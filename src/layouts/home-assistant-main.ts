@@ -23,7 +23,7 @@ import { AppDrawerLayoutElement } from "@polymer/app-layout/app-drawer-layout/ap
 import { showNotificationDrawer } from "../dialogs/notifications/show-notification-drawer";
 import { toggleAttribute } from "../common/dom/toggle_attribute";
 
-const NON_SWIPABLE_PANELS = ["kiosk", "map"];
+const NON_SWIPABLE_PANELS = ["map"];
 
 declare global {
   // for fire event

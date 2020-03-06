@@ -97,6 +97,7 @@ class StepFlowPickHandler extends LitElement {
               )}<a
                 href="https://www.home-assistant.io/integrations/"
                 target="_blank"
+                rel="noreferrer"
                 >${this.hass.localize(
                   "ui.panel.config.integrations.home_assistant_website"
                 )}</a

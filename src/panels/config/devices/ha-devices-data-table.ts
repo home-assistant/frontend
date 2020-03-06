@@ -134,6 +134,7 @@ export class HaDevicesDataTable extends LitElement {
               sortable: true,
               filterable: true,
               direction: "asc",
+              grows: true,
               template: (name, device: DataTableRowData) => {
                 const battery = device.battery_entity
                   ? this.hass.states[device.battery_entity]
@@ -163,6 +164,7 @@ export class HaDevicesDataTable extends LitElement {
               sortable: true,
               filterable: true,
               direction: "asc",
+              grows: true,
             },
             manufacturer: {
               title: this.hass.localize(
@@ -170,6 +172,7 @@ export class HaDevicesDataTable extends LitElement {
               ),
               sortable: true,
               filterable: true,
+              width: "15%",
             },
             model: {
               title: this.hass.localize(
@@ -177,6 +180,7 @@ export class HaDevicesDataTable extends LitElement {
               ),
               sortable: true,
               filterable: true,
+              width: "15%",
             },
             area: {
               title: this.hass.localize(
@@ -184,6 +188,7 @@ export class HaDevicesDataTable extends LitElement {
               ),
               sortable: true,
               filterable: true,
+              width: "15%",
             },
             integration: {
               title: this.hass.localize(
@@ -191,6 +196,7 @@ export class HaDevicesDataTable extends LitElement {
               ),
               sortable: true,
               filterable: true,
+              width: "15%",
             },
             battery_entity: {
               title: this.hass.localize(
@@ -198,6 +204,7 @@ export class HaDevicesDataTable extends LitElement {
               ),
               sortable: true,
               type: "numeric",
+              width: "60px",
               template: (batteryEntity: string) => {
                 const battery = batteryEntity
                   ? this.hass.states[batteryEntity]

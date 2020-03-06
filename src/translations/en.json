@@ -377,9 +377,9 @@
   },
   "ui": {
     "auth_store": {
-      "ask": "Do you want to save this login?",
-      "decline": "No thanks",
-      "confirm": "Save login"
+      "ask": "Do you want to stay logged in?",
+      "decline": "No",
+      "confirm": "Yes"
     },
     "card": {
       "alarm_control_panel": {
@@ -659,8 +659,8 @@
         }
       },
       "helper_settings": {
-        "not_editable": "Not editable",
-        "not_editable_text": "This entity can't be changed from the UI because it is defined in configuration.yaml.",
+        "platform_not_loaded": "The {platform} component is not loaded, please add it your configuration. Either by adding 'default_config:' or '{platform}:'.",
+        "yaml_not_editable": "The settings of this entity can not be edited from the UI. Only entities setup from the UI are configurable from the UI.",
         "required_error_msg": "This field is required",
         "generic": {
           "name": "Name",
@@ -811,6 +811,7 @@
           "picker": {
             "headers": {
               "name": "Name",
+              "entity_id": "Entity ID",
               "type": "Type",
               "editable": "Editable"
             },
@@ -861,15 +862,17 @@
               "headers": {
                 "title": "Title",
                 "conf_mode": "Configuration method",
+                "default": "Default",
                 "require_admin": "Admin only",
                 "sidebar": "Show in sidebar",
                 "filename": "Filename"
               },
-              "open": "Open dashboard",
+              "open": "Open",
               "add_dashboard": "Add dashboard"
             },
             "confirm_delete": "Are you sure you want to delete this dashboard?",
             "cant_edit_yaml": "Dashboards defined in YAML can not be edited from the UI. Change them in configuration.yaml.",
+            "cant_edit_default": "The standard Lovelace dashboard can not be edited from the UI. You can hide it by setting another dashboard as default.",
             "detail": {
               "edit_dashboard": "Edit dashboard",
               "new_dashboard": "Add new dashboard",
@@ -877,12 +880,15 @@
               "show_sidebar": "Show in sidebar",
               "icon": "Sidebar icon",
               "title": "Sidebar title",
+              "title_required": "Title is required.",
               "url": "Url",
               "url_error_msg": "The url can not contain spaces or special characters, except for _ and -",
               "require_admin": "Admin only",
               "delete": "Delete",
               "update": "Update",
-              "create": "Create"
+              "create": "Create",
+              "set_default": "Set as default on this device",
+              "remove_default": "Remove as default on this device"
             }
           },
           "resources": {
@@ -1486,6 +1492,7 @@
               "show_readonly": "Show read-only entities"
             },
             "status": {
+              "restored": "Restored",
               "unavailable": "Unavailable",
               "disabled": "Disabled",
               "readonly": "Read-only",
@@ -1511,7 +1518,9 @@
             "remove_selected": {
               "button": "Remove selected",
               "confirm_title": "Do you want to remove {number} entities?",
-              "confirm_text": "Entities can only be removed when the integration is no longer providing the entities."
+              "confirm_partly_title": "Only {number} selected entities can be removed.",
+              "confirm_text": "You should remove them from your Lovelace config and automations if they contain these entities.",
+              "confirm_partly_text": "You can only remove {removable} of the selected {selected} entities. Entities can only be removed when the integration is no longer providing the entities. Sometimes you have to restart Home Assistant before you can remove the entities of a removed integration. Are you sure you want to remove the removable entities?"
             }
           }
         },
@@ -1866,8 +1875,10 @@
           "saving_failed": "Saving Lovelace UI configuration failed."
         },
         "views": {
-          "confirm_delete": "Are you sure you want to delete this view?",
-          "existing_cards": "You can't delete a view that has cards in it. Remove the cards first."
+          "confirm_delete": "Delete view?",
+          "confirm_delete_text": "Are you sure you want to delete your '{name}' view?",
+          "confirm_delete_existing_cards": "Deleting this view will also remove the cards",
+          "confirm_delete_existing_cards_text": "Are you sure you want to delete your '{name}' view? The view contains {number} cards that will be deleted. This action cannot be undone."
         },
         "menu": {
           "configure_ui": "Configure UI",
@@ -1911,7 +1922,8 @@
             "move_left": "Move view left",
             "move_right": "Move view right",
             "tab_settings": "Settings",
-            "tab_badges": "Badges"
+            "tab_badges": "Badges",
+            "tab_visibility": "Visibility"
           },
           "edit_card": {
             "header": "Card Configuration",
@@ -1951,10 +1963,19 @@
           "card": {
             "alarm-panel": {
               "name": "Alarm Panel",
-              "available_states": "Available States"
+              "available_states": "Available States",
+              "description": "The Alarm Panel card allows you to Arm and Disarm your alarm control panel integrations."
             },
             "conditional": {
-              "name": "Conditional"
+              "name": "Conditional",
+              "description": "The Conditional card displays another card based on entity states.",
+              "conditions": "Conditions",
+              "card": "Card",
+              "state_equal": "State is equal to",
+              "state_not_equal": "State is not equal to",
+              "current_state": "current",
+              "condition_explanation": "The card will be shown when ALL conditions below are fulfilled.",
+              "change_type": "Change type"
             },
             "config": {
               "required": "Required",
@@ -1963,13 +1984,16 @@
             "entities": {
               "name": "Entities",
               "show_header_toggle": "Show Header Toggle?",
-              "toggle": "Toggle entities."
+              "toggle": "Toggle entities.",
+              "description": "The Entities card is the most common type of card. It groups items together into lists."
             },
             "button": {
-              "name": "Button"
+              "name": "Button",
+              "description": "The Button card allows you to add buttons to perform tasks."
             },
             "entity-filter": {
-              "name": "Entity Filter"
+              "name": "Entity Filter",
+              "description": "The Entity Filter card allows you to define a list of entities that you want to track only when in a certain state."
             },
             "gauge": {
               "name": "Gauge",
@@ -1978,23 +2002,29 @@
                 "green": "Green",
                 "red": "Red",
                 "yellow": "Yellow"
-              }
+              },
+              "description": "The Gauge card is a basic card that allows visually seeing sensor data."
             },
             "glance": {
               "name": "Glance",
-              "columns": "Columns"
+              "columns": "Columns",
+              "description": "The Glance card is useful to group multiple sensors in a compact overview."
             },
             "history-graph": {
-              "name": "History Graph"
+              "name": "History Graph",
+              "description": "The History Graph card allows you to display a graph for each of the entities listed."
             },
             "horizontal-stack": {
-              "name": "Horizontal Stack"
+              "name": "Horizontal Stack",
+              "description": "The Horizontal Stack card allows you to stack together multiple cards, so they always sit next to each other in the space of one column."
             },
             "iframe": {
-              "name": "iFrame"
+              "name": "Webpage",
+              "description": "The Webpage card allows you to embed your favorite webpage right into Home Assistant."
             },
             "light": {
-              "name": "Light"
+              "name": "Light",
+              "description": "The Light card allows you to change the brightness of the light."
             },
             "generic": {
               "aspect_ratio": "Aspect Ratio",
@@ -2008,6 +2038,8 @@
               "icon_height": "Icon Height",
               "image": "Image Path",
               "maximum": "Maximum",
+              "manual": "Manual",
+              "manual_description": "Need to add a custom card or just want to manually write the yaml?",
               "minimum": "Minimum",
               "name": "Name",
               "refresh_interval": "Refresh Interval",
@@ -2018,54 +2050,68 @@
               "title": "Title",
               "theme": "Theme",
               "unit": "Unit",
-              "url": "Url"
+              "url": "Url",
+              "state": "State"
             },
             "map": {
               "name": "Map",
               "geo_location_sources": "Geolocation Sources",
               "dark_mode": "Dark Mode?",
               "default_zoom": "Default Zoom",
-              "source": "Source"
+              "source": "Source",
+              "description": "The Map card that allows you to display entities on a map."
             },
             "markdown": {
               "name": "Markdown",
-              "content": "Content"
+              "content": "Content",
+              "description": "The Markdown card is used to render Markdown."
             },
             "media-control": {
-              "name": "Media Control"
+              "name": "Media Control",
+              "description": "The Media Control card is used to display media player entities on an interface with easy to use controls."
             },
             "picture": {
-              "name": "Picture"
+              "name": "Picture",
+              "description": "The Picture card allows you to set an image to use for navigation to various paths in your interface or to call a service."
             },
             "picture-elements": {
-              "name": "Picture Elements"
+              "name": "Picture Elements",
+              "description": "The Picture Elements card is one of the most versatile types of cards. The cards allow you to position icons or text and even services! On an image based on coordinates."
             },
             "picture-entity": {
-              "name": "Picture Entity"
+              "name": "Picture Entity",
+              "description": "The Picture Entity card displays an entity in the form of an image. Instead of images from URL, it can also show the picture of camera entities."
             },
             "picture-glance": {
-              "name": "Picture Glance"
+              "name": "Picture Glance",
+              "description": "The Picture Glance card shows an image and corresponding entity states as an icon. The entities on the right side allow toggle actions, others show the more information dialog."
             },
             "plant-status": {
-              "name": "Plant Status"
+              "name": "Plant Status",
+              "description": "The Plant Status card is for all the lovely botanists out there."
             },
             "sensor": {
               "name": "Sensor",
               "graph_detail": "Graph Detail",
-              "graph_type": "Graph Type"
+              "graph_type": "Graph Type",
+              "description": "The Sensor card gives you a quick overview of your sensors state with an optional graph to visualize change over time."
             },
             "shopping-list": {
               "name": "Shopping List",
+              "description": "The Shopping List card allows you to add, edit, check-off, and clear items from your shopping list.",
               "integration_not_loaded": "This card requires the `shopping_list` integration to be set up."
             },
             "thermostat": {
-              "name": "Thermostat"
+              "name": "Thermostat",
+              "description": "The Thermostat card gives control of your climate entity. Allowing you to change the temperature and mode of the entity."
             },
             "vertical-stack": {
-              "name": "Vertical Stack"
+              "name": "Vertical Stack",
+              "description": "The Vertical Stack card allows you to group multiple cards so they always sit in the same column."
             },
             "weather-forecast": {
-              "name": "Weather Forecast"
+              "name": "Weather Forecast",
+              "description": "The Weather Forecast card displays the weather. Very useful to include on interfaces that people display on the wall."
             }
           },
           "view": {

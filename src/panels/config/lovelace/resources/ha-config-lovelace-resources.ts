@@ -57,6 +57,7 @@ export class HaConfigLovelaceRescources extends LitElement {
           sortable: true,
           filterable: true,
           direction: "asc",
+          grows: true,
         },
         type: {
           title: this.hass.localize(
@@ -64,6 +65,7 @@ export class HaConfigLovelaceRescources extends LitElement {
           ),
           sortable: true,
           filterable: true,
+          width: "30%",
           template: (type) =>
             html`
               ${this.hass.localize(

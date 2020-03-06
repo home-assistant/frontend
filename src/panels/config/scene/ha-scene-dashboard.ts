@@ -54,6 +54,7 @@ class HaSceneDashboard extends LitElement {
               <a
                 href="https://home-assistant.io/docs/scene/editor/"
                 target="_blank"
+                rel="noreferrer"
               >
                 ${this.hass.localize("ui.panel.config.scene.picker.learn_more")}
               </a>
