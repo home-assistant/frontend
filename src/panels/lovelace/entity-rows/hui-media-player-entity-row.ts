@@ -30,14 +30,27 @@ import {
 } from "../../../data/media-player";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
 import { computeRTLDirection } from "../../../common/util/compute_rtl";
+import { debounce } from "../../../common/util/debounce";
 
 @customElement("hui-media-player-entity-row")
 class HuiMediaPlayerEntityRow extends LitElement implements LovelaceRow {
   @property() public hass?: HomeAssistant;
   @property() private _config?: EntityConfig;
-  @property() private _loaded?: boolean;
-  private _updated?: boolean;
-  private _narrow?: boolean;
+  @property() private _narrow?: boolean = false;
+  @property() private _veryNarrow?: boolean = false;
+  private _resizeObserver?: ResizeObserver;
+  private _debouncedResizeListener = debounce(
+    () => {
+      this._narrow = this.parentElement
+        ? this.parentElement.clientWidth < 350
+        : false;
+      this._veryNarrow = this.parentElement
+        ? this.parentElement.clientWidth < 300
+        : false;
+    },
+    250,
+    false
+  );
 
   public setConfig(config: EntityConfig): void {
     if (!config || !config.entity) {
@@ -47,18 +60,8 @@ class HuiMediaPlayerEntityRow extends LitElement implements LovelaceRow {
     this._config = config;
   }
 
-  public connectedCallback(): void {
-    super.connectedCallback();
-    if (this._updated && !this._loaded) {
-      this._initialLoad();
-    }
-  }
-
   protected firstUpdated(): void {
-    this._updated = true;
-    if (this.isConnected && !this._loaded) {
-      this._initialLoad();
-    }
+    this._attachObserver();
   }
 
   protected shouldUpdate(changedProps: PropertyValues): boolean {
@@ -69,6 +72,8 @@ class HuiMediaPlayerEntityRow extends LitElement implements LovelaceRow {
     if (!this.hass || !this._config) {
       return html``;
     }
+
+    console.log("narrow: " + this._narrow + " veryNarrow: " + this._veryNarrow);
 
     const stateObj = this.hass.states[this._config.entity];
 
@@ -102,7 +107,6 @@ class HuiMediaPlayerEntityRow extends LitElement implements LovelaceRow {
               ></paper-icon-button>
             `
           : ""}
-        <div slot="secondary">${this._computeMediaTitle(stateObj)}</div>
       </hui-generic-entity-row>
       <div class="flex">
         <div class="volume">
@@ -127,7 +131,8 @@ class HuiMediaPlayerEntityRow extends LitElement implements LovelaceRow {
                   id="input"
                 ></ha-slider>
               `
-            : supportsFeature(stateObj, SUPPORT_VOLUME_BUTTONS)
+            : supportsFeature(stateObj, SUPPORT_VOLUME_BUTTONS) &&
+              !this._veryNarrow
             ? html`
                 <paper-icon-button
                   icon="hass:volume-minus"
@@ -141,7 +146,8 @@ class HuiMediaPlayerEntityRow extends LitElement implements LovelaceRow {
             : ""}
         </div>
         <div class="controls">
-          ${supportsFeature(stateObj, SUPPORT_PREVIOUS_TRACK)
+          ${supportsFeature(stateObj, SUPPORT_PREVIOUS_TRACK) &&
+          !this._veryNarrow
             ? html`
                 <paper-icon-button
                   icon="hass:skip-previous"
@@ -195,18 +201,20 @@ class HuiMediaPlayerEntityRow extends LitElement implements LovelaceRow {
     `;
   }
 
-  private async _initialLoad(): Promise<void> {
-    await this.updateComplete;
-    this._narrow = false;
-    this._loaded = true;
-
-    if (!this.parentElement) {
+  private _attachObserver(): void {
+    if (typeof ResizeObserver !== "function") {
+      import("resize-observer").then((modules) => {
+        modules.install();
+        this._attachObserver();
+      });
       return;
     }
 
-    if (this.parentElement.clientWidth < 350) {
-      this._narrow = true;
-    }
+    this._resizeObserver = new ResizeObserver(() =>
+      this._debouncedResizeListener()
+    );
+
+    this._resizeObserver.observe(this);
   }
 
   private _computeControlIcon(stateObj: HassEntity): string {
