@@ -1966,7 +1966,14 @@
             },
             "conditional": {
               "name": "Conditional",
-              "description": "The Conditional card displays another card based on entity states."
+              "description": "The Conditional card displays another card based on entity states.",
+              "conditions": "Conditions",
+              "card": "Card",
+              "state_equal": "State is equal to",
+              "state_not_equal": "State is not equal to",
+              "current_state": "current",
+              "condition_explanation": "The card will be shown when ALL conditions below are fulfilled.",
+              "change_type": "Change type"
             },
             "config": {
               "required": "Required",
@@ -2041,7 +2048,8 @@
               "title": "Title",
               "theme": "Theme",
               "unit": "Unit",
-              "url": "Url"
+              "url": "Url",
+              "state": "State"
             },
             "map": {
               "name": "Map",
