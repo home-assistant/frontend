@@ -86,15 +86,8 @@ export class ZHAClustersDataTable extends LitElement {
         .data=${this._clusters(this.clusters)}
         .id=${"cluster_id"}
         selectable
+        auto-height
       ></ha-data-table>
-    `;
-  }
-
-  static get styles(): CSSResult {
-    return css`
-      ha-data-table {
-        height: 600px;
-      }
     `;
   }
 }

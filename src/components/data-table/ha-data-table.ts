@@ -85,6 +85,8 @@ export class HaDataTable extends LitElement {
   @property({ type: Object }) public columns: DataTableColumnContainer = {};
   @property({ type: Array }) public data: DataTableRowData[] = [];
   @property({ type: Boolean }) public selectable = false;
+  @property({ type: Boolean, attribute: "auto-height" })
+  public autoHeight = false;
   @property({ type: String }) public id = "id";
   @property({ type: String }) public filter = "";
   @property({ type: Boolean }) private _filterable = false;
@@ -181,7 +183,16 @@ export class HaDataTable extends LitElement {
               `
             : ""}
         </slot>
-        <div class="mdc-data-table__table">
+        <div
+          class="mdc-data-table__table ${classMap({
+            "auto-height": this.autoHeight,
+          })}"
+          style=${styleMap({
+            height: this.autoHeight
+              ? `${this._filteredData.length * 52 + 56}px`
+              : `calc(100% - ${this._header?.clientHeight}px)`,
+          })}
+        >
           <div class="mdc-data-table__header-row">
             ${this.selectable
               ? html`
@@ -417,6 +428,9 @@ export class HaDataTable extends LitElement {
   }
 
   private async _calcTableHeight() {
+    if (this.autoHeight) {
+      return;
+    }
     await this.updateComplete;
     this._table.style.height = `calc(100% - ${this._header.clientHeight}px)`;
   }
@@ -650,9 +664,6 @@ export class HaDataTable extends LitElement {
         position: relative;
         top: 2px;
       }
-      .scroller {
-        overflow: auto;
-      }
       slot[name="header"] {
         display: block;
       }
@@ -663,8 +674,10 @@ export class HaDataTable extends LitElement {
         display: flex;
         position: relative;
         contain: strict;
-        overflow: auto;
         height: calc(100% - 57px);
+      }
+      .mdc-data-table__table:not(.auto-height) .scroller {
+        overflow: auto;
       }
       .grows {
         flex-grow: 1;

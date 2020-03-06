@@ -146,7 +146,6 @@ export class ZHAGroupPage extends LitElement {
                   .narrow=${this.narrow}
                   selectable
                   @selection-changed=${this._handleRemoveSelectionChanged}
-                  class="table"
                 >
                 </zha-devices-data-table>
 
@@ -181,7 +180,6 @@ export class ZHAGroupPage extends LitElement {
             .narrow=${this.narrow}
             selectable
             @selection-changed=${this._handleAddSelectionChanged}
-            class="table"
           >
           </zha-devices-data-table>
 
@@ -286,11 +284,6 @@ export class ZHAGroupPage extends LitElement {
 
         .button {
           float: right;
-        }
-
-        .table {
-          height: 200px;
-          overflow: auto;
         }
 
         mwc-button paper-spinner {

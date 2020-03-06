@@ -143,6 +143,7 @@ class ZHAConfigDashboard extends LitElement {
               .data=${this._memoizeDevices(this._devices)}
               @row-click=${this._handleDeviceClicked}
               .id=${"ieee"}
+              auto-height
             ></ha-data-table>
           </ha-card>
         </ha-config-section>
@@ -166,9 +167,6 @@ class ZHAConfigDashboard extends LitElement {
         a {
           text-decoration: none;
           color: var(--primary-text-color);
-        }
-        ha-data-table {
-          height: 600px;
         }
       `,
     ];

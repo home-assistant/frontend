@@ -97,6 +97,7 @@ export class ZHADevicesDataTable extends LitElement {
         .columns=${this._columns(this.narrow)}
         .data=${this._devices(this.devices)}
         .selectable=${this.selectable}
+        auto-height
       ></ha-data-table>
     `;
   }
@@ -106,14 +107,6 @@ export class ZHADevicesDataTable extends LitElement {
       .closest("tr")!
       .getAttribute("data-row-id")!;
     showZHADeviceInfoDialog(this, { ieee });
-  }
-
-  static get styles(): CSSResult {
-    return css`
-      ha-data-table {
-        height: 600px;
-      }
-    `;
   }
 }
 

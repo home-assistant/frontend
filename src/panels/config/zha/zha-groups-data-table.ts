@@ -106,6 +106,7 @@ export class ZHAGroupsDataTable extends LitElement {
         .columns=${this._columns(this.narrow)}
         .data=${this._groups(this.groups)}
         .selectable=${this.selectable}
+        auto-height
       ></ha-data-table>
     `;
   }
@@ -115,14 +116,6 @@ export class ZHAGroupsDataTable extends LitElement {
       .closest("tr")!
       .getAttribute("data-row-id")!;
     navigate(this, `/config/zha/group/${groupId}`);
-  }
-
-  static get styles(): CSSResult {
-    return css`
-      ha-data-table {
-        height: 600px;
-      }
-    `;
   }
 }
 

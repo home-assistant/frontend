@@ -83,7 +83,6 @@ export class ZHAAddGroupPage extends LitElement {
             .narrow=${this.narrow}
             selectable
             @selection-changed=${this._handleAddSelectionChanged}
-            class="table"
           >
           </zha-devices-data-table>
 
@@ -156,11 +155,6 @@ export class ZHAAddGroupPage extends LitElement {
 
         .button {
           float: right;
-        }
-
-        .table {
-          height: 400px;
-          overflow: auto;
         }
 
         ha-config-section *:last-child {
