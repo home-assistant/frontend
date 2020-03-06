@@ -32,11 +32,8 @@ declare global {
 export class HuiViewVisibilityEditor extends LitElement {
   set config(config: LovelaceViewConfig) {
     this._config = config;
-    if (this._config.visible === undefined) {
-      this._config.visible = true;
-    } else {
-      this._visible = this._config.visible;
-    }
+    this._visible =
+      this._config.visible === undefined ? true : this._config.visible;
   }
 
   @property() public hass!: HomeAssistant;
@@ -111,13 +108,15 @@ export class HuiViewVisibilityEditor extends LitElement {
           };
         });
       }
+    } else {
+      newVisible = [...this._visible];
     }
 
     if (checked === true) {
       const newEntry: ShowViewConfig = {
         user: userId,
       };
-      newVisible = [...newVisible, newEntry];
+      newVisible.push(newEntry);
     } else {
       newVisible = (newVisible as ShowViewConfig[]).filter(
         (c) => c.user !== userId
