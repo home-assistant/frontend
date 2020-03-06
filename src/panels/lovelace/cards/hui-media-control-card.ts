@@ -39,7 +39,7 @@ import {
   SUPPORT_SEEK,
   CONTRAST_RATIO,
   getCurrentProgress,
-  computeSecondaryTitle,
+  computeMediaDescription,
 } from "../../../data/media-player";
 
 import "../../../components/ha-card";
@@ -237,11 +237,11 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
                   <div class="media-info">
                     <div class="title">
                       ${stateObj.attributes.media_title ||
-                        computeSecondaryTitle(stateObj)}
+                        computeMediaDescription(stateObj)}
                     </div>
                     ${!stateObj.attributes.media_title
                       ? ""
-                      : computeSecondaryTitle(stateObj)}
+                      : computeMediaDescription(stateObj)}
                   </div>
                 `}
             ${this._veryNarrow && !OFF_STATES.includes(stateObj.state)
@@ -578,10 +578,11 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
       .off .image,
       .off .color-gradient {
         opacity: 0;
-        transition: opacity 0s;
+        transition: opacity 0s, width 0.8s;
+        width: 0;
       }
 
-      .background:not(.off) .no-img {
+      .background:not(.off):not(.no-image) .no-img {
         opacity: 0;
       }
 

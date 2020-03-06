@@ -31,7 +31,7 @@ export const getCurrentProgress = (stateObj: HassEntity): number => {
   return progress;
 };
 
-export const computeSecondaryTitle = (stateObj: HassEntity): string => {
+export const computeMediaDescription = (stateObj: HassEntity): string => {
   let secondaryTitle: string;
 
   switch (stateObj.attributes.media_content_type) {
