@@ -1149,7 +1149,7 @@
                         "check_your_email": "비밀번호를 재설정하는 방법은 보내드린 이메일을 확인해주세요.",
                         "email": "이메일",
                         "email_error_msg": "이메일 형식이 잘못되었습니다",
-                        "instructions": "이메일 주소를 입력하시면 비밀번호를 재설정 할 수 있는 링크를 보내드립니다.",
+                        "instructions": "이메일 주소를 입력하시면 비밀번호를 재설정할 수 있는 링크를 보내드립니다.",
                         "send_reset_email": "재설정 이메일 보내기",
                         "subtitle": "비밀번호 재설정 하기",
                         "title": "비밀번호 찾기"
@@ -1481,7 +1481,7 @@
                     "note_about_integrations": "아직 UI 에서 모든 통합 구성요소를 구성할 수 있는 것은 아닙니다.",
                     "note_about_website_reference": "더 많은 구성요소는 다음에서 살펴 봐주세요. "
                 },
-                "introduction": "여기에서 구성요소와  Home Assistant 를 설정 할 수 있습니다. 아직 여기서 모두 설정 할 수는 없지만, 모든 내용을 설정 할 수 있도록 작업 중입니다.",
+                "introduction": "여기에서 구성요소와  Home Assistant 를 설정할 수 있습니다. 아직 여기서 모두 설정할 수는 없지만, 모든 내용을 설정할 수 있도록 작업 중입니다.",
                 "lovelace": {
                     "caption": "Lovelace 대시보드",
                     "dashboards": {
@@ -1799,7 +1799,7 @@
                         "zha_zigbee_groups": "ZHA Zigbee 그룹"
                     },
                     "header": "Zigbee 홈 자동화 구성",
-                    "introduction": "여기에서 ZHA 구성요소를 설정 할 수 있습니다. 아직 여기서 모두 설정 할 수는 없지만, 모든 내용을 설정 할 수 있도록 작업 중입니다.",
+                    "introduction": "여기에서 ZHA 구성요소를 설정할 수 있습니다. 아직 여기서 모두 설정할 수는 없지만, 모든 내용을 설정할 수 있도록 작업 중입니다.",
                     "network_management": {
                         "header": "네트워크 관리",
                         "introduction": "전체 네트워크에 영향을 미치는 명령"

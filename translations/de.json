@@ -647,6 +647,7 @@
                 "generic": {
                     "icon": "Symbol",
                     "initial_value": "Anfangswert beim Start",
+                    "initial_value_explain": "Der Wert, den das Element hat, wenn der Home Assistant startet. Wenn Sie das Feld leer lassen, wird der Wert auf den vorherigen Wert zurückgesetzt.",
                     "name": "Name"
                 },
                 "input_datetime": {
@@ -673,9 +674,11 @@
                     "min": "Minimale Länge",
                     "mode": "Anzeigemodus",
                     "password": "Passwort",
+                    "pattern": "Regex-Muster für die clientseitige Validierung",
                     "text": "Text"
                 },
                 "not_editable": "Nicht bearbeitbar",
+                "not_editable_text": "Diese Entität kann nicht über die Benutzeroberfläche geändert werden, da sie in der configuration.yaml definiert wurde.",
                 "required_error_msg": "Dieses Feld ist erforderlich"
             },
             "more_info_control": {
@@ -1482,6 +1485,7 @@
                 "lovelace": {
                     "caption": "Lovelace Dashboards",
                     "dashboards": {
+                        "cant_edit_yaml": "In YAML definierte Dashboards können nicht über die Benutzeroberfläche bearbeitet werden. Ändern Sie sie in der configuration.yaml.",
                         "caption": "Dashboards",
                         "conf_mode": {
                             "storage": "UI gesteuert",
@@ -1499,7 +1503,8 @@
                             "show_sidebar": "In der Seitenleiste anzeigen",
                             "title": "Titel der Seitenleiste",
                             "update": "Aktualisieren",
-                            "url": "Url"
+                            "url": "Url",
+                            "url_error_msg": "Die URL darf keine Leerzeichen oder Sonderzeichen enthalten, außer _ und -"
                         },
                         "picker": {
                             "add_dashboard": "Dashboard hinzufügen",
@@ -1515,6 +1520,7 @@
                     },
                     "description": "Konfigurieren Sie Ihre Lovelace-Dashboards",
                     "resources": {
+                        "cant_edit_yaml": "Sie verwenden Lovelace im YAML-Modus, daher können Sie Ihre Ressourcen nicht über die Benutzeroberfläche verwalten. Verwalten Sie sie in der configuration.yaml.",
                         "caption": "Ressourcen",
                         "confirm_delete": "Sind Sie sicher, dass Sie diese Ressource löschen möchten?",
                         "detail": {
@@ -1526,7 +1532,8 @@
                             "update": "Aktualisieren",
                             "url": "Url",
                             "url_error_msg": "URL ist ein Pflichtfeld",
-                            "warning_header": "Seien Sie vorsichtig!"
+                            "warning_header": "Seien Sie vorsichtig!",
+                            "warning_text": "Das Hinzufügen von Ressourcen kann gefährlich sein. Stellen Sie sicher, dass Sie die Quelle der Ressource kennen und ihr vertrauen. Schlechte Ressourcen können Ihr System ernsthaft beschädigen."
                         },
                         "picker": {
                             "add_resource": "Ressource hinzufügen",
@@ -1535,6 +1542,7 @@
                                 "url": "Url"
                             }
                         },
+                        "refresh_body": "Sie müssen die Seite aktualisieren, um das Entfernen abzuschließen. Möchten Sie jetzt aktualisieren?",
                         "refresh_header": "Möchten Sie aktualisieren?",
                         "types": {
                             "css": "Stylesheet",
@@ -2248,7 +2256,9 @@
                         "para": "Standardmäßig verwaltet Home Assistant Ihre Benutzeroberfläche und aktualisiert sie, sobald neue Entitäten oder Lovelace-Komponenten verfügbar sind. Wenn Sie die Verwaltung selbst übernehmen wollen, nehmen wir für Sie keine Änderungen mehr vor.",
                         "para_sure": "Sind Sie sicher, dass Sie die Benutzeroberfläche selbst verwalten möchten?",
                         "save": "Kontrolle übernehmen",
-                        "yaml_config": "Um Ihnen den Einstieg zu erleichtern, finden Sie hier die aktuelle Konfiguration dieses Dashboards:"
+                        "yaml_config": "Um Ihnen den Einstieg zu erleichtern, finden Sie hier die aktuelle Konfiguration dieses Dashboards:",
+                        "yaml_control": "Um die Kontrolle im YAML-Modus zu übernehmen, erstellen Sie eine YAML-Datei mit dem Namen, den Sie in Ihrer Konfiguration für dieses Dashboard angegeben haben, oder mit der Standardeinstellung 'ui-lovelace.yaml'.",
+                        "yaml_mode": "Sie verwenden den YAML-Modus, daher können Sie Ihre Lovelace-Konfiguration nicht über die Benutzeroberfläche ändern. Wenn Sie Lovelace über die Benutzeroberfläche ändern möchten, entfernen Sie den 'mode: yaml' aus Ihrer Lovelace-Konfiguration in 'configuration.yaml'."
                     },
                     "suggest_card": {
                         "add": "Zu Lovelace hinzufügen",

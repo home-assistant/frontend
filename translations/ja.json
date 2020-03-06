@@ -1080,6 +1080,7 @@
             "lovelace": {
                 "cards": {
                     "shopping-list": {
+                        "add_item": "アイテムを追加",
                         "clear_items": "チェックされたアイテムを削除"
                     }
                 },
@@ -1138,6 +1139,7 @@
                             "name": "センサー"
                         },
                         "shopping-list": {
+                            "integration_not_loaded": "このカードを設定するには、「shopping_list」インテグレーションが必要です。",
                             "name": "買い物リスト"
                         },
                         "thermostat": {
@@ -1331,7 +1333,7 @@
             },
             "shopping-list": {
                 "add_item": "アイテムを追加",
-                "clear_completed": "削除完了"
+                "clear_completed": "完了したアイテムを削除"
             }
         },
         "sidebar": {

@@ -448,7 +448,7 @@
             },
             "fan": {
                 "direction": "方向",
-                "forward": "向前",
+                "forward": "正向",
                 "oscillate": "摇头",
                 "reverse": "反向",
                 "speed": "风速"
@@ -811,14 +811,14 @@
                         "delete": "删除",
                         "update": "更新"
                     },
-                    "no_areas": "看来你还没有建立区域！",
+                    "no_areas": "看来您还没有建立区域！",
                     "picker": {
                         "create_area": "创建区域",
                         "header": "区域注册表",
                         "integrations_page": "集成页面",
                         "introduction": "区域用于组织设备所在的位置。此信息将用于 Home Assistant 的各个地方，以帮助您组织界面、权限和与其他系统的集成。",
                         "introduction2": "要将设备置入某个区域，请使用下面的链接导航到集成页面，然后点击一个已配置的集成以进入设备卡片。",
-                        "no_areas": "看来你还没有建立区域！"
+                        "no_areas": "看来您还没有建立区域！"
                     }
                 },
                 "automation": {
@@ -1042,7 +1042,7 @@
                         "delete_confirm": "您确定要删除此自动化吗？",
                         "edit_automation": "编辑自动化",
                         "header": "自动化编辑器",
-                        "introduction": "自动化编辑器方便你创建及编辑自动化。请按照下面的链接阅读说明，以确保您已正确配置Home Assistant。",
+                        "introduction": "自动化编辑器方便您创建及编辑自动化。请按照下面的链接阅读说明，以确保配置正确。",
                         "learn_more": "详细了解自动化",
                         "no_automations": "未找到可编辑的自动化",
                         "only_editable": "只能编辑 automations.yaml 中的自动化。",
@@ -1398,10 +1398,15 @@
                 },
                 "header": "配置 Home Assistant",
                 "helpers": {
+                    "caption": "辅助元素",
+                    "description": "可以帮助构建自动化的元素。",
                     "dialog": {
-                        "add_platform": "添加 {platform}"
+                        "add_helper": "添加辅助元素",
+                        "add_platform": "添加 {platform}",
+                        "create": "创建"
                     },
                     "picker": {
+                        "add_helper": "添加辅助元素",
                         "headers": {
                             "editable": "可编辑",
                             "name": "名称",
@@ -1440,7 +1445,7 @@
                         "add_area": "新建区域",
                         "area_picker_label": "区域",
                         "close": "关闭",
-                        "created_config": "新增 {name} 设置。",
+                        "created_config": "为 {name} 创建了配置。",
                         "dismiss": "关闭对话框",
                         "error_saving_area": "保存区域时发生错误：{error}",
                         "external_step": {
@@ -1542,7 +1547,7 @@
                         "types": {
                             "css": "样式表",
                             "html": "HTML（已过时）",
-                            "js": "JavaScript文件（已过时）",
+                            "js": "JavaScript 文件（已过时）",
                             "module": "JavaScript 模块"
                         }
                     }
@@ -1606,7 +1611,7 @@
                         "delete_scene": "删除场景",
                         "edit_scene": "编辑场景",
                         "header": "场景编辑器",
-                        "introduction": "场景编辑器用于创建及编辑场景。请按照下面的链接阅读说明，以确保正确配置。",
+                        "introduction": "场景编辑器方便您创建及编辑场景。请按照下面的链接阅读说明，以确保配置正确。",
                         "learn_more": "详细了解场景",
                         "no_scenes": "未找到可编辑的场景",
                         "only_editable": "只能编辑 scenes.yaml 中的场景。",
@@ -1633,7 +1638,7 @@
                         "add_script": "添加脚本",
                         "edit_script": "编辑脚本",
                         "header": "脚本编辑器",
-                        "introduction": "脚本编辑器用于创建及编辑脚本。请按照下面的链接阅读说明，以确保您已正确配置 Home Assistant。",
+                        "introduction": "脚本编辑器方便您创建及编辑脚本。请按照下面的链接阅读说明，以确保配置正确。",
                         "learn_more": "详细了解脚本",
                         "no_scripts": "未找到可编辑的脚本",
                         "trigger_script": "触发脚本"
@@ -2024,7 +2029,7 @@
             "lovelace": {
                 "add_entities": {
                     "generated_unsupported": "只有在自行编辑 Lovelace UI 时才能使用此功能。",
-                    "saving_failed": "保存 Lovelace UI 设置失败。",
+                    "saving_failed": "保存 Lovelace UI 配置失败。",
                     "yaml_unsupported": "在 YAML 模式下使用 Lovelace 时不能使用此功能。"
                 },
                 "cards": {
@@ -2047,7 +2052,7 @@
                         "url": "打开窗口前往 {url_path}"
                     },
                     "safe-mode": {
-                        "description": "Home Assistant 在加载配置时遇到问题，正以安全模式执行中。请查看错误日志，以找出问题。",
+                        "description": "Home Assistant 在加载配置时遇到问题，现正以安全模式运行。请查看错误日志以排查问题。",
                         "header": "安全模式已开启",
                         "show_errors": "显示错误"
                     },
@@ -2094,7 +2099,7 @@
                         "gauge": {
                             "name": "仪表盘",
                             "severity": {
-                                "define": "定义严重性？",
+                                "define": "设置分级变色？",
                                 "green": "绿色",
                                 "red": "红色",
                                 "yellow": "黄色"
@@ -2145,7 +2150,7 @@
                             "default_zoom": "默认缩放",
                             "geo_location_sources": "地理位置来源",
                             "name": "地图",
-                            "source": "源"
+                            "source": "位置来源"
                         },
                         "markdown": {
                             "content": "内容",
@@ -2230,8 +2235,8 @@
                         "para_no_id": "此元素没有 ID。请在 'ui-lovelace.yaml' 中为此元素添加 ID。"
                     },
                     "raw_editor": {
-                        "confirm_remove_config_text": "如果您删除了 Lovelace UI 设置的话，我们将通过您的区域和设备自动生成 Lovelace UI 面板。",
-                        "confirm_remove_config_title": "您确定要删除 Lovelace UI 设置吗？我们将通过您的区域和设备自动生成 Lovelace UI 面板。",
+                        "confirm_remove_config_text": "如果您删除了 Lovelace 配置，我们将通过您的区域和设备自动生成 Lovelace 视图。",
+                        "confirm_remove_config_title": "您确定要删除 Lovelace 配置吗？我们将通过您的区域和设备自动生成 Lovelace 视图。",
                         "confirm_unsaved_changes": "您有未保存的更改，确定要退出吗？",
                         "confirm_unsaved_comments": "您的配置包含注释，这些注释将不会保存。是否继续？",
                         "error_invalid_config": "您的配置无效：{error}",
@@ -2239,6 +2244,7 @@
                         "error_remove": "无法删除配置：{error}",
                         "error_save_yaml": "无法保存 YAML：{error}",
                         "header": "编辑配置",
+                        "resources_moved": "资源(resources)不应再添加到 Lovelace 配置中，而是在 Lovelace 配置面板中添加。",
                         "save": "保存",
                         "saved": "已保存",
                         "unsaved_changes": "未保存的更改"
@@ -2256,12 +2262,12 @@
                     },
                     "suggest_card": {
                         "add": "添加至 Lovelace UI",
-                        "create_own": "选择其他卡",
-                        "header": "我们为您提出了一条建议"
+                        "create_own": "选择其他卡片",
+                        "header": "为您生成的建议如下"
                     },
                     "view": {
                         "panel_mode": {
-                            "description": "这将使第一张卡片全屏显示。此视图中的其他卡将不会呈现。",
+                            "description": "这将使第一张卡片全屏显示。此视图中的其他卡片将不会呈现。",
                             "title": "面板模式？"
                         }
                     }
@@ -2472,7 +2478,7 @@
             },
             "profile": {
                 "advanced_mode": {
-                    "description": "Home Assistant 默认隐藏高级功能和选项。您可以选中此开关来使用它们。这是用户个人的设置，不会影响使用 Home Assistant 的其他用户。",
+                    "description": "解锁高级功能。",
                     "link_promo": "了解更多信息",
                     "title": "高级模式"
                 },
@@ -2510,7 +2516,7 @@
                     "last_used": "上次使用于 {date} 来自 {location}",
                     "learn_auth_requests": "了解如何创建经过身份验证的请求。",
                     "not_used": "从未使用过",
-                    "prompt_copy_token": "请复制你的访问令牌。它不会再显示出来。",
+                    "prompt_copy_token": "请复制您的访问令牌。它不会再显示出来。",
                     "prompt_name": "名称？"
                 },
                 "mfa_setup": {
