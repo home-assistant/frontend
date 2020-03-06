@@ -189,7 +189,7 @@ export class HaDataTable extends LitElement {
           })}"
           style=${styleMap({
             height: this.autoHeight
-              ? `${this._filteredData.length * 52 + 56}px`
+              ? `${this._filteredData.length * 53 + 57}px`
               : `calc(100% - ${this._header?.clientHeight}px)`,
           })}
         >
