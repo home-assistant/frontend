@@ -9,8 +9,6 @@ import {
   TemplateResult,
   property,
   customElement,
-  CSSResult,
-  css,
 } from "lit-element";
 import { HomeAssistant } from "../../../types";
 // tslint:disable-next-line
