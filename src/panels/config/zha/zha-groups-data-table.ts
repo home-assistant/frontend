@@ -110,9 +110,9 @@ export class ZHAGroupsDataTable extends LitElement {
   }
 
   private _handleRowClicked(ev: CustomEvent) {
-    const groupId = (ev.target as HTMLElement)
-      .closest("tr")!
-      .getAttribute("data-row-id")!;
+    const groupId = ((ev.target as HTMLElement).closest(
+      ".mdc-data-table__row"
+    ) as any).rowId;
     navigate(this, `/config/zha/group/${groupId}`);
   }
 }
