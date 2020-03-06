@@ -605,6 +605,7 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
         align-items: center;
         transition: padding, color;
         transition-duration: 0.4s;
+        margin-left: -12px;
       }
 
       .controls > div {
@@ -678,7 +679,6 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
       }
 
       .off .controls paper-icon-button {
-        margin-left: -16px;
         width: 55px;
         height: 55px;
       }
