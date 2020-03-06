@@ -639,22 +639,23 @@
             },
             "generic": {
                 "cancel": "Anuluj",
+                "close": "zamknij",
                 "default_confirmation_title": "Jesteś pewny?",
                 "ok": "OK"
             },
             "helper_settings": {
                 "generic": {
                     "icon": "Ikona",
-                    "initial_value": "Wartość początkowa na starcie",
-                    "initial_value_explain": "Wartość, jaką będzie miał element po uruchomieniu Asystenta domowego. Pozostawione puste spowoduje przywrócenie poprzedniej wartości.",
-                    "name": "Imię"
+                    "initial_value": "Wartość początkowa",
+                    "initial_value_explain": "Wartość, jaką będzie miał element po uruchomieniu Home Assistant'a. Niewypełnienie spowoduje przywrócenie poprzedniej wartości.",
+                    "name": "Nazwa"
                 },
                 "input_datetime": {
                     "has_date": "Data",
                     "has_time": "Czas"
                 },
                 "input_number": {
-                    "box": "Pole wyboru",
+                    "box": "Pole wprowadzania danych",
                     "max": "Maksymalna wartość",
                     "min": "Minimalna wartość",
                     "mode": "Tryb wyświetlania",
@@ -676,7 +677,7 @@
                     "pattern": "Wyrażenie regularne do sprawdzania poprawności po stronie klienta",
                     "text": "Pole tekstowe"
                 },
-                "not_editable": "Nie edytowalne",
+                "not_editable": "Nieedytowalne",
                 "not_editable_text": "Tego elementu nie można zmienić z poziomu interfejsu użytkownika, ponieważ jest on zdefiniowany w pliku configuration.yaml.",
                 "required_error_msg": "To pole jest wymagane"
             },
@@ -1397,15 +1398,15 @@
                 },
                 "header": "Konfiguruj Home Assistant'a",
                 "helpers": {
-                    "caption": "Pola do wprowadzania danych",
+                    "caption": "Pomocnicy",
                     "description": "Elementy, które mogą pomóc w tworzeniu automatyzacji",
                     "dialog": {
-                        "add_helper": "Dodaj pole do wprowadzania danych",
+                        "add_helper": "Dodaj pomocnika",
                         "add_platform": "Dodaj {platform}",
                         "create": "Utwórz"
                     },
                     "picker": {
-                        "add_helper": "Dodaj pole do wprowadzania danych",
+                        "add_helper": "Dodaj pomocnika",
                         "headers": {
                             "editable": "Edytowalne",
                             "name": "Nazwa",
@@ -1413,10 +1414,10 @@
                         }
                     },
                     "types": {
-                        "input_boolean": "Przełączanie",
-                        "input_datetime": "Data i / lub godzina",
+                        "input_boolean": "Przełącznik",
+                        "input_datetime": "Data i/lub godzina",
                         "input_number": "Pole numeryczne",
-                        "input_select": "Pole rozwijalne",
+                        "input_select": "Rozwijane pole wyboru",
                         "input_text": "Pole tekstowe"
                     }
                 },
@@ -1481,6 +1482,76 @@
                     "note_about_website_reference": "Więcej jest dostępnych na stronie integracji "
                 },
                 "introduction": "Tutaj możesz skonfigurować Home Assistant'a i jego komponenty. Nie wszystkie opcje można konfigurować z interfejsu użytkownika, ale pracujemy nad tym.",
+                "lovelace": {
+                    "caption": "Dashboard'y interfejsu użytkownika Lovelace",
+                    "dashboards": {
+                        "cant_edit_yaml": "Dasboard'y zdefiniowane w plikach YAML nie mogą być edytowane z poziomu interfejsu użytkownika. Zmień je w pliku configuration.yaml.",
+                        "caption": "Dashboard'y",
+                        "conf_mode": {
+                            "storage": "Konfigurowalny z interfejsu użytkownika",
+                            "yaml": "Plik YAML"
+                        },
+                        "confirm_delete": "Na pewno chcesz usunąć ten dashboard?",
+                        "detail": {
+                            "create": "Utwórz",
+                            "delete": "Usuń",
+                            "dismiss": "Zamknij",
+                            "edit_dashboard": "Edytuj dashboard",
+                            "icon": "Ikona w pasku bocznym",
+                            "new_dashboard": "Dodaj nowy dashboard",
+                            "require_admin": "Tylko administrator",
+                            "show_sidebar": "Pokaż na pasku bocznym",
+                            "title": "Tytuł w pasku bocznym",
+                            "update": "Aktualizuj",
+                            "url": "URL",
+                            "url_error_msg": "Adres URL nie może zawierać spacji ani znaków specjalnych, z wyjątkiem _ i -"
+                        },
+                        "picker": {
+                            "add_dashboard": "Dodaj dashboard",
+                            "headers": {
+                                "conf_mode": "Metoda konfiguracji",
+                                "filename": "Nazwa pliku",
+                                "require_admin": "Tylko administrator",
+                                "sidebar": "Pokaż na pasku bocznym",
+                                "title": "Tytuł"
+                            },
+                            "open": "Otwórz dashboard"
+                        }
+                    },
+                    "description": "Konfiguruj dashboard'y interfejsu użytkownika Lovelace",
+                    "resources": {
+                        "cant_edit_yaml": "Korzystasz z interfejsu użytkownika Lovelace w trybie YAML, dlatego nie możesz zarządzać zasobami za pomocą interfejsu użytkownika. Zarządzaj nimi w pliku configuration.yaml.",
+                        "caption": "Zasoby",
+                        "confirm_delete": "Na pewno chcesz usunąć ten zasób?",
+                        "detail": {
+                            "create": "Utwórz",
+                            "delete": "Usuń",
+                            "dismiss": "Zamknij",
+                            "new_resource": "Dodaj nowy zasób",
+                            "type": "Typ zasobu",
+                            "update": "Aktualizuj",
+                            "url": "URL",
+                            "url_error_msg": "URL jest wymagany",
+                            "warning_header": "Bądź ostrożny!",
+                            "warning_text": "Dodawanie zasobów może być niebezpieczne, upewnij się, że znasz źródło zasobu i ufasz mu. Nieprawidłowe zasoby mogą poważnie uszkodzić twój system."
+                        },
+                        "picker": {
+                            "add_resource": "Dodaj zasób",
+                            "headers": {
+                                "type": "Typ",
+                                "url": "URL"
+                            }
+                        },
+                        "refresh_body": "Musisz odświeżyć stronę, aby zakończyć usuwanie, czy chcesz teraz odświeżyć?",
+                        "refresh_header": "Czy chcesz odświeżyć?",
+                        "types": {
+                            "css": "Arkusz stylów",
+                            "html": "HTML (przestarzałe)",
+                            "js": "Plik JavaScript (przestarzałe)",
+                            "module": "Moduł JavaScript (przestarzałe)"
+                        }
+                    }
+                },
                 "person": {
                     "add_person": "Dodaj osobę",
                     "caption": "Osoby",
@@ -2173,17 +2244,21 @@
                         "error_remove": "Nie można usunąć konfiguracji: {error}",
                         "error_save_yaml": "Nie można zapisać YAML: {error}",
                         "header": "Edytuj konfigurację",
-                        "resources_moved": "Zasoby nie powinny być już dodawane do konfiguracji Lovelace, ale można je dodawać w panelu konfiguracji Lovelace.",
+                        "resources_moved": "Zasoby nie powinny być już dodawane do konfiguracji Lovelace, można je dodawać w panelu konfiguracji Lovelace.",
                         "save": "Zapisz",
                         "saved": "Zapisano",
                         "unsaved_changes": "Niezapisane zmiany"
                     },
                     "save_config": {
                         "cancel": "Nieważne",
+                        "close": "Zamknij",
                         "header": "Przejmij kontrolę nad interfejsem użytkownika Lovelace",
                         "para": "Domyślnie Home Assistant będzie zarządzać interfejsem użytkownika, aktualizując go, gdy pojawią się nowe encje lub komponenty Lovelace. Jeśli przejmiesz kontrolę, Home Assistant nie będzie już automatycznie wprowadzać dla ciebie zmian.",
                         "para_sure": "Na pewno chcesz przejąć kontrolę nad interfejsem użytkownika?",
-                        "save": "Przejmuję kontrolę"
+                        "save": "Przejmuję kontrolę",
+                        "yaml_config": "Aby rozpocząć, zapoznaj się z aktualną konfiguracją tego dashboard'u:",
+                        "yaml_control": "Aby zarządzać w trybie YAML, utwórz plik o nazwie podanej w konfiguracji dla tego dashboard'u lub domyślny 'ui-lovelace.yaml'.",
+                        "yaml_mode": "Używasz trybu YAML, co oznacza, że nie możesz zmienić konfiguracji Lovelace z poziomu interfejsu użytkownika. Jeśli chcesz zarządzać Lovelace z poziomu interfejsu użytkownika, usuń 'mode: yaml' z konfiguracji Lovelace w pliku 'configuration.yaml'."
                     },
                     "suggest_card": {
                         "add": "Dodaj do interfejsu użytkownika Lovelace",
