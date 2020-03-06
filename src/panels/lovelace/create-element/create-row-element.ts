@@ -4,7 +4,6 @@ import "../entity-rows/hui-script-entity-row";
 import "../entity-rows/hui-sensor-entity-row";
 import "../entity-rows/hui-text-entity-row";
 import "../entity-rows/hui-toggle-entity-row";
-import "../entity-rows/hui-weather-entity-row";
 import "../special-rows/hui-call-service-row";
 import { EntityConfig } from "../entity-rows/types";
 import { createLovelaceElement } from "./create-element-base";
@@ -16,7 +15,6 @@ const ALWAYS_LOADED_TYPES = new Set([
   "sensor-entity",
   "text-entity",
   "toggle-entity",
-  "weather-entity",
   "call-service",
 ]);
 const LAZY_LOAD_TYPES = {
@@ -33,6 +31,7 @@ const LAZY_LOAD_TYPES = {
   "lock-entity": () => import("../entity-rows/hui-lock-entity-row"),
   "timer-entity": () => import("../entity-rows/hui-timer-entity-row"),
   conditional: () => import("../special-rows/hui-conditional-row"),
+  "weather-entity": () => import("../entity-rows/hui-weather-entity-row"),
   divider: () => import("../special-rows/hui-divider-row"),
   section: () => import("../special-rows/hui-section-row"),
   weblink: () => import("../special-rows/hui-weblink-row"),

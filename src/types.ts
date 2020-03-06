@@ -229,3 +229,17 @@ export interface LocalizeMixin {
   hass?: HomeAssistant;
   localize: LocalizeFunc;
 }
+
+interface ForecastAttribute {
+  temperature: number;
+  templow?: number;
+  precipitation?: number;
+  humidity?: number;
+}
+
+export type WeatherEntity = HassEntityBase & {
+  attributes: HassEntityAttributeBase & {
+    temperature: number;
+    forecast?: ForecastAttribute;
+  };
+};

@@ -60,8 +60,3 @@ export interface ConditionalRowConfig extends EntityConfig {
   row: EntityConfig;
   conditions: Condition[];
 }
-
-export interface WeatherRowConfig extends EntitiesCardEntityConfig {
-  primary_attribute?: string;
-  secondary_attribute?: string;
-}
