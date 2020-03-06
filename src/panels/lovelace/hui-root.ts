@@ -577,7 +577,6 @@ class HUIRoot extends LitElement {
     }
     this.lovelace!.setEditMode(true);
     if (this.config.views.length < 2) {
-      console.log("resize");
       this.updateComplete.then(() => fireEvent(this._appLayout, "iron-resize"));
     }
   }
@@ -585,7 +584,6 @@ class HUIRoot extends LitElement {
   private _editModeDisable(): void {
     this.lovelace!.setEditMode(false);
     if (this.config.views.length < 2) {
-      console.log("resize2");
       this.updateComplete.then(() => fireEvent(this._appLayout, "iron-resize"));
     }
   }
