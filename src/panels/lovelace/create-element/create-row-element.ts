@@ -51,6 +51,7 @@ const ALWAYS_LOADED_TYPES = new Set([
   "weblink",
   "cast",
   "buttons",
+  "attribute",
 ]);
 const LAZY_LOAD_TYPES = {
   // "climate-entity": () => import("../entity-rows/hui-climate-entity-row"),
@@ -71,6 +72,7 @@ const LAZY_LOAD_TYPES = {
   // weblink: () => import("../special-rows/hui-weblink-row"),
   // cast: () => import("../special-rows/hui-cast-row"),
   // buttons: () => import("../special-rows/hui-buttons-row"),
+  // attribute: () => import("../special-rows/hui-attribute-row"),
 };
 const DOMAIN_TO_ELEMENT_TYPE = {
   _domain_not_found: "text",
