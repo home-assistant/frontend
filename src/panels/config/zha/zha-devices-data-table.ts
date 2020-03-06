@@ -53,6 +53,7 @@ export class ZHADevicesDataTable extends LitElement {
               sortable: true,
               filterable: true,
               direction: "asc",
+              grows: true,
               template: (name) => html`
                 <div @click=${this._handleClicked} style="cursor: pointer;">
                   ${name}
@@ -66,6 +67,7 @@ export class ZHADevicesDataTable extends LitElement {
               sortable: true,
               filterable: true,
               direction: "asc",
+              grows: true,
               template: (name) => html`
                 <div @click=${this._handleClicked} style="cursor: pointer;">
                   ${name}
@@ -76,11 +78,13 @@ export class ZHADevicesDataTable extends LitElement {
               title: "Manufacturer",
               sortable: true,
               filterable: true,
+              width: "20%",
             },
             model: {
               title: "Model",
               sortable: true,
               filterable: true,
+              width: "20%",
             },
           }
   );
@@ -91,6 +95,7 @@ export class ZHADevicesDataTable extends LitElement {
         .columns=${this._columns(this.narrow)}
         .data=${this._devices(this.devices)}
         .selectable=${this.selectable}
+        auto-height
       ></ha-data-table>
     `;
   }
