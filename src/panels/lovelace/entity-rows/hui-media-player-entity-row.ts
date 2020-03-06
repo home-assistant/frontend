@@ -73,8 +73,6 @@ class HuiMediaPlayerEntityRow extends LitElement implements LovelaceRow {
       return html``;
     }
 
-    console.log("narrow: " + this._narrow + " veryNarrow: " + this._veryNarrow);
-
     const stateObj = this.hass.states[this._config.entity];
 
     if (!stateObj) {
