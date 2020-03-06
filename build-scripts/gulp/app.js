@@ -24,7 +24,7 @@ gulp.task(
       gulp.parallel("gen-icons-app", "gen-icons-mdi"),
       "gen-pages-dev",
       "gen-index-app-dev",
-      gulp.series("create-test-translation", "build-translations")
+      "build-translations"
     ),
     "copy-static",
     "webpack-watch-app"

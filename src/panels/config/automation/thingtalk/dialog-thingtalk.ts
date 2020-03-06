@@ -123,6 +123,7 @@ class DialogThingtalk extends LitElement {
           <a
             href="https://almond.stanford.edu/"
             target="_blank"
+            rel="noreferrer"
             class="attribution"
             >Powered by Almond</a
           >

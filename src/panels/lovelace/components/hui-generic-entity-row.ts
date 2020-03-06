@@ -115,7 +115,6 @@ class HuiGenericEntityRow extends LitElement {
                         "ui.panel.lovelace.cards.entities.never_triggered"
                       )
                   : ""}
-                }
               </div>
             `
           : ""}

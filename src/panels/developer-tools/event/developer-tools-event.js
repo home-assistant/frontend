@@ -61,9 +61,11 @@ class HaPanelDevEvent extends EventsMixin(LocalizeMixin(PolymerElement)) {
             <a
               href="https://www.home-assistant.io/docs/configuration/events/"
               target="_blank"
-              >[[localize( 'ui.panel.developer-tools.tabs.events.documentation'
-              )]]</a
+              rel="noreferrer"
             >
+              [[localize( 'ui.panel.developer-tools.tabs.events.documentation'
+              )]]
+            </a>
           </p>
           <div class="ha-form">
             <paper-input

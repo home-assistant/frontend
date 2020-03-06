@@ -39,8 +39,8 @@ export class HaConfigHelpers extends LitElement {
   @property() private _stateItems: HassEntity[] = [];
 
   private _columns = memoize(
-    (_language): DataTableColumnContainer => {
-      return {
+    (narrow, _language): DataTableColumnContainer => {
+      const columns: DataTableColumnContainer = {
         icon: {
           title: "",
           type: "icon",
@@ -54,28 +54,45 @@ export class HaConfigHelpers extends LitElement {
           ),
           sortable: true,
           filterable: true,
+          grows: true,
           direction: "asc",
           template: (name, item: any) =>
             html`
               ${name}
-              <div style="color: var(--secondary-text-color)">
-                ${item.entity_id}
-              </div>
-            `,
-        },
-        type: {
-          title: this.hass.localize(
-            "ui.panel.config.helpers.picker.headers.type"
-          ),
-          sortable: true,
-          filterable: true,
-          template: (type) =>
-            html`
-              ${this.hass.localize(`ui.panel.config.helpers.types.${type}`) ||
-                type}
+              ${narrow
+                ? html`
+                    <div class="secondary">
+                      ${item.entity_id}
+                    </div>
+                  `
+                : ""}
             `,
         },
       };
+      if (!narrow) {
+        columns.entity_id = {
+          title: this.hass.localize(
+            "ui.panel.config.helpers.picker.headers.entity_id"
+          ),
+          sortable: true,
+          filterable: true,
+          width: "30%",
+        };
+      }
+      columns.type = {
+        title: this.hass.localize(
+          "ui.panel.config.helpers.picker.headers.type"
+        ),
+        sortable: true,
+        width: "30%",
+        filterable: true,
+        template: (type) =>
+          html`
+            ${this.hass.localize(`ui.panel.config.helpers.types.${type}`) ||
+              type}
+          `,
+      };
+      return columns;
     }
   );
 
@@ -106,7 +123,7 @@ export class HaConfigHelpers extends LitElement {
         back-path="/config"
         .route=${this.route}
         .tabs=${configSections.automation}
-        .columns=${this._columns(this.hass.language)}
+        .columns=${this._columns(this.narrow, this.hass.language)}
         .data=${this._getItems(this._stateItems)}
         @row-click=${this._openEditDialog}
       >

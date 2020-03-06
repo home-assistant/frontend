@@ -74,8 +74,8 @@ class CloudRegister extends LocalizeMixin(EventsMixin(PolymerElement)) {
             <p>
               [[localize('ui.panel.config.cloud.register.information4')]]
               </p><ul>
-                <li><a href="https://home-assistant.io/tos/" target="_blank">[[localize('ui.panel.config.cloud.register.link_terms_conditions')]]</a></li>
-                <li><a href="https://home-assistant.io/privacy/" target="_blank">[[localize('ui.panel.config.cloud.register.link_privacy_policy')]]</a></li>
+                <li><a href="https://home-assistant.io/tos/" target="_blank" rel="noreferrer">[[localize('ui.panel.config.cloud.register.link_terms_conditions')]]</a></li>
+                <li><a href="https://home-assistant.io/privacy/" target="_blank" rel="noreferrer">[[localize('ui.panel.config.cloud.register.link_privacy_policy')]]</a></li>
               </ul>
             </p>
           </div>

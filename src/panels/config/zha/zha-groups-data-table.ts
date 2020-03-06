@@ -52,6 +52,7 @@ export class ZHAGroupsDataTable extends LitElement {
               sortable: true,
               filterable: true,
               direction: "asc",
+              grows: true,
               template: (name) => html`
                 <div @click=${this._handleRowClicked} style="cursor: pointer;">
                   ${name}
@@ -65,6 +66,7 @@ export class ZHAGroupsDataTable extends LitElement {
               sortable: true,
               filterable: true,
               direction: "asc",
+              grows: true,
               template: (name) => html`
                 <div @click=${this._handleRowClicked} style="cursor: pointer;">
                   ${name}
@@ -73,6 +75,8 @@ export class ZHAGroupsDataTable extends LitElement {
             },
             group_id: {
               title: this.hass.localize("ui.panel.config.zha.groups.group_id"),
+              type: "numeric",
+              width: "15%",
               template: (groupId: number) => {
                 return html`
                   ${formatAsPaddedHex(groupId)}
@@ -82,6 +86,8 @@ export class ZHAGroupsDataTable extends LitElement {
             },
             members: {
               title: this.hass.localize("ui.panel.config.zha.groups.members"),
+              type: "numeric",
+              width: "15%",
               template: (members: ZHADevice[]) => {
                 return html`
                   ${members.length}
@@ -98,14 +104,15 @@ export class ZHAGroupsDataTable extends LitElement {
         .columns=${this._columns(this.narrow)}
         .data=${this._groups(this.groups)}
         .selectable=${this.selectable}
+        auto-height
       ></ha-data-table>
     `;
   }
 
   private _handleRowClicked(ev: CustomEvent) {
-    const groupId = (ev.target as HTMLElement)
-      .closest("tr")!
-      .getAttribute("data-row-id")!;
+    const groupId = ((ev.target as HTMLElement).closest(
+      ".mdc-data-table__row"
+    ) as any).rowId;
     navigate(this, `/config/zha/group/${groupId}`);
   }
 }

@@ -2,9 +2,9 @@ import { HomeAssistant } from "../types";
 
 export interface LoggedError {
   name: string;
-  message: string;
+  message: [string];
   level: string;
-  source: string;
+  source: [string, number];
   // unix timestamp in seconds
   timestamp: number;
   exception: string;
