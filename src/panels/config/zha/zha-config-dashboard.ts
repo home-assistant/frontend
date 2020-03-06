@@ -63,6 +63,7 @@ class ZHAConfigDashboard extends LitElement {
               sortable: true,
               filterable: true,
               direction: "asc",
+              grows: true,
             },
           }
         : {
@@ -71,16 +72,19 @@ class ZHAConfigDashboard extends LitElement {
               sortable: true,
               filterable: true,
               direction: "asc",
+              grows: true,
             },
             nwk: {
               title: "Nwk",
               sortable: true,
               filterable: true,
+              width: "15%",
             },
             ieee: {
               title: "IEEE",
               sortable: true,
               filterable: true,
+              width: "25%",
             },
           }
   );
@@ -139,6 +143,7 @@ class ZHAConfigDashboard extends LitElement {
               .data=${this._memoizeDevices(this._devices)}
               @row-click=${this._handleDeviceClicked}
               .id=${"ieee"}
+              auto-height
             ></ha-data-table>
           </ha-card>
         </ha-config-section>
