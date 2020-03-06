@@ -32,6 +32,7 @@ import { HomeAssistant } from "../../../types";
 import { ItemSelectedEvent } from "./types";
 import "@polymer/paper-item/paper-item";
 import { SelectionChangedEvent } from "../../../components/data-table/ha-data-table";
+import { HASSDomEvent } from "../../../common/dom/fire_event";
 
 @customElement("zha-group-binding-control")
 export class ZHAGroupBindingControl extends LitElement {
@@ -200,21 +201,11 @@ export class ZHAGroupBindingControl extends LitElement {
     }
   }
 
-  private _handleClusterSelectionChanged(event: CustomEvent): void {
-    const changedSelection = event.detail as SelectionChangedEvent;
-    const clusterId = changedSelection.id;
-    if (
-      changedSelection.selected &&
-      !this._selectedClusters.includes(clusterId)
-    ) {
-      this._selectedClusters.push(clusterId);
-    } else {
-      const index = this._selectedClusters.indexOf(clusterId);
-      if (index !== -1) {
-        this._selectedClusters.splice(index, 1);
-      }
-    }
-    this._selectedClusters = [...this._selectedClusters];
+  private _handleClusterSelectionChanged(
+    ev: HASSDomEvent<SelectionChangedEvent>
+  ): void {
+    this._selectedClusters = ev.detail.value;
+
     this._clustersToBind = [];
     for (const clusterIndex of this._selectedClusters) {
       const selectedCluster = this._clusters.find((cluster) => {

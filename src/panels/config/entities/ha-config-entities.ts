@@ -49,6 +49,7 @@ import { classMap } from "lit-html/directives/class-map";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 // tslint:disable-next-line: no-duplicate-imports
 import { HaTabsSubpageDataTable } from "../../../layouts/hass-tabs-subpage-data-table";
+import { HASSDomEvent } from "../../../common/dom/fire_event";
 
 export interface StateEntity extends EntityRegistryEntry {
   readonly?: boolean;
@@ -96,6 +97,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
           sortable: true,
           filterable: true,
           direction: "asc",
+          grows: true,
         },
       };
 
@@ -106,6 +108,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
         type: "icon",
         sortable: true,
         filterable: true,
+        width: "55px",
         template: (_status, entity: any) =>
           entity.unavailable || entity.disabled_by || entity.readonly
             ? html`
@@ -166,6 +169,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
         ),
         sortable: true,
         filterable: true,
+        width: "20%",
       };
       columns.platform = {
         title: this.hass.localize(
@@ -173,6 +177,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
         ),
         sortable: true,
         filterable: true,
+        width: "20%",
         template: (platform) =>
           this.hass.localize(`component.${platform}.config.title`) || platform,
       };
@@ -467,16 +472,10 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
     this._filter = ev.detail.value;
   }
 
-  private _handleSelectionChanged(ev: CustomEvent): void {
-    const changedSelection = ev.detail as SelectionChangedEvent;
-    const entity = changedSelection.id;
-    if (changedSelection.selected) {
-      this._selectedEntities = [...this._selectedEntities, entity];
-    } else {
-      this._selectedEntities = this._selectedEntities.filter(
-        (entityId) => entityId !== entity
-      );
-    }
+  private _handleSelectionChanged(
+    ev: HASSDomEvent<SelectionChangedEvent>
+  ): void {
+    this._selectedEntities = ev.detail.value;
   }
 
   private _enableSelected() {

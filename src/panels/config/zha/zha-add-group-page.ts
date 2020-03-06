@@ -25,6 +25,7 @@ import { PolymerChangedEvent } from "../../../polymer-types";
 import "@polymer/paper-spinner/paper-spinner";
 import "@material/mwc-button";
 import { PaperInputElement } from "@polymer/paper-input/paper-input";
+import { HASSDomEvent } from "../../../common/dom/fire_event";
 
 @customElement("zha-add-group-page")
 export class ZHAAddGroupPage extends LitElement {
@@ -82,7 +83,6 @@ export class ZHAAddGroupPage extends LitElement {
             .narrow=${this.narrow}
             selectable
             @selection-changed=${this._handleAddSelectionChanged}
-            class="table"
           >
           </zha-devices-data-table>
 
@@ -114,21 +114,10 @@ export class ZHAAddGroupPage extends LitElement {
     this.devices = await fetchGroupableDevices(this.hass!);
   }
 
-  private _handleAddSelectionChanged(ev: CustomEvent): void {
-    const changedSelection = ev.detail as SelectionChangedEvent;
-    const entity = changedSelection.id;
-    if (
-      changedSelection.selected &&
-      !this._selectedDevicesToAdd.includes(entity)
-    ) {
-      this._selectedDevicesToAdd.push(entity);
-    } else {
-      const index = this._selectedDevicesToAdd.indexOf(entity);
-      if (index !== -1) {
-        this._selectedDevicesToAdd.splice(index, 1);
-      }
-    }
-    this._selectedDevicesToAdd = [...this._selectedDevicesToAdd];
+  private _handleAddSelectionChanged(
+    ev: HASSDomEvent<SelectionChangedEvent>
+  ): void {
+    this._selectedDevicesToAdd = ev.detail.value;
   }
 
   private async _createGroup(): Promise<void> {
@@ -166,11 +155,6 @@ export class ZHAAddGroupPage extends LitElement {
 
         .button {
           float: right;
-        }
-
-        .table {
-          height: 400px;
-          overflow: auto;
         }
 
         ha-config-section *:last-child {
