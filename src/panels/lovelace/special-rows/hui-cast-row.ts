@@ -9,7 +9,7 @@ import {
 } from "lit-element";
 import { classMap } from "lit-html/directives/class-map";
 
-import { EntityRow, CastConfig } from "../entity-rows/types";
+import { LovelaceRow, CastConfig } from "../entity-rows/types";
 import { HomeAssistant } from "../../../types";
 
 import "../../../components/ha-icon";
@@ -20,7 +20,7 @@ import {
 } from "../../../cast/receiver_messages";
 
 @customElement("hui-cast-row")
-class HuiCastRow extends LitElement implements EntityRow {
+class HuiCastRow extends LitElement implements LovelaceRow {
   public hass!: HomeAssistant;
 
   @property() private _config?: CastConfig;
@@ -41,7 +41,7 @@ class HuiCastRow extends LitElement implements EntityRow {
     };
   }
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     if (!this._config) {
       return html``;
     }
@@ -49,7 +49,8 @@ class HuiCastRow extends LitElement implements EntityRow {
     const active =
       this._castManager &&
       this._castManager.status &&
-      this._config.view === this._castManager.status.lovelacePath;
+      this._config.view === this._castManager.status.lovelacePath &&
+      this._config.dashboard === this._castManager.status.urlPath;
 
     return html`
       <ha-icon .icon="${this._config.icon}"></ha-icon>
@@ -122,7 +123,11 @@ class HuiCastRow extends LitElement implements EntityRow {
 
   private async _sendLovelace() {
     await ensureConnectedCastSession(this._castManager!, this.hass.auth);
-    castSendShowLovelaceView(this._castManager!, this._config!.view);
+    castSendShowLovelaceView(
+      this._castManager!,
+      this._config!.view,
+      this._config!.dashboard
+    );
   }
 
   static get styles(): CSSResult {

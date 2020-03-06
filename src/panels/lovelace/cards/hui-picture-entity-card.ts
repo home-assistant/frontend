@@ -9,6 +9,7 @@ import {
   PropertyValues,
 } from "lit-element";
 import { classMap } from "lit-html/directives/class-map";
+import { ifDefined } from "lit-html/directives/if-defined";
 
 import "../../../components/ha-card";
 import "../components/hui-image";
@@ -26,8 +27,9 @@ import { PictureEntityCardConfig } from "./types";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { actionHandler } from "../common/directives/action-handler-directive";
 import { hasAction } from "../common/has-action";
-import { ActionHandlerEvent } from "../../../data/lovelace";
+import { ActionHandlerEvent, LovelaceConfig } from "../../../data/lovelace";
 import { handleAction } from "../common/handle-action";
+import { findEntities } from "../common/find-entites";
 
 @customElement("hui-picture-entity-card")
 class HuiPictureEntityCard extends LitElement implements LovelaceCard {
@@ -37,9 +39,24 @@ class HuiPictureEntityCard extends LitElement implements LovelaceCard {
     );
     return document.createElement("hui-picture-entity-card-editor");
   }
-  public static getStubConfig(): object {
+
+  public static getStubConfig(
+    hass: HomeAssistant,
+    lovelaceConfig: LovelaceConfig,
+    entities?: string[],
+    entitiesFill?: string[]
+  ): object {
+    const maxEntities = 1;
+    const foundEntities = findEntities(
+      hass,
+      lovelaceConfig,
+      maxEntities,
+      entities,
+      entitiesFill
+    );
+
     return {
-      entity: "",
+      entity: foundEntities[0] || "",
       image:
         "https://www.home-assistant.io/images/merchandise/shirt-frontpage.png",
     };
@@ -94,7 +111,7 @@ class HuiPictureEntityCard extends LitElement implements LovelaceCard {
     }
   }
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     if (!this._config || !this.hass) {
       return html``;
     }
@@ -156,6 +173,11 @@ class HuiPictureEntityCard extends LitElement implements LovelaceCard {
             hasHold: hasAction(this._config!.hold_action),
             hasDoubleClick: hasAction(this._config!.double_tap_action),
           })}
+          tabindex=${ifDefined(
+            hasAction(this._config.tap_action) || this._config.entity
+              ? "0"
+              : undefined
+          )}
           class=${classMap({
             clickable: stateObj.state !== UNAVAILABLE,
           })}

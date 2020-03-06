@@ -464,6 +464,9 @@
             "script": {
                 "execute": "Utfør"
             },
+            "service": {
+                "run": "Køyr"
+            },
             "timer": {
                 "actions": {
                     "cancel": "avbryt",
@@ -524,6 +527,23 @@
             "successfully_saved": "Vellukka lagring"
         },
         "components": {
+            "area-picker": {
+                "add_dialog": {
+                    "add": "Legg til",
+                    "failed_create_area": "Klarte ikkje å opprette område.",
+                    "name": "Namn",
+                    "text": "Legg til namnet til det nye området.",
+                    "title": "Legg til nytt område "
+                },
+                "add_new": "Legg til nytt område...",
+                "area": "Område",
+                "clear": "Klar ",
+                "show_areas": "Vis områda"
+            },
+            "device-picker": {
+                "device": "Enhet",
+                "toggle": "Veksl "
+            },
             "entity": {
                 "entity-picker": {
                     "entity": "Eining"
@@ -532,6 +552,11 @@
             "history_charts": {
                 "loading_history": "Lastar tilstandshistoria...",
                 "no_history_found": "Inga tilstandshistorie funne"
+            },
+            "related-items": {
+                "area": "Område",
+                "device": "Eining",
+                "integration": "Integrasjon"
             },
             "relative_time": {
                 "duration": {
@@ -553,9 +578,33 @@
             "config_entry_system_options": {
                 "enable_new_entities_description": "Dersom denne er deaktivert, kjem ikkje nyoppdaga oppføringar til å bli automatisk lagt til i Home Assistant.",
                 "enable_new_entities_label": "Aktiver nyleg tillagde oppføringar.",
-                "title": "Systemval"
+                "title": "Systemval",
+                "update": "Oppdater"
+            },
+            "entity_registry": {
+                "editor": {
+                    "confirm_delete": "Er du sikker på at du vil slette denne oppføringa?",
+                    "delete": "SLETT",
+                    "enabled_cause": "Deaktivert av {cause}.",
+                    "enabled_description": "Dekativere oppføringar kjem ikkje til å bli lagt til i Home Assistant",
+                    "enabled_label": "Aktiver oppføringa",
+                    "entity_id": "Oppførings-ID",
+                    "name": "Namnoverskriding",
+                    "note": "Merk: dette fungerer kanskje ikkje med alle integrasjonane.",
+                    "unavailable": "Denne eininga er for augeblinken ikkje tilgjengeleg.",
+                    "update": "OPPDATER"
+                }
+            },
+            "generic": {
+                "cancel": "Avbryt",
+                "default_confirmation_title": "Er du sikker?",
+                "ok": "OK"
             },
             "more_info_control": {
+                "edit": "Rediger oppføringa",
+                "person": {
+                    "create_zone": "Opprett sone frå gjeldande stad"
+                },
                 "script": {
                     "last_action": "Siste handling"
                 },
@@ -566,6 +615,18 @@
                 },
                 "updater": {
                     "title": "Oppdater instruksane"
+                },
+                "vacuum": {
+                    "clean_spot": "Reingjer området",
+                    "commands": "Støvsugarkommandoar",
+                    "fan_speed": "Viftefart",
+                    "locate": "Lokaliser",
+                    "pause": "Sett på pause",
+                    "return_home": "Returner heim ",
+                    "start": "Start ",
+                    "start_pause": "Start/Sett på pause",
+                    "status": "Status",
+                    "stop": "Stopp "
                 }
             },
             "more_info_settings": {
@@ -582,6 +643,9 @@
                 }
             },
             "zha_device_info": {
+                "confirmations": {
+                    "remove": "Er du sikker på at du vil fjerne eininga?"
+                },
                 "manuf": "av {manufacturer}",
                 "no_area": "Inga område",
                 "services": {
@@ -622,7 +686,7 @@
         },
         "panel": {
             "config": {
-                "area_registry": {
+                "areas": {
                     "caption": "Områderegister",
                     "create_area": "LAG OMRÅDE",
                     "description": "Oversikt over områda i heimen din.",
@@ -634,7 +698,7 @@
                     },
                     "no_areas": "Ser ut til at du ikkje har noko område endå!",
                     "picker": {
-                        "create_area": "Skap område",
+                        "create_area": "LAG OMRÅDE",
                         "header": "Områderegister",
                         "integrations_page": "Integrasjonsside",
                         "introduction": "Områda vert brukt til å organisere kvar einingar er. Denne informasjonen vil bli brukt av Home Assistant for å hjelpe deg å organisere brukargrensesnittet, løyver og integrasjoner med andre system.",
@@ -654,6 +718,7 @@
                             "header": "Handlingar",
                             "introduction": "Handlinga Home Assistant vil gjennomføre når automasjonen vert utløyst.",
                             "learn_more": "Lær meir om handlingar",
+                            "name": "Handling",
                             "type_select": "Handlingstype",
                             "type": {
                                 "condition": {
@@ -692,6 +757,7 @@
                             "header": "Føresetnadar",
                             "introduction": "Føresetnadar er ein valfri del av automasjonsregelen og kan brukast til å hindre at ei handling vert gjennomført når den er utløyst. Føresetnadane liknar på utløysarane, men er veldig forskjellig frå dei. Ein utløysar vil sjå på hendingar som skjer i systemet, medan ein føresetnad berre ser på korleis systemet er akkuratt no. Ein utløysar kan observere at ein brytar blir skrudt på, medan ein føresetnad berre kan sjå om brytaren er på eller av. \n\n[Lær meir om føresetnadar.](https://home-assistant.io/docs/scripts/conditions/)",
                             "learn_more": "Lær meir om føresetnader",
+                            "name": "Betingelse",
                             "type_select": "Føresetnadstype",
                             "type": {
                                 "device": {
@@ -734,6 +800,7 @@
                             "unsupported_condition": "Ikkje støtta føresetnad: {condition}"
                         },
                         "default_name": "Ny automasjon",
+                        "enable_disable": "Aktiver/Deaktiver automasjon",
                         "introduction": "Bruk automasjonar til å gi liv til heimen din",
                         "load_error_not_editable": "Berre automasjonar i automations.yaml kan redigerast.",
                         "load_error_unknown": "Feil ved lasting av automasjon ({err_no}).",
@@ -746,6 +813,7 @@
                             "header": "Utløysarar",
                             "introduction": "Utløysarar er det som startar ein prosess i ein automasjonsregel. Det er mogleg å spesifisere fleire utløysarar for same regel. Når ein utløysar startar, vil Home Assistant validere føresetnadane, dersom der er nokon, og så setje i gang handlinga.\n\n[Lær meir om utløysarar.](https://home-assistant.io/docs/automation/trigger/)",
                             "learn_more": "Lær meir om utløysarar",
+                            "name": "Utløysar",
                             "type_select": "Utløysartype",
                             "type": {
                                 "device": {
@@ -835,6 +903,9 @@
                     }
                 },
                 "cloud": {
+                    "alexa": {
+                        "title": "Alexa"
+                    },
                     "caption": "Home Assistant Cloud",
                     "description_features": "Kontroller når du ikkje er heime og integrer med Alexa og Google Assistant",
                     "description_login": "Logga inn som {email}",
@@ -848,6 +919,7 @@
                             "core_config": {
                                 "edit_requires_storage": "Redigeringsverkty deaktivert sidan konfigurasjonener lagra i configuration.yaml",
                                 "elevation": "Høgde",
+                                "elevation_feet": "fot",
                                 "elevation_meters": "Meter",
                                 "imperial_example": "Fahrenheit, pound",
                                 "latitude": "Breiddegrad",
@@ -897,10 +969,39 @@
                     }
                 },
                 "devices": {
+                    "area_picker_label": "Område",
+                    "automation": {
+                        "automations": "Automasjonar",
+                        "create": "Lag automasjon med eininga",
+                        "no_automations": "Ingen automasjonar",
+                        "no_device_automations": "Ingen tilgjenglege automasjonar for denne eininga."
+                    },
+                    "cant_edit": "Du kan berre redigere element som er laga i brukargrensesnittet.",
                     "caption": "Einingar",
-                    "description": "Administrer tilkopla einingar"
+                    "data_table": {
+                        "area": "Område",
+                        "battery": "Batteri",
+                        "manufacturer": "Produsent",
+                        "model": "Modell"
+                    },
+                    "description": "Administrer tilkopla einingar",
+                    "info": "Enhetsinformasjon",
+                    "name": "Namn",
+                    "scene": {
+                        "create": "Lag ei scene med denne eininga",
+                        "no_scenes": "Ingen scener",
+                        "scenes": "Scener"
+                    },
+                    "scenes": "Scener",
+                    "script": {
+                        "create": "Lag skript med eininga",
+                        "no_scripts": "Ingen skript ",
+                        "scripts": "Skript "
+                    },
+                    "scripts": "Skript ",
+                    "update": "Oppdater"
                 },
-                "entity_registry": {
+                "entities": {
                     "caption": "Oppføringsregister",
                     "description": "Oversikt over alle kjende oppføringar.",
                     "editor": {
@@ -937,13 +1038,17 @@
                         "via": "Tilkopla via"
                     },
                     "config_flow": {
+                        "close": "Lukk",
+                        "dismiss": "Avvis dialogboksa",
                         "external_step": {
                             "description": "Ei ekstern nettside må besøkast for å fullføre dette steget.",
                             "open_site": "Opne nettside"
-                        }
+                        },
+                        "finish": "Fullfør",
+                        "submit": "Send inn"
                     },
                     "configure": "Konfigurer",
-                    "configured": "Konfigurer  ",
+                    "configured": "Konfigurer",
                     "description": "Administrer tilkopla einingar og tenester",
                     "discovered": "Oppdaga",
                     "new": "Sett opp ein ny integrasjon",
@@ -1022,18 +1127,56 @@
                         "header": "ZigBee heimeautomasjon - Legg til eining",
                         "spinner": "Leitar etter ZHA Zigbee-apparat..."
                     },
+                    "add": {
+                        "caption": "Legg til eining ",
+                        "description": "Legg til eining i Zigbee-nettverket"
+                    },
                     "caption": "ZHA",
+                    "clusters": {
+                        "header": "Klynger",
+                        "introduction": "Klynger er byggesteinane for Zigbee-funksjonaliteten. Dei sepererar funksjonaliteten i logiske einingar. Det er klient- og servertyper, som består av attributtar og kommandoar."
+                    },
                     "description": "Zigbee heimeautomasjon nettverksadministrering",
                     "device_card": {
                         "area_picker_label": "Område",
                         "device_name_placeholder": "Brukarnamn",
                         "update_name_button": "Oppdater namn"
                     },
+                    "devices": {
+                        "header": "Zigbee Home Automation - Eininga"
+                    },
+                    "group_binding": {
+                        "bind_button_help": "Huk den merka gruppa til den merka einingsklynga.",
+                        "bind_button_label": "Huk gruppa",
+                        "cluster_selection_help": "Vel klynga som skal bindast til den valde gruppa.",
+                        "group_picker_help": "Vel ei gruppe for å sende bindekommandoen til.",
+                        "group_picker_label": "Grupper som kan bindast",
+                        "header": "Gruppebinding",
+                        "introduction": "Huk og huk av grupper.",
+                        "unbind_button_help": "Huk av den merka gruppa frå den merka einingsklynga.",
+                        "unbind_button_label": "Huk av gruppa"
+                    },
+                    "groups": {
+                        "caption": "Grupper",
+                        "description": "Lag og modifiser Zigbee-grupper",
+                        "group-header": "Zigbee Home Automation - Gruppedetaljer",
+                        "groups-header": "Zigbee Home Automation - Gruppehandtering"
+                    },
                     "services": {
                         "reconfigure": "Konfigurer ZHA-eininga (heal device) på nytt. Bruk dette om du har problem med eininga. Dersom eining går på batteri, ver sikker på at den er vaken og tek i mot kommandar når du brukar denne tenesta.",
                         "remove": "Fjern einhet frå Zigbee nettverk",
                         "updateDeviceName": "Gje einheten eit eige namn i einhetsregistret."
                     }
+                },
+                "zone": {
+                    "configured_in_yaml": "Sonene defingert i configuration.yaml, kan ikkje redigerast via brukargrensesnittet.",
+                    "detail": {
+                        "create": "Lag",
+                        "delete": "Slett",
+                        "required_error_msg": "Dette feltet obligatorisk",
+                        "update": "Oppdater"
+                    },
+                    "edit_home_zone": "Plasseringa av heimen din kan endrast i den generelle konfigurasjonen."
                 },
                 "zwave": {
                     "caption": "Z-Wave",
@@ -1124,6 +1267,9 @@
                         "no_devices": "Denne sida let deg ta kontroll på einingane dine, men det ser ut til at du ikkje har sett opp noko endå. Gå til integrasjonssida for å setje i gang.",
                         "title": "Velkommen heim"
                     },
+                    "entities": {
+                        "never_triggered": "Aldri utløyst"
+                    },
                     "picture-elements": {
                         "call_service": "Tilkall teneste {name}",
                         "hold": "Hald:",
@@ -1144,8 +1290,17 @@
                 },
                 "editor": {
                     "card": {
+                        "button": {
+                            "name": "Knapp"
+                        },
                         "generic": {
                             "name": "Namn"
+                        },
+                        "iframe": {
+                            "name": "iFrame"
+                        },
+                        "shopping-list": {
+                            "integration_not_loaded": "Dette kortet krev at \"shopping_list\"-integrasjonen er sett opp."
                         }
                     },
                     "edit_card": {
@@ -1193,12 +1348,16 @@
                     }
                 },
                 "menu": {
+                    "close": "Lukk",
                     "configure_ui": "Konfigurer brukargrensesnitt",
                     "help": "Hjelp",
                     "refresh": "Oppdater",
                     "unused_entities": "Ubrukte oppføringar"
                 },
                 "reload_lovelace": "Omlast Lovelace",
+                "unused_entities": {
+                    "domain": "Domene"
+                },
                 "warning": {
                     "entity_non_numeric": "Oppføringa er ikkje numerisk: {entity}",
                     "entity_not_found": "Oppføringa er utilgjengelig: {entity}"
@@ -1381,6 +1540,9 @@
                 }
             },
             "profile": {
+                "advanced_mode": {
+                    "link_promo": "Lær meir"
+                },
                 "change_password": {
                     "confirm_new_password": "Stadfest nytt passord",
                     "current_password": "Noverande passord",
@@ -1401,6 +1563,8 @@
                     "link_promo": "Hjelp å oversette"
                 },
                 "logout": "Logg ut",
+                "logout_text": "Er du sikker på at du vil logge ut?",
+                "logout_title": "Logg ut?",
                 "long_lived_access_tokens": {
                     "confirm_delete": "Er du sikker på at du vil slette tilgangstoken for {name}?",
                     "create": "Lag token",

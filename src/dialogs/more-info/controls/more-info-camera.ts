@@ -38,14 +38,14 @@ class MoreInfoCamera extends LitElement {
     this._attached = false;
   }
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     if (!this._attached || !this.hass || !this.stateObj) {
       return html``;
     }
 
     return html`
       <ha-camera-stream
-        .hass="${this.hass}"
+        .hass=${this.hass}
         .stateObj="${this.stateObj}"
         showcontrols
       ></ha-camera-stream>

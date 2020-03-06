@@ -19,12 +19,12 @@ import {
 import { HomeAssistant } from "../../../types";
 import { classMap } from "lit-html/directives/class-map";
 import { Lovelace, LovelaceCard, LovelaceBadge } from "../types";
-import { createCardElement } from "../common/create-card-element";
+import { createCardElement } from "../create-element/create-card-element";
 import { computeCardSize } from "../common/compute-card-size";
 import { showEditCardDialog } from "../editor/card-editor/show-edit-card-dialog";
 import { HuiErrorCard } from "../cards/hui-error-card";
 import { computeRTL } from "../../../common/util/compute_rtl";
-import { createBadgeElement } from "../common/create-badge-element";
+import { createBadgeElement } from "../create-element/create-badge-element";
 import { processConfigEntities } from "../common/process-config-entities";
 
 let editCodeLoaded = false;
@@ -86,7 +86,7 @@ export class HUIView extends LitElement {
     return element;
   }
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     return html`
       ${this.renderStyles()}
       <div id="badges"></div>
@@ -240,7 +240,8 @@ export class HUIView extends LitElement {
 
   private _addCard(): void {
     showEditCardDialog(this, {
-      lovelace: this.lovelace!,
+      lovelaceConfig: this.lovelace!.config,
+      saveConfig: this.lovelace!.saveConfig,
       path: [this.index!],
     });
   }

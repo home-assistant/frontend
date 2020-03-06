@@ -17,19 +17,20 @@ import "@polymer/paper-radio-group/paper-radio-group";
 
 import "../components/hassio-card-content";
 import { hassioStyle } from "../resources/hassio-style";
+import { haStyle } from "../../../src/resources/styles";
 
 import { showHassioSnapshotDialog } from "../dialogs/snapshot/show-dialog-hassio-snapshot";
 import { HomeAssistant } from "../../../src/types";
 import {
   HassioSnapshot,
-  HassioSupervisorInfo,
   fetchHassioSnapshots,
   reloadHassioSnapshots,
   HassioFullSnapshotCreateParams,
   HassioPartialSnapshotCreateParams,
   createHassioFullSnapshot,
   createHassioPartialSnapshot,
-} from "../../../src/data/hassio";
+} from "../../../src/data/hassio/snapshot";
+import { HassioSupervisorInfo } from "../../../src/data/hassio/supervisor";
 import { PolymerChangedEvent } from "../../../src/polymer-types";
 import { fireEvent } from "../../../src/common/dom/fire_event";
 
@@ -75,17 +76,17 @@ class HassioSnapshots extends LitElement {
     await this._updateSnapshots();
   }
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     return html`
       <div class="content">
+        <h1>
+          Create snapshot
+        </h1>
+        <p class="description">
+          Snapshots allow you to easily backup and restore all data of your Home
+          Assistant instance.
+        </p>
         <div class="card-group">
-          <div class="title">
-            Create snapshot
-            <div class="description">
-              Snapshots allow you to easily backup and restore all data of your
-              Hass.io instance.
-            </div>
-          </div>
           <paper-card>
             <div class="card-content">
               <paper-input
@@ -172,8 +173,8 @@ class HassioSnapshots extends LitElement {
           </paper-card>
         </div>
 
+        <h1>Available snapshots</h1>
         <div class="card-group">
-          <div class="title">Available snapshots</div>
           ${this._snapshots === undefined
             ? undefined
             : this._snapshots.length === 0
@@ -334,6 +335,7 @@ class HassioSnapshots extends LitElement {
 
   static get styles(): CSSResultArray {
     return [
+      haStyle,
       hassioStyle,
       css`
         paper-radio-group {

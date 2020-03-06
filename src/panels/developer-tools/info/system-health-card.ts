@@ -35,9 +35,9 @@ class SystemHealthCard extends LitElement {
   @property() public hass!: HomeAssistant;
   @property() private _info?: SystemHealthInfo;
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     if (!this.hass) {
-      return;
+      return html``;
     }
     const sections: TemplateResult[] = [];
 
@@ -78,7 +78,7 @@ class SystemHealthCard extends LitElement {
     }
 
     return html`
-      <ha-card header="${this.hass.localize("domain.system_health")}">
+      <ha-card .header=${this.hass.localize("domain.system_health")}>
         <div class="card-content">${sections}</div>
       </ha-card>
     `;

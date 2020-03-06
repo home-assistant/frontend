@@ -58,7 +58,7 @@ class NotificationManager extends LitElement {
     });
   }
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     return html`
       <ha-toast .noCancelOnOutsideClick=${this._noCancelOnOutsideClick}>
         ${this._action
@@ -82,6 +82,10 @@ class NotificationManager extends LitElement {
 
   static get styles(): CSSResult {
     return css`
+      :host {
+        display: flex;
+        align-items: center;
+      }
       mwc-button {
         color: var(--primary-color);
         font-weight: bold;

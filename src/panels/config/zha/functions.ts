@@ -1,4 +1,4 @@
-import { ZHADevice } from "../../../data/zha";
+import { ZHADevice, ZHAGroup, Cluster } from "../../../data/zha";
 
 export const formatAsPaddedHex = (value: string | number): string => {
   let hex = value;
@@ -12,4 +12,16 @@ export const sortZHADevices = (a: ZHADevice, b: ZHADevice): number => {
   const nameA = a.user_given_name ? a.user_given_name : a.name;
   const nameb = b.user_given_name ? b.user_given_name : b.name;
   return nameA.localeCompare(nameb);
+};
+
+export const sortZHAGroups = (a: ZHAGroup, b: ZHAGroup): number => {
+  const nameA = a.name;
+  const nameb = b.name;
+  return nameA.localeCompare(nameb);
+};
+
+export const computeClusterKey = (cluster: Cluster): string => {
+  return `${cluster.name} (Endpoint id: ${
+    cluster.endpoint_id
+  }, Id: ${formatAsPaddedHex(cluster.id)}, Type: ${cluster.type})`;
 };

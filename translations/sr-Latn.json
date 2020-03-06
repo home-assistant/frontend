@@ -96,6 +96,11 @@
                 "cloud": {
                     "caption": "Home Assistant Cloud"
                 },
+                "entities": {
+                    "picker": {
+                        "header": "Entiteter"
+                    }
+                },
                 "zwave": {
                     "caption": "Z-Wave",
                     "node_config": {

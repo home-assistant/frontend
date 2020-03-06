@@ -18,8 +18,10 @@ import "../../resources/ha-style";
 import { HomeAssistant } from "../../types";
 import { fireEvent } from "../../common/dom/fire_event";
 import { configFlowContentStyles } from "./styles";
-import { DataEntryFlowStepForm, FieldSchema } from "../../data/data_entry_flow";
+import { DataEntryFlowStepForm } from "../../data/data_entry_flow";
 import { FlowConfig } from "./show-dialog-data-entry-flow";
+// tslint:disable-next-line
+import { HaFormSchema } from "../../components/ha-form/ha-form";
 
 @customElement("step-flow-form")
 class StepFlowForm extends LitElement {
@@ -40,7 +42,7 @@ class StepFlowForm extends LitElement {
   @property()
   private _errorMsg?: string;
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     const step = this.step;
     const stepData = this._stepDataProcessed;
 
@@ -109,6 +111,7 @@ class StepFlowForm extends LitElement {
 
   protected firstUpdated(changedProps: PropertyValues) {
     super.firstUpdated(changedProps);
+    setTimeout(() => this.shadowRoot!.querySelector("ha-form")!.focus(), 0);
     this.addEventListener("keypress", (ev) => {
       if (ev.keyCode === 13) {
         this._submitStep();
@@ -175,7 +178,7 @@ class StepFlowForm extends LitElement {
     this._stepData = ev.detail.value;
   }
 
-  private _labelCallback = (field: FieldSchema): string =>
+  private _labelCallback = (field: HaFormSchema): string =>
     this.flowConfig.renderShowFormStepFieldLabel(this.hass, this.step, field);
 
   private _errorCallback = (error: string) =>

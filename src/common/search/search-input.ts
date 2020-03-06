@@ -7,29 +7,43 @@ import {
   property,
 } from "lit-element";
 import { fireEvent } from "../dom/fire_event";
-import "@polymer/iron-icon/iron-icon";
 import "@polymer/paper-input/paper-input";
 import "@polymer/paper-icon-button/paper-icon-button";
-import "@material/mwc-button";
+import "../../components/ha-icon";
+import { classMap } from "lit-html/directives/class-map";
 
 @customElement("search-input")
 class SearchInput extends LitElement {
-  @property() private filter?: string;
+  @property() public filter?: string;
+  @property({ type: Boolean, attribute: "no-label-float" })
+  public noLabelFloat? = false;
+  @property({ type: Boolean, attribute: "no-underline" })
+  public noUnderline = false;
 
-  protected render(): TemplateResult | void {
+  public focus() {
+    this.shadowRoot!.querySelector("paper-input")!.focus();
+  }
+
+  protected render(): TemplateResult {
     return html`
+      <style>
+        .no-underline {
+          --paper-input-container-underline: {
+            display: none;
+            height: 0;
+          }
+        }
+      </style>
       <div class="search-container">
         <paper-input
+          class=${classMap({ "no-underline": this.noUnderline })}
           autofocus
           label="Search"
           .value=${this.filter}
           @value-changed=${this._filterInputChanged}
+          .noLabelFloat=${this.noLabelFloat}
         >
-          <iron-icon
-            icon="hass:magnify"
-            slot="prefix"
-            class="prefix"
-          ></iron-icon>
+          <ha-icon icon="hass:magnify" slot="prefix" class="prefix"></ha-icon>
           ${this.filter &&
             html`
               <paper-icon-button

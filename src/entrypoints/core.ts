@@ -10,23 +10,24 @@ import {
 } from "home-assistant-js-websocket";
 
 import { loadTokens, saveTokens } from "../common/auth/token_storage";
+import { isExternal } from "../data/external";
 import { subscribePanels } from "../data/ws-panels";
 import { subscribeThemes } from "../data/ws-themes";
 import { subscribeUser } from "../data/ws-user";
 import { HomeAssistant } from "../types";
 import { hassUrl } from "../data/auth";
-import { fetchConfig, WindowWithLovelaceProm } from "../data/lovelace";
+import { subscribeFrontendUserData } from "../data/frontend";
+import {
+  fetchConfig,
+  fetchResources,
+  WindowWithLovelaceProm,
+} from "../data/lovelace";
 
 declare global {
   interface Window {
     hassConnection: Promise<{ auth: Auth; conn: Connection }>;
   }
 }
-
-const isExternal =
-  window.externalApp ||
-  window.webkit?.messageHandlers?.getExternalAuth ||
-  location.search.includes("external_auth=1");
 
 const authProm = isExternal
   ? () =>
@@ -55,8 +56,12 @@ const connProm = async (auth) => {
       throw err;
     }
     // We can get invalid auth if auth tokens were stored that are no longer valid
-    // Clear stored tokens.
-    if (!isExternal) {
+    if (isExternal) {
+      // Tell the external app to force refresh the access tokens.
+      // This should trigger their unauthorized handling.
+      await auth.refreshAccessToken(true);
+    } else {
+      // Clear stored tokens.
       saveTokens(null);
     }
     auth = await authProm();
@@ -66,6 +71,9 @@ const connProm = async (auth) => {
 };
 
 if (__DEV__) {
+  // Remove adoptedStyleSheets so style inspector works on shadow DOM.
+  // @ts-ignore
+  delete Document.prototype.adoptedStyleSheets;
   performance.mark("hass-start");
 }
 window.hassConnection = authProm().then(connProm);
@@ -81,9 +89,15 @@ window.hassConnection.then(({ conn }) => {
   subscribePanels(conn, noop);
   subscribeThemes(conn, noop);
   subscribeUser(conn, noop);
+  subscribeFrontendUserData(conn, "core", noop);
 
   if (location.pathname === "/" || location.pathname.startsWith("/lovelace/")) {
-    (window as WindowWithLovelaceProm).llConfProm = fetchConfig(conn, false);
+    (window as WindowWithLovelaceProm).llConfProm = fetchConfig(
+      conn,
+      null,
+      false
+    );
+    (window as WindowWithLovelaceProm).llResProm = fetchResources(conn);
   }
 });
 

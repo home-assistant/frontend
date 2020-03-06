@@ -14,16 +14,17 @@ import "../components/hui-timestamp-display";
 import "../components/hui-warning";
 
 import { HomeAssistant } from "../../../types";
-import { EntityRow, EntityConfig } from "./types";
+import { LovelaceRow, EntityConfig } from "./types";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
 import { computeStateDisplay } from "../../../common/entity/compute_state_display";
+import { SENSOR_DEVICE_CLASS_TIMESTAMP } from "../../../data/sensor";
 
 interface SensorEntityConfig extends EntityConfig {
   format?: "relative" | "date" | "time" | "datetime";
 }
 
 @customElement("hui-sensor-entity-row")
-class HuiSensorEntityRow extends LitElement implements EntityRow {
+class HuiSensorEntityRow extends LitElement implements LovelaceRow {
   @property() public hass?: HomeAssistant;
 
   @property() private _config?: SensorEntityConfig;
@@ -39,7 +40,7 @@ class HuiSensorEntityRow extends LitElement implements EntityRow {
     return hasConfigOrEntityChanged(this, changedProps);
   }
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     if (!this._config || !this.hass) {
       return html``;
     }
@@ -59,15 +60,17 @@ class HuiSensorEntityRow extends LitElement implements EntityRow {
     }
 
     return html`
-      <hui-generic-entity-row .hass="${this.hass}" .config="${this._config}">
-        <div>
-          ${stateObj.attributes.device_class === "timestamp" &&
-          stateObj.state !== "unavailable"
+      <hui-generic-entity-row .hass=${this.hass} .config=${this._config}>
+        <div class="text-content">
+          ${stateObj.attributes.device_class ===
+            SENSOR_DEVICE_CLASS_TIMESTAMP &&
+          stateObj.state !== "unavailable" &&
+          stateObj.state !== "unknown"
             ? html`
                 <hui-timestamp-display
-                  .hass="${this.hass}"
-                  .ts="${new Date(stateObj.state)}"
-                  .format="${this._config.format}"
+                  .hass=${this.hass}
+                  .ts=${new Date(stateObj.state)}
+                  .format=${this._config.format}
                 ></hui-timestamp-display>
               `
             : computeStateDisplay(

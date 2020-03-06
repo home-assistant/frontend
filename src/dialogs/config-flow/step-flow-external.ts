@@ -28,7 +28,7 @@ class StepFlowExternal extends LitElement {
   @property()
   private step!: DataEntryFlowStepExternal;
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     const localize = this.hass.localize;
 
     return html`
@@ -38,7 +38,7 @@ class StepFlowExternal extends LitElement {
       <div class="content">
         ${this.flowConfig.renderExternalStepDescription(this.hass, this.step)}
         <div class="open-button">
-          <a href=${this.step.url} target="_blank">
+          <a href=${this.step.url} target="_blank" rel="noreferrer">
             <mwc-button raised>
               ${localize(
                 "ui.panel.config.integrations.config_flow.external_step.open_site"

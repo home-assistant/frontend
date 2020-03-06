@@ -443,12 +443,6 @@
         },
         "panel": {
             "config": {
-                "area_registry": {
-                    "picker": {
-                        "create_area": "إنشاء منطقة",
-                        "no_areas": "يبدو أنه لا توجد أي مناطق معرفة!"
-                    }
-                },
                 "automation": {
                     "caption": "التشغيل التلقائي",
                     "description": "إنشاء وتحرير التشغيل الألي",
@@ -678,6 +672,13 @@
                     "configured": "تم الإعداد",
                     "description": "إدارة الأجهزة والخدمات المتصلة",
                     "discovered": "مكتشف",
+                    "ignore": {
+                        "confirm_delete_ignore_title": "توقف عن تجاهل {name} ؟",
+                        "ignore": "تجاهل",
+                        "ignored": "تجاهل",
+                        "show_ignored": "Visa ",
+                        "stop_ignore": "توقف عن التجاهل"
+                    },
                     "new": "إعداد تكامل جديد",
                     "none": "لم يتم الإعداد بعد"
                 },
@@ -689,7 +690,10 @@
                 },
                 "script": {
                     "caption": "السكريبت",
-                    "description": "إنشاء و تحرير السكريبت"
+                    "description": "إنشاء و تحرير السكريبت",
+                    "editor": {
+                        "alias": "الاسم"
+                    }
                 },
                 "users": {
                     "add_user": {
@@ -738,6 +742,9 @@
                         "title": "الخدمات"
                     },
                     "states": {
+                        "copied": "نسخ إلى الحافظة",
+                        "copy_entity_attribute": "نسخ السمات",
+                        "copy_entity_state": "نسخ الحالة",
                         "title": "الحالات"
                     },
                     "templates": {

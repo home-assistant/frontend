@@ -83,7 +83,7 @@ export abstract class HaDeviceAutomationPicker<
     return `${this._automations[idx].device_id}_${idx}`;
   }
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     if (this._renderEmpty) {
       return html``;
     }
@@ -176,6 +176,7 @@ export abstract class HaDeviceAutomationPicker<
     this.value = automation;
     setTimeout(() => {
       fireEvent(this, "change");
+      fireEvent(this, "value-changed", { value: automation });
     }, 0);
   }
 

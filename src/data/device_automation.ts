@@ -18,7 +18,7 @@ export interface DeviceCondition extends DeviceAutomation {
 }
 
 export interface DeviceTrigger extends DeviceAutomation {
-  platform: string;
+  platform: "device";
 }
 
 export const fetchDeviceActions = (hass: HomeAssistant, deviceId: string) =>
@@ -66,7 +66,15 @@ export const fetchDeviceTriggerCapabilities = (
     trigger,
   });
 
-const whitelist = ["above", "below", "code", "for"];
+const whitelist = [
+  "above",
+  "below",
+  "brightness",
+  "code",
+  "for",
+  "position",
+  "set_brightness",
+];
 
 export const deviceAutomationsEqual = (
   a: DeviceAutomation,
@@ -99,49 +107,65 @@ export const deviceAutomationsEqual = (
 export const localizeDeviceAutomationAction = (
   hass: HomeAssistant,
   action: DeviceAction
-) => {
+): string => {
   const state = action.entity_id ? hass.states[action.entity_id] : undefined;
-  return hass.localize(
-    `component.${action.domain}.device_automation.action_type.${action.type}`,
-    "entity_name",
-    state ? computeStateName(state) : "<unknown>",
-    "subtype",
+  return (
     hass.localize(
-      `component.${action.domain}.device_automation.action_subtype.${action.subtype}`
-    )
+      `component.${action.domain}.device_automation.action_type.${action.type}`,
+      "entity_name",
+      state ? computeStateName(state) : action.entity_id || "<unknown>",
+      "subtype",
+      action.subtype
+        ? hass.localize(
+            `component.${action.domain}.device_automation.action_subtype.${action.subtype}`
+          ) || action.subtype
+        : ""
+    ) || (action.subtype ? `"${action.subtype}" ${action.type}` : action.type!)
   );
 };
 
 export const localizeDeviceAutomationCondition = (
   hass: HomeAssistant,
   condition: DeviceCondition
-) => {
+): string => {
   const state = condition.entity_id
     ? hass.states[condition.entity_id]
     : undefined;
-  return hass.localize(
-    `component.${condition.domain}.device_automation.condition_type.${condition.type}`,
-    "entity_name",
-    state ? computeStateName(state) : "<unknown>",
-    "subtype",
+  return (
     hass.localize(
-      `component.${condition.domain}.device_automation.condition_subtype.${condition.subtype}`
-    )
+      `component.${condition.domain}.device_automation.condition_type.${condition.type}`,
+      "entity_name",
+      state ? computeStateName(state) : condition.entity_id || "<unknown>",
+      "subtype",
+      condition.subtype
+        ? hass.localize(
+            `component.${condition.domain}.device_automation.condition_subtype.${condition.subtype}`
+          ) || condition.subtype
+        : ""
+    ) ||
+    (condition.subtype
+      ? `"${condition.subtype}" ${condition.type}`
+      : condition.type!)
   );
 };
 
 export const localizeDeviceAutomationTrigger = (
   hass: HomeAssistant,
   trigger: DeviceTrigger
-) => {
+): string => {
   const state = trigger.entity_id ? hass.states[trigger.entity_id] : undefined;
-  return hass.localize(
-    `component.${trigger.domain}.device_automation.trigger_type.${trigger.type}`,
-    "entity_name",
-    state ? computeStateName(state) : "<unknown>",
-    "subtype",
+  return (
     hass.localize(
-      `component.${trigger.domain}.device_automation.trigger_subtype.${trigger.subtype}`
-    )
+      `component.${trigger.domain}.device_automation.trigger_type.${trigger.type}`,
+      "entity_name",
+      state ? computeStateName(state) : trigger.entity_id || "<unknown>",
+      "subtype",
+      trigger.subtype
+        ? hass.localize(
+            `component.${trigger.domain}.device_automation.trigger_subtype.${trigger.subtype}`
+          ) || trigger.subtype
+        : ""
+    ) ||
+    (trigger.subtype ? `"${trigger.subtype}" ${trigger.type}` : trigger.type!)
   );
 };

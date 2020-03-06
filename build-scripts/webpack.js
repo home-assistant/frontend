@@ -22,7 +22,11 @@ const createWebpackConfig = ({
   isProdBuild,
   latestBuild,
   isStatsBuild,
+  dontHash,
 }) => {
+  if (!dontHash) {
+    dontHash = new Set();
+  }
   return {
     mode: isProdBuild ? "production" : "development",
     devtool: isProdBuild ? "source-map" : "inline-cheap-module-source-map",
@@ -91,7 +95,7 @@ const createWebpackConfig = ({
       ),
     ].filter(Boolean),
     resolve: {
-      extensions: [".ts", ".js", ".json", ".tsx"],
+      extensions: [".ts", ".js", ".json"],
       alias: {
         react: "preact-compat",
         "react-dom": "preact-compat",
@@ -103,8 +107,6 @@ const createWebpackConfig = ({
     },
     output: {
       filename: ({ chunk }) => {
-        const dontHash = new Set();
-
         if (!isProdBuild || dontHash.has(chunk.name)) {
           return `${chunk.name}.js`;
         }
@@ -146,11 +148,17 @@ const createAppConfig = ({ isProdBuild, latestBuild, isStatsBuild }) => {
     // Create an object mapping browser urls to their paths during build
     const translationMetadata = require("../build-translations/translationMetadata.json");
     const workBoxTranslationsTemplatedURLs = {};
-    const englishFP = translationMetadata.translations.en.fingerprints;
-    Object.keys(englishFP).forEach((key) => {
+    const englishFilename = `en-${translationMetadata.translations.en.hash}.json`;
+
+    // core
+    workBoxTranslationsTemplatedURLs[
+      `/static/translations/${englishFilename}`
+    ] = `build-translations/output/${englishFilename}`;
+
+    Object.keys(translationMetadata.fragments).forEach((fragment) => {
       workBoxTranslationsTemplatedURLs[
-        `/static/translations/${englishFP[key]}`
-      ] = `build-translations/output/${key}.json`;
+        `/static/translations/${fragment}/${englishFilename}`
+      ] = `build-translations/output/${fragment}/${englishFilename}`;
     });
 
     config.plugins.push(
@@ -222,11 +230,12 @@ const createHassioConfig = ({ isProdBuild, latestBuild }) => {
   }
   const config = createWebpackConfig({
     entry: {
-      entrypoint: path.resolve(paths.hassio_dir, "src/entrypoint.js"),
+      entrypoint: path.resolve(paths.hassio_dir, "src/entrypoint.ts"),
     },
     outputRoot: "",
     isProdBuild,
     latestBuild,
+    dontHash: new Set(["entrypoint"]),
   });
 
   config.output.path = paths.hassio_root;

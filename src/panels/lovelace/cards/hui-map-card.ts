@@ -30,6 +30,8 @@ import { EntityConfig } from "../entity-rows/types";
 import { processConfigEntities } from "../common/process-config-entities";
 import { MapCardConfig } from "./types";
 import { classMap } from "lit-html/directives/class-map";
+import { LovelaceConfig } from "../../../data/lovelace";
+import { findEntities } from "../common/find-entites";
 
 @customElement("hui-map-card")
 class HuiMapCard extends LitElement implements LovelaceCard {
@@ -40,8 +42,24 @@ class HuiMapCard extends LitElement implements LovelaceCard {
     return document.createElement("hui-map-card-editor");
   }
 
-  public static getStubConfig() {
-    return { entities: [] };
+  public static getStubConfig(
+    hass: HomeAssistant,
+    lovelaceConfig: LovelaceConfig,
+    entities?: string[],
+    entitiesFill?: string[]
+  ): object {
+    const includeDomains = ["device_tracker"];
+    const maxEntities = 2;
+    const foundEntities = findEntities(
+      hass,
+      lovelaceConfig,
+      maxEntities,
+      entities,
+      entitiesFill,
+      includeDomains
+    );
+
+    return { entities: foundEntities };
   }
 
   @property() public hass?: HomeAssistant;
@@ -68,6 +86,7 @@ class HuiMapCard extends LitElement implements LovelaceCard {
     false
   );
   private _mapItems: Array<Marker | Circle> = [];
+  private _mapZones: Array<Marker | Circle> = [];
   private _connected = false;
 
   public setConfig(config: MapCardConfig): void {
@@ -134,7 +153,7 @@ class HuiMapCard extends LitElement implements LovelaceCard {
     }
   }
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     if (!this._config) {
       return html``;
     }
@@ -147,6 +166,7 @@ class HuiMapCard extends LitElement implements LovelaceCard {
           ></div>
           <paper-icon-button
             @click=${this._fitMap}
+            tabindex="0"
             icon="hass:image-filter-center-focus"
             title="Reset focus"
           ></paper-icon-button>
@@ -200,6 +220,7 @@ class HuiMapCard extends LitElement implements LovelaceCard {
   protected updated(changedProps: PropertyValues): void {
     if (changedProps.has("hass")) {
       this._drawEntities();
+      this._fitMap();
     }
     if (
       changedProps.has("_config") &&
@@ -283,6 +304,11 @@ class HuiMapCard extends LitElement implements LovelaceCard {
     }
     const mapItems: Layer[] = (this._mapItems = []);
 
+    if (this._mapZones) {
+      this._mapZones.forEach((marker) => marker.remove());
+    }
+    const mapZones: Layer[] = (this._mapZones = []);
+
     const allEntities = this._configEntities!.concat();
 
     // Calculate visible geo location sources
@@ -340,7 +366,7 @@ class HuiMapCard extends LitElement implements LovelaceCard {
         }
 
         // create marker with the icon
-        mapItems.push(
+        mapZones.push(
           Leaflet.marker([latitude, longitude], {
             icon: Leaflet.divIcon({
               html: iconHTML,
@@ -353,7 +379,7 @@ class HuiMapCard extends LitElement implements LovelaceCard {
         );
 
         // create circle around it
-        mapItems.push(
+        mapZones.push(
           Leaflet.circle([latitude, longitude], {
             interactive: false,
             color: "#FF9800",
@@ -405,6 +431,7 @@ class HuiMapCard extends LitElement implements LovelaceCard {
     }
 
     this._mapItems.forEach((marker) => map.addLayer(marker));
+    this._mapZones.forEach((marker) => map.addLayer(marker));
   }
 
   private _attachObserver(): void {

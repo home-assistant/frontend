@@ -39,7 +39,7 @@ class MoreInfoClimate extends LitElement {
   @property() public stateObj?: ClimateEntity;
   private _resizeDebounce?: number;
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     if (!this.stateObj) {
       return html``;
     }
@@ -100,7 +100,8 @@ class MoreInfoClimate extends LitElement {
                   </div>
                 `
               : ""}
-            ${stateObj.attributes.temperature !== undefined
+            ${stateObj.attributes.temperature !== undefined &&
+            stateObj.attributes.temperature !== null
               ? html`
                   <ha-climate-control
                     .value=${stateObj.attributes.temperature}
@@ -112,8 +113,10 @@ class MoreInfoClimate extends LitElement {
                   ></ha-climate-control>
                 `
               : ""}
-            ${stateObj.attributes.target_temp_low !== undefined ||
-            stateObj.attributes.target_temp_high !== undefined
+            ${(stateObj.attributes.target_temp_low !== undefined &&
+              stateObj.attributes.target_temp_low !== null) ||
+            (stateObj.attributes.target_temp_high !== undefined &&
+              stateObj.attributes.target_temp_high !== null)
               ? html`
                   <ha-climate-control
                     .value=${stateObj.attributes.target_temp_low}

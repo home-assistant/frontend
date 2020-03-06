@@ -40,6 +40,15 @@
         "shopping_list": "Ichoufsliste",
         "states": "Übersicht"
     },
+    "state_attributes": {
+        "climate": {
+            "fan_mode": {
+                "auto": "Automatik",
+                "off": "Us",
+                "on": "Ah"
+            }
+        }
+    },
     "state_badge": {
         "alarm_control_panel": {
             "armed": "Scharf",
@@ -509,6 +518,9 @@
                             }
                         }
                     }
+                },
+                "devices": {
+                    "scripts": "Scripts"
                 },
                 "integrations": {
                     "caption": "Integratione",

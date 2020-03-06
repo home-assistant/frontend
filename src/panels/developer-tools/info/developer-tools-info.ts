@@ -11,43 +11,23 @@ import { HomeAssistant } from "../../../types";
 import { haStyle } from "../../../resources/styles";
 
 import "./system-health-card";
+import "./integrations-card";
 
 const JS_TYPE = __BUILD__;
 const JS_VERSION = __VERSION__;
-const OPT_IN_PANEL = "states";
 
 class HaPanelDevInfo extends LitElement {
   @property() public hass!: HomeAssistant;
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     const hass = this.hass;
     const customUiList: Array<{ name: string; url: string; version: string }> =
       (window as any).CUSTOM_UI_LIST || [];
 
-    const nonDefaultLink =
-      localStorage.defaultPage === OPT_IN_PANEL && OPT_IN_PANEL === "states"
-        ? "/lovelace"
-        : "/states";
-
-    const nonDefaultLinkText =
-      localStorage.defaultPage === OPT_IN_PANEL && OPT_IN_PANEL === "states"
-        ? this.hass.localize("ui.panel.developer-tools.tabs.info.lovelace_ui")
-        : this.hass.localize("ui.panel.developer-tools.tabs.info.states_ui");
-
-    const defaultPageText = `${this.hass.localize(
-      "ui.panel.developer-tools.tabs.info.default_ui",
-      "action",
-      localStorage.defaultPage === OPT_IN_PANEL
-        ? this.hass.localize("ui.panel.developer-tools.tabs.info.remove")
-        : this.hass.localize("ui.panel.developer-tools.tabs.info.set"),
-      "name",
-      OPT_IN_PANEL
-    )}`;
-
     return html`
       <div class="about">
         <p class="version">
-          <a href="https://www.home-assistant.io" target="_blank"
+          <a href="https://www.home-assistant.io" target="_blank" rel="noreferrer"
             ><img
               src="/static/icons/favicon-192x192.png"
               height="192"
@@ -56,7 +36,7 @@ class HaPanelDevInfo extends LitElement {
               )}"
           /></a>
           <br />
-          <h2>Home Assistant ${hass.config.version}</h2>
+          <h2>Home Assistant ${hass.connection.haVersion}</h2>
         </p>
         <p>
           ${this.hass.localize(
@@ -68,7 +48,7 @@ class HaPanelDevInfo extends LitElement {
         <p class="develop">
           <a
             href="https://www.home-assistant.io/developers/credits/"
-            target="_blank"
+            target="_blank" rel="noreferrer"
           >
             ${this.hass.localize(
               "ui.panel.developer-tools.tabs.info.developed_by"
@@ -82,7 +62,7 @@ class HaPanelDevInfo extends LitElement {
           ${this.hass.localize("ui.panel.developer-tools.tabs.info.source")}
           <a
             href="https://github.com/home-assistant/home-assistant"
-            target="_blank"
+            target="_blank" rel="noreferrer"
             >${this.hass.localize(
               "ui.panel.developer-tools.tabs.info.server"
             )}</a
@@ -90,7 +70,7 @@ class HaPanelDevInfo extends LitElement {
           &mdash;
           <a
             href="https://github.com/home-assistant/home-assistant-polymer"
-            target="_blank"
+            target="_blank" rel="noreferrer"
             >${this.hass.localize(
               "ui.panel.developer-tools.tabs.info.frontend"
             )}</a
@@ -100,14 +80,14 @@ class HaPanelDevInfo extends LitElement {
           ${this.hass.localize(
             "ui.panel.developer-tools.tabs.info.built_using"
           )}
-          <a href="https://www.python.org">Python 3</a>,
-          <a href="https://www.polymer-project.org" target="_blank">Polymer</a>,
+          <a href="https://www.python.org" target="_blank" rel="noreferrer">Python 3</a>,
+          <a href="https://www.polymer-project.org" target="_blank" rel="noreferrer">Polymer</a>,
           ${this.hass.localize("ui.panel.developer-tools.tabs.info.icons_by")}
-          <a href="https://www.google.com/design/icons/" target="_blank"
+          <a href="https://www.google.com/design/icons/" target="_blank" rel="noreferrer"
             >Google</a
           >
           and
-          <a href="https://MaterialDesignIcons.com" target="_blank"
+          <a href="https://MaterialDesignIcons.com" target="_blank" rel="noreferrer"
             >MaterialDesignIcons.com</a
           >.
         </p>
@@ -139,14 +119,10 @@ class HaPanelDevInfo extends LitElement {
               : ""
           }
         </p>
-        <p>
-          <a href="${nonDefaultLink}">${nonDefaultLinkText}</a><br />
-          <a href="#" @click="${this._toggleDefaultPage}">${defaultPageText}</a
-          ><br />
-        </p>
       </div>
       <div class="content">
         <system-health-card .hass=${this.hass}></system-health-card>
+        <integrations-card .hass=${this.hass}></integrations-card>
       </div>
     `;
   }
@@ -161,15 +137,6 @@ class HaPanelDevInfo extends LitElement {
         this.requestUpdate();
       }
     }, 1000);
-  }
-
-  protected _toggleDefaultPage(): void {
-    if (localStorage.defaultPage === OPT_IN_PANEL) {
-      delete localStorage.defaultPage;
-    } else {
-      localStorage.defaultPage = OPT_IN_PANEL;
-    }
-    this.requestUpdate();
   }
 
   static get styles(): CSSResult[] {
@@ -203,7 +170,8 @@ class HaPanelDevInfo extends LitElement {
           color: var(--dark-primary-color);
         }
 
-        system-health-card {
+        system-health-card,
+        integrations-card {
           display: block;
           max-width: 600px;
           margin: 0 auto;

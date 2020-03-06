@@ -13,7 +13,7 @@ import { HassEvent } from "home-assistant-js-websocket";
 import { HomeAssistant } from "../../../types";
 import { PolymerChangedEvent } from "../../../polymer-types";
 import "../../../components/ha-card";
-import format_time from "../../../common/datetime/format_time";
+import { formatTime } from "../../../common/datetime/format_time";
 
 @customElement("event-subscribe-card")
 class EventSubscribeCard extends LitElement {
@@ -78,7 +78,7 @@ class EventSubscribeCard extends LitElement {
                   "name",
                   ev.id
                 )}
-                ${format_time(
+                ${formatTime(
                   new Date(ev.event.time_fired),
                   this.hass!.language
                 )}:

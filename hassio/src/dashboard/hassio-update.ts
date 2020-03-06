@@ -10,13 +10,14 @@ import {
 import "@polymer/iron-icon/iron-icon";
 
 import { HomeAssistant } from "../../../src/types";
+import { HassioHassOSInfo } from "../../../src/data/hassio/host";
 import {
   HassioHomeAssistantInfo,
-  HassioHassOSInfo,
   HassioSupervisorInfo,
-} from "../../../src/data/hassio";
+} from "../../../src/data/hassio/supervisor";
 
 import { hassioStyle } from "../resources/hassio-style";
+import { haStyle } from "../../../src/resources/styles";
 
 import "@material/mwc-button";
 import "@polymer/paper-card/paper-card";
@@ -26,20 +27,25 @@ import "../components/hassio-card-content";
 @customElement("hassio-update")
 export class HassioUpdate extends LitElement {
   @property() public hass!: HomeAssistant;
-
   @property() public hassInfo: HassioHomeAssistantInfo;
   @property() public hassOsInfo?: HassioHassOSInfo;
   @property() public supervisorInfo: HassioSupervisorInfo;
+  @property() private _error?: string;
 
-  @property() public error?: string;
-
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     const updatesAvailable: number = [
       this.hassInfo,
       this.supervisorInfo,
       this.hassOsInfo,
     ].filter((value) => {
-      return !!value && value.version !== value.last_version;
+      return (
+        !!value &&
+        (value.last_version
+          ? value.version !== value.last_version
+          : value.version_latest
+          ? value.version !== value.version_latest
+          : false)
+      );
     }).length;
 
     if (!updatesAvailable) {
@@ -48,19 +54,19 @@ export class HassioUpdate extends LitElement {
 
     return html`
       <div class="content">
-        ${this.error
+        ${this._error
           ? html`
-              <div class="error">Error: ${this.error}</div>
+              <div class="error">Error: ${this._error}</div>
             `
           : ""}
+        <h1>
+          ${updatesAvailable > 1
+            ? "Updates Available 🎉"
+            : "Update Available 🎉"}
+        </h1>
         <div class="card-group">
-          <div class="title">
-            ${updatesAvailable > 1
-              ? "Updates Available 🎉"
-              : "Update Available 🎉"}
-          </div>
           ${this._renderUpdateCard(
-            "Home Assistant",
+            "Home Assistant Core",
             this.hassInfo.version,
             this.hassInfo.last_version,
             "hassio/homeassistant/update",
@@ -70,7 +76,7 @@ export class HassioUpdate extends LitElement {
             "hassio:home-assistant"
           )}
           ${this._renderUpdateCard(
-            "Hass.io Supervisor",
+            "Supervisor",
             this.supervisorInfo.version,
             this.supervisorInfo.last_version,
             "hassio/supervisor/update",
@@ -78,7 +84,7 @@ export class HassioUpdate extends LitElement {
           )}
           ${this.hassOsInfo
             ? this._renderUpdateCard(
-                "HassOS",
+                "Operating System",
                 this.hassOsInfo.version,
                 this.hassOsInfo.version_latest,
                 "hassio/hassos/update",
@@ -98,7 +104,7 @@ export class HassioUpdate extends LitElement {
     releaseNotesUrl: string,
     icon?: string
   ): TemplateResult {
-    if (lastVersion === curVersion) {
+    if (!lastVersion || lastVersion === curVersion) {
       return html``;
     }
     return html`
@@ -117,7 +123,7 @@ export class HassioUpdate extends LitElement {
           </div>
         </div>
         <div class="card-actions">
-          <a href="${releaseNotesUrl}" target="_blank">
+          <a href="${releaseNotesUrl}" target="_blank" rel="noreferrer">
             <mwc-button>Release notes</mwc-button>
           </a>
           <ha-call-api-button
@@ -134,28 +140,22 @@ export class HassioUpdate extends LitElement {
 
   private _apiCalled(ev) {
     if (ev.detail.success) {
-      this.error = "";
+      this._error = "";
       return;
     }
 
     const response = ev.detail.response;
 
     typeof response.body === "object"
-      ? (this.error = response.body.message || "Unknown error")
-      : (this.error = response.body);
+      ? (this._error = response.body.message || "Unknown error")
+      : (this._error = response.body);
   }
 
   static get styles(): CSSResult[] {
     return [
+      haStyle,
       hassioStyle,
       css`
-        :host {
-          width: 33%;
-        }
-        paper-card {
-          display: inline-block;
-          margin-bottom: 32px;
-        }
         .icon {
           --iron-icon-height: 48px;
           --iron-icon-width: 48px;
@@ -169,6 +169,10 @@ export class HassioUpdate extends LitElement {
         }
         .warning {
           color: var(--secondary-text-color);
+        }
+        .card-content {
+          height: calc(100% - 47px);
+          box-sizing: border-box;
         }
         .card-actions {
           text-align: right;

@@ -22,6 +22,9 @@ import { fireEvent } from "../../../common/dom/fire_event";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
 import { LovelaceCard, LovelaceCardEditor } from "../types";
 import { GaugeCardConfig } from "./types";
+import { LovelaceConfig } from "../../../data/lovelace";
+import { findEntities } from "../common/find-entites";
+import { HassEntity } from "home-assistant-js-websocket/dist/types";
 
 export const severityMap = {
   red: "var(--label-badge-red)",
@@ -38,8 +41,30 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
     );
     return document.createElement("hui-gauge-card-editor");
   }
-  public static getStubConfig(): object {
-    return { entity: "" };
+
+  public static getStubConfig(
+    hass: HomeAssistant,
+    lovelaceConfig: LovelaceConfig,
+    entities?: string[],
+    entitiesFill?: string[]
+  ): object {
+    const includeDomains = ["sensor"];
+    const maxEntities = 1;
+    const entityFilter = (stateObj: HassEntity): boolean => {
+      return !isNaN(Number(stateObj.state));
+    };
+
+    const foundEntities = findEntities(
+      hass,
+      lovelaceConfig,
+      maxEntities,
+      entities,
+      entitiesFill,
+      includeDomains,
+      entityFilter
+    );
+
+    return { entity: foundEntities[0] || "" };
   }
 
   @property() public hass?: HomeAssistant;
@@ -68,7 +93,7 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
     this._setBaseUnit();
   }
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     if (!this._config || !this.hass) {
       return html``;
     }
@@ -104,6 +129,7 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
     return html`
       <ha-card
         @click="${this._handleClick}"
+        tabindex="0"
         style=${styleMap({
           "--base-unit": this._baseUnit,
         })}
@@ -227,6 +253,10 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
         height: calc(var(--base-unit) * 3);
         position: relative;
         cursor: pointer;
+      }
+      ha-card:focus {
+        outline: none;
+        background: var(--divider-color);
       }
       .container {
         width: calc(var(--base-unit) * 4);

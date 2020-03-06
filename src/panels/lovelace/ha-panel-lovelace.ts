@@ -1,4 +1,5 @@
 import "@material/mwc-button";
+import deepFreeze from "deep-freeze";
 
 import {
   fetchConfig,
@@ -6,6 +7,8 @@ import {
   saveConfig,
   subscribeLovelaceUpdates,
   WindowWithLovelaceProm,
+  deleteConfig,
+  fetchResources,
 } from "../../data/lovelace";
 import "../../layouts/hass-loading-screen";
 import "../../layouts/hass-error-screen";
@@ -22,12 +25,16 @@ import {
 import { showSaveDialog } from "./editor/show-save-config-dialog";
 import { generateLovelaceConfigFromHass } from "./common/generate-lovelace-config";
 import { showToast } from "../../util/toast";
+import { loadLovelaceResources } from "./common/load-resources";
+
+(window as any).loadCardHelpers = () => import("./custom-card-helpers");
 
 interface LovelacePanelConfig {
   mode: "yaml" | "storage";
 }
 
 let editorLoaded = false;
+let resourcesLoaded = false;
 
 class LovelacePanel extends LitElement {
   @property() public panel?: PanelInfo<LovelacePanelConfig>;
@@ -50,24 +57,54 @@ class LovelacePanel extends LitElement {
   private mqls?: MediaQueryList[];
 
   private _ignoreNextUpdateEvent = false;
+  private _fetchConfigOnConnect = false;
+  private _unsubUpdates?;
 
   constructor() {
     super();
     this._closeEditor = this._closeEditor.bind(this);
   }
 
-  public render(): TemplateResult | void {
+  public connectedCallback(): void {
+    super.connectedCallback();
+    if (
+      this.lovelace &&
+      this.hass &&
+      this.lovelace.language !== this.hass.language
+    ) {
+      // language has been changed, rebuild UI
+      this._setLovelaceConfig(this.lovelace.config, this.lovelace.mode);
+    } else if (this.lovelace && this.lovelace.mode === "generated") {
+      // When lovelace is generated, we re-generate each time a user goes
+      // to the states panel to make sure new entities are shown.
+      this._state = "loading";
+      this._regenerateConfig();
+    } else if (this._fetchConfigOnConnect) {
+      // Config was changed when we were not at the lovelace panel
+      this._fetchConfig(false);
+    }
+  }
+
+  public disconnectedCallback(): void {
+    super.disconnectedCallback();
+    // On the main dashboard we want to stay subscribed as that one is cached.
+    if (this.urlPath !== null && this._unsubUpdates) {
+      this._unsubUpdates();
+    }
+  }
+
+  protected render(): TemplateResult | void {
     const state = this._state!;
 
     if (state === "loaded") {
       return html`
         <hui-root
-          .hass="${this.hass}"
-          .lovelace="${this.lovelace}"
-          .route="${this.route}"
-          .columns="${this._columns}"
+          .hass=${this.hass}
+          .lovelace=${this.lovelace}
+          .route=${this.route}
+          .columns=${this._columns}
           .narrow=${this.narrow}
-          @config-refresh="${this._forceFetchConfig}"
+          @config-refresh=${this._forceFetchConfig}
         ></hui-root>
       `;
     }
@@ -78,11 +115,9 @@ class LovelacePanel extends LitElement {
           title="${this.hass!.localize("domain.lovelace")}"
           .error="${this._errorMsg}"
         >
-          <mwc-button on-click="_forceFetchConfig"
-            >${this.hass!.localize(
-              "ui.panel.lovelace.reload_lovelace"
-            )}</mwc-button
-          >
+          <mwc-button raised @click=${this._forceFetchConfig}>
+            ${this.hass!.localize("ui.panel.lovelace.reload_lovelace")}
+          </mwc-button>
         </hass-error-screen>
       `;
     }
@@ -90,7 +125,7 @@ class LovelacePanel extends LitElement {
     if (state === "yaml-editor") {
       return html`
         <hui-editor
-          .hass="${this.hass}"
+          .hass=${this.hass}
           .lovelace="${this.lovelace}"
           .closeEditor="${this._closeEditor}"
         ></hui-editor>
@@ -106,7 +141,7 @@ class LovelacePanel extends LitElement {
     `;
   }
 
-  public updated(changedProps: PropertyValues): void {
+  protected updated(changedProps: PropertyValues): void {
     super.updated(changedProps);
 
     if (changedProps.has("narrow")) {
@@ -125,12 +160,11 @@ class LovelacePanel extends LitElement {
     }
   }
 
-  public firstUpdated() {
+  protected firstUpdated() {
     this._fetchConfig(false);
-    // we don't want to unsub as we want to stay informed of updates
-    subscribeLovelaceUpdates(this.hass!.connection, () =>
-      this._lovelaceChanged()
-    );
+    if (!this._unsubUpdates) {
+      this._subscribeUpdates();
+    }
     // reload lovelace on reconnect so we are sure we have the latest config
     window.addEventListener("connection-status", (ev) => {
       if (ev.detail === "connected") {
@@ -146,27 +180,18 @@ class LovelacePanel extends LitElement {
     this._updateColumns();
   }
 
-  public connectedCallback(): void {
-    super.connectedCallback();
-    if (
-      this.lovelace &&
-      this.hass &&
-      this.lovelace.language !== this.hass.language
-    ) {
-      // language has been changed, rebuild UI
-      this._setLovelaceConfig(this.lovelace.config, this.lovelace.mode);
-    } else if (this.lovelace && this.lovelace.mode === "generated") {
-      // When lovelace is generated, we re-generate each time a user goes
-      // to the states panel to make sure new entities are shown.
-      this._state = "loading";
-      this._regenerateConfig();
-    }
-  }
-
   private async _regenerateConfig() {
     const conf = await generateLovelaceConfigFromHass(this.hass!);
     this._setLovelaceConfig(conf, "generated");
     this._state = "loaded";
+  }
+
+  private async _subscribeUpdates() {
+    this._unsubUpdates = await subscribeLovelaceUpdates(
+      this.hass!.connection,
+      this.urlPath,
+      () => this._lovelaceChanged()
+    );
   }
 
   private _closeEditor() {
@@ -191,6 +216,12 @@ class LovelacePanel extends LitElement {
       this._ignoreNextUpdateEvent = false;
       return;
     }
+    if (!this.isConnected) {
+      // We can't fire events from an element that is not connected
+      // Make sure we fetch the config as soon as the user goes back to Lovelace
+      this._fetchConfigOnConnect = true;
+      return;
+    }
     showToast(this, {
       message: this.hass!.localize("ui.panel.lovelace.changed_toast.message"),
       action: {
@@ -202,33 +233,51 @@ class LovelacePanel extends LitElement {
     });
   }
 
+  public get urlPath() {
+    return this.panel!.url_path === "lovelace" ? null : this.panel!.url_path;
+  }
+
   private _forceFetchConfig() {
     this._fetchConfig(true);
   }
 
-  private async _fetchConfig(forceDiskRefresh) {
+  private async _fetchConfig(forceDiskRefresh: boolean) {
     let conf: LovelaceConfig;
     let confMode: Lovelace["mode"] = this.panel!.config.mode;
-    let confProm: Promise<LovelaceConfig>;
+    let confProm: Promise<LovelaceConfig> | undefined;
     const llWindow = window as WindowWithLovelaceProm;
 
     // On first load, we speed up loading page by having LL promise ready
     if (llWindow.llConfProm) {
       confProm = llWindow.llConfProm;
       llWindow.llConfProm = undefined;
-    } else {
+    }
+    if (!resourcesLoaded) {
+      resourcesLoaded = true;
+      (
+        llWindow.llConfProm || fetchResources(this.hass!.connection)
+      ).then((resources) =>
+        loadLovelaceResources(resources, this.hass!.auth.data.hassUrl)
+      );
+    }
+
+    if (this.urlPath !== null || !confProm) {
       // Refreshing a YAML config can trigger an update event. We will ignore
-      // all update events while fetching the config and for 2 seconds after the cnofig is back.
+      // all update events while fetching the config and for 2 seconds after the config is back.
       // We ignore because we already have the latest config.
       if (this.lovelace && this.lovelace.mode === "yaml") {
         this._ignoreNextUpdateEvent = true;
       }
 
-      confProm = fetchConfig(this.hass!.connection, forceDiskRefresh);
+      confProm = fetchConfig(
+        this.hass!.connection,
+        this.urlPath,
+        forceDiskRefresh
+      );
     }
 
     try {
-      conf = await confProm;
+      conf = await confProm!;
     } catch (err) {
       if (err.code !== "config_not_found") {
         // tslint:disable-next-line
@@ -254,15 +303,23 @@ class LovelacePanel extends LitElement {
 
   private _checkLovelaceConfig(config: LovelaceConfig) {
     // Somehow there can be badges with value null, we remove those
-    config.views.forEach((view) => {
-      if (view.badges) {
-        view.badges = view.badges.filter(Boolean);
+    let checkedConfig = !Object.isFrozen(config) ? config : undefined;
+    config.views.forEach((view, index) => {
+      if (view.badges && !view.badges.every(Boolean)) {
+        checkedConfig = checkedConfig || {
+          ...config,
+          views: [...config.views],
+        };
+        checkedConfig.views[index] = { ...view };
+        checkedConfig.views[index].badges = view.badges.filter(Boolean);
       }
     });
+    return checkedConfig ? deepFreeze(checkedConfig) : config;
   }
 
   private _setLovelaceConfig(config: LovelaceConfig, mode: Lovelace["mode"]) {
-    this._checkLovelaceConfig(config);
+    config = this._checkLovelaceConfig(config);
+    const urlPath = this.urlPath;
     this.lovelace = {
       config,
       mode,
@@ -282,11 +339,12 @@ class LovelacePanel extends LitElement {
         }
         showSaveDialog(this, {
           lovelace: this.lovelace!,
+          mode: this.panel!.config.mode,
         });
       },
       saveConfig: async (newConfig: LovelaceConfig): Promise<void> => {
         const { config: previousConfig, mode: previousMode } = this.lovelace!;
-        this._checkLovelaceConfig(newConfig);
+        newConfig = this._checkLovelaceConfig(newConfig);
         try {
           // Optimistic update
           this._updateLovelace({
@@ -294,7 +352,29 @@ class LovelacePanel extends LitElement {
             mode: "storage",
           });
           this._ignoreNextUpdateEvent = true;
-          await saveConfig(this.hass!, newConfig);
+          await saveConfig(this.hass!, urlPath, newConfig);
+        } catch (err) {
+          // tslint:disable-next-line
+          console.error(err);
+          // Rollback the optimistic update
+          this._updateLovelace({
+            config: previousConfig,
+            mode: previousMode,
+          });
+          throw err;
+        }
+      },
+      deleteConfig: async (): Promise<void> => {
+        const { config: previousConfig, mode: previousMode } = this.lovelace!;
+        try {
+          // Optimistic update
+          this._updateLovelace({
+            config: await generateLovelaceConfigFromHass(this.hass!),
+            mode: "generated",
+            editMode: false,
+          });
+          this._ignoreNextUpdateEvent = true;
+          await deleteConfig(this.hass!, urlPath);
         } catch (err) {
           // tslint:disable-next-line
           console.error(err);

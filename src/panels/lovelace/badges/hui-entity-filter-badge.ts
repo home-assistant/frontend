@@ -1,4 +1,4 @@
-import { createBadgeElement } from "../common/create-badge-element";
+import { createBadgeElement } from "../create-element/create-badge-element";
 import { processConfigEntities } from "../common/process-config-entities";
 import { LovelaceBadge } from "../types";
 import { EntityFilterEntityConfig } from "../entity-rows/types";

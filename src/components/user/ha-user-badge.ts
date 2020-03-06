@@ -31,7 +31,7 @@ const computeInitials = (name: string) => {
 class StateBadge extends LitElement {
   @property() public user?: User | CurrentUser;
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     const user = this.user;
     const initials = user ? computeInitials(user.name) : "?";
     return html`

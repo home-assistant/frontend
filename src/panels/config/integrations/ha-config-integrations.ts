@@ -39,6 +39,7 @@ declare global {
 class HaConfigIntegrations extends HassRouterPage {
   @property() public hass!: HomeAssistant;
   @property() public narrow!: boolean;
+  @property() public isWide!: boolean;
   @property() public showAdvanced!: boolean;
 
   protected routerOptions: RouterOptions = {
@@ -101,8 +102,9 @@ class HaConfigIntegrations extends HassRouterPage {
     pageEl.entityRegistryEntries = this._entityRegistryEntries;
     pageEl.configEntries = this._configEntries;
     pageEl.narrow = this.narrow;
+    pageEl.isWide = this.isWide;
     pageEl.showAdvanced = this.showAdvanced;
-
+    pageEl.route = this.routeTail;
     if (this._currentPage === "dashboard") {
       pageEl.configEntriesInProgress = this._configEntriesInProgress;
       return;
@@ -116,7 +118,7 @@ class HaConfigIntegrations extends HassRouterPage {
   private _loadData() {
     getConfigEntries(this.hass).then((configEntries) => {
       this._configEntries = configEntries.sort((conf1, conf2) =>
-        compare(conf1.title, conf2.title)
+        compare(conf1.domain + conf1.title, conf2.domain + conf2.title)
       );
     });
     if (this._unsubs) {

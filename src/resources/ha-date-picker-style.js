@@ -6,7 +6,8 @@ documentContainer.innerHTML = `
   <template>
     <style>
       :host {
-        padding: 8px 0;
+        padding: 8px 0 11px 0;
+        margin: 0;
       }
 
       [part~="label"] {
@@ -35,6 +36,9 @@ documentContainer.innerHTML = `
 
       [part~="value"] {
         font-size: var(--paper-font-subhead_-_font-size);
+        height: 24px;
+        padding-top: 4px;
+        padding-bottom: 0;
       }
     </style>
   </template>

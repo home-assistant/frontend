@@ -8,6 +8,7 @@ import {
   customElement,
   PropertyValues,
 } from "lit-element";
+import { ifDefined } from "lit-html/directives/if-defined";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
 
@@ -18,8 +19,8 @@ import "../components/hui-warning";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 
 import { HomeAssistant, InputSelectEntity } from "../../../types";
-import { EntityRow } from "./types";
-import { setInputSelectOption } from "../../../data/input-select";
+import { LovelaceRow } from "./types";
+import { setInputSelectOption } from "../../../data/input_select";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
 import { forwardHaptic } from "../../../data/haptics";
 import { stopPropagation } from "../../../common/dom/stop_propagation";
@@ -31,9 +32,11 @@ import { actionHandler } from "../common/directives/action-handler-directive";
 import { hasAction } from "../common/has-action";
 import { ActionHandlerEvent } from "../../../data/lovelace";
 import { handleAction } from "../common/handle-action";
+import { UNAVAILABLE } from "../../../data/entity";
+import { fireEvent } from "../../../common/dom/fire_event";
 
 @customElement("hui-input-select-entity-row")
-class HuiInputSelectEntityRow extends LitElement implements EntityRow {
+class HuiInputSelectEntityRow extends LitElement implements LovelaceRow {
   @property() public hass?: HomeAssistant;
 
   @property() private _config?: EntitiesCardEntityConfig;
@@ -50,7 +53,7 @@ class HuiInputSelectEntityRow extends LitElement implements EntityRow {
     return hasConfigOrEntityChanged(this, changedProps);
   }
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     if (!this.hass || !this._config) {
       return html``;
     }
@@ -77,8 +80,19 @@ class HuiInputSelectEntityRow extends LitElement implements EntityRow {
         !DOMAINS_HIDE_MORE_INFO.includes(computeDomain(this._config.entity)));
 
     return html`
+      ${stateObj.state === UNAVAILABLE
+        ? html`
+            <hui-unavailable
+              .text=${this.hass.localize("state.default.unavailable")}
+              @click=${this._showMoreInfo}
+            ></hui-unavailable>
+          `
+        : ""}
       <state-badge
         .stateObj=${stateObj}
+        .stateColor=${this._config.state_color}
+        .overrideIcon=${this._config.icon}
+        .overrideImage=${this._config.image}
         class=${classMap({
           pointer,
         })}
@@ -87,7 +101,7 @@ class HuiInputSelectEntityRow extends LitElement implements EntityRow {
           hasHold: hasAction(this._config!.hold_action),
           hasDoubleClick: hasAction(this._config!.double_tap_action),
         })}
-        tabindex="0"
+        tabindex=${ifDefined(pointer ? "0" : undefined)}
       ></state-badge>
       <ha-paper-dropdown-menu
         .label=${this._config.name || computeStateName(stateObj)}
@@ -96,11 +110,13 @@ class HuiInputSelectEntityRow extends LitElement implements EntityRow {
         @click=${stopPropagation}
       >
         <paper-listbox slot="dropdown-content">
-          ${stateObj.attributes.options.map(
-            (option) => html`
-              <paper-item>${option}</paper-item>
-            `
-          )}
+          ${stateObj.attributes.options
+            ? stateObj.attributes.options.map(
+                (option) => html`
+                  <paper-item>${option}</paper-item>
+                `
+              )
+            : ""}
         </paper-listbox>
       </ha-paper-dropdown-menu>
     `;
@@ -122,13 +138,19 @@ class HuiInputSelectEntityRow extends LitElement implements EntityRow {
     }
 
     // Update selected after rendering the items or else it won't work in Firefox
-    this.shadowRoot!.querySelector(
-      "paper-listbox"
-    )!.selected = stateObj.attributes.options.indexOf(stateObj.state);
+    if (stateObj.attributes.options) {
+      this.shadowRoot!.querySelector(
+        "paper-listbox"
+      )!.selected = stateObj.attributes.options.indexOf(stateObj.state);
+    }
   }
 
   private _handleAction(ev: ActionHandlerEvent) {
     handleAction(this, this.hass!, this._config!, ev.detail.action!);
+  }
+
+  private _showMoreInfo() {
+    fireEvent(this, "hass-more-info", { entityId: this._config!.entity });
   }
 
   static get styles(): CSSResult {
@@ -141,12 +163,19 @@ class HuiInputSelectEntityRow extends LitElement implements EntityRow {
         margin-left: 16px;
         flex: 1;
       }
-
       paper-item {
         cursor: pointer;
         min-width: 200px;
       }
       .pointer {
+        cursor: pointer;
+      }
+      state-badge:focus {
+        outline: none;
+        background: var(--divider-color);
+        border-radius: 100%;
+      }
+      hui-unavailable {
         cursor: pointer;
       }
     `;

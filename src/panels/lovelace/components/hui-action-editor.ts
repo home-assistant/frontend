@@ -62,7 +62,7 @@ export class HuiActionEditor extends LitElement {
     return config.service || "";
   }
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     if (!this.hass || !this.actions) {
       return html``;
     }
@@ -106,7 +106,7 @@ export class HuiActionEditor extends LitElement {
       ${this.config && this.config.action === "call-service"
         ? html`
             <ha-service-picker
-              .hass="${this.hass}"
+              .hass=${this.hass}
               .value="${this._service}"
               .configValue="${"service"}"
               @value-changed="${this._valueChanged}"

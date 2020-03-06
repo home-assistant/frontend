@@ -1,9 +1,10 @@
-import { HomeAssistant } from "../../types";
+import { HomeAssistant, Constructor } from "../../types";
 import {
   LovelaceCardConfig,
   LovelaceConfig,
   LovelaceBadgeConfig,
 } from "../../data/lovelace";
+import { LovelaceHeaderFooterConfig } from "./header-footer/types";
 
 declare global {
   // tslint:disable-next-line
@@ -21,6 +22,7 @@ export interface Lovelace {
   enableFullEditMode: () => void;
   setEditMode: (editMode: boolean) => void;
   saveConfig: (newConfig: LovelaceConfig) => Promise<void>;
+  deleteConfig: () => Promise<void>;
 }
 
 export interface LovelaceBadge extends HTMLElement {
@@ -35,7 +37,23 @@ export interface LovelaceCard extends HTMLElement {
   setConfig(config: LovelaceCardConfig): void;
 }
 
+export interface LovelaceCardConstructor extends Constructor<LovelaceCard> {
+  getStubConfig?: (
+    hass: HomeAssistant,
+    lovelaceConfig: LovelaceConfig,
+    entities?: string[],
+    entitiesFill?: string[]
+  ) => LovelaceCardConfig;
+  getConfigElement?: () => LovelaceCardEditor;
+}
+
+export interface LovelaceHeaderFooter extends HTMLElement {
+  hass?: HomeAssistant;
+  setConfig(config: LovelaceHeaderFooterConfig): void;
+}
+
 export interface LovelaceCardEditor extends HTMLElement {
   hass?: HomeAssistant;
+  lovelace?: LovelaceConfig;
   setConfig(config: LovelaceCardConfig): void;
 }

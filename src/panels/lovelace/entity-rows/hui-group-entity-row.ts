@@ -14,11 +14,11 @@ import "../components/hui-warning";
 import { computeStateDisplay } from "../../../common/entity/compute_state_display";
 import { DOMAINS_TOGGLE } from "../../../common/const";
 import { HomeAssistant } from "../../../types";
-import { EntityRow, EntityConfig } from "./types";
+import { LovelaceRow, EntityConfig } from "./types";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
 
 @customElement("hui-group-entity-row")
-class HuiGroupEntityRow extends LitElement implements EntityRow {
+class HuiGroupEntityRow extends LitElement implements LovelaceRow {
   @property() public hass?: HomeAssistant;
 
   @property() private _config?: EntityConfig;
@@ -34,7 +34,7 @@ class HuiGroupEntityRow extends LitElement implements EntityRow {
     return hasConfigOrEntityChanged(this, changedProps);
   }
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     if (!this._config || !this.hass) {
       return html``;
     }
@@ -54,16 +54,16 @@ class HuiGroupEntityRow extends LitElement implements EntityRow {
     }
 
     return html`
-      <hui-generic-entity-row .hass="${this.hass}" .config="${this._config}">
+      <hui-generic-entity-row .hass=${this.hass} .config=${this._config}>
         ${this._computeCanToggle(stateObj.attributes.entity_id)
           ? html`
               <ha-entity-toggle
-                .hass="${this.hass}"
-                .stateObj="${stateObj}"
+                .hass=${this.hass}
+                .stateObj=${stateObj}
               ></ha-entity-toggle>
             `
           : html`
-              <div>
+              <div class="text-content">
                 ${computeStateDisplay(
                   this.hass!.localize,
                   stateObj,

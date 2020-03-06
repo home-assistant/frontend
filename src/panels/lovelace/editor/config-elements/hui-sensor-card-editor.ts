@@ -77,7 +77,7 @@ export class HuiSensorCardEditor extends LitElement
     return this._config!.hours_to_show || "24";
   }
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     if (!this.hass) {
       return html``;
     }
@@ -93,7 +93,7 @@ export class HuiSensorCardEditor extends LitElement
           )} (${this.hass.localize(
             "ui.panel.lovelace.editor.card.config.required"
           )})"
-          .hass="${this.hass}"
+          .hass=${this.hass}
           .value="${this._entity}"
           .configValue=${"entity"}
           include-domains='["sensor"]'
@@ -167,7 +167,7 @@ export class HuiSensorCardEditor extends LitElement
         </div>
         <div class="side-by-side">
           <hui-theme-select-editor
-            .hass="${this.hass}"
+            .hass=${this.hass}
             .value="${this._theme}"
             .configValue="${"theme"}"
             @theme-changed="${this._valueChanged}"

@@ -50,7 +50,7 @@ class HuiTimerEntityRow extends LitElement {
     }
   }
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     if (!this._config || !this.hass) {
       return html``;
     }
@@ -70,8 +70,8 @@ class HuiTimerEntityRow extends LitElement {
     }
 
     return html`
-      <hui-generic-entity-row .hass="${this.hass}" .config="${this._config}">
-        <div>${this._computeDisplay(stateObj)}</div>
+      <hui-generic-entity-row .hass=${this.hass} .config=${this._config}>
+        <div class="text-content">${this._computeDisplay(stateObj)}</div>
       </hui-generic-entity-row>
     `;
   }

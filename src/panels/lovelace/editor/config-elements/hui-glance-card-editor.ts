@@ -79,7 +79,7 @@ export class HuiGlanceCardEditor extends LitElement
     return this._config!.show_state || true;
   }
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     if (!this.hass) {
       return html``;
     }
@@ -99,7 +99,7 @@ export class HuiGlanceCardEditor extends LitElement
         ></paper-input>
         <div class="side-by-side">
           <hui-theme-select-editor
-            .hass="${this.hass}"
+            .hass=${this.hass}
             .value="${this._theme}"
             .configValue="${"theme"}"
             @theme-changed="${this._valueChanged}"
@@ -118,7 +118,7 @@ export class HuiGlanceCardEditor extends LitElement
         </div>
         <div class="side-by-side">
           <ha-switch
-            ?checked="${this._show_name !== false}"
+            .checked=${this._config!.show_name !== false}
             .configValue="${"show_name"}"
             @change="${this._valueChanged}"
             >${this.hass.localize(
@@ -126,7 +126,7 @@ export class HuiGlanceCardEditor extends LitElement
             )}</ha-switch
           >
           <ha-switch
-            ?checked="${this._show_icon !== false}"
+            .checked=${this._config!.show_icon !== false}
             .configValue="${"show_icon"}"
             @change="${this._valueChanged}"
             >${this.hass.localize(
@@ -134,7 +134,7 @@ export class HuiGlanceCardEditor extends LitElement
             )}</ha-switch
           >
           <ha-switch
-            ?checked="${this._show_state !== false}"
+            .checked=${this._config!.show_state !== false}
             .configValue="${"show_state"}"
             @change="${this._valueChanged}"
             >${this.hass.localize(
@@ -144,7 +144,7 @@ export class HuiGlanceCardEditor extends LitElement
         </div>
       </div>
       <hui-entity-editor
-        .hass="${this.hass}"
+        .hass=${this.hass}
         .entities="${this._configEntities}"
         @entities-changed="${this._valueChanged}"
       ></hui-entity-editor>

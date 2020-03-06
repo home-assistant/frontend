@@ -1,14 +1,27 @@
-import { customElement, CSSResult, css, query } from "lit-element";
+import {
+  customElement,
+  CSSResult,
+  css,
+  query,
+  html,
+  property,
+} from "lit-element";
 import "@material/mwc-switch";
 import { style } from "@material/mwc-switch/mwc-switch-css";
 // tslint:disable-next-line
 import { Switch } from "@material/mwc-switch";
 import { Constructor } from "../types";
+import { forwardHaptic } from "../data/haptics";
+import { ripple } from "@material/mwc-ripple/ripple-directive";
 // tslint:disable-next-line
 const MwcSwitch = customElements.get("mwc-switch") as Constructor<Switch>;
 
 @customElement("ha-switch")
 export class HaSwitch extends MwcSwitch {
+  // Generate a haptic vibration.
+  // Only set to true if the new value of the switch is applied right away when toggling.
+  // Do not add haptic when a user is required to press save.
+  @property({ type: Boolean }) public haptic = false;
   @query("slot") private _slot!: HTMLSlotElement;
 
   protected firstUpdated() {
@@ -21,6 +34,36 @@ export class HaSwitch extends MwcSwitch {
       "slotted",
       Boolean(this._slot.assignedNodes().length)
     );
+    this.addEventListener("change", () => {
+      if (this.haptic) {
+        forwardHaptic("light");
+      }
+    });
+  }
+
+  protected render() {
+    return html`
+      <div class="mdc-switch">
+        <div class="mdc-switch__track"></div>
+        <div
+          class="mdc-switch__thumb-underlay"
+          .ripple="${ripple({
+            interactionNode: this,
+          })}"
+        >
+          <div class="mdc-switch__thumb">
+            <input
+              type="checkbox"
+              id="basic-switch"
+              class="mdc-switch__native-control"
+              role="switch"
+              @change="${this._haChangeHandler}"
+            />
+          </div>
+        </div>
+      </div>
+      <label for="basic-switch"><slot></slot></label>
+    `;
   }
 
   protected static get styles(): CSSResult[] {
@@ -53,6 +96,12 @@ export class HaSwitch extends MwcSwitch {
         }
       `,
     ];
+  }
+
+  private _haChangeHandler(e: Event) {
+    this.mdcFoundation.handleChange(e);
+    // catch "click" event and sync properties
+    this.checked = this.formElement.checked;
   }
 }
 

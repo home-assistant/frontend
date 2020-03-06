@@ -14,16 +14,16 @@ import "../../../components/entity/ha-entity-toggle";
 import "../components/hui-warning";
 
 import { HomeAssistant } from "../../../types";
-import { EntityRow, EntityConfig } from "./types";
+import { LovelaceRow, ActionRowConfig } from "./types";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
 
 @customElement("hui-script-entity-row")
-class HuiScriptEntityRow extends LitElement implements EntityRow {
+class HuiScriptEntityRow extends LitElement implements LovelaceRow {
   public hass?: HomeAssistant;
 
-  @property() private _config?: EntityConfig;
+  @property() private _config?: ActionRowConfig;
 
-  public setConfig(config: EntityConfig): void {
+  public setConfig(config: ActionRowConfig): void {
     if (!config) {
       throw new Error("Configuration error");
     }
@@ -34,7 +34,7 @@ class HuiScriptEntityRow extends LitElement implements EntityRow {
     return hasConfigOrEntityChanged(this, changedProps);
   }
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     if (!this._config || !this.hass) {
       return html``;
     }
@@ -54,17 +54,18 @@ class HuiScriptEntityRow extends LitElement implements EntityRow {
     }
 
     return html`
-      <hui-generic-entity-row .hass="${this.hass}" .config="${this._config}">
+      <hui-generic-entity-row .hass=${this.hass} .config=${this._config}>
         ${stateObj.attributes.can_cancel
           ? html`
               <ha-entity-toggle
-                .hass="${this.hass}"
-                .stateObj="${stateObj}"
+                .hass=${this.hass}
+                .stateObj=${stateObj}
               ></ha-entity-toggle>
             `
           : html`
-              <mwc-button @click="${this._callService}">
-                ${this.hass!.localize("ui.card.script.execute")}
+              <mwc-button @click=${this._callService} class="text-content">
+                ${this._config.action_name ||
+                  this.hass!.localize("ui.card.script.execute")}
               </mwc-button>
             `}
       </hui-generic-entity-row>

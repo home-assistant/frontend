@@ -50,7 +50,7 @@ class ZHAAddDevicesPage extends LitElement {
     this._formattedEvents = "";
   }
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     return html`
       <hass-subpage
         header="${this.hass!.localize(
@@ -84,7 +84,7 @@ class ZHAAddDevicesPage extends LitElement {
                 ${this._showHelp
                   ? html`
                       <ha-service-description
-                        .hass="${this.hass}"
+                        .hass=${this.hass}
                         domain="zha"
                         service="permit"
                         class="help-text"
@@ -120,7 +120,7 @@ class ZHAAddDevicesPage extends LitElement {
                       .narrow=${!this.isWide}
                       .showHelp=${this._showHelp}
                       .showActions=${!this._active}
-                      isJoinPage
+                      .showEntityDetail=${false}
                     ></zha-device-card>
                   `
                 )}

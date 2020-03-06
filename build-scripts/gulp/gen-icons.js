@@ -2,6 +2,7 @@ const gulp = require("gulp");
 const path = require("path");
 const fs = require("fs");
 const paths = require("../paths");
+const { mapFiles } = require("../util");
 
 const ICON_PACKAGE_PATH = path.resolve(
   __dirname,
@@ -55,20 +56,6 @@ function generateIconset(iconsetName, iconNames) {
     })
     .join("");
   return `<ha-iconset-svg name="${iconsetName}" size="24"><svg><defs>${iconDefs}</defs></svg></ha-iconset-svg>`;
-}
-
-// Helper function to map recursively over files in a folder and it's subfolders
-function mapFiles(startPath, filter, mapFunc) {
-  const files = fs.readdirSync(startPath);
-  for (let i = 0; i < files.length; i++) {
-    const filename = path.join(startPath, files[i]);
-    const stat = fs.lstatSync(filename);
-    if (stat.isDirectory()) {
-      mapFiles(filename, filter, mapFunc);
-    } else if (filename.indexOf(filter) >= 0) {
-      mapFunc(filename);
-    }
-  }
 }
 
 // Find all icons used by the project.

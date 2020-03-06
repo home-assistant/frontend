@@ -23,12 +23,11 @@ import scrollToTarget from "../../src/common/dom/scroll-to-target";
 import { haStyle } from "../../src/resources/styles";
 import { HomeAssistant, Route } from "../../src/types";
 import { navigate } from "../../src/common/navigate";
+import { HassioHostInfo, HassioHassOSInfo } from "../../src/data/hassio/host";
 import {
   HassioSupervisorInfo,
-  HassioHostInfo,
   HassioHomeAssistantInfo,
-  HassioHassOSInfo,
-} from "../../src/data/hassio";
+} from "../../src/data/hassio/supervisor";
 
 const HAS_REFRESH_BUTTON = ["store", "snapshots"];
 
@@ -42,7 +41,7 @@ class HassioPagesWithTabs extends LitElement {
   @property() public hassInfo!: HassioHomeAssistantInfo;
   @property() public hassOsInfo!: HassioHassOSInfo;
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     const page = this._page;
     return html`
       <app-header-layout has-scrolling-region>
@@ -53,7 +52,7 @@ class HassioPagesWithTabs extends LitElement {
               .narrow=${this.narrow}
               hassio
             ></ha-menu-button>
-            <div main-title>Hass.io</div>
+            <div main-title>Supervisor</div>
             ${HAS_REFRESH_BUTTON.includes(page)
               ? html`
                   <paper-icon-button
@@ -124,7 +123,7 @@ class HassioPagesWithTabs extends LitElement {
         }
         paper-tabs {
           margin-left: 12px;
-          --paper-tabs-selection-bar-color: #fff;
+          --paper-tabs-selection-bar-color: var(--text-primary-color, #fff);
           text-transform: uppercase;
         }
       `,

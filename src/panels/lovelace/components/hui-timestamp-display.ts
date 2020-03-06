@@ -8,15 +8,15 @@ import {
 } from "lit-element";
 
 import { HomeAssistant } from "../../../types";
-import format_date from "../../../common/datetime/format_date";
-import format_date_time from "../../../common/datetime/format_date_time";
-import format_time from "../../../common/datetime/format_time";
+import { formatDate } from "../../../common/datetime/format_date";
+import { formatDateTime } from "../../../common/datetime/format_date_time";
+import { formatTime } from "../../../common/datetime/format_time";
 import relativeTime from "../../../common/datetime/relative_time";
 
 const FORMATS: { [key: string]: (ts: Date, lang: string) => string } = {
-  date: format_date,
-  datetime: format_date_time,
-  time: format_time,
+  date: formatDate,
+  datetime: formatDateTime,
+  time: formatTime,
 };
 const INTERVAL_FORMAT = ["relative", "total"];
 
@@ -51,7 +51,7 @@ class HuiTimestampDisplay extends LitElement {
     this._clearInterval();
   }
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     if (!this.ts || !this.hass) {
       return html``;
     }

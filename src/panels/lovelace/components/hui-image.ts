@@ -70,7 +70,7 @@ export class HuiImage extends LitElement {
     this._stopUpdateCameraInterval();
   }
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     const ratio = this.aspectRatio ? parseAspectRatio(this.aspectRatio) : null;
     const stateObj =
       this.hass && this.entity ? this.hass.states[this.entity] : undefined;
@@ -133,7 +133,7 @@ export class HuiImage extends LitElement {
         ${this.cameraImage && this.cameraView === "live"
           ? html`
               <ha-camera-stream
-                .hass="${this.hass}"
+                .hass=${this.hass}
                 .stateObj="${cameraObj}"
               ></ha-camera-stream>
             `

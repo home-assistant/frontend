@@ -32,6 +32,7 @@ import { classMap } from "lit-html/directives/class-map";
 // tslint:disable-next-line: no-duplicate-imports
 import { PaperIconItemElement } from "@polymer/paper-item/paper-icon-item";
 import { computeRTL } from "../common/util/compute_rtl";
+import { compare } from "../common/string/compare";
 
 const SHOW_AFTER_SPACER = ["config", "developer-tools", "hassio"];
 
@@ -46,7 +47,21 @@ const SORT_VALUE_URL_PATHS = {
   config: 11,
 };
 
-const panelSorter = (a, b) => {
+const panelSorter = (a: PanelInfo, b: PanelInfo) => {
+  // Put all the Lovelace at the top.
+  const aLovelace = a.component_name === "lovelace";
+  const bLovelace = b.component_name === "lovelace";
+
+  if (aLovelace && bLovelace) {
+    return compare(a.title!, b.title!);
+  }
+  if (aLovelace && !bLovelace) {
+    return -1;
+  }
+  if (bLovelace) {
+    return 1;
+  }
+
   const aBuiltIn = a.url_path in SORT_VALUE_URL_PATHS;
   const bBuiltIn = b.url_path in SORT_VALUE_URL_PATHS;
 
@@ -60,14 +75,9 @@ const panelSorter = (a, b) => {
     return 1;
   }
   // both not built in, sort by title
-  if (a.title! < b.title!) {
-    return -1;
-  }
-  if (a.title! > b.title!) {
-    return 1;
-  }
-  return 0;
+  return compare(a.title!, b.title!);
 };
+const DEFAULT_PAGE = localStorage.defaultPage || DEFAULT_PANEL;
 
 const computePanels = (hass: HomeAssistant): [PanelInfo[], PanelInfo[]] => {
   const panels = hass.panels;
@@ -79,7 +89,7 @@ const computePanels = (hass: HomeAssistant): [PanelInfo[], PanelInfo[]] => {
   const afterSpacer: PanelInfo[] = [];
 
   Object.values(panels).forEach((panel) => {
-    if (!panel.title) {
+    if (!panel.title || panel.url_path === DEFAULT_PAGE) {
       return;
     }
     (SHOW_AFTER_SPACER.includes(panel.url_path)
@@ -103,8 +113,7 @@ class HaSidebar extends LitElement {
 
   @property({ type: Boolean }) public alwaysExpand = false;
   @property({ type: Boolean, reflect: true }) public expanded = false;
-  @property() public _defaultPage?: string =
-    localStorage.defaultPage || DEFAULT_PANEL;
+
   @property() private _externalConfig?: ExternalConfig;
   @property() private _notifications?: PersistentNotification[];
   // property used only in css
@@ -133,6 +142,9 @@ class HaSidebar extends LitElement {
       }
     }
 
+    const defaultPanel =
+      this.hass.panels[DEFAULT_PAGE] || this.hass.panels[DEFAULT_PANEL];
+
     return html`
       <div class="menu">
         ${!this.narrow
@@ -157,9 +169,9 @@ class HaSidebar extends LitElement {
         @keydown=${this._listboxKeydown}
       >
         ${this._renderPanel(
-          this._defaultPage,
-          "hass:apps",
-          hass.localize("panel.states")
+          defaultPanel.url_path,
+          defaultPanel.icon || "hass:view-dashboard",
+          defaultPanel.title || hass.localize("panel.states")
         )}
         ${beforeSpacer.map((panel) =>
           this._renderPanel(
@@ -187,11 +199,10 @@ class HaSidebar extends LitElement {
                 href="#external-app-configuration"
                 tabindex="-1"
                 @click=${this._handleExternalAppConfiguration}
+                @mouseenter=${this._itemMouseEnter}
+                @mouseleave=${this._itemMouseLeave}
               >
-                <paper-icon-item
-                  @mouseenter=${this._itemMouseEnter}
-                  @mouseleave=${this._itemMouseLeave}
-                >
+                <paper-icon-item>
                   <ha-icon
                     slot="item-icon"
                     icon="hass:cellphone-settings-variant"
@@ -207,30 +218,34 @@ class HaSidebar extends LitElement {
 
       <div class="divider"></div>
 
-      <paper-icon-item
-        class="notifications"
-        aria-role="option"
-        @click=${this._handleShowNotificationDrawer}
+      <div
+        class="notifications-container"
         @mouseenter=${this._itemMouseEnter}
         @mouseleave=${this._itemMouseLeave}
       >
-        <ha-icon slot="item-icon" icon="hass:bell"></ha-icon>
-        ${!this.expanded && notificationCount > 0
-          ? html`
-              <span class="notification-badge" slot="item-icon">
-                ${notificationCount}
-              </span>
-            `
-          : ""}
-        <span class="item-text">
-          ${hass.localize("ui.notification_drawer.title")}
-        </span>
-        ${this.expanded && notificationCount > 0
-          ? html`
-              <span class="notification-badge">${notificationCount}</span>
-            `
-          : ""}
-      </paper-icon-item>
+        <paper-icon-item
+          class="notifications"
+          aria-role="option"
+          @click=${this._handleShowNotificationDrawer}
+        >
+          <ha-icon slot="item-icon" icon="hass:bell"></ha-icon>
+          ${!this.expanded && notificationCount > 0
+            ? html`
+                <span class="notification-badge" slot="item-icon">
+                  ${notificationCount}
+                </span>
+              `
+            : ""}
+          <span class="item-text">
+            ${hass.localize("ui.notification_drawer.title")}
+          </span>
+          ${this.expanded && notificationCount > 0
+            ? html`
+                <span class="notification-badge">${notificationCount}</span>
+              `
+            : ""}
+        </paper-icon-item>
+      </div>
 
       <a
         class=${classMap({
@@ -243,11 +258,10 @@ class HaSidebar extends LitElement {
         tabindex="-1"
         aria-role="option"
         aria-label=${hass.localize("panel.profile")}
+        @mouseenter=${this._itemMouseEnter}
+        @mouseleave=${this._itemMouseLeave}
       >
-        <paper-icon-item
-          @mouseenter=${this._itemMouseEnter}
-          @mouseleave=${this._itemMouseLeave}
-        >
+        <paper-icon-item>
           <ha-user-badge slot="item-icon" .user=${hass.user}></ha-user-badge>
 
           <span class="item-text">
@@ -389,14 +403,14 @@ class HaSidebar extends LitElement {
     }
     const tooltip = this._tooltip;
     const listbox = this.shadowRoot!.querySelector("paper-listbox")!;
-    let top = item.offsetTop + 7;
+    let top = item.offsetTop + 11;
     if (listbox.contains(item)) {
       top -= listbox.scrollTop;
     }
     tooltip.innerHTML = item.querySelector(".item-text")!.innerHTML;
     tooltip.style.display = "block";
     tooltip.style.top = `${top}px`;
-    tooltip.style.left = `${item.offsetLeft + item.clientWidth + 12}px`;
+    tooltip.style.left = `${item.offsetLeft + item.clientWidth + 4}px`;
   }
 
   private _hideTooltip() {
@@ -431,11 +445,10 @@ class HaSidebar extends LitElement {
         href="${`/${urlPath}`}"
         data-panel="${urlPath}"
         tabindex="-1"
+        @mouseenter=${this._itemMouseEnter}
+        @mouseleave=${this._itemMouseLeave}
       >
-        <paper-icon-item
-          @mouseenter=${this._itemMouseEnter}
-          @mouseleave=${this._itemMouseLeave}
-        >
+        <paper-icon-item>
           <ha-icon slot="item-icon" .icon="${icon}"></ha-icon>
           <span class="item-text">${title}</span>
         </paper-icon-item>
@@ -520,10 +533,13 @@ class HaSidebar extends LitElement {
       }
 
       a {
+        text-decoration: none;
         color: var(--sidebar-text-color);
         font-weight: 500;
         font-size: 14px;
-        text-decoration: none;
+        position: relative;
+        display: block;
+        outline: 0;
       }
 
       paper-icon-item {
@@ -546,7 +562,8 @@ class HaSidebar extends LitElement {
         color: var(--sidebar-icon-color);
       }
 
-      .iron-selected paper-icon-item:before {
+      .iron-selected paper-icon-item::before,
+      a:not(.iron-selected):focus::before {
         border-radius: 4px;
         position: absolute;
         top: 0;
@@ -555,10 +572,21 @@ class HaSidebar extends LitElement {
         left: 0;
         pointer-events: none;
         content: "";
-        background-color: var(--sidebar-selected-icon-color);
-        opacity: 0.12;
         transition: opacity 15ms linear;
         will-change: opacity;
+      }
+      .iron-selected paper-icon-item::before {
+        background-color: var(--sidebar-selected-icon-color);
+        opacity: 0.12;
+      }
+      a:not(.iron-selected):focus::before {
+        background-color: currentColor;
+        opacity: var(--dark-divider-opacity);
+        margin: 4px 8px;
+      }
+      .iron-selected paper-icon-item:focus::before,
+      .iron-selected:focus paper-icon-item::before {
+        opacity: 0.2;
       }
 
       .iron-selected paper-icon-item[pressed]:before {
@@ -581,6 +609,7 @@ class HaSidebar extends LitElement {
 
       paper-icon-item .item-text {
         display: none;
+        max-width: calc(100% - 56px);
       }
       :host([expanded]) paper-icon-item .item-text {
         display: block;
@@ -596,7 +625,9 @@ class HaSidebar extends LitElement {
         height: 1px;
         background-color: var(--divider-color);
       }
-
+      .notifications-container {
+        display: flex;
+      }
       .notifications {
         cursor: pointer;
       }

@@ -126,7 +126,7 @@
             "triggered": "Sbarduno"
         },
         "automation": {
-            "off": "i ffwrdd",
+            "off": "I ffwrdd",
             "on": "Ar"
         },
         "binary_sensor": {
@@ -249,7 +249,7 @@
             "stopped": "Stopio"
         },
         "default": {
-            "off": "i ffwrdd",
+            "off": "I ffwrdd",
             "on": "Ar",
             "unavailable": "Ddim ar gael",
             "unknown": "Anhysbys"
@@ -426,6 +426,9 @@
             "save": "Arbed"
         },
         "components": {
+            "device-picker": {
+                "device": "Dyfais"
+            },
             "entity": {
                 "entity-picker": {
                     "entity": "Endid"
@@ -437,9 +440,11 @@
         },
         "dialogs": {
             "more_info_control": {
+                "dismiss": "Gwrthod deialog",
                 "script": {
                     "last_action": "Gweithrediad diwethaf"
                 },
+                "settings": "Gosodiadau endid",
                 "sun": {
                     "elevation": "Uchder",
                     "rising": "Cynyddu",
@@ -450,6 +455,7 @@
                 }
             },
             "more_info_settings": {
+                "back": "Mynd yn ôl",
                 "name": "Gwrthwneud Enw"
             },
             "voice_command": {
@@ -465,9 +471,16 @@
             "password": "Cyfrinair",
             "remember": "Cofiwch"
         },
+        "notification_drawer": {
+            "close": "Cau"
+        },
         "panel": {
             "config": {
-                "area_registry": {
+                "advanced_mode": {
+                    "hint_enable": "Opsiynau ffurfweddu ar goll? Galluogi modd uwch ymlaen",
+                    "link_profile_page": "eich tudalen proffil"
+                },
+                "areas": {
                     "caption": "Gofrestrfa ardal",
                     "create_area": "CREU ARDAL",
                     "description": "Trosolwg o bob ardal yn eich cartref.",
@@ -499,6 +512,7 @@
                             "header": "Camau gweithredu",
                             "introduction": "Y camau gweithredu yw'r hyn mae Home Assistant yn gwneud pan mae'r awtomeiddio yn cael ei sbarduno\n\n[Dysgwch mwy am weithred.](https://home-assistant.io/docs/automation/action/)",
                             "learn_more": "Dysgu mwy am gamau gweithredu",
+                            "name": "Gweithredu",
                             "type_select": "Math weithrediad",
                             "type": {
                                 "condition": {
@@ -534,6 +548,7 @@
                             "header": "Amodau",
                             "introduction": "Mae'r amodau'n rhan ddewisol o reol awtomeiddio, a gellir eu defnyddio i atal camau rhag digwydd pan fyddant yn cael eu sbarduno. Mae'r amodau'n edrych yn debyg iawn i sbardunau ond maent yn wahanol iawn. Bydd sbardun yn edrych ar ddigwyddiadau sy'n digwydd yn y system tra bod amod yn edrych ar sut mae'r system yn edrych ar hyn o bryd. Gall sbarduno arsylwi bod switsh yn cael ei droi ymlaen. Dim ond os yw switsh ar neu i ffwrdd ar hyn o bryd y gall cyflwr weld. \n\n [Dysgwch fwy am amodau.] (Https://home-assistant.io/docs/scripts/conditions/)",
                             "learn_more": "Dysgu mwy am amodau",
+                            "name": "Cyflwr",
                             "type_select": "Math o gyflwr",
                             "type": {
                                 "numeric_state": {
@@ -573,6 +588,8 @@
                             "unsupported_condition": "Cyflwr heb gymorth: {condition}"
                         },
                         "default_name": "Awtomeiddiad Newydd",
+                        "edit_ui": "Golygu gyda UI",
+                        "edit_yaml": "Golygu fel YAML",
                         "introduction": "Defnyddiwch awtomeiddio i ddod â'ch cartref yn fyw",
                         "load_error_not_editable": "Dim ond awtomiadau yn 'automations. yaml' y gellir golygu.",
                         "load_error_unknown": "Gwall wrth lwytho awtomeiddad ( {err_no} ).",
@@ -585,6 +602,7 @@
                             "header": "Sbardunau",
                             "introduction": "Sbarduno yw'r hyn sy'n dechrau proses rheol awtomeiddio.  Mae'n bosib dewis nifer o sbardunau i'run rheol. Unwaith mae sbardun yn cychwyn, bydd Home Assistant yn dilysu'r amodau, os o gwbl, a galw'r gweithred. \n\n[dysgwch mwy am sbardunau.] (https://home-assistant.io/docs/automation/trigger/)",
                             "learn_more": "Dysgu mwy am sbardunau",
+                            "name": "Sbardun",
                             "type_select": "Math sbardun",
                             "type": {
                                 "event": {
@@ -731,12 +749,31 @@
                         "introduction": "Addasu nodweddion yr endid. Bydd ychwanegu/golygu osodiadau bersonol i rym ar unwaith. Bydd addasiadau sydd wedi tynnu yn dod i rym pan fydd yr endid yn cael ei ddiweddaru."
                     }
                 },
-                "entity_registry": {
+                "devices": {
+                    "area_picker_label": "Ardal",
+                    "automations": "Awtomeiddiadau",
+                    "confirm_rename_entity_ids": "A ydych chi hefyd eisiau ailenwi enwau eich endidau?",
+                    "data_table": {
+                        "area": "Ardal",
+                        "battery": "Batri",
+                        "device": "Dyfais",
+                        "integration": "Integreiddio",
+                        "manufacturer": "Gwneuthurwr",
+                        "model": "Model"
+                    },
+                    "details": "Dyma holl fanylion eich dyfais.",
+                    "device_not_found": "Heb ganfod y ddyfais.",
+                    "info": "Gwybodaeth am ddyfais",
+                    "unknown_error": "Gwall anhysbys",
+                    "unnamed_device": "Dyfais ddienw"
+                },
+                "entities": {
                     "caption": "Gofrestrfa Endid",
                     "description": "Trosolwg o holl endidau hysbys.",
                     "editor": {
                         "default_name": "Ardal Newydd",
                         "delete": "DILEU",
+                        "note": "Nodyn: Efallai fydd hyn ddim yn gweithio eto gyda holl integreiddiadau.",
                         "unavailable": "Endid yma ddim ar gael ar hyn o bryd.",
                         "update": "DIWEDDARIAD"
                     },
@@ -765,15 +802,28 @@
                         "via": "Cysylltiad drwy"
                     },
                     "config_flow": {
+                        "aborted": "Erthylwyd",
+                        "add_area": "Ychwanegu Ardal",
+                        "area_picker_label": "Ardal",
+                        "close": "Cau",
+                        "created_config": "Wedi creu config.php ar gyfer {name}.",
+                        "error_saving_area": "Gwall wrth gadw ardal: {Error}",
                         "external_step": {
                             "description": "Mae'r cam angen ichi ymweld â wefan allanol i'w lenwi.",
                             "open_site": "Gwefan agored"
-                        }
+                        },
+                        "failed_create_area": "Wedi methu creu ardal.",
+                        "finish": "Gorffen",
+                        "name_new_area": "Enw'r ardal newydd?",
+                        "not_all_required_fields": "Nid yw pob maes gofynnol wedi'i lenwi.",
+                        "submit": "Cyflwyno"
                     },
                     "configure": "Ffurfweddu",
                     "configured": "Wedi'i ffurfweddu",
                     "description": "Rheoli dyfeisiau a gwasanaethau cysylltiedig",
+                    "details": "Manylion integreiddio",
                     "discovered": "Darganfuwyd",
+                    "integration_not_found": "Heb ganfod integreiddiad",
                     "new": "Sefydlu integreiddiad newydd",
                     "none": "Dim byd wedi'i ffurfweddu eto."
                 },
@@ -788,11 +838,37 @@
                         "name": "Enw"
                     }
                 },
+                "scene": {
+                    "editor": {
+                        "default_name": "Golygfa Newydd",
+                        "devices": {
+                            "add": "Ychwanegu dyfais",
+                            "delete": "Dileu dyfais",
+                            "header": "Dyfeisiau",
+                            "introduction": "Ychwanegwch y dyfeisiau rydych chi eisiau cynnwys yn eich golygfa. Gosodwch yr holl ddyfeisiau i'r cyflwr rydych eisiau ar gyfer yr olygfa hon."
+                        },
+                        "entities": {
+                            "add": "Ychwanegu endid",
+                            "delete": "Dileu endid",
+                            "device_entities": "Os ydych chi'n ychwanegu endid sy'n perthyn i ddyfais, bydd y ddyfais yn cael ei hychwanegu.",
+                            "header": "Endidau",
+                            "introduction": "Gellir gosod endidau sydd ddim yn berthyn i ddyfeisiau yma.",
+                            "without_device": "Endidau heb ddyfais"
+                        },
+                        "introduction": "Defnyddiwch olygfeydd i ddod â'ch cartref yn fyw.",
+                        "load_error_not_editable": "Dim ond golygfeydd yn scenes.yaml y gellir eu golygu.",
+                        "load_error_unknown": "Gwall wrth lwytho'r olygfa ({err_no}).",
+                        "name": "Enw",
+                        "save": "Arbed",
+                        "unsaved_confirm": "Mae gennych newidiadau heb eu cadw. Ydych chi'n siŵr bod chi eisiau gadael?"
+                    }
+                },
                 "script": {
                     "caption": "Sgript",
                     "description": "Creu a golygu sgriptiau"
                 },
                 "server_control": {
+                    "caption": "Rheoli gweinydd",
                     "section": {
                         "reloading": {
                             "automation": "Ail-lwytho awtomeiddiadau",
@@ -902,6 +978,10 @@
                         "title": "Gwasanaethau"
                     },
                     "states": {
+                        "copied": "Wedi copïo i'r clipfwrdd",
+                        "copy_entity_attribute": "Copïo priodoleddau",
+                        "copy_entity_id": "Copi ID",
+                        "copy_entity_state": "Copïo cyflwr",
                         "title": "Cyflerau"
                     },
                     "templates": {
@@ -914,6 +994,7 @@
                 "showing_entries": "Dangos cofnodion ar gyfer"
             },
             "logbook": {
+                "entries_not_found": "Heb ganfod cofnodion llyfr log.",
                 "period": "Cyfnod",
                 "showing_entries": "Dangos endidau i"
             },
@@ -1054,8 +1135,8 @@
                     "raw_editor": {
                         "confirm_unsaved_changes": "Mae gennych newidiadau heb eu cadw. Ydych chi'n siŵr bod chi eisiau gadael?",
                         "confirm_unsaved_comments": "Mae eich cyfluniad yn cynnwys sylwadau (au), ni fydd y rhain yn cael eu cadw. Ydych chi eisio parhau?",
-                        "error_invalid_config": "Dydy eich cyfluniad ddim yn ddilys: {Error}",
-                        "error_parse_yaml": "Methu gramadegu YAML: {Error}",
+                        "error_invalid_config": "Dydy eich cyfluniad ddim yn ddilys: {error}",
+                        "error_parse_yaml": "Methu gramadegu YAML: {error}",
                         "error_save_yaml": "Methu arbed YAML: {error}",
                         "header": "Golygu ffurfweddu",
                         "save": "Arbed",
@@ -1073,16 +1154,20 @@
                 "menu": {
                     "close": "Cau",
                     "configure_ui": "Ffurfweddu rhyngwyneb defnyddiwr",
+                    "exit_edit_mode": "Gadael modd golygu UI",
                     "help": "Help",
                     "refresh": "Adnewyddu",
                     "unused_entities": "Endidau heb ei ddefnyddio"
                 },
                 "reload_lovelace": "Ail-lwytho Lovelace",
                 "unused_entities": {
+                    "available_entities": "Rhain yw'r endidau sydd gennych ar gael, ond dim ar eich Lovelace UI eto",
                     "domain": "Parth",
                     "entity": "Endid",
                     "entity_id": "ID Endid",
-                    "last_changed": "Newid Diwethaf"
+                    "last_changed": "Newid Diwethaf",
+                    "select_to_add": "Dewiswch yr endidau rydych am eu hychwanegu at gerdyn ac yna cliciwch ar botwm ychwanegu cerdyn.",
+                    "title": "Endidau heb ei ddefnyddio"
                 },
                 "warning": {
                     "entity_non_numeric": "Endid di-rhifol: {entity}",
@@ -1192,8 +1277,6 @@
             "profile": {
                 "advanced_mode": {
                     "description": "Mae Home Assistant yn cuddio nodweddion uwch ac opsiynau yn ddiofyn. Gallwch wneud y nodweddion hyn yn hygyrch trwy ticio'r toggle hwn. Mae hwn yn leoliad penodol i ddefnyddwyr ac nid yw'n effeithio ar ddefnyddwyr eraill sy'n defnyddio Home Assistant.",
-                    "hint_enable": "Opsiynau ffurfweddu ar goll? Galluogi modd uwch ymlaen",
-                    "link_profile_page": "eich tudalen proffil",
                     "title": "Modd Uwch"
                 }
             },

@@ -31,6 +31,7 @@ import {
   EntitiesCardConfig,
   EntitiesCardEntityConfig,
 } from "../../cards/types";
+import { headerFooterConfigStructs } from "../../header-footer/types";
 
 const cardConfigStruct = struct({
   type: "string",
@@ -38,6 +39,8 @@ const cardConfigStruct = struct({
   theme: "string?",
   show_header_toggle: "boolean?",
   entities: [entitiesConfigStruct],
+  header: struct.optional(headerFooterConfigStructs),
+  footer: struct.optional(headerFooterConfigStructs),
 });
 
 @customElement("hui-entities-card-editor")
@@ -63,7 +66,7 @@ export class HuiEntitiesCardEditor extends LitElement
     return this._config!.theme || "Backend-selected";
   }
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     if (!this.hass) {
       return html``;
     }
@@ -82,13 +85,13 @@ export class HuiEntitiesCardEditor extends LitElement
           @value-changed="${this._valueChanged}"
         ></paper-input>
         <hui-theme-select-editor
-          .hass="${this.hass}"
+          .hass=${this.hass}
           .value="${this._theme}"
           .configValue="${"theme"}"
           @theme-changed="${this._valueChanged}"
         ></hui-theme-select-editor>
         <ha-switch
-          ?checked="${this._config!.show_header_toggle !== false}"
+          .checked="${this._config!.show_header_toggle !== false}"
           .configValue="${"show_header_toggle"}"
           @change="${this._valueChanged}"
           >${this.hass.localize(
@@ -97,7 +100,7 @@ export class HuiEntitiesCardEditor extends LitElement
         >
       </div>
       <hui-entity-editor
-        .hass="${this.hass}"
+        .hass=${this.hass}
         .entities="${this._configEntities}"
         @entities-changed="${this._valueChanged}"
       ></hui-entity-editor>

@@ -24,7 +24,7 @@ export class CloudGooglePref extends LitElement {
   @property() public hass?: HomeAssistant;
   @property() public cloudStatus?: CloudStatusLoggedIn;
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     if (!this.cloudStatus) {
       return html``;
     }
@@ -55,6 +55,7 @@ export class CloudGooglePref extends LitElement {
               <a
                 href="https://assistant.google.com/services/a/uid/00000091fd5fb875?hl=en-US"
                 target="_blank"
+                rel="noreferrer"
               >
                 ${this.hass!.localize(
                   "ui.panel.config.cloud.account.google.enable_ha_skill"
@@ -65,6 +66,7 @@ export class CloudGooglePref extends LitElement {
               <a
                 href="https://www.nabucasa.com/config/google_assistant/"
                 target="_blank"
+                rel="noreferrer"
               >
                 ${this.hass!.localize(
                   "ui.panel.config.cloud.account.google.config_documentation"
@@ -118,8 +120,9 @@ export class CloudGooglePref extends LitElement {
         </div>
         <div class="card-actions">
           <ha-call-api-button
-            .hass="${this.hass}"
+            .hass=${this.hass}
             .disabled="${!google_enabled}"
+            @hass-api-called=${this._syncEntitiesCalled}
             path="cloud/google_actions/sync"
           >
             ${this.hass!.localize(
@@ -137,6 +140,16 @@ export class CloudGooglePref extends LitElement {
         </div>
       </ha-card>
     `;
+  }
+
+  private _syncEntitiesCalled(ev: CustomEvent) {
+    if (!ev.detail.success && ev.detail.response.status_code === 404) {
+      alert(
+        this.hass!.localize(
+          "ui.panel.config.cloud.account.google.sync_entities_404_message"
+        )
+      );
+    }
   }
 
   private async _enableToggleChanged(ev) {

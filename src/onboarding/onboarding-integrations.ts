@@ -51,7 +51,7 @@ class OnboardingIntegrations extends LitElement {
     }
   }
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     if (!this._entries || !this._discovered) {
       return html``;
     }

@@ -23,7 +23,7 @@ export class HuiPersistentNotificationItem extends LitElement {
 
   @property() public notification?: PersistentNotification;
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     if (!this.hass || !this.notification) {
       return html``;
     }
@@ -39,7 +39,7 @@ export class HuiPersistentNotificationItem extends LitElement {
         <div class="time">
           <span>
             <ha-relative-time
-              .hass="${this.hass}"
+              .hass=${this.hass}
               .datetime="${this.notification.created_at}"
             ></ha-relative-time>
             <paper-tooltip

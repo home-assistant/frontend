@@ -23,6 +23,7 @@ import { fireEvent } from "../../common/dom/fire_event";
 import {
   DeviceRegistryEntry,
   subscribeDeviceRegistry,
+  DeviceEntityLookup,
 } from "../../data/device_registry";
 import { compare } from "../../common/string/compare";
 import { PolymerChangedEvent } from "../../polymer-types";
@@ -30,7 +31,6 @@ import {
   AreaRegistryEntry,
   subscribeAreaRegistry,
 } from "../../data/area_registry";
-import { DeviceEntityLookup } from "../../panels/config/devices/ha-devices-data-table";
 import {
   EntityRegistryEntry,
   subscribeEntityRegistry,
@@ -239,6 +239,7 @@ export class HaAreaDevicesPicker extends SubscribeMixin(LitElement) {
   }
 
   protected updated(changedProps: PropertyValues) {
+    super.updated(changedProps);
     if (changedProps.has("area") && this.area) {
       this._areaPicker = true;
       this.value = this.area;
@@ -254,9 +255,9 @@ export class HaAreaDevicesPicker extends SubscribeMixin(LitElement) {
     }
   }
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     if (!this._devices || !this._areas || !this._entities) {
-      return;
+      return html``;
     }
     const areas = this._getDevices(
       this._devices,

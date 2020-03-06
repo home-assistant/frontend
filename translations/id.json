@@ -19,12 +19,12 @@
         "device_tracker": "Pelacak perangkat",
         "fan": "Kipas angin",
         "group": "Grup",
-        "history_graph": "Riwayat Grafik",
+        "history_graph": "Riwayat grafik",
         "image_processing": "Pengolahan gambar",
         "input_boolean": "Input boolean",
         "input_datetime": "Input tanggal waktu",
-        "input_number": "Masukkan angka",
-        "input_select": "Input Pilihan",
+        "input_number": "Input bilangan",
+        "input_select": "Input pilihan",
         "input_text": "Input teks",
         "light": "Lampu",
         "lock": "Kunci",
@@ -34,32 +34,43 @@
         "person": "Orang",
         "plant": "Tanaman",
         "proximity": "Kedekatan",
-        "remote": "Remot",
-        "scene": "Scene",
+        "remote": "Daring",
+        "scene": "Adegan",
         "script": "Skrip",
         "sensor": "Sensor",
         "sun": "Matahari",
         "switch": "Sakelar",
-        "updater": "Updater",
+        "updater": "Pembaru",
         "vacuum": "Vakum",
         "weblink": "Tautan web",
         "zwave": "Z-Wave"
     },
     "groups": {
         "system-admin": "Administrator",
+        "system-read-only": "Pengguna Hanya-Baca",
         "system-users": "Pengguna"
     },
     "panel": {
         "calendar": "Kalender",
         "config": "Konfigurasi",
         "dev-info": "Info",
-        "developer_tools": "Alat pengembang",
+        "developer_tools": "Alat Pengembang",
         "history": "Riwayat",
         "logbook": "Catatan Log",
         "mailbox": "Kotak pesan",
         "map": "Peta",
+        "profile": "Profil",
         "shopping_list": "Daftar belanja",
         "states": "Ikhtisar"
+    },
+    "state_attributes": {
+        "climate": {
+            "fan_mode": {
+                "auto": "Otomatis",
+                "off": "Mati",
+                "on": "Nyala"
+            }
+        }
     },
     "state_badge": {
         "alarm_control_panel": {
@@ -75,6 +86,7 @@
             "triggered": "Picu"
         },
         "default": {
+            "entity_not_found": "Entiti tidak ditemukan",
             "unavailable": "Tak Ada",
             "unknown": "Tak Tahu"
         },
@@ -83,7 +95,7 @@
             "not_home": "Keluar"
         },
         "person": {
-            "home": "Rumah",
+            "home": "Di rumah",
             "not_home": "Keluar"
         }
     },
@@ -162,7 +174,7 @@
                 "on": "Rumah"
             },
             "problem": {
-                "off": "OK",
+                "off": "Oke",
                 "on": "Masalah"
             },
             "safety": {
@@ -204,6 +216,7 @@
             "fan_only": "Hanya kipas",
             "gas": "Gas",
             "heat": "Panas",
+            "heat_cool": "Panas/Dingin",
             "heat_pump": "Pompa pemanas",
             "high_demand": "Permintaan yang tinggi",
             "idle": "Siaga",
@@ -274,7 +287,7 @@
         },
         "person": {
             "home": "Di rumah",
-            "not_home": "Mode jauh"
+            "not_home": "Keluar"
         },
         "plant": {
             "ok": "OK",
@@ -303,19 +316,25 @@
             "off": "Off",
             "on": "On"
         },
+        "timer": {
+            "active": "Aktif",
+            "idle": "Siaga",
+            "paused": "Jeda"
+        },
         "vacuum": {
             "cleaning": "Membersihkan",
             "docked": "Berlabuh",
             "error": "Kesalahan",
             "idle": "Siaga",
             "off": "Padam",
-            "on": "Menyala",
-            "paused": "Berhenti",
+            "on": "Nyala",
+            "paused": "Dijeda",
             "returning": "Kembali ke dock"
         },
         "weather": {
             "clear-night": "Cerah, malam",
             "cloudy": "Berawan",
+            "exceptional": "Luar biasa",
             "fog": "Kabut",
             "hail": "Hujan es",
             "lightning": "Petir",
@@ -350,11 +369,8 @@
         },
         "card": {
             "alarm_control_panel": {
-                "arm_away": "Angkat tangan",
-                "arm_home": "Lengan rumah",
                 "clear_code": "Hapus",
-                "code": "Kode",
-                "disarm": "Lucuti"
+                "code": "Kode"
             },
             "automation": {
                 "last_triggered": "Terakhir terpicu",
@@ -365,14 +381,23 @@
             },
             "climate": {
                 "aux_heat": "Aux panas",
-                "away_mode": "Mode jauh",
+                "away_mode": "Mode di luar rumah",
                 "currently": "Saat ini",
                 "fan_mode": "Mode kipas",
                 "on_off": "Hidup / mati",
                 "operation": "Operasi",
                 "swing_mode": "Mode ayunan",
                 "target_humidity": "Target kelembaban",
-                "target_temperature": "Target suhu"
+                "target_temperature": "Target suhu",
+                "target_temperature_entity": "{name} target suhu",
+                "target_temperature_mode": "{nama} target suhu {mode}"
+            },
+            "counter": {
+                "actions": {
+                    "decrement": "pengurangan",
+                    "increment": "kenaikan",
+                    "reset": "reset"
+                }
             },
             "cover": {
                 "position": "Posisi",
@@ -392,21 +417,32 @@
             "lock": {
                 "code": "Kode",
                 "lock": "Kunci",
-                "unlock": "Membuka"
+                "unlock": "Buka"
             },
             "media_player": {
                 "sound_mode": "Mode suara",
                 "source": "Sumber",
-                "text_to_speak": "Teks untuk berbicara"
+                "text_to_speak": "Teks untuk diucapkan"
             },
             "persistent_notification": {
-                "dismiss": "Abaikan"
+                "dismiss": "Tutup"
             },
             "scene": {
                 "activate": "Aktifkan"
             },
             "script": {
                 "execute": "Jalankan"
+            },
+            "service": {
+                "run": "Jalankan"
+            },
+            "timer": {
+                "actions": {
+                    "cancel": "batalkan",
+                    "finish": "selesai",
+                    "pause": "jeda",
+                    "start": "mulai"
+                }
             },
             "vacuum": {
                 "actions": {
@@ -448,23 +484,54 @@
                     "wnw": "BBL",
                     "wsw": "BBD"
                 },
-                "forecast": "Ramalan cuaca"
+                "forecast": "Prakiraan"
             }
         },
         "common": {
             "cancel": "Batalkan",
+            "close": "Tutup",
             "loading": "Memuat",
-            "save": "Simpan"
+            "save": "Simpan",
+            "successfully_saved": "Berhasil disimpan",
+            "yes": "Ya"
         },
         "components": {
+            "area-picker": {
+                "add_dialog": {
+                    "add": "Tambah",
+                    "failed_create_area": "Gagal membuat area.",
+                    "name": "Nama",
+                    "text": "Masukkan nama area baru.",
+                    "title": "Tambahkan area baru"
+                },
+                "add_new": "Tambahkan area baru ...",
+                "area": "Area",
+                "show_areas": "Tampilkan area"
+            },
+            "device-picker": {
+                "device": "Perangkat",
+                "show_devices": "Tampilkan perangkat"
+            },
             "entity": {
                 "entity-picker": {
-                    "entity": "Entiti"
+                    "entity": "Entiti",
+                    "show_entities": "Tampilkan entiti"
                 }
             },
             "history_charts": {
-                "loading_history": "Memuat riwayat status ...",
+                "loading_history": "Memuat riwayat status...",
                 "no_history_found": "Tidak ada riwayat status yang ditemukan."
+            },
+            "related-items": {
+                "area": "Area",
+                "automation": "Bagian dari otomatisasi berikut",
+                "device": "Perangkat",
+                "entity": "Entiti terkait",
+                "group": "Bagian dari grup berikut",
+                "integration": "Integrasi",
+                "no_related_found": "Tidak ditemukan item terkait.",
+                "scene": "Bagian dari scene berikut",
+                "script": "Bagian dari skrip berikut"
             },
             "relative_time": {
                 "duration": {
@@ -474,7 +541,7 @@
                     "second": "{count} {count, plural,\n  one { detik }\n  other { detik }\n}",
                     "week": "{count} {count, plural,\n  one { minggu }\n  other { minggu }\n}"
                 },
-                "future": "dalam {time}",
+                "future": "Dalam {time}",
                 "never": "Tak pernah",
                 "past": "{time} lalu"
             },
@@ -483,6 +550,24 @@
             }
         },
         "dialogs": {
+            "config_entry_system_options": {
+                "enable_new_entities_label": "Aktifkan entiti yang baru ditambahkan.",
+                "update": "Memperbarui"
+            },
+            "confirmation": {
+                "cancel": "Batal",
+                "ok": "OK",
+                "title": "Apakah anda yakin?"
+            },
+            "entity_registry": {
+                "control": "Kontrol",
+                "dismiss": "Tutup",
+                "editor": {
+                    "confirm_delete": "Apakah Anda yakin ingin menghapus entri ini?",
+                    "delete": "HAPUS",
+                    "enabled_cause": "Dinonaktifkan oleh {cause}."
+                }
+            },
             "more_info_control": {
                 "script": {
                     "last_action": "Aksi Terakhir"
@@ -497,7 +582,7 @@
                 }
             },
             "more_info_settings": {
-                "entity_id": "Entiti ID",
+                "entity_id": "ID Entitas",
                 "name": "Nama",
                 "save": "Simpan"
             }
@@ -511,37 +596,39 @@
         },
         "login-form": {
             "log_in": "Masuk",
-            "password": "Kata sandi",
+            "password": "Kata Sandi",
             "remember": "Ingat"
         },
         "notification_drawer": {
             "click_to_configure": "Klik tombol untuk mengonfigurasi {entity}",
-            "empty": "Tidak ada pemberitahuan",
+            "empty": "Tidak Ada Pemberitahuan",
             "title": "Pemberitahuan"
         },
         "notification_toast": {
-            "connection_lost": "Koneksi terputus. Menghubungkan kembali ...",
+            "connection_lost": "Koneksi terputus. Menghubungkan kembali...",
             "entity_turned_off": "{entity} sudah dimatikan.",
             "entity_turned_on": "{entity} sudah dinyalakan.",
-            "service_call_failed": "Gagal memanggil layanan {service} .",
+            "service_call_failed": "Gagal memanggil layanan {service}.",
             "service_called": "Layanan {service} dipanggil."
         },
         "panel": {
             "config": {
-                "area_registry": {
-                    "caption": "Registry Area",
+                "areas": {
+                    "caption": "Area",
                     "create_area": "BUAT AREA",
                     "description": "Gambaran umum semua area di rumah Anda.",
                     "editor": {
-                        "create": "MEMBUAT",
+                        "create": "BUAT",
                         "default_name": "Area Baru",
                         "delete": "HAPUS",
-                        "update": "MEMPERBARUI"
+                        "update": "PERBARUI"
                     },
-                    "no_areas": "Sepertinya Anda belum memiliki area!",
+                    "no_areas": "Sepertinya Anda belum memiliki area.",
                     "picker": {
-                        "header": "Registry Area",
-                        "integrations_page": "Halaman integrasi"
+                        "create_area": "BUAT AREA",
+                        "header": "Area",
+                        "integrations_page": "Halaman integrasi",
+                        "no_areas": "Sepertinya Anda belum memiliki area!"
                     }
                 },
                 "automation": {
@@ -551,11 +638,11 @@
                         "actions": {
                             "add": "Tambah aksi",
                             "delete": "Hapus",
-                            "delete_confirm": "Anda yakin ingin menghapus?",
+                            "delete_confirm": "Yakin ingin menghapus?",
                             "duplicate": "Gandakan",
                             "header": "Aksi",
-                            "introduction": "Aksi adalah apa yang Home Assistant akan lakukan ketika otomasi terpicu.\n\n[Pelajari lebih lanjut tentang aksi.](https://home-assistant.io/docs/automation/action/)",
-                            "learn_more": "Pelajari lebih lanjut tentang Aksi",
+                            "introduction": "Aksi adalah hal yang Home Assistant akan lakukan ketika otomasi terpicu.",
+                            "learn_more": "Pelajari lebih lanjut tentang aksi",
                             "type_select": "Jenis aksi",
                             "type": {
                                 "condition": {
@@ -566,8 +653,8 @@
                                     "label": "Tunda"
                                 },
                                 "event": {
-                                    "event": "Event",
-                                    "label": "Jalankan Event",
+                                    "event": "Peristiwa:",
+                                    "label": "Jalankan peristiwa",
                                     "service_data": "Data layanan"
                                 },
                                 "service": {
@@ -576,8 +663,8 @@
                                 },
                                 "wait_template": {
                                     "label": "Tunggu",
-                                    "timeout": "Timeout (opsional)",
-                                    "wait_template": "Template tunggu"
+                                    "timeout": "Tenggang waktu (opsional)",
+                                    "wait_template": "Templat tunggu"
                                 }
                             },
                             "unsupported_action": "Aksi tidak didukung: {action}"
@@ -586,35 +673,35 @@
                         "conditions": {
                             "add": "Tambah kondisi",
                             "delete": "Hapus",
-                            "delete_confirm": "Anda yakin ingin menghapus?",
+                            "delete_confirm": "Yakin ingin menghapus?",
                             "duplicate": "Gandakan",
                             "header": "Kondisi",
-                            "introduction": "Kondisi merupakan bagian opsional dari aturan otomasi dan dapat digunakan untuk mencegah Event terjadi saat dipicu. Kondisi terlihat sangat mirip dengan pemicu tetapi sangat berbeda. Pemicu akan melihat peristiwa yang terjadi di sistem sementara kondisi hanya melihat bagaimana sistem terlihat sekarang. Pemicu dapat mengamati bahwa saklar sedang dinyalakan. Suatu kondisi hanya dapat melihat apakah switch sedang aktif atau tidak aktif. \n\n[Pelajari lebih lanjut tentang kondisi.](https://home-assistant.io/docs/scripts/conditions/)",
+                            "introduction": "Kondisi merupakan bagian opsional dari aturan otomasi dan dapat digunakan untuk mencegah Peristiwa terjadi saat dipicu. Kondisi terlihat sangat mirip dengan pemicu tetapi sangat berbeda. Pemicu akan melihat peristiwa yang terjadi di sistem sementara kondisi hanya melihat bagaimana sistem terlihat sekarang. Pemicu dapat mengamati bahwa saklar sedang dinyalakan. Suatu kondisi hanya dapat melihat apakah saklar sedang nyala atau mati. ",
                             "learn_more": "Pelajari lebih lanjut tentang kondisi",
                             "type_select": "Jenis kondisi",
                             "type": {
                                 "numeric_state": {
                                     "above": "Lebih dari",
                                     "below": "Kurang dari",
-                                    "label": "Status Nomor",
-                                    "value_template": "Nilai template (opsional)"
+                                    "label": "Status Angka",
+                                    "value_template": "Nilai templat (opsional)"
                                 },
                                 "state": {
                                     "label": "Status",
                                     "state": "Status"
                                 },
                                 "sun": {
-                                    "after": "Sesudah",
+                                    "after": "Sesudah:",
                                     "after_offset": "Offset setelah",
-                                    "before": "Sebelum",
+                                    "before": "Sebelum:",
                                     "before_offset": "Offset sebelum",
                                     "label": "Matahari",
                                     "sunrise": "Matahari terbit",
                                     "sunset": "Matahari terbenam"
                                 },
                                 "template": {
-                                    "label": "Template",
-                                    "value_template": "Nilai template"
+                                    "label": "Templat",
+                                    "value_template": "Nilai templat"
                                 },
                                 "time": {
                                     "after": "Sesudah",
@@ -629,65 +716,65 @@
                             },
                             "unsupported_condition": "Kondisi tidak didukung: {condition}"
                         },
-                        "default_name": "Otomasi baru",
+                        "default_name": "Otomasi Baru",
                         "introduction": "Gunakan otomasi untuk menghidupkan rumah Anda",
                         "save": "Simpan",
                         "triggers": {
                             "add": "Tambah pemicu",
                             "delete": "Hapus",
-                            "delete_confirm": "Anda yakin ingin menghapus?",
+                            "delete_confirm": "Yakin ingin menghapus?",
                             "duplicate": "Gandakan",
                             "header": "Pemicu",
-                            "introduction": "Pemicu adalah apa yang memulai pemrosesan pengaturan otomasi. Adalah mungkin untuk menentukan beberapa pemicu untuk aturan yang sama. Setelah pemicu dimulai, Home Assistant akan memvalidasi Kondisi, jika ada, dan memanggil tindakan.",
+                            "introduction": "Pemicu adalah hal yang memulai pemrosesan pengaturan otomasi. Beberapa pemicu bisa ditentukan untuk aturan yang sama. Setelah pemicu dimulai, Home Assistant akan memvalidasi kondisi, dan jika sesuai, akan memanggil aksi.",
                             "learn_more": "Pelajari lebih lanjut tentang pemicu",
                             "type_select": "Jenis pemicu",
                             "type": {
                                 "event": {
-                                    "event_data": "Data event",
-                                    "event_type": "Jenis event",
-                                    "label": "Event"
+                                    "event_data": "Data peristiwa",
+                                    "event_type": "Jenis peristiwa",
+                                    "label": "Peristiwa"
                                 },
                                 "geo_location": {
                                     "enter": "Masuk",
-                                    "event": "Event:",
+                                    "event": "Peristiwa:",
                                     "label": "Geolokasi",
                                     "leave": "Keluar",
                                     "source": "Sumber",
                                     "zone": "Zona"
                                 },
                                 "homeassistant": {
-                                    "event": "Event:",
+                                    "event": "Peristiwa:",
                                     "label": "Home Assistant",
                                     "shutdown": "Matikan",
                                     "start": "Mulai"
                                 },
                                 "mqtt": {
                                     "label": "MQTT",
-                                    "payload": "Payload (opsional)",
+                                    "payload": "Muatan (opsional)",
                                     "topic": "Topik"
                                 },
                                 "numeric_state": {
                                     "above": "Lebih dari",
-                                    "below": "Di bawah",
-                                    "label": "Status nomor",
-                                    "value_template": "Nilai template (opsional)"
+                                    "below": "Kurang dari",
+                                    "label": "Status angka",
+                                    "value_template": "Nilai templat (opsional)"
                                 },
                                 "state": {
                                     "for": "Selama",
                                     "from": "Dari",
                                     "label": "Status",
-                                    "to": "Ke"
+                                    "to": "Menjadi"
                                 },
                                 "sun": {
-                                    "event": "Event",
+                                    "event": "Peristiwa:",
                                     "label": "Matahari",
                                     "offset": "Offset (opsional)",
                                     "sunrise": "Matahari terbit",
                                     "sunset": "Matahari terbenam"
                                 },
                                 "template": {
-                                    "label": "Template",
-                                    "value_template": "Nilai template"
+                                    "label": "Templat",
+                                    "value_template": "Nilai templat"
                                 },
                                 "time_pattern": {
                                     "hours": "Jam",
@@ -701,12 +788,12 @@
                                 },
                                 "webhook": {
                                     "label": "Webhook",
-                                    "webhook_id": "Webhook ID"
+                                    "webhook_id": "ID Webhook"
                                 },
                                 "zone": {
                                     "enter": "Masuk",
                                     "entity": "Entiti dengan lokasi",
-                                    "event": "Event:",
+                                    "event": "Peristiwa:",
                                     "label": "Zona",
                                     "leave": "Keluar",
                                     "zone": "Zona"
@@ -714,12 +801,12 @@
                             },
                             "unsupported_platform": "Platform tidak didukung: {platform}"
                         },
-                        "unsaved_confirm": "Anda memiliki perubahan yang belum disimpan. Anda yakin ingin keluar?"
+                        "unsaved_confirm": "Anda memiliki perubahan yang belum disimpan. Yakin ingin keluar?"
                     },
                     "picker": {
                         "add_automation": "Tambah otomasi",
                         "header": "Editor otomasi",
-                        "introduction": "Editor otomasi memungkinkan Anda untuk membuat dan mengedit otomasi. Silakan baca [petunjuk](https://home-assistant.io/docs/automation/editor/) untuk memastikan bahwa Anda telah mengonfigurasi Home Assistant dengan benar.",
+                        "introduction": "Editor otomasi dapat digunakan untuk membuat dan mengedit otomasi. Ikuti tautan di bawah ini untuk membaca instruksi untuk memastikan bahwa Anda telah mengonfigurasi Home Assistant dengan benar.",
                         "learn_more": "Pelajari lebih lanjut tentang otomasi",
                         "no_automations": "Kami tidak dapat menemukan otomasi yang dapat diedit",
                         "pick_automation": "Pilih otomasi untuk diedit"
@@ -732,34 +819,34 @@
                 },
                 "core": {
                     "caption": "Umum",
-                    "description": "Memvalidasi file konfigurasi anda dan mengontrol server",
+                    "description": "Ubah konfigurasi umum Home Assistant Anda",
                     "section": {
                         "core": {
                             "core_config": {
                                 "save_button": "Simpan"
                             },
-                            "header": "Konfigurasi dan kontrol server",
+                            "header": "Konfigurasi Umum",
                             "introduction": "Merubah konfigurasi bisa menjadi proses yang melelahkan. Kami tahu. Bagian ini akan mencoba membuatnya menjadi sedikit lebih mudah."
                         },
                         "server_control": {
                             "reloading": {
                                 "automation": "Muat ulang otomasi",
-                                "core": "Muat ulang core",
+                                "core": "Muat ulang inti",
                                 "group": "Muat ulang grup",
                                 "heading": "Memuat ulang konfigurasi",
-                                "introduction": "Beberapa bagian Home Assistant dapat memuat ulang tanpa memerlukan restart. Menekan tombol reload akan membatalkan konfigurasi sekarang dan memuat konfigurasi yang baru.",
+                                "introduction": "Beberapa bagian Home Assistant dapat memuat ulang tanpa memerlukan memulai ulang. Menekan tombol memuat ulang akan membatalkan konfigurasi sekarang dan memuat konfigurasi yang baru.",
                                 "script": "Muat ulang skrip"
                             },
                             "server_management": {
                                 "heading": "Pengelolaan server",
-                                "introduction": "Kontrol server Home Assistant anda ... dari Home Assistant.",
-                                "restart": "Ulang kembali",
-                                "stop": "Berhenti"
+                                "introduction": "Kendalikan server Home Assistant Anda, dari Home Assistant.",
+                                "restart": "Mulai ulang",
+                                "stop": "Hentikan"
                             },
                             "validation": {
                                 "check_config": "Periksa konfigurasi",
                                 "heading": "Validasi konfigurasi",
-                                "introduction": "Validasikan konfigurasi anda jika anda baru saja membuat beberapa perubahan pada konfigurasi anda dan ingin memastikan semuanya valid",
+                                "introduction": "Validasikan konfigurasi jika Anda baru saja membuat perubahan pada konfigurasi Anda dan ingin memastikan semuanya valid",
                                 "invalid": "Konfigurasi tidak valid",
                                 "valid": "Konfigurasi valid!"
                             }
@@ -770,17 +857,17 @@
                     "caption": "Penyesuaian",
                     "description": "Sesuaikan entitas anda"
                 },
-                "entity_registry": {
+                "entities": {
                     "description": "Ikhtisar semua entitas yang dikenal.",
                     "editor": {
                         "delete": "HAPUS",
-                        "update": "UPDATE"
+                        "update": "PERBARUI"
                     },
                     "picker": {
                         "integrations_page": "Halaman integrasi"
                     }
                 },
-                "header": "Mengkonfigurasi Home Assistant",
+                "header": "Mengonfigurasi Home Assistant",
                 "integrations": {
                     "config_flow": {
                         "external_step": {
@@ -794,7 +881,7 @@
                     "new": "Mengatur integrasi baru",
                     "none": "Belum ada yang dikonfigurasi"
                 },
-                "introduction": "Di sini memungkinkan untuk mengkonfigurasi komponen dan Home Assistant. Meskipun semuanya belum dapat dikonfigurasikan melalui UI, akan tetapi kami sedang mengusahakannya.",
+                "introduction": "Tempat ini bisa digunakan untuk mengonfigurasi komponen dan Home Assistant. Belum semua dapat dikonfigurasikan melalui UI, kami sedang mengusahakannya.",
                 "person": {
                     "caption": "Orang",
                     "description": "Kelola orang yang Home Assistant lacak",
@@ -807,7 +894,7 @@
                 },
                 "script": {
                     "caption": "Skrip",
-                    "description": "Buat dan edit script"
+                    "description": "Buat dan edit skrip"
                 },
                 "users": {
                     "add_user": {
@@ -815,7 +902,7 @@
                         "create": "Buat",
                         "name": "Nama",
                         "password": "Kata sandi",
-                        "username": "Username"
+                        "username": "Nama pengguna"
                     },
                     "caption": "Pengguna",
                     "description": "Kelola pengguna",
@@ -838,7 +925,7 @@
                 },
                 "zwave": {
                     "caption": "Z-Wave",
-                    "description": "Kelola jaringan Z-Wave anda",
+                    "description": "Kelola jaringan Z-Wave Anda",
                     "node_config": {
                         "set_config_parameter": "Setel Parameter Konfigurasi"
                     }
@@ -847,7 +934,7 @@
             "developer-tools": {
                 "tabs": {
                     "events": {
-                        "title": "Event"
+                        "title": "Peristiwa"
                     },
                     "mqtt": {
                         "title": "MQTT"
@@ -859,24 +946,24 @@
                         "title": "Status"
                     },
                     "templates": {
-                        "title": "Template"
+                        "title": "Templat"
                     }
                 }
             },
             "history": {
                 "period": "Periode",
-                "showing_entries": "Menampilkan daftar dari"
+                "showing_entries": "Menampilkan daftar untuk"
             },
             "logbook": {
                 "period": "Periode",
-                "showing_entries": "Menampilkan daftar dari"
+                "showing_entries": "Menampilkan daftar untuk"
             },
             "lovelace": {
                 "cards": {
                     "empty_state": {
                         "go_to_integrations_page": "Buka halaman integrasi.",
                         "no_devices": "Halaman ini memungkinkan Anda untuk mengontrol perangkat Anda, namun sepertinya Anda belum mengatur perangkat. Buka halaman integrasi untuk memulai.",
-                        "title": "Selamat datang di rumah"
+                        "title": "Selamat Datang di Rumah"
                     },
                     "picture-elements": {
                         "more_info": "Tampilkan lebih banyak info: {name}"
@@ -884,7 +971,7 @@
                 },
                 "editor": {
                     "edit_card": {
-                        "delete": "Hapus",
+                        "delete": "Hapus Kartu",
                         "edit": "Edit"
                     },
                     "raw_editor": {
@@ -894,7 +981,7 @@
                         "unsaved_changes": "Perubahan yang belum disimpan"
                     },
                     "save_config": {
-                        "para_sure": "Apakah Anda yakin ingin mengendalikan antarmuka pengguna Anda?"
+                        "para_sure": "Yakin ingin mengendalikan antarmuka pengguna Anda?"
                     }
                 }
             },
@@ -905,19 +992,30 @@
                 "playback_title": "Pemutaran pesan"
             },
             "page-authorize": {
-                "abort_intro": "Login dibatalkan",
-                "authorizing_client": "Anda akan memberi akses {clientId} ke Home Assistant Anda.",
+                "abort_intro": "Proses masuk dibatalkan",
+                "authorizing_client": "Anda akan memberi akses {clientId} ke instans Home Assistant Anda.",
                 "form": {
                     "providers": {
                         "command_line": {
+                            "abort": {
+                                "login_expired": "Sesi kedaluwarsa, harap masuk lagi."
+                            },
+                            "error": {
+                                "invalid_auth": "Nama pengguna atau sandi tidak valid",
+                                "invalid_code": "Kode autentikasi tidak valid"
+                            },
                             "step": {
                                 "init": {
                                     "data": {
-                                        "username": "Nama pengguna"
+                                        "password": "Kata Sandi",
+                                        "username": "Nama Pengguna"
                                     }
                                 },
                                 "mfa": {
-                                    "description": "Buka ** {mfa_module_name} ** pada perangkat Anda untuk melihat kode otentikasi dua-faktor Anda dan verifikasi identitas Anda:"
+                                    "data": {
+                                        "code": "Kode Autentikasi Dua Faktor"
+                                    },
+                                    "description": "Buka ** {mfa_module_name} ** pada perangkat Anda untuk melihat kode autentikasi dua faktor Anda dan memverifikasi identitas Anda:"
                                 }
                             }
                         },
@@ -926,27 +1024,27 @@
                                 "login_expired": "Sesi kedaluwarsa, harap masuk lagi."
                             },
                             "error": {
-                                "invalid_auth": "Username dan password salah",
+                                "invalid_auth": "Nama pengguna atau sandi tidak valid",
                                 "invalid_code": "Kode autentikasi tidak valid"
                             },
                             "step": {
                                 "init": {
                                     "data": {
-                                        "password": "Kata sandi",
-                                        "username": "Nama pengguna"
+                                        "password": "Kata Sandi",
+                                        "username": "Nama Pengguna"
                                     }
                                 },
                                 "mfa": {
                                     "data": {
                                         "code": "Kode Autentikasi Dua Faktor"
                                     },
-                                    "description": "Buka ** {mfa_module_name} ** pada perangkat Anda untuk melihat kode otentikasi dua-faktor Anda dan verifikasi identitas Anda:"
+                                    "description": "Buka ** {mfa_module_name} ** pada perangkat Anda untuk melihat kode autentikasi dua faktor Anda dan memverifikasi identitas Anda:"
                                 }
                             }
                         },
                         "legacy_api_password": {
                             "abort": {
-                                "login_expired": "Sesi kadaluwarsa, silahkan masuk kembali.",
+                                "login_expired": "Sesi kadaluwarsa, silakan masuk kembali.",
                                 "no_api_password_set": "Anda tidak memiliki kata sandi API yang dikonfigurasi."
                             },
                             "error": {
@@ -964,7 +1062,7 @@
                                     "data": {
                                         "code": "Kode Autentikasi Dua Faktor"
                                     },
-                                    "description": "Buka ** {mfa_module_name} ** pada perangkat Anda untuk melihat kode otentikasi dua-faktor Anda dan verifikasi identitas Anda:"
+                                    "description": "Buka ** {mfa_module_name} ** pada perangkat Anda untuk melihat kode autentikasi dua faktor Anda dan memverifikasi identitas Anda:"
                                 }
                             }
                         },
@@ -986,27 +1084,27 @@
                     "working": "Mohon tunggu"
                 },
                 "initializing": "Inisialisasi",
-                "logging_in_with": "Login dengan **{authProviderName}**.",
-                "pick_auth_provider": "Atau login dengan"
+                "logging_in_with": "Masuk dengan **{authProviderName}**.",
+                "pick_auth_provider": "Atau masuk dengan"
             },
             "page-onboarding": {
                 "core-config": {
                     "button_detect": "Deteksi",
                     "finish": "Berikutnya",
-                    "intro": "Halo {name}, selamat datang di Asisten Rumah. Bagaimana Anda ingin memberi nama rumah Anda?",
+                    "intro": "Halo {name}, selamat datang di Home Assistant. Nama apa yang ingin diberikan untuk rumah Anda?",
                     "intro_location_detect": "Kami dapat membantu Anda mengisi informasi ini dengan membuat permintaan satu kali ke layanan eksternal.",
-                    "location_name_default": "Beranda"
+                    "location_name_default": "Rumah"
                 },
                 "integration": {
                     "finish": "Selesai"
                 },
-                "intro": "Apakah Anda siap untuk membuat rumah Anda lebih hidup, merebut kembali privasi Anda dan bergabung dengan komunitas tinkerers dunia?",
+                "intro": "Siap untuk membuat rumah Anda lebih hidup, merebut kembali privasi Anda, dan bergabung dengan komunitas pemikir dunia?",
                 "user": {
                     "create_account": "Buat Akun",
                     "data": {
                         "name": "Nama",
-                        "password": "Kata sandi",
-                        "username": "Username"
+                        "password": "Kata Sandi",
+                        "username": "Nama Pengguna"
                     },
                     "error": {
                         "required_fields": "Isi semua bidang yang wajib diisi"
@@ -1022,14 +1120,14 @@
                     "link_promo": "Bantu menerjemahkan"
                 },
                 "long_lived_access_tokens": {
-                    "confirm_delete": "Anda yakin ingin menghapus token akses untuk {name}?",
+                    "confirm_delete": "Yakin ingin menghapus token akses untuk {name}?",
                     "create": "Buat Token",
                     "create_failed": "Gagal membuat token akses.",
                     "created_at": "Dibuat pada {date}",
                     "delete_failed": "Gagal menghapus token akses.",
-                    "description": "Buat token akses yang berumur panjang untuk memungkinkan skrip Anda berinteraksi dengan Home Assistant. Setiap token akan berlaku selama 10 tahun sejak pembuatan. Berikut Token akses yang berumur panjang yang saat ini aktif.",
+                    "description": "Buat token akses yang berumur panjang untuk memungkinkan skrip Anda berinteraksi dengan Home Assistant. Setiap token akan berlaku selama 10 tahun sejak pembuatan. Berikut adalah token akses yang berumur panjang yang saat ini aktif.",
                     "empty_state": "Anda belum memiliki token akses yang berumur panjang.",
-                    "header": "Token Akses yang berumur panjang",
+                    "header": "Token Akses yang Berumur Panjang",
                     "last_used": "Terakhir digunakan pada {date} di {location}",
                     "learn_auth_requests": "Pelajari cara membuat permintaan yang diautentikasi.",
                     "not_used": "Belum pernah digunakan",
@@ -1039,18 +1137,18 @@
                 "push_notifications": {
                     "description": "Kirim pemberitahuan ke perangkat ini.",
                     "error_load_platform": "Konfigurasi notify.html5.",
-                    "error_use_https": "Membutuhkan SSL diaktifkan untuk frontend.",
-                    "header": "Pemberitahuan push",
+                    "error_use_https": "SSL harus diaktifkan untuk frontend.",
+                    "header": "Pemberitahuan Push",
                     "link_promo": "Pelajari lebih lanjut",
                     "push_notifications": "Pemberitahuan push"
                 },
                 "refresh_tokens": {
-                    "confirm_delete": "Anda yakin ingin menghapus token baru untuk {name} ?",
+                    "confirm_delete": "Yakin ingin menghapus token baru untuk {name} ?",
                     "created_at": "Dibuat pada {date}",
                     "current_token_tooltip": "Tidak dapat menghapus token baru saat ini",
                     "delete_failed": "Gagal menghapus token baru.",
-                    "description": "Setiap token baru mewakili sesi login. Membuat token baru akan dihapus secara otomatis saat Anda mengeklik keluar. Token baru berikut saat ini aktif untuk akun Anda.",
-                    "header": "Token baru",
+                    "description": "Setiap token baru mewakili sesi login. Token baru akan dihapus secara otomatis saat Anda mengeklik keluar. Token baru berikut saat ini aktif untuk akun Anda.",
+                    "header": "Token Baru",
                     "last_used": "Terakhir digunakan pada {date} di {location}",
                     "not_used": "Belum pernah digunakan",
                     "token_title": "Buat token baru untuk {clientId}"
@@ -1064,8 +1162,8 @@
             },
             "shopping-list": {
                 "add_item": "Tambah item",
-                "clear_completed": "Hapus selesai",
-                "microphone_tip": "Sentuh mikrofon di kanan atas dan ucapkan \"Tambahkan permen ke daftar belanjaku\""
+                "clear_completed": "Hapus yang selesai",
+                "microphone_tip": "Sentuh mikrofon di kanan atas dan ucapkan \"Tambahkan permen ke daftar belanja\""
             }
         },
         "sidebar": {

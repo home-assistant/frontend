@@ -10,6 +10,7 @@ import {
 } from "home-assistant-js-websocket";
 import { LocalizeFunc } from "./common/translations/localize";
 import { ExternalMessaging } from "./external_app/external_messaging";
+import { CoreFrontendUserData } from "./data/frontend";
 
 declare global {
   var __DEV__: boolean;
@@ -94,7 +95,7 @@ export interface Panels {
 export interface Translation {
   nativeName: string;
   isRTL: boolean;
-  fingerprints: { [fragment: string]: string };
+  hash: string;
 }
 
 export interface TranslationMetadata {
@@ -155,6 +156,7 @@ export interface HomeAssistant {
   dockedSidebar: "docked" | "always_hidden" | "auto";
   moreInfoEntityId: string | null;
   user?: CurrentUser;
+  userData?: CoreFrontendUserData | null;
   hassUrl(path?): string;
   callService(
     domain: string,
@@ -197,6 +199,16 @@ export type CameraEntity = HassEntityBase & {
     access_token: string;
     brand: string;
     motion_detection: boolean;
+  };
+};
+
+export type MediaEntity = HassEntityBase & {
+  attributes: HassEntityAttributeBase & {
+    media_duration: number;
+    media_position: number;
+    media_title: string;
+    icon?: string;
+    entity_picture_local?: string;
   };
 };
 

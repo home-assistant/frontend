@@ -49,7 +49,7 @@ export class HuiMarkdownCardEditor extends LitElement
     return this._config!.theme || "Backend-selected";
   }
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     if (!this.hass) {
       return html``;
     }
@@ -81,7 +81,7 @@ export class HuiMarkdownCardEditor extends LitElement
           spellcheck="false"
         ></paper-textarea>
         <hui-theme-select-editor
-          .hass="${this.hass}"
+          .hass=${this.hass}
           .value="${this._theme}"
           .configValue="${"theme"}"
           @theme-changed="${this._valueChanged}"
@@ -100,7 +100,7 @@ export class HuiMarkdownCardEditor extends LitElement
       return;
     }
     if (target.configValue) {
-      if (target.value === "") {
+      if (target.value === "" && target.configValue !== "content") {
         delete this._config[target.configValue!];
       } else {
         this._config = {

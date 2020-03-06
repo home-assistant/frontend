@@ -14,13 +14,13 @@ import "../../../components/ha-slider";
 import "../components/hui-warning";
 
 import { computeRTLDirection } from "../../../common/util/compute_rtl";
-import { EntityRow, EntityConfig } from "./types";
+import { LovelaceRow, EntityConfig } from "./types";
 import { HomeAssistant } from "../../../types";
 import { setValue } from "../../../data/input_text";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
 
 @customElement("hui-input-number-entity-row")
-class HuiInputNumberEntityRow extends LitElement implements EntityRow {
+class HuiInputNumberEntityRow extends LitElement implements LovelaceRow {
   @property() public hass?: HomeAssistant;
 
   @property() private _config?: EntityConfig;
@@ -54,7 +54,7 @@ class HuiInputNumberEntityRow extends LitElement implements EntityRow {
     return hasConfigOrEntityChanged(this, changedProps);
   }
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     if (!this._config || !this.hass) {
       return html``;
     }
@@ -74,43 +74,41 @@ class HuiInputNumberEntityRow extends LitElement implements EntityRow {
     }
 
     return html`
-      <hui-generic-entity-row .hass="${this.hass}" .config="${this._config}">
-        <div>
-          ${stateObj.attributes.mode === "slider"
-            ? html`
-                <div class="flex">
-                  <ha-slider
-                    .dir="${computeRTLDirection(this.hass!)}"
-                    .step="${Number(stateObj.attributes.step)}"
-                    .min="${Number(stateObj.attributes.min)}"
-                    .max="${Number(stateObj.attributes.max)}"
-                    .value="${Number(stateObj.state)}"
-                    pin
-                    @change="${this._selectedValueChanged}"
-                    ignore-bar-touch
-                    id="input"
-                  ></ha-slider>
-                  <span class="state">
-                    ${Number(stateObj.state)}
-                    ${stateObj.attributes.unit_of_measurement}
-                  </span>
-                </div>
-              `
-            : html`
-                <paper-input
-                  no-label-float
-                  auto-validate
-                  .pattern="[0-9]+([\\.][0-9]+)?"
+      <hui-generic-entity-row .hass=${this.hass} .config=${this._config}>
+        ${stateObj.attributes.mode === "slider"
+          ? html`
+              <div class="flex">
+                <ha-slider
+                  .dir="${computeRTLDirection(this.hass!)}"
                   .step="${Number(stateObj.attributes.step)}"
                   .min="${Number(stateObj.attributes.min)}"
                   .max="${Number(stateObj.attributes.max)}"
                   .value="${Number(stateObj.state)}"
-                  type="number"
+                  pin
                   @change="${this._selectedValueChanged}"
+                  ignore-bar-touch
                   id="input"
-                ></paper-input>
-              `}
-        </div>
+                ></ha-slider>
+                <span class="state">
+                  ${Number(stateObj.state)}
+                  ${stateObj.attributes.unit_of_measurement}
+                </span>
+              </div>
+            `
+          : html`
+              <paper-input
+                no-label-float
+                auto-validate
+                .pattern="[0-9]+([\\.][0-9]+)?"
+                .step="${Number(stateObj.attributes.step)}"
+                .min="${Number(stateObj.attributes.min)}"
+                .max="${Number(stateObj.attributes.max)}"
+                .value="${Number(stateObj.state)}"
+                type="number"
+                @change="${this._selectedValueChanged}"
+                id="input"
+              ></paper-input>
+            `}
       </hui-generic-entity-row>
     `;
   }

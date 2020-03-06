@@ -18,7 +18,7 @@ import "../components/entity/state-badge";
 
 import { computeStateName } from "../common/entity/compute_state_name";
 import { HomeAssistant, InputSelectEntity } from "../types";
-import { setInputSelectOption } from "../data/input-select";
+import { setInputSelectOption } from "../data/input_select";
 import { PolymerIronSelectEvent } from "../polymer-types";
 import { stopPropagation } from "../common/dom/stop_propagation";
 
@@ -27,7 +27,7 @@ class StateCardInputSelect extends LitElement {
   @property() public hass!: HomeAssistant;
   @property() public stateObj!: InputSelectEntity;
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     return html`
       <state-badge .stateObj=${this.stateObj}></state-badge>
       <paper-dropdown-menu-light

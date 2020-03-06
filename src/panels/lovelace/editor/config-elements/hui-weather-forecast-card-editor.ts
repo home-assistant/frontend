@@ -48,7 +48,7 @@ export class HuiWeatherForecastCardEditor extends LitElement
     return this._config!.theme || "Backend-selected";
   }
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     if (!this.hass) {
       return html``;
     }
@@ -62,7 +62,7 @@ export class HuiWeatherForecastCardEditor extends LitElement
           )} (${this.hass.localize(
             "ui.panel.lovelace.editor.card.config.required"
           )})"
-          .hass="${this.hass}"
+          .hass=${this.hass}
           .value="${this._entity}"
           .configValue=${"entity"}
           include-domains='["weather"]'
@@ -80,7 +80,7 @@ export class HuiWeatherForecastCardEditor extends LitElement
           @value-changed="${this._valueChanged}"
         ></paper-input>
         <hui-theme-select-editor
-          .hass="${this.hass}"
+          .hass=${this.hass}
           .value="${this._theme}"
           .configValue="${"theme"}"
           @theme-changed="${this._valueChanged}"

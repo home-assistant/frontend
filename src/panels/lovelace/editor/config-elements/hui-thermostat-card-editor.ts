@@ -49,7 +49,7 @@ export class HuiThermostatCardEditor extends LitElement
     return this._config!.theme || "default";
   }
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     if (!this.hass) {
       return html``;
     }
@@ -63,7 +63,7 @@ export class HuiThermostatCardEditor extends LitElement
           )} (${this.hass.localize(
             "ui.panel.lovelace.editor.card.config.required"
           )})"
-          .hass="${this.hass}"
+          .hass=${this.hass}
           .value="${this._entity}"
           .configValue=${"entity"}
           include-domains='["climate"]'
@@ -81,7 +81,7 @@ export class HuiThermostatCardEditor extends LitElement
           @value-changed="${this._valueChanged}"
         ></paper-input>
         <hui-theme-select-editor
-          .hass="${this.hass}"
+          .hass=${this.hass}
           .value="${this._theme}"
           .configValue="${"theme"}"
           @theme-changed="${this._valueChanged}"

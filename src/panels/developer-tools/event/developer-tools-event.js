@@ -12,6 +12,7 @@ import "./events-list";
 import "./event-subscribe-card";
 import { EventsMixin } from "../../../mixins/events-mixin";
 import LocalizeMixin from "../../../mixins/localize-mixin";
+import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
 
 const ERROR_SENTINEL = {};
 /*
@@ -60,9 +61,11 @@ class HaPanelDevEvent extends EventsMixin(LocalizeMixin(PolymerElement)) {
             <a
               href="https://www.home-assistant.io/docs/configuration/events/"
               target="_blank"
-              >[[localize( 'ui.panel.developer-tools.tabs.events.documentation'
-              )]]</a
+              rel="noreferrer"
             >
+              [[localize( 'ui.panel.developer-tools.tabs.events.documentation'
+              )]]
+            </a>
           </p>
           <div class="ha-form">
             <paper-input
@@ -154,11 +157,11 @@ class HaPanelDevEvent extends EventsMixin(LocalizeMixin(PolymerElement)) {
 
   fireEvent() {
     if (!this.eventType) {
-      alert(
-        this.hass.localize(
+      showAlertDialog(this, {
+        text: this.hass.localize(
           "ui.panel.developer-tools.tabs.events.alert_event_type"
-        )
-      );
+        ),
+      });
       return;
     }
     this.hass.callApi("POST", "events/" + this.eventType, this.parsedJSON).then(

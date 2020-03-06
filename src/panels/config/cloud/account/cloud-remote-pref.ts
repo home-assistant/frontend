@@ -29,7 +29,7 @@ export class CloudRemotePref extends LitElement {
   @property() public hass?: HomeAssistant;
   @property() public cloudStatus?: CloudStatusLoggedIn;
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     if (!this.cloudStatus) {
       return html``;
     }
@@ -77,12 +77,21 @@ export class CloudRemotePref extends LitElement {
             : this.hass!.localize(
                 "ui.panel.config.cloud.account.remote.instance_will_be_available"
               )}
-          <a href="https://${remote_domain}" target="_blank" class="break-word">
+          <a
+            href="https://${remote_domain}"
+            target="_blank"
+            class="break-word"
+            rel="noreferrer"
+          >
             https://${remote_domain}</a
           >.
         </div>
         <div class="card-actions">
-          <a href="https://www.nabucasa.com/config/remote/" target="_blank">
+          <a
+            href="https://www.nabucasa.com/config/remote/"
+            target="_blank"
+            rel="noreferrer"
+          >
             <mwc-button
               >${this.hass!.localize(
                 "ui.panel.config.cloud.account.remote.link_learn_how_it_works"

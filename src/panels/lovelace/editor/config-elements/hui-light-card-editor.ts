@@ -8,6 +8,8 @@ import {
 import "@polymer/paper-input/paper-input";
 
 import "../../components/hui-theme-select-editor";
+
+import "../../../../components/ha-icon-input";
 import "../../components/hui-entity-editor";
 
 import { struct } from "../../common/structs/struct";
@@ -17,6 +19,7 @@ import { LovelaceCardEditor } from "../../types";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { configElementStyle } from "./config-elements-style";
 import { LightCardConfig } from "../../cards/types";
+import { stateIcon } from "../../../../common/entity/state_icon";
 
 const cardConfigStruct = struct({
   type: "string",
@@ -34,8 +37,7 @@ export class HuiLightCardEditor extends LitElement
   @property() private _config?: LightCardConfig;
 
   public setConfig(config: LightCardConfig): void {
-    config = cardConfigStruct(config);
-    this._config = config;
+    this._config = cardConfigStruct(config);
   }
 
   get _name(): string {
@@ -54,7 +56,7 @@ export class HuiLightCardEditor extends LitElement
     return this._config!.icon || "";
   }
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     if (!this.hass) {
       return html``;
     }
@@ -68,7 +70,7 @@ export class HuiLightCardEditor extends LitElement
           )} (${this.hass.localize(
             "ui.panel.lovelace.editor.card.config.required"
           )})"
-          .hass="${this.hass}"
+          .hass=${this.hass}
           .value="${this._entity}"
           .configValue=${"entity"}
           include-domains='["light"]'
@@ -86,20 +88,22 @@ export class HuiLightCardEditor extends LitElement
             .configValue="${"name"}"
             @value-changed="${this._valueChanged}"
           ></paper-input>
-          <paper-input
+          <ha-icon-input
             .label="${this.hass.localize(
               "ui.panel.lovelace.editor.card.generic.icon"
             )} (${this.hass.localize(
               "ui.panel.lovelace.editor.card.config.optional"
             )})"
             .value="${this._icon}"
+            .placeholder=${this._icon ||
+              stateIcon(this.hass.states[this._entity])}
             .configValue="${"icon"}"
             @value-changed="${this._valueChanged}"
-          ></paper-input>
+          ></ha-icon-input>
         </div>
 
         <hui-theme-select-editor
-          .hass="${this.hass}"
+          .hass=${this.hass}
           .value="${this._theme}"
           .configValue="${"theme"}"
           @theme-changed="${this._valueChanged}"

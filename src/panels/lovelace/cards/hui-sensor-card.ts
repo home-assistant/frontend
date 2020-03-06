@@ -25,6 +25,23 @@ import { fireEvent } from "../../../common/dom/fire_event";
 import { fetchRecent } from "../../../data/history";
 import { SensorCardConfig } from "./types";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
+import { actionHandler } from "../common/directives/action-handler-directive";
+import { LovelaceConfig } from "../../../data/lovelace";
+import { findEntities } from "../common/find-entites";
+import { HassEntity } from "home-assistant-js-websocket/dist/types";
+
+const strokeWidth = 5;
+
+const average = (items): number => {
+  return (
+    items.reduce((sum, entry) => sum + parseFloat(entry.state), 0) /
+    items.length
+  );
+};
+
+const lastValue = (items): number => {
+  return parseFloat(items[items.length - 1].state) || 0;
+};
 
 const midPoint = (
   _Ax: number,
@@ -68,34 +85,41 @@ const calcPoints = (
   max: number
 ): number[][] => {
   const coords = [] as number[][];
-  const margin = 5;
   const height = 80;
-  width -= 10;
   let yRatio = (max - min) / height;
   yRatio = yRatio !== 0 ? yRatio : height;
   let xRatio = width / (hours - (detail === 1 ? 1 : 0));
   xRatio = isFinite(xRatio) ? xRatio : width;
+
+  const first = history.filter(Boolean)[0];
+  let last = [average(first), lastValue(first)];
+
   const getCoords = (item, i, offset = 0, depth = 1) => {
-    if (depth > 1) {
+    if (depth > 1 && item) {
       return item.forEach((subItem, index) =>
         getCoords(subItem, i, index, depth - 1)
       );
     }
-    const average =
-      item.reduce((sum, entry) => sum + parseFloat(entry.state), 0) /
-      item.length;
 
-    const x = xRatio * (i + offset / 6) + margin;
-    const y = height - (average - min) / yRatio + margin * 2;
+    const x = xRatio * (i + offset / 6);
+
+    if (item) {
+      last = [average(item), lastValue(item)];
+    }
+    const y =
+      height + strokeWidth / 2 - ((item ? last[0] : last[1]) - min) / yRatio;
     return coords.push([x, y]);
   };
 
-  history.forEach((item, i) => getCoords(item, i, 0, detail));
-  if (coords.length === 1) {
-    coords[1] = [width + margin, coords[0][1]];
+  for (let i = 0; i < history.length; i += 1) {
+    getCoords(history[i], i, 0, detail);
   }
 
-  coords.push([width + margin, coords[coords.length - 1][1]]);
+  if (coords.length === 1) {
+    coords[1] = [width, coords[0][1]];
+  }
+
+  coords.push([width, coords[coords.length - 1][1]]);
   return coords;
 };
 
@@ -153,8 +177,32 @@ class HuiSensorCard extends LitElement implements LovelaceCard {
     return document.createElement("hui-sensor-card-editor");
   }
 
-  public static getStubConfig(): object {
-    return { entity: "" };
+  public static getStubConfig(
+    hass: HomeAssistant,
+    lovelaceConfig: LovelaceConfig,
+    entities?: string[],
+    entitiesFill?: string[]
+  ): object {
+    const includeDomains = ["sensor"];
+    const maxEntities = 1;
+    const entityFilter = (stateObj: HassEntity): boolean => {
+      return (
+        !isNaN(Number(stateObj.state)) &&
+        !!stateObj.attributes.unit_of_measurement
+      );
+    };
+
+    const foundEntities = findEntities(
+      hass,
+      lovelaceConfig,
+      maxEntities,
+      entities,
+      entitiesFill,
+      includeDomains,
+      entityFilter
+    );
+
+    return { entity: foundEntities[0] || "", graph: "line" };
   }
 
   @property() public hass?: HomeAssistant;
@@ -190,7 +238,7 @@ class HuiSensorCard extends LitElement implements LovelaceCard {
     return 3;
   }
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     if (!this._config || !this.hass) {
       return html``;
     }
@@ -226,14 +274,27 @@ class HuiSensorCard extends LitElement implements LovelaceCard {
       } else {
         graph = svg`
           <svg width="100%" height="100%" viewBox="0 0 500 100">
-            <path
-              d="${this._history}"
-              fill="none"
-              stroke="var(--accent-color)"
-              stroke-width="5"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            />
+            <g>
+              <mask id="fill">
+                <path
+                  class='fill'
+                  fill='white'
+                  d="${this._history} L 500, 100 L 0, 100 z"
+                />
+              </mask>
+              <rect height="100%" width="100%" id="fill-rect" fill="var(--accent-color)" mask="url(#fill)"></rect>
+              <mask id="line">
+                <path
+                  fill="none"
+                  stroke="var(--accent-color)"
+                  stroke-width="${strokeWidth}"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d=${this._history}
+                ></path>
+              </mask>
+              <rect height="100%" width="100%" id="rect" fill="var(--accent-color)" mask="url(#line)"></rect>
+            </g>
           </svg>
         `;
       }
@@ -241,17 +302,19 @@ class HuiSensorCard extends LitElement implements LovelaceCard {
       graph = "";
     }
     return html`
-      <ha-card @click="${this._handleClick}">
-        <div class="flex">
+      <ha-card
+        @action=${this._handleClick}
+        .actionHandler=${actionHandler()}
+        tabindex="0"
+      >
+        <div class="flex header">
+          <div class="name">
+            <span>${this._config.name || computeStateName(stateObj)}</span>
+          </div>
           <div class="icon">
             <ha-icon
               .icon="${this._config.icon || stateIcon(stateObj)}"
             ></ha-icon>
-          </div>
-          <div class="header">
-            <span class="name"
-              >${this._config.name || computeStateName(stateObj)}</span
-            >
           </div>
         </div>
         <div class="flex info">
@@ -280,7 +343,7 @@ class HuiSensorCard extends LitElement implements LovelaceCard {
 
   protected updated(changedProps: PropertyValues) {
     super.updated(changedProps);
-    if (!this._config || this._config.graph !== "line" || !this.hass) {
+    if (!this._config || !this.hass) {
       return;
     }
 
@@ -298,11 +361,13 @@ class HuiSensorCard extends LitElement implements LovelaceCard {
       applyThemesOnElement(this, this.hass.themes, this._config!.theme);
     }
 
-    const minute = 60000;
-    if (changedProps.has("_config")) {
-      this._getHistory();
-    } else if (Date.now() - this._date!.getTime() >= minute) {
-      this._getHistory();
+    if (this._config.graph === "line") {
+      const minute = 60000;
+      if (changedProps.has("_config")) {
+        this._getHistory();
+      } else if (Date.now() - this._date!.getTime() >= minute) {
+        this._getHistory();
+      }
     }
   }
 
@@ -348,9 +413,14 @@ class HuiSensorCard extends LitElement implements LovelaceCard {
         display: flex;
         flex-direction: column;
         flex: 1;
-        padding: 16px;
         position: relative;
         cursor: pointer;
+        overflow: hidden;
+      }
+
+      ha-card:focus {
+        outline: none;
+        background: var(--divider-color);
       }
 
       .flex {
@@ -358,6 +428,11 @@ class HuiSensorCard extends LitElement implements LovelaceCard {
       }
 
       .header {
+        margin: 8px 16px 0;
+        justify-content: space-between;
+      }
+
+      .name {
         align-items: center;
         display: flex;
         min-width: 0;
@@ -365,13 +440,13 @@ class HuiSensorCard extends LitElement implements LovelaceCard {
         position: relative;
       }
 
-      .name {
+      .name > span {
         display: block;
         display: -webkit-box;
         font-size: 1.2rem;
         font-weight: 500;
         max-height: 1.4rem;
-        margin-top: 2px;
+        top: 2px;
         opacity: 0.8;
         overflow: hidden;
         text-overflow: ellipsis;
@@ -383,17 +458,12 @@ class HuiSensorCard extends LitElement implements LovelaceCard {
 
       .icon {
         color: var(--paper-item-icon-color, #44739e);
-        display: inline-block;
-        flex: 0 0 40px;
         line-height: 40px;
-        position: relative;
-        text-align: center;
-        width: 40px;
       }
 
       .info {
         flex-wrap: wrap;
-        margin: 16px 0 16px 8px;
+        margin: 0 16px 16px;
       }
 
       #value {
@@ -420,11 +490,17 @@ class HuiSensorCard extends LitElement implements LovelaceCard {
         margin-bottom: 0px;
         position: relative;
         width: 100%;
+        overflow: hidden;
       }
 
       .graph > div {
         align-self: flex-end;
-        margin: auto 8px;
+        margin: auto 0px;
+        display: flex;
+      }
+
+      .fill {
+        opacity: 0.1;
       }
     `;
   }

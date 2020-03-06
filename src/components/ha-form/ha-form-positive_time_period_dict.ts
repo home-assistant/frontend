@@ -23,7 +23,7 @@ export class HaFormTimePeriod extends LitElement implements HaFormElement {
     }
   }
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     return html`
       <paper-time-input
         .label=${this.label}

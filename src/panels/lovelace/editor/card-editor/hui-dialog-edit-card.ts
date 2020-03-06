@@ -8,6 +8,8 @@ import {
   property,
 } from "lit-element";
 
+import deepFreeze from "deep-freeze";
+
 import { HomeAssistant } from "../../../../types";
 import { HASSDomEvent } from "../../../../common/dom/fire_event";
 import {
@@ -24,6 +26,7 @@ import { addCard, replaceCard } from "../config-util";
 
 import "../../../../components/dialog/ha-paper-dialog";
 import { haStyleDialog } from "../../../../resources/styles";
+import { showSaveSuccessToast } from "../../../../util/toast-saved-success";
 
 declare global {
   // for fire event
@@ -38,7 +41,7 @@ declare global {
 
 @customElement("hui-dialog-edit-card")
 export class HuiDialogEditCard extends LitElement {
-  @property() protected hass?: HomeAssistant;
+  @property() protected hass!: HomeAssistant;
 
   @property() private _params?: EditCardDialogParams;
 
@@ -51,16 +54,19 @@ export class HuiDialogEditCard extends LitElement {
   public async showDialog(params: EditCardDialogParams): Promise<void> {
     this._params = params;
     const [view, card] = params.path;
-    this._viewConfig = params.lovelace.config.views[view];
+    this._viewConfig = params.lovelaceConfig.views[view];
     this._cardConfig =
       card !== undefined ? this._viewConfig.cards![card] : undefined;
+    if (this._cardConfig && !Object.isFrozen(this._cardConfig)) {
+      this._cardConfig = deepFreeze(this._cardConfig);
+    }
   }
 
   private get _cardEditorEl(): HuiCardEditor | null {
     return this.shadowRoot!.querySelector("hui-card-editor");
   }
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     if (!this._params) {
       return html``;
     }
@@ -85,7 +91,7 @@ export class HuiDialogEditCard extends LitElement {
     }
 
     return html`
-      <ha-paper-dialog with-backdrop opened modal>
+      <ha-paper-dialog with-backdrop opened modal @keyup=${this._handleKeyUp}>
         <h2>
           ${heading}
         </h2>
@@ -93,7 +99,8 @@ export class HuiDialogEditCard extends LitElement {
           ${this._cardConfig === undefined
             ? html`
                 <hui-card-picker
-                  .hass="${this.hass}"
+                  .lovelace="${this._params.lovelaceConfig}"
+                  .hass=${this.hass}
                   @config-changed="${this._handleCardPicked}"
                 ></hui-card-picker>
               `
@@ -101,14 +108,15 @@ export class HuiDialogEditCard extends LitElement {
                 <div class="content">
                   <div class="element-editor">
                     <hui-card-editor
-                      .hass="${this.hass}"
+                      .hass=${this.hass}
+                      .lovelace="${this._params.lovelaceConfig}"
                       .value="${this._cardConfig}"
                       @config-changed="${this._handleConfigChanged}"
                     ></hui-card-editor>
                   </div>
                   <div class="element-preview">
                     <hui-card-preview
-                      .hass="${this.hass}"
+                      .hass=${this.hass}
                       .config="${this._cardConfig}"
                       class=${this._error ? "blur" : ""}
                     ></hui-card-preview>
@@ -247,20 +255,27 @@ export class HuiDialogEditCard extends LitElement {
   }
 
   private _handleCardPicked(ev) {
-    this._cardConfig = ev.detail.config;
-    if (this._params!.entities && this._params!.entities.length > 0) {
-      if (Object.keys(this._cardConfig!).includes("entities")) {
-        this._cardConfig!.entities = this._params!.entities;
-      } else if (Object.keys(this._cardConfig!).includes("entity")) {
-        this._cardConfig!.entity = this._params!.entities[0];
+    const config = ev.detail.config;
+    if (this._params!.entities && this._params!.entities.length) {
+      if (Object.keys(config).includes("entities")) {
+        config.entities = this._params!.entities;
+      } else if (Object.keys(config).includes("entity")) {
+        config.entity = this._params!.entities[0];
       }
     }
+    this._cardConfig = deepFreeze(config);
     this._error = ev.detail.error;
   }
 
   private _handleConfigChanged(ev) {
-    this._cardConfig = ev.detail.config;
+    this._cardConfig = deepFreeze(ev.detail.config);
     this._error = ev.detail.error;
+  }
+
+  private _handleKeyUp(ev: KeyboardEvent) {
+    if (ev.keyCode === 27) {
+      this._close();
+    }
   }
 
   private _close(): void {
@@ -283,22 +298,22 @@ export class HuiDialogEditCard extends LitElement {
   }
 
   private async _save(): Promise<void> {
-    const lovelace = this._params!.lovelace;
     this._saving = true;
-    await lovelace.saveConfig(
+    await this._params!.saveConfig(
       this._params!.path.length === 1
         ? addCard(
-            lovelace.config,
+            this._params!.lovelaceConfig,
             this._params!.path as [number],
             this._cardConfig!
           )
         : replaceCard(
-            lovelace.config,
+            this._params!.lovelaceConfig,
             this._params!.path as [number, number],
             this._cardConfig!
           )
     );
     this._saving = false;
+    showSaveSuccessToast(this, this.hass);
     this._close();
   }
 }

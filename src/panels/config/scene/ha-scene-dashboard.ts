@@ -10,7 +10,7 @@ import {
 import "@polymer/paper-icon-button/paper-icon-button";
 import "@polymer/paper-item/paper-item-body";
 import "@polymer/paper-tooltip/paper-tooltip";
-import "../../../layouts/hass-subpage";
+import "../../../layouts/hass-tabs-subpage";
 
 import "../../../components/ha-card";
 import "../../../components/ha-fab";
@@ -20,24 +20,31 @@ import "../ha-config-section";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import { computeRTL } from "../../../common/util/compute_rtl";
 import { haStyle } from "../../../resources/styles";
-import { HomeAssistant } from "../../../types";
+import { HomeAssistant, Route } from "../../../types";
 import { SceneEntity, activateScene } from "../../../data/scene";
 import { showToast } from "../../../util/toast";
 import { ifDefined } from "lit-html/directives/if-defined";
 import { forwardHaptic } from "../../../data/haptics";
+import { configSections } from "../ha-panel-config";
 
 @customElement("ha-scene-dashboard")
 class HaSceneDashboard extends LitElement {
   @property() public hass!: HomeAssistant;
   @property() public narrow!: boolean;
+  @property() public isWide!: boolean;
+  @property() public route!: Route;
   @property() public scenes!: SceneEntity[];
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     return html`
-      <hass-subpage
-        .header=${this.hass.localize("ui.panel.config.scene.caption")}
+      <hass-tabs-subpage
+        .hass=${this.hass}
+        .narrow=${this.narrow}
+        back-path="/config"
+        .route=${this.route}
+        .tabs=${configSections.automation}
       >
-        <ha-config-section .isWide=${!this.narrow}>
+        <ha-config-section .isWide=${this.isWide}>
           <div slot="header">
             ${this.hass.localize("ui.panel.config.scene.picker.header")}
           </div>
@@ -47,6 +54,7 @@ class HaSceneDashboard extends LitElement {
               <a
                 href="https://home-assistant.io/docs/scene/editor/"
                 target="_blank"
+                rel="noreferrer"
               >
                 ${this.hass.localize("ui.panel.config.scene.picker.learn_more")}
               </a>
@@ -70,8 +78,7 @@ class HaSceneDashboard extends LitElement {
                 `
               : this.scenes.map(
                   (scene) => html`
-
-                      <div class='scene'>
+                    <div class="scene">
                       <paper-icon-button
                         .scene=${scene}
                         icon="hass:play"
@@ -80,46 +87,44 @@ class HaSceneDashboard extends LitElement {
                         )}"
                         @click=${this._activateScene}
                       ></paper-icon-button>
-                        <paper-item-body two-line>
-                          <div>${computeStateName(scene)}</div>
-                        </paper-item-body>
-                          <a
-                            href=${ifDefined(
-                              scene.attributes.id
-                                ? `/config/scene/edit/${scene.attributes.id}`
-                                : undefined
-                            )}
-                          >
-                            <paper-icon-button
-                              title="${this.hass.localize(
-                                "ui.panel.config.scene.picker.edit_scene"
-                              )}"
-                              icon="hass:pencil"
-                              .disabled=${!scene.attributes.id}
-                            ></paper-icon-button>
-                            ${
-                              !scene.attributes.id
-                                ? html`
-                                    <paper-tooltip position="left">
-                                      ${this.hass.localize(
-                                        "ui.panel.config.scene.picker.only_editable"
-                                      )}
-                                    </paper-tooltip>
-                                  `
-                                : ""
-                            }
-                          </a>
+                      <paper-item-body two-line>
+                        <div>${computeStateName(scene)}</div>
+                      </paper-item-body>
+                      <div class="actions">
+                        <a
+                          href=${ifDefined(
+                            scene.attributes.id
+                              ? `/config/scene/edit/${scene.attributes.id}`
+                              : undefined
+                          )}
+                        >
+                          <paper-icon-button
+                            title="${this.hass.localize(
+                              "ui.panel.config.scene.picker.edit_scene"
+                            )}"
+                            icon="hass:pencil"
+                            .disabled=${!scene.attributes.id}
+                          ></paper-icon-button>
+                          ${!scene.attributes.id
+                            ? html`
+                                <paper-tooltip position="left">
+                                  ${this.hass.localize(
+                                    "ui.panel.config.scene.picker.only_editable"
+                                  )}
+                                </paper-tooltip>
+                              `
+                            : ""}
+                        </a>
                       </div>
-                    </a>
+                    </div>
                   `
                 )}
           </ha-card>
         </ha-config-section>
-
         <a href="/config/scene/edit/new">
           <ha-fab
-            slot="fab"
-            ?is-wide=${!this.narrow}
+            ?is-wide=${this.isWide}
+            ?narrow=${this.narrow}
             icon="hass:plus"
             title=${this.hass.localize(
               "ui.panel.config.scene.picker.add_scene"
@@ -127,7 +132,7 @@ class HaSceneDashboard extends LitElement {
             ?rtl=${computeRTL(this.hass)}
           ></ha-fab>
         </a>
-      </hass-subpage>
+      </hass-tabs-subpage>
     `;
   }
 
@@ -150,10 +155,7 @@ class HaSceneDashboard extends LitElement {
       css`
         :host {
           display: block;
-        }
-
-        hass-subpage {
-          min-height: 100vh;
+          height: 100%;
         }
 
         ha-card {
@@ -167,12 +169,16 @@ class HaSceneDashboard extends LitElement {
           padding: 0 8px 0 16px;
         }
 
+        .scene > *:first-child {
+          margin-right: 8px;
+        }
+
         .scene a[href] {
           color: var(--primary-text-color);
         }
 
-        ha-entity-toggle {
-          margin-right: 16px;
+        .actions {
+          display: flex;
         }
 
         ha-fab {
@@ -186,7 +192,9 @@ class HaSceneDashboard extends LitElement {
           bottom: 24px;
           right: 24px;
         }
-
+        ha-fab[narrow] {
+          bottom: 84px;
+        }
         ha-fab[rtl] {
           right: auto;
           left: 16px;

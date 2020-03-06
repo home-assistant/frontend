@@ -58,7 +58,7 @@ class DialogThingtalk extends LitElement {
     this._opened = true;
   }
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     if (!this._params) {
       return html``;
     }
@@ -123,6 +123,7 @@ class DialogThingtalk extends LitElement {
           <a
             href="https://almond.stanford.edu/"
             target="_blank"
+            rel="noreferrer"
             class="attribution"
             >Powered by Almond</a
           >
@@ -182,18 +183,19 @@ class DialogThingtalk extends LitElement {
         if (devices.length === 1) {
           Object.entries(devices[0]).forEach(([field, value]) => {
             this._config[type][index][field] = value;
-            return;
           });
+          return;
         }
         const automation = { ...this._config[type][index] };
-        delete this._config[type][index];
+        const newAutomations: any[] = [];
         devices.forEach((fields) => {
           const newAutomation = { ...automation };
           Object.entries(fields).forEach(([field, value]) => {
             newAutomation[field] = value;
           });
-          this._config[type].push(newAutomation);
+          newAutomations.push(newAutomation);
         });
+        this._config[type].splice(index, 1, ...newAutomations);
       });
     });
     this._sendConfig(this._value, this._config);

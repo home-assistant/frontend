@@ -48,7 +48,7 @@ export class ZwaveNetwork extends LitElement {
     this._subscribe();
   }
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     return html`
       <ha-config-section .isWide="${this.isWide}">
         <div class="sectionHeader" slot="header">
@@ -71,6 +71,7 @@ export class ZwaveNetwork extends LitElement {
             <a
               href="https://www.home-assistant.io/docs/z-wave/control-panel/"
               target="_blank"
+              rel="noreferrer"
             >
               ${this.hass!.localize("ui.panel.config.zwave.learn_more")}
             </a>

@@ -16,12 +16,12 @@ import "../../../components/ha-date-input";
 import { HaDateInput } from "../../../components/ha-date-input";
 
 import { HomeAssistant } from "../../../types";
-import { EntityRow, EntityConfig } from "./types";
+import { LovelaceRow, EntityConfig } from "./types";
 import { setInputDateTimeValue } from "../../../data/input_datetime";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
 
 @customElement("hui-input-datetime-entity-row")
-class HuiInputDatetimeEntityRow extends LitElement implements EntityRow {
+class HuiInputDatetimeEntityRow extends LitElement implements LovelaceRow {
   @property() public hass?: HomeAssistant;
   @property() private _config?: EntityConfig;
 
@@ -36,7 +36,7 @@ class HuiInputDatetimeEntityRow extends LitElement implements EntityRow {
     return hasConfigOrEntityChanged(this, changedProps);
   }
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     if (!this._config || !this.hass) {
       return html``;
     }
@@ -56,7 +56,7 @@ class HuiInputDatetimeEntityRow extends LitElement implements EntityRow {
     }
 
     return html`
-      <hui-generic-entity-row .hass="${this.hass}" .config="${this._config}">
+      <hui-generic-entity-row .hass=${this.hass} .config=${this._config}>
         ${stateObj.attributes.has_date
           ? html`
               <ha-date-input

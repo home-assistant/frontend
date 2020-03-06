@@ -34,6 +34,36 @@ export const addCard = (
   };
 };
 
+export const addCards = (
+  config: LovelaceConfig,
+  path: [number],
+  cardConfigs: LovelaceCardConfig[]
+): LovelaceConfig => {
+  const [viewIndex] = path;
+  const views: LovelaceViewConfig[] = [];
+
+  config.views.forEach((viewConf, index) => {
+    if (index !== viewIndex) {
+      views.push(config.views[index]);
+      return;
+    }
+
+    const cards = viewConf.cards
+      ? [...viewConf.cards, ...cardConfigs]
+      : [...cardConfigs];
+
+    views.push({
+      ...viewConf,
+      cards,
+    });
+  });
+
+  return {
+    ...config,
+    views,
+  };
+};
+
 export const replaceCard = (
   config: LovelaceConfig,
   path: [number, number],

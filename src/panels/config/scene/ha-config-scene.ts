@@ -20,6 +20,7 @@ import { HassEntities } from "home-assistant-js-websocket";
 class HaConfigScene extends HassRouterPage {
   @property() public hass!: HomeAssistant;
   @property() public narrow!: boolean;
+  @property() public isWide!: boolean;
   @property() public showAdvanced!: boolean;
   @property() public scenes: SceneEntity[] = [];
 
@@ -49,9 +50,15 @@ class HaConfigScene extends HassRouterPage {
     });
   });
 
+  public disconnectedCallback() {
+    super.disconnectedCallback();
+  }
+
   protected updatePageEl(pageEl, changedProps: PropertyValues) {
     pageEl.hass = this.hass;
     pageEl.narrow = this.narrow;
+    pageEl.isWide = this.isWide;
+    pageEl.route = this.routeTail;
     pageEl.showAdvanced = this.showAdvanced;
 
     if (this.hass) {
@@ -62,6 +69,7 @@ class HaConfigScene extends HassRouterPage {
       (!changedProps || changedProps.has("route")) &&
       this._currentPage === "edit"
     ) {
+      pageEl.creatingNew = undefined;
       const sceneId = this.routeTail.path.substr(1);
       pageEl.creatingNew = sceneId === "new" ? true : false;
       pageEl.scene =

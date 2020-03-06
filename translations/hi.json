@@ -46,6 +46,13 @@
         "shopping_list": "खरीदारी की सूची",
         "states": "स्थिति"
     },
+    "state_attributes": {
+        "climate": {
+            "fan_mode": {
+                "off": "बंद"
+            }
+        }
+    },
     "state_badge": {
         "alarm_control_panel": {
             "pending": "अपूर्ण"
@@ -199,11 +206,6 @@
         },
         "panel": {
             "config": {
-                "area_registry": {
-                    "picker": {
-                        "create_area": "Crea un area"
-                    }
-                },
                 "automation": {
                     "editor": {
                         "conditions": {
@@ -305,6 +307,11 @@
                     "error": {
                         "password_not_match": "Password non trovata"
                     }
+                }
+            },
+            "profile": {
+                "language": {
+                    "link_promo": "अनुवाद करने में सहायता करें"
                 }
             },
             "shopping-list": {

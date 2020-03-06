@@ -9,6 +9,7 @@ import {
   PropertyValues,
 } from "lit-element";
 import { classMap } from "lit-html/directives/class-map";
+import { ifDefined } from "lit-html/directives/if-defined";
 
 import "../../../components/ha-card";
 import "../../../components/ha-icon";
@@ -28,8 +29,9 @@ import { hasConfigOrEntityChanged } from "../common/has-changed";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { actionHandler } from "../common/directives/action-handler-directive";
 import { hasAction } from "../common/has-action";
-import { ActionHandlerEvent } from "../../../data/lovelace";
+import { ActionHandlerEvent, LovelaceConfig } from "../../../data/lovelace";
 import { handleAction } from "../common/handle-action";
+import { findEntities } from "../common/find-entites";
 
 const STATES_OFF = new Set(["closed", "locked", "not_home", "off"]);
 
@@ -41,11 +43,26 @@ class HuiPictureGlanceCard extends LitElement implements LovelaceCard {
     );
     return document.createElement("hui-picture-glance-card-editor");
   }
-  public static getStubConfig(): object {
+
+  public static getStubConfig(
+    hass: HomeAssistant,
+    lovelaceConfig: LovelaceConfig,
+    entities?: string[],
+    entitiesFill?: string[]
+  ): object {
+    const maxEntities = 2;
+    const foundEntities = findEntities(
+      hass,
+      lovelaceConfig,
+      maxEntities,
+      entities,
+      entitiesFill
+    );
+
     return {
       image:
         "https://www.home-assistant.io/images/merchandise/shirt-frontpage.png",
-      entities: [],
+      entities: foundEntities,
     };
   }
 
@@ -148,7 +165,7 @@ class HuiPictureGlanceCard extends LitElement implements LovelaceCard {
     }
   }
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     if (!this._config || !this.hass) {
       return html``;
     }
@@ -168,6 +185,9 @@ class HuiPictureGlanceCard extends LitElement implements LovelaceCard {
             hasHold: hasAction(this._config!.hold_action),
             hasDoubleClick: hasAction(this._config!.double_tap_action),
           })}
+          tabindex=${ifDefined(
+            hasAction(this._config.tap_action) ? "0" : undefined
+          )}
           .config=${this._config}
           .hass=${this.hass}
           .image=${this._config.image}
@@ -230,6 +250,9 @@ class HuiPictureGlanceCard extends LitElement implements LovelaceCard {
             hasHold: hasAction(entityConf.hold_action),
             hasDoubleClick: hasAction(entityConf.double_tap_action),
           })}
+          tabindex=${ifDefined(
+            hasAction(entityConf.tap_action) ? "0" : undefined
+          )}
           .config=${entityConf}
           class="${classMap({
             "state-on": !STATES_OFF.has(stateObj.state),
@@ -317,6 +340,11 @@ class HuiPictureGlanceCard extends LitElement implements LovelaceCard {
         height: 20px;
         padding-bottom: 4px;
         padding-top: 4px;
+      }
+      ha-icon:focus {
+        outline: none;
+        background: var(--divider-color);
+        border-radius: 100%;
       }
       .state {
         display: block;

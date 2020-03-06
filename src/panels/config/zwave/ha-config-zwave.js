@@ -76,7 +76,7 @@ class HaConfigZwave extends LocalizeMixin(EventsMixin(PolymerElement)) {
           color: grey;
         }
 
-        [hidden] {
+        ha-service-description[hidden] {
           display: none;
         }
 

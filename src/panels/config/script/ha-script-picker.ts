@@ -11,7 +11,7 @@ import "@polymer/paper-icon-button/paper-icon-button";
 import "@polymer/paper-item/paper-item-body";
 import { HassEntity } from "home-assistant-js-websocket";
 
-import "../../../layouts/hass-subpage";
+import "../../../layouts/hass-tabs-subpage";
 
 import { computeRTL } from "../../../common/util/compute_rtl";
 
@@ -22,20 +22,27 @@ import "../ha-config-section";
 
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import { haStyle } from "../../../resources/styles";
-import { HomeAssistant } from "../../../types";
+import { HomeAssistant, Route } from "../../../types";
 import { triggerScript } from "../../../data/script";
 import { showToast } from "../../../util/toast";
+import { configSections } from "../ha-panel-config";
 
 @customElement("ha-script-picker")
 class HaScriptPicker extends LitElement {
   @property() public hass!: HomeAssistant;
   @property() public scripts!: HassEntity[];
   @property() public isWide!: boolean;
+  @property() public narrow!: boolean;
+  @property() public route!: Route;
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     return html`
-      <hass-subpage
-        .header=${this.hass.localize("ui.panel.config.script.caption")}
+      <hass-tabs-subpage
+        .hass=${this.hass}
+        .narrow=${this.narrow}
+        back-path="/config"
+        .route=${this.route}
+        .tabs=${configSections.automation}
       >
         <ha-config-section .isWide=${this.isWide}>
           <div slot="header">
@@ -47,6 +54,7 @@ class HaScriptPicker extends LitElement {
               <a
                 href="https://home-assistant.io/docs/scripts/editor/"
                 target="_blank"
+                rel="noreferrer"
               >
                 ${this.hass.localize(
                   "ui.panel.config.script.picker.learn_more"
@@ -77,7 +85,7 @@ class HaScriptPicker extends LitElement {
                         )}"
                         @click=${this._runScript}
                       ></paper-icon-button>
-                      <paper-item-body>
+                      <paper-item-body two-line>
                         <div>${computeStateName(script)}</div>
                       </paper-item-body>
                       <div class="actions">
@@ -98,8 +106,8 @@ class HaScriptPicker extends LitElement {
 
         <a href="/config/script/new">
           <ha-fab
-            slot="fab"
             ?is-wide=${this.isWide}
+            ?narrow=${this.narrow}
             icon="hass:plus"
             title="${this.hass.localize(
               "ui.panel.config.script.picker.add_script"
@@ -107,7 +115,7 @@ class HaScriptPicker extends LitElement {
             ?rtl=${computeRTL(this.hass)}
           ></ha-fab>
         </a>
-      </hass-subpage>
+      </hass-tabs-subpage>
     `;
   }
 
@@ -132,7 +140,6 @@ class HaScriptPicker extends LitElement {
         }
 
         ha-card {
-          padding-bottom: 8px;
           margin-bottom: 56px;
         }
 
@@ -140,8 +147,7 @@ class HaScriptPicker extends LitElement {
           display: flex;
           flex-direction: horizontal;
           align-items: center;
-          padding: 0 8px;
-          margin: 4px 0;
+          padding: 0 8px 0 16px;
         }
 
         .script > *:first-child {
@@ -168,7 +174,9 @@ class HaScriptPicker extends LitElement {
           bottom: 24px;
           right: 24px;
         }
-
+        ha-fab[narrow] {
+          bottom: 84px;
+        }
         ha-fab[rtl] {
           right: auto;
           left: 16px;

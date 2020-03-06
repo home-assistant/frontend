@@ -19,7 +19,7 @@ class MoreInfoTimer extends LitElement {
 
   @property() public stateObj?: TimerEntity;
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     if (!this.hass || !this.stateObj) {
       return html``;
     }

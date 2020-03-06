@@ -3,10 +3,8 @@ import {
   LitElement,
   html,
   property,
-  query,
   CSSResult,
   css,
-  PropertyValues,
 } from "lit-element";
 
 import "./ha-form-string";
@@ -14,8 +12,10 @@ import "./ha-form-integer";
 import "./ha-form-float";
 import "./ha-form-boolean";
 import "./ha-form-select";
+import "./ha-form-multi_select";
 import "./ha-form-positive_time_period_dict";
 import { fireEvent } from "../../common/dom/fire_event";
+import { dynamicElement } from "../../common/dom/dynamic-element-directive";
 
 export type HaFormSchema =
   | HaFormStringSchema
@@ -23,6 +23,7 @@ export type HaFormSchema =
   | HaFormFloatSchema
   | HaFormBooleanSchema
   | HaFormSelectSchema
+  | HaFormMultiSelectSchema
   | HaFormTimeSchema;
 
 export interface HaFormBaseSchema {
@@ -42,7 +43,12 @@ export interface HaFormIntegerSchema extends HaFormBaseSchema {
 
 export interface HaFormSelectSchema extends HaFormBaseSchema {
   type: "select";
-  options?: string[];
+  options?: string[] | Array<[string, string]>;
+}
+
+export interface HaFormMultiSelectSchema extends HaFormBaseSchema {
+  type: "multi_select";
+  options?: { [key: string]: string } | string[] | Array<[string, string]>;
 }
 
 export interface HaFormFloatSchema extends HaFormBaseSchema {
@@ -72,6 +78,7 @@ export type HaFormData =
   | HaFormFloatData
   | HaFormBooleanData
   | HaFormSelectData
+  | HaFormMultiSelectData
   | HaFormTimeData;
 
 export type HaFormStringData = string;
@@ -79,6 +86,7 @@ export type HaFormIntegerData = number;
 export type HaFormFloatData = number;
 export type HaFormBooleanData = boolean;
 export type HaFormSelectData = string;
+export type HaFormMultiSelectData = string[];
 export interface HaFormTimeData {
   hours?: number;
   minutes?: number;
@@ -87,7 +95,7 @@ export interface HaFormTimeData {
 
 export interface HaFormElement extends LitElement {
   schema: HaFormSchema;
-  data: HaFormDataContainer | HaFormData;
+  data?: HaFormDataContainer | HaFormData;
   label?: string;
   suffix?: string;
 }
@@ -100,20 +108,14 @@ export class HaForm extends LitElement implements HaFormElement {
   @property() public computeError?: (schema: HaFormSchema, error) => string;
   @property() public computeLabel?: (schema: HaFormSchema) => string;
   @property() public computeSuffix?: (schema: HaFormSchema) => string;
-  @query("ha-form") private _childForm?: HaForm;
-  @query("#element") private _elementContainer?: HTMLDivElement;
 
   public focus() {
-    const input = this._childForm
-      ? this._childForm
-      : this._elementContainer
-      ? this._elementContainer.lastChild
-      : undefined;
-
+    const input =
+      this.shadowRoot!.getElementById("child-form") ||
+      this.shadowRoot!.querySelector("ha-form");
     if (!input) {
       return;
     }
-
     (input as HTMLElement).focus();
   }
 
@@ -151,38 +153,14 @@ export class HaForm extends LitElement implements HaFormElement {
             </div>
           `
         : ""}
-      <div id="element"></div>
+      ${dynamicElement(`ha-form-${this.schema.type}`, {
+        schema: this.schema,
+        data: this.data,
+        label: this._computeLabel(this.schema),
+        suffix: this._computeSuffix(this.schema),
+        id: "child-form",
+      })}
     `;
-  }
-
-  protected updated(changedProperties: PropertyValues) {
-    const schemaChanged = changedProperties.has("schema");
-    const oldSchema = schemaChanged
-      ? changedProperties.get("schema")
-      : undefined;
-    if (
-      !Array.isArray(this.schema) &&
-      schemaChanged &&
-      (!oldSchema || (oldSchema as HaFormSchema).type !== this.schema.type)
-    ) {
-      const element = document.createElement(
-        `ha-form-${this.schema.type}`
-      ) as HaFormElement;
-      element.schema = this.schema;
-      element.data = this.data;
-      element.label = this._computeLabel(this.schema);
-      element.suffix = this._computeSuffix(this.schema);
-      if (this._elementContainer!.lastChild) {
-        this._elementContainer!.removeChild(this._elementContainer!.lastChild);
-      }
-      this._elementContainer!.appendChild(element);
-    } else if (this._elementContainer && this._elementContainer.lastChild) {
-      const element = this._elementContainer!.lastChild as HaFormElement;
-      element.schema = this.schema;
-      element.data = this.data;
-      element.label = this._computeLabel(this.schema);
-      element.suffix = this._computeSuffix(this.schema);
-    }
   }
 
   private _computeLabel(schema: HaFormSchema) {

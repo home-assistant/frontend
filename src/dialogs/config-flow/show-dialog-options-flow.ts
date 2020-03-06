@@ -44,12 +44,25 @@ export const showOptionsFlowDialog = (
           : "";
       },
 
-      renderShowFormStepHeader(hass, _step) {
-        return hass.localize(`ui.dialogs.options_flow.form.header`);
+      renderShowFormStepHeader(hass, step) {
+        return (
+          hass.localize(
+            `component.${configEntry.domain}.options.step.${step.step_id}.title`
+          ) || hass.localize(`ui.dialogs.options_flow.form.header`)
+        );
       },
 
-      renderShowFormStepDescription(_hass, _step) {
-        return "";
+      renderShowFormStepDescription(hass, step) {
+        const description = localizeKey(
+          hass.localize,
+          `component.${configEntry.domain}.options.step.${step.step_id}.description`,
+          step.description_placeholders
+        );
+        return description
+          ? html`
+              <ha-markdown allowsvg .content=${description}></ha-markdown>
+            `
+          : "";
       },
 
       renderShowFormStepFieldLabel(hass, step, field) {

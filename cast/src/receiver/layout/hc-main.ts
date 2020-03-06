@@ -15,6 +15,9 @@ import {
 import {
   LovelaceConfig,
   getLovelaceCollection,
+  fetchResources,
+  LegacyLovelaceConfig,
+  getLegacyLovelaceCollection,
 } from "../../../../src/data/lovelace";
 import "./hc-launch-screen";
 import { castContext } from "../cast_context";
@@ -22,6 +25,9 @@ import { CAST_NS } from "../../../../src/cast/const";
 import { ReceiverStatusMessage } from "../../../../src/cast/sender_messages";
 import { loadLovelaceResources } from "../../../../src/panels/lovelace/common/load-resources";
 import { isNavigationClick } from "../../../../src/common/dom/is-navigation-click";
+import { atLeastVersion } from "../../../../src/common/config/version";
+
+let resourcesLoaded = false;
 
 @customElement("hc-main")
 export class HcMain extends HassElement {
@@ -34,6 +40,7 @@ export class HcMain extends HassElement {
   @property() private _error?: string;
 
   private _unsubLovelace?: UnsubscribeFunc;
+  private _urlPath?: string | null;
 
   public processIncomingMessage(msg: HassMessage) {
     if (msg.type === "connect") {
@@ -50,7 +57,7 @@ export class HcMain extends HassElement {
     }
   }
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     if (this._showDemo) {
       return html`
         <hc-demo .lovelacePath=${this._lovelacePath}></hc-demo>
@@ -108,6 +115,7 @@ export class HcMain extends HassElement {
     if (this.hass) {
       status.hassUrl = this.hass.auth.data.hassUrl;
       status.lovelacePath = this._lovelacePath!;
+      status.urlPath = this._urlPath;
     }
 
     if (senderId) {
@@ -163,8 +171,14 @@ export class HcMain extends HassElement {
       this._error = "Cannot show Lovelace because we're not connected.";
       return;
     }
-    if (!this._unsubLovelace) {
-      const llColl = getLovelaceCollection(this.hass!.connection);
+    if (!this._unsubLovelace || this._urlPath !== msg.urlPath) {
+      this._urlPath = msg.urlPath;
+      if (this._unsubLovelace) {
+        this._unsubLovelace();
+      }
+      const llColl = atLeastVersion(this.hass.connection.haVersion, 0, 107)
+        ? getLovelaceCollection(this.hass!.connection, msg.urlPath)
+        : getLegacyLovelaceCollection(this.hass!.connection);
       // We first do a single refresh because we need to check if there is LL
       // configuration.
       try {
@@ -183,6 +197,15 @@ export class HcMain extends HassElement {
         );
       }
     }
+    if (!resourcesLoaded) {
+      resourcesLoaded = true;
+      const resources = atLeastVersion(this.hass.connection.haVersion, 0, 107)
+        ? await fetchResources(this.hass!.connection)
+        : (this._lovelaceConfig as LegacyLovelaceConfig).resources;
+      if (resources) {
+        loadLovelaceResources(resources, this.hass!.auth.data.hassUrl);
+      }
+    }
     this._showDemo = false;
     this._lovelacePath = msg.viewPath;
     if (castContext.getDeviceCapabilities().touch_input_supported) {
@@ -194,12 +217,6 @@ export class HcMain extends HassElement {
   private _handleNewLovelaceConfig(lovelaceConfig: LovelaceConfig) {
     castContext.setApplicationState(lovelaceConfig.title!);
     this._lovelaceConfig = lovelaceConfig;
-    if (lovelaceConfig.resources) {
-      loadLovelaceResources(
-        lovelaceConfig.resources,
-        this.hass!.auth.data.hassUrl
-      );
-    }
   }
 
   private _handleShowDemo(_msg: ShowDemoMessage) {

@@ -22,6 +22,7 @@ import {
   DeviceRegistryEntry,
   subscribeDeviceRegistry,
   computeDeviceName,
+  DeviceEntityLookup,
 } from "../../data/device_registry";
 import { compare } from "../../common/string/compare";
 import { PolymerChangedEvent } from "../../polymer-types";
@@ -29,7 +30,6 @@ import {
   AreaRegistryEntry,
   subscribeAreaRegistry,
 } from "../../data/area_registry";
-import { DeviceEntityLookup } from "../../panels/config/devices/ha-devices-data-table";
 import {
   EntityRegistryEntry,
   subscribeEntityRegistry,
@@ -203,9 +203,9 @@ export class HaDevicePicker extends SubscribeMixin(LitElement) {
     ];
   }
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     if (!this.devices || !this.areas || !this.entities) {
-      return;
+      return html``;
     }
     const devices = this._getDevices(
       this.devices,

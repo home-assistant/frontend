@@ -33,6 +33,9 @@
   "en": {
     "nativeName": "English"
   },
+  "eo": {
+    "nativeName": "Esperanto"
+  },
   "es": {
     "nativeName": "Español"
   },
@@ -73,6 +76,9 @@
   },
   "hy": {
     "nativeName": "Հայերեն"
+  },
+  "iba": {
+    "nativeName": "Jaku Iban"
   },
   "id": {
     "nativeName": "Indonesia"

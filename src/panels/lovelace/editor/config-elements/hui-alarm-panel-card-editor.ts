@@ -59,7 +59,7 @@ export class HuiAlarmPanelCardEditor extends LitElement
     return this._config!.theme || "Backend-selected";
   }
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     if (!this.hass) {
       return html``;
     }
@@ -75,7 +75,7 @@ export class HuiAlarmPanelCardEditor extends LitElement
           )} (${this.hass.localize(
             "ui.panel.lovelace.editor.card.config.required"
           )})"
-          .hass="${this.hass}"
+          .hass=${this.hass}
           .value="${this._entity}"
           .configValue=${"entity"}
           include-domains='["alarm_control_panel"]'
@@ -120,7 +120,7 @@ export class HuiAlarmPanelCardEditor extends LitElement
           </paper-listbox>
         </paper-dropdown-menu>
         <hui-theme-select-editor
-          .hass="${this.hass}"
+          .hass=${this.hass}
           .value="${this._theme}"
           .configValue="${"theme"}"
           @theme-changed="${this._valueChanged}"
@@ -155,13 +155,14 @@ export class HuiAlarmPanelCardEditor extends LitElement
     const target = ev.target! as EditorTarget;
     const index = Number(target.value);
     if (index > -1) {
-      const newStates = this._states;
+      const newStates = [...this._states];
       newStates.splice(index, 1);
-      this._config = {
-        ...this._config,
-        states: newStates,
-      };
-      fireEvent(this, "config-changed", { config: this._config });
+      fireEvent(this, "config-changed", {
+        config: {
+          ...this._config,
+          states: newStates,
+        },
+      });
     }
   }
 
@@ -170,17 +171,18 @@ export class HuiAlarmPanelCardEditor extends LitElement
       return;
     }
     const target = ev.target! as EditorTarget;
-    if (!target.value || this._states.indexOf(target.value) >= 0) {
+    if (!target.value || this._states.indexOf(target.value) !== -1) {
       return;
     }
-    const newStates = this._states;
+    const newStates = [...this._states];
     newStates.push(target.value);
-    this._config = {
-      ...this._config,
-      states: newStates,
-    };
     target.value = "";
-    fireEvent(this, "config-changed", { config: this._config });
+    fireEvent(this, "config-changed", {
+      config: {
+        ...this._config,
+        states: newStates,
+      },
+    });
   }
 
   private _valueChanged(ev: EntitiesEditorEvent): void {

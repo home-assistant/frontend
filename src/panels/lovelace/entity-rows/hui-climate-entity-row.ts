@@ -14,11 +14,11 @@ import "../components/hui-generic-entity-row";
 import "../components/hui-warning";
 
 import { HomeAssistant } from "../../../types";
-import { EntityRow, EntityConfig } from "./types";
+import { LovelaceRow, EntityConfig } from "./types";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
 
 @customElement("hui-climate-entity-row")
-class HuiClimateEntityRow extends LitElement implements EntityRow {
+class HuiClimateEntityRow extends LitElement implements LovelaceRow {
   @property() public hass?: HomeAssistant;
 
   @property() private _config?: EntityConfig;
@@ -35,7 +35,7 @@ class HuiClimateEntityRow extends LitElement implements EntityRow {
     return hasConfigOrEntityChanged(this, changedProps);
   }
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     if (!this.hass || !this._config) {
       return html``;
     }
@@ -55,10 +55,10 @@ class HuiClimateEntityRow extends LitElement implements EntityRow {
     }
 
     return html`
-      <hui-generic-entity-row .hass="${this.hass}" .config="${this._config}">
+      <hui-generic-entity-row .hass=${this.hass} .config=${this._config}>
         <ha-climate-state
-          .hass="${this.hass}"
-          .stateObj="${stateObj}"
+          .hass=${this.hass}
+          .stateObj=${stateObj}
         ></ha-climate-state>
       </hui-generic-entity-row>
     `;

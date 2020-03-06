@@ -184,8 +184,8 @@
                 "on": "Blautt"
             },
             "motion": {
-                "off": "Hreinsa",
-                "on": "Uppgötvað"
+                "off": "Engin hreyfing",
+                "on": "Hreyfing"
             },
             "occupancy": {
                 "off": "Hreinsa",
@@ -350,6 +350,7 @@
         "weather": {
             "clear-night": "Heiðskýrt, nótt",
             "cloudy": "Skýjað",
+            "exceptional": "Mjög gott",
             "fog": "Þoka",
             "hail": "Haglél",
             "lightning": "Eldingar",
@@ -402,14 +403,21 @@
             },
             "climate": {
                 "away_mode": "Fjarverandi hamur",
+                "cooling": "{name} kæling",
                 "currently": "Er núna",
                 "fan_mode": "Viftuhamur",
+                "heating": "{name} hitun",
                 "on_off": "Kveikt / slökkt",
                 "operation": "Aðgerð",
                 "preset_mode": "Forstilling",
                 "swing_mode": "Sveifluhamur",
                 "target_humidity": "Viðmiðunar rakastig",
                 "target_temperature": "Viðmiðunar hitastig"
+            },
+            "counter": {
+                "actions": {
+                    "reset": "endurstilla"
+                }
             },
             "cover": {
                 "position": "Staðsetning",
@@ -502,6 +510,7 @@
         },
         "common": {
             "cancel": "Hætta við",
+            "close": "Loka",
             "loading": "Hleð",
             "no": "Nei",
             "save": "Vista",
@@ -510,7 +519,8 @@
         "components": {
             "device-picker": {
                 "clear": "Hreinsa",
-                "device": "Tæki"
+                "device": "Tæki",
+                "show_devices": "Sýna tæki"
             },
             "entity": {
                 "entity-picker": {
@@ -545,7 +555,8 @@
             },
             "confirmation": {
                 "cancel": "Hætta við",
-                "ok": "Í lagi"
+                "ok": "Í lagi",
+                "title": "Ertu viss?"
             },
             "more_info_control": {
                 "script": {
@@ -561,6 +572,7 @@
                 }
             },
             "more_info_settings": {
+                "back": "Fara tilbaka",
                 "entity_id": "Kenni eingar",
                 "name": "Yfirskrifa nafn",
                 "save": "Vista"
@@ -570,7 +582,16 @@
                     "header": "Valkostir"
                 }
             },
+            "voice_command": {
+                "error": "Úbbs, villa kom upp",
+                "how_can_i_help": "Hvernig get ég aðstoðað?"
+            },
             "zha_device_info": {
+                "buttons": {
+                    "add": "Bæta við tækjum",
+                    "reconfigure": "Endurstilla tæki",
+                    "remove": "Fjarlægja tæki"
+                },
                 "last_seen": "Síðast séð",
                 "manuf": "eftir {manufacturer}",
                 "no_area": "Ekkert svæði",
@@ -599,6 +620,7 @@
         },
         "notification_drawer": {
             "click_to_configure": "Smelltu á hnappinn til að stilla {entity}",
+            "close": "Loka",
             "empty": "Engar tilkynningar",
             "title": "Tilkynningar"
         },
@@ -611,7 +633,7 @@
         },
         "panel": {
             "config": {
-                "area_registry": {
+                "areas": {
                     "caption": "Svæðaskrá",
                     "create_area": "BÚA TIL SVÆÐI",
                     "description": "Yfirlit yfir öll svæði á heimilinu þínu.",
@@ -654,6 +676,9 @@
                                     "label": "Töf"
                                 },
                                 "device_id": {
+                                    "extra_fields": {
+                                        "code": "Kóði"
+                                    },
                                     "label": "Tæki"
                                 },
                                 "event": {
@@ -832,10 +857,14 @@
                     },
                     "picker": {
                         "add_automation": "Bæta við sjálfvirkni",
+                        "delete_automation": "Eyða sjálfvirkni",
+                        "edit_automation": "Breyta sjálfvirkni",
                         "header": "Sjálfvirkniritill",
                         "learn_more": "Læra meira um sjálfvirkni",
                         "no_automations": "Við fundum ekki neinar sjálfvirkni-skilgreiningar sem hægt er að breyta",
-                        "pick_automation": "Veldu sjálfvirkni sem á að breyta"
+                        "only_editable": "Eingöngu er hægt að breyta sjálfvirkni sem skilgreind er í automations.yaml",
+                        "pick_automation": "Veldu sjálfvirkni sem á að breyta",
+                        "show_info_automation": "Sýna upplýsingar um sjálfvirkni"
                     }
                 },
                 "cloud": {
@@ -846,6 +875,7 @@
                             "title": "Alexa"
                         },
                         "connected": "Tengdur",
+                        "connection_status": "Staða tengingar við skýið",
                         "fetching_subscription": "Sæki áskrift...",
                         "google": {
                             "security_devices": "Öryggistæki",
@@ -879,7 +909,8 @@
                     "dialog_cloudhook": {
                         "close": "Loka",
                         "confirm_disable": "Ertu viss um að þú viljir afvirkja þennan vefkrók?",
-                        "copied_to_clipboard": "Afritað á klemmuspjald"
+                        "copied_to_clipboard": "Afritað á klemmuspjald",
+                        "view_documentation": "Skoða skjölun"
                     },
                     "forgot_password": {
                         "email": "Netfang",
@@ -888,6 +919,7 @@
                         "title": "Gleymt lykilorð"
                     },
                     "google": {
+                        "disable_2FA": "Afvirkja tvíþátta auðkenningu",
                         "title": "Google Assistant"
                     },
                     "login": {
@@ -911,6 +943,7 @@
                         "link_privacy_policy": "Friðhelgisstefna",
                         "link_terms_conditions": "Skilmálar og skilyrði",
                         "password": "Lykilorð",
+                        "password_error_msg": "Lykilorð eru að minnsta kosti 8 stafir",
                         "resend_confirm_email": "Endursenda staðfestingarpóst"
                     }
                 },
@@ -922,6 +955,7 @@
                             "core_config": {
                                 "edit_requires_storage": "Ritill er óvirkur af því að stillingar eru vistaðar í configuration.yaml.",
                                 "elevation": "Hækkun",
+                                "elevation_feet": "fet",
                                 "elevation_meters": "metrar",
                                 "imperial_example": "Fahrenheit, pund",
                                 "latitude": "Breiddargráða",
@@ -970,6 +1004,7 @@
                     }
                 },
                 "devices": {
+                    "area_picker_label": "Svæði",
                     "automation": {
                         "actions": {
                             "caption": "Þegar eitthvað er ræst af kveikju..."
@@ -983,13 +1018,22 @@
                     },
                     "caption": "Tæki",
                     "data_table": {
+                        "area": "Svæði",
+                        "battery": "Rafhlaða",
+                        "device": "Tæki",
+                        "integration": "Samþætting",
                         "manufacturer": "Framleiðandi"
                     },
                     "description": "Stjórna tengdum tækjum",
                     "device_not_found": "Tæki fannst ekki.",
-                    "unknown_error": "Óþekkt villa"
+                    "entities": {
+                        "entities": "Einingar"
+                    },
+                    "info": "Upplýsingar um tæki",
+                    "unknown_error": "Óþekkt villa",
+                    "unnamed_device": "Ónefnt tæki"
                 },
-                "entity_registry": {
+                "entities": {
                     "caption": "Einingarskrá",
                     "description": "Yfirlit yfir allar þekktar einingar.",
                     "editor": {
@@ -1001,13 +1045,31 @@
                         "update": "UPPFÆRA"
                     },
                     "picker": {
+                        "disable_selected": {
+                            "button": "Afvirkja val"
+                        },
+                        "enable_selected": {
+                            "button": "Virkja val"
+                        },
+                        "filter": {
+                            "filter": "Sía"
+                        },
                         "header": "Einingarskrá",
                         "headers": {
-                            "name": "Nafn"
+                            "name": "Nafn",
+                            "status": "Staða"
                         },
                         "integrations_page": "Samþættingar síða",
                         "introduction": "Home Assistant heldur bókhald utanum allar einingar sem verið greindar. Hver þessara eininga hafa einingar-auðkenni (ID) sem er frátekið bara fyrir þessa tilteknu einingu.",
+                        "remove_selected": {
+                            "button": "Fjarlægja val"
+                        },
                         "show_disabled": "Sýna afvirkjaðar einingar",
+                        "status": {
+                            "disabled": "Afvirkjað",
+                            "ok": "í lagi",
+                            "unavailable": "Ekki tiltækt"
+                        },
                         "unavailable": "(ekki tiltækt)"
                     }
                 },
@@ -1015,6 +1077,7 @@
                 "integrations": {
                     "caption": "Samþættingar",
                     "config_entry": {
+                        "area": "Í {area}",
                         "delete_confirm": "Ertu viss um að þú viljir eyða þessari samþættingu?",
                         "device_unavailable": "Tæki ekki tiltækt",
                         "entity_unavailable": "Eining ekki tiltæk",
@@ -1025,19 +1088,32 @@
                         "no_device": "Einingar án tækja",
                         "no_devices": "Þessi samþætting hefur engin tæki.",
                         "restart_confirm": "Endurræsa Home Assitant til að klára að fjarlægja þessa samþættingu",
+                        "settings_button": "Breyta stillingum fyrir {integration}",
                         "via": "Tengt gegnum"
                     },
                     "config_flow": {
+                        "aborted": "Hætt var við",
+                        "add_area": "Bæta við svæði",
+                        "area_picker_label": "Svæði",
+                        "close": "Loka",
                         "external_step": {
                             "description": "Þetta skref krefst þess að þú heimsækir ytri vefsíðu svo hægt sé að ljúka þessu skrefi.",
                             "open_site": "Opna vefsíðu"
-                        }
+                        },
+                        "finish": "Ljúka",
+                        "submit": "Senda"
                     },
                     "configure": "Stilla",
                     "configured": "Uppsett",
                     "description": "Stjórna tengdum tækjum og þjónustum",
                     "discovered": "Uppgötvað",
                     "home_assistant_website": "Vefsíða Home Assistant",
+                    "ignore": {
+                        "hide_ignored": "Fela hunsaðar samþættingar",
+                        "ignore": "Hunsa",
+                        "ignored": "Hunsað",
+                        "show_ignored": "Sýna hunsaðar samþættingar"
+                    },
                     "new": "Setja upp nýja samþættingu",
                     "none": "Ekkert skilgreint sem stendur"
                 },
@@ -1064,19 +1140,44 @@
                     }
                 },
                 "scene": {
+                    "activated": "Virkjuð sena {name}.",
+                    "caption": "Senur",
+                    "description": "Búa til og breyta senum",
                     "editor": {
+                        "default_name": "Ný sena",
                         "devices": {
                             "add": "Bæta við tæki",
                             "delete": "Eyða tæki",
                             "header": "Tæki"
                         },
+                        "entities": {
+                            "add": "Bæta við einingu",
+                            "delete": "Eyða einingu",
+                            "header": "Einingar"
+                        },
+                        "load_error_not_editable": "Það er eingöngu hægt að breyta senum í scenes.yaml.",
                         "name": "Nafn",
                         "save": "Vista"
+                    },
+                    "picker": {
+                        "add_scene": "Bæta við senu",
+                        "delete_confirm": "Ertu viss um að þú viljir eyða þessari senu?",
+                        "delete_scene": "Eyða senu",
+                        "edit_scene": "Breyta senu",
+                        "header": "Senuritill",
+                        "learn_more": "Læra meira um senur",
+                        "only_editable": "Það er eingöngu hægt að breyta senum skilgreindum í scenes.yaml.",
+                        "pick_scene": "Veldu senu til að breyta",
+                        "show_info_scene": "Birta upplýsingar um senu"
                     }
                 },
                 "script": {
                     "caption": "Skrifta",
                     "description": "Búa til og breyta skriftum",
+                    "editor": {
+                        "alias": "Nafn",
+                        "link_available_actions": "Læra meira um tiltækar aðgerðir."
+                    },
                     "picker": {
                         "learn_more": "Læra meira um skriftur"
                     }
@@ -1159,6 +1260,22 @@
                         "device_name_placeholder": "Nafn notanda",
                         "update_name_button": "Uppfæra nafn"
                     },
+                    "groups": {
+                        "add_members": "Bæta við meðlim",
+                        "adding_members": "Bæti meðlimum við",
+                        "caption": "Hópar",
+                        "create": "Stofna hóp",
+                        "creating_group": "Stofna hóp",
+                        "group_info": "Upplýsingar um hóp",
+                        "group_name_placeholder": "Nafn hóps",
+                        "group_not_found": "Hópur fannst ekki!",
+                        "groups": "Hópar",
+                        "members": "Meðlimir",
+                        "remove_groups": "Fjarlægja hópa",
+                        "remove_members": "Fjarlægja meðlim",
+                        "removing_groups": "Fjarlægji hópa",
+                        "removing_members": "Fjarlægji meðlimi"
+                    },
                     "network_management": {
                         "header": "Netumsýsla"
                     },
@@ -1192,6 +1309,9 @@
                         "seconds": "sekúndur",
                         "set_config_parameter": "Stilltu Config Parameter"
                     },
+                    "ozw_log": {
+                        "header": "OZW annáll"
+                    },
                     "services": {
                         "cancel_command": "Hætta við skipun",
                         "heal_network": "Lækna net",
@@ -1209,6 +1329,8 @@
                         "title": "Viðburðir"
                     },
                     "info": {
+                        "icons_by": "Smátákn eftir",
+                        "remove": "Fjarlægja",
                         "title": "Upplýsingar"
                     },
                     "logs": {
@@ -1218,9 +1340,16 @@
                         "title": "MQTT"
                     },
                     "services": {
+                        "call_service": "Kalla í þjónustu",
+                        "column_description": "Lýsing",
+                        "column_example": "Dæmi",
+                        "data": "Þjónustugögn (YAML, valkvæmt)",
                         "title": "Þjónustur"
                     },
                     "states": {
+                        "copied": "Afritað á klemmuspjald",
+                        "copy_entity_state": "Afrita stöðu",
+                        "more_info": "Frekari upplýsingar",
                         "title": "Stöður"
                     },
                     "templates": {
@@ -1294,6 +1423,7 @@
                         },
                         "generic": {
                             "aspect_ratio": "Hlutfall",
+                            "camera_image": "Myndavélaeining",
                             "camera_view": "Sjónarhorn myndavélar",
                             "entities": "Einingar",
                             "entity": "Eining",
@@ -1309,7 +1439,8 @@
                             "show_state": "Birta stöðu?",
                             "theme": "Þema",
                             "title": "Titill",
-                            "unit": "Eining"
+                            "unit": "Eining",
+                            "url": "Slóð"
                         },
                         "glance": {
                             "columns": "Dálkar"
@@ -1360,11 +1491,15 @@
                         "edit": "Breyta",
                         "header": "Stillingar spjalds",
                         "move": "Færa",
+                        "options": "Fleir valkostir",
                         "pick_card": "Veldu spjald sem þú vilt bæta við.",
                         "save": "Vista",
                         "show_code_editor": "Birta kóða ritil",
                         "show_visual_editor": "Birta sjónrænan ritil",
                         "toggle_editor": "Víxla ritli"
+                    },
+                    "edit_lovelace": {
+                        "edit_title": "Breyta titli"
                     },
                     "edit_view": {
                         "add": "Bæta við sýn",
@@ -1392,6 +1527,10 @@
                         "para": "Home Assistant mun sjálfgefið halda utan um notendaviðmótið og uppfæra það þegar nýjar einingar eða Lovlace íhlutir verða aðgengilegir. Ef þú tekur yfir stjórn á viðmótinu þá mun þetta ekki gerast sjálfkrafa fyrir þig.",
                         "para_sure": "Ertu viss um að þú viljir taka yfir stjórn á notendaviðmótinu þínu?",
                         "save": "Taka stjórnina"
+                    },
+                    "suggest_card": {
+                        "create_own": "Velja annað spjald",
+                        "header": "Hér er tillaga fyrir þig"
                     }
                 },
                 "menu": {
@@ -1403,6 +1542,7 @@
                 },
                 "reload_lovelace": "Endurhlaða Lovelace",
                 "unused_entities": {
+                    "domain": "Lén",
                     "last_changed": "Síðast breytt"
                 },
                 "warning": {

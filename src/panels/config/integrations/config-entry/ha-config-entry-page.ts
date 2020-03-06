@@ -17,7 +17,10 @@ import { DeviceRegistryEntry } from "../../../../data/device_registry";
 import { AreaRegistryEntry } from "../../../../data/area_registry";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { showConfigEntrySystemOptionsDialog } from "../../../../dialogs/config-entry-system-options/show-dialog-config-entry-system-options";
-import { showConfirmationDialog } from "../../../../dialogs/confirmation/show-dialog-confirmation";
+import {
+  showAlertDialog,
+  showConfirmationDialog,
+} from "../../../../dialogs/generic/show-dialog-box";
 
 class HaConfigEntryPage extends LitElement {
   @property() public hass!: HomeAssistant;
@@ -177,11 +180,11 @@ class HaConfigEntryPage extends LitElement {
     deleteConfigEntry(this.hass, this.configEntryId).then((result) => {
       fireEvent(this, "hass-reload-entries");
       if (result.require_restart) {
-        alert(
-          this.hass.localize(
+        showAlertDialog(this, {
+          text: this.hass.localize(
             "ui.panel.config.integrations.config_entry.restart_confirm"
-          )
-        );
+          ),
+        });
       }
       navigate(this, "/config/integrations/dashboard", true);
     });
@@ -191,12 +194,14 @@ class HaConfigEntryPage extends LitElement {
     return css`
       .content {
         padding: 4px;
+        height: 100%;
       }
       p {
         text-align: center;
       }
       ha-devices-data-table {
         width: 100%;
+        height: 100%;
       }
     `;
   }

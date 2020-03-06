@@ -4,12 +4,13 @@ import "@polymer/paper-icon-button/paper-icon-button";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 
-import "../../../layouts/hass-subpage";
+import "../../../layouts/hass-tabs-subpage";
 import "../../../resources/ha-style";
 
 import "./ha-config-section-server-control";
 
 import LocalizeMixin from "../../../mixins/localize-mixin";
+import { configSections } from "../ha-panel-config";
 
 /*
  * @appliesMixin LocalizeMixin
@@ -33,8 +34,13 @@ class HaConfigServerControl extends LocalizeMixin(PolymerElement) {
         }
       </style>
 
-      <hass-subpage
-        header="[[localize('ui.panel.config.server_control.caption')]]"
+      <hass-tabs-subpage
+        hass="[[hass]]"
+        narrow="[[narrow]]"
+        route="[[route]]"
+        back-path="/config"
+        tabs="[[_computeTabs()]]"
+        show-advanced="[[showAdvanced]]"
       >
         <div class$="[[computeClasses(isWide)]]">
           <ha-config-section-server-control
@@ -43,7 +49,7 @@ class HaConfigServerControl extends LocalizeMixin(PolymerElement) {
             hass="[[hass]]"
           ></ha-config-section-server-control>
         </div>
-      </hass-subpage>
+      </hass-tabs-subpage>
     `;
   }
 
@@ -51,8 +57,14 @@ class HaConfigServerControl extends LocalizeMixin(PolymerElement) {
     return {
       hass: Object,
       isWide: Boolean,
+      narrow: Boolean,
+      route: Object,
       showAdvanced: Boolean,
     };
+  }
+
+  _computeTabs() {
+    return configSections.general;
   }
 
   computeClasses(isWide) {

@@ -9,6 +9,7 @@ import {
   CSSResult,
 } from "lit-element";
 import { classMap } from "lit-html/directives/class-map";
+import { ifDefined } from "lit-html/directives/if-defined";
 
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
@@ -26,8 +27,11 @@ import { processConfigEntities } from "../common/process-config-entities";
 import { GlanceCardConfig, GlanceConfigEntity } from "./types";
 import { actionHandler } from "../common/directives/action-handler-directive";
 import { hasAction } from "../common/has-action";
-import { ActionHandlerEvent } from "../../../data/lovelace";
+import { ActionHandlerEvent, LovelaceConfig } from "../../../data/lovelace";
 import { handleAction } from "../common/handle-action";
+import { computeDomain } from "../../../common/entity/compute_domain";
+import { UNAVAILABLE, UNKNOWN } from "../../../data/entity";
+import { findEntities } from "../common/find-entites";
 
 @customElement("hui-glance-card")
 export class HuiGlanceCard extends LitElement implements LovelaceCard {
@@ -38,8 +42,24 @@ export class HuiGlanceCard extends LitElement implements LovelaceCard {
     return document.createElement("hui-glance-card-editor");
   }
 
-  public static getStubConfig(): object {
-    return { entities: [] };
+  public static getStubConfig(
+    hass: HomeAssistant,
+    lovelaceConfig: LovelaceConfig,
+    entities?: string[],
+    entitiesFill?: string[]
+  ): object {
+    const includeDomains = ["sensor"];
+    const maxEntities = 3;
+    const foundEntities = findEntities(
+      hass,
+      lovelaceConfig,
+      maxEntities,
+      entities,
+      entitiesFill,
+      includeDomains
+    );
+
+    return { entities: foundEntities };
   }
 
   @property() public hass?: HomeAssistant;
@@ -56,7 +76,7 @@ export class HuiGlanceCard extends LitElement implements LovelaceCard {
   }
 
   public setConfig(config: GlanceCardConfig): void {
-    this._config = { theme: "default", ...config };
+    this._config = { theme: "default", state_color: true, ...config };
     const entities = processConfigEntities<GlanceConfigEntity>(config.entities);
 
     for (const entity of entities) {
@@ -109,7 +129,7 @@ export class HuiGlanceCard extends LitElement implements LovelaceCard {
     return false;
   }
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     if (!this._config || !this.hass) {
       return html``;
     }
@@ -167,6 +187,13 @@ export class HuiGlanceCard extends LitElement implements LovelaceCard {
         margin-bottom: 12px;
         width: var(--glance-column-width, 20%);
       }
+      .entity:focus {
+        outline: none;
+        background: var(--divider-color);
+        border-radius: 14px;
+        padding: 4px;
+        margin: -4px 0;
+      }
       .entity div {
         width: 100%;
         text-align: center;
@@ -207,6 +234,9 @@ export class HuiGlanceCard extends LitElement implements LovelaceCard {
           hasHold: hasAction(entityConf.hold_action),
           hasDoubleClick: hasAction(entityConf.double_tap_action),
         })}
+        tabindex=${ifDefined(
+          hasAction(entityConf.tap_action) ? "0" : undefined
+        )}
       >
         ${this._config!.show_name !== false
           ? html`
@@ -224,13 +254,27 @@ export class HuiGlanceCard extends LitElement implements LovelaceCard {
                 .stateObj=${stateObj}
                 .overrideIcon=${entityConf.icon}
                 .overrideImage=${entityConf.image}
+                .stateColor=${(entityConf.state_color === false ||
+                  entityConf.state_color) ??
+                  this._config!.state_color}
               ></state-badge>
             `
           : ""}
         ${this._config!.show_state !== false && entityConf.show_state !== false
           ? html`
               <div>
-                ${entityConf.show_last_changed
+                ${computeDomain(entityConf.entity) === "sensor" &&
+                stateObj.attributes.device_class === "timestamp" &&
+                stateObj.state !== UNAVAILABLE &&
+                stateObj.state !== UNKNOWN
+                  ? html`
+                      <hui-timestamp-display
+                        .hass=${this.hass}
+                        .ts=${new Date(stateObj.state)}
+                        .format=${entityConf.format}
+                      ></hui-timestamp-display>
+                    `
+                  : entityConf.show_last_changed
                   ? relativeTime(
                       new Date(stateObj.last_changed),
                       this.hass!.localize

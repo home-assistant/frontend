@@ -15,7 +15,7 @@ class HassErrorScreen extends LitElement {
   @property()
   public error?: string;
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     return html`
       <hass-subpage>
         <div class="content">

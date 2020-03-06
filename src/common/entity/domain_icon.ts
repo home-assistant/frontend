@@ -8,7 +8,7 @@ import { DEFAULT_DOMAIN_ICON } from "../const";
 const fixedIcons = {
   alert: "hass:alert",
   alexa: "hass:amazon-alexa",
-  automation: "hass:playlist-play",
+  automation: "hass:robot",
   calendar: "hass:calendar",
   camera: "hass:video",
   climate: "hass:thermostat",
@@ -23,7 +23,7 @@ const fixedIcons = {
   homeassistant: "hass:home-assistant",
   homekit: "hass:home-automation",
   image_processing: "hass:image-filter-frames",
-  input_boolean: "hass:drawing",
+  input_boolean: "hass:toggle-switch-outline",
   input_datetime: "hass:calendar-clock",
   input_number: "hass:ray-vertex",
   input_select: "hass:format-list-bulleted",
@@ -36,8 +36,8 @@ const fixedIcons = {
   plant: "hass:flower",
   proximity: "hass:apple-safari",
   remote: "hass:remote",
-  scene: "hass:google-pages",
-  script: "hass:file-document",
+  scene: "hass:palette",
+  script: "hass:script-text",
   sensor: "hass:eye",
   simple_alarm: "hass:bell",
   sun: "hass:white-balance-sunny",
@@ -48,7 +48,7 @@ const fixedIcons = {
   water_heater: "hass:thermometer",
   weather: "hass:weather-cloudy",
   weblink: "hass:open-in-new",
-  zone: "hass:map-marker",
+  zone: "hass:map-marker-radius",
 };
 
 export const domainIcon = (domain: string, state?: string): string => {

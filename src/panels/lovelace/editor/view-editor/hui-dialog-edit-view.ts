@@ -34,13 +34,13 @@ export class HuiDialogEditView extends LitElement {
     (this.shadowRoot!.children[0] as any).showDialog();
   }
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     if (!this._params) {
       return html``;
     }
     return html`
       <hui-edit-view
-        .hass="${this.hass}"
+        .hass=${this.hass}
         .lovelace="${this._params.lovelace}"
         .viewIndex="${this._params.viewIndex}"
       >
