@@ -1875,8 +1875,10 @@
           "saving_failed": "Saving Lovelace UI configuration failed."
         },
         "views": {
-          "confirm_delete": "Are you sure you want to delete this view?",
-          "existing_cards": "You can't delete a view that has cards in it. Remove the cards first."
+          "confirm_delete": "Delete view?",
+          "confirm_delete_text": "Are you sure you want to delete your '{name}' view?",
+          "confirm_delete_existing_cards": "Deleting this view will also remove the cards",
+          "confirm_delete_existing_cards_text": "Are you sure you want to delete your '{name}' view? The view contains {number} cards that will be deleted. This action cannot be undone."
         },
         "menu": {
           "configure_ui": "Configure UI",
