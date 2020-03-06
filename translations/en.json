@@ -639,6 +639,7 @@
             },
             "generic": {
                 "cancel": "Cancel",
+                "close": "close",
                 "default_confirmation_title": "Are you sure?",
                 "ok": "OK"
             },
@@ -1481,6 +1482,76 @@
                     "note_about_website_reference": "More are available on the "
                 },
                 "introduction": "Here it is possible to configure your components and Home Assistant. Not everything is possible to configure from the UI yet, but we're working on it.",
+                "lovelace": {
+                    "caption": "Lovelace Dashboards",
+                    "dashboards": {
+                        "cant_edit_yaml": "Dashboards defined in YAML can not be edited from the UI. Change them in configuration.yaml.",
+                        "caption": "Dashboards",
+                        "conf_mode": {
+                            "storage": "UI controlled",
+                            "yaml": "YAML file"
+                        },
+                        "confirm_delete": "Are you sure you want to delete this dashboard?",
+                        "detail": {
+                            "create": "Create",
+                            "delete": "Delete",
+                            "dismiss": "Close",
+                            "edit_dashboard": "Edit dashboard",
+                            "icon": "Sidebar icon",
+                            "new_dashboard": "Add new dashboard",
+                            "require_admin": "Admin only",
+                            "show_sidebar": "Show in sidebar",
+                            "title": "Sidebar title",
+                            "update": "Update",
+                            "url": "Url",
+                            "url_error_msg": "The url can not contain spaces or special characters, except for _ and -"
+                        },
+                        "picker": {
+                            "add_dashboard": "Add dashboard",
+                            "headers": {
+                                "conf_mode": "Configuration method",
+                                "filename": "Filename",
+                                "require_admin": "Admin only",
+                                "sidebar": "Show in sidebar",
+                                "title": "Title"
+                            },
+                            "open": "Open dashboard"
+                        }
+                    },
+                    "description": "Configure your Lovelace Dashboards",
+                    "resources": {
+                        "cant_edit_yaml": "You are using Lovelace in YAML mode, therefore you can not manage your resources through the UI. Manage them in configuration.yaml.",
+                        "caption": "Resources",
+                        "confirm_delete": "Are you sure you want to delete this resource?",
+                        "detail": {
+                            "create": "Create",
+                            "delete": "Delete",
+                            "dismiss": "Close",
+                            "new_resource": "Add new resource",
+                            "type": "Resource type",
+                            "update": "Update",
+                            "url": "Url",
+                            "url_error_msg": "Url is a required field",
+                            "warning_header": "Be cautious!",
+                            "warning_text": "Adding resources can be dangerous, make sure you know the source of the resource and trust them. Bad resources could seriously harm your system."
+                        },
+                        "picker": {
+                            "add_resource": "Add resource",
+                            "headers": {
+                                "type": "Type",
+                                "url": "Url"
+                            }
+                        },
+                        "refresh_body": "You have to refresh the page to complete the removal, do you want to refresh now?",
+                        "refresh_header": "Do you want to refresh?",
+                        "types": {
+                            "css": "Stylesheet",
+                            "html": "HTML (deprecated)",
+                            "js": "JavaScript File (deprecated)",
+                            "module": "JavaScript Module"
+                        }
+                    }
+                },
                 "person": {
                     "add_person": "Add Person",
                     "caption": "Persons",
@@ -2180,10 +2251,14 @@
                     },
                     "save_config": {
                         "cancel": "Never mind",
+                        "close": "Close",
                         "header": "Take control of your Lovelace UI",
                         "para": "By default Home Assistant will maintain your user interface, updating it when new entities or Lovelace UI components become available. If you take control we will no longer make changes automatically for you.",
                         "para_sure": "Are you sure you want to take control of your user interface?",
-                        "save": "Take control"
+                        "save": "Take control",
+                        "yaml_config": "To help you start here is the current config of this dashboard:",
+                        "yaml_control": "To take control in YAML mode, create a YAML file with the name you specified in your config for this dashboard, or the default 'ui-lovelace.yaml'.",
+                        "yaml_mode": "You are using YAML mode, that means you can not change your Lovelace config from the UI. If you want to change Lovelace from the UI, remove the 'mode: yaml' from your Lovelace configuration in 'configuration.yaml.'"
                     },
                     "suggest_card": {
                         "add": "Add to Lovelace UI",

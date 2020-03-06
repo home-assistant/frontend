@@ -626,6 +626,8 @@
                     "enabled_description": "Wyłączone encje nie zostaną dodane do Home Assistant'a.",
                     "enabled_label": "Włącz encję",
                     "entity_id": "Identyfikator encji",
+                    "icon": "Nadpisanie ikony",
+                    "icon_error": "Ikony powinny mieć format 'prefix:iconname', np. 'mdi:home'",
                     "name": "Nadpisanie nazwy",
                     "note": "Uwaga: może to jeszcze nie działać ze wszystkimi integracjami.",
                     "unavailable": "Ta encja nie jest obecnie dostępna.",
@@ -639,6 +641,44 @@
                 "cancel": "Anuluj",
                 "default_confirmation_title": "Jesteś pewny?",
                 "ok": "OK"
+            },
+            "helper_settings": {
+                "generic": {
+                    "icon": "Ikona",
+                    "initial_value": "Wartość początkowa na starcie",
+                    "initial_value_explain": "Wartość, jaką będzie miał element po uruchomieniu Asystenta domowego. Pozostawione puste spowoduje przywrócenie poprzedniej wartości.",
+                    "name": "Imię"
+                },
+                "input_datetime": {
+                    "has_date": "Data",
+                    "has_time": "Czas"
+                },
+                "input_number": {
+                    "box": "Pole wyboru",
+                    "max": "Maksymalna wartość",
+                    "min": "Minimalna wartość",
+                    "mode": "Tryb wyświetlania",
+                    "slider": "Suwak",
+                    "step": "Wielkość kroku suwaka",
+                    "unit_of_measurement": "Jednostka miary"
+                },
+                "input_select": {
+                    "add": "Dodaj",
+                    "add_option": "Dodaj opcję",
+                    "no_options": "Nie ma jeszcze opcji.",
+                    "options": "Opcje"
+                },
+                "input_text": {
+                    "max": "Maksymalna długość",
+                    "min": "Minimalna długość",
+                    "mode": "Tryb wyświetlania",
+                    "password": "Hasło",
+                    "pattern": "Wyrażenie regularne do sprawdzania poprawności po stronie klienta",
+                    "text": "Pole tekstowe"
+                },
+                "not_editable": "Nie edytowalne",
+                "not_editable_text": "Tego elementu nie można zmienić z poziomu interfejsu użytkownika, ponieważ jest on zdefiniowany w pliku configuration.yaml.",
+                "required_error_msg": "To pole jest wymagane"
             },
             "more_info_control": {
                 "dismiss": "Zamknij okno dialogowe",
@@ -1356,6 +1396,30 @@
                     }
                 },
                 "header": "Konfiguruj Home Assistant'a",
+                "helpers": {
+                    "caption": "Pola do wprowadzania danych",
+                    "description": "Elementy, które mogą pomóc w tworzeniu automatyzacji",
+                    "dialog": {
+                        "add_helper": "Dodaj pole do wprowadzania danych",
+                        "add_platform": "Dodaj {platform}",
+                        "create": "Utwórz"
+                    },
+                    "picker": {
+                        "add_helper": "Dodaj pole do wprowadzania danych",
+                        "headers": {
+                            "editable": "Edytowalne",
+                            "name": "Nazwa",
+                            "type": "Typ"
+                        }
+                    },
+                    "types": {
+                        "input_boolean": "Przełączanie",
+                        "input_datetime": "Data i / lub godzina",
+                        "input_number": "Pole numeryczne",
+                        "input_select": "Pole rozwijalne",
+                        "input_text": "Pole tekstowe"
+                    }
+                },
                 "integrations": {
                     "caption": "Integracje",
                     "config_entry": {
@@ -2109,6 +2173,7 @@
                         "error_remove": "Nie można usunąć konfiguracji: {error}",
                         "error_save_yaml": "Nie można zapisać YAML: {error}",
                         "header": "Edytuj konfigurację",
+                        "resources_moved": "Zasoby nie powinny być już dodawane do konfiguracji Lovelace, ale można je dodawać w panelu konfiguracji Lovelace.",
                         "save": "Zapisz",
                         "saved": "Zapisano",
                         "unsaved_changes": "Niezapisane zmiany"
@@ -2415,7 +2480,7 @@
                     "dropdown_label": "Motyw",
                     "error_no_theme": "Brak dostępnych motywów.",
                     "header": "Motyw",
-                    "link_promo": "Dowiedz się więcej o motywch"
+                    "link_promo": "Dowiedz się więcej o motywach"
                 },
                 "vibrate": {
                     "description": "Włącz lub wyłącz wibracje na tym urządzeniu podczas sterowania urządzeniami.",

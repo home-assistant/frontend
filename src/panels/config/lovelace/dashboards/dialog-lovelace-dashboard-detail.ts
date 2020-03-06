@@ -25,9 +25,9 @@ export class DialogLovelaceDashboardDetail extends LitElement {
   @property() public hass!: HomeAssistant;
   @property() private _params?: LovelaceDashboardDetailsDialogParams;
   @property() private _urlPath!: LovelaceDashboard["url_path"];
-  @property() private _showSidebar!: boolean;
-  @property() private _sidebarIcon!: string;
-  @property() private _sidebarTitle!: string;
+  @property() private _showInSidebar!: boolean;
+  @property() private _icon!: string;
+  @property() private _title!: string;
   @property() private _requireAdmin!: LovelaceDashboard["require_admin"];
 
   @property() private _error?: string;
@@ -38,17 +38,16 @@ export class DialogLovelaceDashboardDetail extends LitElement {
   ): Promise<void> {
     this._params = params;
     this._error = undefined;
+    this._urlPath = this._params.urlPath || "";
     if (this._params.dashboard) {
-      this._urlPath = this._params.dashboard.url_path || "";
-      this._showSidebar = !!this._params.dashboard.sidebar;
-      this._sidebarIcon = this._params.dashboard.sidebar?.icon || "";
-      this._sidebarTitle = this._params.dashboard.sidebar?.title || "";
+      this._showInSidebar = !!this._params.dashboard.show_in_sidebar;
+      this._icon = this._params.dashboard.icon || "";
+      this._title = this._params.dashboard.title || "";
       this._requireAdmin = this._params.dashboard.require_admin || false;
     } else {
-      this._urlPath = "";
-      this._showSidebar = true;
-      this._sidebarIcon = "";
-      this._sidebarTitle = "";
+      this._showInSidebar = true;
+      this._icon = "";
+      this._title = "";
       this._requireAdmin = false;
     }
     await this.updateComplete;
@@ -59,6 +58,7 @@ export class DialogLovelaceDashboardDetail extends LitElement {
       return html``;
     }
     const urlInvalid = !/^[a-zA-Z0-9_-]+$/.test(this._urlPath);
+    const titleInvalid = !this._urlPath.trim();
     return html`
       <ha-dialog
         open
@@ -67,97 +67,130 @@ export class DialogLovelaceDashboardDetail extends LitElement {
         escapeKeyAction
         .heading=${createCloseHeading(
           this.hass,
-          this._params.dashboard
-            ? this._sidebarTitle ||
-                this.hass!.localize(
+          this._params.urlPath
+            ? this._title ||
+                this.hass.localize(
                   "ui.panel.config.lovelace.dashboards.detail.edit_dashboard"
                 )
-            : this.hass!.localize(
+            : this.hass.localize(
                 "ui.panel.config.lovelace.dashboards.detail.new_dashboard"
               )
         )}
       >
         <div>
-          ${this._error
-            ? html`
-                <div class="error">${this._error}</div>
-              `
-            : ""}
-          <div class="form">
-            <ha-switch
-              .checked=${this._showSidebar}
-              @change=${this._showSidebarChanged}
-              >${this.hass!.localize(
-                "ui.panel.config.lovelace.dashboards.detail.show_sidebar"
-              )}</ha-switch
-            >
-            ${this._showSidebar
-              ? html`
-                  <ha-icon-input
-                    .value=${this._sidebarIcon}
-                    @value-changed=${this._sidebarIconChanged}
-                    .label=${this.hass!.localize(
-                      "ui.panel.config.lovelace.dashboards.detail.icon"
-                    )}
-                  ></ha-icon-input>
+          ${this._params.dashboard && !this._params.dashboard.id
+            ? this.hass.localize(
+                "ui.panel.config.lovelace.dashboards.cant_edit_yaml"
+              )
+            : this._params.urlPath === "lovelace"
+            ? this.hass.localize(
+                "ui.panel.config.lovelace.dashboards.cant_edit_default"
+              )
+            : html`
+                ${this._error
+                  ? html`
+                      <div class="error">${this._error}</div>
+                    `
+                  : ""}
+                <div class="form">
                   <paper-input
-                    .value=${this._sidebarTitle}
-                    @value-changed=${this._sidebarTitleChanged}
-                    .label=${this.hass!.localize(
+                    .value=${this._title}
+                    @value-changed=${this._titleChanged}
+                    .label=${this.hass.localize(
                       "ui.panel.config.lovelace.dashboards.detail.title"
                     )}
                     @blur=${this._fillUrlPath}
-                  ></paper-input>
-                `
-              : ""}
-            ${!this._params.dashboard
-              ? html`
-                  <paper-input
-                    .value=${this._urlPath}
-                    @value-changed=${this._urlChanged}
-                    .label=${this.hass!.localize(
-                      "ui.panel.config.lovelace.dashboards.detail.url"
+                    .invalid=${titleInvalid}
+                    .errorMessage=${this.hass.localize(
+                      "ui.panel.config.lovelace.dashboards.detail.title_required"
                     )}
-                    .errorMessage=${this.hass!.localize(
-                      "ui.panel.config.lovelace.dashboards.detail.url_error_msg"
-                    )}
-                    .invalid=${urlInvalid}
                   ></paper-input>
-                `
-              : ""}
-            <ha-switch
-              .checked=${this._requireAdmin}
-              @change=${this._requireAdminChanged}
-              >${this.hass!.localize(
-                "ui.panel.config.lovelace.dashboards.detail.require_admin"
-              )}</ha-switch
-            >
-          </div>
+                  <ha-icon-input
+                    .value=${this._icon}
+                    @value-changed=${this._iconChanged}
+                    .label=${this.hass.localize(
+                      "ui.panel.config.lovelace.dashboards.detail.icon"
+                    )}
+                  ></ha-icon-input>
+                  ${!this._params.dashboard
+                    ? html`
+                        <paper-input
+                          .value=${this._urlPath}
+                          @value-changed=${this._urlChanged}
+                          .label=${this.hass.localize(
+                            "ui.panel.config.lovelace.dashboards.detail.url"
+                          )}
+                          .errorMessage=${this.hass.localize(
+                            "ui.panel.config.lovelace.dashboards.detail.url_error_msg"
+                          )}
+                          .invalid=${urlInvalid}
+                        ></paper-input>
+                      `
+                    : ""}
+                  <ha-switch
+                    .checked=${this._showInSidebar}
+                    @change=${this._showSidebarChanged}
+                    >${this.hass.localize(
+                      "ui.panel.config.lovelace.dashboards.detail.show_sidebar"
+                    )}
+                  </ha-switch>
+                  <ha-switch
+                    .checked=${this._requireAdmin}
+                    @change=${this._requireAdminChanged}
+                    >${this.hass.localize(
+                      "ui.panel.config.lovelace.dashboards.detail.require_admin"
+                    )}
+                  </ha-switch>
+                </div>
+              `}
         </div>
-        ${this._params.dashboard
+        ${this._params.urlPath
           ? html`
+              ${this._params.dashboard?.id
+                ? html`
+                    <mwc-button
+                      slot="secondaryAction"
+                      class="warning"
+                      @click=${this._deleteDashboard}
+                      .disabled=${this._submitting}
+                    >
+                      ${this.hass.localize(
+                        "ui.panel.config.lovelace.dashboards.detail.delete"
+                      )}
+                    </mwc-button>
+                  `
+                : ""}
               <mwc-button
                 slot="secondaryAction"
-                class="warning"
-                @click="${this._deleteDashboard}"
-                .disabled=${this._submitting}
+                @click=${this._toggleDefault}
+                .disabled=${this._params.urlPath === "lovelace" &&
+                  (!localStorage.defaultPage ||
+                    localStorage.defaultPage === "lovelace")}
               >
-                ${this.hass!.localize(
-                  "ui.panel.config.lovelace.dashboards.detail.delete"
-                )}
+                ${this._params.urlPath === localStorage.defaultPage ||
+                (this._params.urlPath === "lovelace" &&
+                  !localStorage.defaultPage)
+                  ? this.hass.localize(
+                      "ui.panel.config.lovelace.dashboards.detail.remove_default"
+                    )
+                  : this.hass.localize(
+                      "ui.panel.config.lovelace.dashboards.detail.set_default"
+                    )}
               </mwc-button>
             `
-          : html``}
+          : ""}
         <mwc-button
           slot="primaryAction"
           @click="${this._updateDashboard}"
-          .disabled=${urlInvalid || this._submitting}
+          .disabled=${urlInvalid || titleInvalid || this._submitting}
         >
-          ${this._params.dashboard
-            ? this.hass!.localize(
-                "ui.panel.config.lovelace.dashboards.detail.update"
-              )
-            : this.hass!.localize(
+          ${this._params.urlPath
+            ? this._params.dashboard?.id
+              ? this.hass.localize(
+                  "ui.panel.config.lovelace.dashboards.detail.update"
+                )
+              : this.hass.localize("ui.common.close")
+            : this.hass.localize(
                 "ui.panel.config.lovelace.dashboards.detail.create"
               )}
         </mwc-button>
@@ -170,43 +203,59 @@ export class DialogLovelaceDashboardDetail extends LitElement {
     this._urlPath = ev.detail.value;
   }
 
-  private _sidebarIconChanged(ev: PolymerChangedEvent<string>) {
+  private _iconChanged(ev: PolymerChangedEvent<string>) {
     this._error = undefined;
-    this._sidebarIcon = ev.detail.value;
+    this._icon = ev.detail.value;
   }
 
-  private _sidebarTitleChanged(ev: PolymerChangedEvent<string>) {
+  private _titleChanged(ev: PolymerChangedEvent<string>) {
     this._error = undefined;
-    this._sidebarTitle = ev.detail.value;
+    this._title = ev.detail.value;
   }
 
   private _fillUrlPath() {
     if (this._urlPath) {
       return;
     }
-    const parts = this._sidebarTitle.split(" ");
+    const parts = this._title.split(" ");
 
     if (parts.length) {
-      this._urlPath = parts[0].toLowerCase();
+      this._urlPath = parts.join("_").toLowerCase();
     }
   }
 
   private _showSidebarChanged(ev: Event) {
-    this._showSidebar = (ev.target as HaSwitch).checked;
+    this._showInSidebar = (ev.target as HaSwitch).checked;
   }
 
   private _requireAdminChanged(ev: Event) {
     this._requireAdmin = (ev.target as HaSwitch).checked;
   }
 
+  private _toggleDefault() {
+    const urlPath = this._params?.urlPath;
+    if (!urlPath) {
+      return;
+    }
+    if (urlPath === localStorage.defaultPage) {
+      delete localStorage.defaultPage;
+    } else {
+      localStorage.defaultPage = urlPath;
+    }
+    location.reload();
+  }
+
   private async _updateDashboard() {
+    if (this._params?.urlPath && !this._params.dashboard?.id) {
+      this._close();
+    }
     this._submitting = true;
     try {
       const values: Partial<LovelaceDashboardMutableParams> = {
         require_admin: this._requireAdmin,
-        sidebar: this._showSidebar
-          ? { icon: this._sidebarIcon, title: this._sidebarTitle }
-          : null,
+        show_in_sidebar: this._showInSidebar,
+        icon: this._icon || undefined,
+        title: this._title,
       };
       if (this._params!.dashboard) {
         await this._params!.updateDashboard(values);
@@ -217,7 +266,7 @@ export class DialogLovelaceDashboardDetail extends LitElement {
           values as LovelaceDashboardCreateParams
         );
       }
-      this._params = undefined;
+      this._close();
     } catch (err) {
       this._error = err?.message || "Unknown error";
     } finally {

@@ -54,6 +54,7 @@ class HaScriptPicker extends LitElement {
               <a
                 href="https://home-assistant.io/docs/scripts/editor/"
                 target="_blank"
+                rel="noreferrer"
               >
                 ${this.hass.localize(
                   "ui.panel.config.script.picker.learn_more"

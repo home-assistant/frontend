@@ -63,6 +63,7 @@ class HaAutomationPicker extends LitElement {
               <a
                 href="https://home-assistant.io/docs/automation/editor/"
                 target="_blank"
+                rel="noreferrer"
               >
                 ${this.hass.localize(
                   "ui.panel.config.automation.picker.learn_more"

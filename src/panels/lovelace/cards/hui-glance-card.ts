@@ -27,10 +27,11 @@ import { processConfigEntities } from "../common/process-config-entities";
 import { GlanceCardConfig, GlanceConfigEntity } from "./types";
 import { actionHandler } from "../common/directives/action-handler-directive";
 import { hasAction } from "../common/has-action";
-import { ActionHandlerEvent } from "../../../data/lovelace";
+import { ActionHandlerEvent, LovelaceConfig } from "../../../data/lovelace";
 import { handleAction } from "../common/handle-action";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { UNAVAILABLE, UNKNOWN } from "../../../data/entity";
+import { findEntities } from "../common/find-entites";
 
 @customElement("hui-glance-card")
 export class HuiGlanceCard extends LitElement implements LovelaceCard {
@@ -41,8 +42,24 @@ export class HuiGlanceCard extends LitElement implements LovelaceCard {
     return document.createElement("hui-glance-card-editor");
   }
 
-  public static getStubConfig(): object {
-    return { entities: [] };
+  public static getStubConfig(
+    hass: HomeAssistant,
+    lovelaceConfig: LovelaceConfig,
+    entities?: string[],
+    entitiesFill?: string[]
+  ): object {
+    const includeDomains = ["sensor"];
+    const maxEntities = 3;
+    const foundEntities = findEntities(
+      hass,
+      lovelaceConfig,
+      maxEntities,
+      entities,
+      entitiesFill,
+      includeDomains
+    );
+
+    return { entities: foundEntities };
   }
 
   @property() public hass?: HomeAssistant;

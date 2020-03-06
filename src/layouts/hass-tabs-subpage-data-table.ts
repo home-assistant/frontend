@@ -135,6 +135,7 @@ export class HaTabsSubpageDataTable extends LitElement {
     return css`
       ha-data-table {
         width: 100%;
+        height: 100%;
         --data-table-border-width: 0;
       }
       :host(:not([narrow])) ha-data-table {
