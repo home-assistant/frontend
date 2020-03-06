@@ -639,6 +639,7 @@
             },
             "generic": {
                 "cancel": "Avbryt",
+                "close": "Lukk",
                 "default_confirmation_title": "Er du sikker?",
                 "ok": "OK"
             },
@@ -1481,6 +1482,76 @@
                     "note_about_website_reference": "Flere er tilgjengelige på"
                 },
                 "introduction": "Her er det mulig å konfigurere dine komponenter og Home Assistant. Ikke alt er mulig å konfigurere fra brukergrensesnittet enda, men vi jobber med det.",
+                "lovelace": {
+                    "caption": "Lovelace Dashboards",
+                    "dashboards": {
+                        "cant_edit_yaml": "Instrumentbord som er definert i YAML, kan ikke redigeres fra brukergrensesnittet. Endre dem i configuration.yaml.",
+                        "caption": "Oversikter",
+                        "conf_mode": {
+                            "storage": "UI kontrollert",
+                            "yaml": "YAML-fil"
+                        },
+                        "confirm_delete": "Er du sikker på at du vil slette dette instrumentbordet?",
+                        "detail": {
+                            "create": "Opprett",
+                            "delete": "Slett",
+                            "dismiss": "Lukk",
+                            "edit_dashboard": "Redigere instrumentbord",
+                            "icon": "Sidepanel-ikon",
+                            "new_dashboard": "Legg til nytt instrumentbord",
+                            "require_admin": "Bare administrator",
+                            "show_sidebar": "Vis i sidepanelet",
+                            "title": "Tittel på sidepanelet",
+                            "update": "Oppdater",
+                            "url": "Url",
+                            "url_error_msg": "Url-adressen kan ikke inneholde mellomrom eller spesialtegn, med unntak av _ og -"
+                        },
+                        "picker": {
+                            "add_dashboard": "Legge til instrumentbord",
+                            "headers": {
+                                "conf_mode": "Konfigurasjonsmetode",
+                                "filename": "Filnavn",
+                                "require_admin": "Bare administrator",
+                                "sidebar": "Vis i sidepanelet",
+                                "title": "Tittel"
+                            },
+                            "open": "Åpne instrumentbord"
+                        }
+                    },
+                    "description": "Konfigurer Lovelace Dashboards",
+                    "resources": {
+                        "cant_edit_yaml": "Du bruker Lovelace i YAML-modus, derfor kan du ikke administrere ressursene dine via brukergrensesnittet. Behandle dem i configuration.yaml.",
+                        "caption": "Ressurser",
+                        "confirm_delete": "Er du sikker på at du vil slette denne ressursen?",
+                        "detail": {
+                            "create": "Opprett",
+                            "delete": "Slett",
+                            "dismiss": "Lukk",
+                            "new_resource": "Legg til ny ressurs",
+                            "type": "Ressurstype",
+                            "update": "Oppdater",
+                            "url": "Url",
+                            "url_error_msg": "Url-adresse er et obligatorisk felt",
+                            "warning_header": "Vær forsiktig!",
+                            "warning_text": "Det kan være farlig å legge til ressurser, sørg for at du kjenner kilden til ressursen og stoler på dem. Dårlige ressurser kan skade systemet ditt alvorlig."
+                        },
+                        "picker": {
+                            "add_resource": "Legg til ressurs",
+                            "headers": {
+                                "type": "Type",
+                                "url": "Url"
+                            }
+                        },
+                        "refresh_body": "Du må oppdatere siden for å fullføre fjerningen, vil du oppdatere nå?",
+                        "refresh_header": "Vil du oppdatere?",
+                        "types": {
+                            "css": "stilark",
+                            "html": "HTML (utdatert)",
+                            "js": "JavaScript-fil (utdatert)",
+                            "module": "JavaScript-modul"
+                        }
+                    }
+                },
                 "person": {
                     "add_person": "Legg til person",
                     "caption": "Personer",
@@ -2180,10 +2251,14 @@
                     },
                     "save_config": {
                         "cancel": "Glem det",
+                        "close": "Lukk",
                         "header": "Ta kontroll over Lovelace brukergrensesnittet ditt",
                         "para": "Som standard vil Home Assistant opprettholde brukergrensesnittet ditt, oppdatere det når nye enheter eller Lovelace UI-komponenter blir tilgjengelige. Hvis du tar kontroll, vil vi ikke lenger gjøre endringer automatisk for deg.",
                         "para_sure": "Er du sikker på at du vil ta kontroll over brukergrensesnittet ditt?",
-                        "save": "Ta kontroll"
+                        "save": "Ta kontroll",
+                        "yaml_config": "For å hjelpe deg med å starte, her er den gjeldende konfigurasjonen av dette dashbordet:",
+                        "yaml_control": "Hvis du vil ta kontroll i YAML-modus, oppretter du en YAML-fil med navnet du angav i konfigurasjonen for dette instrumentbordet, eller standard 'ui-lovelace.yaml'.",
+                        "yaml_mode": "Du bruker YAML-modus, det betyr at du ikke kan endre Lovelace config fra brukergrensesnittet. Hvis du vil endre Lovelace fra brukergrensesnittet, fjerner du «modus: yaml» fra Lovelace-konfigurasjonen i 'configuration.yaml'."
                     },
                     "suggest_card": {
                         "add": "Legg til i Lovelace UI",
