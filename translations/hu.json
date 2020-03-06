@@ -1918,7 +1918,7 @@
                     },
                     "safe-mode": {
                         "description": "A Home Assistant a konfiguráció betöltése közben bajba került, és most csökkentett módban fut. Vessen egy pillantást a hibanaplóra, hogy lássa, mi romlott el.",
-                        "header": "Biztonsági mód aktiválva",
+                        "header": "Csökkentett mód aktiválva",
                         "show_errors": "Hibák megjelenítése"
                     },
                     "shopping-list": {

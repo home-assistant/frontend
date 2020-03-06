@@ -40,6 +40,7 @@ class HuiWeblinkRow extends LitElement implements LovelaceRow {
       <a
         href=${this._config.url}
         target=${this._config.url.indexOf("://") !== -1 ? "_blank" : ""}
+        rel="noreferrer"
       >
         <ha-icon .icon="${this._config.icon}"></ha-icon>
         <div>${this._config.name}</div>

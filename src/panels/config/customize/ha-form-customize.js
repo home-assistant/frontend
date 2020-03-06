@@ -31,6 +31,7 @@ class HaFormCustomize extends LocalizeMixin(PolymerElement) {
           <a
             href="https://www.home-assistant.io/docs/configuration/customizing-devices/#customization-using-the-ui"
             target="_blank"
+            rel="noreferrer"
             >[[localize('ui.panel.config.customize.warning.include_link')]]</a
           >.<br />
           [[localize('ui.panel.config.customize.warning.not_applied')]]

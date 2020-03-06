@@ -9,6 +9,7 @@ import {
   css,
 } from "lit-element";
 import memoize from "memoize-one";
+import "@polymer/paper-tooltip/paper-tooltip";
 import {
   DataTableColumnContainer,
   RowClickedEvent,
@@ -24,13 +25,11 @@ import {
   updateDashboard,
   deleteDashboard,
   LovelaceDashboardCreateParams,
+  LovelacePanelConfig,
 } from "../../../../data/lovelace";
 import { showDashboardDetailDialog } from "./show-dialog-lovelace-dashboard-detail";
 import { compare } from "../../../../common/string/compare";
-import {
-  showConfirmationDialog,
-  showAlertDialog,
-} from "../../../../dialogs/generic/show-dialog-box";
+import { showConfirmationDialog } from "../../../../dialogs/generic/show-dialog-box";
 import { lovelaceTabs } from "../ha-config-lovelace";
 import { navigate } from "../../../../common/navigate";
 
@@ -43,7 +42,7 @@ export class HaConfigLovelaceDashboards extends LitElement {
   @property() private _dashboards: LovelaceDashboard[] = [];
 
   private _columns = memoize(
-    (_language, dashboards): DataTableColumnContainer => {
+    (narrow: boolean, _language, dashboards): DataTableColumnContainer => {
       const columns: DataTableColumnContainer = {
         icon: {
           title: "",
@@ -62,89 +61,147 @@ export class HaConfigLovelaceDashboards extends LitElement {
           sortable: true,
           filterable: true,
           direction: "asc",
+          grows: true,
+          template: (title, dashboard: any) => {
+            const titleTemplate = html`
+              ${title}
+              ${dashboard.default
+                ? html`
+                    <ha-icon
+                      style="padding-left: 10px;"
+                      icon="hass:check-circle-outline"
+                    ></ha-icon>
+                    <paper-tooltip>
+                      This is the default dashdoard.
+                    </paper-tooltip>
+                  `
+                : ""}
+            `;
+            return narrow
+              ? html`
+                  ${titleTemplate}
+                  <div class="secondary">
+                    ${this.hass.localize(
+                      `ui.panel.config.lovelace.dashboards.conf_mode.${dashboard.mode}`
+                    )}${dashboard.filename
+                      ? html`
+                          - ${dashboard.filename}
+                        `
+                      : ""}
+                  </div>
+                `
+              : titleTemplate;
+          },
         },
-        mode: {
+      };
+
+      if (!narrow) {
+        columns.mode = {
           title: this.hass.localize(
             "ui.panel.config.lovelace.dashboards.picker.headers.conf_mode"
           ),
           sortable: true,
           filterable: true,
+          width: "15%",
           template: (mode) =>
             html`
               ${this.hass.localize(
                 `ui.panel.config.lovelace.dashboards.conf_mode.${mode}`
               ) || mode}
             `,
-        },
-      };
-
-      if (dashboards.some((dashboard) => dashboard.mode === "yaml")) {
-        columns.filename = {
-          title: this.hass.localize(
-            "ui.panel.config.lovelace.dashboards.picker.headers.filename"
-          ),
-          sortable: true,
-          filterable: true,
         };
-      }
-
-      const columns2: DataTableColumnContainer = {
-        require_admin: {
+        if (dashboards.some((dashboard) => dashboard.filename)) {
+          columns.filename = {
+            title: this.hass.localize(
+              "ui.panel.config.lovelace.dashboards.picker.headers.filename"
+            ),
+            width: "15%",
+            sortable: true,
+            filterable: true,
+          };
+        }
+        columns.require_admin = {
           title: this.hass.localize(
             "ui.panel.config.lovelace.dashboards.picker.headers.require_admin"
           ),
           sortable: true,
           type: "icon",
+          width: "100px",
           template: (requireAdmin: boolean) =>
             requireAdmin
               ? html`
-                  <ha-icon icon="hass:check-circle-outline"></ha-icon>
+                  <ha-icon icon="hass:check"></ha-icon>
                 `
               : html`
                   -
                 `,
-        },
-        sidebar: {
+        };
+        columns.show_in_sidebar = {
           title: this.hass.localize(
             "ui.panel.config.lovelace.dashboards.picker.headers.sidebar"
           ),
           type: "icon",
+          width: "100px",
           template: (sidebar) =>
             sidebar
               ? html`
-                  <ha-icon icon="hass:check-circle-outline"></ha-icon>
+                  <ha-icon icon="hass:check"></ha-icon>
                 `
               : html`
                   -
                 `,
-        },
-        url_path: {
-          title: "",
-          type: "icon",
-          filterable: true,
-          template: (urlPath) =>
-            html`
-              <mwc-button .urlPath=${urlPath} @click=${this._navigate}
-                >${this.hass.localize(
-                  "ui.panel.config.lovelace.dashboards.picker.open"
-                )}</mwc-button
-              >
-            `,
-        },
+        };
+      }
+
+      columns.url_path = {
+        title: "",
+        filterable: true,
+        width: "75px",
+        template: (urlPath) =>
+          narrow
+            ? html`
+                <paper-icon-button
+                  icon="hass:open-in-new"
+                  .urlPath=${urlPath}
+                  @click=${this._navigate}
+                ></paper-icon-button>
+              `
+            : html`
+                <mwc-button .urlPath=${urlPath} @click=${this._navigate}
+                  >${this.hass.localize(
+                    "ui.panel.config.lovelace.dashboards.picker.open"
+                  )}</mwc-button
+                >
+              `,
       };
-      return { ...columns, ...columns2 };
+
+      return columns;
     }
   );
 
   private _getItems = memoize((dashboards: LovelaceDashboard[]) => {
-    return dashboards.map((dashboard) => {
-      return {
-        filename: "",
-        ...dashboard,
-        icon: dashboard.sidebar?.icon,
-        title: dashboard.sidebar?.title || dashboard.url_path,
-      };
-    });
+    const defaultMode = (this.hass.panels?.lovelace
+      ?.config as LovelacePanelConfig).mode;
+    const isDefault =
+      !localStorage.defaultPage || localStorage.defaultPage === "lovelace";
+    return [
+      {
+        icon: "hass:view-dashboard",
+        title: this.hass.localize("panel.states"),
+        default: isDefault,
+        sidebar: isDefault,
+        require_admin: false,
+        url_path: "lovelace",
+        mode: defaultMode,
+        filename: defaultMode === "yaml" ? "ui-lovelace.yaml" : "",
+      },
+      ...dashboards.map((dashboard) => {
+        return {
+          ...dashboard,
+          default: localStorage.defaultPage === dashboard.url_path,
+        };
+      }),
+    ];
   });
 
   protected render(): TemplateResult {
@@ -161,9 +218,14 @@ export class HaConfigLovelaceDashboards extends LitElement {
         back-path="/config"
         .route=${this.route}
         .tabs=${lovelaceTabs}
-        .columns=${this._columns(this.hass.language, this._dashboards)}
+        .columns=${this._columns(
+          this.narrow,
+          this.hass.language,
+          this._dashboards
+        )}
         .data=${this._getItems(this._dashboards)}
         @row-click=${this._editDashboard}
+        id="url_path"
       >
       </hass-tabs-subpage-data-table>
       <ha-fab
@@ -194,28 +256,22 @@ export class HaConfigLovelaceDashboards extends LitElement {
   }
 
   private _editDashboard(ev: CustomEvent) {
-    const id = (ev.detail as RowClickedEvent).id;
-    const dashboard = id
-      ? this._dashboards.find((res) => res.id === id)
-      : undefined;
-    if (!dashboard) {
-      showAlertDialog(this, {
-        text: this.hass!.localize(
-          "ui.panel.config.lovelace.dashboards.cant_edit_yaml"
-        ),
-      });
-      return;
-    }
-    this._openDialog(dashboard);
+    const urlPath = (ev.detail as RowClickedEvent).id;
+    const dashboard = this._dashboards.find((res) => res.url_path === urlPath);
+    this._openDialog(dashboard, urlPath);
   }
 
   private _addDashboard() {
     this._openDialog();
   }
 
-  private async _openDialog(dashboard?: LovelaceDashboard): Promise<void> {
+  private async _openDialog(
+    dashboard?: LovelaceDashboard,
+    urlPath?: string
+  ): Promise<void> {
     showDashboardDetailDialog(this, {
       dashboard,
+      urlPath,
       createDashboard: async (values: LovelaceDashboardCreateParams) => {
         const created = await createDashboard(this.hass!, values);
         this._dashboards = this._dashboards!.concat(

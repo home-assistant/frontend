@@ -18,6 +18,7 @@ import {
 } from "../../../src/data/hassio/addon";
 import { navigate } from "../../../src/common/navigate";
 import { filterAndSort } from "../components/hassio-filter-addons";
+import { atLeastVersion } from "../../../src/common/config/version";
 
 class HassioAddonRepositoryEl extends LitElement {
   @property() public hass!: HomeAssistant;
@@ -39,7 +40,6 @@ class HassioAddonRepositoryEl extends LitElement {
   protected render(): TemplateResult {
     const repo = this.repo;
     const addons = this._getAddons(this.addons, this.filter);
-    const ha105pluss = this._computeHA105plus;
 
     if (this.filter && addons.length < 1) {
       return html`
@@ -57,7 +57,9 @@ class HassioAddonRepositoryEl extends LitElement {
         </h1>
         <p class="description">
           Maintained by ${repo.maintainer}<br />
-          <a class="repo" href=${repo.url} target="_blank">${repo.url}</a>
+          <a class="repo" href=${repo.url} target="_blank" rel="noreferrer">
+            ${repo.url}
+          </a>
         </p>
         <div class="card-group">
           ${addons.map(
@@ -90,7 +92,11 @@ class HassioAddonRepositoryEl extends LitElement {
                       : !addon.available
                       ? "not_available"
                       : ""}
-                    .iconImage=${ha105pluss && addon.icon
+                    .iconImage=${atLeastVersion(
+                      this.hass.connection.haVersion,
+                      0,
+                      105
+                    ) && addon.icon
                       ? `/api/hassio/addons/${addon.slug}/icon`
                       : undefined}
                     .showTopbar=${addon.installed || !addon.available}
@@ -113,11 +119,6 @@ class HassioAddonRepositoryEl extends LitElement {
 
   private _addonTapped(ev) {
     navigate(this, `/hassio/addon/${ev.currentTarget.addon.slug}`);
-  }
-
-  private get _computeHA105plus(): boolean {
-    const [major, minor] = this.hass.config.version.split(".", 2);
-    return Number(major) > 0 || (major === "0" && Number(minor) >= 105);
   }
 
   static get styles(): CSSResultArray {
