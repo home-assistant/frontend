@@ -2079,6 +2079,9 @@
                             "name": "Przycisk"
                         },
                         "conditional": {
+                            "card": "Karta",
+                            "change_type": "Zmień typ",
+                            "conditions": "Warunki",
                             "name": "Warunkowa"
                         },
                         "config": {
@@ -2221,7 +2224,8 @@
                         "move_left": "Przesuń widok w lewo",
                         "move_right": "Przesuń widok w prawo",
                         "tab_badges": "Odznaki",
-                        "tab_settings": "Ustawienia"
+                        "tab_settings": "Ustawienia",
+                        "tab_visibility": "Widoczność"
                     },
                     "header": "Edycja interfejsu użytkownika",
                     "menu": {
