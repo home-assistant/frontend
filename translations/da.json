@@ -637,8 +637,31 @@
             },
             "generic": {
                 "cancel": "Annuller",
+                "close": "Luk",
                 "default_confirmation_title": "Er du sikker?",
                 "ok": "OK"
+            },
+            "helper_settings": {
+                "generic": {
+                    "icon": "Ikon",
+                    "name": "Navn"
+                },
+                "input_number": {
+                    "max": "Maksimumsværdi",
+                    "min": "Minimumsværdi"
+                },
+                "input_select": {
+                    "add": "Tilføj",
+                    "add_option": "Tilføj indstilling",
+                    "options": "Indstillinger"
+                },
+                "input_text": {
+                    "max": "Maksimumslængde",
+                    "min": "Minimumslængde",
+                    "password": "Kodeord",
+                    "text": "Tekst"
+                },
+                "not_editable": "Ikke redigerbar"
             },
             "more_info_control": {
                 "dismiss": "Afvis dialog",
@@ -1350,12 +1373,32 @@
                             "disabled": "Deaktiveret",
                             "ok": "Ok",
                             "readonly": "Skrivebeskyttet",
+                            "restored": "Gendannet",
                             "unavailable": "Utilgængelig"
                         },
                         "unavailable": "(utilgængelig)"
                     }
                 },
                 "header": "Konfigurer Home Assistant",
+                "helpers": {
+                    "caption": "Hjælpere",
+                    "dialog": {
+                        "add_helper": "Tilføj hjælper",
+                        "add_platform": "Tilføj {platform}"
+                    },
+                    "picker": {
+                        "add_helper": "Tilføj hjælper",
+                        "headers": {
+                            "editable": "Redigerbar",
+                            "entity_id": "Enheds ID",
+                            "name": "Navn",
+                            "type": "Type"
+                        }
+                    },
+                    "types": {
+                        "input_text": "Tekst"
+                    }
+                },
                 "integrations": {
                     "caption": "Integrationer",
                     "config_entry": {
@@ -1417,6 +1460,40 @@
                     "note_about_website_reference": "Flere er tilgængelige på "
                 },
                 "introduction": "Her er det muligt at konfigurere dine komponenter og Home Assistant. Ikke alt er muligt at konfigurere fra brugerfladen endnu, men vi arbejder på det.",
+                "lovelace": {
+                    "dashboards": {
+                        "detail": {
+                            "create": "Opret",
+                            "delete": "Slet",
+                            "dismiss": "Luk",
+                            "title_required": "Titel er påkrævet.",
+                            "update": "Opdater"
+                        },
+                        "picker": {
+                            "headers": {
+                                "default": "Standard",
+                                "filename": "Filnavn",
+                                "title": "Titel"
+                            }
+                        }
+                    },
+                    "resources": {
+                        "caption": "Ressourcer",
+                        "detail": {
+                            "delete": "Slet",
+                            "dismiss": "Luk",
+                            "update": "Opdater",
+                            "warning_header": "Vær forsigtig!"
+                        },
+                        "picker": {
+                            "headers": {
+                                "type": "Type"
+                            }
+                        },
+                        "refresh_body": "Du skal opdatere siden for at afslutte fjernelsen, vil du opdatere nu?",
+                        "refresh_header": "Vil du opdatere?"
+                    }
+                },
                 "person": {
                     "add_person": "Tilføj person",
                     "caption": "Personer",
@@ -1918,7 +1995,7 @@
                     },
                     "safe-mode": {
                         "description": "Home Assistant løb ind i problemer indlæsningen af din konfiguration, og kører nu i fejlsikret tilstand. Se på fejlloggen for at se, hvad der gik galt.",
-                        "header": "Safe mode aktiveret",
+                        "header": "Fejlsikret tilstand aktiveret",
                         "show_errors": "Vis fejlmeddelelser"
                     },
                     "shopping-list": {
@@ -2115,6 +2192,7 @@
                     },
                     "save_config": {
                         "cancel": "Glem det",
+                        "close": "Luk",
                         "header": "Tag kontrol over din 'Lovelace'-brugerflade",
                         "para": "Som standard vil Home Assistant vedligeholde din brugerflade ved at opdatere den, når nye entiteter eller Lovelace-brugerfladekomponenter bliver tilgængelige. Hvis du overtager kontrollen, vil vi ikke længere foretage ændringer automatisk for dig.",
                         "para_sure": "Er du sikker på du ønsker at tage kontrol over din brugerflade?",
