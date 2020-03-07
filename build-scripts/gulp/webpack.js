@@ -3,6 +3,7 @@ const gulp = require("gulp");
 const webpack = require("webpack");
 const WebpackDevServer = require("webpack-dev-server");
 const log = require("fancy-log");
+const path = require("path");
 const paths = require("../paths");
 const {
   createAppConfig,
@@ -57,9 +58,13 @@ const handler = (done) => (err, stats) => {
 
 gulp.task("webpack-watch-app", () => {
   // we are not calling done, so this command will run forever
-  webpack(bothBuilds(createAppConfig, { isProdBuild: false })).watch(
-    {},
+  webpack(createAppConfig({ isProdBuild: false, latestBuild: true })).watch(
+    { ignored: /build-translations/ },
     handler()
+  );
+  gulp.watch(
+    path.join(paths.translations_src, "en.json"),
+    gulp.series("build-translations", "copy-translations")
   );
 });
 

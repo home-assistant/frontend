@@ -566,7 +566,7 @@
             "entity": {
                 "entity-picker": {
                     "clear": "Tøm",
-                    "entity": "Oppføring",
+                    "entity": "Entitet",
                     "show_entities": "Vis entiteter"
                 }
             },
@@ -578,9 +578,10 @@
                 "area": "Område",
                 "automation": "Del av følgende automatiseringer",
                 "device": "Enhet",
-                "entity": "Beslektede enheter",
+                "entity": "Beslektede entiteter",
                 "group": "Del av følgende grupper",
                 "integration": "Integrering",
+                "no_related_found": "Finner ingen relaterte elementer.",
                 "scene": "Del av følgende scener",
                 "script": "Del av følgende skript"
             },
@@ -604,7 +605,8 @@
             "config_entry_system_options": {
                 "enable_new_entities_description": "Hvis den er deaktivert, blir ikke nyoppdagede entiteter for {integration} automatisk lagt til i Home Assistant.",
                 "enable_new_entities_label": "Aktiver enheter som nylig er lagt til.",
-                "title": "Systemalternativer for {integration}"
+                "title": "Systemalternativer for {integration}",
+                "update": "Oppdater"
             },
             "confirmation": {
                 "cancel": "Avbryt",
@@ -624,28 +626,73 @@
                     "enabled_description": "Deaktiverte entiteter vil ikke bli lagt til i Home Assistant.",
                     "enabled_label": "Aktiver entitet",
                     "entity_id": "Entitets-ID",
+                    "icon": "Overstyring av ikon",
+                    "icon_error": "Ikoner bør være i formatet 'prefix:iconname', f.eks .",
                     "name": "Overstyr Navn",
                     "note": "Merk: dette fungerer kanskje ikke ennå med alle integrasjoner.",
                     "unavailable": "Denne entiteten er ikke tilgjengelig for øyeblikket.",
-                    "update": "OPPDATER"
+                    "update": "OPPDATÉR"
                 },
+                "no_unique_id": "Denne enheten har ikke en unik ID, derfor kan innstillingene ikke administreres fra brukergrensesnittet.",
                 "related": "Relaterte",
                 "settings": "Innstillinger"
             },
             "generic": {
                 "cancel": "Avbryt",
+                "close": "Lukk",
                 "default_confirmation_title": "Er du sikker?",
                 "ok": "OK"
             },
+            "helper_settings": {
+                "generic": {
+                    "icon": "Ikon",
+                    "initial_value": "Startverdi ved start",
+                    "initial_value_explain": "Verdien elementet vil ha når Home Assistant starter. Når den er tom, gjenopprettes verdien til den forrige verdien.",
+                    "name": "Navn"
+                },
+                "input_datetime": {
+                    "has_date": "Dato",
+                    "has_time": "Tid"
+                },
+                "input_number": {
+                    "box": "Inntastingsfelt",
+                    "max": "Maksimal verdi",
+                    "min": "Minimum verdi",
+                    "mode": "Visningsmodus",
+                    "slider": "Glidebryter",
+                    "step": "Trinnstørrelse på glidebryteren",
+                    "unit_of_measurement": "Måleenhet"
+                },
+                "input_select": {
+                    "add": "Legg til",
+                    "add_option": "Legg til alternativ",
+                    "no_options": "Det er ingen alternativer ennå.",
+                    "options": "Alternativer"
+                },
+                "input_text": {
+                    "max": "Maksimal lengde",
+                    "min": "Minimum lengde",
+                    "mode": "Visningsmodus",
+                    "password": "Passord",
+                    "pattern": "Regex-mønster for validering på klientsiden",
+                    "text": "Tekst"
+                },
+                "not_editable": "Kan ikke redigeres",
+                "not_editable_text": "Denne enheten kan ikke endres fra brukergrensesnittet fordi den er definert i configuration.yaml.",
+                "required_error_msg": "Dette feltet er påkrevd"
+            },
             "more_info_control": {
                 "dismiss": "Avvis dialogboksen",
-                "edit": "Rediger enhet",
+                "edit": "Redigér entitet",
+                "person": {
+                    "create_zone": "Opprett sone fra gjeldende plassering"
+                },
                 "restored": {
-                    "confirm_remove_text": "Er du sikker på at du vil fjerne denne enheten?",
-                    "confirm_remove_title": "Vil du fjerne enheten?",
-                    "not_provided": "Denne enheten er ikke tilgjengelig for øyeblikket, og er en foreldreløs til en fjernet, endret eller dysfunksjonelle integrering eller enhet.",
-                    "remove_action": "Fjern enhet",
-                    "remove_intro": "Hvis enheten ikke lenger er i bruk, kan du rense den opp ved å fjerne den."
+                    "confirm_remove_text": "Er du sikker på at du vil fjerne denne entiteten?",
+                    "confirm_remove_title": "Vil du fjerne entiteten?",
+                    "not_provided": "Denne entiteten er ikke tilgjengelig for øyeblikket og er foreldreløs til en fjernet, endret eller ikke-fungerende integrering eller enhet.",
+                    "remove_action": "Fjern entitet",
+                    "remove_intro": "Hvis entiteten ikke lenger er i bruk, kan du rense den opp ved å fjerne den."
                 },
                 "script": {
                     "last_action": "Siste handling",
@@ -659,11 +706,23 @@
                 },
                 "updater": {
                     "title": "Oppdateringsanvisning"
+                },
+                "vacuum": {
+                    "clean_spot": "Rent sted",
+                    "commands": "Støvsugerkommandoer:",
+                    "fan_speed": "Viftehastighet",
+                    "locate": "Lokaliser",
+                    "pause": "Pause",
+                    "return_home": "Vende hjem",
+                    "start": "Start",
+                    "start_pause": "Start / Pause",
+                    "status": "Status",
+                    "stop": "Stopp"
                 }
             },
             "more_info_settings": {
                 "back": "Gå tilbake",
-                "entity_id": "Oppføring ID",
+                "entity_id": "Entitets-ID",
                 "name": "Navn",
                 "save": "Lagre"
             },
@@ -879,6 +938,7 @@
                         },
                         "edit_ui": "Rediger med UI",
                         "edit_yaml": "Rediger som YAML",
+                        "enable_disable": "Aktivere/deaktivere automatisering",
                         "introduction": "Bruk automasjon for å få liv i hjemmet ditt",
                         "load_error_not_editable": "Kun automasjoner i automations.yaml kan redigeres.",
                         "load_error_unknown": "Feil ved lasting av automasjon ({err_no}).",
@@ -965,7 +1025,7 @@
                                 },
                                 "zone": {
                                     "enter": "Ankommer",
-                                    "entity": "Oppføring med posisjon",
+                                    "entity": "Entitet med posisjon",
                                     "event": "Hendelse:",
                                     "label": "Sone",
                                     "leave": "Forlater",
@@ -993,7 +1053,7 @@
                 "cloud": {
                     "account": {
                         "alexa": {
-                            "config_documentation": "Konfigurer dokumentasjon",
+                            "config_documentation": "Konfigurasjonsdokumentasjon",
                             "disable": "deaktiver",
                             "enable": "aktiver",
                             "enable_ha_skill": "Aktivere Home Assistant-ferdigheten for Alexa",
@@ -1010,7 +1070,7 @@
                         "connection_status": "Status for skytilkobling",
                         "fetching_subscription": "Henter abonnement...",
                         "google": {
-                            "config_documentation": "Konfigurer dokumentasjon",
+                            "config_documentation": "Konfigurasjonsdokumentasjon",
                             "devices_pin": "PIN-kode for sikkerhetsenheter",
                             "enable_ha_skill": "Aktivere Home Assistant-ferdigheten for Google Assistant",
                             "enable_state_reporting": "Aktiver tilstandsrapportering",
@@ -1212,7 +1272,7 @@
                     "pick_attribute": "Velg et attributt som skal overstyres",
                     "picker": {
                         "header": "Tilpasninger",
-                        "introduction": "Juster attributter per entitet. Lagt til/redigert tilpasninger trer i kraft umiddelbart. Fjernede tilpasninger trer i kraft når entiteten er oppdatert."
+                        "introduction": "Justér attributter per entitet. Lagt til eller redigerte tilpasninger trer i kraft umiddelbart. Fjernede tilpasninger trer i kraft når entiteten blir oppdatert."
                     },
                     "warning": {
                         "include_link": "inkludér customize.yaml",
@@ -1285,7 +1345,7 @@
                         "delete": "SLETT",
                         "enabled_cause": "Deaktivert av {cause}.",
                         "enabled_description": "Deaktiverte entiteter vil ikke bli lagt til i Home Assistant.",
-                        "enabled_label": "Aktiver entitet",
+                        "enabled_label": "Aktivér entitet",
                         "entity_id": "Entitets-ID",
                         "name": "Overstyr Navn",
                         "note": "Merk: dette fungerer kanskje ikke ennå med alle integrasjoner.",
@@ -1306,6 +1366,7 @@
                         "filter": {
                             "filter": "Filter",
                             "show_disabled": "Vis deaktiverte entiteter",
+                            "show_readonly": "Vis skrivebeskyttede enheter",
                             "show_unavailable": "Vis utilgjengelige enheter"
                         },
                         "header": "Entiteter",
@@ -1317,8 +1378,8 @@
                             "status": "Status"
                         },
                         "integrations_page": "Integrasjonsside",
-                        "introduction": "Home Assistant bygger opp et register over hver entitet den har sett som kan identifiseres unikt. Hver av disse entitetene vil ha en entitets-ID som er reservert kun til denne entiteten.",
-                        "introduction2": "Bruk enhets registret til å overstyre navnet, endre enhets-ID eller fjerne oppføringen fra Home Assistant.",
+                        "introduction": "Home Assistant bygger opp et register over hver entitet den har sett som kan identifiseres unikt. Hver av disse entitetene vil ha en ID som er reservert kun til denne.",
+                        "introduction2": "Bruk entitetsregistret til å overstyre navnet, endre id-en eller fjerne den fra Home Assistant.",
                         "remove_selected": {
                             "button": "Fjern valgte",
                             "confirm_text": "Enheter kan bare fjernes når integrasjonen ikke lenger gir enhetene.",
@@ -1329,12 +1390,37 @@
                         "status": {
                             "disabled": "Deaktivert",
                             "ok": "Ok",
+                            "readonly": "Skrivebeskyttet",
                             "unavailable": "Utilgjengelig"
                         },
                         "unavailable": "(utilgjengelig)"
                     }
                 },
                 "header": "Konfigurer Home Assistant",
+                "helpers": {
+                    "caption": "Hjelpere",
+                    "description": "Elementer som kan bidra til å bygge automatiseringer.",
+                    "dialog": {
+                        "add_helper": "Legg hjelper",
+                        "add_platform": "Legg til {platform}",
+                        "create": "Opprett"
+                    },
+                    "picker": {
+                        "add_helper": "Legg hjelper",
+                        "headers": {
+                            "editable": "Redigerbare",
+                            "name": "Navn",
+                            "type": "Type"
+                        }
+                    },
+                    "types": {
+                        "input_boolean": "Veksle",
+                        "input_datetime": "Dato og/eller klokkeslett",
+                        "input_number": "Nummer",
+                        "input_select": "Dropdown",
+                        "input_text": "Tekst"
+                    }
+                },
                 "integrations": {
                     "caption": "Integrasjoner",
                     "config_entry": {
@@ -1342,7 +1428,7 @@
                         "delete_button": "Slett {integration}",
                         "delete_confirm": "Er du sikker på at du vil slette denne integrasjonen?",
                         "device_unavailable": "enheten er utilgjengelig",
-                        "entity_unavailable": "oppføringen er utilgjengelig",
+                        "entity_unavailable": "entiteten er ikke tilgjengelig",
                         "firmware": "Fastvare: {version}",
                         "hub": "Tilkoblet via",
                         "manuf": "av {manufacturer}",
@@ -1359,7 +1445,7 @@
                         "add_area": "Legg til område",
                         "area_picker_label": "Område",
                         "close": "Lukk",
-                        "created_config": "Opprettet konfigurasjon for {name}.",
+                        "created_config": "Opprettet konfigurasjon for {name} .",
                         "dismiss": "Avvis dialog",
                         "error_saving_area": "Feil ved lagring av område: {error}",
                         "external_step": {
@@ -1396,6 +1482,76 @@
                     "note_about_website_reference": "Flere er tilgjengelige på"
                 },
                 "introduction": "Her er det mulig å konfigurere dine komponenter og Home Assistant. Ikke alt er mulig å konfigurere fra brukergrensesnittet enda, men vi jobber med det.",
+                "lovelace": {
+                    "caption": "Lovelace Dashboards",
+                    "dashboards": {
+                        "cant_edit_yaml": "Instrumentbord som er definert i YAML, kan ikke redigeres fra brukergrensesnittet. Endre dem i configuration.yaml.",
+                        "caption": "Oversikter",
+                        "conf_mode": {
+                            "storage": "UI kontrollert",
+                            "yaml": "YAML-fil"
+                        },
+                        "confirm_delete": "Er du sikker på at du vil slette dette instrumentbordet?",
+                        "detail": {
+                            "create": "Opprett",
+                            "delete": "Slett",
+                            "dismiss": "Lukk",
+                            "edit_dashboard": "Redigere instrumentbord",
+                            "icon": "Sidepanel-ikon",
+                            "new_dashboard": "Legg til nytt instrumentbord",
+                            "require_admin": "Bare administrator",
+                            "show_sidebar": "Vis i sidepanelet",
+                            "title": "Tittel på sidepanelet",
+                            "update": "Oppdater",
+                            "url": "Url",
+                            "url_error_msg": "Url-adressen kan ikke inneholde mellomrom eller spesialtegn, med unntak av _ og -"
+                        },
+                        "picker": {
+                            "add_dashboard": "Legge til instrumentbord",
+                            "headers": {
+                                "conf_mode": "Konfigurasjonsmetode",
+                                "filename": "Filnavn",
+                                "require_admin": "Bare administrator",
+                                "sidebar": "Vis i sidepanelet",
+                                "title": "Tittel"
+                            },
+                            "open": "Åpne instrumentbord"
+                        }
+                    },
+                    "description": "Konfigurer Lovelace Dashboards",
+                    "resources": {
+                        "cant_edit_yaml": "Du bruker Lovelace i YAML-modus, derfor kan du ikke administrere ressursene dine via brukergrensesnittet. Behandle dem i configuration.yaml.",
+                        "caption": "Ressurser",
+                        "confirm_delete": "Er du sikker på at du vil slette denne ressursen?",
+                        "detail": {
+                            "create": "Opprett",
+                            "delete": "Slett",
+                            "dismiss": "Lukk",
+                            "new_resource": "Legg til ny ressurs",
+                            "type": "Ressurstype",
+                            "update": "Oppdater",
+                            "url": "Url",
+                            "url_error_msg": "Url-adresse er et obligatorisk felt",
+                            "warning_header": "Vær forsiktig!",
+                            "warning_text": "Det kan være farlig å legge til ressurser, sørg for at du kjenner kilden til ressursen og stoler på dem. Dårlige ressurser kan skade systemet ditt alvorlig."
+                        },
+                        "picker": {
+                            "add_resource": "Legg til ressurs",
+                            "headers": {
+                                "type": "Type",
+                                "url": "Url"
+                            }
+                        },
+                        "refresh_body": "Du må oppdatere siden for å fullføre fjerningen, vil du oppdatere nå?",
+                        "refresh_header": "Vil du oppdatere?",
+                        "types": {
+                            "css": "stilark",
+                            "html": "HTML (utdatert)",
+                            "js": "JavaScript-fil (utdatert)",
+                            "module": "JavaScript-modul"
+                        }
+                    }
+                },
                 "person": {
                     "add_person": "Legg til person",
                     "caption": "Personer",
@@ -1496,7 +1652,7 @@
                             "automation": "Last inn automasjoner på nytt",
                             "core": "Last inn lokasjon og spesialtilpassinger på nytt",
                             "group": "Last inn grupper på nytt",
-                            "heading": "Konfigurasjon lastes på nytt",
+                            "heading": "YAML -Konfigurasjon lastes på nytt",
                             "introduction": "Noen deler av Home Assistant kan laste inn uten å kreve omstart. Hvis du trykker last på nytt, vil du bytte den nåværende konfigurasjonen med den nye.",
                             "person": "Last inn personer på nytt",
                             "scene": "Last inn scener på nytt",
@@ -1572,7 +1728,7 @@
                         "header": "Klyngeattributter",
                         "help_attribute_dropdown": "Velg en attributt for å se eller angi verdien.",
                         "help_get_zigbee_attribute": "Hent verdien for det valgte attributtet.",
-                        "help_set_zigbee_attribute": "Angi attributtverdi for den spesifiserte klyngen på den angitte entiteten.",
+                        "help_set_zigbee_attribute": "Angi attributtverdi for klusteret på den angitte entiteten.",
                         "introduction": "Se og rediger klyngeattributter.",
                         "set_zigbee_attribute": "Angi Zigbee-attributt"
                     },
@@ -1684,7 +1840,10 @@
                         "required_error_msg": "Dette feltet er påkrevd",
                         "update": "Oppdater"
                     },
-                    "edit_home_zone": "Plasseringen av hjemmet ditt kan endres i gerenal-konfigurasjonen.",
+                    "edit_home_zone": "Radien til Hjemmesonen kan ikke redigeres fra frontend ennå. Dra markøren på kartet for å flytte hjemmesonen.",
+                    "edit_home_zone_narrow": "Radiusen til hjemsonen kan ikke redigeres fra frontend ennå. Plasseringen kan endres fra den generelle konfigurasjonen.",
+                    "go_to_core_config": "Gå til generell konfigurasjon?",
+                    "home_zone_core_config": "Plasseringen av hjemmesonen kan redigeres fra den generelle konfigurasjonssiden. Radiusen til hjemsonen kan ikke redigeres fra frontend ennå. Vil du gå til den generelle konfigurasjonen?",
                     "introduction": "Med soner kan du angi bestemte områder på jorden. Når en person er innenfor en sone, vil staten ta navnet fra sonen. Soner kan også brukes som en utløser eller tilstand i automatiserings oppsett.",
                     "no_zones_created_yet": "Det ser ut til at du ikke har opprettet noen soner enda."
                 },
@@ -1712,12 +1871,12 @@
                         "network_stopped": "Z-Wave nettverket stoppet"
                     },
                     "node_config": {
-                        "config_parameter": "Konfigurasjon parameter",
-                        "config_value": "Konfigurasjon verdi",
+                        "config_parameter": "Konfigurasjonsparameter",
+                        "config_value": "Konfigurasjonsverdi",
                         "false": "Usant",
                         "header": "Alternativer for nodekonfigurasjon",
                         "seconds": "sekunder",
-                        "set_config_parameter": "Angi konfigurasjons parameter",
+                        "set_config_parameter": "Angi konfigurasjonsparameter",
                         "set_wakeup": "Angi vekkeintervall",
                         "true": "Sant"
                     },
@@ -1892,6 +2051,11 @@
                         "toggle": "Veksle {name}",
                         "url": "Åpne vindu til {url_path}"
                     },
+                    "safe-mode": {
+                        "description": "Home Assistant fikk problemer under lasting av konfigurasjonen og kjører nå i sikkermodus. Ta en titt på feilloggen for å se hva som gikk galt.",
+                        "header": "Sikkermodus aktivert",
+                        "show_errors": "Vis feil"
+                    },
                     "shopping-list": {
                         "add_item": "Legg til",
                         "checked_items": "Merkede elementer",
@@ -1899,7 +2063,7 @@
                     }
                 },
                 "changed_toast": {
-                    "message": "Lovelace UI-konfigurasjonen ble oppdatert. Oppdater for å se endringer?",
+                    "message": "Lovelace UI-konfigurasjonen ble oppdatert. refresh for å se endringer?",
                     "refresh": "Oppdater"
                 },
                 "editor": {
@@ -1910,6 +2074,9 @@
                         "alarm-panel": {
                             "available_states": "Tilgjengelige tilstander",
                             "name": "Alarmpanel"
+                        },
+                        "button": {
+                            "name": "Knapp"
                         },
                         "conditional": {
                             "name": "Betinget"
@@ -2052,39 +2219,46 @@
                         "header": "Vis konfigurasjon",
                         "header_name": "{name} Vis konfigurasjon",
                         "move_left": "Flytt visning til venstre",
-                        "move_right": "Flytt visning til høyre"
+                        "move_right": "Flytt visning til høyre",
+                        "tab_badges": "Merker",
+                        "tab_settings": "Innstillinger"
                     },
                     "header": "Rediger brukergrensesnitt",
                     "menu": {
                         "open": "Åpne Lovelace UI-menyen",
-                        "raw_editor": "Tekstbasert konfigurasjonsredigering"
+                        "raw_editor": "Redigeringsprogram for raw-konfigurasjon"
                     },
                     "migrate": {
                         "header": "Inkompatibel Konfigurasjon",
-                        "migrate": "Overfør konfigurasjon",
-                        "para_migrate": "Home Assistant kan legge til ID-er på alle dine kort og visninger automatisk for deg ved å trykke på 'Overfør konfigurasjon' knappen.",
+                        "migrate": "Migrer konfigurasjon",
+                        "para_migrate": "Hjemmeassistent kan legge til ID-er på alle kortene og visningene automatisk for deg ved å trykke på 'Migrer konfigurasjon' -knappen.",
                         "para_no_id": "Dette elementet har ingen ID. Vennligst legg til en ID på dette elementet i 'ui-lovelace.yaml'."
                     },
                     "raw_editor": {
                         "confirm_remove_config_text": "Vi vil automatisk generere Lovelace-visningene dine med områdene og enhetene dine hvis du fjerner Lovelace-konfigurasjonen.",
                         "confirm_remove_config_title": "Er du sikker på at du vil fjerne Lovelace-konfigurasjonen? Vi vil automatisk generere Lovelace-visningene dine med områdene og enhetene dine.",
                         "confirm_unsaved_changes": "Du har ulagrede endringer, er du sikker på at du vil avslutte?",
-                        "confirm_unsaved_comments": "Konfigurasjonen din inneholder kommentar(er), disse vil ikke bli lagret. Vil du fortsette?",
-                        "error_invalid_config": "Konfigurasjonen er ikke gyldig: {error}",
+                        "confirm_unsaved_comments": "Konfigurasjonen din inneholder kommentarer, disse vil ikke bli lagret. Vil du fortsette?",
+                        "error_invalid_config": "Konfigurasjonen din er ikke gyldig: {error}",
                         "error_parse_yaml": "Kan ikke analysere YAML: {error}",
                         "error_remove": "Kan ikke fjerne konfigurasjonen: {error}",
                         "error_save_yaml": "Kan ikke lagre YAML: {error}",
                         "header": "Rediger konfigurasjon",
+                        "resources_moved": "Ressurser skal ikke lenger legges til Lovelace-konfigurasjonen, men kan legges til i Lovelace-konfigurasjonspanelet.",
                         "save": "Lagre",
                         "saved": "Lagret",
                         "unsaved_changes": "Ulagrede endringer"
                     },
                     "save_config": {
                         "cancel": "Glem det",
+                        "close": "Lukk",
                         "header": "Ta kontroll over Lovelace brukergrensesnittet ditt",
                         "para": "Som standard vil Home Assistant opprettholde brukergrensesnittet ditt, oppdatere det når nye enheter eller Lovelace UI-komponenter blir tilgjengelige. Hvis du tar kontroll, vil vi ikke lenger gjøre endringer automatisk for deg.",
                         "para_sure": "Er du sikker på at du vil ta kontroll over brukergrensesnittet ditt?",
-                        "save": "Ta kontroll"
+                        "save": "Ta kontroll",
+                        "yaml_config": "For å hjelpe deg med å starte, her er den gjeldende konfigurasjonen av dette dashbordet:",
+                        "yaml_control": "Hvis du vil ta kontroll i YAML-modus, oppretter du en YAML-fil med navnet du angav i konfigurasjonen for dette instrumentbordet, eller standard 'ui-lovelace.yaml'.",
+                        "yaml_mode": "Du bruker YAML-modus, det betyr at du ikke kan endre Lovelace config fra brukergrensesnittet. Hvis du vil endre Lovelace fra brukergrensesnittet, fjerner du «modus: yaml» fra Lovelace-konfigurasjonen i 'configuration.yaml'."
                     },
                     "suggest_card": {
                         "add": "Legg til i Lovelace UI",
@@ -2196,7 +2370,7 @@
                                     "data": {
                                         "password": "API-passord"
                                     },
-                                    "description": "Vennligst skriv inn API-passordet i http-konfigurasjonen din:"
+                                    "description": "Skriv inn API-passordet i HTTP-konfigurasjonen:"
                                 },
                                 "mfa": {
                                     "data": {

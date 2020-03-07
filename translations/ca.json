@@ -52,7 +52,7 @@
         "switch": "Interruptors",
         "system_health": "Estat del Sistema",
         "updater": "Actualitzador",
-        "vacuum": "Aspiradora",
+        "vacuum": "Aspirador",
         "weblink": "Enllaços web",
         "zha": "ZHA",
         "zwave": "Z-Wave"
@@ -354,12 +354,12 @@
         },
         "vacuum": {
             "cleaning": "Netejant",
-            "docked": "Aparcada",
+            "docked": "Aparcat",
             "error": "Error",
             "idle": "Inactiu",
-            "off": "Apagada",
-            "on": "Encesa",
-            "paused": "Pausada",
+            "off": "Apagat",
+            "on": "Encès",
+            "paused": "Pausat",
             "returning": "Retornant a la base"
         },
         "weather": {
@@ -478,6 +478,9 @@
             "script": {
                 "execute": "Executar"
             },
+            "service": {
+                "run": "Executa"
+            },
             "timer": {
                 "actions": {
                     "cancel": "cancel·la",
@@ -489,10 +492,10 @@
             "vacuum": {
                 "actions": {
                     "resume_cleaning": "Reprendre neteja",
-                    "return_to_base": "Retornar a la base",
-                    "start_cleaning": "Començar neteja",
-                    "turn_off": "Apagar",
-                    "turn_on": "Encendre"
+                    "return_to_base": "Retorna a la base",
+                    "start_cleaning": "Comença neteja",
+                    "turn_off": "Apaga",
+                    "turn_on": "Encén"
                 }
             },
             "water_heater": {
@@ -533,6 +536,7 @@
         },
         "common": {
             "cancel": "Cancel·la",
+            "close": "Tanca",
             "loading": "Carregant",
             "no": "No",
             "save": "Desa",
@@ -543,7 +547,10 @@
             "area-picker": {
                 "add_dialog": {
                     "add": "Afegeix",
-                    "name": "Nom"
+                    "failed_create_area": "No s'ha pogut crear l'àrea.",
+                    "name": "Nom",
+                    "text": "Introdueix el nom de la nova àrea.",
+                    "title": "Afegeix àrea nova"
                 },
                 "add_new": "Afegir àrea nova...",
                 "area": "Àrea",
@@ -567,6 +574,17 @@
                 "loading_history": "Carregant historial d'estats...",
                 "no_history_found": "No s'ha trobat cap historial d'estats."
             },
+            "related-items": {
+                "area": "Àrea",
+                "automation": "Part de les següents automatitzacions",
+                "device": "Dispositiu",
+                "entity": "Entitats relacionades",
+                "group": "Part dels següents grups",
+                "integration": "Integració",
+                "no_related_found": "No s'han trobat elements relacionats.",
+                "scene": "Part de les següents escenes",
+                "script": "Part dels següents programes (scripts)"
+            },
             "relative_time": {
                 "duration": {
                     "day": "{count} {count, plural,\n  one {dia}\n  other {dies}\n}",
@@ -587,7 +605,8 @@
             "config_entry_system_options": {
                 "enable_new_entities_description": "Si està desactivat, les entitats recentment descobertes per a {integration} no s’afegiran automàticament a Home Assistant.",
                 "enable_new_entities_label": "Activa entitats afegides recentment.",
-                "title": "Opcions del sistema per a {integration}"
+                "title": "Opcions del sistema per a {integration}",
+                "update": "Actualitza"
             },
             "confirmation": {
                 "cancel": "Cancel·la",
@@ -597,14 +616,75 @@
             "domain_toggler": {
                 "title": "Commutació de dominis"
             },
+            "entity_registry": {
+                "control": "Control",
+                "dismiss": "Desestimar",
+                "editor": {
+                    "confirm_delete": "Estàs segur que vols eliminar aquesta entrada?",
+                    "delete": "ELIMINA",
+                    "enabled_cause": "Desactivada per {cause}.",
+                    "enabled_description": "Les entitats desactivades no s’afegiran a Home Assistant.",
+                    "enabled_label": "Activa l’entitat",
+                    "entity_id": "ID de l'entitat",
+                    "icon_error": "Els icones han de tenir el format 'prefix:nom_icona', per exemple: 'mdi:home'",
+                    "name": "Substitució de Nom",
+                    "note": "Nota: podria no funcionar amb alguna de les integracions.",
+                    "unavailable": "Aquesta entitat no està disponible actualment.",
+                    "update": "ACTUALITZA"
+                },
+                "no_unique_id": "Aquesta entitat no té un ID únic, per tant, no pot ser configurada des de la interfície d'usuari.",
+                "related": "Relacionades",
+                "settings": "Configuració"
+            },
             "generic": {
                 "cancel": "Cancel·la",
-                "default_confirmation_title": "Estàs segur?"
+                "close": "tanca",
+                "default_confirmation_title": "Estàs segur?",
+                "ok": "OK"
+            },
+            "helper_settings": {
+                "generic": {
+                    "icon": "Icona",
+                    "initial_value": "Valor inicial",
+                    "name": "Nom"
+                },
+                "input_datetime": {
+                    "has_date": "Data",
+                    "has_time": "Hora"
+                },
+                "input_number": {
+                    "max": "Valor màxim",
+                    "min": "Valor mínim"
+                },
+                "input_select": {
+                    "add": "Afegeix",
+                    "options": "Opcions"
+                },
+                "input_text": {
+                    "max": "Longitud màxima",
+                    "min": "Longitud mínima",
+                    "password": "Contrasenya",
+                    "text": "Text"
+                },
+                "not_editable": "No editable",
+                "required_error_msg": "Aquest camp és obligatori"
             },
             "more_info_control": {
                 "dismiss": "Desestimar el diàleg",
+                "edit": "Edita entitat",
+                "person": {
+                    "create_zone": "Crea una zona a partir de la ubicació actual"
+                },
+                "restored": {
+                    "confirm_remove_text": "Estàs segur que vols eliminar aquesta entitat?",
+                    "confirm_remove_title": "Eliminar l'entitat?",
+                    "not_provided": "Actualment aquesta entitat no està disponible, prové d'una integració o dispositiu eliminat, modificat o que no funciona.",
+                    "remove_action": "Elimina entitat",
+                    "remove_intro": "Si l'entitat ja no s'utilitza, pots borrar-la eliminant-la."
+                },
                 "script": {
-                    "last_action": "Última acció"
+                    "last_action": "Última acció",
+                    "last_triggered": "Disparada per última vegada"
                 },
                 "settings": "Configuració de l'entitat",
                 "sun": {
@@ -614,6 +694,18 @@
                 },
                 "updater": {
                     "title": "Instruccions d'actualització"
+                },
+                "vacuum": {
+                    "clean_spot": "Zona neta",
+                    "commands": "Comandes de l’aspirador:",
+                    "fan_speed": "Velocitat del ventilador",
+                    "locate": "Localitza",
+                    "pause": "Pausa",
+                    "return_home": "Torna a casa",
+                    "start": "Inici",
+                    "start_pause": "Inicia/Pausa",
+                    "status": "Estat",
+                    "stop": "Atura"
                 }
             },
             "more_info_settings": {
@@ -834,6 +926,7 @@
                         },
                         "edit_ui": "Edita a través d'interfície",
                         "edit_yaml": "Edita com a YAML",
+                        "enable_disable": "Activa/desactiva automatització",
                         "introduction": "Utilitza les automatitzacions per donar més vida a la teva casa",
                         "load_error_not_editable": "Només es poden editar les automatitzacions de l'arxiu automations.yaml.",
                         "load_error_unknown": "Error en carregar l’automatització ({err_no}).",
@@ -977,6 +1070,7 @@
                             "manage_entities": "Gestió d'entitats",
                             "security_devices": "Dispositius de seguretat",
                             "sync_entities": "Sincronitza les entitats amb Google",
+                            "sync_entities_404_message": "No s'han pogut sincronitzar les entitats amb Google, digues \"Hey Google, sincronitza els meus dispositius\" per sincronitzar-les.",
                             "title": "Google Assistant"
                         },
                         "integrations": "Integracions",
@@ -1184,12 +1278,15 @@
                         "conditions": {
                             "caption": "Només fer alguna cosa si..."
                         },
+                        "create": "Crea una automatització amb el dispositiu",
                         "no_automations": "No hi ha automatitzacions",
+                        "no_device_automations": "No hi ha automatitzacions disponibles per a aquest dispositiu.",
                         "triggers": {
                             "caption": "Feu alguna cosa quan..."
                         }
                     },
                     "automations": "Automatitzacions",
+                    "cant_edit": "Només pots editar els elements creats a la interfície d'usuari (UI).",
                     "caption": "Dispositius",
                     "confirm_rename_entity_ids": "Vols, també, canviar el nom dels ID's d’entitat de les entitats?",
                     "data_table": {
@@ -1203,18 +1300,25 @@
                     "description": "Gestiona els dispositius connectats",
                     "details": "Aquí tens tots els detalls del dispositiu.",
                     "device_not_found": "Dispositiu no trobat.",
+                    "entities": {
+                        "add_entities_lovelace": "Afegeix a Lovelace",
+                        "entities": "Entitats",
+                        "none": "Aquest dispositiu no té entitats"
+                    },
                     "info": "Informació del dispositiu",
                     "name": "Nom",
                     "scene": {
+                        "create": "Crea una escena amb el dispositiu",
                         "no_scenes": "No hi ha escenes",
                         "scenes": "Escenes"
                     },
                     "scenes": "Escenes",
                     "script": {
+                        "create": "Crea un programa (script) amb el dispositiu",
                         "no_scripts": "No hi ha scripts",
                         "scripts": "Scripts"
                     },
-                    "scripts": "Scripts",
+                    "scripts": "Programes (scripts)",
                     "unknown_error": "Error desconegut",
                     "unnamed_device": "Dispositiu sense nom",
                     "update": "Actualitza"
@@ -1223,33 +1327,82 @@
                     "caption": "Registre d'entitats",
                     "description": "Visió general de totes les entitats conegudes.",
                     "editor": {
-                        "confirm_delete": "Estàs segur que vols eliminar aquesta entitat?",
+                        "confirm_delete": "Estàs segur que vols eliminar aquesta entrada?",
                         "confirm_delete2": "Si suprimeixes una entrada, no suprimiras l'entitat de Home Assistant. Per fer-ho, has de suprimir la integració '{plataform}' de Home Assistant.",
                         "default_name": "Àrea nova",
                         "delete": "ELIMINA",
-                        "enabled_cause": "Desactivat per {cause}.",
+                        "enabled_cause": "Desactivada per {cause}.",
                         "enabled_description": "Les entitats desactivades no s’afegiran a Home Assistant.",
                         "enabled_label": "Activa l’entitat",
+                        "entity_id": "ID de l'entitat",
+                        "name": "Substitució de Nom",
                         "note": "Nota: podria no funcionar amb alguna de les integracions.",
                         "unavailable": "Aquesta entitat no està disponible actualment.",
                         "update": "ACTUALITZAR"
                     },
                     "picker": {
+                        "disable_selected": {
+                            "button": "Desactiva seleccionada/es",
+                            "confirm_text": "Les entitats desactivades no s’afegiran a Home Assistant.",
+                            "confirm_title": "Vols desactivar {number} entitat/s?"
+                        },
+                        "enable_selected": {
+                            "button": "Activa seleccionada/es",
+                            "confirm_text": "Això farà que tornin a estar disponibles a Home Assistant si estan desactivades.",
+                            "confirm_title": "Vols activar {number} entitat/s?"
+                        },
+                        "filter": {
+                            "filter": "Filtre",
+                            "show_disabled": "Mostra entitats desactivades",
+                            "show_readonly": "Mostra entitats de només lectura",
+                            "show_unavailable": "Mostra entitats no disponibles"
+                        },
                         "header": "Registre d'entitats",
                         "headers": {
                             "enabled": "Habilitat",
                             "entity_id": "ID de l'entitat",
                             "integration": "Integració",
-                            "name": "Nom"
+                            "name": "Nom",
+                            "status": "Estat"
                         },
                         "integrations_page": "Pàgina d'integracions",
                         "introduction": "Home Assistant manté un registre de totes les entitats que ha detectat alguna vegada les quals tenen una identificació única. Cadascuna d'aquestes entitats té un identificador (ID) assignat que està reservat només per a ella.",
-                        "introduction2": "Utilitza el registre d'entitats per canviar el nom, canviar l'ID o eliminar l'entrada de Home Assistant de les entitats. Tingues en compte que eliminar-les del registre d'entitats no eliminarà l'entitat. Per fer-ho, segueix l'enllaç següent i elimineu-la dins la pàgina d'integracions.",
+                        "introduction2": "Utilitza el registre d'entitats per canviar el nom, canviar l'ID o eliminar l'entrada de Home Assistant.",
+                        "remove_selected": {
+                            "button": "Elimina seleccionada/es",
+                            "confirm_text": "Les entitats només poden eliminar-se quan la seva integració ja no les està proporcionant.",
+                            "confirm_title": "Vols eliminar {number} entitat/s?"
+                        },
+                        "selected": "{number} seleccionada/es",
                         "show_disabled": "Mostra entitats desactivades",
+                        "status": {
+                            "disabled": "Desactivada/es",
+                            "ok": "D'acord",
+                            "readonly": "Només lectura",
+                            "unavailable": "No disponible/s"
+                        },
                         "unavailable": "(no disponible)"
                     }
                 },
                 "header": "Configuració de Home Assistant",
+                "helpers": {
+                    "dialog": {
+                        "create": "Crea"
+                    },
+                    "picker": {
+                        "headers": {
+                            "name": "Nom",
+                            "type": "Tipus"
+                        }
+                    },
+                    "types": {
+                        "input_boolean": "Commuta",
+                        "input_datetime": "Data i/o hora",
+                        "input_number": "Número",
+                        "input_select": "Desplegable",
+                        "input_text": "Text"
+                    }
+                },
                 "integrations": {
                     "caption": "Integracions",
                     "config_entry": {
@@ -1311,6 +1464,74 @@
                     "note_about_website_reference": "N'hi ha més disponibles al "
                 },
                 "introduction": "Aquí pots configurar Home Assistant i els seus components. Encara no és possible configurar-ho tot des de la interfície d'usuari, però hi estem treballant.",
+                "lovelace": {
+                    "caption": "Panells Lovelace",
+                    "dashboards": {
+                        "caption": "Panells",
+                        "conf_mode": {
+                            "storage": "Controlat per la UI",
+                            "yaml": "Fitxer YAML"
+                        },
+                        "confirm_delete": "Estàs segur que vols eliminar aquest panell?",
+                        "detail": {
+                            "create": "Crea",
+                            "delete": "Suprimeix",
+                            "dismiss": "Tanca",
+                            "edit_dashboard": "Edita el panell",
+                            "icon": "Icona de la barra lateral",
+                            "new_dashboard": "Afegeix un nou panell",
+                            "require_admin": "Només administrador",
+                            "show_sidebar": "Mostra a la barra lateral",
+                            "title": "Títol de la barra lateral",
+                            "update": "Actualitza",
+                            "url": "URL"
+                        },
+                        "picker": {
+                            "add_dashboard": "Afegeix panell",
+                            "headers": {
+                                "conf_mode": "Mètode de configuració",
+                                "filename": "Nom de l'arxiu",
+                                "require_admin": "Només administrador",
+                                "sidebar": "Mostra a la barra lateral",
+                                "title": "Títol"
+                            },
+                            "open": "Obre panell"
+                        }
+                    },
+                    "description": "Configura els teus panells Lovelace",
+                    "resources": {
+                        "cant_edit_yaml": "Estàs utilitzant el mode YAML per tant no pots gestionar els recursos des de la interfície d'usuari. Els pots gestionar dins el fitxer 'configuration.yaml'.",
+                        "caption": "Recursos",
+                        "confirm_delete": "Estàs segur que vols eliminar aquest recurs?",
+                        "detail": {
+                            "create": "Crea",
+                            "delete": "Suprimeix",
+                            "dismiss": "Tanca",
+                            "new_resource": "Afegeix nou recurs",
+                            "type": "Tipus de recurs",
+                            "update": "Actualitza",
+                            "url": "URL",
+                            "url_error_msg": "L'URL és un camp obligatori",
+                            "warning_header": "Ves amb compte!",
+                            "warning_text": "Afegir recursos pot ser perillós, assegura't de conèixer i confiar en el seu origen. Els recursos fraudulents poden perjudicar greument el teu sistema."
+                        },
+                        "picker": {
+                            "add_resource": "Afegeix recurs",
+                            "headers": {
+                                "type": "Tipus",
+                                "url": "URL"
+                            }
+                        },
+                        "refresh_body": "Has d’actualitzar la pàgina per completar l’eliminació. Vols actualitzar-la ara?",
+                        "refresh_header": "Vols actualitzar?",
+                        "types": {
+                            "css": "Fitxer d’estils",
+                            "html": "HTML (obsolet)",
+                            "js": "Fitxer JavaScript (obsolet)",
+                            "module": "Mòdul JavaScript"
+                        }
+                    }
+                },
                 "person": {
                     "add_person": "Afegeix persona",
                     "caption": "Persones",
@@ -1335,7 +1556,7 @@
                     },
                     "introduction": "Aquí pots definir cada persona d'interès en Home Assistant.",
                     "no_persons_created_yet": "Sembla que encara no has creat cap persona.",
-                    "note_about_persons_configured_in_yaml": "Nota: les persones configurades mitjançant configuration.yaml no es poden editar a la UI."
+                    "note_about_persons_configured_in_yaml": "Nota: les persones configurades mitjançant configuration.yaml no es poden editar des de la UI."
                 },
                 "scene": {
                     "activated": "Escena {name} activada.",
@@ -1413,8 +1634,10 @@
                             "group": "Actualitza grups",
                             "heading": "Torna a carregar la configuració",
                             "introduction": "Algunes parts de la configuració de Home Assistant es poden recarregar sense necessitat de reiniciar. Els botons de sota esborraran la configuració antiga i en carregaran la nova.",
+                            "person": "Actualitza persones",
                             "scene": "Actualitza escenes",
-                            "script": "Actualitza programes"
+                            "script": "Actualitza programes",
+                            "zone": "Actualitza zones"
                         },
                         "server_management": {
                             "confirm_restart": "Segur que vols reiniciar Home Assistant?",
@@ -1475,7 +1698,8 @@
                         "spinner": "S'estan cercant dispositius ZHA Zigbee..."
                     },
                     "add": {
-                        "caption": "Afegeix dispositius"
+                        "caption": "Afegeix dispositius",
+                        "description": "Afegeix dispositius a la xarxa Zigbee"
                     },
                     "caption": "ZHA",
                     "cluster_attributes": {
@@ -1497,7 +1721,8 @@
                     },
                     "clusters": {
                         "header": "Clústers",
-                        "help_cluster_dropdown": "Selecciona un clúster per visualitzar-ne els atributs i comandes."
+                        "help_cluster_dropdown": "Selecciona un clúster per visualitzar-ne els atributs i comandes.",
+                        "introduction": "Els clústers són els blocs de construcció per dotar Zigbee de funcionalitat. Separen la funcionalitat en unitats lògiques. N'hi ha de tipus client i servidor; estan formats per atributs i comandes (ordres)."
                     },
                     "common": {
                         "add_devices": "Afegeix dispositius",
@@ -1512,11 +1737,18 @@
                         "device_name_placeholder": "Nom donat per l'usuari",
                         "update_name_button": "Actualitzar Nom"
                     },
+                    "devices": {
+                        "header": "Domòtica Zigbee (ZHA) - Dispositiu"
+                    },
                     "group_binding": {
+                        "bind_button_help": "Vincula el grup seleccionat als clústers de dispositius seleccionats.",
                         "bind_button_label": "Vincula grup",
+                        "cluster_selection_help": "Selecciona clústers per vincular-los al grup seleccionat.",
+                        "group_picker_help": "Selecciona un grup per emetre una comanda de vinculació.",
                         "group_picker_label": "Grups vinculables",
                         "header": "Vinculació de grups",
                         "introduction": "Vincula i desvincula grups.",
+                        "unbind_button_help": "Desvincula el grup seleccionat dels clústers de dispositius seleccionats.",
                         "unbind_button_label": "Desvincula grup"
                     },
                     "groups": {
@@ -1546,6 +1778,8 @@
                         "removing_members": "Eliminant membres",
                         "zha_zigbee_groups": "Grups ZHA Zigbee"
                     },
+                    "header": "Configuració domòtica Zigbee (ZHA)",
+                    "introduction": "Des d'aquí pots configurar el component ZHA. Encara no és possible configurar-ho tot des de la interfície d'usuari, però hi estem treballant.",
                     "network_management": {
                         "header": "Gestió de la xarxa",
                         "introduction": "Comandes que afecten tota la xarxa"
@@ -1563,6 +1797,35 @@
                         "updateDeviceName": "Estableix un nom personalitzat pel dispositiu al registre de dispositius."
                     },
                     "title": "Domòtica Zigbee (ZHA)"
+                },
+                "zone": {
+                    "add_zone": "Afegeix zona",
+                    "caption": "Zones",
+                    "configured_in_yaml": "Les zones configurades mitjançant configuration.yaml no es poden editar des de la UI.",
+                    "confirm_delete": "Estàs segur que vols eliminar aquesta zona?",
+                    "create_zone": "Crea zona",
+                    "description": "Gestiona les zones en les quals es fa seguiment de persones.",
+                    "detail": {
+                        "create": "Crea",
+                        "delete": "Suprimeix",
+                        "icon": "Icona",
+                        "icon_error_msg": "El nom de la icona ha de tenir el format prefix:nom_icona, per exemple: mdi: home",
+                        "latitude": "Latitud",
+                        "longitude": "Longitud",
+                        "name": "Nom",
+                        "new_zone": "Zona nova",
+                        "passive": "Passiva",
+                        "passive_note": "Les zones passives estan amagades i no s’utilitzen com a ubicacions per a dispositius rastrejables. Però són utils per a la creació d'automatitzacions.",
+                        "radius": "Radi",
+                        "required_error_msg": "Aquest camp és obligatori",
+                        "update": "Actualitza"
+                    },
+                    "edit_home_zone": "La ubicació de casa es pot canviar des de la configuració general.",
+                    "edit_home_zone_narrow": "El radi de la zona principal (casa) encara no es pot editar des del \"frontend\". Sí que pots canviar-ne la ubicació des de la configuració general.",
+                    "go_to_core_config": "Anar a la configuració general?",
+                    "home_zone_core_config": "La ubicació de la zona principal (casa) és pot canviar des de la pàgina de configuració general. El radi d'aquesta zona encara no es pot editar des d'aquí. Vols anar a la configuració general?",
+                    "introduction": "Les zones et permeten definir certes regions del planeta. Quan una persona es trobi dins d’una zona, l’estat prendrà el nom d'aquesta zona. També es poden utilitzar com a disparadors o condicions durant la creació d'automatitzacions.",
+                    "no_zones_created_yet": "Sembla que encara no has creat cap zona."
                 },
                 "zwave": {
                     "caption": "Z-Wave",
@@ -1744,12 +2007,20 @@
                 "showing_entries": "Mostrant entrades de"
             },
             "lovelace": {
+                "add_entities": {
+                    "generated_unsupported": "Només pots utilitzar aquesta funció quan tinguis el control de la UI Lovelace.",
+                    "saving_failed": "S'ha produït un error en desar la configuració de la UI Lovelace.",
+                    "yaml_unsupported": "Només pots utilitzar aquesta funció si fas servir Lovelace en mode YAML."
+                },
                 "cards": {
                     "confirm_delete": "Estàs segur que vols eliminar aquesta targeta?",
                     "empty_state": {
                         "go_to_integrations_page": "Vés a la pàgina d'integracions.",
                         "no_devices": "Aquesta pàgina et permet controlar els teus dispositius, però sembla que encara no en tens cap configurat. Vés a la pàgina d'integracions per a començar.",
                         "title": "Benvingut/da a casa"
+                    },
+                    "entities": {
+                        "never_triggered": "Mai disparada"
                     },
                     "picture-elements": {
                         "call_service": "Crida servei {name}",
@@ -1759,6 +2030,11 @@
                         "tap": "Tocar:",
                         "toggle": "Commuta {name}",
                         "url": "Obre un finestra a {url_path}"
+                    },
+                    "safe-mode": {
+                        "description": "Home Assistant ha tingut algun problema en carregar la configuració i ara s'està executant en mode segur. Mira el registre d’errors per veure què ha anat malament.",
+                        "header": "Mode segur activat",
+                        "show_errors": "Mostra els errors"
                     },
                     "shopping-list": {
                         "add_item": "Afegir element",
@@ -1778,6 +2054,9 @@
                         "alarm-panel": {
                             "available_states": "Estats disponibles",
                             "name": "Panell d'alarma"
+                        },
+                        "button": {
+                            "name": "Botó"
                         },
                         "conditional": {
                             "name": "Condicional"
@@ -1920,7 +2199,9 @@
                         "header": "Configuració de la visualització",
                         "header_name": "Configuració de la visualització {name}",
                         "move_left": "Desplaça la visualització cap a l'esquerra",
-                        "move_right": "Desplaça la visualització cap a la dreta"
+                        "move_right": "Desplaça la visualització cap a la dreta",
+                        "tab_badges": "Etiquetes",
+                        "tab_settings": "Configuració"
                     },
                     "header": "Editar la interfície d'usuari (UI)",
                     "menu": {
@@ -1934,25 +2215,35 @@
                         "para_no_id": "Aquest element no té ID. Afegeix un ID per aquest element a 'ui-lovelace.yaml'."
                     },
                     "raw_editor": {
+                        "confirm_remove_config_text": "Si elimines la configuració de la interfície d'usuari Lovelace es generaran automàticament les visualitzacions de Lovelace amb les teves àrees i dispositius.",
+                        "confirm_remove_config_title": "Estàs segur que vols eliminar la configuració de la interfície d'usuari Lovelace? Es generaran automàticament les visualitzacions de Lovelace amb les teves àrees i dispositius.",
                         "confirm_unsaved_changes": "Hi han canvis no desats. Segur que vols sortir?",
                         "confirm_unsaved_comments": "La configuració conté comentaris que es descartaran. Vols continuar?",
                         "error_invalid_config": "La configuració no és vàlida: {error}",
                         "error_parse_yaml": "No es pot analitzar YAML: {error}",
+                        "error_remove": "No s'ha pogut eliminar la configuració: {error}",
                         "error_save_yaml": "No es pot desar YAML: {error}",
                         "header": "Edita la configuració",
+                        "resources_moved": "Els recursos ja no s'han d'afegir a la configuració de Lovelace, però es poden afegir al tauler de configuració de Lovelace.",
                         "save": "Desa",
                         "saved": "Desat",
                         "unsaved_changes": "Canvis sense desar"
                     },
                     "save_config": {
                         "cancel": "M'ho he repensat",
+                        "close": "Tanca",
                         "header": "Pren el control de la interfície d'usuari Lovelace",
                         "para": "De manera predeterminada, Home Assistant mantindrà al dia la teva interfície d'usuari, actualitzant-la quan hi hagi noves entitats o nous components de Lovelace disponibles. Si prens el control, ja no es faran aquests canvis automàticament.",
                         "para_sure": "Estàs segur que vols prendre el control de la interfície d'usuari?",
-                        "save": "Prendre el control"
+                        "save": "Prendre el control",
+                        "yaml_config": "Per ajudar a familiaritzar-te, aquí tens la configuració actual del teu panell Lovelace:",
+                        "yaml_control": "Per configurar el panell en mode YAML, crea un fitxer YAML amb el nom que hagis establert a la configuració del panell, o bé el nom per defecte 'ui-lovelace.yaml'.",
+                        "yaml_mode": "Estàs utilitzant el mode YAML per tant no pots editar el panell Lovelace des de la interfície d'usuari. Si vols poder editar-lo des de la UI, elimina la línia 'mode: yaml' del fitxer 'configuration.yaml' en l'apartat de configuració de Lovelace."
                     },
                     "suggest_card": {
-                        "create_own": "Crea la teva"
+                        "add": "Afegeix a la UI Lovelace",
+                        "create_own": "Crea la teva",
+                        "header": "T'hem creat un suggeriment"
                     },
                     "view": {
                         "panel_mode": {

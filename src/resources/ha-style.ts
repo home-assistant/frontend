@@ -1,6 +1,6 @@
 import "@polymer/paper-styles/paper-styles";
 import "@polymer/polymer/lib/elements/custom-style";
-import { haStyle, haStyleDialog } from "./styles";
+import { haStyle, haStyleDialog, derivedStyles } from "./styles";
 
 const documentContainer = document.createElement("template");
 documentContainer.setAttribute("style", "display: none;");
@@ -33,46 +33,22 @@ documentContainer.innerHTML = `<custom-style>
 
       --scrollbar-thumb-color: rgb(194, 194, 194);
 
-
       --error-color: #db4437;
-      --error-state-color: var(--error-color);
 
       /* states and badges */
       --state-icon-color: #44739e;
       --state-icon-active-color: #FDD835;
-      --state-icon-unavailable-color: var(--disabled-text-color);
 
       /* background and sidebar */
       --card-background-color: #ffffff;
       --primary-background-color: #fafafa;
       --secondary-background-color: #e5e5e5; /* behind the cards on state */
 
-      /* sidebar menu */
-      --sidebar-text-color: var(--primary-text-color);
-      --sidebar-background-color: var(--paper-listbox-background-color); /* backward compatible with existing themes */
-      --sidebar-icon-color: rgba(0, 0, 0, 0.5);
-      --sidebar-selected-text-color: var(--primary-color);
-      --sidebar-selected-icon-color: var(--primary-color);
-
-      /* controls */
-      --switch-checked-color: var(--primary-color);
-      /* --switch-unchecked-color: var(--accent-color); */
-      --switch-checked-button-color: var(--switch-checked-color, var(--paper-grey-50));
-      --switch-checked-track-color: var(--switch-checked-color, #000000);
-      --switch-unchecked-button-color: var(--switch-unchecked-color, var(--paper-grey-50));
-      --switch-unchecked-track-color: var(--switch-unchecked-color, #000000);
-      --slider-color: var(--primary-color);
-      --slider-secondary-color: var(--light-primary-color);
-      --slider-bar-color: var(--disabled-text-color);
-
       /* for label-badge */
-      --label-badge-background-color: white;
-      --label-badge-text-color: rgb(76, 76, 76);
       --label-badge-red: #DF4C1E;
       --label-badge-blue: #039be5;
       --label-badge-green: #0DA035;
       --label-badge-yellow: #f4b400;
-      --label-badge-grey: var(--paper-grey-500);
 
       /*
         Paper-styles color.html dependency is stripped on build.
@@ -89,7 +65,6 @@ documentContainer.innerHTML = `<custom-style>
       --google-blue-500: #4285f4;
       --google-green-500: #0f9d58;
       --google-yellow-500: #f4b400;
-      --paper-spinner-color: var(--primary-color);
 
       /* for paper-slider */
       --paper-green-400: #66bb6a;
@@ -108,25 +83,8 @@ documentContainer.innerHTML = `<custom-style>
       --light-secondary-opacity: 0.7;
       --light-primary-opacity: 1.0;
 
-      /* derived colors, to keep existing themes mostly working */
-      --paper-card-background-color: var(--card-background-color);
-      --paper-listbox-background-color: var(--card-background-color);
-      --paper-item-icon-color: var(--state-icon-color);
-      --paper-item-icon-active-color: var(--state-icon-active-color);
-      --table-row-background-color: var(--primary-background-color);
-      --table-row-alternative-background-color: var(--secondary-background-color);
-
       /* set our slider style */
-      --paper-slider-knob-color: var(--slider-color);
-      --paper-slider-knob-start-color: var(--slider-color);
-      --paper-slider-pin-color: var(--slider-color);
-      --paper-slider-active-color: var(--slider-color);
-      --paper-slider-secondary-color: var(--slider-secondary-color);
-      --paper-slider-container-color: var(--slider-bar-color);
       --ha-paper-slider-pin-font-size: 15px;
-
-      /* set data table style */
-      --data-table-background-color: var(--card-background-color);
 
       /* rgb */
       --rgb-primary-color: 3, 169, 244;
@@ -135,21 +93,9 @@ documentContainer.innerHTML = `<custom-style>
       --rgb-secondary-text-color: 114, 114, 114;
       --rgb-text-primary-color: 255, 255, 255;
 
-      /* mwc */
-      --mdc-theme-primary: var(--primary-color);
-      --mdc-theme-secondary: var(--accent-color);
-      --mdc-theme-background: var(--primary-background-color);
-      --mdc-theme-surface: var(--paper-card-background-color, var(--card-background-color));
-
-      /* mwc text styles */
-      --mdc-theme-on-primary: var(--text-primary-color);
-      --mdc-theme-on-secondary: var(--text-primary-color);
-      --mdc-theme-on-surface: var(--primary-text-color);
-
-      /* app header background color */
-      --app-header-text-color: var(--text-primary-color);
-      --app-header-background-color: var(--primary-color);
-
+      ${Object.entries(derivedStyles)
+        .map(([key, value]) => `--${key}: ${value};`)
+        .join("")}
     }
   </style>
 

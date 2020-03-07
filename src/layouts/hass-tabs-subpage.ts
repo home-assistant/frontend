@@ -15,6 +15,7 @@ import { Route, HomeAssistant } from "../types";
 import { navigate } from "../common/navigate";
 import "@material/mwc-ripple";
 import { isComponentLoaded } from "../common/config/is_component_loaded";
+import memoizeOne from "memoize-one";
 
 export interface PageNavigation {
   path: string;
@@ -22,7 +23,7 @@ export interface PageNavigation {
   component?: string;
   name?: string;
   core?: boolean;
-  exportOnly?: boolean;
+  advancedOnly?: boolean;
   icon?: string;
   info?: any;
 }
@@ -33,11 +34,56 @@ class HassTabsSubpage extends LitElement {
   @property({ type: String, attribute: "back-path" }) public backPath?: string;
   @property() public backCallback?: () => void;
   @property({ type: Boolean }) public hassio = false;
-  @property({ type: Boolean }) public showAdvanced = false;
   @property() public route!: Route;
   @property() public tabs!: PageNavigation[];
   @property({ type: Boolean, reflect: true }) public narrow = false;
   @property() private _activeTab: number = -1;
+
+  private _getTabs = memoizeOne(
+    (
+      tabs: PageNavigation[],
+      activeTab: number,
+      showAdvanced: boolean | undefined,
+      _components,
+      _language
+    ) => {
+      const shownTabs = tabs.filter(
+        (page) =>
+          (!page.component ||
+            page.core ||
+            isComponentLoaded(this.hass, page.component)) &&
+          (!page.advancedOnly || showAdvanced)
+      );
+
+      return shownTabs.map(
+        (page, index) => html`
+          <div
+            class="tab ${classMap({
+              active: index === activeTab,
+            })}"
+            @click=${this._tabTapped}
+            .path=${page.path}
+          >
+            ${this.narrow
+              ? html`
+                  <ha-icon .icon=${page.icon}></ha-icon>
+                `
+              : ""}
+            ${!this.narrow || index === activeTab
+              ? html`
+                  <span class="name"
+                    >${page.translationKey
+                      ? this.hass.localize(page.translationKey)
+                      : name}</span
+                  >
+                `
+              : ""}
+            <mwc-ripple></mwc-ripple>
+          </div>
+        `
+      );
+    }
+  );
 
   protected updated(changedProperties: PropertyValues) {
     super.updated(changedProperties);
@@ -49,6 +95,14 @@ class HassTabsSubpage extends LitElement {
   }
 
   protected render(): TemplateResult {
+    const tabs = this._getTabs(
+      this.tabs,
+      this._activeTab,
+      this.hass.userData?.showAdvanced,
+      this.hass.config.components,
+      this.hass.language
+    );
+
     return html`
       <div class="toolbar">
         <ha-paper-icon-button-arrow-prev
@@ -56,41 +110,18 @@ class HassTabsSubpage extends LitElement {
           .hassio=${this.hassio}
           @click=${this._backTapped}
         ></ha-paper-icon-button-arrow-prev>
-        <div id="tabbar" class=${classMap({ "bottom-bar": this.narrow })}>
-          ${this.tabs.map((page, index) =>
-            (!page.component ||
-              page.core ||
-              isComponentLoaded(this.hass, page.component)) &&
-            (!page.exportOnly || this.showAdvanced)
-              ? html`
-                  <div
-                    class="tab ${classMap({
-                      active: index === this._activeTab,
-                    })}"
-                    @click=${this._tabTapped}
-                    .path=${page.path}
-                  >
-                    ${this.narrow
-                      ? html`
-                          <ha-icon .icon=${page.icon}></ha-icon>
-                        `
-                      : ""}
-                    ${!this.narrow || index === this._activeTab
-                      ? html`
-                          <span class="name"
-                            >${page.translationKey
-                              ? this.hass.localize(page.translationKey)
-                              : name}</span
-                          >
-                        `
-                      : ""}
-                    <mwc-ripple></mwc-ripple>
-                  </div>
-                `
-              : ""
-          )}
-        </div>
-
+        ${this.narrow
+          ? html`
+              <div main-title><slot name="header"></slot></div>
+            `
+          : ""}
+        ${tabs.length > 1 || !this.narrow
+          ? html`
+              <div id="tabbar" class=${classMap({ "bottom-bar": this.narrow })}>
+                ${tabs}
+              </div>
+            `
+          : ""}
         <div id="toolbar-icon">
           <slot name="toolbar-icon"></slot>
         </div>
@@ -136,11 +167,6 @@ class HassTabsSubpage extends LitElement {
         border-bottom: 1px solid var(--divider-color);
         padding: 0 16px;
         box-sizing: border-box;
-      }
-
-      :host([narrow]) .toolbar {
-        background-color: var(--primary-background-color);
-        border-bottom: none;
       }
 
       #tabbar {

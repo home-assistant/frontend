@@ -65,7 +65,7 @@ export class HuiDialogEditLovelace extends LitElement {
             "ui.panel.lovelace.editor.edit_lovelace.explanation"
           )}
           <hui-lovelace-editor
-            .hass="${this.hass}"
+            .hass=${this.hass}
             .config="${this._config}"
             @lovelace-config-changed="${this._ConfigChanged}"
           ></hui-lovelace-editor

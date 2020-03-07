@@ -32,7 +32,7 @@ class HuiGenericEntityRow extends LitElement {
 
   @property() public config?: EntitiesCardEntityConfig;
 
-  @property() public showSecondary: boolean = true;
+  @property() public secondaryText?: string;
 
   protected render(): TemplateResult {
     if (!this.hass || !this.config) {
@@ -59,6 +59,8 @@ class HuiGenericEntityRow extends LitElement {
       (this.config.entity &&
         !DOMAINS_HIDE_MORE_INFO.includes(computeDomain(this.config.entity)));
 
+    const hasSecondary = this.secondaryText || this.config.secondary_info;
+
     return html`
       <state-badge
         class=${classMap({
@@ -76,59 +78,58 @@ class HuiGenericEntityRow extends LitElement {
         })}
         tabindex=${ifDefined(pointer ? "0" : undefined)}
       ></state-badge>
-      <div class="flex">
-        <div
-          class=${classMap({
-            info: true,
-            pointer,
-            padName: this.showSecondary && !this.config.secondary_info,
-            padSecondary: Boolean(
-              !this.showSecondary || this.config.secondary_info
-            ),
-          })}
-          @action=${this._handleAction}
-          .actionHandler=${actionHandler({
-            hasHold: hasAction(this.config!.hold_action),
-            hasDoubleClick: hasAction(this.config!.double_tap_action),
-          })}
-        >
-          ${this.config.name || computeStateName(stateObj)}
-          <div class="secondary">
-            ${!this.showSecondary
-              ? html`
-                  <slot name="secondary"></slot>
-                `
-              : this.config.secondary_info === "entity-id"
-              ? stateObj.entity_id
-              : this.config.secondary_info === "last-changed"
-              ? html`
-                  <ha-relative-time
-                    .hass=${this.hass}
-                    .datetime=${stateObj.last_changed}
-                  ></ha-relative-time>
-                `
-              : this.config.secondary_info === "last-triggered"
-              ? stateObj.attributes.last_triggered
-                ? html`
-                    <ha-relative-time
-                      .hass=${this.hass}
-                      .datetime=${stateObj.attributes.last_triggered}
-                    ></ha-relative-time>
-                  `
-                : this.hass.localize(
-                    "ui.panel.lovelace.cards.entities.never_triggered"
-                  )
-              : ""}
-          </div>
-        </div>
-
-        <slot></slot>
+      <div
+        class="info ${classMap({
+          pointer,
+          "text-content": !hasSecondary,
+        })}"
+        @action=${this._handleAction}
+        .actionHandler=${actionHandler({
+          hasHold: hasAction(this.config!.hold_action),
+          hasDoubleClick: hasAction(this.config!.double_tap_action),
+        })}
+      >
+        ${this.config.name || computeStateName(stateObj)}
+        ${hasSecondary
+          ? html`
+              <div class="secondary">
+                ${this.secondaryText ||
+                this.config.secondary_info === "entity-id"
+                  ? stateObj.entity_id
+                  : this.config.secondary_info === "last-changed"
+                  ? html`
+                      <ha-relative-time
+                        .hass=${this.hass}
+                        .datetime=${stateObj.last_changed}
+                      ></ha-relative-time>
+                    `
+                  : this.config.secondary_info === "last-triggered"
+                  ? stateObj.attributes.last_triggered
+                    ? html`
+                        <ha-relative-time
+                          .hass=${this.hass}
+                          .datetime=${stateObj.attributes.last_triggered}
+                        ></ha-relative-time>
+                      `
+                    : this.hass.localize(
+                        "ui.panel.lovelace.cards.entities.never_triggered"
+                      )
+                  : ""}
+              </div>
+            `
+          : ""}
       </div>
+      <slot></slot>
     `;
   }
 
   protected updated(changedProps: PropertyValues): void {
     super.updated(changedProps);
+    toggleAttribute(
+      this,
+      "no-secondary",
+      !this.secondaryText && !this.config?.secondary_info
+    );
     if (changedProps.has("hass")) {
       toggleAttribute(this, "rtl", computeRTL(this.hass!));
     }
@@ -143,16 +144,10 @@ class HuiGenericEntityRow extends LitElement {
       :host {
         display: flex;
         align-items: center;
-      }
-      .flex {
-        flex: 1;
-        margin-left: 16px;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        min-width: 0;
+        flex-direction: row;
       }
       .info {
+        margin-left: 16px;
         flex: 1 0 60px;
       }
       .info,
@@ -160,6 +155,11 @@ class HuiGenericEntityRow extends LitElement {
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
+      }
+      :host([no-secondary]) .text-content,
+      :host([no-secondary]) ::slotted(.text-content) {
+        position: relative;
+        top: 2px;
       }
       .flex ::slotted(*) {
         margin-left: 8px;
@@ -191,12 +191,6 @@ class HuiGenericEntityRow extends LitElement {
       }
       .pointer {
         cursor: pointer;
-      }
-      .padName {
-        padding: 12px 0px;
-      }
-      .padSecondary {
-        padding: 4px 0px;
       }
     `;
   }

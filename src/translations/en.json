@@ -377,9 +377,9 @@
   },
   "ui": {
     "auth_store": {
-      "ask": "Do you want to save this login?",
-      "decline": "No thanks",
-      "confirm": "Save login"
+      "ask": "Do you want to stay logged in?",
+      "decline": "No",
+      "confirm": "Yes"
     },
     "card": {
       "alarm_control_panel": {
@@ -572,6 +572,7 @@
         "service": "Service"
       },
       "related-items": {
+        "no_related_found": "No related items found.",
         "integration": "Integration",
         "device": "Device",
         "area": "Area",
@@ -594,7 +595,8 @@
       "generic": {
         "cancel": "Cancel",
         "ok": "OK",
-        "default_confirmation_title": "Are you sure?"
+        "default_confirmation_title": "Are you sure?",
+        "close": "close"
       },
       "more_info_control": {
         "dismiss": "Dismiss dialog",
@@ -618,6 +620,21 @@
           "remove_action": "Remove entity",
           "confirm_remove_title": "Remove entity?",
           "confirm_remove_text": "Are you sure you want to remove this entity?"
+        },
+        "vacuum": {
+          "status": "Status",
+          "commands": "Vacuum cleaner commands:",
+          "fan_speed": "Fan speed",
+          "start": "Start",
+          "pause": "Pause",
+          "stop": "Stop",
+          "clean_spot": "Clean spot",
+          "locate": "Locate",
+          "return_home": "Return home",
+          "start_pause": "Start/Pause"
+        },
+        "person": {
+          "create_zone": "Create zone from current location"
         }
       },
       "entity_registry": {
@@ -625,8 +642,11 @@
         "control": "Control",
         "related": "Related",
         "dismiss": "Dismiss",
+        "no_unique_id": "This entity does not have a unique ID, therefore it's settings can not be managed from the UI.",
         "editor": {
           "name": "Name Override",
+          "icon": "Icon Override",
+          "icon_error": "Icons should be in the format 'prefix:iconname', e.g. 'mdi:home'",
           "entity_id": "Entity ID",
           "unavailable": "This entity is not currently available.",
           "enabled_label": "Enable entity",
@@ -636,6 +656,44 @@
           "confirm_delete": "Are you sure you want to delete this entry?",
           "update": "UPDATE",
           "note": "Note: this might not work yet with all integrations."
+        }
+      },
+      "helper_settings": {
+        "platform_not_loaded": "The {platform} component is not loaded, please add it your configuration. Either by adding 'default_config:' or '{platform}:'.",
+        "yaml_not_editable": "The settings of this entity can not be edited from the UI. Only entities setup from the UI are configurable from the UI.",
+        "required_error_msg": "This field is required",
+        "generic": {
+          "name": "Name",
+          "icon": "Icon",
+          "initial_value": "Initial value at start",
+          "initial_value_explain": "The value the element will have when Home Assistant starts. When left empty, the value will be restored to it's previous value."
+        },
+        "input_datetime": {
+          "has_time": "Time",
+          "has_date": "Date"
+        },
+        "input_text": {
+          "min": "Minimum lenght",
+          "max": "Maximum lenght",
+          "mode": "Display mode",
+          "text": "Text",
+          "password": "Password",
+          "pattern": "Regex pattern for client-side validation"
+        },
+        "input_number": {
+          "min": "Minimum value",
+          "max": "Maximum value",
+          "mode": "Display mode",
+          "box": "Input field",
+          "slider": "Slider",
+          "step": "Step size of the slider",
+          "unit_of_measurement": "Unit of measurement"
+        },
+        "input_select": {
+          "options": "Options",
+          "add_option": "Add option",
+          "no_options": "There are no options yet.",
+          "add": "Add"
         }
       },
       "options_flow": {
@@ -649,7 +707,8 @@
       "config_entry_system_options": {
         "title": "System Options for {integration}",
         "enable_new_entities_label": "Enable newly added entities.",
-        "enable_new_entities_description": "If disabled, newly discovered entities for {integration} will not be automatically added to Home Assistant."
+        "enable_new_entities_description": "If disabled, newly discovered entities for {integration} will not be automatically added to Home Assistant.",
+        "update": "Update"
       },
       "zha_device_info": {
         "manuf": "by {manufacturer}",
@@ -743,6 +802,31 @@
             "confirmation_text": "All devices in this area will become unassigned."
           }
         },
+        "helpers": {
+          "caption": "Helpers",
+          "description": "Elements that can help build automations.",
+          "types": {
+            "input_text": "Text",
+            "input_number": "Number",
+            "input_select": "Dropdown",
+            "input_boolean": "Toggle",
+            "input_datetime": "Date and/or time"
+          },
+          "picker": {
+            "headers": {
+              "name": "Name",
+              "entity_id": "Entity ID",
+              "type": "Type",
+              "editable": "Editable"
+            },
+            "add_helper": "Add helper"
+          },
+          "dialog": {
+            "create": "Create",
+            "add_helper": "Add helper",
+            "add_platform": "Add {platform}"
+          }
+        },
         "core": {
           "caption": "General",
           "description": "Change your general Home Assistant configuration",
@@ -769,6 +853,81 @@
             }
           }
         },
+        "lovelace": {
+          "caption": "Lovelace Dashboards",
+          "description": "Configure your Lovelace Dashboards",
+          "dashboards": {
+            "caption": "Dashboards",
+            "conf_mode": {
+              "yaml": "YAML file",
+              "storage": "UI controlled"
+            },
+            "picker": {
+              "headers": {
+                "title": "Title",
+                "conf_mode": "Configuration method",
+                "default": "Default",
+                "require_admin": "Admin only",
+                "sidebar": "Show in sidebar",
+                "filename": "Filename"
+              },
+              "open": "Open",
+              "add_dashboard": "Add dashboard"
+            },
+            "confirm_delete": "Are you sure you want to delete this dashboard?",
+            "cant_edit_yaml": "Dashboards defined in YAML can not be edited from the UI. Change them in configuration.yaml.",
+            "cant_edit_default": "The standard Lovelace dashboard can not be edited from the UI. You can hide it by setting another dashboard as default.",
+            "detail": {
+              "edit_dashboard": "Edit dashboard",
+              "new_dashboard": "Add new dashboard",
+              "dismiss": "Close",
+              "show_sidebar": "Show in sidebar",
+              "icon": "Sidebar icon",
+              "title": "Sidebar title",
+              "title_required": "Title is required.",
+              "url": "Url",
+              "url_error_msg": "The url can not contain spaces or special characters, except for _ and -",
+              "require_admin": "Admin only",
+              "delete": "Delete",
+              "update": "Update",
+              "create": "Create",
+              "set_default": "Set as default on this device",
+              "remove_default": "Remove as default on this device"
+            }
+          },
+          "resources": {
+            "caption": "Resources",
+            "types": {
+              "css": "Stylesheet",
+              "html": "HTML (deprecated)",
+              "js": "JavaScript File (deprecated)",
+              "module": "JavaScript Module"
+            },
+            "picker": {
+              "headers": {
+                "url": "Url",
+                "type": "Type"
+              },
+              "add_resource": "Add resource"
+            },
+            "confirm_delete": "Are you sure you want to delete this resource?",
+            "refresh_header": "Do you want to refresh?",
+            "refresh_body": "You have to refresh the page to complete the removal, do you want to refresh now?",
+            "cant_edit_yaml": "You are using Lovelace in YAML mode, therefore you can not manage your resources through the UI. Manage them in configuration.yaml.",
+            "detail": {
+              "new_resource": "Add new resource",
+              "dismiss": "Close",
+              "warning_header": "Be cautious!",
+              "warning_text": "Adding resources can be dangerous, make sure you know the source of the resource and trust them. Bad resources could seriously harm your system.",
+              "url": "Url",
+              "url_error_msg": "Url is a required field",
+              "type": "Resource type",
+              "delete": "Delete",
+              "update": "Update",
+              "create": "Create"
+            }
+          }
+        },
         "server_control": {
           "caption": "Server Controls",
           "description": "Restart and stop the Home Assistant server",
@@ -776,13 +935,13 @@
             "validation": {
               "heading": "Configuration validation",
               "introduction": "Validate your configuration if you recently made some changes to your configuration and want to make sure that it is all valid",
-              "check_config": "Check config",
+              "check_config": "Check configuration",
               "valid": "Configuration valid!",
               "invalid": "Configuration invalid"
             },
             "reloading": {
-              "heading": "Configuration reloading",
-              "introduction": "Some parts of Home Assistant can reload without requiring a restart. Hitting reload will unload their current configuration and load the new one.",
+              "heading": "YAML configuration reloading",
+              "introduction": "Some parts of Home Assistant can reload without requiring a restart. Hitting reload will unload their current YAML configuration and load the new one.",
               "core": "Reload location & customizations",
               "group": "Reload groups",
               "automation": "Reload automations",
@@ -838,6 +997,7 @@
             "delete_confirm": "Are you sure you want to delete this automation?"
           },
           "editor": {
+            "enable_disable": "Enable/Disable automation",
             "introduction": "Use automations to bring your home alive.",
             "default_name": "New Automation",
             "load_error_not_editable": "Only automations in automations.yaml are editable.",
@@ -1197,7 +1357,7 @@
               "title": "Alexa",
               "info": "With the Alexa integration for Home Assistant Cloud you'll be able to control all your Home Assistant devices via any Alexa-enabled device.",
               "enable_ha_skill": "Enable the Home Assistant skill for Alexa",
-              "config_documentation": "Config documentation",
+              "config_documentation": "Configuration documentation",
               "enable_state_reporting": "Enable State Reporting",
               "info_state_reporting": "If you enable state reporting, Home Assistant will send all state changes of exposed entities to Amazon. This allows you to always see the latest states in the Alexa app and use the state changes to create routines.",
               "sync_entities": "Sync Entities",
@@ -1211,7 +1371,7 @@
               "title": "Google Assistant",
               "info": "With the Google Assistant integration for Home Assistant Cloud you'll be able to control all your Home Assistant devices via any Google Assistant-enabled device.",
               "enable_ha_skill": "Activate the Home Assistant skill for Google Assistant",
-              "config_documentation": "Config documentation",
+              "config_documentation": "Configuration documentation",
               "enable_state_reporting": "Enable State Reporting",
               "info_state_reporting": "If you enable state reporting, Home Assistant will send all state changes of exposed entities to Google. This allows you to always see the latest states in the Google app.",
               "security_devices": "Security Devices",
@@ -1332,11 +1492,14 @@
             "filter": {
               "filter": "Filter",
               "show_disabled": "Show disabled entities",
-              "show_unavailable": "Show unavailable entities"
+              "show_unavailable": "Show unavailable entities",
+              "show_readonly": "Show read-only entities"
             },
             "status": {
+              "restored": "Restored",
               "unavailable": "Unavailable",
               "disabled": "Disabled",
+              "readonly": "Read-only",
               "ok": "Ok"
             },
             "headers": {
@@ -1359,7 +1522,9 @@
             "remove_selected": {
               "button": "Remove selected",
               "confirm_title": "Do you want to remove {number} entities?",
-              "confirm_text": "Entities can only be removed when the integration is no longer providing the entities."
+              "confirm_partly_title": "Only {number} selected entities can be removed.",
+              "confirm_text": "You should remove them from your Lovelace config and automations if they contain these entities.",
+              "confirm_partly_text": "You can only remove {removable} of the selected {selected} entities. Entities can only be removed when the integration is no longer providing the entities. Sometimes you have to restart Home Assistant before you can remove the entities of a removed integration. Are you sure you want to remove the removable entities?"
             }
           }
         },
@@ -1398,7 +1563,10 @@
           "add_zone": "Add Zone",
           "confirm_delete": "Are you sure you want to delete this zone?",
           "configured_in_yaml": "Zones configured via configuration.yaml cannot be edited via the UI.",
-          "edit_home_zone": "The location of your home can be changed in the gerenal config.",
+          "edit_home_zone": "The radius of the Home zone can't be edited from the frontend yet. Drag the marker on the map to move the home zone.",
+          "edit_home_zone_narrow": "The radius of the Home zone can't be edited from the frontend yet. The location can be changed from the general configuration.",
+          "go_to_core_config": "Go to general configuration?",
+          "home_zone_core_config": "The location of your home zone is editable from the general configuration page. The radius of the Home zone can't be edited from the frontend yet. Do you want to go to the general configuration?",
           "detail": {
             "new_zone": "New Zone",
             "name": "Name",
@@ -1408,7 +1576,7 @@
             "latitude": "Latitude",
             "longitude": "Longitude",
             "passive": "Passive",
-            "passive_note": "Passive zones are hidden in the frontend and are not used as location for device trackers. This is usefull if you just want to use it for automations.",
+            "passive_note": "Passive zones are hidden in the frontend and are not used as location for device trackers. This is useful if you just want to use it for automations.",
             "required_error_msg": "This field is required",
             "delete": "Delete",
             "create": "Create",
@@ -1463,7 +1631,7 @@
             "submit": "Submit",
             "not_all_required_fields": "Not all required fields are filled in.",
             "error_saving_area": "Error saving area: {error}",
-            "created_config": "Created config for {name}.",
+            "created_config": "Created configuration for {name}.",
             "external_step": {
               "description": "This step requires you to visit an external website to be completed.",
               "open_site": "Open website"
@@ -1630,14 +1798,14 @@
             "network_started_note_all_queried": "All nodes have been queried."
           },
           "node_config": {
-            "header": "Node Config Options",
+            "header": "Node Configuration Options",
             "seconds": "seconds",
             "set_wakeup": "Set Wakeup Interval",
-            "config_parameter": "Config Parameter",
-            "config_value": "Config Value",
+            "config_parameter": "Configuration Parameter",
+            "config_value": "Configuration Value",
             "true": "True",
             "false": "False",
-            "set_config_parameter": "Set Config Parameter"
+            "set_config_parameter": "Set Configuration Parameter"
           },
           "values": {
             "header": "Node Values"
@@ -1648,7 +1816,7 @@
             "heal_network": "Heal Network",
             "test_network": "Test Network",
             "soft_reset": "Soft Reset",
-            "save_config": "Save Config",
+            "save_config": "Save Configuration",
             "add_node_secure": "Add Node Secure",
             "add_node": "Add Node",
             "remove_node": "Remove Node",
@@ -1689,6 +1857,11 @@
             "toggle": "Toggle {name}",
             "call_service": "Call service {name}",
             "more_info": "Show more-info: {name}"
+          },
+          "safe-mode": {
+            "header": "Safe Mode Activated",
+            "description": "Home Assistant ran into trouble while loading your configuration and is now running in safe mode. Take a look at the error log to see what went wrong.",
+            "show_errors": "Show errors"
           }
         },
         "unused_entities": {
@@ -1703,11 +1876,13 @@
         "add_entities": {
           "yaml_unsupported": "You can not use this function when using Lovelace UI in YAML mode.",
           "generated_unsupported": "You can only use this function when you have taken control of the Lovelace UI.",
-          "saving_failed": "Saving Lovelace UI config failed."
+          "saving_failed": "Saving Lovelace UI configuration failed."
         },
         "views": {
-          "confirm_delete": "Are you sure you want to delete this view?",
-          "existing_cards": "You can't delete a view that has cards in it. Remove the cards first."
+          "confirm_delete": "Delete view?",
+          "confirm_delete_text": "Are you sure you want to delete your '{name}' view?",
+          "confirm_delete_existing_cards": "Deleting this view will also remove the cards",
+          "confirm_delete_existing_cards_text": "Are you sure you want to delete your '{name}' view? The view contains {number} cards that will be deleted. This action cannot be undone."
         },
         "menu": {
           "configure_ui": "Configure UI",
@@ -1720,21 +1895,22 @@
           "header": "Edit UI",
           "menu": {
             "open": "Open Lovelace UI menu",
-            "raw_editor": "Raw config editor"
+            "raw_editor": "Raw configuration editor"
           },
           "raw_editor": {
-            "header": "Edit Config",
+            "header": "Edit Configuration",
             "save": "Save",
             "unsaved_changes": "Unsaved changes",
             "saved": "Saved",
             "confirm_remove_config_title": "Are you sure you want to remove your Lovelace UI configuration? We will automatically generate your Lovelace UI views with your areas and devices.",
             "confirm_remove_config_text": "We will automatically generate your Lovelace UI views with your areas and devices if you remove your Lovelace UI configuration.",
             "confirm_unsaved_changes": "You have unsaved changes, are you sure you want to exit?",
-            "confirm_unsaved_comments": "Your config contains comment(s), these will not be saved. Do you want to continue?",
+            "confirm_unsaved_comments": "Your configuration contains comment(s), these will not be saved. Do you want to continue?",
             "error_parse_yaml": "Unable to parse YAML: {error}",
-            "error_invalid_config": "Your config is not valid: {error}",
+            "error_invalid_config": "Your configuration is not valid: {error}",
             "error_save_yaml": "Unable to save YAML: {error}",
-            "error_remove": "Unable to remove config: {error}"
+            "error_remove": "Unable to remove configuration: {error}",
+            "resources_moved": "Resources should no longer be added to the Lovelace configuration but can be added in the Lovelace config panel."
           },
           "edit_lovelace": {
             "header": "Title of your Lovelace UI",
@@ -1748,7 +1924,10 @@
             "edit": "Edit view",
             "delete": "Delete view",
             "move_left": "Move view left",
-            "move_right": "Move view right"
+            "move_right": "Move view right",
+            "tab_settings": "Settings",
+            "tab_badges": "Badges",
+            "tab_visibility": "Visibility"
           },
           "edit_card": {
             "header": "Card Configuration",
@@ -1772,22 +1951,35 @@
             "header": "Take control of your Lovelace UI",
             "para": "By default Home Assistant will maintain your user interface, updating it when new entities or Lovelace UI components become available. If you take control we will no longer make changes automatically for you.",
             "para_sure": "Are you sure you want to take control of your user interface?",
+            "yaml_mode": "You are using YAML mode, that means you can not change your Lovelace config from the UI. If you want to change Lovelace from the UI, remove the 'mode: yaml' from your Lovelace configuration in 'configuration.yaml.'",
+            "yaml_control": "To take control in YAML mode, create a YAML file with the name you specified in your config for this dashboard, or the default 'ui-lovelace.yaml'.",
+            "yaml_config": "To help you start here is the current config of this dashboard:",
             "cancel": "Never mind",
+            "close": "Close",
             "save": "Take control"
           },
           "migrate": {
             "header": "Configuration Incompatible",
             "para_no_id": "This element doesn't have an ID. Please add an ID to this element in 'ui-lovelace.yaml'.",
-            "para_migrate": "Home Assistant can add ID's to all your cards and views automatically for you by pressing the 'Migrate config' button.",
-            "migrate": "Migrate config"
+            "para_migrate": "Home Assistant can add ID's to all your cards and views automatically for you by pressing the 'Migrate configuration' button.",
+            "migrate": "Migrate configuration"
           },
           "card": {
             "alarm-panel": {
               "name": "Alarm Panel",
-              "available_states": "Available States"
+              "available_states": "Available States",
+              "description": "The Alarm Panel card allows you to Arm and Disarm your alarm control panel integrations."
             },
             "conditional": {
-              "name": "Conditional"
+              "name": "Conditional",
+              "description": "The Conditional card displays another card based on entity states.",
+              "conditions": "Conditions",
+              "card": "Card",
+              "state_equal": "State is equal to",
+              "state_not_equal": "State is not equal to",
+              "current_state": "current",
+              "condition_explanation": "The card will be shown when ALL conditions below are fulfilled.",
+              "change_type": "Change type"
             },
             "config": {
               "required": "Required",
@@ -1796,13 +1988,16 @@
             "entities": {
               "name": "Entities",
               "show_header_toggle": "Show Header Toggle?",
-              "toggle": "Toggle entities."
+              "toggle": "Toggle entities.",
+              "description": "The Entities card is the most common type of card. It groups items together into lists."
             },
-            "entity-button": {
-              "name": "Entity Button"
+            "button": {
+              "name": "Button",
+              "description": "The Button card allows you to add buttons to perform tasks."
             },
             "entity-filter": {
-              "name": "Entity Filter"
+              "name": "Entity Filter",
+              "description": "The Entity Filter card allows you to define a list of entities that you want to track only when in a certain state."
             },
             "gauge": {
               "name": "Gauge",
@@ -1811,23 +2006,29 @@
                 "green": "Green",
                 "red": "Red",
                 "yellow": "Yellow"
-              }
+              },
+              "description": "The Gauge card is a basic card that allows visually seeing sensor data."
             },
             "glance": {
               "name": "Glance",
-              "columns": "Columns"
+              "columns": "Columns",
+              "description": "The Glance card is useful to group multiple sensors in a compact overview."
             },
             "history-graph": {
-              "name": "History Graph"
+              "name": "History Graph",
+              "description": "The History Graph card allows you to display a graph for each of the entities listed."
             },
             "horizontal-stack": {
-              "name": "Horizontal Stack"
+              "name": "Horizontal Stack",
+              "description": "The Horizontal Stack card allows you to stack together multiple cards, so they always sit next to each other in the space of one column."
             },
             "iframe": {
-              "name": "iFrame"
+              "name": "Webpage",
+              "description": "The Webpage card allows you to embed your favorite webpage right into Home Assistant."
             },
             "light": {
-              "name": "Light"
+              "name": "Light",
+              "description": "The Light card allows you to change the brightness of the light."
             },
             "generic": {
               "aspect_ratio": "Aspect Ratio",
@@ -1841,6 +2042,8 @@
               "icon_height": "Icon Height",
               "image": "Image Path",
               "maximum": "Maximum",
+              "manual": "Manual",
+              "manual_description": "Need to add a custom card or just want to manually write the yaml?",
               "minimum": "Minimum",
               "name": "Name",
               "refresh_interval": "Refresh Interval",
@@ -1851,54 +2054,68 @@
               "title": "Title",
               "theme": "Theme",
               "unit": "Unit",
-              "url": "Url"
+              "url": "Url",
+              "state": "State"
             },
             "map": {
               "name": "Map",
               "geo_location_sources": "Geolocation Sources",
               "dark_mode": "Dark Mode?",
               "default_zoom": "Default Zoom",
-              "source": "Source"
+              "source": "Source",
+              "description": "The Map card that allows you to display entities on a map."
             },
             "markdown": {
               "name": "Markdown",
-              "content": "Content"
+              "content": "Content",
+              "description": "The Markdown card is used to render Markdown."
             },
             "media-control": {
-              "name": "Media Control"
+              "name": "Media Control",
+              "description": "The Media Control card is used to display media player entities on an interface with easy to use controls."
             },
             "picture": {
-              "name": "Picture"
+              "name": "Picture",
+              "description": "The Picture card allows you to set an image to use for navigation to various paths in your interface or to call a service."
             },
             "picture-elements": {
-              "name": "Picture Elements"
+              "name": "Picture Elements",
+              "description": "The Picture Elements card is one of the most versatile types of cards. The cards allow you to position icons or text and even services! On an image based on coordinates."
             },
             "picture-entity": {
-              "name": "Picture Entity"
+              "name": "Picture Entity",
+              "description": "The Picture Entity card displays an entity in the form of an image. Instead of images from URL, it can also show the picture of camera entities."
             },
             "picture-glance": {
-              "name": "Picture Glance"
+              "name": "Picture Glance",
+              "description": "The Picture Glance card shows an image and corresponding entity states as an icon. The entities on the right side allow toggle actions, others show the more information dialog."
             },
             "plant-status": {
-              "name": "Plant Status"
+              "name": "Plant Status",
+              "description": "The Plant Status card is for all the lovely botanists out there."
             },
             "sensor": {
               "name": "Sensor",
               "graph_detail": "Graph Detail",
-              "graph_type": "Graph Type"
+              "graph_type": "Graph Type",
+              "description": "The Sensor card gives you a quick overview of your sensors state with an optional graph to visualize change over time."
             },
             "shopping-list": {
               "name": "Shopping List",
+              "description": "The Shopping List card allows you to add, edit, check-off, and clear items from your shopping list.",
               "integration_not_loaded": "This card requires the `shopping_list` integration to be set up."
             },
             "thermostat": {
-              "name": "Thermostat"
+              "name": "Thermostat",
+              "description": "The Thermostat card gives control of your climate entity. Allowing you to change the temperature and mode of the entity."
             },
             "vertical-stack": {
-              "name": "Vertical Stack"
+              "name": "Vertical Stack",
+              "description": "The Vertical Stack card allows you to group multiple cards so they always sit in the same column."
             },
             "weather-forecast": {
-              "name": "Weather Forecast"
+              "name": "Weather Forecast",
+              "description": "The Weather Forecast card displays the weather. Very useful to include on interfaces that people display on the wall."
             }
           },
           "view": {
@@ -1913,7 +2130,7 @@
           "entity_non_numeric": "Entity is non-numeric: {entity}"
         },
         "changed_toast": {
-          "message": "The Lovelace UI configuration was updated, refresh to see changes?",
+          "message": "The Lovelace UI configuration for this dashboard was updated, refresh to see changes?",
           "refresh": "Refresh"
         },
         "reload_lovelace": "Reload UI"
@@ -2077,7 +2294,7 @@
                   "data": {
                     "password": "API Password"
                   },
-                  "description": "Please input the API password in your http config:"
+                  "description": "Please input the API password in your HTTP configuration:"
                 },
                 "mfa": {
                   "data": {

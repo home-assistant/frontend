@@ -26,10 +26,12 @@ import { CastManager } from "../../../../src/cast/cast_manager";
 import {
   LovelaceConfig,
   getLovelaceCollection,
+  getLegacyLovelaceCollection,
 } from "../../../../src/data/lovelace";
 import "./hc-layout";
 import { generateDefaultViewConfig } from "../../../../src/panels/lovelace/common/generate-lovelace-config";
 import { toggleAttribute } from "../../../../src/common/dom/toggle_attribute";
+import { atLeastVersion } from "../../../../src/common/config/version";
 
 @customElement("hc-cast")
 class HcCast extends LitElement {
@@ -133,7 +135,9 @@ class HcCast extends LitElement {
   protected firstUpdated(changedProps) {
     super.firstUpdated(changedProps);
 
-    const llColl = getLovelaceCollection(this.connection);
+    const llColl = atLeastVersion(this.connection.haVersion, 0, 107)
+      ? getLovelaceCollection(this.connection)
+      : getLegacyLovelaceCollection(this.connection);
     // We first do a single refresh because we need to check if there is LL
     // configuration.
     llColl.refresh().then(

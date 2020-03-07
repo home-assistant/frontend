@@ -13,11 +13,12 @@ import "@material/mwc-button";
 
 import "../../../components/entity/ha-entities-picker";
 import "../../../components/user/ha-user-picker";
-import "../../../components/ha-dialog";
 import { PersonDetailDialogParams } from "./show-dialog-person-detail";
 import { PolymerChangedEvent } from "../../../polymer-types";
 import { HomeAssistant } from "../../../types";
 import { PersonMutableParams } from "../../../data/person";
+import { createCloseHeading } from "../../../components/ha-dialog";
+import { haStyleDialog } from "../../../resources/styles";
 
 class DialogPersonDetail extends LitElement {
   @property() public hass!: HomeAssistant;
@@ -55,26 +56,18 @@ class DialogPersonDetail extends LitElement {
       return html``;
     }
     const nameInvalid = this._name.trim() === "";
-    const title = html`
-      ${this._params.entry
-        ? this._params.entry.name
-        : this.hass!.localize("ui.panel.config.person.detail.new_person")}
-      <paper-icon-button
-        aria-label=${this.hass.localize(
-          "ui.panel.config.integrations.config_flow.dismiss"
-        )}
-        icon="hass:close"
-        dialogAction="close"
-        style="position: absolute; right: 16px; top: 12px;"
-      ></paper-icon-button>
-    `;
     return html`
       <ha-dialog
         open
         @closing="${this._close}"
         scrimClickAction=""
         escapeKeyAction=""
-        .title=${title}
+        .heading=${createCloseHeading(
+          this.hass,
+          this._params.entry
+            ? this._params.entry.name
+            : this.hass!.localize("ui.panel.config.person.detail.new_person")
+        )}
       >
         <div>
           ${this._error
@@ -135,6 +128,7 @@ class DialogPersonDetail extends LitElement {
                       <a
                         href="https://www.home-assistant.io/integrations/#presence-detection"
                         target="_blank"
+                        rel="noreferrer"
                         >${this.hass!.localize(
                           "ui.panel.config.person.detail.link_presence_detection_integrations"
                         )}</a
@@ -236,33 +230,13 @@ class DialogPersonDetail extends LitElement {
 
   static get styles(): CSSResult[] {
     return [
+      haStyleDialog,
       css`
-        ha-dialog {
-          --mdc-dialog-min-width: 400px;
-          --mdc-dialog-max-width: 600px;
-          --mdc-dialog-title-ink-color: var(--primary-text-color);
-          --justify-action-buttons: space-between;
-        }
-        /* make dialog fullscreen on small screens */
-        @media all and (max-width: 450px), all and (max-height: 500px) {
-          ha-dialog {
-            --mdc-dialog-min-width: 100vw;
-            --mdc-dialog-max-height: 100vh;
-            --mdc-dialog-shape-radius: 0px;
-            --vertial-align-dialog: flex-end;
-          }
-        }
         .form {
           padding-bottom: 24px;
         }
         ha-user-picker {
           margin-top: 16px;
-        }
-        mwc-button.warning {
-          --mdc-theme-primary: var(--google-red-500);
-        }
-        .error {
-          color: var(--google-red-500);
         }
         a {
           color: var(--primary-color);

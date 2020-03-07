@@ -8,7 +8,6 @@ import "../resources/ha-style";
 import "./more-info/more-info-controls";
 
 import { computeStateDomain } from "../common/entity/compute_state_domain";
-import { isComponentLoaded } from "../common/config/is_component_loaded";
 
 import DialogMixin from "../mixins/dialog-mixin";
 
@@ -80,8 +79,7 @@ class HaMoreInfoDialog extends DialogMixin(PolymerElement) {
         class="no-padding"
         hass="[[hass]]"
         state-obj="[[stateObj]]"
-        dialog-element="[[_dialogElement]]"
-        registry-entry="[[_registryInfo]]"
+        dialog-element="[[_dialogElement()]]"
         large="{{large}}"
       ></more-info-controls>
     `;
@@ -102,9 +100,6 @@ class HaMoreInfoDialog extends DialogMixin(PolymerElement) {
         observer: "_largeChanged",
       },
 
-      _dialogElement: Object,
-      _registryInfo: Object,
-
       dataDomain: {
         computed: "_computeDomain(stateObj)",
         reflectToAttribute: true,
@@ -116,9 +111,8 @@ class HaMoreInfoDialog extends DialogMixin(PolymerElement) {
     return ["_dialogOpenChanged(opened)"];
   }
 
-  ready() {
-    super.ready();
-    this._dialogElement = this;
+  _dialogElement() {
+    return this;
   }
 
   _computeDomain(stateObj) {
@@ -129,11 +123,10 @@ class HaMoreInfoDialog extends DialogMixin(PolymerElement) {
     return hass.states[hass.moreInfoEntityId] || null;
   }
 
-  async _stateObjChanged(newVal, oldVal) {
+  async _stateObjChanged(newVal) {
     if (!newVal) {
       this.setProperties({
         opened: false,
-        _registryInfo: null,
         large: false,
       });
       return;
@@ -146,25 +139,6 @@ class HaMoreInfoDialog extends DialogMixin(PolymerElement) {
         this.opened = true;
       })
     );
-
-    if (
-      !isComponentLoaded(this.hass, "config") ||
-      (oldVal && oldVal.entity_id === newVal.entity_id)
-    ) {
-      return;
-    }
-
-    if (this.hass.user.is_admin) {
-      try {
-        const info = await this.hass.callWS({
-          type: "config/entity_registry/get",
-          entity_id: newVal.entity_id,
-        });
-        this._registryInfo = info;
-      } catch (err) {
-        this._registryInfo = null;
-      }
-    }
   }
 
   _dialogOpenChanged(newVal) {

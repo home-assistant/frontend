@@ -10,6 +10,7 @@ import {
 import { LitElement, customElement, property, html } from "lit-element";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import { HomeAssistant } from "../../../../../types";
+import memoizeOne from "memoize-one";
 
 @customElement("ha-automation-action-device_id")
 export class HaDeviceAction extends LitElement {
@@ -27,14 +28,20 @@ export class HaDeviceAction extends LitElement {
     };
   }
 
+  private _extraFieldsData = memoizeOne((capabilities, action: DeviceAction) =>
+    capabilities && capabilities.extra_fields
+      ? capabilities.extra_fields.map((item) => {
+          return { [item.name]: action[item.name] };
+        })
+      : undefined
+  );
+
   protected render() {
     const deviceId = this._deviceId || this.action.device_id;
-    const extraFieldsData =
-      this._capabilities && this._capabilities.extra_fields
-        ? this._capabilities.extra_fields.map((item) => {
-            return { [item.name]: this.action[item.name] };
-          })
-        : undefined;
+    const extraFieldsData = this._extraFieldsData(
+      this._capabilities,
+      this.action
+    );
 
     return html`
       <ha-device-picker
@@ -82,10 +89,8 @@ export class HaDeviceAction extends LitElement {
   }
 
   private async _getCapabilities() {
-    const action = this.action;
-
-    this._capabilities = action.domain
-      ? await fetchDeviceActionCapabilities(this.hass, action)
+    this._capabilities = this.action.domain
+      ? await fetchDeviceActionCapabilities(this.hass, this.action)
       : null;
   }
 

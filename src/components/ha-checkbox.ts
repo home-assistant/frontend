@@ -9,7 +9,7 @@ const MwcCheckbox = customElements.get("mwc-checkbox") as Constructor<Checkbox>;
 
 @customElement("ha-checkbox")
 export class HaCheckbox extends MwcCheckbox {
-  protected firstUpdated() {
+  public firstUpdated() {
     super.firstUpdated();
     this.style.setProperty("--mdc-theme-secondary", "var(--primary-color)");
   }

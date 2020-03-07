@@ -14,6 +14,13 @@ import { SystemLogDetailDialogParams } from "./show-dialog-system-log-detail";
 import { PolymerChangedEvent } from "../../../polymer-types";
 import { haStyleDialog } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
+import {
+  integrationDocsUrl,
+  integrationIssuesUrl,
+  domainToName,
+} from "../../../data/integration";
+import { formatSystemLogTime } from "./util";
+import { getLoggedErrorIntegration } from "../../../data/system_log";
 
 class DialogSystemLogDetail extends LitElement {
   @property() public hass!: HomeAssistant;
@@ -30,6 +37,8 @@ class DialogSystemLogDetail extends LitElement {
     }
     const item = this._params.item;
 
+    const integration = getLoggedErrorIntegration(item);
+
     return html`
       <ha-paper-dialog
         with-backdrop
@@ -44,12 +53,53 @@ class DialogSystemLogDetail extends LitElement {
           )}
         </h2>
         <paper-dialog-scrollable>
-          <p>${new Date(item.timestamp * 1000)}</p>
-          ${item.message
+          <p>
+            Logger: ${item.name}<br />
+            Source: ${item.source.join(":")}
+            ${integration
+              ? html`
+                  <br />
+                  Integration: ${domainToName(this.hass.localize, integration)}
+                  (<a
+                    href=${integrationDocsUrl(integration)}
+                    target="_blank"
+                    rel="noreferrer"
+                    >documentation</a
+                  >,
+                  <a
+                    href=${integrationIssuesUrl(integration)}
+                    target="_blank"
+                    rel="noreferrer"
+                    >issues</a
+                  >)
+                `
+              : ""}
+            <br />
+            ${item.count > 0
+              ? html`
+                  First occured:
+                  ${formatSystemLogTime(
+                    item.first_occured,
+                    this.hass!.language
+                  )}
+                  (${item.count} occurences) <br />
+                `
+              : ""}
+            Last logged:
+            ${formatSystemLogTime(item.timestamp, this.hass!.language)}
+          </p>
+          ${item.message.length > 1
             ? html`
-                <pre>${item.message}</pre>
+                <ul>
+                  ${item.message.map(
+                    (msg) =>
+                      html`
+                        <li>${msg}</li>
+                      `
+                  )}
+                </ul>
               `
-            : html``}
+            : item.message[0]}
           ${item.exception
             ? html`
                 <pre>${item.exception}</pre>
@@ -72,6 +122,15 @@ class DialogSystemLogDetail extends LitElement {
       css`
         ha-paper-dialog {
           direction: ltr;
+        }
+        a {
+          color: var(--primary-color);
+        }
+        p {
+          margin-top: 0;
+        }
+        pre {
+          margin-bottom: 0;
         }
       `,
     ];

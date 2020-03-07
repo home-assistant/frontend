@@ -28,7 +28,7 @@ import {
   showAutomationEditor,
   AutomationConfig,
 } from "../../../data/automation";
-import format_date_time from "../../../common/datetime/format_date_time";
+import { formatDateTime } from "../../../common/datetime/format_date_time";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { showThingtalkDialog } from "./show-dialog-thingtalk";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
@@ -63,6 +63,7 @@ class HaAutomationPicker extends LitElement {
               <a
                 href="https://home-assistant.io/docs/automation/editor/"
                 target="_blank"
+                rel="noreferrer"
               >
                 ${this.hass.localize(
                   "ui.panel.config.automation.picker.learn_more"
@@ -102,7 +103,7 @@ class HaAutomationPicker extends LitElement {
                               "ui.card.automation.last_triggered"
                             )}: ${
                     automation.attributes.last_triggered
-                      ? format_date_time(
+                      ? formatDateTime(
                           new Date(automation.attributes.last_triggered),
                           this.hass.language
                         )

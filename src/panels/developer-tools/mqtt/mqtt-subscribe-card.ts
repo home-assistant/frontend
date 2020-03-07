@@ -11,7 +11,7 @@ import "@material/mwc-button";
 import "@polymer/paper-input/paper-input";
 import { HomeAssistant } from "../../../types";
 import "../../../components/ha-card";
-import format_time from "../../../common/datetime/format_time";
+import { formatTime } from "../../../common/datetime/format_time";
 
 import { subscribeMQTTTopic, MQTTMessage } from "../../../data/mqtt";
 
@@ -85,7 +85,7 @@ class MqttSubscribeCard extends LitElement {
                   "topic",
                   msg.message.topic,
                   "time",
-                  format_time(msg.time, this.hass!.language)
+                  formatTime(msg.time, this.hass!.language)
                 )}
                 <pre>${msg.payload}</pre>
                 <div class="bottom">

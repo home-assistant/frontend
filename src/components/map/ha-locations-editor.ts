@@ -22,6 +22,7 @@ import {
   LeafletModuleType,
 } from "../../common/dom/setup-leaflet-map";
 import { fireEvent } from "../../common/dom/fire_event";
+import { defaultRadiusColor } from "../../data/zone";
 
 declare global {
   // for fire event
@@ -40,7 +41,8 @@ export interface MarkerLocation {
   id: string;
   icon?: string;
   radius_color?: string;
-  editable?: boolean;
+  location_editable?: boolean;
+  radius_editable?: boolean;
 }
 
 @customElement("ha-locations-editor")
@@ -202,12 +204,12 @@ export class HaLocationsEditor extends LitElement {
         const circle = this.Leaflet!.circle(
           [location.latitude, location.longitude],
           {
-            color: location.radius_color ? location.radius_color : "#FF9800",
+            color: location.radius_color || defaultRadiusColor,
             radius: location.radius,
           }
         );
         circle.addTo(this._leafletMap!);
-        if (location.editable) {
+        if (location.radius_editable || location.location_editable) {
           // @ts-ignore
           circle.editing.enable();
           // @ts-ignore
@@ -229,19 +231,25 @@ export class HaLocationsEditor extends LitElement {
               // @ts-ignore
               (ev: MouseEvent) => this._markerClicked(ev)
             );
-          resizeMarker.addEventListener(
-            "dragend",
-            // @ts-ignore
-            (ev: DragEndEvent) => this._updateRadius(ev)
-          );
+          if (location.radius_editable) {
+            resizeMarker.addEventListener(
+              "dragend",
+              // @ts-ignore
+              (ev: DragEndEvent) => this._updateRadius(ev)
+            );
+          } else {
+            resizeMarker.remove();
+          }
           this._locationMarkers![location.id] = circle;
         } else {
           this._circles[location.id] = circle;
         }
       }
-      if (!location.radius || !location.editable) {
+      if (
+        !location.radius ||
+        (!location.radius_editable && !location.location_editable)
+      ) {
         const options: MarkerOptions = {
-          draggable: Boolean(location.editable),
           title: location.name,
         };
 

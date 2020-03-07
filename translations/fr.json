@@ -411,7 +411,7 @@
             },
             "automation": {
                 "last_triggered": "Dernier déclenchement",
-                "trigger": "Exécutez"
+                "trigger": "Exécuter"
             },
             "camera": {
                 "not_available": "Image non disponible"
@@ -581,6 +581,7 @@
                 "entity": "Entités liées",
                 "group": "Partie des groupes suivants",
                 "integration": "Intégration",
+                "no_related_found": "Aucun historique des valeurs trouvé.",
                 "scene": "Partie des scènes suivantes",
                 "script": "Partie des scripts suivants"
             },
@@ -604,7 +605,8 @@
             "config_entry_system_options": {
                 "enable_new_entities_description": "Si désactivé, les nouvelles entités découvertes pour {integration} ne seront pas ajoutées automatiquement à Home Assistant.",
                 "enable_new_entities_label": "Activer les entités nouvellement ajoutées.",
-                "title": "Options système pour {integration}"
+                "title": "Options système pour {integration}",
+                "update": "Mise à jour"
             },
             "confirmation": {
                 "cancel": "Annuler",
@@ -629,6 +631,7 @@
                     "unavailable": "Cette entité n'est pas disponible actuellement.",
                     "update": "MISE À JOUR"
                 },
+                "no_unique_id": "Cette entité n'a pas d'identifiant unique, ses paramètres ne peuvent donc pas être gérés à partir de l'interface utilisateur.",
                 "related": "Liées",
                 "settings": "Réglages"
             },
@@ -637,9 +640,29 @@
                 "default_confirmation_title": "Êtes-vous sûr ?",
                 "ok": "OK"
             },
+            "helper_settings": {
+                "input_datetime": {
+                    "has_date": "Date"
+                },
+                "input_select": {
+                    "add": "Ajouter",
+                    "add_option": "Ajouter une option",
+                    "options": "Options"
+                },
+                "input_text": {
+                    "max": "Longueur maximale",
+                    "min": "Longueur minimum",
+                    "mode": "Mode d'affichage",
+                    "password": "Mot de passe",
+                    "text": "Texte"
+                }
+            },
             "more_info_control": {
                 "dismiss": "Fermer la fenêtre de dialogue",
                 "edit": "Modifier l'entité",
+                "person": {
+                    "create_zone": "Créer une zone à partir de l'emplacement actuel"
+                },
                 "restored": {
                     "confirm_remove_text": "Voulez-vous vraiment supprimer cette entité ?",
                     "confirm_remove_title": "Supprimer l'entité ?",
@@ -659,6 +682,18 @@
                 },
                 "updater": {
                     "title": "Instructions de mise à jour"
+                },
+                "vacuum": {
+                    "clean_spot": "Nettoyer Endroit",
+                    "commands": "Commandes d'aspirateur :",
+                    "fan_speed": "Vitesse ventilateur",
+                    "locate": "Localiser",
+                    "pause": "Pause",
+                    "return_home": "Rentrer à la maison",
+                    "start": "Démarrer",
+                    "start_pause": "Démarrer/Pause",
+                    "status": "Statut",
+                    "stop": "Arrêter"
                 }
             },
             "more_info_settings": {
@@ -879,6 +914,7 @@
                         },
                         "edit_ui": "Modifier avec l'interface utilisateur",
                         "edit_yaml": "Modifier en tant que YAML",
+                        "enable_disable": "Activer/Désactiver l'automatisation",
                         "introduction": "Utilisez les automatisations pour donner vie à votre maison",
                         "load_error_not_editable": "Seules les automations dans automations.yaml sont modifiables.",
                         "load_error_unknown": "Erreur lors du chargement de l'automation ( {err_no} ).",
@@ -1253,7 +1289,7 @@
                     "details": "Voici tous les détails de votre appareil.",
                     "device_not_found": "Appareil non trouvé.",
                     "entities": {
-                        "add_entities_lovelace": "Ajouter toutes les entités de l'appareil à l'interface utilisateur de Lovelace",
+                        "add_entities_lovelace": "Ajouter à Lovelace",
                         "entities": "Entités",
                         "none": "Cet appareil n'a pas d'entités"
                     },
@@ -1306,6 +1342,7 @@
                         "filter": {
                             "filter": "Filtre",
                             "show_disabled": "Afficher les entités désactivées",
+                            "show_readonly": "Afficher les entités désactivées",
                             "show_unavailable": "Afficher les entités non disponibles"
                         },
                         "header": "Entités",
@@ -1329,12 +1366,32 @@
                         "status": {
                             "disabled": "Désactivé",
                             "ok": "Ok",
+                            "readonly": "Lecture seule",
                             "unavailable": "Indisponible"
                         },
                         "unavailable": "(indisponible)"
                     }
                 },
                 "header": "Configurer Home Assistant",
+                "helpers": {
+                    "caption": "Aides",
+                    "dialog": {
+                        "add_helper": "Ajouter une aide",
+                        "create": "Créer"
+                    },
+                    "picker": {
+                        "add_helper": "Ajouter une aide",
+                        "headers": {
+                            "editable": "Modifiable",
+                            "name": "Nom",
+                            "type": "Type"
+                        }
+                    },
+                    "types": {
+                        "input_number": "Nombre",
+                        "input_text": "Texte"
+                    }
+                },
                 "integrations": {
                     "caption": "Intégrations",
                     "config_entry": {
@@ -1498,7 +1555,7 @@
                             "group": "Recharger les groupes",
                             "heading": "Rechargement de la configuration",
                             "introduction": "Certaines parties de Home Assistant peuvent être rechargées sans nécessiter de redémarrage. Le fait de cliquer sur recharger déchargera leur configuration actuelle et chargera la nouvelle.",
-                            "person": "Recharger des personnes",
+                            "person": "Recharger les personnes",
                             "scene": "Recharger les scènes",
                             "script": "Recharger les scripts",
                             "zone": "Recharger les zones"
@@ -1679,12 +1736,15 @@
                         "name": "Nom",
                         "new_zone": "Nouvelle zone",
                         "passive": "Passif",
-                        "passive_note": "Les zones passives sont cachées dans le frontend et ne sont pas utilisées comme emplacement pour les traceurs de périphériques. C'est utile si vous voulez seulement les utiliser pour des automations.",
+                        "passive_note": "Les zones passives sont cachées dans l'interface utilisateur et ne sont pas utilisées comme emplacement pour les appareils suivis. Elles sont utiles si vous voulez les utiliser pour des automations.",
                         "radius": "Rayon",
                         "required_error_msg": "Ce champ est requis",
                         "update": "Mettre à jour"
                     },
                     "edit_home_zone": "L'emplacement de votre maison peut être modifié dans la configuration générale.",
+                    "edit_home_zone_narrow": "Le rayon de la zone d'habitation ne peut pas encore être modifié depuis le frontend. L'emplacement peut être modifié par rapport à la configuration générale.",
+                    "go_to_core_config": "Configuration générale",
+                    "home_zone_core_config": "L'emplacement de votre zone d'habitation est modifiable à partir de la page de configuration générale. Le rayon de la zone d'habitation ne peut pas encore être modifié depuis le frontend. Voulez-vous passer à la configuration générale ?",
                     "introduction": "Les zones vous permettent de spécifier certaines régions sur la terre. Lorsqu'une personne se trouve dans une zone, l'état prend le nom de la zone. Les zones peuvent également être utilisées comme déclencheur ou condition dans les configurations d'automation.",
                     "no_zones_created_yet": "Il semble que vous n'ayez pas encore créé de zones."
                 },
@@ -1870,7 +1930,7 @@
             "lovelace": {
                 "add_entities": {
                     "generated_unsupported": "Vous ne pouvez utiliser cette fonction que lorsque vous avez pris le contrôle de Lovelace UI.",
-                    "saving_failed": "La sauvegarde de la configuration de Lovelace UI a échouée.",
+                    "saving_failed": "La sauvegarde de la configuration de Lovelace UI a échoué.",
                     "yaml_unsupported": "Vous ne pouvez pas utiliser cette fonction lorsque vous utilisé Lovelace UI en mode YAML."
                 },
                 "cards": {
@@ -1892,6 +1952,11 @@
                         "toggle": "Permuter {name}",
                         "url": "Ouvrir la fenêtre vers {url_path}."
                     },
+                    "safe-mode": {
+                        "description": "Home Assistant a rencontré des problèmes lors du chargement de votre configuration et fonctionne désormais en mode sans échec. Jetez un œil au journal des erreurs pour voir ce qui ne va pas.",
+                        "header": "Mode sans échec activé",
+                        "show_errors": "Afficher les erreurs"
+                    },
                     "shopping-list": {
                         "add_item": "Ajouter un élément",
                         "checked_items": "Éléments cochés",
@@ -1910,6 +1975,9 @@
                         "alarm-panel": {
                             "available_states": "États disponibles",
                             "name": "Panneau d'alarme"
+                        },
+                        "button": {
+                            "name": "Bouton"
                         },
                         "conditional": {
                             "name": "Conditionnel"
@@ -2052,7 +2120,9 @@
                         "header": "Voir la configuration",
                         "header_name": "{name} Voir la configuration",
                         "move_left": "Déplacer la vue à gauche",
-                        "move_right": "Déplacer la vue à droite"
+                        "move_right": "Déplacer la vue à droite",
+                        "tab_badges": "Badges",
+                        "tab_settings": "Paramètres"
                     },
                     "header": "Modifier l'interface utilisateur",
                     "menu": {
@@ -2361,7 +2431,7 @@
                 "push_notifications": {
                     "description": "Envoyer des notifications à cet appareil.",
                     "error_load_platform": "Configurer notify.html5.",
-                    "error_use_https": "Nécessite l'activation SSL pour le frontend.",
+                    "error_use_https": "Nécessite l'activation SSL pour l'interface utilisateur.",
                     "header": "Notifications push",
                     "link_promo": "En savoir plus",
                     "push_notifications": "Notifications push"

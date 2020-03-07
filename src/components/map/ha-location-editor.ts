@@ -23,11 +23,13 @@ import {
 } from "../../common/dom/setup-leaflet-map";
 import { fireEvent } from "../../common/dom/fire_event";
 import { nextRender } from "../../common/util/render-status";
+import { defaultRadiusColor } from "../../data/zone";
 
 @customElement("ha-location-editor")
 class LocationEditor extends LitElement {
   @property() public location?: [number, number];
   @property() public radius?: number;
+  @property() public radiusColor?: string;
   @property() public icon?: string;
   public fitZoom = 16;
   private _iconEl?: DivIcon;
@@ -82,6 +84,9 @@ class LocationEditor extends LitElement {
     }
     if (changedProps.has("radius")) {
       this._updateRadius();
+    }
+    if (changedProps.has("radiusColor")) {
+      this._updateRadiusColor();
     }
     if (changedProps.has("icon")) {
       this._updateIcon();
@@ -213,7 +218,7 @@ class LocationEditor extends LitElement {
       this._leafletMap!.addLayer(this._locationMarker);
     } else {
       this._locationMarker = this.Leaflet!.circle(this.location, {
-        color: "#FF9800",
+        color: this.radiusColor || defaultRadiusColor,
         radius: this.radius,
       });
       this._leafletMap!.addLayer(this._locationMarker);
@@ -226,6 +231,13 @@ class LocationEditor extends LitElement {
       return;
     }
     (this._locationMarker as Circle).setRadius(this.radius);
+  }
+
+  private _updateRadiusColor(): void {
+    if (!this._locationMarker || !this.radius) {
+      return;
+    }
+    (this._locationMarker as Circle).setStyle({ color: this.radiusColor });
   }
 
   static get styles(): CSSResult {

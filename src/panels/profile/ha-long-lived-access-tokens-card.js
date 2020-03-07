@@ -4,7 +4,7 @@ import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 import { EventsMixin } from "../../mixins/events-mixin";
 import LocalizeMixin from "../../mixins/localize-mixin";
-import formatDateTime from "../../common/datetime/format_date_time";
+import { formatDateTime } from "../../common/datetime/format_date_time";
 import "../../components/ha-card";
 
 import "../../resources/ha-style";
@@ -39,6 +39,7 @@ class HaLongLivedTokens extends LocalizeMixin(EventsMixin(PolymerElement)) {
             <a
               href="https://developers.home-assistant.io/docs/en/auth_api.html#making-authenticated-requests"
               target="_blank"
+              rel="noreferrer"
             >
               [[localize('ui.panel.profile.long_lived_access_tokens.learn_auth_requests')]]
             </a>

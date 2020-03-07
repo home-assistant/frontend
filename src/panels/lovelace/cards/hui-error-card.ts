@@ -13,7 +13,7 @@ import { LovelaceCard } from "../types";
 import { HomeAssistant } from "../../../types";
 import { ErrorCardConfig } from "./types";
 
-export const createErrorCardElement = (config) => {
+export const createErrorCardElement = (config: ErrorCardConfig) => {
   const el = document.createElement("hui-error-card");
   el.setConfig(config);
   return el;
@@ -46,7 +46,11 @@ export class HuiErrorCard extends LitElement implements LovelaceCard {
 
     return html`
       ${this._config.error}
-      <pre>${safeDump(this._config.origConfig)}</pre>
+      ${this._config.origConfig
+        ? html`
+            <pre>${safeDump(this._config.origConfig)}</pre>
+          `
+        : ""}
     `;
   }
 

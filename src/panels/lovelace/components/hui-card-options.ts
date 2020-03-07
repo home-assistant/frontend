@@ -33,72 +33,83 @@ export class HuiCardOptions extends LitElement {
   protected render(): TemplateResult {
     return html`
       <slot></slot>
-      <div class="options">
-        <div class="primary-actions">
-          <mwc-button @click="${this._editCard}"
-            >${this.hass!.localize(
-              "ui.panel.lovelace.editor.edit_card.edit"
-            )}</mwc-button
-          >
-        </div>
-        <div class="secondary-actions">
-          <paper-icon-button
-            title="Move card down"
-            class="move-arrow"
-            icon="hass:arrow-down"
-            @click="${this._cardDown}"
-            ?disabled="${this.lovelace!.config.views[this.path![0]].cards!
-              .length ===
-              this.path![1] + 1}"
-          ></paper-icon-button>
-          <paper-icon-button
-            title="Move card up"
-            class="move-arrow"
-            icon="hass:arrow-up"
-            @click="${this._cardUp}"
-            ?disabled="${this.path![1] === 0}"
-          ></paper-icon-button>
-          <paper-menu-button
-            horizontal-align="right"
-            vertical-align="bottom"
-            vertical-offset="40"
-            close-on-activate
-          >
+      <ha-card>
+        <div class="options">
+          <div class="primary-actions">
+            <mwc-button @click="${this._editCard}"
+              >${this.hass!.localize(
+                "ui.panel.lovelace.editor.edit_card.edit"
+              )}</mwc-button
+            >
+          </div>
+          <div class="secondary-actions">
             <paper-icon-button
-              icon="hass:dots-vertical"
-              slot="dropdown-trigger"
-              aria-label=${this.hass!.localize(
-                "ui.panel.lovelace.editor.edit_card.options"
-              )}
+              title="Move card down"
+              class="move-arrow"
+              icon="hass:arrow-down"
+              @click="${this._cardDown}"
+              ?disabled="${this.lovelace!.config.views[this.path![0]].cards!
+                .length ===
+                this.path![1] + 1}"
             ></paper-icon-button>
-            <paper-listbox slot="dropdown-content">
-              <paper-item @tap="${this._moveCard}">
-                ${this.hass!.localize(
-                  "ui.panel.lovelace.editor.edit_card.move"
-                )}</paper-item
-              >
-              <paper-item .class="delete-item" @tap="${this._deleteCard}">
-                ${this.hass!.localize(
-                  "ui.panel.lovelace.editor.edit_card.delete"
-                )}</paper-item
-              >
-            </paper-listbox>
-          </paper-menu-button>
+            <paper-icon-button
+              title="Move card up"
+              class="move-arrow"
+              icon="hass:arrow-up"
+              @click="${this._cardUp}"
+              ?disabled="${this.path![1] === 0}"
+            ></paper-icon-button>
+            <paper-menu-button
+              horizontal-align="right"
+              vertical-align="bottom"
+              vertical-offset="40"
+              close-on-activate
+            >
+              <paper-icon-button
+                icon="hass:dots-vertical"
+                slot="dropdown-trigger"
+                aria-label=${this.hass!.localize(
+                  "ui.panel.lovelace.editor.edit_card.options"
+                )}
+              ></paper-icon-button>
+              <paper-listbox slot="dropdown-content">
+                <paper-item @tap="${this._moveCard}">
+                  ${this.hass!.localize(
+                    "ui.panel.lovelace.editor.edit_card.move"
+                  )}</paper-item
+                >
+                <paper-item .class="delete-item" @tap="${this._deleteCard}">
+                  ${this.hass!.localize(
+                    "ui.panel.lovelace.editor.edit_card.delete"
+                  )}</paper-item
+                >
+              </paper-listbox>
+            </paper-menu-button>
+          </div>
         </div>
-      </div>
+      </ha-card>
     `;
   }
 
   static get styles(): CSSResult {
     return css`
-      div.options {
-        border-top: 1px solid #e8e8e8;
-        padding: 5px 8px;
-        background: var(--paper-card-background-color, white);
+      :host(:hover) {
+        outline: 2px solid var(--primary-color);
+      }
+
+      ha-card {
+        border-top-right-radius: 0;
+        border-top-left-radius: 0;
         box-shadow: rgba(0, 0, 0, 0.14) 0px 2px 2px 0px,
           rgba(0, 0, 0, 0.12) 0px 1px 5px -4px,
           rgba(0, 0, 0, 0.2) 0px 3px 1px -2px;
+      }
+
+      div.options {
+        border-top: 1px solid #e8e8e8;
+        padding: 5px 8px;
         display: flex;
+        margin-top: -1px;
       }
 
       div.options .primary-actions {

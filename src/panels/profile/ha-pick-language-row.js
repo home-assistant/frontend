@@ -36,6 +36,7 @@ class HaPickLanguageRow extends LocalizeMixin(EventsMixin(PolymerElement)) {
           <a
             href="https://developers.home-assistant.io/docs/en/internationalization_translation.html"
             target="_blank"
+            rel="noreferrer"
             >[[localize('ui.panel.profile.language.link_promo')]]</a
           >
         </span>

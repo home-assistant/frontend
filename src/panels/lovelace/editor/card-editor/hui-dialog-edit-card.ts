@@ -8,6 +8,8 @@ import {
   property,
 } from "lit-element";
 
+import deepFreeze from "deep-freeze";
+
 import { HomeAssistant } from "../../../../types";
 import { HASSDomEvent } from "../../../../common/dom/fire_event";
 import {
@@ -55,6 +57,9 @@ export class HuiDialogEditCard extends LitElement {
     this._viewConfig = params.lovelaceConfig.views[view];
     this._cardConfig =
       card !== undefined ? this._viewConfig.cards![card] : undefined;
+    if (this._cardConfig && !Object.isFrozen(this._cardConfig)) {
+      this._cardConfig = deepFreeze(this._cardConfig);
+    }
   }
 
   private get _cardEditorEl(): HuiCardEditor | null {
@@ -94,7 +99,8 @@ export class HuiDialogEditCard extends LitElement {
           ${this._cardConfig === undefined
             ? html`
                 <hui-card-picker
-                  .hass="${this.hass}"
+                  .lovelace="${this._params.lovelaceConfig}"
+                  .hass=${this.hass}
                   @config-changed="${this._handleCardPicked}"
                 ></hui-card-picker>
               `
@@ -102,14 +108,15 @@ export class HuiDialogEditCard extends LitElement {
                 <div class="content">
                   <div class="element-editor">
                     <hui-card-editor
-                      .hass="${this.hass}"
+                      .hass=${this.hass}
+                      .lovelace="${this._params.lovelaceConfig}"
                       .value="${this._cardConfig}"
                       @config-changed="${this._handleConfigChanged}"
                     ></hui-card-editor>
                   </div>
                   <div class="element-preview">
                     <hui-card-preview
-                      .hass="${this.hass}"
+                      .hass=${this.hass}
                       .config="${this._cardConfig}"
                       class=${this._error ? "blur" : ""}
                     ></hui-card-preview>
@@ -248,19 +255,20 @@ export class HuiDialogEditCard extends LitElement {
   }
 
   private _handleCardPicked(ev) {
-    this._cardConfig = ev.detail.config;
-    if (this._params!.entities && this._params!.entities.length > 0) {
-      if (Object.keys(this._cardConfig!).includes("entities")) {
-        this._cardConfig!.entities = this._params!.entities;
-      } else if (Object.keys(this._cardConfig!).includes("entity")) {
-        this._cardConfig!.entity = this._params!.entities[0];
+    const config = ev.detail.config;
+    if (this._params!.entities && this._params!.entities.length) {
+      if (Object.keys(config).includes("entities")) {
+        config.entities = this._params!.entities;
+      } else if (Object.keys(config).includes("entity")) {
+        config.entity = this._params!.entities[0];
       }
     }
+    this._cardConfig = deepFreeze(config);
     this._error = ev.detail.error;
   }
 
   private _handleConfigChanged(ev) {
-    this._cardConfig = ev.detail.config;
+    this._cardConfig = deepFreeze(ev.detail.config);
     this._error = ev.detail.error;
   }
 

@@ -400,9 +400,9 @@
         },
         "card": {
             "alarm_control_panel": {
-                "arm_away": "Aktivieren, unterwegs",
+                "arm_away": "Aktivieren - Unterwegs",
                 "arm_custom_bypass": "Benutzerdefinierter Bypass",
-                "arm_home": "Aktivieren, Zuhause",
+                "arm_home": "Aktivieren - Zuhause",
                 "arm_night": "Nacht aktiviert",
                 "armed_custom_bypass": "Benutzerdefinierter Bypass",
                 "clear_code": "Löschen",
@@ -581,6 +581,7 @@
                 "entity": "Verwandte Entitäten",
                 "group": "Teil der folgenden Gruppen",
                 "integration": "Integration",
+                "no_related_found": "Es wurden keine verwandten Elemente gefunden.",
                 "scene": "Teil der folgenden Szenen",
                 "script": "Teil der folgenden Skripte"
             },
@@ -604,12 +605,13 @@
             "config_entry_system_options": {
                 "enable_new_entities_description": "Wenn deaktiviert werden neu erkannte Entitäten für {integration} nicht automatisch zu Home Assistant hinzugefügt.",
                 "enable_new_entities_label": "Neu hinzugefügte Entitäten aktivieren.",
-                "title": "Einstellungen für {integration}"
+                "title": "Einstellungen für {integration}",
+                "update": "Aktualisieren"
             },
             "confirmation": {
                 "cancel": "Abbrechen",
                 "ok": "OK",
-                "title": "Bist Sie sicher?"
+                "title": "Sind Sie sicher?"
             },
             "domain_toggler": {
                 "title": "Domänen umschalten"
@@ -624,22 +626,67 @@
                     "enabled_description": "Deaktivierte Entitäten werden nicht zu Home Assistant hinzugefügt.",
                     "enabled_label": "Entität aktivieren",
                     "entity_id": "Entitäts-ID",
+                    "icon": "Symbol Überschreiben",
+                    "icon_error": "Symbole sollten das Format 'Präfix:iconname' haben, z. B. 'mdi:home'",
                     "name": "Namen überschreiben",
                     "note": "Hinweis: Dies funktioniert möglicherweise noch nicht bei allen Integrationen.",
                     "unavailable": "Diese Entität ist derzeit nicht verfügbar.",
                     "update": "AKTUALISIEREN"
                 },
+                "no_unique_id": "Diese Entität hat keine eindeutige ID, daher können die Einstellungen nicht über die UI verwaltet werden.",
                 "related": "Verwandte",
                 "settings": "Einstellungen"
             },
             "generic": {
                 "cancel": "Abbrechen",
+                "close": "schließen",
                 "default_confirmation_title": "Sind Sie sicher?",
                 "ok": "OK"
+            },
+            "helper_settings": {
+                "generic": {
+                    "icon": "Symbol",
+                    "initial_value": "Anfangswert beim Start",
+                    "initial_value_explain": "Der Wert, den das Element hat, wenn der Home Assistant startet. Wenn Sie das Feld leer lassen, wird der Wert auf den vorherigen Wert zurückgesetzt.",
+                    "name": "Name"
+                },
+                "input_datetime": {
+                    "has_date": "Datum",
+                    "has_time": "Zeit"
+                },
+                "input_number": {
+                    "box": "Eingabefeld",
+                    "max": "Maximaler Wert",
+                    "min": "Minimaler Wert",
+                    "mode": "Anzeigemodus",
+                    "slider": "Schieberegler",
+                    "step": "Schrittweite des Schiebereglers",
+                    "unit_of_measurement": "Maßeinheit"
+                },
+                "input_select": {
+                    "add": "Hinzufügen",
+                    "add_option": "Option hinzufügen",
+                    "no_options": "Es gibt noch keine Optionen.",
+                    "options": "Optionen"
+                },
+                "input_text": {
+                    "max": "Maximale Länge",
+                    "min": "Minimale Länge",
+                    "mode": "Anzeigemodus",
+                    "password": "Passwort",
+                    "pattern": "Regex-Muster für die clientseitige Validierung",
+                    "text": "Text"
+                },
+                "not_editable": "Nicht bearbeitbar",
+                "not_editable_text": "Diese Entität kann nicht über die Benutzeroberfläche geändert werden, da sie in der configuration.yaml definiert wurde.",
+                "required_error_msg": "Dieses Feld ist erforderlich"
             },
             "more_info_control": {
                 "dismiss": "Dialog ausblenden",
                 "edit": "Entität bearbeiten",
+                "person": {
+                    "create_zone": "Zone vom aktuellen Standort erstellen"
+                },
                 "restored": {
                     "confirm_remove_text": "Sind Sie sicher, dass Sie diese Entität löschen möchten?",
                     "confirm_remove_title": "Entität entfernen?",
@@ -659,6 +706,18 @@
                 },
                 "updater": {
                     "title": "Update-Anweisungen"
+                },
+                "vacuum": {
+                    "clean_spot": "Stelle säubern",
+                    "commands": "Staubsaugerbefehle:",
+                    "fan_speed": "Lüftergeschwindigkeit",
+                    "locate": "Lokalisieren",
+                    "pause": "Pause",
+                    "return_home": "Zum Hub zurückkehren",
+                    "start": "Start",
+                    "start_pause": "Start/Pause",
+                    "status": "Status",
+                    "stop": "Stoppen"
                 }
             },
             "more_info_settings": {
@@ -817,7 +876,7 @@
                             "delete_confirm": "Möchten Sie das wirklich löschen?",
                             "duplicate": "Duplizieren",
                             "header": "Bedingungen",
-                            "introduction": "Bedingungen sind ein optionaler Bestandteil bei automatisierten Abläufen und können das Ausführen einer Aktion verhindern. Bedingungen sind Auslösern ähnlich, aber dennoch verschieden. Ein Auslöser beobachtet im System ablaufende Ereignisse, wohingegen Bedingungen nur den aktuellen Systemzustand betrachten. Ein Auslöser kann beobachten, ob ein Schalter aktiviert wird. Eine Bedingung kann lediglich sehen, ob ein Schalter aktuell an oder aus ist.",
+                            "introduction": "Die Bedingungen sind optional und verhindern die weitere Ausführung, sofern nicht alle Bedingungen erfüllt sind.",
                             "learn_more": "Erfahre mehr über Bedingungen",
                             "name": "Zustand",
                             "type_select": "Bedingungstyp",
@@ -879,6 +938,7 @@
                         },
                         "edit_ui": "Bearbeiten Sie mit der Benutzeroberfläche",
                         "edit_yaml": "Als YAML bearbeiten",
+                        "enable_disable": "Automatisierung aktivieren / deaktivieren",
                         "introduction": "Benutze Automatisierungen, um deinem Zuhause Leben einzuhauchen",
                         "load_error_not_editable": "Nur Automatisierungen in automations.yaml sind editierbar.",
                         "load_error_unknown": "Fehler beim Laden der Automatisierung ({err_no}).",
@@ -1079,7 +1139,7 @@
                         "close": "Schließen",
                         "confirm_disable": "Möchten Sie diesen Webhook wirklich deaktivieren?",
                         "copied_to_clipboard": "In die Zwischenablage kopiert",
-                        "info_disable_webhook": "Wenn Sie diesen Webhook nicht mehr nutzen wollen, können Sie ",
+                        "info_disable_webhook": "Wenn Sie diesen Webhook nicht mehr nutzen wollen, können Sie",
                         "link_disable_webhook": "deaktiviere es",
                         "managed_by_integration": "Dieser Webhook wird von einer Integration verwaltet und kann nicht deaktiviert werden.",
                         "view_documentation": "Dokumentation anzeigen",
@@ -1193,7 +1253,7 @@
                             "validation": {
                                 "check_config": "Konfiguration prüfen",
                                 "heading": "Konfiguration überprüfen",
-                                "introduction": "Überprüfen der Konfiguration, wenn Sie kürzlich Änderungen vorgenommen haben  und sicherstellen möchten, dass alles ordnungsgemäß ist",
+                                "introduction": "Überprüfen der Konfiguration, wenn Sie kürzlich Änderungen vorgenommen haben und sicherstellen möchten, dass alles ordnungsgemäß ist",
                                 "invalid": "Konfiguration fehlerhaft",
                                 "valid": "Konfiguration in Ordnung"
                             }
@@ -1253,7 +1313,7 @@
                     "details": "Hier sind alle Details deines Geräts.",
                     "device_not_found": "Gerät nicht gefunden.",
                     "entities": {
-                        "add_entities_lovelace": "Alle Geräte-Entitäten zu Lovelace hinzufügen",
+                        "add_entities_lovelace": "Zu Lovelace hinzufügen",
                         "entities": "Entitäten",
                         "none": "Dieses Gerät hat keine Entitäten"
                     },
@@ -1306,6 +1366,7 @@
                         "filter": {
                             "filter": "Filter",
                             "show_disabled": "Anzeigen deaktivierter Entitäten",
+                            "show_readonly": "Anzeigen schreibgeschützter Entitäten",
                             "show_unavailable": "Anzeigen nicht verfügbarer Entitäten"
                         },
                         "header": "Entitäten",
@@ -1329,12 +1390,37 @@
                         "status": {
                             "disabled": "Deaktiviert",
                             "ok": "Ok",
+                            "readonly": "Schreibgeschützt",
                             "unavailable": "Nicht verfügbar"
                         },
                         "unavailable": "(nicht verfügbar)"
                     }
                 },
                 "header": "Home Assistant konfigurieren",
+                "helpers": {
+                    "caption": "Helfer",
+                    "description": "Elemente, die beim Aufbau von Automatisierungen helfen können.",
+                    "dialog": {
+                        "add_helper": "Helfer hinzufügen",
+                        "add_platform": "{platform} hinzufügen",
+                        "create": "Erstellen"
+                    },
+                    "picker": {
+                        "add_helper": "Helfer hinzufügen",
+                        "headers": {
+                            "editable": "Editierbar",
+                            "name": "Name",
+                            "type": "Typ"
+                        }
+                    },
+                    "types": {
+                        "input_boolean": "Umschalten",
+                        "input_datetime": "Datum und/oder Uhrzeit",
+                        "input_number": "Nummer",
+                        "input_select": "Dropdown",
+                        "input_text": "Text"
+                    }
+                },
                 "integrations": {
                     "caption": "Integrationen",
                     "config_entry": {
@@ -1396,6 +1482,76 @@
                     "note_about_website_reference": "Weitere Informationen finden Sie auf der "
                 },
                 "introduction": "Hier ist es möglich, deine Komponenten und Home Assistant zu konfigurieren. Noch ist nicht alles über die GUI einstellbar, aber wir arbeiten daran.",
+                "lovelace": {
+                    "caption": "Lovelace Dashboards",
+                    "dashboards": {
+                        "cant_edit_yaml": "In YAML definierte Dashboards können nicht über die Benutzeroberfläche bearbeitet werden. Ändern Sie sie in der configuration.yaml.",
+                        "caption": "Dashboards",
+                        "conf_mode": {
+                            "storage": "UI gesteuert",
+                            "yaml": "YAML-Datei"
+                        },
+                        "confirm_delete": "Sind Sie sicher, dass Sie dieses Dashboard löschen möchten?",
+                        "detail": {
+                            "create": "Erstellen",
+                            "delete": "Löschen",
+                            "dismiss": "Schließen",
+                            "edit_dashboard": "Dashboard bearbeiten",
+                            "icon": "Seitenleistensymbol",
+                            "new_dashboard": "Neues Dashboard hinzufügen",
+                            "require_admin": "Nur Admin",
+                            "show_sidebar": "In der Seitenleiste anzeigen",
+                            "title": "Titel der Seitenleiste",
+                            "update": "Aktualisieren",
+                            "url": "Url",
+                            "url_error_msg": "Die URL darf keine Leerzeichen oder Sonderzeichen enthalten, außer _ und -"
+                        },
+                        "picker": {
+                            "add_dashboard": "Dashboard hinzufügen",
+                            "headers": {
+                                "conf_mode": "Konfigurationsmethode",
+                                "filename": "Dateiname",
+                                "require_admin": "Nur für Administratoren",
+                                "sidebar": "In der Seitenleiste anzeigen",
+                                "title": "Titel"
+                            },
+                            "open": "Dashboard öffnen"
+                        }
+                    },
+                    "description": "Konfigurieren Sie Ihre Lovelace-Dashboards",
+                    "resources": {
+                        "cant_edit_yaml": "Sie verwenden Lovelace im YAML-Modus, daher können Sie Ihre Ressourcen nicht über die Benutzeroberfläche verwalten. Verwalten Sie sie in der configuration.yaml.",
+                        "caption": "Ressourcen",
+                        "confirm_delete": "Sind Sie sicher, dass Sie diese Ressource löschen möchten?",
+                        "detail": {
+                            "create": "Erstellen",
+                            "delete": "Löschen",
+                            "dismiss": "Schließen",
+                            "new_resource": "Neue Ressource hinzufügen",
+                            "type": "Ressource-Typ",
+                            "update": "Aktualisieren",
+                            "url": "Url",
+                            "url_error_msg": "URL ist ein Pflichtfeld",
+                            "warning_header": "Seien Sie vorsichtig!",
+                            "warning_text": "Das Hinzufügen von Ressourcen kann gefährlich sein. Stellen Sie sicher, dass Sie die Quelle der Ressource kennen und ihr vertrauen. Schlechte Ressourcen können Ihr System ernsthaft beschädigen."
+                        },
+                        "picker": {
+                            "add_resource": "Ressource hinzufügen",
+                            "headers": {
+                                "type": "Typ",
+                                "url": "Url"
+                            }
+                        },
+                        "refresh_body": "Sie müssen die Seite aktualisieren, um das Entfernen abzuschließen. Möchten Sie jetzt aktualisieren?",
+                        "refresh_header": "Möchten Sie aktualisieren?",
+                        "types": {
+                            "css": "Stylesheet",
+                            "html": "HTML (veraltet)",
+                            "js": "JavaScript-Datei (veraltet)",
+                            "module": "JavaScript-Modul"
+                        }
+                    }
+                },
                 "person": {
                     "add_person": "Person hinzufügen",
                     "caption": "Personen",
@@ -1415,7 +1571,7 @@
                         "name": "Name",
                         "name_error_msg": "Name erforderlich",
                         "new_person": "Neue Person",
-                        "no_device_tracker_available_intro": "Wenn Sie Geräte haben, die die Anwesenheit einer Person anzeigen, können Sie  diese hier einer Person zuordnen. Sie können Ihr erstes Gerät hinzufügen, indem Sie eine Integration zur Anwesenheitserkennung auf der Integrationsseite hinzufügen.",
+                        "no_device_tracker_available_intro": "Wenn Sie Geräte haben, die die Anwesenheit einer Person anzeigen, können Sie diese hier einer Person zuordnen. Sie können Ihr erstes Gerät hinzufügen, indem Sie eine Integration zur Anwesenheitserkennung auf der Integrationsseite hinzufügen.",
                         "update": "Aktualisieren"
                     },
                     "introduction": "Hier können Sie jede Person von Interesse in Home Assistant definieren.",
@@ -1621,7 +1777,7 @@
                         "caption": "Gruppen",
                         "create": "Gruppe erstellen",
                         "create_group": "Zigbee Home Automation - Gruppe erstellen",
-                        "create_group_details": "Gebe die erforderlichen Details ein, um eine neue Zigbee-Gruppe zu erstellen",
+                        "create_group_details": "Gib die erforderlichen Details ein, um eine neue Zigbee-Gruppe zu erstellen",
                         "creating_group": "Erstelle Gruppe",
                         "description": "Erstellen und Ändern von Zigbee-Gruppen",
                         "group_details": "Hier sind alle Details der ausgewählten Zigbee Gruppe.",
@@ -1656,7 +1812,7 @@
                         "introduction": "ZHA-Befehle ausführen, die sich auf ein einzelnes Gerät auswirken. Wählen Sie ein Gerät aus, um eine Liste der verfügbaren Befehle anzuzeigen."
                     },
                     "services": {
-                        "reconfigure": "Rekonfigurieren des ZHA-Geräts (Gerät heilen). Benutzen Sie dies, wenn Sie  Probleme mit dem Gerät haben. Wenn es sich bei dem betroffenden Gerät um ein batteriebetriebenes Gerät handelt, stellen Sie sicher, dass es wach ist und Kommandos akzeptiert, wenn Sie diesen Dienst benutzen.",
+                        "reconfigure": "Rekonfigurieren des ZHA-Geräts (Gerät heilen). Benutzen Sie dies, wenn Sie Probleme mit dem Gerät haben. Wenn es sich bei dem betroffenden Gerät um ein batteriebetriebenes Gerät handelt, stellen Sie sicher, dass es wach ist und Kommandos akzeptiert, wenn Sie diesen Dienst benutzen.",
                         "remove": "Entferne ein Gerät aus dem Zigbee-Netzwerk.",
                         "updateDeviceName": "Lege einen benutzerdefinierten Namen für dieses Gerät in der Geräteregistrierung fest."
                     },
@@ -1685,6 +1841,9 @@
                         "update": "Aktualisieren"
                     },
                     "edit_home_zone": "Der Standort Ihres Hauses kann in der allgemeinen Konfiguration geändert werden.",
+                    "edit_home_zone_narrow": "Der Radius der Home-Zone kann vom Frontend aus noch nicht bearbeitet werden. Der Standort kann von der allgemeinen Konfiguration aus geändert werden.",
+                    "go_to_core_config": "Zur allgemeinen Konfiguration gehen?",
+                    "home_zone_core_config": "Der Standort Ihrer Homezone kann auf der allgemeinen Konfigurationsseite bearbeitet werden. Der Radius der Homezone kann vom Frontend aus noch nicht bearbeitet werden. Wollen Sie zur allgemeinen Konfiguration gehen?",
                     "introduction": "Mit Zonen können Sie bestimmte Regionen auf der Erde angeben. Befindet sich eine Person in einer Zone, übernimmt der Zustand den Namen aus der Zone. Zonen können auch als Auslöser oder Bedingung in Automatisierungs-Setups verwendet werden.",
                     "no_zones_created_yet": "Es sieht so aus, als hätten Sie noch keine Zonen erstellt."
                 },
@@ -1892,6 +2051,11 @@
                         "toggle": "{name} umschalten",
                         "url": "Fenster zu {url_path} öffnen"
                     },
+                    "safe-mode": {
+                        "description": "Home Assistant hatte beim Laden Ihrer Konfiguration Probleme und wird jetzt im abgesicherten Modus ausgeführt. Sehen Sie sich das Fehlerprotokoll an, um zu sehen, was schiefgelaufen ist.",
+                        "header": "Abgesicherter Modus aktiviert",
+                        "show_errors": "Fehler anzeigen"
+                    },
                     "shopping-list": {
                         "add_item": "Artikel hinzufügen",
                         "checked_items": "Markierte Artikel",
@@ -1910,6 +2074,9 @@
                         "alarm-panel": {
                             "available_states": "Verfügbare Zustände",
                             "name": "Alarmpanel"
+                        },
+                        "button": {
+                            "name": "Schaltfläche"
                         },
                         "conditional": {
                             "name": "Bedingte Elemente"
@@ -2052,7 +2219,9 @@
                         "header": "Konfiguration anzeigen",
                         "header_name": "{name} Konfiguration anzeigen",
                         "move_left": "Ansicht nach links verschieben",
-                        "move_right": "Ansicht nach rechts verschieben"
+                        "move_right": "Ansicht nach rechts verschieben",
+                        "tab_badges": "Abzeichen",
+                        "tab_settings": "Einstellungen"
                     },
                     "header": "Benutzeroberfläche bearbeiten",
                     "menu": {
@@ -2067,7 +2236,7 @@
                     },
                     "raw_editor": {
                         "confirm_remove_config_text": "Wir generieren automatisch deine Lovelace-Ansichten mit deinen Bereichen und Geräten, wenn Sie Ihre Lovelace-Konfiguration entfernen.",
-                        "confirm_remove_config_title": "Bist Ssie sicher, dass Sie Ihre deine Lovelace-Konfiguration entfernen ollen? Wir generieren automatisch Ihre Lovelace-Ansichten mit Ihren Bereichen und Geräten.",
+                        "confirm_remove_config_title": "Sind Sie sicher, dass Sie Ihre Lovelace-Konfiguration entfernen wollen? Wir generieren automatisch Ihre Lovelace-Ansichten mit Ihren Bereichen und Geräten.",
                         "confirm_unsaved_changes": "Sie haben ungespeicherte Änderungen, sind Sie sicher, dass Sie beenden willen?",
                         "confirm_unsaved_comments": "Ihre Konfiguration enthält einen oder mehrere Kommentare, diese werden nicht gespeichert. Möchten Sie fortfahren?",
                         "error_invalid_config": "Deine Konfiguration ist ungültig: {error}",
@@ -2075,16 +2244,21 @@
                         "error_remove": "Konfiguration konnte nicht entfernt werden: {error}",
                         "error_save_yaml": "YAML konnte nicht gespeichert werden: {error}",
                         "header": "Konfiguration bearbeiten",
+                        "resources_moved": "Ressourcen sollten nicht mehr zur Lovelace-Konfiguration hinzugefügt werden, sondern können im Lovelace-Konfigurationsfenster hinzugefügt werden.",
                         "save": "Speichern",
                         "saved": "Gespeichert",
                         "unsaved_changes": "Nicht gespeicherte Änderungen"
                     },
                     "save_config": {
                         "cancel": "Abbrechen",
+                        "close": "Schließen",
                         "header": "Lovelace Userinterface selbst verwalten",
                         "para": "Standardmäßig verwaltet Home Assistant Ihre Benutzeroberfläche und aktualisiert sie, sobald neue Entitäten oder Lovelace-Komponenten verfügbar sind. Wenn Sie die Verwaltung selbst übernehmen wollen, nehmen wir für Sie keine Änderungen mehr vor.",
                         "para_sure": "Sind Sie sicher, dass Sie die Benutzeroberfläche selbst verwalten möchten?",
-                        "save": "Kontrolle übernehmen"
+                        "save": "Kontrolle übernehmen",
+                        "yaml_config": "Um Ihnen den Einstieg zu erleichtern, finden Sie hier die aktuelle Konfiguration dieses Dashboards:",
+                        "yaml_control": "Um die Kontrolle im YAML-Modus zu übernehmen, erstellen Sie eine YAML-Datei mit dem Namen, den Sie in Ihrer Konfiguration für dieses Dashboard angegeben haben, oder mit der Standardeinstellung 'ui-lovelace.yaml'.",
+                        "yaml_mode": "Sie verwenden den YAML-Modus, daher können Sie Ihre Lovelace-Konfiguration nicht über die Benutzeroberfläche ändern. Wenn Sie Lovelace über die Benutzeroberfläche ändern möchten, entfernen Sie den 'mode: yaml' aus Ihrer Lovelace-Konfiguration in 'configuration.yaml'."
                     },
                     "suggest_card": {
                         "add": "Zu Lovelace hinzufügen",
@@ -2106,7 +2280,7 @@
                     "refresh": "Aktualisieren",
                     "unused_entities": "Ungenutzte Elemente"
                 },
-                "reload_lovelace": "Lovelace neu laden",
+                "reload_lovelace": "Benutzeroberfläche neu laden",
                 "unused_entities": {
                     "available_entities": "Dies sind die Entitäten, die Sie zur Verfügung haben, die aber noch nicht in Ihrer Lovelace-Benutzeroberfläche enthalten sind.",
                     "domain": "Domain",
@@ -2276,7 +2450,7 @@
                     "button_detect": "Erkennen",
                     "finish": "Weiter",
                     "intro": "Hallo {name}, willkommen bei Home Assistant. Wie möchten Sie Ihre Haus benennen?",
-                    "intro_location": "Wir würden gerne wissen, wo Sie wohen. Diese Daten helfen bei der Anzeige von Informationen und der Einrichtung von Sonnenstands-basierten Automatisierungen. Diese Daten werden niemals außerhalb Ihres Netzwerks weitergegeben.",
+                    "intro_location": "Wir würden gerne wissen, wo Sie wohnen. Diese Daten helfen bei der Anzeige von Informationen und der Einrichtung von Sonnenstands-basierten Automatisierungen. Diese Daten werden niemals außerhalb Ihres Netzwerks weitergegeben.",
                     "intro_location_detect": "Wir können helfen, diese Informationen auszufüllen, indem wir eine einmalige Anfrage an einen externen Dienstleister richten.",
                     "location_name_default": "Home"
                 },
@@ -2325,7 +2499,7 @@
                 "language": {
                     "dropdown_label": "Sprache",
                     "header": "Sprache",
-                    "link_promo": "Hilf beim Übersetzen"
+                    "link_promo": "Hilfe beim Übersetzen"
                 },
                 "logout": "Abmelden",
                 "logout_text": "Möchten Sie sich wirklich abmelden?",

@@ -12,12 +12,18 @@ import "@material/mwc-button";
 
 import "../../../components/map/ha-location-editor";
 import "../../../components/ha-switch";
-import "../../../components/ha-dialog";
 
 import { ZoneDetailDialogParams } from "./show-dialog-zone-detail";
 import { HomeAssistant } from "../../../types";
-import { ZoneMutableParams } from "../../../data/zone";
+import {
+  ZoneMutableParams,
+  passiveRadiusColor,
+  defaultRadiusColor,
+  getZoneEditorInitData,
+} from "../../../data/zone";
 import { addDistanceToCoord } from "../../../common/location/add_distance_to_coord";
+import { createCloseHeading } from "../../../components/ha-dialog";
+import { haStyleDialog } from "../../../resources/styles";
 
 class DialogZoneDetail extends LitElement {
   @property() public hass!: HomeAssistant;
@@ -43,15 +49,20 @@ class DialogZoneDetail extends LitElement {
       this._passive = this._params.entry.passive || false;
       this._radius = this._params.entry.radius || 100;
     } else {
-      const movedHomeLocation = addDistanceToCoord(
-        [this.hass.config.latitude, this.hass.config.longitude],
-        500,
-        500
-      );
-      this._name = "";
-      this._icon = "mdi:map-marker";
-      this._latitude = movedHomeLocation[0];
-      this._longitude = movedHomeLocation[1];
+      const initConfig = getZoneEditorInitData();
+      let movedHomeLocation;
+      if (!initConfig?.latitude || !initConfig?.longitude) {
+        movedHomeLocation = addDistanceToCoord(
+          [this.hass.config.latitude, this.hass.config.longitude],
+          Math.random() * 500 * (Math.random() < 0.5 ? -1 : 1),
+          Math.random() * 500 * (Math.random() < 0.5 ? -1 : 1)
+        );
+      }
+      this._latitude = initConfig?.latitude || movedHomeLocation[0];
+      this._longitude = initConfig?.longitude || movedHomeLocation[1];
+      this._name = initConfig?.name || "";
+      this._icon = initConfig?.icon || "mdi:map-marker";
+
       this._passive = false;
       this._radius = 100;
     }
@@ -62,19 +73,6 @@ class DialogZoneDetail extends LitElement {
     if (!this._params) {
       return html``;
     }
-    const title = html`
-      ${this._params.entry
-        ? this._params.entry.name
-        : this.hass!.localize("ui.panel.config.zone.detail.new_zone")}
-      <paper-icon-button
-        aria-label=${this.hass.localize(
-          "ui.panel.config.integrations.config_flow.dismiss"
-        )}
-        icon="hass:close"
-        dialogAction="close"
-        style="position: absolute; right: 16px; top: 12px;"
-      ></paper-icon-button>
-    `;
     const nameValid = this._name.trim() === "";
     const iconValid = !this._icon.trim().includes(":");
     const latValid = String(this._latitude) === "";
@@ -90,7 +88,12 @@ class DialogZoneDetail extends LitElement {
         @closing="${this._close}"
         scrimClickAction=""
         escapeKeyAction=""
-        .title=${title}
+        .heading=${createCloseHeading(
+          this.hass,
+          this._params.entry
+            ? this._params.entry.name
+            : this.hass!.localize("ui.panel.config.zone.detail.new_zone")
+        )}
       >
         <div>
           ${this._error
@@ -127,6 +130,9 @@ class DialogZoneDetail extends LitElement {
               class="flex"
               .location=${this._locationValue}
               .radius=${this._radius}
+              .radiusColor=${this._passive
+                ? passiveRadiusColor
+                : defaultRadiusColor}
               .icon=${this._icon}
               @change=${this._locationChanged}
             ></ha-location-editor>
@@ -264,26 +270,8 @@ class DialogZoneDetail extends LitElement {
 
   static get styles(): CSSResult[] {
     return [
+      haStyleDialog,
       css`
-        ha-dialog {
-          --mdc-dialog-title-ink-color: var(--primary-text-color);
-          --justify-action-buttons: space-between;
-        }
-        @media only screen and (min-width: 600px) {
-          ha-dialog {
-            --mdc-dialog-min-width: 600px;
-          }
-        }
-
-        /* make dialog fullscreen on small screens */
-        @media all and (max-width: 450px), all and (max-height: 500px) {
-          ha-dialog {
-            --mdc-dialog-min-width: 100vw;
-            --mdc-dialog-max-height: 100vh;
-            --mdc-dialog-shape-radius: 0px;
-            --vertial-align-dialog: flex-end;
-          }
-        }
         .form {
           padding-bottom: 24px;
           color: var(--primary-text-color);
@@ -306,12 +294,6 @@ class DialogZoneDetail extends LitElement {
         }
         ha-user-picker {
           margin-top: 16px;
-        }
-        mwc-button.warning {
-          --mdc-theme-primary: var(--google-red-500);
-        }
-        .error {
-          color: var(--google-red-500);
         }
         a {
           color: var(--primary-color);

@@ -478,6 +478,9 @@
             "script": {
                 "execute": "Izvedi"
             },
+            "service": {
+                "run": "Poženi"
+            },
             "timer": {
                 "actions": {
                     "cancel": "Prekliči",
@@ -541,10 +544,24 @@
             "yes": "Da"
         },
         "components": {
+            "area-picker": {
+                "add_dialog": {
+                    "add": "Dodaj",
+                    "failed_create_area": "Ni bilo mogoče ustvariti območja.",
+                    "name": "Ime",
+                    "text": "Vnesite ime novega območja.",
+                    "title": "Dodajte novo območje"
+                },
+                "add_new": "Dodaj novo območje …",
+                "area": "Območje",
+                "clear": "Počisti",
+                "show_areas": "Pokaži cone"
+            },
             "device-picker": {
                 "clear": "Počisti",
                 "device": "Naprava",
-                "show_devices": "Pokažite naprave"
+                "show_devices": "Pokažite naprave",
+                "toggle": "Preklopite"
             },
             "entity": {
                 "entity-picker": {
@@ -558,7 +575,15 @@
                 "no_history_found": "Ni najdene zgodovine stanj."
             },
             "related-items": {
-                "area": "Območje"
+                "area": "Območje",
+                "automation": "Del naslednjih avtomatizacij",
+                "device": "Naprava",
+                "entity": "Sorodne entitete",
+                "group": "Del naslednjih skupin",
+                "integration": "Integracija",
+                "no_related_found": "Najden ni bil noben povezan element.",
+                "scene": "Del naslednjih prizorov",
+                "script": "Del naslednjih skript"
             },
             "relative_time": {
                 "duration": {
@@ -580,7 +605,8 @@
             "config_entry_system_options": {
                 "enable_new_entities_description": "Če je onemogočeno, novo odkrite entitete za {integration} ne bodo samodejno dodane v Home Assistant.",
                 "enable_new_entities_label": "Omogočite novo dodane subjekte.",
-                "title": "Sistemske možnosti za {integration}"
+                "title": "Sistemske možnosti za {integration}",
+                "update": "Posodobite"
             },
             "confirmation": {
                 "cancel": "Prekliči",
@@ -591,10 +617,76 @@
                 "title": "Preklopi domene"
             },
             "entity_registry": {
-                "dismiss": "Opusti"
+                "control": "Nadzor",
+                "dismiss": "Opusti",
+                "editor": {
+                    "confirm_delete": "Ali ste prepričani, da želite izbrisati ta vnos?",
+                    "delete": "BRISANJE",
+                    "enabled_cause": "Onemogočeno zaradi {cause}.",
+                    "enabled_description": "Onemogočeni subjekti ne bodo dodani v Home Assistant-a.",
+                    "enabled_label": "Omogoči entiteto",
+                    "entity_id": "ID subjekta",
+                    "icon": "Preglasitev ikone",
+                    "icon_error": "Ikone morajo biti v obliki \"predpona: imeIkone\", na primer \"MDI: Home\"",
+                    "name": "Preglasitev imena",
+                    "note": "Opomba: to morda še ne deluje z vsemi integracijami.",
+                    "unavailable": "Ta entiteta trenutno ni na voljo.",
+                    "update": "POSODOBITEV"
+                },
+                "no_unique_id": "Ta entiteta nima enoličnega ID-ja, zato nastavitev ni mogoče upravljati iz uporabniškega vmesnika.",
+                "related": "Povezano",
+                "settings": "Nastavitve"
+            },
+            "generic": {
+                "cancel": "Prekliči",
+                "close": "Zapri",
+                "default_confirmation_title": "Ste prepričani?",
+                "ok": "OK"
+            },
+            "helper_settings": {
+                "generic": {
+                    "icon": "Ikona",
+                    "initial_value": "Začetna vrednost ob zagonu",
+                    "initial_value_explain": "Vrednost, ki jo bo imel element, ko se zažene Home Assistant. Če ostane prazna, se bo vrednost nastavila na prejšnjo.",
+                    "name": "Ime"
+                },
+                "input_datetime": {
+                    "has_date": "Datum",
+                    "has_time": "Čas"
+                },
+                "input_number": {
+                    "box": "Vnosno polje",
+                    "max": "Najvišja vrednost",
+                    "min": "Najmanjša vrednost",
+                    "mode": "Način prikaza",
+                    "slider": "Drsnik",
+                    "step": "Velikost koraka drsnika",
+                    "unit_of_measurement": "Merska enota"
+                },
+                "input_select": {
+                    "add": "Dodaj",
+                    "add_option": "Dodaj možnost",
+                    "no_options": "Še ni možnosti.",
+                    "options": "Možnosti"
+                },
+                "input_text": {
+                    "max": "Najdaljša dolžina",
+                    "min": "Najkrajša dolžina",
+                    "mode": "Način prikaza",
+                    "password": "Geslo",
+                    "pattern": "Vzorec Regex za validacijo na strani odjemalca",
+                    "text": "Besedilo"
+                },
+                "not_editable": "Ni mogoče urejati",
+                "not_editable_text": "Te entitete ni mogoče spremeniti iz uporabniškega vmesnika, ker je določena v config.yaml.",
+                "required_error_msg": "To polje je obvezno"
             },
             "more_info_control": {
                 "dismiss": "Opusti pogovorno okno",
+                "edit": "Uredi entiteto",
+                "person": {
+                    "create_zone": "Ustvari območje iz trenutne lokacije"
+                },
                 "restored": {
                     "confirm_remove_text": "Ali ste prepričani, da želite odstraniti to entiteto?",
                     "confirm_remove_title": "Ali želite odstraniti entiteto?",
@@ -603,7 +695,8 @@
                     "remove_intro": "Če entiteta ni več v uporabi, jo lahko očistite tako, da jo odstranite."
                 },
                 "script": {
-                    "last_action": "Zadnje Dejanje"
+                    "last_action": "Zadnje Dejanje",
+                    "last_triggered": "Nazadnje sproženo"
                 },
                 "settings": "Nastavitve entitete",
                 "sun": {
@@ -613,6 +706,18 @@
                 },
                 "updater": {
                     "title": "Navodila za posodabitev"
+                },
+                "vacuum": {
+                    "clean_spot": "Očisti točko",
+                    "commands": "Ukazi sesalnika:",
+                    "fan_speed": "Hitrost ventilatorja",
+                    "locate": "Poiščite",
+                    "pause": "Premor",
+                    "return_home": "Vrni se domov",
+                    "start": "Zagon",
+                    "start_pause": "Začetek/Premor",
+                    "status": "Stanje",
+                    "stop": "Ustavi"
                 }
             },
             "more_info_settings": {
@@ -642,6 +747,9 @@
                     "add": "Dodajte naprave",
                     "reconfigure": "Ponovno konfigurirajte napravo",
                     "remove": "Odstranite napravo"
+                },
+                "confirmations": {
+                    "remove": "Ali ste prepričani, da želite odstraniti napravo?"
                 },
                 "last_seen": "Nazadnje viden",
                 "manuf": "naredil: {manufacturer}",
@@ -768,7 +876,7 @@
                             "delete_confirm": "Ste prepričani, da želite izbrisati?",
                             "duplicate": "Podvoji",
                             "header": "Pogoji",
-                            "introduction": "Pogoji so neobvezni del pravila za avtomatizacijo in jih je mogoče uporabiti za preprečitev, da bi se dejanje zgodilo ob sprožitvi. Pogoji so zelo podobni sprožilcem, vendar so zelo različni. Sprožilec bo pogledal dogodke, ki se dogajajo v sistemu, medtem, ko pogoj gleda samo na to, kako sistem trenutno izgleda. Sprožilec lahko opazi, da je stikalo vklopljeno. Pogoj lahko vidi le, če je stikalo trenutno vklopljeno ali izklopljeno. \n\n [Več o pogojih.] (Https://home-assistant.io/docs/scripts/conditions/)",
+                            "introduction": "Pogoji so izbirni in bodo preprečili nadaljnjo izvedbo, razen če so izpolnjeni vsi pogoji.",
                             "learn_more": "Več o pogojih",
                             "name": "Stanje",
                             "type_select": "Vrsta pogoja",
@@ -830,6 +938,7 @@
                         },
                         "edit_ui": "Uredi z uporabniškim vmesnikom",
                         "edit_yaml": "Uredi z YAML-om",
+                        "enable_disable": "Omogoči / onemogoči avtomatizacijo",
                         "introduction": "Uporabite avtomatizacije za oživitev vašega doma.",
                         "load_error_not_editable": "Urejati je mogoče le avtomatizacije v automations.yaml.",
                         "load_error_unknown": "Napaka pri nalaganju avtomatizacije ({err_no}).",
@@ -944,7 +1053,7 @@
                 "cloud": {
                     "account": {
                         "alexa": {
-                            "config_documentation": "Dokumentacija o konfiguraciji",
+                            "config_documentation": "Konfiguracijska dokumentacija",
                             "disable": "onemogočiti",
                             "enable": "omogočiti",
                             "enable_ha_skill": "Omogoči Home Assistant spretnost za Alexo",
@@ -961,7 +1070,7 @@
                         "connection_status": "Stanje povezave v oblaku",
                         "fetching_subscription": "Pridobivam naročnino...",
                         "google": {
-                            "config_documentation": "Dokumentacija o konfiguraciji",
+                            "config_documentation": "Konfiguracijska dokumentacija",
                             "devices_pin": "Pin koda za varnostne naprave",
                             "enable_ha_skill": "Aktivirajte spretnost Home Assistant za Pomočnika Google",
                             "enable_state_reporting": "Omogoči poročanje o stanju",
@@ -1177,14 +1286,19 @@
                         "actions": {
                             "caption": "Ko se nekaj sproži ..."
                         },
+                        "automations": "Avtomatizacije",
                         "conditions": {
                             "caption": "Naredite nekaj, samo če ..."
                         },
+                        "create": "Ustvarjanje avtomatizacije z napravo",
+                        "no_automations": "Ni avtomatizacij",
+                        "no_device_automations": "Za to napravo ni na voljo nobenih avtomatizacij.",
                         "triggers": {
                             "caption": "Naredi nekaj, ko ..."
                         }
                     },
                     "automations": "Avtomatizacije",
+                    "cant_edit": "Urejate lahko samo elemente, ki so ustvarjeni v uporabniškem vmesniku.",
                     "caption": "Naprave",
                     "confirm_rename_entity_ids": "Ali želite preimenovati tudi ID entitete vaših entitet?",
                     "data_table": {
@@ -1199,13 +1313,27 @@
                     "details": "Tu so vse podrobnosti vaše naprave.",
                     "device_not_found": "Naprave ni bilo mogoče najti",
                     "entities": {
-                        "add_entities_lovelace": "Dodajte vse entitete naprave v uporabniški vmesnik Lovelace",
+                        "add_entities_lovelace": "Dodaj v Lovelace",
                         "entities": "Entitete",
                         "none": "Ta naprava nima entitet"
                     },
                     "info": "Informacije o napravi",
+                    "name": "Ime",
+                    "scene": {
+                        "create": "Ustvarjanje scen z napravo",
+                        "no_scenes": "Ni scen",
+                        "scenes": "Scene"
+                    },
+                    "scenes": "Scene",
+                    "script": {
+                        "create": "Ustvarjanje skript z napravo",
+                        "no_scripts": "Ni  skript",
+                        "scripts": "Skripte"
+                    },
+                    "scripts": "Skripte",
                     "unknown_error": "Neznana napaka",
-                    "unnamed_device": "Neimenovana naprava"
+                    "unnamed_device": "Neimenovana naprava",
+                    "update": "Posodobite"
                 },
                 "entities": {
                     "caption": "Entitete",
@@ -1218,6 +1346,8 @@
                         "enabled_cause": "Onemogočeno zaradi {cause}.",
                         "enabled_description": "Onemogočeni subjekti ne bodo dodani v Home Assistant-a.",
                         "enabled_label": "Omogoči entiteto",
+                        "entity_id": "ID subjekta",
+                        "name": "Preglasitev imena",
                         "note": "Opomba: to morda še ne deluje z vsemi integracijami.",
                         "unavailable": "Ta entiteta trenutno ni na voljo.",
                         "update": "POSODOBITEV"
@@ -1236,6 +1366,7 @@
                         "filter": {
                             "filter": "Filter",
                             "show_disabled": "Pokaži onemogočene subjekte",
+                            "show_readonly": "Prikaži entitete \"samo za branje\"",
                             "show_unavailable": "Pokaži nerazpoložljive entitete"
                         },
                         "header": "Entitete",
@@ -1248,21 +1379,48 @@
                         },
                         "integrations_page": "Stran za integracije",
                         "introduction": "Home Assistant vodi register vseh entitet, ki jih je kdajkoli videl in jih je mogoče enolično identificirati. Vsak od teh entitet ima dodeljen ID entitete, ki bo rezerviran samo za to entiteto.",
-                        "introduction2": "Z registrom entitet preglasite ime, spremenite ID entitete ali odstranite vnos iz Home Assistent-a. Opomba, odstranitev vnosa registra entitet ne bo odstranila entitete. Če želite to narediti, sledite spodnji povezavi in jo odstranite s strani za integracijo.",
+                        "introduction2": "Z registrom entitet lahko nadomestite ime, spremenite ID entitete ali odstranite vnos iz programa Home Assistant.",
                         "remove_selected": {
-                            "button": "Odstrani izbrane"
+                            "button": "Odstrani izbrane",
+                            "confirm_text": "Entitete je mogoče odstraniti le, če jih integracija več ne zagotavlja.",
+                            "confirm_title": "Ali želite odstraniti {number} entiteto-i/e?"
                         },
                         "selected": "{številka} izbrana/ih",
                         "show_disabled": "Pokaži onemogočene subjekte",
                         "status": {
                             "disabled": "Onemogočeno",
                             "ok": "V redu",
+                            "readonly": "Samo za branje",
                             "unavailable": "Ni na voljo"
                         },
                         "unavailable": "(ni na voljo)"
                     }
                 },
                 "header": "Konfiguriraj Home Assistant",
+                "helpers": {
+                    "caption": "Pomočniki",
+                    "description": "Elementi, ki lahko pomagajo graditi avtomatizacije.",
+                    "dialog": {
+                        "add_helper": "Dodajte pomočnika",
+                        "add_platform": "Dodaj {platform}",
+                        "create": "Ustvari"
+                    },
+                    "picker": {
+                        "add_helper": "Dodajte pomočnika",
+                        "headers": {
+                            "editable": "Za urejanje",
+                            "name": "Ime",
+                            "type": "Vrsta"
+                        }
+                    },
+                    "types": {
+                        "input_boolean": "Preklopite",
+                        "input_datetime": "Datum in/ali čas",
+                        "input_number": "Številka",
+                        "input_select": "Spustni",
+                        "input_text": "Besedilo"
+                    }
+                },
                 "integrations": {
                     "caption": "Integracije",
                     "config_entry": {
@@ -1288,6 +1446,7 @@
                         "area_picker_label": "Območje",
                         "close": "Zapri",
                         "created_config": "Ustvarjena konfiguracija za {name}.",
+                        "dismiss": "Opusti pogovorno okno",
                         "error_saving_area": "Napaka pri shranjevanju območja: {error}",
                         "external_step": {
                             "description": "Ta korak zahteva, da za končanje obiščete zunanjo spletno stran.",
@@ -1323,6 +1482,76 @@
                     "note_about_website_reference": "Več jih je na voljo prek"
                 },
                 "introduction": "Tukaj je mogoče konfigurirati vaše komponente in Home Assistanta. Vsega ni mogoče konfigurirati iz uporabniškega vmesnika (vendar delamo na tem).",
+                "lovelace": {
+                    "caption": "Nadzorne plošče Lovelace",
+                    "dashboards": {
+                        "cant_edit_yaml": "Nadzorne plošče, definirane v YAML-u, ni mogoče urejati iz uporabniškega vmesnika. Spremenite jih v config.yaml.",
+                        "caption": "Nadzorne plošče",
+                        "conf_mode": {
+                            "storage": "Pod nad UI-ja",
+                            "yaml": "Datoteka YAML"
+                        },
+                        "confirm_delete": "Ali ste prepričani, da želite izbrisati to nadzorno ploščo?",
+                        "detail": {
+                            "create": "Ustvari",
+                            "delete": "Izbriši",
+                            "dismiss": "Zapri",
+                            "edit_dashboard": "Urejanje nadzorne plošče",
+                            "icon": "Ikona stranske vrstice",
+                            "new_dashboard": "Dodajte novo nadzorno ploščo",
+                            "require_admin": "Samo skrbnik",
+                            "show_sidebar": "Pokaži v stranski vrstici",
+                            "title": "Naslov stranske vrstice",
+                            "update": "Posodobi",
+                            "url": "URL",
+                            "url_error_msg": "URL ne sme vsebovati presledkov ali posebnih znakov, razen _ in -"
+                        },
+                        "picker": {
+                            "add_dashboard": "Dodajte nadzorno ploščo",
+                            "headers": {
+                                "conf_mode": "Način konfiguracije",
+                                "filename": "Ime datoteke",
+                                "require_admin": "Samo skrbnik",
+                                "sidebar": "Pokaži v stranski vrstici",
+                                "title": "Naslov"
+                            },
+                            "open": "Odprite nadzorno ploščo"
+                        }
+                    },
+                    "description": "Konfigurirajte nadzorne plošče Lovelace",
+                    "resources": {
+                        "cant_edit_yaml": "Lovelace uporabljate v načinu YAML, zato ne morete upravljati svojih virov prek uporabniškega vmesnika. Upravljajte jih v config.yaml.",
+                        "caption": "Viri",
+                        "confirm_delete": "Ali ste prepričani, da želite izbrisati ta vir?",
+                        "detail": {
+                            "create": "Ustvari",
+                            "delete": "Izbriši",
+                            "dismiss": "Zapri",
+                            "new_resource": "Dodajte nov vir",
+                            "type": "Vrsta vira",
+                            "update": "Posodobi",
+                            "url": "URL",
+                            "url_error_msg": "Url je obvezno polje",
+                            "warning_header": "Bodite previdni!",
+                            "warning_text": "Dodajanje virov je lahko nevarno, prepričajte se, da poznate vir vira in jim zaupate. Slabi viri lahko resno škodijo vašemu sistemu."
+                        },
+                        "picker": {
+                            "add_resource": "Dodaj vir",
+                            "headers": {
+                                "type": "Vrsta",
+                                "url": "URL"
+                            }
+                        },
+                        "refresh_body": "Če želite dokončati odstranitev, morate osvežiti stran, ali jo želite zdaj osvežiti?",
+                        "refresh_header": "Ali želite osvežiti?",
+                        "types": {
+                            "css": "Slogovna stran",
+                            "html": "HTML (zastarelo)",
+                            "js": "Datoteka JavaScript (zastarelo)",
+                            "module": "JavaScript modul"
+                        }
+                    }
+                },
                 "person": {
                     "add_person": "Dodaj osebo",
                     "caption": "Osebe",
@@ -1366,7 +1595,7 @@
                             "delete": "Izbrišite entiteto",
                             "device_entities": "Če dodate entiteto, ki pripada napravi, bo dodana naprava.",
                             "header": "Entitete",
-                            "introduction": "Tukaj lahko nastavite entitete, ki ne pripadajo napravam.",
+                            "introduction": "Tu lahko nastavite subjekte, ki ne pripadajo napravi.",
                             "without_device": "Entitete brez naprave"
                         },
                         "introduction": "Uporabite scene, da oživite svoj dom.",
@@ -1423,10 +1652,12 @@
                             "automation": "Ponovno naloži avtomatizacije",
                             "core": "Ponovno naloži lokacijo in prilagoditve",
                             "group": "Ponovno naloži skupine",
-                            "heading": "Ponovno nalaganje konfiguracije",
-                            "introduction": "Nekateri deli Home Assistanta se lahko znova naložijo brez potrebe po ponovnem zagonu. S pritiskom na \"ponovno naloži\" se bo naložila nova konfiguracija",
+                            "heading": "Ponovno nalaganje konfiguracije YAML",
+                            "introduction": "Nekateri deli programa Home Assistant-a se lahko naložijo brez ponovnega zagona. S ponovnim nalaganjem se trenutna konfiguracija YAML zamenja in naloži nova.",
+                            "person": "Ponovno naloži osebe",
                             "scene": "Ponovno naloži scene",
-                            "script": "Ponovno naloži skripte"
+                            "script": "Ponovno naloži skripte",
+                            "zone": "Ponovno naloži območja"
                         },
                         "server_management": {
                             "confirm_restart": "Ali ste prepričani, da želite znova zagnati Home Assistant-a?",
@@ -1437,7 +1668,7 @@
                             "stop": "Ustavi"
                         },
                         "validation": {
-                            "check_config": "Preverite nastavitve",
+                            "check_config": "Preverite konfiguracijo",
                             "heading": "Preverjanje konfiguracije",
                             "introduction": "Potrdite svojo konfiguracijo, če ste nedavno spremenili svojo konfiguracijo in se prepričajte, da je vse veljavno",
                             "invalid": "Konfiguracija ni veljavna",
@@ -1486,6 +1717,10 @@
                         "search_again": "Ponovno iskanje",
                         "spinner": "Iskanje ZHA Zigbee naprav..."
                     },
+                    "add": {
+                        "caption": "Dodajte naprave",
+                        "description": "Dodajte naprave v omrežje Zigbee"
+                    },
                     "caption": "ZHA",
                     "cluster_attributes": {
                         "attributes_of_cluster": "Atributi izbrane gruče",
@@ -1505,7 +1740,9 @@
                         "issue_zigbee_command": "Izdajte ukaz Zigbee"
                     },
                     "clusters": {
-                        "help_cluster_dropdown": "Izberite gručo, če si želite ogledati njene atribute in ukaze."
+                        "header": "Gruče",
+                        "help_cluster_dropdown": "Izberite gručo, če si želite ogledati njene atribute in ukaze.",
+                        "introduction": "Gruče so sestavni del funkcionalnosti Zigbee. Funkcionalnost ločijo na logične enote. Obstajajo vrste odjemalcev in strežnikov, ki jih sestavljajo atributi in ukazi."
                     },
                     "common": {
                         "add_devices": "Dodajte naprave",
@@ -1520,10 +1757,49 @@
                         "device_name_placeholder": "Ime, ki ga je dodelil uporabnik",
                         "update_name_button": "Posodobi ime"
                     },
-                    "groups": {
-                        "caption": "Skupine",
-                        "create": "Ustvari skupino"
+                    "devices": {
+                        "header": "ZigBee Home Automation-naprava"
                     },
+                    "group_binding": {
+                        "bind_button_help": "Povežite izbrano skupino z izbranimi gručami naprave.",
+                        "bind_button_label": "Združi skupino",
+                        "cluster_selection_help": "Izberite gruče, ki se vežejo na izbrano skupino.",
+                        "group_picker_help": "Izberite skupino, ki bo izdala ukaz vezanja.",
+                        "group_picker_label": "Skupine za povezovanje",
+                        "header": "Vezava skupin",
+                        "introduction": "Povežite in razvezujte skupine.",
+                        "unbind_button_help": "Odvežite izbrano skupino iz izbranih gruč naprav.",
+                        "unbind_button_label": "Razdruži skupino"
+                    },
+                    "groups": {
+                        "add_members": "Dodajte člane",
+                        "adding_members": "Dodajanje članov",
+                        "caption": "Skupine",
+                        "create": "Ustvari skupino",
+                        "create_group": "Zigbee Home Automation - Ustvari skupino",
+                        "create_group_details": "Da ustvarite novo skupino Zigbee vnesite zahtevane podrobnosti.",
+                        "creating_group": "Ustvarjanje skupine",
+                        "description": "Ustvarjajte in spreminjajte skupine Zigbee",
+                        "group_details": "Tu so vse podrobnosti za izbrano skupino Zigbee.",
+                        "group_id": "ID skupine",
+                        "group_info": "Informacije o skupini",
+                        "group_name_placeholder": "Ime skupine",
+                        "group_not_found": "Skupine ni mogoče najti!",
+                        "group-header": "Zigbee Home Automation - Podrobnosti o skupini",
+                        "groups": "Skupine",
+                        "groups-header": "ZigBee Home Automation-upravljanje skupin",
+                        "header": "ZigBee Home Automation-upravljanje skupin",
+                        "introduction": "Ustvarite in spreminjajte skupine Zigbee",
+                        "manage_groups": "Upravljajte zigbee skupine",
+                        "members": "Člani",
+                        "remove_groups": "Odstrani skupine",
+                        "remove_members": "Odstranite člane",
+                        "removing_groups": "Odstranjevanje skupin",
+                        "removing_members": "Odstranjevanje članov",
+                        "zha_zigbee_groups": "ZHA Zigbee Skupine"
+                    },
+                    "header": "Konfigurirajte Zigbee Home Automation",
+                    "introduction": "Tu je možno konfigurirati komponento ZHA. Iz uporabniškega vmesnika še ni mogoče konfigurirati vsega, vendar delamo na tem.",
                     "network_management": {
                         "header": "Upravljanje omrežja",
                         "introduction": "Ukazi, ki vplivajo na celotno omrežje"
@@ -1539,16 +1815,37 @@
                         "reconfigure": "Ponovno konfigurirajte napravo ZHA (\"pozdravite\" napravo). To uporabite, če imate z njo težave. Če ta naprava deluje na baterije, se prepričajte, da je budna in sprejema ukaze pri uporabi te storitve.",
                         "remove": "Odstranite napravo iz omrežja ZigBee.",
                         "updateDeviceName": "Nastavite ime po meri za to napravo v registru naprav."
-                    }
+                    },
+                    "title": "Zigbee Home Automation"
                 },
                 "zone": {
+                    "add_zone": "Dodaj območje",
+                    "caption": "Območja",
+                    "configured_in_yaml": "Območij, konfiguriranih prek config.yaml, ni mogoče urejati prek uporabniškega vmesnika.",
+                    "confirm_delete": "Ali ste prepričani, da želite izbrisati to območje?",
+                    "create_zone": "Ustvari območje",
+                    "description": "Upravljajte območja, v katerih želite slediti osebam.",
                     "detail": {
                         "create": "Ustvari",
                         "delete": "Izbriši",
                         "icon": "Ikona",
+                        "icon_error_msg": "Ikona mora biti v obliki predpona:ime ikone, na primer: mdi:home",
+                        "latitude": "Zemljepisna širina",
+                        "longitude": "Zemljepisna dolžina",
+                        "name": "Ime",
+                        "new_zone": "Novo območje",
+                        "passive": "Pasivno",
+                        "passive_note": "Pasivna območja so skrita v \"frontendu\" in jih ne uporabljamo za sledenje naprav. Koristna so, če jih želite uporabiti samo za avtomatizacijo.",
                         "radius": "Polmer",
+                        "required_error_msg": "To polje je obvezno",
                         "update": "Posodobite"
-                    }
+                    },
+                    "edit_home_zone": "Polmera območja \"doma\" še ni mogoče urejati na frontend-u. Če želite premakniti domače območje, povlecite oznako na zemljevid.",
+                    "edit_home_zone_narrow": "Polmera domačega območja še ni mogoče urejati iz frontend-a. Lokacijo lahko spremenite iz splošne konfiguracije.",
+                    "go_to_core_config": "Pojdi na splošno konfiguracijo?",
+                    "home_zone_core_config": "Lokacijo domačega območja je mogoče urejati na strani splošne konfiguracije. Polmera domačega območja še ni mogoče urejati iz frontend-a. Ali želite iti na splošno konfiguracijo?",
+                    "introduction": "Območja omogočajo določitev določenih regij. Ko je oseba znotraj tega območja, bo stanje prevzelo njegovo ime. Območja se lahko uporabljajo tudi kot sprožilec ali pogoj v avtomatizacijah.",
+                    "no_zones_created_yet": "Izgleda, da še niste ustvarili nobenih con."
                 },
                 "zwave": {
                     "caption": "Z-Wave",
@@ -1574,12 +1871,12 @@
                         "network_stopped": "Omrežje Z-Wave ustavljeno"
                     },
                     "node_config": {
-                        "config_parameter": "Vrednostni parameter",
-                        "config_value": "Vrednost nastavite",
+                        "config_parameter": "Konfiguracijski parameter",
+                        "config_value": "Vrednost konfiguracije",
                         "false": "Lažno",
                         "header": "Možnosti konfiguracije vozlišča",
                         "seconds": "Sekund",
-                        "set_config_parameter": "Nastavite Config Parameter",
+                        "set_config_parameter": "Nastavite konfiguracijski parameter",
                         "set_wakeup": "Nastavite Interval bujenja",
                         "true": "Prav"
                     },
@@ -1731,7 +2028,9 @@
             },
             "lovelace": {
                 "add_entities": {
-                    "saving_failed": "Shranjevanje nastavitve uporabniškega vmesnika Lovelace ni uspelo."
+                    "generated_unsupported": "To funkcijo lahko uporabite le, ko ste prevzeli nadzor nad uporabniškim vmesnikom Lovelace.",
+                    "saving_failed": "Shranjevanje konfiguracije uporabniškega vmesnika Lovelace ni uspelo.",
+                    "yaml_unsupported": "Te funkcije ne morete uporabljati pri uporabi uporabniškega vmesnika Lovelace v načinu YAML."
                 },
                 "cards": {
                     "confirm_delete": "Ali ste prepričani, da želite izbrisati to kartico?",
@@ -1739,6 +2038,9 @@
                         "go_to_integrations_page": "Pojdite na stran za integracije.",
                         "no_devices": "Ta stran vam omogoča nadzor nad napravami, vendar je videti, da še niste nastavili nobenih naprav. Pojdite na stran za integracije, da začnete.",
                         "title": "Dobrodošli Doma"
+                    },
+                    "entities": {
+                        "never_triggered": "Nikoli sprožen"
                     },
                     "picture-elements": {
                         "call_service": "Kličite storitev {name}",
@@ -1749,6 +2051,11 @@
                         "toggle": "Preklopi {name}",
                         "url": "Odprite okno za {url_path}"
                     },
+                    "safe-mode": {
+                        "description": "Home Assistant je med nalaganjem konfiguracije naletel na težave in zdaj deluje v varnem načinu. Oglejte si dnevnik napak in preverite kaj je šlo narobe.",
+                        "header": "Aktiviran varni način",
+                        "show_errors": "Pokaži napake"
+                    },
                     "shopping-list": {
                         "add_item": "Dodaj element",
                         "checked_items": "Označeni predmeti",
@@ -1756,7 +2063,7 @@
                     }
                 },
                 "changed_toast": {
-                    "message": "Konfiguracija Lovelace je bila spremenjena, jo želiš osvežiti?",
+                    "message": "Konfiguracija uporabniškega vmesnika Lovelace za to nadzorno ploščo je bila posodobljena, če želite videti spremembe jo morate osvežiti.",
                     "refresh": "Osveži"
                 },
                 "editor": {
@@ -1767,6 +2074,9 @@
                         "alarm-panel": {
                             "available_states": "Stanja na voljo",
                             "name": "Alarmna plošča"
+                        },
+                        "button": {
+                            "name": "Gumb"
                         },
                         "conditional": {
                             "name": "Pogojno"
@@ -1870,6 +2180,7 @@
                             "name": "Senzor"
                         },
                         "shopping-list": {
+                            "integration_not_loaded": "Ta kartica zahteva nastavitev integracije `shopping_list`.",
                             "name": "Nakupovalni seznam"
                         },
                         "thermostat": {
@@ -1898,7 +2209,7 @@
                     },
                     "edit_lovelace": {
                         "edit_title": "Uredi naslov",
-                        "explanation": "Ta naslov je prikazan nad vsemi vašimi pogledi v Lovelace-u.",
+                        "explanation": "Ta naslov je prikazan predvsem nad vašimi pogledi v uporabniškem vmesniku Lovelace.",
                         "header": "Naslov vašega uporabniškega vmesnika Lovelace"
                     },
                     "edit_view": {
@@ -1908,40 +2219,51 @@
                         "header": "Prikaži konfiguracijo",
                         "header_name": "{name} Prikaži konfiguracijo",
                         "move_left": "Premakni pogled levo",
-                        "move_right": "Premakni pogled desno"
+                        "move_right": "Premakni pogled desno",
+                        "tab_badges": "Značke",
+                        "tab_settings": "Nastavitve"
                     },
                     "header": "Uredi UI",
                     "menu": {
-                        "open": "Odprite meni Lovelace",
-                        "raw_editor": "Urejevalnik konfiguracije"
+                        "open": "Odprite meni uporabniškega vmesnika Lovelace",
+                        "raw_editor": "\"Surovi\" urejevalnik konfiguracije"
                     },
                     "migrate": {
                         "header": "Konfiguracija Nezdružljiva",
-                        "migrate": "Migriraj nastavitve",
-                        "para_migrate": "Home Assistant lahko doda ID-je vsem vašim karticam in pogledom samodejno s pritiskom gumba »Migriraj nastavitve«.",
+                        "migrate": "Selitev konfiguracije",
+                        "para_migrate": "Home Assistant lahko za vas samodejno doda ID na vse vaše kartice in poglede s pritiskom na gumb »Preseli konfiguracijo«.",
                         "para_no_id": "Ta element nima ID-ja. Prosimo, dodajte ID tega elementa v 'ui-lovelace.yaml'."
                     },
                     "raw_editor": {
+                        "confirm_remove_config_text": "Samodejno bomo ustvarili vaše poglede uporabniškega vmesnika Lovelace z vašimi območji in napravami, če odstranite konfiguracijo uporabniškega vmesnika Lovelace.",
+                        "confirm_remove_config_title": "Ali ste prepričani, da želite odstraniti konfiguracijo uporabniškega vmesnika Lovelace? Samodejno bomo ustvarili vaše poglede uporabniškega vmesnika Lovelace z vašimi območji in napravami.",
                         "confirm_unsaved_changes": "Imate neshranjene spremembe, ali ste prepričani, da želite zapreti?",
-                        "confirm_unsaved_comments": "Vaša konfiguracija vsebuje komentarje, ti ne bodo shranjeni. Ali želite nadaljevati?",
-                        "error_invalid_config": "Vaš konfiguracija ni veljavna: {error}",
+                        "confirm_unsaved_comments": "Vaša konfiguracija vsebuje komentarje, ki ne bodo shranjeni. Ali želite nadaljevati?",
+                        "error_invalid_config": "Vaša konfiguracija ni veljavna: {error}",
                         "error_parse_yaml": "Ni mogoče razčleniti YAML: {error}",
+                        "error_remove": "Konfiguracije ni mogoče odstraniti: {error}",
                         "error_save_yaml": "YAML-a ni mogoče shraniti: {error}",
-                        "header": "Uredi nastavitve",
+                        "header": "Uredi konfiguracijo",
+                        "resources_moved": "Viri se naj ne bi več dodajali v Lovelace konfiguracijo ampak v Lovelace config ploščo.",
                         "save": "Shrani",
                         "saved": "Shranjeno",
                         "unsaved_changes": "Neshranjene spremembe"
                     },
                     "save_config": {
                         "cancel": "Pozabi",
+                        "close": "Zapri",
                         "header": "Prevzemite nadzor nad lovelace vmesnikom",
-                        "para": "Home Assistant bo privzeto vzdrževal vaš uporabniški vmesnik, ga posodabljal, ko bodo na voljo nove entitete ali komponente Lovelace. Če prevzamete nadzor, vam ga ne bo več samodejno popravljal.",
+                        "para": "Home Assistant bo privzeto vzdrževal vaš uporabniški vmesnik in ga posodabljal, ko bodo na voljo novi subjekti ali komponente Lovelace UI. Če prevzamete nadzor, ne bomo več samodejno spreminjali sprememb za vas.",
                         "para_sure": "Ali ste prepričani, da želite prevzeti nadzor nad vašim vmesnikom?",
-                        "save": "Prevzemite nadzor"
+                        "save": "Prevzemite nadzor",
+                        "yaml_config": "Za pomoč pri zagonu je tukaj trenutna konfiguracija te nadzorne plošče:",
+                        "yaml_control": "Če želite prevzeti nadzor v načinu YAML, ustvarite datoteko YAML z imenom, ki ste ga določili v konfiguraciji za to nadzorno ploščo, ali privzeto 'ui-lovelace.yaml'.",
+                        "yaml_mode": "Uporabljate način YAML, kar pomeni, da ne morete spremeniti konfiguracijo Lovelace iz uporabniškega vmesnika. Če želite spremenjati Lovelace iz uporabniškega vmesnika, morate iz konfiguracije 'config.yaml' odstraniti 'mode: yaml'."
                     },
                     "suggest_card": {
                         "add": "Dodaj v uporabniški vmesnik Lovelace",
-                        "create_own": "Izberite drugačno karto"
+                        "create_own": "Izberite drugačno karto",
+                        "header": "Za vas smo ustvarili predlog"
                     },
                     "view": {
                         "panel_mode": {
@@ -1958,7 +2280,7 @@
                     "refresh": "Osveži",
                     "unused_entities": "Neuporabljene entitete"
                 },
-                "reload_lovelace": "Ponovno naloži Lovelace",
+                "reload_lovelace": "Ponovno naloži uporabniški vmesnik",
                 "unused_entities": {
                     "available_entities": "To so entitete, ki so vam na voljo, vendar še niso v uporabniškem vmesniku Lovelace.",
                     "domain": "Domena",
@@ -2048,7 +2370,7 @@
                                     "data": {
                                         "password": "API Geslo"
                                     },
-                                    "description": "Prosimo vnesite API geslo v vašem http config-u:"
+                                    "description": "Prosimo vnesite API geslo v vašo HTTP konfiguracijo:"
                                 },
                                 "mfa": {
                                     "data": {
@@ -2156,7 +2478,8 @@
             },
             "profile": {
                 "advanced_mode": {
-                    "description": "Home Assistant privzeto skrije napredne funkcije in možnosti. Do teh funkcij lahko dostopate tako, da vklopite to stikalo. To je uporabniško določena nastavitev, ki ne vpliva na druge uporabnike.",
+                    "description": "Odklene napredne funkcije.",
+                    "link_promo": "Preberite več",
                     "title": "Napredni način"
                 },
                 "change_password": {
@@ -2179,6 +2502,7 @@
                     "link_promo": "Pomagajte pri prevodu"
                 },
                 "logout": "Odjava",
+                "logout_text": "Ali ste prepričani, da se želite odjaviti?",
                 "logout_title": "Odjava?",
                 "long_lived_access_tokens": {
                     "confirm_delete": "Ali ste prepričani, da želite izbrisati žeton za dostop za {name} ?",

@@ -604,7 +604,8 @@
             "config_entry_system_options": {
                 "enable_new_entities_description": "Pokud je zakázáno, nově objevené entity pro {integration} nebudou automaticky přidány do Home Assistant.",
                 "enable_new_entities_label": "Povolit nově přidané entity.",
-                "title": "Systémové možnosti pro {integration}"
+                "title": "Systémové možnosti pro {integration}",
+                "update": "Aktualizovat"
             },
             "confirmation": {
                 "cancel": "Zrušit",
@@ -640,6 +641,9 @@
             "more_info_control": {
                 "dismiss": "Zavřít dialog",
                 "edit": "Upravit entitu",
+                "person": {
+                    "create_zone": "Vytvořit zónu z aktuálního umístění"
+                },
                 "restored": {
                     "confirm_remove_text": "Opravdu chcete tuto entitu odebrat?",
                     "confirm_remove_title": "Odebrat entitu?",
@@ -659,6 +663,18 @@
                 },
                 "updater": {
                     "title": "Pokyny pro aktualizaci"
+                },
+                "vacuum": {
+                    "clean_spot": "Čisté místo",
+                    "commands": "Příkazy vysavače:",
+                    "fan_speed": "Rychlost ventilátoru",
+                    "locate": "Lokalizovat",
+                    "pause": "Pauza",
+                    "return_home": "Návrat domů",
+                    "start": "Start",
+                    "start_pause": "Start / Pauza",
+                    "status": "Stav",
+                    "stop": "Stop"
                 }
             },
             "more_info_settings": {
@@ -879,6 +895,7 @@
                         },
                         "edit_ui": "Upravit pomocí uživatelského rozhraní",
                         "edit_yaml": "Upravit jako YAML",
+                        "enable_disable": "Povolit / zakázat automatizaci",
                         "introduction": "Použijte automatizace k oživení svého domova",
                         "load_error_not_editable": "Lze upravovat pouze automatizace v automations.yaml.",
                         "load_error_unknown": "Chyba při načítání automatizace ({err_no}).",
@@ -1177,7 +1194,7 @@
                         },
                         "server_control": {
                             "reloading": {
-                                "automation": "Znovu načíst automatizace",
+                                "automation": "Znovu načíst automatizaci",
                                 "core": "Znovu načíst jádro",
                                 "group": "Znovu načíst skupiny",
                                 "heading": "Konfigurace se načítá",
@@ -1226,14 +1243,19 @@
                         "actions": {
                             "caption": "Když je něco spuštěno ..."
                         },
+                        "automations": "Automatizace",
                         "conditions": {
                             "caption": "Udělej něco, jen když ..."
                         },
+                        "create": "Vytvořit automatizaci se zařízením",
+                        "no_automations": "Žádné automatizace",
+                        "no_device_automations": "Pro toto zařízení nejsou k dispozici žádné automatizace.",
                         "triggers": {
                             "caption": "Udělej něco, když ..."
                         }
                     },
                     "automations": "Automatizace",
+                    "cant_edit": "Můžete upravovat pouze položky, které jsou vytvořeny v uživatelském rozhraní.",
                     "caption": "Zařízení",
                     "confirm_rename_entity_ids": "Chcete také přejmenovat ID entit vašich entit?",
                     "data_table": {
@@ -1254,6 +1276,18 @@
                     },
                     "info": "Informace o zařízení",
                     "name": "Jméno",
+                    "scene": {
+                        "create": "Vytvořit scénu se zařízením",
+                        "no_scenes": "Žádné scény",
+                        "scenes": "Scény"
+                    },
+                    "scenes": "Scény",
+                    "script": {
+                        "create": "Vytvořit skript se zařízením",
+                        "no_scripts": "Žádné skripty",
+                        "scripts": "Skripty"
+                    },
+                    "scripts": "Skripty",
                     "unknown_error": "Neznámá chyba",
                     "unnamed_device": "Nepojmenované zařízení",
                     "update": "Aktualizovat"
@@ -1476,8 +1510,8 @@
                     "description": "Restart a zastavení serveru Home Asistent",
                     "section": {
                         "reloading": {
-                            "automation": "Znovu načíst automatizace",
-                            "core": "Znovu načíst umístění a přispůsobení",
+                            "automation": "Znovu načíst automatizaci",
+                            "core": "Znovu načíst umístění a přizpůsobení",
                             "group": "Znovu načíst skupiny",
                             "heading": "Konfigurace se načítá",
                             "introduction": "Některé části Home Assistant lze načíst bez nutnosti restartování. Volba načtení zahodí jejich aktuální konfiguraci a načte novou.",
@@ -1893,6 +1927,9 @@
                         "alarm-panel": {
                             "available_states": "Dostupné stavy",
                             "name": "Ovládací panel alarmu"
+                        },
+                        "button": {
+                            "name": "Tlačítko"
                         },
                         "conditional": {
                             "name": "Podmínka"

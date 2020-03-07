@@ -6,6 +6,7 @@ import {
   CSSResult,
   css,
   property,
+  query,
 } from "lit-element";
 import { classMap } from "lit-html/directives/class-map";
 import "@polymer/app-layout/app-header-layout/app-header-layout";
@@ -47,7 +48,6 @@ import { Lovelace } from "./types";
 import { afterNextRender } from "../../common/util/render-status";
 import { haStyle } from "../../resources/styles";
 import { computeRTLDirection } from "../../common/util/compute_rtl";
-import { loadLovelaceResources } from "./common/load-resources";
 import { showVoiceCommandDialog } from "../../dialogs/voice-command-dialog/show-ha-voice-command-dialog";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import { showAlertDialog } from "../../dialogs/generic/show-dialog-box";
@@ -61,6 +61,7 @@ class HUIRoot extends LitElement {
   @property() public route?: { path: string; prefix: string };
   @property() private _routeData?: { view: string };
   @property() private _curView?: number | "hass-unused-entities";
+  @query("ha-app-layout") private _appLayout!: HTMLElement;
   private _viewCache?: { [viewId: string]: HUIView };
 
   private _debouncedConfigChanged: () => void;
@@ -226,7 +227,8 @@ class HUIRoot extends LitElement {
                             </paper-item>
                           `
                         : ""}
-                      ${this.hass!.user!.is_admin
+                      ${this.hass!.user!.is_admin &&
+                      !this.hass!.config.safe_mode
                         ? html`
                             <paper-item
                               aria-label=${this.hass!.localize(
@@ -344,7 +346,8 @@ class HUIRoot extends LitElement {
         }
       </app-header>
       <div id='view' class="${classMap({
-        "tabs-hidden": this.lovelace!.config.views.length < 2,
+        "tabs-hidden":
+          !this._editMode && this.lovelace!.config.views.length < 2,
       })}" @ll-rebuild='${this._debouncedConfigChanged}'></div>
     </app-header-layout>
     `;
@@ -467,13 +470,9 @@ class HUIRoot extends LitElement {
     let force = false;
 
     if (changedProperties.has("route")) {
-      const views = this.config && this.config.views;
-      if (
-        this.route!.path === "" &&
-        this.route!.prefix === "/lovelace" &&
-        views
-      ) {
-        navigate(this, `/lovelace/${views[0].path || 0}`, true);
+      const views = this.config.views;
+      if (this.route!.path === "" && views.length) {
+        navigate(this, `${this.route!.prefix}/${views[0].path || 0}`, true);
         newSelectView = 0;
       } else if (this._routeData!.view === "hass-unused-entities") {
         newSelectView = "hass-unused-entities";
@@ -497,16 +496,8 @@ class HUIRoot extends LitElement {
         | undefined;
 
       if (!oldLovelace || oldLovelace.config !== this.lovelace!.config) {
-        if (this.lovelace!.config.resources) {
-          loadLovelaceResources(
-            this.lovelace!.config.resources,
-            this.hass!.auth.data.hassUrl
-          );
-        }
         // On config change, recreate the current view from scratch.
         force = true;
-        // Recalculate to see if we need to adjust content area for tab bar
-        fireEvent(this, "iron-resize");
       }
 
       if (!oldLovelace || oldLovelace.editMode !== this.lovelace!.editMode) {
@@ -516,13 +507,11 @@ class HUIRoot extends LitElement {
           this._routeData!.view === "hass-unused-entities"
         ) {
           const views = this.config && this.config.views;
-          navigate(this, `/lovelace/${views[0].path || 0}`);
+          navigate(this, `${this.route?.prefix}/${views[0]?.path || 0}`);
           newSelectView = 0;
         }
         // On edit mode change, recreate the current view from scratch
         force = true;
-        // Recalculate to see if we need to adjust content area for tab bar
-        fireEvent(this, "iron-resize");
       }
     }
 
@@ -564,7 +553,7 @@ class HUIRoot extends LitElement {
   }
 
   private _handleUnusedEntities(): void {
-    navigate(this, `/lovelace/hass-unused-entities`);
+    navigate(this, `${this.route?.prefix}/hass-unused-entities`);
   }
 
   private _deselect(ev): void {
@@ -588,14 +577,14 @@ class HUIRoot extends LitElement {
     }
     this.lovelace!.setEditMode(true);
     if (this.config.views.length < 2) {
-      fireEvent(this, "iron-resize");
+      this.updateComplete.then(() => fireEvent(this._appLayout, "iron-resize"));
     }
   }
 
   private _editModeDisable(): void {
     this.lovelace!.setEditMode(false);
     if (this.config.views.length < 2) {
-      fireEvent(this, "iron-resize");
+      this.updateComplete.then(() => fireEvent(this._appLayout, "iron-resize"));
     }
   }
 
@@ -637,7 +626,7 @@ class HUIRoot extends LitElement {
 
     if (viewIndex !== this._curView) {
       const path = this.config.views[viewIndex].path || viewIndex;
-      navigate(this, `/lovelace/${path}`);
+      navigate(this, `${this.route?.prefix}/${path}`);
     }
     scrollToTarget(this, this._layout.header.scrollTarget);
   }

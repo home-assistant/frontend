@@ -581,6 +581,7 @@
                 "entity": "Relaterede entiteter",
                 "group": "En del af følgende grupper",
                 "integration": "Integration",
+                "no_related_found": "Ingen relaterede elementer fundet.",
                 "scene": "En del af følgende scener",
                 "script": "En del af følgende scripts"
             },
@@ -604,7 +605,8 @@
             "config_entry_system_options": {
                 "enable_new_entities_description": "Hvis deaktiveret, tilføjes nyligt opdagede entiteter fra {integration} ikke automatisk til Home Assistant.",
                 "enable_new_entities_label": "Aktivér nyligt tilføjede entiteter.",
-                "title": "Systemindstillinger for {integration}"
+                "title": "Systemindstillinger for {integration}",
+                "update": "Opdater"
             },
             "confirmation": {
                 "cancel": "Annuller",
@@ -629,17 +631,44 @@
                     "unavailable": "Denne entitet er ikke tilgængelig i øjeblikket.",
                     "update": "OPDATER"
                 },
+                "no_unique_id": "Denne entitet har ikke et unikt id. Derfor kan dens indstillinger ikke styres fra brugerfladen.",
                 "related": "Relaterede",
                 "settings": "Indstillinger"
             },
             "generic": {
                 "cancel": "Annuller",
+                "close": "Luk",
                 "default_confirmation_title": "Er du sikker?",
                 "ok": "OK"
+            },
+            "helper_settings": {
+                "generic": {
+                    "icon": "Ikon",
+                    "name": "Navn"
+                },
+                "input_number": {
+                    "max": "Maksimumsværdi",
+                    "min": "Minimumsværdi"
+                },
+                "input_select": {
+                    "add": "Tilføj",
+                    "add_option": "Tilføj indstilling",
+                    "options": "Indstillinger"
+                },
+                "input_text": {
+                    "max": "Maksimumslængde",
+                    "min": "Minimumslængde",
+                    "password": "Kodeord",
+                    "text": "Tekst"
+                },
+                "not_editable": "Ikke redigerbar"
             },
             "more_info_control": {
                 "dismiss": "Afvis dialog",
                 "edit": "Rediger entitet",
+                "person": {
+                    "create_zone": "Opret zone fra den aktuelle lokalitet"
+                },
                 "restored": {
                     "confirm_remove_text": "Er du sikker på, at du vil fjerne denne entitet?",
                     "confirm_remove_title": "Fjern entitet?",
@@ -659,6 +688,18 @@
                 },
                 "updater": {
                     "title": "Opdateringsvejledning"
+                },
+                "vacuum": {
+                    "clean_spot": "Rengør sted",
+                    "commands": "Støvsuger kommandoer",
+                    "fan_speed": "Blæserhastighed",
+                    "locate": "Lokaliser",
+                    "pause": "Pause",
+                    "return_home": "Retur til ladestation",
+                    "start": "Start",
+                    "start_pause": "Start/Pause",
+                    "status": "Status",
+                    "stop": "Stop"
                 }
             },
             "more_info_settings": {
@@ -879,6 +920,7 @@
                         },
                         "edit_ui": "Rediger brugerflade",
                         "edit_yaml": "Rediger med YAML",
+                        "enable_disable": "Aktiver/deaktiver automatisering",
                         "introduction": "Brug automatiseringer til at vække dit hjem til live.",
                         "load_error_not_editable": "Kun automatiseringer i 'automations.yaml' kan redigeres.",
                         "load_error_unknown": "Fejl ved indlæsning af automatisering ({err_no}).",
@@ -1306,6 +1348,7 @@
                         "filter": {
                             "filter": "Filtrer",
                             "show_disabled": "Vis deaktiverede entiteter",
+                            "show_readonly": "Vis skrivebeskyttede entiteter",
                             "show_unavailable": "Vis utilgængelige entiteter"
                         },
                         "header": "Entiteter",
@@ -1329,12 +1372,33 @@
                         "status": {
                             "disabled": "Deaktiveret",
                             "ok": "Ok",
+                            "readonly": "Skrivebeskyttet",
+                            "restored": "Gendannet",
                             "unavailable": "Utilgængelig"
                         },
                         "unavailable": "(utilgængelig)"
                     }
                 },
                 "header": "Konfigurer Home Assistant",
+                "helpers": {
+                    "caption": "Hjælpere",
+                    "dialog": {
+                        "add_helper": "Tilføj hjælper",
+                        "add_platform": "Tilføj {platform}"
+                    },
+                    "picker": {
+                        "add_helper": "Tilføj hjælper",
+                        "headers": {
+                            "editable": "Redigerbar",
+                            "entity_id": "Enheds ID",
+                            "name": "Navn",
+                            "type": "Type"
+                        }
+                    },
+                    "types": {
+                        "input_text": "Tekst"
+                    }
+                },
                 "integrations": {
                     "caption": "Integrationer",
                     "config_entry": {
@@ -1359,7 +1423,7 @@
                         "add_area": "Tilføj område",
                         "area_picker_label": "Område",
                         "close": "Luk",
-                        "created_config": "Oprettede konfiguration til {name}.",
+                        "created_config": "Oprettede konfiguration for {name}.",
                         "dismiss": "Afvis dialog",
                         "error_saving_area": "Fejl ved lagring af område: {error}",
                         "external_step": {
@@ -1396,6 +1460,40 @@
                     "note_about_website_reference": "Flere er tilgængelige på "
                 },
                 "introduction": "Her er det muligt at konfigurere dine komponenter og Home Assistant. Ikke alt er muligt at konfigurere fra brugerfladen endnu, men vi arbejder på det.",
+                "lovelace": {
+                    "dashboards": {
+                        "detail": {
+                            "create": "Opret",
+                            "delete": "Slet",
+                            "dismiss": "Luk",
+                            "title_required": "Titel er påkrævet.",
+                            "update": "Opdater"
+                        },
+                        "picker": {
+                            "headers": {
+                                "default": "Standard",
+                                "filename": "Filnavn",
+                                "title": "Titel"
+                            }
+                        }
+                    },
+                    "resources": {
+                        "caption": "Ressourcer",
+                        "detail": {
+                            "delete": "Slet",
+                            "dismiss": "Luk",
+                            "update": "Opdater",
+                            "warning_header": "Vær forsigtig!"
+                        },
+                        "picker": {
+                            "headers": {
+                                "type": "Type"
+                            }
+                        },
+                        "refresh_body": "Du skal opdatere siden for at afslutte fjernelsen, vil du opdatere nu?",
+                        "refresh_header": "Vil du opdatere?"
+                    }
+                },
                 "person": {
                     "add_person": "Tilføj person",
                     "caption": "Personer",
@@ -1496,8 +1594,8 @@
                             "automation": "Genindlæs automatiseringer",
                             "core": "Genindlæs lokalitet og tilpasninger",
                             "group": "Genindlæs grupper",
-                            "heading": "Genindlæser konfiguration",
-                            "introduction": "Nogle dele af Home Assistant kan genindlæses uden en genstart. Tryk på genindlæs for at aflæse den nuværende konfiguration og indlæse den nye.",
+                            "heading": "YAML-konfiguration genindlæses",
+                            "introduction": "Nogle dele af Home Assistant kan genindlæses uden en genstart. Tryk på genindlæs for at aflæse den nuværende YAML-konfiguration og indlæse den nye.",
                             "person": "Genindlæs personer",
                             "scene": "Genindlæs scener",
                             "script": "Genindlæs scripts",
@@ -1679,12 +1777,15 @@
                         "name": "Navn",
                         "new_zone": "Ny zone",
                         "passive": "Passiv",
-                        "passive_note": "Passive zoner er skjult i brugerfladen og bruges ikke som lokalitet for enhedssporere. Dette er nyttigt, hvis du bare vil bruge det til automatiseringer.",
+                        "passive_note": "Passive zoner er skjult i brugerfladen og bruges ikke som lokalitet for enhedssporere. Dette er nyttigt, hvis du bare vil bruge dem til automatiseringer.",
                         "radius": "Radius",
                         "required_error_msg": "Dette felt er påkrævet",
                         "update": "Opdater"
                     },
-                    "edit_home_zone": "Lokaliteten af dit hjem kan ændres i den generelle konfiguration.",
+                    "edit_home_zone": "Radius af hjemzonen kan ikke redigeres fra brugerfladen endnu. Træk markøren på kortet for at flytte hjemmezonen.",
+                    "edit_home_zone_narrow": "Radius af hjemmezonen kan ikke redigeres fra brugerfladen endnu. Lokaliteten kan ændres fra den generelle konfiguration.",
+                    "go_to_core_config": "Gå til generel konfiguration?",
+                    "home_zone_core_config": "Lokaliteten af din hjemmezone kan redigeres fra den generelle konfigurationsside. Radius af hjemmezonen kan ikke redigeres fra brugerfladen endnu. Vil du gå til den generelle konfiguration?",
                     "introduction": "Zoner giver dig mulighed for at angive bestemte områder på jorden. Når en person er inden for en zone, vil tilstanden antage navnet fra zonen. Zoner kan også bruges som udløser eller tilstand inde i automatiseringsopsætninger.",
                     "no_zones_created_yet": "Det ser ud til, at du ikke har oprettet nogen zoner endnu."
                 },
@@ -1892,6 +1993,11 @@
                         "toggle": "Skift {name}",
                         "url": "Åbn vindue til {url_path}"
                     },
+                    "safe-mode": {
+                        "description": "Home Assistant løb ind i problemer indlæsningen af din konfiguration, og kører nu i fejlsikret tilstand. Se på fejlloggen for at se, hvad der gik galt.",
+                        "header": "Fejlsikret tilstand aktiveret",
+                        "show_errors": "Vis fejlmeddelelser"
+                    },
                     "shopping-list": {
                         "add_item": "Tilføj element",
                         "checked_items": "Markerede elementer",
@@ -1910,6 +2016,9 @@
                         "alarm-panel": {
                             "available_states": "Tilgængelige tilstande",
                             "name": "Alarmpanel"
+                        },
+                        "button": {
+                            "name": "Knap"
                         },
                         "conditional": {
                             "name": "Betinget"
@@ -2052,7 +2161,9 @@
                         "header": "Vis konfiguration",
                         "header_name": "{name}-visningskonfiguration",
                         "move_left": "Flyt visningen til venstre",
-                        "move_right": "Flyt visningen til højre"
+                        "move_right": "Flyt visningen til højre",
+                        "tab_badges": "Badges",
+                        "tab_settings": "Indstillinger"
                     },
                     "header": "Rediger brugerflade",
                     "menu": {
@@ -2062,7 +2173,7 @@
                     "migrate": {
                         "header": "Konfigurationen er ikke kompatibel",
                         "migrate": "Migrer opsætning",
-                        "para_migrate": "Home Assistant kan tilføje id'er til alle dine kort og oversigter automatisk for dig ved at trykke på knappen 'Migrer opsætning'.",
+                        "para_migrate": "Home Assistant kan tilføje id'er til alle dine kort og visninger automatisk for dig ved at trykke på knappen 'Migrer opsætning'.",
                         "para_no_id": "Dette element har ikke et id. Tilføj venligst et id til dette element i 'ui-lovelace.yaml'."
                     },
                     "raw_editor": {
@@ -2081,6 +2192,7 @@
                     },
                     "save_config": {
                         "cancel": "Glem det",
+                        "close": "Luk",
                         "header": "Tag kontrol over din 'Lovelace'-brugerflade",
                         "para": "Som standard vil Home Assistant vedligeholde din brugerflade ved at opdatere den, når nye entiteter eller Lovelace-brugerfladekomponenter bliver tilgængelige. Hvis du overtager kontrollen, vil vi ikke længere foretage ændringer automatisk for dig.",
                         "para_sure": "Er du sikker på du ønsker at tage kontrol over din brugerflade?",

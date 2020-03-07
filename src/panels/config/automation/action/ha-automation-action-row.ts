@@ -158,7 +158,7 @@ export default class HaAutomationActionRow extends LitElement {
                       `
                     : ""}
                   <ha-yaml-editor
-                    .value=${this.action}
+                    .defaultValue=${this.action}
                     @value-changed=${this._onYamlChange}
                   ></ha-yaml-editor>
                 </div>
@@ -240,6 +240,9 @@ export default class HaAutomationActionRow extends LitElement {
 
   private _onYamlChange(ev: CustomEvent) {
     ev.stopPropagation();
+    if (!ev.detail.isValid) {
+      return;
+    }
     fireEvent(this, "value-changed", { value: ev.detail.value });
   }
 

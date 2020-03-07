@@ -25,6 +25,10 @@ import { EntitiesCardConfig, EntitiesCardEntityConfig } from "./types";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { createHeaderFooterElement } from "../create-element/create-header-footer-element";
 import { LovelaceHeaderFooterConfig } from "../header-footer/types";
+import { DOMAINS_TOGGLE } from "../../../common/const";
+import { computeDomain } from "../../../common/entity/compute_domain";
+import { LovelaceConfig } from "../../../data/lovelace";
+import { findEntities } from "../common/find-entites";
 
 @customElement("hui-entities-card")
 class HuiEntitiesCard extends LitElement implements LovelaceCard {
@@ -35,8 +39,22 @@ class HuiEntitiesCard extends LitElement implements LovelaceCard {
     return document.createElement("hui-entities-card-editor");
   }
 
-  public static getStubConfig(): object {
-    return { entities: [] };
+  public static getStubConfig(
+    hass: HomeAssistant,
+    lovelaceConfig: LovelaceConfig,
+    entities?: string[],
+    entitiesFill?: string[]
+  ) {
+    const maxEntities = 3;
+    const foundEntities = findEntities(
+      hass,
+      lovelaceConfig,
+      maxEntities,
+      entities,
+      entitiesFill
+    );
+
+    return { entities: foundEntities };
   }
 
   @property() private _config?: EntitiesCardConfig;
@@ -44,6 +62,7 @@ class HuiEntitiesCard extends LitElement implements LovelaceCard {
   private _hass?: HomeAssistant;
 
   private _configEntities?: EntitiesCardEntityConfig[];
+  private _showHeaderToggle?: boolean;
 
   set hass(hass: HomeAssistant) {
     this._hass = hass;
@@ -78,6 +97,22 @@ class HuiEntitiesCard extends LitElement implements LovelaceCard {
 
     this._config = { theme: "default", ...config };
     this._configEntities = entities;
+    if (config.show_header_toggle === undefined) {
+      // Default value is show toggle if we can at least toggle 2 entities.
+      let toggleable = 0;
+      for (const rowConf of entities) {
+        if (!rowConf.entity) {
+          continue;
+        }
+        toggleable += Number(DOMAINS_TOGGLE.has(computeDomain(rowConf.entity)));
+        if (toggleable === 2) {
+          break;
+        }
+      }
+      this._showHeaderToggle = toggleable === 2;
+    } else {
+      this._showHeaderToggle = config.show_header_toggle;
+    }
   }
 
   protected updated(changedProps: PropertyValues): void {
@@ -110,9 +145,7 @@ class HuiEntitiesCard extends LitElement implements LovelaceCard {
         ${this._config.header
           ? this.renderHeaderFooter(this._config.header, "header")
           : ""}
-        ${!this._config.title &&
-        !this._config.show_header_toggle &&
-        !this._config.icon
+        ${!this._config.title && !this._showHeaderToggle && !this._config.icon
           ? ""
           : html`
               <div class="card-header">
@@ -127,7 +160,7 @@ class HuiEntitiesCard extends LitElement implements LovelaceCard {
                     : ""}
                   ${this._config.title}
                 </div>
-                ${this._config.show_header_toggle === false
+                ${!this._showHeaderToggle
                   ? html``
                   : html`
                       <hui-entities-toggle
@@ -171,6 +204,10 @@ class HuiEntitiesCard extends LitElement implements LovelaceCard {
 
       #states > div > * {
         overflow: hidden;
+      }
+
+      #states > div {
+        position: relative;
       }
 
       .icon {
