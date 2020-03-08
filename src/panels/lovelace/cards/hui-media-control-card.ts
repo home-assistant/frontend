@@ -90,17 +90,6 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
   @property() private _cardHeight: number = 0;
   private _progressInterval?: number;
   private _resizeObserver?: ResizeObserver;
-  private _debouncedResizeListener = debounce(
-    () => {
-      this._narrow = this.offsetWidth < 350;
-      this._veryNarrow = this.offsetWidth < 300;
-      if (this._image) {
-        this._cardHeight = this.offsetHeight;
-      }
-    },
-    250,
-    false
-  );
 
   public getCardSize(): number {
     return 3;
@@ -116,14 +105,16 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
 
   public connectedCallback(): void {
     super.connectedCallback();
+    this.updateComplete.then(() => this._measureCard());
+
     if (!this.hass || !this._config) {
-      return undefined;
+      return;
     }
 
     const stateObj = this.hass.states[this._config.entity] as MediaEntity;
 
     if (!stateObj) {
-      return undefined;
+      return;
     }
 
     if (
@@ -429,6 +420,13 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
     );
   }
 
+  private _measureCard() {
+    const card = this.shadowRoot!.querySelector("ha-card")!;
+    this._narrow = card.offsetWidth < 350;
+    this._veryNarrow = card.offsetWidth < 300;
+    this._cardHeight = card.offsetHeight;
+  }
+
   private _attachObserver(): void {
     if (typeof ResizeObserver !== "function") {
       import("resize-observer").then((modules) => {
@@ -438,8 +436,8 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
       return;
     }
 
-    this._resizeObserver = new ResizeObserver(() =>
-      this._debouncedResizeListener()
+    this._resizeObserver = new ResizeObserver(
+      debounce(() => this._measureCard(), 250, false)
     );
 
     this._resizeObserver.observe(this);
@@ -559,6 +557,10 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
         opacity: 1;
         transition: width 0.8s, background-image 0.8s, background-color 0.8s,
           background-size 0.8s, opacity 0.8s linear 0.8s;
+      }
+
+      .no-image .image {
+        opacity: 0;
       }
 
       .no-img {
