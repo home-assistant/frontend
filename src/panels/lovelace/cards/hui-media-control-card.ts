@@ -90,15 +90,6 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
   @property() private _cardHeight: number = 0;
   private _progressInterval?: number;
   private _resizeObserver?: ResizeObserver;
-  private _debouncedResizeListener = debounce(
-    () => {
-      this._narrow = this.offsetWidth < 350;
-      this._veryNarrow = this.offsetWidth < 300;
-      this._cardHeight = this.offsetHeight;
-    },
-    250,
-    false
-  );
 
   public getCardSize(): number {
     return 3;
@@ -114,19 +105,16 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
 
   public connectedCallback(): void {
     super.connectedCallback();
-
-    if (!this._resizeObserver) {
-      this._attachObserver();
-    }
+    this.updateComplete.then(() => this._measureCard());
 
     if (!this.hass || !this._config) {
-      return undefined;
+      return;
     }
 
     const stateObj = this.hass.states[this._config.entity] as MediaEntity;
 
     if (!stateObj) {
-      return undefined;
+      return;
     }
 
     if (
@@ -333,6 +321,10 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
     return hasConfigOrEntityChanged(this, changedProps);
   }
 
+  protected firstUpdated(): void {
+    this._attachObserver();
+  }
+
   protected updated(changedProps: PropertyValues): void {
     super.updated(changedProps);
     if (!this._config || !this.hass || !changedProps.has("hass")) {
@@ -428,6 +420,13 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
     );
   }
 
+  private _measureCard() {
+    const card = this.shadowRoot!.querySelector("ha-card")!;
+    this._narrow = card.offsetWidth < 350;
+    this._veryNarrow = card.offsetWidth < 300;
+    this._cardHeight = card.offsetHeight;
+  }
+
   private _attachObserver(): void {
     if (typeof ResizeObserver !== "function") {
       import("resize-observer").then((modules) => {
@@ -442,12 +441,11 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
       return;
     }
 
-    this._resizeObserver = new ResizeObserver(() =>
-      this._debouncedResizeListener()
+    this._resizeObserver = new ResizeObserver(
+      debounce(() => this._measureCard(), 250, false)
     );
 
     this._resizeObserver.observe(this);
-    this._debouncedResizeListener();
   }
 
   private _handleMoreInfo(): void {
