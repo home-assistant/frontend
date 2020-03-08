@@ -94,9 +94,7 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
     () => {
       this._narrow = this.offsetWidth < 350;
       this._veryNarrow = this.offsetWidth < 300;
-      if (this._image) {
-        this._cardHeight = this.offsetHeight;
-      }
+      this._cardHeight = this.offsetHeight;
     },
     250,
     false
@@ -116,6 +114,11 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
 
   public connectedCallback(): void {
     super.connectedCallback();
+
+    if (!this._resizeObserver) {
+      this._attachObserver();
+    }
+
     if (!this.hass || !this._config) {
       return undefined;
     }
@@ -190,10 +193,10 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
             class="no-img"
             style="background-color: ${this._backgroundColor}"
           ></div>
-          <div class="image" style=${styleMap(imageStyle)}></div>
           ${!this._image
             ? ""
             : html`
+                <div class="image" style=${styleMap(imageStyle)}></div>
                 <div
                   class="color-gradient"
                   style=${styleMap(gradientStyle)}
@@ -330,10 +333,6 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
     return hasConfigOrEntityChanged(this, changedProps);
   }
 
-  protected firstUpdated(): void {
-    this._attachObserver();
-  }
-
   protected updated(changedProps: PropertyValues): void {
     super.updated(changedProps);
     if (!this._config || !this.hass || !changedProps.has("hass")) {
@@ -432,6 +431,11 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
   private _attachObserver(): void {
     if (typeof ResizeObserver !== "function") {
       import("resize-observer").then((modules) => {
+        // Guard in case we got connected twice before loading completed
+        if (this._resizeObserver) {
+          return;
+        }
+
         modules.install();
         this._attachObserver();
       });
@@ -443,6 +447,7 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
     );
 
     this._resizeObserver.observe(this);
+    this._debouncedResizeListener();
   }
 
   private _handleMoreInfo(): void {
