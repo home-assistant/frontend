@@ -193,10 +193,10 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
             class="no-img"
             style="background-color: ${this._backgroundColor}"
           ></div>
+          <div class="image" style=${styleMap(imageStyle)}></div>
           ${!this._image
             ? ""
             : html`
-                <div class="image" style=${styleMap(imageStyle)}></div>
                 <div
                   class="color-gradient"
                   style=${styleMap(gradientStyle)}
@@ -564,6 +564,10 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
         opacity: 1;
         transition: width 0.8s, background-image 0.8s, background-color 0.8s,
           background-size 0.8s, opacity 0.8s linear 0.8s;
+      }
+
+      .no-image .image {
+        opacity: 0;
       }
 
       .no-img {
