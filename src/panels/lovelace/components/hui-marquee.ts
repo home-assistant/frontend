@@ -14,15 +14,24 @@ const marqueeSpeed = 0.2;
 @customElement("hui-marquee")
 class HuiMarquee extends LitElement {
   @property() public marqueeText?: string;
-  @property() public off?: boolean;
-  private interval?: number;
-  private left: number = 0;
+  @property() public active?: boolean;
+  private _interval?: number;
+  private _left: number = 0;
 
   protected updated(changedProperties: PropertyValues): void {
     super.updated(changedProperties);
 
-    if (!this.off) {
-      this._start();
+    if (
+      changedProperties.has("active") &&
+      this.active &&
+      !this._interval &&
+      this.offsetWidth < this.scrollWidth
+    ) {
+      this._interval = window.setInterval(() => {
+        this._play();
+      });
+
+      this.requestUpdate();
     }
   }
 
@@ -32,63 +41,40 @@ class HuiMarquee extends LitElement {
     }
 
     return html`
-      <div id="Marquee">
-        <div>${this.marqueeText}</div>
-      </div>
+      <div>${this.marqueeText}</div>
+      ${this._interval
+        ? html`
+            <div>${this.marqueeText}</div>
+          `
+        : ""}
     `;
   }
 
-  private get _marqueeElement(): HTMLElement {
-    return this.shadowRoot?.querySelector("#Marquee") as HTMLElement;
-  }
-
   private get _marqueeElementFirstChild(): HTMLElement {
-    return this._marqueeElement.firstElementChild as HTMLElement;
-  }
-
-  private get _marqueeElementLastChild(): HTMLElement {
-    return this._marqueeElement.lastElementChild as HTMLElement;
-  }
-
-  private _start(): void {
-    if (this.interval || this.offsetWidth >= this._marqueeElement.scrollWidth) {
-      return;
-    }
-
-    this._marqueeElement.innerHTML += this._marqueeElement.innerHTML;
-
-    this.interval = window.setInterval(() => {
-      this._play();
-    });
+    return this.shadowRoot!.firstElementChild as HTMLElement;
   }
 
   private _play(): void {
-    this._marqueeElement.style.marginLeft = "-" + this.left + "px";
+    this.style.marginLeft = "-" + this._left + "px";
 
-    if (this.off && !this.left) {
-      clearInterval(this.interval);
-      this.interval = undefined;
-      this._marqueeElementLastChild.remove();
-      this.off = true;
+    if (!this.active && !this._left) {
+      clearInterval(this._interval);
+      this._interval = undefined;
     }
 
-    this.left += marqueeSpeed;
-    if (this.left >= this._marqueeElementFirstChild.offsetWidth + 16) {
-      this.left = 0;
+    this._left += marqueeSpeed;
+    if (this._left >= this._marqueeElementFirstChild.offsetWidth + 16) {
+      this._left = 0;
     }
   }
 
   static get styles(): CSSResult {
     return css`
       :host {
-        display: block;
-      }
-
-      #Marquee {
         display: flex;
       }
 
-      #Marquee div {
+      :host div {
         margin-right: 16px;
       }
     `;

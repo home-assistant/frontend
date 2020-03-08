@@ -89,7 +89,7 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
   @property() private _narrow: boolean = false;
   @property() private _veryNarrow: boolean = false;
   @property() private _cardHeight: number = 0;
-  @property() private _marqueeOff: boolean = true;
+  @property() private _marqueeActive: boolean = false;
   private _progressInterval?: number;
   private _resizeObserver?: ResizeObserver;
 
@@ -226,6 +226,7 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
               ></paper-icon-button>
             </div>
           </div>
+<<<<<<< HEAD
           ${isUnavailable
             ? ""
             : html`
@@ -263,6 +264,84 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
                             ${(stateObj.state === "off" &&
                               !supportsFeature(stateObj, SUPPORT_TURN_ON)) ||
                             !isOffState
+=======
+          <div
+            class="title-controls"
+            style="padding-right: ${OFF_STATES.includes(stateObj.state)
+              ? 0
+              : this._cardHeight - 40}px"
+          >
+            ${OFF_STATES.includes(stateObj.state)
+              ? ""
+              : html`
+                  <div class="media-info">
+                    <div class="title">
+                      <hui-marquee
+                        .marqueeText=${stateObj.attributes.media_title ||
+                          computeMediaDescription(stateObj)}
+                        .active=${this._marqueeActive}
+                        @mouseover=${this._marqueeMouseOver}
+                        @mouseleave=${this._marqueeMouseLeave}
+                      ></hui-marquee>
+                    </div>
+                    ${!stateObj.attributes.media_title
+                      ? ""
+                      : computeMediaDescription(stateObj)}
+                  </div>
+                `}
+            ${this._veryNarrow && !OFF_STATES.includes(stateObj.state)
+              ? ""
+              : html`
+                  <div class="controls">
+                    <div>
+                      ${(stateObj.state === "off" &&
+                        !supportsFeature(stateObj, SUPPORT_TURN_ON)) ||
+                      !OFF_STATES.includes(stateObj.state)
+                        ? ""
+                        : html`
+                            <paper-icon-button
+                              icon="hass:power"
+                              .action=${stateObj.state === "off"
+                                ? "turn_on"
+                                : "turn_off"}
+                              @click=${this._handleClick}
+                            ></paper-icon-button>
+                          `}
+                    </div>
+                    ${OFF_STATES.includes(stateObj.state)
+                      ? ""
+                      : html`
+                          <div class="playback-controls">
+                            ${!supportsFeature(stateObj, SUPPORT_PREVIOUS_TRACK)
+                              ? ""
+                              : html`
+                                  <paper-icon-button
+                                    icon="hass:skip-previous"
+                                    .action=${"media_previous_track"}
+                                    @click=${this._handleClick}
+                                  ></paper-icon-button>
+                                `}
+                            ${(stateObj.state !== "playing" &&
+                              !supportsFeature(stateObj, SUPPORTS_PLAY)) ||
+                            stateObj.state === UNAVAILABLE ||
+                            (stateObj.state === "playing" &&
+                              !supportsFeature(stateObj, SUPPORT_PAUSE) &&
+                              !supportsFeature(stateObj, SUPPORT_STOP))
+                              ? ""
+                              : html`
+                                  <paper-icon-button
+                                    class="playPauseButton"
+                                    .icon=${stateObj.state !== "playing"
+                                      ? "hass:play"
+                                      : supportsFeature(stateObj, SUPPORT_PAUSE)
+                                      ? "hass:pause"
+                                      : "hass:stop"}
+                                    .action=${"media_play_pause"}
+                                    @click=${this._handleClick}
+                                  ></paper-icon-button>
+                                `}
+                            ${!supportsFeature(stateObj, SUPPORT_NEXT_TRACK)
+>>>>>>> Review Comments
                               ? ""
                               : html`
                                   <paper-icon-button
@@ -546,14 +625,14 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
   }
 
   private _marqueeMouseOver(): void {
-    if (this._marqueeOff) {
-      this._marqueeOff = false;
+    if (!this._marqueeActive) {
+      this._marqueeActive = true;
     }
   }
 
   private _marqueeMouseLeave(): void {
-    if (!this._marqueeOff) {
-      this._marqueeOff = true;
+    if (this._marqueeActive) {
+      this._marqueeActive = false;
     }
   }
 
