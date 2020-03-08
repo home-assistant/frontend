@@ -10,7 +10,7 @@ import {
 } from "lit-element";
 import { classMap } from "lit-html/directives/class-map";
 import { styleMap } from "lit-html/directives/style-map";
-import * as Vibrant from "node-vibrant";
+import Vibrant from "node-vibrant";
 import { Palette } from "node-vibrant/lib/color";
 import "@polymer/paper-icon-button/paper-icon-button";
 
