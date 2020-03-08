@@ -1409,6 +1409,7 @@
                         "add_helper": "Helper toevoegen",
                         "headers": {
                             "editable": "Bewerkbaar",
+                            "entity_id": "Entiteits-ID",
                             "name": "Naam",
                             "type": "Type"
                         }
@@ -1488,20 +1489,27 @@
                         "cant_edit_yaml": "Dashboards die zijn gedefinieerd in YAML kunnen niet worden bewerkt vanuit de gebruikersinterface. Wijzig ze in configuration.yaml.",
                         "caption": "Dashboards",
                         "conf_mode": {
+                            "storage": "UI gecontroleerd",
                             "yaml": "YAML-bestand"
                         },
                         "confirm_delete": "Weet je zeker dat je deze dashboard wilt verwijderen?",
                         "detail": {
                             "create": "Aanmaken",
                             "delete": "Verwijderen",
+                            "dismiss": "Sluiten",
+                            "edit_dashboard": "Dashboard bewerken",
+                            "new_dashboard": "Nieuw dashboard toevoegen",
                             "require_admin": "Alleen beheerder",
+                            "show_sidebar": "Toon in de zijbalk",
                             "update": "Bijwerken",
+                            "url": "Url",
                             "url_error_msg": "De URL mag geen spaties of speciale tekens bevatten, behalve _ en -"
                         },
                         "picker": {
                             "add_dashboard": "Dashboard toevoegen",
                             "headers": {
                                 "conf_mode": "Configuratiemethode",
+                                "default": "Standaard",
                                 "filename": "Bestandsnaam",
                                 "require_admin": "Alleen beheerder",
                                 "sidebar": "Toon in de zijbalk",
@@ -2102,6 +2110,7 @@
                             "icon": "Pictogram",
                             "icon_height": "Pictogram hoogte",
                             "image": "Afbeeldingspad",
+                            "manual": "Handmatig",
                             "maximum": "Maximaal",
                             "minimum": "Minimum",
                             "name": "Naam",
@@ -2109,6 +2118,7 @@
                             "show_icon": "Pictogram Weergeven?",
                             "show_name": "Naam weergeven?",
                             "show_state": "Staat tonen?",
+                            "state": "Toestand",
                             "tap_action": "Tik Actie",
                             "theme": "Thema",
                             "title": "Titel",

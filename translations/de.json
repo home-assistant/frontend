@@ -394,9 +394,9 @@
     },
     "ui": {
         "auth_store": {
-            "ask": "Möchten Sie diesen Login speichern?",
-            "confirm": "Login speichern",
-            "decline": "Nein Danke"
+            "ask": "Möchten Sie angemeldet bleiben?",
+            "confirm": "Ja",
+            "decline": "Nein"
         },
         "card": {
             "alarm_control_panel": {
@@ -679,7 +679,9 @@
                 },
                 "not_editable": "Nicht bearbeitbar",
                 "not_editable_text": "Diese Entität kann nicht über die Benutzeroberfläche geändert werden, da sie in der configuration.yaml definiert wurde.",
-                "required_error_msg": "Dieses Feld ist erforderlich"
+                "platform_not_loaded": "Die {platform} -Komponente ist nicht geladen. Fügen Sie sie bitte Ihre Konfiguration hinzu. Entweder durch Hinzufügen von 'default_config:' oder '{platform}:'.",
+                "required_error_msg": "Dieses Feld ist erforderlich",
+                "yaml_not_editable": "Die Einstellungen dieser Entität können nicht über die Benutzeroberfläche bearbeitet werden. Nur über die Benutzeroberfläche eingerichtete Entitäten können über die Benutzeroberfläche konfiguriert werden."
             },
             "more_info_control": {
                 "dismiss": "Dialog ausblenden",
@@ -1382,7 +1384,9 @@
                         "introduction2": "Verwenden Sie die Entitätsregistrierung, um den Namen zu überschreiben, die Entität-ID zu ändern oder den Eintrag aus Home Assistant zu entfernen. Beachten Sie, dass das Entfernen des Entitätsregistrierungs-Eintrags die Entität nicht löscht. Folgen Sie dazu dem Link unten und entfernen Sie ihn in der Integrationsseite.",
                         "remove_selected": {
                             "button": "Ausgewählte entfernen",
-                            "confirm_text": "Entitäten können nur entfernt werden, wenn die Integration die Entitäten nicht mehr bereitstellt.",
+                            "confirm_partly_text": "Sie können nur {removable} der ausgewählten {selected} Entitäten entfernen. Entitäten können nur entfernt werden, wenn die Integration die Entitäten nicht mehr bereitstellt. Manchmal müssen Sie Home Assistant neu starten, bevor Sie die Entitäten einer entfernten Integration entfernen können. Möchten Sie die entfernbaren Entitäten wirklich entfernen?",
+                            "confirm_partly_title": "Es können nur {number} ausgewählte Objekte entfernt werden.",
+                            "confirm_text": "Sie sollten sie aus Ihrer Lovelace-Konfiguration und Ihren Automatisierungen entfernen, wenn sie diese Entitäten enthalten.",
                             "confirm_title": "Willen Sie {number} Entitäten entfernen?"
                         },
                         "selected": "{number} ausgewählt",
@@ -1391,6 +1395,7 @@
                             "disabled": "Deaktiviert",
                             "ok": "Ok",
                             "readonly": "Schreibgeschützt",
+                            "restored": "Wiederhergestellt",
                             "unavailable": "Nicht verfügbar"
                         },
                         "unavailable": "(nicht verfügbar)"
@@ -1409,6 +1414,7 @@
                         "add_helper": "Helfer hinzufügen",
                         "headers": {
                             "editable": "Editierbar",
+                            "entity_id": "Entitäts-ID",
                             "name": "Name",
                             "type": "Typ"
                         }
@@ -1485,6 +1491,7 @@
                 "lovelace": {
                     "caption": "Lovelace Dashboards",
                     "dashboards": {
+                        "cant_edit_default": "Das Standard-Lovelace-Dashboard kann nicht über die Benutzeroberfläche bearbeitet werden. Sie können es ausblenden, indem Sie ein anderes Dashboard als Standard festlegen.",
                         "cant_edit_yaml": "In YAML definierte Dashboards können nicht über die Benutzeroberfläche bearbeitet werden. Ändern Sie sie in der configuration.yaml.",
                         "caption": "Dashboards",
                         "conf_mode": {
@@ -1499,9 +1506,12 @@
                             "edit_dashboard": "Dashboard bearbeiten",
                             "icon": "Seitenleistensymbol",
                             "new_dashboard": "Neues Dashboard hinzufügen",
+                            "remove_default": "Als Standard auf diesem Gerät entfernen",
                             "require_admin": "Nur Admin",
+                            "set_default": "Auf diesem Gerät als Standard festlegen",
                             "show_sidebar": "In der Seitenleiste anzeigen",
                             "title": "Titel der Seitenleiste",
+                            "title_required": "Titel ist erforderlich.",
                             "update": "Aktualisieren",
                             "url": "Url",
                             "url_error_msg": "Die URL darf keine Leerzeichen oder Sonderzeichen enthalten, außer _ und -"
@@ -1510,12 +1520,13 @@
                             "add_dashboard": "Dashboard hinzufügen",
                             "headers": {
                                 "conf_mode": "Konfigurationsmethode",
+                                "default": "Standard",
                                 "filename": "Dateiname",
                                 "require_admin": "Nur für Administratoren",
                                 "sidebar": "In der Seitenleiste anzeigen",
                                 "title": "Titel"
                             },
-                            "open": "Dashboard öffnen"
+                            "open": "Öffnen"
                         }
                     },
                     "description": "Konfigurieren Sie Ihre Lovelace-Dashboards",
@@ -1652,7 +1663,7 @@
                             "automation": "Automatisierungen neu laden",
                             "core": "Ort & Anpassungen neu laden",
                             "group": "Gruppen neu laden",
-                            "heading": "Konfiguration neu laden",
+                            "heading": "Neuladen der YAML-Konfiguration",
                             "introduction": "Einige Komponenten von Home Assistant können ohne einen Neustart neu geladen werden. \"Neu laden\" entlädt dabei die aktuelle Konfiguration und lädt die neue Konfiguration.",
                             "person": "Personen neu laden",
                             "scene": "Szenen neu laden",
@@ -1840,7 +1851,7 @@
                         "required_error_msg": "Dieses Feld ist erforderlich",
                         "update": "Aktualisieren"
                     },
-                    "edit_home_zone": "Der Standort Ihres Hauses kann in der allgemeinen Konfiguration geändert werden.",
+                    "edit_home_zone": "Der Radius der Home-Zone kann noch nicht über das Frontend bearbeitet werden. Ziehen Sie die Markierung auf der Karte, um die Heimatzone zu verschieben.",
                     "edit_home_zone_narrow": "Der Radius der Home-Zone kann vom Frontend aus noch nicht bearbeitet werden. Der Standort kann von der allgemeinen Konfiguration aus geändert werden.",
                     "go_to_core_config": "Zur allgemeinen Konfiguration gehen?",
                     "home_zone_core_config": "Der Standort Ihrer Homezone kann auf der allgemeinen Konfigurationsseite bearbeitet werden. Der Radius der Homezone kann vom Frontend aus noch nicht bearbeitet werden. Wollen Sie zur allgemeinen Konfiguration gehen?",
@@ -2073,19 +2084,30 @@
                         },
                         "alarm-panel": {
                             "available_states": "Verfügbare Zustände",
+                            "description": "Mit der Alarmzentralen-Karte können Sie die Integrationen Ihrer Alarmzentrale aktivieren und deaktivieren.",
                             "name": "Alarmpanel"
                         },
                         "button": {
+                            "description": "Mit der Schaltflächen-Karte können Sie Schaltflächen hinzufügen, um Aufgaben auszuführen.",
                             "name": "Schaltfläche"
                         },
                         "conditional": {
-                            "name": "Bedingte Elemente"
+                            "card": "Karte",
+                            "change_type": "Typ ändern",
+                            "condition_explanation": "Die Karte wird gezeigt, wenn ALLE untenstehenden Bedingungen erfüllt sind.",
+                            "conditions": "Bedingungen",
+                            "current_state": "aktuell",
+                            "description": "Die Bedingungs-Karte zeigt eine andere Karte an, die auf Entitätszuständen basiert.",
+                            "name": "Bedingte Elemente",
+                            "state_equal": "Zustand ist gleich",
+                            "state_not_equal": "Zustand ist nicht gleich"
                         },
                         "config": {
                             "optional": "Optional",
                             "required": "Benötigt"
                         },
                         "entities": {
+                            "description": "Die Entitäts-Karte ist der am häufigsten verwendete Kartentyp. Sie gruppiert Elemente in Listen.",
                             "name": "Elemente",
                             "show_header_toggle": "Schalter anzeigen?",
                             "toggle": "Entitäten umschalten"
@@ -2094,9 +2116,11 @@
                             "name": "Entity Button"
                         },
                         "entity-filter": {
+                            "description": "Mit der Entitätsfilter-Karte können Sie eine Liste von Entitäten definieren, die Sie nur in einem bestimmten Status verfolgen wollen.",
                             "name": "Entity Filter"
                         },
                         "gauge": {
+                            "description": "Die Messkarte ist eine Basiskarte, mit der Sensordaten visuell angezeigt werden können.",
                             "name": "Gauge",
                             "severity": {
                                 "define": "Schweregrad definieren?",
@@ -2116,6 +2140,8 @@
                             "icon": "Symbol",
                             "icon_height": "Symbol Höhe",
                             "image": "Bildpfad",
+                            "manual": "Manuell",
+                            "manual_description": "Müssen Sie eine benutzerdefinierte Karte hinzufügen oder möchten Sie die Yaml-Datei nur manuell schreiben?",
                             "maximum": "Maximum",
                             "minimum": "Minimum",
                             "name": "Name",
@@ -2123,6 +2149,7 @@
                             "show_icon": "Symbol anzeigen?",
                             "show_name": "Namen anzeigen?",
                             "show_state": "Status anzeigen?",
+                            "state": "Zustand",
                             "tap_action": "Tipp-Aktion",
                             "theme": "Aussehen",
                             "title": "Titel",
@@ -2134,20 +2161,24 @@
                             "name": "Glance"
                         },
                         "history-graph": {
+                            "description": "Mit der Verlaufsdiagramm-Karte können Sie für jedes der aufgelisteten Objekte ein Diagramm anzeigen.",
                             "name": "History Graph"
                         },
                         "horizontal-stack": {
                             "name": "Horizontaler Stapel"
                         },
                         "iframe": {
-                            "name": "iFrame"
+                            "description": "Mit der Webseiten-Karte können Sie Ihre Lieblingswebseite direkt in Home Assistant einbetten.",
+                            "name": "Webseite"
                         },
                         "light": {
+                            "description": "Mit der Licht-Karte können Sie die Helligkeit des Lichts ändern.",
                             "name": "Licht"
                         },
                         "map": {
                             "dark_mode": "Dunkler Modus?",
                             "default_zoom": "Standard-Zoom",
+                            "description": "Die Map-Karte, mit der Sie Objekte auf einer Karte anzeigen können.",
                             "geo_location_sources": "Geolocation-Quellen",
                             "name": "Karte",
                             "source": "Quelle"
@@ -2157,36 +2188,45 @@
                             "name": "Markdown"
                         },
                         "media-control": {
+                            "description": "Die Media Kontroll-Karte wird verwendet, um Media Player-Entitäten auf einer Oberfläche mit benutzerfreundlichen Steuerelementen anzuzeigen.",
                             "name": "Mediensteuerung"
                         },
                         "picture-elements": {
+                            "description": "Die Bilder-Karte ist eine der vielseitigsten Arten von Karten. Mit den Karten können Sie Symbole oder Text und sogar Dienste positionieren! Auf einem Bild basierend auf Koordinaten.",
                             "name": "Picture Elements"
                         },
                         "picture-entity": {
+                            "description": "Die Bilder-Karte zeigt eine Entität in Form eines Bildes an. Anstelle von Bildern aus der URL kann auch das Bild von Kamera-entitäten angezeigt werden.",
                             "name": "Picture Entity"
                         },
                         "picture-glance": {
                             "name": "Picture Glance"
                         },
                         "picture": {
+                            "description": "Mit der Bildkarte können Sie ein Bild festlegen, das für die Navigation zu verschiedenen Pfaden in Ihrer Benutzeroberfläche oder zum Aufrufen eines Dienstes verwendet werden soll.",
                             "name": "Picture"
                         },
                         "plant-status": {
+                            "description": "Die Pflanzenstatuskarte ist für alle liebenswerten Botaniker da draußen.",
                             "name": "Pflanzen Status"
                         },
                         "sensor": {
+                            "description": "Die Sensorkarte gibt Ihnen einen schnellen Überblick über Ihren Sensorstatus mit einem optionalen Diagramm, um Änderungen im Zeitverlauf zu visualisieren.",
                             "graph_detail": "Diagrammdetail",
                             "graph_type": "Typ",
                             "name": "Sensor"
                         },
                         "shopping-list": {
+                            "description": "Mit der Einkaufslistenkarte können Sie Artikel zu Ihrer Einkaufsliste hinzufügen, bearbeiten, abhaken und löschen.",
                             "integration_not_loaded": "Für diese Karte muss die `shopping_list`-Integration eingerichtet werden.",
                             "name": "Einkaufsliste"
                         },
                         "thermostat": {
+                            "description": "Die Thermostatkarte gibt Ihnen die Kontrolle über Ihre Klimaeinheit. Sie ermöglicht es Ihnen, die Temperatur und den Modus der Einheit zu ändern.",
                             "name": "Thermostat"
                         },
                         "vertical-stack": {
+                            "description": "Mit der Karte \"Vertikaler Stapel\" können Sie mehrere Karten so gruppieren, dass sie immer in der gleichen Spalte sitzen.",
                             "name": "Vertikaler Stapel"
                         },
                         "weather-forecast": {
@@ -2221,7 +2261,8 @@
                         "move_left": "Ansicht nach links verschieben",
                         "move_right": "Ansicht nach rechts verschieben",
                         "tab_badges": "Abzeichen",
-                        "tab_settings": "Einstellungen"
+                        "tab_settings": "Einstellungen",
+                        "tab_visibility": "Sichtweite"
                     },
                     "header": "Benutzeroberfläche bearbeiten",
                     "menu": {
@@ -2292,6 +2333,9 @@
                 },
                 "views": {
                     "confirm_delete": "Möchten Sie diese Ansicht wirklich löschen?",
+                    "confirm_delete_existing_cards": "Durch Löschen dieser Ansicht werden auch die Karten entfernt",
+                    "confirm_delete_existing_cards_text": "Möchten Sie Ihre Ansicht '{name}' wirklich löschen? Die Ansicht enthält {number} Karten, die gelöscht werden. Diese Aktion kann nicht rückgängig gemacht werden.",
+                    "confirm_delete_text": "Möchten Sie Ihre Ansicht '{name}' wirklich löschen?",
                     "existing_cards": "Sie können eine Ansicht mit Karten nicht löschen. Entfernen Sie zuerst die Karten."
                 },
                 "warning": {
@@ -2370,7 +2414,7 @@
                                     "data": {
                                         "password": "API-Passwort"
                                     },
-                                    "description": "Bitte gib das API-Passwort deiner http-Konfiguration ein:"
+                                    "description": "Bitte gib das API-Passwort deiner HTTP-Konfiguration ein:"
                                 },
                                 "mfa": {
                                     "data": {

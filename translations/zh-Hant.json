@@ -394,9 +394,9 @@
     },
     "ui": {
         "auth_store": {
-            "ask": "是否要儲存此登錄資訊？",
-            "confirm": "儲存資訊",
-            "decline": "不用了，謝謝"
+            "ask": "是否要保持登錄狀態？",
+            "confirm": "是",
+            "decline": "否"
         },
         "card": {
             "alarm_control_panel": {
@@ -679,7 +679,9 @@
                 },
                 "not_editable": "不可編輯",
                 "not_editable_text": "由於 configuration.yaml 內已定義，物件編輯功能已關閉。",
-                "required_error_msg": "必填欄位"
+                "platform_not_loaded": "{platform} 元件未載入。請於設定檔進行添加、新增「default_config:」或「{platform}:」。",
+                "required_error_msg": "必填欄位",
+                "yaml_not_editable": "此物件的設定無法藉由 UI 編輯、僅有透過 UI 設定的物件可於 UI 進行設定。"
             },
             "more_info_control": {
                 "dismiss": "忽略對話",
@@ -1382,7 +1384,9 @@
                         "introduction2": "使用物件 ID 以覆寫名稱、變更物件 ID 或由 Home Assistant 移除物件。",
                         "remove_selected": {
                             "button": "移除已選擇",
-                            "confirm_text": "僅能於整合不再提供物件時方能進行移除。",
+                            "confirm_partly_text": "已選擇的 {selected} 個物件中、僅有 {removable} 個可移除。僅有當整合不再提供物件時、物件方能進行移除。有時候，於移除整合之後、需重啟 Home Assistant 後、方能進行移除的動作。確定要移除可移除之物件？",
+                            "confirm_partly_title": "僅 {number} 個已選擇之物件可移除。",
+                            "confirm_text": "假如包含此些物件，應該從 Lovelace 設定與自動化中進行移除。",
                             "confirm_title": "是否要移除 {number} 個物件？"
                         },
                         "selected": "已選擇 {number} 個",
@@ -1391,6 +1395,7 @@
                             "disabled": "已關閉",
                             "ok": "確定",
                             "readonly": "唯讀",
+                            "restored": "已回復",
                             "unavailable": "不可用"
                         },
                         "unavailable": "（不可用）"
@@ -1409,6 +1414,7 @@
                         "add_helper": "新增助手",
                         "headers": {
                             "editable": "可編輯",
+                            "entity_id": "物件 ID",
                             "name": "名稱",
                             "type": "類別"
                         }
@@ -1485,6 +1491,7 @@
                 "lovelace": {
                     "caption": "Lovelace 主面板",
                     "dashboards": {
+                        "cant_edit_default": "標準 Lovelace 主面板無法藉由 UI 進行編輯。可以設定其他主面板為預設值後進行隱藏。",
                         "cant_edit_yaml": "於 YAML 中定義的主面板無法藉由 UI 編輯，請於 Configuration.yaml 進行更改。",
                         "caption": "主面板",
                         "conf_mode": {
@@ -1499,9 +1506,12 @@
                             "edit_dashboard": "編輯主面板",
                             "icon": "側邊欄圖示",
                             "new_dashboard": "新增主面板",
+                            "remove_default": "移除此設備預設值",
                             "require_admin": "僅限管理員",
+                            "set_default": "設定為此設備預設值",
                             "show_sidebar": "於側邊列顯示",
                             "title": "側邊欄標題",
+                            "title_required": "必須輸入標題",
                             "update": "更新",
                             "url": "網址",
                             "url_error_msg": "網址不能包含空格或特殊字元，除了 _ 及 -。"
@@ -1510,12 +1520,13 @@
                             "add_dashboard": "新增主面板",
                             "headers": {
                                 "conf_mode": "設定模式",
+                                "default": "預設值",
                                 "filename": "檔名",
                                 "require_admin": "僅限管理員",
                                 "sidebar": "於側邊列顯示",
                                 "title": "標題"
                             },
-                            "open": "開啟主面板"
+                            "open": "開啟"
                         }
                     },
                     "description": "設定 Lovelace 主面板",
@@ -2073,19 +2084,30 @@
                         },
                         "alarm-panel": {
                             "available_states": "可用狀態",
+                            "description": "警報器面板可供進行警戒或解除警戒。",
                             "name": "警報器面板"
                         },
                         "button": {
-                            "name": "按鈕"
+                            "description": "按鈕面板可供新增按鈕以執行任務。",
+                            "name": "按鈕面板"
                         },
                         "conditional": {
-                            "name": "條件式面板"
+                            "card": "面板",
+                            "change_type": "變更類別",
+                            "condition_explanation": "當以下所有條件都滿足時將會顯示面板。",
+                            "conditions": "觸發面板",
+                            "current_state": "目前狀態",
+                            "description": "觸發面板可基於物件狀態進而顯示其他面板。",
+                            "name": "條件式面板",
+                            "state_equal": "狀態等於",
+                            "state_not_equal": "狀態不等於"
                         },
                         "config": {
                             "optional": "選項",
                             "required": "必填"
                         },
                         "entities": {
+                            "description": "物件列表面板為最常用的面板。將物件分組為列表使用。",
                             "name": "物件",
                             "show_header_toggle": "於頁首顯示開關？",
                             "toggle": "切換物件。"
@@ -2094,9 +2116,11 @@
                             "name": "物件按鈕式面板"
                         },
                         "entity-filter": {
+                            "description": "物件過濾式面板可供定義於特定狀態下、所要進行追蹤的物件列表。",
                             "name": "物件過濾式面板"
                         },
                         "gauge": {
+                            "description": "量表式面板可供視覺化檢視傳感器資料。",
                             "name": "量表式面板",
                             "severity": {
                                 "define": "定義嚴重度？",
@@ -2116,6 +2140,8 @@
                             "icon": "圖示",
                             "icon_height": "圖示高度",
                             "image": "圖像路徑",
+                            "manual": "手動",
+                            "manual_description": "需要新增自定面板或手動編寫 Yaml？",
                             "maximum": "最大值",
                             "minimum": "最小值",
                             "name": "名稱",
@@ -2123,6 +2149,7 @@
                             "show_icon": "顯示圖示？",
                             "show_name": "顯示名稱？",
                             "show_state": "顯示狀態？",
+                            "state": "狀態",
                             "tap_action": "點選觸發",
                             "theme": "主題",
                             "title": "標題",
@@ -2131,65 +2158,83 @@
                         },
                         "glance": {
                             "columns": "列",
+                            "description": "簡略式面板以緊致群組方式顯示多個傳感器狀態。",
                             "name": "簡略式面板"
                         },
                         "history-graph": {
+                            "description": "歷史圖表式面板可供顯示每個列表物件圖表。",
                             "name": "歷史圖表式面板"
                         },
                         "horizontal-stack": {
+                            "description": "水平排列面板可供將多個面板排列、同時顯示。",
                             "name": "水平排列面板"
                         },
                         "iframe": {
-                            "name": "iFrame 面板"
+                            "description": "網頁面板可供於 Home Assistant 嵌入喜愛的網頁。",
+                            "name": "網頁面板"
                         },
                         "light": {
+                            "description": "燈光面板可供變更燈光的亮度與開關。",
                             "name": "燈光面板"
                         },
                         "map": {
                             "dark_mode": "深色模式？",
                             "default_zoom": "預設大小",
+                            "description": "地圖面板可供顯示地圖物件。",
                             "geo_location_sources": "地理位置來源",
                             "name": "地圖面板",
                             "source": "來源"
                         },
                         "markdown": {
                             "content": "內容",
+                            "description": "Markdown 面板用以使用 Markdown。",
                             "name": "Markdown 面板"
                         },
                         "media-control": {
+                            "description": "媒體控制面板用以易於使用的介面、顯示媒體播放器物件。",
                             "name": "媒體控制面板"
                         },
                         "picture-elements": {
+                            "description": "圖片要素面板為最多樣化的面板之一。可供基於圖片座標上，放置圖示、文字，甚至服務！",
                             "name": "圖片要素面板"
                         },
                         "picture-entity": {
+                            "description": "圖片物件面板可以圖像方式顯示物件。除了使用 URL 圖片之外、也能夠顯示攝影機物件的圖像。",
                             "name": "圖片物件面板"
                         },
                         "picture-glance": {
+                            "description": "圖片簡略式面板顯示圖像與以圖示顯示的物件狀態。於右側的物件可切換動作、其他則為顯示更詳細資訊。",
                             "name": "圖片簡略式面板"
                         },
                         "picture": {
+                            "description": "圖片面板可供設定圖片、進而導向不同的介面或呼叫服務。",
                             "name": "圖片面板"
                         },
                         "plant-status": {
+                            "description": "植物狀態面板針對植物愛好者而推出。",
                             "name": "植物狀態面板"
                         },
                         "sensor": {
+                            "description": "傳感器面板、可供以選項圖像方式檢視傳感器時間變化與狀態。",
                             "graph_detail": "圖像精細度",
                             "graph_type": "圖像類型",
                             "name": "傳感器面板"
                         },
                         "shopping-list": {
+                            "description": "購物清單面板、可供新增、編輯、勾選或清除購物清單項目。",
                             "integration_not_loaded": "此面板需要先設定「shopping_list」整合。",
                             "name": "購物清單面板"
                         },
                         "thermostat": {
+                            "description": "溫控器面板可供控制溫控物件、可允許變更溫度與模式。",
                             "name": "溫控器面板"
                         },
                         "vertical-stack": {
+                            "description": "垂直排列面板可將多個面板進行分組、總是顯示在一起。",
                             "name": "垂直排列面板"
                         },
                         "weather-forecast": {
+                            "description": "天氣預報面板顯示天氣狀態。對於放置於牆上顯示非常實用。",
                             "name": "天氣預報面板"
                         }
                     },
@@ -2221,7 +2266,8 @@
                         "move_left": "向左移動視圖",
                         "move_right": "向右移動視圖",
                         "tab_badges": "園標圖示",
-                        "tab_settings": "設定"
+                        "tab_settings": "設定",
+                        "tab_visibility": "能見度"
                     },
                     "header": "編輯 UI",
                     "menu": {
@@ -2291,7 +2337,10 @@
                     "title": "未使用物件"
                 },
                 "views": {
-                    "confirm_delete": "確定要刪除此視圖？",
+                    "confirm_delete": "刪除面板？",
+                    "confirm_delete_existing_cards": "刪除此主面板同時將移除面板。",
+                    "confirm_delete_existing_cards_text": "確定要刪除「{name}」面板？面板內包含 {number} 張面板也同時將被刪除。此動作將無法回復。",
+                    "confirm_delete_text": "確定要刪除「{name}」面板？",
                     "existing_cards": "無法刪除內含面板的視圖，請先移除面板。"
                 },
                 "warning": {
