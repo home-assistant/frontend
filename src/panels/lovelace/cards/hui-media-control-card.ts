@@ -167,7 +167,9 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
 
     const isOffState = OFF_STATES.includes(stateObj.state);
     const isUnavailable =
-      stateObj.state === UNAVAILABLE || stateObj.state === UNKNOWN;
+      stateObj.state === UNAVAILABLE ||
+      stateObj.state === UNKNOWN ||
+      (stateObj.state === "off" && !supportsFeature(stateObj, SUPPORT_TURN_ON));
     const hasNoImage = !this._image;
 
     return html`
@@ -176,6 +178,7 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
           class="background ${classMap({
             "no-image": hasNoImage,
             off: isOffState || isUnavailable,
+            unavailable: isUnavailable,
           })}"
         >
           <div
@@ -221,8 +224,7 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
               ></paper-icon-button>
             </div>
           </div>
-          ${isUnavailable ||
-          (isOffState && !supportsFeature(stateObj, SUPPORT_TURN_ON))
+          ${isUnavailable
             ? ""
             : html`
                 <div
@@ -609,6 +611,7 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
         width: 0;
       }
 
+      .unavailable .no-img,
       .background:not(.off):not(.no-image) .no-img {
         opacity: 0;
       }
