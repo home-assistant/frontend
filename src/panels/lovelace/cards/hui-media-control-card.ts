@@ -482,26 +482,47 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
       .quality(1)
       .getPalette()
       .then((palette: Palette) => {
-        if (!palette.DarkMuted) {
+        const paletteColors: any[] = [];
+
+        Object.keys(palette).forEach((color) => {
+          paletteColors.push({
+            hex: palette[color]!.getHex(),
+            rgb: palette[color]!.getRgb(),
+            textColor: palette[color]!.getBodyTextColor(),
+            population: palette[color]!.getPopulation(),
+          });
+        });
+
+        if (!paletteColors.length) {
           this._foregroundColor = undefined;
           this._backgroundColor = undefined;
           return;
         }
 
-        this._backgroundColor = palette.DarkMuted.getHex();
+        paletteColors.sort((colorA, colorB) => {
+          if (colorA.population > colorB.population) {
+            return -1;
+          }
+          if (colorA.population < colorB.population) {
+            return 1;
+          }
 
-        if (
-          !palette.Vibrant ||
-          getContrastRatio(
-            palette.Vibrant.getRgb(),
-            palette.DarkMuted.getRgb()
-          ) < CONTRAST_RATIO
-        ) {
-          this._foregroundColor = palette.DarkMuted.getBodyTextColor();
-          return;
+          return 0;
+        });
+
+        this._backgroundColor = paletteColors[0].hex;
+
+        for (let i = 1; i < paletteColors.length; i++) {
+          if (
+            getContrastRatio(paletteColors[0].rgb, paletteColors[i].rgb) >=
+            CONTRAST_RATIO
+          ) {
+            this._foregroundColor = paletteColors[i].hex;
+            return;
+          }
         }
 
-        this._foregroundColor = palette.Vibrant.getHex();
+        this._foregroundColor = paletteColors[0].textColor;
       })
       .catch((err: any) => {
         // tslint:disable-next-line:no-console
