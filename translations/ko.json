@@ -635,7 +635,7 @@
                 },
                 "no_unique_id": "이 구성요소는 고유한 ID 가 없으므로 설정을 UI에서 관리할 수 없습니다.",
                 "related": "관련 내용",
-                "settings": "설정"
+                "settings": "설정 내용"
             },
             "generic": {
                 "cancel": "취소",

@@ -679,7 +679,7 @@
                 },
                 "not_editable": "不可编辑",
                 "not_editable_text": "该实体无法在 UI 中修改，因为它被定义于 configuration.yaml。",
-                "platform_not_loaded": "{platform} 组件尚未加载。请在 'default_config:' 或 '{platform}:' 中选择一种写法，将其加入配置中。",
+                "platform_not_loaded": "{platform} 组件尚未加载。请在 'default_config:' 或 '{platform}:' 中选择一种方式，将其写入配置中。",
                 "required_error_msg": "此字段为必填字段",
                 "yaml_not_editable": "无法从 UI 编辑此实体的设置。只有通过 UI 设置的实体可以从 UI 配置。"
             },
@@ -2109,7 +2109,7 @@
                         "entities": {
                             "description": "“实体”卡片是最常见的卡片。它将项目汇聚成列表。",
                             "name": "实体",
-                            "show_header_toggle": "显示名称切换？",
+                            "show_header_toggle": "显示标题旁的开关？",
                             "toggle": "切换实体。"
                         },
                         "entity-button": {
