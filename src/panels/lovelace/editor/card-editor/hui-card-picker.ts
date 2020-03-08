@@ -192,9 +192,9 @@ export class HuiCardPicker extends LitElement {
         .preview > :first-child {
           zoom: 0.6;
           -moz-transform: scale(0.6); /* Firefox */
-          -moz-transform-origin: 0 0;
+          -moz-transform-origin: center;
           -o-transform: scale(0.6); /* Opera */
-          -o-transform-origin: 0 0;
+          -o-transform-origin: center;
           display: block;
           width: 100%;
         }
