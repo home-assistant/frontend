@@ -430,11 +430,6 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
   private _attachObserver(): void {
     if (typeof ResizeObserver !== "function") {
       import("resize-observer").then((modules) => {
-        // Guard in case we got connected twice before loading completed
-        if (this._resizeObserver) {
-          return;
-        }
-
         modules.install();
         this._attachObserver();
       });
