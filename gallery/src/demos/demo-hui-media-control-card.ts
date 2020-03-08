@@ -71,7 +71,7 @@ const CONFIGS = [
   },
 ];
 
-class DemoHuiMediaPlayerCard extends PolymerElement {
+class DemoHuiMediControlCard extends PolymerElement {
   static get template() {
     return html`
       <demo-cards
@@ -99,4 +99,4 @@ class DemoHuiMediaPlayerCard extends PolymerElement {
   }
 }
 
-customElements.define("demo-hui-media-player-card", DemoHuiMediaPlayerCard);
+customElements.define("demo-hui-media-control-card", DemoHuiMediControlCard);
