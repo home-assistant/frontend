@@ -13,7 +13,7 @@ const marqueeSpeed = 0.2;
 
 @customElement("hui-marquee")
 class HuiMarquee extends LitElement {
-  @property() public marqueeText?: string;
+  @property() public text?: string;
   @property() public active?: boolean;
   private _interval?: number;
   private _left: number = 0;
@@ -36,15 +36,15 @@ class HuiMarquee extends LitElement {
   }
 
   protected render(): TemplateResult {
-    if (!this.marqueeText) {
+    if (!this.text) {
       return html``;
     }
 
     return html`
-      <div>${this.marqueeText}</div>
+      <div>${this.text}</div>
       ${this._interval
         ? html`
-            <div>${this.marqueeText}</div>
+            <div>${this.text}</div>
           `
         : ""}
     `;
