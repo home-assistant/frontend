@@ -396,7 +396,7 @@
         "auth_store": {
             "ask": "Doriți să salvați aceste date de conectare?",
             "confirm": "Salvați datele de conectare",
-            "decline": "Nu, mulţumesc"
+            "decline": "Nu"
         },
         "card": {
             "alarm_control_panel": {
