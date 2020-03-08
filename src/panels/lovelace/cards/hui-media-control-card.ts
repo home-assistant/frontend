@@ -27,7 +27,7 @@ import { hasConfigOrEntityChanged } from "../common/has-changed";
 import { contrast } from "../common/color/contrast";
 import { findEntities } from "../common/find-entites";
 import { LovelaceConfig } from "../../../data/lovelace";
-import { UNAVAILABLE } from "../../../data/entity";
+import { UNAVAILABLE, UNKNOWN } from "../../../data/entity";
 import {
   OFF_STATES,
   SUPPORT_PAUSE,
@@ -165,24 +165,32 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
       width: `${this._cardHeight}px`,
     };
 
+    const isOffState = OFF_STATES.includes(stateObj.state);
+    const isUnavailable =
+      stateObj.state === UNAVAILABLE ||
+      stateObj.state === UNKNOWN ||
+      (stateObj.state === "off" && !supportsFeature(stateObj, SUPPORT_TURN_ON));
+    const hasNoImage = !this._image;
+
     return html`
       <ha-card>
         <div
           class="background ${classMap({
-            "no-image": !this._image,
-            off: OFF_STATES.includes(stateObj.state),
+            "no-image": hasNoImage,
+            off: isOffState || isUnavailable,
+            unavailable: isUnavailable,
           })}"
         >
           <div
             class="color-block"
-            style="background-color: ${this._backgroundColor}"
+            style=${styleMap({ "background-color": this._backgroundColor! })}
           ></div>
           <div
             class="no-img"
-            style="background-color: ${this._backgroundColor}"
+            style=${styleMap({ "background-color": this._backgroundColor! })}
           ></div>
           <div class="image" style=${styleMap(imageStyle)}></div>
-          ${!this._image
+          ${hasNoImage
             ? ""
             : html`
                 <div
@@ -193,12 +201,12 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
         </div>
         <div
           class="player ${classMap({
-            "no-image": !this._image,
+            "no-image": hasNoImage,
             narrow: this._narrow && !this._veryNarrow,
-            off: OFF_STATES.includes(stateObj.state),
+            off: isOffState || isUnavailable,
             "no-progress": !this._showProgressBar && !this._veryNarrow,
           })}"
-          style="color: ${this._foregroundColor}"
+          style=${styleMap({ color: this._foregroundColor! })}
         >
           <div class="top-info">
             <div class="icon-name">
@@ -216,101 +224,120 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
               ></paper-icon-button>
             </div>
           </div>
-          <div
-            class="title-controls"
-            style="padding-right: ${OFF_STATES.includes(stateObj.state)
-              ? 0
-              : this._cardHeight - 40}px"
-          >
-            ${OFF_STATES.includes(stateObj.state)
-              ? ""
-              : html`
-                  <div class="media-info">
-                    <div class="title">
-                      ${stateObj.attributes.media_title ||
-                        computeMediaDescription(stateObj)}
-                    </div>
-                    ${!stateObj.attributes.media_title
-                      ? ""
-                      : computeMediaDescription(stateObj)}
-                  </div>
-                `}
-            ${this._veryNarrow && !OFF_STATES.includes(stateObj.state)
-              ? ""
-              : html`
-                  <div class="controls">
-                    <div>
-                      ${(stateObj.state === "off" &&
-                        !supportsFeature(stateObj, SUPPORT_TURN_ON)) ||
-                      !OFF_STATES.includes(stateObj.state)
-                        ? ""
-                        : html`
-                            <paper-icon-button
-                              icon="hass:power"
-                              .action=${stateObj.state === "off"
-                                ? "turn_on"
-                                : "turn_off"}
-                              @click=${this._handleClick}
-                            ></paper-icon-button>
-                          `}
-                    </div>
-                    ${OFF_STATES.includes(stateObj.state)
-                      ? ""
-                      : html`
-                          <div class="playback-controls">
-                            ${!supportsFeature(stateObj, SUPPORT_PREVIOUS_TRACK)
+          ${isUnavailable
+            ? ""
+            : html`
+                <div
+                  class="title-controls"
+                  style=${styleMap({
+                    paddingRight: isOffState
+                      ? "0"
+                      : `${this._cardHeight - 40}px`,
+                  })}
+                >
+                  ${isOffState
+                    ? ""
+                    : html`
+                        <div class="media-info">
+                          <div class="title">
+                            ${stateObj.attributes.media_title ||
+                              computeMediaDescription(stateObj)}
+                          </div>
+                          ${!stateObj.attributes.media_title
+                            ? ""
+                            : computeMediaDescription(stateObj)}
+                        </div>
+                      `}
+                  ${this._veryNarrow && !isOffState
+                    ? ""
+                    : html`
+                        <div class="controls">
+                          <div>
+                            ${(stateObj.state === "off" &&
+                              !supportsFeature(stateObj, SUPPORT_TURN_ON)) ||
+                            !isOffState
                               ? ""
                               : html`
                                   <paper-icon-button
-                                    icon="hass:skip-previous"
-                                    .action=${"media_previous_track"}
-                                    @click=${this._handleClick}
-                                  ></paper-icon-button>
-                                `}
-                            ${(stateObj.state !== "playing" &&
-                              !supportsFeature(stateObj, SUPPORTS_PLAY)) ||
-                            stateObj.state === UNAVAILABLE ||
-                            (stateObj.state === "playing" &&
-                              !supportsFeature(stateObj, SUPPORT_PAUSE) &&
-                              !supportsFeature(stateObj, SUPPORT_STOP))
-                              ? ""
-                              : html`
-                                  <paper-icon-button
-                                    class="playPauseButton"
-                                    .icon=${stateObj.state !== "playing"
-                                      ? "hass:play"
-                                      : supportsFeature(stateObj, SUPPORT_PAUSE)
-                                      ? "hass:pause"
-                                      : "hass:stop"}
-                                    .action=${"media_play_pause"}
-                                    @click=${this._handleClick}
-                                  ></paper-icon-button>
-                                `}
-                            ${!supportsFeature(stateObj, SUPPORT_NEXT_TRACK)
-                              ? ""
-                              : html`
-                                  <paper-icon-button
-                                    icon="hass:skip-next"
-                                    .action=${"media_next_track"}
+                                    icon="hass:power"
+                                    .action=${stateObj.state === "off"
+                                      ? "turn_on"
+                                      : "turn_off"}
                                     @click=${this._handleClick}
                                   ></paper-icon-button>
                                 `}
                           </div>
-                        `}
-                  </div>
-                `}
-          </div>
-          ${!this._showProgressBar
-            ? ""
-            : html`
-                <paper-progress
-                  .max="${stateObj.attributes.media_duration}"
-                  .value="${getCurrentProgress(stateObj)}"
-                  class="progress"
-                  style="--paper-progress-active-color: ${this
-                    ._foregroundColor || "var(--accent-color)"}"
-                  @click=${(e: MouseEvent) => this._handleSeek(e, stateObj)}
-                ></paper-progress>
+                          ${isOffState
+                            ? ""
+                            : html`
+                                <div class="playback-controls">
+                                  ${!supportsFeature(
+                                    stateObj,
+                                    SUPPORT_PREVIOUS_TRACK
+                                  )
+                                    ? ""
+                                    : html`
+                                        <paper-icon-button
+                                          icon="hass:skip-previous"
+                                          .action=${"media_previous_track"}
+                                          @click=${this._handleClick}
+                                        ></paper-icon-button>
+                                      `}
+                                  ${(stateObj.state !== "playing" &&
+                                    !supportsFeature(
+                                      stateObj,
+                                      SUPPORTS_PLAY
+                                    )) ||
+                                  stateObj.state === UNAVAILABLE ||
+                                  (stateObj.state === "playing" &&
+                                    !supportsFeature(stateObj, SUPPORT_PAUSE) &&
+                                    !supportsFeature(stateObj, SUPPORT_STOP))
+                                    ? ""
+                                    : html`
+                                        <paper-icon-button
+                                          class="playPauseButton"
+                                          .icon=${stateObj.state !== "playing"
+                                            ? "hass:play"
+                                            : supportsFeature(
+                                                stateObj,
+                                                SUPPORT_PAUSE
+                                              )
+                                            ? "hass:pause"
+                                            : "hass:stop"}
+                                          .action=${"media_play_pause"}
+                                          @click=${this._handleClick}
+                                        ></paper-icon-button>
+                                      `}
+                                  ${!supportsFeature(
+                                    stateObj,
+                                    SUPPORT_NEXT_TRACK
+                                  )
+                                    ? ""
+                                    : html`
+                                        <paper-icon-button
+                                          icon="hass:skip-next"
+                                          .action=${"media_next_track"}
+                                          @click=${this._handleClick}
+                                        ></paper-icon-button>
+                                      `}
+                                </div>
+                              `}
+                        </div>
+                      `}
+                </div>
+                ${!this._showProgressBar
+                  ? ""
+                  : html`
+                      <paper-progress
+                        .max="${stateObj.attributes.media_duration}"
+                        .value="${getCurrentProgress(stateObj)}"
+                        class="progress"
+                        style="--paper-progress-active-color: ${this
+                          ._foregroundColor || "var(--accent-color)"}"
+                        @click=${(e: MouseEvent) =>
+                          this._handleSeek(e, stateObj)}
+                      ></paper-progress>
+                    `}
               `}
         </div>
       </ha-card>
@@ -584,6 +611,7 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
         width: 0;
       }
 
+      .unavailable .no-img,
       .background:not(.off):not(.no-image) .no-img {
         opacity: 0;
       }
@@ -687,7 +715,7 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
 
       .off.player,
       .narrow.player {
-        padding-bottom: 8px !important;
+        padding-bottom: 16px !important;
       }
 
       .narrow .controls,
