@@ -328,7 +328,8 @@
         },
         "weather": {
             "cloudy": "Bewolkt",
-            "fog": "Mist"
+            "fog": "Mist",
+            "sunny": "مشمس"
         },
         "zwave": {
             "default": {
@@ -683,6 +684,23 @@
                     "none": "لم يتم الإعداد بعد"
                 },
                 "introduction": "يمكنك هنا برمجة المكونات الخاصة بك و إعداد نظام مساعد البيت. ليس كل شيء متاح للبرمجة من خلال واجهة المستخدم حتى الآن، ولكننا نعمل على ذلك.",
+                "lovelace": {
+                    "dashboards": {
+                        "picker": {
+                            "headers": {
+                                "default": "الافتراضي"
+                            }
+                        }
+                    },
+                    "resources": {
+                        "detail": {
+                            "create": "إنشاء",
+                            "delete": "حذف",
+                            "update": "تحديث",
+                            "url": "عنوان url"
+                        }
+                    }
+                },
                 "person": {
                     "detail": {
                         "device_tracker_pick": "اختر جهاز لتتبع"
@@ -761,10 +779,19 @@
             },
             "lovelace": {
                 "editor": {
+                    "card": {
+                        "conditional": {
+                            "card": "بطاقة",
+                            "current_state": "الحالي"
+                        }
+                    },
                     "edit_card": {
                         "delete": "حذف",
                         "edit": "تصحيح",
                         "move": "نقل"
+                    },
+                    "edit_view": {
+                        "tab_visibility": "الرؤية"
                     },
                     "raw_editor": {
                         "header": "تعديل",

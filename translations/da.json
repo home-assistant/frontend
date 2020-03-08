@@ -395,8 +395,8 @@
     "ui": {
         "auth_store": {
             "ask": "Vil du gemme dette login?",
-            "confirm": "Gem login",
-            "decline": "Nej tak"
+            "confirm": "Ja",
+            "decline": "Nej"
         },
         "card": {
             "alarm_control_panel": {
@@ -1474,7 +1474,8 @@
                                 "default": "Standard",
                                 "filename": "Filnavn",
                                 "title": "Titel"
-                            }
+                            },
+                            "open": "Åben"
                         }
                     },
                     "resources": {
@@ -2082,7 +2083,7 @@
                             "name": "Vandret stak"
                         },
                         "iframe": {
-                            "name": "iFrame"
+                            "name": "Webside"
                         },
                         "light": {
                             "name": "Lys"
@@ -2229,7 +2230,7 @@
                     "title": "Ubrugte entiteter"
                 },
                 "views": {
-                    "confirm_delete": "Er du sikker på, at du vil slette denne visning?",
+                    "confirm_delete": "Slet visning?",
                     "existing_cards": "Du kan ikke slette en visning, der har kort i sig. Fjern kortene først."
                 },
                 "warning": {

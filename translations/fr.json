@@ -1783,7 +1783,7 @@
                     },
                     "ozw_log": {
                         "header": "Journal OZW",
-                        "introduction": "Afficher le journal. 0 est le minimum (charges journal entier) et 1000 est le maximum. La charge affichera un journal statique et la queue sera mise à jour automatique avec le dernier nombre spécifié de lignes du journal."
+                        "introduction": "Afficher le journal. Entrer un nombre de 1 à 1000 lignes pour limiter le nombre de lignes chargées dans le journal, ou entrer 0 pour désactiver la limitation du nombre de lignes affichées (journal complet). \"Load\" affichera un instantané du journal, alors que \"Tail\" affichera le journal en l'actualisant au fur et à mesure que de nouvelles entrées apparaissent."
                     },
                     "services": {
                         "add_node": "Ajouter un nœud",
@@ -2067,30 +2067,37 @@
                             "name": "Entité image"
                         },
                         "picture-glance": {
+                            "description": "La carte Picture Glance affiche une image et les états d'entité correspondants sous forme d'icône. Les entités sur le côté droit permettent de basculer entre les actions, d'autres affichent la boîte de dialogue plus d'informations.",
                             "name": "Coup d'œil en image"
                         },
                         "picture": {
                             "name": "Image"
                         },
                         "plant-status": {
+                            "description": "La carte Statut des plantes est destinée à tous nos adorables botanistes.",
                             "name": "Statut de la plante"
                         },
                         "sensor": {
+                            "description": "La carte Capteur vous donne un aperçu rapide de l'état de vos sensors avec un graphique en option pour visualiser les changements au fil du temps.",
                             "graph_detail": "Détail du graphique",
                             "graph_type": "Type de graphique",
                             "name": "Capteur"
                         },
                         "shopping-list": {
+                            "description": "La carte Liste d'achats vous permet d'ajouter, de modifier, de valider et d'effacer des articles de votre liste d'achats.",
                             "integration_not_loaded": "Cette carte nécessite la mise en place de l'intégration `shopping_list`.",
                             "name": "Liste de courses"
                         },
                         "thermostat": {
+                            "description": "La carte Thermostat permet de contrôler votre entité climate. Vous permettant de changer la température et le mode de l'entité.",
                             "name": "Thermostat"
                         },
                         "vertical-stack": {
+                            "description": "La carte Pile verticale vous permet de regrouper plusieurs cartes afin qu'elles se trouvent toujours dans la même colonne.",
                             "name": "Pile verticale"
                         },
                         "weather-forecast": {
+                            "description": "La carte Prévisions météorologiques affiche la météo. Très utile pour les écrans placés au mur.",
                             "name": "Prévisions Météo"
                         }
                     },

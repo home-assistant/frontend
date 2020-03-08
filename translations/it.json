@@ -394,9 +394,9 @@
     },
     "ui": {
         "auth_store": {
-            "ask": "Salvare questo login?",
-            "confirm": "Salva login",
-            "decline": "No grazie"
+            "ask": "Vuoi rimanere connesso?",
+            "confirm": "Sì",
+            "decline": "No"
         },
         "card": {
             "alarm_control_panel": {
@@ -679,7 +679,9 @@
                 },
                 "not_editable": "Non modificabile",
                 "not_editable_text": "Questa entità non può essere modificata dall'Interfaccia Utente perché è definita in configuration.yaml.",
-                "required_error_msg": "Questo campo è obbligatorio"
+                "platform_not_loaded": "Il componente {platform} non è caricato, si prega di aggiungerlo alla propria configurazione, aggiungendo 'default_config:' o '{platform}:'.",
+                "required_error_msg": "Questo campo è obbligatorio",
+                "yaml_not_editable": "Le impostazioni di questa entità non possono essere modificate dall'interfaccia utente. Solo le entità impostate dall'interfaccia utente sono configurabili dall'interfaccia utente."
             },
             "more_info_control": {
                 "dismiss": "Chiudi finestra di dialogo",
@@ -1382,7 +1384,9 @@
                         "introduction2": "Utilizzare il Registro Entità per sovrascrivere il nome, modificare l'ID Entità o rimuovere la voce da Home Assistant.",
                         "remove_selected": {
                             "button": "Rimuovi selezionati",
-                            "confirm_text": "Le entità possono essere rimosse solo quando l'integrazione non fornisce più le entità.",
+                            "confirm_partly_text": "Puoi rimuovere solo {removable} delle {selected} entità selezionate. Le entità possono essere rimosse solo quando l'integrazione non le fornisce più. A volte è necessario riavviare Home Assistant prima di poter rimuovere le entità di un'integrazione rimossa. Sei sicuro di voler rimuovere le entità rimovibili?",
+                            "confirm_partly_title": "Solo {number} entità selezionate possono essere rimosse.",
+                            "confirm_text": "Dovresti rimuoverli dalla configurazione di Lovelace e dalle automazioni se contengono queste entità.",
                             "confirm_title": "Vuoi rimuovere {number} entità?"
                         },
                         "selected": "{number} selezionato",
@@ -1391,6 +1395,7 @@
                             "disabled": "Disabilitato",
                             "ok": "Ok",
                             "readonly": "Sola lettura",
+                            "restored": "Ripristinato",
                             "unavailable": "Non disponibile"
                         },
                         "unavailable": "(non disponibile)"
@@ -1409,6 +1414,7 @@
                         "add_helper": "Aggiungi aiuto",
                         "headers": {
                             "editable": "Modificabile",
+                            "entity_id": "ID Entità",
                             "name": "Nome",
                             "type": "Tipo"
                         }
@@ -1485,6 +1491,7 @@
                 "lovelace": {
                     "caption": "Cruscotti Lovelace",
                     "dashboards": {
+                        "cant_edit_default": "Il cruscotto standard Lovelace non può essere modificato dall'interfaccia utente. È possibile nasconderlo impostando un altro cruscotto come predefinito.",
                         "cant_edit_yaml": "I cruscotti definiti in YAML non possono essere modificati dall'Interfaccia Utente. Modificarli in configuration.yaml.",
                         "caption": "Cruscotti",
                         "conf_mode": {
@@ -1499,9 +1506,12 @@
                             "edit_dashboard": "Modifica cruscotto",
                             "icon": "Icona della barra laterale",
                             "new_dashboard": "Aggiungi nuovo cruscotto",
+                            "remove_default": "Rimuovi come predefinito su questo dispositivo",
                             "require_admin": "Solo per l'amministratore",
+                            "set_default": "Imposta come predefinito su questo dispositivo",
                             "show_sidebar": "Mostra nella barra laterale",
                             "title": "Titolo della barra laterale",
+                            "title_required": "È richiesto il titolo.",
                             "update": "Aggiorna",
                             "url": "Url",
                             "url_error_msg": "L'URL non può contenere spazi o caratteri speciali, ad eccezione di _ e -"
@@ -1510,12 +1520,13 @@
                             "add_dashboard": "Aggiungi cruscotto",
                             "headers": {
                                 "conf_mode": "Metodo di configurazione",
+                                "default": "Predefinito",
                                 "filename": "Nome del file",
                                 "require_admin": "Solo per l'amministratore",
                                 "sidebar": "Mostra nella barra laterale",
                                 "title": "Titolo"
                             },
-                            "open": "Apri cruscotto"
+                            "open": "Aprire"
                         }
                     },
                     "description": "Configurare i cruscotti Lovelace",
@@ -2073,19 +2084,30 @@
                         },
                         "alarm-panel": {
                             "available_states": "Stati disponibili",
+                            "description": "La scheda del pannello di allarme consente di Attivare e Disattivare le tue integrazioni del pannello di controllo di allarme.",
                             "name": "Pannello di allarme"
                         },
                         "button": {
+                            "description": "La scheda Pulsante consente di aggiungere pulsanti per eseguire attività.",
                             "name": "Pulsante"
                         },
                         "conditional": {
-                            "name": "Condizionale"
+                            "card": "Scheda",
+                            "change_type": "Cambia tipo",
+                            "condition_explanation": "La scheda sarà mostrata quando TUTTE le seguenti condizioni saranno soddisfatte.",
+                            "conditions": "Condizioni",
+                            "current_state": "attuale",
+                            "description": "La scheda Condizionale visualizza un'altra scheda in base agli stati dell'entità.",
+                            "name": "Condizionale",
+                            "state_equal": "Stato è uguale a",
+                            "state_not_equal": "Stato non è uguale a"
                         },
                         "config": {
                             "optional": "Facoltativo",
                             "required": "Richiesto"
                         },
                         "entities": {
+                            "description": "La scheda Entità è il tipo di scheda più comune. Raggruppa gli elementi in elenchi.",
                             "name": "Entità",
                             "show_header_toggle": "Mostrare l'interruttore dell'intestazione?",
                             "toggle": "Attiva/disattiva entità."
@@ -2094,9 +2116,11 @@
                             "name": "Pulsante Entità"
                         },
                         "entity-filter": {
+                            "description": "La scheda Filtro Entità consente di definire un elenco di entità che si desidera monitorare solo in un determinato stato.",
                             "name": "Filtro Entità"
                         },
                         "gauge": {
+                            "description": "La scheda Indicatore è una scheda di base che consente di visualizzare visivamente i dati del sensore.",
                             "name": "Indicatore",
                             "severity": {
                                 "define": "Definire la gravità?",
@@ -2116,6 +2140,8 @@
                             "icon": "Icona",
                             "icon_height": "Altezza icona",
                             "image": "Percorso immagine",
+                            "manual": "Manuale",
+                            "manual_description": "Devi aggiungere una scheda personalizzata o semplicemente si vuole scrivere manualmente il file in yaml?",
                             "maximum": "Massimo",
                             "minimum": "Minimo",
                             "name": "Nome",
@@ -2123,6 +2149,7 @@
                             "show_icon": "Mostrare l'icona?",
                             "show_name": "Mostrare il nome?",
                             "show_state": "Mostrare lo stato?",
+                            "state": "Stato",
                             "tap_action": "Tocca Azione",
                             "theme": "Tema",
                             "title": "Titolo",
@@ -2131,65 +2158,83 @@
                         },
                         "glance": {
                             "columns": "Colonne",
+                            "description": "La scheda Occhiata è utile per raggruppare più sensori in una panoramica compatta.",
                             "name": "Vista"
                         },
                         "history-graph": {
+                            "description": "La scheda Grafico Storico consente di visualizzare un grafico per ciascuna delle entità elencate.",
                             "name": "Grafico cronologico"
                         },
                         "horizontal-stack": {
+                            "description": "La scheda Pila Orizzontale consente di raggruppare insieme più schede, in modo che siano sempre l'una accanto all'altra nello spazio di una colonna.",
                             "name": "Pila orizzontale"
                         },
                         "iframe": {
-                            "name": "iFrame"
+                            "description": "La scheda Pagina Web consente di incorporare la pagina Web preferita direttamente in Home Assistant.",
+                            "name": "Pagina web"
                         },
                         "light": {
+                            "description": "La scheda Luce consente di modificare la luminosità della luce.",
                             "name": "Luce"
                         },
                         "map": {
                             "dark_mode": "Modalità scura?",
                             "default_zoom": "Ingrandimento predefinito",
+                            "description": "La scheda Mappa che permette di visualizzare le entità su una mappa.",
                             "geo_location_sources": "Fonti di geolocalizzazione",
                             "name": "Mappa",
                             "source": "Fonte"
                         },
                         "markdown": {
                             "content": "Contenuto",
+                            "description": "La scheda Ribassi viene utilizzata per presentare i ribassi.",
                             "name": "Markdown"
                         },
                         "media-control": {
+                            "description": "La scheda Controllo Multimediale viene utilizzata per visualizzare le entità del lettore multimediale su un'interfaccia con controlli di facile utilizzo.",
                             "name": "Controllo dei media"
                         },
                         "picture-elements": {
+                            "description": "La scheda Elementi Immagine è uno dei tipi di schede più versatili. Le schede consentono di posizionare icone o testo (e anche servizi!) su un'immagine basata su coordinate.",
                             "name": "Elementi immagine"
                         },
                         "picture-entity": {
+                            "description": "La scheda Entità Immagine visualizza un'entità sotto forma di immagine. Oltre ad immagini da URL, può anche mostrare l'immagine delle entità fotocamera.",
                             "name": "Entità immagine"
                         },
                         "picture-glance": {
+                            "description": "La scheda Occhiata Immagine mostra un'immagine e gli stati dell'entità corrispondenti come una icona. Le entità sul lato destro consentono azioni di commutazione, altre mostrano più informazioni di dialogo.",
                             "name": "Vista immagine"
                         },
                         "picture": {
+                            "description": "La scheda Immagine consente di impostare un'immagine da utilizzare per la navigazione su vari percorsi nell'interfaccia o per chiamare un servizio.",
                             "name": "Immagine"
                         },
                         "plant-status": {
+                            "description": "La scheda dello Stato della Pianta è per tutti gli adorabili botanici là fuori.",
                             "name": "Stato pianta"
                         },
                         "sensor": {
+                            "description": "La scheda Sensore offre una rapida panoramica dello stato dei sensori con un grafico opzionale per visualizzare il cambiamento nel tempo.",
                             "graph_detail": "Dettaglio grafico",
                             "graph_type": "Tipo di grafico",
                             "name": "Sensore"
                         },
                         "shopping-list": {
+                            "description": "La scheda della Lista della Spesa consente di aggiungere, modificare, selezionare e cancellare gli articoli dalla lista della spesa.",
                             "integration_not_loaded": "Questa carta richiede l'integrazione \"shopping_list\" per essere configurata.",
                             "name": "Lista della spesa"
                         },
                         "thermostat": {
+                            "description": "La scheda Termostato fornisce il controllo della tua entità climatica, consentendo di modificare la temperatura e la modalità dell'entità.",
                             "name": "Termostato"
                         },
                         "vertical-stack": {
+                            "description": "La scheda Pila Verticale consente di raggruppare più schede in modo che si trovino sempre nella stessa colonna.",
                             "name": "Pila verticale"
                         },
                         "weather-forecast": {
+                            "description": "La scheda Previsioni Meteo mostra le condizioni meteorologiche. Molto utili da includere nelle interfacce che le persone visualizzano sulla parete.",
                             "name": "Previsioni del tempo"
                         }
                     },
@@ -2221,7 +2266,8 @@
                         "move_left": "Sposta la vista a sinistra",
                         "move_right": "Sposta la vista a destra",
                         "tab_badges": "Distintivi",
-                        "tab_settings": "Impostazioni"
+                        "tab_settings": "Impostazioni",
+                        "tab_visibility": "Visibilità"
                     },
                     "header": "Modifica dell'interfaccia utente",
                     "menu": {
@@ -2291,7 +2337,10 @@
                     "title": "Entità non utilizzate"
                 },
                 "views": {
-                    "confirm_delete": "Sei sicuro di voler eliminare questa vista?",
+                    "confirm_delete": "Eliminare vista?",
+                    "confirm_delete_existing_cards": "L'eliminazione di questa vista rimuoverà anche le schede",
+                    "confirm_delete_existing_cards_text": "Sei sicuro di voler eliminare la tua vista \"{name}\"? La vista contiene {number} schede che sarranno eliminate. Questa azione non può essere annullata.",
+                    "confirm_delete_text": "Sei sicuro di voler eliminare la tua vista \"{name}\"?",
                     "existing_cards": "Non è possibile eliminare una visualizzazione contenente schede. Rimuovere prima le schede."
                 },
                 "warning": {
