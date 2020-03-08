@@ -183,11 +183,11 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
         >
           <div
             class="color-block"
-            style="background-color: ${this._backgroundColor}"
+            style=${styleMap({ "background-color": this._backgroundColor! })}
           ></div>
           <div
             class="no-img"
-            style="background-color: ${this._backgroundColor}"
+            style=${styleMap({ "background-color": this._backgroundColor! })}
           ></div>
           <div class="image" style=${styleMap(imageStyle)}></div>
           ${hasNoImage
