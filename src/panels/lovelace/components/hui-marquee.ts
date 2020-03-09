@@ -7,30 +7,24 @@ import {
   css,
   CSSResult,
   property,
+  query,
 } from "lit-element";
-
-const marqueeSpeed = 0.6;
+import { classMap } from "lit-html/directives/class-map";
 
 @customElement("hui-marquee")
 class HuiMarquee extends LitElement {
   @property() public text?: string;
   @property() public active?: boolean;
   @property() private _animating?: boolean;
-  private _left: number = 0;
-
+  @query(".marquee") private _marquee?: HTMLDivElement;
   protected updated(changedProperties: PropertyValues): void {
     super.updated(changedProperties);
 
-    if (
-      changedProperties.has("active") &&
-      this.active &&
-      !this._animating &&
-      this.offsetWidth < this.scrollWidth
-    ) {
-      this._animating = true;
-      window.requestAnimationFrame(() => {
-        this._animate();
-      });
+    if (changedProperties.has("active") && this.active) {
+      const marquee = this._marquee;
+      if (marquee && marquee.offsetWidth < marquee.scrollWidth) {
+        this._animating = true;
+      }
     }
   }
 
@@ -40,44 +34,58 @@ class HuiMarquee extends LitElement {
     }
 
     return html`
-      <div>${this.text}</div>
-      ${this._animating
-        ? html`
-            <div>${this.text}</div>
-          `
-        : ""}
+      <div class="marquee">
+        <div
+          class="marquee-inner ${classMap({
+            animating: Boolean(this._animating),
+          })}"
+          @animationiteration=${this._onIteration}
+        >
+          <span>${this.text}</span>
+          ${this._animating
+            ? html`
+                <span>${this.text}</span>
+              `
+            : ""}
+        </div>
+      </div>
     `;
   }
 
-  private get _marqueeElementFirstChild(): HTMLElement {
-    return this.shadowRoot!.firstElementChild as HTMLElement;
-  }
-
-  private _animate(): void {
-    this.style.marginLeft = "-" + this._left + "px";
-
-    if (!this.active && !this._left) {
+  private _onIteration() {
+    if (!this.active) {
       this._animating = false;
-      return;
     }
-
-    this._left += marqueeSpeed;
-    if (this._left >= this._marqueeElementFirstChild.offsetWidth + 16) {
-      this._left = 0;
-    }
-    window.requestAnimationFrame(() => {
-      this._animate();
-    });
   }
 
   static get styles(): CSSResult {
     return css`
-      :host {
-        display: flex;
+      .marquee {
+        width: 100%;
+        height: 25px;
+        overflow: hidden;
+        position: relative;
       }
 
-      :host div {
-        margin-right: 16px;
+      .marquee-inner {
+        position: absolute;
+      }
+
+      .animating {
+        animation: marquee 10s linear infinite;
+      }
+
+      span {
+        padding-right: 16px;
+      }
+
+      @keyframes marquee {
+        0% {
+          transform: translateX(0%);
+        }
+        100% {
+          transform: translateX(-50%);
+        }
       }
     `;
   }
