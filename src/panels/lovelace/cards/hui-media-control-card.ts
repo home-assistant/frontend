@@ -7,12 +7,16 @@ import {
   property,
   css,
   CSSResult,
+  query,
 } from "lit-element";
 import { classMap } from "lit-html/directives/class-map";
 import { styleMap } from "lit-html/directives/style-map";
 import Vibrant from "node-vibrant";
 import { Palette } from "node-vibrant/lib/color";
 import "@polymer/paper-icon-button/paper-icon-button";
+import "@polymer/paper-progress/paper-progress";
+// tslint:disable-next-line: no-duplicate-imports
+import { PaperProgressElement } from "@polymer/paper-progress/paper-progress";
 
 import { MediaControlCardConfig } from "./types";
 import { LovelaceCard, LovelaceCardEditor } from "../types";
@@ -89,6 +93,7 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
   @property() private _narrow: boolean = false;
   @property() private _veryNarrow: boolean = false;
   @property() private _cardHeight: number = 0;
+  @query("paper-progress") private _progressBar?: PaperProgressElement;
   @property() private _marqueeActive: boolean = false;
   private _progressInterval?: number;
   private _resizeObserver?: ResizeObserver;
@@ -125,7 +130,7 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
       stateObj.state === "playing"
     ) {
       this._progressInterval = window.setInterval(
-        () => this.requestUpdate(),
+        () => this._updateProgressBar(stateObj),
         1000
       );
     }
@@ -212,7 +217,7 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
         >
           <div class="top-info">
             <div class="icon-name">
-              <ha-icon class="icon" .icon="${stateIcon(stateObj)}"></ha-icon>
+              <ha-icon class="icon" .icon=${stateIcon(stateObj)}></ha-icon>
               <div>
                 ${this._config!.name ||
                   computeStateName(this.hass!.states[this._config!.entity])}
@@ -336,10 +341,9 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
                   ? ""
                   : html`
                       <paper-progress
-                        .max="${stateObj.attributes.media_duration}"
-                        .value="${getCurrentProgress(stateObj)}"
+                        .max=${stateObj.attributes.media_duration}
                         class="progress"
-                        ${styleMap({
+                        style=${styleMap({
                           "--paper-progress-active-color":
                             this._foregroundColor || "var(--accent-color)",
                           cursor: supportsFeature(stateObj, SUPPORT_SEEK)
@@ -396,7 +400,7 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
       stateObj.state === "playing"
     ) {
       this._progressInterval = window.setInterval(
-        () => this.requestUpdate(),
+        () => this._updateProgressBar(stateObj),
         1000
       );
     } else if (
@@ -460,7 +464,10 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
   }
 
   private _measureCard() {
-    const card = this.shadowRoot!.querySelector("ha-card")!;
+    const card = this.shadowRoot!.querySelector("ha-card");
+    if (!card) {
+      return;
+    }
     this._narrow = card.offsetWidth < 350;
     this._veryNarrow = card.offsetWidth < 300;
     this._cardHeight = card.offsetHeight;
@@ -492,6 +499,12 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
     this.hass!.callService("media_player", (e.currentTarget! as any).action, {
       entity_id: this._config!.entity,
     });
+  }
+
+  private _updateProgressBar(stateObj: MediaEntity): void {
+    if (this._progressBar) {
+      this._progressBar.value = getCurrentProgress(stateObj);
+    }
   }
 
   private _handleSeek(e: MouseEvent, stateObj: MediaEntity): void {
