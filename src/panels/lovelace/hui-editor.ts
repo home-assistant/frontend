@@ -168,19 +168,19 @@ class LovelaceFullConfigEditor extends LitElement {
 
   private _closeEditor() {
     if (this._changed) {
-      if (
-        !confirm(
-          this.hass.localize(
-            "ui.panel.lovelace.editor.raw_editor.confirm_unsaved_changes"
-          )
-        )
-      ) {
-        return;
-      }
-    }
-    window.onbeforeunload = null;
-    if (this.closeEditor) {
-      this.closeEditor();
+      showConfirmationDialog(this, {
+        text: this.hass.localize(
+          "ui.panel.lovelace.editor.raw_editor.confirm_unsaved_changes"
+        ),
+        dismissText: this.hass!.localize("ui.common.no"),
+        confirmText: this.hass!.localize("ui.common.yes"),
+        confirm: () => {
+          window.onbeforeunload = null;
+          if (this.closeEditor) {
+            this.closeEditor();
+          }
+        },
+      });
     }
   }
 
@@ -188,13 +188,13 @@ class LovelaceFullConfigEditor extends LitElement {
     try {
       await this.lovelace!.deleteConfig();
     } catch (err) {
-      alert(
-        this.hass.localize(
+      showAlertDialog(this, {
+        text: this.hass.localize(
           "ui.panel.lovelace.editor.raw_editor.error_remove",
           "error",
           err
-        )
-      );
+        ),
+      });
     }
     window.onbeforeunload = null;
     if (this.closeEditor) {
