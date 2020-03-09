@@ -70,6 +70,13 @@ export class HaConfigDevicePage extends LitElement {
       devices ? devices.find((device) => device.id === deviceId) : undefined
   );
 
+  private _domains = memoizeOne(
+    (device: DeviceRegistryEntry, entries: ConfigEntry[]): string[] =>
+      entries
+        .filter((entry) => device.config_entries.includes(entry.entry_id))
+        .map((entry) => entry.domain)
+  );
+
   private _entities = memoizeOne(
     (
       deviceId: string,
@@ -113,6 +120,7 @@ export class HaConfigDevicePage extends LitElement {
       `;
     }
 
+    const domains = this._domains(device, this.entries);
     const entities = this._entities(this.deviceId, this.entities);
 
     return html`
@@ -153,6 +161,7 @@ export class HaConfigDevicePage extends LitElement {
                 .areas=${this.areas}
                 .devices=${this.devices}
                 .device=${device}
+                .domains=${domains}
               ></ha-device-card>
             </div>
 

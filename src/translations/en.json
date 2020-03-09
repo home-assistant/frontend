@@ -1482,7 +1482,9 @@
             "integration": "Integration",
             "battery": "Battery",
             "no_devices": "No devices"
-          }
+          },
+          "delete": "DELETE",
+          "confirm_delete": "Are you sure you want to delete this device?"
         },
         "entities": {
           "caption": "Entities",
