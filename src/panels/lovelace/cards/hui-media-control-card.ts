@@ -453,7 +453,7 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
   }
 
   private _measureCard() {
-    const card = this.shadowRoot!.querySelector("ha-card")!;
+    const card = this.shadowRoot!.querySelector("ha-card");
     if (!card) {
       return;
     }
