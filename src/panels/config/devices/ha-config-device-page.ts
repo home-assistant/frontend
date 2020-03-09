@@ -25,6 +25,7 @@ import {
 } from "../../../data/entity_registry";
 import {
   DeviceRegistryEntry,
+  computeDeviceName,
   updateDeviceRegistryEntry,
 } from "../../../data/device_registry";
 import { AreaRegistryEntry } from "../../../data/area_registry";
@@ -124,7 +125,9 @@ export class HaConfigDevicePage extends LitElement {
         ${
           this.narrow
             ? html`
-                <span slot="header">${device.name_by_user || device.name}</span>
+                <span slot="header">
+                  ${computeDeviceName(device, this.hass)}
+                </span>
               `
             : ""
         }
@@ -142,7 +145,7 @@ export class HaConfigDevicePage extends LitElement {
                 this.narrow
                   ? ""
                   : html`
-                      <h1>${device.name_by_user || device.name}</h1>
+                      <h1>${computeDeviceName(device, this.hass)}</h1>
                     `
               }
               <ha-device-card
