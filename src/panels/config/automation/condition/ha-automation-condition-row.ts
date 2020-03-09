@@ -12,6 +12,7 @@ import {
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-card";
 import { HomeAssistant } from "../../../../types";
+import { showConfirmationDialog } from "../../../../dialogs/generic/show-dialog-box";
 
 import "./ha-automation-condition-editor";
 import { Condition } from "../../../../data/automation";
@@ -104,15 +105,16 @@ export default class HaAutomationConditionRow extends LitElement {
   }
 
   private _onDelete() {
-    if (
-      confirm(
-        this.hass.localize(
-          "ui.panel.config.automation.editor.conditions.delete_confirm"
-        )
-      )
-    ) {
-      fireEvent(this, "value-changed", { value: null });
-    }
+    showConfirmationDialog(this, {
+      text: this.hass.localize(
+        "ui.panel.config.automation.editor.conditions.delete_confirm"
+      ),
+      dismissText: this.hass.localize("ui.common.no"),
+      confirmText: this.hass.localize("ui.common.yes"),
+      confirm: () => {
+        fireEvent(this, "value-changed", { value: null });
+      },
+    });
   }
 
   private _switchYamlMode() {
