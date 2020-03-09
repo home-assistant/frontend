@@ -243,9 +243,9 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
                         <div class="media-info">
                           <div class="title">
                             <hui-marquee
-                              .marqueeText=${stateObj.attributes.media_title ||
+                              .text=${stateObj.attributes.media_title ||
                                 computeMediaDescription(stateObj)}
-                              .off=${this._marqueeActive}
+                              .active=${this._marqueeActive}
                               @mouseover=${this._marqueeMouseOver}
                               @mouseleave=${this._marqueeMouseLeave}
                             ></hui-marquee>

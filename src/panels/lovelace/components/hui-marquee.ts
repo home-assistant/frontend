@@ -60,6 +60,7 @@ class HuiMarquee extends LitElement {
     if (!this.active && !this._left) {
       clearInterval(this._interval);
       this._interval = undefined;
+      return;
     }
 
     this._left += marqueeSpeed;
