@@ -117,6 +117,14 @@ export class HaDataTable extends LitElement {
     this._checkedRowsChanged();
   }
 
+  public connectedCallback() {
+    super.connectedCallback();
+    if (this._filteredData.length) {
+      // Force update of location of rows
+      this._filteredData = [...this._filteredData];
+    }
+  }
+
   protected firstUpdated(properties: PropertyValues) {
     super.firstUpdated(properties);
     this._worker = sortFilterWorker();
