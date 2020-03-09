@@ -88,6 +88,7 @@ export class HaDataTable extends LitElement {
   @property({ type: Boolean, attribute: "auto-height" })
   public autoHeight = false;
   @property({ type: String }) public id = "id";
+  @property({ type: String }) public noDataText?: string;
   @property({ type: String }) public filter = "";
   @property({ type: Boolean }) private _filterable = false;
   @property({ type: String }) private _filter = "";
@@ -189,7 +190,7 @@ export class HaDataTable extends LitElement {
           })}"
           style=${styleMap({
             height: this.autoHeight
-              ? `${this._filteredData.length * 53 + 57}px`
+              ? `${(this._filteredData.length || 1) * 53 + 57}px`
               : `calc(100% - ${this._header?.clientHeight}px)`,
           })}
         >
@@ -256,73 +257,85 @@ export class HaDataTable extends LitElement {
               `;
             })}
           </div>
-          <div class="mdc-data-table__content scroller">
-            ${scroll({
-              items: this._filteredData,
-              renderItem: (row: DataTableRowData) => html`
-                <div
-                  .rowId="${row[this.id]}"
-                  @click=${this._handleRowClick}
-                  class="mdc-data-table__row ${classMap({
-                    "mdc-data-table__row--selected": this._checkedRows.includes(
-                      String(row[this.id])
-                    ),
-                  })}"
-                  aria-selected=${ifDefined(
-                    this._checkedRows.includes(String(row[this.id]))
-                      ? true
-                      : undefined
-                  )}
-                  .selectable=${row.selectable !== false}
-                >
-                  ${this.selectable
-                    ? html`
-                        <div
-                          class="mdc-data-table__cell mdc-data-table__cell--checkbox"
-                        >
-                          <ha-checkbox
-                            class="mdc-data-table__row-checkbox"
-                            @change=${this._handleRowCheckboxClick}
-                            .disabled=${row.selectable === false}
-                            .checked=${this._checkedRows.includes(
-                              String(row[this.id])
-                            )}
-                          >
-                          </ha-checkbox>
-                        </div>
-                      `
-                    : ""}
-                  ${Object.entries(this.columns).map((columnEntry) => {
-                    const [key, column] = columnEntry;
-                    return html`
+          ${!this._filteredData.length
+            ? html`
+                <div class="mdc-data-table__content">
+                  <div class="mdc-data-table__row">
+                    <div class="mdc-data-table__cell grows center">
+                      ${this.noDataText || "No data"}
+                    </div>
+                  </div>
+                </div>
+              `
+            : html`
+                <div class="mdc-data-table__content scroller">
+                  ${scroll({
+                    items: this._filteredData,
+                    renderItem: (row: DataTableRowData) => html`
                       <div
-                        class="mdc-data-table__cell ${classMap({
-                          "mdc-data-table__cell--numeric": Boolean(
-                            column.type && column.type === "numeric"
+                        .rowId="${row[this.id]}"
+                        @click=${this._handleRowClick}
+                        class="mdc-data-table__row ${classMap({
+                          "mdc-data-table__row--selected": this._checkedRows.includes(
+                            String(row[this.id])
                           ),
-                          "mdc-data-table__cell--icon": Boolean(
-                            column.type && column.type === "icon"
-                          ),
-                          grows: Boolean(column.grows),
                         })}"
-                        style=${column.width
-                          ? styleMap({
-                              [column.grows ? "minWidth" : "width"]: String(
-                                column.width
-                              ),
-                            })
-                          : ""}
+                        aria-selected=${ifDefined(
+                          this._checkedRows.includes(String(row[this.id]))
+                            ? true
+                            : undefined
+                        )}
+                        .selectable=${row.selectable !== false}
                       >
-                        ${column.template
-                          ? column.template(row[key], row)
-                          : row[key]}
+                        ${this.selectable
+                          ? html`
+                              <div
+                                class="mdc-data-table__cell mdc-data-table__cell--checkbox"
+                              >
+                                <ha-checkbox
+                                  class="mdc-data-table__row-checkbox"
+                                  @change=${this._handleRowCheckboxClick}
+                                  .disabled=${row.selectable === false}
+                                  .checked=${this._checkedRows.includes(
+                                    String(row[this.id])
+                                  )}
+                                >
+                                </ha-checkbox>
+                              </div>
+                            `
+                          : ""}
+                        ${Object.entries(this.columns).map((columnEntry) => {
+                          const [key, column] = columnEntry;
+                          return html`
+                            <div
+                              class="mdc-data-table__cell ${classMap({
+                                "mdc-data-table__cell--numeric": Boolean(
+                                  column.type && column.type === "numeric"
+                                ),
+                                "mdc-data-table__cell--icon": Boolean(
+                                  column.type && column.type === "icon"
+                                ),
+                                grows: Boolean(column.grows),
+                              })}"
+                              style=${column.width
+                                ? styleMap({
+                                    [column.grows
+                                      ? "minWidth"
+                                      : "width"]: String(column.width),
+                                  })
+                                : ""}
+                            >
+                              ${column.template
+                                ? column.template(row[key], row)
+                                : row[key]}
+                            </div>
+                          `;
+                        })}
                       </div>
-                    `;
+                    `,
                   })}
                 </div>
-              `,
-            })}
-          </div>
+              `}
         </div>
       </div>
     `;

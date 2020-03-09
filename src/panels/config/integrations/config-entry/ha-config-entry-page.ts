@@ -194,14 +194,12 @@ class HaConfigEntryPage extends LitElement {
     return css`
       .content {
         padding: 4px;
-        height: 100%;
       }
       p {
         text-align: center;
       }
       ha-devices-data-table {
         width: 100%;
-        height: 100%;
       }
     `;
   }
