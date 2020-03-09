@@ -18,6 +18,7 @@ import { createInputSelect } from "../../../data/input_select";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { Helper } from "./const";
 import "@polymer/paper-item/paper-icon-item";
+import "@polymer/paper-tooltip/paper-tooltip";
 import "./forms/ha-input_boolean-form";
 import "./forms/ha-input_text-form";
 import "./forms/ha-input_datetime-form";
@@ -62,6 +63,8 @@ export class DialogHelperDetail extends LitElement {
         .open=${this._opened}
         @closing=${this.closeDialog}
         class=${classMap({ "button-left": !this._platform })}
+        scrimClickAction
+        escapeKeyAction
         .heading=${this._platform
           ? this.hass.localize(
               "ui.panel.config.helpers.dialog.add_platform",
@@ -103,22 +106,36 @@ export class DialogHelperDetail extends LitElement {
             `
           : html`
               ${Object.keys(HELPERS).map((platform: string) => {
+                const isLoaded = isComponentLoaded(this.hass, platform);
                 return html`
-                  <paper-icon-item
-                    .disabled=${!isComponentLoaded(this.hass, platform)}
-                    @click="${this._platformPicked}"
-                    .platform="${platform}"
-                  >
-                    <ha-icon
-                      slot="item-icon"
-                      .icon=${domainIcon(platform)}
-                    ></ha-icon>
-                    <span class="item-text">
-                      ${this.hass.localize(
-                        `ui.panel.config.helpers.types.${platform}`
-                      ) || platform}
-                    </span>
-                  </paper-icon-item>
+                  <div>
+                    <paper-icon-item
+                      .disabled=${!isLoaded}
+                      @click=${this._platformPicked}
+                      .platform=${platform}
+                    >
+                      <ha-icon
+                        slot="item-icon"
+                        .icon=${domainIcon(platform)}
+                      ></ha-icon>
+                      <span class="item-text">
+                        ${this.hass.localize(
+                          `ui.panel.config.helpers.types.${platform}`
+                        ) || platform}
+                      </span>
+                    </paper-icon-item>
+                    ${!isLoaded
+                      ? html`
+                          <paper-tooltip
+                            >${this.hass.localize(
+                              "ui.dialogs.helper_settings.platform_not_loaded",
+                              "platform",
+                              platform
+                            )}</paper-tooltip
+                          >
+                        `
+                      : ""}
+                  </div>
                 `;
               })}
               <mwc-button slot="primaryAction" @click="${this.closeDialog}">

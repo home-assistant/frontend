@@ -659,18 +659,18 @@
         }
       },
       "helper_settings": {
-        "platform_not_loaded": "The {platform} component is not loaded, please add it your configuration. Either by adding 'default_config:' or '{platform}:'.",
+        "platform_not_loaded": "The {platform} integration is not loaded, please add it your configuration. Either by adding 'default_config:' or '{platform}:'.",
         "yaml_not_editable": "The settings of this entity can not be edited from the UI. Only entities setup from the UI are configurable from the UI.",
         "required_error_msg": "This field is required",
         "generic": {
           "name": "Name",
-          "icon": "Icon",
-          "initial_value": "Initial value at start",
-          "initial_value_explain": "The value the element will have when Home Assistant starts. When left empty, the value will be restored to it's previous value."
+          "icon": "Icon"
         },
         "input_datetime": {
-          "has_time": "Time",
-          "has_date": "Date"
+          "date": "Date",
+          "time": "Time",
+          "datetime": "Date and time",
+          "mode": "What do you want to input"
         },
         "input_text": {
           "min": "Minimum lenght",
