@@ -48,6 +48,7 @@ import {
 
 import "../../../components/ha-card";
 import "../../../components/ha-icon";
+import "../components/hui-marquee";
 
 function getContrastRatio(
   rgb1: [number, number, number],
@@ -93,6 +94,7 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
   @property() private _veryNarrow: boolean = false;
   @property() private _cardHeight: number = 0;
   @query("paper-progress") private _progressBar?: PaperProgressElement;
+  @property() private _marqueeActive: boolean = false;
   private _progressInterval?: number;
   private _resizeObserver?: ResizeObserver;
 
@@ -245,8 +247,13 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
                     : html`
                         <div class="media-info">
                           <div class="title">
-                            ${stateObj.attributes.media_title ||
-                              computeMediaDescription(stateObj)}
+                            <hui-marquee
+                              .text=${stateObj.attributes.media_title ||
+                                computeMediaDescription(stateObj)}
+                              .active=${this._marqueeActive}
+                              @mouseover=${this._marqueeMouseOver}
+                              @mouseleave=${this._marqueeMouseLeave}
+                            ></hui-marquee>
                           </div>
                           ${!stateObj.attributes.media_title
                             ? ""
@@ -575,6 +582,18 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
         this._foregroundColor = undefined;
         this._backgroundColor = undefined;
       });
+  }
+
+  private _marqueeMouseOver(): void {
+    if (!this._marqueeActive) {
+      this._marqueeActive = true;
+    }
+  }
+
+  private _marqueeMouseLeave(): void {
+    if (this._marqueeActive) {
+      this._marqueeActive = false;
+    }
   }
 
   static get styles(): CSSResult {
