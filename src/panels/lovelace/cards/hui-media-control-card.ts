@@ -332,7 +332,7 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
                         .max="${stateObj.attributes.media_duration}"
                         .value="${getCurrentProgress(stateObj)}"
                         class="progress"
-                        ${styleMap({
+                        style=${styleMap({
                           "--paper-progress-active-color":
                             this._foregroundColor || "var(--accent-color)",
                           cursor: supportsFeature(stateObj, SUPPORT_SEEK)
@@ -454,6 +454,9 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
 
   private _measureCard() {
     const card = this.shadowRoot!.querySelector("ha-card")!;
+    if (!card) {
+      return;
+    }
     this._narrow = card.offsetWidth < 350;
     this._veryNarrow = card.offsetWidth < 300;
     this._cardHeight = card.offsetHeight;
