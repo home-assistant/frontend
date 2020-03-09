@@ -604,7 +604,8 @@
             "config_entry_system_options": {
                 "enable_new_entities_description": "Pokud je zakázáno, nově objevené entity pro {integration} nebudou automaticky přidány do Home Assistant.",
                 "enable_new_entities_label": "Povolit nově přidané entity.",
-                "title": "Systémové možnosti pro {integration}"
+                "title": "Systémové možnosti pro {integration}",
+                "update": "Aktualizovat"
             },
             "confirmation": {
                 "cancel": "Zrušit",
@@ -640,6 +641,9 @@
             "more_info_control": {
                 "dismiss": "Zavřít dialog",
                 "edit": "Upravit entitu",
+                "person": {
+                    "create_zone": "Vytvořit zónu z aktuálního umístění"
+                },
                 "restored": {
                     "confirm_remove_text": "Opravdu chcete tuto entitu odebrat?",
                     "confirm_remove_title": "Odebrat entitu?",
@@ -659,6 +663,18 @@
                 },
                 "updater": {
                     "title": "Pokyny pro aktualizaci"
+                },
+                "vacuum": {
+                    "clean_spot": "Čisté místo",
+                    "commands": "Příkazy vysavače:",
+                    "fan_speed": "Rychlost ventilátoru",
+                    "locate": "Lokalizovat",
+                    "pause": "Pauza",
+                    "return_home": "Návrat domů",
+                    "start": "Start",
+                    "start_pause": "Start / Pauza",
+                    "status": "Stav",
+                    "stop": "Stop"
                 }
             },
             "more_info_settings": {
@@ -879,6 +895,7 @@
                         },
                         "edit_ui": "Upravit pomocí uživatelského rozhraní",
                         "edit_yaml": "Upravit jako YAML",
+                        "enable_disable": "Povolit / zakázat automatizaci",
                         "introduction": "Použijte automatizace k oživení svého domova",
                         "load_error_not_editable": "Lze upravovat pouze automatizace v automations.yaml.",
                         "load_error_unknown": "Chyba při načítání automatizace ({err_no}).",
@@ -1910,6 +1927,9 @@
                         "alarm-panel": {
                             "available_states": "Dostupné stavy",
                             "name": "Ovládací panel alarmu"
+                        },
+                        "button": {
+                            "name": "Tlačítko"
                         },
                         "conditional": {
                             "name": "Podmínka"

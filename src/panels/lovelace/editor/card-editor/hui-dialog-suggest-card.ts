@@ -9,6 +9,8 @@ import {
   query,
 } from "lit-element";
 
+import deepFreeze from "deep-freeze";
+
 import { HomeAssistant } from "../../../../types";
 import { LovelaceCardConfig } from "../../../../data/lovelace";
 import "./hui-card-editor";
@@ -52,6 +54,9 @@ export class HuiDialogSuggestCard extends LitElement {
         {},
         true
       );
+    if (!Object.isFrozen(this._cardConfig)) {
+      this._cardConfig = deepFreeze(this._cardConfig);
+    }
     if (this._dialog) {
       this._dialog.open();
     }
@@ -73,7 +78,7 @@ export class HuiDialogSuggestCard extends LitElement {
                   ${this._cardConfig.map(
                     (cardConfig) => html`
                       <hui-card-preview
-                        .hass="${this.hass}"
+                        .hass=${this.hass}
                         .config="${cardConfig}"
                       ></hui-card-preview>
                     `

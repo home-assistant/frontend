@@ -8,6 +8,7 @@ export interface ReceiverStatusMessage extends BaseCastMessage {
   showDemo: boolean;
   hassUrl?: string;
   lovelacePath?: string | number | null;
+  urlPath?: string | null;
 }
 
 export type SenderMessage = ReceiverStatusMessage;

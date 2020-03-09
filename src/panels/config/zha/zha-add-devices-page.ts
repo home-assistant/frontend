@@ -84,7 +84,7 @@ class ZHAAddDevicesPage extends LitElement {
                 ${this._showHelp
                   ? html`
                       <ha-service-description
-                        .hass="${this.hass}"
+                        .hass=${this.hass}
                         domain="zha"
                         service="permit"
                         class="help-text"

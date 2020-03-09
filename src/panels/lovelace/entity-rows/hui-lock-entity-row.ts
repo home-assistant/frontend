@@ -53,8 +53,8 @@ class HuiLockEntityRow extends LitElement implements LovelaceRow {
     }
 
     return html`
-      <hui-generic-entity-row .hass="${this.hass}" .config="${this._config}">
-        <mwc-button @click="${this._callService}">
+      <hui-generic-entity-row .hass=${this.hass} .config=${this._config}>
+        <mwc-button @click="${this._callService}" class="text-content">
           ${stateObj.state === "locked"
             ? this.hass!.localize("ui.card.lock.unlock")
             : this.hass!.localize("ui.card.lock.lock")}

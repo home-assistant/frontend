@@ -14,10 +14,10 @@ import { EntitiesEditorEvent, EditorTarget } from "../types";
 import { HomeAssistant } from "../../../../types";
 import { LovelaceCardEditor } from "../../types";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import { HistoryGraphCardConfig } from "../../cards/hui-history-graph-card";
 import { EntityConfig } from "../../entity-rows/types";
 import { processEditorEntities } from "../process-editor-entities";
 import { configElementStyle } from "./config-elements-style";
+import { HistoryGraphCardConfig } from "../../cards/types";
 
 const entitiesConfigStruct = struct.union([
   {
@@ -109,7 +109,7 @@ export class HuiHistoryGraphCardEditor extends LitElement
           ></paper-input>
         </div>
         <hui-entity-editor
-          .hass="${this.hass}"
+          .hass=${this.hass}
           .entities="${this._configEntities}"
           @entities-changed="${this._valueChanged}"
         ></hui-entity-editor>

@@ -20,6 +20,7 @@ import "../../common/search/search-input";
 import { styleMap } from "lit-html/directives/style-map";
 import { FlowConfig } from "./show-dialog-data-entry-flow";
 import { configFlowContentStyles } from "./styles";
+import { classMap } from "lit-html/directives/class-map";
 
 interface HandlerObj {
   name: string;
@@ -69,7 +70,10 @@ class StepFlowPickHandler extends LitElement {
         .filter=${this.filter}
         @value-changed=${this._filterChanged}
       ></search-input>
-      <div style=${styleMap({ width: `${this._width}px` })}>
+      <div
+        style=${styleMap({ width: `${this._width}px` })}
+        class=${classMap({ advanced: Boolean(this.showAdvanced) })}
+      >
         ${handlers.map(
           (handler: HandlerObj) =>
             html`
@@ -93,6 +97,7 @@ class StepFlowPickHandler extends LitElement {
               )}<a
                 href="https://www.home-assistant.io/integrations/"
                 target="_blank"
+                rel="noreferrer"
                 >${this.hass.localize(
                   "ui.panel.config.integrations.home_assistant_website"
                 )}</a
@@ -142,6 +147,14 @@ class StepFlowPickHandler extends LitElement {
         div {
           overflow: auto;
           max-height: 600px;
+        }
+        @media all and (max-height: 1px) {
+          div {
+            max-height: calc(100vh - 205px);
+          }
+          div.advanced {
+            max-height: calc(100vh - 300px);
+          }
         }
         paper-item {
           cursor: pointer;

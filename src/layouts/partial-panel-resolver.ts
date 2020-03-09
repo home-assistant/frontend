@@ -8,8 +8,9 @@ import {
   RouteOptions,
 } from "./hass-router-page";
 import { removeInitSkeleton } from "../util/init-skeleton";
+import { deepEqual } from "../common/util/deep-equal";
 
-const CACHE_COMPONENTS = ["lovelace", "states", "developer-tools"];
+const CACHE_URL_PATHS = ["lovelace", "developer-tools"];
 const COMPONENTS = {
   calendar: () =>
     import(
@@ -31,10 +32,6 @@ const COMPONENTS = {
     import(
       /* webpackChunkName: "panel-lovelace" */ "../panels/lovelace/ha-panel-lovelace"
     ),
-  states: () =>
-    import(
-      /* webpackChunkName: "panel-states" */ "../panels/states/ha-panel-states"
-    ),
   history: () =>
     import(
       /* webpackChunkName: "panel-history" */ "../panels/history/ha-panel-history"
@@ -42,10 +39,6 @@ const COMPONENTS = {
   iframe: () =>
     import(
       /* webpackChunkName: "panel-iframe" */ "../panels/iframe/ha-panel-iframe"
-    ),
-  kiosk: () =>
-    import(
-      /* webpackChunkName: "panel-kiosk" */ "../panels/kiosk/ha-panel-kiosk"
     ),
   logbook: () =>
     import(
@@ -69,11 +62,10 @@ const COMPONENTS = {
 
 const getRoutes = (panels: Panels): RouterOptions => {
   const routes: RouterOptions["routes"] = {};
-
   Object.values(panels).forEach((panel) => {
     const data: RouteOptions = {
       tag: `ha-panel-${panel.component_name}`,
-      cache: CACHE_COMPONENTS.includes(panel.component_name),
+      cache: CACHE_URL_PATHS.includes(panel.url_path),
     };
     if (panel.component_name in COMPONENTS) {
       data.load = COMPONENTS[panel.component_name];
@@ -89,7 +81,7 @@ const getRoutes = (panels: Panels): RouterOptions => {
 
 @customElement("partial-panel-resolver")
 class PartialPanelResolver extends HassRouterPage {
-  @property() public hass?: HomeAssistant;
+  @property() public hass!: HomeAssistant;
   @property() public narrow?: boolean;
 
   protected updated(changedProps: PropertyValues) {
@@ -101,11 +93,8 @@ class PartialPanelResolver extends HassRouterPage {
 
     const oldHass = changedProps.get("hass") as this["hass"];
 
-    if (
-      this.hass!.panels &&
-      (!oldHass || oldHass.panels !== this.hass!.panels)
-    ) {
-      this._updateRoutes();
+    if (this.hass.panels && (!oldHass || oldHass.panels !== this.hass.panels)) {
+      this._updateRoutes(oldHass?.panels);
     }
   }
 
@@ -118,7 +107,7 @@ class PartialPanelResolver extends HassRouterPage {
   }
 
   protected updatePageEl(el) {
-    const hass = this.hass!;
+    const hass = this.hass;
 
     if ("setProperties" in el) {
       // As long as we have Polymer panels
@@ -136,11 +125,20 @@ class PartialPanelResolver extends HassRouterPage {
     }
   }
 
-  private async _updateRoutes() {
-    this.routerOptions = getRoutes(this.hass!.panels);
-    await this.rebuild();
-    await this.pageRendered;
-    removeInitSkeleton();
+  private async _updateRoutes(oldPanels?: HomeAssistant["panels"]) {
+    this.routerOptions = getRoutes(this.hass.panels);
+
+    if (
+      !oldPanels ||
+      !deepEqual(
+        oldPanels[this._currentPage],
+        this.hass.panels[this._currentPage]
+      )
+    ) {
+      await this.rebuild();
+      await this.pageRendered;
+      removeInitSkeleton();
+    }
   }
 }
 

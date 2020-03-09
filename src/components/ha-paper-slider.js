@@ -18,6 +18,11 @@ class HaPaperSlider extends PaperSliderClass {
         line-height: normal;
       }
 
+      .disabled.ring > .slider-knob > .slider-knob-inner {
+        background-color: var(--paper-slider-disabled-knob-color, var(--paper-grey-400));
+        border: 2px solid var(--paper-slider-disabled-knob-color, var(--paper-grey-400));
+      }
+
       .pin > .slider-knob > .slider-knob-inner::before {
         top: unset;
         margin-left: unset;

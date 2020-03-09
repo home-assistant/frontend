@@ -54,6 +54,7 @@ class HaScriptPicker extends LitElement {
               <a
                 href="https://home-assistant.io/docs/scripts/editor/"
                 target="_blank"
+                rel="noreferrer"
               >
                 ${this.hass.localize(
                   "ui.panel.config.script.picker.learn_more"
@@ -139,7 +140,6 @@ class HaScriptPicker extends LitElement {
         }
 
         ha-card {
-          padding-bottom: 8px;
           margin-bottom: 56px;
         }
 
@@ -147,8 +147,7 @@ class HaScriptPicker extends LitElement {
           display: flex;
           flex-direction: horizontal;
           align-items: center;
-          padding: 0 8px;
-          margin: 4px 0;
+          padding: 0 8px 0 16px;
         }
 
         .script > *:first-child {

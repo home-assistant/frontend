@@ -39,8 +39,13 @@ export interface CastConfig {
   icon: string;
   name: string;
   view: string | number;
+  dashboard?: string;
   // Hide the row if either unsupported browser or no API available.
   hide_if_unavailable: boolean;
+}
+export interface ButtonsRowConfig {
+  type: "buttons";
+  entities: Array<string | EntityConfig>;
 }
 export type LovelaceRowConfig =
   | EntityConfig
@@ -48,7 +53,9 @@ export type LovelaceRowConfig =
   | SectionConfig
   | WeblinkConfig
   | CallServiceConfig
-  | CastConfig;
+  | CastConfig
+  | ButtonsRowConfig
+  | ConditionalRowConfig;
 
 export interface LovelaceRow extends HTMLElement {
   hass?: HomeAssistant;

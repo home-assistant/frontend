@@ -59,6 +59,7 @@ export interface StateIconElementConfig extends LovelaceElementConfig {
   hold_action?: ActionConfig;
   double_tap_action?: ActionConfig;
   icon?: string;
+  state_color?: boolean;
 }
 
 export interface StateLabelElementConfig extends LovelaceElementConfig {

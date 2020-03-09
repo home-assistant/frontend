@@ -23,7 +23,7 @@ const fixedIcons = {
   homeassistant: "hass:home-assistant",
   homekit: "hass:home-automation",
   image_processing: "hass:image-filter-frames",
-  input_boolean: "hass:drawing",
+  input_boolean: "hass:toggle-switch-outline",
   input_datetime: "hass:calendar-clock",
   input_number: "hass:ray-vertex",
   input_select: "hass:format-list-bulleted",

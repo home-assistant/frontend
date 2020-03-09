@@ -6,6 +6,13 @@ import { afterNextRender } from "../common/util/render-status";
 // tslint:disable-next-line
 import { HaCodeEditor } from "./ha-code-editor";
 
+declare global {
+  // for fire event
+  interface HASSDomEvents {
+    "editor-refreshed": undefined;
+  }
+}
+
 const isEmpty = (obj: object) => {
   if (typeof obj !== "object") {
     return false;
@@ -37,6 +44,7 @@ export class HaYamlEditor extends LitElement {
       if (this._editor?.codemirror) {
         this._editor.codemirror.refresh();
       }
+      afterNextRender(() => fireEvent(this, "editor-refreshed"));
     });
   }
 

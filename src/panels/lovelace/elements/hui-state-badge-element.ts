@@ -59,7 +59,7 @@ export class HuiStateBadgeElement extends LitElement
 
     return html`
       <ha-state-label-badge
-        .hass="${this.hass}"
+        .hass=${this.hass}
         .state="${stateObj}"
         .title="${this._config.title === undefined
           ? computeStateName(stateObj)

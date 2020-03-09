@@ -560,14 +560,14 @@
             "device-picker": {
                 "clear": "Wyczyść",
                 "device": "Urządzenie",
-                "show_devices": "Wyświetl urządzenia",
+                "show_devices": "Pokaż urządzenia",
                 "toggle": "Przełącz"
             },
             "entity": {
                 "entity-picker": {
                     "clear": "Wyczyść",
                     "entity": "Encja",
-                    "show_entities": "Wyświetl encje"
+                    "show_entities": "Pokaż encje"
                 }
             },
             "history_charts": {
@@ -581,6 +581,7 @@
                 "entity": "Powiązane encje",
                 "group": "Element następujących grup",
                 "integration": "Integracja",
+                "no_related_found": "Nie znaleziono powiązanych elementów.",
                 "scene": "Element następujących scen",
                 "script": "Element następujących skryptów"
             },
@@ -604,7 +605,8 @@
             "config_entry_system_options": {
                 "enable_new_entities_description": "Jeśli wyłączone, nowo wykryte encje nie będą automatycznie dodawane do Home Assistant'a.",
                 "enable_new_entities_label": "Włącz dodawanie nowych encji.",
-                "title": "Opcje systemowe dla {integration}"
+                "title": "Opcje systemowe dla {integration}",
+                "update": "Aktualizuj"
             },
             "confirmation": {
                 "cancel": "Anuluj",
@@ -624,22 +626,67 @@
                     "enabled_description": "Wyłączone encje nie zostaną dodane do Home Assistant'a.",
                     "enabled_label": "Włącz encję",
                     "entity_id": "Identyfikator encji",
+                    "icon": "Nadpisanie ikony",
+                    "icon_error": "Ikony powinny mieć format 'prefix:iconname', np. 'mdi:home'",
                     "name": "Nadpisanie nazwy",
                     "note": "Uwaga: może to jeszcze nie działać ze wszystkimi integracjami.",
                     "unavailable": "Ta encja nie jest obecnie dostępna.",
                     "update": "AKTUALIZUJ"
                 },
+                "no_unique_id": "Ten encja nie ma unikalnego identyfikatora, dlatego z poziomu interfejsu użytkownika nie można zarządzać jej ustawieniami.",
                 "related": "Powiązane",
                 "settings": "Ustawienia"
             },
             "generic": {
                 "cancel": "Anuluj",
+                "close": "zamknij",
                 "default_confirmation_title": "Jesteś pewny?",
                 "ok": "OK"
+            },
+            "helper_settings": {
+                "generic": {
+                    "icon": "Ikona",
+                    "initial_value": "Wartość początkowa",
+                    "initial_value_explain": "Wartość, jaką będzie miał element po uruchomieniu Home Assistant'a. Niewypełnienie spowoduje przywrócenie poprzedniej wartości.",
+                    "name": "Nazwa"
+                },
+                "input_datetime": {
+                    "has_date": "Data",
+                    "has_time": "Czas"
+                },
+                "input_number": {
+                    "box": "Pole wprowadzania danych",
+                    "max": "Maksymalna wartość",
+                    "min": "Minimalna wartość",
+                    "mode": "Tryb wyświetlania",
+                    "slider": "Suwak",
+                    "step": "Wielkość kroku suwaka",
+                    "unit_of_measurement": "Jednostka miary"
+                },
+                "input_select": {
+                    "add": "Dodaj",
+                    "add_option": "Dodaj opcję",
+                    "no_options": "Nie ma jeszcze opcji.",
+                    "options": "Opcje"
+                },
+                "input_text": {
+                    "max": "Maksymalna długość",
+                    "min": "Minimalna długość",
+                    "mode": "Tryb wyświetlania",
+                    "password": "Hasło",
+                    "pattern": "Wyrażenie regularne do sprawdzania poprawności po stronie klienta",
+                    "text": "Pole tekstowe"
+                },
+                "not_editable": "Nieedytowalne",
+                "not_editable_text": "Tego elementu nie można zmienić z poziomu interfejsu użytkownika, ponieważ jest on zdefiniowany w pliku configuration.yaml.",
+                "required_error_msg": "To pole jest wymagane"
             },
             "more_info_control": {
                 "dismiss": "Zamknij okno dialogowe",
                 "edit": "Edytuj encję",
+                "person": {
+                    "create_zone": "Utwórz strefę z bieżącej lokalizacji"
+                },
                 "restored": {
                     "confirm_remove_text": "Czy na pewno chcesz usunąć tę encję?",
                     "confirm_remove_title": "Usunąć encję?",
@@ -659,6 +706,18 @@
                 },
                 "updater": {
                     "title": "Instrukcje aktualizacji"
+                },
+                "vacuum": {
+                    "clean_spot": "Wyczyść miejsce",
+                    "commands": "Polecenia odkurzacza:",
+                    "fan_speed": "Prędkość wentylatora",
+                    "locate": "Zlokalizuj",
+                    "pause": "Pauza",
+                    "return_home": "Powrót do domu",
+                    "start": "Start",
+                    "start_pause": "Start/Pauza",
+                    "status": "Status",
+                    "stop": "Zatrzymaj"
                 }
             },
             "more_info_settings": {
@@ -879,6 +938,7 @@
                         },
                         "edit_ui": "Edytuj za pomocą interfejsu użytkownika",
                         "edit_yaml": "Edycja jako YAML",
+                        "enable_disable": "Włącz/wyłącz automatyzację",
                         "introduction": "Użyj automatyzacji, aby ożywić swój dom",
                         "load_error_not_editable": "Tylko automatyzacje zdefiniowane w pliku automations.yaml są edytowalne.",
                         "load_error_unknown": "Wystąpił błąd podczas ładowania automatyzacji ({err_no}).",
@@ -1306,6 +1366,7 @@
                         "filter": {
                             "filter": "Filtr",
                             "show_disabled": "Wyświetlaj wyłączone encje",
+                            "show_readonly": "Wyświetlaj encje tylko do odczytu",
                             "show_unavailable": "Wyświetlaj niedostępne encje"
                         },
                         "header": "Rejestr encji",
@@ -1329,12 +1390,37 @@
                         "status": {
                             "disabled": "Wyłączone",
                             "ok": "Ok",
+                            "readonly": "Tylko do odczytu",
                             "unavailable": "Niedostępne"
                         },
                         "unavailable": "(niedostępne)"
                     }
                 },
                 "header": "Konfiguruj Home Assistant'a",
+                "helpers": {
+                    "caption": "Pomocnicy",
+                    "description": "Elementy, które mogą pomóc w tworzeniu automatyzacji",
+                    "dialog": {
+                        "add_helper": "Dodaj pomocnika",
+                        "add_platform": "Dodaj {platform}",
+                        "create": "Utwórz"
+                    },
+                    "picker": {
+                        "add_helper": "Dodaj pomocnika",
+                        "headers": {
+                            "editable": "Edytowalne",
+                            "name": "Nazwa",
+                            "type": "Typ"
+                        }
+                    },
+                    "types": {
+                        "input_boolean": "Przełącznik",
+                        "input_datetime": "Data i/lub godzina",
+                        "input_number": "Pole numeryczne",
+                        "input_select": "Rozwijane pole wyboru",
+                        "input_text": "Pole tekstowe"
+                    }
+                },
                 "integrations": {
                     "caption": "Integracje",
                     "config_entry": {
@@ -1396,6 +1482,76 @@
                     "note_about_website_reference": "Więcej jest dostępnych na stronie integracji "
                 },
                 "introduction": "Tutaj możesz skonfigurować Home Assistant'a i jego komponenty. Nie wszystkie opcje można konfigurować z interfejsu użytkownika, ale pracujemy nad tym.",
+                "lovelace": {
+                    "caption": "Dashboard'y interfejsu użytkownika Lovelace",
+                    "dashboards": {
+                        "cant_edit_yaml": "Dasboard'y zdefiniowane w plikach YAML nie mogą być edytowane z poziomu interfejsu użytkownika. Zmień je w pliku configuration.yaml.",
+                        "caption": "Dashboard'y",
+                        "conf_mode": {
+                            "storage": "Konfigurowalny z interfejsu użytkownika",
+                            "yaml": "Plik YAML"
+                        },
+                        "confirm_delete": "Na pewno chcesz usunąć ten dashboard?",
+                        "detail": {
+                            "create": "Utwórz",
+                            "delete": "Usuń",
+                            "dismiss": "Zamknij",
+                            "edit_dashboard": "Edytuj dashboard",
+                            "icon": "Ikona w pasku bocznym",
+                            "new_dashboard": "Dodaj nowy dashboard",
+                            "require_admin": "Tylko administrator",
+                            "show_sidebar": "Pokaż na pasku bocznym",
+                            "title": "Tytuł w pasku bocznym",
+                            "update": "Aktualizuj",
+                            "url": "URL",
+                            "url_error_msg": "Adres URL nie może zawierać spacji ani znaków specjalnych, z wyjątkiem _ i -"
+                        },
+                        "picker": {
+                            "add_dashboard": "Dodaj dashboard",
+                            "headers": {
+                                "conf_mode": "Metoda konfiguracji",
+                                "filename": "Nazwa pliku",
+                                "require_admin": "Tylko administrator",
+                                "sidebar": "Pokaż na pasku bocznym",
+                                "title": "Tytuł"
+                            },
+                            "open": "Otwórz dashboard"
+                        }
+                    },
+                    "description": "Konfiguruj dashboard'y interfejsu użytkownika Lovelace",
+                    "resources": {
+                        "cant_edit_yaml": "Korzystasz z interfejsu użytkownika Lovelace w trybie YAML, dlatego nie możesz zarządzać zasobami za pomocą interfejsu użytkownika. Zarządzaj nimi w pliku configuration.yaml.",
+                        "caption": "Zasoby",
+                        "confirm_delete": "Na pewno chcesz usunąć ten zasób?",
+                        "detail": {
+                            "create": "Utwórz",
+                            "delete": "Usuń",
+                            "dismiss": "Zamknij",
+                            "new_resource": "Dodaj nowy zasób",
+                            "type": "Typ zasobu",
+                            "update": "Aktualizuj",
+                            "url": "URL",
+                            "url_error_msg": "URL jest wymagany",
+                            "warning_header": "Bądź ostrożny!",
+                            "warning_text": "Dodawanie zasobów może być niebezpieczne, upewnij się, że znasz źródło zasobu i ufasz mu. Nieprawidłowe zasoby mogą poważnie uszkodzić twój system."
+                        },
+                        "picker": {
+                            "add_resource": "Dodaj zasób",
+                            "headers": {
+                                "type": "Typ",
+                                "url": "URL"
+                            }
+                        },
+                        "refresh_body": "Musisz odświeżyć stronę, aby zakończyć usuwanie, czy chcesz teraz odświeżyć?",
+                        "refresh_header": "Czy chcesz odświeżyć?",
+                        "types": {
+                            "css": "Arkusz stylów",
+                            "html": "HTML (przestarzałe)",
+                            "js": "Plik JavaScript (przestarzałe)",
+                            "module": "Moduł JavaScript (przestarzałe)"
+                        }
+                    }
+                },
                 "person": {
                     "add_person": "Dodaj osobę",
                     "caption": "Osoby",
@@ -1494,7 +1650,7 @@
                     "section": {
                         "reloading": {
                             "automation": "Automatyzacje",
-                            "core": "Lokacje i dostosowywanie",
+                            "core": "Lokalizacja i dostosowywanie",
                             "group": "Grupy",
                             "heading": "Ponowne wczytanie konfiguracji",
                             "introduction": "Niektóre części konfiguracji można wczytać od nowa bez konieczności ponownego uruchamiania Home Assistant'a. Naciśnięcie poniższych przycisków wczyta ponownie daną część konfiguracji.",
@@ -1684,7 +1840,10 @@
                         "required_error_msg": "To pole jest wymagane",
                         "update": "Aktualizuj"
                     },
-                    "edit_home_zone": "Lokalizację domu można zmienić w konfiguracji ogólnej.",
+                    "edit_home_zone": "Lokalizację strefy domowej można zmienić w konfiguracji ogólnej.",
+                    "edit_home_zone_narrow": "Promienia strefy domowej nie można jeszcze edytować z poziomu interfejsu użytkownika. Lokalizację tej strefy można zmienić w konfiguracji ogólnej.",
+                    "go_to_core_config": "Czy chcesz przejść do konfiguracji ogólnej?",
+                    "home_zone_core_config": "Lokalizację strefy domowej można edytować w konfiguracji ogólnej. Promienia strefy domowej nie można jeszcze edytować z poziomu interfejsu użytkownika. Czy chcesz przejść do konfiguracji ogólnej?",
                     "introduction": "Strefy pozwalają określić regiony na ziemi. Gdy dana osoba znajduje się w strefie, jej encja pobierze stan z nazwy strefy. Strefy mogą być również używane jako wyzwalacz lub warunek w automatyzacjach.",
                     "no_zones_created_yet": "Wygląda na to, że nie utworzyłeś jeszcze żadnych stref."
                 },
@@ -1892,6 +2051,11 @@
                         "toggle": "Przełącz {name}",
                         "url": "Otwórz okno do {url_path}"
                     },
+                    "safe-mode": {
+                        "description": "Podczas ładowania konfiguracji Home Assistant napotkał problemy i działa teraz w trybie awaryjnym. Zajrzyj do loga, aby sprawdzić, co poszło nie tak.",
+                        "header": "Tryb awaryjny aktywny",
+                        "show_errors": "Pokaż błędy"
+                    },
                     "shopping-list": {
                         "add_item": "Dodaj pozycję",
                         "checked_items": "Pozycje zaznaczone",
@@ -1911,7 +2075,13 @@
                             "available_states": "Dostępne stany",
                             "name": "Panel alarmu"
                         },
+                        "button": {
+                            "name": "Przycisk"
+                        },
                         "conditional": {
+                            "card": "Karta",
+                            "change_type": "Zmień typ",
+                            "conditions": "Warunki",
                             "name": "Warunkowa"
                         },
                         "config": {
@@ -1920,7 +2090,7 @@
                         },
                         "entities": {
                             "name": "Encje",
-                            "show_header_toggle": "Pokaż przełącznik w nagłówku?",
+                            "show_header_toggle": "Pokaż przełącznik w nagłówku",
                             "toggle": "Przełącz encje"
                         },
                         "entity-button": {
@@ -1953,9 +2123,9 @@
                             "minimum": "Minimum",
                             "name": "Nazwa",
                             "refresh_interval": "Częstotliwość odświeżania",
-                            "show_icon": "Pokaż ikonę?",
-                            "show_name": "Pokaż nazwę?",
-                            "show_state": "Pokaż stan?",
+                            "show_icon": "Wyświetlanie ikony",
+                            "show_name": "Wyświetlanie nazwy",
+                            "show_state": "Wyświetlanie stanu",
                             "tap_action": "Akcja dotknięcia",
                             "theme": "Motyw",
                             "title": "Tytuł",
@@ -1979,7 +2149,7 @@
                             "name": "Światło"
                         },
                         "map": {
-                            "dark_mode": "Tryb ciemny?",
+                            "dark_mode": "Tryb ciemny",
                             "default_zoom": "Domyślne powiększenie",
                             "geo_location_sources": "Źródła geolokalizacji",
                             "name": "Mapa",
@@ -2052,7 +2222,10 @@
                         "header": "Konfiguracja widoku",
                         "header_name": "Konfiguracja widoku {name}",
                         "move_left": "Przesuń widok w lewo",
-                        "move_right": "Przesuń widok w prawo"
+                        "move_right": "Przesuń widok w prawo",
+                        "tab_badges": "Odznaki",
+                        "tab_settings": "Ustawienia",
+                        "tab_visibility": "Widoczność"
                     },
                     "header": "Edycja interfejsu użytkownika",
                     "menu": {
@@ -2075,16 +2248,21 @@
                         "error_remove": "Nie można usunąć konfiguracji: {error}",
                         "error_save_yaml": "Nie można zapisać YAML: {error}",
                         "header": "Edytuj konfigurację",
+                        "resources_moved": "Zasoby nie powinny być już dodawane do konfiguracji Lovelace, można je dodawać w panelu konfiguracji Lovelace.",
                         "save": "Zapisz",
                         "saved": "Zapisano",
                         "unsaved_changes": "Niezapisane zmiany"
                     },
                     "save_config": {
                         "cancel": "Nieważne",
+                        "close": "Zamknij",
                         "header": "Przejmij kontrolę nad interfejsem użytkownika Lovelace",
                         "para": "Domyślnie Home Assistant będzie zarządzać interfejsem użytkownika, aktualizując go, gdy pojawią się nowe encje lub komponenty Lovelace. Jeśli przejmiesz kontrolę, Home Assistant nie będzie już automatycznie wprowadzać dla ciebie zmian.",
                         "para_sure": "Na pewno chcesz przejąć kontrolę nad interfejsem użytkownika?",
-                        "save": "Przejmuję kontrolę"
+                        "save": "Przejmuję kontrolę",
+                        "yaml_config": "Aby rozpocząć, zapoznaj się z aktualną konfiguracją tego dashboard'u:",
+                        "yaml_control": "Aby zarządzać w trybie YAML, utwórz plik o nazwie podanej w konfiguracji dla tego dashboard'u lub domyślny 'ui-lovelace.yaml'.",
+                        "yaml_mode": "Używasz trybu YAML, co oznacza, że nie możesz zmienić konfiguracji Lovelace z poziomu interfejsu użytkownika. Jeśli chcesz zarządzać Lovelace z poziomu interfejsu użytkownika, usuń 'mode: yaml' z konfiguracji Lovelace w pliku 'configuration.yaml'."
                     },
                     "suggest_card": {
                         "add": "Dodaj do interfejsu użytkownika Lovelace",
@@ -2343,7 +2521,7 @@
                     "learn_auth_requests": "Dowiedz się, jak tworzyć uwierzytelnione żądania.",
                     "not_used": "Nigdy nie był używany",
                     "prompt_copy_token": "Skopiuj token. Nie będzie on już ponownie wyświetlany.",
-                    "prompt_name": "Nazwa?"
+                    "prompt_name": "Nazwa"
                 },
                 "mfa_setup": {
                     "close": "Zamknij",
@@ -2381,7 +2559,7 @@
                     "dropdown_label": "Motyw",
                     "error_no_theme": "Brak dostępnych motywów.",
                     "header": "Motyw",
-                    "link_promo": "Dowiedz się więcej o motywch"
+                    "link_promo": "Dowiedz się więcej o motywach"
                 },
                 "vibrate": {
                     "description": "Włącz lub wyłącz wibracje na tym urządzeniu podczas sterowania urządzeniami.",

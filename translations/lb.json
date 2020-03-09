@@ -581,6 +581,7 @@
                 "entity": "Entitéiten a Relatioun",
                 "group": "Deel vun de folgende Gruppen",
                 "integration": "Integratioun",
+                "no_related_found": "Keng ähnlech Objeten fonnt.",
                 "scene": "Deel vun de folgende Zeenen",
                 "script": "Deel vun de folgende Skripten"
             },
@@ -602,9 +603,10 @@
         },
         "dialogs": {
             "config_entry_system_options": {
-                "enable_new_entities_description": "Falls desaktivéiert, ginn nei entdeckten Entitéiten net automatesch zu Home Assistant dobäigesat.",
+                "enable_new_entities_description": "Falls desaktivéiert, ginn nei entdeckten Entitéiten fir {integration} net automatesch zu Home Assistant dobäigesat.",
                 "enable_new_entities_label": "Aktivéiert nei dobäigesate Entitéiten.",
-                "title": "System Optiounen"
+                "title": "System Optiounen fir {integration}",
+                "update": "Aktualiséieren"
             },
             "confirmation": {
                 "cancel": "Ofbriechen",
@@ -624,22 +626,62 @@
                     "enabled_description": "Deaktivéiert Entitéiten ginn net am Home Assistant bäigesat.",
                     "enabled_label": "Entitéit aktivéieren",
                     "entity_id": "ID vun der Entitéit",
+                    "icon": "Ikon iwwerschreiwen",
                     "name": "Numm iwwerschreiwen",
                     "note": "Nott: dëst funktionéiert villäicht nach net mat all Integratioun.",
                     "unavailable": "Dës Entitéit ass net erreechbar fir de Moment.",
                     "update": "AKTUALISEIEREN"
                 },
+                "no_unique_id": "Dës Entitéit huet keng eenzegaarteg ID, dofir kënnen hir Astellungen net am Benotzer Interface geréiert ginn.",
                 "related": "Relatioun",
                 "settings": "Astellungen"
             },
             "generic": {
                 "cancel": "Ofbriechen",
+                "close": "Zoumaachen",
                 "default_confirmation_title": "Sécher?",
                 "ok": "OK"
+            },
+            "helper_settings": {
+                "generic": {
+                    "icon": "Ikon",
+                    "initial_value": "Initial Wäert beim start",
+                    "name": "Numm"
+                },
+                "input_datetime": {
+                    "has_date": "Datum",
+                    "has_time": "Zäit"
+                },
+                "input_number": {
+                    "max": "Maximale Wäert",
+                    "min": "Minimale Wäert",
+                    "mode": "Affichage Modus",
+                    "slider": "Slider",
+                    "step": "Schrëtt Gréisst vum Slider",
+                    "unit_of_measurement": "Moosseenheet"
+                },
+                "input_select": {
+                    "add": "Dobäisetzen",
+                    "add_option": "Optioun dobäisetzen",
+                    "no_options": "Et gi nach keng Optiounen.",
+                    "options": "Optiounen"
+                },
+                "input_text": {
+                    "max": "Maximal Längt",
+                    "min": "Minimal Längt",
+                    "mode": "Affichage Modus",
+                    "password": "Passwuert",
+                    "text": "Text"
+                },
+                "not_editable": "Net Editéierbar",
+                "required_error_msg": "Dëst Feld ass erfuerderlech"
             },
             "more_info_control": {
                 "dismiss": "Dialog ofbriechen",
                 "edit": "Entitéit änneren",
+                "person": {
+                    "create_zone": "Zone erstellen vun der aktueller Positioun"
+                },
                 "restored": {
                     "confirm_remove_text": "Sécher fir dës Entitéit ze läsche?",
                     "confirm_remove_title": "Entitéit läschen?",
@@ -659,6 +701,18 @@
                 },
                 "updater": {
                     "title": "Instruktioune fir d'Mise à jour"
+                },
+                "vacuum": {
+                    "clean_spot": "Plaz botzen",
+                    "commands": "Staubsauger Kommandoen:",
+                    "fan_speed": "Vitesse vum Ventilator",
+                    "locate": "Lokaliséieren",
+                    "pause": "Pause",
+                    "return_home": "Zeréck zur Statioun",
+                    "start": "Start",
+                    "start_pause": "Start/Pause",
+                    "status": "Status",
+                    "stop": "Stop"
                 }
             },
             "more_info_settings": {
@@ -879,6 +933,7 @@
                         },
                         "edit_ui": "Mam Benotzer Inteface änneren",
                         "edit_yaml": "Als YAML änneren",
+                        "enable_disable": "Automatismen aktivéieren/deaktivieren",
                         "introduction": "Benotzt Automatismen fir däin Haus zum Liewen ze bréngen",
                         "load_error_not_editable": "Nëmmen Automatiounen am automations.yaml kënnen editéiert ginn.",
                         "load_error_unknown": "Feeler beim luede vun der Automatioun ({err_no}).",
@@ -1253,7 +1308,7 @@
                     "details": "Hei sinn all Detailer vun ärem Apparat.",
                     "device_not_found": "Apparat net fonnt.",
                     "entities": {
-                        "add_entities_lovelace": "All Entitéiten zu Lovelace bäisetzen",
+                        "add_entities_lovelace": "Zu Lovelace bäisetzen",
                         "entities": "Entitéiten",
                         "none": "Dësen Appart huet keng Entitéiten."
                     },
@@ -1306,6 +1361,7 @@
                         "filter": {
                             "filter": "Filter",
                             "show_disabled": "Deaktivéiert Entitéiten uweisen",
+                            "show_readonly": "Schreifgeséchert Entitéiten uweisen",
                             "show_unavailable": "Net ereechbar Entitéite uweisen"
                         },
                         "header": "Lëscht vun den Entitéiten",
@@ -1329,12 +1385,37 @@
                         "status": {
                             "disabled": "Deaktivéiert",
                             "ok": "Ok",
+                            "readonly": "Nëmme liesen",
                             "unavailable": "Net erreechbar"
                         },
                         "unavailable": "(net verfügbar)"
                     }
                 },
                 "header": "Home Assistant astellen",
+                "helpers": {
+                    "caption": "Helper",
+                    "description": "Elementer déi et erlaaben Automatismen z'erstellen.",
+                    "dialog": {
+                        "add_helper": "Helper bäifügen",
+                        "add_platform": "{platform} bäifügen",
+                        "create": "Erstellen"
+                    },
+                    "picker": {
+                        "add_helper": "Helper bäifügen",
+                        "headers": {
+                            "editable": "Editéierbar",
+                            "name": "Numm",
+                            "type": "Typ"
+                        }
+                    },
+                    "types": {
+                        "input_boolean": "Ëmschalten",
+                        "input_datetime": "Datum an/oder Zäit",
+                        "input_number": "Nummer",
+                        "input_select": "Auswiellëscht",
+                        "input_text": "Text"
+                    }
+                },
                 "integrations": {
                     "caption": "Integratiounen",
                     "config_entry": {
@@ -1396,6 +1477,76 @@
                     "note_about_website_reference": "Méi sin der disponibel op der "
                 },
                 "introduction": "Hei ass et méiglech är Komponenten vum Home Assistant ze konfiguréieren. Net alles ass méiglech fir iwwert den Interface anzestellen, mee mir schaffen drun.",
+                "lovelace": {
+                    "caption": "Lovelace Tableau de Bord",
+                    "dashboards": {
+                        "cant_edit_yaml": "Tableau de Bord déi am YAML définéiert sinn kënnen net vum Benotzer Interface aus verännert ginn. Änner se an der configuration.yaml",
+                        "caption": "Tableau de Bord",
+                        "conf_mode": {
+                            "storage": "Kontrolléiert vum Benotzer Interface",
+                            "yaml": "Yaml Fichier"
+                        },
+                        "confirm_delete": "Sécher fir dëse Tableau de Bord ze läschen?",
+                        "detail": {
+                            "create": "Erstellen",
+                            "delete": "Läschen",
+                            "dismiss": "Zoumaachen",
+                            "edit_dashboard": "Tableau de Bord änneren",
+                            "icon": "Ikon vun der Säite Läischt",
+                            "new_dashboard": "Neien Tableau de Bord dobäisetzen",
+                            "require_admin": "Admin nëmmen",
+                            "show_sidebar": "An der Säite Läischt uweisen",
+                            "title": "Titel vun der Säite Läischt",
+                            "update": "Aktualiséieren",
+                            "url": "Url",
+                            "url_error_msg": "D'Url ka keen Espace oder speziell Charakteren, ausser _ an - , enthalen."
+                        },
+                        "picker": {
+                            "add_dashboard": "Tableau de Bord dobäisetzen",
+                            "headers": {
+                                "conf_mode": "Konfiguratioun's Method",
+                                "filename": "Numm vum Fichier",
+                                "require_admin": "Admin nëmmen",
+                                "sidebar": "An der Säite Läischt uweisen",
+                                "title": "Titel"
+                            },
+                            "open": "Tableau de Bord opmaachen"
+                        }
+                    },
+                    "description": "Deng Lovelace Tableau de Bord konfiguréieren",
+                    "resources": {
+                        "cant_edit_yaml": "Du benotz Lovelace am YAML Modus, dofir kanns du Dir deng Ressourcen net duerch de Benotzer Interface verwalten. Verwalt se an der Konfiguratioun.yaml.",
+                        "caption": "Ressourcen",
+                        "confirm_delete": "Sécher fir dës Ressource ze läschen?",
+                        "detail": {
+                            "create": "Erstellen",
+                            "delete": "Läschen",
+                            "dismiss": "Zoumaachen",
+                            "new_resource": "Nei Ressource dobäisetzen",
+                            "type": "Typ vun Ressource",
+                            "update": "Aktualiséieren",
+                            "url": "Url",
+                            "url_error_msg": "Url ass een erfuerderlecht Feld",
+                            "warning_header": "Opgepasst!",
+                            "warning_text": "Ressourcen dobäisetzen ka geféierlech sinn, stell sécher dass d'Quell vun der Ressource bekannt a vertraut ass. Schlecht Ressourcen kënnen dem System seriö schueden."
+                        },
+                        "picker": {
+                            "add_resource": "Ressource dobäisetzen",
+                            "headers": {
+                                "type": "Typ",
+                                "url": "Url"
+                            }
+                        },
+                        "refresh_body": "D'Säit muss aktualiséiert gi fir d'Läschen ofzeschléissen, elo aktualiséieren?",
+                        "refresh_header": "Soll aktualiséiert ginn?",
+                        "types": {
+                            "css": "Stylesheet",
+                            "html": "HTML (obsolet)",
+                            "js": "Javascript Fichier (obsolet)",
+                            "module": "JavaScript Module"
+                        }
+                    }
+                },
                 "person": {
                     "add_person": "Persoun dobäisetzen",
                     "caption": "Persounen",
@@ -1494,7 +1645,7 @@
                     "section": {
                         "reloading": {
                             "automation": "Automatisme nei lueden",
-                            "core": "Kär néi lueden",
+                            "core": "Standuert and Personnalisatioun néi lueden",
                             "group": "Gruppe nei lueden",
                             "heading": "Konfiguratioun gëtt frësch gelueden",
                             "introduction": "E puer Deeler vum Home Assistant kënne frësch geluede ginn ouni datt een Neistart néideg ass. Klick op nei luede fir di aktuell Konfiguratioun z'entlueden an di nei Konfiguratioun ze lueden.",
@@ -1679,12 +1830,15 @@
                         "name": "Numm",
                         "new_zone": "Nei Zon",
                         "passive": "Passiv",
-                        "passive_note": "Passiv Zonë sinn am Frontend verstoppt a ginn net als Standuert fir Apparaten Tracker benotzt. Dëst ass nëtzlech wann Dir et just fir Automatisme wëllt benotzen.",
+                        "passive_note": "Passiv Zone sinn am Frontend verstoppt a ginn net als Standuert fir Apparaten Tracker benotzt. Dëst ass nëtzlech wann Dir et just fir Automatisme wëllt benotzen.",
                         "radius": "Radius",
                         "required_error_msg": "Dëst Feld ass erfuerderlech",
                         "update": "Aktualiséieren"
                     },
                     "edit_home_zone": "De Standuert vun Ärem Doheem kann an der allgemenger Konfiguratioun geännert ginn.",
+                    "edit_home_zone_narrow": "De Radius vun der Home Zone kann nach net vum Frontend aus geännert ginn. De Standuert kann an der allgemenger Konfiguratioun geännert ginn.",
+                    "go_to_core_config": "Zur genereller Konfiguratioun wiesselen?",
+                    "home_zone_core_config": "De Standuert vun Ärer Heemzon kann vun der allgemenger Konfiguratiounssäit aus geännert ginn. De Radius vun der Home Zone kann nach net am Frontend geännert ginn. Wëllt Dir op d'allgemeng Konfiguratioun goen?",
                     "introduction": "Zonen erlaben Iech verschidde Regiounen op der Äerd ze spezifizéieren. Wann eng Persoun an enger Zone ass, hëlt de Status den Numm aus der Zone. Zonë kënnen och als Ausléiser oder als Konditioun an Automatisme benotzt ginn.",
                     "no_zones_created_yet": "Et gesäit sou aus wéi wann nach keng Zone erstallt goufen."
                 },
@@ -1777,7 +1931,7 @@
                         "frontend": "frontend-ui",
                         "frontend_version": "Frontend Versioun: {version} - {type}",
                         "home_assistant_logo": "Home Assistant logo",
-                        "icons_by": "Ikoner vun",
+                        "icons_by": "Ikonen vun",
                         "license": "Verëffentlecht ënnert der Apache 2.0 Lizenz",
                         "lovelace_ui": "Zum Lovelace Benotzer Interface wiesselen",
                         "path_configuration": "Pad zur configuration.yaml: {path}",
@@ -1892,6 +2046,11 @@
                         "toggle": "{name} ëmschalten",
                         "url": "Fënster opmaachen mat {url_path}"
                     },
+                    "safe-mode": {
+                        "description": "Home Assistant konnt Konfiguratioun net richteg lueden an leeft elo am Sécherheetsmodus. Kuck Logbicher fir de Feeler ze fannen.",
+                        "header": "Sécherheetsmodus aktivéiert",
+                        "show_errors": "Feeler uweisen"
+                    },
                     "shopping-list": {
                         "add_item": "Element dobäisetzen",
                         "checked_items": "Markéiert Elementer",
@@ -1910,6 +2069,9 @@
                         "alarm-panel": {
                             "available_states": "Verfügbar Zoustänn",
                             "name": "Alarm Zentral"
+                        },
+                        "button": {
+                            "name": "Knäppchen"
                         },
                         "conditional": {
                             "name": "Bedingungen"
@@ -1946,14 +2108,14 @@
                             "entity": "Entitéit",
                             "hold_action": "Aktioun beim unhalen",
                             "hours_to_show": "Stonnen uweisen",
-                            "icon": "Ikone",
-                            "icon_height": "Héicht vun der Ikone",
+                            "icon": "Ikon",
+                            "icon_height": "Héicht vun der Ikon",
                             "image": "Wee zum Bild",
                             "maximum": "Maximum",
                             "minimum": "Minimum",
                             "name": "Numm",
                             "refresh_interval": "Aktualiséierungs Intervall",
-                            "show_icon": "Ikone uweisen?",
+                            "show_icon": "Ikon uweisen?",
                             "show_name": "Numm uweisen?",
                             "show_state": "Zoustand uweisen?",
                             "tap_action": "Aktioun beim tippen",
@@ -2052,7 +2214,9 @@
                         "header": "Konfiguratioun kucken",
                         "header_name": "{name} Konfiguratioun kucken",
                         "move_left": "Usiicht no lenks réckelen",
-                        "move_right": "Usiicht no riets réckelen"
+                        "move_right": "Usiicht no riets réckelen",
+                        "tab_badges": "Badgen",
+                        "tab_settings": "Astellungen"
                     },
                     "header": "UI änneren",
                     "menu": {
@@ -2075,20 +2239,25 @@
                         "error_remove": "Kann Konfiguratioun net läschen: {error}",
                         "error_save_yaml": "Kann de YAML net späicheren: {error}",
                         "header": "Konfiguratioun änneren",
+                        "resources_moved": "Ressourcen sollen net méi an d'Lovelace Konfiguratioun bäigesat ginn, awer kënnen am Lovelace Konfiguratiouns Panel bäigefügt ginn.",
                         "save": "Späicheren",
                         "saved": "Gespäichert",
                         "unsaved_changes": "Net gespäicherten Ännerungen"
                     },
                     "save_config": {
                         "cancel": "Vergiess et",
+                        "close": "Zoumaachen",
                         "header": "Kontroll iwwert Loveloce UI iwwerhuelen",
                         "para": "Standardméisseg verwalt Home Assistant de Benotzer Interface an aktualiséiert en soubal nei Entitéiten oder Lovelace-Komponenten disponibel sinn. Wann dir d'Kontrolle iwwerhuelt, kënne mir keng automatesch Ännerung méi fir iech maachen.",
                         "para_sure": "Sécher fir d'Kontrolle iwwert de Benotzer Interface z'iwwerhuelen?",
-                        "save": "Kontroll iwwerhuelen"
+                        "save": "Kontroll iwwerhuelen",
+                        "yaml_config": "Fir de Start ze vereinfachen, hei ass déi aktuell Konfiguratioun vun dësem Tableau de Bord:",
+                        "yaml_control": "Fir d'Kontroll am YAML Modus z'iwwerhuelen, erstell ee YAML Fichier mam Numm deen an der Konfiguratioun vun dësem Tableau de Bord uginn ass, oder de Standard 'ui-lovelace.yaml'",
+                        "yaml_mode": "Du benotz de YAML Modus, dëst bedeit dass du d'Lovelace Konfiguratioun net kanns aus dem Benotzer Interface änneren. Wann's du Lovelace vum Benotzer Interface aus wëlls änneren, läsch de 'mode: yaml' aus denger Lovelace Konfiguratioun am 'configuration.yaml'"
                     },
                     "suggest_card": {
                         "add": "Zu Lovelace bäisetzen",
-                        "create_own": "Erstellt är eegen",
+                        "create_own": "Aner Kaart auswielen",
                         "header": "Mir hun eng Suggestioun fir iech erstallt"
                     },
                     "view": {
@@ -2318,8 +2487,8 @@
                 },
                 "current_user": "Dir sidd aktuell ageloggt als {fullName}.",
                 "force_narrow": {
-                    "description": "Dës Optioun verstoppt d'Säiteleescht, esou wéi op engem mobillen Apparat.",
-                    "header": "Säiteleescht ëmmer verstoppen"
+                    "description": "Dës Optioun verstoppt d'Säite Läischt esou wéi op engem mobillen Apparat.",
+                    "header": "Säite Läischt ëmmer verstoppen"
                 },
                 "is_owner": "Dir sidd Proprietär.",
                 "language": {

@@ -1,9 +1,10 @@
 import { HomeAssistant } from "../types";
 
 export interface LoggedError {
-  message: string;
+  name: string;
+  message: [string];
   level: string;
-  source: string;
+  source: [string, number];
   // unix timestamp in seconds
   timestamp: number;
   exception: string;
@@ -14,3 +15,8 @@ export interface LoggedError {
 
 export const fetchSystemLog = (hass: HomeAssistant) =>
   hass.callApi<LoggedError[]>("GET", "error/all");
+
+export const getLoggedErrorIntegration = (item: LoggedError) =>
+  item.name.startsWith("homeassistant.components.")
+    ? item.name.split(".")[2]
+    : undefined;

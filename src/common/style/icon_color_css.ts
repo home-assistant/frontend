@@ -1,7 +1,6 @@
 import { css } from "lit-element";
 
 export const iconColorCSS = css`
-  ha-icon[data-domain="alarm_control_panel"][data-state="disarmed"],
   ha-icon[data-domain="alert"][data-state="on"],
   ha-icon[data-domain="automation"][data-state="on"],
   ha-icon[data-domain="binary_sensor"][data-state="on"],
@@ -28,6 +27,38 @@ export const iconColorCSS = css`
 
   ha-icon[data-domain="climate"][data-state="heating"] {
     color: var(--heat-color, #ff8100);
+  }
+
+  ha-icon[data-domain="climate"][data-state="drying"] {
+    color: var(--dry-color, #efbd07);
+  }
+
+  ha-icon[data-domain="alarm_control_panel"] {
+    color: var(--alarm-color-armed, var(--label-badge-red));
+  }
+
+  ha-icon[data-domain="alarm_control_panel"][data-state="disarmed"] {
+    color: var(--alarm-color-disarmed, var(--label-badge-green));
+  }
+
+  ha-icon[data-domain="alarm_control_panel"][data-state="pending"],
+  ha-icon[data-domain="alarm_control_panel"][data-state="arming"] {
+    color: var(--alarm-color-pending, var(--label-badge-yellow));
+    animation: pulse 1s infinite;
+  }
+
+  ha-icon[data-domain="alarm_control_panel"][data-state="triggered"] {
+    color: var(--alarm-color-triggered, var(--label-badge-red));
+    animation: pulse 1s infinite;
+  }
+
+  @keyframes pulse {
+    0% {
+      opacity: 1;
+    }
+    100% {
+      opacity: 0;
+    }
   }
 
   ha-icon[data-domain="plant"][data-state="problem"],

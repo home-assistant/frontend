@@ -54,6 +54,7 @@ class HaSceneDashboard extends LitElement {
               <a
                 href="https://home-assistant.io/docs/scene/editor/"
                 target="_blank"
+                rel="noreferrer"
               >
                 ${this.hass.localize("ui.panel.config.scene.picker.learn_more")}
               </a>
@@ -158,7 +159,6 @@ class HaSceneDashboard extends LitElement {
         }
 
         ha-card {
-          padding-bottom: 8px;
           margin-bottom: 56px;
         }
 
@@ -169,16 +169,16 @@ class HaSceneDashboard extends LitElement {
           padding: 0 8px 0 16px;
         }
 
+        .scene > *:first-child {
+          margin-right: 8px;
+        }
+
         .scene a[href] {
           color: var(--primary-text-color);
         }
 
         .actions {
           display: flex;
-        }
-
-        ha-entity-toggle {
-          margin-right: 16px;
         }
 
         ha-fab {

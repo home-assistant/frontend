@@ -359,7 +359,7 @@
             "idle": "Tétlen",
             "off": "Ki",
             "on": "Be",
-            "paused": "Felfüggesztve",
+            "paused": "Szüneteltetve",
             "returning": "Dokkolás folyamatban"
         },
         "weather": {
@@ -581,6 +581,7 @@
                 "entity": "Kapcsolódó entitások",
                 "group": "A következő csoportok része",
                 "integration": "Integráció",
+                "no_related_found": "Nem található kapcsolódó elem.",
                 "scene": "A következő jelenetek része",
                 "script": "A következő szkriptek része"
             },
@@ -604,7 +605,8 @@
             "config_entry_system_options": {
                 "enable_new_entities_description": "Ha le van tiltva, akkor az újonnan felfedezett {integration} entitások nem lesznek automatikusan hozzáadva a Home Assistant-hoz.",
                 "enable_new_entities_label": "Újonnan hozzáadott entitások engedélyezése.",
-                "title": "{integration} rendszerbeállításai"
+                "title": "{integration} rendszerbeállításai",
+                "update": "Frissítés"
             },
             "confirmation": {
                 "cancel": "Mégse",
@@ -629,7 +631,8 @@
                     "unavailable": "Ez az entitás jelenleg nem elérhető.",
                     "update": "FRISSÍTÉS"
                 },
-                "related": "Kapcsolódás",
+                "no_unique_id": "Ez az entitás nem rendelkezik egyedi azonosítóval, ezért a beállítások nem kezelhetők a felhasználói felületről.",
+                "related": "Kapcsolatok",
                 "settings": "Beállítások"
             },
             "generic": {
@@ -640,6 +643,9 @@
             "more_info_control": {
                 "dismiss": "Párbeszédpanel elvetése",
                 "edit": "Entitás szerkesztése",
+                "person": {
+                    "create_zone": "Zóna létrehozása az aktuális helyről"
+                },
                 "restored": {
                     "confirm_remove_text": "Biztosan el szeretnéd távolítani ezt az entitást?",
                     "confirm_remove_title": "Eltávolítod az entitást?",
@@ -659,6 +665,18 @@
                 },
                 "updater": {
                     "title": "Frissítési Instrukciók"
+                },
+                "vacuum": {
+                    "clean_spot": "Helyi takarítás",
+                    "commands": "Porszívó parancsok:",
+                    "fan_speed": "Szívóerő",
+                    "locate": "Keresés",
+                    "pause": "Szünet",
+                    "return_home": "Hazatérés",
+                    "start": "Indítás",
+                    "start_pause": "Indítás/szünet",
+                    "status": "Állapot",
+                    "stop": "Leállítás"
                 }
             },
             "more_info_settings": {
@@ -879,6 +897,7 @@
                         },
                         "edit_ui": "Szerkesztés a felhasználói felületen",
                         "edit_yaml": "Szerkesztés YAML-ként",
+                        "enable_disable": "Automatizálás engedélyezése/letiltása",
                         "introduction": "Használj automatizálásokat otthonod életre keltéséhez",
                         "load_error_not_editable": "Csak az automations.yaml fájlban megadott automatizálások szerkeszthetők.",
                         "load_error_unknown": "Hiba az automatizálás betöltésekor ({err_no}).",
@@ -1112,7 +1131,7 @@
                         "forgot_password": "elfelejtett jelszó?",
                         "introduction": "A Home Assistant Felhő biztonságos távoli kapcsolatot nyújt a példányodhoz, miközben távol vagy. Azt is lehetővé teszi, hogy csak felhőn alapuló szolgáltatásokhoz csatlakozz: Amazon Alexa, Google Asszisztens.",
                         "introduction2": "Ezt a szolgáltatást partnerünk üzemelteti, a ",
-                        "introduction2a": "vállalat, amelyet a Home Assistant és a Hass.io alapítói alapítottak.",
+                        "introduction2a": "vállalat, amelyet a Home Assistant és a Hass.io alapítói hoztak létre.",
                         "introduction3": "A Home Assistant Felhő egy előfizetéses szolgáltatás egy hónapos ingyenes próbaverzióval. Nincs szükség fizetési információk megadására.",
                         "learn_more_link": "Tudj meg többet a Home Assistant Felhőről",
                         "password": "Jelszó",
@@ -1135,7 +1154,7 @@
                         "information": "Hozz létre egy fiókot ahhoz, hogy elindíthasd az egy hónapos ingyenes Home Assistant Felhő próbaidőszakodat. Nincs szükség fizetési információk megadására.",
                         "information2": "A próbaidőszak hozzáférést biztosít a Home Assistant Felhő minden előnyéhez, beleértve a következőket:",
                         "information3": "Ezt a szolgáltatást partnerünk üzemelteti, a ",
-                        "information3a": "vállalat, amelyet a Home Assistant és a Hass.io alapítói alapítottak.",
+                        "information3a": "vállalat, amelyet a Home Assistant és a Hass.io alapítói hoztak létre.",
                         "information4": "Fiók regisztrálásával elfogadod az alábbi feltételeket.",
                         "link_privacy_policy": "Adatvédelmi irányelvek",
                         "link_terms_conditions": "Felhasználási feltételek",
@@ -1253,7 +1272,7 @@
                     "details": "Itt található minden részlet az eszközről.",
                     "device_not_found": "Eszköz nem található.",
                     "entities": {
-                        "add_entities_lovelace": "Mindet a Lovelace felületre",
+                        "add_entities_lovelace": "Hozzáadás a Lovelace-hez",
                         "entities": "Entitások",
                         "none": "Ennek az eszköznek nincsenek entitásai"
                     },
@@ -1306,6 +1325,7 @@
                         "filter": {
                             "filter": "Szűrő",
                             "show_disabled": "Letiltott entitások megjelenítése",
+                            "show_readonly": "Csak olvasható entitások megjelenítése",
                             "show_unavailable": "Nem elérhető entitások megjelenítése"
                         },
                         "header": "Entitások",
@@ -1329,6 +1349,7 @@
                         "status": {
                             "disabled": "Letiltott",
                             "ok": "Ok",
+                            "readonly": "Csak olvasható",
                             "unavailable": "Nem elérhető"
                         },
                         "unavailable": "(nem elérhető)"
@@ -1496,16 +1517,16 @@
                             "automation": "Automatizálások újratöltése",
                             "core": "Lokáció és testreszabások újratöltése",
                             "group": "Csoportok újratöltése",
-                            "heading": "Konfiguráció újratöltés",
-                            "introduction": "A Home Assistant bizonyos részei újraindítás nélkül újratölthetőek. Az újratöltés az aktuális konfiguráció helyére betölti az újat.",
+                            "heading": "YAML konfiguráció újratöltése",
+                            "introduction": "A Home Assistant bizonyos részei újraindítás nélkül újratölthetőek. Újratöltéskor az aktuálisan betöltött YAML konfiguráció helyére betöltődik az új.",
                             "person": "Személyek újratöltése",
                             "scene": "Jelenetek újratöltése",
                             "script": "Szkriptek újratöltése",
                             "zone": "Zónák újratöltése"
                         },
                         "server_management": {
-                            "confirm_restart": "Biztosan újra akarod indítani a Home Assistantet?",
-                            "confirm_stop": "Biztosan le akarod állítani a Home Assistantet?",
+                            "confirm_restart": "Biztosan újra szeretnéd indítani a Home Assistant-ot?",
+                            "confirm_stop": "Biztosan le szeretnéd állítani a Home Assistant-ot?",
                             "heading": "Szerver menedzsment",
                             "introduction": "Home Assistant szerver vezérlése... a Home Assistant-ból.",
                             "restart": "Újraindítás",
@@ -1685,6 +1706,9 @@
                         "update": "Frissítés"
                     },
                     "edit_home_zone": "Az otthona címét az általános konfigurációnál változtathatja meg.",
+                    "edit_home_zone_narrow": "A otthoni zóna sugara még nem szerkeszthető a frontendről. A hely az általános konfigurációtól módosítható.",
+                    "go_to_core_config": "Ugrás az általános konfigurációra?",
+                    "home_zone_core_config": "Az otthoni zóna helye szerkeszthető az általános konfigurációs lapon. A Főzóna sugara még nem szerkeszthető a frontendről. Szeretné az általános konfigurációt?",
                     "introduction": "A zónák lehetővé teszik a Föld bizonyos területeinek megadását. Ha egy személy egy zónán belül van, az állapota felveszi a zóna nevét. A zónák eseményindítóként vagy feltételként is használhatók az automatizálási beállításokon belül.",
                     "no_zones_created_yet": "Úgy tűnik, még nem hoztál létre zónákat."
                 },
@@ -1892,6 +1916,11 @@
                         "toggle": "Váltás {name}",
                         "url": "Ablak megnyitása: {url_path}"
                     },
+                    "safe-mode": {
+                        "description": "A Home Assistant a konfiguráció betöltése közben bajba került, és most csökkentett módban fut. Vessen egy pillantást a hibanaplóra, hogy lássa, mi romlott el.",
+                        "header": "Csökkentett mód aktiválva",
+                        "show_errors": "Hibák megjelenítése"
+                    },
                     "shopping-list": {
                         "add_item": "Tétel hozzáadása",
                         "checked_items": "Bejelölt tételek",
@@ -1910,6 +1939,9 @@
                         "alarm-panel": {
                             "available_states": "Rendelkezésre álló állapotok",
                             "name": "Riasztópanel"
+                        },
+                        "button": {
+                            "name": "Gomb"
                         },
                         "conditional": {
                             "name": "Feltételes"
@@ -2052,7 +2084,9 @@
                         "header": "Nézet konfigurálása",
                         "header_name": "{name} Konfiguráció megtekintése",
                         "move_left": "Nézet mozgatása balra",
-                        "move_right": "Nézet mozgatása jobbra"
+                        "move_right": "Nézet mozgatása jobbra",
+                        "tab_badges": "Kitűzők",
+                        "tab_settings": "Beállítások"
                     },
                     "header": "Felhasználói felület szerkesztése",
                     "menu": {

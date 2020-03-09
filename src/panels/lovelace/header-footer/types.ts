@@ -1,13 +1,14 @@
 import { ActionConfig } from "../../../data/lovelace";
 import { struct } from "../common/structs/struct";
 import { actionConfigStruct, entitiesConfigStruct } from "../editor/types";
+import { EntityConfig } from "../entity-rows/types";
 
 export interface LovelaceHeaderFooterConfig {
   type: string;
 }
 
 export interface ButtonsHeaderFooterConfig extends LovelaceHeaderFooterConfig {
-  entities: string[];
+  entities: Array<string | EntityConfig>;
 }
 
 export interface PictureHeaderFooterConfig extends LovelaceHeaderFooterConfig {

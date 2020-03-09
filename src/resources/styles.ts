@@ -94,6 +94,50 @@ export const haStyle = css`
   .card-actions .warning {
     --mdc-theme-primary: var(--google-red-500);
   }
+
+  .layout.horizontal,
+  .layout.vertical {
+    display: flex;
+  }
+  .layout.inline {
+    display: inline-flex;
+  }
+  .layout.horizontal {
+    flex-direction: row;
+  }
+  .layout.vertical {
+    flex-direction: column;
+  }
+  .layout.wrap {
+    flex-wrap: wrap;
+  }
+  .layout.no-wrap {
+    flex-wrap: nowrap;
+  }
+  .layout.center,
+  .layout.center-center {
+    align-items: center;
+  }
+  .layout.bottom {
+    align-items: flex-end;
+  }
+  .layout.center-justified,
+  .layout.center-center {
+    justify-content: center;
+  }
+  .flex {
+    flex: 1;
+    flex-basis: 0.000000001px;
+  }
+  .flex-auto {
+    flex: 1 1 auto;
+  }
+  .flex-none {
+    flex: none;
+  }
+  .layout.justified {
+    justify-content: space-between;
+  }
 `;
 
 export const haStyleDialog = css`
@@ -135,5 +179,28 @@ export const haStyleDialog = css`
       border-bottom-left-radius: 0px;
       border-bottom-right-radius: 0px;
     }
+  }
+
+  /* mwc-dialog (ha-dialog) styles */
+  ha-dialog {
+    --mdc-dialog-min-width: 400px;
+    --mdc-dialog-max-width: 600px;
+    --mdc-dialog-title-ink-color: var(--primary-text-color);
+    --justify-action-buttons: space-between;
+  }
+  /* make dialog fullscreen on small screens */
+  @media all and (max-width: 450px), all and (max-height: 500px) {
+    ha-dialog {
+      --mdc-dialog-min-width: 100vw;
+      --mdc-dialog-max-height: 100vh;
+      --mdc-dialog-shape-radius: 0px;
+      --vertial-align-dialog: flex-end;
+    }
+  }
+  mwc-button.warning {
+    --mdc-theme-primary: var(--google-red-500);
+  }
+  .error {
+    color: var(--google-red-500);
   }
 `;

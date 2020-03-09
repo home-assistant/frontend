@@ -47,8 +47,8 @@ export interface EntitiesCardConfig extends LovelaceCardConfig {
   state_color?: boolean;
 }
 
-export interface EntityButtonCardConfig extends LovelaceCardConfig {
-  entity: string;
+export interface ButtonCardConfig extends LovelaceCardConfig {
+  entity?: string;
   name?: string;
   show_name?: boolean;
   icon?: string;
@@ -57,6 +57,7 @@ export interface EntityButtonCardConfig extends LovelaceCardConfig {
   tap_action?: ActionConfig;
   hold_action?: ActionConfig;
   double_tap_action?: ActionConfig;
+  state_color?: boolean;
 }
 
 export interface EntityFilterCardConfig extends LovelaceCardConfig {
@@ -102,6 +103,7 @@ export interface GlanceConfigEntity extends ConfigEntity {
   show_last_changed?: boolean;
   image?: string;
   show_state?: boolean;
+  state_color?: boolean;
 }
 
 export interface GlanceCardConfig extends LovelaceCardConfig {
@@ -112,6 +114,7 @@ export interface GlanceCardConfig extends LovelaceCardConfig {
   theme?: string;
   entities: ConfigEntity[];
   columns?: number;
+  state_color?: boolean;
 }
 
 export interface IframeCardConfig extends LovelaceCardConfig {
@@ -148,6 +151,13 @@ export interface MarkdownCardConfig extends LovelaceCardConfig {
 
 export interface MediaControlCardConfig extends LovelaceCardConfig {
   entity: string;
+}
+
+export interface HistoryGraphCardConfig extends LovelaceCardConfig {
+  entities: Array<EntityConfig | string>;
+  hours_to_show?: number;
+  refresh_interval?: number;
+  title?: string;
 }
 
 export interface PictureCardConfig extends LovelaceCardConfig {
@@ -233,6 +243,7 @@ export interface ShoppingListCardConfig extends LovelaceCardConfig {
 
 export interface StackCardConfig extends LovelaceCardConfig {
   cards: LovelaceCardConfig[];
+  title?: string;
 }
 
 export interface ThermostatCardConfig extends LovelaceCardConfig {

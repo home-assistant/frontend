@@ -74,43 +74,41 @@ class HuiInputNumberEntityRow extends LitElement implements LovelaceRow {
     }
 
     return html`
-      <hui-generic-entity-row .hass="${this.hass}" .config="${this._config}">
-        <div>
-          ${stateObj.attributes.mode === "slider"
-            ? html`
-                <div class="flex">
-                  <ha-slider
-                    .dir="${computeRTLDirection(this.hass!)}"
-                    .step="${Number(stateObj.attributes.step)}"
-                    .min="${Number(stateObj.attributes.min)}"
-                    .max="${Number(stateObj.attributes.max)}"
-                    .value="${Number(stateObj.state)}"
-                    pin
-                    @change="${this._selectedValueChanged}"
-                    ignore-bar-touch
-                    id="input"
-                  ></ha-slider>
-                  <span class="state">
-                    ${Number(stateObj.state)}
-                    ${stateObj.attributes.unit_of_measurement}
-                  </span>
-                </div>
-              `
-            : html`
-                <paper-input
-                  no-label-float
-                  auto-validate
-                  .pattern="[0-9]+([\\.][0-9]+)?"
+      <hui-generic-entity-row .hass=${this.hass} .config=${this._config}>
+        ${stateObj.attributes.mode === "slider"
+          ? html`
+              <div class="flex">
+                <ha-slider
+                  .dir="${computeRTLDirection(this.hass!)}"
                   .step="${Number(stateObj.attributes.step)}"
                   .min="${Number(stateObj.attributes.min)}"
                   .max="${Number(stateObj.attributes.max)}"
                   .value="${Number(stateObj.state)}"
-                  type="number"
+                  pin
                   @change="${this._selectedValueChanged}"
+                  ignore-bar-touch
                   id="input"
-                ></paper-input>
-              `}
-        </div>
+                ></ha-slider>
+                <span class="state">
+                  ${Number(stateObj.state)}
+                  ${stateObj.attributes.unit_of_measurement}
+                </span>
+              </div>
+            `
+          : html`
+              <paper-input
+                no-label-float
+                auto-validate
+                .pattern="[0-9]+([\\.][0-9]+)?"
+                .step="${Number(stateObj.attributes.step)}"
+                .min="${Number(stateObj.attributes.min)}"
+                .max="${Number(stateObj.attributes.max)}"
+                .value="${Number(stateObj.state)}"
+                type="number"
+                @change="${this._selectedValueChanged}"
+                id="input"
+              ></paper-input>
+            `}
       </hui-generic-entity-row>
     `;
   }
@@ -120,6 +118,8 @@ class HuiInputNumberEntityRow extends LitElement implements LovelaceRow {
       .flex {
         display: flex;
         align-items: center;
+        justify-content: flex-end;
+        width: 100%;
       }
       .state {
         min-width: 45px;
@@ -127,6 +127,10 @@ class HuiInputNumberEntityRow extends LitElement implements LovelaceRow {
       }
       paper-input {
         text-align: end;
+      }
+      ha-slider {
+        width: 100%;
+        max-width: 200px;
       }
     `;
   }

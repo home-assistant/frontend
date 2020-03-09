@@ -15,7 +15,7 @@ import {
 } from "lit-element";
 import { HomeAssistant } from "../../types";
 import { fireEvent } from "../../common/dom/fire_event";
-import "lit-virtualizer";
+import { scroll } from "lit-virtualizer";
 import { LogbookEntry } from "../../data/logbook";
 
 class HaLogbook extends LitElement {
@@ -25,19 +25,14 @@ class HaLogbook extends LitElement {
   // @ts-ignore
   private _rtl = false;
 
-  protected updated(changedProps: PropertyValues) {
-    super.updated(changedProps);
-    if (!changedProps.has("hass")) {
-      return;
-    }
+  protected shouldUpdate(changedProps: PropertyValues) {
     const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
-    if (oldHass && oldHass.language !== this.hass.language) {
-      this._rtl = computeRTL(this.hass);
-    }
+    const languageChanged =
+      oldHass === undefined || oldHass.language !== this.hass.language;
+    return changedProps.has("entries") || languageChanged;
   }
 
-  protected firstUpdated(changedProps: PropertyValues) {
-    super.firstUpdated(changedProps);
+  protected updated(_changedProps: PropertyValues) {
     this._rtl = computeRTL(this.hass);
   }
 
@@ -49,19 +44,23 @@ class HaLogbook extends LitElement {
     }
 
     return html`
-      <lit-virtualizer
-        .items=${this.entries}
-        .renderItem=${(item: LogbookEntry, index: number) =>
-          this._renderLogbookItem(item, index)}
-        style="height: 100%;"
-      ></lit-virtualizer>
+      <div>
+        ${scroll({
+          items: this.entries,
+          renderItem: (item: LogbookEntry, index?: number) =>
+            this._renderLogbookItem(item, index),
+        })}
+      </div>
     `;
   }
 
   private _renderLogbookItem(
     item: LogbookEntry,
-    index: number
+    index?: number
   ): TemplateResult {
+    if (!index) {
+      return html``;
+    }
     const previous = this.entries[index - 1];
     const state = item.entity_id ? this.hass.states[item.entity_id] : undefined;
     return html`
@@ -153,6 +152,19 @@ class HaLogbook extends LitElement {
 
       a {
         color: var(--primary-color);
+      }
+
+      .uni-virtualizer-host {
+        display: block;
+        position: relative;
+        contain: strict;
+        height: 100%;
+        overflow: auto;
+        padding: 0 16px;
+      }
+
+      .uni-virtualizer-host > * {
+        box-sizing: border-box;
       }
     `;
   }
