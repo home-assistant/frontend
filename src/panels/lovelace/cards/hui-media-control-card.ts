@@ -332,8 +332,13 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
                         .max="${stateObj.attributes.media_duration}"
                         .value="${getCurrentProgress(stateObj)}"
                         class="progress"
-                        style="--paper-progress-active-color: ${this
-                          ._foregroundColor || "var(--accent-color)"}"
+                        ${styleMap({
+                          "--paper-progress-active-color":
+                            this._foregroundColor || "var(--accent-color)",
+                          cursor: supportsFeature(stateObj, SUPPORT_SEEK)
+                            ? "pointer"
+                            : "initial",
+                        })}
                         @click=${(e: MouseEvent) =>
                           this._handleSeek(e, stateObj)}
                       ></paper-progress>
