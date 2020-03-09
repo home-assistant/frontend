@@ -125,7 +125,7 @@ export class HaConfigDevicePage extends LitElement {
         ${
           this.narrow
             ? html`
-                <span slot="header">${device.name_by_user || device.name}</span>
+                <span slot="header">${computeDeviceName(device, this.hass)}</span>
               `
             : ""
         }
