@@ -189,19 +189,26 @@ class HaConfigPerson extends LitElement {
         );
       },
       removeEntry: async () => {
-        showConfirmationDialog(this, {
-          title: this.hass!.localize("ui.panel.config.person.confirm_delete"),
-          text: this.hass!.localize("ui.panel.config.person.confirm_delete2"),
-          dismissText: this.hass!.localize("ui.common.no"),
-          confirmText: this.hass!.localize("ui.common.yes"),
-          confirm: async () => {
-            await deletePerson(this.hass!, entry!.id);
-            this._storageItems = this._storageItems!.filter(
-              (ent) => ent !== entry
-            );
-          },
-        });
-        return true;
+        if (
+          !(await showConfirmationDialog(this, {
+            title: this.hass!.localize("ui.panel.config.person.confirm_delete"),
+            text: this.hass!.localize("ui.panel.config.person.confirm_delete2"),
+            dismissText: this.hass!.localize("ui.common.no"),
+            confirmText: this.hass!.localize("ui.common.yes"),
+          }))
+        ) {
+          return false;
+        }
+
+        try {
+          await deletePerson(this.hass!, entry!.id);
+          this._storageItems = this._storageItems!.filter(
+            (ent) => ent !== entry
+          );
+          return true;
+        } catch (err) {
+          return false;
+        }
       },
     });
   }

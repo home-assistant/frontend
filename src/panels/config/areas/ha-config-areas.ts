@@ -150,20 +150,27 @@ export class HaConfigAreas extends LitElement {
       updateEntry: async (values) =>
         updateAreaRegistryEntry(this.hass!, entry!.area_id, values),
       removeEntry: async () => {
-        showConfirmationDialog(this, {
-          title: this.hass.localize(
-            "ui.panel.config.areas.delete.confirmation_title"
-          ),
-          text: this.hass.localize(
-            "ui.panel.config.areas.delete.confirmation_text"
-          ),
-          confirm: () => {
-            deleteAreaRegistryEntry(this.hass!, entry!.area_id);
-          },
-          dismissText: this.hass.localize("ui.common.no"),
-          confirmText: this.hass.localize("ui.common.yes"),
-        });
-        return true;
+        if (
+          !(await showConfirmationDialog(this, {
+            title: this.hass.localize(
+              "ui.panel.config.areas.delete.confirmation_title"
+            ),
+            text: this.hass.localize(
+              "ui.panel.config.areas.delete.confirmation_text"
+            ),
+            dismissText: this.hass.localize("ui.common.no"),
+            confirmText: this.hass.localize("ui.common.yes"),
+          }))
+        ) {
+          return false;
+        }
+
+        try {
+          await deleteAreaRegistryEntry(this.hass!, entry!.area_id);
+          return true;
+        } catch (err) {
+          return false;
+        }
       },
     });
   }

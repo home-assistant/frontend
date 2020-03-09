@@ -421,20 +421,27 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
   }
 
   private async _removeEntry(entry: Zone) {
-    showConfirmationDialog(this, {
-      title: this.hass!.localize("ui.panel.config.zone.confirm_delete"),
-      text: this.hass!.localize("ui.panel.config.zone.confirm_delete2"),
-      dismissText: this.hass!.localize("ui.common.no"),
-      confirmText: this.hass!.localize("ui.common.yes"),
-      confirm: async () => {
-        await deleteZone(this.hass!, entry!.id);
-        this._storageItems = this._storageItems!.filter((ent) => ent !== entry);
-        if (!this.narrow) {
-          this._map?.fitMap();
-        }
-      },
-    });
-    return true;
+    if (
+      !(await showConfirmationDialog(this, {
+        title: this.hass!.localize("ui.panel.config.zone.confirm_delete"),
+        text: this.hass!.localize("ui.panel.config.zone.confirm_delete2"),
+        dismissText: this.hass!.localize("ui.common.no"),
+        confirmText: this.hass!.localize("ui.common.yes"),
+      }))
+    ) {
+      return false;
+    }
+
+    try {
+      await deleteZone(this.hass!, entry!.id);
+      this._storageItems = this._storageItems!.filter((ent) => ent !== entry);
+      if (!this.narrow) {
+        this._map?.fitMap();
+      }
+      return true;
+    } catch (err) {
+      return false;
+    }
   }
 
   private async _openDialog(entry?: Zone) {
