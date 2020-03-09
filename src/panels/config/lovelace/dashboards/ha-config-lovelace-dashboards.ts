@@ -197,6 +197,7 @@ export class HaConfigLovelaceDashboards extends LitElement {
       },
       ...dashboards.map((dashboard) => {
         return {
+          filename: "",
           ...dashboard,
           default: localStorage.defaultPage === dashboard.url_path,
         };
