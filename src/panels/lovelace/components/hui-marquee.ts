@@ -9,13 +9,13 @@ import {
   property,
 } from "lit-element";
 
-const marqueeSpeed = 0.2;
+const marqueeSpeed = 0.6;
 
 @customElement("hui-marquee")
 class HuiMarquee extends LitElement {
   @property() public text?: string;
   @property() public active?: boolean;
-  private _interval?: number;
+  @property() private _animating?: boolean;
   private _left: number = 0;
 
   protected updated(changedProperties: PropertyValues): void {
@@ -24,14 +24,13 @@ class HuiMarquee extends LitElement {
     if (
       changedProperties.has("active") &&
       this.active &&
-      !this._interval &&
+      !this._animating &&
       this.offsetWidth < this.scrollWidth
     ) {
-      this._interval = window.setInterval(() => {
-        this._play();
+      this._animating = true;
+      window.requestAnimationFrame(() => {
+        this._animate();
       });
-
-      this.requestUpdate();
     }
   }
 
@@ -42,7 +41,7 @@ class HuiMarquee extends LitElement {
 
     return html`
       <div>${this.text}</div>
-      ${this._interval
+      ${this._animating
         ? html`
             <div>${this.text}</div>
           `
@@ -54,12 +53,11 @@ class HuiMarquee extends LitElement {
     return this.shadowRoot!.firstElementChild as HTMLElement;
   }
 
-  private _play(): void {
+  private _animate(): void {
     this.style.marginLeft = "-" + this._left + "px";
 
     if (!this.active && !this._left) {
-      clearInterval(this._interval);
-      this._interval = undefined;
+      this._animating = false;
       return;
     }
 
@@ -67,6 +65,9 @@ class HuiMarquee extends LitElement {
     if (this._left >= this._marqueeElementFirstChild.offsetWidth + 16) {
       this._left = 0;
     }
+    window.requestAnimationFrame(() => {
+      this._animate();
+    });
   }
 
   static get styles(): CSSResult {
