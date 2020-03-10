@@ -1333,6 +1333,7 @@
                         "introduction2": "Utilice el registro de la entidad para reemplazar el nombre, cambiar el ID de la entidad o eliminar la entrada de Home Assistant. Tenga en cuenta que eliminar la entrada del registro de la entidad no eliminará la entidad. Para hacerlo, siga el enlace a continuación y elimínelo de la página de integraciones.",
                         "remove_selected": {
                             "button": "Eliminar selección",
+                            "confirm_partly_title": "Sólo se pueden eliminar {número} entidades seleccionadas.",
                             "confirm_text": "Las entidades sólo pueden ser eliminadas cuando la integración ya no las proporciona.",
                             "confirm_title": "¿Desea eliminar {number} entidades?"
                         },
@@ -1924,7 +1925,14 @@
                             "name": "Panel de alarma"
                         },
                         "conditional": {
-                            "name": "Condicional"
+                            "card": "Tarjeta",
+                            "condition_explanation": "La tarjeta será mostrada cuando TODAS las siguientes condiciones se cumplan.",
+                            "conditions": "Condiciones",
+                            "current_state": "actual",
+                            "description": "La tarjeta Condicional muestra otra tarjeta basada en estados de entidad.",
+                            "name": "Condicional",
+                            "state_equal": "El Estado es igual a",
+                            "state_not_equal": "El Estado no es igual a"
                         },
                         "config": {
                             "optional": "Opcional",
@@ -2017,21 +2025,26 @@
                             "name": "Imagen"
                         },
                         "plant-status": {
+                            "description": "La tarjeta de estado de la planta es para todos los botánicos encantadores que hay.",
                             "name": "Estado de la planta"
                         },
                         "sensor": {
+                            "description": "La tarjeta Sensor le ofrece una visión general rápida del estado de sus sensores con un gráfico opcional para visualizar los cambios a lo largo del tiempo.",
                             "graph_detail": "Detalle del gráfico",
                             "graph_type": "Tipo de gráfico",
                             "name": "Sensor"
                         },
                         "shopping-list": {
+                            "description": "La tarjeta Lista de Compras le permite agregar, editar, marcar y borrar artículos de su lista.",
                             "integration_not_loaded": "Esta tarjeta requiere que se configure la integración `shopping_list`.",
                             "name": "Lista de la compra"
                         },
                         "thermostat": {
+                            "description": "La tarjeta del termostato le da el control de su entidad climática. Permitiéndole cambiar la temperatura y el modo de la entidad.",
                             "name": "Termostato"
                         },
                         "vertical-stack": {
+                            "description": "La tarjera Pila Vertical te permite agrupar multiples tarjetas de modo que siempre queden en la misma columna.",
                             "name": "Pila vertical"
                         },
                         "weather-forecast": {
