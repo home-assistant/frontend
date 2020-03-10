@@ -58,11 +58,10 @@ class HuiMarquee extends LitElement {
   static get styles(): CSSResult {
     return css`
       :host {
-        display: block;
-        width: 100%;
-        height: 25px;
-        overflow: hidden;
+        display: flex;
         position: relative;
+        align-items: center;
+        height: 25px;
       }
 
       .marquee-inner {
