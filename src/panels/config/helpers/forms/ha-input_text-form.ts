@@ -24,7 +24,6 @@ class HaInputTextForm extends LitElement {
   private _item?: InputText;
   @property() private _name!: string;
   @property() private _icon!: string;
-  @property() private _initial?: string;
   @property() private _max?: number;
   @property() private _min?: number;
   @property() private _mode?: string;
@@ -37,7 +36,6 @@ class HaInputTextForm extends LitElement {
       this._icon = item.icon || "";
       this._max = item.max || 100;
       this._min = item.min || 0;
-      this._initial = item.initial;
       this._mode = item.mode || "text";
       this._pattern = item.pattern;
     } else {
@@ -127,18 +125,6 @@ class HaInputTextForm extends LitElement {
                 @value-changed=${this._valueChanged}
                 .label=${this.hass!.localize(
                   "ui.dialogs.helper_settings.input_text.pattern"
-                )}
-              ></paper-input>
-              <br />
-              ${this.hass!.localize(
-                "ui.dialogs.helper_settings.generic.initial_value_explain"
-              )}
-              <paper-input
-                .value=${this._initial}
-                .configValue=${"initial"}
-                @value-changed=${this._valueChanged}
-                .label=${this.hass!.localize(
-                  "ui.dialogs.helper_settings.generic.initial_value"
                 )}
               ></paper-input>
             `
