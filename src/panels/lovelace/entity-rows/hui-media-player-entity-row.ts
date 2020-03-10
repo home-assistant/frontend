@@ -177,6 +177,9 @@ class HuiMediaPlayerEntityRow extends LitElement implements LovelaceRow {
 
   static get styles(): CSSResult {
     return css`
+      :host {
+        display: block;
+      }
       .flex {
         display: flex;
         align-items: center;
