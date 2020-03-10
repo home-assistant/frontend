@@ -66,10 +66,11 @@ class HuiMarquee extends LitElement {
 
       .marquee-inner {
         position: absolute;
+        animation: marquee 10s linear infinite paused;
       }
 
       .animating {
-        animation: marquee 10s linear infinite;
+        animation-play-state: running;
       }
 
       span {
