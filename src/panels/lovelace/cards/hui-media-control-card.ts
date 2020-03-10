@@ -190,11 +190,15 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
         >
           <div
             class="color-block"
-            style=${styleMap({ "background-color": this._backgroundColor! })}
+            style=${styleMap({
+              "background-color": `${this._backgroundColor}`,
+            })}
           ></div>
           <div
             class="no-img"
-            style=${styleMap({ "background-color": this._backgroundColor! })}
+            style=${styleMap({
+              "background-color": `${this._backgroundColor}`,
+            })}
           ></div>
           <div class="image" style=${styleMap(imageStyle)}></div>
           ${hasNoImage
@@ -213,7 +217,7 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
             off: isOffState || isUnavailable,
             "no-progress": !this._showProgressBar && !this._veryNarrow,
           })}"
-          style=${styleMap({ color: this._foregroundColor! })}
+          style=${styleMap({ color: `${this._foregroundColor}` })}
         >
           <div class="top-info">
             <div class="icon-name">
