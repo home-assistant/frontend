@@ -7,7 +7,6 @@ import {
   css,
   CSSResult,
   property,
-  query,
 } from "lit-element";
 import { classMap } from "lit-html/directives/class-map";
 
@@ -15,16 +14,16 @@ import { classMap } from "lit-html/directives/class-map";
 class HuiMarquee extends LitElement {
   @property() public text?: string;
   @property() public active?: boolean;
-  @property() private _animating?: boolean;
-  @query(".marquee") private _marquee?: HTMLDivElement;
+  @property() private _animating = false;
   protected updated(changedProperties: PropertyValues): void {
     super.updated(changedProperties);
 
-    if (changedProperties.has("active") && this.active) {
-      const marquee = this._marquee;
-      if (marquee && marquee.offsetWidth < marquee.scrollWidth) {
-        this._animating = true;
-      }
+    if (
+      changedProperties.has("active") &&
+      this.active &&
+      this.offsetWidth < this.scrollWidth
+    ) {
+      this._animating = true;
     }
   }
 
@@ -34,20 +33,18 @@ class HuiMarquee extends LitElement {
     }
 
     return html`
-      <div class="marquee">
-        <div
-          class="marquee-inner ${classMap({
-            animating: Boolean(this._animating),
-          })}"
-          @animationiteration=${this._onIteration}
-        >
-          <span>${this.text}</span>
-          ${this._animating
-            ? html`
-                <span>${this.text}</span>
-              `
-            : ""}
-        </div>
+      <div
+        class="marquee-inner ${classMap({
+          animating: this._animating,
+        })}"
+        @animationiteration=${this._onIteration}
+      >
+        <span>${this.text}</span>
+        ${this._animating
+          ? html`
+              <span>${this.text}</span>
+            `
+          : ""}
       </div>
     `;
   }
@@ -60,7 +57,8 @@ class HuiMarquee extends LitElement {
 
   static get styles(): CSSResult {
     return css`
-      .marquee {
+      :host {
+        display: block;
         width: 100%;
         height: 25px;
         overflow: hidden;
