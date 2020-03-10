@@ -2,7 +2,6 @@ import {
   DeviceRegistryEntry,
   computeDeviceName,
 } from "../../../../data/device_registry";
-import { removeMQTTDeviceEntry } from "../../../../data/mqtt";
 import { loadDeviceRegistryDetailDialog } from "../../../../dialogs/device-registry-detail/show-dialog-device-registry-detail";
 import {
   LitElement,
@@ -13,7 +12,6 @@ import {
   CSSResult,
   css,
 } from "lit-element";
-import { showConfirmationDialog } from "../../../../dialogs/generic/show-dialog-box";
 import { HomeAssistant } from "../../../../types";
 import { AreaRegistryEntry } from "../../../../data/area_registry";
 
@@ -24,7 +22,6 @@ export class HaDeviceCard extends LitElement {
   @property() public devices!: DeviceRegistryEntry[];
   @property() public areas!: AreaRegistryEntry[];
   @property() public narrow!: boolean;
-  @property() public domains!: string[];
 
   protected render(): TemplateResult {
     return html`
@@ -84,18 +81,6 @@ export class HaDeviceCard extends LitElement {
               </div>
             `
           : ""}
-        ${this.domains.includes("mqtt")
-          ? html`
-              <div class="buttons">
-                <mwc-button
-                  class="warning"
-                  @click="${this._confirmDeleteEntry}"
-                >
-                  ${this.hass.localize("ui.panel.config.devices.delete")}
-                </mwc-button>
-              </div>
-            `
-          : ""}
       </div>
     `;
   }
@@ -122,17 +107,6 @@ export class HaDeviceCard extends LitElement {
         )})`;
   }
 
-  private async _deleteEntry(): Promise<void> {
-    await removeMQTTDeviceEntry(this.hass!, this.device.id);
-  }
-
-  private _confirmDeleteEntry(): void {
-    showConfirmationDialog(this, {
-      text: this.hass.localize("ui.panel.config.devices.confirm_delete"),
-      confirm: () => this._deleteEntry(),
-    });
-  }
-
   static get styles(): CSSResult {
     return css`
       ha-card {
@@ -153,10 +127,6 @@ export class HaDeviceCard extends LitElement {
       .entity-id,
       .model {
         color: var(--secondary-text-color);
-      }
-      mwc-button.warning {
-        margin-right: auto;
-        --mdc-theme-primary: var(--google-red-500);
       }
     `;
   }
