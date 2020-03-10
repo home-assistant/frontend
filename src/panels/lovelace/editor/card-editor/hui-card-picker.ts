@@ -118,7 +118,7 @@ export class HuiCardPicker extends LitElement {
         </div>
       </div>
       <div class="cards-container">
-        ${(window.customCards || []).map((card) => {
+        ${((window as any).customCards || []).map((card) => {
           return html`
             ${until(
               this._renderCardElement(`custom:${card.type}`),
@@ -266,8 +266,8 @@ export class HuiCardPicker extends LitElement {
   ): Promise<TemplateResult> {
     let element: LovelaceCard | undefined;
     let cardConfig: LovelaceCardConfig = { type };
-    let customCard = type.startsWith("custom:")
-      ? (window.customCards || []).find(
+    const customCard = type.startsWith("custom:")
+      ? ((window as any).customCards || []).find(
           (card) => `custom:${card.type}` === type
         )
       : undefined;
@@ -306,7 +306,7 @@ export class HuiCardPicker extends LitElement {
         </div>
         <div class="card-header">
           ${customCard && customCard.name
-            ? customCard.name
+            ? `Custom: ${customCard.name}`
             : this.hass!.localize(
                 `ui.panel.lovelace.editor.card.${cardConfig.type}.name`
               )}
