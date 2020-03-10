@@ -118,6 +118,8 @@ class HuiInputNumberEntityRow extends LitElement implements LovelaceRow {
       .flex {
         display: flex;
         align-items: center;
+        justify-content: flex-end;
+        width: 100%;
       }
       .state {
         min-width: 45px;
@@ -125,6 +127,10 @@ class HuiInputNumberEntityRow extends LitElement implements LovelaceRow {
       }
       paper-input {
         text-align: end;
+      }
+      ha-slider {
+        width: 100%;
+        max-width: 200px;
       }
     `;
   }

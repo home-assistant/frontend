@@ -626,16 +626,16 @@
                     "enabled_description": "비활성화 된 구성요소는 Home Assistant 에 추가되지 않습니다.",
                     "enabled_label": "구성요소 활성화",
                     "entity_id": "구성요소 ID",
-                    "icon": "아이콘 재정의(Override)",
+                    "icon": "아이콘 재정의",
                     "icon_error": "아이콘을 지정할 때 'mdi:home'과 같이 '접두사:아이콘' 형식이어야 합니다.",
                     "name": "대체 이름",
                     "note": "참고: 아직 모든 통합 구성요소에 적용되지 않을 수 있습니다.",
                     "unavailable": "이 구성요소는 현재 사용할 수 없습니다.",
                     "update": "업데이트"
                 },
-                "no_unique_id": "이 구성요소는 고유한 ID 가 없으므로 설정을 UI에서 관리할 수 없습니다.",
+                "no_unique_id": "이 구성요소는 고유한 ID 가 없으므로 설정을 UI 에서 관리할 수 없습니다.",
                 "related": "관련 내용",
-                "settings": "설정"
+                "settings": "설정 내용"
             },
             "generic": {
                 "cancel": "취소",
@@ -1277,7 +1277,7 @@
                     "warning": {
                         "include_link": "customize.yaml 포함",
                         "include_sentence": "configuration.yaml 이 올바르지 않은 것 같습니다",
-                        "not_applied": "여기에서 변경 한 내용은 저장되지만, 해당 사항이 없다면 구성을 다시 읽어들인 후에는 적용되지 않습니다."
+                        "not_applied": "여기에서 변경 한 내용은 저장되지만, 해당 사항이 없다면 구성을 다시 읽어 들인 후에는 적용되지 않습니다."
                     }
                 },
                 "devices": {
@@ -1751,7 +1751,7 @@
                         "manufacturer_code_override": "제조업체 코드 재정의",
                         "value": "값"
                     },
-                    "description": "Zigbee 홈 자동화 네트워크 관리",
+                    "description": "Zigbee 홈 자동화 네트워크를 관리합니다",
                     "device_card": {
                         "area_picker_label": "영역",
                         "device_name_placeholder": "사용자 지정 이름",
@@ -1779,7 +1779,7 @@
                         "create_group": "Zigbee 홈 자동화 - 그룹 만들기",
                         "create_group_details": "새로운 Zigbee 그룹을 생성하기 위해 필요한 세부 사항을 입력해주세요",
                         "creating_group": "그룹 생성",
-                        "description": "Zigbee 그룹 생성 및 수정",
+                        "description": "Zigbee 그룹을 생성하거나 수정합니다",
                         "group_details": "선택된 Zigbee 그룹의 모든 세부 정보는 다음과 같습니다.",
                         "group_id": "그룹 ID",
                         "group_info": "그룹 정보",
@@ -1789,7 +1789,7 @@
                         "groups": "그룹",
                         "groups-header": "Zigbee 홈 자동화 - 그룹 관리",
                         "header": "Zigbee 홈 자동화 - 그룹 관리",
-                        "introduction": "Zigbee 그룹 생성 및 수정",
+                        "introduction": "Zigbee 그룹을 생성하거나 수정합니다",
                         "manage_groups": "Zigbee 그룹 관리",
                         "members": "구성원",
                         "remove_groups": "그룹 제거",
@@ -1844,7 +1844,7 @@
                     "edit_home_zone_narrow": "집 지역의 반경은 아직 프런트엔드에서 편집할 수 없습니다. 위치는 일반 구성에서 변경할 수 있습니다.",
                     "go_to_core_config": "일반 구성으로 이동하시겠습니까?",
                     "home_zone_core_config": "집 지역의 위치는 일반 구성 페이지에서 편집할 수 있습니다. 집 지역의 반경은 아직 프런트엔드에서 편집할 수 없습니다. 일반 구성으로 이동하시겠습니까?",
-                    "introduction": "지역을 사용하면 지구 상의 특정 지역을 지정할 수 있습니다. 구성원이 지역 내에 있으면 구성요소 상태에서 지역의 이름을 가져옵니다. 자동화 설정 내에서 지역을 트리거 또는 조건으로 사용할 수도 있습니다.",
+                    "introduction": "지역을 사용하면 지구 상의 특정 위치를 지정할 수 있습니다. 구성원이 지역 내에 있으면 구성요소 상태에서 지역의 이름을 가져옵니다. 자동화 설정 내에서 지역을 트리거 또는 조건으로 사용할 수도 있습니다.",
                     "no_zones_created_yet": "아직 설정한 지역이 없는 것 같습니다."
                 },
                 "zwave": {

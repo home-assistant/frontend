@@ -1,4 +1,4 @@
 declare module "node-vibrant" {
-  export = Vibrant;
+  export default Vibrant;
 }
 declare var Vibrant: Any;

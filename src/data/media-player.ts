@@ -24,6 +24,10 @@ export interface MediaPlayerThumbnail {
 
 export const getCurrentProgress = (stateObj: HassEntity): number => {
   let progress = stateObj.attributes.media_position;
+
+  if (stateObj.state !== "playing") {
+    return progress;
+  }
   progress +=
     (Date.now() -
       new Date(stateObj.attributes.media_position_updated_at).getTime()) /

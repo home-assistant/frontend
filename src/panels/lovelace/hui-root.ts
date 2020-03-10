@@ -6,7 +6,6 @@ import {
   CSSResult,
   css,
   property,
-  query,
 } from "lit-element";
 import { classMap } from "lit-html/directives/class-map";
 import "@polymer/app-layout/app-header-layout/app-header-layout";
@@ -61,7 +60,6 @@ class HUIRoot extends LitElement {
   @property() public route?: { path: string; prefix: string };
   @property() private _routeData?: { view: string };
   @property() private _curView?: number | "hass-unused-entities";
-  @query("ha-app-layout") private _appLayout!: HTMLElement;
   private _viewCache?: { [viewId: string]: HUIView };
 
   private _debouncedConfigChanged: () => void;
@@ -576,16 +574,10 @@ class HUIRoot extends LitElement {
       return;
     }
     this.lovelace!.setEditMode(true);
-    if (this.config.views.length < 2) {
-      this.updateComplete.then(() => fireEvent(this._appLayout, "iron-resize"));
-    }
   }
 
   private _editModeDisable(): void {
     this.lovelace!.setEditMode(false);
-    if (this.config.views.length < 2) {
-      this.updateComplete.then(() => fireEvent(this._appLayout, "iron-resize"));
-    }
   }
 
   private _editLovelace() {
@@ -703,6 +695,8 @@ class HUIRoot extends LitElement {
     }
 
     root.appendChild(view);
+    // Recalculate to see if we need to adjust content area for tab bar
+    fireEvent(this, "iron-resize");
   }
 }
 

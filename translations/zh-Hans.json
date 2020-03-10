@@ -394,9 +394,9 @@
     },
     "ui": {
         "auth_store": {
-            "ask": "是否保存本次登录？",
-            "confirm": "保存",
-            "decline": "不，谢谢"
+            "ask": "保持登录状态吗？",
+            "confirm": "保持",
+            "decline": "不保持"
         },
         "card": {
             "alarm_control_panel": {
@@ -679,7 +679,9 @@
                 },
                 "not_editable": "不可编辑",
                 "not_editable_text": "该实体无法在 UI 中修改，因为它被定义于 configuration.yaml。",
-                "required_error_msg": "此字段为必填字段"
+                "platform_not_loaded": "{platform} 组件尚未加载。请在 'default_config:' 或 '{platform}:' 中选择一种方式，将其写入配置中。",
+                "required_error_msg": "此字段为必填字段",
+                "yaml_not_editable": "无法从 UI 编辑此实体的设置。只有通过 UI 设置的实体可以从 UI 配置。"
             },
             "more_info_control": {
                 "dismiss": "关闭对话框",
@@ -1382,7 +1384,9 @@
                         "introduction2": "使用本实体注册工具重写名称，修改实体 ID 或者从 Home Assistant 删除实体。注意，删除实体注册信息并不会删除实体本身。如果要删除实体，请点击下面的链接进入集成页面进行操作。",
                         "remove_selected": {
                             "button": "删除所选实体",
-                            "confirm_text": "仅当集成不再提供实体时才能进行删除。",
+                            "confirm_partly_text": "在所选的 {removable} 个实体中有 {selected} 个可被删除。实体可被删除的条件是集成不再提供它们。有时，即使集成已删除，也必须先重新启动 Home Assistant 才能删除它们的实体。您确定要删除实体吗？",
+                            "confirm_partly_title": "所选实体中只有 {number} 个可被删除。",
+                            "confirm_text": "如果它们包含这些实体，则应将它们从 Lovelace 配置和自动化中删除。",
                             "confirm_title": "您要删除这 {number} 个实体吗？"
                         },
                         "selected": "选择了 {number} 项",
@@ -1391,6 +1395,7 @@
                             "disabled": "已禁用",
                             "ok": "确定",
                             "readonly": "只读",
+                            "restored": "已还原",
                             "unavailable": "不可用"
                         },
                         "unavailable": "(不可用)"
@@ -1409,6 +1414,7 @@
                         "add_helper": "添加辅助元素",
                         "headers": {
                             "editable": "可编辑",
+                            "entity_id": "实体 ID",
                             "name": "名称",
                             "type": "类型"
                         }
@@ -1485,6 +1491,7 @@
                 "lovelace": {
                     "caption": "Lovelace 仪表盘",
                     "dashboards": {
+                        "cant_edit_default": "标准 Lovelace 仪表盘不能通过 UI 编辑。您可以通过将另一个仪表盘设为默认来隐藏它。",
                         "cant_edit_yaml": "定义于 YAML 中的仪表盘不能从 UI 修改。请在 configuration.yaml 中修改它们。",
                         "caption": "仪表盘",
                         "conf_mode": {
@@ -1499,9 +1506,12 @@
                             "edit_dashboard": "编辑仪表盘",
                             "icon": "侧边栏图标",
                             "new_dashboard": "添加新仪表盘",
+                            "remove_default": "取消在此设备上设为默认",
                             "require_admin": "仅限管理员",
+                            "set_default": "在此设备上设为默认",
                             "show_sidebar": "在侧边栏显示",
                             "title": "侧边栏标题",
+                            "title_required": "标题为必填项。",
                             "update": "更新",
                             "url": "网址",
                             "url_error_msg": "网址不可包含除 - 和 _ 以外的特殊字符及空格"
@@ -1510,12 +1520,13 @@
                             "add_dashboard": "添加仪表盘",
                             "headers": {
                                 "conf_mode": "配置方式",
+                                "default": "默认",
                                 "filename": "文件名",
                                 "require_admin": "仅限管理员",
                                 "sidebar": "在侧边栏显示",
                                 "title": "标题"
                             },
-                            "open": "打开仪表盘"
+                            "open": "打开"
                         }
                     },
                     "description": "配置 Lovelace 仪表盘",
@@ -2073,31 +2084,44 @@
                         },
                         "alarm-panel": {
                             "available_states": "可用状态",
+                            "description": "“警报面板”卡片用于对警报控制集成进行“警戒”和“解除警戒”操作。",
                             "name": "报警面板"
                         },
                         "button": {
+                            "description": "“按钮”卡片用于添加按钮来执行任务。",
                             "name": "按钮"
                         },
                         "conditional": {
-                            "name": "有条件的"
+                            "card": "卡片",
+                            "change_type": "更改类型",
+                            "condition_explanation": "当以下条件全部满足时，才会显示卡片。",
+                            "conditions": "条件",
+                            "current_state": "当前状态",
+                            "description": "“条件卡片”会根据实体的状态决定是否显示。",
+                            "name": "条件",
+                            "state_equal": "状态等于",
+                            "state_not_equal": "状态不等于"
                         },
                         "config": {
                             "optional": "可选",
                             "required": "必填"
                         },
                         "entities": {
+                            "description": "“实体”卡片是最常见的卡片。它将项目汇聚成列表。",
                             "name": "实体",
-                            "show_header_toggle": "显示名称切换？",
+                            "show_header_toggle": "显示标题旁的开关？",
                             "toggle": "切换实体。"
                         },
                         "entity-button": {
                             "name": "实体按钮"
                         },
                         "entity-filter": {
+                            "description": "“实体筛选”卡片用于定义一个实体的列表，只显示处于指定状态的实体。",
                             "name": "实体筛选"
                         },
                         "gauge": {
-                            "name": "仪表盘",
+                            "description": "“表盘”卡片是基础卡片，用于直观地展示传感器数据。",
+                            "name": "表盘",
                             "severity": {
                                 "define": "设置分级变色？",
                                 "green": "绿色",
@@ -2116,6 +2140,8 @@
                             "icon": "图标",
                             "icon_height": "图标高度",
                             "image": "图像路径",
+                            "manual": "手动模式",
+                            "manual_description": "您是想添加自定义卡片，还是手动编写 yaml 文件？",
                             "maximum": "最大",
                             "minimum": "最小",
                             "name": "名称",
@@ -2123,6 +2149,7 @@
                             "show_icon": "显示图标？",
                             "show_name": "显示名称？",
                             "show_state": "显示状态？",
+                            "state": "状态",
                             "tap_action": "点击动作",
                             "theme": "主题",
                             "title": "标题",
@@ -2131,65 +2158,83 @@
                         },
                         "glance": {
                             "columns": "列",
+                            "description": "“概览”卡片用于将多个传感器汇聚成一个紧凑的概览。",
                             "name": "概览"
                         },
                         "history-graph": {
+                            "description": "“历史图表”卡片用于为每一个列出的实体显示图表。",
                             "name": "历史图表"
                         },
                         "horizontal-stack": {
+                            "description": "“水平堆叠”卡片用于将多张卡片堆叠在一起，使它们始终彼此相邻放置成一行。",
                             "name": "水平堆叠"
                         },
                         "iframe": {
-                            "name": "iFrame"
+                            "description": "“网页”卡片供您将喜欢的网页直接嵌入 Home Assistant 中。",
+                            "name": "网页"
                         },
                         "light": {
-                            "name": "灯"
+                            "description": "“灯光”卡片用于调整灯的亮度。",
+                            "name": "灯光"
                         },
                         "map": {
                             "dark_mode": "夜间模式？",
                             "default_zoom": "默认缩放",
+                            "description": "“地图”卡片用于在地图上显示实体。",
                             "geo_location_sources": "地理位置来源",
                             "name": "地图",
                             "source": "位置来源"
                         },
                         "markdown": {
                             "content": "内容",
+                            "description": "“Markdown”卡片用于渲染 Markdown。",
                             "name": "Markdown"
                         },
                         "media-control": {
+                            "description": "“媒体控制”卡片用于显示媒体播放器实体，并提供一个易用的控制界面。",
                             "name": "媒体控制"
                         },
                         "picture-elements": {
+                            "description": "“图片元素”是最多才多艺的卡片类型了。在图片的配合下，它可用于放置图标、文本甚至是服务！",
                             "name": "图片元素"
                         },
                         "picture-entity": {
+                            "description": "“图片实体”卡片以图像的形式显示实体。除了来自 URL 的图像，它还可以显示摄像机实体拍摄到的画面。",
                             "name": "图片实体"
                         },
                         "picture-glance": {
+                            "description": "“图片概览”卡片显示图像和相应的实体状态作为图标。右侧的实体允许切换操作，其他实体则显示“更多信息”对话框。",
                             "name": "图片概览"
                         },
                         "picture": {
+                            "description": "“图片”卡片可设置图像，以用于前往界面路径或调用服务。",
                             "name": "图片"
                         },
                         "plant-status": {
+                            "description": "“植物状态”卡适用于所有可爱的植物学家。",
                             "name": "植物状态"
                         },
                         "sensor": {
+                            "description": "“传感器”卡片供您快速了解传感器的状态，还提供可选的图表来表示其随时间的变化。",
                             "graph_detail": "图形详细信息",
                             "graph_type": "图形类型",
                             "name": "传感器"
                         },
                         "shopping-list": {
+                            "description": "“购物清单”卡片供您向购物清单中添加、编辑、划掉、删除商品。",
                             "integration_not_loaded": "此卡片需要先配置好 `shopping_list` 集成。",
                             "name": "购物清单"
                         },
                         "thermostat": {
+                            "description": "“温控器”卡片用于控制恒温器实体，改变其设定温度和模式。",
                             "name": "温控器"
                         },
                         "vertical-stack": {
+                            "description": "“垂直堆叠”卡片用于将多张卡片堆叠在一起，使它们始终排成一列。",
                             "name": "垂直堆叠"
                         },
                         "weather-forecast": {
+                            "description": "“天气预报”卡片用于显示天气。对于将界面挂墙显示的情况非常有用。",
                             "name": "天气预报"
                         }
                     },
@@ -2201,7 +2246,7 @@
                         "move": "移动",
                         "options": "更多选项",
                         "pick_card": "请选择要添加的卡片。",
-                        "pick_card_view_title": "您想将哪张卡添加到您的{name}视图？",
+                        "pick_card_view_title": "您想将哪张卡片添加到 {name} 视图？",
                         "save": "保存",
                         "show_code_editor": "显示代码编辑器",
                         "show_visual_editor": "显示可视化编辑器",
@@ -2221,7 +2266,8 @@
                         "move_left": "向左移动视图",
                         "move_right": "向右移动视图",
                         "tab_badges": "徽章",
-                        "tab_settings": "设置"
+                        "tab_settings": "设置",
+                        "tab_visibility": "可见性"
                     },
                     "header": "编辑 UI",
                     "menu": {
@@ -2291,8 +2337,11 @@
                     "title": "未使用的实体"
                 },
                 "views": {
-                    "confirm_delete": "您确定要删除此视图吗？",
-                    "existing_cards": "您无法删除其中包含卡片的视图。请先移除卡片。"
+                    "confirm_delete": "删除此视图？",
+                    "confirm_delete_existing_cards": "删除此视图将同时删除卡片。",
+                    "confirm_delete_existing_cards_text": "您确定要删除“{name}”视图吗？该视图包含的 {number} 张卡片也将被删除。该操作不能撤消。",
+                    "confirm_delete_text": "您确定要删除“{name}”视图吗？",
+                    "existing_cards": "无法删除包含卡片的视图。请先移除卡片。"
                 },
                 "warning": {
                     "entity_non_numeric": "实体 {entity} 非数值",
