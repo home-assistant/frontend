@@ -566,6 +566,9 @@
             "config_entry_system_options": {
                 "update": "Opdateer"
             },
+            "domain_toggler": {
+                "title": "Wissel domeine"
+            },
             "entity_registry": {
                 "control": "Beheer",
                 "dismiss": "Ontslaan",
@@ -675,6 +678,11 @@
                 "entity_id": "Entiteit ID",
                 "name": "Naam Oorheers",
                 "save": "Stoor"
+            },
+            "voice_command": {
+                "how_can_i_help": "Hoe kan ek help?",
+                "label": "Voer 'n vraag in en druk 'Enter'",
+                "label_voice": "Tik en druk 'Enter' of tik op die mikrofoon om te praat"
             },
             "zha_device_info": {
                 "confirmations": {
@@ -988,6 +996,7 @@
                     }
                 },
                 "customize": {
+                    "attributes_customize": "Die volgende kenmerke is reeds opgestel in customize.yaml",
                     "attributes_not_set": "Die volgende eienskappe is nie gestel nie. Stel dit in as u wil.",
                     "attributes_override": "Jy kan hulle oorheers as jy wil.",
                     "attributes_set": "Die volgende eienskappe van die entiteit is programmaties gestel",
@@ -998,6 +1007,11 @@
                     "picker": {
                         "header": "Pasgemaakte Instellings",
                         "introduction": "Verfyn per-entiteit eienskappe. Bygevoegde / gewysigde aanpassings sal onmiddellik in werking tree. Verwyderde aanpassings sal in werking tree wanneer die entiteit opgedateer word."
+                    },
+                    "warning": {
+                        "include_link": "sluit customize.yaml in",
+                        "include_sentence": "Dit lyk asof u konfigurasie.yaml nie behoorlik is nie",
+                        "not_applied": "Wysigings wat hier aangebring is, word daarin geskryf, maar sal nie toegepas word na die herlaai van die konfigurasie nie, tensy die insluit in plek is."
                     }
                 },
                 "devices": {

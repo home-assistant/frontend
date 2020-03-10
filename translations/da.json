@@ -394,7 +394,7 @@
     },
     "ui": {
         "auth_store": {
-            "ask": "Vil du gemme dette login?",
+            "ask": "Ønsker du at forblive logget ind?",
             "confirm": "Ja",
             "decline": "Nej"
         },
@@ -626,7 +626,7 @@
                     "enabled_description": "Deaktiverede entiteter tilføjes ikke til Home Assistant.",
                     "enabled_label": "Aktivér entitet",
                     "entity_id": "Entitets-id",
-                    "name": "Tilsidesættelse af navn",
+                    "name": "Brugerdefineret navn",
                     "note": "Bemærk: Dette virker muligvis ikke med alle integrationer endnu.",
                     "unavailable": "Denne entitet er ikke tilgængelig i øjeblikket.",
                     "update": "OPDATER"
@@ -658,6 +658,7 @@
                 "input_text": {
                     "max": "Maksimumslængde",
                     "min": "Minimumslængde",
+                    "mode": "Visningstilstand",
                     "password": "Kodeord",
                     "text": "Tekst"
                 },
@@ -1329,7 +1330,7 @@
                         "enabled_description": "Deaktiverede entiteter tilføjes ikke til Home Assistant.",
                         "enabled_label": "Aktivér entitet",
                         "entity_id": "Entitets-id",
-                        "name": "Tilsidesættelse af navn",
+                        "name": "Brugerdefineret navn",
                         "note": "Bemærk: Dette fungerer muligvis ikke med alle integrationer endnu.",
                         "unavailable": "Denne entitet er ikke tilgængelig i øjeblikket.",
                         "update": "OPDATER"
@@ -1364,7 +1365,7 @@
                         "introduction2": "Brug entitetssregistret til at overskrive navnet, ændre entitets-id eller fjerne posten fra Home Assistant. Bemærk, at fjernelse af entitetens registreringspost ikke fjerner entiteten. For at gøre dette, skal du følge linket herunder og fjerne det fra integrationssiden.",
                         "remove_selected": {
                             "button": "Fjern valgte",
-                            "confirm_text": "Entiteter kan kun fjernes, når integrationen ikke længere leverer entiteterne.",
+                            "confirm_text": "Du bør fjerne dem fra din Lovelace-konfiguration og automatiseringer, hvis de indeholder disse entiteter.",
                             "confirm_title": "Vil du fjerne {number} entiteter?"
                         },
                         "selected": "{number} valgt",
@@ -1691,7 +1692,7 @@
                         "add_devices": "Tilføj enheder",
                         "clusters": "Klynger",
                         "devices": "Enheder",
-                        "manufacturer_code_override": "Tilsidesættelse af producentens kode",
+                        "manufacturer_code_override": "Brugerdefineret producentkode",
                         "value": "Værdi"
                     },
                     "description": "Zigbee Home Automation-opsætning",
@@ -2006,7 +2007,7 @@
                     }
                 },
                 "changed_toast": {
-                    "message": "Lovelace-brugerfladekonfigurationen blev opdateret. Vil du genindlæse?",
+                    "message": "Lovelace-brugerfladekonfigurationen for dette dashboard blev opdateret. Vil du genindlæse?",
                     "refresh": "Opdater"
                 },
                 "editor": {
@@ -2106,33 +2107,41 @@
                             "name": "Billedelementer"
                         },
                         "picture-entity": {
+                            "description": "Billedentitet-kortet viser en entitet i form af et billede. I stedet for billeder fra URL, kan det også vise billedet af kameraentiteter.",
                             "name": "Billedentitet"
                         },
                         "picture-glance": {
+                            "description": "Billedblik-kortet viser et billede og den tilsvarende entitetstilstand som et ikon. Entiteterne på højre side tillader at skifte handlinger, andre viser dialogboksen for mere information.",
                             "name": "Billedblik"
                         },
                         "picture": {
                             "name": "Billede"
                         },
                         "plant-status": {
+                            "description": "Plantestatus-kortet er til alle de dejlige botanikere derude.",
                             "name": "Plantestatus"
                         },
                         "sensor": {
+                            "description": "Sensorkortet giver dig et hurtigt overblik over dine sensorers tilstand med en valgfri graf til at visualisere forandringer over tid.",
                             "graph_detail": "Grafdetaljer",
                             "graph_type": "Graftype",
                             "name": "Sensor"
                         },
                         "shopping-list": {
+                            "description": "På indkøbslistekortet kan du tilføje, redigere, afkrydse og rydde varer fra din indkøbsliste.",
                             "integration_not_loaded": "Dette kort kræver, at 'shopping_list'-integrationen er konfigureret.",
                             "name": "Indkøbsliste"
                         },
                         "thermostat": {
+                            "description": "Termostatkortet giver kontrol over din klimaentitet. Giver dig mulighed for at ændre entitetens temperatur og tilstand.",
                             "name": "Termostat"
                         },
                         "vertical-stack": {
+                            "description": "Lodret stak-kortet giver dig mulighed for at gruppere flere kort, så de altid sidder i samme kolonne.",
                             "name": "Lodret stak"
                         },
                         "weather-forecast": {
+                            "description": "Vejrudsigtskortet viser vejret - meget nyttigt at medtage på brugerflader, som folk viser på væggen.",
                             "name": "Vejrudsigt"
                         }
                     },

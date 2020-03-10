@@ -1980,7 +1980,9 @@
                             "name": "Bouton"
                         },
                         "conditional": {
-                            "name": "Conditionnel"
+                            "current_state": "actuel",
+                            "name": "Conditionnel",
+                            "state_not_equal": "L'état n'est pas égal à"
                         },
                         "config": {
                             "optional": "Optionnel",
