@@ -8,30 +8,22 @@ import {
   CSSResult,
   property,
 } from "lit-element";
-
-const marqueeSpeed = 0.2;
+import { classMap } from "lit-html/directives/class-map";
 
 @customElement("hui-marquee")
 class HuiMarquee extends LitElement {
   @property() public text?: string;
   @property() public active?: boolean;
-  private _interval?: number;
-  private _left: number = 0;
-
+  @property() private _animating = false;
   protected updated(changedProperties: PropertyValues): void {
     super.updated(changedProperties);
 
     if (
       changedProperties.has("active") &&
       this.active &&
-      !this._interval &&
       this.offsetWidth < this.scrollWidth
     ) {
-      this._interval = window.setInterval(() => {
-        this._play();
-      });
-
-      this.requestUpdate();
+      this._animating = true;
     }
   }
 
@@ -41,31 +33,25 @@ class HuiMarquee extends LitElement {
     }
 
     return html`
-      <div>${this.text}</div>
-      ${this._interval
-        ? html`
-            <div>${this.text}</div>
-          `
-        : ""}
+      <div
+        class="marquee-inner ${classMap({
+          animating: this._animating,
+        })}"
+        @animationiteration=${this._onIteration}
+      >
+        <span>${this.text}</span>
+        ${this._animating
+          ? html`
+              <span>${this.text}</span>
+            `
+          : ""}
+      </div>
     `;
   }
 
-  private get _marqueeElementFirstChild(): HTMLElement {
-    return this.shadowRoot!.firstElementChild as HTMLElement;
-  }
-
-  private _play(): void {
-    this.style.marginLeft = "-" + this._left + "px";
-
-    if (!this.active && !this._left) {
-      clearInterval(this._interval);
-      this._interval = undefined;
-      return;
-    }
-
-    this._left += marqueeSpeed;
-    if (this._left >= this._marqueeElementFirstChild.offsetWidth + 16) {
-      this._left = 0;
+  private _onIteration() {
+    if (!this.active) {
+      this._animating = false;
     }
   }
 
@@ -73,10 +59,31 @@ class HuiMarquee extends LitElement {
     return css`
       :host {
         display: flex;
+        position: relative;
+        align-items: center;
+        height: 25px;
       }
 
-      :host div {
-        margin-right: 16px;
+      .marquee-inner {
+        position: absolute;
+        animation: marquee 10s linear infinite paused;
+      }
+
+      .animating {
+        animation-play-state: running;
+      }
+
+      span {
+        padding-right: 16px;
+      }
+
+      @keyframes marquee {
+        0% {
+          transform: translateX(0%);
+        }
+        100% {
+          transform: translateX(-50%);
+        }
       }
     `;
   }
