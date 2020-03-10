@@ -13,7 +13,7 @@ import "../components/hui-generic-entity-row";
 import "../components/hui-warning";
 
 import { LovelaceRow } from "./types";
-import { HomeAssistant } from "../../../types";
+import { HomeAssistant, WeatherEntity } from "../../../types";
 import { EntitiesCardEntityConfig } from "../cards/types";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
 import { UNAVAILABLE } from "../../../data/entity";
@@ -47,7 +47,7 @@ class HuiWeatherEntityRow extends LitElement implements LovelaceRow {
       return html``;
     }
 
-    const stateObj = this.hass.states[this._config.entity];
+    const stateObj = this.hass.states[this._config.entity] as WeatherEntity;
 
     if (!stateObj || stateObj.state === UNAVAILABLE) {
       return html`
@@ -74,7 +74,7 @@ class HuiWeatherEntityRow extends LitElement implements LovelaceRow {
       >
         <div class="attributes">
           <div>
-            ${this._getExtrema(stateObj.attributes.forecast[0])}
+            ${this._getExtrema(stateObj)}
           </div>
           <div>
             ${this._getSecondaryAttribute(stateObj)}
@@ -90,17 +90,21 @@ class HuiWeatherEntityRow extends LitElement implements LovelaceRow {
     `;
   }
 
-  private _getSecondaryAttribute(stateObj: any): TemplateResult {
-    const todayForecast = stateObj.attributes.forecast[0];
+  private _getSecondaryAttribute(stateObj: WeatherEntity): TemplateResult {
+    if (!stateObj.attributes.forecast?.length) {
+      return html``;
+    }
+
+    const forecastNow = stateObj.attributes.forecast[0];
 
     let value: string;
     let attribute: string;
 
-    if (todayForecast.precipitation) {
-      value = todayForecast.precipitation;
+    if (forecastNow.precipitation) {
+      value = forecastNow.precipitation.toString();
       attribute = "precipitation";
-    } else if (todayForecast.humidity) {
-      value = todayForecast.humidity;
+    } else if (forecastNow.humidity) {
+      value = forecastNow.humidity.toString();
       attribute = "humidity";
     } else {
       return html``;
@@ -120,21 +124,41 @@ class HuiWeatherEntityRow extends LitElement implements LovelaceRow {
     `;
   }
 
-  private _getExtrema(todayForecast: any): TemplateResult {
-    const low = todayForecast.templow;
-    const high = todayForecast.temperature;
+  private _getExtrema(stateObj: WeatherEntity): TemplateResult {
+    if (!stateObj.attributes.forecast?.length) {
+      return html``;
+    }
+
+    let tempLow: number | undefined;
+    let tempHigh = stateObj.attributes.temperature;
+    const today = new Date().getDate();
     const unit = getWeatherUnit(this.hass!, "temperature");
 
+    for (const forecast of stateObj.attributes.forecast) {
+      if (new Date(forecast.datetime).getDate() !== today) {
+        break;
+      }
+      if (!tempHigh || forecast.temperature > tempHigh) {
+        tempHigh = forecast.temperature;
+      }
+      if (!tempLow || (forecast.templow && forecast.templow < tempLow)) {
+        tempLow = forecast.templow;
+      }
+      if (!forecast.templow && (!tempLow || forecast.temperature < tempLow)) {
+        tempLow = forecast.temperature;
+      }
+    }
+
     return html`
-      ${low
+      ${tempLow
         ? html`
-            ${low} ${unit}
+            ${tempLow} ${unit}
           `
         : ""}
-      ${low && high ? " / " : ""}
-      ${high
+      ${tempLow && tempHigh ? " / " : ""}
+      ${tempHigh
         ? html`
-            ${high} ${unit}
+            ${tempHigh} ${unit}
           `
         : ""}
     `;

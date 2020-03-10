@@ -232,6 +232,7 @@ export interface LocalizeMixin {
 
 interface ForecastAttribute {
   temperature: number;
+  datetime: string;
   templow?: number;
   precipitation?: number;
   humidity?: number;
@@ -240,6 +241,6 @@ interface ForecastAttribute {
 export type WeatherEntity = HassEntityBase & {
   attributes: HassEntityAttributeBase & {
     temperature: number;
-    forecast?: ForecastAttribute;
+    forecast?: ForecastAttribute[];
   };
 };
