@@ -806,6 +806,10 @@
                 "areas": {
                     "caption": "Areas",
                     "create_area": "CREATE AREA",
+                    "delete": {
+                        "confirmation_text": "All devices in this area will become unassigned.",
+                        "confirmation_title": "Are you sure you want to delete this area?"
+                    },
                     "description": "Overview of all areas in your home.",
                     "editor": {
                         "create": "CREATE",
@@ -830,7 +834,7 @@
                         "actions": {
                             "add": "Add action",
                             "delete": "Delete",
-                            "delete_confirm": "Sure you want to delete?",
+                            "delete_confirm": "Are you sure you want to delete this?",
                             "duplicate": "Duplicate",
                             "header": "Actions",
                             "introduction": "The actions are what Home Assistant will do when the automation is triggered.",
@@ -875,7 +879,7 @@
                         "conditions": {
                             "add": "Add condition",
                             "delete": "Delete",
-                            "delete_confirm": "Sure you want to delete?",
+                            "delete_confirm": "Are you sure you want to delete this?",
                             "duplicate": "Duplicate",
                             "header": "Conditions",
                             "introduction": "Conditions are optional and will prevent further execution unless all conditions are satisfied.",
@@ -948,7 +952,7 @@
                         "triggers": {
                             "add": "Add trigger",
                             "delete": "Delete",
-                            "delete_confirm": "Sure you want to delete?",
+                            "delete_confirm": "Are you sure you want to delete this?",
                             "duplicate": "Duplicate",
                             "header": "Triggers",
                             "introduction": "Triggers are what starts the processing of an automation rule. It is possible to specify multiple triggers for the same rule. Once a trigger starts, Home Assistant will validate the conditions, if any, and call the action.",
