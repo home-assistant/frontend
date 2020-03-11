@@ -93,6 +93,9 @@ export class HaConfigLovelaceRescources extends LitElement {
         .tabs=${lovelaceTabs}
         .columns=${this._columns(this.hass.language)}
         .data=${this._resources}
+        .noDataText=${this.hass.localize(
+          "ui.panel.config.lovelace.resources.picker.no_resources"
+        )}
         @row-click=${this._editResource}
       >
       </hass-tabs-subpage-data-table>
@@ -100,9 +103,9 @@ export class HaConfigLovelaceRescources extends LitElement {
         ?is-wide=${this.isWide}
         ?narrow=${this.narrow}
         icon="hass:plus"
-        title="${this.hass.localize(
+        title=${this.hass.localize(
           "ui.panel.config.lovelace.resources.picker.add_resource"
-        )}"
+        )}
         @click=${this._addResource}
       ></ha-fab>
     `;
