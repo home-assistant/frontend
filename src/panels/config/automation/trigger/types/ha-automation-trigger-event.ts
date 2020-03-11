@@ -36,12 +36,17 @@ export class HaEventTrigger extends LitElement implements TriggerElement {
         )}
         .name=${"event_data"}
         .defaultValue=${event_data}
-        @value-changed=${this._valueChanged}
+        @value-changed=${this._dataChanged}
       ></ha-yaml-editor>
     `;
   }
 
   private _valueChanged(ev: CustomEvent): void {
+    ev.stopPropagation();
+    handleChangeEvent(this, ev);
+  }
+
+  private _dataChanged(ev: CustomEvent): void {
     ev.stopPropagation();
     if (!ev.detail.isValid) {
       return;
