@@ -41,12 +41,8 @@ class HuiMediaPlayerEntityRow extends LitElement implements LovelaceRow {
   private _resizeObserver?: ResizeObserver;
   private _debouncedResizeListener = debounce(
     () => {
-      this._narrow = this.parentElement
-        ? this.parentElement.clientWidth < 350
-        : false;
-      this._veryNarrow = this.parentElement
-        ? this.parentElement.clientWidth < 300
-        : false;
+      this._narrow = (this.parentElement?.clientWidth || 0) < 350;
+      this._narrow = (this.parentElement?.clientWidth || 0) < 300;
     },
     250,
     false
@@ -93,11 +89,9 @@ class HuiMediaPlayerEntityRow extends LitElement implements LovelaceRow {
         .config=${this._config}
         .secondaryText=${this._computeMediaTitle(stateObj)}
       >
-        ${Boolean(
-          OFF_STATES.includes(stateObj.state)
-            ? supportsFeature(stateObj, SUPPORT_TURN_ON)
-            : supportsFeature(stateObj, SUPPORT_TURN_OFF)
-        )
+        ${OFF_STATES.includes(stateObj.state)
+          ? supportsFeature(stateObj, SUPPORT_TURN_ON)
+          : supportsFeature(stateObj, SUPPORT_TURN_OFF)
           ? html`
               <paper-icon-button
                 icon="hass:power"
@@ -118,7 +112,7 @@ class HuiMediaPlayerEntityRow extends LitElement implements LovelaceRow {
                 ></paper-icon-button>
               `
             : ""}
-          ${supportsFeature(stateObj, SUPPORT_VOLUME_SET) && !this._narrow
+          ${!this._narrow && supportsFeature(stateObj, SUPPORT_VOLUME_SET)
             ? html`
                 <ha-slider
                   .dir=${computeRTLDirection(this.hass!)}
@@ -129,8 +123,8 @@ class HuiMediaPlayerEntityRow extends LitElement implements LovelaceRow {
                   id="input"
                 ></ha-slider>
               `
-            : supportsFeature(stateObj, SUPPORT_VOLUME_BUTTONS) &&
-              !this._veryNarrow
+            : !this._veryNarrow &&
+              supportsFeature(stateObj, SUPPORT_VOLUME_BUTTONS)
             ? html`
                 <paper-icon-button
                   icon="hass:volume-minus"
@@ -144,8 +138,8 @@ class HuiMediaPlayerEntityRow extends LitElement implements LovelaceRow {
             : ""}
         </div>
         <div class="controls">
-          ${supportsFeature(stateObj, SUPPORT_PREVIOUS_TRACK) &&
-          !this._veryNarrow
+          ${!this._veryNarrow &&
+          supportsFeature(stateObj, SUPPORT_PREVIOUS_TRACK)
             ? html`
                 <paper-icon-button
                   icon="hass:skip-previous"
@@ -303,14 +297,12 @@ class HuiMediaPlayerEntityRow extends LitElement implements LovelaceRow {
     });
   }
 
-  private get _inputElement(): { value: number } {
-    return (this.shadowRoot!.getElementById("input") as unknown) as {
-      value: number;
-    };
+  private get _inputElement(): Element {
+    return this.shadowRoot!.querySelector("ha-slider")!;
   }
 
   private _selectedValueChanged(): void {
-    const element = this._inputElement;
+    const element = this._inputElement as any;
 
     this.hass!.callService("media_player", "volume_set", {
       entity_id: this._config!.entity,
