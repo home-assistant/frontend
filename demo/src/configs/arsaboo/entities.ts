@@ -291,16 +291,7 @@ export const demoEntitiesArsaboo: DemoConfig["entities"] = (localize) =>
       state: "13:21",
       attributes: {
         attribution: "Data provided by Ring.com",
-        device_id: "e04f434dca02",
-        firmware: "Up to Date",
-        kind: "lpd_v2",
-        timezone: "America/New_York",
-        type: "doorbots",
-        wifi_name: "RingOfSecurity-hUrGKNlhR",
-        created_at: "2019-01-22T13:21:03-05:00",
         answered: false,
-        recording_status: "ready",
-        category: "motion",
         friendly_name: "Front Door Last Motion",
         icon: "hademo:history",
       },
@@ -313,8 +304,7 @@ export const demoEntitiesArsaboo: DemoConfig["entities"] = (localize) =>
           "cbd8dfac9efb441f19168e271cb8629b0372d0c1f721353394b23ed0202013b0",
         motion_detection: true,
         friendly_name: "Patio",
-        entity_picture:
-          "/api/camera_proxy/camera.patio?token=cbd8dfac9efb441f19168e271cb8629b0372d0c1f721353394b23ed0202013b0",
+        entity_picture: "/assets/arsaboo/images/camera.patio.jpg",
         supported_features: 0,
       },
     },
@@ -326,8 +316,7 @@ export const demoEntitiesArsaboo: DemoConfig["entities"] = (localize) =>
           "479b332e0a7cad4c58e0fb98a1ecb7942e3b225190adb93a1341edfa7daf45b0",
         motion_detection: true,
         friendly_name: "Porch",
-        entity_picture:
-          "/api/camera_proxy/camera.porch?token=479b332e0a7cad4c58e0fb98a1ecb7942e3b225190adb93a1341edfa7daf45b0",
+        entity_picture: "/assets/arsaboo/images/camera.porch.jpg",
         supported_features: 0,
       },
     },
@@ -339,8 +328,7 @@ export const demoEntitiesArsaboo: DemoConfig["entities"] = (localize) =>
           "9381b2e4edd1bb21e868e2193f5d132a5fae153ce4f458451d979a02712b4642",
         motion_detection: true,
         friendly_name: "Backyard",
-        entity_picture:
-          "/api/camera_proxy/camera.backyard?token=9381b2e4edd1bb21e868e2193f5d132a5fae153ce4f458451d979a02712b4642",
+        entity_picture: "/assets/arsaboo/images/camera.backyard.jpg",
         supported_features: 0,
       },
     },
@@ -352,8 +340,7 @@ export const demoEntitiesArsaboo: DemoConfig["entities"] = (localize) =>
           "ac38bf88c2c5896eed66ae15739a3e726677f92d79e0d57f83f726ac28bda746",
         motion_detection: true,
         friendly_name: "Driveway",
-        entity_picture:
-          "/api/camera_proxy/camera.driveway?token=ac38bf88c2c5896eed66ae15739a3e726677f92d79e0d57f83f726ac28bda746",
+        entity_picture: "/assets/arsaboo/images/camera.driveway.jpg",
         supported_features: 0,
       },
     },
@@ -477,8 +464,7 @@ export const demoEntitiesArsaboo: DemoConfig["entities"] = (localize) =>
         friendly_name: localize(
           "ui.panel.page-demo.config.arsaboo.names.family_room"
         ),
-        entity_picture:
-          "/api/media_player_proxy/media_player.family_room_2?token=be41a86e2a360761d67c36a010b09654b730deec092016ee92aafef79b1978ff&cache=e03d22fb103202e7",
+        entity_picture: "/assets/arsaboo/images/media_player_family_room.jpg",
         supported_features: 64063,
       },
     },
@@ -487,16 +473,7 @@ export const demoEntitiesArsaboo: DemoConfig["entities"] = (localize) =>
       state: "06:44",
       attributes: {
         attribution: "Data provided by Ring.com",
-        device_id: "e04f434dca02",
-        firmware: "Up to Date",
-        kind: "lpd_v2",
-        timezone: "America/New_York",
-        type: "doorbots",
-        wifi_name: "RingOfSecurity-hUrGKNlhR",
-        created_at: "2019-01-22T06:44:31-05:00",
         answered: false,
-        recording_status: "ready",
-        category: "ding",
         friendly_name: "Front Door Last Ding",
         icon: "hademo:history",
       },
