@@ -362,6 +362,9 @@ export class HuiEditView extends LitElement {
         paper-spinner[active] {
           display: block;
         }
+        paper-dialog-scrollable {
+          margin-top: 0;
+        }
         .hidden {
           display: none;
         }
