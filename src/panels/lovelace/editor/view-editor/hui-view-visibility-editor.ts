@@ -42,16 +42,14 @@ export class HuiViewVisibilityEditor extends LitElement {
   @property() private _visible!: boolean | ShowViewConfig[];
 
   private _sortedUsers = memoizeOne((users: User[]) => {
-    return users
-      .filter((user) => !user.system_generated)
-      .sort((a, b) => compare(a.name, b.name));
+    return users.sort((a, b) => compare(a.name, b.name));
   });
 
   protected firstUpdated(changedProps: PropertyValues) {
     super.firstUpdated(changedProps);
 
     fetchUsers(this.hass).then((users) => {
-      this._users = users;
+      this._users = users.filter((user) => !user.system_generated);
       fireEvent(this, "iron-resize");
     });
   }
@@ -64,7 +62,11 @@ export class HuiViewVisibilityEditor extends LitElement {
     return html`
       ${configElementStyle}
       <div class="card-config">
-        <span>Select which users should have access to this view</span>
+        <span
+          >${this.hass.localize(
+            "ui.panel.lovelace.editor.edit_view.visibility.select_users"
+          )}</span
+        >
 
         ${this._sortedUsers(this._users).map(
           (user) => html`

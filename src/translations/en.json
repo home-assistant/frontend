@@ -1929,7 +1929,10 @@
             "move_right": "Move view right",
             "tab_settings": "Settings",
             "tab_badges": "Badges",
-            "tab_visibility": "Visibility"
+            "tab_visibility": "Visibility",
+            "visibility": {
+              "select_users": "Select which users should see this view in the navigation"
+            }
           },
           "edit_card": {
             "header": "Card Configuration",
