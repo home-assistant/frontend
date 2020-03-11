@@ -47,6 +47,7 @@
     },
     "groups": {
         "system-admin": "Administrator",
+        "system-read-only": "Pengguna Hanya-Baca",
         "system-users": "Pengguna"
     },
     "panel": {
@@ -58,6 +59,7 @@
         "logbook": "Catatan Log",
         "mailbox": "Kotak pesan",
         "map": "Peta",
+        "profile": "Profil",
         "shopping_list": "Daftar belanja",
         "states": "Ikhtisar"
     },
@@ -74,7 +76,7 @@
         "alarm_control_panel": {
             "armed": "Armed",
             "armed_away": "Armed",
-            "armed_custom_bypass": "Aktif",
+            "armed_custom_bypass": "Armed",
             "armed_home": "Armed",
             "armed_night": "Armed",
             "arming": "Arming",
@@ -84,6 +86,7 @@
             "triggered": "Picu"
         },
         "default": {
+            "entity_not_found": "Entiti tidak ditemukan",
             "unavailable": "Tak Ada",
             "unknown": "Tak Tahu"
         },
@@ -213,6 +216,7 @@
             "fan_only": "Hanya kipas",
             "gas": "Gas",
             "heat": "Panas",
+            "heat_cool": "Panas/Dingin",
             "heat_pump": "Pompa pemanas",
             "high_demand": "Permintaan yang tinggi",
             "idle": "Siaga",
@@ -312,6 +316,11 @@
             "off": "Off",
             "on": "On"
         },
+        "timer": {
+            "active": "Aktif",
+            "idle": "Siaga",
+            "paused": "Jeda"
+        },
         "vacuum": {
             "cleaning": "Membersihkan",
             "docked": "Berlabuh",
@@ -325,6 +334,7 @@
         "weather": {
             "clear-night": "Cerah, malam",
             "cloudy": "Berawan",
+            "exceptional": "Luar biasa",
             "fog": "Kabut",
             "hail": "Hujan es",
             "lightning": "Petir",
@@ -353,17 +363,14 @@
     },
     "ui": {
         "auth_store": {
-            "ask": "Ingin menyimpan info masuk ini?",
-            "confirm": "Simpan info masuk",
+            "ask": "Apakah Anda ingin menyimpan login ini?",
+            "confirm": "Simpan login",
             "decline": "Tidak, terima kasih"
         },
         "card": {
             "alarm_control_panel": {
-                "arm_away": "Angkat tangan",
-                "arm_home": "Lengan rumah",
                 "clear_code": "Hapus",
-                "code": "Kode",
-                "disarm": "Lucuti"
+                "code": "Kode"
             },
             "automation": {
                 "last_triggered": "Terakhir terpicu",
@@ -381,7 +388,16 @@
                 "operation": "Operasi",
                 "swing_mode": "Mode ayunan",
                 "target_humidity": "Target kelembaban",
-                "target_temperature": "Target suhu"
+                "target_temperature": "Target suhu",
+                "target_temperature_entity": "{name} target suhu",
+                "target_temperature_mode": "{nama} target suhu {mode}"
+            },
+            "counter": {
+                "actions": {
+                    "decrement": "pengurangan",
+                    "increment": "kenaikan",
+                    "reset": "reset"
+                }
             },
             "cover": {
                 "position": "Posisi",
@@ -416,6 +432,17 @@
             },
             "script": {
                 "execute": "Jalankan"
+            },
+            "service": {
+                "run": "Jalankan"
+            },
+            "timer": {
+                "actions": {
+                    "cancel": "batalkan",
+                    "finish": "selesai",
+                    "pause": "jeda",
+                    "start": "mulai"
+                }
             },
             "vacuum": {
                 "actions": {
@@ -462,18 +489,49 @@
         },
         "common": {
             "cancel": "Batalkan",
+            "close": "Tutup",
             "loading": "Memuat",
-            "save": "Simpan"
+            "save": "Simpan",
+            "successfully_saved": "Berhasil disimpan",
+            "yes": "Ya"
         },
         "components": {
+            "area-picker": {
+                "add_dialog": {
+                    "add": "Tambah",
+                    "failed_create_area": "Gagal membuat area.",
+                    "name": "Nama",
+                    "text": "Masukkan nama area baru.",
+                    "title": "Tambahkan area baru"
+                },
+                "add_new": "Tambahkan area baru ...",
+                "area": "Area",
+                "show_areas": "Tampilkan area"
+            },
+            "device-picker": {
+                "device": "Perangkat",
+                "show_devices": "Tampilkan perangkat"
+            },
             "entity": {
                 "entity-picker": {
-                    "entity": "Entitas"
+                    "entity": "Entiti",
+                    "show_entities": "Tampilkan entiti"
                 }
             },
             "history_charts": {
                 "loading_history": "Memuat riwayat status...",
                 "no_history_found": "Tidak ada riwayat status yang ditemukan."
+            },
+            "related-items": {
+                "area": "Area",
+                "automation": "Bagian dari otomatisasi berikut",
+                "device": "Perangkat",
+                "entity": "Entiti terkait",
+                "group": "Bagian dari grup berikut",
+                "integration": "Integrasi",
+                "no_related_found": "Tidak ditemukan item terkait.",
+                "scene": "Bagian dari scene berikut",
+                "script": "Bagian dari skrip berikut"
             },
             "relative_time": {
                 "duration": {
@@ -492,6 +550,24 @@
             }
         },
         "dialogs": {
+            "config_entry_system_options": {
+                "enable_new_entities_label": "Aktifkan entiti yang baru ditambahkan.",
+                "update": "Memperbarui"
+            },
+            "confirmation": {
+                "cancel": "Batal",
+                "ok": "OK",
+                "title": "Apakah anda yakin?"
+            },
+            "entity_registry": {
+                "control": "Kontrol",
+                "dismiss": "Tutup",
+                "editor": {
+                    "confirm_delete": "Apakah Anda yakin ingin menghapus entri ini?",
+                    "delete": "HAPUS",
+                    "enabled_cause": "Dinonaktifkan oleh {cause}."
+                }
+            },
             "more_info_control": {
                 "script": {
                     "last_action": "Aksi Terakhir"

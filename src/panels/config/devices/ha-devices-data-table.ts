@@ -237,7 +237,11 @@ export class HaDevicesDataTable extends LitElement {
           this.domain,
           this.hass.localize
         )}
+        .noDataText=${this.hass.localize(
+          "ui.panel.config.devices.data_table.no_devices"
+        )}
         @row-click=${this._handleRowClicked}
+        auto-height
       ></ha-data-table>
     `;
   }

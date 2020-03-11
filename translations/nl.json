@@ -626,6 +626,8 @@
                     "enabled_description": "Uitgeschakelde entiteiten zullen niet aan Home Assistant worden toegevoegd",
                     "enabled_label": "Schakel entiteit in",
                     "entity_id": "Entiteits-ID",
+                    "icon": "Overschrijf pictogram",
+                    "icon_error": "Pictogrammen moeten de notatie 'prefix:pictogramnaam' hebben, bijvoorbeeld 'mdi:home'",
                     "name": "Naam overschrijven",
                     "note": "Nota bene: dit werkt mogelijk nog niet met alle integraties.",
                     "unavailable": "Deze entiteit is momenteel niet beschikbaar.",
@@ -637,8 +639,47 @@
             },
             "generic": {
                 "cancel": "Annuleren",
+                "close": "Sluiten",
                 "default_confirmation_title": "Weet je het zeker?",
                 "ok": "OK"
+            },
+            "helper_settings": {
+                "generic": {
+                    "icon": "Pictogram",
+                    "initial_value": "Initiële waarde na het starten",
+                    "initial_value_explain": "De waarde die het element zal hebben wanneer Home Assistant start. Als deze leeg wordt gelaten, wordt de waarde hersteld naar de vorige waarde.",
+                    "name": "Naam"
+                },
+                "input_datetime": {
+                    "has_date": "Datum",
+                    "has_time": "Tijd"
+                },
+                "input_number": {
+                    "box": "Invoerveld",
+                    "max": "Maximale waarde",
+                    "min": "Minimale waarde",
+                    "mode": "Weergavemodus",
+                    "slider": "Schuifregelaar",
+                    "step": "Stapgrootte van de schuifregelaar",
+                    "unit_of_measurement": "Meeteenheid"
+                },
+                "input_select": {
+                    "add": "Toevoegen",
+                    "add_option": "Optie toevoegen",
+                    "no_options": "Er zijn nog geen opties.",
+                    "options": "Opties"
+                },
+                "input_text": {
+                    "max": "Maximale lengte",
+                    "min": "Minimale lengte",
+                    "mode": "Weergavemodus",
+                    "password": "Wachtwoord",
+                    "pattern": "Regex-patroon voor clientvalidatie",
+                    "text": "Tekst"
+                },
+                "not_editable": "Niet bewerkbaar",
+                "not_editable_text": "Deze entiteit kan niet worden gewijzigd vanuit de gebruikersinterface omdat deze is gedefinieerd in configuration.yaml.",
+                "required_error_msg": "Dit veld is verplicht"
             },
             "more_info_control": {
                 "dismiss": "Dialoogvenster sluiten",
@@ -647,11 +688,11 @@
                     "create_zone": "Creëer zone van huidige locatie"
                 },
                 "restored": {
-                    "confirm_remove_text": "Weet u zeker dat u dit item wilt verwijderen?",
+                    "confirm_remove_text": "Weet je zeker dat je dit item wilt verwijderen?",
                     "confirm_remove_title": "Entiteit verwijderen?",
                     "not_provided": "Deze entiteit is momenteel niet beschikbaar en is een wees voor een verwijderde, gewijzigde of disfunctionele integratie of apparaat.",
                     "remove_action": "Entiteit verwijderen",
-                    "remove_intro": "Als de entiteit niet meer in gebruik is, kunt u deze opruimen door deze te verwijderen."
+                    "remove_intro": "Als de entiteit niet meer in gebruik is, kan je deze opruimen door het te verwijderen."
                 },
                 "script": {
                     "last_action": "Laatste actie",
@@ -708,7 +749,7 @@
                     "remove": "Verwijder apparaat"
                 },
                 "confirmations": {
-                    "remove": "Weet u zeker dat u het apparaat wilt verwijderen?"
+                    "remove": "Weet je zeker dat je het apparaat wilt verwijderen?"
                 },
                 "last_seen": "Laatst gezien",
                 "manuf": "door {manufacturer}",
@@ -998,7 +1039,7 @@
                     "picker": {
                         "add_automation": "Automatisering toevoegen",
                         "delete_automation": "Verwijder automatisering",
-                        "delete_confirm": "Weet u zeker dat u deze automatisering wilt verwijderen?",
+                        "delete_confirm": "Weet je zeker dat je deze automatisering wilt verwijderen?",
                         "edit_automation": "Bewerk automatisering",
                         "header": "Automatiseringsbewerker",
                         "introduction": "Met de automatiseringsbewerker kun je automatiseringen maken en bewerken. Volg de link hieronder om er zeker van te zijn dat je Home Assistant juist hebt geconfigureerd.",
@@ -1076,7 +1117,7 @@
                         }
                     },
                     "alexa": {
-                        "banner": "Het bewerken van de entiteiten die via deze UI worden blootgesteld, is uitgeschakeld omdat u geconfigureerde entiteitenfilters hebt in configuration.yaml.",
+                        "banner": "Het bewerken van de entiteiten die via deze gebruikersinterface worden weergegeven, is uitgeschakeld omdat je entiteitenfilters hebt geconfigureerd in configuration.yaml.",
                         "expose": "Blootstellen aan Alexa",
                         "exposed_entities": "Blootgestelde entiteiten",
                         "not_exposed_entities": "Niet blootgestelde entiteiten",
@@ -1096,7 +1137,7 @@
                     "dialog_cloudhook": {
                         "available_at": "De webhook is beschikbaar op de volgende URL:",
                         "close": "Sluiten",
-                        "confirm_disable": "Weet u zeker dat u deze Webhook wilt uitschakelen?",
+                        "confirm_disable": "Weet je zeker dat je deze webhook wilt uitschakelen?",
                         "copied_to_clipboard": "Gekopieerd naar het klembord",
                         "info_disable_webhook": "Als je deze webhook niet langer wilt gebruiken, kun je het",
                         "link_disable_webhook": "uitschakelen",
@@ -1114,7 +1155,7 @@
                         "title": "Wachtwoord vergeten"
                     },
                     "google": {
-                        "banner": "Het bewerken van de entiteiten die via deze UI worden blootgesteld, is uitgeschakeld omdat u geconfigureerde entiteitenfilters hebt in configuration.yaml.",
+                        "banner": "Het bewerken van de entiteiten die via deze gebruikersinterface worden weergegeven, is uitgeschakeld omdat je entiteitenfilters hebt geconfigureerd in configuration.yaml.",
                         "disable_2FA": "Schakel tweestapsverificatie uit",
                         "expose": "Blootstellen aan Google Assistant",
                         "exposed_entities": "Blootgestelde entiteiten",
@@ -1356,6 +1397,31 @@
                     }
                 },
                 "header": "Configureer Home Assistant",
+                "helpers": {
+                    "caption": "Helpers",
+                    "description": "Elementen die kunnen helpen bij het maken van automatiseringen.",
+                    "dialog": {
+                        "add_helper": "Helper toevoegen",
+                        "add_platform": "{platform} toevoegen",
+                        "create": "Aanmaken"
+                    },
+                    "picker": {
+                        "add_helper": "Helper toevoegen",
+                        "headers": {
+                            "editable": "Bewerkbaar",
+                            "entity_id": "Entiteits-ID",
+                            "name": "Naam",
+                            "type": "Type"
+                        }
+                    },
+                    "types": {
+                        "input_boolean": "Schakelaar",
+                        "input_datetime": "Datum en/of tijd",
+                        "input_number": "Numeriek",
+                        "input_select": "Keuzelijst",
+                        "input_text": "Tekst"
+                    }
+                },
                 "integrations": {
                     "caption": "Integraties",
                     "config_entry": {
@@ -1402,7 +1468,7 @@
                     "ignore": {
                         "confirm_delete_ignore": "Hierdoor verschijnt de integratie weer in uw ontdekte integraties wanneer deze wordt ontdekt. Dit kan een herstart vereisen of enige tijd duren.",
                         "confirm_delete_ignore_title": "Stop met negeren van {name}?",
-                        "confirm_ignore": "Weet u zeker dat u deze integratie niet wilt instellen? U kunt dit ongedaan maken door in het overloopmenu rechtsboven op 'Genegeerde integraties weergeven' te klikken.",
+                        "confirm_ignore": "Weet je zeker dat je deze integratie niet wilt instellen? Je kan dit ongedaan maken door in het overloopmenu rechtsboven op 'Genegeerde integraties weergeven' te klikken.",
                         "confirm_ignore_title": "Detectie van {name} negeren?",
                         "hide_ignored": "Verberg genegeerde integraties",
                         "ignore": "Negeren",
@@ -1417,6 +1483,69 @@
                     "note_about_website_reference": "Meer zijn beschikbaar op de "
                 },
                 "introduction": "Hier kun je je componenten en Home Assistant configureren. Het is nog niet mogelijk om alles te configureren vanuit de interface, maar we werken er aan.",
+                "lovelace": {
+                    "caption": "Lovelace-dashboards",
+                    "dashboards": {
+                        "cant_edit_yaml": "Dashboards die zijn gedefinieerd in YAML kunnen niet worden bewerkt vanuit de gebruikersinterface. Wijzig ze in configuration.yaml.",
+                        "caption": "Dashboards",
+                        "conf_mode": {
+                            "storage": "UI gecontroleerd",
+                            "yaml": "YAML-bestand"
+                        },
+                        "confirm_delete": "Weet je zeker dat je deze dashboard wilt verwijderen?",
+                        "detail": {
+                            "create": "Aanmaken",
+                            "delete": "Verwijderen",
+                            "dismiss": "Sluiten",
+                            "edit_dashboard": "Dashboard bewerken",
+                            "new_dashboard": "Nieuw dashboard toevoegen",
+                            "require_admin": "Alleen beheerder",
+                            "show_sidebar": "Toon in de zijbalk",
+                            "update": "Bijwerken",
+                            "url": "Url",
+                            "url_error_msg": "De URL mag geen spaties of speciale tekens bevatten, behalve _ en -"
+                        },
+                        "picker": {
+                            "add_dashboard": "Dashboard toevoegen",
+                            "headers": {
+                                "conf_mode": "Configuratiemethode",
+                                "default": "Standaard",
+                                "filename": "Bestandsnaam",
+                                "require_admin": "Alleen beheerder",
+                                "sidebar": "Toon in de zijbalk",
+                                "title": "Titel"
+                            },
+                            "open": "Dashboard openen"
+                        }
+                    },
+                    "description": "Configureer je Lovelace-dashboards",
+                    "resources": {
+                        "caption": "Bronnen",
+                        "detail": {
+                            "create": "Aanmaken",
+                            "delete": "Verwijder",
+                            "dismiss": "Sluiten",
+                            "update": "Bijwerken",
+                            "url": "Url",
+                            "url_error_msg": "Url is een verplicht veld",
+                            "warning_header": "Wees voorzichtig!"
+                        },
+                        "picker": {
+                            "headers": {
+                                "type": "Type",
+                                "url": "Url"
+                            }
+                        },
+                        "refresh_body": "Je moet de pagina vernieuwen om de verwijdering te voltooien. Wil je nu vernieuwen?",
+                        "refresh_header": "Wil je verversen?",
+                        "types": {
+                            "css": "Stylesheet",
+                            "html": "HTML (afgeschaft)",
+                            "js": "JavaScript-bestand (afgeschaft)",
+                            "module": "JavaScript-module"
+                        }
+                    }
+                },
                 "person": {
                     "add_person": "Persoon toevoegen",
                     "caption": "Personen",
@@ -1436,10 +1565,10 @@
                         "name": "Naam",
                         "name_error_msg": "Naam is vereist",
                         "new_person": "Nieuw persoon",
-                        "no_device_tracker_available_intro": "Wanneer u apparaten hebt die de aanwezigheid van een persoon detecteren, kunt u deze aan een persoon toewijzen. U kunt uw eerste apparaat toevoegen door een integratie voor aanwezigheidsdetectie toe te voegen vanaf de integratiepagina.",
+                        "no_device_tracker_available_intro": "Wanneer je apparaten hebt die de aanwezigheid van een persoon detecteren, kan je deze aan een persoon toewijzen. Je kan het eerste apparaat toevoegen door een integratie voor aanwezigheidsdetectie toe te voegen vanaf de integratiepagina.",
                         "update": "Bijwerken"
                     },
-                    "introduction": "Hier kunt u personen toevoegen die gebruik maken van Home Assistant.",
+                    "introduction": "Hier kan je personen toevoegen die gebruik maken van Home Assistant.",
                     "no_persons_created_yet": "Het lijkt erop dat je nog geen personen hebt aangemaakt.",
                     "note_about_persons_configured_in_yaml": "Opmerking: personen die zijn geconfigureerd via configuration.yaml kunnen niet worden bewerkt via de UI."
                 },
@@ -1453,12 +1582,12 @@
                             "add": "Apparaat toevoegen",
                             "delete": "Apparaat verwijderen",
                             "header": "Apparaten",
-                            "introduction": "Voeg de apparaten toe die u in uw scène wilt opnemen. Stel alle apparaten in op de gewenste status voor deze scène."
+                            "introduction": "Voeg de apparaten toe die je in je scène wilt opnemen. Stel alle apparaten in op de gewenste status voor deze scène."
                         },
                         "entities": {
                             "add": "Voeg een entiteit toe",
                             "delete": "Verwijderen entiteit",
-                            "device_entities": "Als u een entiteit toevoegt die tot een apparaat hoort, wordt het apparaat ook toegevoegd.",
+                            "device_entities": "Als je een entiteit toevoegt die tot een apparaat hoort, wordt het apparaat ook toegevoegd.",
                             "header": "Entiteiten",
                             "introduction": "Entiteiten die niet bij apparaten horen kunnen hier ingesteld worden.",
                             "without_device": "Entiteiten zonder apparaat"
@@ -1468,7 +1597,7 @@
                         "load_error_unknown": "Fout bij het laden van de scène ({err_no}).",
                         "name": "Naam",
                         "save": "Opslaan",
-                        "unsaved_confirm": "U heeft niet-opgeslagen wijzigingen. Weet u zeker dat u wilt afsluiten?"
+                        "unsaved_confirm": "U heeft niet-opgeslagen wijzigingen. Weet je zeker dat je wilt afsluiten?"
                     },
                     "picker": {
                         "add_scene": "Voeg scène toe",
@@ -1476,7 +1605,7 @@
                         "delete_scene": "Scène verwijderen",
                         "edit_scene": "Scène bewerken",
                         "header": "Scene Editor",
-                        "introduction": "Met de scene editor kun je scenes maken en bewerken. Volg de onderstaande link om de instructies te lezen om ervoor te zorgen dat u Home Assistant correct hebt geconfigureerd.",
+                        "introduction": "Met de scene editor kun je scenes maken en bewerken. Volg de onderstaande link om de instructies te lezen om ervoor te zorgen dat je Home Assistant correct hebt geconfigureerd.",
                         "learn_more": "Meer informatie over scènes",
                         "no_scenes": "We konden geen bewerkbare scènes vinden.",
                         "only_editable": "Alleen scènes die zijn gedefinieerd in scenes.yaml kunnen worden bewerkt.",
@@ -1673,7 +1802,7 @@
                         "header": "Apparaatbeheer",
                         "help_node_dropdown": "Selecteer een apparaat om de opties per apparaat te bekijken.",
                         "hint_battery_devices": "Opmerking: Slappende (op batterij werkende) apparaten moeten wakker zijn wanneer deze apparaten opdrachten moeten uitvoeren. Over het algemeen kunnen slapende apparaten wakker worden gemaakt door deze te activeren.",
-                        "hint_wakeup": "Sommige apparaten, zoals Xiaomi-sensoren hebben een wekknop die u met tussenpozen van 5 seconden kunt indrukken om het apparaat wakker te houden terwijl u ermee communiceert",
+                        "hint_wakeup": "Sommige apparaten, zoals Xiaomi-sensoren hebben een wekknop die je met tussenpozen van 5 seconden kunt indrukken om het apparaat wakker te houden terwijl je ermee communiceert",
                         "introduction": "Voer ZHA-commando's uit die van invloed zijn op een enkel apparaat. Kies een apparaat om een lijst met beschikbare commando's te zien."
                     },
                     "services": {
@@ -1689,7 +1818,7 @@
                     "configured_in_yaml": "Zones die via configuration.yaml zijn geconfigureerd kunnen niet worden bewerkt in de gebruikers",
                     "confirm_delete": "Weet je zeker dat je deze zone wilt verwijderen?",
                     "create_zone": "Creëer Zone",
-                    "description": "Beheer de zones waarin u personen wilt volgen.",
+                    "description": "Beheer de zones waarin jepersonen wilt volgen.",
                     "detail": {
                         "create": "Aanmaken",
                         "delete": "Verwijder",
@@ -1708,8 +1837,8 @@
                     "edit_home_zone": "De straal van de thuiszone kan nog niet vanaf de frontend worden bewerkt. Sleep de markering op de kaart om de thuiszone te verplaatsen.",
                     "edit_home_zone_narrow": "De straal van de thuiszone kan nog niet vanaf de frontend worden bewerkt. De locatie kan worden gewijzigd vanuit de algemene instellingen.",
                     "go_to_core_config": "Ga naar de algemene instellingen?",
-                    "home_zone_core_config": "De locatie van uw thuiszone kan worden bewerkt vanuit de algemene instellingen-pagina. De straal van de thuiszone kan nog niet vanaf de frontend worden bewerkt. Wilt u naar de algemene instellingen gaan?",
-                    "introduction": "Met zones kunt u bepaalde regio's op aarde opgeven. Wanneer een persoon zich in een zone bevindt, dan wordt de staat de naam uit de zone. Zones kunnen ook worden gebruikt als trigger of voorwaarde in automatiseringen.",
+                    "home_zone_core_config": "De locatie van uw thuiszone kan worden bewerkt vanuit de algemene instellingen-pagina. De straal van de thuiszone kan nog niet vanaf de frontend worden bewerkt. Wil je naar de algemene instellingen gaan?",
+                    "introduction": "Met zones kan je bepaalde regio's op aarde opgeven. Wanneer een persoon zich in een zone bevindt, dan wordt de staat de naam uit de zone. Zones kunnen ook worden gebruikt als trigger of voorwaarde in automatiseringen.",
                     "no_zones_created_yet": "Het lijkt erop dat je nog geen zones hebt aangemaakt."
                 },
                 "zwave": {
@@ -1844,7 +1973,7 @@
                         "column_example": "Voorbeeld",
                         "column_parameter": "Parameter",
                         "data": "Service data (YAML, optioneel)",
-                        "description": "Met de tool service Dev kunt u elke beschikbare service in Home Assistant aanroepen.",
+                        "description": "Met het service ontwikkelhulpmiddel kunt je elke beschikbare service in Home Assistant aanroepen.",
                         "fill_example_data": "Voorbeeldgegeven invullen",
                         "no_description": "Er is geen beschrijving beschikbaar",
                         "no_parameters": "Deze service heeft geen parameters nodig.",
@@ -1981,6 +2110,7 @@
                             "icon": "Pictogram",
                             "icon_height": "Pictogram hoogte",
                             "image": "Afbeeldingspad",
+                            "manual": "Handmatig",
                             "maximum": "Maximaal",
                             "minimum": "Minimum",
                             "name": "Naam",
@@ -1988,6 +2118,7 @@
                             "show_icon": "Pictogram Weergeven?",
                             "show_name": "Naam weergeven?",
                             "show_state": "Staat tonen?",
+                            "state": "Toestand",
                             "tap_action": "Tik Actie",
                             "theme": "Thema",
                             "title": "Titel",
@@ -2102,19 +2233,21 @@
                     "raw_editor": {
                         "confirm_remove_config_text": "We zullen je Lovelace gebruikersinterface automatisch genereren met je gebieden en apparaten als je de huidige Lovelace gebruikersinterface verwijdert.",
                         "confirm_remove_config_title": "Weet je zeker dat je de huidige Lovelace gebruikersinterface wilt verwijderen? We zullen automatisch een nieuwe Lovelace gebruikersinterface genereren op basis van je gebieden en apparaten.",
-                        "confirm_unsaved_changes": "Er zijn nog niet-opgeslagen wijzigingen, weet u zeker dat u wilt afsluiten?",
+                        "confirm_unsaved_changes": "Er zijn nog niet-opgeslagen wijzigingen, weet je zeker dat je wilt afsluiten?",
                         "confirm_unsaved_comments": "Uw configuratie bevat opmerkingen, deze worden niet opgeslagen. Wil je doorgaan?",
                         "error_invalid_config": "Uw configuratie is niet geldig: {error}",
                         "error_parse_yaml": "Kan YAML niet parseren: {error}",
                         "error_remove": "Kan configuratie niet verwijderen: {error}",
                         "error_save_yaml": "Kan YAML niet opslaan: {error}",
                         "header": "Configuratie bewerken",
+                        "resources_moved": "Bronnen moeten niet langer worden toegevoegd aan de Lovelace-configuratie, maar kunnen worden toegevoegd in het Lovelace-configuratievenster.",
                         "save": "Opslaan",
                         "saved": "Opgeslagen",
                         "unsaved_changes": "Niet-opgeslagen wijzigingen"
                     },
                     "save_config": {
                         "cancel": "Laat maar",
+                        "close": "Sluiten",
                         "header": "Neem de controle over je Lovelace UI",
                         "para": "Home Assistant onderhoudt je gebruikersinterface en update die met nieuwe entiteiten of Lovelace-onderdelen wanneer deze beschikbaar zijn. Als je het beheer overneemt, zullen we niet langer automatisch wijzigingen aanbrengen.",
                         "para_sure": "Weet je zeker dat je de controle wilt over je gebruikersinterface?",
@@ -2123,7 +2256,7 @@
                     "suggest_card": {
                         "add": "Voeg toe aan de Lovelace gebruikersinterface",
                         "create_own": "Kies een andere kaart",
-                        "header": "We hebben een suggestie voor u gemaakt"
+                        "header": "We hebben een suggestie voor je gemaakt"
                     },
                     "view": {
                         "panel_mode": {
@@ -2147,11 +2280,11 @@
                     "entity": "Entiteit",
                     "entity_id": "Entiteits-ID",
                     "last_changed": "Laatst gewijzigd",
-                    "select_to_add": "Selecteer de entiteiten die u aan een kaart wilt toevoegen en klik vervolgens op de knop Kaart toevoegen.",
+                    "select_to_add": "Selecteer de entiteiten die je aan een kaart wilt toevoegen en klik vervolgens op de knop Kaart toevoegen.",
                     "title": "Ongebruikte entiteiten"
                 },
                 "views": {
-                    "confirm_delete": "Weet u zeker dat u dit item wilt verwijderen?",
+                    "confirm_delete": "Weet je zeker dat je dit item wilt verwijderen?",
                     "existing_cards": "U kunt een weergave met kaarten niet verwijderen. Verwijder eerst de kaarten."
                 },
                 "warning": {
