@@ -72,7 +72,7 @@
         "mailbox": "Bústia",
         "map": "Mapa",
         "profile": "Perfil",
-        "shopping_list": "Llista de la compra",
+        "shopping_list": "Llista de compres",
         "states": "Visualització general"
     },
     "state_attributes": {
@@ -792,6 +792,10 @@
                 "areas": {
                     "caption": "Registre d'àrees",
                     "create_area": "CREA ÀREA",
+                    "delete": {
+                        "confirmation_text": "Tots els dispositius d'aquesta àrea quedaran sense assignar.",
+                        "confirmation_title": "Estàs segur que vols eliminar aquesta àrea?"
+                    },
                     "description": "Visió general de totes les àrees de la casa.",
                     "editor": {
                         "create": "CREAR",
@@ -2059,6 +2063,9 @@
                             "name": "Botó"
                         },
                         "conditional": {
+                            "card": "Targeta",
+                            "conditions": "Condicions",
+                            "current_state": "actual",
                             "name": "Condicional"
                         },
                         "config": {
@@ -2103,6 +2110,7 @@
                             "show_icon": "Mostra icona?",
                             "show_name": "Mostra nom?",
                             "show_state": "Mostra estat?",
+                            "state": "Estat",
                             "tap_action": "Acció en tocar",
                             "theme": "Tema",
                             "title": "Títol",
@@ -2128,6 +2136,7 @@
                         "map": {
                             "dark_mode": "Mode fosc?",
                             "default_zoom": "Zoom predeterminat",
+                            "description": "La targeta mapa et permet mostrar diferents entitats sobre un mapa.",
                             "geo_location_sources": "Fonts de geolocalització",
                             "name": "Mapa",
                             "source": "Font"
@@ -2155,21 +2164,26 @@
                             "name": "Estat de la planta"
                         },
                         "sensor": {
+                            "description": "La targeta sensor mostra una visió ràpida d'un dels teus sensors. En mostra l'estat i opcionalment un gràfic amb els canvis al llarg del temps.",
                             "graph_detail": "Detall del gràfic",
                             "graph_type": "Tipus de gràfic",
                             "name": "Sensor"
                         },
                         "shopping-list": {
+                            "description": "La targeta de llista de compres et permet afegir, editar, marcar i borrar elements de la teva llista de compres.",
                             "integration_not_loaded": "Aquesta targeta necessita que la integració `shopping_list` estigui configurada.",
-                            "name": "Llista de la compra"
+                            "name": "Llista de compres"
                         },
                         "thermostat": {
+                            "description": "La targeta termòstat et permet controlar una entitat de tipus climatització. Pots canviar-ne tant la temperatura com el mode.",
                             "name": "Termòstat"
                         },
                         "vertical-stack": {
+                            "description": "La targeta pila vertical et permet agrupar diferents targetes dins d'una única columna.",
                             "name": "Pila vertical"
                         },
                         "weather-forecast": {
+                            "description": "La targeta de previsió meteorològica, és molt útil per incloure en interfícies integrades en parets.",
                             "name": "Previsió meteorològica"
                         }
                     },
@@ -2201,7 +2215,8 @@
                         "move_left": "Desplaça la visualització cap a l'esquerra",
                         "move_right": "Desplaça la visualització cap a la dreta",
                         "tab_badges": "Etiquetes",
-                        "tab_settings": "Configuració"
+                        "tab_settings": "Configuració",
+                        "tab_visibility": "Visibilitat"
                     },
                     "header": "Editar la interfície d'usuari (UI)",
                     "menu": {
