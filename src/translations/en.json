@@ -908,6 +908,7 @@
                 "url": "Url",
                 "type": "Type"
               },
+              "no_resources": "No resources",
               "add_resource": "Add resource"
             },
             "confirm_delete": "Are you sure you want to delete this resource?",
@@ -1479,7 +1480,8 @@
             "model": "Model",
             "area": "Area",
             "integration": "Integration",
-            "battery": "Battery"
+            "battery": "Battery",
+            "no_devices": "No devices"
           }
         },
         "entities": {
