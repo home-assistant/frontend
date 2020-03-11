@@ -19,6 +19,7 @@ import "@polymer/paper-spinner/paper-spinner";
 import "@polymer/paper-icon-button/paper-icon-button";
 import { navigate } from "../../../common/navigate";
 import "../../../layouts/hass-subpage";
+import { HASSDomEvent } from "../../../common/dom/fire_event";
 
 @customElement("zha-groups-dashboard")
 export class ZHAGroupsDashboard extends LitElement {
@@ -102,21 +103,12 @@ export class ZHAGroupsDashboard extends LitElement {
     this._groups = (await fetchGroups(this.hass!)).sort(sortZHAGroups);
   }
 
-  private _handleRemoveSelectionChanged(ev: CustomEvent): void {
-    const changedSelection = ev.detail as SelectionChangedEvent;
-    const groupId = Number(changedSelection.id);
-    if (
-      changedSelection.selected &&
-      !this._selectedGroupsToRemove.includes(groupId)
-    ) {
-      this._selectedGroupsToRemove.push(groupId);
-    } else {
-      const index = this._selectedGroupsToRemove.indexOf(groupId);
-      if (index !== -1) {
-        this._selectedGroupsToRemove.splice(index, 1);
-      }
-    }
-    this._selectedGroupsToRemove = [...this._selectedGroupsToRemove];
+  private _handleRemoveSelectionChanged(
+    ev: HASSDomEvent<SelectionChangedEvent>
+  ): void {
+    this._selectedGroupsToRemove = ev.detail.value.map((value) =>
+      Number(value)
+    );
   }
 
   private async _removeGroup(): Promise<void> {

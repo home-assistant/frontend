@@ -1515,24 +1515,6 @@
     "@material/typography" "^5.0.0"
     tslib "^1.9.3"
 
-"@material/data-table@^5.0.0":
-  version "5.0.0"
-  resolved "https://registry.yarnpkg.com/@material/data-table/-/data-table-5.0.0.tgz#441f4bde8f4206273cbc304baf26d003cac4ea8d"
-  integrity sha512-h7GHVGwStqeBigkWrr+5/VWX6iqCG1eXWoD/my7YfBZzOOcJ3xvSfF+jNPchK0bRPSzX06jhaNRvGOmu3HCAzg==
-  dependencies:
-    "@material/animation" "^5.0.0"
-    "@material/base" "^5.0.0"
-    "@material/checkbox" "^5.0.0"
-    "@material/density" "^5.0.0"
-    "@material/dom" "^5.0.0"
-    "@material/elevation" "^5.0.0"
-    "@material/feature-targeting" "^5.0.0"
-    "@material/rtl" "^5.0.0"
-    "@material/shape" "^5.0.0"
-    "@material/theme" "^5.0.0"
-    "@material/typography" "^5.0.0"
-    tslib "^1.10.0"
-
 "@material/density@^5.0.0":
   version "5.0.0"
   resolved "https://registry.yarnpkg.com/@material/density/-/density-5.0.0.tgz#643d9bd1a5d89b3985d48fd1d6572f73d05fb2e9"

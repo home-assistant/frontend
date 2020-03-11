@@ -638,6 +638,7 @@
             },
             "generic": {
                 "cancel": "Ofbriechen",
+                "close": "Zoumaachen",
                 "default_confirmation_title": "Sécher?",
                 "ok": "OK"
             },
@@ -655,6 +656,8 @@
                     "max": "Maximale Wäert",
                     "min": "Minimale Wäert",
                     "mode": "Affichage Modus",
+                    "slider": "Slider",
+                    "step": "Schrëtt Gréisst vum Slider",
                     "unit_of_measurement": "Moosseenheet"
                 },
                 "input_select": {
@@ -1474,6 +1477,76 @@
                     "note_about_website_reference": "Méi sin der disponibel op der "
                 },
                 "introduction": "Hei ass et méiglech är Komponenten vum Home Assistant ze konfiguréieren. Net alles ass méiglech fir iwwert den Interface anzestellen, mee mir schaffen drun.",
+                "lovelace": {
+                    "caption": "Lovelace Tableau de Bord",
+                    "dashboards": {
+                        "cant_edit_yaml": "Tableau de Bord déi am YAML définéiert sinn kënnen net vum Benotzer Interface aus verännert ginn. Änner se an der configuration.yaml",
+                        "caption": "Tableau de Bord",
+                        "conf_mode": {
+                            "storage": "Kontrolléiert vum Benotzer Interface",
+                            "yaml": "Yaml Fichier"
+                        },
+                        "confirm_delete": "Sécher fir dëse Tableau de Bord ze läschen?",
+                        "detail": {
+                            "create": "Erstellen",
+                            "delete": "Läschen",
+                            "dismiss": "Zoumaachen",
+                            "edit_dashboard": "Tableau de Bord änneren",
+                            "icon": "Ikon vun der Säite Läischt",
+                            "new_dashboard": "Neien Tableau de Bord dobäisetzen",
+                            "require_admin": "Admin nëmmen",
+                            "show_sidebar": "An der Säite Läischt uweisen",
+                            "title": "Titel vun der Säite Läischt",
+                            "update": "Aktualiséieren",
+                            "url": "Url",
+                            "url_error_msg": "D'Url ka keen Espace oder speziell Charakteren, ausser _ an - , enthalen."
+                        },
+                        "picker": {
+                            "add_dashboard": "Tableau de Bord dobäisetzen",
+                            "headers": {
+                                "conf_mode": "Konfiguratioun's Method",
+                                "filename": "Numm vum Fichier",
+                                "require_admin": "Admin nëmmen",
+                                "sidebar": "An der Säite Läischt uweisen",
+                                "title": "Titel"
+                            },
+                            "open": "Tableau de Bord opmaachen"
+                        }
+                    },
+                    "description": "Deng Lovelace Tableau de Bord konfiguréieren",
+                    "resources": {
+                        "cant_edit_yaml": "Du benotz Lovelace am YAML Modus, dofir kanns du Dir deng Ressourcen net duerch de Benotzer Interface verwalten. Verwalt se an der Konfiguratioun.yaml.",
+                        "caption": "Ressourcen",
+                        "confirm_delete": "Sécher fir dës Ressource ze läschen?",
+                        "detail": {
+                            "create": "Erstellen",
+                            "delete": "Läschen",
+                            "dismiss": "Zoumaachen",
+                            "new_resource": "Nei Ressource dobäisetzen",
+                            "type": "Typ vun Ressource",
+                            "update": "Aktualiséieren",
+                            "url": "Url",
+                            "url_error_msg": "Url ass een erfuerderlecht Feld",
+                            "warning_header": "Opgepasst!",
+                            "warning_text": "Ressourcen dobäisetzen ka geféierlech sinn, stell sécher dass d'Quell vun der Ressource bekannt a vertraut ass. Schlecht Ressourcen kënnen dem System seriö schueden."
+                        },
+                        "picker": {
+                            "add_resource": "Ressource dobäisetzen",
+                            "headers": {
+                                "type": "Typ",
+                                "url": "Url"
+                            }
+                        },
+                        "refresh_body": "D'Säit muss aktualiséiert gi fir d'Läschen ofzeschléissen, elo aktualiséieren?",
+                        "refresh_header": "Soll aktualiséiert ginn?",
+                        "types": {
+                            "css": "Stylesheet",
+                            "html": "HTML (obsolet)",
+                            "js": "Javascript Fichier (obsolet)",
+                            "module": "JavaScript Module"
+                        }
+                    }
+                },
                 "person": {
                     "add_person": "Persoun dobäisetzen",
                     "caption": "Persounen",
@@ -2173,10 +2246,14 @@
                     },
                     "save_config": {
                         "cancel": "Vergiess et",
+                        "close": "Zoumaachen",
                         "header": "Kontroll iwwert Loveloce UI iwwerhuelen",
                         "para": "Standardméisseg verwalt Home Assistant de Benotzer Interface an aktualiséiert en soubal nei Entitéiten oder Lovelace-Komponenten disponibel sinn. Wann dir d'Kontrolle iwwerhuelt, kënne mir keng automatesch Ännerung méi fir iech maachen.",
                         "para_sure": "Sécher fir d'Kontrolle iwwert de Benotzer Interface z'iwwerhuelen?",
-                        "save": "Kontroll iwwerhuelen"
+                        "save": "Kontroll iwwerhuelen",
+                        "yaml_config": "Fir de Start ze vereinfachen, hei ass déi aktuell Konfiguratioun vun dësem Tableau de Bord:",
+                        "yaml_control": "Fir d'Kontroll am YAML Modus z'iwwerhuelen, erstell ee YAML Fichier mam Numm deen an der Konfiguratioun vun dësem Tableau de Bord uginn ass, oder de Standard 'ui-lovelace.yaml'",
+                        "yaml_mode": "Du benotz de YAML Modus, dëst bedeit dass du d'Lovelace Konfiguratioun net kanns aus dem Benotzer Interface änneren. Wann's du Lovelace vum Benotzer Interface aus wëlls änneren, läsch de 'mode: yaml' aus denger Lovelace Konfiguratioun am 'configuration.yaml'"
                     },
                     "suggest_card": {
                         "add": "Zu Lovelace bäisetzen",
@@ -2410,8 +2487,8 @@
                 },
                 "current_user": "Dir sidd aktuell ageloggt als {fullName}.",
                 "force_narrow": {
-                    "description": "Dës Optioun verstoppt d'Säiteleescht, esou wéi op engem mobillen Apparat.",
-                    "header": "Säiteleescht ëmmer verstoppen"
+                    "description": "Dës Optioun verstoppt d'Säite Läischt esou wéi op engem mobillen Apparat.",
+                    "header": "Säite Läischt ëmmer verstoppen"
                 },
                 "is_owner": "Dir sidd Proprietär.",
                 "language": {

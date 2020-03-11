@@ -344,7 +344,8 @@ class HUIRoot extends LitElement {
         }
       </app-header>
       <div id='view' class="${classMap({
-        "tabs-hidden": this.lovelace!.config.views.length < 2,
+        "tabs-hidden":
+          !this._editMode && this.lovelace!.config.views.length < 2,
       })}" @ll-rebuild='${this._debouncedConfigChanged}'></div>
     </app-header-layout>
     `;
@@ -468,7 +469,7 @@ class HUIRoot extends LitElement {
 
     if (changedProperties.has("route")) {
       const views = this.config.views;
-      if (this.route!.path === "" && views) {
+      if (this.route!.path === "" && views.length) {
         navigate(this, `${this.route!.prefix}/${views[0].path || 0}`, true);
         newSelectView = 0;
       } else if (this._routeData!.view === "hass-unused-entities") {
@@ -495,8 +496,6 @@ class HUIRoot extends LitElement {
       if (!oldLovelace || oldLovelace.config !== this.lovelace!.config) {
         // On config change, recreate the current view from scratch.
         force = true;
-        // Recalculate to see if we need to adjust content area for tab bar
-        fireEvent(this, "iron-resize");
       }
 
       if (!oldLovelace || oldLovelace.editMode !== this.lovelace!.editMode) {
@@ -506,13 +505,11 @@ class HUIRoot extends LitElement {
           this._routeData!.view === "hass-unused-entities"
         ) {
           const views = this.config && this.config.views;
-          navigate(this, `${this.route?.prefix}/${views[0].path || 0}`);
+          navigate(this, `${this.route?.prefix}/${views[0]?.path || 0}`);
           newSelectView = 0;
         }
         // On edit mode change, recreate the current view from scratch
         force = true;
-        // Recalculate to see if we need to adjust content area for tab bar
-        fireEvent(this, "iron-resize");
       }
     }
 
@@ -577,16 +574,10 @@ class HUIRoot extends LitElement {
       return;
     }
     this.lovelace!.setEditMode(true);
-    if (this.config.views.length < 2) {
-      fireEvent(this, "iron-resize");
-    }
   }
 
   private _editModeDisable(): void {
     this.lovelace!.setEditMode(false);
-    if (this.config.views.length < 2) {
-      fireEvent(this, "iron-resize");
-    }
   }
 
   private _editLovelace() {
@@ -704,6 +695,8 @@ class HUIRoot extends LitElement {
     }
 
     root.appendChild(view);
+    // Recalculate to see if we need to adjust content area for tab bar
+    fireEvent(this, "iron-resize");
   }
 }
 

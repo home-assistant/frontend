@@ -22,14 +22,19 @@ import { haStyleDialog } from "../../../../resources/styles";
 
 import "../../components/hui-entity-editor";
 import "./hui-view-editor";
+import "./hui-view-visibility-editor";
 import { HomeAssistant } from "../../../../types";
 import {
   LovelaceViewConfig,
   LovelaceCardConfig,
   LovelaceBadgeConfig,
 } from "../../../../data/lovelace";
-import { fireEvent } from "../../../../common/dom/fire_event";
-import { EntitiesEditorEvent, ViewEditEvent } from "../types";
+import { fireEvent, HASSDomEvent } from "../../../../common/dom/fire_event";
+import {
+  EntitiesEditorEvent,
+  ViewEditEvent,
+  ViewVisibilityChangeEvent,
+} from "../types";
 import { processEditorEntities } from "../process-editor-entities";
 import { navigate } from "../../../../common/navigate";
 import { Lovelace } from "../../types";
@@ -125,6 +130,15 @@ export class HuiEditView extends LitElement {
           ></hui-entity-editor>
         `;
         break;
+      case "tab-visibility":
+        content = html`
+          <hui-view-visibility-editor
+            .hass="${this.hass}"
+            .config="${this._config}"
+            @view-visibility-changed="${this._viewVisibilityChanged}"
+          ></hui-view-visibility-editor>
+        `;
+        break;
       case "tab-cards":
         content = html`
           Cards
@@ -150,6 +164,11 @@ export class HuiEditView extends LitElement {
           <paper-tab id="tab-badges"
             >${this.hass!.localize(
               "ui.panel.lovelace.editor.edit_view.tab_badges"
+            )}</paper-tab
+          >
+          <paper-tab id="tab-visibility"
+            >${this.hass!.localize(
+              "ui.panel.lovelace.editor.edit_view.tab_visibility"
             )}</paper-tab
           >
         </paper-tabs>
@@ -188,7 +207,7 @@ export class HuiEditView extends LitElement {
         deleteView(this.lovelace!.config, this.viewIndex!)
       );
       this._closeDialog();
-      navigate(this, `/lovelace/0`);
+      navigate(this, `/${window.location.pathname.split("/")[1]}`);
     } catch (err) {
       showAlertDialog(this, {
         text: `Deleting failed: ${err.message}`,
@@ -197,15 +216,21 @@ export class HuiEditView extends LitElement {
   }
 
   private _deleteConfirm(): void {
-    if (this._cards && this._cards.length > 0) {
-      showAlertDialog(this, {
-        text: this.hass!.localize("ui.panel.lovelace.views.existing_cards"),
-      });
-      return;
-    }
-
     showConfirmationDialog(this, {
-      text: this.hass!.localize("ui.panel.lovelace.views.confirm_delete"),
+      title: this.hass!.localize(
+        `ui.panel.lovelace.views.confirm_delete${
+          this._cards?.length ? `_existing_cards` : ""
+        }`
+      ),
+      text: this.hass!.localize(
+        `ui.panel.lovelace.views.confirm_delete${
+          this._cards?.length ? `_existing_cards` : ""
+        }_text`,
+        "name",
+        this._config?.title || "Unnamed view",
+        "number",
+        this._cards?.length || 0
+      ),
       confirm: () => this._delete(),
     });
   }
@@ -269,6 +294,14 @@ export class HuiEditView extends LitElement {
   private _viewConfigChanged(ev: ViewEditEvent): void {
     if (ev.detail && ev.detail.config) {
       this._config = ev.detail.config;
+    }
+  }
+
+  private _viewVisibilityChanged(
+    ev: HASSDomEvent<ViewVisibilityChangeEvent>
+  ): void {
+    if (ev.detail.visible && this._config) {
+      this._config.visible = ev.detail.visible;
     }
   }
 

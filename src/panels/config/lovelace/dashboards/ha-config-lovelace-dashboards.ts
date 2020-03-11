@@ -61,6 +61,7 @@ export class HaConfigLovelaceDashboards extends LitElement {
           sortable: true,
           filterable: true,
           direction: "asc",
+          grows: true,
           template: (title, dashboard: any) => {
             const titleTemplate = html`
               ${title}
@@ -101,6 +102,7 @@ export class HaConfigLovelaceDashboards extends LitElement {
           ),
           sortable: true,
           filterable: true,
+          width: "15%",
           template: (mode) =>
             html`
               ${this.hass.localize(
@@ -113,6 +115,7 @@ export class HaConfigLovelaceDashboards extends LitElement {
             title: this.hass.localize(
               "ui.panel.config.lovelace.dashboards.picker.headers.filename"
             ),
+            width: "15%",
             sortable: true,
             filterable: true,
           };
@@ -123,6 +126,7 @@ export class HaConfigLovelaceDashboards extends LitElement {
           ),
           sortable: true,
           type: "icon",
+          width: "100px",
           template: (requireAdmin: boolean) =>
             requireAdmin
               ? html`
@@ -137,6 +141,7 @@ export class HaConfigLovelaceDashboards extends LitElement {
             "ui.panel.config.lovelace.dashboards.picker.headers.sidebar"
           ),
           type: "icon",
+          width: "100px",
           template: (sidebar) =>
             sidebar
               ? html`
@@ -151,6 +156,7 @@ export class HaConfigLovelaceDashboards extends LitElement {
       columns.url_path = {
         title: "",
         filterable: true,
+        width: "75px",
         template: (urlPath) =>
           narrow
             ? html`
@@ -191,6 +197,7 @@ export class HaConfigLovelaceDashboards extends LitElement {
       },
       ...dashboards.map((dashboard) => {
         return {
+          filename: "",
           ...dashboard,
           default: localStorage.defaultPage === dashboard.url_path,
         };

@@ -29,6 +29,7 @@ import {
 } from "./show-dialog-person-detail";
 import { User, fetchUsers } from "../../../data/user";
 import { configSections } from "../ha-panel-config";
+import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
 
 class HaConfigPerson extends LitElement {
   @property() public hass?: HomeAssistant;
@@ -189,11 +190,12 @@ class HaConfigPerson extends LitElement {
       },
       removeEntry: async () => {
         if (
-          !confirm(`${this.hass!.localize(
-            "ui.panel.config.person.confirm_delete"
-          )}
-
-${this.hass!.localize("ui.panel.config.person.confirm_delete2")}`)
+          !(await showConfirmationDialog(this, {
+            title: this.hass!.localize("ui.panel.config.person.confirm_delete"),
+            text: this.hass!.localize("ui.panel.config.person.confirm_delete2"),
+            dismissText: this.hass!.localize("ui.common.no"),
+            confirmText: this.hass!.localize("ui.common.yes"),
+          }))
         ) {
           return false;
         }
