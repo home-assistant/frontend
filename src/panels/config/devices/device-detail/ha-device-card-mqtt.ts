@@ -7,10 +7,10 @@ import {
   property,
   TemplateResult,
   CSSResult,
-  css,
 } from "lit-element";
 import { showConfirmationDialog } from "../../../../dialogs/generic/show-dialog-box";
 import { HomeAssistant } from "../../../../types";
+import { haStyleDialog } from "../../../../resources/styles";
 
 @customElement("ha-device-card-mqtt")
 export class HaDeviceCardMqtt extends LitElement {
@@ -38,10 +38,6 @@ export class HaDeviceCardMqtt extends LitElement {
   }
 
   static get styles(): CSSResult {
-    return css`
-      mwc-button.warning {
-        --mdc-theme-primary: var(--error-color);
-      }
-    `;
+    return haStyleDialog;
   }
 }
