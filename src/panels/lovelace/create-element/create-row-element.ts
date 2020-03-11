@@ -17,7 +17,6 @@ const ALWAYS_LOADED_TYPES = new Set([
   "text-entity",
   "toggle-entity",
   "call-service",
-
 ]);
 const LAZY_LOAD_TYPES = {
   "climate-entity": () => import("../entity-rows/hui-climate-entity-row"),
