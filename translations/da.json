@@ -626,6 +626,8 @@
                     "enabled_description": "Deaktiverede entiteter tilføjes ikke til Home Assistant.",
                     "enabled_label": "Aktivér entitet",
                     "entity_id": "Entitets-id",
+                    "icon": "Brugerdefineret ikon",
+                    "icon_error": "Ikoner skal være i formatet 'præfiks:ikonnavn', fx. 'mdi:home'",
                     "name": "Brugerdefineret navn",
                     "note": "Bemærk: Dette virker muligvis ikke med alle integrationer endnu.",
                     "unavailable": "Denne entitet er ikke tilgængelig i øjeblikket.",
@@ -644,25 +646,42 @@
             "helper_settings": {
                 "generic": {
                     "icon": "Ikon",
+                    "initial_value": "Startværdi ved start",
+                    "initial_value_explain": "Den værdi, som elementet får, når Home Assistant starter. Hvis værdien er tom, gendannes den seneste værdi.",
                     "name": "Navn"
                 },
+                "input_datetime": {
+                    "has_date": "Dato",
+                    "has_time": "Tid"
+                },
                 "input_number": {
+                    "box": "Inputfelt",
                     "max": "Maksimumsværdi",
-                    "min": "Minimumsværdi"
+                    "min": "Minimumsværdi",
+                    "mode": "Visningstilstand",
+                    "slider": "Skyder",
+                    "step": "Skyderens trinstørrelse",
+                    "unit_of_measurement": "Måleenhed"
                 },
                 "input_select": {
                     "add": "Tilføj",
                     "add_option": "Tilføj indstilling",
+                    "no_options": "Der er ingen muligheder endnu.",
                     "options": "Indstillinger"
                 },
                 "input_text": {
                     "max": "Maksimumslængde",
                     "min": "Minimumslængde",
                     "mode": "Visningstilstand",
-                    "password": "Kodeord",
+                    "password": "Adgangskode",
+                    "pattern": "Regex-mønster til validering på klientsiden",
                     "text": "Tekst"
                 },
-                "not_editable": "Ikke redigerbar"
+                "not_editable": "Ikke redigerbar",
+                "not_editable_text": "Denne entitet kan ikke ændres fra brugerfladen, fordi det er defineret i configuration.yaml.",
+                "platform_not_loaded": "Komponenten {platform} er ikke indlæst, tilføj den til din konfiguration. Enten ved at tilføje 'default_config:' eller '{platform}:'.",
+                "required_error_msg": "Dette felt er påkrævet",
+                "yaml_not_editable": "Indstillingerne for denne entitet kan ikke redigeres fra brugerfladen. Det er kun entiteter, der er konfigureret fra brugergrænsefladen, der kan konfigureres herfra."
             },
             "more_info_control": {
                 "dismiss": "Afvis dialog",
@@ -691,7 +710,7 @@
                     "title": "Opdateringsvejledning"
                 },
                 "vacuum": {
-                    "clean_spot": "Rengør sted",
+                    "clean_spot": "Rengør område",
                     "commands": "Støvsuger kommandoer",
                     "fan_speed": "Blæserhastighed",
                     "locate": "Lokaliser",
@@ -787,6 +806,10 @@
                 "areas": {
                     "caption": "Områder",
                     "create_area": "OPRET OMRÅDE",
+                    "delete": {
+                        "confirmation_text": "Alle enheder i dette område vil blive utildelte.",
+                        "confirmation_title": "Er du sikker på, at du vil slette dette område?"
+                    },
                     "description": "Oversigt over alle områder i dit hjem.",
                     "editor": {
                         "create": "OPRET",
@@ -1365,6 +1388,8 @@
                         "introduction2": "Brug entitetssregistret til at overskrive navnet, ændre entitets-id eller fjerne posten fra Home Assistant. Bemærk, at fjernelse af entitetens registreringspost ikke fjerner entiteten. For at gøre dette, skal du følge linket herunder og fjerne det fra integrationssiden.",
                         "remove_selected": {
                             "button": "Fjern valgte",
+                            "confirm_partly_text": "Du kan kun fjerne {removable} af de valgte {selected} entiteter. Entiteter kan kun fjernes, når integrationen ikke længere leverer entiteterne. Nogle gange er du nødt til at genstarte Home Assistant, før du kan fjerne entiteterne fra en fjernet integration. Er du sikker på, at du vil fjerne de fjernbare entiteter?",
+                            "confirm_partly_title": "Kun {number} valgte entiteter kan fjernes.",
                             "confirm_text": "Du bør fjerne dem fra din Lovelace-konfiguration og automatiseringer, hvis de indeholder disse entiteter.",
                             "confirm_title": "Vil du fjerne {number} entiteter?"
                         },
@@ -1383,20 +1408,26 @@
                 "header": "Konfigurer Home Assistant",
                 "helpers": {
                     "caption": "Hjælpere",
+                    "description": "Elementer, der kan hjælpe med at bygge automatiseringer.",
                     "dialog": {
                         "add_helper": "Tilføj hjælper",
-                        "add_platform": "Tilføj {platform}"
+                        "add_platform": "Tilføj {platform}",
+                        "create": "Opret"
                     },
                     "picker": {
                         "add_helper": "Tilføj hjælper",
                         "headers": {
                             "editable": "Redigerbar",
-                            "entity_id": "Enheds ID",
+                            "entity_id": "Entitets-id",
                             "name": "Navn",
                             "type": "Type"
                         }
                     },
                     "types": {
+                        "input_boolean": "Til/fra",
+                        "input_datetime": "Dato og/eller klokkeslæt",
+                        "input_number": "Tal",
+                        "input_select": "Dropdown",
                         "input_text": "Tekst"
                     }
                 },
@@ -1462,38 +1493,78 @@
                 },
                 "introduction": "Her er det muligt at konfigurere dine komponenter og Home Assistant. Ikke alt er muligt at konfigurere fra brugerfladen endnu, men vi arbejder på det.",
                 "lovelace": {
+                    "caption": "Lovelace-betjeningspaneler",
                     "dashboards": {
+                        "cant_edit_default": "Standard-Lovelace-betjeningspanelet kan ikke redigeres fra brugerfladen. Du kan skjule det ved at indstille et andet betjeningspanel som standard.",
+                        "cant_edit_yaml": "Betjeningspaneler, der er defineret i YAML, kan ikke redigeres fra brugerfladen. Ændr dem i configuration.yaml.",
+                        "caption": "Betjeningspaneler",
+                        "conf_mode": {
+                            "storage": "Brugerfladekontrolleret",
+                            "yaml": "YAML-fil"
+                        },
+                        "confirm_delete": "Er du sikker på, at du vil slette dette betjeningspanel?",
                         "detail": {
                             "create": "Opret",
                             "delete": "Slet",
                             "dismiss": "Luk",
+                            "edit_dashboard": "Rediger betjeningspanel",
+                            "icon": "Sidebjælke-ikon",
+                            "new_dashboard": "Tilføj nyt betjeningspanel",
+                            "remove_default": "Fjern som standard på denne enhed",
+                            "require_admin": "Kun administrator",
+                            "set_default": "Indstil som standard på denne enhed",
+                            "show_sidebar": "Vis i sidebjælke",
+                            "title": "Titel på sidebjælke",
                             "title_required": "Titel er påkrævet.",
-                            "update": "Opdater"
+                            "update": "Opdater",
+                            "url": "Webadresse",
+                            "url_error_msg": "Webadressen kan ikke indeholde mellemrum eller specialtegn undtagen _ og -"
                         },
                         "picker": {
+                            "add_dashboard": "Tilføj betjeningspanel",
                             "headers": {
+                                "conf_mode": "Konfigurationsmetode",
                                 "default": "Standard",
                                 "filename": "Filnavn",
+                                "require_admin": "Kun administrator",
+                                "sidebar": "Vis i sidebjælke",
                                 "title": "Titel"
                             },
-                            "open": "Åben"
+                            "open": "Åbn"
                         }
                     },
+                    "description": "Konfigurer dine Lovelace-betjeningspaneler",
                     "resources": {
+                        "cant_edit_yaml": "Du bruger Lovelace i YAML-tilstand, og derfor kan du ikke administrere dine ressourcer gennem brugerfladen. Administrer dem i configuration.yaml.",
                         "caption": "Ressourcer",
+                        "confirm_delete": "Er du sikker på, at du vil slette denne ressource?",
                         "detail": {
+                            "create": "Opret",
                             "delete": "Slet",
                             "dismiss": "Luk",
+                            "new_resource": "Tilføj ny ressource",
+                            "type": "Ressourcetype",
                             "update": "Opdater",
-                            "warning_header": "Vær forsigtig!"
+                            "url": "Webadresse",
+                            "url_error_msg": "Webadresse er et påkrævet felt",
+                            "warning_header": "Vær forsigtig!",
+                            "warning_text": "Tilføjelse af ressourcer kan være farligt, sørg for at kende ressourcekilden, og at du stoler på dem. Dårlige ressourcer kan skade dit system betydeligt."
                         },
                         "picker": {
+                            "add_resource": "Tilføj ressource",
                             "headers": {
-                                "type": "Type"
+                                "type": "Type",
+                                "url": "Webadresse"
                             }
                         },
                         "refresh_body": "Du skal opdatere siden for at afslutte fjernelsen, vil du opdatere nu?",
-                        "refresh_header": "Vil du opdatere?"
+                        "refresh_header": "Vil du opdatere?",
+                        "types": {
+                            "css": "Stylesheet",
+                            "html": "HTML (frarådes)",
+                            "js": "JavaScript-fil (frarådes)",
+                            "module": "JavaScript-modul"
+                        }
                     }
                 },
                 "person": {
@@ -2007,7 +2078,7 @@
                     }
                 },
                 "changed_toast": {
-                    "message": "Lovelace-brugerfladekonfigurationen for dette dashboard blev opdateret. Vil du genindlæse?",
+                    "message": "Lovelace-brugerfladekonfigurationen for dette betjeningspanel blev opdateret. Vil du genindlæse?",
                     "refresh": "Opdater"
                 },
                 "editor": {
@@ -2017,19 +2088,30 @@
                         },
                         "alarm-panel": {
                             "available_states": "Tilgængelige tilstande",
+                            "description": "Alarmpanelkortet giver dig mulighed for at aktivere og deaktivere alarmkontrolpanelets integrationer.",
                             "name": "Alarmpanel"
                         },
                         "button": {
+                            "description": "Med knapkortet kan du tilføje knapper til at udføre opgaver.",
                             "name": "Knap"
                         },
                         "conditional": {
-                            "name": "Betinget"
+                            "card": "Kort",
+                            "change_type": "Skift type",
+                            "condition_explanation": "Kortet vises, når ALLE nedenstående betingelser er opfyldt.",
+                            "conditions": "Betingelser",
+                            "current_state": "aktuelt",
+                            "description": "Betinget-kortet viser et andet kort baseret på entitetstilstande.",
+                            "name": "Betinget",
+                            "state_equal": "Tilstand er lig med",
+                            "state_not_equal": "Tilstand er ikke lig med"
                         },
                         "config": {
                             "optional": "Valgfri",
                             "required": "Påkrævet"
                         },
                         "entities": {
+                            "description": "Entiteter-kortet er det mest almindelige type kort. Det grupperer elementer på lister.",
                             "name": "Entiteter",
                             "show_header_toggle": "Vis omskifter ved overskrift?",
                             "toggle": "Til/fra entiteter."
@@ -2038,9 +2120,11 @@
                             "name": "Entitetsknap"
                         },
                         "entity-filter": {
+                            "description": "Entitetsfilterkortet giver dig mulighed for at definere en liste af entiteter, du kun vil vise, når en bestemt tilstand er mødt.",
                             "name": "Entitetsfilter"
                         },
                         "gauge": {
+                            "description": "Målerkortet er et basalt kort, der gør det muligt visuelt at se sensordata.",
                             "name": "Måler",
                             "severity": {
                                 "define": "Definer alvorlighed?",
@@ -2060,6 +2144,8 @@
                             "icon": "Ikon",
                             "icon_height": "Ikonhøjde",
                             "image": "Sti til billede",
+                            "manual": "Manuel",
+                            "manual_description": "Har du brug for at tilføje et brugerdefineret kort eller bare manuelt skrive yaml?",
                             "maximum": "Maksimum",
                             "minimum": "Minimum",
                             "name": "Navn",
@@ -2067,6 +2153,7 @@
                             "show_icon": "Vis ikon?",
                             "show_name": "Vis navn?",
                             "show_state": "Vis tilstand?",
+                            "state": "Tilstand",
                             "tap_action": "Handling ved tryk",
                             "theme": "Tema",
                             "title": "Titel",
@@ -2075,35 +2162,44 @@
                         },
                         "glance": {
                             "columns": "Kolonner",
+                            "description": "Blik-kortet er nyttigt til at gruppere flere sensorer i en kompakt oversigt.",
                             "name": "Blik"
                         },
                         "history-graph": {
+                            "description": "Historikgraf-kortet kan vise en graf for hver af de anførte entiteter.",
                             "name": "Historikgraf"
                         },
                         "horizontal-stack": {
+                            "description": "Vandret stak-kortet giver dig mulighed for at stable flere kort sammen, så de altid sidder ved siden af hinanden i en kolonne.",
                             "name": "Vandret stak"
                         },
                         "iframe": {
+                            "description": "Websidekortet giver dig mulighed for at integrere din foretrukne webside direkte i Home Assistant.",
                             "name": "Webside"
                         },
                         "light": {
+                            "description": "Lys-kortet giver dig mulighed for at ændre lysets lysstyrke.",
                             "name": "Lys"
                         },
                         "map": {
                             "dark_mode": "Mørk tilstand?",
                             "default_zoom": "Standard-zoom",
+                            "description": "Kort-kortet giver dig mulighed for at vise entiteter på et kort.",
                             "geo_location_sources": "Lokalitetskilder",
                             "name": "Kort",
                             "source": "Kilde"
                         },
                         "markdown": {
                             "content": "Indhold",
+                            "description": "Markdown-kortet bruges til at gengive Markdown.",
                             "name": "Markdown"
                         },
                         "media-control": {
+                            "description": "Mediekontrolkortet bruges til at vise medieafspillerenheder på en brugerflade med brugervenlige kontroller.",
                             "name": "Mediekontrol"
                         },
                         "picture-elements": {
+                            "description": "Billedelementer-kortet er en af de mest alsidige korttyper. Kortene giver dig mulighed for at placere ikoner eller tekst og endda tjenester! På et billede baseret på koordinater.",
                             "name": "Billedelementer"
                         },
                         "picture-entity": {
@@ -2115,6 +2211,7 @@
                             "name": "Billedblik"
                         },
                         "picture": {
+                            "description": "Billedkortet giver dig mulighed for at indstille et billede, der skal bruges til navigation til forskellige stier i brugerfladen eller til at kalde en tjeneste.",
                             "name": "Billede"
                         },
                         "plant-status": {
@@ -2173,7 +2270,8 @@
                         "move_left": "Flyt visningen til venstre",
                         "move_right": "Flyt visningen til højre",
                         "tab_badges": "Badges",
-                        "tab_settings": "Indstillinger"
+                        "tab_settings": "Indstillinger",
+                        "tab_visibility": "Synlighed"
                     },
                     "header": "Rediger brugerflade",
                     "menu": {
@@ -2196,6 +2294,7 @@
                         "error_remove": "Ude af stand til at fjerne konfiguration: {error}",
                         "error_save_yaml": "Kunne ikke gemme YAML: {error}",
                         "header": "Rediger konfiguration",
+                        "resources_moved": "Ressourcer bør ikke længere føjes til Lovelace-konfigurationen, men kan tilføjes i  Lovelace-konfigurationspanelet.",
                         "save": "Gem",
                         "saved": "Gemt",
                         "unsaved_changes": "Ikke-gemte ændringer"
@@ -2206,7 +2305,10 @@
                         "header": "Tag kontrol over din 'Lovelace'-brugerflade",
                         "para": "Som standard vil Home Assistant vedligeholde din brugerflade ved at opdatere den, når nye entiteter eller Lovelace-brugerfladekomponenter bliver tilgængelige. Hvis du overtager kontrollen, vil vi ikke længere foretage ændringer automatisk for dig.",
                         "para_sure": "Er du sikker på du ønsker at tage kontrol over din brugerflade?",
-                        "save": "Tag kontrol"
+                        "save": "Tag kontrol",
+                        "yaml_config": "For at hjælpe dig med at starte, er her den aktuelle konfiguration af dette betjeningspanel:",
+                        "yaml_control": "For at tage kontrol i YAML-tilstand skal du oprette en YAML-fil med det navn, du har angivet i din konfiguration for dette betjeningspanel, eller standard-'ui-lovelace.yaml'-filen.",
+                        "yaml_mode": "Du bruger YAML-tilstand. Det betyder, at du ikke kan ændre din Lovelace-konfiguration fra brugerfladen. Hvis du vil ændre Lovelace fra brugerfladen, skal du fjerne 'mode: yaml' fra din Lovelace-konfiguration i 'configuration.yaml.'"
                     },
                     "suggest_card": {
                         "add": "Tilføj til Lovelace-brugerflade",
@@ -2240,6 +2342,9 @@
                 },
                 "views": {
                     "confirm_delete": "Slet visning?",
+                    "confirm_delete_existing_cards": "Sletning af denne visning fjerner også kortene",
+                    "confirm_delete_existing_cards_text": "Er du sikker på, at du vil slette visningen '{name}'? Visningen indeholder {number} kort, der vil blive slettet. Denne handling kan ikke fortrydes.",
+                    "confirm_delete_text": "Er du sikker på, at du vil slette visningen '{name}'?",
                     "existing_cards": "Du kan ikke slette en visning, der har kort i sig. Fjern kortene først."
                 },
                 "warning": {
@@ -2440,8 +2545,8 @@
                 },
                 "current_user": "Du er logget ind som {fullName}.",
                 "force_narrow": {
-                    "description": "Dette vil skjule sidepanelet som standard, svarende til den mobile oplevelse.",
-                    "header": "Skjul altid sidepanelet"
+                    "description": "Dette vil skjule sidebjælken som standard, svarende til den mobile oplevelse.",
+                    "header": "Skjul altid sidebjælken"
                 },
                 "is_owner": "Du er ejer.",
                 "language": {
@@ -2519,7 +2624,7 @@
         "sidebar": {
             "external_app_configuration": "App-konfiguration",
             "log_out": "Log ud",
-            "sidebar_toggle": "Vis/skjul sidepanel"
+            "sidebar_toggle": "Vis/skjul sidebjælke"
         }
     }
 }

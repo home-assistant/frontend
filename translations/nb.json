@@ -806,6 +806,10 @@
                 "areas": {
                     "caption": "Områder",
                     "create_area": "OPPRETT OMRÅDE",
+                    "delete": {
+                        "confirmation_text": "Alle enheter som tilhører dette området vil ikke bli tildelt.",
+                        "confirmation_title": "Er du sikker på at du vil slette dette området?"
+                    },
                     "description": "Oversikt over alle områder i ditt hjem",
                     "editor": {
                         "create": "OPPRETT",
@@ -948,7 +952,7 @@
                         "triggers": {
                             "add": "Legg til utløser",
                             "delete": "Slett",
-                            "delete_confirm": "Er du sikker på at du vil slette?",
+                            "delete_confirm": "Er du sikker på at du vil slette dette?",
                             "duplicate": "Dupliser",
                             "header": "Utløsere",
                             "introduction": "Utløsere er det som starter en automatiseringsregel. Det er mulig å spesifisere flere utløsere for samme regel. Når en utløser aktiveres, vil Home Assistant bekrefte vilkårene, hvis noen, og kjøre handlingen. \n\n[Lær mer om utløsere.](https://home-assistant.io/docs/automation/trigger/)",

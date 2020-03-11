@@ -806,6 +806,10 @@
                 "areas": {
                     "caption": "分區",
                     "create_area": "建立分區",
+                    "delete": {
+                        "confirmation_text": "所有該分區所屬設備都將變成未指派狀態。",
+                        "confirmation_title": "確定要刪除此分區？"
+                    },
                     "description": "家中所有分區概觀",
                     "editor": {
                         "create": "建立",
