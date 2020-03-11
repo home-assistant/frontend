@@ -64,6 +64,7 @@ export interface StateIconElementConfig extends LovelaceElementConfig {
 
 export interface StateLabelElementConfig extends LovelaceElementConfig {
   entity: string;
+  attribute?: string;
   prefix?: string;
   suffix?: string;
   tap_action?: ActionConfig;
