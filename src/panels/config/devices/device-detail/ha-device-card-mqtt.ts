@@ -25,26 +25,22 @@ export class HaDeviceCardMqtt extends LitElement {
     `;
   }
 
-  protected firstUpdated(changedProps) {
-    super.firstUpdated(changedProps);
-  }
-
-  private async _deleteEntry(): Promise<void> {
-    await removeMQTTDeviceEntry(this.hass!, this.device.id);
-  }
-
-  private _confirmDeleteEntry(): void {
-    showConfirmationDialog(this, {
+  private async _confirmDeleteEntry(): Promise<void> {
+    const confirmed = await showConfirmationDialog(this, {
       text: this.hass.localize("ui.panel.config.devices.confirm_delete"),
-      confirm: () => this._deleteEntry(),
     });
+
+    if (!confirmed) {
+      return;
+    }
+
+    await removeMQTTDeviceEntry(this.hass!, this.device.id);
   }
 
   static get styles(): CSSResult {
     return css`
       mwc-button.warning {
-        margin-right: auto;
-        --mdc-theme-primary: var(--google-red-500);
+        --mdc-theme-primary: var(--error-color);
       }
     `;
   }
