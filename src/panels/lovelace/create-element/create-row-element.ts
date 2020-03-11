@@ -8,23 +8,6 @@ import "../special-rows/hui-call-service-row";
 import { EntityConfig } from "../entity-rows/types";
 import { createLovelaceElement } from "./create-element-base";
 
-// lazy load imports
-import "../entity-rows/hui-climate-entity-row";
-import "../entity-rows/hui-cover-entity-row";
-import "../entity-rows/hui-group-entity-row";
-import "../entity-rows/hui-input-datetime-entity-row";
-import "../entity-rows/hui-input-number-entity-row";
-import "../entity-rows/hui-input-select-entity-row";
-import "../entity-rows/hui-input-text-entity-row";
-import "../entity-rows/hui-lock-entity-row";
-import "../entity-rows/hui-timer-entity-row";
-import "../special-rows/hui-conditional-row";
-import "../special-rows/hui-divider-row";
-import "../special-rows/hui-section-row";
-import "../special-rows/hui-weblink-row";
-import "../special-rows/hui-cast-row";
-import "../special-rows/hui-buttons-row";
-
 const ALWAYS_LOADED_TYPES = new Set([
   "media-player-entity",
   "scene-entity",
@@ -33,43 +16,26 @@ const ALWAYS_LOADED_TYPES = new Set([
   "text-entity",
   "toggle-entity",
   "call-service",
-
-  // lazy load types
-  "climate-entity",
-  "cover-entity",
-  "group-entity",
-  "input-datetime-entity",
-  "input-number-entity",
-  "input-select-entity",
-  "input-text-entity",
-  "lock-entity",
-  "timer-entity",
-  "conditional",
-  "divider",
-  "section",
-  "weblink",
-  "cast",
-  "buttons",
 ]);
 const LAZY_LOAD_TYPES = {
-  // "climate-entity": () => import("../entity-rows/hui-climate-entity-row"),
-  // "cover-entity": () => import("../entity-rows/hui-cover-entity-row"),
-  // "group-entity": () => import("../entity-rows/hui-group-entity-row"),
-  // "input-datetime-entity": () =>
-  //   import("../entity-rows/hui-input-datetime-entity-row"),
-  // "input-number-entity": () =>
-  //   import("../entity-rows/hui-input-number-entity-row"),
-  // "input-select-entity": () =>
-  //   import("../entity-rows/hui-input-select-entity-row"),
-  // "input-text-entity": () => import("../entity-rows/hui-input-text-entity-row"),
-  // "lock-entity": () => import("../entity-rows/hui-lock-entity-row"),
-  // "timer-entity": () => import("../entity-rows/hui-timer-entity-row"),
-  // conditional: () => import("../special-rows/hui-conditional-row"),
-  // divider: () => import("../special-rows/hui-divider-row"),
-  // section: () => import("../special-rows/hui-section-row"),
-  // weblink: () => import("../special-rows/hui-weblink-row"),
-  // cast: () => import("../special-rows/hui-cast-row"),
-  // buttons: () => import("../special-rows/hui-buttons-row"),
+  "climate-entity": () => import("../entity-rows/hui-climate-entity-row"),
+  "cover-entity": () => import("../entity-rows/hui-cover-entity-row"),
+  "group-entity": () => import("../entity-rows/hui-group-entity-row"),
+  "input-datetime-entity": () =>
+    import("../entity-rows/hui-input-datetime-entity-row"),
+  "input-number-entity": () =>
+    import("../entity-rows/hui-input-number-entity-row"),
+  "input-select-entity": () =>
+    import("../entity-rows/hui-input-select-entity-row"),
+  "input-text-entity": () => import("../entity-rows/hui-input-text-entity-row"),
+  "lock-entity": () => import("../entity-rows/hui-lock-entity-row"),
+  "timer-entity": () => import("../entity-rows/hui-timer-entity-row"),
+  conditional: () => import("../special-rows/hui-conditional-row"),
+  divider: () => import("../special-rows/hui-divider-row"),
+  section: () => import("../special-rows/hui-section-row"),
+  weblink: () => import("../special-rows/hui-weblink-row"),
+  cast: () => import("../special-rows/hui-cast-row"),
+  buttons: () => import("../special-rows/hui-buttons-row"),
 };
 const DOMAIN_TO_ELEMENT_TYPE = {
   _domain_not_found: "text",

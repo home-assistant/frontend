@@ -394,9 +394,9 @@
     },
     "ui": {
         "auth_store": {
-            "ask": "Ønsker du å lagre denne påloggingen?",
-            "confirm": "Lagre pålogging",
-            "decline": "Nei takk"
+            "ask": "Vil du fortstatt være logget inn?",
+            "confirm": "Ja",
+            "decline": "Nei"
         },
         "card": {
             "alarm_control_panel": {
@@ -639,6 +639,7 @@
             },
             "generic": {
                 "cancel": "Avbryt",
+                "close": "Lukk",
                 "default_confirmation_title": "Er du sikker?",
                 "ok": "OK"
             },
@@ -678,7 +679,9 @@
                 },
                 "not_editable": "Kan ikke redigeres",
                 "not_editable_text": "Denne enheten kan ikke endres fra brukergrensesnittet fordi den er definert i configuration.yaml.",
-                "required_error_msg": "Dette feltet er påkrevd"
+                "platform_not_loaded": "{platform} -komponenten er ikke lastet, legg den til konfigurasjonen din. Enten ved å legge til 'default_config:' eller '{platform}:'.",
+                "required_error_msg": "Dette feltet er påkrevd",
+                "yaml_not_editable": "Innstillingene til denne enheten kan ikke redigeres fra brukergrensesnittet. Bare enheter som er konfigurert fra brukergrensesnittet, kan konfigureres fra brukergrensesnittet."
             },
             "more_info_control": {
                 "dismiss": "Avvis dialogboksen",
@@ -803,6 +806,10 @@
                 "areas": {
                     "caption": "Områder",
                     "create_area": "OPPRETT OMRÅDE",
+                    "delete": {
+                        "confirmation_text": "Alle enheter som tilhører dette området vil ikke bli tildelt.",
+                        "confirmation_title": "Er du sikker på at du vil slette dette området?"
+                    },
                     "description": "Oversikt over alle områder i ditt hjem",
                     "editor": {
                         "create": "OPPRETT",
@@ -945,7 +952,7 @@
                         "triggers": {
                             "add": "Legg til utløser",
                             "delete": "Slett",
-                            "delete_confirm": "Er du sikker på at du vil slette?",
+                            "delete_confirm": "Er du sikker på at du vil slette dette?",
                             "duplicate": "Dupliser",
                             "header": "Utløsere",
                             "introduction": "Utløsere er det som starter en automatiseringsregel. Det er mulig å spesifisere flere utløsere for samme regel. Når en utløser aktiveres, vil Home Assistant bekrefte vilkårene, hvis noen, og kjøre handlingen. \n\n[Lær mer om utløsere.](https://home-assistant.io/docs/automation/trigger/)",
@@ -1381,7 +1388,9 @@
                         "introduction2": "Bruk entitetsregistret til å overstyre navnet, endre id-en eller fjerne den fra Home Assistant.",
                         "remove_selected": {
                             "button": "Fjern valgte",
-                            "confirm_text": "Enheter kan bare fjernes når integrasjonen ikke lenger gir enhetene.",
+                            "confirm_partly_text": "Du kan bare fjerne {removable} av de valgte {selected} enhetene. Enheter kan bare fjernes når integrasjonen ikke lenger leverer enhetene. Noen ganger må du starte Home Assistant på nytt før du kan fjerne enhetene til en fjernet integrasjon. Er du sikker på at du vil fjerne de flyttbare enhetene?",
+                            "confirm_partly_title": "Bare {number} valgte enheter kan fjernes.",
+                            "confirm_text": "Du bør fjerne dem fra Lovelace config og automatiseringer hvis de inneholder disse enhetene.",
                             "confirm_title": "Vil du fjerne {number} enheter?"
                         },
                         "selected": "{number} valgte",
@@ -1390,6 +1399,7 @@
                             "disabled": "Deaktivert",
                             "ok": "Ok",
                             "readonly": "Skrivebeskyttet",
+                            "restored": "Gjennopprettet",
                             "unavailable": "Utilgjengelig"
                         },
                         "unavailable": "(utilgjengelig)"
@@ -1408,6 +1418,7 @@
                         "add_helper": "Legg hjelper",
                         "headers": {
                             "editable": "Redigerbare",
+                            "entity_id": "Entitets-ID",
                             "name": "Navn",
                             "type": "Type"
                         }
@@ -1481,6 +1492,81 @@
                     "note_about_website_reference": "Flere er tilgjengelige på"
                 },
                 "introduction": "Her er det mulig å konfigurere dine komponenter og Home Assistant. Ikke alt er mulig å konfigurere fra brukergrensesnittet enda, men vi jobber med det.",
+                "lovelace": {
+                    "caption": "Lovelace Dashboards",
+                    "dashboards": {
+                        "cant_edit_default": "Standard Lovelace-dashbordet kan ikke redigeres fra brukergrensesnittet. Du kan skjule det ved å sette et annet dashbord som standard.",
+                        "cant_edit_yaml": "Instrumentbord som er definert i YAML, kan ikke redigeres fra brukergrensesnittet. Endre dem i configuration.yaml.",
+                        "caption": "Oversikter",
+                        "conf_mode": {
+                            "storage": "UI kontrollert",
+                            "yaml": "YAML-fil"
+                        },
+                        "confirm_delete": "Er du sikker på at du vil slette dette instrumentbordet?",
+                        "detail": {
+                            "create": "Opprett",
+                            "delete": "Slett",
+                            "dismiss": "Lukk",
+                            "edit_dashboard": "Redigere instrumentbord",
+                            "icon": "Sidepanel-ikon",
+                            "new_dashboard": "Legg til nytt instrumentbord",
+                            "remove_default": "Fjern som standard på denne enheten",
+                            "require_admin": "Bare administrator",
+                            "set_default": "Angi som standard på denne enheten",
+                            "show_sidebar": "Vis i sidepanelet",
+                            "title": "Tittel på sidepanelet",
+                            "title_required": "Tittel er nødvendig.",
+                            "update": "Oppdater",
+                            "url": "Url",
+                            "url_error_msg": "Url-adressen kan ikke inneholde mellomrom eller spesialtegn, med unntak av _ og -"
+                        },
+                        "picker": {
+                            "add_dashboard": "Legge til instrumentbord",
+                            "headers": {
+                                "conf_mode": "Konfigurasjonsmetode",
+                                "default": "Standard",
+                                "filename": "Filnavn",
+                                "require_admin": "Bare administrator",
+                                "sidebar": "Vis i sidepanelet",
+                                "title": "Tittel"
+                            },
+                            "open": "Åpne"
+                        }
+                    },
+                    "description": "Konfigurer Lovelace Dashboards",
+                    "resources": {
+                        "cant_edit_yaml": "Du bruker Lovelace i YAML-modus, derfor kan du ikke administrere ressursene dine via brukergrensesnittet. Behandle dem i configuration.yaml.",
+                        "caption": "Ressurser",
+                        "confirm_delete": "Er du sikker på at du vil slette denne ressursen?",
+                        "detail": {
+                            "create": "Opprett",
+                            "delete": "Slett",
+                            "dismiss": "Lukk",
+                            "new_resource": "Legg til ny ressurs",
+                            "type": "Ressurstype",
+                            "update": "Oppdater",
+                            "url": "Url",
+                            "url_error_msg": "Url-adresse er et obligatorisk felt",
+                            "warning_header": "Vær forsiktig!",
+                            "warning_text": "Det kan være farlig å legge til ressurser, sørg for at du kjenner kilden til ressursen og stoler på dem. Dårlige ressurser kan skade systemet ditt alvorlig."
+                        },
+                        "picker": {
+                            "add_resource": "Legg til ressurs",
+                            "headers": {
+                                "type": "Type",
+                                "url": "Url"
+                            }
+                        },
+                        "refresh_body": "Du må oppdatere siden for å fullføre fjerningen, vil du oppdatere nå?",
+                        "refresh_header": "Vil du oppdatere?",
+                        "types": {
+                            "css": "stilark",
+                            "html": "HTML (utdatert)",
+                            "js": "JavaScript-fil (utdatert)",
+                            "module": "JavaScript-modul"
+                        }
+                    }
+                },
                 "person": {
                     "add_person": "Legg til person",
                     "caption": "Personer",
@@ -2002,19 +2088,30 @@
                         },
                         "alarm-panel": {
                             "available_states": "Tilgjengelige tilstander",
+                            "description": "Alarmpanelkortet lar deg armere og deaktivere alarmkontrollpanelets integrasjoner.",
                             "name": "Alarmpanel"
                         },
                         "button": {
+                            "description": "The Button card lar deg legge til knapper for å utføre oppgaver.",
                             "name": "Knapp"
                         },
                         "conditional": {
-                            "name": "Betinget"
+                            "card": "Kort",
+                            "change_type": "Endre type",
+                            "condition_explanation": "Kortet vil vises når ALLE betingelser nedenfor er oppfylt.",
+                            "conditions": "Forhold",
+                            "current_state": "Gjeldende",
+                            "description": "Betingelseskortet viser et annet kort basert på enhetstilstander.",
+                            "name": "Betinget",
+                            "state_equal": "Tilstanden er lik",
+                            "state_not_equal": "Tilstanden er ikke lik"
                         },
                         "config": {
                             "optional": "Valgfritt",
                             "required": "Nødvendig"
                         },
                         "entities": {
+                            "description": " Entities card er den vanligste typen kort. Den grupperer elementer i lister.",
                             "name": "Entiteter",
                             "show_header_toggle": "Vis kortbryter?",
                             "toggle": "Aktivér/deaktivér entiteter."
@@ -2023,9 +2120,11 @@
                             "name": "Entitetsknapp"
                         },
                         "entity-filter": {
+                            "description": "Entity Filter-kortet lar deg definere en liste over enheter du bare vil spore når du er i en viss tilstand.",
                             "name": "Entitetsfilter"
                         },
                         "gauge": {
+                            "description": "Gauge-kortet er et grunnleggende kort som gjør det mulig å se sensordata visuelt.",
                             "name": "Måler",
                             "severity": {
                                 "define": "Definer alvorlighetsgrad?",
@@ -2045,6 +2144,8 @@
                             "icon": "Ikon",
                             "icon_height": "Ikon høyde",
                             "image": "Bane til bilde",
+                            "manual": "Manuell",
+                            "manual_description": "Trenger du å legge til et tilpasset kort eller bare ønsker å skrive yaml manuelt?",
                             "maximum": "Maksimalt",
                             "minimum": "Minimum",
                             "name": "Navn",
@@ -2052,6 +2153,7 @@
                             "show_icon": "Vis ikon?",
                             "show_name": "Vis navn?",
                             "show_state": "Vis tilstand?",
+                            "state": "Tilstand",
                             "tap_action": "Trykk handling",
                             "theme": "Tema",
                             "title": "Tittel",
@@ -2060,65 +2162,83 @@
                         },
                         "glance": {
                             "columns": "Kolonner",
+                            "description": "Glance-kortet er nyttig for å gruppere flere sensorer i en kompakt oversikt.",
                             "name": "Blikk"
                         },
                         "history-graph": {
+                            "description": "Med History Graph-kortet kan du vise en graf for hver av enhetene som er oppført.",
                             "name": "Historikk graf"
                         },
                         "horizontal-stack": {
+                            "description": "Horizontal Stack-kortet lar deg stable sammen flere kort, slik at de alltid sitter ved siden av hverandre i løpet av en kolonne.",
                             "name": "Horisontal Stack"
                         },
                         "iframe": {
-                            "name": "iFrame"
+                            "description": "Websidekortet lar deg legge inn favorittwebsiden din direkte i Home Assistant.",
+                            "name": "Webside"
                         },
                         "light": {
+                            "description": "Med Light-kortet kan du endre lysstyrken.",
                             "name": "Lys"
                         },
                         "map": {
                             "dark_mode": "Mørk modus?",
                             "default_zoom": "Standard zoom",
+                            "description": "Kartkortet som lar deg vise enheter på et kart.",
                             "geo_location_sources": "Kilder for geolokasjon",
                             "name": "Kart",
                             "source": "Kilde"
                         },
                         "markdown": {
                             "content": "Innhold",
+                            "description": "Markdown-kortet brukes til å gjengi Markdown.",
                             "name": "Markdown"
                         },
                         "media-control": {
+                            "description": "Media Control-kortet brukes til å vise mediespillerenheter på et grensesnitt med brukervennlige kontroller.",
                             "name": "Mediekontroll"
                         },
                         "picture-elements": {
+                            "description": "Picture Elements-kortet er en av de mest allsidige korttyper. Kortene lar deg plassere ikoner eller tekst og til og med tjenester! På et bilde basert på koordinater.",
                             "name": "Bildeelementer"
                         },
                         "picture-entity": {
+                            "description": "Picture Entity-kortet viser en enhet i form av et bilde. I stedet for bilder fra URL, kan det også vise bilde av kameraenheter.",
                             "name": "Bildeoppføring"
                         },
                         "picture-glance": {
+                            "description": "Picture Glance-kortet viser et bilde og tilhørende entitetstilstander som et ikon. Enhetene på høyre side tillater veksling av handlinger, andre viser dialogboksen mer informasjon.",
                             "name": "Bilde blikk"
                         },
                         "picture": {
+                            "description": "Bildekortet lar deg stille inn et bilde som skal brukes til navigasjon til forskjellige baner i grensesnittet ditt eller for å ringe en tjeneste.",
                             "name": "Bilde"
                         },
                         "plant-status": {
+                            "description": "Plant Status-kortet er for alle de flotte botanikerne der ute.",
                             "name": "Plante status"
                         },
                         "sensor": {
+                            "description": "Sensorkortet gir deg en rask oversikt over sensortilstanden din med en valgfri graf for å visualisere endring over tid.",
                             "graph_detail": "Detaljer for graf",
                             "graph_type": "Graf type",
                             "name": "Sensor"
                         },
                         "shopping-list": {
+                            "description": "På Shopping List-kortet kan du legge til, redigere, sjekke av og fjerne gjenstander fra handlelisten din.",
                             "integration_not_loaded": "Dette kortet krever at \"shopping_list\" -integrasjonen er satt opp.",
                             "name": "Handleliste"
                         },
                         "thermostat": {
+                            "description": "Termostatkortet gir kontroll over din klimaenhet. Lar deg endre temperaturen og modus for enheten.",
                             "name": "Termostat"
                         },
                         "vertical-stack": {
+                            "description": "Vertical Stack-kortet lar deg gruppere flere kort slik at de alltid sitter i samme kolonne.",
                             "name": "Vertikal stabel"
                         },
                         "weather-forecast": {
+                            "description": "Værmeldingskortet viser været. Veldig nyttig å ta med på grensesnitt som folk viser på veggen.",
                             "name": "Værmelding"
                         }
                     },
@@ -2150,7 +2270,8 @@
                         "move_left": "Flytt visning til venstre",
                         "move_right": "Flytt visning til høyre",
                         "tab_badges": "Merker",
-                        "tab_settings": "Innstillinger"
+                        "tab_settings": "Innstillinger",
+                        "tab_visibility": "Synlighet"
                     },
                     "header": "Rediger brukergrensesnitt",
                     "menu": {
@@ -2180,10 +2301,14 @@
                     },
                     "save_config": {
                         "cancel": "Glem det",
+                        "close": "Lukk",
                         "header": "Ta kontroll over Lovelace brukergrensesnittet ditt",
                         "para": "Som standard vil Home Assistant opprettholde brukergrensesnittet ditt, oppdatere det når nye enheter eller Lovelace UI-komponenter blir tilgjengelige. Hvis du tar kontroll, vil vi ikke lenger gjøre endringer automatisk for deg.",
                         "para_sure": "Er du sikker på at du vil ta kontroll over brukergrensesnittet ditt?",
-                        "save": "Ta kontroll"
+                        "save": "Ta kontroll",
+                        "yaml_config": "For å hjelpe deg med å starte, her er den gjeldende konfigurasjonen av dette dashbordet:",
+                        "yaml_control": "Hvis du vil ta kontroll i YAML-modus, oppretter du en YAML-fil med navnet du angav i konfigurasjonen for dette instrumentbordet, eller standard 'ui-lovelace.yaml'.",
+                        "yaml_mode": "Du bruker YAML-modus, det betyr at du ikke kan endre Lovelace config fra brukergrensesnittet. Hvis du vil endre Lovelace fra brukergrensesnittet, fjerner du «modus: yaml» fra Lovelace-konfigurasjonen i 'configuration.yaml'."
                     },
                     "suggest_card": {
                         "add": "Legg til i Lovelace UI",
@@ -2216,7 +2341,10 @@
                     "title": "Ubrukte entiteter"
                 },
                 "views": {
-                    "confirm_delete": "Er du sikker på at du vil slette denne visningen?",
+                    "confirm_delete": "Slette visning?",
+                    "confirm_delete_existing_cards": "Hvis du sletter denne visningen, fjernes også kortene",
+                    "confirm_delete_existing_cards_text": "Er du sikker på at du vil slette visningen '{name}'? Visningen inneholder {number} kort som blir slettet. Denne handlingen kan ikke angre.",
+                    "confirm_delete_text": "Er du sikker på at du vil slette visningen '{name}'?",
                     "existing_cards": "Du kan ikke slette en visning som har kort i den. Fjern kortene først."
                 },
                 "warning": {

@@ -16,7 +16,7 @@ gulp.task(
       process.env.NODE_ENV = "development";
     },
     "clean-gallery",
-    gulp.parallel("gen-icons-app", "gen-icons-app", "build-translations"),
+    gulp.parallel("gen-icons-app", "gen-icons-mdi", "build-translations"),
     "copy-static-gallery",
     "gen-index-gallery-dev",
     "webpack-dev-server-gallery"
