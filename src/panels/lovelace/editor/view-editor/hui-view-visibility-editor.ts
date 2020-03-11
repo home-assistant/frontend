@@ -8,11 +8,11 @@ import {
   CSSResult,
   css,
 } from "lit-element";
-import "@polymer/paper-input/paper-input";
+import "@polymer/paper-item/paper-item";
+import "@polymer/paper-item/paper-item-body";
 
 import { HomeAssistant } from "../../../../types";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import { configElementStyle } from "../config-elements/config-elements-style";
 import { LovelaceViewConfig, ShowViewConfig } from "../../../../data/lovelace";
 
 import { fetchUsers, User } from "../../../../data/user";
@@ -60,28 +60,23 @@ export class HuiViewVisibilityEditor extends LitElement {
     }
 
     return html`
-      ${configElementStyle}
-      <div class="card-config">
-        <span
-          >${this.hass.localize(
-            "ui.panel.lovelace.editor.edit_view.visibility.select_users"
-          )}</span
-        >
-
-        ${this._sortedUsers(this._users).map(
-          (user) => html`
-            <div class="flex">
-              <div>${user.name}</div>
-              <ha-switch
-                .userId="${user.id}"
-                @change=${this.valChange}
-                .checked=${this.checkUser(user.id)}
-                >&nbsp;</ha-switch
-              >
-            </div>
-          `
+      <p>
+        ${this.hass.localize(
+          "ui.panel.lovelace.editor.edit_view.visibility.select_users"
         )}
-      </div>
+      </p>
+      ${this._sortedUsers(this._users).map(
+        (user) => html`
+          <paper-item>
+            <paper-item-body>${user.name}</paper-item-body>
+            <ha-switch
+              .userId="${user.id}"
+              @change=${this.valChange}
+              .checked=${this.checkUser(user.id)}
+            ></ha-switch>
+          </paper-item>
+        `
+      )}
     `;
   }
 
@@ -135,13 +130,8 @@ export class HuiViewVisibilityEditor extends LitElement {
 
   static get styles(): CSSResult {
     return css`
-      .flex {
-        flex: 1;
-        margin-left: 16px;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        min-width: 0;
+      :host {
+        display: block;
       }
     `;
   }
