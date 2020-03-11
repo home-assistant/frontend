@@ -142,11 +142,6 @@ class DialogAreaDetail extends LitElement {
     return [
       haStyleDialog,
       css`
-        @media all and (min-width: 450px) {
-          ha-paper-dialog {
-            min-width: 400px;
-          }
-        }
         .form {
           padding-bottom: 24px;
         }
