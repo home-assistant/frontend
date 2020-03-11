@@ -166,21 +166,23 @@ class LovelaceFullConfigEditor extends LitElement {
     }
   }
 
-  private _closeEditor() {
-    if (this._changed) {
-      showConfirmationDialog(this, {
+  private async _closeEditor() {
+    if (
+      this._changed &&
+      !(await showConfirmationDialog(this, {
         text: this.hass.localize(
           "ui.panel.lovelace.editor.raw_editor.confirm_unsaved_changes"
         ),
         dismissText: this.hass!.localize("ui.common.no"),
         confirmText: this.hass!.localize("ui.common.yes"),
-        confirm: () => {
-          window.onbeforeunload = null;
-          if (this.closeEditor) {
-            this.closeEditor();
-          }
-        },
-      });
+      }))
+    ) {
+      return;
+    }
+
+    window.onbeforeunload = null;
+    if (this.closeEditor) {
+      this.closeEditor();
     }
   }
 
