@@ -792,6 +792,10 @@
                 "areas": {
                     "caption": "Registre d'àrees",
                     "create_area": "CREA ÀREA",
+                    "delete": {
+                        "confirmation_text": "Tots els dispositius d'aquesta àrea quedaran sense assignar.",
+                        "confirmation_title": "Estàs segur que vols eliminar aquesta àrea?"
+                    },
                     "description": "Visió general de totes les àrees de la casa.",
                     "editor": {
                         "create": "CREAR",

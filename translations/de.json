@@ -806,6 +806,10 @@
                 "areas": {
                     "caption": "Bereichsregister",
                     "create_area": "BEREICH ERSTELLEN",
+                    "delete": {
+                        "confirmation_text": "Alle Geräte in diesem Bereich werden nicht zugewiesen.",
+                        "confirmation_title": "Möchten Sie diesen Bereich wirklich löschen?"
+                    },
                     "description": "Überblick über alle Bereiche in Deinem Haus.",
                     "editor": {
                         "create": "ERSTELLEN",
@@ -830,7 +834,7 @@
                         "actions": {
                             "add": "Aktion hinzufügen",
                             "delete": "Löschen",
-                            "delete_confirm": "Möchten Sie das wirklich löschen?",
+                            "delete_confirm": "Sind Sie sicher, dass Sie das löschen wollen?",
                             "duplicate": "Duplizieren",
                             "header": "Aktionen",
                             "introduction": "Aktionen werden von Home Assistant ausgeführt, wenn Automatisierungen ausgelöst werden.",
@@ -875,7 +879,7 @@
                         "conditions": {
                             "add": "Bedingung hinzufügen",
                             "delete": "Löschen",
-                            "delete_confirm": "Möchten Sie das wirklich löschen?",
+                            "delete_confirm": "Sind Sie sicher, dass Sie das löschen wollen?",
                             "duplicate": "Duplizieren",
                             "header": "Bedingungen",
                             "introduction": "Die Bedingungen sind optional und verhindern die weitere Ausführung, sofern nicht alle Bedingungen erfüllt sind.",
@@ -948,7 +952,7 @@
                         "triggers": {
                             "add": "Auslöser hinzufügen",
                             "delete": "Löschen",
-                            "delete_confirm": "Möchten Sie das wirklich löschen?",
+                            "delete_confirm": "Sind Sie sicher, dass Sie das löschen wollen?",
                             "duplicate": "Duplizieren",
                             "header": "Auslöser",
                             "introduction": "Auslöser starten automatisierte Abläufe. Es ist möglich, mehrere Auslöser für dieselbe Abfolge zu definieren. Wenn ein Auslöser aktiviert wird, prüft Home Assistant die Bedingungen, sofern vorhanden, und führt die Aktion aus.",
