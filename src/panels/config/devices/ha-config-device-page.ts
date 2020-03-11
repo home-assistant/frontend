@@ -168,8 +168,6 @@ export class HaConfigDevicePage extends LitElement {
                   ? html`
                       <ha-device-card-mqtt
                         .hass=${this.hass}
-                        .areas=${this.areas}
-                        .devices=${this.devices}
                         .device=${device}
                       ></ha-device-card-mqtt>
                     `
