@@ -519,7 +519,7 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
       debounce(() => this._measureCard(), 250, false)
     );
 
-    this._resizeObserver.observe(this);
+    this._resizeObserver.observe(this.shadowRoot!.querySelector("ha-card")!);
   }
 
   private _handleMoreInfo(): void {
@@ -813,11 +813,6 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
         height: 55px;
       }
 
-      .off.player,
-      .narrow.player {
-        padding-bottom: 16px !important;
-      }
-
       .narrow .controls,
       .no-progress .controls {
         padding-bottom: 0;
@@ -828,9 +823,11 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
         height: 40px;
       }
 
-      .narrow .playPauseButton {
-        width: 50px !important;
-        height: 50px !important;
+      .narrow paper-icon-button[action="media_play"],
+      .narrow paper-icon-button[action="media_play_pause"],
+      .narrow paper-icon-button[action="turn_on"] {
+        width: 50px;
+        height: 50px;
       }
 
       .no-progress.player:not(.no-controls) {
