@@ -673,8 +673,8 @@
           "mode": "What do you want to input"
         },
         "input_text": {
-          "min": "Minimum lenght",
-          "max": "Maximum lenght",
+          "min": "Minimum length",
+          "max": "Maximum length",
           "mode": "Display mode",
           "text": "Text",
           "password": "Password",
@@ -857,6 +857,7 @@
           "caption": "Lovelace Dashboards",
           "description": "Configure your Lovelace Dashboards",
           "dashboards": {
+            "default_dashboard": "This is the default dashboard",
             "caption": "Dashboards",
             "conf_mode": {
               "yaml": "YAML file",
@@ -882,8 +883,8 @@
               "new_dashboard": "Add new dashboard",
               "dismiss": "Close",
               "show_sidebar": "Show in sidebar",
-              "icon": "Sidebar icon",
-              "title": "Sidebar title",
+              "icon": "Icon",
+              "title": "Title",
               "title_required": "Title is required.",
               "url": "Url",
               "url_error_msg": "The url can not contain spaces or special characters, except for _ and -",

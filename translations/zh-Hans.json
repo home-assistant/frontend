@@ -651,8 +651,12 @@
                     "name": "名称"
                 },
                 "input_datetime": {
+                    "date": "日期",
+                    "datetime": "日期和时间",
                     "has_date": "日期",
-                    "has_time": "时间"
+                    "has_time": "时间",
+                    "mode": "要输入哪种形式",
+                    "time": "时间"
                 },
                 "input_number": {
                     "box": "输入框",
@@ -806,6 +810,10 @@
                 "areas": {
                     "caption": "区域注册表",
                     "create_area": "创建区域",
+                    "delete": {
+                        "confirmation_text": "此区域中的所有设备都将取消分配。",
+                        "confirmation_title": "您确定要删除此区域吗？"
+                    },
                     "description": "您家中所有区域的概览。",
                     "editor": {
                         "create": "创建",

@@ -86,6 +86,7 @@ export class DialogLovelaceResourceDetail extends LitElement {
                 "ui.panel.config.lovelace.resources.detail.url_error_msg"
               )}
               .invalid=${urlInvalid}
+              dialogInitialFocus
             ></paper-input>
             <br />
             <ha-paper-dropdown-menu
@@ -210,9 +211,6 @@ export class DialogLovelaceResourceDetail extends LitElement {
     return [
       haStyleDialog,
       css`
-        .form {
-          padding-bottom: 24px;
-        }
         .warning {
           color: var(--error-color);
         }
