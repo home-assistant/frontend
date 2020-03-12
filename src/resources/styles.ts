@@ -203,9 +203,16 @@ export const haStyleDialog = css`
   ha-dialog {
     --mdc-dialog-min-width: 400px;
     --mdc-dialog-max-width: 600px;
-    --mdc-dialog-title-ink-color: var(--primary-text-color);
+    --mdc-dialog-heading-ink-color: var(--primary-text-color);
     --justify-action-buttons: space-between;
+    color: var(--primary-text-color);
   }
+
+  ha-dialog .form {
+    padding-bottom: 24px;
+    color: var(--primary-text-color);
+  }
+
   /* make dialog fullscreen on small screens */
   @media all and (max-width: 450px), all and (max-height: 500px) {
     ha-dialog {

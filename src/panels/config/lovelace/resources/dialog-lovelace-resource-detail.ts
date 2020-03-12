@@ -210,9 +210,6 @@ export class DialogLovelaceResourceDetail extends LitElement {
     return [
       haStyleDialog,
       css`
-        .form {
-          padding-bottom: 24px;
-        }
         .warning {
           color: var(--error-color);
         }
