@@ -176,7 +176,9 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
     };
 
     const gradientStyle = {
-      "background-image": `linear-gradient(to right, ${this._backgroundColor}, transparent)`,
+      "background-image": `linear-gradient(to right, ${
+        this._backgroundColor
+      }, ${this._backgroundColor + "00"})`,
       width: `${this._cardHeight}px`,
     };
 
