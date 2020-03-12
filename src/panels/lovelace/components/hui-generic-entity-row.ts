@@ -94,27 +94,27 @@ class HuiGenericEntityRow extends LitElement {
           ? html`
               <div class="secondary">
                 ${this.secondaryText ||
-                this.config.secondary_info === "entity-id"
-                  ? stateObj.entity_id
-                  : this.config.secondary_info === "last-changed"
-                  ? html`
-                      <ha-relative-time
-                        .hass=${this.hass}
-                        .datetime=${stateObj.last_changed}
-                      ></ha-relative-time>
-                    `
-                  : this.config.secondary_info === "last-triggered"
-                  ? stateObj.attributes.last_triggered
+                  (this.config.secondary_info === "entity-id"
+                    ? stateObj.entity_id
+                    : this.config.secondary_info === "last-changed"
                     ? html`
                         <ha-relative-time
                           .hass=${this.hass}
-                          .datetime=${stateObj.attributes.last_triggered}
+                          .datetime=${stateObj.last_changed}
                         ></ha-relative-time>
                       `
-                    : this.hass.localize(
-                        "ui.panel.lovelace.cards.entities.never_triggered"
-                      )
-                  : ""}
+                    : this.config.secondary_info === "last-triggered"
+                    ? stateObj.attributes.last_triggered
+                      ? html`
+                          <ha-relative-time
+                            .hass=${this.hass}
+                            .datetime=${stateObj.attributes.last_triggered}
+                          ></ha-relative-time>
+                        `
+                      : this.hass.localize(
+                          "ui.panel.lovelace.cards.entities.never_triggered"
+                        )
+                    : "")}
               </div>
             `
           : ""}
