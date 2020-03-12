@@ -560,13 +560,9 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
       this._marqueeActive = false;
     }
 
-    this.hass!.callService(
-      "media_player",
-      (e.currentTarget! as PaperIconButtonElement).getAttribute("action")!,
-      {
-        entity_id: this._config!.entity,
-      }
-    );
+    this.hass!.callService("media_player", action, {
+      entity_id: this._config!.entity,
+    });
   }
 
   private _updateProgressBar(): void {
