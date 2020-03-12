@@ -49,6 +49,7 @@ import {
 import "../../../components/ha-card";
 import "../../../components/ha-icon";
 import "../components/hui-marquee";
+// tslint:disable-next-line: no-duplicate-imports
 import { PaperIconButtonElement } from "@polymer/paper-icon-button/paper-icon-button";
 
 function getContrastRatio(
@@ -386,7 +387,12 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
   }
 
   private _getControls(): ControlButton[] | undefined {
-    const stateObj = this.hass!.states[this._config!.entity] as MediaEntity;
+    const stateObj = this._stateObj;
+
+    if (!stateObj) {
+      return undefined;
+    }
+
     const state = stateObj.state;
 
     if (state === UNAVAILABLE || state === UNKNOWN) {
