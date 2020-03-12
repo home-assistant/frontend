@@ -180,13 +180,17 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
       width: `${this._cardHeight}px`,
     };
 
-    const isOffState = stateObj.state === "off";
+    const state = stateObj.state;
+
+    const isOffState = state === "off";
     const isUnavailable =
-      stateObj.state === UNAVAILABLE ||
-      stateObj.state === UNKNOWN ||
-      (stateObj.state === "off" && !supportsFeature(stateObj, SUPPORT_TURN_ON));
+      state === UNAVAILABLE ||
+      state === UNKNOWN ||
+      (state === "off" && !supportsFeature(stateObj, SUPPORT_TURN_ON));
     const hasNoImage = !this._image;
     const controls = this._getControls();
+    const showControls =
+      controls && (!this._veryNarrow || isOffState || state === "idle");
 
     const mediaDescription = computeMediaDescription(stateObj);
 
@@ -226,8 +230,8 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
             "no-image": hasNoImage,
             narrow: this._narrow && !this._veryNarrow,
             off: isOffState || isUnavailable,
-            "no-progress": !this._showProgressBar && !this._veryNarrow,
-            "no-controls": !controls,
+            "no-progress": this._veryNarrow || !this._showProgressBar,
+            "no-controls": !showControls,
           })}"
           style=${styleMap({ color: this._foregroundColor || "" })}
         >
@@ -274,7 +278,7 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
                             : mediaDescription}
                         </div>
                       `}
-                  ${(this._veryNarrow && !isOffState) || !controls
+                  ${!showControls
                     ? ""
                     : html`
                         <div class="controls">
