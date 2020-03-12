@@ -45,24 +45,18 @@ export const createMediaPlayerEntities = () => [
     supported_features: 1,
   }),
   getEntity("media_player", "lounge_room", "idle", {
-    friendly_name: "Screen casting",
-    media_content_type: "music",
-    media_title: "I Wanna Be A Hippy (Flamman & Abraxas Radio Mix)",
-    media_artist: "Technohead",
+    friendly_name: "Idle Cast",
     supported_features: 16385,
   }),
   getEntity("media_player", "theater", "off", {
-    friendly_name: "Chromcast Idle",
-    media_content_type: "movie",
-    media_title: "Epic sax guy 10 hours",
-    app_name: "YouTube",
+    friendly_name: "TV Off",
     supported_features: 161,
   }),
   getEntity("media_player", "android_cast", "playing", {
-    friendly_name: "Player Off",
+    friendly_name: "Casting App",
     media_title: "Android Screen Casting",
     app_name: "Screen Mirroring",
-    supported_features: 21437,
+    // supported_features: 21437,
   }),
   getEntity("media_player", "unavailable", "unavailable", {
     friendly_name: "Player Unavailable",

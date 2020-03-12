@@ -33,7 +33,6 @@ import { findEntities } from "../common/find-entites";
 import { LovelaceConfig } from "../../../data/lovelace";
 import { UNAVAILABLE, UNKNOWN } from "../../../data/entity";
 import {
-  OFF_STATES,
   SUPPORT_PAUSE,
   SUPPORT_TURN_ON,
   SUPPORT_PREVIOUS_TRACK,
@@ -181,13 +180,15 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
       width: `${this._cardHeight}px`,
     };
 
-    const isOffState = OFF_STATES.includes(stateObj.state);
+    const isOffState = stateObj.state === "off";
     const isUnavailable =
       stateObj.state === UNAVAILABLE ||
       stateObj.state === UNKNOWN ||
       (stateObj.state === "off" && !supportsFeature(stateObj, SUPPORT_TURN_ON));
     const hasNoImage = !this._image;
     const controls = this._getControls();
+
+    const mediaDescription = computeMediaDescription(stateObj);
 
     return html`
       <ha-card>
@@ -226,6 +227,7 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
             narrow: this._narrow && !this._veryNarrow,
             off: isOffState || isUnavailable,
             "no-progress": !this._showProgressBar && !this._veryNarrow,
+            "no-controls": !controls,
           })}"
           style=${styleMap({ color: this._foregroundColor || "" })}
         >
@@ -256,22 +258,20 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
                       : `${this._cardHeight - 40}px`,
                   })}
                 >
-                  ${isOffState
+                  ${!mediaDescription && !stateObj.attributes.media_title
                     ? ""
                     : html`
                         <div class="media-info">
-                          <div class="title">
-                            <hui-marquee
-                              .text=${stateObj.attributes.media_title ||
-                                computeMediaDescription(stateObj)}
-                              .active=${this._marqueeActive}
-                              @mouseover=${this._marqueeMouseOver}
-                              @mouseleave=${this._marqueeMouseLeave}
-                            ></hui-marquee>
-                          </div>
+                          <hui-marquee
+                            .text=${stateObj.attributes.media_title ||
+                              mediaDescription}
+                            .active=${this._marqueeActive}
+                            @mouseover=${this._marqueeMouseOver}
+                            @mouseleave=${this._marqueeMouseLeave}
+                          ></hui-marquee>
                           ${!stateObj.attributes.media_title
                             ? ""
-                            : computeMediaDescription(stateObj)}
+                            : mediaDescription}
                         </div>
                       `}
                   ${(this._veryNarrow && !isOffState) || !controls
@@ -745,7 +745,9 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
         height: 44px;
       }
 
-      paper-icon-button[action="media_play_pause"] {
+      paper-icon-button[action="media_play"],
+      paper-icon-button[action="media_play_pause"],
+      paper-icon-button[action="turn_on"] {
         width: 56px;
         height: 56px;
       }
@@ -777,16 +779,13 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
         overflow: hidden;
       }
 
-      .title-controls {
-        padding-top: 16px;
-      }
-
-      .title {
+      hui-marquee {
         font-size: 1.2em;
         margin: 0px 0 4px;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-        overflow: hidden;
+      }
+
+      .title-controls {
+        padding-top: 16px;
       }
 
       paper-progress {
@@ -830,7 +829,7 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
         height: 50px !important;
       }
 
-      .no-progress.player {
+      .no-progress.player:not(.no-controls) {
         padding-bottom: 0px;
       }
     `;
