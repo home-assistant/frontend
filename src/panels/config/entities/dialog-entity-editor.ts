@@ -250,6 +250,7 @@ export class DialogEntityEditor extends LitElement {
 
         ha-paper-dialog {
           width: 450px;
+          max-height: none !important;
         }
 
         /* overrule the ha-style-dialog max-height on small screens */
