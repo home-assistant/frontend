@@ -29,6 +29,7 @@ import { configSections } from "../ha-panel-config";
 import { showEntityEditorDialog } from "../entities/show-dialog-entity-editor";
 import { showHelperDetailDialog } from "./show-dialog-helper-detail";
 import { HELPER_DOMAINS } from "./const";
+import { domainIcon } from "../../../common/entity/domain_icon";
 
 @customElement("ha-config-helpers")
 export class HaConfigHelpers extends LitElement {
@@ -44,8 +45,8 @@ export class HaConfigHelpers extends LitElement {
         icon: {
           title: "",
           type: "icon",
-          template: (icon) => html`
-            <ha-icon slot="item-icon" .icon=${icon}></ha-icon>
+          template: (icon, helper: any) => html`
+            <ha-icon .icon=${icon || domainIcon(helper.type)}></ha-icon>
           `,
         },
         name: {
@@ -76,7 +77,7 @@ export class HaConfigHelpers extends LitElement {
           ),
           sortable: true,
           filterable: true,
-          width: "30%",
+          width: "25%",
         };
       }
       columns.type = {
@@ -84,13 +85,34 @@ export class HaConfigHelpers extends LitElement {
           "ui.panel.config.helpers.picker.headers.type"
         ),
         sortable: true,
-        width: "30%",
+        width: "25%",
         filterable: true,
         template: (type) =>
           html`
             ${this.hass.localize(`ui.panel.config.helpers.types.${type}`) ||
               type}
           `,
+      };
+      columns.editable = {
+        title: "",
+        type: "icon",
+        template: (editable) => html`
+          ${!editable
+            ? html`
+                <div
+                  tabindex="0"
+                  style="display:inline-block; position: relative;"
+                >
+                  <ha-icon icon="hass:pencil-off"></ha-icon>
+                  <paper-tooltip position="left">
+                    ${this.hass.localize(
+                      "ui.panel.config.entities.picker.status.readonly"
+                    )}
+                  </paper-tooltip>
+                </div>
+              `
+            : ""}
+        `,
       };
       return columns;
     }
