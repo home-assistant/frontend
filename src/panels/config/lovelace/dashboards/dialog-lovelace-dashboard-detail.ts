@@ -293,9 +293,6 @@ export class DialogLovelaceDashboardDetail extends LitElement {
     return [
       haStyleDialog,
       css`
-        .form {
-          padding-bottom: 24px;
-        }
         ha-switch {
           padding: 16px 0;
         }
