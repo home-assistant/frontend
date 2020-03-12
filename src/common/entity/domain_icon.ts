@@ -84,9 +84,7 @@ export const domainIcon = (domain: string, state?: string): string => {
       return state && state === "unlocked" ? "hass:lock-open" : "hass:lock";
 
     case "media_player":
-      return state && state !== "off" && state !== "idle"
-        ? "hass:cast-connected"
-        : "hass:cast";
+      return state && state === "playing" ? "hass:cast-connected" : "hass:cast";
 
     case "zwave":
       switch (state) {
