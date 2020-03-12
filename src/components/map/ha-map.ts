@@ -90,6 +90,27 @@ class HaMap extends LitElement {
     }
   }
 
+  protected shouldUpdate(changedProps) {
+    if (!changedProps.has("hass") || changedProps.size > 1) {
+      return true;
+    }
+
+    const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
+
+    if (!oldHass || !this.entities) {
+      return true;
+    }
+
+    // Check if any state has changed
+    for (const entity of this.entities) {
+      if (oldHass.states[entity] !== this.hass!.states[entity]) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
   protected updated(changedProps: PropertyValues): void {
     if (changedProps.has("hass")) {
       this._drawEntities();
