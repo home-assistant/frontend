@@ -282,7 +282,7 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
                     ? ""
                     : html`
                         <div class="controls">
-                          ${controls.map(
+                          ${controls!.map(
                             (control) => html`
                               <paper-icon-button
                                 .icon=${control.icon}
