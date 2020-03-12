@@ -8,13 +8,25 @@ import {
   CSSResult,
   property,
 } from "lit-element";
-import { classMap } from "lit-html/directives/class-map";
 
 @customElement("hui-marquee")
 class HuiMarquee extends LitElement {
   @property() public text?: string;
-  @property() public active?: boolean;
-  @property() private _animating = false;
+  @property({ type: Boolean }) public active?: boolean;
+  @property({ reflect: true, type: Boolean, attribute: "animating" })
+  private _animating = false;
+
+  protected firstUpdated(changedProps) {
+    super.firstUpdated(changedProps);
+
+    this.addEventListener("mouseover", () => this.classList.add("hovering"), {
+      // Capture because we need to run before a parent sets active on us.
+      // Hovering will disable the overflow, allowing us to calc if we overflow.
+      capture: true,
+    });
+    this.addEventListener("mouseout", () => this.classList.remove("hovering"));
+  }
+
   protected updated(changedProperties: PropertyValues): void {
     super.updated(changedProperties);
 
@@ -33,12 +45,7 @@ class HuiMarquee extends LitElement {
     }
 
     return html`
-      <div
-        class="marquee-inner ${classMap({
-          animating: this._animating,
-        })}"
-        @animationiteration=${this._onIteration}
-      >
+      <div class="marquee-inner" @animationiteration=${this._onIteration}>
         <span>${this.text}</span>
         ${this._animating
           ? html`
@@ -61,15 +68,29 @@ class HuiMarquee extends LitElement {
         display: flex;
         position: relative;
         align-items: center;
-        height: 25px;
+        height: 1em;
       }
 
       .marquee-inner {
         position: absolute;
+        left: 0;
+        right: 0;
+        text-overflow: ellipsis;
+        overflow: hidden;
         animation: marquee 10s linear infinite paused;
       }
 
-      .animating {
+      :host(.hovering) .marquee-inner {
+        text-overflow: initial;
+        overflow: initial;
+      }
+
+      :host([animating]) .marquee-inner {
+        left: initial;
+        right: initial;
+      }
+
+      :host([animating]) > div {
         animation-play-state: running;
       }
 
