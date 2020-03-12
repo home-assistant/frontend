@@ -651,6 +651,7 @@
                     "name": "Nazwa"
                 },
                 "input_datetime": {
+                    "datetime": "Data i godzina",
                     "has_date": "Data",
                     "has_time": "Czas"
                 },

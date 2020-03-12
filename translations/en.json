@@ -1317,7 +1317,8 @@
                         "device": "Device",
                         "integration": "Integration",
                         "manufacturer": "Manufacturer",
-                        "model": "Model"
+                        "model": "Model",
+                        "no_devices": "No devices"
                     },
                     "description": "Manage connected devices",
                     "details": "Here are all the details of your device.",
@@ -1559,7 +1560,8 @@
                             "headers": {
                                 "type": "Type",
                                 "url": "Url"
-                            }
+                            },
+                            "no_resources": "No resources"
                         },
                         "refresh_body": "You have to refresh the page to complete the removal, do you want to refresh now?",
                         "refresh_header": "Do you want to refresh?",
@@ -2275,7 +2277,10 @@
                         "move_right": "Move view right",
                         "tab_badges": "Badges",
                         "tab_settings": "Settings",
-                        "tab_visibility": "Visibility"
+                        "tab_visibility": "Visibility",
+                        "visibility": {
+                            "select_users": "Select which users should see this view in the navigation"
+                        }
                     },
                     "header": "Edit UI",
                     "menu": {
@@ -2352,6 +2357,7 @@
                     "existing_cards": "You can't delete a view that has cards in it. Remove the cards first."
                 },
                 "warning": {
+                    "attribute_not_found": "Attribute {attribute} not available in: {entity}",
                     "entity_non_numeric": "Entity is non-numeric: {entity}",
                     "entity_not_found": "Entity not available: {entity}"
                 }

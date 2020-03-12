@@ -651,8 +651,12 @@
                     "name": "Name"
                 },
                 "input_datetime": {
+                    "date": "Datum",
+                    "datetime": "Datum und Uhrzeit",
                     "has_date": "Datum",
-                    "has_time": "Zeit"
+                    "has_time": "Zeit",
+                    "mode": "Was möchten Sie eingeben",
+                    "time": "Uhrzeit"
                 },
                 "input_number": {
                     "box": "Eingabefeld",
@@ -2162,6 +2166,7 @@
                         },
                         "glance": {
                             "columns": "Spalten",
+                            "description": "Die Glance-Karte ist nützlich, um mehrere Sensoren in einer kompakten Übersicht zu gruppieren.",
                             "name": "Glance"
                         },
                         "history-graph": {
@@ -2169,6 +2174,7 @@
                             "name": "History Graph"
                         },
                         "horizontal-stack": {
+                            "description": "Mit der Karte \"Horizontaler Stapel\" können Sie mehrere Karten so gruppieren, dass sie immer nebeneinander sitzen und gemeinsam die Breite einer Spalte einnehmen.",
                             "name": "Horizontaler Stapel"
                         },
                         "iframe": {
@@ -2189,6 +2195,7 @@
                         },
                         "markdown": {
                             "content": "Inhalt",
+                            "description": "Die Markdown-Karte wird zum Rendern von Markdown verwendet.",
                             "name": "Markdown"
                         },
                         "media-control": {
@@ -2204,6 +2211,7 @@
                             "name": "Picture Entity"
                         },
                         "picture-glance": {
+                            "description": "Die Bild Glance-Karte zeigt ein Bild und die entsprechenden Entitätszustände als Symbol. Die Entitäten auf der rechten Seite ermöglichen das Umschalten von Aktionen, andere zeigen den Dialog mit weiteren Informationen an.",
                             "name": "Picture Glance"
                         },
                         "picture": {
@@ -2234,6 +2242,7 @@
                             "name": "Vertikaler Stapel"
                         },
                         "weather-forecast": {
+                            "description": "Die Wettervorhersagekarte zeigt das vorhergesagte Wetter an. Sehr nützlich für wandmontierte Displays.",
                             "name": "Wettervorhersage"
                         }
                     },

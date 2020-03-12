@@ -622,7 +622,9 @@
                 "settings": "Nastavenia"
             },
             "generic": {
-                "default_confirmation_title": "Ste si istý?"
+                "cancel": "Zrušiť",
+                "default_confirmation_title": "Ste si istý?",
+                "ok": "OK"
             },
             "more_info_control": {
                 "person": {
@@ -718,6 +720,9 @@
                 "areas": {
                     "caption": "Register oblastí",
                     "create_area": "VYTVORIŤ OBLASŤ",
+                    "delete": {
+                        "confirmation_title": "Naozaj chcete odstrániť túto oblasť?"
+                    },
                     "description": "Prehľad všetkých oblastí vo vašej domácnosti.",
                     "editor": {
                         "create": "VYTVORIŤ",
@@ -1004,12 +1009,15 @@
                         "thank_you_note": "Ďakujeme, že ste sa stali súčasťou Home Assistant Cloudu. Vďaka ľuďom, ako ste vy, sme schopní urobiť skvelý zážitok z automatizácie domácnosti pre každého. Ďakujeme!",
                         "webhooks": {
                             "disable_hook_error_msg": "Nepodarilo sa deaktivovať webhook:",
+                            "info": "Čokoľvek, čo je nakonfigurované na spúšťanie webhookom, môže dostať verejne prístupnú adresu URL, ktorá vám umožní odosielať údaje späť Home Assistant odkiaľkoľvek bez toho, aby ste svoju inštanciu vystavili na internete.",
                             "link_learn_more": "Prečítajte si viac informácií o vytváraní automatizácií na báze Webhook.",
                             "loading": "Načítava sa ...",
                             "manage": "Spravovať",
+                            "no_hooks_yet": "Zdá sa, že ešte nemáte žiadne webhooky. Začnite konfiguráciou",
                             "no_hooks_yet_link_automation": "automatizácia webhookov",
                             "no_hooks_yet_link_integration": "integrácia založená na webhook",
-                            "no_hooks_yet2": "alebo vytvorením "
+                            "no_hooks_yet2": "alebo vytvorením ",
+                            "title": "Webhooky"
                         }
                     },
                     "alexa": {
@@ -1027,7 +1035,10 @@
                         "close": "Zavrieť",
                         "confirm_disable": "Naozaj chcete zakázať tento webhook?",
                         "copied_to_clipboard": "Skopírované do schránky",
+                        "info_disable_webhook": "Ak už nechcete používať tento webhook, môžete",
+                        "link_disable_webhook": "zakázať to",
                         "managed_by_integration": "Tento webhook je riadený integráciou a nemožno ho zakázať.",
+                        "view_documentation": "Pozrieť dokumentáciu",
                         "webhook_for": "Webhook pre {name}"
                     },
                     "forgot_password": {
@@ -1055,6 +1066,7 @@
                     "register": {
                         "feature_amazon_alexa": "Integrácia s Amazon Alexa",
                         "feature_google_home": "Integrácia s Google Assistant",
+                        "feature_webhook_apps": "Jednoduchá integrácia s webovými aplikáciami, ako napríklad OwnTracks",
                         "password": "Heslo",
                         "resend_confirm_email": "Znova odoslať potvrdzovací e-mail",
                         "title": "Registrovať účet"
@@ -1206,6 +1218,9 @@
                             "confirm_text": "Entity je možné odstrániť, iba ak ich integrácia už neposkytuje."
                         },
                         "show_disabled": "Zobraziť zakázané entity",
+                        "status": {
+                            "ok": "Ok"
+                        },
                         "unavailable": "(nedostupné)"
                     }
                 },
@@ -1266,6 +1281,7 @@
                 "introduction": "Tu je možné konfigurovať vaše komponenty a Home Assistant. Aktuálne sa z používateľského rozhrania nedá konfigurovať všetko, ale pracujeme na tom.",
                 "lovelace": {
                     "dashboards": {
+                        "confirm_delete": "Naozaj chcete odstrániť tento dashboard?",
                         "detail": {
                             "delete": "Vymazať",
                             "update": "Aktualizovať"
@@ -1302,6 +1318,7 @@
                         "update": "Aktualizovať"
                     },
                     "introduction": "Tu môžete definovať každú osobu, ktorá vás zaujíma v Home Assistant.",
+                    "no_persons_created_yet": "Zdá sa, že ste ešte nevytvorili žiadne osoby.",
                     "note_about_persons_configured_in_yaml": "Poznámka: osoby nakonfigurované prostredníctvom configuration.yaml nie je možné upravovať pomocou používateľského rozhrania."
                 },
                 "scene": {
@@ -1655,6 +1672,7 @@
                 "showing_entries": "Zobrazujú sa záznamy pre"
             },
             "logbook": {
+                "entries_not_found": "Nenašli sa žiadne záznamy v denníku.",
                 "period": "Obdobie",
                 "showing_entries": "Zobrazujú sa záznamy za obdobie"
             },
@@ -1678,6 +1696,11 @@
                         "tap": "Ťuknite:",
                         "toggle": "Prepnúť {name}",
                         "url": "Otvoriť okno na {url_path}"
+                    },
+                    "safe-mode": {
+                        "description": "Pri načítaní vašej konfigurácie sa Home Assistant dostal do problémov a teraz beží v núdzovom režime. Prezrite si denník chýb a zistite, čo sa stalo.",
+                        "header": "Núdzový režim je aktivovaný",
+                        "show_errors": "Zobraziť chyby"
                     },
                     "shopping-list": {
                         "add_item": "Pridať položku",
@@ -1839,6 +1862,7 @@
                     },
                     "save_config": {
                         "cancel": "Zrušiť",
+                        "close": "Zavrieť",
                         "header": "Prevziať kontrolu rozhrania Lovelace",
                         "para": "Štandardne bude Home Assistant udržiavať vaše používateľské rozhranie a aktualizovať ho, keď budú k dispozícii nové entity alebo komponenty rozhrania Lovelace. Ak prevezmete kontrolu, už za vás nebudeme automaticky robiť zmeny.",
                         "para_sure": "Skutočne chcete prevziať kontrolu vášho používateľského rozhrania?",
@@ -1863,7 +1887,9 @@
                 },
                 "reload_lovelace": "Znovu načítať Lovelace",
                 "views": {
-                    "confirm_delete": "Naozaj chcete odstrániť toto zobrazenie?"
+                    "confirm_delete": "Naozaj chcete odstrániť toto zobrazenie?",
+                    "confirm_delete_existing_cards_text": "Naozaj chcete odstrániť zobrazenie '{name}'? Toto zobrazenie obsahuje {number} kariet, ktoré budú odstránené. Túto akciu nie je možné vrátiť späť.",
+                    "confirm_delete_text": "Naozaj chcete odstrániť zobrazenie '{name}'?"
                 },
                 "warning": {
                     "entity_non_numeric": "Entita je nečíselná: {entity}",
