@@ -673,8 +673,8 @@
           "mode": "What do you want to input"
         },
         "input_text": {
-          "min": "Minimum lenght",
-          "max": "Maximum lenght",
+          "min": "Minimum length",
+          "max": "Maximum length",
           "mode": "Display mode",
           "text": "Text",
           "password": "Password",
@@ -857,6 +857,7 @@
           "caption": "Lovelace Dashboards",
           "description": "Configure your Lovelace Dashboards",
           "dashboards": {
+            "default_dashboard": "This is the default dashboard",
             "caption": "Dashboards",
             "conf_mode": {
               "yaml": "YAML file",
