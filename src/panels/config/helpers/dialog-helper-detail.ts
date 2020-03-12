@@ -192,6 +192,7 @@ export class DialogHelperDetail extends LitElement {
   private _goBack() {
     this._platform = undefined;
     this._item = undefined;
+    this._error = undefined;
   }
 
   static get styles(): CSSResult[] {
