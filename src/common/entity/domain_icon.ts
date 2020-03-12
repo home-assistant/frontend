@@ -6,6 +6,7 @@
 import { DEFAULT_DOMAIN_ICON } from "../const";
 
 const fixedIcons = {
+  analog_output: "hass:flash",
   alert: "hass:alert",
   alexa: "hass:amazon-alexa",
   automation: "hass:robot",

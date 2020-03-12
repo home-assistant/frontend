@@ -1,3 +1,4 @@
+import "../entity-rows/hui-analog-output-entity-row";
 import "../entity-rows/hui-media-player-entity-row";
 import "../entity-rows/hui-scene-entity-row";
 import "../entity-rows/hui-script-entity-row";
@@ -26,6 +27,7 @@ import "../special-rows/hui-cast-row";
 import "../special-rows/hui-buttons-row";
 
 const ALWAYS_LOADED_TYPES = new Set([
+  "analog-output-entity",
   "media-player-entity",
   "scene-entity",
   "script-entity",
@@ -73,6 +75,7 @@ const LAZY_LOAD_TYPES = {
 };
 const DOMAIN_TO_ELEMENT_TYPE = {
   _domain_not_found: "text",
+  analog_output: "analog-output",
   alert: "toggle",
   automation: "toggle",
   climate: "climate",

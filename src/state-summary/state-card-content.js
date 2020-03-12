@@ -1,5 +1,6 @@
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 
+import "./state-card-analog_output";
 import "./state-card-climate";
 import "./state-card-configurator";
 import "./state-card-cover";

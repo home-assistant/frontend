@@ -12,6 +12,7 @@ export const DEFAULT_PANEL = "lovelace";
 
 /** Domains that have a state card. */
 export const DOMAINS_WITH_CARD = [
+  "analog_output",
   "climate",
   "cover",
   "configurator",
@@ -30,6 +31,7 @@ export const DOMAINS_WITH_CARD = [
 
 /** Domains with separate more info dialog. */
 export const DOMAINS_WITH_MORE_INFO = [
+  "analog_output",
   "alarm_control_panel",
   "automation",
   "camera",
@@ -72,10 +74,11 @@ export const DOMAINS_MORE_INFO_NO_HISTORY = [
 ];
 
 /** States that we consider "off". */
-export const STATES_OFF = ["closed", "locked", "off"];
+export const STATES_OFF = ["closed", "locked", "off", "0", "0.0"];
 
 /** Domains where we allow toggle in Lovelace. */
 export const DOMAINS_TOGGLE = new Set([
+  "analog_output",
   "fan",
   "input_boolean",
   "light",
