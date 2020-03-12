@@ -272,10 +272,6 @@ class DialogZoneDetail extends LitElement {
     return [
       haStyleDialog,
       css`
-        .form {
-          padding-bottom: 24px;
-          color: var(--primary-text-color);
-        }
         .location {
           display: flex;
         }
@@ -297,9 +293,6 @@ class DialogZoneDetail extends LitElement {
         }
         a {
           color: var(--primary-color);
-        }
-        p {
-          color: var(--primary-text-color);
         }
       `,
     ];
