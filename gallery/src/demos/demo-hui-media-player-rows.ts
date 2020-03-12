@@ -11,11 +11,11 @@ const CONFIGS = [
     config: `
 - type: entities
   entities:
-    - entity: media_player.bedroom
-      name: Skip, no pause
-    - entity: media_player.family_room
-      name: Paused, music
-    - entity: media_player.family_room_no_play
+    - entity: media_player.music_paused
+      name: Paused music
+    - entity: media_player.music_playing
+      name: Playing music
+    - entity: media_player.stream_playing
       name: Paused, no play
     - entity: media_player.living_room
       name: Pause, No skip, tvshow

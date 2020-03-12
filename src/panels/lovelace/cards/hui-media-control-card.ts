@@ -49,12 +49,18 @@ import {
 import "../../../components/ha-card";
 import "../../../components/ha-icon";
 import "../components/hui-marquee";
+import { PaperIconButtonElement } from "@polymer/paper-icon-button/paper-icon-button";
 
 function getContrastRatio(
   rgb1: [number, number, number],
   rgb2: [number, number, number]
 ): number {
   return Math.round((contrast(rgb1, rgb2) + Number.EPSILON) * 100) / 100;
+}
+
+interface ControlButton {
+  icon: string;
+  action: string;
 }
 
 @customElement("hui-media-control-card")
@@ -118,7 +124,7 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
       return;
     }
 
-    const stateObj = this.hass.states[this._config.entity] as MediaEntity;
+    const stateObj = this._stateObj;
 
     if (!stateObj) {
       return;
@@ -130,7 +136,7 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
       stateObj.state === "playing"
     ) {
       this._progressInterval = window.setInterval(
-        () => this._updateProgressBar(stateObj),
+        () => this._updateProgressBar(),
         1000
       );
     }
@@ -147,7 +153,7 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
     if (!this.hass || !this._config) {
       return html``;
     }
-    const stateObj = this.hass.states[this._config.entity] as MediaEntity;
+    const stateObj = this._stateObj;
 
     if (!stateObj) {
       return html`
@@ -162,7 +168,9 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
     }
 
     const imageStyle = {
-      "background-image": `url(${this.hass.hassUrl(this._image)})`,
+      "background-image": this._image
+        ? `url(${this.hass.hassUrl(this._image)})`
+        : "none",
       width: `${this._cardHeight}px`,
       "background-color": this._backgroundColor || "",
     };
@@ -178,6 +186,7 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
       stateObj.state === UNKNOWN ||
       (stateObj.state === "off" && !supportsFeature(stateObj, SUPPORT_TURN_ON));
     const hasNoImage = !this._image;
+    const controls = this._getControls();
 
     return html`
       <ha-card>
@@ -264,80 +273,19 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
                             : computeMediaDescription(stateObj)}
                         </div>
                       `}
-                  ${this._veryNarrow && !isOffState
+                  ${(this._veryNarrow && !isOffState) || !controls
                     ? ""
                     : html`
-                        <div class="controls">
-                          <div>
-                            ${(stateObj.state === "off" &&
-                              !supportsFeature(stateObj, SUPPORT_TURN_ON)) ||
-                            !isOffState
-                              ? ""
-                              : html`
-                                  <paper-icon-button
-                                    icon="hass:power"
-                                    .action=${stateObj.state === "off"
-                                      ? "turn_on"
-                                      : "turn_off"}
-                                    @click=${this._handleClick}
-                                  ></paper-icon-button>
-                                `}
-                          </div>
-                          ${isOffState
-                            ? ""
-                            : html`
-                                <div class="playback-controls">
-                                  ${!supportsFeature(
-                                    stateObj,
-                                    SUPPORT_PREVIOUS_TRACK
-                                  )
-                                    ? ""
-                                    : html`
-                                        <paper-icon-button
-                                          icon="hass:skip-previous"
-                                          .action=${"media_previous_track"}
-                                          @click=${this._handleClick}
-                                        ></paper-icon-button>
-                                      `}
-                                  ${(stateObj.state !== "playing" &&
-                                    !supportsFeature(
-                                      stateObj,
-                                      SUPPORTS_PLAY
-                                    )) ||
-                                  stateObj.state === UNAVAILABLE ||
-                                  (stateObj.state === "playing" &&
-                                    !supportsFeature(stateObj, SUPPORT_PAUSE) &&
-                                    !supportsFeature(stateObj, SUPPORT_STOP))
-                                    ? ""
-                                    : html`
-                                        <paper-icon-button
-                                          class="playPauseButton"
-                                          .icon=${stateObj.state !== "playing"
-                                            ? "hass:play"
-                                            : supportsFeature(
-                                                stateObj,
-                                                SUPPORT_PAUSE
-                                              )
-                                            ? "hass:pause"
-                                            : "hass:stop"}
-                                          .action=${"media_play_pause"}
-                                          @click=${this._handleClick}
-                                        ></paper-icon-button>
-                                      `}
-                                  ${!supportsFeature(
-                                    stateObj,
-                                    SUPPORT_NEXT_TRACK
-                                  )
-                                    ? ""
-                                    : html`
-                                        <paper-icon-button
-                                          icon="hass:skip-next"
-                                          .action=${"media_next_track"}
-                                          @click=${this._handleClick}
-                                        ></paper-icon-button>
-                                      `}
-                                </div>
-                              `}
+                        <div class="playback-controls">
+                          ${controls.map(
+                            (control) => html`
+                              <paper-icon-button
+                                .icon=${control.icon}
+                                action=${control.action}
+                                @click=${this._handleClick}
+                              ></paper-icon-button>
+                            `
+                          )}
                         </div>
                       `}
                 </div>
@@ -346,7 +294,6 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
                   : html`
                       <paper-progress
                         .max=${stateObj.attributes.media_duration}
-                        class="progress"
                         style=${styleMap({
                           "--paper-progress-active-color":
                             this._foregroundColor || "var(--accent-color)",
@@ -354,8 +301,7 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
                             ? "pointer"
                             : "initial",
                         })}
-                        @click=${(e: MouseEvent) =>
-                          this._handleSeek(e, stateObj)}
+                        @click=${this._handleSeek}
                       ></paper-progress>
                     `}
               `}
@@ -374,13 +320,20 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
 
   protected updated(changedProps: PropertyValues): void {
     super.updated(changedProps);
+
     if (!this._config || !this.hass || !changedProps.has("hass")) {
       return;
     }
 
-    const stateObj = this.hass.states[this._config.entity] as MediaEntity;
+    const stateObj = this._stateObj;
 
     if (!stateObj) {
+      if (this._progressInterval) {
+        clearInterval(this._progressInterval);
+        this._progressInterval = undefined;
+      }
+      this._foregroundColor = undefined;
+      this._backgroundColor = undefined;
       return;
     }
 
@@ -398,13 +351,15 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
       applyThemesOnElement(this, this.hass.themes, this._config.theme);
     }
 
+    this._updateProgressBar();
+
     if (
       !this._progressInterval &&
-      this._showProgressBar &&
+      this._showProgressBar !== false &&
       stateObj.state === "playing"
     ) {
       this._progressInterval = window.setInterval(
-        () => this._updateProgressBar(stateObj),
+        () => this._updateProgressBar(),
         1000
       );
     } else if (
@@ -427,8 +382,73 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
 
     if (this._image !== oldImage) {
       this._setColors();
-      return;
     }
+  }
+
+  private _getControls(): ControlButton[] | undefined {
+    const stateObj = this.hass!.states[this._config!.entity] as MediaEntity;
+    const state = stateObj.state;
+
+    if (state === UNAVAILABLE || state === UNKNOWN) {
+      return undefined;
+    }
+
+    if (state === "off") {
+      return supportsFeature(stateObj, SUPPORT_TURN_ON)
+        ? [
+            {
+              icon: "hass:power",
+              action: "turn_on",
+            },
+          ]
+        : undefined;
+    }
+
+    if (state === "idle") {
+      return supportsFeature(stateObj, SUPPORTS_PLAY)
+        ? [
+            {
+              icon: "hass:play",
+              action: "media_play",
+            },
+          ]
+        : undefined;
+    }
+
+    const buttons: ControlButton[] = [];
+
+    if (supportsFeature(stateObj, SUPPORT_PREVIOUS_TRACK)) {
+      buttons.push({
+        icon: "hass:skip-previous",
+        action: "media_previous_track",
+      });
+    }
+
+    if (
+      (state === "playing" &&
+        (supportsFeature(stateObj, SUPPORT_PAUSE) ||
+          supportsFeature(stateObj, SUPPORT_STOP))) ||
+      (state === "paused" && supportsFeature(stateObj, SUPPORTS_PLAY))
+    ) {
+      buttons.push({
+        icon:
+          state !== "playing"
+            ? "hass:play"
+            : supportsFeature(stateObj, SUPPORT_PAUSE)
+            ? "hass:pause"
+            : "hass:stop",
+        action: "media_play_pause",
+      });
+    }
+
+    if (supportsFeature(stateObj, SUPPORT_NEXT_TRACK)) {
+      buttons.push({
+        icon: "hass:skip-next",
+        action: "media_next_track",
+      });
+    }
+
+    return buttons.length > 0 ? buttons : undefined;
   }
 
   private get _image() {
@@ -436,7 +456,7 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
       return undefined;
     }
 
-    const stateObj = this.hass.states[this._config.entity] as MediaEntity;
+    const stateObj = this._stateObj;
 
     if (!stateObj) {
       return undefined;
@@ -449,21 +469,20 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
   }
 
   private get _showProgressBar() {
-    if (!this.hass || !this._config) {
+    if (!this.hass || !this._config || this.narrow) {
       return false;
     }
 
-    const stateObj = this.hass.states[this._config.entity] as MediaEntity;
+    const stateObj = this._stateObj;
 
     if (!stateObj) {
       return false;
     }
 
     return (
-      !OFF_STATES.includes(stateObj.state) &&
-      stateObj.attributes.media_duration &&
-      stateObj.attributes.media_position &&
-      !this._narrow
+      (stateObj.state === "playing" || stateObj.state === "paused") &&
+      "media_duration" in stateObj.attributes &&
+      "media_position" in stateObj.attributes
     );
   }
 
@@ -500,18 +519,28 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
   }
 
   private _handleClick(e: MouseEvent): void {
-    this.hass!.callService("media_player", (e.currentTarget! as any).action, {
-      entity_id: this._config!.entity,
-    });
+    this.hass!.callService(
+      "media_player",
+      (e.currentTarget! as PaperIconButtonElement).getAttribute("action")!,
+      {
+        entity_id: this._config!.entity,
+      }
+    );
   }
 
-  private _updateProgressBar(stateObj: MediaEntity): void {
+  private _updateProgressBar(): void {
     if (this._progressBar) {
-      this._progressBar.value = getCurrentProgress(stateObj);
+      this._progressBar.value = getCurrentProgress(this._stateObj!);
     }
   }
 
-  private _handleSeek(e: MouseEvent, stateObj: MediaEntity): void {
+  private get _stateObj(): MediaEntity | undefined {
+    return this.hass!.states[this._config!.entity] as MediaEntity;
+  }
+
+  private _handleSeek(e: MouseEvent): void {
+    const stateObj = this._stateObj!;
+
     if (!supportsFeature(stateObj, SUPPORT_SEEK)) {
       return;
     }
@@ -710,9 +739,9 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
         height: 44px;
       }
 
-      .playPauseButton {
-        width: 56px !important;
-        height: 56px !important;
+      paper-icon-button[action="media_play_pause"] {
+        width: 56px;
+        height: 56px;
       }
 
       .top-info {
@@ -754,7 +783,7 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
         overflow: hidden;
       }
 
-      .progress {
+      paper-progress {
         width: 100%;
         height: var(--paper-progress-height, 4px);
         margin-top: 4px;

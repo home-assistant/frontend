@@ -7,24 +7,24 @@ import { createMediaPlayerEntities } from "../data/media_players";
 
 const CONFIGS = [
   {
-    heading: "Skip, no pause",
+    heading: "Paused music",
     config: `
   - type: media-control
-    entity: media_player.bedroom
+    entity: media_player.music_paused
     `,
   },
   {
-    heading: "Paused, music",
+    heading: "Playing music",
     config: `
   - type: media-control
-    entity: media_player.family_room
+    entity: media_player.music_playing
     `,
   },
   {
-    heading: "Paused, no play",
+    heading: "Playing stream",
     config: `
   - type: media-control
-    entity: media_player.family_room_no_play
+    entity: media_player.stream_playing
     `,
   },
   {
