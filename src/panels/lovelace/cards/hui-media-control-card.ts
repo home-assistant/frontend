@@ -356,7 +356,7 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
 
     if (
       !this._progressInterval &&
-      this._showProgressBar !== false &&
+      this._showProgressBar &&
       stateObj.state === "playing"
     ) {
       this._progressInterval = window.setInterval(
@@ -475,7 +475,7 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
   }
 
   private get _showProgressBar() {
-    if (!this.hass || !this._config || this.narrow) {
+    if (!this.hass || !this._config || this._narrow) {
       return false;
     }
 
