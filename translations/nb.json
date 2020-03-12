@@ -651,8 +651,12 @@
                     "name": "Navn"
                 },
                 "input_datetime": {
+                    "date": "Dato",
+                    "datetime": "Dato og tid",
                     "has_date": "Dato",
-                    "has_time": "Tid"
+                    "has_time": "Tid",
+                    "mode": "Hva vil du legge inn",
+                    "time": "Tid"
                 },
                 "input_number": {
                     "box": "Inntastingsfelt",
@@ -679,7 +683,7 @@
                 },
                 "not_editable": "Kan ikke redigeres",
                 "not_editable_text": "Denne enheten kan ikke endres fra brukergrensesnittet fordi den er definert i configuration.yaml.",
-                "platform_not_loaded": "{platform} -komponenten er ikke lastet, legg den til konfigurasjonen din. Enten ved å legge til 'default_config:' eller '{platform}:'.",
+                "platform_not_loaded": "Integrasjonen {platform} er ikke lastet, legg den til konfigurasjonen din. Enten ved å legge til 'default_config:' eller '{platform}:'.",
                 "required_error_msg": "Dette feltet er påkrevd",
                 "yaml_not_editable": "Innstillingene til denne enheten kan ikke redigeres fra brukergrensesnittet. Bare enheter som er konfigurert fra brukergrensesnittet, kan konfigureres fra brukergrensesnittet."
             },

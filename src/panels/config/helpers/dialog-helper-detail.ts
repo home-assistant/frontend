@@ -6,6 +6,7 @@ import {
   LitElement,
   property,
   TemplateResult,
+  query,
 } from "lit-element";
 import "../../../components/ha-dialog";
 import { HomeAssistant } from "../../../types";
@@ -44,6 +45,7 @@ export class DialogHelperDetail extends LitElement {
   @property() private _platform?: string;
   @property() private _error?: string;
   @property() private _submitting = false;
+  @query(".form") private _form?: HTMLDivElement;
 
   public async showDialog(): Promise<void> {
     this._platform = undefined;
@@ -108,11 +110,13 @@ export class DialogHelperDetail extends LitElement {
               ${Object.keys(HELPERS).map((platform: string) => {
                 const isLoaded = isComponentLoaded(this.hass, platform);
                 return html`
-                  <div>
+                  <div class="form">
                     <paper-icon-item
                       .disabled=${!isLoaded}
                       @click=${this._platformPicked}
+                      @keydown=${this._handleEnter}
                       .platform=${platform}
+                      dialogInitialFocus
                     >
                       <ha-icon
                         slot="item-icon"
@@ -166,12 +170,29 @@ export class DialogHelperDetail extends LitElement {
     }
   }
 
+  private _handleEnter(ev: KeyboardEvent) {
+    if (ev.keyCode !== 13) {
+      return;
+    }
+    ev.stopPropagation();
+    ev.preventDefault();
+    this._platformPicked(ev);
+  }
+
   private _platformPicked(ev: Event): void {
     this._platform = (ev.currentTarget! as any).platform;
+    this._focusForm();
+  }
+
+  private async _focusForm(): Promise<void> {
+    await this.updateComplete;
+    (this._form?.lastElementChild as HTMLElement).focus();
   }
 
   private _goBack() {
     this._platform = undefined;
+    this._item = undefined;
+    this._error = undefined;
   }
 
   static get styles(): CSSResult[] {

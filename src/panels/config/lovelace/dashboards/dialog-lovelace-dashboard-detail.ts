@@ -104,6 +104,7 @@ export class DialogLovelaceDashboardDetail extends LitElement {
                     .errorMessage=${this.hass.localize(
                       "ui.panel.config.lovelace.dashboards.detail.title_required"
                     )}
+                    dialogInitialFocus
                   ></paper-input>
                   <ha-icon-input
                     .value=${this._icon}
@@ -293,9 +294,6 @@ export class DialogLovelaceDashboardDetail extends LitElement {
     return [
       haStyleDialog,
       css`
-        .form {
-          padding-bottom: 24px;
-        }
         ha-switch {
           padding: 16px 0;
         }

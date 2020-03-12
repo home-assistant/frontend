@@ -476,7 +476,7 @@ class HUIRoot extends LitElement {
         newSelectView = "hass-unused-entities";
       } else if (this._routeData!.view) {
         const selectedView = this._routeData!.view;
-        const selectedViewInt = parseInt(selectedView, 10);
+        const selectedViewInt = Number(selectedView);
         let index = 0;
         for (let i = 0; i < views.length; i++) {
           if (views[i].path === selectedView || i === selectedViewInt) {
