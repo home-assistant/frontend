@@ -651,8 +651,12 @@
                     "name": "名稱"
                 },
                 "input_datetime": {
+                    "date": "日期",
+                    "datetime": "日期與時間",
                     "has_date": "日期",
-                    "has_time": "時間"
+                    "has_time": "時間",
+                    "mode": "所要輸入的內容",
+                    "time": "時間"
                 },
                 "input_number": {
                     "box": "輸入欄位",
@@ -679,7 +683,7 @@
                 },
                 "not_editable": "不可編輯",
                 "not_editable_text": "由於 configuration.yaml 內已定義，物件編輯功能已關閉。",
-                "platform_not_loaded": "{platform} 元件未載入。請於設定檔進行添加、新增「default_config:」或「{platform}:」。",
+                "platform_not_loaded": "{platform} 元件未載入。請於設定檔進行添加、新增 'default_config:' 或 '{platform}:'。",
                 "required_error_msg": "必填欄位",
                 "yaml_not_editable": "此物件的設定無法藉由 UI 編輯、僅有透過 UI 設定的物件可於 UI 進行設定。"
             },
