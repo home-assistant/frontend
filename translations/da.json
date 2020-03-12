@@ -651,8 +651,12 @@
                     "name": "Navn"
                 },
                 "input_datetime": {
+                    "date": "Dato",
+                    "datetime": "Dato og tid",
                     "has_date": "Dato",
-                    "has_time": "Tid"
+                    "has_time": "Tid",
+                    "mode": "Hvad vil du indtaste",
+                    "time": "Tid"
                 },
                 "input_number": {
                     "box": "Inputfelt",
