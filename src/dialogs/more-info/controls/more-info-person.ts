@@ -15,11 +15,14 @@ import "../../../components/map/ha-map";
 import { HomeAssistant } from "../../../types";
 import { showZoneEditor } from "../../../data/zone";
 import { fireEvent } from "../../../common/dom/fire_event";
+import memoizeOne from "memoize-one";
 
 @customElement("more-info-person")
 class MoreInfoPerson extends LitElement {
   @property() public hass!: HomeAssistant;
   @property() public stateObj?: HassEntity;
+
+  private _entityArray = memoizeOne((entityId: string) => [entityId]);
 
   protected render(): TemplateResult {
     if (!this.hass || !this.stateObj) {
@@ -35,7 +38,7 @@ class MoreInfoPerson extends LitElement {
         ? html`
             <ha-map
               .hass=${this.hass}
-              .entities=${[this.stateObj.entity_id]}
+              .entities=${this._entityArray(this.stateObj.entity_id)}
             ></ha-map>
           `
         : ""}
