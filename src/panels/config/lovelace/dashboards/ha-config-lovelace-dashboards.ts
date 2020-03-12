@@ -72,7 +72,9 @@ export class HaConfigLovelaceDashboards extends LitElement {
                       icon="hass:check-circle-outline"
                     ></ha-icon>
                     <paper-tooltip>
-                      This is the default dashdoard.
+                      ${this.hass.localize(
+                        `ui.panel.config.lovelace.dashboards.default_dashboard`
+                      )}
                     </paper-tooltip>
                   `
                 : ""}

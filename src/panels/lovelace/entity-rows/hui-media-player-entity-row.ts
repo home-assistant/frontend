@@ -20,7 +20,6 @@ import { supportsFeature } from "../../../common/entity/supports-feature";
 import {
   SUPPORTS_PLAY,
   SUPPORT_NEXT_TRACK,
-  OFF_STATES,
   SUPPORT_PAUSE,
 } from "../../../data/media-player";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
@@ -68,7 +67,7 @@ class HuiMediaPlayerEntityRow extends LitElement implements LovelaceRow {
         .config=${this._config}
         .secondaryText=${this._computeMediaTitle(stateObj)}
       >
-        ${OFF_STATES.includes(stateObj.state)
+        ${stateObj.state === "off" || stateObj.state === "idle"
           ? html`
               <div class="text-content">
                 ${this.hass!.localize(`state.media_player.${stateObj.state}`) ||
