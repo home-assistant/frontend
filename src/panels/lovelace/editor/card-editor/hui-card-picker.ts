@@ -183,7 +183,7 @@ export class HuiCardPicker extends LitElement {
         .preview {
           pointer-events: none;
           margin: 20px;
-          flex: 1 1 0;
+          flex-grow: 1;
           display: flex;
           align-items: center;
           justify-content: center;
