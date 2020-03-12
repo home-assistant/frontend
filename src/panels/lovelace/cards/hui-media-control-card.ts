@@ -43,6 +43,7 @@ import {
   CONTRAST_RATIO,
   getCurrentProgress,
   computeMediaDescription,
+  SUPPORT_TURN_OFF,
 } from "../../../data/media-player";
 
 import "../../../components/ha-card";
@@ -190,7 +191,8 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
     const hasNoImage = !this._image;
     const controls = this._getControls();
     const showControls =
-      controls && (!this._veryNarrow || isOffState || state === "idle");
+      controls &&
+      (!this._veryNarrow || isOffState || state === "idle" || state === "on");
 
     const mediaDescription = computeMediaDescription(stateObj);
 
@@ -409,6 +411,17 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
             {
               icon: "hass:power",
               action: "turn_on",
+            },
+          ]
+        : undefined;
+    }
+
+    if (state === "on") {
+      return supportsFeature(stateObj, SUPPORT_TURN_OFF)
+        ? [
+            {
+              icon: "hass:power",
+              action: "turn_off",
             },
           ]
         : undefined;
@@ -751,7 +764,8 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
 
       paper-icon-button[action="media_play"],
       paper-icon-button[action="media_play_pause"],
-      paper-icon-button[action="turn_on"] {
+      paper-icon-button[action="turn_on"],
+      paper-icon-button[action="turn_off"] {
         width: 56px;
         height: 56px;
       }
@@ -806,11 +820,6 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
 
       .off.background {
         filter: grayscale(1);
-      }
-
-      .off .controls paper-icon-button {
-        width: 55px;
-        height: 55px;
       }
 
       .narrow .controls,
