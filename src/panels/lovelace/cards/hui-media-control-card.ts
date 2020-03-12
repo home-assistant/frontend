@@ -506,7 +506,7 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
     this._cardHeight = card.offsetHeight;
   }
 
-  private async _attachObserver(): Promise<void> {
+  private _attachObserver(): void {
     if (typeof ResizeObserver !== "function") {
       import("resize-observer").then((modules) => {
         modules.install();
