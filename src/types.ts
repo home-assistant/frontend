@@ -210,7 +210,14 @@ export type MediaEntity = HassEntityBase & {
     icon?: string;
     entity_picture_local?: string;
   };
-  state: "playing" | "paused" | "idle" | "off" | "unavailable" | "unknown";
+  state:
+    | "playing"
+    | "paused"
+    | "idle"
+    | "off"
+    | "on"
+    | "unavailable"
+    | "unknown";
 };
 
 export type InputSelectEntity = HassEntityBase & {
