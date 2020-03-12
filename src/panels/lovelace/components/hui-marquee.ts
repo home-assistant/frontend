@@ -101,7 +101,7 @@ class HuiMarquee extends LitElement {
         padding-right: 16px;
       }
 
-      :host([stopped]) > div {
+      :host([stopped]) .marquee-inner {
         animation: none;
       }
 
