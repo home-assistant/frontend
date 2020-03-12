@@ -69,6 +69,20 @@ const CONFIGS = [
     entity: media_player.unknown
     `,
   },
+  {
+    heading: "Receiver On",
+    config: `
+  - type: media-control
+    entity: media_player.receiver_on
+    `,
+  },
+  {
+    heading: "Receiver Off",
+    config: `
+  - type: media-control
+    entity: media_player.receiver_off
+    `,
+  },
 ];
 
 class DemoHuiMediControlCard extends PolymerElement {

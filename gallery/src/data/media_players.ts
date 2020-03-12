@@ -66,4 +66,17 @@ export const createMediaPlayerEntities = () => [
     friendly_name: "Player Unknown",
     supported_features: 21437,
   }),
+  getEntity("media_player", "receiver_on", "on", {
+    source_list: ["AirPlay", "Blu-Ray", "TV", "USB", "iPod (USB)"],
+    volume_level: 0.63,
+    is_volume_muted: false,
+    source: "TV",
+    friendly_name: "Receiver",
+    supported_features: 84364,
+  }),
+  getEntity("media_player", "receiver_off", "off", {
+    source_list: ["AirPlay", "Blu-Ray", "TV", "USB", "iPod (USB)"],
+    friendly_name: "Receiver",
+    supported_features: 84364,
+  }),
 ];
