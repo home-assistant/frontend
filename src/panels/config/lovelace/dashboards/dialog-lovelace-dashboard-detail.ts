@@ -104,6 +104,7 @@ export class DialogLovelaceDashboardDetail extends LitElement {
                     .errorMessage=${this.hass.localize(
                       "ui.panel.config.lovelace.dashboards.detail.title_required"
                     )}
+                    dialogInitialFocus
                   ></paper-input>
                   <ha-icon-input
                     .value=${this._icon}
