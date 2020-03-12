@@ -88,13 +88,10 @@ class HuiMarquee extends LitElement {
       :host([animating]) .marquee-inner {
         left: initial;
         right: initial;
-      }
-
-      :host([animating]) > div {
         animation-play-state: running;
       }
 
-      span {
+      :host([animating]) .marquee-inner span {
         padding-right: 16px;
       }
 
