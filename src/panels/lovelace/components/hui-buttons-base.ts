@@ -63,7 +63,7 @@ export class HuiButtonsBase extends LitElement {
               ? html`
                   <state-badge
                     title=${computeTooltip(this._hass!, entityConf)}
-                    _hass=${this._hass}
+                    .hass=${this._hass}
                     .stateObj=${stateObj}
                     .overrideIcon=${entityConf.icon}
                     .overrideImage=${entityConf.image}
