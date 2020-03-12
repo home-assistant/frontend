@@ -44,6 +44,14 @@ class HaInputSelectForm extends LitElement {
     }
   }
 
+  public focus() {
+    this.updateComplete.then(() =>
+      (this.shadowRoot?.querySelector(
+        "[dialogInitialFocus]"
+      ) as HTMLElement)?.focus()
+    );
+  }
+
   protected render(): TemplateResult {
     if (!this.hass) {
       return html``;
@@ -63,6 +71,7 @@ class HaInputSelectForm extends LitElement {
             "ui.dialogs.helper_settings.required_error_msg"
           )}"
           .invalid=${nameInvalid}
+          dialogInitialFocus
         ></paper-input>
         <ha-icon-input
           .value=${this._icon}
