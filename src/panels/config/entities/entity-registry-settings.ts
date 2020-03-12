@@ -241,17 +241,10 @@ export class EntityRegistrySettings extends LitElement {
         }
         mwc-button.warning {
           margin-right: auto;
-          --mdc-theme-primary: var(--google-red-500);
-        }
-        .error {
-          color: var(--google-red-500);
         }
         .row {
           margin-top: 8px;
           color: var(--primary-text-color);
-        }
-        .secondary {
-          color: var(--secondary-text-color);
         }
       `,
     ];
