@@ -534,6 +534,10 @@ export class HaDataTable extends LitElement {
         flex-shrink: 0;
       }
 
+      .mdc-data-table__cell.mdc-data-table__cell--icon {
+        overflow: initial;
+      }
+
       .mdc-data-table__header-cell--checkbox,
       .mdc-data-table__cell--checkbox {
         /* @noflip */
