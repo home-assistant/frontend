@@ -21,7 +21,7 @@ const CONFIGS = [
       name: Pause, No skip, tvshow
     - entity: media_player.android_cast
       name: Screen casting
-    - entity: media_player.lounge_room
+    - entity: media_player.sonos_idle
       name: Chromcast Idle
     - entity: media_player.theater
       name: Player Off

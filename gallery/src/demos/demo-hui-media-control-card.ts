@@ -42,10 +42,10 @@ const CONFIGS = [
     `,
   },
   {
-    heading: "Chromcast Idle",
+    heading: "Sonos Idle",
     config: `
   - type: media-control
-    entity: media_player.lounge_room
+    entity: media_player.sonos_idle
     `,
   },
   {

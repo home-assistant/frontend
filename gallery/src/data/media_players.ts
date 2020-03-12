@@ -44,9 +44,9 @@ export const createMediaPlayerEntities = () => [
     app_name: "Netflix",
     supported_features: 1,
   }),
-  getEntity("media_player", "lounge_room", "idle", {
-    friendly_name: "Idle Cast",
-    supported_features: 16385,
+  getEntity("media_player", "sonos_idle", "idle", {
+    friendly_name: "Sonos Idle",
+    supported_features: 64063,
   }),
   getEntity("media_player", "theater", "off", {
     friendly_name: "TV Off",
