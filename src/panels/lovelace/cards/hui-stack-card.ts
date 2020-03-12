@@ -41,7 +41,9 @@ export abstract class HuiStackCard extends LitElement implements LovelaceCard {
     }
   }
 
-  public abstract getCardSize(): number;
+  public getCardSize(): number {
+    return 1;
+  }
 
   public setConfig(config: StackCardConfig): void {
     if (!config || !config.cards || !Array.isArray(config.cards)) {
