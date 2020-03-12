@@ -13,6 +13,8 @@ import {
 class HuiMarquee extends LitElement {
   @property() public text?: string;
   @property({ type: Boolean }) public active?: boolean;
+  @property({ type: Boolean, reflect: true, attribute: "stopped" })
+  public forceStop?: boolean;
   @property({ reflect: true, type: Boolean, attribute: "animating" })
   private _animating = false;
 
@@ -29,6 +31,10 @@ class HuiMarquee extends LitElement {
 
   protected updated(changedProperties: PropertyValues): void {
     super.updated(changedProperties);
+
+    if (this.forceStop) {
+      this._animating = false;
+    }
 
     if (
       changedProperties.has("active") &&
@@ -93,6 +99,10 @@ class HuiMarquee extends LitElement {
 
       :host([animating]) .marquee-inner span {
         padding-right: 16px;
+      }
+
+      :host([stopped]) > div {
+        animation: none;
       }
 
       @keyframes marquee {
