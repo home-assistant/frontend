@@ -7,7 +7,7 @@ export const createMediaPlayerEntities = () => [
     media_title: "I Wanna Be A Hippy (Flamman & Abraxas Radio Mix)",
     media_artist: "Technohead",
     supported_features: 64063,
-    entity_picture: "/images/album_cover.jpg",
+    entity_picture: "/images/album_cover_2.jpg",
     media_duration: 300,
     media_position: 50,
     media_position_updated_at: new Date(
