@@ -14,7 +14,7 @@ export const SUPPORT_SELECT_SOURCE = 2048;
 export const SUPPORT_STOP = 4096;
 export const SUPPORTS_PLAY = 16384;
 export const SUPPORT_SELECT_SOUND_MODE = 65536;
-export const CONTRAST_RATIO = 3.5;
+export const CONTRAST_RATIO = 4.5;
 
 export interface MediaPlayerThumbnail {
   content_type: string;

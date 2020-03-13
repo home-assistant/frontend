@@ -2200,6 +2200,7 @@
                     "existing_cards": "Vous ne pouvez pas supprimer une vue contenant des cartes. Retirez d'abord les cartes."
                 },
                 "warning": {
+                    "attribute_not_found": "Attribut {attribute} non disponible dans: {entity}",
                     "entity_non_numeric": "L'entité est non numérique: {entity}",
                     "entity_not_found": "Entité non disponible: {entity}"
                 }
