@@ -44,7 +44,7 @@ const addEntities = (entities: Set<string>, obj) => {
   if (obj.entity) {
     addEntityId(entities, obj.entity);
   }
-  if (obj.entities) {
+  if (obj.entities && Array.isArray(obj.entities)) {
     obj.entities.forEach((entity) => addEntityId(entities, entity));
   }
   if (obj.card) {
