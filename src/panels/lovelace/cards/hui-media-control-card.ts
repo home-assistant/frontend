@@ -102,7 +102,6 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
   @property() private _cardHeight: number = 0;
   @query("paper-progress") private _progressBar?: PaperProgressElement;
   @property() private _marqueeActive: boolean = false;
-  private _marqueeForceStop: boolean = false;
   private _progressInterval?: number;
   private _resizeObserver?: ResizeObserver;
 
@@ -275,7 +274,6 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
                             .text=${stateObj.attributes.media_title ||
                               mediaDescription}
                             .active=${this._marqueeActive}
-                            .forceStop=${this._marqueeForceStop}
                             @mouseover=${this._marqueeMouseOver}
                             @mouseleave=${this._marqueeMouseLeave}
                           ></hui-marquee>
@@ -551,18 +549,13 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
   }
 
   private _handleClick(e: MouseEvent): void {
-    const action = (e.currentTarget! as PaperIconButtonElement).getAttribute(
-      "action"
-    )!;
-
-    if (action === "media_previous_track" || action === "media_next_track") {
-      this._marqueeForceStop = true;
-      this._marqueeActive = false;
-    }
-
-    this.hass!.callService("media_player", action, {
-      entity_id: this._config!.entity,
-    });
+    this.hass!.callService(
+      "media_player",
+      (e.currentTarget! as PaperIconButtonElement).getAttribute("action")!,
+      {
+        entity_id: this._config!.entity,
+      }
+    );
   }
 
   private _updateProgressBar(): void {

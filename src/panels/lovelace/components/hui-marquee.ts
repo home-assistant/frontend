@@ -13,8 +13,6 @@ import {
 class HuiMarquee extends LitElement {
   @property() public text?: string;
   @property({ type: Boolean }) public active?: boolean;
-  @property({ type: Boolean, reflect: true, attribute: "stopped" })
-  public forceStop?: boolean;
   @property({ reflect: true, type: Boolean, attribute: "animating" })
   private _animating = false;
 
@@ -32,8 +30,9 @@ class HuiMarquee extends LitElement {
   protected updated(changedProperties: PropertyValues): void {
     super.updated(changedProperties);
 
-    if (this.forceStop) {
+    if (changedProperties.has("text") && this._animating) {
       this._animating = false;
+      this.setAttribute("stopped", "stopped");
     }
 
     if (
@@ -41,6 +40,10 @@ class HuiMarquee extends LitElement {
       this.active &&
       this.offsetWidth < this.scrollWidth
     ) {
+      if (this.hasAttribute("stopped")) {
+        this.removeAttribute("stopped");
+      }
+
       this._animating = true;
     }
   }
