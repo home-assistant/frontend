@@ -115,7 +115,7 @@ export interface GlanceCardConfig extends LovelaceCardConfig {
   show_icon?: boolean;
   title?: string;
   theme?: string;
-  entities: ConfigEntity[];
+  entities: Array<string | ConfigEntity>;
   columns?: number;
   state_color?: boolean;
 }
@@ -177,7 +177,7 @@ export interface PictureElementsCardConfig extends LovelaceCardConfig {
   camera_image?: string;
   camera_view?: HuiImage["cameraView"];
   state_image?: {};
-  state_filter: string[];
+  state_filter?: string[];
   aspect_ratio?: string;
   entity?: string;
   elements: LovelaceElementConfig[];
@@ -202,13 +202,13 @@ export interface PictureEntityCardConfig extends LovelaceCardConfig {
 }
 
 export interface PictureGlanceCardConfig extends LovelaceCardConfig {
-  entities: PictureGlanceEntityConfig[];
+  entities: Array<string | PictureGlanceEntityConfig>;
   title?: string;
   image?: string;
   camera_image?: string;
   camera_view?: HuiImage["cameraView"];
   state_image?: {};
-  state_filter: string[];
+  state_filter?: string[];
   aspect_ratio?: string;
   entity?: string;
   tap_action?: ActionConfig;
