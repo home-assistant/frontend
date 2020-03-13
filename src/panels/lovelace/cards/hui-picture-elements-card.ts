@@ -25,26 +25,30 @@ class HuiPictureElementsCard extends LitElement implements LovelaceCard {
     lovelaceConfig: LovelaceConfig,
     entities?: string[],
     entitiesFill?: string[]
-  ): object {
+  ): PictureElementsCardConfig {
     const maxEntities = 1;
     const foundEntities = findEntities(
       hass,
       lovelaceConfig,
       maxEntities,
       entities,
-      entitiesFill
+      entitiesFill,
+      ["sensor", "binary_sensor"]
     );
 
     return {
+      type: "picture-elements",
       elements: [
         {
           type: "state-badge",
           entity: foundEntities[0] || "",
-          style: "position: absolute, transform: translate(-50%, -50%)",
+          style: {
+            top: "32%",
+            left: "40%",
+          },
         },
       ],
-      image:
-        "https://www.home-assistant.io/images/merchandise/shirt-frontpage.png",
+      image: "https://demo.home-assistant.io/stub_config/floorplan.png",
     };
   }
 

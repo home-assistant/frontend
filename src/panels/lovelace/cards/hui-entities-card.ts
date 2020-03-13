@@ -51,10 +51,11 @@ class HuiEntitiesCard extends LitElement implements LovelaceCard {
       lovelaceConfig,
       maxEntities,
       entities,
-      entitiesFill
+      entitiesFill,
+      ["light", "switch", "sensor"]
     );
 
-    return { entities: foundEntities };
+    return { title: "My Title", entities: foundEntities };
   }
 
   @property() private _config?: EntitiesCardConfig;
