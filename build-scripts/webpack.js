@@ -155,7 +155,7 @@ const createAppConfig = ({ isProdBuild, latestBuild, isStatsBuild }) => {
       `/static/translations/${englishFilename}`
     ] = `build-translations/output/${englishFilename}`;
 
-    Object.keys(translationMetadata.fragments).forEach((fragment) => {
+    translationMetadata.fragments.forEach((fragment) => {
       workBoxTranslationsTemplatedURLs[
         `/static/translations/${fragment}/${englishFilename}`
       ] = `build-translations/output/${fragment}/${englishFilename}`;

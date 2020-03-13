@@ -11,7 +11,6 @@ const minify = require("gulp-jsonminify");
 const rename = require("gulp-rename");
 const transform = require("gulp-json-transform");
 const { mapFiles } = require("../util");
-const env = require("../env");
 const paths = require("../paths");
 
 const inDir = "translations";
@@ -292,10 +291,12 @@ gulp.task(
   function fingerprintTranslationFiles() {
     // Fingerprint full file of each language
     const files = fs.readdirSync(fullDir);
+    const isProdBuild = process.env.NODE_ENV === "production";
+
     for (let i = 0; i < files.length; i++) {
       fingerprints[files[i].split(".")[0]] = {
         // In dev we create fake hashes
-        hash: env.isProdBuild
+        hash: isProdBuild
           ? crypto
               .createHash("md5")
               .update(fs.readFileSync(path.join(fullDir, files[i]), "utf-8"))
@@ -332,7 +333,9 @@ gulp.task(
   gulp.series(
     "clean-translations",
     "ensure-translations-build-dir",
-    env.isProdBuild ? (done) => done() : "create-test-translation",
+    process.env.NODE_ENV === "production"
+      ? (done) => done()
+      : "create-test-translation",
     "build-master-translation",
     "build-merged-translations",
     gulp.parallel(...splitTasks),
