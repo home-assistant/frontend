@@ -648,10 +648,6 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
   }
 
   private _marqueeMouseOver(): void {
-    if (this._marqueeForceStop) {
-      this._marqueeForceStop = false;
-    }
-
     if (!this._marqueeActive) {
       this._marqueeActive = true;
     }
