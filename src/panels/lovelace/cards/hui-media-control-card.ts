@@ -137,7 +137,7 @@ const customGenerator = (colors: Swatch[]) => {
   }
 
   if (foregroundColor === undefined) {
-    foregroundColor = colors[0].bodyTextColor;
+    foregroundColor = backgroundColor.bodyTextColor;
   }
 
   if (DEBUG_COLOR) {
