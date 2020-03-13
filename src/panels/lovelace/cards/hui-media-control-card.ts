@@ -695,7 +695,6 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
     }
 
     Vibrant.from(this._image)
-      .quality(1)
       .useGenerator(customGenerator)
       .getPalette()
       .then(([foreground, background]: [string, string]) => {
