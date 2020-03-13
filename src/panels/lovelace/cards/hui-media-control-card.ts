@@ -59,6 +59,10 @@ function getContrastRatio(
   return Math.round((contrast(rgb1, rgb2) + Number.EPSILON) * 100) / 100;
 }
 
+// How much the total diff between 2 RGB colors can be
+// to be considered similar.
+const COLOR_SIMILARITY_THRESHOLD = 150;
+
 // For debug purposes, is being tree shaken.
 const DEBUG_COLOR = __DEV__ && false;
 
@@ -122,7 +126,7 @@ const customGenerator = (colors: Swatch[]) => {
         logColor(colors[j], `${colors[j].hex} - ${diffScore}`);
       }
 
-      if (diffScore > 150) {
+      if (diffScore > COLOR_SIMILARITY_THRESHOLD) {
         continue;
       }
 
