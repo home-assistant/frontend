@@ -73,6 +73,7 @@ class HuiMarquee extends LitElement {
         position: relative;
         align-items: center;
         height: 1em;
+        contain: strict;
       }
 
       .marquee-inner {
@@ -81,7 +82,6 @@ class HuiMarquee extends LitElement {
         right: 0;
         text-overflow: ellipsis;
         overflow: hidden;
-        transform: translateX(0);
       }
 
       :host(.hovering) .marquee-inner {
