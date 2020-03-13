@@ -6,6 +6,6 @@ const { isProdBuild } = require("../build-scripts/env.js");
 const latestBuild = true;
 
 module.exports = createCastConfig({
-  isProdBuild,
+  isProdBuild: isProdBuild(),
   latestBuild,
 });
