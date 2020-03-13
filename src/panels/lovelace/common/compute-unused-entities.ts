@@ -71,7 +71,6 @@ export const computeUnusedEntities = (
   hass: HomeAssistant,
   config: LovelaceConfig
 ): string[] => {
-  console.log("CALC");
   const usedEntities = computeUsedEntities(config);
   return Object.keys(hass.states)
     .filter(
