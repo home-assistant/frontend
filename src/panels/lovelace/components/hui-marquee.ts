@@ -30,6 +30,10 @@ class HuiMarquee extends LitElement {
   protected updated(changedProperties: PropertyValues): void {
     super.updated(changedProperties);
 
+    if (changedProperties.has("text") && this._animating) {
+      this._animating = false;
+    }
+
     if (
       changedProperties.has("active") &&
       this.active &&
@@ -69,6 +73,7 @@ class HuiMarquee extends LitElement {
         position: relative;
         align-items: center;
         height: 1em;
+        contain: strict;
       }
 
       .marquee-inner {
@@ -77,7 +82,6 @@ class HuiMarquee extends LitElement {
         right: 0;
         text-overflow: ellipsis;
         overflow: hidden;
-        animation: marquee 10s linear infinite paused;
       }
 
       :host(.hovering) .marquee-inner {
@@ -88,7 +92,7 @@ class HuiMarquee extends LitElement {
       :host([animating]) .marquee-inner {
         left: initial;
         right: initial;
-        animation-play-state: running;
+        animation: marquee 10s linear infinite;
       }
 
       :host([animating]) .marquee-inner span {
