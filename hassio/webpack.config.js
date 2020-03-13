@@ -6,6 +6,6 @@ const { isProdBuild } = require("../build-scripts/env.js");
 const latestBuild = false;
 
 module.exports = createHassioConfig({
-  isProdBuild,
+  isProdBuild: isProdBuild(),
   latestBuild,
 });
