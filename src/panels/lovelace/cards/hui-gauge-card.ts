@@ -312,8 +312,8 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
         line-height: calc(var(--base-unit) * 0.3);
         position: absolute;
         width: calc(var(--base-unit) * 4);
-        height: calc(var(--base-unit) * 2.1);
-        top: calc(var(--base-unit) * 1.2);
+        height: var(--base-unit);
+        top: var(--base-unit);
         margin-left: auto;
         margin-right: auto;
       }
@@ -322,6 +322,7 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
       }
       .gauge-data #percent {
         font-size: calc(var(--base-unit) * 0.55);
+        line-height: calc(var(--base-unit) * 0.55);
       }
       .gauge-data #name {
         padding-top: calc(var(--base-unit) * 0.15);
