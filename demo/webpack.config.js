@@ -6,7 +6,7 @@ const { isProdBuild, isStatsBuild } = require("../build-scripts/env.js");
 const latestBuild = true;
 
 module.exports = createDemoConfig({
-  isProdBuild,
-  isStatsBuild,
+  isProdBuild: isProdBuild(),
+  isStatsBuild: isStatsBuild(),
   latestBuild,
 });
