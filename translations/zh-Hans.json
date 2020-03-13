@@ -1317,7 +1317,8 @@
                         "device": "设备",
                         "integration": "集成",
                         "manufacturer": "制造商",
-                        "model": "型号"
+                        "model": "型号",
+                        "no_devices": "没有设备"
                     },
                     "description": "管理已连接的设备",
                     "details": "这是设备的所有详细信息。",
@@ -1559,7 +1560,8 @@
                             "headers": {
                                 "type": "类型",
                                 "url": "网址"
-                            }
+                            },
+                            "no_resources": "没有资源"
                         },
                         "refresh_body": "您必须刷新页面才能完成删除，是否要立即刷新？",
                         "refresh_header": "要刷新吗？",
@@ -2275,7 +2277,10 @@
                         "move_right": "向右移动视图",
                         "tab_badges": "徽章",
                         "tab_settings": "设置",
-                        "tab_visibility": "可见性"
+                        "tab_visibility": "可见性",
+                        "visibility": {
+                            "select_users": "选择要让哪些用户在导航中看到此视图"
+                        }
                     },
                     "header": "编辑 UI",
                     "menu": {
@@ -2352,6 +2357,7 @@
                     "existing_cards": "无法删除包含卡片的视图。请先移除卡片。"
                 },
                 "warning": {
+                    "attribute_not_found": "属性 {attribute} 对 {entity} 不可用",
                     "entity_non_numeric": "实体 {entity} 非数值",
                     "entity_not_found": "实体 {entity} 不可用"
                 }

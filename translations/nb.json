@@ -1317,7 +1317,8 @@
                         "device": "Enhet",
                         "integration": "Integrering",
                         "manufacturer": "Produsent",
-                        "model": "Modell"
+                        "model": "Modell",
+                        "no_devices": "Ingen enheter"
                     },
                     "description": "Administrer tilkoblede enheter",
                     "details": "Her er alle detaljer for enheten.",
@@ -1559,7 +1560,8 @@
                             "headers": {
                                 "type": "Type",
                                 "url": "Url"
-                            }
+                            },
+                            "no_resources": "Ingen ressurser"
                         },
                         "refresh_body": "Du må oppdatere siden for å fullføre fjerningen, vil du oppdatere nå?",
                         "refresh_header": "Vil du oppdatere?",
@@ -2275,7 +2277,10 @@
                         "move_right": "Flytt visning til høyre",
                         "tab_badges": "Merker",
                         "tab_settings": "Innstillinger",
-                        "tab_visibility": "Synlighet"
+                        "tab_visibility": "Synlighet",
+                        "visibility": {
+                            "select_users": "Velg hvilke brukere som skal se denne visningen i navigasjonen"
+                        }
                     },
                     "header": "Rediger brukergrensesnitt",
                     "menu": {
@@ -2352,6 +2357,7 @@
                     "existing_cards": "Du kan ikke slette en visning som har kort i den. Fjern kortene først."
                 },
                 "warning": {
+                    "attribute_not_found": "Attributtet {attributt} er ikke tilgjengelig i: {entity}",
                     "entity_non_numeric": "Entiteten er ikke-numerisk: {entity}",
                     "entity_not_found": "Entitet ikke tilgjengelig: {entity}"
                 }

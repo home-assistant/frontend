@@ -1317,7 +1317,8 @@
                         "device": "Gerät",
                         "integration": "Integration",
                         "manufacturer": "Hersteller",
-                        "model": "Modell"
+                        "model": "Modell",
+                        "no_devices": "keine Geräte"
                     },
                     "description": "Verwalte verbundene Geräte",
                     "details": "Hier sind alle Details deines Geräts.",
@@ -1559,7 +1560,8 @@
                             "headers": {
                                 "type": "Typ",
                                 "url": "Url"
-                            }
+                            },
+                            "no_resources": "keine Ressourcen"
                         },
                         "refresh_body": "Sie müssen die Seite aktualisieren, um das Entfernen abzuschließen. Möchten Sie jetzt aktualisieren?",
                         "refresh_header": "Möchten Sie aktualisieren?",
@@ -2275,7 +2277,10 @@
                         "move_right": "Ansicht nach rechts verschieben",
                         "tab_badges": "Abzeichen",
                         "tab_settings": "Einstellungen",
-                        "tab_visibility": "Sichtweite"
+                        "tab_visibility": "Sichtweite",
+                        "visibility": {
+                            "select_users": "Wähle aus, welche Benutzer diese Ansicht in der Navigation sehen sollen"
+                        }
                     },
                     "header": "Benutzeroberfläche bearbeiten",
                     "menu": {
@@ -2352,6 +2357,7 @@
                     "existing_cards": "Sie können eine Ansicht mit Karten nicht löschen. Entfernen Sie zuerst die Karten."
                 },
                 "warning": {
+                    "attribute_not_found": "Attribut {attribute} nicht verfügbar in: {entity}",
                     "entity_non_numeric": "Die Entität ist nicht-numerisch: {entity}",
                     "entity_not_found": "Entität nicht verfügbar: {entity}"
                 }

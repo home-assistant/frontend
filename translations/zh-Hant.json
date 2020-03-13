@@ -510,7 +510,7 @@
                     "air_pressure": "大氣壓",
                     "humidity": "濕度",
                     "temperature": "溫度",
-                    "visibility": "能見度",
+                    "visibility": "顯示選項",
                     "wind_speed": "風速"
                 },
                 "cardinal_direction": {
@@ -770,7 +770,7 @@
                 "unknown": "未知",
                 "zha_device_card": {
                     "area_picker_label": "分區",
-                    "device_name_placeholder": "使用者姓氏",
+                    "device_name_placeholder": "設備命名",
                     "update_name_button": "更新名稱"
                 }
             }
@@ -1317,7 +1317,8 @@
                         "device": "設備",
                         "integration": "整合",
                         "manufacturer": "廠牌",
-                        "model": "型號"
+                        "model": "型號",
+                        "no_devices": "沒有設備"
                     },
                     "description": "管理已連線設備",
                     "details": "此處顯示設備所有詳細資訊。",
@@ -1412,7 +1413,7 @@
                 "header": "設定 Home Assistant",
                 "helpers": {
                     "caption": "助手",
-                    "description": "可協助建立自動化的元素。",
+                    "description": "可協助建立自動化的元素",
                     "dialog": {
                         "add_helper": "新增助手",
                         "add_platform": "新增 {platform}",
@@ -1503,7 +1504,7 @@
                         "cant_edit_yaml": "於 YAML 中定義的主面板無法藉由 UI 編輯，請於 Configuration.yaml 進行更改。",
                         "caption": "主面板",
                         "conf_mode": {
-                            "storage": "UI 已控制",
+                            "storage": "由 UI 控制",
                             "yaml": "YAML 檔案"
                         },
                         "confirm_delete": "確定要刪除此主面板？",
@@ -1559,14 +1560,15 @@
                             "headers": {
                                 "type": "類別",
                                 "url": "網址"
-                            }
+                            },
+                            "no_resources": "沒有資源"
                         },
                         "refresh_body": "必須更新頁面以完成移除、要立即更新？",
                         "refresh_header": "是否要更新？",
                         "types": {
                             "css": "Stylesheet",
-                            "html": "HTML（已棄用）",
-                            "js": "JavaScript 檔案（已棄用）",
+                            "html": "HTML（不再適用）",
+                            "js": "JavaScript 檔案（不再適用）",
                             "module": "JavaScript 模組"
                         }
                     }
@@ -2273,9 +2275,12 @@
                         "header_name": "{name}面板設定",
                         "move_left": "向左移動視圖",
                         "move_right": "向右移動視圖",
-                        "tab_badges": "園標圖示",
+                        "tab_badges": "圓標圖示",
                         "tab_settings": "設定",
-                        "tab_visibility": "能見度"
+                        "tab_visibility": "顯示選項",
+                        "visibility": {
+                            "select_users": "選擇可觀看此面板的使用者"
+                        }
                     },
                     "header": "編輯 UI",
                     "menu": {
@@ -2321,7 +2326,7 @@
                     },
                     "view": {
                         "panel_mode": {
-                            "description": "將會以全寬繪製第一張卡，視圖中其他面板將不進行呈現。",
+                            "description": "將會以全寬度製作第一張面板，視圖中其他面板將不進行呈現。",
                             "title": "面板模式？"
                         }
                     }
@@ -2352,6 +2357,7 @@
                     "existing_cards": "無法刪除內含面板的視圖，請先移除面板。"
                 },
                 "warning": {
+                    "attribute_not_found": "無法使用屬性 {attribute} 之物件：{entity}",
                     "entity_non_numeric": "物件為非數字：{entity}",
                     "entity_not_found": "物件不可用：{entity}"
                 }

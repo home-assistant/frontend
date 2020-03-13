@@ -5,7 +5,6 @@ import "../cards/hui-glance-card";
 import "../cards/hui-history-graph-card";
 import "../cards/hui-horizontal-stack-card";
 import "../cards/hui-light-card";
-import "../cards/hui-media-control-card";
 import "../cards/hui-sensor-card";
 import "../cards/hui-thermostat-card";
 import "../cards/hui-vertical-stack-card";
@@ -25,7 +24,6 @@ const ALWAYS_LOADED_TYPES = new Set([
   "history-graph",
   "horizontal-stack",
   "light",
-  "media-control",
   "sensor",
   "thermostat",
   "vertical-stack",
@@ -36,6 +34,7 @@ const LAZY_LOAD_TYPES = {
   "alarm-panel": () => import("../cards/hui-alarm-panel-card"),
   "empty-state": () => import("../cards/hui-empty-state-card"),
   "entity-filter": () => import("../cards/hui-entity-filter-card"),
+  "media-control": () => import("../cards/hui-media-control-card"),
   "picture-elements": () => import("../cards/hui-picture-elements-card"),
   "picture-entity": () => import("../cards/hui-picture-entity-card"),
   "picture-glance": () => import("../cards/hui-picture-glance-card"),
