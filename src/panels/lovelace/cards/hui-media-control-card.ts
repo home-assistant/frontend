@@ -12,7 +12,7 @@ import {
 import { classMap } from "lit-html/directives/class-map";
 import { styleMap } from "lit-html/directives/style-map";
 import Vibrant from "node-vibrant";
-import { Palette } from "node-vibrant/lib/color";
+import { Swatch } from "node-vibrant/lib/color";
 import "@polymer/paper-icon-button/paper-icon-button";
 import "@polymer/paper-progress/paper-progress";
 // tslint:disable-next-line: no-duplicate-imports
@@ -58,6 +58,99 @@ function getContrastRatio(
 ): number {
   return Math.round((contrast(rgb1, rgb2) + Number.EPSILON) * 100) / 100;
 }
+
+// For debug purposes, is being tree shaken.
+const DEBUG_COLOR = __DEV__ && false;
+
+const logColor = (
+  color: Swatch,
+  label: string = `${color.getHex()} - ${color.getPopulation()}`
+) =>
+  console.log(
+    `%c${label}`,
+    `color: ${color.getBodyTextColor()}; background-color: ${color.getHex()}`
+  );
+
+const customGenerator = (colors: Swatch[]) => {
+  colors.sort((colorA, colorB) => colorB.population - colorA.population);
+
+  const backgroundColor = colors[0];
+  let foregroundColor: string | undefined;
+
+  const contrastRatios = new Map<Swatch, number>();
+  const approvedContrastRatio = (color: Swatch) => {
+    if (!contrastRatios.has(color)) {
+      contrastRatios.set(
+        color,
+        getContrastRatio(backgroundColor.rgb, color.rgb)
+      );
+    }
+
+    return contrastRatios.get(color)! > CONTRAST_RATIO;
+  };
+
+  // We take each next color and find one that has better contrast.
+  for (let i = 1; i < colors.length && foregroundColor === undefined; i++) {
+    // If this color matches, score, take it.
+    if (approvedContrastRatio(colors[i])) {
+      if (DEBUG_COLOR) {
+        logColor(colors[i], "PICKED");
+      }
+      foregroundColor = colors[i].hex;
+      break;
+    }
+
+    // The 2nd color has the wrong contrast ratio, but it is the right color.
+    // Let's find other colors that are similar
+
+    const currentColor = colors[i];
+    if (DEBUG_COLOR) {
+      logColor(colors[i], "Finding similar color with better contrast");
+    }
+
+    for (let j = i + 1; j < colors.length; j++) {
+      const compareColor = colors[j];
+
+      // difference. 0 is same, 765 max difference
+      const diffScore =
+        Math.abs(currentColor.rgb[0] - compareColor.rgb[0]) +
+        Math.abs(currentColor.rgb[1] - compareColor.rgb[1]) +
+        Math.abs(currentColor.rgb[2] - compareColor.rgb[2]);
+
+      if (DEBUG_COLOR) {
+        logColor(colors[j], `${colors[j].hex} - ${diffScore}`);
+      }
+
+      if (diffScore > 150) {
+        continue;
+      }
+
+      if (approvedContrastRatio(compareColor)) {
+        if (DEBUG_COLOR) {
+          logColor(compareColor, "PICKED");
+        }
+        foregroundColor = compareColor.hex;
+        break;
+      }
+    }
+  }
+
+  if (foregroundColor === undefined) {
+    foregroundColor = colors[0].bodyTextColor;
+  }
+
+  if (DEBUG_COLOR) {
+    console.log();
+    console.log(
+      "%cPicked colors",
+      `color: ${foregroundColor}; background-color: ${backgroundColor.hex}; font-weight: bold; padding: 16px;`
+    );
+    colors.forEach((color) => logColor(color));
+    console.log();
+  }
+
+  return [foregroundColor, backgroundColor.hex];
+};
 
 interface ControlButton {
   icon: string;
@@ -595,49 +688,11 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
 
     Vibrant.from(this._image)
       .quality(1)
+      .useGenerator(customGenerator)
       .getPalette()
-      .then((palette: Palette) => {
-        const paletteColors: any[] = [];
-
-        Object.keys(palette).forEach((color) => {
-          paletteColors.push({
-            hex: palette[color]!.getHex(),
-            rgb: palette[color]!.getRgb(),
-            textColor: palette[color]!.getBodyTextColor(),
-            population: palette[color]!.getPopulation(),
-          });
-        });
-
-        if (!paletteColors.length) {
-          this._foregroundColor = undefined;
-          this._backgroundColor = undefined;
-          return;
-        }
-
-        paletteColors.sort((colorA, colorB) => {
-          if (colorA.population > colorB.population) {
-            return -1;
-          }
-          if (colorA.population < colorB.population) {
-            return 1;
-          }
-
-          return 0;
-        });
-
-        this._backgroundColor = paletteColors[0].hex;
-
-        for (let i = 1; i < paletteColors.length; i++) {
-          if (
-            getContrastRatio(paletteColors[0].rgb, paletteColors[i].rgb) >=
-            CONTRAST_RATIO
-          ) {
-            this._foregroundColor = paletteColors[i].hex;
-            return;
-          }
-        }
-
-        this._foregroundColor = paletteColors[0].textColor;
+      .then(([foreground, background]: [string, string]) => {
+        this._backgroundColor = background;
+        this._foregroundColor = foreground;
       })
       .catch((err: any) => {
         // tslint:disable-next-line:no-console
