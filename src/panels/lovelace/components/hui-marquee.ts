@@ -32,7 +32,6 @@ class HuiMarquee extends LitElement {
 
     if (changedProperties.has("text") && this._animating) {
       this._animating = false;
-      this.setAttribute("stopped", "stopped");
     }
 
     if (
@@ -40,10 +39,6 @@ class HuiMarquee extends LitElement {
       this.active &&
       this.offsetWidth < this.scrollWidth
     ) {
-      if (this.hasAttribute("stopped")) {
-        this.removeAttribute("stopped");
-      }
-
       this._animating = true;
     }
   }
@@ -86,7 +81,6 @@ class HuiMarquee extends LitElement {
         right: 0;
         text-overflow: ellipsis;
         overflow: hidden;
-        animation: marquee 10s linear infinite paused;
       }
 
       :host(.hovering) .marquee-inner {
@@ -97,15 +91,11 @@ class HuiMarquee extends LitElement {
       :host([animating]) .marquee-inner {
         left: initial;
         right: initial;
-        animation-play-state: running;
+        animation: marquee 10s linear infinite;
       }
 
       :host([animating]) .marquee-inner span {
         padding-right: 16px;
-      }
-
-      :host([stopped]) .marquee-inner {
-        animation: none;
       }
 
       @keyframes marquee {
