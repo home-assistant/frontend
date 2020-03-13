@@ -649,8 +649,12 @@
                     "name": "Nom"
                 },
                 "input_datetime": {
+                    "date": "Data",
+                    "datetime": "Data i hora",
                     "has_date": "Data",
-                    "has_time": "Hora"
+                    "has_time": "Hora",
+                    "mode": "Què vols introduir",
+                    "time": "Hora"
                 },
                 "input_number": {
                     "max": "Valor màxim",
@@ -1299,7 +1303,8 @@
                         "device": "Dispositiu",
                         "integration": "Integració",
                         "manufacturer": "Fabricant",
-                        "model": "Model"
+                        "model": "Model",
+                        "no_devices": "Sense dispositius"
                     },
                     "description": "Gestiona els dispositius connectats",
                     "details": "Aquí tens tots els detalls del dispositiu.",
@@ -1395,6 +1400,7 @@
                     },
                     "picker": {
                         "headers": {
+                            "entity_id": "ID de l'entitat",
                             "name": "Nom",
                             "type": "Tipus"
                         }
@@ -1487,6 +1493,7 @@
                             "require_admin": "Només administrador",
                             "show_sidebar": "Mostra a la barra lateral",
                             "title": "Títol de la barra lateral",
+                            "title_required": "El títol és necessari.",
                             "update": "Actualitza",
                             "url": "URL"
                         },
@@ -1494,6 +1501,7 @@
                             "add_dashboard": "Afegeix panell",
                             "headers": {
                                 "conf_mode": "Mètode de configuració",
+                                "default": "Per defecte",
                                 "filename": "Nom de l'arxiu",
                                 "require_admin": "Només administrador",
                                 "sidebar": "Mostra a la barra lateral",
@@ -1524,7 +1532,8 @@
                             "headers": {
                                 "type": "Tipus",
                                 "url": "URL"
-                            }
+                            },
+                            "no_resources": "Sense recursos"
                         },
                         "refresh_body": "Has d’actualitzar la pàgina per completar l’eliminació. Vols actualitzar-la ara?",
                         "refresh_header": "Vols actualitzar?",
@@ -2060,13 +2069,17 @@
                             "name": "Panell d'alarma"
                         },
                         "button": {
+                            "description": "La targeta botó et permet afegir botons per realitzar diferents tasques.",
                             "name": "Botó"
                         },
                         "conditional": {
                             "card": "Targeta",
                             "conditions": "Condicions",
                             "current_state": "actual",
-                            "name": "Condicional"
+                            "description": "La targeta condicional mostra una altra targeta en funció dels estats d'una entitat.",
+                            "name": "Condicional",
+                            "state_equal": "L'estat és igual a",
+                            "state_not_equal": "L'estat NO és igual a"
                         },
                         "config": {
                             "optional": "Opcional",
@@ -2103,6 +2116,7 @@
                             "icon": "Icona",
                             "icon_height": "Alçada de la icona",
                             "image": "Ruta de la imatge",
+                            "manual": "Manual",
                             "maximum": "Màxim",
                             "minimum": "Mínim",
                             "name": "Nom",
@@ -2216,7 +2230,10 @@
                         "move_right": "Desplaça la visualització cap a la dreta",
                         "tab_badges": "Etiquetes",
                         "tab_settings": "Configuració",
-                        "tab_visibility": "Visibilitat"
+                        "tab_visibility": "Visibilitat",
+                        "visibility": {
+                            "select_users": "Selecciona quins usuaris podran veure aquesta vista a la navegació"
+                        }
                     },
                     "header": "Editar la interfície d'usuari (UI)",
                     "menu": {
@@ -2287,9 +2304,12 @@
                 },
                 "views": {
                     "confirm_delete": "Estàs segur que vols eliminar aquesta visualització?",
+                    "confirm_delete_existing_cards": "Si elimines aquesta vista, també s'eliminaran les targetes que conté",
+                    "confirm_delete_text": "Estàs segur que vols eliminar la vista '{name}'?",
                     "existing_cards": "No pots suprimir una visualització si conté targetes, elimina-les primer."
                 },
                 "warning": {
+                    "attribute_not_found": "L'atribut {attribute} de {entity} no està disponible.",
                     "entity_non_numeric": "Entitat no numèrica: {entity}",
                     "entity_not_found": "Entitat no disponible: {entity}"
                 }
