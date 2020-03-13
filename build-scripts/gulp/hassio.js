@@ -29,6 +29,6 @@ gulp.task(
     gulp.parallel("gen-icons-hassio", "gen-icons-mdi"),
     "webpack-prod-hassio",
     ...// Don't compress running tests
-    (envVars.isTravis ? [] : ["compress-hassio"])
+    (envVars.isTravis() ? [] : ["compress-hassio"])
   )
 );

@@ -42,7 +42,7 @@ gulp.task(
     "copy-static",
     "webpack-prod-app",
     ...// Don't compress running tests
-    (envVars.isTravis ? [] : ["compress-app"]),
+    (envVars.isTravis() ? [] : ["compress-app"]),
     gulp.parallel(
       "gen-pages-prod",
       "gen-index-app-prod",
