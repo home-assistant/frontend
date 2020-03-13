@@ -674,8 +674,8 @@
                     "options": "Options"
                 },
                 "input_text": {
-                    "max": "Maximum lenght",
-                    "min": "Minimum lenght",
+                    "max": "Maximum length",
+                    "min": "Minimum length",
                     "mode": "Display mode",
                     "password": "Password",
                     "pattern": "Regex pattern for client-side validation",
@@ -1508,18 +1508,19 @@
                             "yaml": "YAML file"
                         },
                         "confirm_delete": "Are you sure you want to delete this dashboard?",
+                        "default_dashboard": "This is the default dashboard",
                         "detail": {
                             "create": "Create",
                             "delete": "Delete",
                             "dismiss": "Close",
                             "edit_dashboard": "Edit dashboard",
-                            "icon": "Sidebar icon",
+                            "icon": "Icon",
                             "new_dashboard": "Add new dashboard",
                             "remove_default": "Remove as default on this device",
                             "require_admin": "Admin only",
                             "set_default": "Set as default on this device",
                             "show_sidebar": "Show in sidebar",
-                            "title": "Sidebar title",
+                            "title": "Title",
                             "title_required": "Title is required.",
                             "update": "Update",
                             "url": "Url",
