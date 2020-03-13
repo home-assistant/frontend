@@ -66,6 +66,7 @@ const logColor = (
   color: Swatch,
   label: string = `${color.getHex()} - ${color.getPopulation()}`
 ) =>
+  // tslint:disable-next-line:no-console
   console.log(
     `%c${label}`,
     `color: ${color.getBodyTextColor()}; background-color: ${color.getHex()}`
@@ -100,8 +101,8 @@ const customGenerator = (colors: Swatch[]) => {
       break;
     }
 
-    // The 2nd color has the wrong contrast ratio, but it is the right color.
-    // Let's find other colors that are similar
+    // This color has the wrong contrast ratio, but it is the right color.
+    // Let's find similar colors that might have the right contrast ratio
 
     const currentColor = colors[i];
     if (DEBUG_COLOR) {
@@ -140,12 +141,15 @@ const customGenerator = (colors: Swatch[]) => {
   }
 
   if (DEBUG_COLOR) {
+    // tslint:disable-next-line:no-console
     console.log();
+    // tslint:disable-next-line:no-console
     console.log(
       "%cPicked colors",
       `color: ${foregroundColor}; background-color: ${backgroundColor.hex}; font-weight: bold; padding: 16px;`
     );
     colors.forEach((color) => logColor(color));
+    // tslint:disable-next-line:no-console
     console.log();
   }
 
