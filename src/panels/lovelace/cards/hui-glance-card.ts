@@ -47,7 +47,7 @@ export class HuiGlanceCard extends LitElement implements LovelaceCard {
     lovelaceConfig: LovelaceConfig,
     entities?: string[],
     entitiesFill?: string[]
-  ): object {
+  ): GlanceCardConfig {
     const includeDomains = ["sensor"];
     const maxEntities = 3;
     const foundEntities = findEntities(
@@ -59,7 +59,7 @@ export class HuiGlanceCard extends LitElement implements LovelaceCard {
       includeDomains
     );
 
-    return { entities: foundEntities };
+    return { type: "glance", entities: foundEntities };
   }
 
   @property() public hass?: HomeAssistant;

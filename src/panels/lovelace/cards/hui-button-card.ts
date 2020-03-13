@@ -56,7 +56,8 @@ export class HuiButtonCard extends LitElement implements LovelaceCard {
       lovelaceConfig,
       maxEntities,
       entities,
-      entitiesFill
+      entitiesFill,
+      ["light", "switch"]
     );
 
     return {
