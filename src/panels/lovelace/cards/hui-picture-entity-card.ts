@@ -52,13 +52,13 @@ class HuiPictureEntityCard extends LitElement implements LovelaceCard {
       lovelaceConfig,
       maxEntities,
       entities,
-      entitiesFill
+      entitiesFill,
+      ["light", "switch"]
     );
 
     return {
       entity: foundEntities[0] || "",
-      image:
-        "https://www.home-assistant.io/images/merchandise/shirt-frontpage.png",
+      image: "https://demo.home-assistant.io/stub_config/bedroom.png",
     };
   }
 
