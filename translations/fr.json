@@ -395,7 +395,7 @@
     "ui": {
         "auth_store": {
             "ask": "Voulez-vous enregistrer cette connexion?",
-            "confirm": "Enregistrer la connexion",
+            "confirm": "Connexion automatique",
             "decline": "Non merci"
         },
         "card": {
@@ -642,7 +642,10 @@
             },
             "helper_settings": {
                 "input_datetime": {
-                    "has_date": "Date"
+                    "date": "Date",
+                    "datetime": "Date et heure",
+                    "has_date": "Date",
+                    "time": "Heure"
                 },
                 "input_select": {
                     "add": "Ajouter",
@@ -655,7 +658,9 @@
                     "mode": "Mode d'affichage",
                     "password": "Mot de passe",
                     "text": "Texte"
-                }
+                },
+                "not_editable": "Non modifiable",
+                "platform_not_loaded": "L'intégration {platform} n'est pas chargée, veuillez l'ajouter à votre configuration. Soit en ajoutant 'default_config:' ou '{platform}:'."
             },
             "more_info_control": {
                 "dismiss": "Fermer la fenêtre de dialogue",
@@ -780,6 +785,10 @@
                 "areas": {
                     "caption": "Pièces",
                     "create_area": "CRÉER UNE PIÈCE",
+                    "delete": {
+                        "confirmation_text": "Tous les appareils de cette zone ne seront plus attribués.",
+                        "confirmation_title": "Etes-vous sûr de vouloir supprimer cette zone ?"
+                    },
                     "description": "Vue d'ensemble de toutes les pièces de votre maison.",
                     "editor": {
                         "create": "CRÉER",
@@ -1029,7 +1038,7 @@
                 "cloud": {
                     "account": {
                         "alexa": {
-                            "config_documentation": "Documentation de la configuration",
+                            "config_documentation": "Documentation de configuration",
                             "disable": "désactiver",
                             "enable": "activer",
                             "enable_ha_skill": "Activer le skill Home Assistant pour Alexa",
@@ -1283,7 +1292,8 @@
                         "device": "Appareil",
                         "integration": "Intégration",
                         "manufacturer": "Fabricant",
-                        "model": "Modèle"
+                        "model": "Modèle",
+                        "no_devices": "Aucun appareil"
                     },
                     "description": "Gérer les appareils connectés",
                     "details": "Voici tous les détails de votre appareil.",
@@ -1453,6 +1463,24 @@
                     "note_about_website_reference": "D'autres sont disponibles sur le "
                 },
                 "introduction": "Ici, il est possible de configurer vos composants et Home Assistant. Tout n'est pas encore possible de configurer à partir de l'interface utilisateur, mais nous y travaillons.",
+                "lovelace": {
+                    "dashboards": {
+                        "default_dashboard": "Ceci est le tableau de bord par défaut",
+                        "detail": {
+                            "icon": "Icône",
+                            "title": "Titre",
+                            "title_required": "Le titre est requis."
+                        },
+                        "picker": {
+                            "open": "Ouvrir"
+                        }
+                    },
+                    "resources": {
+                        "picker": {
+                            "no_resources": "Pas de ressources"
+                        }
+                    }
+                },
                 "person": {
                     "add_person": "Ajouter une personne",
                     "caption": "Personnes",
@@ -1980,8 +2008,11 @@
                             "name": "Bouton"
                         },
                         "conditional": {
+                            "card": "Carte",
+                            "conditions": "Conditions",
                             "current_state": "actuel",
                             "name": "Conditionnel",
+                            "state_equal": "L'État est égal à",
                             "state_not_equal": "L'état n'est pas égal à"
                         },
                         "config": {
@@ -2019,6 +2050,7 @@
                             "icon": "Icône",
                             "icon_height": "Hauteur de l'icône",
                             "image": "Chemin de l'image",
+                            "manual": "Manuel",
                             "maximum": "Maximum",
                             "minimum": "Minimum",
                             "name": "Nom",
@@ -2026,6 +2058,7 @@
                             "show_icon": "Afficher l'icône ?",
                             "show_name": "Afficher le nom ?",
                             "show_state": "Afficher l'état ?",
+                            "state": "État",
                             "tap_action": "Appui court",
                             "theme": "Thème",
                             "title": "Titre",
@@ -2043,7 +2076,7 @@
                             "name": "Pile horizontale"
                         },
                         "iframe": {
-                            "name": "iFrame"
+                            "name": "Page Web"
                         },
                         "light": {
                             "name": "Lumière"
@@ -2066,6 +2099,7 @@
                             "name": "Éléments d'image"
                         },
                         "picture-entity": {
+                            "description": "La carte Entité image affiche une entité sous la forme d'une image. Au lieu d'images provenant d'une URL, il peut également afficher l'image des entités de la caméra.",
                             "name": "Entité image"
                         },
                         "picture-glance": {
@@ -2131,7 +2165,10 @@
                         "move_left": "Déplacer la vue à gauche",
                         "move_right": "Déplacer la vue à droite",
                         "tab_badges": "Badges",
-                        "tab_settings": "Paramètres"
+                        "tab_settings": "Paramètres",
+                        "visibility": {
+                            "select_users": "Sélectionnez les utilisateurs qui devraient voir cette vue dans la navigation"
+                        }
                     },
                     "header": "Modifier l'interface utilisateur",
                     "menu": {
