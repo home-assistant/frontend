@@ -7,8 +7,8 @@ const arrayFilter = (
   conditions: Array<(value: any) => boolean>,
   maxSize: number
 ) => {
-  if (maxSize > array.length) {
-    return array;
+  if (!maxSize || maxSize > array.length) {
+    maxSize = array.length;
   }
 
   const filteredArray: any[] = [];
