@@ -27,7 +27,7 @@ import { PictureEntityCardConfig } from "./types";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { actionHandler } from "../common/directives/action-handler-directive";
 import { hasAction } from "../common/has-action";
-import { ActionHandlerEvent, LovelaceConfig } from "../../../data/lovelace";
+import { ActionHandlerEvent } from "../../../data/lovelace";
 import { handleAction } from "../common/handle-action";
 import { findEntities } from "../common/find-entites";
 
