@@ -7,7 +7,7 @@ const arrayFilter = (
   conditions: Array<(value: any) => boolean>,
   maxSize: number
 ) => {
-  if (!maxSize || maxSize > array.length) {
+  if (maxSize > array.length) {
     return array;
   }
 
