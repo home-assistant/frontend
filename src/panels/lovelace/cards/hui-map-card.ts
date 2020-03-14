@@ -56,7 +56,7 @@ class HuiMapCard extends LitElement implements LovelaceCard {
       includeDomains
     );
 
-    return { entities: foundEntities };
+    return { type: "map", entities: foundEntities };
   }
 
   @property() public hass?: HomeAssistant;

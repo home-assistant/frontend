@@ -38,7 +38,7 @@ class HuiShoppingListCard extends LitElement implements LovelaceCard {
   }
 
   public static getStubConfig(): object {
-    return {};
+    return { type: "shopping-list" };
   }
 
   @property() public hass?: HomeAssistant;

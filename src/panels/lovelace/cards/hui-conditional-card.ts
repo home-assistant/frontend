@@ -17,6 +17,7 @@ class HuiConditionalCard extends HuiConditionalBase implements LovelaceCard {
 
   public static getStubConfig(): object {
     return {
+      type: "conditional",
       conditions: [],
       card: {},
     };

@@ -64,6 +64,7 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
     );
 
     return {
+      type: "alarm-panel",
       states: ["arm_home", "arm_away"],
       entity: foundEntities[0] || "",
     };

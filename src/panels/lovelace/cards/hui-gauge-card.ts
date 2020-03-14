@@ -61,7 +61,7 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
       entityFilter
     );
 
-    return { entity: foundEntities[0] || "" };
+    return { type: "gauge", entity: foundEntities[0] || "" };
   }
 
   @property() public hass?: HomeAssistant;

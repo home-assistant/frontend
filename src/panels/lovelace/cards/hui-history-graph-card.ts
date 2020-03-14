@@ -46,7 +46,7 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
       includeDomains
     );
 
-    return { entities: foundEntities };
+    return { type: "history-graph", entities: foundEntities };
   }
 
   @property() public hass?: HomeAssistant;

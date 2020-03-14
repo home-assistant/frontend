@@ -31,6 +31,7 @@ export class HuiMarkdownCard extends LitElement implements LovelaceCard {
 
   public static getStubConfig(): object {
     return {
+      type: "markdown",
       content:
         "The **Markdown** card allows you to write any text. You can style it **bold**, *italicized*, ~strikethrough~ etc. You can do images, links, and more.\n\nFor more information see the [Markdown Cheatsheet](https://commonmark.org/help).",
     };
