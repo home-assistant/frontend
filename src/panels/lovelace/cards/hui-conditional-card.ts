@@ -19,7 +19,7 @@ class HuiConditionalCard extends HuiConditionalBase implements LovelaceCard {
     return {
       type: "conditional",
       conditions: [],
-      card: {},
+      card: { type: "" },
     };
   }
 
