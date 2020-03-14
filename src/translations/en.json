@@ -887,7 +887,7 @@
               "title": "Title",
               "title_required": "Title is required.",
               "url": "Url",
-              "url_error_msg": "The url can not contain spaces or special characters, except for _ and -",
+              "url_error_msg": "The url should contain a - and can not contain spaces or special characters, except for _ and -",
               "require_admin": "Admin only",
               "delete": "Delete",
               "update": "Update",

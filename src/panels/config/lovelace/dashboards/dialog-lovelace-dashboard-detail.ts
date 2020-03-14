@@ -57,7 +57,7 @@ export class DialogLovelaceDashboardDetail extends LitElement {
     if (!this._params) {
       return html``;
     }
-    const urlInvalid = !/^[a-zA-Z0-9_-]+$/.test(this._urlPath);
+    const urlInvalid = !/^[a-zA-Z0-9_-]+-[a-zA-Z0-9_-]+$/.test(this._urlPath);
     const titleInvalid = !this._urlPath.trim();
     return html`
       <ha-dialog
@@ -215,12 +215,14 @@ export class DialogLovelaceDashboardDetail extends LitElement {
   }
 
   private _fillUrlPath() {
-    if (this._urlPath) {
+    if (this._urlPath || !this._title) {
       return;
     }
     const parts = this._title.split(" ");
 
-    if (parts.length) {
+    if (parts.length === 1) {
+      this._urlPath = `lovelace-${parts[0].toLowerCase()}`;
+    } else {
       this._urlPath = parts.join("_").toLowerCase();
     }
   }
