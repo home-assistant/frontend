@@ -27,7 +27,7 @@ import { processConfigEntities } from "../common/process-config-entities";
 import { GlanceCardConfig, GlanceConfigEntity } from "./types";
 import { actionHandler } from "../common/directives/action-handler-directive";
 import { hasAction } from "../common/has-action";
-import { ActionHandlerEvent, LovelaceConfig } from "../../../data/lovelace";
+import { ActionHandlerEvent } from "../../../data/lovelace";
 import { handleAction } from "../common/handle-action";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { UNAVAILABLE, UNKNOWN } from "../../../data/entity";
@@ -44,15 +44,13 @@ export class HuiGlanceCard extends LitElement implements LovelaceCard {
 
   public static getStubConfig(
     hass: HomeAssistant,
-    lovelaceConfig: LovelaceConfig,
-    entities?: string[],
-    entitiesFill?: string[]
+    entities: string[],
+    entitiesFill: string[]
   ): GlanceCardConfig {
     const includeDomains = ["sensor"];
     const maxEntities = 3;
     const foundEntities = findEntities(
       hass,
-      lovelaceConfig,
       maxEntities,
       entities,
       entitiesFill,

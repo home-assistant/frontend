@@ -241,10 +241,9 @@ export class HuiCardPicker extends LitElement {
     if (this.hass && this.lovelace) {
       cardConfig = await getCardStubConfig(
         this.hass,
-        this.lovelace,
         type,
-        this._unusedEntities,
-        this._usedEntities
+        this._unusedEntities!,
+        this._usedEntities!
       );
 
       if (!noElement) {

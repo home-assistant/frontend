@@ -22,7 +22,6 @@ import { fireEvent } from "../../../common/dom/fire_event";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
 import { LovelaceCard, LovelaceCardEditor } from "../types";
 import { GaugeCardConfig } from "./types";
-import { LovelaceConfig } from "../../../data/lovelace";
 import { findEntities } from "../common/find-entites";
 import { HassEntity } from "home-assistant-js-websocket/dist/types";
 
@@ -44,9 +43,8 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
 
   public static getStubConfig(
     hass: HomeAssistant,
-    lovelaceConfig: LovelaceConfig,
-    entities?: string[],
-    entitiesFill?: string[]
+    entities: string[],
+    entitiesFill: string[]
   ): object {
     const includeDomains = ["sensor"];
     const maxEntities = 1;
@@ -56,7 +54,6 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
 
     const foundEntities = findEntities(
       hass,
-      lovelaceConfig,
       maxEntities,
       entities,
       entitiesFill,

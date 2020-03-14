@@ -1,26 +1,23 @@
-import {
-  computeUnusedEntities,
-  computeUsedEntities,
-} from "./compute-unused-entities";
 import { HomeAssistant } from "../../../types";
-import { LovelaceConfig } from "../../../data/lovelace";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { HassEntity } from "home-assistant-js-websocket";
+import { UNKNOWN, UNAVAILABLE } from "../../../data/entity";
 
 export const findEntities = (
   hass: HomeAssistant,
-  lovelaceConfig: LovelaceConfig,
   maxEntities: number,
-  entities?: string[],
-  entitiesFill?: string[],
+  entities: string[],
+  entitiesFill: string[],
   includeDomains?: string[],
   entityFilter?: (stateObj: HassEntity) => boolean
 ) => {
   let entityIds: string[];
 
-  entityIds = !entities?.length
-    ? computeUnusedEntities(hass, lovelaceConfig)
-    : entities;
+  entityIds = entities.filter(
+    (eid) =>
+      hass.states[eid].state !== UNKNOWN &&
+      hass.states[eid].state !== UNAVAILABLE
+  );
 
   if (includeDomains && includeDomains.length) {
     entityIds = entityIds.filter((eid) =>
@@ -35,10 +32,11 @@ export const findEntities = (
   }
 
   if (entityIds.length < (maxEntities || 1)) {
-    let fillEntityIds =
-      entitiesFill && entitiesFill.length
-        ? entitiesFill
-        : [...computeUsedEntities(lovelaceConfig)];
+    let fillEntityIds = entitiesFill.filter(
+      (eid) =>
+        hass.states[eid].state !== UNKNOWN &&
+        hass.states[eid].state !== UNAVAILABLE
+    );
 
     if (includeDomains && includeDomains.length) {
       fillEntityIds = fillEntityIds.filter((eid) =>

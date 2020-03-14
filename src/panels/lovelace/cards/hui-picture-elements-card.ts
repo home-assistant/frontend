@@ -15,21 +15,18 @@ import { HomeAssistant } from "../../../types";
 import { LovelaceElementConfig, LovelaceElement } from "../elements/types";
 import { PictureElementsCardConfig } from "./types";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
-import { LovelaceConfig } from "../../../data/lovelace";
 import { findEntities } from "../common/find-entites";
 
 @customElement("hui-picture-elements-card")
 class HuiPictureElementsCard extends LitElement implements LovelaceCard {
   public static getStubConfig(
     hass: HomeAssistant,
-    lovelaceConfig: LovelaceConfig,
-    entities?: string[],
-    entitiesFill?: string[]
+    entities: string[],
+    entitiesFill: string[]
   ): PictureElementsCardConfig {
     const maxEntities = 1;
     const foundEntities = findEntities(
       hass,
-      lovelaceConfig,
       maxEntities,
       entities,
       entitiesFill,

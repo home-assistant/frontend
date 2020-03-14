@@ -22,7 +22,6 @@ import { hasConfigOrEntityChanged } from "../common/has-changed";
 import { PlantStatusCardConfig, PlantAttributeTarget } from "./types";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { actionHandler } from "../common/directives/action-handler-directive";
-import { LovelaceConfig } from "../../../data/lovelace";
 import { findEntities } from "../common/find-entites";
 
 const SENSORS = {
@@ -44,15 +43,13 @@ class HuiPlantStatusCard extends LitElement implements LovelaceCard {
 
   public static getStubConfig(
     hass: HomeAssistant,
-    lovelaceConfig: LovelaceConfig,
-    entities?: string[],
-    entitiesFill?: string[]
+    entities: string[],
+    entitiesFill: string[]
   ): object {
     const includeDomains = ["plant"];
     const maxEntities = 1;
     const foundEntities = findEntities(
       hass,
-      lovelaceConfig,
       maxEntities,
       entities,
       entitiesFill,
