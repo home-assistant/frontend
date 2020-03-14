@@ -22,6 +22,7 @@ import {
   computeUnusedEntities,
   computeUsedEntities,
 } from "../../common/compute-unused-entities";
+import { UNKNOWN, UNAVAILABLE } from "../../../../data/entity";
 
 const previewCards: string[] = [
   "alarm-panel",
@@ -137,8 +138,23 @@ export class HuiCardPicker extends LitElement {
       return;
     }
 
-    this._unusedEntities = computeUnusedEntities(this.hass, this.lovelace);
-    this._usedEntities = [...computeUsedEntities(this.lovelace)];
+    this._unusedEntities = computeUnusedEntities(
+      this.hass,
+      this.lovelace
+    ).filter(
+      (eid) =>
+        this.hass!.states[eid] &&
+        this.hass!.states[eid].state !== UNKNOWN &&
+        this.hass!.states[eid].state !== UNAVAILABLE
+    );
+
+    this._usedEntities = [...computeUsedEntities(this.lovelace)].filter(
+      (eid) =>
+        this.hass!.states[eid] &&
+        this.hass!.states[eid].state !== UNKNOWN &&
+        this.hass!.states[eid].state !== UNAVAILABLE
+    );
+
     this.requestUpdate();
   }
 

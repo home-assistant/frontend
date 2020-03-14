@@ -41,19 +41,16 @@ export const findEntities = (
 ) => {
   let entityIds: string[];
 
-  const conditions: Array<(value: string) => boolean> = [
-    (eid) =>
-      hass.states[eid] &&
-      hass.states[eid].state !== UNKNOWN &&
-      hass.states[eid].state !== UNAVAILABLE,
-  ];
+  const conditions: Array<(value: string) => boolean> = [];
 
   if (includeDomains && includeDomains.length) {
     conditions.push((eid) => includeDomains!.includes(computeDomain(eid)));
   }
 
   if (entityFilter) {
-    conditions.push((eid) => entityFilter(hass.states[eid]));
+    conditions.push(
+      (eid) => hass.states[eid] && entityFilter(hass.states[eid])
+    );
   }
 
   entityIds = arrayFilter(entities, conditions, maxEntities);
