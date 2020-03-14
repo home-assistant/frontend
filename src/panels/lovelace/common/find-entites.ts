@@ -1,7 +1,6 @@
 import { HomeAssistant } from "../../../types";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { HassEntity } from "home-assistant-js-websocket";
-import { UNKNOWN, UNAVAILABLE } from "../../../data/entity";
 
 const arrayFilter = (
   array: any[],
