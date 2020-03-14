@@ -683,7 +683,7 @@
                 },
                 "not_editable": "Ikke redigerbar",
                 "not_editable_text": "Denne entitet kan ikke ændres fra brugerfladen, fordi det er defineret i configuration.yaml.",
-                "platform_not_loaded": "Komponenten {platform} er ikke indlæst, tilføj den til din konfiguration. Enten ved at tilføje 'default_config:' eller '{platform}:'.",
+                "platform_not_loaded": "{platform}-integrationen er ikke indlæst. Tilføj den til din konfiguration. Enten ved at tilføje 'default_config:' eller '{platform}:'.",
                 "required_error_msg": "Dette felt er påkrævet",
                 "yaml_not_editable": "Indstillingerne for denne entitet kan ikke redigeres fra brugerfladen. Det er kun entiteter, der er konfigureret fra brugergrænsefladen, der kan konfigureres herfra."
             },
@@ -1317,7 +1317,8 @@
                         "device": "Enhed",
                         "integration": "Integration",
                         "manufacturer": "Producent",
-                        "model": "Model"
+                        "model": "Model",
+                        "no_devices": "Ingen enheder"
                     },
                     "description": "Administrer tilsluttede enheder",
                     "details": "Her er alle oplysninger om din enhed.",
@@ -1507,18 +1508,19 @@
                             "yaml": "YAML-fil"
                         },
                         "confirm_delete": "Er du sikker på, at du vil slette dette betjeningspanel?",
+                        "default_dashboard": "Dette er standardbetjeningspanelet",
                         "detail": {
                             "create": "Opret",
                             "delete": "Slet",
                             "dismiss": "Luk",
                             "edit_dashboard": "Rediger betjeningspanel",
-                            "icon": "Sidebjælke-ikon",
+                            "icon": "Ikon",
                             "new_dashboard": "Tilføj nyt betjeningspanel",
                             "remove_default": "Fjern som standard på denne enhed",
                             "require_admin": "Kun administrator",
                             "set_default": "Indstil som standard på denne enhed",
                             "show_sidebar": "Vis i sidebjælke",
-                            "title": "Titel på sidebjælke",
+                            "title": "Titel",
                             "title_required": "Titel er påkrævet.",
                             "update": "Opdater",
                             "url": "Webadresse",
@@ -1559,7 +1561,8 @@
                             "headers": {
                                 "type": "Type",
                                 "url": "Webadresse"
-                            }
+                            },
+                            "no_resources": "Ingen ressourcer"
                         },
                         "refresh_body": "Du skal opdatere siden for at afslutte fjernelsen, vil du opdatere nu?",
                         "refresh_header": "Vil du opdatere?",
@@ -2275,7 +2278,10 @@
                         "move_right": "Flyt visningen til højre",
                         "tab_badges": "Badges",
                         "tab_settings": "Indstillinger",
-                        "tab_visibility": "Synlighed"
+                        "tab_visibility": "Synlighed",
+                        "visibility": {
+                            "select_users": "Vælg, hvilke brugere der skal se denne visning i navigationen"
+                        }
                     },
                     "header": "Rediger brugerflade",
                     "menu": {
@@ -2352,6 +2358,7 @@
                     "existing_cards": "Du kan ikke slette en visning, der har kort i sig. Fjern kortene først."
                 },
                 "warning": {
+                    "attribute_not_found": "Egenskaben {attribute} er ikke tilgængelig i: {entity}",
                     "entity_non_numeric": "Entitet er ikke-numerisk: {entity}",
                     "entity_not_found": "Entitet ikke tilgængelig: {entity}"
                 }
