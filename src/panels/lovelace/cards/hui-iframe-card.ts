@@ -22,7 +22,7 @@ export class HuiIframeCard extends LitElement implements LovelaceCard {
     );
     return document.createElement("hui-iframe-card-editor");
   }
-  public static getStubConfig(): object {
+  public static getStubConfig(): IframeCardConfig {
     return {
       type: "iframe",
       url: "https://www.home-assistant.io",

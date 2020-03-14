@@ -177,7 +177,7 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
     hass: HomeAssistant,
     entities: string[],
     entitiesFallback: string[]
-  ): object {
+  ): MediaControlCardConfig {
     const includeDomains = ["media_player"];
     const maxEntities = 1;
     const foundEntities = findEntities(

@@ -45,7 +45,7 @@ class HuiMapCard extends LitElement implements LovelaceCard {
     hass: HomeAssistant,
     entities: string[],
     entitiesFallback: string[]
-  ): object {
+  ): MapCardConfig {
     const includeDomains = ["device_tracker"];
     const maxEntities = 2;
     const foundEntities = findEntities(

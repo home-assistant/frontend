@@ -42,7 +42,7 @@ class HuiEntitiesCard extends LitElement implements LovelaceCard {
     hass: HomeAssistant,
     entities: string[],
     entitiesFallback: string[]
-  ) {
+  ): EntitiesCardConfig {
     const maxEntities = 3;
     const foundEntities = findEntities(
       hass,

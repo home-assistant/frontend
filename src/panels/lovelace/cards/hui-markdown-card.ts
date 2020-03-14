@@ -29,7 +29,7 @@ export class HuiMarkdownCard extends LitElement implements LovelaceCard {
     return document.createElement("hui-markdown-card-editor");
   }
 
-  public static getStubConfig(): object {
+  public static getStubConfig(): MarkdownCardConfig {
     return {
       type: "markdown",
       content:
