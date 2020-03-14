@@ -44,7 +44,7 @@ class HuiPlantStatusCard extends LitElement implements LovelaceCard {
   public static getStubConfig(
     hass: HomeAssistant,
     entities: string[],
-    entitiesFill: string[]
+    entitiesFallback: string[]
   ): object {
     const includeDomains = ["plant"];
     const maxEntities = 1;
@@ -52,7 +52,7 @@ class HuiPlantStatusCard extends LitElement implements LovelaceCard {
       hass,
       maxEntities,
       entities,
-      entitiesFill,
+      entitiesFallback,
       includeDomains
     );
 

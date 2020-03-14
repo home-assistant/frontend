@@ -45,7 +45,7 @@ export class HuiGlanceCard extends LitElement implements LovelaceCard {
   public static getStubConfig(
     hass: HomeAssistant,
     entities: string[],
-    entitiesFill: string[]
+    entitiesFallback: string[]
   ): GlanceCardConfig {
     const includeDomains = ["sensor"];
     const maxEntities = 3;
@@ -53,7 +53,7 @@ export class HuiGlanceCard extends LitElement implements LovelaceCard {
       hass,
       maxEntities,
       entities,
-      entitiesFill,
+      entitiesFallback,
       includeDomains
     );
 

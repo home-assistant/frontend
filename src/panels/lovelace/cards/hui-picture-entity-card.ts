@@ -43,14 +43,14 @@ class HuiPictureEntityCard extends LitElement implements LovelaceCard {
   public static getStubConfig(
     hass: HomeAssistant,
     entities: string[],
-    entitiesFill: string[]
+    entitiesFallback: string[]
   ): object {
     const maxEntities = 1;
     const foundEntities = findEntities(
       hass,
       maxEntities,
       entities,
-      entitiesFill,
+      entitiesFallback,
       ["light", "switch"]
     );
 

@@ -76,7 +76,7 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
   public static getStubConfig(
     hass: HomeAssistant,
     entities: string[],
-    entitiesFill: string[]
+    entitiesFallback: string[]
   ): object {
     const includeDomains = ["weather"];
     const maxEntities = 1;
@@ -84,7 +84,7 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
       hass,
       maxEntities,
       entities,
-      entitiesFill,
+      entitiesFallback,
       includeDomains
     );
 

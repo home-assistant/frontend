@@ -52,7 +52,7 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
   public static getStubConfig(
     hass: HomeAssistant,
     entities: string[],
-    entitiesFill: string[]
+    entitiesFallback: string[]
   ) {
     const includeDomains = ["alarm_control_panel"];
     const maxEntities = 1;
@@ -60,7 +60,7 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
       hass,
       maxEntities,
       entities,
-      entitiesFill,
+      entitiesFallback,
       includeDomains
     );
 

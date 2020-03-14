@@ -41,7 +41,7 @@ export interface LovelaceCardConstructor extends Constructor<LovelaceCard> {
   getStubConfig?: (
     hass: HomeAssistant,
     entities: string[],
-    entitiesFill: string[]
+    entitiesFallback: string[]
   ) => LovelaceCardConfig;
   getConfigElement?: () => LovelaceCardEditor;
 }

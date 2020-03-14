@@ -3,55 +3,73 @@ import { computeDomain } from "../../../common/entity/compute_domain";
 import { HassEntity } from "home-assistant-js-websocket";
 import { UNKNOWN, UNAVAILABLE } from "../../../data/entity";
 
+const arrayFilter = (
+  array: any[],
+  conditions: Array<(value: any) => boolean>,
+  maxSize: number
+) => {
+  if (!maxSize || maxSize > array.length) {
+    return array;
+  }
+
+  const filteredArray: any[] = [];
+
+  for (let i = 0; i < array.length && filteredArray.length < maxSize; i++) {
+    let meetsConditions = true;
+    conditions.forEach((condition) => {
+      if (!condition(array[i])) {
+        meetsConditions = false;
+        return;
+      }
+    });
+
+    if (meetsConditions) {
+      filteredArray.push(array[i]);
+    }
+  }
+
+  return filteredArray;
+};
+
 export const findEntities = (
   hass: HomeAssistant,
   maxEntities: number,
   entities: string[],
-  entitiesFill: string[],
+  entitiesFallback: string[],
   includeDomains?: string[],
   entityFilter?: (stateObj: HassEntity) => boolean
 ) => {
   let entityIds: string[];
 
-  entityIds = entities.filter(
+  const conditions: Array<(value: string) => boolean> = [
     (eid) =>
+      hass.states[eid] &&
       hass.states[eid].state !== UNKNOWN &&
-      hass.states[eid].state !== UNAVAILABLE
-  );
+      hass.states[eid].state !== UNAVAILABLE,
+  ];
 
   if (includeDomains && includeDomains.length) {
-    entityIds = entityIds.filter((eid) =>
-      includeDomains!.includes(computeDomain(eid))
-    );
+    conditions.push((eid) => includeDomains!.includes(computeDomain(eid)));
   }
 
   if (entityFilter) {
-    entityIds = entityIds.filter(
-      (eid) => hass.states[eid] && entityFilter(hass.states[eid])
-    );
+    conditions.push((eid) => entityFilter(hass.states[eid]));
   }
 
-  if (entityIds.length < (maxEntities || 1)) {
-    let fillEntityIds = entitiesFill.filter(
-      (eid) =>
-        hass.states[eid].state !== UNKNOWN &&
-        hass.states[eid].state !== UNAVAILABLE
+  entityIds = arrayFilter(entities, conditions, maxEntities);
+
+  if (entityIds.length < maxEntities && entitiesFallback.length) {
+    const fillEntityIds = findEntities(
+      hass,
+      maxEntities - entityIds.length,
+      entitiesFallback,
+      [],
+      includeDomains,
+      entityFilter
     );
-
-    if (includeDomains && includeDomains.length) {
-      fillEntityIds = fillEntityIds.filter((eid) =>
-        includeDomains!.includes(computeDomain(eid))
-      );
-    }
-
-    if (entityFilter) {
-      fillEntityIds = fillEntityIds.filter(
-        (eid) => hass.states[eid] && entityFilter(hass.states[eid])
-      );
-    }
 
     entityIds = [...entityIds, ...fillEntityIds];
   }
 
-  return entityIds.slice(0, maxEntities);
+  return entityIds;
 };

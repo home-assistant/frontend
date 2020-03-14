@@ -44,7 +44,7 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
   public static getStubConfig(
     hass: HomeAssistant,
     entities: string[],
-    entitiesFill: string[]
+    entitiesFallback: string[]
   ): object {
     const includeDomains = ["light"];
     const maxEntities = 1;
@@ -52,7 +52,7 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
       hass,
       maxEntities,
       entities,
-      entitiesFill,
+      entitiesFallback,
       includeDomains
     );
 

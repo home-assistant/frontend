@@ -59,7 +59,7 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
   public static getStubConfig(
     hass: HomeAssistant,
     entities: string[],
-    entitiesFill: string[]
+    entitiesFallback: string[]
   ): object {
     const includeDomains = ["climate"];
     const maxEntities = 1;
@@ -67,7 +67,7 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
       hass,
       maxEntities,
       entities,
-      entitiesFill,
+      entitiesFallback,
       includeDomains
     );
 
