@@ -55,7 +55,7 @@ export const findEntities = (
   entityIds = arrayFilter(entities, conditions, maxEntities);
 
   if (entityIds.length < maxEntities && entitiesFallback.length) {
-    const fillEntityIds = findEntities(
+    const fallbackEntityIds = findEntities(
       hass,
       maxEntities - entityIds.length,
       entitiesFallback,
@@ -64,7 +64,7 @@ export const findEntities = (
       entityFilter
     );
 
-    entityIds = [...entityIds, ...fillEntityIds];
+    entityIds = [...entityIds, ...fallbackEntityIds];
   }
 
   return entityIds;
