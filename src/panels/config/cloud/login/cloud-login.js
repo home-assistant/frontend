@@ -145,7 +145,7 @@ class CloudLogin extends LocalizeMixin(
                   progress="[[_requestInProgress]]"
                   >[[localize('ui.panel.config.cloud.login.sign_in')]]</ha-progress-button
                 >
-                <button
+                <mwc-button
                   class="link"
                   hidden="[[_requestInProgress]]"
                   on-click="_handleForgotPassword"

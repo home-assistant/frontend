@@ -1295,7 +1295,7 @@
             "email_error_msg": "Invalid email",
             "password": "Password",
             "password_error_msg": "Passwords are at least 8 characters",
-            "forgot_password": "forgot password?",
+            "forgot_password": "Forgot password?",
             "start_trial": "Start your free 1 month trial",
             "trial_info": "No payment information necessary",
             "alert_password_change_required": "You need to change your password before logging in.",
