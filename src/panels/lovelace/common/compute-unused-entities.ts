@@ -61,7 +61,7 @@ const addEntities = (entities: Set<string>, obj) => {
   }
 };
 
-export const computeUsedEntities = (config) => {
+export const computeUsedEntities = (config: LovelaceConfig): Set<string> => {
   const entities = new Set<string>();
   config.views.forEach((view) => addEntities(entities, view));
   return entities;
@@ -72,11 +72,24 @@ export const computeUnusedEntities = (
   config: LovelaceConfig
 ): string[] => {
   const usedEntities = computeUsedEntities(config);
-  return Object.keys(hass.states)
-    .filter(
-      (entity) =>
-        !usedEntities.has(entity) &&
-        !EXCLUDED_DOMAINS.includes(entity.split(".", 1)[0])
-    )
-    .sort();
+  const allEntites = new Set(Object.keys(hass.states));
+  return [...calcUnusedEntities(allEntites, usedEntities)].sort();
+};
+
+export const calcUnusedEntities = (
+  allEntites: Set<string>,
+  usedEntities: Set<string>
+): Set<string> => {
+  const unusedEntities = allEntites;
+
+  unusedEntities.forEach((entity) => {
+    if (
+      usedEntities.has(entity) ||
+      EXCLUDED_DOMAINS.includes(entity.split(".", 1)[0])
+    ) {
+      unusedEntities.delete(entity);
+    }
+  });
+
+  return unusedEntities;
 };

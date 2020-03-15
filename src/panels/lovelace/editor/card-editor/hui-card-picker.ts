@@ -19,8 +19,8 @@ import { fireEvent } from "../../../../common/dom/fire_event";
 import { createCardElement } from "../../create-element/create-card-element";
 import { getCardStubConfig } from "../get-card-stub-config";
 import {
-  computeUnusedEntities,
   computeUsedEntities,
+  calcUnusedEntities,
 } from "../../common/compute-unused-entities";
 import { UNKNOWN, UNAVAILABLE } from "../../../../data/entity";
 
@@ -138,17 +138,19 @@ export class HuiCardPicker extends LitElement {
       return;
     }
 
-    this._unusedEntities = computeUnusedEntities(
-      this.hass,
-      this.lovelace
-    ).filter(
+    const usedEntities = computeUsedEntities(this.lovelace);
+    const unusedEntities = calcUnusedEntities(
+      new Set(Object.keys(this.hass.states)),
+      usedEntities
+    );
+
+    this._usedEntities = [...usedEntities].filter(
       (eid) =>
         this.hass!.states[eid] &&
         this.hass!.states[eid].state !== UNKNOWN &&
         this.hass!.states[eid].state !== UNAVAILABLE
     );
-
-    this._usedEntities = [...computeUsedEntities(this.lovelace)].filter(
+    this._unusedEntities = [...unusedEntities].filter(
       (eid) =>
         this.hass!.states[eid] &&
         this.hass!.states[eid].state !== UNKNOWN &&
