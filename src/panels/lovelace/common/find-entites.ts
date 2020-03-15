@@ -65,7 +65,7 @@ export const findEntities = (
       entityFilter
     );
 
-    entityIds.push(fallbackEntityIds);
+    entityIds.push(...fallbackEntityIds);
   }
 
   return entityIds;
