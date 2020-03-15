@@ -2,9 +2,7 @@
   You are amazing! Thanks for contributing to our project!
   Please, DO NOT DELETE ANY TEXT from this template! (unless instructed).
 -->
-
 ## Breaking change
-
 <!--
   If your PR contains a breaking change for existing users, it is important
   to tell them what breaks, how to make it work again and why we did this.
@@ -13,20 +11,20 @@
   Note: Remove this section if this PR is NOT a breaking change.
 -->
 
-## Proposed change
 
-<!--
+## Proposed change
+<!-- 
   Describe the big picture of your changes here to communicate to the
   maintainers why we should accept this pull request. If it fixes a bug
   or resolves a feature request, be sure to link to that issue in the
   additional information section.
 -->
 
-## Type of change
 
+## Type of change
 <!--
   What type of change does your PR introduce to the Home Assistant frontend?
-  NOTE: Please, check only 1! box!
+  NOTE: Please, check only 1! box! 
   If your PR requires multiple boxes to be checked, you'll most likely need to
   split it into multiple PRs. This makes things easier and faster to code review.
 -->
@@ -38,7 +36,6 @@
 - [ ] Code quality improvements to existing code or addition of tests
 
 ## Example configuration
-
 <!--
   Supplying a configuration snippet, makes it easier for a maintainer to test
   your PR.
@@ -49,18 +46,16 @@
 ```
 
 ## Additional information
-
 <!--
   Details are important, and help maintainers processing your PR.
   Please be sure to fill out additional details, if applicable.
 -->
 
 - This PR fixes or closes issue: fixes #
-- This PR is related to issue:
-- Link to documentation pull request:
+- This PR is related to issue: 
+- Link to documentation pull request: 
 
 ## Checklist
-
 <!--
   Put an `x` in the boxes that apply. You can also fill these out after
   creating the PR. If you're unsure about any of them, don't hesitate to ask.
@@ -79,5 +74,4 @@ If user exposed functionality or configuration variables are added/changed:
 <!--
   Thank you for contributing <3
 -->
-
 [docs-repository]: https://github.com/home-assistant/home-assistant.io
