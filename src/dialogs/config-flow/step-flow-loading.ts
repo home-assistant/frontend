@@ -16,9 +16,11 @@ class StepFlowLoading extends LitElement {
   protected render(): TemplateResult {
     return html`
       <div class="init-spinner">
-        <div>
-          ${this.label || ""}
-        </div>
+        ${this.label
+          ? html`
+              <div>${this.label}</div>
+            `
+          : ""}
         <paper-spinner-lite active></paper-spinner-lite>
       </div>
     `;
