@@ -84,7 +84,8 @@ export class HuiIframeCardEditor extends LitElement
             .value="${this._aspect_ratio.replace("%", "")}"
             .configValue="${"aspect_ratio"}"
             @value-changed="${this._valueChanged}"
-          ></paper-input>
+            ><div slot="suffix">%</div></paper-input
+          >
         </div>
       </div>
     `;
