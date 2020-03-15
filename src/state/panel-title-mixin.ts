@@ -2,7 +2,7 @@ import { getPanelTitle } from "../data/panel";
 import { HassBaseEl } from "./hass-base-mixin";
 import { HomeAssistant, Constructor } from "../types";
 
-export const pageTitleMixin = <T extends Constructor<HassBaseEl>>(
+export const panelTitleMixin = <T extends Constructor<HassBaseEl>>(
   superClass: T
 ) =>
   class extends superClass {

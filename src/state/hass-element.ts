@@ -12,7 +12,7 @@ import { hapticMixin } from "./haptic-mixin";
 import { urlSyncMixin } from "./url-sync-mixin";
 import { Constructor } from "../types";
 import { HassBaseEl } from "./hass-base-mixin";
-import { pageTitleMixin } from "./page-title-mixin";
+import { panelTitleMixin } from "./panel-title-mixin";
 
 const ext = <T extends Constructor>(baseClass: T, mixins): T =>
   mixins.reduceRight((base, mixin) => mixin(base), baseClass);
@@ -30,5 +30,5 @@ export class HassElement extends ext(HassBaseEl, [
   urlSyncMixin,
   ZHADialogMixin,
   hapticMixin,
-  pageTitleMixin,
+  panelTitleMixin,
 ]) {}
