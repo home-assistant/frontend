@@ -190,6 +190,7 @@ export class HuiCardPicker extends LitElement {
         }
 
         .preview > :first-child {
+          zoom: 0.6;
           display: block;
           width: 100%;
         }
