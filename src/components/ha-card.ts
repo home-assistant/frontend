@@ -5,8 +5,10 @@ import {
   LitElement,
   property,
   TemplateResult,
+  customElement,
 } from "lit-element";
 
+@customElement("ha-card")
 class HaCard extends LitElement {
   @property() public header?: string;
 
@@ -70,4 +72,8 @@ class HaCard extends LitElement {
   }
 }
 
-customElements.define("ha-card", HaCard);
+declare global {
+  interface HTMLElementTagNameMap {
+    "ha-card": HaCard;
+  }
+}

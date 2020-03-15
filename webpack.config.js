@@ -5,8 +5,8 @@ const { isProdBuild, isStatsBuild } = require("./build-scripts/env.js");
 
 const configs = [
   createAppConfig({
-    isProdBuild,
-    isStatsBuild,
+    isProdBuild: isProdBuild(),
+    isStatsBuild: isStatsBuild(),
     latestBuild: true,
   }),
 ];
@@ -14,8 +14,8 @@ const configs = [
 if (isProdBuild && !isStatsBuild) {
   configs.push(
     createAppConfig({
-      isProdBuild,
-      isStatsBuild,
+      isProdBuild: isProdBuild(),
+      isStatsBuild: isStatsBuild(),
       latestBuild: false,
     })
   );

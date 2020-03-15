@@ -5,26 +5,31 @@ import {
   TemplateResult,
   CSSResult,
   customElement,
+  property,
+  PropertyValues,
 } from "lit-element";
-import "@material/mwc-button";
+import { until } from "lit-html/directives/until";
+import { classMap } from "lit-html/directives/class-map";
 
-import { HomeAssistant } from "../../../../types";
-import { LovelaceCardConfig } from "../../../../data/lovelace";
-import { getCardElementTag } from "../../common/get-card-element-tag";
 import { CardPickTarget } from "../types";
+import { HomeAssistant } from "../../../../types";
+import { LovelaceCard } from "../../types";
+import { LovelaceCardConfig, LovelaceConfig } from "../../../../data/lovelace";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import { createCardElement } from "../../create-element/create-card-element";
+import { getCardStubConfig } from "../get-card-stub-config";
+import {
+  computeUnusedEntities,
+  computeUsedEntities,
+} from "../../common/compute-unused-entities";
 
-const cards: string[] = [
+const previewCards: string[] = [
   "alarm-panel",
-  "conditional",
   "entities",
-  "entity-button",
-  "entity-filter",
+  "button",
   "gauge",
   "glance",
   "history-graph",
-  "horizontal-stack",
-  "iframe",
   "light",
   "map",
   "markdown",
@@ -35,78 +40,246 @@ const cards: string[] = [
   "picture-glance",
   "plant-status",
   "sensor",
-  "shopping-list",
   "thermostat",
-  "vertical-stack",
   "weather-forecast",
+];
+
+const nonPreviewCards: string[] = [
+  "conditional",
+  "entity-filter",
+  "horizontal-stack",
+  "iframe",
+  "vertical-stack",
+  "shopping-list",
 ];
 
 @customElement("hui-card-picker")
 export class HuiCardPicker extends LitElement {
-  public hass?: HomeAssistant;
-
+  @property() public hass?: HomeAssistant;
+  public lovelace?: LovelaceConfig;
   public cardPicked?: (cardConf: LovelaceCardConfig) => void;
+  private _unusedEntities?: string[];
+  private _usedEntities?: string[];
 
   protected render(): TemplateResult {
+    if (
+      !this.hass ||
+      !this.lovelace ||
+      !this._unusedEntities ||
+      !this._usedEntities
+    ) {
+      return html``;
+    }
+
     return html`
       <div class="cards-container">
-        ${cards.map((card: string) => {
+        ${previewCards.map((type: string) => {
           return html`
-            <mwc-button @click="${this._cardPicked}" .type="${card}">
-              ${this.hass!.localize(
-                `ui.panel.lovelace.editor.card.${card}.name`
-              )}
-            </mwc-button>
+            ${until(
+              this._renderCardElement(type),
+              html`
+                <div class="card spinner">
+                  <paper-spinner active alt="Loading"></paper-spinner>
+                </div>
+              `
+            )}
+          `;
+        })}
+        ${nonPreviewCards.map((type: string) => {
+          return html`
+            ${until(
+              this._renderCardElement(type, true),
+              html`
+                <div class="card spinner">
+                  <paper-spinner active alt="Loading"></paper-spinner>
+                </div>
+              `
+            )}
           `;
         })}
       </div>
       <div class="cards-container">
-        <mwc-button @click="${this._manualPicked}">MANUAL CARD</mwc-button>
+        <div
+          class="card"
+          @click="${this._cardPicked}"
+          .config="${{ type: "" }}"
+        >
+          <div class="preview description">
+            ${this.hass!.localize(
+              `ui.panel.lovelace.editor.card.generic.manual_description`
+            )}
+          </div>
+          <div class="card-header">
+            ${this.hass!.localize(
+              `ui.panel.lovelace.editor.card.generic.manual`
+            )}
+          </div>
+        </div>
       </div>
     `;
+  }
+
+  protected shouldUpdate(changedProps: PropertyValues): boolean {
+    const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
+    if (!oldHass) {
+      return true;
+    }
+
+    if (oldHass.language !== this.hass!.language) {
+      return true;
+    }
+
+    return false;
+  }
+
+  protected firstUpdated(): void {
+    if (!this.hass || !this.lovelace) {
+      return;
+    }
+
+    this._unusedEntities = computeUnusedEntities(this.hass, this.lovelace);
+    this._usedEntities = [...computeUsedEntities(this.lovelace)];
+    this.requestUpdate();
   }
 
   static get styles(): CSSResult[] {
     return [
       css`
         .cards-container {
-          display: flex;
-          flex-wrap: wrap;
-          margin-bottom: 10px;
-        }
-        .cards-container mwc-button {
-          flex: 1 0 25%;
-          margin: 4px;
+          display: grid;
+          grid-gap: 8px 8px;
+          grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+          margin-top: 20px;
         }
 
-        @media all and (max-width: 450px), all and (max-height: 500px) {
-          .cards-container mwc-button {
-            flex: 1 0 33%;
-          }
+        .card {
+          height: 100%;
+          display: flex;
+          flex-direction: column;
+          border-radius: 4px;
+          border: 1px solid var(--divider-color);
+          background: var(--primary-background-color, #fafafa);
+          cursor: pointer;
+          box-sizing: border-box;
+        }
+
+        .card-header {
+          color: var(--ha-card-header-color, --primary-text-color);
+          font-family: var(--ha-card-header-font-family, inherit);
+          font-size: 16px;
+          letter-spacing: -0.012em;
+          line-height: 20px;
+          padding: 12px 16px;
+          display: block;
+          text-align: center;
+          background: var(
+            --ha-card-background,
+            var(--paper-card-background-color, white)
+          );
+          border-radius: 0 0 4px 4px;
+          border-top: 1px solid var(--divider-color);
+        }
+
+        .preview {
+          pointer-events: none;
+          margin: 20px;
+          flex-grow: 1;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+
+        .preview > :first-child {
+          zoom: 0.6;
+          -moz-transform: scale(0.6); /* Firefox */
+          -moz-transform-origin: center;
+          -o-transform: scale(0.6); /* Opera */
+          -o-transform-origin: center;
+          display: block;
+          width: 100%;
+        }
+
+        .description {
+          text-align: center;
+        }
+
+        .spinner {
+          align-items: center;
+          justify-content: center;
         }
       `,
     ];
   }
 
-  private _manualPicked(): void {
-    fireEvent(this, "config-changed", {
-      config: { type: "" },
-    });
-  }
-
   private _cardPicked(ev: Event): void {
-    const type = (ev.currentTarget! as CardPickTarget).type;
-    const tag = getCardElementTag(type);
-
-    const elClass = customElements.get(tag);
-    let config: LovelaceCardConfig = { type };
-
-    if (elClass && elClass.getStubConfig) {
-      const cardConfig = elClass.getStubConfig(this.hass);
-      config = { ...config, ...cardConfig };
-    }
+    const config: LovelaceCardConfig = (ev.currentTarget! as CardPickTarget)
+      .config;
 
     fireEvent(this, "config-changed", { config });
+  }
+
+  private _createCardElement(cardConfig: LovelaceCardConfig) {
+    const element = createCardElement(cardConfig) as LovelaceCard;
+    element.hass = this.hass;
+    element.addEventListener(
+      "ll-rebuild",
+      (ev) => {
+        ev.stopPropagation();
+        element.parentElement!.replaceChild(
+          this._createCardElement(cardConfig),
+          element
+        );
+      },
+      { once: true }
+    );
+    return element;
+  }
+
+  private async _renderCardElement(
+    type: string,
+    noElement: boolean = false
+  ): Promise<TemplateResult> {
+    let element: LovelaceCard | undefined;
+    let cardConfig: LovelaceCardConfig = { type };
+
+    if (this.hass && this.lovelace) {
+      cardConfig = await getCardStubConfig(
+        this.hass,
+        this.lovelace,
+        type,
+        this._unusedEntities,
+        this._usedEntities
+      );
+
+      if (!noElement) {
+        element = this._createCardElement(cardConfig);
+      }
+    }
+
+    return html`
+      <div class="card" @click="${this._cardPicked}" .config="${cardConfig}">
+        <div
+          class="preview ${classMap({
+            description: !element || element.tagName === "HUI-ERROR-CARD",
+          })}"
+        >
+          ${!element || element.tagName === "HUI-ERROR-CARD"
+            ? html`
+                ${this.hass!.localize(
+                  `ui.panel.lovelace.editor.card.${cardConfig.type}.description`
+                )}
+              `
+            : html`
+                ${element}
+              `}
+        </div>
+        <div class="card-header">
+          ${this.hass!.localize(
+            `ui.panel.lovelace.editor.card.${cardConfig.type}.name`
+          )}
+        </div>
+      </div>
+    `;
   }
 }
 

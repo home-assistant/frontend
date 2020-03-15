@@ -31,7 +31,7 @@ class HaConfigNavigation extends LitElement {
         (!page.component ||
           page.core ||
           isComponentLoaded(this.hass, page.component)) &&
-        (!page.exportOnly || this.showAdvanced)
+        (!page.advancedOnly || this.showAdvanced)
           ? html`
               <a
                 href=${`/config/${page.component}`}

@@ -12,6 +12,7 @@ import { computeStateDomain } from "../../common/entity/compute_state_domain";
 import { computeStateName } from "../../common/entity/compute_state_name";
 import LocalizeMixin from "../../mixins/localize-mixin";
 import { setupLeafletMap } from "../../common/dom/setup-leaflet-map";
+import { defaultRadiusColor } from "../../data/zone";
 
 /*
  * @appliesMixin LocalizeMixin
@@ -34,7 +35,7 @@ class HaPanelMap extends LocalizeMixin(PolymerElement) {
       <app-toolbar>
         <ha-menu-button hass="[[hass]]" narrow="[[narrow]]"></ha-menu-button>
         <div main-title>[[localize('panel.map')]]</div>
-        <template is="dom-if" if="[[!computeDemo()]]">
+        <template is="dom-if" if="[[computeShowEditZone(hass)]]">
           <paper-icon-button
             icon="hass:pencil"
             on-click="openZonesEditor"
@@ -74,8 +75,8 @@ class HaPanelMap extends LocalizeMixin(PolymerElement) {
     }
   }
 
-  computeDemo() {
-    return __DEMO__;
+  computeShowEditZone(hass) {
+    return !__DEMO__ && hass.user.is_admin;
   }
 
   openZonesEditor() {
@@ -175,7 +176,7 @@ class HaPanelMap extends LocalizeMixin(PolymerElement) {
             [entity.attributes.latitude, entity.attributes.longitude],
             {
               interactive: false,
-              color: "#FF9800",
+              color: defaultRadiusColor,
               radius: entity.attributes.radius,
             }
           ).addTo(map)

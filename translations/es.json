@@ -394,9 +394,9 @@
     },
     "ui": {
         "auth_store": {
-            "ask": "¿Quieres guardar este inicio de sesión?",
-            "confirm": "Guardar usuario",
-            "decline": "No, gracias"
+            "ask": "¿Quieres permanecer conectado?",
+            "confirm": "Sí",
+            "decline": "No"
         },
         "card": {
             "alarm_control_panel": {
@@ -581,6 +581,7 @@
                 "entity": "Entidades relacionadas",
                 "group": "Parte de los siguientes grupos",
                 "integration": "Integración",
+                "no_related_found": "No se encontraron elementos relacionados.",
                 "scene": "Parte de las siguientes escenas",
                 "script": "Parte de los siguientes scripts"
             },
@@ -604,7 +605,8 @@
             "config_entry_system_options": {
                 "enable_new_entities_description": "Si está deshabilitada, las nuevas entidades que se descubran para {integration} no se añadirán automáticamente a Home Assistant.",
                 "enable_new_entities_label": "Activar entidades recién añadidas.",
-                "title": "Opciones del sistema para {integration}"
+                "title": "Opciones del sistema para {integration}",
+                "update": "Actualizar"
             },
             "confirmation": {
                 "cancel": "Cancelar",
@@ -624,22 +626,73 @@
                     "enabled_description": "Las entidades deshabilitadas no se agregarán a Home Assistant.",
                     "enabled_label": "Activar entidad",
                     "entity_id": "ID de la entidad",
+                    "icon": "Reemplazar Icono",
+                    "icon_error": "Los iconos deben tener el formato 'prefijo:nombreicono', por ejemplo, 'mdi:home'",
                     "name": "Cambio de nombre",
                     "note": "Nota: puede que esto no funcione todavía con todas las integraciones",
                     "unavailable": "Esta entidad no está disponible actualmente.",
                     "update": "ACTUALIZAR"
                 },
+                "no_unique_id": "Esta entidad no tiene una ID única, por lo que su configuración no se puede administrar desde la IU.",
                 "related": "Relacionado",
                 "settings": "Configuración"
             },
             "generic": {
                 "cancel": "Cancelar",
+                "close": "cerrar",
                 "default_confirmation_title": "¿Estás seguro?",
                 "ok": "Aceptar"
+            },
+            "helper_settings": {
+                "generic": {
+                    "icon": "Icono",
+                    "initial_value": "Valor inicial en el arranque",
+                    "initial_value_explain": "El valor que tendrá el elemento cuando se inicie Home Assistant. Cuando se deja vacío, el valor se recuperará de su valor anterior.",
+                    "name": "Nombre"
+                },
+                "input_datetime": {
+                    "date": "Fecha",
+                    "datetime": "Fecha y hora",
+                    "has_date": "Fecha",
+                    "has_time": "Hora",
+                    "mode": "¿Qué quieres introducir?",
+                    "time": "Hora"
+                },
+                "input_number": {
+                    "box": "Campo de entrada",
+                    "max": "Valor máximo",
+                    "min": "Valor mínimo",
+                    "mode": "Modo de visualización",
+                    "slider": "Control deslizante",
+                    "step": "Tamaño del paso del control deslizante",
+                    "unit_of_measurement": "Unidad de medida"
+                },
+                "input_select": {
+                    "add": "Añadir",
+                    "add_option": "Añadir opción",
+                    "no_options": "No hay opciones todavía.",
+                    "options": "Opciones"
+                },
+                "input_text": {
+                    "max": "Longitud máxima",
+                    "min": "Longitud mínima",
+                    "mode": "Modo de visualización",
+                    "password": "Contraseña",
+                    "pattern": "Patrón Regex para la validación del lado del cliente",
+                    "text": "Texto"
+                },
+                "not_editable": "No editable",
+                "not_editable_text": "Esta entidad no se puede cambiar desde la interfaz de usuario porque está definida en configuration.yaml.",
+                "platform_not_loaded": "La integración {platform} no está cargada, por favor añádela a tu configuración. Ya sea agregando 'default_config:' o '{platform}:'.",
+                "required_error_msg": "Este campo es obligatorio",
+                "yaml_not_editable": "La configuración de esta entidad no se puede editar desde la IU. Solo las entidades configuradas desde la IU se pueden configurar desde la IU"
             },
             "more_info_control": {
                 "dismiss": "Descartar diálogo",
                 "edit": "Editar entidad",
+                "person": {
+                    "create_zone": "Crear zona a partir de la ubicación actual"
+                },
                 "restored": {
                     "confirm_remove_text": "¿Estás seguro de que deseas eliminar esta entidad?",
                     "confirm_remove_title": "¿Eliminar entidad?",
@@ -659,6 +712,18 @@
                 },
                 "updater": {
                     "title": "Instrucciones de actualización"
+                },
+                "vacuum": {
+                    "clean_spot": "Limpiar punto",
+                    "commands": "Comandos de aspiradora:",
+                    "fan_speed": "Velocidad del ventilador",
+                    "locate": "Localizar",
+                    "pause": "Pausa",
+                    "return_home": "Volver a casa",
+                    "start": "Inicio",
+                    "start_pause": "Inicio/Pausa",
+                    "status": "Estado",
+                    "stop": "Detener"
                 }
             },
             "more_info_settings": {
@@ -745,6 +810,10 @@
                 "areas": {
                     "caption": "Áreas",
                     "create_area": "CREAR ÁREA",
+                    "delete": {
+                        "confirmation_text": "Todos los dispositivos en esta área quedarán sin asignar.",
+                        "confirmation_title": "¿Estás seguro de que deseas eliminar esta área?"
+                    },
                     "description": "Visión general de todas las áreas de tu casa.",
                     "editor": {
                         "create": "CREAR",
@@ -764,7 +833,7 @@
                 },
                 "automation": {
                     "caption": "Automatizaciones",
-                    "description": "Crear y editar automatizaciones",
+                    "description": "Crea y edita automatizaciones",
                     "editor": {
                         "actions": {
                             "add": "Añadir acción",
@@ -814,7 +883,7 @@
                         "conditions": {
                             "add": "Añadir condición",
                             "delete": "Eliminar",
-                            "delete_confirm": "¿Seguro que quieres eliminarlo?",
+                            "delete_confirm": "¿Estás seguro de que quieres eliminarlo?",
                             "duplicate": "Duplicar",
                             "header": "Condiciones",
                             "introduction": "Las condiciones son opcionales e impedirán cualquier\nejecución posterior a menos que se cumplan todas las condiciones.",
@@ -879,6 +948,7 @@
                         },
                         "edit_ui": "Editar con la interfaz de usuario",
                         "edit_yaml": "Editar como YAML",
+                        "enable_disable": "Activar/Desactivar automatización",
                         "introduction": "Utiliza automatizaciones para darle vida a tu hogar.",
                         "load_error_not_editable": "Solo las automatizaciones en automations.yaml son editables.",
                         "load_error_unknown": "Error al cargar la automatización ({err_no}).",
@@ -886,7 +956,7 @@
                         "triggers": {
                             "add": "Añadir desencadenante",
                             "delete": "Eliminar",
-                            "delete_confirm": "¿Seguro que quieres eliminarlo?",
+                            "delete_confirm": "¿Estás seguro de que quieres eliminarlo?",
                             "duplicate": "Duplicar",
                             "header": "Desencadenantes",
                             "introduction": "Los desencadenantes son los que inician el funcionamiento de una regla de automatización. Es posible especificar varios desencadenantes para la misma regla. Una vez que se inicia un desencadenante, Home Assistant comprobará las condiciones, si las hubiere, y ejecutará la acción.",
@@ -1153,7 +1223,7 @@
                 },
                 "core": {
                     "caption": "Configuración general",
-                    "description": "Cambiar la configuración general de Home Assistant",
+                    "description": "Cambia la configuración general de Home Assistant",
                     "section": {
                         "core": {
                             "core_config": {
@@ -1247,7 +1317,8 @@
                         "device": "Dispositivo",
                         "integration": "Integración",
                         "manufacturer": "Fabricante",
-                        "model": "Modelo"
+                        "model": "Modelo",
+                        "no_devices": "Sin dispositivos"
                     },
                     "description": "Administrar dispositivos conectados",
                     "details": "Aquí están todos los detalles de tu dispositivo.",
@@ -1306,6 +1377,7 @@
                         "filter": {
                             "filter": "Filtrar",
                             "show_disabled": "Mostrar entidades deshabilitadas",
+                            "show_readonly": "Mostrar entidades de solo lectura",
                             "show_unavailable": "Mostrar entidades no disponibles"
                         },
                         "header": "Entidades",
@@ -1321,7 +1393,9 @@
                         "introduction2": "Utiliza el registro de entidades para anular el nombre, cambiar el ID de la entidad o eliminar la entrada de Home Assistant.",
                         "remove_selected": {
                             "button": "Eliminar seleccionadas",
-                            "confirm_text": "Las entidades solo se pueden eliminar cuando la integración ya no proporciona las entidades.",
+                            "confirm_partly_text": "Solo puedes eliminar {removable} de las entidades {selected} seleccionadas. Las entidades solo se pueden eliminar cuando la integración ya no proporciona las entidades. En algunas ocasiones debes reiniciar Home Assistant antes de poder eliminar las entidades de una integración eliminada. ¿Seguro que quieres eliminar las entidades eliminables?",
+                            "confirm_partly_title": "Sólo se pueden eliminar {number}​ entidades seleccionadas.",
+                            "confirm_text": "Debes eliminarlos de la configuración y las automatizaciones de Lovelace si contienen estas entidades.",
                             "confirm_title": "¿Deseas eliminar {number} entidades?"
                         },
                         "selected": "{number} seleccionadas",
@@ -1329,12 +1403,39 @@
                         "status": {
                             "disabled": "Deshabilitado",
                             "ok": "De acuerdo",
+                            "readonly": "Solo lectura",
+                            "restored": "Restaurado",
                             "unavailable": "No disponible"
                         },
                         "unavailable": "(no disponible)"
                     }
                 },
                 "header": "Configurar Home Assistant",
+                "helpers": {
+                    "caption": "Ayudantes",
+                    "description": "Elementos que pueden ayudar a construir automatizaciones.",
+                    "dialog": {
+                        "add_helper": "Añadir ayudante",
+                        "add_platform": "Añadir {platform}",
+                        "create": "Crear"
+                    },
+                    "picker": {
+                        "add_helper": "Añadir ayudante",
+                        "headers": {
+                            "editable": "Editable",
+                            "entity_id": "ID de la entidad",
+                            "name": "Nombre",
+                            "type": "Tipo"
+                        }
+                    },
+                    "types": {
+                        "input_boolean": "Alternar",
+                        "input_datetime": "Fecha y/o hora",
+                        "input_number": "Número",
+                        "input_select": "Desplegable",
+                        "input_text": "Texto"
+                    }
+                },
                 "integrations": {
                     "caption": "Integraciones",
                     "config_entry": {
@@ -1374,7 +1475,7 @@
                     },
                     "configure": "Configurar",
                     "configured": "Configurado",
-                    "description": "Administrar y configurar integraciones",
+                    "description": "Administra y configura integraciones",
                     "details": "Detalles de la integración",
                     "discovered": "Descubierto",
                     "home_assistant_website": "Sitio web de Home Assistant",
@@ -1396,6 +1497,83 @@
                     "note_about_website_reference": "Más están disponibles en el"
                 },
                 "introduction": "Aquí puedes configurar tus componentes y Home Assistant. Aún no es posible configurar todo desde la interfaz de usuario, pero estamos trabajando en ello.",
+                "lovelace": {
+                    "caption": "Paneles de Control Lovelace",
+                    "dashboards": {
+                        "cant_edit_default": "El panel de control estándar de Lovelace no se puede editar desde la interfaz de usuario. Puedes ocultarlo estableciendo otro panel como predeterminado.",
+                        "cant_edit_yaml": "Los paneles de control definidos en YAML no se pueden editar desde la interfaz de usuario. Cámbialos en configuration.yaml.",
+                        "caption": "Paneles de control",
+                        "conf_mode": {
+                            "storage": "Controlado por la interfaz de usuario",
+                            "yaml": "Archivo YAML"
+                        },
+                        "confirm_delete": "¿Estás seguro de que quieres eliminar este panel de control?",
+                        "default_dashboard": "Este es el panel predeterminado",
+                        "detail": {
+                            "create": "Crear",
+                            "delete": "Eliminar",
+                            "dismiss": "Cerrar",
+                            "edit_dashboard": "Editar panel de control",
+                            "icon": "Icono",
+                            "new_dashboard": "Añadir nuevo panel de control",
+                            "remove_default": "Eliminar como predeterminado en este dispositivo",
+                            "require_admin": "Solo administrador",
+                            "set_default": "Establecer como predeterminado en este dispositivo",
+                            "show_sidebar": "Mostrar en la barra lateral",
+                            "title": "Título",
+                            "title_required": "Se requiere un título.",
+                            "update": "Actualizar",
+                            "url": "Url",
+                            "url_error_msg": "La url no puede contener espacios o caracteres especiales, excepto _ y -"
+                        },
+                        "picker": {
+                            "add_dashboard": "Añadir panel de control",
+                            "headers": {
+                                "conf_mode": "Método de configuración",
+                                "default": "Por defecto",
+                                "filename": "Nombre de archivo",
+                                "require_admin": "Solo administrador",
+                                "sidebar": "Mostrar en la barra lateral",
+                                "title": "Título"
+                            },
+                            "open": "Abrir"
+                        }
+                    },
+                    "description": "Configura tus Paneles de Control Lovelace",
+                    "resources": {
+                        "cant_edit_yaml": "Está utilizando Lovelace en modo YAML, por lo tanto, no puedes administrar tus recursos a través de la interfaz de usuario. Adminístralos en configuration.yaml.",
+                        "caption": "Recursos",
+                        "confirm_delete": "¿Estás seguro de que quieres eliminar este recurso?",
+                        "detail": {
+                            "create": "Crear",
+                            "delete": "Eliminar",
+                            "dismiss": "Cerrar",
+                            "new_resource": "Añadir nuevo recurso",
+                            "type": "Tipo de recurso",
+                            "update": "Actualizar",
+                            "url": "Url",
+                            "url_error_msg": "Url es un campo obligatorio",
+                            "warning_header": "¡Ten cuidado!",
+                            "warning_text": "Añadir recursos puede ser peligroso, asegúrate de conocer el origen del recurso y que confías en ellos. Malos recursos  pueden dañar seriamente tu sistema."
+                        },
+                        "picker": {
+                            "add_resource": "Añadir recurso",
+                            "headers": {
+                                "type": "Tipo",
+                                "url": "Url"
+                            },
+                            "no_resources": "Sin recursos"
+                        },
+                        "refresh_body": "Tienes que actualizar la página para completar la eliminación, ¿deseas actualizar ahora?",
+                        "refresh_header": "¿Quieres actualizar?",
+                        "types": {
+                            "css": "Hoja de estilo",
+                            "html": "HTML (obsoleto)",
+                            "js": "Archivo JavaScript (obsoleto)",
+                            "module": "Módulo JavaScript"
+                        }
+                    }
+                },
                 "person": {
                     "add_person": "Añadir persona",
                     "caption": "Personas",
@@ -1425,7 +1603,7 @@
                 "scene": {
                     "activated": "Activada escena {name}.",
                     "caption": "Escenas",
-                    "description": "Crear y editar escenas",
+                    "description": "Crea y edita escenas",
                     "editor": {
                         "default_name": "Nueva Escena",
                         "devices": {
@@ -1465,7 +1643,7 @@
                 },
                 "script": {
                     "caption": "Scripts",
-                    "description": "Crear y editar scripts",
+                    "description": "Crea y edita scripts",
                     "editor": {
                         "alias": "Nombre",
                         "default_name": "Nuevo script",
@@ -1496,8 +1674,8 @@
                             "automation": "Recargar automatizaciones",
                             "core": "Recargar ubicación y personalizaciones",
                             "group": "Recargar grupos",
-                            "heading": "Recargando la configuración",
-                            "introduction": "Algunas partes de Home Assistant pueden recargarse sin necesidad de reiniciar. Al pulsar en recargar se descartará la configuración actual y se cargará la nueva.",
+                            "heading": "Recargando la configuración YAML",
+                            "introduction": "Algunas partes de Home Assistant pueden recargarse sin necesidad de reiniciar. Al pulsar en recargar se descartará la configuración YAML actual y se cargará la nueva.",
                             "person": "Recargar personas",
                             "scene": "Recargar escenas",
                             "script": "Recargar scripts",
@@ -1512,7 +1690,7 @@
                             "stop": "Detener"
                         },
                         "validation": {
-                            "check_config": "Verificar la configuración",
+                            "check_config": "Verificar configuración",
                             "heading": "Validación de la configuración",
                             "introduction": "Valida tu configuración si has realizado cambios recientemente y quieres asegurarte de que son correctos",
                             "invalid": "Configuración no válida",
@@ -1529,7 +1707,7 @@
                         "username": "Nombre de usuario"
                     },
                     "caption": "Usuarios",
-                    "description": "Administrar usuarios",
+                    "description": "Administra usuarios",
                     "editor": {
                         "activate_user": "Activar usuario",
                         "active": "Activo",
@@ -1684,7 +1862,10 @@
                         "required_error_msg": "Este campo es obligatorio",
                         "update": "Actualizar"
                     },
-                    "edit_home_zone": "Es posible modificar la ubicación de tu casa en la configuración general",
+                    "edit_home_zone": "El radio de la zona de tu casa aún no se puede editar desde la interfaz. Arrastra el marcador en el mapa para mover la zona de tu casa.",
+                    "edit_home_zone_narrow": "El radio de la zona de tu casa aún no se puede editar desde la interfaz. La ubicación se puede cambiar desde la configuración general.",
+                    "go_to_core_config": "¿Ir a la configuración general?",
+                    "home_zone_core_config": "La ubicación de la zona de tu casa se puede editar desde la página de configuración general. El radio de la zona de tu casa aún no se puede editar desde la interfaz. ¿Quieres ir a la configuración general?",
                     "introduction": "Las zonas permiten especificar determinadas regiones de la tierra. Cuando una persona está dentro de una zona, su estado tomará el nombre de la zona. Las zonas también se pueden utilizar como desencadenante o condición dentro de las configuraciones de automatización.",
                     "no_zones_created_yet": "Parece que aún no has creado ninguna zona."
                 },
@@ -1892,6 +2073,11 @@
                         "toggle": "Alternar {name}",
                         "url": "Abrir ventana a {url_path}"
                     },
+                    "safe-mode": {
+                        "description": "Home Assistant tuvo problemas al cargar tu configuración y ahora se está ejecutando en modo seguro. Echa un vistazo al registro de errores para ver qué salió mal.",
+                        "header": "Modo Seguro Activado",
+                        "show_errors": "Mostrar errores"
+                    },
                     "shopping-list": {
                         "add_item": "Añadir artículo",
                         "checked_items": "Elementos marcados",
@@ -1899,7 +2085,7 @@
                     }
                 },
                 "changed_toast": {
-                    "message": "La configuración de la IU Lovelace se actualizó, ¿te gustaría volver a cargarla?",
+                    "message": "La configuración de la IU Lovelace para este panel de control se ha actualizado, ¿quieres recargar para ver los cambios?",
                     "refresh": "Actualizar"
                 },
                 "editor": {
@@ -1909,16 +2095,30 @@
                         },
                         "alarm-panel": {
                             "available_states": "Estados disponibles",
+                            "description": "La tarjeta del Panel de Alarma te permite Armar y Desarmar las integraciones de tu panel de control de alarma.",
                             "name": "Panel de alarma"
                         },
+                        "button": {
+                            "description": "La tarjeta Botón te permite agregar botones para realizar tareas.",
+                            "name": "Botón"
+                        },
                         "conditional": {
-                            "name": "Condicional"
+                            "card": "Tarjeta",
+                            "change_type": "Cambiar el tipo",
+                            "condition_explanation": "La tarjeta será mostrada cuando se cumplan TODAS las condiciones siguientes.",
+                            "conditions": "Condiciones",
+                            "current_state": "actual",
+                            "description": "La tarjeta Condicional muestra otra tarjeta en función de los estados de entidad.",
+                            "name": "Condicional",
+                            "state_equal": "El Estado es igual a",
+                            "state_not_equal": "El Estado no es igual a"
                         },
                         "config": {
                             "optional": "Opcional",
                             "required": "Necesario"
                         },
                         "entities": {
+                            "description": "La tarjeta Entidades es el tipo de tarjeta más común. Agrupa los elementos en listas.",
                             "name": "Entidades",
                             "show_header_toggle": "¿Mostrar interruptor en encabezado?",
                             "toggle": "Alternar entidades."
@@ -1927,9 +2127,11 @@
                             "name": "Botón de entidad"
                         },
                         "entity-filter": {
+                            "description": "La tarjeta Filtro de Entidades te permite definir una lista de entidades de las que deseas realizar un seguimiento solo cuando se encuentra en un estado determinado.",
                             "name": "Filtro de entidad"
                         },
                         "gauge": {
+                            "description": "La tarjeta Indicador es una tarjeta básica que permite ver visualmente los datos de los sensores.",
                             "name": "Indicador",
                             "severity": {
                                 "define": "¿Definir gravedad?",
@@ -1949,6 +2151,8 @@
                             "icon": "Icono",
                             "icon_height": "Altura del icono",
                             "image": "Ruta de la imagen",
+                            "manual": "Manual",
+                            "manual_description": "¿Necesitas agregar una tarjeta personalizada o simplemente deseas escribir manualmente el yaml?",
                             "maximum": "Máximo",
                             "minimum": "Mínimo",
                             "name": "Nombre",
@@ -1956,6 +2160,7 @@
                             "show_icon": "¿Mostrar icono?",
                             "show_name": "¿Mostrar nombre?",
                             "show_state": "¿Mostrar estado?",
+                            "state": "Estado",
                             "tap_action": "Acción de toque",
                             "theme": "Tema",
                             "title": "Título",
@@ -1964,65 +2169,83 @@
                         },
                         "glance": {
                             "columns": "Columnas",
+                            "description": "La tarjeta Vistazo es útil para agrupar varios sensores en una visión general compacta.",
                             "name": "Vistazo"
                         },
                         "history-graph": {
+                            "description": "La tarjeta Historial Gráfico te permite mostrar un gráfico para cada una de las entidades enumeradas.",
                             "name": "Gráfico histórico"
                         },
                         "horizontal-stack": {
+                            "description": "La tarjeta de la Pila Horizontal permite apilar varias tarjetas, de modo que siempre se sientan una al lado de la otra en el espacio de una columna.",
                             "name": "Pila horizontal"
                         },
                         "iframe": {
-                            "name": "iFrame"
+                            "description": "La tarjeta de página web te permite incrustar tu página web favorita directamente en Home Assistant.",
+                            "name": "Página web"
                         },
                         "light": {
+                            "description": "La tarjeta de luz te permite cambiar la intensidad de la luz.",
                             "name": "Luz"
                         },
                         "map": {
                             "dark_mode": "¿Modo oscuro?",
                             "default_zoom": "Zoom predeterminado",
+                            "description": "La tarjeta Mapa que te permite mostrar entidades en un mapa.",
                             "geo_location_sources": "Fuentes de geolocalización",
                             "name": "Mapa",
                             "source": "Fuente"
                         },
                         "markdown": {
                             "content": "Contenido",
+                            "description": "La tarjeta Markdown se usa para representar Markdown.",
                             "name": "Markdown"
                         },
                         "media-control": {
-                            "name": "Control de medios"
+                            "description": "La tarjeta Control Multimedia se utiliza para mostrar entidades de reproductor multimedia en una interfaz con controles fáciles de usar.",
+                            "name": "Control Multimedia"
                         },
                         "picture-elements": {
+                            "description": "La tarjeta Elementos de imagen es uno de los tipos de tarjetas más versátiles. ¡Las tarjetas te permiten colocar iconos o texto e incluso servicios! En una imagen basada en coordenadas.",
                             "name": "Elementos de imagen"
                         },
                         "picture-entity": {
+                            "description": "La tarjeta de Entidad de Imagen muestra una entidad en forma de imagen. En lugar de imágenes desde una URL, también puede mostrar la imagen de las entidades de cámara.",
                             "name": "Entidad de imagen"
                         },
                         "picture-glance": {
+                            "description": "La tarjeta Vistazo de Imagen muestra una imagen y los estados de entidad correspondientes como un icono. Las entidades en el lado derecho permiten alternar acciones, otras muestran el diálogo de más información.",
                             "name": "Vistazo de imagen"
                         },
                         "picture": {
+                            "description": "La tarjeta Imagen le permite configurar una imagen para usarla para navegar por varias rutas en su interfaz o para llamar a un servicio.",
                             "name": "Imagen"
                         },
                         "plant-status": {
+                            "description": "La tarjeta Estado de la Planta es para todos los botánicos encantadores que hay.",
                             "name": "Estado de la planta"
                         },
                         "sensor": {
+                            "description": "La tarjeta Sensor te ofrece una visión general rápida del estado de tus sensores con un gráfico opcional para visualizar los cambios a lo largo del tiempo.",
                             "graph_detail": "Detalle del gráfico",
                             "graph_type": "Tipo de gráfico",
                             "name": "Sensor"
                         },
                         "shopping-list": {
+                            "description": "La tarjeta Lista de la Compra le permite agregar, editar, marcar y borrar artículos de tu lista de compras.",
                             "integration_not_loaded": "Esta tarjeta requiere que se configure la integración 'Lista de la compra'.",
                             "name": "Lista de la compra"
                         },
                         "thermostat": {
+                            "description": "La tarjeta Termostato te da el control de tu entidad climática. Te permite cambiar la temperatura y el modo de la entidad.",
                             "name": "Termostato"
                         },
                         "vertical-stack": {
+                            "description": "La tarjeta Pila Vertical te permite agrupar varias tarjetas para que siempre se sienten en la misma columna.",
                             "name": "Pila vertical"
                         },
                         "weather-forecast": {
+                            "description": "La tarjeta de Pronóstico del tiempo muestra el clima. Muy útil para incluir en las interfaces que las personas muestran en la pared.",
                             "name": "Pronóstico del tiempo"
                         }
                     },
@@ -2052,7 +2275,13 @@
                         "header": "Ver configuración",
                         "header_name": "{name} Ver configuración",
                         "move_left": "Mover vista a la izquierda",
-                        "move_right": "Mover vista a la derecha"
+                        "move_right": "Mover vista a la derecha",
+                        "tab_badges": "Insignias",
+                        "tab_settings": "Configuración",
+                        "tab_visibility": "Visibilidad",
+                        "visibility": {
+                            "select_users": "Selecciona qué usuarios deberían ver esta vista en la navegación"
+                        }
                     },
                     "header": "Editar la interfaz de usuario",
                     "menu": {
@@ -2062,7 +2291,7 @@
                     "migrate": {
                         "header": "Configuración incompatible",
                         "migrate": "Migrar configuración",
-                        "para_migrate": "Home Assistant puede añadir ID's a todas tus tarjetas y vistas automáticamente pulsando el botón 'Migrar configuración'.",
+                        "para_migrate": "Home Assistant puede añadir IDs a todas tus tarjetas y vistas automáticamente pulsando el botón 'Migrar configuración'.",
                         "para_no_id": "Este elemento no tiene un ID. Por favor añade uno a este elemento en 'ui-lovelace.yaml'."
                     },
                     "raw_editor": {
@@ -2075,16 +2304,21 @@
                         "error_remove": "No se puede eliminar la configuración: {error}",
                         "error_save_yaml": "No se puede guardar YAML: {error}",
                         "header": "Editar configuración",
+                        "resources_moved": "Los recursos ya no se deben agregar a la configuración de Lovelace, sino que se pueden agregar en el panel de configuración de Lovelace.",
                         "save": "Guardar",
                         "saved": "Guardado",
                         "unsaved_changes": "Cambios no guardados"
                     },
                     "save_config": {
                         "cancel": "No importa",
+                        "close": "Cerrar",
                         "header": "Tomar el control de la interfaz de usuario Lovelace",
                         "para": "Por defecto Home Assistant se encargará de tu interfaz de usuario, actualizándola cuando haya nuevas entidades o componentes Lovelace disponibles. Si asumes el control, ya no haremos más cambios automáticamente por ti.",
                         "para_sure": "¿Estás seguro de que quieres tomar el control de tu interfaz de usuario?",
-                        "save": "Tomar el control"
+                        "save": "Tomar el control",
+                        "yaml_config": "Para ayudarte a empezar aquí está la configuración actual de este panel:",
+                        "yaml_control": "Para tomar el control en modo YAML, crea un archivo YAML con el nombre que especificaste en la configuración para este panel de control, o el valor predeterminado 'ui-lovelace.yaml'.",
+                        "yaml_mode": "Está utilizando el modo YAML, lo que significa que no puedes cambiar la configuración de Lovelace desde la interfaz de usuario. Si deseas cambiar Lovelace desde la interfaz de usuario, quita el 'mode: yaml' de la configuración de Lovelace en 'configuration.yaml.'"
                     },
                     "suggest_card": {
                         "add": "Añadir a la IU Lovelace",
@@ -2117,10 +2351,14 @@
                     "title": "Entidades no utilizadas"
                 },
                 "views": {
-                    "confirm_delete": "¿Seguro que quieres eliminar esta vista?",
+                    "confirm_delete": "¿Eliminar vista?",
+                    "confirm_delete_existing_cards": "Al eliminar esta vista también se eliminarán las tarjetas",
+                    "confirm_delete_existing_cards_text": "¿Estás seguro de que deseas eliminar tu vista '{name}'? La vista contiene {number} tarjetas que se eliminarán. Esta acción no se puede deshacer.",
+                    "confirm_delete_text": "¿Estás seguro de que deseas eliminar tu vista '{name}'?",
                     "existing_cards": "No puedes eliminar una vista que tiene tarjetas. Elimina las tarjetas primero."
                 },
                 "warning": {
+                    "attribute_not_found": "El atributo {attribute} no está disponible en: {entity}",
                     "entity_non_numeric": "La entidad no es numérica: {entity}",
                     "entity_not_found": "La entidad no está disponible: {entity}"
                 }
@@ -2196,7 +2434,7 @@
                                     "data": {
                                         "password": "Contraseña de API"
                                     },
-                                    "description": "Introduce la contraseña de la API en tu configuración http:"
+                                    "description": "Introduce la contraseña de la API en tu configuración HTTP:"
                                 },
                                 "mfa": {
                                     "data": {

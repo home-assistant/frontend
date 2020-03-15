@@ -16,6 +16,7 @@ import { dynamicElement } from "../../../../common/dom/dynamic-element-directive
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-card";
 import { HomeAssistant } from "../../../../types";
+import { showConfirmationDialog } from "../../../../dialogs/generic/show-dialog-box";
 
 import { Action } from "../../../../data/script";
 
@@ -157,7 +158,7 @@ export default class HaAutomationActionRow extends LitElement {
                       `
                     : ""}
                   <ha-yaml-editor
-                    .value=${this.action}
+                    .defaultValue=${this.action}
                     @value-changed=${this._onYamlChange}
                   ></ha-yaml-editor>
                 </div>
@@ -206,15 +207,16 @@ export default class HaAutomationActionRow extends LitElement {
   }
 
   private _onDelete() {
-    if (
-      confirm(
-        this.hass.localize(
-          "ui.panel.config.automation.editor.actions.delete_confirm"
-        )
-      )
-    ) {
-      fireEvent(this, "value-changed", { value: null });
-    }
+    showConfirmationDialog(this, {
+      text: this.hass.localize(
+        "ui.panel.config.automation.editor.actions.delete_confirm"
+      ),
+      dismissText: this.hass.localize("ui.common.no"),
+      confirmText: this.hass.localize("ui.common.yes"),
+      confirm: () => {
+        fireEvent(this, "value-changed", { value: null });
+      },
+    });
   }
 
   private _typeChanged(ev: CustomEvent) {
@@ -238,6 +240,9 @@ export default class HaAutomationActionRow extends LitElement {
 
   private _onYamlChange(ev: CustomEvent) {
     ev.stopPropagation();
+    if (!ev.detail.isValid) {
+      return;
+    }
     fireEvent(this, "value-changed", { value: ev.detail.value });
   }
 

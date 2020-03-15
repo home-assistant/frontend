@@ -54,16 +54,16 @@ class HuiScriptEntityRow extends LitElement implements LovelaceRow {
     }
 
     return html`
-      <hui-generic-entity-row .hass="${this.hass}" .config="${this._config}">
+      <hui-generic-entity-row .hass=${this.hass} .config=${this._config}>
         ${stateObj.attributes.can_cancel
           ? html`
               <ha-entity-toggle
-                .hass="${this.hass}"
-                .stateObj="${stateObj}"
+                .hass=${this.hass}
+                .stateObj=${stateObj}
               ></ha-entity-toggle>
             `
           : html`
-              <mwc-button @click="${this._callService}">
+              <mwc-button @click=${this._callService} class="text-content">
                 ${this._config.action_name ||
                   this.hass!.localize("ui.card.script.execute")}
               </mwc-button>

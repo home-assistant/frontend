@@ -1,4 +1,9 @@
 import { HomeAssistant } from "../types";
+import { navigate } from "../common/navigate";
+
+export const defaultRadiusColor = "#FF9800";
+export const homeRadiusColor: string = "#03a9f4";
+export const passiveRadiusColor: string = "#9b9b9b";
 
 export interface Zone {
   id: string;
@@ -44,3 +49,19 @@ export const deleteZone = (hass: HomeAssistant, zoneId: string) =>
     type: "zone/delete",
     zone_id: zoneId,
   });
+
+let inititialZoneEditorData: Partial<ZoneMutableParams> | undefined;
+
+export const showZoneEditor = (
+  el: HTMLElement,
+  data?: Partial<ZoneMutableParams>
+) => {
+  inititialZoneEditorData = data;
+  navigate(el, "/config/zone/new");
+};
+
+export const getZoneEditorInitData = () => {
+  const data = inititialZoneEditorData;
+  inititialZoneEditorData = undefined;
+  return data;
+};

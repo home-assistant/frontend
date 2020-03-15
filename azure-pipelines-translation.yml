@@ -11,7 +11,7 @@ trigger:
 pr: none
 schedules:
   - cron: "30 0 * * *"
-    displayName: "translation update"
+    displayName: "frontend translation update"
     branches:
       include:
       - dev

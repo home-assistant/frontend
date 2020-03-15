@@ -16,7 +16,7 @@ import "../../data/ha-state-history-data";
 import "../../resources/ha-date-picker-style";
 import "../../resources/ha-style";
 
-import formatDate from "../../common/datetime/format_date";
+import { formatDate } from "../../common/datetime/format_date";
 import LocalizeMixin from "../../mixins/localize-mixin";
 import { computeRTL } from "../../common/util/compute_rtl";
 
@@ -41,7 +41,10 @@ class HaPanelHistory extends LocalizeMixin(PolymerElement) {
           margin-right: 16px;
           margin-top: 5px;
           --paper-input-container-label-floating: {
-            padding-bottom: 10px;
+            padding-bottom: 11px;
+          }
+          --paper-input-suffix: {
+            height: 24px;
           }
         }
 
@@ -51,6 +54,7 @@ class HaPanelHistory extends LocalizeMixin(PolymerElement) {
 
         paper-item {
           cursor: pointer;
+          white-space: nowrap;
         }
       </style>
 

@@ -395,7 +395,7 @@
     "ui": {
         "auth_store": {
             "ask": "Voulez-vous enregistrer cette connexion?",
-            "confirm": "Enregistrer la connexion",
+            "confirm": "Connexion automatique",
             "decline": "Non merci"
         },
         "card": {
@@ -411,7 +411,7 @@
             },
             "automation": {
                 "last_triggered": "Dernier déclenchement",
-                "trigger": "Exécutez"
+                "trigger": "Exécuter"
             },
             "camera": {
                 "not_available": "Image non disponible"
@@ -581,6 +581,7 @@
                 "entity": "Entités liées",
                 "group": "Partie des groupes suivants",
                 "integration": "Intégration",
+                "no_related_found": "Aucun historique des valeurs trouvé.",
                 "scene": "Partie des scènes suivantes",
                 "script": "Partie des scripts suivants"
             },
@@ -604,7 +605,8 @@
             "config_entry_system_options": {
                 "enable_new_entities_description": "Si désactivé, les nouvelles entités découvertes pour {integration} ne seront pas ajoutées automatiquement à Home Assistant.",
                 "enable_new_entities_label": "Activer les entités nouvellement ajoutées.",
-                "title": "Options système pour {integration}"
+                "title": "Options système pour {integration}",
+                "update": "Mise à jour"
             },
             "confirmation": {
                 "cancel": "Annuler",
@@ -629,6 +631,7 @@
                     "unavailable": "Cette entité n'est pas disponible actuellement.",
                     "update": "MISE À JOUR"
                 },
+                "no_unique_id": "Cette entité n'a pas d'identifiant unique, ses paramètres ne peuvent donc pas être gérés à partir de l'interface utilisateur.",
                 "related": "Liées",
                 "settings": "Réglages"
             },
@@ -637,9 +640,35 @@
                 "default_confirmation_title": "Êtes-vous sûr ?",
                 "ok": "OK"
             },
+            "helper_settings": {
+                "input_datetime": {
+                    "date": "Date",
+                    "datetime": "Date et heure",
+                    "has_date": "Date",
+                    "mode": "Que voulez-vous saisir",
+                    "time": "Heure"
+                },
+                "input_select": {
+                    "add": "Ajouter",
+                    "add_option": "Ajouter une option",
+                    "options": "Options"
+                },
+                "input_text": {
+                    "max": "Longueur maximale",
+                    "min": "Longueur minimum",
+                    "mode": "Mode d'affichage",
+                    "password": "Mot de passe",
+                    "text": "Texte"
+                },
+                "not_editable": "Non modifiable",
+                "platform_not_loaded": "L'intégration {platform} n'est pas chargée, veuillez l'ajouter à votre configuration. Soit en ajoutant 'default_config:' ou '{platform}:'."
+            },
             "more_info_control": {
                 "dismiss": "Fermer la fenêtre de dialogue",
                 "edit": "Modifier l'entité",
+                "person": {
+                    "create_zone": "Créer une zone à partir de l'emplacement actuel"
+                },
                 "restored": {
                     "confirm_remove_text": "Voulez-vous vraiment supprimer cette entité ?",
                     "confirm_remove_title": "Supprimer l'entité ?",
@@ -659,6 +688,18 @@
                 },
                 "updater": {
                     "title": "Instructions de mise à jour"
+                },
+                "vacuum": {
+                    "clean_spot": "Nettoyer Endroit",
+                    "commands": "Commandes d'aspirateur :",
+                    "fan_speed": "Vitesse ventilateur",
+                    "locate": "Localiser",
+                    "pause": "Pause",
+                    "return_home": "Rentrer à la maison",
+                    "start": "Démarrer",
+                    "start_pause": "Démarrer/Pause",
+                    "status": "Statut",
+                    "stop": "Arrêter"
                 }
             },
             "more_info_settings": {
@@ -745,6 +786,10 @@
                 "areas": {
                     "caption": "Pièces",
                     "create_area": "CRÉER UNE PIÈCE",
+                    "delete": {
+                        "confirmation_text": "Tous les appareils de cette zone ne seront plus attribués.",
+                        "confirmation_title": "Etes-vous sûr de vouloir supprimer cette zone ?"
+                    },
                     "description": "Vue d'ensemble de toutes les pièces de votre maison.",
                     "editor": {
                         "create": "CRÉER",
@@ -879,6 +924,7 @@
                         },
                         "edit_ui": "Modifier avec l'interface utilisateur",
                         "edit_yaml": "Modifier en tant que YAML",
+                        "enable_disable": "Activer/Désactiver l'automatisation",
                         "introduction": "Utilisez les automatisations pour donner vie à votre maison",
                         "load_error_not_editable": "Seules les automations dans automations.yaml sont modifiables.",
                         "load_error_unknown": "Erreur lors du chargement de l'automation ( {err_no} ).",
@@ -993,7 +1039,7 @@
                 "cloud": {
                     "account": {
                         "alexa": {
-                            "config_documentation": "Documentation de la configuration",
+                            "config_documentation": "Documentation de configuration",
                             "disable": "désactiver",
                             "enable": "activer",
                             "enable_ha_skill": "Activer le skill Home Assistant pour Alexa",
@@ -1247,13 +1293,14 @@
                         "device": "Appareil",
                         "integration": "Intégration",
                         "manufacturer": "Fabricant",
-                        "model": "Modèle"
+                        "model": "Modèle",
+                        "no_devices": "Aucun appareil"
                     },
                     "description": "Gérer les appareils connectés",
                     "details": "Voici tous les détails de votre appareil.",
                     "device_not_found": "Appareil non trouvé.",
                     "entities": {
-                        "add_entities_lovelace": "Ajouter toutes les entités de l'appareil à l'interface utilisateur de Lovelace",
+                        "add_entities_lovelace": "Ajouter à Lovelace",
                         "entities": "Entités",
                         "none": "Cet appareil n'a pas d'entités"
                     },
@@ -1306,6 +1353,7 @@
                         "filter": {
                             "filter": "Filtre",
                             "show_disabled": "Afficher les entités désactivées",
+                            "show_readonly": "Afficher les entités désactivées",
                             "show_unavailable": "Afficher les entités non disponibles"
                         },
                         "header": "Entités",
@@ -1329,12 +1377,33 @@
                         "status": {
                             "disabled": "Désactivé",
                             "ok": "Ok",
+                            "readonly": "Lecture seule",
+                            "restored": "Restauré",
                             "unavailable": "Indisponible"
                         },
                         "unavailable": "(indisponible)"
                     }
                 },
                 "header": "Configurer Home Assistant",
+                "helpers": {
+                    "caption": "Aides",
+                    "dialog": {
+                        "add_helper": "Ajouter une aide",
+                        "create": "Créer"
+                    },
+                    "picker": {
+                        "add_helper": "Ajouter une aide",
+                        "headers": {
+                            "editable": "Modifiable",
+                            "name": "Nom",
+                            "type": "Type"
+                        }
+                    },
+                    "types": {
+                        "input_number": "Nombre",
+                        "input_text": "Texte"
+                    }
+                },
                 "integrations": {
                     "caption": "Intégrations",
                     "config_entry": {
@@ -1396,6 +1465,39 @@
                     "note_about_website_reference": "D'autres sont disponibles sur le "
                 },
                 "introduction": "Ici, il est possible de configurer vos composants et Home Assistant. Tout n'est pas encore possible de configurer à partir de l'interface utilisateur, mais nous y travaillons.",
+                "lovelace": {
+                    "dashboards": {
+                        "default_dashboard": "Ceci est le tableau de bord par défaut",
+                        "detail": {
+                            "icon": "Icône",
+                            "title": "Titre",
+                            "title_required": "Le titre est requis."
+                        },
+                        "picker": {
+                            "open": "Ouvrir"
+                        }
+                    },
+                    "resources": {
+                        "confirm_delete": "Voulez-vous vraiment supprimer cette ressource ?",
+                        "detail": {
+                            "create": "Créer",
+                            "delete": "Supprimer",
+                            "dismiss": "Fermer",
+                            "new_resource": "Ajouter une nouvelle ressource",
+                            "type": "Type de ressource",
+                            "update": "Mise à jour",
+                            "url": "Url",
+                            "url_error_msg": "L'URL est un champ obligatoire",
+                            "warning_header": "Soyez prudents !",
+                            "warning_text": "L'ajout de ressources peut être dangereux, assurez-vous de connaître la source de la ressource et faites-lui confiance. De mauvaises ressources peuvent sérieusement endommager votre système."
+                        },
+                        "picker": {
+                            "add_resource": "Ajouter une ressource",
+                            "no_resources": "Pas de ressources"
+                        },
+                        "refresh_header": "Voulez-vous vous rafraîchir ?"
+                    }
+                },
                 "person": {
                     "add_person": "Ajouter une personne",
                     "caption": "Personnes",
@@ -1498,7 +1600,7 @@
                             "group": "Recharger les groupes",
                             "heading": "Rechargement de la configuration",
                             "introduction": "Certaines parties de Home Assistant peuvent être rechargées sans nécessiter de redémarrage. Le fait de cliquer sur recharger déchargera leur configuration actuelle et chargera la nouvelle.",
-                            "person": "Recharger des personnes",
+                            "person": "Recharger les personnes",
                             "scene": "Recharger les scènes",
                             "script": "Recharger les scripts",
                             "zone": "Recharger les zones"
@@ -1679,12 +1781,15 @@
                         "name": "Nom",
                         "new_zone": "Nouvelle zone",
                         "passive": "Passif",
-                        "passive_note": "Les zones passives sont cachées dans le frontend et ne sont pas utilisées comme emplacement pour les traceurs de périphériques. C'est utile si vous voulez seulement les utiliser pour des automations.",
+                        "passive_note": "Les zones passives sont cachées dans l'interface utilisateur et ne sont pas utilisées comme emplacement pour les appareils suivis. Elles sont utiles si vous voulez les utiliser pour des automations.",
                         "radius": "Rayon",
                         "required_error_msg": "Ce champ est requis",
                         "update": "Mettre à jour"
                     },
                     "edit_home_zone": "L'emplacement de votre maison peut être modifié dans la configuration générale.",
+                    "edit_home_zone_narrow": "Le rayon de la zone d'habitation ne peut pas encore être modifié depuis le frontend. L'emplacement peut être modifié par rapport à la configuration générale.",
+                    "go_to_core_config": "Configuration générale",
+                    "home_zone_core_config": "L'emplacement de votre zone d'habitation est modifiable à partir de la page de configuration générale. Le rayon de la zone d'habitation ne peut pas encore être modifié depuis le frontend. Voulez-vous passer à la configuration générale ?",
                     "introduction": "Les zones vous permettent de spécifier certaines régions sur la terre. Lorsqu'une personne se trouve dans une zone, l'état prend le nom de la zone. Les zones peuvent également être utilisées comme déclencheur ou condition dans les configurations d'automation.",
                     "no_zones_created_yet": "Il semble que vous n'ayez pas encore créé de zones."
                 },
@@ -1723,7 +1828,7 @@
                     },
                     "ozw_log": {
                         "header": "Journal OZW",
-                        "introduction": "Afficher le journal. 0 est le minimum (charges journal entier) et 1000 est le maximum. La charge affichera un journal statique et la queue sera mise à jour automatique avec le dernier nombre spécifié de lignes du journal."
+                        "introduction": "Afficher le journal. Entrer un nombre de 1 à 1000 lignes pour limiter le nombre de lignes chargées dans le journal, ou entrer 0 pour désactiver la limitation du nombre de lignes affichées (journal complet). \"Load\" affichera un instantané du journal, alors que \"Tail\" affichera le journal en l'actualisant au fur et à mesure que de nouvelles entrées apparaissent."
                     },
                     "services": {
                         "add_node": "Ajouter un nœud",
@@ -1870,7 +1975,7 @@
             "lovelace": {
                 "add_entities": {
                     "generated_unsupported": "Vous ne pouvez utiliser cette fonction que lorsque vous avez pris le contrôle de Lovelace UI.",
-                    "saving_failed": "La sauvegarde de la configuration de Lovelace UI a échouée.",
+                    "saving_failed": "La sauvegarde de la configuration de Lovelace UI a échoué.",
                     "yaml_unsupported": "Vous ne pouvez pas utiliser cette fonction lorsque vous utilisé Lovelace UI en mode YAML."
                 },
                 "cards": {
@@ -1892,6 +1997,11 @@
                         "toggle": "Permuter {name}",
                         "url": "Ouvrir la fenêtre vers {url_path}."
                     },
+                    "safe-mode": {
+                        "description": "Home Assistant a rencontré des problèmes lors du chargement de votre configuration et fonctionne désormais en mode sans échec. Jetez un œil au journal des erreurs pour voir ce qui ne va pas.",
+                        "header": "Mode sans échec activé",
+                        "show_errors": "Afficher les erreurs"
+                    },
                     "shopping-list": {
                         "add_item": "Ajouter un élément",
                         "checked_items": "Éléments cochés",
@@ -1911,8 +2021,17 @@
                             "available_states": "États disponibles",
                             "name": "Panneau d'alarme"
                         },
+                        "button": {
+                            "name": "Bouton"
+                        },
                         "conditional": {
-                            "name": "Conditionnel"
+                            "card": "Carte",
+                            "change_type": "Changer le type",
+                            "conditions": "Conditions",
+                            "current_state": "actuel",
+                            "name": "Conditionnel",
+                            "state_equal": "L'État est égal à",
+                            "state_not_equal": "L'état n'est pas égal à"
                         },
                         "config": {
                             "optional": "Optionnel",
@@ -1949,6 +2068,7 @@
                             "icon": "Icône",
                             "icon_height": "Hauteur de l'icône",
                             "image": "Chemin de l'image",
+                            "manual": "Manuel",
                             "maximum": "Maximum",
                             "minimum": "Minimum",
                             "name": "Nom",
@@ -1956,6 +2076,7 @@
                             "show_icon": "Afficher l'icône ?",
                             "show_name": "Afficher le nom ?",
                             "show_state": "Afficher l'état ?",
+                            "state": "État",
                             "tap_action": "Appui court",
                             "theme": "Thème",
                             "title": "Titre",
@@ -1973,7 +2094,7 @@
                             "name": "Pile horizontale"
                         },
                         "iframe": {
-                            "name": "iFrame"
+                            "name": "Page Web"
                         },
                         "light": {
                             "name": "Lumière"
@@ -1996,33 +2117,41 @@
                             "name": "Éléments d'image"
                         },
                         "picture-entity": {
+                            "description": "La carte Entité image affiche une entité sous la forme d'une image. Au lieu d'images provenant d'une URL, il peut également afficher l'image des entités de la caméra.",
                             "name": "Entité image"
                         },
                         "picture-glance": {
+                            "description": "La carte Picture Glance affiche une image et les états d'entité correspondants sous forme d'icône. Les entités sur le côté droit permettent de basculer entre les actions, d'autres affichent la boîte de dialogue plus d'informations.",
                             "name": "Coup d'œil en image"
                         },
                         "picture": {
                             "name": "Image"
                         },
                         "plant-status": {
+                            "description": "La carte Statut des plantes est destinée à tous nos adorables botanistes.",
                             "name": "Statut de la plante"
                         },
                         "sensor": {
+                            "description": "La carte Capteur vous donne un aperçu rapide de l'état de vos sensors avec un graphique en option pour visualiser les changements au fil du temps.",
                             "graph_detail": "Détail du graphique",
                             "graph_type": "Type de graphique",
                             "name": "Capteur"
                         },
                         "shopping-list": {
+                            "description": "La carte Liste d'achats vous permet d'ajouter, de modifier, de valider et d'effacer des articles de votre liste d'achats.",
                             "integration_not_loaded": "Cette carte nécessite la mise en place de l'intégration `shopping_list`.",
                             "name": "Liste de courses"
                         },
                         "thermostat": {
+                            "description": "La carte Thermostat permet de contrôler votre entité climate. Vous permettant de changer la température et le mode de l'entité.",
                             "name": "Thermostat"
                         },
                         "vertical-stack": {
+                            "description": "La carte Pile verticale vous permet de regrouper plusieurs cartes afin qu'elles se trouvent toujours dans la même colonne.",
                             "name": "Pile verticale"
                         },
                         "weather-forecast": {
+                            "description": "La carte Prévisions météorologiques affiche la météo. Très utile pour les écrans placés au mur.",
                             "name": "Prévisions Météo"
                         }
                     },
@@ -2052,7 +2181,13 @@
                         "header": "Voir la configuration",
                         "header_name": "{name} Voir la configuration",
                         "move_left": "Déplacer la vue à gauche",
-                        "move_right": "Déplacer la vue à droite"
+                        "move_right": "Déplacer la vue à droite",
+                        "tab_badges": "Badges",
+                        "tab_settings": "Paramètres",
+                        "tab_visibility": "Visibilité",
+                        "visibility": {
+                            "select_users": "Sélectionnez les utilisateurs qui devraient voir cette vue dans la navigation"
+                        }
                     },
                     "header": "Modifier l'interface utilisateur",
                     "menu": {
@@ -2121,6 +2256,7 @@
                     "existing_cards": "Vous ne pouvez pas supprimer une vue contenant des cartes. Retirez d'abord les cartes."
                 },
                 "warning": {
+                    "attribute_not_found": "Attribut {attribute} non disponible dans: {entity}",
                     "entity_non_numeric": "L'entité est non numérique: {entity}",
                     "entity_not_found": "Entité non disponible: {entity}"
                 }
@@ -2361,7 +2497,7 @@
                 "push_notifications": {
                     "description": "Envoyer des notifications à cet appareil.",
                     "error_load_platform": "Configurer notify.html5.",
-                    "error_use_https": "Nécessite l'activation SSL pour le frontend.",
+                    "error_use_https": "Nécessite l'activation SSL pour l'interface utilisateur.",
                     "header": "Notifications push",
                     "link_promo": "En savoir plus",
                     "push_notifications": "Notifications push"

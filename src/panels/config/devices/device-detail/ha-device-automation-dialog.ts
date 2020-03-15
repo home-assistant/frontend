@@ -1,7 +1,6 @@
 import {
   LitElement,
   html,
-  css,
   CSSResult,
   TemplateResult,
   property,
@@ -22,6 +21,7 @@ import {
   fetchDeviceConditions,
   fetchDeviceActions,
 } from "../../../../data/device_automation";
+import { haStyleDialog } from "../../../../resources/styles";
 
 @customElement("dialog-device-automation")
 export class DialogDeviceAutomation extends LitElement {
@@ -76,7 +76,7 @@ export class DialogDeviceAutomation extends LitElement {
       <ha-dialog
         open
         @closing="${this._close}"
-        .title=${this.hass.localize(
+        .heading=${this.hass.localize(
           `ui.panel.config.devices.${
             this._params.script ? "script" : "automation"
           }.create`
@@ -129,16 +129,7 @@ export class DialogDeviceAutomation extends LitElement {
   }
 
   static get styles(): CSSResult {
-    return css`
-      ha-dialog {
-        --mdc-dialog-title-ink-color: var(--primary-text-color);
-      }
-      @media only screen and (min-width: 600px) {
-        ha-dialog {
-          --mdc-dialog-min-width: 600px;
-        }
-      }
-    `;
+    return haStyleDialog;
   }
 }
 

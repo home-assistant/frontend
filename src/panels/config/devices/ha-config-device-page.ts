@@ -25,6 +25,7 @@ import {
 } from "../../../data/entity_registry";
 import {
   DeviceRegistryEntry,
+  computeDeviceName,
   updateDeviceRegistryEntry,
 } from "../../../data/device_registry";
 import { AreaRegistryEntry } from "../../../data/area_registry";
@@ -121,6 +122,16 @@ export class HaConfigDevicePage extends LitElement {
         .tabs=${configSections.integrations}
         .route=${this.route}
       >
+        ${
+          this.narrow
+            ? html`
+                <span slot="header">
+                  ${computeDeviceName(device, this.hass)}
+                </span>
+              `
+            : ""
+        }
+
         <paper-icon-button
           slot="toolbar-icon"
           icon="hass:settings"
@@ -130,7 +141,13 @@ export class HaConfigDevicePage extends LitElement {
         <div class="container">
           <div class="left">
             <div class="device-info">
-              <h1>${device.name_by_user || device.name}</h1>
+              ${
+                this.narrow
+                  ? ""
+                  : html`
+                      <h1>${computeDeviceName(device, this.hass)}</h1>
+                    `
+              }
               <ha-device-card
                 .hass=${this.hass}
                 .areas=${this.areas}
@@ -496,6 +513,10 @@ export class HaConfigDevicePage extends LitElement {
       :host([narrow]) .right,
       :host([narrow]) .column {
         width: 100%;
+      }
+
+      :host([narrow]) .container > *:first-child {
+        padding-top: 0;
       }
 
       :host([narrow]) .container {

@@ -59,7 +59,6 @@ DO NOT DELETE ANY TEXT from this template! Otherwise, your issue may be closed w
 
 - Home Assistant release with the issue:
 - Last working Home Assistant release (if known):
-- UI Type (States or Lovelace):
 - Browser and browser version:
 - Operating system:
 

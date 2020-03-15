@@ -20,6 +20,7 @@ import { fireEvent } from "../common/dom/fire_event";
 import { Constructor, ServiceCallResponse } from "../types";
 import { HassBaseEl } from "./hass-base-mixin";
 import { broadcastConnectionStatus } from "../data/connection-status";
+import { subscribeFrontendUserData } from "../data/frontend";
 
 export const connectionMixin = <T extends Constructor<HassBaseEl>>(
   superClass: T
@@ -141,6 +142,9 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
       subscribeConfig(conn, (config) => this._updateHass({ config }));
       subscribeServices(conn, (services) => this._updateHass({ services }));
       subscribePanels(conn, (panels) => this._updateHass({ panels }));
+      subscribeFrontendUserData(conn, "core", (userData) =>
+        this._updateHass({ userData })
+      );
     }
 
     protected hassReconnected() {

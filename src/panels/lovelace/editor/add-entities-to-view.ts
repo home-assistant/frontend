@@ -22,7 +22,7 @@ export const addEntitiesToLovelaceView = async (
   }
   if (!lovelaceConfig) {
     try {
-      lovelaceConfig = await fetchConfig(hass.connection, false);
+      lovelaceConfig = await fetchConfig(hass.connection, null, false);
     } catch {
       alert(
         hass.localize(
@@ -41,7 +41,7 @@ export const addEntitiesToLovelaceView = async (
   if (!saveConfigFunc) {
     saveConfigFunc = async (newConfig: LovelaceConfig): Promise<void> => {
       try {
-        await saveConfig(hass!, newConfig);
+        await saveConfig(hass!, null, newConfig);
       } catch {
         alert(
           hass.localize("ui.panel.config.devices.add_entities.saving_failed")

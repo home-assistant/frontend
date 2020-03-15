@@ -11,7 +11,7 @@ import { HassEntity } from "home-assistant-js-websocket";
 
 import "../../../components/ha-relative-time";
 
-import formatTime from "../../../common/datetime/format_time";
+import { formatTime } from "../../../common/datetime/format_time";
 import { HomeAssistant } from "../../../types";
 
 @customElement("more-info-sun")

@@ -20,7 +20,7 @@ import "@polymer/paper-item/paper-item-body";
 
 import "../../../../components/ha-card";
 import "../../../../components/ha-icon";
-import { showEntityRegistryDetailDialog } from "../../entities/show-dialog-entity-registry-detail";
+import { showEntityEditorDialog } from "../../entities/show-dialog-entity-editor";
 import { computeDomain } from "../../../../common/entity/compute_domain";
 import { domainIcon } from "../../../../common/entity/domain_icon";
 import { EntityRegistryStateEntry } from "../ha-config-device-page";
@@ -150,8 +150,9 @@ export class HaDeviceEntitiesCard extends LitElement {
   private _openEditEntry(ev: Event): void {
     ev.stopPropagation();
     const entry = (ev.currentTarget! as any).entry;
-    showEntityRegistryDetailDialog(this, {
+    showEntityEditorDialog(this, {
       entry,
+      entity_id: entry.entity_id,
     });
   }
 

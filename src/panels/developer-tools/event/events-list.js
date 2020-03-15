@@ -1,6 +1,7 @@
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 
+import { compare } from "../../../common/string/compare";
 import { EventsMixin } from "../../../mixins/events-mixin";
 import LocalizeMixin from "../../../mixins/localize-mixin";
 
@@ -58,7 +59,7 @@ class EventsList extends EventsMixin(LocalizeMixin(PolymerElement)) {
     super.connectedCallback();
     this.hass.callApi("GET", "events").then(
       function(events) {
-        this.events = events;
+        this.events = events.sort((e1, e2) => compare(e1.event, e2.event));
       }.bind(this)
     );
   }

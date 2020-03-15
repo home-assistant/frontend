@@ -173,6 +173,12 @@ export type Condition =
   | DeviceCondition
   | LogicalCondition;
 
+export const triggerAutomation = (hass: HomeAssistant, entityId: string) => {
+  hass.callService("automation", "trigger", {
+    entity_id: entityId,
+  });
+};
+
 export const deleteAutomation = (hass: HomeAssistant, id: string) =>
   hass.callApi("DELETE", `config/automation/config/${id}`);
 

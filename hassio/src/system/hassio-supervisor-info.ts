@@ -32,7 +32,7 @@ class HassioSupervisorInfo extends LitElement {
     return html`
       <paper-card>
         <div class="card-content">
-          <h2>Hass.io supervisor</h2>
+          <h2>Supervisor</h2>
           <table class="info">
             <tbody>
               <tr>
@@ -103,20 +103,13 @@ class HassioSupervisorInfo extends LitElement {
       hassioStyle,
       css`
         paper-card {
-          display: inline-block;
-          width: 400px;
+          height: 100%;
+          width: 100%;
         }
         .card-content {
-          height: 200px;
           color: var(--primary-text-color);
-        }
-        @media screen and (max-width: 830px) {
-          paper-card {
-            width: 100%;
-          }
-          .card-content {
-            height: auto;
-          }
+          box-sizing: border-box;
+          height: calc(100% - 47px);
         }
         .info {
           width: 100%;
@@ -155,7 +148,7 @@ class HassioSupervisorInfo extends LitElement {
       !confirm(`WARNING:
 Beta releases are for testers and early adopters and can contain unstable code changes. Make sure you have backups of your data before you activate this feature.
 
-This inludes beta releases for:
+This includes beta releases for:
 - Home Assistant (Release Candidates)
 - Hass.io supervisor
 - Host system`)

@@ -24,7 +24,7 @@ gulp.task(
       gulp.parallel("gen-icons-app", "gen-icons-mdi"),
       "gen-pages-dev",
       "gen-index-app-dev",
-      gulp.series("create-test-translation", "build-translations")
+      "build-translations"
     ),
     "copy-static",
     "webpack-watch-app"
@@ -42,7 +42,7 @@ gulp.task(
     "copy-static",
     "webpack-prod-app",
     ...// Don't compress running tests
-    (envVars.isTravis ? [] : ["compress-app"]),
+    (envVars.isTravis() ? [] : ["compress-app"]),
     gulp.parallel(
       "gen-pages-prod",
       "gen-index-app-prod",

@@ -7,7 +7,12 @@ import {
   createErrorCardElement,
   createErrorCardConfig,
 } from "../cards/hui-error-card";
-import { LovelaceCard, LovelaceBadge, LovelaceHeaderFooter } from "../types";
+import {
+  LovelaceCard,
+  LovelaceBadge,
+  LovelaceHeaderFooter,
+  LovelaceCardConstructor,
+} from "../types";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { LovelaceElementConfig, LovelaceElement } from "../elements/types";
 import { LovelaceRow, LovelaceRowConfig } from "../entity-rows/types";
@@ -17,13 +22,30 @@ const CUSTOM_TYPE_PREFIX = "custom:";
 const TIMEOUT = 2000;
 
 interface CreateElementConfigTypes {
-  card: { config: LovelaceCardConfig; element: LovelaceCard };
-  badge: { config: LovelaceBadgeConfig; element: LovelaceBadge };
-  element: { config: LovelaceElementConfig; element: LovelaceElement };
-  row: { config: LovelaceRowConfig; element: LovelaceRow };
+  card: {
+    config: LovelaceCardConfig;
+    element: LovelaceCard;
+    constructor: LovelaceCardConstructor;
+  };
+  badge: {
+    config: LovelaceBadgeConfig;
+    element: LovelaceBadge;
+    constructor: unknown;
+  };
+  element: {
+    config: LovelaceElementConfig;
+    element: LovelaceElement;
+    constructor: unknown;
+  };
+  row: {
+    config: LovelaceRowConfig;
+    element: LovelaceRow;
+    constructor: unknown;
+  };
   "header-footer": {
     config: LovelaceHeaderFooterConfig;
     element: LovelaceHeaderFooter;
+    constructor: unknown;
   };
 }
 
@@ -50,10 +72,41 @@ const _createErrorElement = <T extends keyof CreateElementConfigTypes>(
   config: CreateElementConfigTypes[T]["config"]
 ): HuiErrorCard => createErrorCardElement(createErrorCardConfig(error, config));
 
+const _maybeCreate = <T extends keyof CreateElementConfigTypes>(
+  tag: string,
+  config: CreateElementConfigTypes[T]["config"]
+) => {
+  if (customElements.get(tag)) {
+    return _createElement(tag, config);
+  }
+
+  const element = _createErrorElement(
+    `Custom element doesn't exist: ${tag}.`,
+    config
+  );
+  element.style.display = "None";
+  const timer = window.setTimeout(() => {
+    element.style.display = "";
+  }, TIMEOUT);
+
+  customElements.whenDefined(tag).then(() => {
+    clearTimeout(timer);
+    fireEvent(element, "ll-rebuild");
+  });
+
+  return element;
+};
+
+const _getCustomTag = (type: string) =>
+  type.startsWith(CUSTOM_TYPE_PREFIX)
+    ? type.substr(CUSTOM_TYPE_PREFIX.length)
+    : undefined;
+
 export const createLovelaceElement = <T extends keyof CreateElementConfigTypes>(
   tagSuffix: T,
   config: CreateElementConfigTypes[T]["config"],
-  elementTypes: Set<string>,
+  alwaysLoadTypes?: Set<string>,
+  lazyLoadTypes?: { [domain: string]: () => Promise<unknown> },
   // Allow looking at "entity" in config and mapping that to a type
   domainTypes?: { _domain_not_found: string; [domain: string]: string },
   // Default type if no type given. If given, entity types will not work.
@@ -72,44 +125,79 @@ export const createLovelaceElement = <T extends keyof CreateElementConfigTypes>(
     return _createErrorElement("No card type configured.", config);
   }
 
-  if (config.type && config.type.startsWith(CUSTOM_TYPE_PREFIX)) {
-    const tag = config.type.substr(CUSTOM_TYPE_PREFIX.length);
+  const customTag = config.type ? _getCustomTag(config.type) : undefined;
 
-    if (customElements.get(tag)) {
-      return _createElement(tag, config);
-    }
-    const element = _createErrorElement(
-      `Custom element doesn't exist: ${tag}.`,
-      config
-    );
-    element.style.display = "None";
-    const timer = window.setTimeout(() => {
-      element.style.display = "";
-    }, TIMEOUT);
-
-    customElements.whenDefined(tag).then(() => {
-      clearTimeout(timer);
-      fireEvent(element, "ll-rebuild");
-    });
-
-    return element;
+  if (customTag) {
+    return _maybeCreate(customTag, config);
   }
+
+  let type: string | undefined;
 
   // config.type has priority over config.entity, but defaultType has not.
   // @ts-ignore
   if (domainTypes && !config.type && config.entity) {
     // @ts-ignore
     const domain = config.entity.split(".", 1)[0];
-    return _createElement(
-      `hui-${domainTypes![domain] ||
-        domainTypes!._domain_not_found}-entity-${tagSuffix}`,
-      config
-    );
+    type = `${domainTypes![domain] || domainTypes!._domain_not_found}-entity`;
+  } else {
+    type = config.type || defaultType;
   }
 
-  const type = config.type || defaultType;
+  if (type === undefined) {
+    return _createErrorElement(`No type specified`, config);
+  }
 
-  return type !== undefined && elementTypes.has(type)
-    ? _createElement(`hui-${type}-${tagSuffix}`, config)
-    : _createErrorElement(`Unknown type encountered: ${type}.`, config);
+  const tag = `hui-${type}-${tagSuffix}`;
+
+  if (lazyLoadTypes && type in lazyLoadTypes) {
+    lazyLoadTypes[type]();
+    return _maybeCreate(tag, config);
+  }
+
+  if (alwaysLoadTypes && alwaysLoadTypes.has(type)) {
+    return _createElement(tag, config);
+  }
+
+  return _createErrorElement(`Unknown type encountered: ${type}.`, config);
+};
+
+export const getLovelaceElementClass = async <
+  T extends keyof CreateElementConfigTypes
+>(
+  type: string,
+  tagSuffix: T,
+  alwaysLoadTypes?: Set<string>,
+  lazyLoadTypes?: { [domain: string]: () => Promise<unknown> }
+): Promise<CreateElementConfigTypes[T]["constructor"]> => {
+  const customTag = _getCustomTag(type);
+
+  if (customTag) {
+    const customCls = customElements.get(customTag);
+    return customCls
+      ? customCls
+      : new Promise((resolve, reject) => {
+          // We will give custom components up to TIMEOUT seconds to get defined
+          setTimeout(
+            () => reject(new Error(`Custom element not found: ${customTag}`)),
+            TIMEOUT
+          );
+
+          customElements
+            .whenDefined(customTag)
+            .then(() => resolve(customElements.get(customTag)));
+        });
+  }
+
+  const tag = `hui-${type}-${tagSuffix}`;
+  const cls = customElements.get(tag);
+
+  if (alwaysLoadTypes && alwaysLoadTypes.has(type)) {
+    return cls;
+  }
+
+  if (lazyLoadTypes && type in lazyLoadTypes) {
+    return cls || lazyLoadTypes[type]().then(() => customElements.get(tag));
+  }
+
+  throw new Error(`Unknown type: ${type}`);
 };

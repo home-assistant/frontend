@@ -23,7 +23,7 @@ const fixedIcons = {
   homeassistant: "hass:home-assistant",
   homekit: "hass:home-automation",
   image_processing: "hass:image-filter-frames",
-  input_boolean: "hass:drawing",
+  input_boolean: "hass:toggle-switch-outline",
   input_datetime: "hass:calendar-clock",
   input_number: "hass:ray-vertex",
   input_select: "hass:format-list-bulleted",
@@ -83,9 +83,7 @@ export const domainIcon = (domain: string, state?: string): string => {
       return state && state === "unlocked" ? "hass:lock-open" : "hass:lock";
 
     case "media_player":
-      return state && state !== "off" && state !== "idle"
-        ? "hass:cast-connected"
-        : "hass:cast";
+      return state && state === "playing" ? "hass:cast-connected" : "hass:cast";
 
     case "zwave":
       switch (state) {

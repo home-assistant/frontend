@@ -54,7 +54,7 @@ export default class HaAutomationConditionEditor extends LitElement {
                   `
                 : ""}
               <ha-yaml-editor
-                .value=${this.condition}
+                .defaultValue=${this.condition}
                 @value-changed=${this._onYamlChange}
               ></ha-yaml-editor>
             </div>
@@ -114,6 +114,9 @@ export default class HaAutomationConditionEditor extends LitElement {
 
   private _onYamlChange(ev: CustomEvent) {
     ev.stopPropagation();
+    if (!ev.detail.isValid) {
+      return;
+    }
     fireEvent(this, "value-changed", { value: ev.detail.value });
   }
 }

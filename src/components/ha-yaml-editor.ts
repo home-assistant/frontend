@@ -6,6 +6,13 @@ import { afterNextRender } from "../common/util/render-status";
 // tslint:disable-next-line
 import { HaCodeEditor } from "./ha-code-editor";
 
+declare global {
+  // for fire event
+  interface HASSDomEvents {
+    "editor-refreshed": undefined;
+  }
+}
+
 const isEmpty = (obj: object) => {
   if (typeof obj !== "object") {
     return false;
@@ -21,9 +28,10 @@ const isEmpty = (obj: object) => {
 @customElement("ha-yaml-editor")
 export class HaYamlEditor extends LitElement {
   @property() public value?: any;
+  @property() public defaultValue?: any;
   @property() public isValid = true;
   @property() public label?: string;
-  @property() private _yaml?: string;
+  @property() private _yaml: string = "";
   @query("ha-code-editor") private _editor?: HaCodeEditor;
 
   public setValue(value) {
@@ -36,11 +44,14 @@ export class HaYamlEditor extends LitElement {
       if (this._editor?.codemirror) {
         this._editor.codemirror.refresh();
       }
+      afterNextRender(() => fireEvent(this, "editor-refreshed"));
     });
   }
 
   protected firstUpdated() {
-    this.setValue(this.value);
+    if (this.defaultValue) {
+      this.setValue(this.defaultValue);
+    }
   }
 
   protected render() {
@@ -71,7 +82,6 @@ export class HaYamlEditor extends LitElement {
     if (value) {
       try {
         parsed = safeLoad(value);
-        isValid = true;
       } catch (err) {
         // Invalid YAML
         isValid = false;
@@ -83,9 +93,7 @@ export class HaYamlEditor extends LitElement {
     this.value = parsed;
     this.isValid = isValid;
 
-    if (isValid) {
-      fireEvent(this, "value-changed", { value: parsed });
-    }
+    fireEvent(this, "value-changed", { value: parsed, isValid } as any);
   }
 }
 

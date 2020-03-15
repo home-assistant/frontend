@@ -148,11 +148,17 @@ const createAppConfig = ({ isProdBuild, latestBuild, isStatsBuild }) => {
     // Create an object mapping browser urls to their paths during build
     const translationMetadata = require("../build-translations/translationMetadata.json");
     const workBoxTranslationsTemplatedURLs = {};
-    const englishFP = translationMetadata.translations.en.fingerprints;
-    Object.keys(englishFP).forEach((key) => {
+    const englishFilename = `en-${translationMetadata.translations.en.hash}.json`;
+
+    // core
+    workBoxTranslationsTemplatedURLs[
+      `/static/translations/${englishFilename}`
+    ] = `build-translations/output/${englishFilename}`;
+
+    translationMetadata.fragments.forEach((fragment) => {
       workBoxTranslationsTemplatedURLs[
-        `/static/translations/${englishFP[key]}`
-      ] = `build-translations/output/${key}.json`;
+        `/static/translations/${fragment}/${englishFilename}`
+      ] = `build-translations/output/${fragment}/${englishFilename}`;
     });
 
     config.plugins.push(

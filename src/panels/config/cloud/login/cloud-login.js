@@ -84,18 +84,26 @@ class CloudLogin extends LocalizeMixin(
               </p>
               <p>
                 [[localize('ui.panel.config.cloud.login.introduction2')]]
-                <a href="https://www.nabucasa.com" target="_blank"
-                  >Nabu&nbsp;Casa,&nbsp;Inc</a
+                <a
+                  href="https://www.nabucasa.com"
+                  target="_blank"
+                  rel="noreferrer"
                 >
+                  Nabu&nbsp;Casa,&nbsp;Inc
+                </a>
                 [[localize('ui.panel.config.cloud.login.introduction2a')]]
               </p>
               <p>
                 [[localize('ui.panel.config.cloud.login.introduction3')]]
               </p>
               <p>
-                <a href="https://www.nabucasa.com" target="_blank"
-                  >[[localize('ui.panel.config.cloud.login.learn_more_link')]]</a
+                <a
+                  href="https://www.nabucasa.com"
+                  target="_blank"
+                  rel="noreferrer"
                 >
+                  [[localize('ui.panel.config.cloud.login.learn_more_link')]]
+                </a>
               </p>
             </div>
 

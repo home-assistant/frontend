@@ -32,7 +32,6 @@ class ActionHandler extends HTMLElement implements ActionHandler {
   public ripple: Ripple;
   protected timer?: number;
   protected held = false;
-  protected touch?: boolean;
   private dblClickTimeout?: number;
 
   constructor() {
@@ -92,22 +91,6 @@ class ActionHandler extends HTMLElement implements ActionHandler {
       return false;
     });
 
-    const touchStart = (ev: TouchEvent) => {
-      if (this.touch === false) {
-        return;
-      }
-      this.touch = true;
-      start(ev);
-    };
-
-    const clickStart = (ev: MouseEvent) => {
-      if (this.touch === true) {
-        return;
-      }
-      this.touch = false;
-      start(ev);
-    };
-
     const start = (ev: Event) => {
       this.held = false;
       let x;
@@ -126,29 +109,16 @@ class ActionHandler extends HTMLElement implements ActionHandler {
       }, this.holdTime);
     };
 
-    const touchEnd = (ev: TouchEvent) => {
-      if (this.touch === false) {
-        return;
-      }
-      end(ev);
-    };
-
-    const clickEnd = (ev: MouseEvent) => {
-      if (this.touch === true) {
-        return;
-      }
-      end(ev);
-    };
-
     const handleEnter = (ev: KeyboardEvent) => {
-      if (this.touch === true || ev.keyCode !== 13) {
+      if (ev.keyCode !== 13) {
         return;
       }
-      this.touch = false;
       end(ev);
     };
 
     const end = (ev: Event) => {
+      // Prevent mouse event if touch event
+      ev.preventDefault();
       if (
         ["touchend", "touchcancel"].includes(ev.type) &&
         this.timer === undefined
@@ -177,15 +147,14 @@ class ActionHandler extends HTMLElement implements ActionHandler {
       } else {
         fireEvent(element, "action", { action: "tap" });
       }
-      window.setTimeout(() => (this.touch = undefined), 100);
     };
 
-    element.addEventListener("touchstart", touchStart, { passive: true });
-    element.addEventListener("touchend", touchEnd);
-    element.addEventListener("touchcancel", touchEnd);
+    element.addEventListener("touchstart", start, { passive: true });
+    element.addEventListener("touchend", end);
+    element.addEventListener("touchcancel", end);
 
-    element.addEventListener("mousedown", clickStart, { passive: true });
-    element.addEventListener("click", clickEnd);
+    element.addEventListener("mousedown", start, { passive: true });
+    element.addEventListener("click", end);
 
     element.addEventListener("keyup", handleEnter);
   }

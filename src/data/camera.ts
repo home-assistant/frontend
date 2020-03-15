@@ -41,15 +41,6 @@ export const fetchThumbnailUrl = async (
   return hass.hassUrl(path.path);
 };
 
-export const fetchThumbnail = (hass: HomeAssistant, entityId: string) => {
-  // tslint:disable-next-line: no-console
-  console.warn("This method has been deprecated.");
-  return hass.callWS<CameraThumbnail>({
-    type: "camera_thumbnail",
-    entity_id: entityId,
-  });
-};
-
 export const fetchStreamUrl = async (
   hass: HomeAssistant,
   entityId: string,

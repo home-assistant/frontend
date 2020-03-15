@@ -1,19 +1,31 @@
 import "@polymer/paper-input/paper-textarea";
 
-import deepClone from "deep-clone-simple";
-
 import { createCardElement } from "../../create-element/create-card-element";
 import { HomeAssistant } from "../../../../types";
 import { LovelaceCardConfig } from "../../../../data/lovelace";
 import { LovelaceCard } from "../../types";
 import { ConfigError } from "../types";
-import { getCardElementTag } from "../../common/get-card-element-tag";
 import { createErrorCardConfig } from "../../cards/hui-error-card";
 import { computeRTL } from "../../../../common/util/compute_rtl";
 
 export class HuiCardPreview extends HTMLElement {
   private _hass?: HomeAssistant;
   private _element?: LovelaceCard;
+  private _config?: LovelaceCardConfig;
+
+  private get _error() {
+    return this._element?.tagName === "HUI-ERROR-CARD";
+  }
+
+  constructor() {
+    super();
+    this.addEventListener("ll-rebuild", () => {
+      this._cleanup();
+      if (this._config) {
+        this.config = this._config;
+      }
+    });
+  }
 
   set hass(hass: HomeAssistant) {
     if (!this._hass || this._hass.language !== hass.language) {
@@ -27,15 +39,15 @@ export class HuiCardPreview extends HTMLElement {
   }
 
   set error(error: ConfigError) {
-    const configValue = createErrorCardConfig(
-      `${error.type}: ${error.message}`,
-      undefined
+    this._createCard(
+      createErrorCardConfig(`${error.type}: ${error.message}`, undefined)
     );
-
-    this._createCard(configValue);
   }
 
   set config(configValue: LovelaceCardConfig) {
+    const curConfig = this._config;
+    this._config = configValue;
+
     if (!configValue) {
       this._cleanup();
       return;
@@ -53,11 +65,10 @@ export class HuiCardPreview extends HTMLElement {
       return;
     }
 
-    const tag = getCardElementTag(configValue.type);
-
-    if (tag.toUpperCase() === this._element.tagName) {
+    // in case the element was an error element we always want to recreate it
+    if (!this._error && curConfig && configValue.type === curConfig.type) {
       try {
-        this._element.setConfig(deepClone(configValue));
+        this._element.setConfig(configValue);
       } catch (err) {
         this._createCard(createErrorCardConfig(err.message, configValue));
       }

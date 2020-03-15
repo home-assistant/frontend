@@ -37,7 +37,6 @@ import {
 const lovelaceStruct = struct.interface({
   title: "string?",
   views: ["object"],
-  resources: struct.optional(["object"]),
 });
 
 @customElement("hui-editor")
@@ -93,7 +92,7 @@ class LovelaceFullConfigEditor extends LitElement {
             mode="yaml"
             autofocus
             .rtl=${computeRTL(this.hass)}
-            .hass="${this.hass}"
+            .hass=${this.hass}
             @value-changed="${this._yamlChanged}"
             @editor-save="${this._handleSave}"
           >
@@ -167,18 +166,20 @@ class LovelaceFullConfigEditor extends LitElement {
     }
   }
 
-  private _closeEditor() {
-    if (this._changed) {
-      if (
-        !confirm(
-          this.hass.localize(
-            "ui.panel.lovelace.editor.raw_editor.confirm_unsaved_changes"
-          )
-        )
-      ) {
-        return;
-      }
+  private async _closeEditor() {
+    if (
+      this._changed &&
+      !(await showConfirmationDialog(this, {
+        text: this.hass.localize(
+          "ui.panel.lovelace.editor.raw_editor.confirm_unsaved_changes"
+        ),
+        dismissText: this.hass!.localize("ui.common.no"),
+        confirmText: this.hass!.localize("ui.common.yes"),
+      }))
+    ) {
+      return;
     }
+
     window.onbeforeunload = null;
     if (this.closeEditor) {
       this.closeEditor();
@@ -189,13 +190,13 @@ class LovelaceFullConfigEditor extends LitElement {
     try {
       await this.lovelace!.deleteConfig();
     } catch (err) {
-      alert(
-        this.hass.localize(
+      showAlertDialog(this, {
+        text: this.hass.localize(
           "ui.panel.lovelace.editor.raw_editor.error_remove",
           "error",
           err
-        )
-      );
+        ),
+      });
     }
     window.onbeforeunload = null;
     if (this.closeEditor) {
@@ -260,6 +261,14 @@ class LovelaceFullConfigEditor extends LitElement {
         ),
       });
       return;
+    }
+    // @ts-ignore
+    if (config.resources) {
+      showAlertDialog(this, {
+        text: this.hass.localize(
+          "ui.panel.lovelace.editor.raw_editor.resources_moved"
+        ),
+      });
     }
     try {
       await this.lovelace!.saveConfig(config);

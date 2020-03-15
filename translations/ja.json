@@ -370,10 +370,24 @@
             "yes": "はい"
         },
         "components": {
+            "area-picker": {
+                "add_dialog": {
+                    "add": "追加",
+                    "failed_create_area": "エリアを作成できませんでした。",
+                    "name": "名前",
+                    "text": "新しいエリアの名前を入力してください。",
+                    "title": "新しいエリアを追加"
+                },
+                "add_new": "新しいエリアを追加…",
+                "area": "エリア",
+                "clear": "消去",
+                "show_areas": "エリアを表示"
+            },
             "device-picker": {
                 "clear": "削除",
                 "device": "デバイス",
-                "show_devices": "デバイスを表示"
+                "show_devices": "デバイスを表示",
+                "toggle": "切り替え"
             },
             "entity": {
                 "entity-picker": {
@@ -385,6 +399,9 @@
             "history_charts": {
                 "loading_history": "状態履歴を読込中...",
                 "no_history_found": "状態履歴がありません。"
+            },
+            "related-items": {
+                "no_related_found": "関連するアイテムが見つかりませんでした。"
             },
             "relative_time": {
                 "duration": {
@@ -400,7 +417,8 @@
         "dialogs": {
             "config_entry_system_options": {
                 "enable_new_entities_description": "無効にするには、 {integration} から検出された新しいエンティティは Home Assistant に自動的に追加されません。",
-                "title": "{integration} のシステムオプション"
+                "title": "{integration} のシステムオプション",
+                "update": "更新"
             },
             "confirmation": {
                 "cancel": "キャンセル",
@@ -410,14 +428,42 @@
             "domain_toggler": {
                 "title": "ドメインを切り替え"
             },
+            "entity_registry": {
+                "editor": {
+                    "delete": "削除",
+                    "enabled_cause": "{cause} によって無効にされました。",
+                    "enabled_label": "エンティティを有効化",
+                    "update": "更新"
+                }
+            },
+            "generic": {
+                "cancel": "キャンセル",
+                "default_confirmation_title": "本当ですか？",
+                "ok": "OK"
+            },
             "more_info_control": {
                 "dismiss": "ダイアログを閉じる",
                 "edit": "エンティティを編集",
+                "person": {
+                    "create_zone": "現在地からゾーンを作成"
+                },
                 "settings": "エンティティ設定",
                 "sun": {
                     "elevation": "高度",
                     "rising": "日の出ます",
                     "setting": "日の入っています"
+                },
+                "vacuum": {
+                    "clean_spot": "クリーンスポット",
+                    "commands": "掃除機コマンド：",
+                    "fan_speed": "ファン回転速度",
+                    "locate": "見つける",
+                    "pause": "一時停止",
+                    "return_home": "ホームに戻戻る",
+                    "start": "開始",
+                    "start_pause": "開始/一時停止",
+                    "status": "状態",
+                    "stop": "停止"
                 }
             },
             "more_info_settings": {
@@ -552,6 +598,7 @@
                         "default_name": "新しいオートメーション",
                         "edit_ui": "UI で編集",
                         "edit_yaml": "YAML で編集",
+                        "enable_disable": "オートメーションの有効化/無効化",
                         "introduction": "オートメーションを使用して、あなたの家を生き生きとさせましょう。",
                         "save": "保存",
                         "triggers": {
@@ -714,6 +761,11 @@
                 },
                 "devices": {
                     "area_picker_label": "エリア",
+                    "automation": {
+                        "automations": "オートメーション",
+                        "no_automations": "オートメーションなし",
+                        "no_device_automations": "このデバイスで利用可能なオートメーションはありません。"
+                    },
                     "automations": "オートメーション",
                     "confirm_rename_entity_ids": "エンティティの ID も変更しますか？",
                     "data_table": {
@@ -728,17 +780,36 @@
                     "details": "これらはデバイスの詳細な情報です。",
                     "device_not_found": "デバイスが見つかりません。",
                     "info": "デバイス情報",
+                    "name": "名前",
+                    "scene": {
+                        "no_scenes": "シーンなし",
+                        "scenes": "シーン"
+                    },
+                    "scenes": "シーン",
+                    "script": {
+                        "create": "デバイスからスクリプトを作成",
+                        "no_scripts": "スクリプトなし",
+                        "scripts": "スクリプト"
+                    },
+                    "scripts": "スクリプト",
                     "unknown_error": "不明なエラー",
-                    "unnamed_device": "名前のないデバイス"
+                    "unnamed_device": "名前のないデバイス",
+                    "update": "更新"
                 },
                 "entities": {
                     "caption": "エンティティ",
                     "description": "すべて既知のエンティティの一覧",
                     "picker": {
+                        "filter": {
+                            "show_readonly": "読み取り専用のエンティティを表示"
+                        },
                         "header": "エンティティ",
                         "headers": {
                             "entity_id": "エンティティ ID",
                             "name": "名前"
+                        },
+                        "status": {
+                            "readonly": "読み取り専用"
                         }
                     }
                 },
@@ -836,8 +907,10 @@
                             "group": "グループの再読込",
                             "heading": "設定の再読込",
                             "introduction": "Home Assistant の一部は、再起動を必要とせずに再読込できます。再読込を押すと、現在の設定をアンロードし、新しい設定を読み込みます。",
+                            "person": "人の再読込",
                             "scene": "シーンの再読込",
-                            "script": "スクリプトの再読込"
+                            "script": "スクリプトの再読込",
+                            "zone": "ゾーンの再読込"
                         },
                         "server_management": {
                             "confirm_restart": "Home Assistant を再起動してもよろしいですか？",
@@ -889,6 +962,17 @@
                     "node_management": {
                         "header": "デバイス管理"
                     }
+                },
+                "zone": {
+                    "detail": {
+                        "icon": "アイコン",
+                        "latitude": "緯度",
+                        "longitude": "経度",
+                        "name": "名前",
+                        "new_zone": "新しいゾーン",
+                        "radius": "半径"
+                    },
+                    "go_to_core_config": "一般的な構成に移動しますか？"
                 },
                 "zwave": {
                     "caption": "Z-Wave",
@@ -996,11 +1080,15 @@
             "lovelace": {
                 "cards": {
                     "shopping-list": {
+                        "add_item": "アイテムを追加",
                         "clear_items": "チェックされたアイテムを削除"
                     }
                 },
                 "editor": {
                     "card": {
+                        "button": {
+                            "name": "ボタン"
+                        },
                         "conditional": {
                             "name": "条件付き"
                         },
@@ -1051,6 +1139,7 @@
                             "name": "センサー"
                         },
                         "shopping-list": {
+                            "integration_not_loaded": "このカードを設定するには、「shopping_list」インテグレーションが必要です。",
                             "name": "買い物リスト"
                         },
                         "thermostat": {
@@ -1204,6 +1293,7 @@
             },
             "profile": {
                 "advanced_mode": {
+                    "link_promo": "もっと見る",
                     "title": "高度モード"
                 },
                 "change_password": {
@@ -1243,7 +1333,7 @@
             },
             "shopping-list": {
                 "add_item": "アイテムを追加",
-                "clear_completed": "削除完了"
+                "clear_completed": "完了したアイテムを削除"
             }
         },
         "sidebar": {
