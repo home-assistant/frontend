@@ -15,12 +15,13 @@ const arrayFilter = (
 
   for (let i = 0; i < array.length && filteredArray.length < maxSize; i++) {
     let meetsConditions = true;
-    conditions.forEach((condition) => {
+
+    for (const condition of conditions) {
       if (!condition(array[i])) {
         meetsConditions = false;
-        return;
+        break;
       }
-    });
+    }
 
     if (meetsConditions) {
       filteredArray.push(array[i]);
@@ -64,7 +65,7 @@ export const findEntities = (
       entityFilter
     );
 
-    entityIds = [...entityIds, ...fallbackEntityIds];
+    entityIds.push(fallbackEntityIds);
   }
 
   return entityIds;
