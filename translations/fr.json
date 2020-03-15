@@ -645,6 +645,7 @@
                     "date": "Date",
                     "datetime": "Date et heure",
                     "has_date": "Date",
+                    "mode": "Que voulez-vous saisir",
                     "time": "Heure"
                 },
                 "input_select": {
@@ -1377,6 +1378,7 @@
                             "disabled": "Désactivé",
                             "ok": "Ok",
                             "readonly": "Lecture seule",
+                            "restored": "Restauré",
                             "unavailable": "Indisponible"
                         },
                         "unavailable": "(indisponible)"
@@ -1476,9 +1478,24 @@
                         }
                     },
                     "resources": {
+                        "confirm_delete": "Voulez-vous vraiment supprimer cette ressource ?",
+                        "detail": {
+                            "create": "Créer",
+                            "delete": "Supprimer",
+                            "dismiss": "Fermer",
+                            "new_resource": "Ajouter une nouvelle ressource",
+                            "type": "Type de ressource",
+                            "update": "Mise à jour",
+                            "url": "Url",
+                            "url_error_msg": "L'URL est un champ obligatoire",
+                            "warning_header": "Soyez prudents !",
+                            "warning_text": "L'ajout de ressources peut être dangereux, assurez-vous de connaître la source de la ressource et faites-lui confiance. De mauvaises ressources peuvent sérieusement endommager votre système."
+                        },
                         "picker": {
+                            "add_resource": "Ajouter une ressource",
                             "no_resources": "Pas de ressources"
-                        }
+                        },
+                        "refresh_header": "Voulez-vous vous rafraîchir ?"
                     }
                 },
                 "person": {
@@ -2009,6 +2026,7 @@
                         },
                         "conditional": {
                             "card": "Carte",
+                            "change_type": "Changer le type",
                             "conditions": "Conditions",
                             "current_state": "actuel",
                             "name": "Conditionnel",
@@ -2166,6 +2184,7 @@
                         "move_right": "Déplacer la vue à droite",
                         "tab_badges": "Badges",
                         "tab_settings": "Paramètres",
+                        "tab_visibility": "Visibilité",
                         "visibility": {
                             "select_users": "Sélectionnez les utilisateurs qui devraient voir cette vue dans la navigation"
                         }
