@@ -1674,7 +1674,7 @@
                             "automation": "Genindlæs automatiseringer",
                             "core": "Genindlæs lokalitet og tilpasninger",
                             "group": "Genindlæs grupper",
-                            "heading": "YAML-konfiguration genindlæses",
+                            "heading": "Genindlæsning af YAML-konfiguration",
                             "introduction": "Nogle dele af Home Assistant kan genindlæses uden en genstart. Tryk på genindlæs for at aflæse den nuværende YAML-konfiguration og indlæse den nye.",
                             "person": "Genindlæs personer",
                             "scene": "Genindlæs scener",
