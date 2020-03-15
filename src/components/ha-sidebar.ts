@@ -335,6 +335,27 @@ class HaSidebar extends LitElement {
         // @ts-ignore
         selectedEl.scrollIntoViewIfNeeded();
       }
+      this.setTitle();
+    }
+  }
+
+  private setTitle() {
+    const panel = Object.values(this.hass.panels).find(
+      (p: PanelInfo): boolean => p.url_path === this.hass.panelUrl
+    );
+    if (panel) {
+      const defaultPanel =
+        this.hass.panels[DEFAULT_PAGE] || this.hass.panels[DEFAULT_PANEL];
+      const title =
+        panel.url_path === "profile"
+          ? this.hass.localize("panel.profile")
+          : this.hass.localize(`panel.${panel.title}`) ||
+            panel.title ||
+            defaultPanel.title ||
+            this.hass.localize("panel.states");
+      document.title = title
+        ? `${title} - ${this.hass.localize("domain.homeassistant")}`
+        : this.hass.localize("domain.homeassistant");
     }
   }
 
