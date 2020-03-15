@@ -257,6 +257,8 @@ class HuiSensorCard extends LitElement implements LovelaceCard {
       `;
     }
 
+    const fillColor = this._config.fill_color || "var(--accent-color)";
+    const lineColor = this._config.line_color || "var(--accent-color)";
     let graph;
 
     if (stateObj && this._config.graph === "line") {
@@ -282,7 +284,7 @@ class HuiSensorCard extends LitElement implements LovelaceCard {
                   d="${this._history} L 500, 100 L 0, 100 z"
                 />
               </mask>
-              <rect height="100%" width="100%" id="fill-rect" fill="var(--accent-color)" mask="url(#fill)"></rect>
+              <rect height="100%" width="100%" id="fill-rect" fill="${fillColor}" mask="url(#fill)"></rect>
               <mask id="line">
                 <path
                   fill="none"
@@ -293,7 +295,7 @@ class HuiSensorCard extends LitElement implements LovelaceCard {
                   d=${this._history}
                 ></path>
               </mask>
-              <rect height="100%" width="100%" id="rect" fill="var(--accent-color)" mask="url(#line)"></rect>
+              <rect height="100%" width="100%" id="rect" fill="${lineColor}" mask="url(#line)"></rect>
             </g>
           </svg>
         `;
