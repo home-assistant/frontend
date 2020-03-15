@@ -37,12 +37,12 @@ class HassTabsSubpage extends LitElement {
   @property() public route!: Route;
   @property() public tabs!: PageNavigation[];
   @property({ type: Boolean, reflect: true }) public narrow = false;
-  @property() private _activeTab: number = -1;
+  @property() private _activeTab?: PageNavigation;
 
   private _getTabs = memoizeOne(
     (
       tabs: PageNavigation[],
-      activeTab: number,
+      activeTab: PageNavigation | undefined,
       showAdvanced: boolean | undefined,
       _components,
       _language
@@ -55,34 +55,33 @@ class HassTabsSubpage extends LitElement {
           (!page.advancedOnly || showAdvanced)
       );
 
-      return tabs.map((page, index) =>
-        shownTabs.find((t) => page.path === t.path)
-          ? html`
-              <div
-                class="tab ${classMap({
-                  active: index === activeTab,
-                })}"
-                @click=${this._tabTapped}
-                .path=${page.path}
-              >
-                ${this.narrow
-                  ? html`
-                      <ha-icon .icon=${page.icon}></ha-icon>
-                    `
-                  : ""}
-                ${!this.narrow || index === activeTab
-                  ? html`
-                      <span class="name"
-                        >${page.translationKey
-                          ? this.hass.localize(page.translationKey)
-                          : name}</span
-                      >
-                    `
-                  : ""}
-                <mwc-ripple></mwc-ripple>
-              </div>
-            `
-          : ""
+      return shownTabs.map(
+        (page) =>
+          html`
+            <div
+              class="tab ${classMap({
+                active: activeTab ? page.path === activeTab.path : false,
+              })}"
+              @click=${this._tabTapped}
+              .path=${page.path}
+            >
+              ${this.narrow
+                ? html`
+                    <ha-icon .icon=${page.icon}></ha-icon>
+                  `
+                : ""}
+              ${!this.narrow || (activeTab && page.path === activeTab.path)
+                ? html`
+                    <span class="name"
+                      >${page.translationKey
+                        ? this.hass.localize(page.translationKey)
+                        : name}</span
+                    >
+                  `
+                : ""}
+              <mwc-ripple></mwc-ripple>
+            </div>
+          `
       );
     }
   );
@@ -90,7 +89,7 @@ class HassTabsSubpage extends LitElement {
   protected updated(changedProperties: PropertyValues) {
     super.updated(changedProperties);
     if (changedProperties.has("route")) {
-      this._activeTab = this.tabs.findIndex((tab) =>
+      this._activeTab = this.tabs.find((tab) =>
         this.route.prefix.includes(tab.path)
       );
     }
