@@ -113,9 +113,14 @@ class HuiMapCard extends LitElement implements LovelaceCard {
   }
 
   public getCardSize(): number {
-    if (!this._config?.aspect_ratio) {
+    if (!this._config) {
       return 3;
     }
+
+    if (!this._config.aspect_ratio) {
+      return 5;
+    }
+
     const ratio = parseAspectRatio(this._config.aspect_ratio);
     const ar =
       ratio && ratio.w > 0 && ratio.h > 0
@@ -207,6 +212,7 @@ class HuiMapCard extends LitElement implements LovelaceCard {
     }
 
     if (!this._config.aspect_ratio) {
+      root.style.paddingBottom = "100%";
       return;
     }
 
