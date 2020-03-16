@@ -113,11 +113,7 @@ class HuiMapCard extends LitElement implements LovelaceCard {
   }
 
   public getCardSize(): number {
-    if (!this._config) {
-      return 3;
-    }
-
-    if (!this._config.aspect_ratio) {
+    if (!this._config?.aspect_ratio) {
       return 5;
     }
 
