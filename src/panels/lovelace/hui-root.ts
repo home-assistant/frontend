@@ -29,7 +29,7 @@ import "../../components/ha-paper-icon-button-arrow-prev";
 import "../../components/ha-icon";
 import { debounce } from "../../common/util/debounce";
 import { HomeAssistant } from "../../types";
-import { LovelaceConfig } from "../../data/lovelace";
+import { LovelaceConfig, LovelacePanelConfig } from "../../data/lovelace";
 import { navigate } from "../../common/navigate";
 import { fireEvent } from "../../common/dom/fire_event";
 import { swapView } from "./editor/config-util";
@@ -49,7 +49,10 @@ import { haStyle } from "../../resources/styles";
 import { computeRTLDirection } from "../../common/util/compute_rtl";
 import { showVoiceCommandDialog } from "../../dialogs/voice-command-dialog/show-ha-voice-command-dialog";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
-import { showAlertDialog } from "../../dialogs/generic/show-dialog-box";
+import {
+  showAlertDialog,
+  showConfirmationDialog,
+} from "../../dialogs/generic/show-dialog-box";
 import memoizeOne from "memoize-one";
 
 class HUIRoot extends LitElement {
@@ -221,6 +224,21 @@ class HUIRoot extends LitElement {
                             >
                               ${this.hass!.localize(
                                 "ui.panel.lovelace.unused_entities.title"
+                              )}
+                            </paper-item>
+                          `
+                        : ""}
+                      ${(this.hass.panels.lovelace
+                        ?.config as LovelacePanelConfig)?.mode === "yaml"
+                        ? html`
+                            <paper-item
+                              aria-label=${this.hass!.localize(
+                                "ui.panel.lovelace.menu.reload_resources"
+                              )}
+                              @tap="${this._handleReloadResources}"
+                            >
+                              ${this.hass!.localize(
+                                "ui.panel.lovelace.menu.reload_resources"
                               )}
                             </paper-item>
                           `
@@ -548,6 +566,19 @@ class HUIRoot extends LitElement {
 
   private _handleRefresh(): void {
     fireEvent(this, "config-refresh");
+  }
+
+  private _handleReloadResources(): void {
+    this.hass.callService("lovelace", "reload_resources");
+    showConfirmationDialog(this, {
+      title: this.hass!.localize(
+        "ui.panel.lovelace.reload_resources.refresh_header"
+      ),
+      text: this.hass!.localize(
+        "ui.panel.lovelace.reload_resources.refresh_body"
+      ),
+      confirm: () => location.reload(),
+    });
   }
 
   private _handleUnusedEntities(): void {
