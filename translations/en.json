@@ -633,7 +633,7 @@
                     "unavailable": "This entity is not currently available.",
                     "update": "UPDATE"
                 },
-                "no_unique_id": "This entity does not have a unique ID, therefore it's settings can not be managed from the UI.",
+                "no_unique_id": "This entity does not have a unique ID, therefore its settings cannot be managed from the UI.",
                 "related": "Related",
                 "settings": "Settings"
             },
@@ -647,7 +647,7 @@
                 "generic": {
                     "icon": "Icon",
                     "initial_value": "Initial value at start",
-                    "initial_value_explain": "The value the element will have when Home Assistant starts. When left empty, the value will be restored to it's previous value.",
+                    "initial_value_explain": "The value the element will have when Home Assistant starts. When left empty, the value will be restored to its previous value.",
                     "name": "Name"
                 },
                 "input_datetime": {
@@ -683,9 +683,9 @@
                 },
                 "not_editable": "Not editable",
                 "not_editable_text": "This entity can't be changed from the UI because it is defined in configuration.yaml.",
-                "platform_not_loaded": "The {platform} integration is not loaded, please add it your configuration. Either by adding 'default_config:' or '{platform}:'.",
+                "platform_not_loaded": "The {platform} integration is not loaded. Please add it your configuration either by adding 'default_config:' or '{platform}:'.",
                 "required_error_msg": "This field is required",
-                "yaml_not_editable": "The settings of this entity can not be edited from the UI. Only entities setup from the UI are configurable from the UI."
+                "yaml_not_editable": "The settings of this entity cannot be edited from the UI. Only entities set up from the UI are configurable from the UI."
             },
             "more_info_control": {
                 "dismiss": "Dismiss dialog",
@@ -1475,14 +1475,14 @@
                     },
                     "configure": "Configure",
                     "configured": "Configured",
-                    "description": "Manage and setup integrations",
+                    "description": "Manage and set up integrations",
                     "details": "Integration details",
                     "discovered": "Discovered",
                     "home_assistant_website": "Home Assistant website",
                     "ignore": {
                         "confirm_delete_ignore": "This will make the integration appear in your discovered integrations again when it gets discovered. This might require a restart or take some time.",
                         "confirm_delete_ignore_title": "Stop ignoring {name}?",
-                        "confirm_ignore": "Are you sure you don't want to setup this integration? You can undo this by clicking the 'Show ignored integrations' in the overflow menu on the top right.",
+                        "confirm_ignore": "Are you sure you don't want to set up this integration? You can undo this by clicking the 'Show ignored integrations' option in the overflow menu on the top right.",
                         "confirm_ignore_title": "Ignore discovery of {name}?",
                         "hide_ignored": "Hide ignored integrations",
                         "ignore": "Ignore",
@@ -1500,8 +1500,8 @@
                 "lovelace": {
                     "caption": "Lovelace Dashboards",
                     "dashboards": {
-                        "cant_edit_default": "The standard Lovelace dashboard can not be edited from the UI. You can hide it by setting another dashboard as default.",
-                        "cant_edit_yaml": "Dashboards defined in YAML can not be edited from the UI. Change them in configuration.yaml.",
+                        "cant_edit_default": "The standard Lovelace dashboard cannot be edited from the UI. You can hide it by setting another dashboard as default.",
+                        "cant_edit_yaml": "Dashboards defined in YAML cannot be edited from the UI. Change them in configuration.yaml.",
                         "caption": "Dashboards",
                         "conf_mode": {
                             "storage": "UI controlled",
@@ -1524,7 +1524,7 @@
                             "title_required": "Title is required.",
                             "update": "Update",
                             "url": "Url",
-                            "url_error_msg": "The url can not contain spaces or special characters, except for _ and -"
+                            "url_error_msg": "The url cannot contain spaces or special characters, except for _ and -"
                         },
                         "picker": {
                             "add_dashboard": "Add dashboard",
@@ -1541,7 +1541,7 @@
                     },
                     "description": "Configure your Lovelace Dashboards",
                     "resources": {
-                        "cant_edit_yaml": "You are using Lovelace in YAML mode, therefore you can not manage your resources through the UI. Manage them in configuration.yaml.",
+                        "cant_edit_yaml": "You are using Lovelace in YAML mode, therefore you cannot manage your resources through the UI. Manage them in configuration.yaml.",
                         "caption": "Resources",
                         "confirm_delete": "Are you sure you want to delete this resource?",
                         "detail": {
@@ -2052,7 +2052,7 @@
                 "add_entities": {
                     "generated_unsupported": "You can only use this function when you have taken control of the Lovelace UI.",
                     "saving_failed": "Saving Lovelace UI configuration failed.",
-                    "yaml_unsupported": "You can not use this function when using Lovelace UI in YAML mode."
+                    "yaml_unsupported": "You cannot use this function when using Lovelace UI in YAML mode."
                 },
                 "cards": {
                     "confirm_delete": "Are you sure you want to delete this card?",
@@ -2318,7 +2318,7 @@
                         "save": "Take control",
                         "yaml_config": "To help you start here is the current config of this dashboard:",
                         "yaml_control": "To take control in YAML mode, create a YAML file with the name you specified in your config for this dashboard, or the default 'ui-lovelace.yaml'.",
-                        "yaml_mode": "You are using YAML mode, that means you can not change your Lovelace config from the UI. If you want to change Lovelace from the UI, remove the 'mode: yaml' from your Lovelace configuration in 'configuration.yaml.'"
+                        "yaml_mode": "You are using YAML mode, that means you cannot change your Lovelace config from the UI. If you want to change Lovelace from the UI, remove the 'mode: yaml' from your Lovelace configuration in 'configuration.yaml.'"
                     },
                     "suggest_card": {
                         "add": "Add to Lovelace UI",
