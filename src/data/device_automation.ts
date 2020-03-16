@@ -69,7 +69,7 @@ export const fetchDeviceTriggerCapabilities = (
 const whitelist = [
   "above",
   "below",
-  "brightness",
+  "brightness_pct",
   "code",
   "for",
   "position",
