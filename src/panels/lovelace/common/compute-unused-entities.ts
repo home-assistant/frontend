@@ -72,15 +72,14 @@ export const computeUnusedEntities = (
   config: LovelaceConfig
 ): string[] => {
   const usedEntities = computeUsedEntities(config);
-  const allEntites = new Set(Object.keys(hass.states));
-  return [...calcUnusedEntities(allEntites, usedEntities)].sort();
+  return [...calcUnusedEntities(hass, usedEntities)].sort();
 };
 
 export const calcUnusedEntities = (
-  allEntites: Set<string>,
+  hass: HomeAssistant,
   usedEntities: Set<string>
 ): Set<string> => {
-  const unusedEntities = allEntites;
+  const unusedEntities = new Set(Object.keys(hass.states));
 
   unusedEntities.forEach((entity) => {
     if (

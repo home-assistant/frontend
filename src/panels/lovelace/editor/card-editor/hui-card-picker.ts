@@ -139,10 +139,7 @@ export class HuiCardPicker extends LitElement {
     }
 
     const usedEntities = computeUsedEntities(this.lovelace);
-    const unusedEntities = calcUnusedEntities(
-      new Set(Object.keys(this.hass.states)),
-      usedEntities
-    );
+    const unusedEntities = calcUnusedEntities(this.hass, usedEntities);
 
     this._usedEntities = [...usedEntities].filter(
       (eid) =>
