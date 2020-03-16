@@ -70,7 +70,7 @@ class HassTabsSubpage extends LitElement {
                     <ha-icon .icon=${page.icon}></ha-icon>
                   `
                 : ""}
-              ${!this.narrow || (activeTab && page.path === activeTab.path)
+              ${!this.narrow || page === activeTab
                 ? html`
                     <span class="name"
                       >${page.translationKey
