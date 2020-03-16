@@ -84,7 +84,7 @@ export class SystemLogCard extends LitElement {
                                       "ui.panel.developer-tools.tabs.logs.multiple_messages",
                                       "time",
                                       formatSystemLogTime(
-                                        item.first_occured,
+                                        item.first_occurred,
                                         this.hass!.language
                                       ),
                                       "counter",
