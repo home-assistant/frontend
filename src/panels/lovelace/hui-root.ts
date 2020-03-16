@@ -563,7 +563,7 @@ class HUIRoot extends LitElement {
     fireEvent(this, "config-refresh");
   }
 
-  private async _handleReloadResources(): Promise<void> {
+  private _handleReloadResources(): void {
     this.hass.callService("lovelace", "reload_resources");
     showConfirmationDialog(this, {
       title: this.hass!.localize(
