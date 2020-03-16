@@ -154,14 +154,14 @@ export class HaConfigLovelaceRescources extends LitElement {
         this._resources = this._resources!.concat(created).sort((res1, res2) =>
           compare(res1.url, res2.url)
         );
-        loadLovelaceResources(this._resources, this.hass!.auth.data.hassUrl);
+        loadLovelaceResources([created], this.hass!.auth.data.hassUrl);
       },
       updateResource: async (values) => {
         const updated = await updateResource(this.hass!, resource!.id, values);
         this._resources = this._resources!.map((res) =>
           res === resource ? updated : res
         );
-        loadLovelaceResources(this._resources, this.hass!.auth.data.hassUrl);
+        loadLovelaceResources([updated], this.hass!.auth.data.hassUrl);
       },
       removeResource: async () => {
         if (
