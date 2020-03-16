@@ -99,7 +99,9 @@ export class DialogLovelaceDashboardDetail extends LitElement {
                     .label=${this.hass.localize(
                       "ui.panel.config.lovelace.dashboards.detail.title"
                     )}
-                    @blur=${this._fillUrlPath}
+                    @blur=${this.hass.userData?.showAdvanced
+                      ? this._fillUrlPath
+                      : undefined}
                     .invalid=${titleInvalid}
                     .errorMessage=${this.hass.localize(
                       "ui.panel.config.lovelace.dashboards.detail.title_required"
@@ -113,7 +115,7 @@ export class DialogLovelaceDashboardDetail extends LitElement {
                       "ui.panel.config.lovelace.dashboards.detail.icon"
                     )}
                   ></ha-icon-input>
-                  ${!this._params.dashboard
+                  ${!this._params.dashboard && this.hass.userData?.showAdvanced
                     ? html`
                         <paper-input
                           .value=${this._urlPath}
@@ -212,10 +214,13 @@ export class DialogLovelaceDashboardDetail extends LitElement {
   private _titleChanged(ev: PolymerChangedEvent<string>) {
     this._error = undefined;
     this._title = ev.detail.value;
+    if (!this.hass.userData?.showAdvanced) {
+      this._fillUrlPath();
+    }
   }
 
   private _fillUrlPath() {
-    if (this._urlPath || !this._title) {
+    if ((this.hass.userData?.showAdvanced && this._urlPath) || !this._title) {
       return;
     }
     const parts = this._title.toLowerCase().split(" ");
