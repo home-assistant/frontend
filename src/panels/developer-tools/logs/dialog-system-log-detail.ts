@@ -77,12 +77,12 @@ class DialogSystemLogDetail extends LitElement {
             <br />
             ${item.count > 0
               ? html`
-                  First occured:
+                  First occurred:
                   ${formatSystemLogTime(
-                    item.first_occured,
+                    item.first_occurred,
                     this.hass!.language
                   )}
-                  (${item.count} occurences) <br />
+                  (${item.count} occurrences) <br />
                 `
               : ""}
             Last logged:
