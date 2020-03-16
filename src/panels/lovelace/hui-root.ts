@@ -29,7 +29,7 @@ import "../../components/ha-paper-icon-button-arrow-prev";
 import "../../components/ha-icon";
 import { debounce } from "../../common/util/debounce";
 import { HomeAssistant } from "../../types";
-import { LovelaceConfig } from "../../data/lovelace";
+import { LovelaceConfig, LovelacePanelConfig } from "../../data/lovelace";
 import { navigate } from "../../common/navigate";
 import { fireEvent } from "../../common/dom/fire_event";
 import { swapView } from "./editor/config-util";
@@ -218,22 +218,27 @@ class HUIRoot extends LitElement {
                             </paper-item>
                             <paper-item
                               aria-label=${this.hass!.localize(
-                                "ui.panel.lovelace.menu.reload_resources"
-                              )}
-                              @tap="${this._handleReloadResources}"
-                            >
-                              ${this.hass!.localize(
-                                "ui.panel.lovelace.menu.reload_resources"
-                              )}
-                            </paper-item>
-                            <paper-item
-                              aria-label=${this.hass!.localize(
                                 "ui.panel.lovelace.unused_entities.title"
                               )}
                               @tap="${this._handleUnusedEntities}"
                             >
                               ${this.hass!.localize(
                                 "ui.panel.lovelace.unused_entities.title"
+                              )}
+                            </paper-item>
+                          `
+                        : ""}
+                      ${(this.hass.panels.lovelace
+                        ?.config as LovelacePanelConfig)?.mode === "yaml"
+                        ? html`
+                            <paper-item
+                              aria-label=${this.hass!.localize(
+                                "ui.panel.lovelace.menu.reload_resources"
+                              )}
+                              @tap="${this._handleReloadResources}"
+                            >
+                              ${this.hass!.localize(
+                                "ui.panel.lovelace.menu.reload_resources"
                               )}
                             </paper-item>
                           `
