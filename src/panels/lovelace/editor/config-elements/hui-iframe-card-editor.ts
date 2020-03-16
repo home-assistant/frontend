@@ -81,11 +81,11 @@ export class HuiIframeCardEditor extends LitElement
             )} (${this.hass.localize(
               "ui.panel.lovelace.editor.card.config.optional"
             )})"
-            type="number"
-            .value="${Number(this._aspect_ratio.replace("%", ""))}"
+            .value="${this._aspect_ratio.replace("%", "")}"
             .configValue="${"aspect_ratio"}"
             @value-changed="${this._valueChanged}"
-          ></paper-input>
+            ><div slot="suffix">%</div></paper-input
+          >
         </div>
       </div>
     `;
