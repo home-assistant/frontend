@@ -21,13 +21,13 @@ const hexToRgb = (hex: string): string | null => {
  * element: Element to apply theme on.
  * themes: HASS Theme information
  * localTheme: selected theme.
- * updateMeta: boolean if we should update the theme-color meta element.
+ * mainElement: boolean if it is the top element of the page.
  */
 export const applyThemesOnElement = (
   element,
   themes,
   localTheme,
-  updateMeta = false
+  mainElement = false
 ) => {
   if (!element._themes) {
     element._themes = {};
@@ -37,7 +37,7 @@ export const applyThemesOnElement = (
     themeName = localTheme;
   }
   const styles = { ...element._themes };
-  if (themeName !== "default") {
+  if (themeName !== "default" && (localTheme || mainElement)) {
     const theme = { ...derivedStyles, ...themes.themes[themeName] };
     Object.keys(theme).forEach((key) => {
       const prefixedKey = `--${key}`;
@@ -65,7 +65,7 @@ export const applyThemesOnElement = (
     window.ShadyCSS.styleSubtree(/** @type {!HTMLElement} */ element, styles);
   }
 
-  if (!updateMeta) {
+  if (!mainElement) {
     return;
   }
 
