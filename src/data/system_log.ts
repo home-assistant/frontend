@@ -10,7 +10,7 @@ export interface LoggedError {
   exception: string;
   count: number;
   // unix timestamp in seconds
-  first_occured: number;
+  first_occurred: number;
 }
 
 export const fetchSystemLog = (hass: HomeAssistant) =>
