@@ -49,7 +49,10 @@ import { haStyle } from "../../resources/styles";
 import { computeRTLDirection } from "../../common/util/compute_rtl";
 import { showVoiceCommandDialog } from "../../dialogs/voice-command-dialog/show-ha-voice-command-dialog";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
-import { showAlertDialog } from "../../dialogs/generic/show-dialog-box";
+import {
+  showAlertDialog,
+  showConfirmationDialog,
+} from "../../dialogs/generic/show-dialog-box";
 import memoizeOne from "memoize-one";
 
 class HUIRoot extends LitElement {
@@ -211,6 +214,16 @@ class HUIRoot extends LitElement {
                             >
                               ${this.hass!.localize(
                                 "ui.panel.lovelace.menu.refresh"
+                              )}
+                            </paper-item>
+                            <paper-item
+                              aria-label=${this.hass!.localize(
+                                "ui.panel.lovelace.menu.reload_resources"
+                              )}
+                              @tap="${this._handleReloadResources}"
+                            >
+                              ${this.hass!.localize(
+                                "ui.panel.lovelace.menu.reload_resources"
                               )}
                             </paper-item>
                             <paper-item
@@ -548,6 +561,19 @@ class HUIRoot extends LitElement {
 
   private _handleRefresh(): void {
     fireEvent(this, "config-refresh");
+  }
+
+  private async _handleReloadResources(): Promise<void> {
+    this.hass.callService("lovelace", "reload_resources");
+    showConfirmationDialog(this, {
+      title: this.hass!.localize(
+        "ui.panel.lovelace.reload_resources.refresh_header"
+      ),
+      text: this.hass!.localize(
+        "ui.panel.lovelace.reload_resources.refresh_body"
+      ),
+      confirm: () => location.reload(),
+    });
   }
 
   private _handleUnusedEntities(): void {

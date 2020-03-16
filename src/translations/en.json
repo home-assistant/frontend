@@ -1891,8 +1891,13 @@
           "configure_ui": "Configure UI",
           "help": "Help",
           "refresh": "Refresh",
+          "reload_resources": "Reload resources",
           "exit_edit_mode": "Exit UI edit mode",
           "close": "Close"
+        },
+        "reload_resources": {
+          "refresh_header": "Do you want to refresh?",
+          "refresh_body": "You have to refresh the page to complete the reload, do you want to refresh now?"
         },
         "editor": {
           "header": "Edit UI",
