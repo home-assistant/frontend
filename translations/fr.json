@@ -637,14 +637,21 @@
             },
             "generic": {
                 "cancel": "Annuler",
+                "close": "fermer",
                 "default_confirmation_title": "Êtes-vous sûr ?",
                 "ok": "OK"
             },
             "helper_settings": {
+                "generic": {
+                    "icon": "Icône",
+                    "initial_value": "Valeur initiale au démarrage",
+                    "name": "Nom"
+                },
                 "input_datetime": {
                     "date": "Date",
                     "datetime": "Date et heure",
                     "has_date": "Date",
+                    "has_time": "Temps",
                     "mode": "Que voulez-vous saisir",
                     "time": "Heure"
                 },
@@ -661,7 +668,8 @@
                     "text": "Texte"
                 },
                 "not_editable": "Non modifiable",
-                "platform_not_loaded": "L'intégration {platform} n'est pas chargée, veuillez l'ajouter à votre configuration. Soit en ajoutant 'default_config:' ou '{platform}:'."
+                "platform_not_loaded": "L'intégration {platform} n'est pas chargée, veuillez l'ajouter à votre configuration. Soit en ajoutant 'default_config:' ou '{platform}:'.",
+                "required_error_msg": "Ce champ est requis"
             },
             "more_info_control": {
                 "dismiss": "Fermer la fenêtre de dialogue",
@@ -1467,17 +1475,34 @@
                 "introduction": "Ici, il est possible de configurer vos composants et Home Assistant. Tout n'est pas encore possible de configurer à partir de l'interface utilisateur, mais nous y travaillons.",
                 "lovelace": {
                     "dashboards": {
+                        "cant_edit_default": "Le tableau de bord Lovelace standard ne peut pas être modifié à partir de l'interface utilisateur. Vous pouvez le masquer en définissant un autre tableau de bord par défaut.",
+                        "caption": "Tableaux de bord",
                         "default_dashboard": "Ceci est le tableau de bord par défaut",
                         "detail": {
+                            "create": "Créer",
+                            "delete": "Supprimer",
+                            "dismiss": "Fermer",
                             "icon": "Icône",
+                            "remove_default": "Supprimer par défaut sur cet appareil",
+                            "require_admin": "Admin uniquement",
+                            "set_default": "Définir par défaut sur cet appareil",
+                            "show_sidebar": "Afficher dans la barre latérale",
                             "title": "Titre",
-                            "title_required": "Le titre est requis."
+                            "title_required": "Le titre est requis.",
+                            "update": "Mise à jour",
+                            "url": "Url",
+                            "url_error_msg": "L'url ne peut pas contenir d'espaces ni de caractères spéciaux, sauf pour _ et -"
                         },
                         "picker": {
+                            "headers": {
+                                "default": "Défaut",
+                                "title": "Titre"
+                            },
                             "open": "Ouvrir"
                         }
                     },
                     "resources": {
+                        "caption": "Ressources",
                         "confirm_delete": "Voulez-vous vraiment supprimer cette ressource ?",
                         "detail": {
                             "create": "Créer",
@@ -1493,9 +1518,19 @@
                         },
                         "picker": {
                             "add_resource": "Ajouter une ressource",
+                            "headers": {
+                                "type": "Type",
+                                "url": "Url"
+                            },
                             "no_resources": "Pas de ressources"
                         },
-                        "refresh_header": "Voulez-vous vous rafraîchir ?"
+                        "refresh_header": "Voulez-vous vous rafraîchir ?",
+                        "types": {
+                            "css": "Feuille de style",
+                            "html": "HTML (obsolète)",
+                            "js": "Fichier JavaScript (obsolète)",
+                            "module": "Module JavaScript"
+                        }
                     }
                 },
                 "person": {
@@ -2216,6 +2251,7 @@
                     },
                     "save_config": {
                         "cancel": "Oublie ce que j'ai dit, c'est pas grave.",
+                        "close": "Fermer",
                         "header": "Prenez le contrôle de votre Interface Lovelace",
                         "para": "Par défaut, Home Assistant maintient votre interface utilisateur, la met à jour lorsque de nouvelles entités ou de nouveaux composants Lovelace UI sont disponibles. Si vous prenez le contrôle, nous ne ferons plus les changements automatiquement pour vous.",
                         "para_sure": "Êtes-vous sûr de vouloir prendre le contrôle de l'interface utilisateur?",
