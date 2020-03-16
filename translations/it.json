@@ -651,8 +651,12 @@
                     "name": "Nome"
                 },
                 "input_datetime": {
+                    "date": "Data",
+                    "datetime": "Data e ora",
                     "has_date": "Data",
-                    "has_time": "Ora"
+                    "has_time": "Ora",
+                    "mode": "Cosa vuoi inserire",
+                    "time": "Ora"
                 },
                 "input_number": {
                     "box": "Campo di immissione",
@@ -679,7 +683,7 @@
                 },
                 "not_editable": "Non modificabile",
                 "not_editable_text": "Questa entità non può essere modificata dall'Interfaccia Utente perché è definita in configuration.yaml.",
-                "platform_not_loaded": "Il componente {platform} non è caricato, si prega di aggiungerlo alla propria configurazione, aggiungendo 'default_config:' o '{platform}:'.",
+                "platform_not_loaded": "L'integrazione {platform} non è stata caricata, si prega di aggiungerla alla propria configurazione, aggiungendo 'default_config:' o '{platform}:'.",
                 "required_error_msg": "Questo campo è obbligatorio",
                 "yaml_not_editable": "Le impostazioni di questa entità non possono essere modificate dall'interfaccia utente. Solo le entità impostate dall'interfaccia utente sono configurabili dall'interfaccia utente."
             },
@@ -806,6 +810,10 @@
                 "areas": {
                     "caption": "Aree",
                     "create_area": "CREA AREA",
+                    "delete": {
+                        "confirmation_text": "Tutti i dispositivi in quest'area non saranno assegnati.",
+                        "confirmation_title": "Sei sicuro di voler cancellare quest'area?"
+                    },
                     "description": "Panoramica di tutte le aree della tua casa.",
                     "editor": {
                         "create": "CREA",
@@ -948,7 +956,7 @@
                         "triggers": {
                             "add": "Aggiungi Attivazione",
                             "delete": "Elimina",
-                            "delete_confirm": "Sicuro di voler eliminare?",
+                            "delete_confirm": "Sei sicuro di voler eliminare questo?",
                             "duplicate": "Duplica",
                             "header": "Attivazioni (o Triggers)",
                             "introduction": "L'Attivazione (o Trigger) avvia l'elaborazione di una regola di automazione. È possibile specificare più Attivazioni per una stessa regola di automazione. Una volta avviata una Attivazione, Home Assistant convaliderà le Condizioni, se presenti, ed eseguirà l'Azione.",
@@ -1309,7 +1317,8 @@
                         "device": "Dispositivo",
                         "integration": "Integrazione",
                         "manufacturer": "Produttore",
-                        "model": "Modello"
+                        "model": "Modello",
+                        "no_devices": "Nessun dispositivo"
                     },
                     "description": "Gestisci i dispositivi collegati",
                     "details": "Ecco tutti i dettagli del tuo dispositivo.",
@@ -1499,18 +1508,19 @@
                             "yaml": "File YAML"
                         },
                         "confirm_delete": "Sei sicuro di voler eliminare questo cruscotto?",
+                        "default_dashboard": "Questo è il cruscotto predefinito",
                         "detail": {
                             "create": "Crea",
                             "delete": "Elimina",
                             "dismiss": "Chiudi",
                             "edit_dashboard": "Modifica cruscotto",
-                            "icon": "Icona della barra laterale",
+                            "icon": "Icona",
                             "new_dashboard": "Aggiungi nuovo cruscotto",
                             "remove_default": "Rimuovi come predefinito su questo dispositivo",
                             "require_admin": "Solo per l'amministratore",
                             "set_default": "Imposta come predefinito su questo dispositivo",
                             "show_sidebar": "Mostra nella barra laterale",
-                            "title": "Titolo della barra laterale",
+                            "title": "Titolo",
                             "title_required": "È richiesto il titolo.",
                             "update": "Aggiorna",
                             "url": "Url",
@@ -1551,7 +1561,8 @@
                             "headers": {
                                 "type": "Tipo",
                                 "url": "Url"
-                            }
+                            },
+                            "no_resources": "Nessuna risorsa"
                         },
                         "refresh_body": "Devi aggiornare la pagina per completare la rimozione, vuoi aggiornare ora?",
                         "refresh_header": "Vuoi aggiornare?",
@@ -2267,7 +2278,10 @@
                         "move_right": "Sposta la vista a destra",
                         "tab_badges": "Distintivi",
                         "tab_settings": "Impostazioni",
-                        "tab_visibility": "Visibilità"
+                        "tab_visibility": "Visibilità",
+                        "visibility": {
+                            "select_users": "Selezionare quali utenti dovrebbero vedere questa vista nella navigazione"
+                        }
                     },
                     "header": "Modifica dell'interfaccia utente",
                     "menu": {
@@ -2344,6 +2358,7 @@
                     "existing_cards": "Non è possibile eliminare una visualizzazione contenente schede. Rimuovere prima le schede."
                 },
                 "warning": {
+                    "attribute_not_found": "Attributo {attribute} non disponibile in: {entity}",
                     "entity_non_numeric": "L'entità non è numerica: {entity}",
                     "entity_not_found": "Entità non disponibile: {entity}"
                 }

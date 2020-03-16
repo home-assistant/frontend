@@ -113,7 +113,7 @@ export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
           ></paper-input>
         </div>
         <ha-switch
-          .checked="${this._config!.dark_mode !== false}"
+          .checked="${this._dark_mode}"
           .configValue="${"dark_mode"}"
           @change="${this._valueChanged}"
           >${this.hass.localize(
