@@ -230,7 +230,6 @@ export class HUIView extends LitElement {
         (hass.themes !== oldHass.themes ||
           hass.selectedTheme !== oldHass.selectedTheme))
     ) {
-      console.log(hass.themes, lovelace.config.views[this.index!].theme);
       applyThemesOnElement(
         this,
         hass.themes,
