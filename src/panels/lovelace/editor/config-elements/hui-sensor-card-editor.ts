@@ -31,8 +31,7 @@ const cardConfigStruct = struct({
   detail: "number?",
   theme: "string?",
   hours_to_show: "number?",
-  fill_color: "string?",
-  line_color: "string?",
+  graph_color: "string?",
 });
 
 @customElement("hui-sensor-card-editor")
@@ -79,12 +78,8 @@ export class HuiSensorCardEditor extends LitElement
     return this._config!.hours_to_show || "24";
   }
 
-  get _fill_color(): string {
-    return this._config!.fill_color || "";
-  }
-
-  get _line_color(): string {
-    return this._config!.line_color || "";
+  get _graph_color(): string {
+    return this._config!.graph_color || "";
   }
 
   protected render(): TemplateResult {
@@ -194,30 +189,17 @@ export class HuiSensorCardEditor extends LitElement
             @value-changed="${this._valueChanged}"
           ></paper-input>
         </div>
-        <div class="side-by-side">
-          <paper-input
-            .label="${this.hass.localize(
-              "ui.panel.lovelace.editor.card.sensor.fill_color"
-            )} (${this.hass.localize(
-              "ui.panel.lovelace.editor.card.config.optional"
-            )})"
-            .value="${this._fill_color}"
-            .configValue="${"fill_color"}"
-            @value-changed="${this._valueChanged}"
-          >
-          </paper-input>
-          <paper-input
-            .label="${this.hass.localize(
-              "ui.panel.lovelace.editor.card.sensor.line_color"
-            )} (${this.hass.localize(
-              "ui.panel.lovelace.editor.card.config.optional"
-            )})"
-            .value="${this._line_color}"
-            .configValue="${"line_color"}"
-            @value-changed="${this._valueChanged}"
-          >
-          </paper-input>
-        </div>
+        <paper-input
+          .label="${this.hass.localize(
+            "ui.panel.lovelace.editor.card.sensor.graph_color"
+          )} (${this.hass.localize(
+            "ui.panel.lovelace.editor.card.config.optional"
+          )})"
+          .value="${this._graph_color}"
+          .configValue="${"graph_color"}"
+          @value-changed="${this._valueChanged}"
+        >
+        </paper-input>
       </div>
     `;
   }

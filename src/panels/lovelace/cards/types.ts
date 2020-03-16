@@ -237,8 +237,7 @@ export interface SensorCardConfig extends LovelaceCardConfig {
   detail?: number;
   theme?: string;
   hours_to_show?: number;
-  fill_color?: string;
-  line_color?: string;
+  graph_color?: string;
 }
 
 export interface ShoppingListCardConfig extends LovelaceCardConfig {

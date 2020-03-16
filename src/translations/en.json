@@ -2104,8 +2104,7 @@
               "name": "Sensor",
               "graph_detail": "Graph Detail",
               "graph_type": "Graph Type",
-              "fill_color": "Fill Color",
-              "line_color": "Line Color",
+              "graph_color": "Graph Color",
               "description": "The Sensor card gives you a quick overview of your sensors state with an optional graph to visualize change over time."
             },
             "shopping-list": {
