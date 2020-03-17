@@ -60,7 +60,7 @@ class HassTabsSubpage extends LitElement {
           html`
             <div
               class="tab ${classMap({
-                active: activeTab ? page.path === activeTab.path : false,
+                active: page === activeTab,
               })}"
               @click=${this._tabTapped}
               .path=${page.path}
