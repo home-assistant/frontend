@@ -683,7 +683,7 @@
                 },
                 "not_editable": "No editable",
                 "not_editable_text": "Esta entidad no se puede cambiar desde la interfaz de usuario porque está definida en configuration.yaml.",
-                "platform_not_loaded": "La integración {platform} no está cargada, por favor añádela a tu configuración. Ya sea agregando 'default_config:' o '{platform}:'.",
+                "platform_not_loaded": "La integración {platform} no está cargada, por favor añádela a tu configuración. Ya sea agregando \"default_config:\" o \"{platform}:\".",
                 "required_error_msg": "Este campo es obligatorio",
                 "yaml_not_editable": "La configuración de esta entidad no se puede editar desde la IU. Solo las entidades configuradas desde la IU se pueden configurar desde la IU"
             },
