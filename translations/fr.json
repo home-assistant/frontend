@@ -626,6 +626,7 @@
                     "enabled_description": "Les entités désactivées ne seront pas ajoutées à Home Assistant.",
                     "enabled_label": "Activer l'entité",
                     "entity_id": "ID d'entité",
+                    "icon": "Remplacer l'icône",
                     "name": "Remplacement de nom",
                     "note": "Remarque: cela peut ne pas encore fonctionner avec toutes les intégrations.",
                     "unavailable": "Cette entité n'est pas disponible actuellement.",
@@ -654,6 +655,12 @@
                     "has_time": "Temps",
                     "mode": "Que voulez-vous saisir",
                     "time": "Heure"
+                },
+                "input_number": {
+                    "max": "Valeur maximum",
+                    "min": "Valeur minimum",
+                    "mode": "Mode d'affichage",
+                    "unit_of_measurement": "Unité de mesure"
                 },
                 "input_select": {
                     "add": "Ajouter",
@@ -1397,18 +1404,23 @@
                     "caption": "Aides",
                     "dialog": {
                         "add_helper": "Ajouter une aide",
+                        "add_platform": "Ajouter {platform}",
                         "create": "Créer"
                     },
                     "picker": {
                         "add_helper": "Ajouter une aide",
                         "headers": {
                             "editable": "Modifiable",
+                            "entity_id": "ID de l'entité",
                             "name": "Nom",
                             "type": "Type"
                         }
                     },
                     "types": {
+                        "input_boolean": "Permuter",
+                        "input_datetime": "Date et/ou heure",
                         "input_number": "Nombre",
+                        "input_select": "Liste déroulante",
                         "input_text": "Texte"
                     }
                 },
@@ -1474,15 +1486,23 @@
                 },
                 "introduction": "Ici, il est possible de configurer vos composants et Home Assistant. Tout n'est pas encore possible de configurer à partir de l'interface utilisateur, mais nous y travaillons.",
                 "lovelace": {
+                    "caption": "Tableaux de bord Lovelace",
                     "dashboards": {
                         "cant_edit_default": "Le tableau de bord Lovelace standard ne peut pas être modifié à partir de l'interface utilisateur. Vous pouvez le masquer en définissant un autre tableau de bord par défaut.",
                         "caption": "Tableaux de bord",
+                        "conf_mode": {
+                            "storage": "Contrôle de l'IU",
+                            "yaml": "Fichier YAML"
+                        },
+                        "confirm_delete": "Voulez-vous vraiment supprimer ce tableau de bord ?",
                         "default_dashboard": "Ceci est le tableau de bord par défaut",
                         "detail": {
                             "create": "Créer",
                             "delete": "Supprimer",
                             "dismiss": "Fermer",
+                            "edit_dashboard": "Modifier le tableau de bord",
                             "icon": "Icône",
+                            "new_dashboard": "Ajouter un nouveau tableau de bord",
                             "remove_default": "Supprimer par défaut sur cet appareil",
                             "require_admin": "Admin uniquement",
                             "set_default": "Définir par défaut sur cet appareil",
@@ -1494,14 +1514,21 @@
                             "url_error_msg": "L'url ne peut pas contenir d'espaces ni de caractères spéciaux, sauf pour _ et -"
                         },
                         "picker": {
+                            "add_dashboard": "Ajouter un tableau de bord",
                             "headers": {
+                                "conf_mode": "Méthode de configuration",
                                 "default": "Défaut",
+                                "filename": "Nom de fichier",
+                                "require_admin": "Admin uniquement",
+                                "sidebar": "Afficher dans la barre latérale",
                                 "title": "Titre"
                             },
                             "open": "Ouvrir"
                         }
                     },
+                    "description": "Configurez vos tableaux de bord Lovelace",
                     "resources": {
+                        "cant_edit_yaml": "Vous utilisez Lovelace en mode YAML, vous ne pouvez donc pas gérer vos ressources via l'interface utilisateur. Gérez-les dans configuration.yaml.",
                         "caption": "Ressources",
                         "confirm_delete": "Voulez-vous vraiment supprimer cette ressource ?",
                         "detail": {
@@ -1524,6 +1551,7 @@
                             },
                             "no_resources": "Pas de ressources"
                         },
+                        "refresh_body": "Vous devez actualiser la page pour terminer la suppression, voulez-vous actualiser maintenant ?",
                         "refresh_header": "Voulez-vous vous rafraîchir ?",
                         "types": {
                             "css": "Feuille de style",
@@ -2054,9 +2082,11 @@
                         },
                         "alarm-panel": {
                             "available_states": "États disponibles",
+                            "description": "La carte du panneau d'alarme vous permet d'armer et de désarmer les intégrations de votre panneau de commande d'alarme.",
                             "name": "Panneau d'alarme"
                         },
                         "button": {
+                            "description": "La carte Boutons vous permet d'ajouter des boutons pour effectuer des tâches.",
                             "name": "Bouton"
                         },
                         "conditional": {
@@ -2064,6 +2094,7 @@
                             "change_type": "Changer le type",
                             "conditions": "Conditions",
                             "current_state": "actuel",
+                            "description": "La carte conditionnelle affiche une autre carte basée sur les états d'entité.",
                             "name": "Conditionnel",
                             "state_equal": "L'État est égal à",
                             "state_not_equal": "L'état n'est pas égal à"
@@ -2123,32 +2154,39 @@
                             "name": "Coup d'œil"
                         },
                         "history-graph": {
+                            "description": "La carte Graphique historique vous permet d'afficher un graphique pour chacune des entités répertoriées.",
                             "name": "Graphique Historique"
                         },
                         "horizontal-stack": {
+                            "description": "La carte de pile horizontale vous permet d'empiler plusieurs cartes, de sorte qu'elles soient toujours côte à côte dans l'espace d'une colonne.",
                             "name": "Pile horizontale"
                         },
                         "iframe": {
                             "name": "Page Web"
                         },
                         "light": {
+                            "description": "La carte Lumière vous permet de modifier la luminosité de la lumière.",
                             "name": "Lumière"
                         },
                         "map": {
                             "dark_mode": "Mode sombre ?",
                             "default_zoom": "Zoom par défaut",
+                            "description": "La carte Carte vous permet d'afficher des entités sur une carte.",
                             "geo_location_sources": "Sources de géolocalisation",
                             "name": "Carte",
                             "source": "Source"
                         },
                         "markdown": {
                             "content": "Contenu",
+                            "description": "La carte Markdown est utilisée pour rendre Markdown.",
                             "name": "Markdown"
                         },
                         "media-control": {
+                            "description": "La carte Control des médias est utilisée pour afficher les entités du lecteur multimédia sur une interface avec des commandes faciles à utiliser.",
                             "name": "Contrôle des médias"
                         },
                         "picture-elements": {
+                            "description": "La carte Éléments d'image est l'un des types de cartes les plus polyvalents. La carte vous permet de positionner des icônes ou du texte et même des services! Sur une image basée sur des coordonnées.",
                             "name": "Éléments d'image"
                         },
                         "picture-entity": {
@@ -2160,6 +2198,7 @@
                             "name": "Coup d'œil en image"
                         },
                         "picture": {
+                            "description": "La carte Image vous permet de définir une image à utiliser pour la navigation vers divers chemins de votre interface ou d'appeler un service.",
                             "name": "Image"
                         },
                         "plant-status": {
@@ -2245,6 +2284,7 @@
                         "error_remove": "Impossible de supprimer la configuration: {error}",
                         "error_save_yaml": "Impossible de sauvegarder le YAML : {error}",
                         "header": "Modifier la configuration",
+                        "resources_moved": "Les ressources ne doivent plus être ajoutées à la configuration Lovelace mais peuvent être ajoutées dans le panneau de configuration Lovelace.",
                         "save": "Enregistrer",
                         "saved": "Enregistré",
                         "unsaved_changes": "Modifications non enregistrées"
@@ -2289,6 +2329,8 @@
                 },
                 "views": {
                     "confirm_delete": "Êtes-vous sûr de vouloir supprimer cette vue?",
+                    "confirm_delete_existing_cards": "La suppression de cette vue supprimera également les cartes",
+                    "confirm_delete_text": "Voulez-vous vraiment supprimer votre vue '{name}'?",
                     "existing_cards": "Vous ne pouvez pas supprimer une vue contenant des cartes. Retirez d'abord les cartes."
                 },
                 "warning": {
