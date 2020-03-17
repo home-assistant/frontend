@@ -647,7 +647,7 @@
                 "generic": {
                     "icon": "Icon",
                     "initial_value": "Initial value at start",
-                    "initial_value_explain": "The value the element will have when Home Assistant starts. When left empty, the value will be restored to its previous value.",
+                    "initial_value_explain": "The value the element will have when Home Assistant starts. When left empty, the value will be restored to it's previous value.",
                     "name": "Name"
                 },
                 "input_datetime": {
@@ -1482,7 +1482,7 @@
                     "ignore": {
                         "confirm_delete_ignore": "This will make the integration appear in your discovered integrations again when it gets discovered. This might require a restart or take some time.",
                         "confirm_delete_ignore_title": "Stop ignoring {name}?",
-                        "confirm_ignore": "Are you sure you don't want to set up this integration? You can undo this by clicking the 'Show ignored integrations' option in the overflow menu on the top right.",
+                        "confirm_ignore": "Are you sure you don't want to set up this integration? You can undo this by clicking the 'Show ignored integrations' in the overflow menu on the top right.",
                         "confirm_ignore_title": "Ignore discovery of {name}?",
                         "hide_ignored": "Hide ignored integrations",
                         "ignore": "Ignore",
@@ -1524,7 +1524,7 @@
                             "title_required": "Title is required.",
                             "update": "Update",
                             "url": "Url",
-                            "url_error_msg": "The url cannot contain spaces or special characters, except for _ and -"
+                            "url_error_msg": "The url should contain a - and cannot contain spaces or special characters, except for _ and -"
                         },
                         "picker": {
                             "add_dashboard": "Add dashboard",
@@ -2318,7 +2318,7 @@
                         "save": "Take control",
                         "yaml_config": "To help you start here is the current config of this dashboard:",
                         "yaml_control": "To take control in YAML mode, create a YAML file with the name you specified in your config for this dashboard, or the default 'ui-lovelace.yaml'.",
-                        "yaml_mode": "You are using YAML mode, that means you cannot change your Lovelace config from the UI. If you want to change Lovelace from the UI, remove the 'mode: yaml' from your Lovelace configuration in 'configuration.yaml.'"
+                        "yaml_mode": "You are using YAML mode, which means you cannot change your Lovelace config from the UI. If you want to change Lovelace from the UI, remove 'mode: yaml' from your Lovelace configuration in 'configuration.yaml.'"
                     },
                     "suggest_card": {
                         "add": "Add to Lovelace UI",
@@ -2338,9 +2338,14 @@
                     "exit_edit_mode": "Exit UI edit mode",
                     "help": "Help",
                     "refresh": "Refresh",
+                    "reload_resources": "Reload resources",
                     "unused_entities": "Unused entities"
                 },
                 "reload_lovelace": "Reload UI",
+                "reload_resources": {
+                    "refresh_body": "You have to refresh the page to complete the reload, do you want to refresh now?",
+                    "refresh_header": "Do you want to refresh?"
+                },
                 "unused_entities": {
                     "available_entities": "These are the entities that you have available, but are not in your Lovelace UI yet.",
                     "domain": "Domain",
