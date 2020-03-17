@@ -29,18 +29,25 @@ export const applyThemesOnElement = (
   localTheme,
   mainElement = false
 ) => {
-  if (!element._themes) {
-    element._themes = {};
-  }
   let themeName = themes.default_theme;
   if (localTheme === "default" || (localTheme && themes.themes[localTheme])) {
     themeName = localTheme;
   }
+  if (!element._themes) {
+    if (themeName === "default" || (!localTheme && !mainElement)) {
+      // No styles to reset, and no styles to set
+      return;
+    }
+    element._themes = {};
+  }
+  // Add previous set keys to reset them
   const styles = { ...element._themes };
+  // We only set styles if the element has a theme itself or on the main element if it isn't default, otherwise it will inherit the styles from it's parent
   if (themeName !== "default" && (localTheme || mainElement)) {
     const theme = { ...derivedStyles, ...themes.themes[themeName] };
     Object.keys(theme).forEach((key) => {
       const prefixedKey = `--${key}`;
+      // Save key so we can reset it later if needed
       element._themes[prefixedKey] = "";
       styles[prefixedKey] = theme[key];
       if (key.startsWith("rgb")) {
@@ -51,6 +58,7 @@ export const applyThemesOnElement = (
         return;
       }
       const prefixedRgbKey = `--${rgbKey}`;
+      // Save key so we can reset it later if needed
       element._themes[prefixedRgbKey] = "";
       const rgbValue = hexToRgb(theme[key]);
       if (rgbValue !== null) {
@@ -58,13 +66,15 @@ export const applyThemesOnElement = (
       }
     });
   }
+  // Set and/or reset styles
   if (element.updateStyles) {
     element.updateStyles(styles);
   } else if (window.ShadyCSS) {
-    // implement updateStyles() method of Polymer elements
+    // Implement updateStyles() method of Polymer elements
     window.ShadyCSS.styleSubtree(/** @type {!HTMLElement} */ element, styles);
   }
 
+  // We update the meta data with the theme of the main element
   if (!mainElement) {
     return;
   }
