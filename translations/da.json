@@ -2127,7 +2127,7 @@
                             "name": "Entitetsknap"
                         },
                         "entity-filter": {
-                            "description": "Entitetsfilterkortet giver dig mulighed for at definere en liste af entiteter, du kun vil vise, når en bestemt tilstand er mødt.",
+                            "description": "Entitetsfilterkortet giver dig mulighed for at definere en liste af entiteter, du kun vil vise, når en bestemt tilstand er tilstede.",
                             "name": "Entitetsfilter"
                         },
                         "gauge": {
