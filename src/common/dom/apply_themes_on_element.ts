@@ -29,22 +29,34 @@ export const applyThemesOnElement = (
   localTheme,
   mainElement = false
 ) => {
-  let themeName = themes.default_theme;
-  if (localTheme === "default" || (localTheme && themes.themes[localTheme])) {
-    themeName = localTheme;
-  }
+  // We only set styles if the element has an existing theme itself or on the main element, otherwise it will inherit the styles from it's parent
+  const setTheme =
+    (localTheme && themes.themes[localTheme]) ||
+    (mainElement && themes.default_theme !== "default");
+
+  // Styles that need to be reset from the previous theme
   if (!element._themes) {
-    if (themeName === "default" || (!localTheme && !mainElement)) {
+    if (!setTheme) {
       // No styles to reset, and no styles to set
       return;
     }
     element._themes = {};
   }
+
   // Add previous set keys to reset them
   const styles = { ...element._themes };
-  // We only set styles if the element has a theme itself or on the main element if it isn't default, otherwise it will inherit the styles from it's parent
-  if (themeName !== "default" && (localTheme || mainElement)) {
-    const theme = { ...derivedStyles, ...themes.themes[themeName] };
+  if (setTheme) {
+    // we set the local theme, and otherwise the backend selected theme
+    const newTheme =
+      themes.themes[localTheme] || themes.themes[themes.default_theme];
+
+    if (!newTheme) {
+      return;
+    }
+    const theme = {
+      ...derivedStyles,
+      ...newTheme,
+    };
     Object.keys(theme).forEach((key) => {
       const prefixedKey = `--${key}`;
       // Save key so we can reset it later if needed
