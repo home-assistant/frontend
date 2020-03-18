@@ -12,7 +12,6 @@ import "@polymer/app-layout/app-header-layout/app-header-layout";
 import "@polymer/app-layout/app-header/app-header";
 import "@polymer/app-layout/app-scroll-effects/effects/waterfall";
 import "@polymer/app-layout/app-toolbar/app-toolbar";
-import "@polymer/app-route/app-route";
 import "@polymer/paper-icon-button/paper-icon-button";
 import "@material/mwc-button";
 import "@polymer/paper-item/paper-item";
@@ -61,7 +60,6 @@ class HUIRoot extends LitElement {
   @property() public columns?: number;
   @property() public narrow?: boolean;
   @property() public route?: { path: string; prefix: string };
-  @property() private _routeData?: { view: string };
   @property() private _curView?: number | "hass-unused-entities";
   private _viewCache?: { [viewId: string]: HUIView };
 
@@ -84,9 +82,6 @@ class HUIRoot extends LitElement {
 
   protected render(): TemplateResult {
     return html`
-    <app-route .route=${this.route} pattern="/:view" .data=${
-      this._routeData
-    } @data-changed=${this._routeDataChanged}></app-route>
     <ha-app-layout id="layout">
       <app-header slot="header" effects="waterfall" class=${classMap({
         "edit-mode": this._editMode,
@@ -485,15 +480,17 @@ class HUIRoot extends LitElement {
     let newSelectView;
     let force = false;
 
+    const viewPath = this.route!.path.split("/")[1];
+
     if (changedProperties.has("route")) {
       const views = this.config.views;
-      if (this.route!.path === "" && views.length) {
+      if (!viewPath && views.length) {
         navigate(this, `${this.route!.prefix}/${views[0].path || 0}`, true);
         newSelectView = 0;
-      } else if (this._routeData!.view === "hass-unused-entities") {
+      } else if (viewPath === "hass-unused-entities") {
         newSelectView = "hass-unused-entities";
-      } else if (this._routeData!.view) {
-        const selectedView = this._routeData!.view;
+      } else if (viewPath) {
+        const selectedView = viewPath;
         const selectedViewInt = Number(selectedView);
         let index = 0;
         for (let i = 0; i < views.length; i++) {
@@ -520,7 +517,7 @@ class HUIRoot extends LitElement {
         // Leave unused entities when leaving edit mode
         if (
           this.lovelace!.mode === "storage" &&
-          this._routeData!.view === "hass-unused-entities"
+          viewPath === "hass-unused-entities"
         ) {
           const views = this.config && this.config.views;
           navigate(this, `${this.route?.prefix}/${views[0]?.path || 0}`);
@@ -558,10 +555,6 @@ class HUIRoot extends LitElement {
 
   private get _viewRoot(): HTMLDivElement {
     return this.shadowRoot!.getElementById("view") as HTMLDivElement;
-  }
-
-  private _routeDataChanged(ev): void {
-    this._routeData = ev.detail.value;
   }
 
   private _handleRefresh(): void {
