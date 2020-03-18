@@ -611,7 +611,7 @@
             "confirmation": {
                 "cancel": "Abbrechen",
                 "ok": "OK",
-                "title": "Sind Sie sicher?"
+                "title": "Bist du sicher?"
             },
             "domain_toggler": {
                 "title": "Domänen umschalten"
@@ -694,7 +694,7 @@
                     "create_zone": "Zone vom aktuellen Standort erstellen"
                 },
                 "restored": {
-                    "confirm_remove_text": "Sind Sie sicher, dass Sie diese Entität löschen möchten?",
+                    "confirm_remove_text": "Bist du dir sicher, dass du diese Entität löschen möchtest?",
                     "confirm_remove_title": "Entität entfernen?",
                     "not_provided": "Diese Entität ist derzeit nicht verfügbar und ist verwitwet für eine entfernte, geänderte oder gestörte Integration oder ein Gerät.",
                     "remove_action": "Entität entfernen",
@@ -838,7 +838,7 @@
                         "actions": {
                             "add": "Aktion hinzufügen",
                             "delete": "Löschen",
-                            "delete_confirm": "Sind Sie sicher, dass Sie das löschen wollen?",
+                            "delete_confirm": "Möchtest du das wirklich löschen?",
                             "duplicate": "Duplizieren",
                             "header": "Aktionen",
                             "introduction": "Aktionen werden von Home Assistant ausgeführt, wenn Automatisierungen ausgelöst werden.",
@@ -883,7 +883,7 @@
                         "conditions": {
                             "add": "Bedingung hinzufügen",
                             "delete": "Löschen",
-                            "delete_confirm": "Sind Sie sicher, dass Sie das löschen wollen?",
+                            "delete_confirm": "Möchtest du das wirklich löschen?",
                             "duplicate": "Duplizieren",
                             "header": "Bedingungen",
                             "introduction": "Die Bedingungen sind optional und verhindern die weitere Ausführung, sofern nicht alle Bedingungen erfüllt sind.",
@@ -956,7 +956,7 @@
                         "triggers": {
                             "add": "Auslöser hinzufügen",
                             "delete": "Löschen",
-                            "delete_confirm": "Sind Sie sicher, dass Sie das löschen wollen?",
+                            "delete_confirm": "Möchtest du das wirklich löschen?",
                             "duplicate": "Duplizieren",
                             "header": "Auslöser",
                             "introduction": "Auslöser starten automatisierte Abläufe. Es ist möglich, mehrere Auslöser für dieselbe Abfolge zu definieren. Wenn ein Auslöser aktiviert wird, prüft Home Assistant die Bedingungen, sofern vorhanden, und führt die Aktion aus.",
@@ -1049,7 +1049,7 @@
                     "picker": {
                         "add_automation": "Automatisierung hinzufügen",
                         "delete_automation": "Automatisierung löschen",
-                        "delete_confirm": "Sind Sie sicher, dass Sie diese Automatisierung löschen wollen?",
+                        "delete_confirm": "Bist du sicher, dass du diese Automatisierung löschen möchtest?",
                         "edit_automation": "Automatisierung bearbeiten",
                         "header": "Automatisierungseditor",
                         "introduction": "Mit dem Automations-Editor können Automatisierungen erstellt und bearbeitet werden. Bitte folgen Sie dem nachfolgenden Link, um die Anleitung zu lesen und um sicherzustellen, dass Sie Home Assistant richtig konfiguriert haben.",
@@ -1308,7 +1308,7 @@
                         }
                     },
                     "automations": "Automatisierungen",
-                    "cant_edit": "Sie können nur Elemente bearbeiten, die in der Benutzeroberfläche erstellt wurden.",
+                    "cant_edit": "Du kannst nur Elemente bearbeiten, die in der Benutzeroberfläche erstellt wurden.",
                     "caption": "Geräte",
                     "confirm_rename_entity_ids": "Möchten Sie auch die Entitäts-IDs Ihrer Entitäten umbenennen?",
                     "data_table": {
@@ -1372,7 +1372,7 @@
                         "enable_selected": {
                             "button": "Ausgewählte aktivieren",
                             "confirm_text": "Dadurch stehen sie in Home Assistant wieder zur Verfügung, wenn sie jetzt deaktiviert sind.",
-                            "confirm_title": "Willen Sie {number} Entitäten aktivieren?"
+                            "confirm_title": "Möchtest du {number} Entitäten aktivieren?"
                         },
                         "filter": {
                             "filter": "Filter",
@@ -1393,9 +1393,9 @@
                         "introduction2": "Verwenden Sie die Entitätsregistrierung, um den Namen zu überschreiben, die Entität-ID zu ändern oder den Eintrag aus Home Assistant zu entfernen. Beachten Sie, dass das Entfernen des Entitätsregistrierungs-Eintrags die Entität nicht löscht. Folgen Sie dazu dem Link unten und entfernen Sie ihn in der Integrationsseite.",
                         "remove_selected": {
                             "button": "Ausgewählte entfernen",
-                            "confirm_partly_text": "Sie können nur {removable} der ausgewählten {selected} Entitäten entfernen. Entitäten können nur entfernt werden, wenn die Integration die Entitäten nicht mehr bereitstellt. Manchmal müssen Sie Home Assistant neu starten, bevor Sie die Entitäten einer entfernten Integration entfernen können. Möchten Sie die entfernbaren Entitäten wirklich entfernen?",
+                            "confirm_partly_text": "Du kannst nur {removable} der ausgewählten {selected} Entitäten entfernen. Entitäten können nur entfernt werden, wenn die Integration die Entitäten nicht mehr bereitstellt. Manchmal musst du Home Assistant neu starten, bevor du die Entitäten einer entfernten Integration entfernen kannst. Möchtest Du die entfernbaren Entitäten wirklich entfernen?",
                             "confirm_partly_title": "Es können nur {number} ausgewählte Objekte entfernt werden.",
-                            "confirm_text": "Sie sollten sie aus Ihrer Lovelace-Konfiguration und Ihren Automatisierungen entfernen, wenn sie diese Entitäten enthalten.",
+                            "confirm_text": "Du solltest sie aus deiner Lovelace-Konfiguration und deinen Automatisierungen entfernen, wenn sie diese Entitäten enthalten.",
                             "confirm_title": "Möchtest du {number} Entitäten entfernen?"
                         },
                         "selected": "{number} ausgewählt",
@@ -1482,7 +1482,7 @@
                     "ignore": {
                         "confirm_delete_ignore": "Dies wird die Integration in deinen entdeckten Integrationen wieder erscheinen lassen, wenn sie entdeckt wird. Dies kann einen Neustart erfordern oder einige Zeit dauern.",
                         "confirm_delete_ignore_title": "{name} nicht mehr ignorieren?",
-                        "confirm_ignore": "Sind Sie sicher, dass Sie diese Integration nicht einrichten wollen? Sie können dies rückgängig machen, indem Sie im Kontextmenü oben rechts auf 'Ignorierte Integrationen anzeigen' klicken.",
+                        "confirm_ignore": "Bist du sicher, dass du diese Integration nicht einrichten willst? Du kannst dies rückgängig machen, indem du im Kontextmenü oben rechts auf 'Ignorierte Integrationen anzeigen' klickst.",
                         "confirm_ignore_title": "Ignoriere die Entdeckung von {name}?",
                         "hide_ignored": "Ignorierte Integrationen ausblenden",
                         "ignore": "Ignorieren",
@@ -1500,7 +1500,7 @@
                 "lovelace": {
                     "caption": "Lovelace Dashboards",
                     "dashboards": {
-                        "cant_edit_default": "Das Standard-Lovelace-Dashboard kann nicht über die Benutzeroberfläche bearbeitet werden. Sie können es ausblenden, indem Sie ein anderes Dashboard als Standard festlegen.",
+                        "cant_edit_default": "Das Standard-Lovelace-Dashboard kann nicht über die Benutzeroberfläche bearbeitet werden. Du kannst es ausblenden, indem du ein anderes Dashboard als Standard festlegst.",
                         "cant_edit_yaml": "In YAML definierte Dashboards können nicht über die Benutzeroberfläche bearbeitet werden. Du kannst sie aber in der configuration.yaml ändern.",
                         "caption": "Dashboards",
                         "conf_mode": {
@@ -1553,7 +1553,7 @@
                             "update": "Aktualisieren",
                             "url": "Url",
                             "url_error_msg": "URL ist ein Pflichtfeld",
-                            "warning_header": "Seien Sie vorsichtig!",
+                            "warning_header": "Sei vorsichtig!",
                             "warning_text": "Das Hinzufügen von Ressourcen kann gefährlich sein. Stelle sicher, dass du die Quelle der Ressource kennst und ihr vertraust. Schlechte Ressourcen können dein System ernsthaft beschädigen."
                         },
                         "picker": {
@@ -1564,7 +1564,7 @@
                             },
                             "no_resources": "keine Ressourcen"
                         },
-                        "refresh_body": "Sie müssen die Seite aktualisieren, um das Entfernen abzuschließen. Möchten Sie jetzt aktualisieren?",
+                        "refresh_body": "Die Seite muss aktualisiert werden, um das Entfernen abzuschließen. Möchtest du sie jetzt aktualisieren?",
                         "refresh_header": "Möchtest du aktualisieren?",
                         "types": {
                             "css": "Stylesheet",
@@ -1597,7 +1597,7 @@
                         "update": "Aktualisieren"
                     },
                     "introduction": "Hier können Sie jede Person von Interesse in Home Assistant definieren.",
-                    "no_persons_created_yet": "Sieht so aus, als hätten Sie noch keine Personen angelegt.",
+                    "no_persons_created_yet": "Sieht so aus, als hättest du noch keine Personen angelegt.",
                     "note_about_persons_configured_in_yaml": "Hinweis: Personen, die über configuration.yaml konfiguriert wurden, können nicht über die Benutzeroberfläche bearbeitet werden."
                 },
                 "scene": {
@@ -1786,7 +1786,7 @@
                         "bind_button_help": "Binden Sie die ausgewählte Gruppe an die ausgewählten Geräte-Cluster.",
                         "bind_button_label": "Gruppe binden",
                         "cluster_selection_help": "Wählen Sie Cluster aus, die an die ausgewählte Gruppe gebunden werden sollen.",
-                        "group_picker_help": "Wählen Sie eine Gruppe aus, um einen Bindungsbefehl zu erteilen.",
+                        "group_picker_help": "Wähle eine Gruppe aus, um einen Bindungsbefehl zu erteilen.",
                         "group_picker_label": "Bindbare Gruppen",
                         "header": "Gruppenbindung",
                         "introduction": "Binden und Aufheben der Bindung von Gruppen.",
@@ -1846,7 +1846,7 @@
                     "configured_in_yaml": "Zonen, die über configuration.yaml konfiguriert wurden, können nicht über die Benutzeroberfläche bearbeitet werden.",
                     "confirm_delete": "Möchtest du diesen Bereich wirklich löschen?",
                     "create_zone": "Zone erstellen",
-                    "description": "Verwalten Sie die Zonen, in denen Sie Personen verfolgen möchten.",
+                    "description": "Verwalte die Zonen, in denen du Personen verfolgen möchten.",
                     "detail": {
                         "create": "Erstellen",
                         "delete": "Löschen",
@@ -1857,7 +1857,7 @@
                         "name": "Name",
                         "new_zone": "Neue Zone",
                         "passive": "Passiv",
-                        "passive_note": "Passive Zonen sind im Frontend versteckt und werden nicht als Ort für Device Tracker verwendet. Dies ist nützlich, wenn Sie es nur für Automatisierungen verwenden möchten.",
+                        "passive_note": "Passive Zonen sind im Frontend versteckt und werden nicht als Ort für Device Tracker verwendet. Dies ist nützlich, wenn du sie nur für Automatisierungen verwenden möchtest.",
                         "radius": "Radius",
                         "required_error_msg": "Dieses Feld ist erforderlich",
                         "update": "Aktualisieren"
@@ -1865,8 +1865,8 @@
                     "edit_home_zone": "Der Radius der Home-Zone kann noch nicht über das Frontend bearbeitet werden. Ziehe die Markierung auf der Karte, um die Heimatzone zu verschieben.",
                     "edit_home_zone_narrow": "Der Radius der Home-Zone kann vom Frontend aus noch nicht bearbeitet werden. Der Standort kann von der allgemeinen Konfiguration aus geändert werden.",
                     "go_to_core_config": "Zur allgemeinen Konfiguration gehen?",
-                    "home_zone_core_config": "Der Standort Ihrer Homezone kann auf der allgemeinen Konfigurationsseite bearbeitet werden. Der Radius der Homezone kann vom Frontend aus noch nicht bearbeitet werden. Wollen Sie zur allgemeinen Konfiguration gehen?",
-                    "introduction": "Mit Zonen können Sie bestimmte Regionen auf der Erde angeben. Befindet sich eine Person in einer Zone, übernimmt der Zustand den Namen aus der Zone. Zonen können auch als Auslöser oder Bedingung in Automatisierungs-Setups verwendet werden.",
+                    "home_zone_core_config": "Der Standort deiner Homezone kann auf der allgemeinen Konfigurationsseite bearbeitet werden. Der Radius der Homezone kann vom Frontend aus noch nicht bearbeitet werden. Möchtest du zur allgemeinen Konfiguration gehen?",
+                    "introduction": "Mit Zonen kannst du bestimmte Regionen auf der Erde angeben. Befindet sich eine Person in einer Zone, übernimmt der Zustand den Namen aus der Zone. Zonen können auch als Auslöser oder Bedingung in Automatisierungs-Setups verwendet werden.",
                     "no_zones_created_yet": "Es sieht so aus, als hättest du noch keine Zonen erstellt."
                 },
                 "zwave": {
@@ -2052,7 +2052,7 @@
                 "add_entities": {
                     "generated_unsupported": "Sie können diese Funktion nur verwenden, wenn Sie die Kontrolle über Lovelace übernommen haben.",
                     "saving_failed": "Speichern der Lovelace-Konfiguration ist fehlgeschlagen.",
-                    "yaml_unsupported": "Sie können diese Funktion nicht verwenden, wenn Sie Lovelace im YAML-Modus verwenden."
+                    "yaml_unsupported": "Du kannst diese Funktion nicht verwenden, wenn du Lovelace im YAML-Modus verwendest."
                 },
                 "cards": {
                     "confirm_delete": "Möchten Sie diese Karte wirklich löschen?",
@@ -2074,7 +2074,7 @@
                         "url": "Fenster zu {url_path} öffnen"
                     },
                     "safe-mode": {
-                        "description": "Home Assistant hatte beim Laden Ihrer Konfiguration Probleme und wird jetzt im abgesicherten Modus ausgeführt. Sehen Sie sich das Fehlerprotokoll an, um zu sehen, was schiefgelaufen ist.",
+                        "description": "Home Assistant hatte beim Laden Ihrer Konfiguration Probleme und wird jetzt im abgesicherten Modus ausgeführt. Sieh dir das Fehlerprotokoll an, um zu erkennen, was schiefgelaufen ist.",
                         "header": "Abgesicherter Modus aktiviert",
                         "show_errors": "Fehler anzeigen"
                     },
@@ -2127,7 +2127,7 @@
                             "name": "Entity Button"
                         },
                         "entity-filter": {
-                            "description": "Mit der Entitätsfilter-Karte können Sie eine Liste von Entitäten definieren, die Sie nur in einem bestimmten Status verfolgen wollen.",
+                            "description": "Mit der Entitätsfilter-Karte kannst du eine Liste von Entitäten definieren, die du nur in einem bestimmten Status verfolgen möchtest.",
                             "name": "Entity Filter"
                         },
                         "gauge": {
@@ -2152,7 +2152,7 @@
                             "icon_height": "Symbol Höhe",
                             "image": "Bildpfad",
                             "manual": "Manuell",
-                            "manual_description": "Müssen Sie eine benutzerdefinierte Karte hinzufügen oder möchten Sie die Yaml-Datei nur manuell schreiben?",
+                            "manual_description": "Möchtest du eine benutzerdefinierte Karte hinzufügen oder den Yaml-Code von Hand bearbeiten?",
                             "maximum": "Maximum",
                             "minimum": "Minimum",
                             "name": "Name",
@@ -2241,7 +2241,7 @@
                             "name": "Thermostat"
                         },
                         "vertical-stack": {
-                            "description": "Mit der Karte \"Vertikaler Stapel\" kannst Du mehrere Karten so gruppieren, dass sie immer in der gleichen Spalte sitzen.",
+                            "description": "Mit der Karte \"Vertikaler Stapel\" kannst du mehrere Karten so gruppieren, dass sie immer in der gleichen Spalte sitzen.",
                             "name": "Vertikaler Stapel"
                         },
                         "weather-forecast": {
@@ -2316,7 +2316,7 @@
                         "para": "Standardmäßig verwaltet Home Assistant deine Benutzeroberfläche und aktualisiert sie, sobald neue Entitäten oder Lovelace-Komponenten verfügbar sind. Wenn du die Verwaltung selbst übernehmen möchtest, nehmen wir für dich keine Änderungen mehr vor.",
                         "para_sure": "Bist du dir sicher, dass du die Benutzeroberfläche selbst verwalten möchtest?",
                         "save": "Kontrolle übernehmen",
-                        "yaml_config": "Um Ihnen den Einstieg zu erleichtern, finden Sie hier die aktuelle Konfiguration dieses Dashboards:",
+                        "yaml_config": "Um dir den Einstieg zu erleichtern, findest du hier die aktuelle Konfiguration dieses Dashboards:",
                         "yaml_control": "Um die Kontrolle im YAML-Modus zu übernehmen, erstellen Sie eine YAML-Datei mit dem Namen, den Sie in Ihrer Konfiguration für dieses Dashboard angegeben haben, oder mit der Standardeinstellung 'ui-lovelace.yaml'.",
                         "yaml_mode": "Du verwendest den YAML-Modus. Daher kannst du deine Lovelace-Konfiguration nicht über die Benutzeroberfläche ändern. Wenn du Lovelace über die Benutzeroberfläche ändern möchtest, entferne den 'mode: yaml' aus deiner Lovelace-Konfiguration in 'configuration.yaml'."
                     },
@@ -2338,9 +2338,14 @@
                     "exit_edit_mode": "Schließen des UI-Bearbeitungsmodus",
                     "help": "Hilfe",
                     "refresh": "Aktualisieren",
+                    "reload_resources": "Ressourcen neu laden",
                     "unused_entities": "Ungenutzte Elemente"
                 },
                 "reload_lovelace": "Benutzeroberfläche neu laden",
+                "reload_resources": {
+                    "refresh_body": "Sie müssen die Seite aktualisieren, um das Neuladen abzuschließen. Möchten Sie jetzt aktualisieren?",
+                    "refresh_header": "Möchtest du aktualisieren?"
+                },
                 "unused_entities": {
                     "available_entities": "Dies sind die Entitäten, die Sie zur Verfügung haben, die aber noch nicht in Ihrer Lovelace-Benutzeroberfläche enthalten sind.",
                     "domain": "Domain",
