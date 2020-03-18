@@ -2338,9 +2338,14 @@
                     "exit_edit_mode": "Afslut brugerflade-redigeringstilstand",
                     "help": "Hjælp",
                     "refresh": "Opdater",
+                    "reload_resources": "Genindlæs ressourcer",
                     "unused_entities": "Ubrugte entiteter"
                 },
                 "reload_lovelace": "Genindlæs brugerflade",
+                "reload_resources": {
+                    "refresh_body": "Du er nødt til at opdatere siden for at fuldføre genindlæsningen. Vil du opdatere nu?",
+                    "refresh_header": "Vil du opdatere?"
+                },
                 "unused_entities": {
                     "available_entities": "Dette er de entiteter, du har til rådighed, som endnu ikke er i din Lovelace-brugerflade.",
                     "domain": "Domæne",

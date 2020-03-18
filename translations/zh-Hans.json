@@ -1482,7 +1482,7 @@
                     "ignore": {
                         "confirm_delete_ignore": "这将使集成在被发现时再次出现在已发现集成中。这可能需要重新启动或等待一段时间。",
                         "confirm_delete_ignore_title": "不再忽略 {name} 吗？",
-                        "confirm_ignore": "您确定不想设置此集成吗？您可以通过单击右上角菜单中的“显示忽略的集成”来撤消此操作。",
+                        "confirm_ignore": "您确定不想设置此集成吗？要撤销此操作，您可以点击右上角菜单中的“显示忽略的集成”。",
                         "confirm_ignore_title": "忽略发现的 {name}？",
                         "hide_ignored": "隐藏忽略的集成",
                         "ignore": "忽略",
@@ -1524,7 +1524,7 @@
                             "title_required": "标题为必填项。",
                             "update": "更新",
                             "url": "网址",
-                            "url_error_msg": "网址不可包含除 - 和 _ 以外的特殊字符及空格"
+                            "url_error_msg": "网址应包含“-”，且不可包含除“-”和“_”以外的特殊字符及空格"
                         },
                         "picker": {
                             "add_dashboard": "添加仪表盘",
@@ -2222,7 +2222,7 @@
                             "name": "图片"
                         },
                         "plant-status": {
-                            "description": "“植物状态”卡适用于所有可爱的植物学家。",
+                            "description": "“植物状态”卡片适合所有的植物爱好者。",
                             "name": "植物状态"
                         },
                         "sensor": {
@@ -2318,7 +2318,7 @@
                         "save": "自行编辑",
                         "yaml_config": "为方便您开始，以下是此仪表盘的当前配置：",
                         "yaml_control": "要以 YAML 模式下自行编辑，请创建 YAML 文件并命名为在配置中为此仪表盘指定的名称，或使用默认的 'ui-lovelace.yaml'。",
-                        "yaml_mode": "您正在使用 YAML 模式，因此无法从 UI 更改 Lovelace 配置。如果要从 UI 更改 Lovelace，请从 'configuration.yaml' 中的 Lovelace 配置中删除 'mode:yaml'。"
+                        "yaml_mode": "您正在使用 YAML 模式，因此无法从 UI 更改 Lovelace 配置。如果要从 UI 更改 Lovelace，请从 'configuration.yaml' 中的 Lovelace 配置中删除 'mode: yaml'。"
                     },
                     "suggest_card": {
                         "add": "添加至 Lovelace UI",
@@ -2338,9 +2338,14 @@
                     "exit_edit_mode": "退出 UI 编辑模式",
                     "help": "帮助",
                     "refresh": "刷新",
+                    "reload_resources": "重载资源",
                     "unused_entities": "未使用的实体"
                 },
                 "reload_lovelace": "重新加载 Lovelace",
+                "reload_resources": {
+                    "refresh_body": "必须刷新页面才能完成重载，是否要立即刷新？",
+                    "refresh_header": "要刷新吗？"
+                },
                 "unused_entities": {
                     "available_entities": "这些是您可用的实体，但尚未在 Lovelace UI 中显示。",
                     "domain": "域",
