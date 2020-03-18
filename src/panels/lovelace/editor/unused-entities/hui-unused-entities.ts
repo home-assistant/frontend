@@ -186,10 +186,10 @@ export class HuiUnusedEntities extends LitElement {
                 rtl: computeRTL(this.hass),
               })}"
               icon="hass:plus"
-              label="${this.hass.localize(
+              .label=${this.hass.localize(
                 "ui.panel.lovelace.editor.edit_card.add"
-              )}"
-              @click="${this._addToLovelaceView}"
+              )}
+              @click=${this._addToLovelaceView}
             ></ha-fab>
           `
         : ""}
