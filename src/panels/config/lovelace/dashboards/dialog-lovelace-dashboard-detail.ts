@@ -57,8 +57,10 @@ export class DialogLovelaceDashboardDetail extends LitElement {
     if (!this._params) {
       return html``;
     }
-    const urlInvalid = !/^[a-zA-Z0-9_-]+-[a-zA-Z0-9_-]+$/.test(this._urlPath);
-    const titleInvalid = !this._urlPath.trim();
+    const urlInvalid =
+      this._params.urlPath !== "lovelace" &&
+      !/^[a-zA-Z0-9_-]+-[a-zA-Z0-9_-]+$/.test(this._urlPath);
+    const titleInvalid = !this._title.trim();
     return html`
       <ha-dialog
         open
@@ -185,8 +187,7 @@ export class DialogLovelaceDashboardDetail extends LitElement {
         <mwc-button
           slot="primaryAction"
           @click="${this._updateDashboard}"
-          .disabled=${this._params.dashboard?.id &&
-            (urlInvalid || titleInvalid || this._submitting)}
+          .disabled=${urlInvalid || titleInvalid || this._submitting}
         >
           ${this._params.urlPath
             ? this._params.dashboard?.id
