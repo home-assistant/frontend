@@ -13,9 +13,7 @@ import deepFreeze from "deep-freeze";
 
 import { HomeAssistant } from "../../../../types";
 import { LovelaceCardConfig } from "../../../../data/lovelace";
-import "./hui-card-editor";
 import "./hui-card-preview";
-import "./hui-card-picker";
 import { addCards } from "../config-util";
 
 import "../../../../components/ha-yaml-editor";
