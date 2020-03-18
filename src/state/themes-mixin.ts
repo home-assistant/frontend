@@ -52,7 +52,6 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
           headerColor.trim() ||
           (meta.getAttribute("default-content") as string);
         meta.setAttribute("content", themeColor);
-        console.log(meta);
       }
     }
   };
