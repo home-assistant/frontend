@@ -26,6 +26,7 @@ import { PaperInputElement } from "@polymer/paper-input/paper-input";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { findEntities } from "../common/find-entites";
 import { LovelaceConfig } from "../../../data/lovelace";
+import { fireEvent } from "../../../common/dom/fire_event";
 
 const ICONS = {
   armed_away: "hass:shield-lock",
@@ -173,6 +174,7 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
           class="${classMap({ [stateObj.state]: true })}"
           .icon="${ICONS[stateObj.state] || "hass:shield-outline"}"
           .label="${this._stateIconLabel(stateObj.state)}"
+          @click=${this._handleMoreInfo}
         ></ha-label-badge>
         <div id="armActions" class="actions">
           ${(stateObj.state === "disarmed"
@@ -260,6 +262,12 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
     input.value = "";
   }
 
+  private _handleMoreInfo() {
+    fireEvent(this, "hass-more-info", {
+      entityId: this._config!.entity,
+    });
+  }
+
   static get styles(): CSSResult {
     return css`
       ha-card {
@@ -281,6 +289,7 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
         position: absolute;
         right: 12px;
         top: 12px;
+        cursor: pointer;
       }
 
       .disarmed {
