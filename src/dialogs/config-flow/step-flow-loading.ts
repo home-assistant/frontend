@@ -5,14 +5,22 @@ import {
   css,
   customElement,
   CSSResult,
+  property,
 } from "lit-element";
 import "@polymer/paper-spinner/paper-spinner-lite";
 
 @customElement("step-flow-loading")
 class StepFlowLoading extends LitElement {
+  @property() public label?: string;
+
   protected render(): TemplateResult {
     return html`
       <div class="init-spinner">
+        ${this.label
+          ? html`
+              <div>${this.label}</div>
+            `
+          : ""}
         <paper-spinner-lite active></paper-spinner-lite>
       </div>
     `;
