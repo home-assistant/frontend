@@ -1475,7 +1475,7 @@
                     },
                     "configure": "設定",
                     "configured": "已設定整合",
-                    "description": "管理已連線設備與整合",
+                    "description": "管理與設定整合",
                     "details": "整合詳細資訊",
                     "discovered": "已掃描",
                     "home_assistant_website": "Home Assistant 網站",
@@ -1501,7 +1501,7 @@
                     "caption": "Lovelace 主面板",
                     "dashboards": {
                         "cant_edit_default": "標準 Lovelace 主面板無法藉由 UI 進行編輯。可以設定其他主面板為預設值後進行隱藏。",
-                        "cant_edit_yaml": "於 YAML 中定義的主面板無法藉由 UI 編輯，請於 Configuration.yaml 進行更改。",
+                        "cant_edit_yaml": "於 YAML 中定義的主面板無法藉由 UI 編輯，請於 configuration.yaml 進行更改。",
                         "caption": "主面板",
                         "conf_mode": {
                             "storage": "由 UI 控制",
@@ -2338,9 +2338,14 @@
                     "exit_edit_mode": "退出 UI 編輯模式",
                     "help": "說明",
                     "refresh": "更新",
+                    "reload_resources": "重新載入資源",
                     "unused_entities": "未顯示物件"
                 },
                 "reload_lovelace": "重新載入 UI",
+                "reload_resources": {
+                    "refresh_body": "必須更新頁面以完成重新載入、要立即更新？",
+                    "refresh_header": "是否要更新？"
+                },
                 "unused_entities": {
                     "available_entities": "此些為尚未於 Lovelace 介面中、可供使用的物件。",
                     "domain": "區域",
