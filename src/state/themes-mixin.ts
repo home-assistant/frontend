@@ -36,8 +36,7 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
       applyThemesOnElement(
         document.documentElement,
         this.hass!.themes,
-        this.hass!.selectedTheme,
-        true
+        this.hass!.selectedTheme || this.hass!.themes.default_theme
       );
 
       const meta = document.querySelector("meta[name=theme-color]");

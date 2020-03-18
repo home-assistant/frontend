@@ -1,5 +1,5 @@
 import { derivedStyles } from "../../resources/styles";
-import { HomeAssistant, Theme } from "../../types";
+import { HomeAssistant } from "../../types";
 
 const hexToRgb = (hex: string): string | null => {
   const shorthandRegex = /^#?([a-f\d])([a-f\d])([a-f\d])$/i;
@@ -21,22 +21,14 @@ const hexToRgb = (hex: string): string | null => {
  *
  * element: Element to apply theme on.
  * themes: HASS Theme information
- * localTheme: selected theme.
- * mainElement: boolean if it is the top element of the page.
+ * selectedTheme: selected theme.
  */
 export const applyThemesOnElement = (
   element,
   themes: HomeAssistant["themes"],
-  localTheme?: string | null,
-  mainElement = false
+  selectedTheme?: string
 ) => {
-  // We only set styles if the element has an theme itself or on the main element, otherwise it will inherit the styles from it's parent
-  let newTheme: Theme | undefined;
-  if (localTheme && themes.themes[localTheme]) {
-    newTheme = themes.themes[localTheme];
-  } else if (mainElement && localTheme !== "default") {
-    newTheme = themes.themes[themes.default_theme];
-  }
+  const newTheme = selectedTheme ? themes.themes[selectedTheme] : undefined;
 
   // Styles that need to be reset from the previous theme
   if (!element._themes) {
