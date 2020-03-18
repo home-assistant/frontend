@@ -1508,6 +1508,7 @@
                             "yaml": "Plik YAML"
                         },
                         "confirm_delete": "Na pewno chcesz usunąć ten dashboard?",
+                        "default_dashboard": "To jest domyślny dashboard",
                         "detail": {
                             "create": "Utwórz",
                             "delete": "Usuń",
@@ -2337,9 +2338,14 @@
                     "exit_edit_mode": "Wyjdź z trybu edycji interfejsu użytkownika",
                     "help": "Pomoc",
                     "refresh": "Wczytaj ponownie",
+                    "reload_resources": "Wczytaj ponownie zasoby",
                     "unused_entities": "Nieużywane encje"
                 },
                 "reload_lovelace": "Wczytaj ponownie Lovelace",
+                "reload_resources": {
+                    "refresh_body": "Musisz odświeżyć stronę, aby zakończyć ponowne wczytywanie zasobów, czy chcesz teraz odświeżyć?",
+                    "refresh_header": "Czy chcesz odświeżyć?"
+                },
                 "unused_entities": {
                     "available_entities": "Są to encje, które są dostępne, ale jeszcze nie ma ich w interfejsie użytkownika Lovelace.",
                     "domain": "Domena",

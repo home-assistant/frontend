@@ -76,12 +76,19 @@
                 "on": "เปิด"
             },
             "hvac_action": {
+                "cooling": "โหมดเย็น",
+                "drying": "โหมดแห้ง",
+                "fan": "พัดลม",
+                "heating": "โหมดอบอุ่น",
                 "idle": "ไม่ได้ใช้งาน",
                 "off": "ปิด"
             },
             "preset_mode": {
                 "activity": "กิจกรรม",
-                "home": "บ้าน"
+                "eco": "ประหยัด",
+                "home": "บ้าน",
+                "none": "ไม่มี",
+                "sleep": "หลับ"
             }
         }
     },
@@ -404,6 +411,7 @@
                 "fan_mode": "โหมดของพัดลม",
                 "on_off": "เปิด / ปิด",
                 "operation": "การทำงาน",
+                "preset_mode": "ฟังก์ชันที่ใช้งานบ่อย",
                 "swing_mode": "โหมดแกว่ง",
                 "target_humidity": "ค่าความชื้นที่ต้องการ",
                 "target_temperature": "อุณหภูมิที่ต้องการ"
@@ -854,6 +862,7 @@
                         "device_unavailable": "อุปกรณ์นี้ไม่พร้อมใช้งาน",
                         "entity_unavailable": "Entity นี้ไม่พร้อมใช้งาน",
                         "firmware": "Firmware: {version}",
+                        "hub": "เชื่อมต่อผ่านทาง",
                         "manuf": "โดย {manufacturer}",
                         "no_area": "ไม่มีห้อง",
                         "no_device": "เป็น Entities โดยไม่มีอุปกรณ์",
@@ -954,6 +963,13 @@
                         "value": "ค่า"
                     },
                     "description": "จัดการเครือข่าย Z-Wave",
+                    "network_management": {
+                        "header": "เริ่มเครือข่าย Z-Wave"
+                    },
+                    "network_status": {
+                        "network_started": "เริ่มเครือข่าย Z-Wave",
+                        "network_stopped": "หยุดเครือข่าย Z-Wave"
+                    },
                     "node_config": {
                         "seconds": "วินาที",
                         "set_config_parameter": "ตั้งค่าพารามิเตอร์การกำหนดค่า"
@@ -1016,6 +1032,22 @@
                     "refresh": "รีเฟรช"
                 },
                 "editor": {
+                    "card": {
+                        "gauge": {
+                            "severity": {
+                                "green": "เขียว",
+                                "red": "แดง",
+                                "yellow": "เหลือง"
+                            }
+                        },
+                        "generic": {
+                            "icon": "ไอคอน",
+                            "icon_height": "ความสูงของไอคอน",
+                            "image": "เส้นทางของภาพ",
+                            "maximum": "ขีดสุด",
+                            "minimum": "ขั้นต่ำ"
+                        }
+                    },
                     "edit_card": {
                         "add": "เพิ่มการ์ดใหม่",
                         "delete": "ลบ",
@@ -1170,6 +1202,49 @@
                 "logging_in_with": "เข้าสู่ระบบด้วย ** {authProviderName} **",
                 "pick_auth_provider": "หรือเข้าสู่ระบบด้วย"
             },
+            "page-demo": {
+                "cards": {
+                    "demo": {
+                        "demo_by": "โดย {name}",
+                        "introduction": "ยินดีต้อนรับกลับบ้าน! คุณมาถึงหน้าสาธิตที่เราแสดง UIs ที่ดีที่สุดที่สร้างโดยชุมชนของเรา",
+                        "learn_more": "เรียนรู้เพิ่มเติมเกี่ยวกับ Home Assistant",
+                        "next_demo": "การสาธิตครั้งต่อไป"
+                    }
+                },
+                "config": {
+                    "arsaboo": {
+                        "labels": {
+                            "activity": "กิจกรรม",
+                            "air": "อากาศ",
+                            "commute_home": "เดินทางกลับบ้าน",
+                            "entertainment": "ความบันเทิง",
+                            "hdmi_input": "ช่องต่อ HDMI",
+                            "hdmi_switcher": "ตัวสลับสัญญาณ HDMI",
+                            "information": "ข้อมูล",
+                            "lights": "ไฟ",
+                            "morning_commute": "การเดินทางยามเช้า",
+                            "total_tv_time": "เวลาที่ใช้กับโทรทัศน์ทั้งหมด",
+                            "turn_tv_off": "ปิดโทรทัศน์",
+                            "volume": "ระดับเสียง"
+                        },
+                        "names": {
+                            "family_room": "ห้องของครอบครัว",
+                            "hallway": "ห้องโถง",
+                            "kitchen": "ห้องครัว",
+                            "left": "ซ้าย",
+                            "master_bedroom": "ห้องนอนใหญ่",
+                            "mirror": "กระจกเงา",
+                            "patio": "ลาน",
+                            "right": "ขวา",
+                            "upstairs": "ชั้นบน"
+                        },
+                        "unit": {
+                            "minutes_abbr": "นาที",
+                            "watching": "ดู"
+                        }
+                    }
+                }
+            },
             "page-onboarding": {
                 "core-config": {
                     "button_detect": "ตรวจจับ",
@@ -1220,6 +1295,7 @@
                     "header": "ภาษา",
                     "link_promo": "ช่วยเราแปลภาษาเป็นประเทศของคุณ"
                 },
+                "logout": "ออกจากระบบ",
                 "long_lived_access_tokens": {
                     "confirm_delete": "คุณแน่ใจหรือไม่ว่าต้องการลบโทเค็นการเข้าถึงของ {name} ?",
                     "create": "สร้าง Token ใหม่",

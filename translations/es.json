@@ -683,7 +683,7 @@
                 },
                 "not_editable": "No editable",
                 "not_editable_text": "Esta entidad no se puede cambiar desde la interfaz de usuario porque está definida en configuration.yaml.",
-                "platform_not_loaded": "La integración {platform} no está cargada, por favor añádela a tu configuración. Ya sea agregando 'default_config:' o '{platform}:'.",
+                "platform_not_loaded": "La integración {platform} no está cargada, por favor añádela a tu configuración. Ya sea agregando \"default_config:\" o \"{platform}:\".",
                 "required_error_msg": "Este campo es obligatorio",
                 "yaml_not_editable": "La configuración de esta entidad no se puede editar desde la IU. Solo las entidades configuradas desde la IU se pueden configurar desde la IU"
             },
@@ -1500,8 +1500,8 @@
                 "lovelace": {
                     "caption": "Paneles de Control Lovelace",
                     "dashboards": {
-                        "cant_edit_default": "El panel de control estándar de Lovelace no se puede editar desde la interfaz de usuario. Puedes ocultarlo estableciendo otro panel como predeterminado.",
-                        "cant_edit_yaml": "Los paneles de control definidos en YAML no se pueden editar desde la interfaz de usuario. Cámbialos en configuration.yaml.",
+                        "cant_edit_default": "El panel de control estándar de Lovelace no se puede editar desde la IU. Puedes ocultarlo estableciendo otro panel como predeterminado.",
+                        "cant_edit_yaml": "Los paneles de control definidos en YAML no se pueden editar desde la IU. Cámbialos en configuration.yaml.",
                         "caption": "Paneles de control",
                         "conf_mode": {
                             "storage": "Controlado por la interfaz de usuario",
@@ -1541,7 +1541,7 @@
                     },
                     "description": "Configura tus Paneles de Control Lovelace",
                     "resources": {
-                        "cant_edit_yaml": "Está utilizando Lovelace en modo YAML, por lo tanto, no puedes administrar tus recursos a través de la interfaz de usuario. Adminístralos en configuration.yaml.",
+                        "cant_edit_yaml": "Estás utilizando Lovelace en modo YAML, por tanto no puedes administrar tus recursos a través de la IU. Adminístralos en configuration.yaml.",
                         "caption": "Recursos",
                         "confirm_delete": "¿Estás seguro de que quieres eliminar este recurso?",
                         "detail": {
@@ -2318,7 +2318,7 @@
                         "save": "Tomar el control",
                         "yaml_config": "Para ayudarte a empezar aquí está la configuración actual de este panel:",
                         "yaml_control": "Para tomar el control en modo YAML, crea un archivo YAML con el nombre que especificaste en la configuración para este panel de control, o el valor predeterminado 'ui-lovelace.yaml'.",
-                        "yaml_mode": "Está utilizando el modo YAML, lo que significa que no puedes cambiar la configuración de Lovelace desde la interfaz de usuario. Si deseas cambiar Lovelace desde la interfaz de usuario, quita el 'mode: yaml' de la configuración de Lovelace en 'configuration.yaml.'"
+                        "yaml_mode": "Estás utilizando el modo YAML, lo que significa que no puedes cambiar la configuración de Lovelace desde la IU. Si deseas cambiar Lovelace desde la IU, elimina 'mode: yaml' de la configuración de Lovelace en 'configuration.yaml.'"
                     },
                     "suggest_card": {
                         "add": "Añadir a la IU Lovelace",
@@ -2338,9 +2338,14 @@
                     "exit_edit_mode": "Salir del modo de edición de la interfaz de usuario",
                     "help": "Ayuda",
                     "refresh": "Actualizar",
+                    "reload_resources": "Recargar recursos",
                     "unused_entities": "Entidades no utilizadas"
                 },
                 "reload_lovelace": "Recargar la IU Lovelace",
+                "reload_resources": {
+                    "refresh_body": "Tienes que actualizar la página para completar la recarga, ¿deseas actualizar ahora?",
+                    "refresh_header": "¿Quieres actualizar?"
+                },
                 "unused_entities": {
                     "available_entities": "Estas son las entidades que tienes disponibles, pero aún no están en la interfaz de usuario de Lovelace.",
                     "domain": "Dominio",

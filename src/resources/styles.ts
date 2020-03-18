@@ -204,8 +204,8 @@ export const haStyleDialog = css`
     --mdc-dialog-min-width: 400px;
     --mdc-dialog-max-width: 600px;
     --mdc-dialog-heading-ink-color: var(--primary-text-color);
+    --mdc-dialog-content-ink-color: var(--primary-text-color);
     --justify-action-buttons: space-between;
-    color: var(--primary-text-color);
   }
 
   ha-dialog .form {
