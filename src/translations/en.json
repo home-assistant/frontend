@@ -2059,6 +2059,7 @@
               "tap_action": "Tap Action",
               "title": "Title",
               "theme": "Theme",
+              "remove_theme": "Remove theme",
               "unit": "Unit",
               "url": "Url",
               "state": "State"

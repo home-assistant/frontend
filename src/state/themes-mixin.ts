@@ -39,5 +39,20 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
         this.hass!.selectedTheme,
         true
       );
+
+      const meta = document.querySelector("meta[name=theme-color]");
+      const headerColor = getComputedStyle(
+        document.documentElement
+      ).getPropertyValue("--app-header-background-color");
+      if (meta) {
+        if (!meta.hasAttribute("default-content")) {
+          meta.setAttribute("default-content", meta.getAttribute("content")!);
+        }
+        const themeColor =
+          headerColor.trim() ||
+          (meta.getAttribute("default-content") as string);
+        meta.setAttribute("content", themeColor);
+        console.log(meta);
+      }
     }
   };

@@ -1,4 +1,5 @@
 import { derivedStyles } from "../../resources/styles";
+import { HomeAssistant, Theme } from "../../types";
 
 const hexToRgb = (hex: string): string | null => {
   const shorthandRegex = /^#?([a-f\d])([a-f\d])([a-f\d])$/i;
@@ -25,18 +26,21 @@ const hexToRgb = (hex: string): string | null => {
  */
 export const applyThemesOnElement = (
   element,
-  themes,
-  localTheme,
+  themes: HomeAssistant["themes"],
+  localTheme?: string | null,
   mainElement = false
 ) => {
-  // We only set styles if the element has an existing theme itself or on the main element, otherwise it will inherit the styles from it's parent
-  const setTheme =
-    (localTheme && themes.themes[localTheme]) ||
-    (mainElement && themes.default_theme !== "default");
+  // We only set styles if the element has an theme itself or on the main element, otherwise it will inherit the styles from it's parent
+  let newTheme: Theme | undefined;
+  if (localTheme && themes.themes[localTheme]) {
+    newTheme = themes.themes[localTheme];
+  } else if (mainElement && localTheme !== "default") {
+    newTheme = themes.themes[themes.default_theme];
+  }
 
   // Styles that need to be reset from the previous theme
   if (!element._themes) {
-    if (!setTheme) {
+    if (!newTheme) {
       // No styles to reset, and no styles to set
       return;
     }
@@ -45,14 +49,7 @@ export const applyThemesOnElement = (
 
   // Add previous set keys to reset them
   const styles = { ...element._themes };
-  if (setTheme) {
-    // we set the local theme, and otherwise the backend selected theme
-    const newTheme =
-      themes.themes[localTheme] || themes.themes[themes.default_theme];
-
-    if (!newTheme) {
-      return;
-    }
+  if (newTheme) {
     const theme = {
       ...derivedStyles,
       ...newTheme,
@@ -84,20 +81,5 @@ export const applyThemesOnElement = (
   } else if (window.ShadyCSS) {
     // Implement updateStyles() method of Polymer elements
     window.ShadyCSS.styleSubtree(/** @type {!HTMLElement} */ element, styles);
-  }
-
-  // We update the meta data with the theme of the main element
-  if (!mainElement) {
-    return;
-  }
-
-  const meta = document.querySelector("meta[name=theme-color]");
-  if (meta) {
-    if (!meta.hasAttribute("default-content")) {
-      meta.setAttribute("default-content", meta.getAttribute("content")!);
-    }
-    const themeColor =
-      styles["--primary-color"] || meta.getAttribute("default-content");
-    meta.setAttribute("content", themeColor);
   }
 };
