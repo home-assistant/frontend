@@ -1950,7 +1950,7 @@
             "add": "Add Card",
             "edit": "Edit",
             "delete": "Delete Card",
-            "copy": "Copy Card",
+            "duplicate": "Duplicate Card",
             "move": "Move to View",
             "options": "More options"
           },

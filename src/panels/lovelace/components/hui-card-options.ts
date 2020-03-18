@@ -78,9 +78,9 @@ export class HuiCardOptions extends LitElement {
                     "ui.panel.lovelace.editor.edit_card.move"
                   )}</paper-item
                 >
-                <paper-item @tap="${this._copyCard}"
+                <paper-item @tap=${this._duplicateCard}
                   >${this.hass!.localize(
-                    "ui.panel.lovelace.editor.edit_card.copy"
+                    "ui.panel.lovelace.editor.edit_card.duplicate"
                   )}</paper-item
                 >
                 <paper-item .class="delete-item" @tap="${this._deleteCard}">
@@ -157,7 +157,7 @@ export class HuiCardOptions extends LitElement {
     `;
   }
 
-  private _copyCard(): void {
+  private _duplicateCard(): void {
     const path = this.path!;
     const cardConfig = this.lovelace!.config.views[path[0]].cards![path[1]];
     showEditCardDialog(this, {
