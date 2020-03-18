@@ -185,7 +185,8 @@ export class DialogLovelaceDashboardDetail extends LitElement {
         <mwc-button
           slot="primaryAction"
           @click="${this._updateDashboard}"
-          .disabled=${urlInvalid || titleInvalid || this._submitting}
+          .disabled=${this._params.dashboard?.id &&
+            (urlInvalid || titleInvalid || this._submitting)}
         >
           ${this._params.urlPath
             ? this._params.dashboard?.id
