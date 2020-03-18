@@ -172,6 +172,9 @@ export class HcMain extends HassElement {
       return;
     }
     if (!this._unsubLovelace || this._urlPath !== msg.urlPath) {
+      if (msg.urlPath === "lovelace") {
+        msg.urlPath = null;
+      }
       this._urlPath = msg.urlPath;
       if (this._unsubLovelace) {
         this._unsubLovelace();
