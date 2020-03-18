@@ -489,7 +489,7 @@ class HUIRoot extends LitElement {
         newSelectView = 0;
       } else if (viewPath === "hass-unused-entities") {
         newSelectView = "hass-unused-entities";
-      } else {
+      } else if (viewPath) {
         const selectedView = viewPath;
         const selectedViewInt = Number(selectedView);
         let index = 0;
