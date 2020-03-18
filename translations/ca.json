@@ -2336,9 +2336,14 @@
                     "exit_edit_mode": "Surt del mode d’edició d'interfície",
                     "help": "Ajuda",
                     "refresh": "Actualitzar",
+                    "reload_resources": "Actualitza recursos",
                     "unused_entities": "Entitats sense utilitzar"
                 },
                 "reload_lovelace": "Recarrega Lovelace",
+                "reload_resources": {
+                    "refresh_body": "Has d’actualitzar la pàgina per completar la càrrega. Vols actualitzar-la ara?",
+                    "refresh_header": "Vols actualitzar?"
+                },
                 "unused_entities": {
                     "available_entities": "Aquestes són les entitats que tens disponibles, però que no es troben a la interfície d'usuari Lovelace.",
                     "domain": "Domini",

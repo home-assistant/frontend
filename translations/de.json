@@ -1482,7 +1482,7 @@
                     "ignore": {
                         "confirm_delete_ignore": "Dies wird die Integration in deinen entdeckten Integrationen wieder erscheinen lassen, wenn sie entdeckt wird. Dies kann einen Neustart erfordern oder einige Zeit dauern.",
                         "confirm_delete_ignore_title": "{name} nicht mehr ignorieren?",
-                        "confirm_ignore": "Sind Sie sicher, dass Sie diese Integration nicht einrichten wollen? Sie können dies rückgängig machen, indem Sie im Kontextmenü oben rechts auf 'Ignorierte Integrationen anzeigen' klicken.",
+                        "confirm_ignore": "Bist du sicher, dass du diese Integration nicht einrichten willst? Du kannst dies rückgängig machen, indem du im Kontextmenü oben rechts auf 'Ignorierte Integrationen anzeigen' klickst.",
                         "confirm_ignore_title": "Ignoriere die Entdeckung von {name}?",
                         "hide_ignored": "Ignorierte Integrationen ausblenden",
                         "ignore": "Ignorieren",
@@ -2338,9 +2338,14 @@
                     "exit_edit_mode": "Schließen des UI-Bearbeitungsmodus",
                     "help": "Hilfe",
                     "refresh": "Aktualisieren",
+                    "reload_resources": "Ressourcen neu laden",
                     "unused_entities": "Ungenutzte Elemente"
                 },
                 "reload_lovelace": "Benutzeroberfläche neu laden",
+                "reload_resources": {
+                    "refresh_body": "Sie müssen die Seite aktualisieren, um das Neuladen abzuschließen. Möchten Sie jetzt aktualisieren?",
+                    "refresh_header": "Möchtest du aktualisieren?"
+                },
                 "unused_entities": {
                     "available_entities": "Dies sind die Entitäten, die Sie zur Verfügung haben, die aber noch nicht in Ihrer Lovelace-Benutzeroberfläche enthalten sind.",
                     "domain": "Domain",
