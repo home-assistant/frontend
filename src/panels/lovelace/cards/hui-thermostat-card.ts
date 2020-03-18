@@ -271,7 +271,12 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
 
   protected updated(changedProps: PropertyValues): void {
     super.updated(changedProps);
-    if (!this._config || !this.hass || !changedProps.has("hass")) {
+
+    if (
+      !this._config ||
+      !this.hass ||
+      (!changedProps.has("hass") && !changedProps.has("_config"))
+    ) {
       return;
     }
 
