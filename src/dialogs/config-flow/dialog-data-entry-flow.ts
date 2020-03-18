@@ -130,7 +130,11 @@ class DataEntryFlowDialog extends LitElement {
       >
         ${this._loading || (this._step === null && this._handlers === undefined)
           ? html`
-              <step-flow-loading></step-flow-loading>
+              <step-flow-loading
+                .label=${this.hass.localize(
+                  "ui.panel.config.integrations.config_flow.loading_first_time"
+                )}
+              ></step-flow-loading>
             `
           : this._step === undefined
           ? // When we are going to next step, we render 1 round of empty
