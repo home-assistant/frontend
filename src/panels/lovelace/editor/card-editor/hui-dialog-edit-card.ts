@@ -112,6 +112,7 @@ export class HuiDialogEditCard extends LitElement {
                       .lovelace="${this._params.lovelaceConfig}"
                       .value="${this._cardConfig}"
                       @config-changed="${this._handleConfigChanged}"
+                      @GUImode-changed=${() => this.requestUpdate()}
                     ></hui-card-editor>
                   </div>
                   <div class="element-preview">
@@ -133,6 +134,22 @@ export class HuiDialogEditCard extends LitElement {
               `}
         </paper-dialog-scrollable>
         <div class="paper-dialog-buttons">
+          ${this._cardConfig !== undefined
+            ? html`
+                <mwc-button
+                  @click=${() => this._cardEditorEl?.toggleMode()}
+                  ?disabled=${this._cardEditorEl?.hasWarning ||
+                    this._cardEditorEl?.hasError}
+                  class="gui-mode-button"
+                >
+                  ${this.hass!.localize(
+                    !this._cardEditorEl || this._cardEditorEl.GUImode
+                      ? "ui.panel.lovelace.editor.edit_card.show_code_editor"
+                      : "ui.panel.lovelace.editor.edit_card.show_visual_editor"
+                  )}
+                </mwc-button>
+              `
+            : ""}
           <mwc-button @click="${this._close}">
             ${this.hass!.localize("ui.common.cancel")}
           </mwc-button>
@@ -249,6 +266,9 @@ export class HuiDialogEditCard extends LitElement {
           margin-bottom: 4px;
           display: block;
           width: 100%;
+        }
+        .gui-mode-button {
+          margin-right: auto;
         }
       `,
     ];

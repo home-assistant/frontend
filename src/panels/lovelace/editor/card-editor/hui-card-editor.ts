@@ -33,6 +33,7 @@ declare global {
       config: LovelaceCardConfig;
       error?: string;
     };
+    "GUImode-changed": {};
   }
 }
 
@@ -85,8 +86,23 @@ export class HuiCardEditor extends LitElement {
     }
   }
 
+  public get hasWarning(): boolean {
+    return this._warning !== undefined;
+  }
+
   public get hasError(): boolean {
     return this._error !== undefined;
+  }
+
+  public get GUImode(): boolean {
+    return this._GUImode;
+  }
+
+  public set GUImode(guiMode: boolean) {
+    this._GUImode = guiMode;
+    fireEvent(this as HTMLElement, "GUImode-changed", {
+      guiMode,
+    });
   }
 
   private get _yamlEditor(): HaCodeEditor {
@@ -94,7 +110,7 @@ export class HuiCardEditor extends LitElement {
   }
 
   public toggleMode() {
-    this._GUImode = !this._GUImode;
+    this.GUImode = !this.GUImode;
   }
 
   public connectedCallback() {
@@ -105,7 +121,7 @@ export class HuiCardEditor extends LitElement {
   protected render(): TemplateResult {
     return html`
       <div class="wrapper">
-        ${this._GUImode
+        ${this.GUImode
           ? html`
               <div class="gui-editor">
                 ${this._loading
@@ -145,18 +161,6 @@ export class HuiCardEditor extends LitElement {
               </div>
             `
           : ""}
-        <div class="buttons">
-          <mwc-button
-            @click=${this.toggleMode}
-            ?disabled=${this._warning || this._error}
-          >
-            ${this.hass!.localize(
-              this._GUImode
-                ? "ui.panel.lovelace.editor.edit_card.show_code_editor"
-                : "ui.panel.lovelace.editor.edit_card.show_visual_editor"
-            )}
-          </mwc-button>
-        </div>
       </div>
     `;
   }
@@ -165,7 +169,7 @@ export class HuiCardEditor extends LitElement {
     super.updated(changedProperties);
 
     if (changedProperties.has("_GUImode")) {
-      if (this._GUImode === false) {
+      if (this.GUImode === false) {
         // Refresh code editor when switching to yaml mode
         this._refreshYamlEditor(true);
       }
@@ -252,7 +256,7 @@ export class HuiCardEditor extends LitElement {
       } else {
         this._error = err;
       }
-      this._GUImode = false;
+      this.GUImode = false;
     } finally {
       this._loading = false;
       fireEvent(this, "iron-resize");
@@ -276,10 +280,6 @@ export class HuiCardEditor extends LitElement {
       }
       .warning {
         color: #ffa726;
-      }
-      .buttons {
-        text-align: right;
-        padding: 8px 0px;
       }
       paper-spinner {
         display: block;
