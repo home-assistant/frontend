@@ -78,6 +78,11 @@ export class HuiCardOptions extends LitElement {
                     "ui.panel.lovelace.editor.edit_card.move"
                   )}</paper-item
                 >
+                <paper-item @tap="${this._copyCard}"
+                  >${this.hass!.localize(
+                    "ui.panel.lovelace.editor.edit_card.copy"
+                  )}</paper-item
+                >
                 <paper-item .class="delete-item" @tap="${this._deleteCard}">
                   ${this.hass!.localize(
                     "ui.panel.lovelace.editor.edit_card.delete"
@@ -150,6 +155,17 @@ export class HuiCardOptions extends LitElement {
         color: var(--google-red-500);
       }
     `;
+  }
+
+  private _copyCard(): void {
+    const path = this.path!;
+    const cardConfig = this.lovelace!.config.views[path[0]].cards![path[1]];
+    showEditCardDialog(this, {
+      lovelaceConfig: this.lovelace!.config,
+      cardConfig,
+      saveConfig: this.lovelace!.saveConfig,
+      path: [path[0]],
+    });
   }
 
   private _editCard(): void {
