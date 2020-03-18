@@ -84,13 +84,13 @@ class HUIRoot extends LitElement {
 
   protected render(): TemplateResult {
     return html`
-    <app-route .route="${this.route}" pattern="/:view" data="${
+    <app-route .route=${this.route} pattern="/:view" .data=${
       this._routeData
-    }" @data-changed="${this._routeDataChanged}"></app-route>
+    } @data-changed=${this._routeDataChanged}></app-route>
     <ha-app-layout id="layout">
-      <app-header slot="header" effects="waterfall" class="${classMap({
+      <app-header slot="header" effects="waterfall" class=${classMap({
         "edit-mode": this._editMode,
-      })}" fixed condenses>
+      })} fixed condenses>
         ${
           this._editMode
             ? html`
