@@ -6,11 +6,11 @@ import "./ha-init-page";
 import "../resources/ha-style";
 import "../resources/custom-card-support";
 import { registerServiceWorker } from "../util/register-service-worker";
-import { DEFAULT_PANEL } from "../common/const";
 
 import { Route, HomeAssistant } from "../types";
 import { navigate } from "../common/navigate";
 import { HassElement } from "../state/hass-element";
+import { getDefaultPanelUrlPath } from "../data/panel";
 
 export class HomeAssistantAppEl extends HassElement {
   @property() private _route?: Route;
@@ -86,7 +86,7 @@ export class HomeAssistantAppEl extends HassElement {
       this._route === undefined &&
       (route.path === "" || route.path === "/")
     ) {
-      navigate(window, `/${localStorage.defaultPage || DEFAULT_PANEL}`, true);
+      navigate(window, `/${getDefaultPanelUrlPath()}`, true);
       return;
     }
 

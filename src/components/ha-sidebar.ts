@@ -18,7 +18,6 @@ import "../components/user/ha-user-badge";
 import "../components/ha-menu-button";
 import { HomeAssistant, PanelInfo } from "../types";
 import { fireEvent } from "../common/dom/fire_event";
-import { DEFAULT_PANEL } from "../common/const";
 import {
   getExternalConfig,
   ExternalConfig,
@@ -33,6 +32,7 @@ import { classMap } from "lit-html/directives/class-map";
 import { PaperIconItemElement } from "@polymer/paper-item/paper-icon-item";
 import { computeRTL } from "../common/util/compute_rtl";
 import { compare } from "../common/string/compare";
+import { getDefaultPanelUrlPath, getDefaultPanel } from "../data/panel";
 
 const SHOW_AFTER_SPACER = ["config", "developer-tools", "hassio"];
 
@@ -77,7 +77,6 @@ const panelSorter = (a: PanelInfo, b: PanelInfo) => {
   // both not built in, sort by title
   return compare(a.title!, b.title!);
 };
-const DEFAULT_PAGE = localStorage.defaultPage || DEFAULT_PANEL;
 
 const computePanels = (hass: HomeAssistant): [PanelInfo[], PanelInfo[]] => {
   const panels = hass.panels;
@@ -88,8 +87,10 @@ const computePanels = (hass: HomeAssistant): [PanelInfo[], PanelInfo[]] => {
   const beforeSpacer: PanelInfo[] = [];
   const afterSpacer: PanelInfo[] = [];
 
+  const defaultPage = getDefaultPanelUrlPath();
+
   Object.values(panels).forEach((panel) => {
-    if (!panel.title || panel.url_path === DEFAULT_PAGE) {
+    if (!panel.title || panel.url_path === defaultPage) {
       return;
     }
     (SHOW_AFTER_SPACER.includes(panel.url_path)
@@ -142,8 +143,7 @@ class HaSidebar extends LitElement {
       }
     }
 
-    const defaultPanel =
-      this.hass.panels[DEFAULT_PAGE] || this.hass.panels[DEFAULT_PANEL];
+    const defaultPanel = getDefaultPanel(hass.panels);
 
     return html`
       <div class="menu">
