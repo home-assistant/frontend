@@ -122,6 +122,46 @@ class HaAuthFlow extends litLocalizeLiteMixin(LitElement) {
             )}
           ></ha-markdown>
         `;
+      case "external":
+        const external = window.open(step.url);
+        const loop = setInterval(async () => {
+          if (external?.closed) {
+            clearInterval(loop);
+
+            try {
+              const postData = { client_id: this.clientId };
+              const response = await fetch(
+                `/auth/login_flow/${this._step?.flow_id}`,
+                {
+                  method: "POST",
+                  credentials: "same-origin",
+                  body: JSON.stringify(postData),
+                }
+              );
+
+              const data = await response.json();
+
+              if (response.ok) {
+                // allow auth provider bypass the login form
+                if (data.type === "create_entry") {
+                  this._redirect(data.result);
+                  return;
+                }
+
+                await this._updateStep(data);
+              } else {
+                this._state = "error";
+                this._errorMessage = data.message;
+              }
+            } catch (err) {
+              // tslint:disable-next-line: no-console
+              console.error("Error updating auth flow", err);
+              this._state = "error";
+              this._errorMessage = this._unknownError();
+            }
+          }
+        }, 500);
+        return html``;
       case "form":
         return html`
           ${this._computeStepDescription(step)
