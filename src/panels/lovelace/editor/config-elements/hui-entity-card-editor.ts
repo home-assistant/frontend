@@ -82,10 +82,10 @@ export class HuiEntityCardEditor extends LitElement
           )} (${this.hass.localize(
             "ui.panel.lovelace.editor.card.config.optional"
           )})"
-          .hass="${this.hass}"
-          .value="${this._entity}"
+          .hass=${this.hass}
+          .value=${this._entity}
           .configValue=${"entity"}
-          @change="${this._valueChanged}"
+          @change=${this._valueChanged}
           allow-custom-entity
         ></ha-entity-picker>
         <div class="side-by-side">
@@ -95,9 +95,9 @@ export class HuiEntityCardEditor extends LitElement
             )} (${this.hass.localize(
               "ui.panel.lovelace.editor.card.config.optional"
             )})"
-            .value="${this._name}"
-            .configValue="${"name"}"
-            @value-changed="${this._valueChanged}"
+            .value=${this._name}
+            .configValue=${"name"}
+            @value-changed=${this._valueChanged}
           ></paper-input>
           <paper-input
             .label="${this.hass.localize(
@@ -105,9 +105,9 @@ export class HuiEntityCardEditor extends LitElement
             )} (${this.hass.localize(
               "ui.panel.lovelace.editor.card.config.optional"
             )})"
-            .value="${this._icon}"
-            .configValue="${"icon"}"
-            @value-changed="${this._valueChanged}"
+            .value=${this._icon}
+            .configValue=${"icon"}
+            @value-changed=${this._valueChanged}
           ></paper-input>
         </div>
         <div class="side-by-side">
@@ -117,9 +117,9 @@ export class HuiEntityCardEditor extends LitElement
             )} (${this.hass.localize(
               "ui.panel.lovelace.editor.card.config.optional"
             )})"
-            .value="${this._attribute}"
-            .configValue="${"attribute"}"
-            @value-changed="${this._valueChanged}"
+            .value=${this._attribute}
+            .configValue=${"attribute"}
+            @value-changed=${this._valueChanged}
           ></paper-input>
           <paper-input
             .label="${this.hass.localize(
@@ -127,16 +127,16 @@ export class HuiEntityCardEditor extends LitElement
             )} (${this.hass.localize(
               "ui.panel.lovelace.editor.card.config.optional"
             )})"
-            .value="${this._unit}"
-            .configValue="${"unit"}"
-            @value-changed="${this._valueChanged}"
+            .value=${this._unit}
+            .configValue=${"unit"}
+            @value-changed=${this._valueChanged}
           ></paper-input>
         </div>
         <hui-theme-select-editor
-          .hass="${this.hass}"
-          .value="${this._theme}"
-          .configValue="${"theme"}"
-          @theme-changed="${this._valueChanged}"
+          .hass=${this.hass}
+          .value=${this._theme}
+          .configValue=${"theme"}
+          @theme-changed=${this._valueChanged}
         ></hui-theme-select-editor>
       </div>
     `;

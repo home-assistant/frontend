@@ -121,7 +121,7 @@ class HuiEntityCard extends LitElement implements LovelaceCard {
           </div>
           <div class="icon">
             <ha-icon
-              .icon="${this._config.icon || stateIcon(stateObj)}"
+              .icon=${this._config.icon || stateIcon(stateObj)}
             ></ha-icon>
           </div>
         </div>
