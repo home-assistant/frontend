@@ -29,7 +29,6 @@ import { toggleEntity } from "../common/entity/toggle-entity";
 import { LightCardConfig } from "./types";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import { SUPPORT_BRIGHTNESS } from "../../../data/light";
-import { LovelaceConfig } from "../../../data/lovelace";
 import { findEntities } from "../common/find-entites";
 import { UNAVAILABLE } from "../../../data/entity";
 
@@ -44,18 +43,16 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
 
   public static getStubConfig(
     hass: HomeAssistant,
-    lovelaceConfig: LovelaceConfig,
-    entities?: string[],
-    entitiesFill?: string[]
+    entities: string[],
+    entitiesFallback: string[]
   ): object {
     const includeDomains = ["light"];
     const maxEntities = 1;
     const foundEntities = findEntities(
       hass,
-      lovelaceConfig,
       maxEntities,
       entities,
-      entitiesFill,
+      entitiesFallback,
       includeDomains
     );
 

@@ -61,7 +61,7 @@ const addEntities = (entities: Set<string>, obj) => {
   }
 };
 
-export const computeUsedEntities = (config) => {
+export const computeUsedEntities = (config: LovelaceConfig): Set<string> => {
   const entities = new Set<string>();
   config.views.forEach((view) => addEntities(entities, view));
   return entities;
@@ -70,13 +70,26 @@ export const computeUsedEntities = (config) => {
 export const computeUnusedEntities = (
   hass: HomeAssistant,
   config: LovelaceConfig
-): string[] => {
+): Set<string> => {
   const usedEntities = computeUsedEntities(config);
-  return Object.keys(hass.states)
-    .filter(
-      (entity) =>
-        !usedEntities.has(entity) &&
-        !EXCLUDED_DOMAINS.includes(entity.split(".", 1)[0])
-    )
-    .sort();
+  const unusedEntities = calcUnusedEntities(hass, usedEntities);
+  return unusedEntities;
+};
+
+export const calcUnusedEntities = (
+  hass: HomeAssistant,
+  usedEntities: Set<string>
+): Set<string> => {
+  const unusedEntities: Set<string> = new Set();
+
+  for (const entity of Object.keys(hass.states)) {
+    if (
+      !usedEntities.has(entity) &&
+      !EXCLUDED_DOMAINS.includes(entity.split(".", 1)[0])
+    ) {
+      unusedEntities.add(entity);
+    }
+  }
+
+  return unusedEntities;
 };

@@ -30,7 +30,6 @@ import { stateIcon } from "../../../common/entity/state_icon";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
 import { contrast } from "../common/color/contrast";
 import { findEntities } from "../common/find-entites";
-import { LovelaceConfig } from "../../../data/lovelace";
 import { UNAVAILABLE, UNKNOWN } from "../../../data/entity";
 import {
   SUPPORT_PAUSE,
@@ -176,18 +175,16 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
 
   public static getStubConfig(
     hass: HomeAssistant,
-    lovelaceConfig: LovelaceConfig,
-    entities?: string[],
-    entitiesFill?: string[]
+    entities: string[],
+    entitiesFallback: string[]
   ): object {
     const includeDomains = ["media_player"];
     const maxEntities = 1;
     const foundEntities = findEntities(
       hass,
-      lovelaceConfig,
       maxEntities,
       entities,
-      entitiesFill,
+      entitiesFallback,
       includeDomains
     );
 
