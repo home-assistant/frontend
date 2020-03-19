@@ -1,4 +1,7 @@
-import { applyThemesOnElement } from "../common/dom/apply_themes_on_element";
+import {
+  applyThemesOnElement,
+  invalidateThemeCache,
+} from "../common/dom/apply_themes_on_element";
 import { storeState } from "../util/ha-pref-storage";
 import { subscribeThemes } from "../data/ws-themes";
 import { HassBaseEl } from "./hass-base-mixin";
@@ -28,6 +31,7 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
 
       subscribeThemes(this.hass!.connection, (themes) => {
         this._updateHass({ themes });
+        invalidateThemeCache();
         this._applyTheme();
       });
     }

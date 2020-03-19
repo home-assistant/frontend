@@ -37,7 +37,7 @@ export class HuiThemeSelectEditor extends LitElement {
         >
           <paper-item theme="remove"
             >${this.hass!.localize(
-              "ui.panel.lovelace.editor.card.generic.remove_theme"
+              "ui.panel.lovelace.editor.card.generic.no_theme"
             )}</paper-item
           >
           ${Object.keys(this.hass!.themes.themes)

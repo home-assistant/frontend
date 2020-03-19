@@ -2059,7 +2059,7 @@
               "tap_action": "Tap Action",
               "title": "Title",
               "theme": "Theme",
-              "remove_theme": "Remove theme",
+              "no_theme": "No theme",
               "unit": "Unit",
               "url": "Url",
               "state": "State"

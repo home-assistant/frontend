@@ -1,5 +1,10 @@
 import { derivedStyles } from "../../resources/styles";
-import { HomeAssistant } from "../../types";
+import { HomeAssistant, Theme } from "../../types";
+
+interface ProcessedTheme {
+  keys: { [key: string]: "" };
+  styles: { [key: string]: string };
+}
 
 const hexToRgb = (hex: string): string | null => {
   const shorthandRegex = /^#?([a-f\d])([a-f\d])([a-f\d])$/i;
@@ -17,6 +22,7 @@ const hexToRgb = (hex: string): string | null => {
 };
 
 const HEX_TO_RGB_LOOKUP = {};
+let PROCESSED_THEMES: { [key: string]: ProcessedTheme } = {};
 
 /**
  * Apply a theme to an element by setting the CSS variables on it.
@@ -30,51 +36,18 @@ export const applyThemesOnElement = (
   themes: HomeAssistant["themes"],
   selectedTheme?: string
 ) => {
-  const newTheme = selectedTheme ? themes.themes[selectedTheme] : undefined;
+  const newTheme = selectedTheme
+    ? PROCESSED_THEMES[selectedTheme] || processTheme(selectedTheme, themes)
+    : undefined;
 
   if (!element._themes && !newTheme) {
     // No styles to reset, and no styles to set
     return;
   }
 
-  // Add previous set keys to reset them
-  const styles = element._themes ? { ...element._themes } : {};
-
-  if (newTheme) {
-    element._themes = {};
-    const theme = {
-      ...derivedStyles,
-      ...newTheme,
-    };
-    for (const key of Object.keys(theme)) {
-      const prefixedKey = `--${key}`;
-      const value = theme[key];
-      // Save key so we can reset it later if needed
-      element._themes[prefixedKey] = "";
-      styles[prefixedKey] = value;
-
-      // Try to create a rgb value for this key if it is a hex color
-      if (!value.startsWith("#")) {
-        // Not a hex color
-        continue;
-      }
-      const rgbKey = `rgb-${key}`;
-      if (theme[rgbKey] !== undefined) {
-        // Theme has it's own rgb value
-        continue;
-      }
-      let rgbValue = HEX_TO_RGB_LOOKUP[value];
-      if (rgbValue === undefined) {
-        rgbValue = HEX_TO_RGB_LOOKUP[value] = hexToRgb(value);
-      }
-      if (rgbValue !== null) {
-        const prefixedRgbKey = `--${rgbKey}`;
-        // Save key so we can reset it later if needed
-        element._themes[prefixedRgbKey] = "";
-        styles[prefixedRgbKey] = rgbValue;
-      }
-    }
-  }
+  // Add previous set keys to reset them, and new theme
+  const styles = { ...element._themes, ...newTheme?.styles };
+  element._themes = newTheme?.keys;
 
   // Set and/or reset styles
   if (element.updateStyles) {
@@ -83,4 +56,51 @@ export const applyThemesOnElement = (
     // Implement updateStyles() method of Polymer elements
     window.ShadyCSS.styleSubtree(/** @type {!HTMLElement} */ element, styles);
   }
+};
+
+const processTheme = (
+  themeName: string,
+  themes: HomeAssistant["themes"]
+): ProcessedTheme | undefined => {
+  if (!themes.themes[themeName]) {
+    return;
+  }
+  const theme: Theme = {
+    ...derivedStyles,
+    ...themes.themes[themeName],
+  };
+  const styles = {};
+  const keys = {};
+  for (const key of Object.keys(theme)) {
+    const prefixedKey = `--${key}`;
+    const value = theme[key];
+    styles[prefixedKey] = value;
+    keys[prefixedKey] = "";
+
+    // Try to create a rgb value for this key if it is a hex color
+    if (!value.startsWith("#")) {
+      // Not a hex color
+      continue;
+    }
+    const rgbKey = `rgb-${key}`;
+    if (theme[rgbKey] !== undefined) {
+      // Theme has it's own rgb value
+      continue;
+    }
+    let rgbValue = HEX_TO_RGB_LOOKUP[value];
+    if (rgbValue === undefined) {
+      rgbValue = HEX_TO_RGB_LOOKUP[value] = hexToRgb(value);
+    }
+    if (rgbValue !== null) {
+      const prefixedRgbKey = `--${rgbKey}`;
+      styles[prefixedRgbKey] = rgbValue;
+      keys[prefixedRgbKey] = "";
+    }
+  }
+  PROCESSED_THEMES[themeName] = { styles, keys };
+  return { styles, keys };
+};
+
+export const invalidateThemeCache = () => {
+  PROCESSED_THEMES = {};
 };
