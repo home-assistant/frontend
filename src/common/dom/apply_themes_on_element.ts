@@ -16,6 +16,8 @@ const hexToRgb = (hex: string): string | null => {
     : null;
 };
 
+const HEX_TO_RGB_LOOKUP = {};
+
 /**
  * Apply a theme to an element by setting the CSS variables on it.
  *
@@ -30,43 +32,46 @@ export const applyThemesOnElement = (
 ) => {
   const newTheme = selectedTheme ? themes.themes[selectedTheme] : undefined;
 
-  // Styles that need to be reset from the previous theme
-  if (!element._themes) {
-    if (!newTheme) {
-      // No styles to reset, and no styles to set
-      return;
-    }
-    element._themes = {};
+  if (!element._themes && !newTheme) {
+    // No styles to reset, and no styles to set
+    return;
   }
 
   // Add previous set keys to reset them
-  const styles = { ...element._themes };
+  const styles = element._themes ? { ...element._themes } : {};
+
   if (newTheme) {
+    element._themes = {};
     const theme = {
       ...derivedStyles,
       ...newTheme,
     };
-    Object.keys(theme).forEach((key) => {
+    for (const key of Object.keys(theme)) {
       const prefixedKey = `--${key}`;
+      const value = theme[key];
       // Save key so we can reset it later if needed
       element._themes[prefixedKey] = "";
-      styles[prefixedKey] = theme[key];
+      styles[prefixedKey] = value;
       if (key.startsWith("rgb")) {
-        return;
+        continue;
       }
       const rgbKey = `rgb-${key}`;
       if (theme[rgbKey] !== undefined) {
-        return;
+        continue;
       }
-      const prefixedRgbKey = `--${rgbKey}`;
-      // Save key so we can reset it later if needed
-      element._themes[prefixedRgbKey] = "";
-      const rgbValue = hexToRgb(theme[key]);
+      let rgbValue = HEX_TO_RGB_LOOKUP[value];
+      if (rgbValue === undefined) {
+        rgbValue = HEX_TO_RGB_LOOKUP[value] = hexToRgb(value);
+      }
       if (rgbValue !== null) {
+        const prefixedRgbKey = `--${rgbKey}`;
+        // Save key so we can reset it later if needed
+        element._themes[prefixedRgbKey] = "";
         styles[prefixedRgbKey] = rgbValue;
       }
-    });
+    }
   }
+
   // Set and/or reset styles
   if (element.updateStyles) {
     element.updateStyles(styles);
