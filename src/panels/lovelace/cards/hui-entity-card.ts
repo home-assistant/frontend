@@ -24,6 +24,8 @@ import { EntityCardConfig } from "./types";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
 import { actionHandler } from "../common/directives/action-handler-directive";
 import { isValidEntityId } from "../../../common/entity/valid_entity_id";
+import { LovelaceConfig } from "../../../data/lovelace";
+import { findEntities } from "../common/find-entites";
 
 @customElement("hui-entity-card")
 class HuiEntityCard extends LitElement implements LovelaceCard {
@@ -34,8 +36,26 @@ class HuiEntityCard extends LitElement implements LovelaceCard {
     return document.createElement("hui-entity-card-editor");
   }
 
-  public static getStubConfig(): object {
-    return { entity: "" };
+  public static getStubConfig(
+    hass: HomeAssistant,
+    lovelaceConfig: LovelaceConfig,
+    entities?: string[],
+    entitiesFill?: string[]
+  ) {
+    const includeDomains = ["sensor", "light", "switch"];
+    const maxEntities = 1;
+    const foundEntities = findEntities(
+      hass,
+      lovelaceConfig,
+      maxEntities,
+      entities,
+      entitiesFill,
+      includeDomains
+    );
+
+    return {
+      entity: foundEntities[0] || "",
+    };
   }
 
   @property() public hass?: HomeAssistant;
@@ -110,7 +130,8 @@ class HuiEntityCard extends LitElement implements LovelaceCard {
               : stateObj.state}</span
           >
           <span id="measurement"
-            >${stateObj.attributes.unit_of_measurement}</span
+            >${this._config.unit ||
+              stateObj.attributes.unit_of_measurement}</span
           >
         </div>
       </ha-card>

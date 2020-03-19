@@ -56,6 +56,10 @@ export class HuiEntityCardEditor extends LitElement
     return this._config!.attribute || "";
   }
 
+  get _unit(): string {
+    return this._config!.unit || "";
+  }
+
   get _theme(): string {
     return this._config!.theme || "default";
   }
@@ -113,13 +117,23 @@ export class HuiEntityCardEditor extends LitElement
             .configValue="${"attribute"}"
             @value-changed="${this._valueChanged}"
           ></paper-input>
-          <hui-theme-select-editor
-            .hass="${this.hass}"
-            .value="${this._theme}"
-            .configValue="${"theme"}"
-            @theme-changed="${this._valueChanged}"
-          ></hui-theme-select-editor>
+          <paper-input
+            .label="${this.hass.localize(
+              "ui.panel.lovelace.editor.card.generic.unit"
+            )} (${this.hass.localize(
+              "ui.panel.lovelace.editor.card.config.optional"
+            )})"
+            .value="${this._unit}"
+            .configValue="${"unit"}"
+            @value-changed="${this._valueChanged}"
+          ></paper-input>
         </div>
+        <hui-theme-select-editor
+          .hass="${this.hass}"
+          .value="${this._theme}"
+          .configValue="${"theme"}"
+          @theme-changed="${this._valueChanged}"
+        ></hui-theme-select-editor>
       </div>
     `;
   }
