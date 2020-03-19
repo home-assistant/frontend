@@ -634,7 +634,7 @@
                     "update": "ACTUALITZA"
                 },
                 "no_unique_id": "Aquesta entitat no té un ID únic, per tant, no pot ser configurada des de la interfície d'usuari.",
-                "related": "Relacionades",
+                "related": "Relacionat",
                 "settings": "Configuració"
             },
             "generic": {
@@ -2151,7 +2151,7 @@
                             "icon_height": "Alçada de la icona",
                             "image": "Ruta de la imatge",
                             "manual": "Manual",
-                            "manual_description": "Vols afegir una targeta personalitzada o vols escriure el codi yaml manualment?",
+                            "manual_description": "Vols afegir una targeta personalitzada o escriure el codi yaml manualment?",
                             "maximum": "Màxim",
                             "minimum": "Mínim",
                             "name": "Nom",
@@ -2221,7 +2221,8 @@
                             "name": "Imatge"
                         },
                         "plant-status": {
-                            "name": "Estat de la planta"
+                            "description": "La targeta condicions de planta/vegetal és per a tots els amants de la botànica.",
+                            "name": "Condicions de planta/vegetal"
                         },
                         "sensor": {
                             "description": "La targeta sensor mostra una visió ràpida d'un dels teus sensors. En mostra l'estat i opcionalment un gràfic amb els canvis al llarg del temps.",
@@ -2251,7 +2252,7 @@
                         "add": "Afegir targeta",
                         "delete": "Elimina",
                         "edit": "Editar",
-                        "header": "Configuració de la targeta",
+                        "header": "(configuració de la targeta)",
                         "move": "Mou",
                         "options": "Més opcions",
                         "pick_card": "Tria una targeta que vulguis afegir.",
@@ -2263,7 +2264,7 @@
                     },
                     "edit_lovelace": {
                         "edit_title": "Edita el títol",
-                        "explanation": "Aquest títol es mostra a sobre de cada visualització a Lovelace.",
+                        "explanation": "Aquest títol es mostra a sobre de cada panell Lovelace.",
                         "header": "Títol de la interfície d'usuari Lovelace"
                     },
                     "edit_view": {
