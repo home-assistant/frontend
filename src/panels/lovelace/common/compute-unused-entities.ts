@@ -70,9 +70,10 @@ export const computeUsedEntities = (config: LovelaceConfig): Set<string> => {
 export const computeUnusedEntities = (
   hass: HomeAssistant,
   config: LovelaceConfig
-): string[] => {
+): Set<string> => {
   const usedEntities = computeUsedEntities(config);
-  return [...calcUnusedEntities(hass, usedEntities)].sort();
+  const unusedEntities = calcUnusedEntities(hass, usedEntities);
+  return unusedEntities;
 };
 
 export const calcUnusedEntities = (
