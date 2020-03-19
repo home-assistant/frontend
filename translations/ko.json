@@ -633,7 +633,7 @@
                     "unavailable": "이 구성요소는 현재 사용할 수 없습니다.",
                     "update": "업데이트"
                 },
-                "no_unique_id": "이 구성요소는 고유한 ID 가 없으므로 설정을 UI 에서 관리할 수 없습니다.",
+                "no_unique_id": "이 구성요소는 고유한 ID 가 없으므로 UI 에서 설정 내용을 관리할 수 없습니다.",
                 "related": "관련 내용",
                 "settings": "설정 내용"
             },
@@ -683,7 +683,7 @@
                 },
                 "not_editable": "수정 불가능",
                 "not_editable_text": "이 구성요소는 configuration.yaml 에서 정의되었기 때문에 UI 에서 수정할 수 없습니다.",
-                "platform_not_loaded": "{platform} 통합 구성요소가 로드되지 않았습니다. 구성을 추가해주세요. 'default_config:' 또는 '{platform} :' 을 추가해주세요.",
+                "platform_not_loaded": "{platform} 통합 구성요소가 로드되지 않았습니다. 'default_config:' 또는 '{platform} :' 을 추가하여 구성을 추가해주세요.",
                 "required_error_msg": "이 입력란은 필수 요소입니다",
                 "yaml_not_editable": "이 구성요소의 설정은 UI 에서 편집할 수 없습니다. UI 에서 설정한 구성요소만 UI 에서 구성할 수 있습니다."
             },
@@ -1413,7 +1413,7 @@
                 "header": "Home Assistant 설정",
                 "helpers": {
                     "caption": "도우미",
-                    "description": "자동화를 구축하는 데 도움이 되는 요소입니다.",
+                    "description": "자동화 구축에 도움이 되는 요소입니다",
                     "dialog": {
                         "add_helper": "도우미 추가",
                         "add_platform": "{platform} 추가",
@@ -1500,7 +1500,7 @@
                 "lovelace": {
                     "caption": "Lovelace 대시보드",
                     "dashboards": {
-                        "cant_edit_default": "표준 Lovelace 대시보드는 UI 에서 편집할 수 없습니다. 다른 대시보드를 기본값으로 설정하여 숨길 수 있습니다.",
+                        "cant_edit_default": "기본 Lovelace 대시보드는 UI 에서 편집할 수 없습니다. 다른 대시보드를 기본값으로 설정하여 숨길 수 있습니다.",
                         "cant_edit_yaml": "YAML 에서 정의된 대시보드는 UI 에서 편집할 수 없습니다. configuration.yaml 파일에서 수정해주세요.",
                         "caption": "대시보드",
                         "conf_mode": {
@@ -1524,7 +1524,7 @@
                             "title_required": "제목은 필수 요소입니다",
                             "update": "업데이트",
                             "url": "URL",
-                            "url_error_msg": "URL 은 _ 와 - 를 제외한 공백이나 특수 문자를 포함할 수 없습니다."
+                            "url_error_msg": "URL 은 - 를 포함해야 하며 _ 및 - 를 제외한 공백이나 특수 문자를 포함할 수 없습니다"
                         },
                         "picker": {
                             "add_dashboard": "대시보드 추가",
@@ -1541,7 +1541,7 @@
                     },
                     "description": "Lovelace 대시보드를 구성합니다",
                     "resources": {
-                        "cant_edit_yaml": "Lovelace 를 YAML 모드로 사용 중 이므로 UI 에서 리소스를 관리할 수 없습니다. configuration.yaml 에서 관리해주세요.",
+                        "cant_edit_yaml": "YAML 모드에서 Lovelace 를 사용하고 있으므로 UI 를 통해 리소스를 관리할 수 없습니다. configuration.yaml 에서 관리해주세요.",
                         "caption": "리소스",
                         "confirm_delete": "이 리소스를 삭제하시겠습니까?",
                         "detail": {
@@ -2052,7 +2052,7 @@
                 "add_entities": {
                     "generated_unsupported": "Lovelace UI 를 직접 관리하는 경우에만 이 기능을 사용할 수 있습니다.",
                     "saving_failed": "Lovelace UI 구성을 저장하지 못했습니다.",
-                    "yaml_unsupported": "Lovelace UI 를 YAML 모드로 사용하는 경우 이 기능은 사용할 수 없습니다."
+                    "yaml_unsupported": "YAML 모드에서 Lovelace UI 를 사용하는 경우 이 기능은 사용할 수 없습니다."
                 },
                 "cards": {
                     "confirm_delete": "이 카드를 삭제하시겠습니까?",
@@ -2318,7 +2318,7 @@
                         "save": "직접 관리할게요",
                         "yaml_config": "시작하는데 도움이 될 수 있는 대시보드의 현재 구성은 다음과 같습니다:",
                         "yaml_control": "YAML 모드로 제어하려면 대시보드의 구성에서 지정한 이름의 YAML 파일을 만들거나 기본 제공된 'ui-lovelace.yaml' 을 사용해주세요.",
-                        "yaml_mode": "YAML 모드를 사용 중이므로 UI 에서 Lovelace 구성을 변경할 수 없습니다. Lovelace 를 UI 에서 변경하려면 'configuration.yaml' 의 Lovelace 구성에서 'mode:yaml'을 제거해주세요."
+                        "yaml_mode": "YAML 모드를 사용 중이므로 UI 에서 Lovelace 구성을 변경할 수 없습니다. Lovelace 를 UI 에서 변경하려면 'configuration.yaml' 의 Lovelace 구성에서 'mode:yaml' 을 제거해주세요."
                     },
                     "suggest_card": {
                         "add": "Lovelace UI 에 추가",
@@ -2338,9 +2338,14 @@
                     "exit_edit_mode": "UI 편집 모드 종료",
                     "help": "도움말",
                     "refresh": "새로고침",
+                    "reload_resources": "리소스 다시 읽어오기",
                     "unused_entities": "미사용 구성요소"
                 },
                 "reload_lovelace": "UI 새로고침",
+                "reload_resources": {
+                    "refresh_body": "다시 읽어오기를 완료하려면 페이지를 새로 고쳐야 합니다. 지금 새로 고치시겠습니까?",
+                    "refresh_header": "새로 고치시겠습니까?"
+                },
                 "unused_entities": {
                     "available_entities": "사용 가능한 구성요소이지만 아직 Lovelace UI 에는 등록되지 않았습니다.",
                     "domain": "도메인",

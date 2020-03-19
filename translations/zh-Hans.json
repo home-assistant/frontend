@@ -1393,7 +1393,7 @@
                         "introduction2": "使用本实体注册工具重写名称，修改实体 ID 或者从 Home Assistant 删除实体。注意，删除实体注册信息并不会删除实体本身。如果要删除实体，请点击下面的链接进入集成页面进行操作。",
                         "remove_selected": {
                             "button": "删除所选实体",
-                            "confirm_partly_text": "在所选的 {removable} 个实体中有 {selected} 个可被删除。实体可被删除的条件是集成不再提供它们。有时，即使集成已删除，也必须先重新启动 Home Assistant 才能删除它们的实体。您确定要删除实体吗？",
+                            "confirm_partly_text": "在所选的 {selected} 个实体中有 {removable} 个可被删除。实体可被删除的条件是集成不再提供它们。有时，即使集成已删除，也必须先重新启动 Home Assistant 才能删除它们的实体。您确定要删除实体吗？",
                             "confirm_partly_title": "所选实体中只有 {number} 个可被删除。",
                             "confirm_text": "如果它们包含这些实体，则应将它们从 Lovelace 配置和自动化中删除。",
                             "confirm_title": "您要删除这 {number} 个实体吗？"
@@ -2153,8 +2153,8 @@
                             "image": "图像路径",
                             "manual": "手动模式",
                             "manual_description": "您是想添加自定义卡片，还是手动编写 yaml 文件？",
-                            "maximum": "最大",
-                            "minimum": "最小",
+                            "maximum": "最大值",
+                            "minimum": "最小值",
                             "name": "名称",
                             "refresh_interval": "刷新间隔",
                             "show_icon": "显示图标？",
@@ -2164,7 +2164,7 @@
                             "tap_action": "点击动作",
                             "theme": "主题",
                             "title": "标题",
-                            "unit": "单元",
+                            "unit": "单位",
                             "url": "网址"
                         },
                         "glance": {
