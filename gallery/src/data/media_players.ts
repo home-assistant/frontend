@@ -34,6 +34,7 @@ export const createMediaPlayerEntities = () => [
     media_content_type: "movie",
     media_title: "Epic sax guy 10 hours",
     app_name: "YouTube",
+    entity_picture: "/images/frenck.jpg",
     supported_features: 33,
   }),
   getEntity("media_player", "living_room", "playing", {
@@ -42,6 +43,7 @@ export const createMediaPlayerEntities = () => [
     media_title: "Chapter 1",
     media_series_title: "House of Cards",
     app_name: "Netflix",
+    entity_picture: "/images/netflix.jpg",
     supported_features: 1,
   }),
   getEntity("media_player", "sonos_idle", "idle", {
