@@ -201,7 +201,7 @@
                 "on": "Ouvert"
             },
             "presence": {
-                "off": "Absent.e",
+                "off": "Absent",
                 "on": "Présent"
             },
             "problem": {
