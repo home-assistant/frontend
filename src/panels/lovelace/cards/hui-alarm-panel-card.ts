@@ -25,7 +25,6 @@ import { AlarmPanelCardConfig } from "./types";
 import { PaperInputElement } from "@polymer/paper-input/paper-input";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { findEntities } from "../common/find-entites";
-import { LovelaceConfig } from "../../../data/lovelace";
 import { fireEvent } from "../../../common/dom/fire_event";
 
 const ICONS = {
