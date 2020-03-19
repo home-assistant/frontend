@@ -15,6 +15,7 @@ import { LovelaceCardEditor } from "../../types";
 import { StackCardConfig } from "../../cards/types";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { LovelaceConfig } from "../../../../data/lovelace";
+import { HuiCardEditor } from "../card-editor/hui-card-editor";
 
 const cardConfigStruct = struct({
   type: "string",
@@ -73,6 +74,18 @@ export class HuiStackCardEditor extends LitElement
             selected < numcards
               ? html`
                   <div id="card-options">
+                    <mwc-button
+                      @click=${() => this._cardEditorEl?.toggleMode()}
+                      ?disabled=${this._cardEditorEl?.hasWarning ||
+                        this._cardEditorEl?.hasError}
+                      class="gui-mode-button"
+                    >
+                      ${this.hass!.localize(
+                        !this._cardEditorEl || this._cardEditorEl.GUImode
+                          ? "ui.panel.lovelace.editor.edit_card.show_code_editor"
+                          : "ui.panel.lovelace.editor.edit_card.show_visual_editor"
+                      )}
+                    </mwc-button>
                     <paper-icon-button
                       id="move-before"
                       title="Move card before"
@@ -100,6 +113,7 @@ export class HuiStackCardEditor extends LitElement
                     .value="${this._config.cards[selected]}"
                     .lovelace=${this.lovelace}
                     @config-changed="${this._handleConfigChanged}"
+                    @GUImode-changed=${() => this.requestUpdate()}
                   ></hui-card-editor>
                 `
               : html`
@@ -113,6 +127,10 @@ export class HuiStackCardEditor extends LitElement
         </div>
       </div>
     `;
+  }
+
+  private get _cardEditorEl(): HuiCardEditor | null {
+    return this.shadowRoot!.querySelector("hui-card-editor");
   }
 
   private _handleSelectedCard(ev) {
@@ -193,6 +211,10 @@ export class HuiStackCardEditor extends LitElement
         #editor {
           margin: 0 -12px;
         }
+      }
+
+      .gui-mode-button {
+        margin-right: auto;
       }
     `;
   }

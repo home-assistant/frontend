@@ -249,6 +249,7 @@ export class HuiCardEditor extends LitElement {
         this._handleUIConfigChanged(ev as UIConfigChangedEvent)
       );
 
+      this.GUImode = true;
       return;
     } catch (err) {
       if (err.message.startsWith("WARNING:")) {
