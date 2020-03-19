@@ -394,7 +394,7 @@
     },
     "ui": {
         "auth_store": {
-            "ask": "Wil je de inloggegevens opslaan?",
+            "ask": "Wil je de ingelogd blijven?",
             "confirm": "Login opslaan",
             "decline": "Nee, bedankt"
         },
@@ -946,7 +946,7 @@
                         "triggers": {
                             "add": "Trigger toevoegen",
                             "delete": "Verwijderen",
-                            "delete_confirm": "Zeker dat je wil verwijderen?",
+                            "delete_confirm": "Weet je zeker dat je dit item wilt verwijderen?",
                             "duplicate": "Dupliceren",
                             "header": "",
                             "introduction": "Triggers starten de verwerking van een automatiseringsregel. Het is mogelijk om meerdere triggers voor dezelfde regel op te geven. Zodra een trigger start, valideert Home Assistant de eventuele voorwaarden en roept hij de actie aan.",
@@ -1382,7 +1382,7 @@
                         "introduction2": "Gebruik het entiteitenregister om de naam te overschrijven, de entiteits-ID te wijzigen of het item te verwijderen uit Home Assistant.",
                         "remove_selected": {
                             "button": "Verwijder geselecteerde",
-                            "confirm_text": "Entiteiten kunnen alleen worden verwijderd wanneer de integratie de entiteiten niet langer levert.",
+                            "confirm_text": "Je moet ze zelf nog verwijderen uit je Lovelace-configuratie en automatiseringen als ze deze entiteiten bevatten.",
                             "confirm_title": "Wilt je {number} entiteiten verwijderen?"
                         },
                         "selected": "{number} geselecteerd",
@@ -1503,7 +1503,7 @@
                             "show_sidebar": "Toon in de zijbalk",
                             "update": "Bijwerken",
                             "url": "Url",
-                            "url_error_msg": "De URL mag geen spaties of speciale tekens bevatten, behalve _ en -"
+                            "url_error_msg": "De URL moet een - bevatten en mag geen spaties of speciale tekens bevatten, behalve _ en -"
                         },
                         "picker": {
                             "add_dashboard": "Dashboard toevoegen",
@@ -1515,7 +1515,7 @@
                                 "sidebar": "Toon in de zijbalk",
                                 "title": "Titel"
                             },
-                            "open": "Dashboard openen"
+                            "open": "Open"
                         }
                     },
                     "description": "Configureer je Lovelace-dashboards",
@@ -2057,7 +2057,7 @@
                     }
                 },
                 "changed_toast": {
-                    "message": "De Lovelace configuratie is bijgewerkt. Wil je de pagina vernieuwen?",
+                    "message": "De Lovelace configuratie van dit dashboard is bijgewerkt. Wil je de pagina vernieuwen?",
                     "refresh": "Vernieuwen"
                 },
                 "editor": {
@@ -2136,7 +2136,7 @@
                             "name": "Horizontale stapel"
                         },
                         "iframe": {
-                            "name": "iFrame"
+                            "name": "Webpagina"
                         },
                         "light": {
                             "name": "Lamp"
@@ -2284,7 +2284,7 @@
                     "title": "Ongebruikte entiteiten"
                 },
                 "views": {
-                    "confirm_delete": "Weet je zeker dat je dit item wilt verwijderen?",
+                    "confirm_delete": "Weergave verwijderen?",
                     "existing_cards": "U kunt een weergave met kaarten niet verwijderen. Verwijder eerst de kaarten."
                 },
                 "warning": {
@@ -2420,15 +2420,15 @@
                             "volume": "Volume"
                         },
                         "names": {
-                            "family_room": "Familiekamer",
+                            "family_room": "Woonkamer",
                             "hallway": "Gang",
                             "kitchen": "Keuken",
                             "left": "Links",
-                            "master_bedroom": "Hoofdslaapkamer",
+                            "master_bedroom": "Slaapkamer",
                             "mirror": "Spiegel",
                             "patio": "Achtertuin",
                             "right": "Rechts",
-                            "temperature_study": "Temperatuur bestuderen",
+                            "temperature_study": "Temperatuur studeerkamer",
                             "upstairs": "Boven"
                         },
                         "unit": {
