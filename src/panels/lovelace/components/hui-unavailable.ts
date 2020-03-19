@@ -44,6 +44,7 @@ export class HuiUnavailable extends LitElement {
         transform: translate(-50%, -50%);
         -ms-transform: translate(-50%, -50%);
         z-index: 50;
+        opacity: 0.7;
       }
     `;
   }
