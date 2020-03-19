@@ -1,13 +1,12 @@
 import { HomeAssistant } from "../../../types";
-import { LovelaceCardConfig, LovelaceConfig } from "../../../data/lovelace";
+import { LovelaceCardConfig } from "../../../data/lovelace";
 import { getCardElementClass } from "../create-element/create-card-element";
 
 export const getCardStubConfig = async (
   hass: HomeAssistant,
-  lovelaceConfig: LovelaceConfig,
   type: string,
-  entities?: string[],
-  entitiesFill?: string[]
+  entities: string[],
+  entitiesFallback: string[]
 ): Promise<LovelaceCardConfig> => {
   let cardConfig: LovelaceCardConfig = { type };
 
@@ -16,9 +15,8 @@ export const getCardStubConfig = async (
   if (elClass && elClass.getStubConfig) {
     const classStubConfig = elClass.getStubConfig(
       hass,
-      lovelaceConfig,
       entities,
-      entitiesFill
+      entitiesFallback
     );
 
     cardConfig = { ...cardConfig, ...classStubConfig };

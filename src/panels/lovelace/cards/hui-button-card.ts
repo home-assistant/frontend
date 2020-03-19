@@ -30,7 +30,7 @@ import { ButtonCardConfig } from "./types";
 import { actionHandler } from "../common/directives/action-handler-directive";
 import { hasAction } from "../common/has-action";
 import { handleAction } from "../common/handle-action";
-import { ActionHandlerEvent, LovelaceConfig } from "../../../data/lovelace";
+import { ActionHandlerEvent } from "../../../data/lovelace";
 import { computeActiveState } from "../../../common/entity/compute_active_state";
 import { iconColorCSS } from "../../../common/style/icon_color_css";
 import { findEntities } from "../common/find-entites";
@@ -46,17 +46,15 @@ export class HuiButtonCard extends LitElement implements LovelaceCard {
 
   public static getStubConfig(
     hass: HomeAssistant,
-    lovelaceConfig: LovelaceConfig,
-    entities?: string[],
-    entitiesFill?: string[]
+    entities: string[],
+    entitiesFallback: string[]
   ): object {
     const maxEntities = 1;
     const foundEntities = findEntities(
       hass,
-      lovelaceConfig,
       maxEntities,
       entities,
-      entitiesFill,
+      entitiesFallback,
       ["light", "switch"]
     );
 

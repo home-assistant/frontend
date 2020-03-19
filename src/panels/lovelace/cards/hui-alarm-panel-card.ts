@@ -25,7 +25,6 @@ import { AlarmPanelCardConfig } from "./types";
 import { PaperInputElement } from "@polymer/paper-input/paper-input";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { findEntities } from "../common/find-entites";
-import { LovelaceConfig } from "../../../data/lovelace";
 import { fireEvent } from "../../../common/dom/fire_event";
 
 const ICONS = {
@@ -51,18 +50,16 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
 
   public static getStubConfig(
     hass: HomeAssistant,
-    lovelaceConfig: LovelaceConfig,
-    entities?: string[],
-    entitiesFill?: string[]
+    entities: string[],
+    entitiesFallback: string[]
   ) {
     const includeDomains = ["alarm_control_panel"];
     const maxEntities = 1;
     const foundEntities = findEntities(
       hass,
-      lovelaceConfig,
       maxEntities,
       entities,
-      entitiesFill,
+      entitiesFallback,
       includeDomains
     );
 

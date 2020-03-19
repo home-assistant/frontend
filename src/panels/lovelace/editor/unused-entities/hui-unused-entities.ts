@@ -201,7 +201,8 @@ export class HuiUnusedEntities extends LitElement {
       return;
     }
     this._selectedEntities = [];
-    this._unusedEntities = computeUnusedEntities(this.hass, this._config!);
+    const unusedEntities = computeUnusedEntities(this.hass, this._config!);
+    this._unusedEntities = [...unusedEntities].sort();
   }
 
   private _handleSelectionChanged(
