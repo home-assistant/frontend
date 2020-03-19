@@ -88,7 +88,7 @@ export class HuiGraphHeaderFooter extends LitElement
   }
 
   private async _getCoordinates(): Promise<void> {
-    const coords = getHistoryCoordinates(
+    const coords = await getHistoryCoordinates(
       this.hass!,
       this._config!.entity,
       this._config!.hours_to_show!,
