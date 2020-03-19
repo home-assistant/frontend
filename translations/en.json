@@ -1469,6 +1469,7 @@
                         },
                         "failed_create_area": "Failed to create area.",
                         "finish": "Finish",
+                        "loading_first_time": "Please wait while the integration is being installed",
                         "name_new_area": "Name of the new area?",
                         "not_all_required_fields": "Not all required fields are filled in.",
                         "submit": "Submit"
@@ -1524,7 +1525,7 @@
                             "title_required": "Title is required.",
                             "update": "Update",
                             "url": "Url",
-                            "url_error_msg": "The url should contain a - and cannot contain spaces or special characters, except for _ and -"
+                            "url_error_msg": "The URL should contain a - and cannot contain spaces or special characters, except for _ and -"
                         },
                         "picker": {
                             "add_dashboard": "Add dashboard",
@@ -2252,6 +2253,7 @@
                     "edit_card": {
                         "add": "Add Card",
                         "delete": "Delete Card",
+                        "duplicate": "Duplicate Card",
                         "edit": "Edit",
                         "header": "Card Configuration",
                         "move": "Move to View",

@@ -1310,7 +1310,8 @@
                         "device": "Apparat",
                         "integration": "Integratioun",
                         "manufacturer": "Hiersteller",
-                        "model": "Modell"
+                        "model": "Modell",
+                        "no_devices": "Keng Apparater"
                     },
                     "description": "Verwalt verbonnen Apparater",
                     "details": "Hei sinn all Detailer vun ärem Apparat.",
@@ -1503,7 +1504,9 @@
                             "edit_dashboard": "Tableau de Bord änneren",
                             "icon": "Ikon vun der Säite Läischt",
                             "new_dashboard": "Neien Tableau de Bord dobäisetzen",
+                            "remove_default": "Als Standard op dësem Apparat ewech huelen",
                             "require_admin": "Admin nëmmen",
+                            "set_default": "Als Standard op dësem Apparat définéieren",
                             "show_sidebar": "An der Säite Läischt uweisen",
                             "title": "Titel vun der Säite Läischt",
                             "title_required": "Titel ass erfuerderlech.",
@@ -1515,6 +1518,7 @@
                             "add_dashboard": "Tableau de Bord dobäisetzen",
                             "headers": {
                                 "conf_mode": "Konfiguratioun's Method",
+                                "default": "Standard",
                                 "filename": "Numm vum Fichier",
                                 "require_admin": "Admin nëmmen",
                                 "sidebar": "An der Säite Läischt uweisen",
@@ -1545,7 +1549,8 @@
                             "headers": {
                                 "type": "Typ",
                                 "url": "Url"
-                            }
+                            },
+                            "no_resources": "Keng Ressourcen"
                         },
                         "refresh_body": "D'Säit muss aktualiséiert gi fir d'Läschen ofzeschléissen, elo aktualiséieren?",
                         "refresh_header": "Soll aktualiséiert ginn?",
