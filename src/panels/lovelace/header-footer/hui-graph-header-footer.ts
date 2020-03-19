@@ -12,8 +12,7 @@ import "../components/hui-graph-base";
 import { LovelaceHeaderFooter } from "../types";
 import { HomeAssistant } from "../../../types";
 import { GraphHeaderFooterConfig } from "./types";
-import { fetchRecent } from "../../../data/history";
-import { coordinates } from "../common/graph/coordinates";
+import { getHistoryCoordinates } from "../common/graph/get-history-coordinates";
 
 const minute = 60000;
 
@@ -89,25 +88,10 @@ export class HuiGraphHeaderFooter extends LitElement
   }
 
   private async _getCoordinates(): Promise<void> {
-    const endTime = new Date();
-    const startTime = new Date();
-    startTime.setHours(endTime.getHours() - this._config!.hours_to_show!);
-
-    const stateHistory = await fetchRecent(
-      this.hass,
+    const coords = getHistoryCoordinates(
+      this.hass!,
       this._config!.entity,
-      startTime,
-      endTime
-    );
-
-    if (stateHistory.length < 1 || stateHistory[0].length < 1) {
-      return;
-    }
-
-    const coords = coordinates(
-      stateHistory[0],
       this._config!.hours_to_show!,
-      500,
       this._config!.detail!
     );
 
