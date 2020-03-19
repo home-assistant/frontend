@@ -80,16 +80,16 @@ export const calcUnusedEntities = (
   hass: HomeAssistant,
   usedEntities: Set<string>
 ): Set<string> => {
-  const unusedEntities = new Set(Object.keys(hass.states));
+  const unusedEntities: Set<string> = new Set();
 
-  unusedEntities.forEach((entity) => {
+  for (const entity of Object.keys(hass.states)) {
     if (
-      usedEntities.has(entity) ||
-      EXCLUDED_DOMAINS.includes(entity.split(".", 1)[0])
+      !usedEntities.has(entity) &&
+      !EXCLUDED_DOMAINS.includes(entity.split(".", 1)[0])
     ) {
-      unusedEntities.delete(entity);
+      unusedEntities.add(entity);
     }
-  });
+  }
 
   return unusedEntities;
 };
