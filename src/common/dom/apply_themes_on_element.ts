@@ -52,11 +52,15 @@ export const applyThemesOnElement = (
       // Save key so we can reset it later if needed
       element._themes[prefixedKey] = "";
       styles[prefixedKey] = value;
-      if (key.startsWith("rgb")) {
+
+      // Try to create a rgb value for this key if it is a hex color
+      if (!value.startsWith("#")) {
+        // Not a hex color
         continue;
       }
       const rgbKey = `rgb-${key}`;
       if (theme[rgbKey] !== undefined) {
+        // Theme has it's own rgb value
         continue;
       }
       let rgbValue = HEX_TO_RGB_LOOKUP[value];
