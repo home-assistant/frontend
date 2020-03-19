@@ -18,6 +18,7 @@ import { LovelaceCardEditor } from "../../types";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { configElementStyle } from "./config-elements-style";
 import { EntityCardConfig } from "../../cards/types";
+import { headerFooterConfigStructs } from "../../header-footer/types";
 
 const cardConfigStruct = struct({
   type: "string",
@@ -25,7 +26,10 @@ const cardConfigStruct = struct({
   name: "string?",
   icon: "string?",
   attribute: "string?",
+  unit: "string?",
   theme: "string?",
+  header: struct.optional(headerFooterConfigStructs),
+  footer: struct.optional(headerFooterConfigStructs),
 });
 
 @customElement("hui-entity-card-editor")

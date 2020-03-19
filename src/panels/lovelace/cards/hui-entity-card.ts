@@ -26,6 +26,8 @@ import { actionHandler } from "../common/directives/action-handler-directive";
 import { isValidEntityId } from "../../../common/entity/valid_entity_id";
 import { LovelaceConfig } from "../../../data/lovelace";
 import { findEntities } from "../common/find-entites";
+import { LovelaceHeaderFooterConfig } from "../header-footer/types";
+import { createHeaderFooterElement } from "../create-element/create-header-footer-element";
 
 @customElement("hui-entity-card")
 class HuiEntityCard extends LitElement implements LovelaceCard {
@@ -134,6 +136,9 @@ class HuiEntityCard extends LitElement implements LovelaceCard {
               stateObj.attributes.unit_of_measurement}</span
           >
         </div>
+        ${this._config.footer
+          ? this.renderHeaderFooter(this._config.footer, "footer")
+          : ""}
       </ha-card>
     `;
   }
@@ -161,6 +166,19 @@ class HuiEntityCard extends LitElement implements LovelaceCard {
     ) {
       applyThemesOnElement(this, this.hass.themes, this._config!.theme);
     }
+  }
+
+  private renderHeaderFooter(
+    conf: LovelaceHeaderFooterConfig,
+    className: string
+  ): TemplateResult {
+    const element = createHeaderFooterElement(conf);
+    if (this.hass) {
+      element.hass = this.hass;
+    }
+    return html`
+      <div class=${"header-footer " + className}>${element}</div>
+    `;
   }
 
   private _handleClick(): void {
