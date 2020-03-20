@@ -95,13 +95,13 @@ export class HuiIframeCardEditor extends LitElement
       return;
     }
     const target = ev.target! as EditorTarget;
-    let value = target.value;
+    const value = target.value;
 
     if (this[`_${target.configValue}`] === value) {
       return;
     }
     if (target.configValue) {
-      if (target.value === "") {
+      if (value === "") {
         delete this._config[target.configValue!];
       } else {
         this._config = { ...this._config, [target.configValue!]: value };
