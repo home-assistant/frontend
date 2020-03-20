@@ -1469,6 +1469,7 @@
                         },
                         "failed_create_area": "No s'ha pogut crear l'àrea.",
                         "finish": "Finalitza",
+                        "loading_first_time": "Espera mentre s'instal·la la integració",
                         "name_new_area": "Nom de la nova àrea?",
                         "not_all_required_fields": "No s'han omplert tots els camps obligatoris.",
                         "submit": "Envia"
