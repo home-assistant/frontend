@@ -87,8 +87,7 @@ class HassioMain extends ProvideHassLitMixin(HassRouterPage) {
     applyThemesOnElement(
       this.parentElement,
       this.hass.themes,
-      this.hass.selectedTheme,
-      true
+      this.hass.selectedTheme || this.hass.themes.default_theme
     );
     this.addEventListener("hass-api-called", (ev) => this._apiCalled(ev));
     // Paulus - March 17, 2019
