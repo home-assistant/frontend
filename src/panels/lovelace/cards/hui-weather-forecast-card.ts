@@ -77,7 +77,7 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
     hass: HomeAssistant,
     entities: string[],
     entitiesFallback: string[]
-  ): object {
+  ): WeatherForecastCardConfig {
     const includeDomains = ["weather"];
     const maxEntities = 1;
     const foundEntities = findEntities(
@@ -88,7 +88,7 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
       includeDomains
     );
 
-    return { entity: foundEntities[0] || "" };
+    return { type: "weather-forecast", entity: foundEntities[0] || "" };
   }
 
   @property() public hass?: HomeAssistant;

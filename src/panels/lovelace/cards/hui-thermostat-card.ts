@@ -60,7 +60,7 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
     hass: HomeAssistant,
     entities: string[],
     entitiesFallback: string[]
-  ): object {
+  ): ThermostatCardConfig {
     const includeDomains = ["climate"];
     const maxEntities = 1;
     const foundEntities = findEntities(
@@ -71,7 +71,7 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
       includeDomains
     );
 
-    return { entity: foundEntities[0] || "" };
+    return { type: "thermostat", entity: foundEntities[0] || "" };
   }
 
   @property() public hass?: HomeAssistant;

@@ -52,7 +52,7 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
     hass: HomeAssistant,
     entities: string[],
     entitiesFallback: string[]
-  ) {
+  ): AlarmPanelCardConfig {
     const includeDomains = ["alarm_control_panel"];
     const maxEntities = 1;
     const foundEntities = findEntities(
@@ -64,6 +64,7 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
     );
 
     return {
+      type: "alarm-panel",
       states: ["arm_home", "arm_away"],
       entity: foundEntities[0] || "",
     };

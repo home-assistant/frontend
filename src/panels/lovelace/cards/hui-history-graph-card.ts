@@ -35,7 +35,7 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
     hass: HomeAssistant,
     entities: string[],
     entitiesFallback: string[]
-  ): object {
+  ): HistoryGraphCardConfig {
     const includeDomains = ["sensor"];
     const maxEntities = 1;
     const foundEntities = findEntities(
@@ -46,7 +46,7 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
       includeDomains
     );
 
-    return { entities: foundEntities };
+    return { type: "history-graph", entities: foundEntities };
   }
 
   @property() public hass?: HomeAssistant;
