@@ -1469,6 +1469,7 @@
                         },
                         "failed_create_area": "新增分區失敗。",
                         "finish": "完成",
+                        "loading_first_time": "請稍候、正在安裝整合",
                         "name_new_area": "新分區名稱？",
                         "not_all_required_fields": "所有所需欄位都需要填寫。",
                         "submit": "傳送"
@@ -1524,7 +1525,7 @@
                             "title_required": "必須輸入標題",
                             "update": "更新",
                             "url": "網址",
-                            "url_error_msg": "網址不能包含空格或特殊字元，除了 _ 及 -。"
+                            "url_error_msg": "網址應該包含一個 -，同時不能包含空格或特殊字元，除了 _ 及 -。"
                         },
                         "picker": {
                             "add_dashboard": "新增主面板",
@@ -2252,6 +2253,7 @@
                     "edit_card": {
                         "add": "新增面板",
                         "delete": "刪除面板",
+                        "duplicate": "複製面板",
                         "edit": "編輯",
                         "header": "面板設定",
                         "move": "移動至視圖",

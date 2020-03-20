@@ -85,6 +85,9 @@
             },
             "preset_mode": {
                 "activity": "กิจกรรม",
+                "away": "ไม่อยู่",
+                "boost": "เพิ่ม",
+                "comfort": "คอม ฟอร์ท",
                 "eco": "ประหยัด",
                 "home": "บ้าน",
                 "none": "ไม่มี",
@@ -237,6 +240,7 @@
             "fan_only": "เฉพาะพัดลม",
             "gas": "แก๊ส",
             "heat": "ร้อน",
+            "heat_cool": "ร้อน/เย็น",
             "heat_pump": "ปั๊มความร้อน",
             "high_demand": "ความต้องการสูง",
             "idle": "ไม่ได้ใช้งาน",
@@ -450,6 +454,14 @@
             "script": {
                 "execute": "ปฏิบัติ"
             },
+            "timer": {
+                "actions": {
+                    "cancel": "ยกเลิก",
+                    "finish": "เสร็จสิ้น",
+                    "pause": "หยุดชั่วคราว",
+                    "start": "เริ่มต้น"
+                }
+            },
             "vacuum": {
                 "actions": {
                     "resume_cleaning": "ทำความสะอาดต่อไป",
@@ -544,6 +556,15 @@
                 "entity_id": "รหัสประจำเอนทิตี",
                 "name": "ชื่อที่สำหรับแทนที่ค่าเดิม",
                 "save": "บันทึก"
+            },
+            "zha_device_info": {
+                "manuf": "โดย {manufacturer}",
+                "no_area": "ไม่มีห้อง",
+                "power_source": "แหล่งพลังงาน",
+                "services": {
+                    "reconfigure": "กำหนดค่าอุปกรณ์ ZHA อีกครั้ง (เพื่อรักษาอุปกรณ์) ใช้สิ่งนี้หากคุณมีปัญหากับอุปกรณ์ หากอุปกรณ์ดังกล่าวเป็นอุปกรณ์ที่ใช้พลังงานจากแบตเตอรี่โปรดตรวจสอบให้แน่ใจว่าอุปกรณ์นั้นเปิดอยู่และยอมรับคำสั่งเมื่อคุณใช้บริการ"
+                },
+                "unknown": "ไม่ทราบสถานะ"
             }
         },
         "duration": {
@@ -613,6 +634,9 @@
                                     "delay": "หน่วงเวลา",
                                     "label": "หน่วงเวลา"
                                 },
+                                "device_id": {
+                                    "label": "อุปกรณ์"
+                                },
                                 "event": {
                                     "event": "การกระทำ",
                                     "label": "กระทำเหตุการณ์",
@@ -641,11 +665,23 @@
                             "learn_more": "เรียนรู้เพิ่มเติมเกี่ยวกับเงื่อนไข",
                             "type_select": "ประเภทเงื่อนไข",
                             "type": {
+                                "and": {
+                                    "label": "และ"
+                                },
+                                "device": {
+                                    "extra_fields": {
+                                        "above": "เหนือกว่า",
+                                        "below": "ต่ำกว่า"
+                                    }
+                                },
                                 "numeric_state": {
                                     "above": "เหนือหัว",
                                     "below": "ต่ำกว่า",
                                     "label": "สถานะตัวเลข",
                                     "value_template": "ค่าของรูปแบบ (ปล่อยว่างได้)"
+                                },
+                                "or": {
+                                    "label": "หรือ"
                                 },
                                 "state": {
                                     "label": "สถานะ",
@@ -678,6 +714,9 @@
                             "unsupported_condition": "ไม่รองรับเงื่อนไข: {condition}"
                         },
                         "default_name": "ระบบอัตโนมัติใหม่",
+                        "description": {
+                            "label": "รายละเอียด"
+                        },
                         "introduction": "ใช้ระบบอัตโนมัติเพื่อทำให้บ้านของคุณมีชีวิตชีวา",
                         "load_error_not_editable": "ระบบอัตโนมัติที่อยู่ในไฟล์ Automations.yaml เท่านั้นที่สามารถแก้ไขได้",
                         "load_error_unknown": "เกิดข้อผิดพลาดในการโหลดระบบอัตโนมัติ ({err_no})",
@@ -692,6 +731,13 @@
                             "learn_more": "เรียนรู้เพิ่มเติมเกี่ยวกับ Trigger",
                             "type_select": "ประเภททริกเกอร์",
                             "type": {
+                                "device": {
+                                    "extra_fields": {
+                                        "above": "เหนือกว่า",
+                                        "below": "ต่ำกว่า"
+                                    },
+                                    "label": "อุปกรณ์"
+                                },
                                 "event": {
                                     "event_data": "ข้อมูลเหตุการณ์",
                                     "event_type": "ชนิดเหตุการณ์",
@@ -779,7 +825,19 @@
                     "caption": "Home Assistant Cloud",
                     "description_features": "ควบคุมการทำงานเมื่อออกจากบ้านร่วมกับ Alexa และ Google Assistant",
                     "description_login": "ลงชื่อเข้าใช้เป็น {email}",
-                    "description_not_login": "ยังไม่ได้เข้าสู่ระบบ"
+                    "description_not_login": "ยังไม่ได้เข้าสู่ระบบ",
+                    "forgot_password": {
+                        "email": "อีเมล์",
+                        "email_error_msg": "อีเมลไม่ถูกต้อง",
+                        "subtitle": "ลืมรหัสผ่าน",
+                        "title": "ลืมรหัสผ่าน"
+                    },
+                    "login": {
+                        "email_error_msg": "อีเมลไม่ถูกต้อง",
+                        "forgot_password": "ลืมรหัสผ่าน?",
+                        "password": "รหัสผ่าน",
+                        "password_error_msg": "รหัสผ่านมีอย่างน้อย 8 ตัวอักษร"
+                    }
                 },
                 "core": {
                     "caption": "ทั่วไป",
@@ -836,6 +894,9 @@
                         "header": "การปรับแต่ง",
                         "introduction": "ปรับแต่งคุณลักษณะของเอนทิตี้แต่ละตัว เมื่อมีการเพิ่มหรือแก้ไขจะมีผลทันที หากลบคุณลักษณะจะเห็นผลต่อเมื่อเอนทิตี้นั้นได้รับการอัพเดท"
                     }
+                },
+                "devices": {
+                    "caption": "อุปกรณ์"
                 },
                 "entities": {
                     "caption": "เอนทิตีรีจิสทรี",
@@ -896,22 +957,31 @@
                 },
                 "script": {
                     "caption": "สคริปต์",
-                    "description": "สร้างและแก้ไขสคริปต์"
+                    "description": "สร้างและแก้ไขสคริปต์",
+                    "picker": {
+                        "add_script": "เพิ่มสคริปต์"
+                    }
                 },
                 "server_control": {
+                    "caption": "การควบคุมเซิร์ฟเวอร์",
                     "section": {
                         "reloading": {
                             "core": "โหลดส่วนกลางใหม่",
                             "group": "โหลดกลุ่มใหม่",
+                            "heading": "โหลดการกำหนดค่า YAML อีกครั้ง",
                             "script": "โหลดสคริปต์อีกครั้ง"
                         },
                         "server_management": {
+                            "confirm_stop": "คุณแน่ใจหรือว่าต้องการหยุดการทำงานของ Home Assistant",
                             "heading": "การจัดการเซิร์ฟเวอร์",
                             "restart": "เริ่มต้นใหม่",
                             "stop": "หยุด"
                         },
                         "validation": {
-                            "check_config": "ตรวจสอบการกำหนดค่า"
+                            "check_config": "ตรวจสอบการกำหนดค่า",
+                            "heading": "ตรวจสอบการกำหนดค่า",
+                            "invalid": "การกำหนดค่าไม่ถูกต้อง",
+                            "valid": "การกำหนดค่าถูกต้อง!"
                         }
                     }
                 },
@@ -959,8 +1029,10 @@
                 "zwave": {
                     "caption": "Z-Wave",
                     "common": {
+                        "index": "ดัชนี",
                         "unknown": "ไม่ทราบ",
-                        "value": "ค่า"
+                        "value": "ค่า",
+                        "wakeup_interval": "ช่วงเวลาการปลุก"
                     },
                     "description": "จัดการเครือข่าย Z-Wave",
                     "network_management": {
@@ -971,8 +1043,11 @@
                         "network_stopped": "หยุดเครือข่าย Z-Wave"
                     },
                     "node_config": {
+                        "false": "เท็จ",
                         "seconds": "วินาที",
-                        "set_config_parameter": "ตั้งค่าพารามิเตอร์การกำหนดค่า"
+                        "set_config_parameter": "ตั้งค่าพารามิเตอร์การกำหนดค่า",
+                        "set_wakeup": "ตั้งค่าช่วงเวลาการปลุก",
+                        "true": "จริง"
                     }
                 }
             },
@@ -1019,7 +1094,8 @@
                         "more_info": "แสดงข้อมูลเพิ่มเติม: {name}",
                         "navigate_to": "นำทางไปยัง {location}",
                         "tap": "แตะ:",
-                        "toggle": "สลับ {name}"
+                        "toggle": "สลับ {name}",
+                        "url": "เปิดหน้าต่างเพื่อไปยัง {url_path}"
                     },
                     "shopping-list": {
                         "add_item": "เพิ่มรายการ",
@@ -1033,6 +1109,9 @@
                 },
                 "editor": {
                     "card": {
+                        "config": {
+                            "optional": "ตัวเลือก"
+                        },
                         "gauge": {
                             "severity": {
                                 "green": "เขียว",
@@ -1046,6 +1125,11 @@
                             "image": "เส้นทางของภาพ",
                             "maximum": "ขีดสุด",
                             "minimum": "ขั้นต่ำ"
+                        },
+                        "map": {
+                            "dark_mode": "โหมดมืด?",
+                            "default_zoom": "ค่าซูมเริ่มต้น",
+                            "source": "แหล่งที่มา"
                         }
                     },
                     "edit_card": {
