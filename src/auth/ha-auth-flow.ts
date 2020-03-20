@@ -36,6 +36,7 @@ class HaAuthFlow extends litLocalizeLiteMixin(LitElement) {
   @internalProperty() private _step?: DataEntryFlowStep;
 
   @internalProperty() private _errorMessage?: string;
+  @internalProperty() private _externalWindow?: Window;
 
   protected render() {
     return html`
@@ -65,6 +66,21 @@ class HaAuthFlow extends litLocalizeLiteMixin(LitElement) {
         this._handleSubmit(ev);
       }
     });
+
+    window.addEventListener(
+      "message",
+      async (message) => {
+        if (
+          message.data.type === "externalCallback" &&
+          message.source === this._externalWindow
+        ) {
+          await this._postFlow(`/auth/login_flow/${this._step?.flow_id}`, {
+            client_id: this.clientId,
+          });
+        }
+      },
+      false
+    );
   }
 
   protected updated(changedProps: PropertyValues): void {
@@ -240,14 +256,7 @@ class HaAuthFlow extends litLocalizeLiteMixin(LitElement) {
     if (step.type === "external") {
       const external = window.open(step.url);
       if (external) {
-        const loop = setInterval(async () => {
-          if (external.closed) {
-            clearInterval(loop);
-            await this._postFlow(`/auth/login_flow/${this._step?.flow_id}`, {
-              client_id: this.clientId,
-            });
-          }
-        }, 500);
+        this._externalWindow = external;
       } else {
         this._state = "error";
         this._errorMessage = "Login window was blocked";
