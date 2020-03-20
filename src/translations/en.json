@@ -652,9 +652,9 @@
           "enabled_label": "Enable entity",
           "enabled_cause": "Disabled by {cause}.",
           "enabled_description": "Disabled entities will not be added to Home Assistant.",
-          "delete": "DELETE",
+          "delete": "Delete",
           "confirm_delete": "Are you sure you want to delete this entry?",
-          "update": "UPDATE",
+          "update": "Update",
           "note": "Note: this might not work yet with all integrations."
         }
       },
@@ -789,13 +789,13 @@
             "introduction2": "To place devices in an area, use the link below to navigate to the integrations page and then click on a configured integration to get to the device cards.",
             "integrations_page": "Integrations page",
             "no_areas": "Looks like you have no areas yet!",
-            "create_area": "CREATE AREA"
+            "create_area": "Create Area"
           },
           "editor": {
             "default_name": "New Area",
-            "delete": "DELETE",
-            "update": "UPDATE",
-            "create": "CREATE"
+            "delete": "Delete",
+            "update": "Update",
+            "create": "Create"
           },
           "delete": {
             "confirmation_title": "Are you sure you want to delete this area?",
@@ -1483,7 +1483,9 @@
             "integration": "Integration",
             "battery": "Battery",
             "no_devices": "No devices"
-          }
+          },
+          "delete": "Delete",
+          "confirm_delete": "Are you sure you want to delete this device?"
         },
         "entities": {
           "caption": "Entities",
