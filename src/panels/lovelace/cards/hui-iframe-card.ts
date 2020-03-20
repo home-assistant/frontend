@@ -22,8 +22,12 @@ export class HuiIframeCard extends LitElement implements LovelaceCard {
     );
     return document.createElement("hui-iframe-card-editor");
   }
-  public static getStubConfig(): object {
-    return { url: "https://www.home-assistant.io", aspect_ratio: "50%" };
+  public static getStubConfig(): IframeCardConfig {
+    return {
+      type: "iframe",
+      url: "https://www.home-assistant.io",
+      aspect_ratio: "50%",
+    };
   }
 
   @property() protected _config?: IframeCardConfig;
