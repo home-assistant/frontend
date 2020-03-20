@@ -16,6 +16,7 @@ import "../../../layouts/hass-error-screen";
 import "../ha-config-section";
 
 import "./device-detail/ha-device-card";
+import "./device-detail/ha-device-card-mqtt";
 import "./device-detail/ha-device-entities-card";
 import { HomeAssistant, Route } from "../../../types";
 import { ConfigEntry } from "../../../data/config_entries";
@@ -70,6 +71,13 @@ export class HaConfigDevicePage extends LitElement {
       devices ? devices.find((device) => device.id === deviceId) : undefined
   );
 
+  private _integrations = memoizeOne(
+    (device: DeviceRegistryEntry, entries: ConfigEntry[]): string[] =>
+      entries
+        .filter((entry) => device.config_entries.includes(entry.entry_id))
+        .map((entry) => entry.domain)
+  );
+
   private _entities = memoizeOne(
     (
       deviceId: string,
@@ -113,6 +121,7 @@ export class HaConfigDevicePage extends LitElement {
       `;
     }
 
+    const integrations = this._integrations(device, this.entries);
     const entities = this._entities(this.deviceId, this.entities);
 
     return html`
@@ -154,6 +163,16 @@ export class HaConfigDevicePage extends LitElement {
                 .devices=${this.devices}
                 .device=${device}
               ></ha-device-card>
+              ${
+                integrations.includes("mqtt")
+                  ? html`
+                      <ha-device-card-mqtt
+                        .hass=${this.hass}
+                        .device=${device}
+                      ></ha-device-card-mqtt>
+                    `
+                  : html``
+              }
             </div>
 
             ${
