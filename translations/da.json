@@ -715,7 +715,7 @@
                 },
                 "vacuum": {
                     "clean_spot": "Rengør område",
-                    "commands": "Støvsuger kommandoer",
+                    "commands": "Støvsugerkommandoer",
                     "fan_speed": "Blæserhastighed",
                     "locate": "Lokaliser",
                     "pause": "Pause",
@@ -1469,6 +1469,7 @@
                         },
                         "failed_create_area": "Området kunne ikke oprettes.",
                         "finish": "Afslut",
+                        "loading_first_time": "Vent mens integrationen installeres",
                         "name_new_area": "Navnet på det nye område?",
                         "not_all_required_fields": "Ikke alle påkrævede felter er udfyldt.",
                         "submit": "Send"
@@ -2252,6 +2253,7 @@
                     "edit_card": {
                         "add": "Tilføj kort",
                         "delete": "Slet kort",
+                        "duplicate": "Dubliker kort",
                         "edit": "Rediger",
                         "header": "Kortkonfiguration",
                         "move": "Flyt til visning",

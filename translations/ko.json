@@ -1247,12 +1247,12 @@
                         },
                         "server_control": {
                             "reloading": {
-                                "automation": "자동화 새로고침",
-                                "core": "코어 새로고침",
-                                "group": "그룹 새로고침",
-                                "heading": "구성 내용 새로고침",
-                                "introduction": "Home Assistant 의 일부 구성 내용은 재시작 없이 다시 읽어들일 수 있습니다. 새로고침을 누르면 현재 구성 내용을 내리고 새로운 구성 내용을 읽어들입니다.",
-                                "script": "스크립트 새로고침"
+                                "automation": "자동화 다시 읽어오기",
+                                "core": "코어 다시 읽어오기",
+                                "group": "그룹 다시 읽어오기",
+                                "heading": "구성 내용 다시 읽어오기",
+                                "introduction": "Home Assistant 의 일부 구성 내용은 재시작 없이 다시 읽어들일 수 있습니다. 다시 읽어오기를 누르면 현재 구성 내용을 내리고 새로운 구성 내용을 읽어들입니다.",
+                                "script": "스크립트 다시 읽어오기"
                             },
                             "server_management": {
                                 "heading": "서버 관리",
@@ -1469,6 +1469,7 @@
                         },
                         "failed_create_area": "영역을 만들지 못했습니다.",
                         "finish": "완료",
+                        "loading_first_time": "통합 구성요소가 설치되는 동안 기다려주세요",
                         "name_new_area": "새로운 영역의 이름?",
                         "not_all_required_fields": "필수 입력란이 모두 채워지지 않았습니다.",
                         "submit": "확인"
@@ -1671,15 +1672,15 @@
                     "description": "Home Assistant 서버를 재시작 또는 중지합니다",
                     "section": {
                         "reloading": {
-                            "automation": "자동화 새로고침",
-                            "core": "위치 및 사용자화 새로고침",
-                            "group": "그룹 새로고침",
+                            "automation": "자동화 다시 읽어오기",
+                            "core": "위치 및 사용자화 다시 읽어오기",
+                            "group": "그룹 다시 읽어오기",
                             "heading": "YAML 구성 다시 읽어오기",
-                            "introduction": "Home Assistant 의 일부 구성 내용은 재시작 없이 다시 읽어 들일 수 있습니다. 새로고침을 누르면 현재 사용 중인 YAML 구성 내용을 내리고 새로운 구성 내용을 읽어 들입니다.",
-                            "person": "구성원 새로고침",
-                            "scene": "씬 다시읽기",
-                            "script": "스크립트 새로고침",
-                            "zone": "지역 새로고침"
+                            "introduction": "Home Assistant 의 일부 구성 내용은 재시작 없이 다시 읽어 들일 수 있습니다. 다시 읽어오기를 누르면 현재 사용 중인 YAML 구성 내용을 내리고 새로운 구성 내용을 읽어 들입니다.",
+                            "person": "구성원 다시 읽어오기",
+                            "scene": "씬 다시 읽어오기",
+                            "script": "스크립트 다시 읽어오기",
+                            "zone": "지역 다시 읽어오기"
                         },
                         "server_management": {
                             "confirm_restart": "Home Assistant 를 재시작하시겠습니까?",
@@ -2252,6 +2253,7 @@
                     "edit_card": {
                         "add": "카드 추가하기",
                         "delete": "카드 삭제",
+                        "duplicate": "카드 복사",
                         "edit": "편집",
                         "header": "카드 구성",
                         "move": "다른 뷰로 이동",
@@ -2341,7 +2343,7 @@
                     "reload_resources": "리소스 다시 읽어오기",
                     "unused_entities": "미사용 구성요소"
                 },
-                "reload_lovelace": "UI 새로고침",
+                "reload_lovelace": "UI 다시 읽어오기",
                 "reload_resources": {
                     "refresh_body": "다시 읽어오기를 완료하려면 페이지를 새로 고쳐야 합니다. 지금 새로 고치시겠습니까?",
                     "refresh_header": "새로 고치시겠습니까?"
