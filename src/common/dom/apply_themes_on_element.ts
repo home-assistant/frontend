@@ -1,4 +1,10 @@
 import { derivedStyles } from "../../resources/styles";
+import { HomeAssistant, Theme } from "../../types";
+
+interface ProcessedTheme {
+  keys: { [key: string]: "" };
+  styles: { [key: string]: string };
+}
 
 const hexToRgb = (hex: string): string | null => {
   const shorthandRegex = /^#?([a-f\d])([a-f\d])([a-f\d])$/i;
@@ -15,67 +21,82 @@ const hexToRgb = (hex: string): string | null => {
     : null;
 };
 
+let PROCESSED_THEMES: { [key: string]: ProcessedTheme } = {};
+
 /**
  * Apply a theme to an element by setting the CSS variables on it.
  *
  * element: Element to apply theme on.
  * themes: HASS Theme information
- * localTheme: selected theme.
- * updateMeta: boolean if we should update the theme-color meta element.
+ * selectedTheme: selected theme.
  */
 export const applyThemesOnElement = (
   element,
-  themes,
-  localTheme,
-  updateMeta = false
+  themes: HomeAssistant["themes"],
+  selectedTheme?: string
 ) => {
-  if (!element._themes) {
-    element._themes = {};
-  }
-  let themeName = themes.default_theme;
-  if (localTheme === "default" || (localTheme && themes.themes[localTheme])) {
-    themeName = localTheme;
-  }
-  const styles = { ...element._themes };
-  if (themeName !== "default") {
-    const theme = { ...derivedStyles, ...themes.themes[themeName] };
-    Object.keys(theme).forEach((key) => {
-      const prefixedKey = `--${key}`;
-      element._themes[prefixedKey] = "";
-      styles[prefixedKey] = theme[key];
-      if (key.startsWith("rgb")) {
-        return;
-      }
-      const rgbKey = `rgb-${key}`;
-      if (theme[rgbKey] !== undefined) {
-        return;
-      }
-      const prefixedRgbKey = `--${rgbKey}`;
-      element._themes[prefixedRgbKey] = "";
-      const rgbValue = hexToRgb(theme[key]);
-      if (rgbValue !== null) {
-        styles[prefixedRgbKey] = rgbValue;
-      }
-    });
-  }
-  if (element.updateStyles) {
-    element.updateStyles(styles);
-  } else if (window.ShadyCSS) {
-    // implement updateStyles() method of Polymer elements
-    window.ShadyCSS.styleSubtree(/** @type {!HTMLElement} */ element, styles);
-  }
+  const newTheme = selectedTheme
+    ? PROCESSED_THEMES[selectedTheme] || processTheme(selectedTheme, themes)
+    : undefined;
 
-  if (!updateMeta) {
+  if (!element._themes && !newTheme) {
+    // No styles to reset, and no styles to set
     return;
   }
 
-  const meta = document.querySelector("meta[name=theme-color]");
-  if (meta) {
-    if (!meta.hasAttribute("default-content")) {
-      meta.setAttribute("default-content", meta.getAttribute("content")!);
-    }
-    const themeColor =
-      styles["--primary-color"] || meta.getAttribute("default-content");
-    meta.setAttribute("content", themeColor);
+  // Add previous set keys to reset them, and new theme
+  const styles = { ...element._themes, ...newTheme?.styles };
+  element._themes = newTheme?.keys;
+
+  // Set and/or reset styles
+  if (element.updateStyles) {
+    element.updateStyles(styles);
+  } else if (window.ShadyCSS) {
+    // Implement updateStyles() method of Polymer elements
+    window.ShadyCSS.styleSubtree(/** @type {!HTMLElement} */ element, styles);
   }
+};
+
+const processTheme = (
+  themeName: string,
+  themes: HomeAssistant["themes"]
+): ProcessedTheme | undefined => {
+  if (!themes.themes[themeName]) {
+    return;
+  }
+  const theme: Theme = {
+    ...derivedStyles,
+    ...themes.themes[themeName],
+  };
+  const styles = {};
+  const keys = {};
+  for (const key of Object.keys(theme)) {
+    const prefixedKey = `--${key}`;
+    const value = theme[key];
+    styles[prefixedKey] = value;
+    keys[prefixedKey] = "";
+
+    // Try to create a rgb value for this key if it is a hex color
+    if (!value.startsWith("#")) {
+      // Not a hex color
+      continue;
+    }
+    const rgbKey = `rgb-${key}`;
+    if (theme[rgbKey] !== undefined) {
+      // Theme has it's own rgb value
+      continue;
+    }
+    const rgbValue = hexToRgb(value);
+    if (rgbValue !== null) {
+      const prefixedRgbKey = `--${rgbKey}`;
+      styles[prefixedRgbKey] = rgbValue;
+      keys[prefixedRgbKey] = "";
+    }
+  }
+  PROCESSED_THEMES[themeName] = { styles, keys };
+  return { styles, keys };
+};
+
+export const invalidateThemeCache = () => {
+  PROCESSED_THEMES = {};
 };
