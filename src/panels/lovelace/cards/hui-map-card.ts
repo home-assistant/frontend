@@ -45,7 +45,7 @@ class HuiMapCard extends LitElement implements LovelaceCard {
     hass: HomeAssistant,
     entities: string[],
     entitiesFallback: string[]
-  ): object {
+  ): MapCardConfig {
     const includeDomains = ["device_tracker"];
     const maxEntities = 2;
     const foundEntities = findEntities(
@@ -56,7 +56,7 @@ class HuiMapCard extends LitElement implements LovelaceCard {
       includeDomains
     );
 
-    return { entities: foundEntities };
+    return { type: "map", entities: foundEntities };
   }
 
   @property() public hass?: HomeAssistant;
@@ -113,9 +113,10 @@ class HuiMapCard extends LitElement implements LovelaceCard {
   }
 
   public getCardSize(): number {
-    if (!this._config) {
-      return 3;
+    if (!this._config?.aspect_ratio) {
+      return 5;
     }
+
     const ratio = parseAspectRatio(this._config.aspect_ratio);
     const ar =
       ratio && ratio.w > 0 && ratio.h > 0
@@ -204,6 +205,11 @@ class HuiMapCard extends LitElement implements LovelaceCard {
 
     if (this._connected) {
       this._attachObserver();
+    }
+
+    if (!this._config.aspect_ratio) {
+      root.style.paddingBottom = "100%";
+      return;
     }
 
     const ratio = parseAspectRatio(this._config.aspect_ratio);

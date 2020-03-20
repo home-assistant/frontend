@@ -45,7 +45,7 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
     hass: HomeAssistant,
     entities: string[],
     entitiesFallback: string[]
-  ): object {
+  ): GaugeCardConfig {
     const includeDomains = ["sensor"];
     const maxEntities = 1;
     const entityFilter = (stateObj: HassEntity): boolean => {
@@ -61,7 +61,7 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
       entityFilter
     );
 
-    return { entity: foundEntities[0] || "" };
+    return { type: "gauge", entity: foundEntities[0] || "" };
   }
 
   @property() public hass?: HomeAssistant;

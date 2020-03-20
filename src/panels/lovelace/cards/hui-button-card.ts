@@ -48,7 +48,7 @@ export class HuiButtonCard extends LitElement implements LovelaceCard {
     hass: HomeAssistant,
     entities: string[],
     entitiesFallback: string[]
-  ): object {
+  ): ButtonCardConfig {
     const maxEntities = 1;
     const foundEntities = findEntities(
       hass,
@@ -59,6 +59,7 @@ export class HuiButtonCard extends LitElement implements LovelaceCard {
     );
 
     return {
+      type: "button",
       tap_action: { action: "toggle" },
       hold_action: { action: "more-info" },
       show_icon: true,
