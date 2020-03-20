@@ -12,9 +12,9 @@ export const callAlarmAction = (
     | "arm_night"
     | "arm_custom_bypass"
     | "disarm",
-  code: string
+  code?: string
 ) => {
-  hass!.callService("alarm_control_panel", "alarm_" + action, {
+  hass!.callService("alarm_control_panel", `alarm_${action}`, {
     entity_id: entity,
     code,
   });
