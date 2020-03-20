@@ -237,8 +237,7 @@ export const provideHass = (
       applyThemesOnElement(
         document.documentElement,
         themes,
-        selectedTheme,
-        true
+        selectedTheme as string
       );
     },
 

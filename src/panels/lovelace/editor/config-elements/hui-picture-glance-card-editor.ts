@@ -234,7 +234,7 @@ export class HuiPictureGlanceCardEditor extends LitElement
           .hass=${this.hass}
           .value="${this._theme}"
           .configValue="${"theme"}"
-          @theme-changed="${this._valueChanged}"
+          @value-changed="${this._valueChanged}"
         ></hui-theme-select-editor>
       </div>
     `;
