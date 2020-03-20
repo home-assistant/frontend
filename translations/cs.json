@@ -581,6 +581,7 @@
                 "entity": "Související entity",
                 "group": "Část následujících skupin",
                 "integration": "Integrace",
+                "no_related_found": "Nebyly nalezeny žádné související položky.",
                 "scene": "Část následujících scén",
                 "script": "Část následujících skriptů"
             },
@@ -625,18 +626,66 @@
                     "enabled_description": "Zakázané entity nebudou přidány do Home Assistant.",
                     "enabled_label": "Povolit entitu",
                     "entity_id": "Entity ID",
+                    "icon": "Nahrazení ikony",
+                    "icon_error": "Ikony by měly být ve formátu 'prefix:nazevikony', např. 'mdi:home'",
                     "name": "Přepsání názvu",
                     "note": "Poznámka: to nemusí fungovat se všemi integracemi.",
                     "unavailable": "Tato entita není momentálně k dispozici.",
                     "update": "Aktualizovat"
                 },
+                "no_unique_id": "Tato entita nemá jedinečné ID, proto její nastavení nelze spravovat z uživatelského rozhraní.",
                 "related": "Související",
                 "settings": "Nastavení"
             },
             "generic": {
                 "cancel": "Zrušit",
+                "close": "zavřít",
                 "default_confirmation_title": "Opravdu?",
                 "ok": "OK"
+            },
+            "helper_settings": {
+                "generic": {
+                    "icon": "Ikona",
+                    "initial_value": "Počáteční hodnota při spuštění",
+                    "initial_value_explain": "Hodnota, kterou bude mít prvek, když se spustí Home Assistant. Pokud zůstane prázdné, bude hodnota obnovena na předchozí hodnotu.",
+                    "name": "Název"
+                },
+                "input_datetime": {
+                    "date": "Datum",
+                    "datetime": "Datum a čas",
+                    "has_date": "Datum",
+                    "has_time": "Čas",
+                    "mode": "Co chcete zadat",
+                    "time": "Čas"
+                },
+                "input_number": {
+                    "box": "Vstupní pole",
+                    "max": "Maximální hodnota",
+                    "min": "Minimální hodnota",
+                    "mode": "Režim zobrazení",
+                    "slider": "Posuvník",
+                    "step": "Velikost kroku posuvníku",
+                    "unit_of_measurement": "Měrná jednotka"
+                },
+                "input_select": {
+                    "add": "Přidat",
+                    "add_option": "Přidat možnost",
+                    "no_options": "Zatím nejsou k dispozici žádné možnosti.",
+                    "options": "Možnosti"
+                },
+                "input_text": {
+                    "max": "Maximální délka",
+                    "min": "Minimální délka",
+                    "mode": "Režim zobrazení",
+                    "password": "Heslo",
+                    "pattern": "Vzor regex pro ověření na straně klienta",
+                    "text": "Text"
+                },
+                "not_editable": "Nelze upravovat",
+                "not_editable_text": "Tuto entitu nelze změnit z uživatelského rozhraní, protože je definována v souboru configuration.yaml.",
+                "platform_not_loaded": "Integrace {platform} není načtena. Přidejte ji do své konfigurace buďto přidáním 'default_config:' nebo '{platform}:'.",
+                "required_error_msg": "Toto pole je povinné",
+                "yaml_not_editable": "Nastavení této entity nelze upravovat z uživatelského rozhraní. Pouze entity nastavené z uživatelského rozhraní lze konfigurovat v uživatelském rozhraní."
             },
             "more_info_control": {
                 "dismiss": "Zavřít dialog",
@@ -665,7 +714,7 @@
                     "title": "Pokyny pro aktualizaci"
                 },
                 "vacuum": {
-                    "clean_spot": "Čisté místo",
+                    "clean_spot": "Vyčistit místo",
                     "commands": "Příkazy vysavače:",
                     "fan_speed": "Rychlost ventilátoru",
                     "locate": "Lokalizovat",
@@ -761,6 +810,10 @@
                 "areas": {
                     "caption": "Registr oblastí",
                     "create_area": "VYTVOŘIT OBLAST",
+                    "delete": {
+                        "confirmation_text": "Všechna zařízení v této oblasti budou nastavena jako nepřiřazena.",
+                        "confirmation_title": "Opravdu chcete tuto oblast smazat?"
+                    },
                     "description": "Přehled všech oblastí ve vaší domácnosti.",
                     "editor": {
                         "create": "VYTVOŘIT",
@@ -1264,7 +1317,8 @@
                         "device": "Zařízení",
                         "integration": "Integrace",
                         "manufacturer": "Výrobce",
-                        "model": "Model"
+                        "model": "Model",
+                        "no_devices": "Žádná zařízení"
                     },
                     "description": "Správa připojených zařízení",
                     "details": "Zde jsou všechny podrobnosti o vašem zařízení.",
@@ -1323,6 +1377,7 @@
                         "filter": {
                             "filter": "Filtr",
                             "show_disabled": "Zobrazit zakázané entity",
+                            "show_readonly": "Zobrazit entity jen pro čtení",
                             "show_unavailable": "Zobrazit nedostupné entity"
                         },
                         "header": "Registr entit",
@@ -1338,6 +1393,8 @@
                         "introduction2": "Pomocí registru entit můžete přepsat název, změnit identifikátor entity nebo odebrat entitu. Poznámka: odebrání entity z registru entit nesmaže entitu. Pro smazání přejděte na stránku integrací pomocí odkazu níže.",
                         "remove_selected": {
                             "button": "Odstranit vybrané",
+                            "confirm_partly_text": "Můžete odebrat pouze {removable} z vybraných {selected} entit. Entity lze odebrat pouze v případě, že integrace již entity neposkytuje. Občas je třeba restartovat Home Assistant před tím, než je možné odstranit entity ze smazané integrace. Opravdu chcete odebrat odstranitelné entity?",
+                            "confirm_partly_title": "Lze odebrat pouze {number} vybraných entit.",
                             "confirm_text": "Entity lze odebrat pouze v případě, že integrace již entity neposkytuje.",
                             "confirm_title": "Chcete odstranit {number} entit?"
                         },
@@ -1346,12 +1403,39 @@
                         "status": {
                             "disabled": "Zakázáno",
                             "ok": "Ok",
+                            "readonly": "Pouze pro čtení",
+                            "restored": "Obnoveno",
                             "unavailable": "Nedostupné"
                         },
                         "unavailable": "(není k dispozici)"
                     }
                 },
                 "header": "Konfigurace Home Assistant",
+                "helpers": {
+                    "caption": "Pomocníci",
+                    "description": "Prvky, které mohou pomoci při vytváření automatizací.",
+                    "dialog": {
+                        "add_helper": "Přidat pomocníka",
+                        "add_platform": "Přidat {platform}",
+                        "create": "Vytvořit"
+                    },
+                    "picker": {
+                        "add_helper": "Přidat pomocníka",
+                        "headers": {
+                            "editable": "Upravitelné",
+                            "entity_id": "ID entity",
+                            "name": "Název",
+                            "type": "Typ"
+                        }
+                    },
+                    "types": {
+                        "input_boolean": "Přepnout",
+                        "input_datetime": "Datum a/nebo čas",
+                        "input_number": "Číslo",
+                        "input_select": "Rozbalovací nabídka",
+                        "input_text": "Text"
+                    }
+                },
                 "integrations": {
                     "caption": "Integrace",
                     "config_entry": {
@@ -1385,6 +1469,7 @@
                         },
                         "failed_create_area": "Nepodařilo se vytvořit oblast.",
                         "finish": "Dokončit",
+                        "loading_first_time": "Počkejte prosím, než bude integrace nainstalována.",
                         "name_new_area": "Název nové oblasti?",
                         "not_all_required_fields": "Nejsou vyplněna všechna povinná pole.",
                         "submit": "Odeslat"
@@ -1413,6 +1498,83 @@
                     "note_about_website_reference": "Další jsou k dispozici na "
                 },
                 "introduction": "Zde je možné konfigurovat vaše komponenty a Home Assistant.\nZ uživatelského rozhraní sice zatím není možné konfigurovat vše, ale pracujeme na tom.",
+                "lovelace": {
+                    "caption": "Lovelace Dashboardy",
+                    "dashboards": {
+                        "cant_edit_default": "Standardní Lovelace dashboard nelze upravovat z uživatelského rozhraní. Můžete jej skrýt nastavením jiného dashboardu jako výchozího.",
+                        "cant_edit_yaml": "Dashboardy definované v YAML nelze upravovat z uživatelského rozhraní. Změňte je v configuration.yaml.",
+                        "caption": "Dashboardy",
+                        "conf_mode": {
+                            "storage": "Řízeno UI",
+                            "yaml": "Soubor YAML"
+                        },
+                        "confirm_delete": "Opravdu chcete odstranit tento dashboard?",
+                        "default_dashboard": "Toto je výchozí dashboard",
+                        "detail": {
+                            "create": "Vytvořit",
+                            "delete": "Smazat",
+                            "dismiss": "Zavřít",
+                            "edit_dashboard": "Upravit dashboard",
+                            "icon": "Ikona",
+                            "new_dashboard": "Přidat nový dashboard",
+                            "remove_default": "Odebrat jako výchozí na tomto zařízení",
+                            "require_admin": "Pouze správce",
+                            "set_default": "Nastavit jako výchozí na tomto zařízení",
+                            "show_sidebar": "Zobrazit na postranním panelu",
+                            "title": "Název",
+                            "title_required": "Název je povinný.",
+                            "update": "Aktualizovat",
+                            "url": "Url",
+                            "url_error_msg": "Adresa URL by měla obsahovat - a nesmí obsahovat mezery ani speciální znaky, s výjimkou _ a -"
+                        },
+                        "picker": {
+                            "add_dashboard": "Přidat dashboard",
+                            "headers": {
+                                "conf_mode": "Metoda konfigurace",
+                                "default": "Výchozí",
+                                "filename": "Název souboru",
+                                "require_admin": "Pouze správce",
+                                "sidebar": "Zobrazit na postranním panelu",
+                                "title": "Název"
+                            },
+                            "open": "Otevřít"
+                        }
+                    },
+                    "description": "Nakonfigurujte své Lovelace Dashboardy",
+                    "resources": {
+                        "cant_edit_yaml": "Používáte Lovelace v režimu YAML, proto nemůžete spravovat své zdroje prostřednictvím uživatelského rozhraní. Spravujte je v souboru configuration.yaml.",
+                        "caption": "Zdroje",
+                        "confirm_delete": "Opravdu chcete tento zdroj odstranit?",
+                        "detail": {
+                            "create": "Vytvořit",
+                            "delete": "Smazat",
+                            "dismiss": "Zavřít",
+                            "new_resource": "Přidat nový zdroj",
+                            "type": "Typ zdroje",
+                            "update": "Aktualizovat",
+                            "url": "Url",
+                            "url_error_msg": "Url je povinné pole.",
+                            "warning_header": "Buďte opatrní!",
+                            "warning_text": "Přidávání zdrojů může být nebezpečné, ujistěte se, že znáte původ zdroje a důvěřujete jim. Špatné zdroje mohou vážně poškodit váš systém."
+                        },
+                        "picker": {
+                            "add_resource": "Přidat zdroj",
+                            "headers": {
+                                "type": "Typ",
+                                "url": "Url"
+                            },
+                            "no_resources": "Žádné zdroje"
+                        },
+                        "refresh_body": "Chcete-li dokončit odebrání, musíte stránku obnovit, chcete ji obnovit nyní?",
+                        "refresh_header": "Chcete provést obnovení?",
+                        "types": {
+                            "css": "Stylesheet",
+                            "html": "HTML (zastaralé)",
+                            "js": "Soubor JavaScriptu (zastaralý)",
+                            "module": "Modul JavaScriptu"
+                        }
+                    }
+                },
                 "person": {
                     "add_person": "Přidat osobu",
                     "caption": "Osoby",
@@ -1702,6 +1864,9 @@
                         "update": "Aktualizovat"
                     },
                     "edit_home_zone": "Umístění vašeho domova lze změnit v konfiguraci.",
+                    "edit_home_zone_narrow": "Poloměr domovské zóny zatím nelze upravit z frontendu. Umístění lze změnit z obecné konfigurace.",
+                    "go_to_core_config": "Přejít na obecnou konfiguraci?",
+                    "home_zone_core_config": "Umístění vaší domovské zóny lze upravit na stránce obecné konfigurace. Poloměr domovské zóny zatím nelze upravit z frontendu. Chcete přejít na obecnou konfiguraci?",
                     "introduction": "Zóny umožňují určit určité oblasti na zemi. Když je osoba v zóně, stav převezme název ze zóny. Zóny lze také použít jako aktivační událost nebo podmínku v nastavení automatizace.",
                     "no_zones_created_yet": "Vypadá to, že nejsou vytvořené žádné zóny."
                 },
@@ -1909,6 +2074,11 @@
                         "toggle": "Přepnout {name}",
                         "url": "Otevřít okno adresy {url_path}"
                     },
+                    "safe-mode": {
+                        "description": "Home Assistant se při načítání konfigurace setkal s problémy a nyní běží v nouzovém režimu. Podívejte se do protokolu chyb a zjistěte, co se pokazilo.",
+                        "header": "Nouzový režim aktivován",
+                        "show_errors": "Zobrazit chyby"
+                    },
                     "shopping-list": {
                         "add_item": "Přidat položku",
                         "checked_items": "Označené položky",
@@ -1916,7 +2086,7 @@
                     }
                 },
                 "changed_toast": {
-                    "message": "Konfigurace Lovelace byla aktualizována, chcete obnovit stránku?",
+                    "message": "Konfigurace Lovelace pro tento dashboard byla aktualizována, chcete obnovit stránku?",
                     "refresh": "Obnovit"
                 },
                 "editor": {
@@ -1926,19 +2096,30 @@
                         },
                         "alarm-panel": {
                             "available_states": "Dostupné stavy",
+                            "description": "Karta Alarm panel umožňuje aktivovat či deaktivovat alarm integrací zabezpečovacích systémů.",
                             "name": "Ovládací panel alarmu"
                         },
                         "button": {
+                            "description": "Karta Tlačítko umožňuje přidat tlačítka k provádění úkolů.",
                             "name": "Tlačítko"
                         },
                         "conditional": {
-                            "name": "Podmínka"
+                            "card": "Karta",
+                            "change_type": "Změnit typ",
+                            "condition_explanation": "Karta se zobrazí, když jsou splněny VŠECHNY níže uvedené podmínky.",
+                            "conditions": "Podmínky",
+                            "current_state": "současné",
+                            "description": "Podmínková karta zobrazuje další kartu na základě stavu entity.",
+                            "name": "Podmínka",
+                            "state_equal": "Stav se rovná",
+                            "state_not_equal": "Stav se nerovná"
                         },
                         "config": {
                             "optional": "Volitelné",
                             "required": "Povinné"
                         },
                         "entities": {
+                            "description": "Karta Entity je nejběžnějším typem karty. Seskupuje položky do seznamů.",
                             "name": "Entity",
                             "show_header_toggle": "Zobrazit přepínač záhlaví?",
                             "toggle": "Přepnout entity."
@@ -1947,10 +2128,12 @@
                             "name": "Tlačítko entity"
                         },
                         "entity-filter": {
+                            "description": "Karta Filtr entit umožňuje definovat seznam entit, které chcete sledovat pouze v určitém stavu.",
                             "name": "Filtr entit"
                         },
                         "gauge": {
-                            "name": "Měřidlo",
+                            "description": "Karta Ručičkový ukazatel je základní karta pro vizuální zobrazení hodnoty senzoru.",
+                            "name": "Ručičkový ukazatel",
                             "severity": {
                                 "define": "Definovat závažnost?",
                                 "green": "Zelená",
@@ -1969,6 +2152,8 @@
                             "icon": "Ikona",
                             "icon_height": "Výška ikony",
                             "image": "Cesta obrázku",
+                            "manual": "Manuální",
+                            "manual_description": "Potřebujete přidat vlastní kartu nebo jen chcete ručně napsat yaml?",
                             "maximum": "Maximum",
                             "minimum": "Minimum",
                             "name": "Název",
@@ -1976,6 +2161,7 @@
                             "show_icon": "Zobrazit ikonu?",
                             "show_name": "Zobrazit název?",
                             "show_state": "Zobrazit stav?",
+                            "state": "Stav",
                             "tap_action": "Akce při stisknutí",
                             "theme": "Motiv",
                             "title": "Název",
@@ -1984,71 +2170,90 @@
                         },
                         "glance": {
                             "columns": "Sloupce",
-                            "name": "Rychlý pohled"
+                            "description": "Karta Náhled je užitečná pro seskupení více senzorů v kompaktním přehledu.",
+                            "name": "Rychlý náhled"
                         },
                         "history-graph": {
+                            "description": "Karta Graf historie umožňuje zobrazit graf pro každou z uvedených entit.",
                             "name": "Graf historie"
                         },
                         "horizontal-stack": {
+                            "description": "Karta Horizontální Stack umožňuje seskupovat více karet tak, že jsou vždy zobrazeny vedle sebe v prostoru šířky jednoho sloupce.",
                             "name": "Horizontální uskupení"
                         },
                         "iframe": {
+                            "description": "Karta Webová stránka umožňuje vložit oblíbenou webovou stránku přímo do Home Assistanta.",
                             "name": "iFrame"
                         },
                         "light": {
+                            "description": "Karta Světlo umožňuje změnit jas světla.",
                             "name": "Světlo"
                         },
                         "map": {
                             "dark_mode": "Tmavý režim?",
                             "default_zoom": "Výchozí zvětšení",
+                            "description": "Karta Mapa umožňuje zobrazit entity na mapě.",
                             "geo_location_sources": "Zdroje geolokace",
                             "name": "Mapa",
                             "source": "Zdroj"
                         },
                         "markdown": {
                             "content": "Obsah",
+                            "description": "Karta Markdown se používá k vykreslení Markdown.",
                             "name": "Markdown"
                         },
                         "media-control": {
+                            "description": "Karta Media Control se používá k zobrazení entit přehrávače médií na rozhraní se snadno použitelnými ovládacími prvky.",
                             "name": "Řízení médií"
                         },
                         "picture-elements": {
+                            "description": "Karta Obrázkové elementy je jednou z nejvšestrannějších typů karet. Karta umožňuje umisťovat ikony, text nebo dokonce služby pomocí souřadnic do obrázku.",
                             "name": "Obrázkové elementy"
                         },
                         "picture-entity": {
+                            "description": "Karta Obrázková entita zobrazuje entitu ve formě obrázku. Namísto obrázků z adresy URL může také zobrazit obrázek entit kamery.",
                             "name": "Obrazková entita"
                         },
                         "picture-glance": {
-                            "name": "Obrázkový pohled"
+                            "description": "Karta Obrázkový náhled zobrazuje obrázek a odpovídající stav entity jako ikonu. Entity na pravé straně umožňují přepínání, jiné zobrazují dialogové okno s více informacemi.",
+                            "name": "Obrázkový náhled"
                         },
                         "picture": {
+                            "description": "Karta Obrázek vám umožňuje nastavit obrázek, který se použije pro navigaci na různá místa v rozhraní nebo pro volání služby.",
                             "name": "Obrázek"
                         },
                         "plant-status": {
+                            "description": "Karta Stav rostliny je pro všechny naše úžasné botaniky.",
                             "name": "Stav rostliny"
                         },
                         "sensor": {
+                            "description": "Karta Sensor poskytuje rychlý přehled o stavu senzorů s volitelným grafem pro vizualizaci změn v průběhu času.",
                             "graph_detail": "Detail grafu",
                             "graph_type": "Typ grafu",
                             "name": "Senzor"
                         },
                         "shopping-list": {
+                            "description": "Karta Nákupní seznam umožňuje přidávat, upravovat, odškrtávat a mazat položky z nákupního seznamu.",
                             "integration_not_loaded": "Tato karta vyžaduje integraci `shopping_list`.",
                             "name": "Nákupní seznam"
                         },
                         "thermostat": {
+                            "description": "Karta Termostat poskytuje kontrolu nad vaší klimatickou entitou. Umožňuje změnit teplotu a režim entity.",
                             "name": "Termostat"
                         },
                         "vertical-stack": {
+                            "description": "Karta Vertical Stack umožňuje seskupovat více karet tak, že jsou vždy zobrazeny ve stejném sloupci.",
                             "name": "Svislá sada"
                         },
                         "weather-forecast": {
+                            "description": "Karta Předpověď počasí zobrazuje počasí. Velmi užitečná pro použití v rozhraní, které lidé zobrazují na zdi.",
                             "name": "Předpověď počasí"
                         }
                     },
                     "edit_card": {
                         "add": "Přidat kartu",
                         "delete": "Odstranit",
+                        "duplicate": "Duplikovat Kartu",
                         "edit": "Upravit",
                         "header": "Konfigurace karty",
                         "move": "Přesunout",
@@ -2072,7 +2277,13 @@
                         "header": "Zobrazit konfiguraci",
                         "header_name": "{name} Zobrazit konfiguraci",
                         "move_left": "Posunout pohled doleva",
-                        "move_right": "Posunout pohled doprava"
+                        "move_right": "Posunout pohled doprava",
+                        "tab_badges": "Odznaky",
+                        "tab_settings": "Nastavení",
+                        "tab_visibility": "Viditelnost",
+                        "visibility": {
+                            "select_users": "Vyberte, kteří uživatelé by měli vidět tento pohled v navigaci"
+                        }
                     },
                     "header": "Upravit UI",
                     "menu": {
@@ -2095,16 +2306,21 @@
                         "error_remove": "Nelze odstranit nastavení: {error}",
                         "error_save_yaml": "Nelze uložit YAML: {error}",
                         "header": "Upravit konfiguraci",
+                        "resources_moved": "Zdroje by již neměly být přidávány do konfigurace Lovelace, ale mohou být přidávány v konfiguračním panelu Lovelace.",
                         "save": "Uložit",
                         "saved": "Uloženo",
                         "unsaved_changes": "Neuložené změny"
                     },
                     "save_config": {
                         "cancel": "Zahodit změnu",
+                        "close": "Zavřít",
                         "header": "Převzít kontrolu nad vaší Lovelace UI",
                         "para": "Ve výchozím nastavení bude Home Assistant spravovat vaše uživatelské rozhraní – aktualizovat jej při přidání nové entity nebo Lovelace komponenty. Pokud převezmete kontrolu, nebudeme již provádět změny automaticky za vás.",
                         "para_sure": "Opravdu chcete převzít kontrolu nad uživalským rohraním ?",
-                        "save": "Převzít kontrolu"
+                        "save": "Převzít kontrolu",
+                        "yaml_config": "Abyste mohli snadněji začít, zde aktuální konfigurace tohoto dashboardu:",
+                        "yaml_control": "Chcete-li převzít kontrolu v režimu YAML, vytvořte soubor YAML s názvem, který jste uvedli ve své konfiguraci pro tento dashboard nebo výchozí 'ui-lovelace.yaml'.",
+                        "yaml_mode": "Používáte režim YAML, což znamená, že nemůžete změnit konfiguraci Lovelace z uživatelského rozhraní. Pokud chcete měnit Lovelace z uživatelského rozhraní, odstraňte 'mode: yaml' z vaší konfigurace Lovelace v 'configuration.yaml.'"
                     },
                     "suggest_card": {
                         "add": "Přidat do Lovelance",
@@ -2124,9 +2340,14 @@
                     "exit_edit_mode": "Ukončit režim úprav uživatelského rozhraní",
                     "help": "Pomoc",
                     "refresh": "Obnovit",
+                    "reload_resources": "Opětovné načtení prostředků",
                     "unused_entities": "Nepoužívané entity"
                 },
                 "reload_lovelace": "Znovu načíst Lovelace",
+                "reload_resources": {
+                    "refresh_body": "Chcete-li dokončit opětovné načtení, musíte stránku aktualizovat, chcete ji nyní aktualizovat?",
+                    "refresh_header": "Chcete aktualizovat stránku?"
+                },
                 "unused_entities": {
                     "available_entities": "Toto jsou entity, které máte k dispozici, ale dosud nejsou ve vašem uživatelském rozhraní Lovelace.",
                     "domain": "Doména",
@@ -2138,9 +2359,13 @@
                 },
                 "views": {
                     "confirm_delete": "Opravdu chcete smazat tento pohled?",
+                    "confirm_delete_existing_cards": "Odstraněním tohoto pohledu dojde také k odebrání karet",
+                    "confirm_delete_existing_cards_text": "Opravdu chcete smazat pohled '{name}'? Pohled obsahuje {number} karty, které budou smazány. Tuto akci nelze vrátit zpět.",
+                    "confirm_delete_text": "Opravdu chcete smazat pohled '{name}'?",
                     "existing_cards": "Nelze smazat pohled, který obsahuje karty. Nejprve karty odstraňte."
                 },
                 "warning": {
+                    "attribute_not_found": "Atribut {attribute} není k dispozici v: {entity}",
                     "entity_non_numeric": "Entita není číselná: {entity}",
                     "entity_not_found": "Entita není k dispozici: {entity}"
                 }

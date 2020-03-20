@@ -841,7 +841,7 @@
                             "delete_confirm": "确认删除？",
                             "duplicate": "复制",
                             "header": "动作",
-                            "introduction": "Actions（动作）是当自动化条件满足时 Home Assistant 执行的操作。\n\n[了解更多关于 Actions 的信息](https://home-assistant.io/docs/automation/action)",
+                            "introduction": "“动作”是当自动化条件满足时 Home Assistant 执行的操作。",
                             "learn_more": "详细了解动作",
                             "name": "执行",
                             "type_select": "动作类型",
@@ -886,7 +886,7 @@
                             "delete_confirm": "确认删除？",
                             "duplicate": "复制",
                             "header": "环境条件",
-                            "introduction": "环境条件是自动化流程中的可选部分，它可用于触发条件触发时拦截不符合条件的动作。环境条件看似像触发条件实则大有不同。触发条件监测系统中事件的发生，也就是瞬时动作；而环境条件监测的是系统当前的状态。触发条件可以观察到开关打开的动作。条件只能查看当前开关是开还是关。",
+                            "introduction": "“环境条件”是自动化流程中的可选部分。除非所有环境条件都符合，否则“动作”不会执行。",
                             "learn_more": "详细了解环境条件",
                             "name": "环境条件",
                             "type_select": "环境条件类型",
@@ -959,7 +959,7 @@
                             "delete_confirm": "确认删除？",
                             "duplicate": "复制",
                             "header": "触发条件",
-                            "introduction": "触发条件是整个自动化流程的起点。一个自动化实例中可以设置多个触发条件。一旦该条件满足，Home Assistant 将验证环境条件（Conditions）是否符合，如果符合，则执行动作（Actions）。\n\n[了解更多内容](https://home-assistant.io/docs/automation/trigger/)",
+                            "introduction": "“触发条件”是整个自动化流程的起点。一个自动化规则中可以设置多个触发条件。一旦该条件满足，Home Assistant 将验证“环境条件”是否符合，如果符合，则执行“动作”。",
                             "learn_more": "详细了解触发条件",
                             "name": "触发条件",
                             "type_select": "触发条件类型",
@@ -1469,6 +1469,7 @@
                         },
                         "failed_create_area": "创建区域失败。",
                         "finish": "完成",
+                        "loading_first_time": "正在安装集成，请稍候",
                         "name_new_area": "新区域的名称？",
                         "not_all_required_fields": "请填写所有必填字段",
                         "submit": "提交"
@@ -2152,7 +2153,7 @@
                             "icon_height": "图标高度",
                             "image": "图像路径",
                             "manual": "手动模式",
-                            "manual_description": "您是想添加自定义卡片，还是手动编写 yaml 文件？",
+                            "manual_description": "需要添加自定义卡片，或者手动编写 yaml 吗？",
                             "maximum": "最大值",
                             "minimum": "最小值",
                             "name": "名称",
@@ -2252,6 +2253,7 @@
                     "edit_card": {
                         "add": "添加卡片",
                         "delete": "删除",
+                        "duplicate": "复制卡片",
                         "edit": "编辑",
                         "header": "卡片配置",
                         "move": "移动",
@@ -2467,7 +2469,7 @@
                     "working": "请稍候"
                 },
                 "initializing": "正在初始化",
-                "logging_in_with": "正在用 **{authProviderName}** 登录。",
+                "logging_in_with": "正在通过 **{authProviderName}** 登录。",
                 "pick_auth_provider": "或者用以下方式登录"
             },
             "page-demo": {
