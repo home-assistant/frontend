@@ -109,6 +109,30 @@ class HaAuthFlow extends litLocalizeLiteMixin(LitElement) {
     }
   }
 
+  private async _postFlow(url: string, postData: any) {
+    try {
+      const response = await fetch(url, {
+        method: "POST",
+        credentials: "same-origin",
+        body: JSON.stringify(postData),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        await this._updateStep(data);
+      } else {
+        this._state = "error";
+        this._errorMessage = data.message;
+      }
+    } catch (err) {
+      // eslint:disable-next-line no-console
+      console.error("Error updating auth flow", err);
+      this._state = "error";
+      this._errorMessage = this._unknownError();
+    }
+  }
+
   private _renderStep(step: DataEntryFlowStep): TemplateResult {
     switch (step.type) {
       case "abort":
@@ -122,46 +146,6 @@ class HaAuthFlow extends litLocalizeLiteMixin(LitElement) {
             )}
           ></ha-markdown>
         `;
-      case "external":
-        const external = window.open(step.url);
-        const loop = setInterval(async () => {
-          if (external?.closed) {
-            clearInterval(loop);
-
-            try {
-              const postData = { client_id: this.clientId };
-              const response = await fetch(
-                `/auth/login_flow/${this._step?.flow_id}`,
-                {
-                  method: "POST",
-                  credentials: "same-origin",
-                  body: JSON.stringify(postData),
-                }
-              );
-
-              const data = await response.json();
-
-              if (response.ok) {
-                // allow auth provider bypass the login form
-                if (data.type === "create_entry") {
-                  this._redirect(data.result);
-                  return;
-                }
-
-                await this._updateStep(data);
-              } else {
-                this._state = "error";
-                this._errorMessage = data.message;
-              }
-            } catch (err) {
-              // tslint:disable-next-line: no-console
-              console.error("Error updating auth flow", err);
-              this._state = "error";
-              this._errorMessage = this._unknownError();
-            }
-          }
-        }, 500);
-        return html``;
       case "form":
         return html`
           ${this._computeStepDescription(step)
@@ -205,37 +189,11 @@ class HaAuthFlow extends litLocalizeLiteMixin(LitElement) {
       return;
     }
 
-    try {
-      const response = await fetch("/auth/login_flow", {
-        method: "POST",
-        credentials: "same-origin",
-        body: JSON.stringify({
-          client_id: this.clientId,
-          handler: [newProvider.type, newProvider.id],
-          redirect_uri: this.redirectUri,
-        }),
-      });
-
-      const data = await response.json();
-
-      if (response.ok) {
-        // allow auth provider bypass the login form
-        if (data.type === "create_entry") {
-          this._redirect(data.result);
-          return;
-        }
-
-        await this._updateStep(data);
-      } else {
-        this._state = "error";
-        this._errorMessage = data.message;
-      }
-    } catch (err) {
-      // eslint-disable-next-line no-console
-      console.error("Error starting auth flow", err);
-      this._state = "error";
-      this._errorMessage = this._unknownError();
-    }
+    await this._postFlow(`/auth/login_flow`, {
+      client_id: this.clientId,
+      handler: [newProvider.type, newProvider.id],
+      redirect_uri: this.redirectUri,
+    });
   }
 
   private _redirect(authCode: string) {
@@ -271,6 +229,29 @@ class HaAuthFlow extends litLocalizeLiteMixin(LitElement) {
     this._state = "step";
     if (stepData != null) {
       this._stepData = stepData;
+    }
+
+    // allow auth provider bypass the login form
+    if (step.type === "create_entry") {
+      this._redirect(step.result);
+      return;
+    }
+
+    if (step.type === "external") {
+      const external = window.open(step.url);
+      if (external) {
+        const loop = setInterval(async () => {
+          if (external.closed) {
+            clearInterval(loop);
+            await this._postFlow(`/auth/login_flow/${this._step?.flow_id}`, {
+              client_id: this.clientId,
+            });
+          }
+        }, 500);
+      } else {
+        this._state = "error";
+        this._errorMessage = "Login window was blocked";
+      }
     }
 
     await this.updateComplete;
@@ -331,30 +312,10 @@ class HaAuthFlow extends litLocalizeLiteMixin(LitElement) {
     // To avoid a jumping UI.
     this.style.setProperty("min-height", `${this.offsetHeight}px`);
 
-    const postData = { ...this._stepData, client_id: this.clientId };
-
-    try {
-      const response = await fetch(`/auth/login_flow/${this._step.flow_id}`, {
-        method: "POST",
-        credentials: "same-origin",
-        body: JSON.stringify(postData),
-      });
-
-      const newStep = await response.json();
-
-      if (newStep.type === "create_entry") {
-        this._redirect(newStep.result);
-        return;
-      }
-      await this._updateStep(newStep);
-    } catch (err) {
-      // eslint-disable-next-line no-console
-      console.error("Error submitting step", err);
-      this._state = "error";
-      this._errorMessage = this._unknownError();
-    } finally {
-      this.style.setProperty("min-height", "");
-    }
+    await this._postFlow(`/auth/login_flow/${this._step?.flow_id}`, {
+      ...this._stepData,
+      client_id: this.clientId,
+    });
   }
 
   static get styles(): CSSResult {
