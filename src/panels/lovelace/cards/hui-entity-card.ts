@@ -28,6 +28,7 @@ import { LovelaceConfig } from "../../../data/lovelace";
 import { findEntities } from "../common/find-entites";
 import { LovelaceHeaderFooterConfig } from "../header-footer/types";
 import { createHeaderFooterElement } from "../create-element/create-header-footer-element";
+import { UNKNOWN, UNAVAILABLE } from "../../../data/entity";
 
 @customElement("hui-entity-card")
 class HuiEntityCard extends LitElement implements LovelaceCard {
@@ -94,20 +95,11 @@ class HuiEntityCard extends LitElement implements LovelaceCard {
       `;
     }
 
-    if (
-      this._config.attribute &&
-      !stateObj.attributes[this._config.attribute]
-    ) {
-      return html`
-        <hui-warning
-          >${this.hass.localize(
-            "ui.panel.lovelace.warning.attribute_not_found",
-            "attribute",
-            this._config.attribute
-          )}</hui-warning
-        >
-      `;
-    }
+    const showUnit =
+      (!this._config.attribute &&
+        stateObj.state !== UNKNOWN &&
+        stateObj.state !== UNAVAILABLE) ||
+      (this._config.attribute && stateObj.attributes[this._config.attribute]);
 
     return html`
       <ha-card
@@ -128,13 +120,17 @@ class HuiEntityCard extends LitElement implements LovelaceCard {
         <div class="flex info">
           <span id="value"
             >${this._config.attribute
-              ? stateObj.attributes[this._config.attribute]
+              ? stateObj.attributes[this._config.attribute] ||
+                this.hass.localize("state.default.unknown")
               : stateObj.state}</span
-          >
-          <span id="measurement"
-            >${this._config.unit ||
-              stateObj.attributes.unit_of_measurement}</span
-          >
+          >${showUnit
+            ? html`
+                <span id="measurement"
+                  >${this._config.unit ||
+                    stateObj.attributes.unit_of_measurement}</span
+                >
+              `
+            : ""}
         </div>
         ${this._config.footer
           ? this.renderHeaderFooter(this._config.footer, "footer")
