@@ -450,15 +450,8 @@ class HuiMapCard extends LitElement implements LovelaceCard {
   static get styles(): CSSResult {
     return css`
       :host([ispanel]) ha-card {
-        left: 0;
-        top: 0;
         width: 100%;
-        /**
-       * In panel mode we want a full height map. Since parent #view
-       * only sets min-height, we need absolute positioning here
-       */
         height: 100%;
-        position: absolute;
       }
 
       ha-card {

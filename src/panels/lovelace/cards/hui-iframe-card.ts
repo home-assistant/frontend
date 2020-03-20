@@ -13,6 +13,7 @@ import "../../../components/ha-card";
 import { LovelaceCard, LovelaceCardEditor } from "../types";
 import { styleMap } from "lit-html/directives/style-map";
 import { IframeCardConfig } from "./types";
+import parseAspectRatio from "../../../common/util/parse-aspect-ratio";
 
 @customElement("hui-iframe-card")
 export class HuiIframeCard extends LitElement implements LovelaceCard {
@@ -25,7 +26,8 @@ export class HuiIframeCard extends LitElement implements LovelaceCard {
   public static getStubConfig(): object {
     return { url: "https://www.home-assistant.io", aspect_ratio: "50%" };
   }
-
+  @property({ type: Boolean, reflect: true })
+  public isPanel = false;
   @property() protected _config?: IframeCardConfig;
 
   public getCardSize(): number {
@@ -51,14 +53,22 @@ export class HuiIframeCard extends LitElement implements LovelaceCard {
       return html``;
     }
 
-    const aspectRatio = this._config.aspect_ratio || "50%";
+    let padding = "";
+    if (!this.isPanel && this._config.aspect_ratio) {
+      const ratio = parseAspectRatio(this._config.aspect_ratio);
+      if (ratio && ratio.w > 0 && ratio.h > 0) {
+        padding = `${((100 * ratio.h) / ratio.w).toFixed(2)}%`;
+      }
+    } else if (!this.isPanel) {
+      padding = "50%";
+    }
 
     return html`
       <ha-card .header="${this._config.title}">
         <div
           id="root"
           style="${styleMap({
-            "padding-top": aspectRatio,
+            "padding-top": padding,
           })}"
         >
           <iframe src="${this._config.url}"></iframe>
@@ -69,6 +79,11 @@ export class HuiIframeCard extends LitElement implements LovelaceCard {
 
   static get styles(): CSSResult {
     return css`
+      :host([ispanel]) ha-card {
+        width: 100%;
+        height: 100%;
+      }
+
       ha-card {
         overflow: hidden;
       }
@@ -76,6 +91,10 @@ export class HuiIframeCard extends LitElement implements LovelaceCard {
       #root {
         width: 100%;
         position: relative;
+      }
+
+      :host([ispanel]) #root {
+        height: 100%;
       }
 
       iframe {
