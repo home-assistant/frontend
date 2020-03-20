@@ -1469,6 +1469,7 @@
                         },
                         "failed_create_area": "Échec de la création de la zone.",
                         "finish": "Terminer",
+                        "loading_first_time": "Veuillez patienter pendant que l'intégration est en cours d'installation",
                         "name_new_area": "Nom de la nouvelle zone ?",
                         "not_all_required_fields": "Tous les champs obligatoires ne sont pas renseignés.",
                         "submit": "Soumettre"
@@ -2252,6 +2253,7 @@
                     "edit_card": {
                         "add": "Ajouter une action",
                         "delete": "Supprimer",
+                        "duplicate": "Carte en double",
                         "edit": "Modifier",
                         "header": "Configuration de la carte",
                         "move": "Déplacer",
