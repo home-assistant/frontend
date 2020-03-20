@@ -45,7 +45,7 @@ class HuiPlantStatusCard extends LitElement implements LovelaceCard {
     hass: HomeAssistant,
     entities: string[],
     entitiesFallback: string[]
-  ): object {
+  ): PlantStatusCardConfig {
     const includeDomains = ["plant"];
     const maxEntities = 1;
     const foundEntities = findEntities(
@@ -56,7 +56,7 @@ class HuiPlantStatusCard extends LitElement implements LovelaceCard {
       includeDomains
     );
 
-    return { entity: foundEntities[0] || "" };
+    return { type: "plant-status", entity: foundEntities[0] || "" };
   }
 
   @property() public hass?: HomeAssistant;
