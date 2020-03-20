@@ -45,7 +45,7 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
     hass: HomeAssistant,
     entities: string[],
     entitiesFallback: string[]
-  ): object {
+  ): LightCardConfig {
     const includeDomains = ["light"];
     const maxEntities = 1;
     const foundEntities = findEntities(
@@ -56,7 +56,7 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
       includeDomains
     );
 
-    return { entity: foundEntities[0] || "" };
+    return { type: "light", entity: foundEntities[0] || "" };
   }
 
   @property() public hass?: HomeAssistant;
