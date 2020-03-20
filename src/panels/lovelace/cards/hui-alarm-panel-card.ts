@@ -248,16 +248,16 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
   }
 
   private _handleActionClick(e: MouseEvent): void {
-    const input = this._input!;
-    const code =
-      input && input.value && input.value.length > 0 ? input.value : "";
+    const input = this._input;
     callAlarmAction(
       this.hass!,
       this._config!.entity,
       (e.currentTarget! as any).action,
-      code
+      input?.value || undefined
     );
-    input.value = "";
+    if (input) {
+      input.value = "";
+    }
   }
 
   private _handleMoreInfo() {
