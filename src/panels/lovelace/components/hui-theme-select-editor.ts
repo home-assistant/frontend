@@ -10,18 +10,7 @@ import {
 import "@material/mwc-button";
 
 import { HomeAssistant } from "../../../types";
-import { fireEvent, HASSDomEvent } from "../../../common/dom/fire_event";
-
-declare global {
-  // for fire event
-  interface HASSDomEvents {
-    "theme-changed": undefined;
-  }
-  // for add event listener
-  interface HTMLElementEventMap {
-    "theme-changed": HASSDomEvent<undefined>;
-  }
-}
+import { fireEvent } from "../../../common/dom/fire_event";
 
 @customElement("hui-theme-select-editor")
 export class HuiThemeSelectEditor extends LitElement {
@@ -30,32 +19,34 @@ export class HuiThemeSelectEditor extends LitElement {
   @property() public hass?: HomeAssistant;
 
   protected render(): TemplateResult {
-    const themes = ["Backend-selected", "default"].concat(
-      Object.keys(this.hass!.themes.themes).sort()
-    );
-
     return html`
       <paper-dropdown-menu
         .label=${this.label ||
-          this.hass!.localize("ui.panel.lovelace.editor.card.generic.theme") +
-            " (" +
-            this.hass!.localize(
-              "ui.panel.lovelace.editor.card.config.optional"
-            ) +
-            ")"}
+          `${this.hass!.localize(
+            "ui.panel.lovelace.editor.card.generic.theme"
+          )} (${this.hass!.localize(
+            "ui.panel.lovelace.editor.card.config.optional"
+          )})`}
         dynamic-align
-        @value-changed="${this._changed}"
       >
         <paper-listbox
           slot="dropdown-content"
-          .selected="${this.value}"
+          .selected=${this.value}
           attr-for-selected="theme"
+          @iron-select=${this._changed}
         >
-          ${themes.map((theme) => {
-            return html`
-              <paper-item theme="${theme}">${theme}</paper-item>
-            `;
-          })}
+          <paper-item theme="remove"
+            >${this.hass!.localize(
+              "ui.panel.lovelace.editor.card.generic.no_theme"
+            )}</paper-item
+          >
+          ${Object.keys(this.hass!.themes.themes)
+            .sort()
+            .map((theme) => {
+              return html`
+                <paper-item theme=${theme}>${theme}</paper-item>
+              `;
+            })}
         </paper-listbox>
       </paper-dropdown-menu>
     `;
@@ -70,11 +61,11 @@ export class HuiThemeSelectEditor extends LitElement {
   }
 
   private _changed(ev): void {
-    if (!this.hass || ev.target.value === "") {
+    if (!this.hass || ev.target.selected === "") {
       return;
     }
-    this.value = ev.target.value;
-    fireEvent(this, "theme-changed");
+    this.value = ev.target.selected === "remove" ? "" : ev.target.selected;
+    fireEvent(this, "value-changed", { value: this.value });
   }
 }
 
