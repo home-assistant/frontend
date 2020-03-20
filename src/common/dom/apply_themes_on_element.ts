@@ -21,7 +21,6 @@ const hexToRgb = (hex: string): string | null => {
     : null;
 };
 
-const HEX_TO_RGB_LOOKUP = {};
 let PROCESSED_THEMES: { [key: string]: ProcessedTheme } = {};
 
 /**
@@ -87,10 +86,7 @@ const processTheme = (
       // Theme has it's own rgb value
       continue;
     }
-    let rgbValue = HEX_TO_RGB_LOOKUP[value];
-    if (rgbValue === undefined) {
-      rgbValue = HEX_TO_RGB_LOOKUP[value] = hexToRgb(value);
-    }
+    const rgbValue = hexToRgb(value);
     if (rgbValue !== null) {
       const prefixedRgbKey = `--${rgbKey}`;
       styles[prefixedRgbKey] = rgbValue;
