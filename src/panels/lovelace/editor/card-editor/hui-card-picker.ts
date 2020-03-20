@@ -26,8 +26,8 @@ import { UNKNOWN, UNAVAILABLE } from "../../../../data/entity";
 
 const previewCards: string[] = [
   "alarm-panel",
-  "entities",
   "button",
+  "entities",
   "gauge",
   "glance",
   "history-graph",
