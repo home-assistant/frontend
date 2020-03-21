@@ -686,7 +686,7 @@
           "mode": "Display mode",
           "box": "Input field",
           "slider": "Slider",
-          "step": "Step size of the slider",
+          "step": "Step size",
           "unit_of_measurement": "Unit of measurement"
         },
         "input_select": {
