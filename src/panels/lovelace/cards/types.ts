@@ -154,6 +154,9 @@ export interface MarkdownCardConfig extends LovelaceCardConfig {
 
 export interface MediaControlCardConfig extends LovelaceCardConfig {
   entity: string;
+  show_controls_power: boolean;
+  show_controls_playback: boolean;
+  show_controls_volume: boolean;
 }
 
 export interface HistoryGraphCardConfig extends LovelaceCardConfig {

@@ -32,17 +32,18 @@ import { contrast } from "../common/color/contrast";
 import { findEntities } from "../common/find-entites";
 import { UNAVAILABLE, UNKNOWN } from "../../../data/entity";
 import {
-  SUPPORT_PAUSE,
-  SUPPORT_TURN_ON,
-  SUPPORT_PREVIOUS_TRACK,
-  SUPPORT_NEXT_TRACK,
-  SUPPORTS_PLAY,
-  SUPPORT_STOP,
-  SUPPORT_SEEK,
+  computeMediaDescription,
   CONTRAST_RATIO,
   getCurrentProgress,
-  computeMediaDescription,
+  SUPPORT_NEXT_TRACK,
+  SUPPORT_PAUSE,
+  SUPPORT_PREVIOUS_TRACK,
+  SUPPORT_SEEK,
+  SUPPORT_STOP,
   SUPPORT_TURN_OFF,
+  SUPPORT_TURN_ON,
+  SUPPORT_VOLUME_BUTTONS,
+  SUPPORTS_PLAY,
 } from "../../../data/media-player";
 
 import "../../../components/ha-card";
@@ -188,7 +189,13 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
       includeDomains
     );
 
-    return { type: "media-control", entity: foundEntities[0] || "" };
+    return {
+      type: "media-control",
+      entity: foundEntities[0] || "",
+      show_controls_power: true,
+      show_controls_playback: false,
+      show_controls_volume: false,
+    };
   }
 
   @property() public hass?: HomeAssistant;
@@ -212,7 +219,7 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
       throw new Error("Specify an entity from within the media_player domain.");
     }
 
-    this._config = { theme: "default", ...config };
+    this._config = { theme: "default", show_controls_power: true, ...config };
   }
 
   public connectedCallback(): void {
@@ -505,7 +512,7 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
       return undefined;
     }
 
-    if (state === "off") {
+    if (this._config?.show_controls_power && state === "off") {
       return supportsFeature(stateObj, SUPPORT_TURN_ON)
         ? [
             {
@@ -516,59 +523,73 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
         : undefined;
     }
 
-    if (state === "on") {
-      return supportsFeature(stateObj, SUPPORT_TURN_OFF)
-        ? [
-            {
-              icon: "hass:power",
-              action: "turn_off",
-            },
-          ]
-        : undefined;
-    }
-
-    if (state === "idle") {
-      return supportsFeature(stateObj, SUPPORTS_PLAY)
-        ? [
-            {
-              icon: "hass:play",
-              action: "media_play",
-            },
-          ]
-        : undefined;
-    }
-
     const buttons: ControlButton[] = [];
 
-    if (supportsFeature(stateObj, SUPPORT_PREVIOUS_TRACK)) {
+    console.log(this._config);
+
+    if (
+      this._config?.show_controls_power &&
+      state === "on" &&
+      supportsFeature(stateObj, SUPPORT_TURN_OFF)
+    ) {
       buttons.push({
-        icon: "hass:skip-previous",
-        action: "media_previous_track",
+        icon: "hass:power",
+        action: "turn_off",
       });
     }
 
     if (
-      (state === "playing" &&
-        (supportsFeature(stateObj, SUPPORT_PAUSE) ||
-          supportsFeature(stateObj, SUPPORT_STOP))) ||
-      (state === "paused" && supportsFeature(stateObj, SUPPORTS_PLAY))
+      this._config?.show_controls_volume &&
+      supportsFeature(stateObj, SUPPORT_VOLUME_BUTTONS)
     ) {
       buttons.push({
-        icon:
-          state !== "playing"
-            ? "hass:play"
-            : supportsFeature(stateObj, SUPPORT_PAUSE)
-            ? "hass:pause"
-            : "hass:stop",
-        action: "media_play_pause",
+        icon: "hass:volume-medium",
+        action: "volume_down",
+      });
+      buttons.push({
+        icon: "hass:volume-high",
+        action: "volume_up",
       });
     }
 
-    if (supportsFeature(stateObj, SUPPORT_NEXT_TRACK)) {
-      buttons.push({
-        icon: "hass:skip-next",
-        action: "media_next_track",
-      });
+    if (this._config?.show_controls_playback) {
+      if (state === "idle" && supportsFeature(stateObj, SUPPORTS_PLAY)) {
+        buttons.push({
+          icon: "hass:play",
+          action: "media_play",
+        });
+      }
+
+      if (supportsFeature(stateObj, SUPPORT_PREVIOUS_TRACK)) {
+        buttons.push({
+          icon: "hass:skip-previous",
+          action: "media_previous_track",
+        });
+      }
+
+      if (
+        (state === "playing" &&
+          (supportsFeature(stateObj, SUPPORT_PAUSE) ||
+            supportsFeature(stateObj, SUPPORT_STOP))) ||
+        (state === "paused" && supportsFeature(stateObj, SUPPORTS_PLAY))
+      ) {
+        buttons.push({
+          icon:
+            state !== "playing"
+              ? "hass:play"
+              : supportsFeature(stateObj, SUPPORT_PAUSE)
+              ? "hass:pause"
+              : "hass:stop",
+          action: "media_play_pause",
+        });
+      }
+
+      if (supportsFeature(stateObj, SUPPORT_NEXT_TRACK)) {
+        buttons.push({
+          icon: "hass:skip-next",
+          action: "media_next_track",
+        });
+      }
     }
 
     return buttons.length > 0 ? buttons : undefined;

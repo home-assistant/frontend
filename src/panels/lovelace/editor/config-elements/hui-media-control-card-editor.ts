@@ -13,11 +13,16 @@ import { LovelaceCardEditor } from "../../types";
 import { fireEvent } from "../../../../common/dom/fire_event";
 
 import "../../../../components/entity/ha-entity-picker";
+import "../../../../components/ha-switch";
 import { MediaControlCardConfig } from "../../cards/types";
+import { configElementStyle } from "./config-elements-style";
 
 const cardConfigStruct = struct({
   type: "string",
   entity: "string?",
+  show_controls_power: "boolean?",
+  show_controls_playback: "boolean?",
+  show_controls_volume: "boolean?",
 });
 
 @customElement("hui-media-control-card-editor")
@@ -36,12 +41,25 @@ export class HuiMediaControlCardEditor extends LitElement
     return this._config!.entity || "";
   }
 
+  get _show_controls_power(): boolean {
+    return this._config!.show_controls_power || true;
+  }
+
+  get _show_controls_playback(): boolean {
+    return this._config!.show_controls_playback || false;
+  }
+
+  get _show_controls_volume(): boolean {
+    return this._config!.show_controls_volume || false;
+  }
+
   protected render(): TemplateResult {
     if (!this.hass) {
       return html``;
     }
 
     return html`
+      ${configElementStyle}
       <div class="card-config">
         <ha-entity-picker
           .label="${this.hass.localize(
@@ -56,6 +74,32 @@ export class HuiMediaControlCardEditor extends LitElement
           @change="${this._valueChanged}"
           allow-custom-entity
         ></ha-entity-picker>
+        <div class="side-by-side">
+          <ha-switch
+            .checked="${this._show_controls_power}"
+            .configValue="${"show_controls_power"}"
+            @change="${this._valueChanged}"
+            >${this.hass.localize(
+              "ui.panel.lovelace.editor.card.media-control.show_controls_power"
+            )}</ha-switch
+          >
+          <ha-switch
+            .checked="${this._show_controls_playback}"
+            .configValue="${"show_controls_playback"}"
+            @change="${this._valueChanged}"
+            >${this.hass.localize(
+              "ui.panel.lovelace.editor.card.media-control.show_controls_playback"
+            )}</ha-switch
+          >
+        </div>
+        <ha-switch
+          .checked="${this._show_controls_volume}"
+          .configValue="${"show_controls_volume"}"
+          @change="${this._valueChanged}"
+          >${this.hass.localize(
+            "ui.panel.lovelace.editor.card.media-control.show_controls_volume"
+          )}</ha-switch
+        >
       </div>
     `;
   }
@@ -74,10 +118,12 @@ export class HuiMediaControlCardEditor extends LitElement
       } else {
         this._config = {
           ...this._config,
-          [target.configValue!]: target.value,
+          [target.configValue!]:
+            target.checked !== undefined ? target.checked : target.value,
         };
       }
     }
+
     fireEvent(this, "config-changed", { config: this._config });
   }
 }

@@ -2088,7 +2088,10 @@
             },
             "media-control": {
               "name": "Media Control",
-              "description": "The Media Control card is used to display media player entities on an interface with easy to use controls."
+              "description": "The Media Control card is used to display media player entities on an interface with easy to use controls.",
+              "show_controls_power": "Show Power Controls",
+              "show_controls_playback": "Show Playback Controls",
+              "show_controls_volume": "Show Volume Controls"
             },
             "picture": {
               "name": "Picture",
