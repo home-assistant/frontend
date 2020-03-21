@@ -525,8 +525,6 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
 
     const buttons: ControlButton[] = [];
 
-    console.log(this._config);
-
     if (
       this._config?.show_controls_power &&
       state === "on" &&
