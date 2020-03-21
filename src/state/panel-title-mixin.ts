@@ -2,7 +2,7 @@ import { getPanelTitle } from "../data/panel";
 import { HassBaseEl } from "./hass-base-mixin";
 import { HomeAssistant, Constructor } from "../types";
 
-const setTitle = (title: string | undefined) => {
+const setTitle = (title: string | null) => {
   document.title = title ? `${title} - Home Assistant` : "Home Assistant";
 };
 
