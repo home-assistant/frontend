@@ -12,9 +12,11 @@
         "binary_sensor": "حسگر باینری",
         "calendar": "تقویم",
         "camera": "دوربین",
+        "climate": "آب و هوا",
         "configurator": "تنظیم کننده",
         "conversation": "گفتگو",
         "cover": "پوشش",
+        "device_tracker": "ردیاب",
         "fan": "فن",
         "group": "گروه",
         "hassio": "Hass.io",
@@ -26,10 +28,13 @@
         "lovelace": "Lovelace",
         "mailbox": "میل باکس",
         "person": "فرد",
+        "scene": "صحنه",
+        "script": "اسکریپت",
         "sensor": "سنسور",
         "sun": "آفتاب",
         "switch": "سوئیچ",
         "system_health": "سلامت سیستم",
+        "updater": "به روز رسان",
         "vacuum": "خلاء",
         "weblink": "لینک سایت",
         "zha": "ZHA",
@@ -114,6 +119,10 @@
             "cold": {
                 "off": "عادی",
                 "on": "سرد"
+            },
+            "connectivity": {
+                "off": "قطع ",
+                "on": "متصل"
             },
             "default": {
                 "off": "خاموش",
@@ -356,6 +365,9 @@
                 "last_triggered": "آخرین ماشه",
                 "trigger": "ماشه"
             },
+            "camera": {
+                "not_available": "تصویر در دسترس نیست"
+            },
             "climate": {
                 "aux_heat": "Aux گرما",
                 "away_mode": "حالت بیرون",
@@ -433,6 +445,8 @@
             }
         },
         "common": {
+            "cancel": "لغو",
+            "loading": "در حال بارگذاری",
             "save": "ذخیره"
         },
         "components": {
@@ -459,6 +473,14 @@
             }
         },
         "dialogs": {
+            "helper_settings": {
+                "input_datetime": {
+                    "date": "تاریخ",
+                    "datetime": "تاریخ و زمان",
+                    "mode": "چه چیزی را می خواهید وارد کنید",
+                    "time": "زمان"
+                }
+            },
             "more_info_control": {
                 "script": {
                     "last_action": "آخرین اقدام"
@@ -506,6 +528,10 @@
                 "areas": {
                     "caption": "ثبت نام منطقه",
                     "create_area": "ایجاد منطقه",
+                    "delete": {
+                        "confirmation_text": "هیچیک از درستگاه های این ناحیه اختصاص داده نشده اند",
+                        "confirmation_title": "آیا مطمئنید که می خواهید این ناحیه را حذف کنید ؟"
+                    },
                     "description": "بررسی کلیه مناطق  خانه شما",
                     "editor": {
                         "create": "ايجاد كردن",
@@ -684,6 +710,7 @@
                     "description_not_login": "وارد نشده اید"
                 },
                 "core": {
+                    "caption": "عمومی",
                     "section": {
                         "core": {
                             "core_config": {
@@ -728,6 +755,11 @@
                         "introduction": "نویسه ویژگی های هر سازمانی. سفارشی سازی اضافه شده / ویرایش شده فورا اثر می کند. سفارشی های حذف شده هنگامی که موجودیت به روز می شود اثر می کند."
                     }
                 },
+                "devices": {
+                    "data_table": {
+                        "no_devices": "دستگاهی وجود ندارد"
+                    }
+                },
                 "entities": {
                     "caption": "ثبت  منطقه",
                     "description": "مرور کلیه اشخاص شناخته شده.",
@@ -742,6 +774,9 @@
                         "integrations_page": "صفحه ادغام",
                         "introduction": "دستیار خانه نگهداری رجیستری از هر نهاد که تا به حال دیده است که می تواند منحصر به فرد شناسایی شده است. هر یک از این نهاد ها یک شناسه نهادی اختصاص داده است که فقط برای این نهاد محفوظ خواهد ماند.",
                         "introduction2": "از رجیستر entity استفاده کنید تا نام را عوض کند، شناسه موجودیت را تغییر دهید یا ورودی را از صفحه اصلی دستیار حذف کنید. توجه داشته باشید، از بین بردن ورودی رجیستر entity entity entity را حذف نخواهد کرد. برای انجام این کار، پیوند زیر را دنبال کنید و آن را از صفحه ی ادغام حذف کنید.",
+                        "status": {
+                            "restored": "بازیابی شد"
+                        },
                         "unavailable": "(در دسترس نیست)"
                     }
                 },
@@ -764,7 +799,8 @@
                         "external_step": {
                             "description": "این مرحله نیاز به بازدید از وب سایت خارجی دارد که باید تکمیل شود.",
                             "open_site": "باز کردن سایت"
-                        }
+                        },
+                        "loading_first_time": "لطفاً منتظر بمانید تا ادغام نصب شود"
                     },
                     "configure": "پیکربندی",
                     "configured": "پیکربندی شده",
@@ -774,6 +810,24 @@
                     "none": "هیچ چیز پیکربندی نشده است"
                 },
                 "introduction": "در اینجا می توانید اجزای خود و صفحه اصلی دستیار را پیکربندی کنید. ",
+                "lovelace": {
+                    "dashboards": {
+                        "default_dashboard": "این داشبورد پیش فرض است",
+                        "detail": {
+                            "title_required": "عنوان مورد نیاز است."
+                        }
+                    },
+                    "resources": {
+                        "detail": {
+                            "create": "ایجاد کن",
+                            "delete": "پاک کن",
+                            "update": "به روز رسانی"
+                        },
+                        "picker": {
+                            "no_resources": "منابعی وجود ندارد"
+                        }
+                    }
+                },
                 "person": {
                     "caption": "افراد",
                     "description": "مدیریت افراد خانه هوشمند",
@@ -885,9 +939,12 @@
                         "title": "رویدادها"
                     },
                     "info": {
+                        "icons_by": "آیکون توسط",
+                        "server": "سرور",
                         "title": "اطلاعات"
                     },
                     "logs": {
+                        "refresh": "تازه کن",
                         "title": "وقایع"
                     },
                     "mqtt": {
@@ -937,7 +994,14 @@
                 },
                 "editor": {
                     "card": {
+                        "conditional": {
+                            "card": "کارت",
+                            "conditions": "شرایط",
+                            "current_state": "جاری"
+                        },
                         "generic": {
+                            "manual": "دستی",
+                            "manual_description": "آیا نیاز به اضافه کردن کارت سفارشی دارید یا فقط می خواهید yaml را به صورت دستی بنویسید؟",
                             "maximum": "بیشترین",
                             "minimum": "کمترین",
                             "name": "نام",
@@ -945,6 +1009,7 @@
                             "show_icon": "نمایش آیکون؟",
                             "show_name": "نمایش نام؟",
                             "show_state": "نمایش وضعیت؟",
+                            "state": "وضعیت",
                             "theme": "زمینه",
                             "title": "عنوان",
                             "unit": "واحد",
@@ -987,6 +1052,7 @@
                     "edit_card": {
                         "add": "افزودن کارت",
                         "delete": "حذف",
+                        "duplicate": "کارت تکراری",
                         "edit": "ویرایش",
                         "pick_card": "کارتی را که می خواهید اضافه کنید انتخاب کنید ؛",
                         "save": "ذخیره",
@@ -994,7 +1060,11 @@
                     },
                     "edit_view": {
                         "add": "افزودن نمایه",
-                        "edit": "ویرایش نما"
+                        "edit": "ویرایش نما",
+                        "tab_visibility": "رویت پذیری",
+                        "visibility": {
+                            "select_users": "انتخاب کنید کدام کاربران باید این نمای را در پیمایش ببینند"
+                        }
                     },
                     "header": "ویرایش رابط کاربری",
                     "menu": {
@@ -1013,6 +1083,7 @@
                     },
                     "save_config": {
                         "cancel": "بیخیال",
+                        "close": "ببند",
                         "header": "کنترل UI Lovelace خود را بگیرید",
                         "para": "به طور پیش فرض Home Assistant رابط کاربر خود را حفظ می کند، آن را به روز می کند زمانی که موجودیت های جدید و یا اجزای Lovelace در دسترس قرار گیرد. اگر کنترل داشته باشید دیگر تغییرات را برای شما انجام نخواهیم داد.",
                         "para_sure": "آیا مطمئن هستید که میخواهید کنترل رابط کاربری خود را کنترل کنید؟",
@@ -1022,15 +1093,25 @@
                 "menu": {
                     "help": "کمک",
                     "refresh": "تازه کردن",
+                    "reload_resources": "بارگذاری مجدد منابع",
                     "unused_entities": "نهادهای استفاده نشده"
                 },
                 "reload_lovelace": "بازنگری Lovelace",
+                "reload_resources": {
+                    "refresh_body": "شما باید صفحه را تازه سازی کنید تا بارگذاری مجدد را کامل کنید ، آیا می خواهید اکنون دوباره آن را تازه کنید ؟",
+                    "refresh_header": "آیا می خواهید تازه سازی کنید ؟"
+                },
+                "views": {
+                    "confirm_delete_existing_cards": "با حذف این نمای کارت ها نیز حذف می شود"
+                },
                 "warning": {
+                    "attribute_not_found": "ویژگی {attribute} در دسترس نیست:: {entity}",
                     "entity_non_numeric": "نهاد غیر عددی است: {entity}",
                     "entity_not_found": "نهاد موجود نیست: {entity}"
                 }
             },
             "mailbox": {
+                "delete_button": "پاک کن",
                 "empty": "شما پیامی ندارید"
             },
             "page-authorize": {
@@ -1175,7 +1256,8 @@
                 }
             },
             "shopping-list": {
-                "add_item": "اضافه کردن آیتم"
+                "add_item": "اضافه کردن آیتم",
+                "clear_completed": "کامل شده ها را پاک کن"
             }
         },
         "sidebar": {
