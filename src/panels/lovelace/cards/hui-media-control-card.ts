@@ -32,17 +32,18 @@ import { contrast } from "../common/color/contrast";
 import { findEntities } from "../common/find-entites";
 import { UNAVAILABLE, UNKNOWN } from "../../../data/entity";
 import {
-  SUPPORT_PAUSE,
-  SUPPORT_TURN_ON,
-  SUPPORT_PREVIOUS_TRACK,
-  SUPPORT_NEXT_TRACK,
-  SUPPORTS_PLAY,
-  SUPPORT_STOP,
-  SUPPORT_SEEK,
+  computeMediaDescription,
   CONTRAST_RATIO,
   getCurrentProgress,
-  computeMediaDescription,
+  SUPPORT_NEXT_TRACK,
+  SUPPORT_PAUSE,
+  SUPPORT_PREVIOUS_TRACK,
+  SUPPORT_SEEK,
+  SUPPORT_STOP,
   SUPPORT_TURN_OFF,
+  SUPPORT_TURN_ON,
+  SUPPORT_VOLUME_BUTTONS,
+  SUPPORTS_PLAY,
 } from "../../../data/media-player";
 
 import "../../../components/ha-card";
@@ -505,40 +506,28 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
       return undefined;
     }
 
-    if (state === "off") {
-      return supportsFeature(stateObj, SUPPORT_TURN_ON)
-        ? [
-            {
-              icon: "hass:power",
-              action: "turn_on",
-            },
-          ]
-        : undefined;
-    }
-
-    if (state === "on") {
-      return supportsFeature(stateObj, SUPPORT_TURN_OFF)
-        ? [
-            {
-              icon: "hass:power",
-              action: "turn_off",
-            },
-          ]
-        : undefined;
-    }
-
-    if (state === "idle") {
-      return supportsFeature(stateObj, SUPPORTS_PLAY)
-        ? [
-            {
-              icon: "hass:play",
-              action: "media_play",
-            },
-          ]
-        : undefined;
-    }
-
     const buttons: ControlButton[] = [];
+
+    if (state === "off" && supportsFeature(stateObj, SUPPORT_TURN_ON)) {
+      buttons.push({
+        icon: "hass:power",
+        action: "turn_on",
+      });
+    }
+
+    if (state === "on" && supportsFeature(stateObj, SUPPORT_TURN_OFF)) {
+      buttons.push({
+        icon: "hass:power",
+        action: "turn_off",
+      });
+    }
+
+    if (state === "idle" && supportsFeature(stateObj, SUPPORTS_PLAY)) {
+      buttons.push({
+        icon: "hass:play",
+        action: "media_play",
+      });
+    }
 
     if (supportsFeature(stateObj, SUPPORT_PREVIOUS_TRACK)) {
       buttons.push({
@@ -568,6 +557,17 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
       buttons.push({
         icon: "hass:skip-next",
         action: "media_next_track",
+      });
+    }
+
+    if (supportsFeature(stateObj, SUPPORT_VOLUME_BUTTONS)) {
+      buttons.push({
+        icon: "hass:volume-medium",
+        action: "volume_down",
+      });
+      buttons.push({
+        icon: "hass:volume-high",
+        action: "volume_up",
       });
     }
 
