@@ -249,6 +249,12 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
       ha-card {
         cursor: pointer;
         padding: 16px 16px 0 16px;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        box-sizing: border-box;
+        justify-content: center;
+        align-items: center;
       }
       ha-card:focus {
         outline: none;
@@ -259,8 +265,6 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
         height: calc(var(--base-unit) * 2);
         overflow: hidden;
         position: relative;
-        text-align: center;
-        margin: auto;
       }
       .gauge-a {
         position: absolute;
