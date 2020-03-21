@@ -621,7 +621,7 @@
                 "dismiss": "Dismiss",
                 "editor": {
                     "confirm_delete": "Are you sure you want to delete this entry?",
-                    "delete": "DELETE",
+                    "delete": "Delete",
                     "enabled_cause": "Disabled by {cause}.",
                     "enabled_description": "Disabled entities will not be added to Home Assistant.",
                     "enabled_label": "Enable entity",
@@ -631,7 +631,7 @@
                     "name": "Name Override",
                     "note": "Note: this might not work yet with all integrations.",
                     "unavailable": "This entity is not currently available.",
-                    "update": "UPDATE"
+                    "update": "Update"
                 },
                 "no_unique_id": "This entity does not have a unique ID, therefore its settings cannot be managed from the UI.",
                 "related": "Related",
@@ -816,14 +816,14 @@
                     },
                     "description": "Overview of all areas in your home.",
                     "editor": {
-                        "create": "CREATE",
+                        "create": "Create",
                         "default_name": "New Area",
-                        "delete": "DELETE",
-                        "update": "UPDATE"
+                        "delete": "Delete",
+                        "update": "Update"
                     },
                     "no_areas": "Looks like you have no areas yet!",
                     "picker": {
-                        "create_area": "CREATE AREA",
+                        "create_area": "Create Area",
                         "header": "Areas",
                         "integrations_page": "Integrations page",
                         "introduction": "Areas are used to organize where devices are. This information will be used throughout Home Assistant to help you in organizing your interface, permissions and integrations with other systems.",
@@ -1310,6 +1310,7 @@
                     "automations": "Automations",
                     "cant_edit": "You can only edit items that are created in the UI.",
                     "caption": "Devices",
+                    "confirm_delete": "Are you sure you want to delete this device?",
                     "confirm_rename_entity_ids": "Do you also want to rename the entity id's of your entities?",
                     "data_table": {
                         "area": "Area",
@@ -1320,6 +1321,7 @@
                         "model": "Model",
                         "no_devices": "No devices"
                     },
+                    "delete": "Delete",
                     "description": "Manage connected devices",
                     "details": "Here are all the details of your device.",
                     "device_not_found": "Device not found.",
@@ -2157,6 +2159,7 @@
                             "maximum": "Maximum",
                             "minimum": "Minimum",
                             "name": "Name",
+                            "no_theme": "No theme",
                             "refresh_interval": "Refresh Interval",
                             "show_icon": "Show Icon?",
                             "show_name": "Show Name?",
