@@ -9,9 +9,9 @@ export const getDefaultPanelUrlPath = () =>
 export const getDefaultPanel = (panels: HomeAssistant["panels"]) =>
   panels[localStorage.defaultPage] || panels[DEFAULT_PANEL];
 
-export const getPanelTitle = (hass: HomeAssistant): string | undefined => {
+export const getPanelTitle = (hass: HomeAssistant): string | null => {
   if (!hass.panels) {
-    return;
+    return null;
   }
 
   const panel = Object.values(hass.panels).find(
@@ -19,17 +19,16 @@ export const getPanelTitle = (hass: HomeAssistant): string | undefined => {
   );
 
   if (!panel) {
-    return;
+    return null;
+  }
+
+  if (panel.url_path === "lovelace") {
+    return hass.localize("panel.states");
   }
 
   if (panel.url_path === "profile") {
     return hass.localize("panel.profile");
   }
 
-  return (
-    hass.localize(`panel.${panel.title}`) ||
-    panel.title ||
-    // default panel
-    (hass.panels[localStorage.defaultPage] || hass.panels[DEFAULT_PANEL]).title!
-  );
+  return hass.localize(`panel.${panel.title}`) || panel.title;
 };
