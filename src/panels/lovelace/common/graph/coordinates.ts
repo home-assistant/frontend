@@ -63,7 +63,7 @@ export const coordinates = (
   hours: number,
   width: number,
   detail: number
-): number[][] => {
+): number[][] | undefined => {
   history.forEach((item) => (item.state = Number(item.state)));
   history = history.filter((item) => !Number.isNaN(item.state));
 
@@ -100,5 +100,10 @@ export const coordinates = (
       entry.reduce((res, item) => reduce(res, item, true), [])
     );
   }
+
+  if (!history.length) {
+    return undefined;
+  }
+
   return calcPoints(history, hours, width, detail, min, max);
 };

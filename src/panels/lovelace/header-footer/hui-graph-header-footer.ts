@@ -5,6 +5,8 @@ import {
   customElement,
   property,
   PropertyValues,
+  CSSResult,
+  css,
 } from "lit-element";
 
 import "../components/hui-graph-base";
@@ -14,7 +16,7 @@ import { HomeAssistant } from "../../../types";
 import { GraphHeaderFooterConfig } from "./types";
 import { getHistoryCoordinates } from "../common/graph/get-history-coordinates";
 
-const minute = 60000;
+const MINUTE = 60000;
 
 @customElement("hui-graph-header-footer")
 export class HuiGraphHeaderFooter extends LitElement
@@ -55,14 +57,11 @@ export class HuiGraphHeaderFooter extends LitElement
       return html``;
     }
 
-    const stateObj = this.hass!.states[this._config.entity];
-
-    if (!stateObj.attributes.unit_of_measurement) {
+    if (!this._coordinates) {
       return html`
-        <hui-warning
-          >Entity: ${this._config.entity} - Has no Unit of Measurement and
-          therefore can not display a line graph.</hui-warning
-        >
+        <div class="info">
+          No state history found.
+        </div>
       `;
     }
 
@@ -82,21 +81,30 @@ export class HuiGraphHeaderFooter extends LitElement
 
     if (changedProps.has("_config")) {
       this._getCoordinates();
-    } else if (Date.now() - this._date!.getTime() >= minute) {
+    } else if (Date.now() - this._date!.getTime() >= MINUTE) {
       this._getCoordinates();
     }
   }
 
   private async _getCoordinates(): Promise<void> {
-    const coords = await getHistoryCoordinates(
+    this._coordinates = await getHistoryCoordinates(
       this.hass!,
       this._config!.entity,
       this._config!.hours_to_show!,
       this._config!.detail!
     );
 
-    this._coordinates = coords;
     this._date = new Date();
+  }
+
+  static get styles(): CSSResult {
+    return css`
+      .info {
+        text-align: center;
+        line-height: 58px;
+        color: var(--secondary-text-color);
+      }
+    `;
   }
 }
 
