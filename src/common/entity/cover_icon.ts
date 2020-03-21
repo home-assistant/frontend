@@ -9,9 +9,9 @@ export const coverIcon = (state: HassEntity): string => {
     case "garage":
       switch (state.state) {
         case "opening":
-          return "hass:arrow-up-bold-box";
+          return "hass:arrow-up-box";
         case "closing":
-          return "hass:arrow-down-bold-box";
+          return "hass:arrow-down-box";
         case "closed":
           return "hass:garage";
         default:
@@ -37,9 +37,9 @@ export const coverIcon = (state: HassEntity): string => {
     case "curtain":
       switch (state.state) {
         case "opening":
-          return "hass:arrow-up-bold-outline";
+          return "hass:arrow-up-box";
         case "closing":
-          return "hass:arrow-down-bold-outline";
+          return "hass:arrow-down-box";
         case "closed":
           return "hass:blinds";
         default:
@@ -48,9 +48,9 @@ export const coverIcon = (state: HassEntity): string => {
     case "window":
       switch (state.state) {
         case "opening":
-          return "hass:arrow-up-bold-box-outline";
+          return "hass:arrow-up-box";
         case "closing":
-          return "hass:arrow-down-bold-box-outline";
+          return "hass:arrow-down-box";
         case "closed":
           return "hass:window-closed";
         default:

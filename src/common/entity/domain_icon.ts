@@ -79,9 +79,9 @@ export const domainIcon = (domain: string, state?: string): string => {
     case "cover":
       switch (state) {
         case "opening":
-          return "hass:arrow-up-bold-box-outline";
+          return "hass:arrow-up-box";
         case "closing":
-          return "hass:arrow-down-bold-box-outline";
+          return "hass:arrow-down-box";
         case "closed":
           return "hass:window-closed";
         default:
