@@ -298,6 +298,7 @@ export class HUIView extends LitElement {
       wrapper.hass = this.hass;
       wrapper.lovelace = this.lovelace;
       wrapper.path = [this.index!, cardIndex];
+      element.editMode = true;
       wrapper.appendChild(element);
       elementsToAppend.push(wrapper);
     });

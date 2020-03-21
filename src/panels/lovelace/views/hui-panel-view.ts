@@ -83,12 +83,18 @@ export class HUIPanelView extends UpdatingElement {
     wrapper.hass = this.hass;
     wrapper.lovelace = this.lovelace;
     wrapper.path = [this.index, 0];
+    card.editMode = true;
     wrapper.appendChild(card);
     this.appendChild(wrapper);
     if (this.config!.cards!.length > 1) {
       const warning = document.createElement("hui-warning");
-      warning.innerText =
-        "This view contains more than one card, but a panel view can only show 1 card.";
+      warning.setAttribute(
+        "style",
+        "position: absolute; top: 0; width: 100%; box-sizing: border-box;"
+      );
+      warning.innerText = this.hass!.localize(
+        "ui.panel.lovelace.editor.view.panel_mode.warning_multiple_cards"
+      );
       this.appendChild(warning);
     }
   }
