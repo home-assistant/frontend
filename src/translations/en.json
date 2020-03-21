@@ -2137,7 +2137,8 @@
           "view": {
             "panel_mode": {
               "title": "Panel Mode?",
-              "description": "This renders the first card at full width; other cards in this view will not be rendered."
+              "description": "This renders the first card at full width; other cards in this view will not be rendered.",
+              "warning_multiple_cards": "This view contains more than one card, but a panel view can only show 1 card."
             }
           }
         },
@@ -2393,11 +2394,6 @@
         "tabs": {
           "info": {
             "title": "Info",
-            "remove": "Remove",
-            "set": "Set",
-            "default_ui": "{action} {name} as default page on this device",
-            "lovelace_ui": "Go to the Lovelace UI",
-            "states_ui": "Go to the states UI",
             "home_assistant_logo": "Home Assistant logo",
             "path_configuration": "Path to configuration.yaml: {path}",
             "developed_by": "Developed by a bunch of awesome people.",
