@@ -132,19 +132,16 @@ class HaInputNumberForm extends LitElement {
                   </paper-radio-button>
                 </paper-radio-group>
               </div>
-              ${this._mode === "slider"
-                ? html`
-                    <paper-input
-                      .value=${this._step}
-                      .configValue=${"step"}
-                      type="number"
-                      @value-changed=${this._valueChanged}
-                      .label=${this.hass!.localize(
-                        "ui.dialogs.helper_settings.input_number.step"
-                      )}
-                    ></paper-input>
-                  `
-                : ""}
+              <paper-input
+                .value=${this._step}
+                .configValue=${"step"}
+                type="number"
+                @value-changed=${this._valueChanged}
+                .label=${this.hass!.localize(
+                  "ui.dialogs.helper_settings.input_number.step"
+                )}
+              ></paper-input>
+
               <paper-input
                 .value=${this._unit_of_measurement}
                 .configValue=${"unit_of_measurement"}
