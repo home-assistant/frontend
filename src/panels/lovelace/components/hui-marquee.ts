@@ -9,29 +9,37 @@ import {
   property,
 } from "lit-element";
 
-const marqueeSpeed = 0.2;
-
 @customElement("hui-marquee")
 class HuiMarquee extends LitElement {
   @property() public text?: string;
-  @property() public active?: boolean;
-  private _interval?: number;
-  private _left: number = 0;
+  @property({ type: Boolean }) public active?: boolean;
+  @property({ reflect: true, type: Boolean, attribute: "animating" })
+  private _animating = false;
+
+  protected firstUpdated(changedProps) {
+    super.firstUpdated(changedProps);
+
+    this.addEventListener("mouseover", () => this.classList.add("hovering"), {
+      // Capture because we need to run before a parent sets active on us.
+      // Hovering will disable the overflow, allowing us to calc if we overflow.
+      capture: true,
+    });
+    this.addEventListener("mouseout", () => this.classList.remove("hovering"));
+  }
 
   protected updated(changedProperties: PropertyValues): void {
     super.updated(changedProperties);
 
+    if (changedProperties.has("text") && this._animating) {
+      this._animating = false;
+    }
+
     if (
       changedProperties.has("active") &&
       this.active &&
-      !this._interval &&
       this.offsetWidth < this.scrollWidth
     ) {
-      this._interval = window.setInterval(() => {
-        this._play();
-      });
-
-      this.requestUpdate();
+      this._animating = true;
     }
   }
 
@@ -41,31 +49,20 @@ class HuiMarquee extends LitElement {
     }
 
     return html`
-      <div>${this.text}</div>
-      ${this._interval
-        ? html`
-            <div>${this.text}</div>
-          `
-        : ""}
+      <div class="marquee-inner" @animationiteration=${this._onIteration}>
+        <span>${this.text}</span>
+        ${this._animating
+          ? html`
+              <span>${this.text}</span>
+            `
+          : ""}
+      </div>
     `;
   }
 
-  private get _marqueeElementFirstChild(): HTMLElement {
-    return this.shadowRoot!.firstElementChild as HTMLElement;
-  }
-
-  private _play(): void {
-    this.style.marginLeft = "-" + this._left + "px";
-
-    if (!this.active && !this._left) {
-      clearInterval(this._interval);
-      this._interval = undefined;
-      return;
-    }
-
-    this._left += marqueeSpeed;
-    if (this._left >= this._marqueeElementFirstChild.offsetWidth + 16) {
-      this._left = 0;
+  private _onIteration() {
+    if (!this.active) {
+      this._animating = false;
     }
   }
 
@@ -73,10 +70,42 @@ class HuiMarquee extends LitElement {
     return css`
       :host {
         display: flex;
+        position: relative;
+        align-items: center;
+        height: 1em;
+        contain: strict;
       }
 
-      :host div {
-        margin-right: 16px;
+      .marquee-inner {
+        position: absolute;
+        left: 0;
+        right: 0;
+        text-overflow: ellipsis;
+        overflow: hidden;
+      }
+
+      :host(.hovering) .marquee-inner {
+        text-overflow: initial;
+        overflow: initial;
+      }
+
+      :host([animating]) .marquee-inner {
+        left: initial;
+        right: initial;
+        animation: marquee 10s linear infinite;
+      }
+
+      :host([animating]) .marquee-inner span {
+        padding-right: 16px;
+      }
+
+      @keyframes marquee {
+        0% {
+          transform: translateX(0%);
+        }
+        100% {
+          transform: translateX(-50%);
+        }
       }
     `;
   }

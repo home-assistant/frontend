@@ -27,7 +27,7 @@ import { PictureEntityCardConfig } from "./types";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { actionHandler } from "../common/directives/action-handler-directive";
 import { hasAction } from "../common/has-action";
-import { ActionHandlerEvent, LovelaceConfig } from "../../../data/lovelace";
+import { ActionHandlerEvent } from "../../../data/lovelace";
 import { handleAction } from "../common/handle-action";
 import { findEntities } from "../common/find-entites";
 
@@ -42,23 +42,22 @@ class HuiPictureEntityCard extends LitElement implements LovelaceCard {
 
   public static getStubConfig(
     hass: HomeAssistant,
-    lovelaceConfig: LovelaceConfig,
-    entities?: string[],
-    entitiesFill?: string[]
-  ): object {
+    entities: string[],
+    entitiesFallback: string[]
+  ): PictureEntityCardConfig {
     const maxEntities = 1;
     const foundEntities = findEntities(
       hass,
-      lovelaceConfig,
       maxEntities,
       entities,
-      entitiesFill
+      entitiesFallback,
+      ["light", "switch"]
     );
 
     return {
+      type: "picture-entity",
       entity: foundEntities[0] || "",
-      image:
-        "https://www.home-assistant.io/images/merchandise/shirt-frontpage.png",
+      image: "https://demo.home-assistant.io/stub_config/bedroom.png",
     };
   }
 

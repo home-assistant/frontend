@@ -651,8 +651,12 @@
                     "name": "Nazwa"
                 },
                 "input_datetime": {
+                    "date": "Data",
+                    "datetime": "Data i czas",
                     "has_date": "Data",
-                    "has_time": "Czas"
+                    "has_time": "Czas",
+                    "mode": "Co chcesz wprowadzić?",
+                    "time": "Czas"
                 },
                 "input_number": {
                     "box": "Pole wprowadzania danych",
@@ -679,9 +683,9 @@
                 },
                 "not_editable": "Nieedytowalne",
                 "not_editable_text": "Tego elementu nie można zmienić z poziomu interfejsu użytkownika, ponieważ jest on zdefiniowany w pliku configuration.yaml.",
-                "platform_not_loaded": "Składnik {platform} nie jest załadowany, dodaj go do swojej konfiguracji. Dodając 'default_config:' lub '{platform}:'.",
+                "platform_not_loaded": "Komponent {platform} nie jest załadowany, dodaj go do swojej konfiguracji dodając 'default_config:' lub '{platform}:'.",
                 "required_error_msg": "To pole jest wymagane",
-                "yaml_not_editable": "Ustawienia tej encji nie mogą być edytowane z interfejsu użytkownika. Tylko encje skonfigurowane z interfejsu użytkownika można konfigurować z poziomu interfejsu użytkownika."
+                "yaml_not_editable": "Ustawienia tej encji nie mogą być edytowane z interfejsu użytkownika. Tylko encje dodane z interfejsu użytkownika można konfigurować z poziomu interfejsu użytkownika."
             },
             "more_info_control": {
                 "dismiss": "Zamknij okno dialogowe",
@@ -806,6 +810,10 @@
                 "areas": {
                     "caption": "Rejestr obszarów",
                     "create_area": "UTWÓRZ OBSZAR",
+                    "delete": {
+                        "confirmation_text": "Wszystkie urządzenia z tego obszaru pozostaną bez przypisanego obszaru.",
+                        "confirmation_title": "Czy na pewno chcesz usunąć ten obszar?"
+                    },
                     "description": "Przegląd wszystkich obszarów w twoim domu",
                     "editor": {
                         "create": "UTWÓRZ",
@@ -1309,7 +1317,8 @@
                         "device": "Urządzenie",
                         "integration": "Integracja",
                         "manufacturer": "Producent",
-                        "model": "Model"
+                        "model": "Model",
+                        "no_devices": "Brak urządzeń"
                     },
                     "description": "Zarządzaj podłączonymi urządzeniami",
                     "details": "Oto wszystkie szczegóły dotyczące twojego urządzenia.",
@@ -1358,12 +1367,12 @@
                         "disable_selected": {
                             "button": "Wyłącz wybrane",
                             "confirm_text": "Wyłączone encje nie zostaną dodane do Home Assistant'a.",
-                            "confirm_title": "Czy chcesz wyłączyć {number} encj(-e/-i)?"
+                            "confirm_title": "Czy chcesz wyłączyć {number} encj(ę/e/i)?"
                         },
                         "enable_selected": {
                             "button": "Włącz wybrane",
                             "confirm_text": "Dzięki temu będą ponownie dostępne w Home Assistant, jeśli są teraz wyłączone.",
-                            "confirm_title": "Czy chcesz włączyć {number} encj(-e/-i)?"
+                            "confirm_title": "Czy chcesz włączyć {number} encj(ę/e/i)?"
                         },
                         "filter": {
                             "filter": "Filtr",
@@ -1384,10 +1393,10 @@
                         "introduction2": "Użyj rejestru encji, aby nadpisać jej nazwę, zmienić jej identyfikator lub usunąć ją z Home Assistant'a. Uwaga: usunięcie wpisu rejestru encji nie spowoduje usunięcia encji. Aby to zrobić, kliknij poniższy link i usuń integracje encji.",
                         "remove_selected": {
                             "button": "Usuń zaznaczone",
-                            "confirm_partly_text": "Można usunąć tylko {removable} z wybranych {selected} encji. Jednostki można usunąć tylko wtedy, gdy integracja nie zapewnia już jednostek. Czasami trzeba ponownie uruchomić Asystenta domowego, zanim będzie można usunąć jednostki usuniętej integracji. Czy na pewno chcesz usunąć elementy wymienne?",
-                            "confirm_partly_title": "Tylko {number} wybranych encji można usunąć.",
+                            "confirm_partly_text": "Można usunąć tylko {removable} z wybranych {selected} encji. Encje można usunąć tylko wtedy, gdy integracja wspiera taka możliwość. Czasami trzeba ponownie uruchomić Home Assistant'a, zanim będzie można usunąć encje usuniętej integracji. Czy na pewno chcesz usunąć usuwalne encje?",
+                            "confirm_partly_title": "Tylko {number} wybrane encje można usunąć.",
                             "confirm_text": "Encje mogą zostać usunięte tylko wtedy, gdy ich integracja na to zezwala.",
-                            "confirm_title": "Czy chcesz usunąć {number} encj(-e/-i)?"
+                            "confirm_title": "Czy chcesz usunąć {number} encj(ę/e/i)?"
                         },
                         "selected": "wybrano {number}",
                         "show_disabled": "Wyświetlaj nieużywane encje",
@@ -1489,16 +1498,17 @@
                 },
                 "introduction": "Tutaj możesz skonfigurować Home Assistant'a i jego komponenty. Nie wszystkie opcje można konfigurować z interfejsu użytkownika, ale pracujemy nad tym.",
                 "lovelace": {
-                    "caption": "Dashboard'y interfejsu użytkownika Lovelace",
+                    "caption": "Dashboardy Lovelace",
                     "dashboards": {
-                        "cant_edit_default": "Standardowego pulpitu nawigacyjnego Lovelace nie można edytować za pomocą interfejsu użytkownika. Możesz to ukryć, ustawiając domyślnie inny pulpit.",
+                        "cant_edit_default": "Standardowego dashboardu Lovelace nie można edytować za pomocą interfejsu użytkownika. Możesz go ukryć, ustawiając jako domyślny inny dashboard.",
                         "cant_edit_yaml": "Dasboard'y zdefiniowane w plikach YAML nie mogą być edytowane z poziomu interfejsu użytkownika. Zmień je w pliku configuration.yaml.",
-                        "caption": "Dashboard'y",
+                        "caption": "Dashboardy",
                         "conf_mode": {
                             "storage": "Konfigurowalny z interfejsu użytkownika",
                             "yaml": "Plik YAML"
                         },
                         "confirm_delete": "Na pewno chcesz usunąć ten dashboard?",
+                        "default_dashboard": "To jest domyślny dashboard",
                         "detail": {
                             "create": "Utwórz",
                             "delete": "Usuń",
@@ -1506,10 +1516,10 @@
                             "edit_dashboard": "Edytuj dashboard",
                             "icon": "Ikona w pasku bocznym",
                             "new_dashboard": "Dodaj nowy dashboard",
-                            "remove_default": "Usuń domyślnie na tym urządzeniu",
-                            "require_admin": "Tylko administrator",
-                            "set_default": "Ustaw jako domyślne na tym urządzeniu",
-                            "show_sidebar": "Pokaż na pasku bocznym",
+                            "remove_default": "Nie używaj jako domyślny na tym urządzeniu",
+                            "require_admin": "Tylko dla administratorów",
+                            "set_default": "Ustaw jako domyślny na tym urządzeniu",
+                            "show_sidebar": "Wyświetlanie na pasku bocznym",
                             "title": "Tytuł w pasku bocznym",
                             "title_required": "Tytuł jest wymagany.",
                             "update": "Aktualizuj",
@@ -1523,13 +1533,13 @@
                                 "default": "Domyślny",
                                 "filename": "Nazwa pliku",
                                 "require_admin": "Tylko administrator",
-                                "sidebar": "Pokaż na pasku bocznym",
+                                "sidebar": "Na pasku bocznym",
                                 "title": "Tytuł"
                             },
-                            "open": "Otwórz dashboard"
+                            "open": "Otwórz"
                         }
                     },
-                    "description": "Konfiguruj dashboard'y interfejsu użytkownika Lovelace",
+                    "description": "Konfiguruj dashboardy interfejsu użytkownika Lovelace",
                     "resources": {
                         "cant_edit_yaml": "Korzystasz z interfejsu użytkownika Lovelace w trybie YAML, dlatego nie możesz zarządzać zasobami za pomocą interfejsu użytkownika. Zarządzaj nimi w pliku configuration.yaml.",
                         "caption": "Zasoby",
@@ -1551,7 +1561,8 @@
                             "headers": {
                                 "type": "Typ",
                                 "url": "URL"
-                            }
+                            },
+                            "no_resources": "Brak zasobów"
                         },
                         "refresh_body": "Musisz odświeżyć stronę, aby zakończyć usuwanie, czy chcesz teraz odświeżyć?",
                         "refresh_header": "Czy chcesz odświeżyć?",
@@ -2088,7 +2099,7 @@
                             "name": "Panel alarmu"
                         },
                         "button": {
-                            "description": "Karta Button umożliwia dodawanie przycisków do wykonywania zadań.",
+                            "description": "Karta przycisku umożliwia dodawanie przycisków do wykonywania zadań.",
                             "name": "Przycisk"
                         },
                         "conditional": {
@@ -2107,7 +2118,7 @@
                             "required": "Wymagane"
                         },
                         "entities": {
-                            "description": "Karta Entities jest najbardziej popularnym rodzajem karty. Grupuje ona pozycje w listy.",
+                            "description": "Karta encji jest najbardziej popularnym rodzajem karty. Grupuje ona encje w listy.",
                             "name": "Encje",
                             "show_header_toggle": "Pokaż przełącznik w nagłówku",
                             "toggle": "Przełącz encje"
@@ -2116,11 +2127,11 @@
                             "name": "Przycisk encji"
                         },
                         "entity-filter": {
-                            "description": "Karta Entity Filter umożliwia zdefiniowanie listy podmiotów, które mają być śledzone tylko w określonym stanie.",
+                            "description": "Karta filtr encji umożliwia zdefiniowanie listy encji, które mają być śledzone tylko w określonym stanie.",
                             "name": "Filtr encji"
                         },
                         "gauge": {
-                            "description": "Karta Gauge to podstawowa karta, która umożliwia wizualne widzenie danych czujnika.",
+                            "description": "Karta wskaźnika to podstawowa karta, która umożliwia wizualne przedstawienie danych liczbowych sensora.",
                             "name": "Wskaźnik",
                             "severity": {
                                 "define": "Zdefiniować progi kolorów?",
@@ -2158,75 +2169,75 @@
                         },
                         "glance": {
                             "columns": "Kolumny",
-                            "description": "Karta Glance umożliwia grupowanie wielu czujników w kompaktowym przeglądzie.",
+                            "description": "Karta glance umożliwia grupowanie wielu sensorów w kompaktowym przeglądzie.",
                             "name": "Glance"
                         },
                         "history-graph": {
-                            "description": "Karta Wykres historii umożliwia wyświetlenie wykresu dla każdej z wymienionych encji.",
+                            "description": "Karta wykres historii umożliwia wyświetlenie wykresu dla każdej z wymienionych encji.",
                             "name": "Wykres historii"
                         },
                         "horizontal-stack": {
-                            "description": "Karta poziomego stosu umożliwia układanie wielu kart razem, dzięki czemu zawsze siedzą obok siebie w przestrzeni jednej kolumny.",
+                            "description": "Karta poziomego stosu umożliwia układanie wielu kart razem, dzięki czemu zawsze zlokalizowane są obok siebie w przestrzeni jednej kolumny.",
                             "name": "Poziomy stos"
                         },
                         "iframe": {
-                            "description": "Karta Webpage pozwala osadzić ulubioną stronę bezpośrednio w Home Assistant.",
-                            "name": "iFrame"
+                            "description": "Karta strona web pozwala osadzić ulubioną stronę bezpośrednio w Home Assistant.",
+                            "name": "Strona web"
                         },
                         "light": {
-                            "description": "Karta Światło pozwala zmienić jasność światła.",
+                            "description": "Karta światło pozwala zmienić jasność światła.",
                             "name": "Światło"
                         },
                         "map": {
                             "dark_mode": "Tryb ciemny",
                             "default_zoom": "Domyślne powiększenie",
-                            "description": "Karta mapy, która pozwala wyświetlać byty na mapie.",
+                            "description": "Karta mapy, która pozwala wyświetlać encje na mapie.",
                             "geo_location_sources": "Źródła geolokalizacji",
                             "name": "Mapa",
                             "source": "Źródło"
                         },
                         "markdown": {
                             "content": "Zawartość",
-                            "description": "Karta Markdown służy do renderowania Markdown.",
+                            "description": "Karta markdown służy do renderowania treści o składni Markdown.",
                             "name": "Markdown"
                         },
                         "media-control": {
-                            "description": "Karta Media Control służy do wyświetlania jednostek odtwarzacza multimediów na interfejsie z łatwymi w użyciu elementami sterującymi.",
+                            "description": "Karta kontroli mediów służy do wyświetlania encji odtwarzacza multimediów na interfejsie z łatwymi w użyciu elementami sterującymi.",
                             "name": "Kontrola mediów"
                         },
                         "picture-elements": {
-                            "description": "Karta Picture Elements to jeden z najbardziej wszechstronnych rodzajów kart. Karty umożliwiają pozycjonowanie ikon lub tekstu, a nawet usług! Na obrazie opartym na współrzędnych.",
+                            "description": "Karta elementów obrazu to jeden z najbardziej wszechstronnych rodzajów kart. Karty umożliwiają pozycjonowanie ikon lub tekstu, a nawet usług! Na obrazie opartym na współrzędnych.",
                             "name": "Elementy obrazu"
                         },
                         "picture-entity": {
-                            "description": "Karta Picture Entity wyświetla byt w postaci obrazu. Zamiast obrazów z adresu URL może również wyświetlać obraz elementów kamery.",
-                            "name": "Obraz"
+                            "description": "Karta obrazu encji wyświetla encję w postaci obrazu. Zamiast obrazów z adresu URL może również wyświetlać obraz elementów kamery.",
+                            "name": "Obraz encji"
                         },
                         "picture-glance": {
-                            "description": "Karta Picture Glance pokazuje obraz i odpowiadające stany bytu jako ikonę. Elementy po prawej stronie umożliwiają przełączanie działań, inne pokazują okno dialogowe z większą ilością informacji.",
+                            "description": "Karta obrazu (glance) pokazuje obraz i odpowiadające stany encje jako ikonę. Encje po prawej stronie umożliwiają przełączanie działań, inne pokazują okno dialogowe z większą ilością informacji.",
                             "name": "Obraz (glance)"
                         },
                         "picture": {
-                            "description": "Karta Picture umożliwia ustawienie obrazu używanego do nawigacji do różnych ścieżek w interfejsie lub do wywołania usługi.",
+                            "description": "Karta obrazu umożliwia ustawienie obrazu używanego do nawigacji do różnych ścieżek w interfejsie lub do wywołania usługi.",
                             "name": "Obraz"
                         },
                         "plant-status": {
-                            "description": "Karta statusu rośliny jest przeznaczona dla wszystkich uroczych botaników.",
+                            "description": "Karta stanu rośliny jest przeznaczona dla wszystkich uroczych botaników.",
                             "name": "Stan rośliny"
                         },
                         "sensor": {
-                            "description": "Karta Sensor zapewnia szybki przegląd stanu czujników z opcjonalnym wykresem, aby wizualizować zmiany w czasie.",
+                            "description": "Karta sensor zapewnia szybki przegląd stanu czujników z opcjonalnym wykresem, aby wizualizować zmiany w czasie.",
                             "graph_detail": "Szczegół wykresu",
                             "graph_type": "Rodzaj wykresu",
                             "name": "Sensor"
                         },
                         "shopping-list": {
-                            "description": "Karta Lista zakupów umożliwia dodawanie, edytowanie, zaznaczanie i usuwanie pozycji z listy zakupów.",
+                            "description": "Karta lista zakupów umożliwia dodawanie, edytowanie, zaznaczanie i usuwanie pozycji z listy zakupów.",
                             "integration_not_loaded": "Ta karta wymaga ustawienia integracji  `shopping_list`.",
                             "name": "Lista zakupów"
                         },
                         "thermostat": {
-                            "description": "Karta termostatu zapewnia kontrolę nad klimatem. Umożliwiając zmianę temperatury i trybu jednostki.",
+                            "description": "Karta termostatu zapewnia kontrolę nad klimatem umożliwiając zmianę temperatury i trybu pracy encji.",
                             "name": "Termostat"
                         },
                         "vertical-stack": {
@@ -2234,7 +2245,7 @@
                             "name": "Pionowy stos"
                         },
                         "weather-forecast": {
-                            "description": "Karta prognozy pogody wyświetla pogodę. Bardzo przydatne w przypadku interfejsów wyświetlanych na ścianie.",
+                            "description": "Karta prognozy pogody wyświetla pogodę. Bardzo przydatna w przypadku interfejsów wyświetlanych na urządzeniach zawieszonych na ścianie.",
                             "name": "Prognoza pogody"
                         }
                     },
@@ -2267,7 +2278,10 @@
                         "move_right": "Przesuń widok w prawo",
                         "tab_badges": "Odznaki",
                         "tab_settings": "Ustawienia",
-                        "tab_visibility": "Widoczność"
+                        "tab_visibility": "Widoczność",
+                        "visibility": {
+                            "select_users": "Wybierz, którzy użytkownicy powinni mieć dostęp do tego widoku"
+                        }
                     },
                     "header": "Edycja interfejsu użytkownika",
                     "menu": {
@@ -2302,8 +2316,8 @@
                         "para": "Domyślnie Home Assistant będzie zarządzać interfejsem użytkownika, aktualizując go, gdy pojawią się nowe encje lub komponenty Lovelace. Jeśli przejmiesz kontrolę, Home Assistant nie będzie już automatycznie wprowadzać dla ciebie zmian.",
                         "para_sure": "Na pewno chcesz przejąć kontrolę nad interfejsem użytkownika?",
                         "save": "Przejmuję kontrolę",
-                        "yaml_config": "Aby rozpocząć, zapoznaj się z aktualną konfiguracją tego dashboard'u:",
-                        "yaml_control": "Aby zarządzać w trybie YAML, utwórz plik o nazwie podanej w konfiguracji dla tego dashboard'u lub domyślny 'ui-lovelace.yaml'.",
+                        "yaml_config": "Aby rozpocząć, zapoznaj się z aktualną konfiguracją tego dashboardu:",
+                        "yaml_control": "Aby zarządzać w trybie YAML, utwórz plik o nazwie podanej w konfiguracji dla tego dashboardu lub domyślny 'ui-lovelace.yaml'.",
                         "yaml_mode": "Używasz trybu YAML, co oznacza, że nie możesz zmienić konfiguracji Lovelace z poziomu interfejsu użytkownika. Jeśli chcesz zarządzać Lovelace z poziomu interfejsu użytkownika, usuń 'mode: yaml' z konfiguracji Lovelace w pliku 'configuration.yaml'."
                     },
                     "suggest_card": {
@@ -2324,9 +2338,14 @@
                     "exit_edit_mode": "Wyjdź z trybu edycji interfejsu użytkownika",
                     "help": "Pomoc",
                     "refresh": "Wczytaj ponownie",
+                    "reload_resources": "Wczytaj ponownie zasoby",
                     "unused_entities": "Nieużywane encje"
                 },
                 "reload_lovelace": "Wczytaj ponownie Lovelace",
+                "reload_resources": {
+                    "refresh_body": "Musisz odświeżyć stronę, aby zakończyć ponowne wczytywanie zasobów, czy chcesz teraz odświeżyć?",
+                    "refresh_header": "Czy chcesz odświeżyć?"
+                },
                 "unused_entities": {
                     "available_entities": "Są to encje, które są dostępne, ale jeszcze nie ma ich w interfejsie użytkownika Lovelace.",
                     "domain": "Domena",
@@ -2339,11 +2358,12 @@
                 "views": {
                     "confirm_delete": "Na pewno chcesz usunąć ten widok?",
                     "confirm_delete_existing_cards": "Usunięcie tego widoku spowoduje również usunięcie kart",
-                    "confirm_delete_existing_cards_text": "Czy na pewno chcesz usunąć widok '{name}'? Widok zawiera karty {number}, które zostaną usunięte. Tej akcji nie można cofnąć.",
+                    "confirm_delete_existing_cards_text": "Czy na pewno chcesz usunąć widok '{name}'? Widok zawiera {number} kart(ę/y), które zostaną usunięte. Tej akcji nie można cofnąć.",
                     "confirm_delete_text": "Czy na pewno chcesz usunąć widok '{name}'?",
                     "existing_cards": "Nie można usunąć widoku zawierającego karty. Najpierw usuń karty."
                 },
                 "warning": {
+                    "attribute_not_found": "Atrybut {attribute} jest niedostępny dla: {entity}",
                     "entity_non_numeric": "Encja nie jest numeryczna: {entity}",
                     "entity_not_found": "Encja niedostępna: {entity}"
                 }

@@ -116,7 +116,7 @@ export class HuiViewEditor extends LitElement {
           .hass=${this.hass}
           .value=${this._theme}
           .configValue=${"theme"}
-          @theme-changed=${this._valueChanged}
+          @value-changed=${this._valueChanged}
         ></hui-theme-select-editor>
         <ha-switch
           .checked=${this._panel !== false}

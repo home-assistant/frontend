@@ -621,7 +621,7 @@
                 "dismiss": "Dismiss",
                 "editor": {
                     "confirm_delete": "Are you sure you want to delete this entry?",
-                    "delete": "DELETE",
+                    "delete": "Delete",
                     "enabled_cause": "Disabled by {cause}.",
                     "enabled_description": "Disabled entities will not be added to Home Assistant.",
                     "enabled_label": "Enable entity",
@@ -631,9 +631,9 @@
                     "name": "Name Override",
                     "note": "Note: this might not work yet with all integrations.",
                     "unavailable": "This entity is not currently available.",
-                    "update": "UPDATE"
+                    "update": "Update"
                 },
-                "no_unique_id": "This entity does not have a unique ID, therefore it's settings can not be managed from the UI.",
+                "no_unique_id": "This entity does not have a unique ID, therefore its settings cannot be managed from the UI.",
                 "related": "Related",
                 "settings": "Settings"
             },
@@ -651,8 +651,12 @@
                     "name": "Name"
                 },
                 "input_datetime": {
+                    "date": "Date",
+                    "datetime": "Date and time",
                     "has_date": "Date",
-                    "has_time": "Time"
+                    "has_time": "Time",
+                    "mode": "What do you want to input",
+                    "time": "Time"
                 },
                 "input_number": {
                     "box": "Input field",
@@ -670,8 +674,8 @@
                     "options": "Options"
                 },
                 "input_text": {
-                    "max": "Maximum lenght",
-                    "min": "Minimum lenght",
+                    "max": "Maximum length",
+                    "min": "Minimum length",
                     "mode": "Display mode",
                     "password": "Password",
                     "pattern": "Regex pattern for client-side validation",
@@ -679,9 +683,9 @@
                 },
                 "not_editable": "Not editable",
                 "not_editable_text": "This entity can't be changed from the UI because it is defined in configuration.yaml.",
-                "platform_not_loaded": "The {platform} component is not loaded, please add it your configuration. Either by adding 'default_config:' or '{platform}:'.",
+                "platform_not_loaded": "The {platform} integration is not loaded. Please add it your configuration either by adding 'default_config:' or '{platform}:'.",
                 "required_error_msg": "This field is required",
-                "yaml_not_editable": "The settings of this entity can not be edited from the UI. Only entities setup from the UI are configurable from the UI."
+                "yaml_not_editable": "The settings of this entity cannot be edited from the UI. Only entities set up from the UI are configurable from the UI."
             },
             "more_info_control": {
                 "dismiss": "Dismiss dialog",
@@ -812,14 +816,14 @@
                     },
                     "description": "Overview of all areas in your home.",
                     "editor": {
-                        "create": "CREATE",
+                        "create": "Create",
                         "default_name": "New Area",
-                        "delete": "DELETE",
-                        "update": "UPDATE"
+                        "delete": "Delete",
+                        "update": "Update"
                     },
                     "no_areas": "Looks like you have no areas yet!",
                     "picker": {
-                        "create_area": "CREATE AREA",
+                        "create_area": "Create Area",
                         "header": "Areas",
                         "integrations_page": "Integrations page",
                         "introduction": "Areas are used to organize where devices are. This information will be used throughout Home Assistant to help you in organizing your interface, permissions and integrations with other systems.",
@@ -1306,6 +1310,7 @@
                     "automations": "Automations",
                     "cant_edit": "You can only edit items that are created in the UI.",
                     "caption": "Devices",
+                    "confirm_delete": "Are you sure you want to delete this device?",
                     "confirm_rename_entity_ids": "Do you also want to rename the entity id's of your entities?",
                     "data_table": {
                         "area": "Area",
@@ -1313,8 +1318,10 @@
                         "device": "Device",
                         "integration": "Integration",
                         "manufacturer": "Manufacturer",
-                        "model": "Model"
+                        "model": "Model",
+                        "no_devices": "No devices"
                     },
+                    "delete": "Delete",
                     "description": "Manage connected devices",
                     "details": "Here are all the details of your device.",
                     "device_not_found": "Device not found.",
@@ -1464,20 +1471,21 @@
                         },
                         "failed_create_area": "Failed to create area.",
                         "finish": "Finish",
+                        "loading_first_time": "Please wait while the integration is being installed",
                         "name_new_area": "Name of the new area?",
                         "not_all_required_fields": "Not all required fields are filled in.",
                         "submit": "Submit"
                     },
                     "configure": "Configure",
                     "configured": "Configured",
-                    "description": "Manage and setup integrations",
+                    "description": "Manage and set up integrations",
                     "details": "Integration details",
                     "discovered": "Discovered",
                     "home_assistant_website": "Home Assistant website",
                     "ignore": {
                         "confirm_delete_ignore": "This will make the integration appear in your discovered integrations again when it gets discovered. This might require a restart or take some time.",
                         "confirm_delete_ignore_title": "Stop ignoring {name}?",
-                        "confirm_ignore": "Are you sure you don't want to setup this integration? You can undo this by clicking the 'Show ignored integrations' in the overflow menu on the top right.",
+                        "confirm_ignore": "Are you sure you don't want to set up this integration? You can undo this by clicking the 'Show ignored integrations' in the overflow menu on the top right.",
                         "confirm_ignore_title": "Ignore discovery of {name}?",
                         "hide_ignored": "Hide ignored integrations",
                         "ignore": "Ignore",
@@ -1495,30 +1503,31 @@
                 "lovelace": {
                     "caption": "Lovelace Dashboards",
                     "dashboards": {
-                        "cant_edit_default": "The standard Lovelace dashboard can not be edited from the UI. You can hide it by setting another dashboard as default.",
-                        "cant_edit_yaml": "Dashboards defined in YAML can not be edited from the UI. Change them in configuration.yaml.",
+                        "cant_edit_default": "The standard Lovelace dashboard cannot be edited from the UI. You can hide it by setting another dashboard as default.",
+                        "cant_edit_yaml": "Dashboards defined in YAML cannot be edited from the UI. Change them in configuration.yaml.",
                         "caption": "Dashboards",
                         "conf_mode": {
                             "storage": "UI controlled",
                             "yaml": "YAML file"
                         },
                         "confirm_delete": "Are you sure you want to delete this dashboard?",
+                        "default_dashboard": "This is the default dashboard",
                         "detail": {
                             "create": "Create",
                             "delete": "Delete",
                             "dismiss": "Close",
                             "edit_dashboard": "Edit dashboard",
-                            "icon": "Sidebar icon",
+                            "icon": "Icon",
                             "new_dashboard": "Add new dashboard",
                             "remove_default": "Remove as default on this device",
                             "require_admin": "Admin only",
                             "set_default": "Set as default on this device",
                             "show_sidebar": "Show in sidebar",
-                            "title": "Sidebar title",
+                            "title": "Title",
                             "title_required": "Title is required.",
                             "update": "Update",
                             "url": "Url",
-                            "url_error_msg": "The url can not contain spaces or special characters, except for _ and -"
+                            "url_error_msg": "The URL should contain a - and cannot contain spaces or special characters, except for _ and -"
                         },
                         "picker": {
                             "add_dashboard": "Add dashboard",
@@ -1535,7 +1544,7 @@
                     },
                     "description": "Configure your Lovelace Dashboards",
                     "resources": {
-                        "cant_edit_yaml": "You are using Lovelace in YAML mode, therefore you can not manage your resources through the UI. Manage them in configuration.yaml.",
+                        "cant_edit_yaml": "You are using Lovelace in YAML mode, therefore you cannot manage your resources through the UI. Manage them in configuration.yaml.",
                         "caption": "Resources",
                         "confirm_delete": "Are you sure you want to delete this resource?",
                         "detail": {
@@ -1555,7 +1564,8 @@
                             "headers": {
                                 "type": "Type",
                                 "url": "Url"
-                            }
+                            },
+                            "no_resources": "No resources"
                         },
                         "refresh_body": "You have to refresh the page to complete the removal, do you want to refresh now?",
                         "refresh_header": "Do you want to refresh?",
@@ -2045,7 +2055,7 @@
                 "add_entities": {
                     "generated_unsupported": "You can only use this function when you have taken control of the Lovelace UI.",
                     "saving_failed": "Saving Lovelace UI configuration failed.",
-                    "yaml_unsupported": "You can not use this function when using Lovelace UI in YAML mode."
+                    "yaml_unsupported": "You cannot use this function when using Lovelace UI in YAML mode."
                 },
                 "cards": {
                     "confirm_delete": "Are you sure you want to delete this card?",
@@ -2149,6 +2159,7 @@
                             "maximum": "Maximum",
                             "minimum": "Minimum",
                             "name": "Name",
+                            "no_theme": "No theme",
                             "refresh_interval": "Refresh Interval",
                             "show_icon": "Show Icon?",
                             "show_name": "Show Name?",
@@ -2245,6 +2256,7 @@
                     "edit_card": {
                         "add": "Add Card",
                         "delete": "Delete Card",
+                        "duplicate": "Duplicate Card",
                         "edit": "Edit",
                         "header": "Card Configuration",
                         "move": "Move to View",
@@ -2271,7 +2283,10 @@
                         "move_right": "Move view right",
                         "tab_badges": "Badges",
                         "tab_settings": "Settings",
-                        "tab_visibility": "Visibility"
+                        "tab_visibility": "Visibility",
+                        "visibility": {
+                            "select_users": "Select which users should see this view in the navigation"
+                        }
                     },
                     "header": "Edit UI",
                     "menu": {
@@ -2308,7 +2323,7 @@
                         "save": "Take control",
                         "yaml_config": "To help you start here is the current config of this dashboard:",
                         "yaml_control": "To take control in YAML mode, create a YAML file with the name you specified in your config for this dashboard, or the default 'ui-lovelace.yaml'.",
-                        "yaml_mode": "You are using YAML mode, that means you can not change your Lovelace config from the UI. If you want to change Lovelace from the UI, remove the 'mode: yaml' from your Lovelace configuration in 'configuration.yaml.'"
+                        "yaml_mode": "You are using YAML mode, which means you cannot change your Lovelace config from the UI. If you want to change Lovelace from the UI, remove 'mode: yaml' from your Lovelace configuration in 'configuration.yaml.'"
                     },
                     "suggest_card": {
                         "add": "Add to Lovelace UI",
@@ -2328,9 +2343,14 @@
                     "exit_edit_mode": "Exit UI edit mode",
                     "help": "Help",
                     "refresh": "Refresh",
+                    "reload_resources": "Reload resources",
                     "unused_entities": "Unused entities"
                 },
                 "reload_lovelace": "Reload UI",
+                "reload_resources": {
+                    "refresh_body": "You have to refresh the page to complete the reload, do you want to refresh now?",
+                    "refresh_header": "Do you want to refresh?"
+                },
                 "unused_entities": {
                     "available_entities": "These are the entities that you have available, but are not in your Lovelace UI yet.",
                     "domain": "Domain",
@@ -2348,6 +2368,7 @@
                     "existing_cards": "You can't delete a view that has cards in it. Remove the cards first."
                 },
                 "warning": {
+                    "attribute_not_found": "Attribute {attribute} not available in: {entity}",
                     "entity_non_numeric": "Entity is non-numeric: {entity}",
                     "entity_not_found": "Entity not available: {entity}"
                 }

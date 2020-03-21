@@ -651,8 +651,12 @@
                     "name": "Navn"
                 },
                 "input_datetime": {
+                    "date": "Dato",
+                    "datetime": "Dato og tid",
                     "has_date": "Dato",
-                    "has_time": "Tid"
+                    "has_time": "Tid",
+                    "mode": "Hva vil du legge inn",
+                    "time": "Tid"
                 },
                 "input_number": {
                     "box": "Inntastingsfelt",
@@ -679,9 +683,9 @@
                 },
                 "not_editable": "Kan ikke redigeres",
                 "not_editable_text": "Denne enheten kan ikke endres fra brukergrensesnittet fordi den er definert i configuration.yaml.",
-                "platform_not_loaded": "{platform} -komponenten er ikke lastet, legg den til konfigurasjonen din. Enten ved å legge til 'default_config:' eller '{platform}:'.",
+                "platform_not_loaded": "{platform}-integreringen er ikke lastet inn. Legg til konfigurasjonen ved å legge til 'default_config:' eller '{platform}:'.",
                 "required_error_msg": "Dette feltet er påkrevd",
-                "yaml_not_editable": "Innstillingene til denne enheten kan ikke redigeres fra brukergrensesnittet. Bare enheter som er konfigurert fra brukergrensesnittet, kan konfigureres fra brukergrensesnittet."
+                "yaml_not_editable": "Innstillingene for denne enheten kan ikke redigeres fra brukergrensesnittet. Bare enheter som er konfigurert fra brukergrensesnittet, kan konfigureres fra brukergrensesnittet."
             },
             "more_info_control": {
                 "dismiss": "Avvis dialogboksen",
@@ -806,6 +810,10 @@
                 "areas": {
                     "caption": "Områder",
                     "create_area": "OPPRETT OMRÅDE",
+                    "delete": {
+                        "confirmation_text": "Alle enheter som tilhører dette området vil ikke bli tildelt.",
+                        "confirmation_title": "Er du sikker på at du vil slette dette området?"
+                    },
                     "description": "Oversikt over alle områder i ditt hjem",
                     "editor": {
                         "create": "OPPRETT",
@@ -948,7 +956,7 @@
                         "triggers": {
                             "add": "Legg til utløser",
                             "delete": "Slett",
-                            "delete_confirm": "Er du sikker på at du vil slette?",
+                            "delete_confirm": "Er du sikker på at du vil slette dette?",
                             "duplicate": "Dupliser",
                             "header": "Utløsere",
                             "introduction": "Utløsere er det som starter en automatiseringsregel. Det er mulig å spesifisere flere utløsere for samme regel. Når en utløser aktiveres, vil Home Assistant bekrefte vilkårene, hvis noen, og kjøre handlingen. \n\n[Lær mer om utløsere.](https://home-assistant.io/docs/automation/trigger/)",
@@ -1309,7 +1317,8 @@
                         "device": "Enhet",
                         "integration": "Integrering",
                         "manufacturer": "Produsent",
-                        "model": "Modell"
+                        "model": "Modell",
+                        "no_devices": "Ingen enheter"
                     },
                     "description": "Administrer tilkoblede enheter",
                     "details": "Her er alle detaljer for enheten.",
@@ -1460,13 +1469,14 @@
                         },
                         "failed_create_area": "Kunne ikke opprette område.",
                         "finish": "Fullfør",
+                        "loading_first_time": "Vent mens integreringen installeres",
                         "name_new_area": "Navn på det nye området?",
                         "not_all_required_fields": "Ikke alle obligatoriske felt er fylt ut.",
                         "submit": "Send inn"
                     },
                     "configure": "Konfigurer",
                     "configured": "Konfigurert",
-                    "description": "Administrer og konfigurér integrasjoner",
+                    "description": "Administrer og konfigurer integrasjoner",
                     "details": "Integrasjonsdetaljer",
                     "discovered": "Oppdaget",
                     "home_assistant_website": "Nettsted for Home Assistant",
@@ -1491,7 +1501,7 @@
                 "lovelace": {
                     "caption": "Lovelace Dashboards",
                     "dashboards": {
-                        "cant_edit_default": "Standard Lovelace-dashbordet kan ikke redigeres fra brukergrensesnittet. Du kan skjule det ved å sette et annet dashbord som standard.",
+                        "cant_edit_default": "Standard Lovelace-dashbordet kan ikke redigeres fra brukergrensesnittet. Du kan skjule det ved å angi et annet instrumentbord som standard.",
                         "cant_edit_yaml": "Instrumentbord som er definert i YAML, kan ikke redigeres fra brukergrensesnittet. Endre dem i configuration.yaml.",
                         "caption": "Oversikter",
                         "conf_mode": {
@@ -1499,22 +1509,23 @@
                             "yaml": "YAML-fil"
                         },
                         "confirm_delete": "Er du sikker på at du vil slette dette instrumentbordet?",
+                        "default_dashboard": "Dette er standard instrumentbord",
                         "detail": {
                             "create": "Opprett",
                             "delete": "Slett",
                             "dismiss": "Lukk",
                             "edit_dashboard": "Redigere instrumentbord",
-                            "icon": "Sidepanel-ikon",
+                            "icon": "Ikon",
                             "new_dashboard": "Legg til nytt instrumentbord",
                             "remove_default": "Fjern som standard på denne enheten",
                             "require_admin": "Bare administrator",
                             "set_default": "Angi som standard på denne enheten",
                             "show_sidebar": "Vis i sidepanelet",
-                            "title": "Tittel på sidepanelet",
+                            "title": "Tittel",
                             "title_required": "Tittel er nødvendig.",
                             "update": "Oppdater",
                             "url": "Url",
-                            "url_error_msg": "Url-adressen kan ikke inneholde mellomrom eller spesialtegn, med unntak av _ og -"
+                            "url_error_msg": "URLen skal inneholde en - og kan ikke inneholde mellomrom eller spesialtegn, bortsett fra _ og -"
                         },
                         "picker": {
                             "add_dashboard": "Legge til instrumentbord",
@@ -1551,7 +1562,8 @@
                             "headers": {
                                 "type": "Type",
                                 "url": "Url"
-                            }
+                            },
+                            "no_resources": "Ingen ressurser"
                         },
                         "refresh_body": "Du må oppdatere siden for å fullføre fjerningen, vil du oppdatere nå?",
                         "refresh_header": "Vil du oppdatere?",
@@ -2241,6 +2253,7 @@
                     "edit_card": {
                         "add": "Legg til kort",
                         "delete": "Slett kort",
+                        "duplicate": "Duplikatkort",
                         "edit": "Rediger",
                         "header": "Kortkonfigurasjon",
                         "move": "Flytt til visning",
@@ -2267,7 +2280,10 @@
                         "move_right": "Flytt visning til høyre",
                         "tab_badges": "Merker",
                         "tab_settings": "Innstillinger",
-                        "tab_visibility": "Synlighet"
+                        "tab_visibility": "Synlighet",
+                        "visibility": {
+                            "select_users": "Velg hvilke brukere som skal se denne visningen i navigasjonen"
+                        }
                     },
                     "header": "Rediger brukergrensesnitt",
                     "menu": {
@@ -2324,9 +2340,14 @@
                     "exit_edit_mode": "Avslutt redigeringsmodus for brukergrensesnitt",
                     "help": "Hjelp",
                     "refresh": "Oppdater",
+                    "reload_resources": "Last inn ressursene på nytt",
                     "unused_entities": "Ubrukte entiteter"
                 },
                 "reload_lovelace": "Last inn UI",
+                "reload_resources": {
+                    "refresh_body": "Du må oppdatere siden for å fullføre omlastingen, vil du oppdatere nå?",
+                    "refresh_header": "Vil du oppdatere?"
+                },
                 "unused_entities": {
                     "available_entities": "Dette er enheter som du har tilgjengelig, men som ikke er i Lovelace UI ennå.",
                     "domain": "Domene",
@@ -2344,6 +2365,7 @@
                     "existing_cards": "Du kan ikke slette en visning som har kort i den. Fjern kortene først."
                 },
                 "warning": {
+                    "attribute_not_found": "Attributtet {attributt} er ikke tilgjengelig i: {entity}",
                     "entity_non_numeric": "Entiteten er ikke-numerisk: {entity}",
                     "entity_not_found": "Entitet ikke tilgjengelig: {entity}"
                 }

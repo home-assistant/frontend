@@ -29,7 +29,6 @@ class HaInputSelectForm extends LitElement {
   @property() private _name!: string;
   @property() private _icon!: string;
   @property() private _options: string[] = [];
-  @property() private _initial?: string;
   @query("#option_input") private _optionInput?: PaperInputElement;
 
   set item(item: InputSelect) {
@@ -37,13 +36,20 @@ class HaInputSelectForm extends LitElement {
     if (item) {
       this._name = item.name || "";
       this._icon = item.icon || "";
-      this._initial = item.initial;
       this._options = item.options || [];
     } else {
       this._name = "";
       this._icon = "";
       this._options = [];
     }
+  }
+
+  public focus() {
+    this.updateComplete.then(() =>
+      (this.shadowRoot?.querySelector(
+        "[dialogInitialFocus]"
+      ) as HTMLElement)?.focus()
+    );
   }
 
   protected render(): TemplateResult {
@@ -65,6 +71,7 @@ class HaInputSelectForm extends LitElement {
             "ui.dialogs.helper_settings.required_error_msg"
           )}"
           .invalid=${nameInvalid}
+          dialogInitialFocus
         ></paper-input>
         <ha-icon-input
           .value=${this._icon}
@@ -115,42 +122,8 @@ class HaInputSelectForm extends LitElement {
             )}</mwc-button
           >
         </div>
-        ${this.hass.userData?.showAdvanced
-          ? html`
-              <br />
-              ${this.hass!.localize(
-                "ui.dialogs.helper_settings.generic.initial_value_explain"
-              )}
-              <ha-paper-dropdown-menu
-                label-float
-                dynamic-align
-                .label=${this.hass.localize(
-                  "ui.dialogs.helper_settings.generic.initial_value"
-                )}
-              >
-                <paper-listbox
-                  slot="dropdown-content"
-                  attr-for-selected="item-initial"
-                  .selected=${this._initial}
-                  @selected-changed=${this._initialChanged}
-                >
-                  ${this._options.map(
-                    (option) => html`
-                      <paper-item item-initial=${option}>${option}</paper-item>
-                    `
-                  )}
-                </paper-listbox>
-              </ha-paper-dropdown-menu>
-            `
-          : ""}
       </div>
     `;
-  }
-
-  private _initialChanged(ev: CustomEvent) {
-    fireEvent(this, "value-changed", {
-      value: { ...this._item, initial: ev.detail.value },
-    });
   }
 
   private _handleKeyAdd(ev: KeyboardEvent) {

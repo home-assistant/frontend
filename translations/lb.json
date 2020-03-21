@@ -649,8 +649,12 @@
                     "name": "Numm"
                 },
                 "input_datetime": {
+                    "date": "Datum",
+                    "datetime": "Datum an Zäit",
                     "has_date": "Datum",
-                    "has_time": "Zäit"
+                    "has_time": "Zäit",
+                    "mode": "Wat soll d'Angabe sinn?",
+                    "time": "Zäit"
                 },
                 "input_number": {
                     "max": "Maximale Wäert",
@@ -799,6 +803,10 @@
                 "areas": {
                     "caption": "Lëscht vun de Beräicher",
                     "create_area": "Beräich erstellen",
+                    "delete": {
+                        "confirmation_text": "All Apparater an dësem Beräich ginn néirens zougewisen.",
+                        "confirmation_title": "Sécher fir dëse Beräich ze läsche?"
+                    },
                     "description": "Iwwersiicht vun de Beräicher am Haus",
                     "editor": {
                         "create": "Erstellen",
@@ -1302,7 +1310,8 @@
                         "device": "Apparat",
                         "integration": "Integratioun",
                         "manufacturer": "Hiersteller",
-                        "model": "Modell"
+                        "model": "Modell",
+                        "no_devices": "Keng Apparater"
                     },
                     "description": "Verwalt verbonnen Apparater",
                     "details": "Hei sinn all Detailer vun ärem Apparat.",
@@ -1404,6 +1413,7 @@
                         "add_helper": "Helper bäifügen",
                         "headers": {
                             "editable": "Editéierbar",
+                            "entity_id": "ID vun der Entitéit",
                             "name": "Numm",
                             "type": "Typ"
                         }
@@ -1494,9 +1504,12 @@
                             "edit_dashboard": "Tableau de Bord änneren",
                             "icon": "Ikon vun der Säite Läischt",
                             "new_dashboard": "Neien Tableau de Bord dobäisetzen",
+                            "remove_default": "Als Standard op dësem Apparat ewech huelen",
                             "require_admin": "Admin nëmmen",
+                            "set_default": "Als Standard op dësem Apparat définéieren",
                             "show_sidebar": "An der Säite Läischt uweisen",
                             "title": "Titel vun der Säite Läischt",
+                            "title_required": "Titel ass erfuerderlech.",
                             "update": "Aktualiséieren",
                             "url": "Url",
                             "url_error_msg": "D'Url ka keen Espace oder speziell Charakteren, ausser _ an - , enthalen."
@@ -1505,6 +1518,7 @@
                             "add_dashboard": "Tableau de Bord dobäisetzen",
                             "headers": {
                                 "conf_mode": "Konfiguratioun's Method",
+                                "default": "Standard",
                                 "filename": "Numm vum Fichier",
                                 "require_admin": "Admin nëmmen",
                                 "sidebar": "An der Säite Läischt uweisen",
@@ -1535,7 +1549,8 @@
                             "headers": {
                                 "type": "Typ",
                                 "url": "Url"
-                            }
+                            },
+                            "no_resources": "Keng Ressourcen"
                         },
                         "refresh_body": "D'Säit muss aktualiséiert gi fir d'Läschen ofzeschléissen, elo aktualiséieren?",
                         "refresh_header": "Soll aktualiséiert ginn?",
@@ -2071,10 +2086,18 @@
                             "name": "Alarm Zentral"
                         },
                         "button": {
+                            "description": "Knäppchen Kaart erlaabt et Knäppchen mat Aktioune unzeweisen.",
                             "name": "Knäppchen"
                         },
                         "conditional": {
-                            "name": "Bedingungen"
+                            "card": "Kaart",
+                            "change_type": "Typ änneren",
+                            "condition_explanation": "D'Kaart gëtt réischt ugewisen wann ALL Konditiounen erfëllt sinn.",
+                            "conditions": "Konditiounen",
+                            "current_state": "aktuell",
+                            "name": "Bedingungen",
+                            "state_equal": "Zoustand ass gläich mat",
+                            "state_not_equal": "Zoustand ass net gläich mat"
                         },
                         "config": {
                             "optional": "Optional",
@@ -2111,6 +2134,7 @@
                             "icon": "Ikon",
                             "icon_height": "Héicht vun der Ikon",
                             "image": "Wee zum Bild",
+                            "manual": "Manuell",
                             "maximum": "Maximum",
                             "minimum": "Minimum",
                             "name": "Numm",
@@ -2118,6 +2142,7 @@
                             "show_icon": "Ikon uweisen?",
                             "show_name": "Numm uweisen?",
                             "show_state": "Zoustand uweisen?",
+                            "state": "Zoustand",
                             "tap_action": "Aktioun beim tippen",
                             "theme": "Thema",
                             "title": "Titel",
@@ -2132,32 +2157,39 @@
                             "name": "Verlaf Diagramm"
                         },
                         "horizontal-stack": {
+                            "description": "Horizontaé Kaart erlaabt et méi Kaarten ze gruppéieren fir dass se ëmmer an der selwechter Rei ugewise ginn.",
                             "name": "Horizontale Stapel"
                         },
                         "iframe": {
+                            "description": "Websäit Kaart erlaabt et eng aaner Websäit am Home Assistant unzeweisen.",
                             "name": "iFrame"
                         },
                         "light": {
+                            "description": "Luucht Kaart erlaabt et d'Hellegkeet vun de Luuchten ze veränneren.",
                             "name": "Luucht"
                         },
                         "map": {
                             "dark_mode": "Däischteren Modus",
                             "default_zoom": "Standard Zoom",
+                            "description": "Kaarte Kaart erméiglecht d'Visualisatioun vun Entitéiten op enger Kaart.",
                             "geo_location_sources": "Quell vun der Geolokalisatioun",
                             "name": "Kaart",
                             "source": "Quell"
                         },
                         "markdown": {
                             "content": "Contenu",
+                            "description": "Markdown Kaart gëtt benotzt fir Text ze formatéieren.",
                             "name": "Markdown"
                         },
                         "media-control": {
+                            "description": "Medien Kontroller Kaart gëtt benotzt fir Medie Spiller Entitéiten an engem Interface mat Kontroll Knäppchen unzeweisen.",
                             "name": "Medie Kontroll"
                         },
                         "picture-elements": {
                             "name": "Biller Elementer"
                         },
                         "picture-entity": {
+                            "description": "Bild Entitéite Kaart affichéiert eng Entitéit an der Form vun engem Bild. Amplaatz vun Biller vun enger URL kënnen och Biller vun enger Kamera ugewise ginn.",
                             "name": "Biller Entitéit"
                         },
                         "picture-glance": {
@@ -2167,24 +2199,30 @@
                             "name": "Bild"
                         },
                         "plant-status": {
+                            "description": "Pflanz Kaart ass fir all Botanist geduecht.",
                             "name": "Status vun der Planz"
                         },
                         "sensor": {
+                            "description": "Sensor Kaart erméiglecht eng schnell vue vun den Zoustänn vun de Sensoren mat engem optionalen Graphique fir den Verlaf ze visualiséieren.",
                             "graph_detail": "Detail Diagramm",
                             "graph_type": "Typ vun Graph.",
                             "name": "Sensor"
                         },
                         "shopping-list": {
+                            "description": "Akafslëscht Kaart erlaabt et Saachen op eng Akafslëscht dobäizesetzen, änneren oder ofzehaken.",
                             "integration_not_loaded": "Dës Kaart erfuerdert dass d'Integratioun `shopping_list ageriicht ass.",
                             "name": "Akafslëscht"
                         },
                         "thermostat": {
+                            "description": "Thermostat Kaart erlaabt d'Kontroll vun den Klima Entitéiten. Souwuel Temperatur an Betriibs Modus kënnen geännert ginn.",
                             "name": "Thermostat"
                         },
                         "vertical-stack": {
+                            "description": "Vertikal Kaart erlaabt et méi Kaarten ze gruppéieren fir dass se ëmmer an der selwechter Kolonne ugewise ginn.",
                             "name": "Vertikale Stapel"
                         },
                         "weather-forecast": {
+                            "description": "Wieder Previsoune Kaart weist d'Météo un. Immens nëtzlech fir Interfacen déi Benotzer un d'Mauer hänken.",
                             "name": "Wiederprevisioune"
                         }
                     },
@@ -2216,7 +2254,8 @@
                         "move_left": "Usiicht no lenks réckelen",
                         "move_right": "Usiicht no riets réckelen",
                         "tab_badges": "Badgen",
-                        "tab_settings": "Astellungen"
+                        "tab_settings": "Astellungen",
+                        "tab_visibility": "Visibilitéit"
                     },
                     "header": "UI änneren",
                     "menu": {

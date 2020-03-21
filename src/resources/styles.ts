@@ -76,6 +76,22 @@ export const haStyle = css`
     @apply --paper-font-title;
   }
 
+  .secondary {
+    color: var(--secondary-text-color);
+  }
+
+  .error {
+    color: var(--google-red-500);
+  }
+
+  .warning {
+    color: var(--google-red-500);
+  }
+
+  mwc-button.warning {
+    --mdc-theme-primary: var(--google-red-500);
+  }
+
   button.link {
     background: none;
     color: inherit;
@@ -160,8 +176,10 @@ export const haStyleDialog = css`
     padding: 8px;
   }
 
-  .paper-dialog-buttons .warning {
-    --mdc-theme-primary: var(--google-red-500);
+  @media all and (min-width: 450px) {
+    ha-paper-dialog {
+      min-width: 400px;
+    }
   }
 
   @media all and (max-width: 450px), all and (max-height: 500px) {
@@ -185,9 +203,16 @@ export const haStyleDialog = css`
   ha-dialog {
     --mdc-dialog-min-width: 400px;
     --mdc-dialog-max-width: 600px;
-    --mdc-dialog-title-ink-color: var(--primary-text-color);
+    --mdc-dialog-heading-ink-color: var(--primary-text-color);
+    --mdc-dialog-content-ink-color: var(--primary-text-color);
     --justify-action-buttons: space-between;
   }
+
+  ha-dialog .form {
+    padding-bottom: 24px;
+    color: var(--primary-text-color);
+  }
+
   /* make dialog fullscreen on small screens */
   @media all and (max-width: 450px), all and (max-height: 500px) {
     ha-dialog {

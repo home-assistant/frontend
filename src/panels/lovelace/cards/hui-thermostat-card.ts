@@ -34,7 +34,6 @@ import {
 } from "../../../data/climate";
 import { HassEntity } from "home-assistant-js-websocket";
 import { actionHandler } from "../common/directives/action-handler-directive";
-import { LovelaceConfig } from "../../../data/lovelace";
 import { findEntities } from "../common/find-entites";
 import { UNAVAILABLE } from "../../../data/entity";
 
@@ -59,22 +58,20 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
 
   public static getStubConfig(
     hass: HomeAssistant,
-    lovelaceConfig: LovelaceConfig,
-    entities?: string[],
-    entitiesFill?: string[]
-  ): object {
+    entities: string[],
+    entitiesFallback: string[]
+  ): ThermostatCardConfig {
     const includeDomains = ["climate"];
     const maxEntities = 1;
     const foundEntities = findEntities(
       hass,
-      lovelaceConfig,
       maxEntities,
       entities,
-      entitiesFill,
+      entitiesFallback,
       includeDomains
     );
 
-    return { entity: foundEntities[0] || "" };
+    return { type: "thermostat", entity: foundEntities[0] || "" };
   }
 
   @property() public hass?: HomeAssistant;
@@ -271,7 +268,12 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
 
   protected updated(changedProps: PropertyValues): void {
     super.updated(changedProps);
-    if (!this._config || !this.hass || !changedProps.has("hass")) {
+
+    if (
+      !this._config ||
+      !this.hass ||
+      (!changedProps.has("hass") && !changedProps.has("_config"))
+    ) {
       return;
     }
 

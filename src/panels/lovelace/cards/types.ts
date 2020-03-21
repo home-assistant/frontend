@@ -39,7 +39,7 @@ export interface EntitiesCardConfig extends LovelaceCardConfig {
   type: "entities";
   show_header_toggle?: boolean;
   title?: string;
-  entities: EntitiesCardEntityConfig[];
+  entities: Array<EntitiesCardEntityConfig | string>;
   theme?: string;
   icon?: string;
   header?: LovelaceHeaderFooterConfig;
@@ -97,6 +97,9 @@ export interface ConfigEntity extends EntityConfig {
 
 export interface PictureGlanceEntityConfig extends ConfigEntity {
   show_state?: boolean;
+  attribute?: string;
+  prefix?: string;
+  suffix?: string;
 }
 
 export interface GlanceConfigEntity extends ConfigEntity {
@@ -112,7 +115,7 @@ export interface GlanceCardConfig extends LovelaceCardConfig {
   show_icon?: boolean;
   title?: string;
   theme?: string;
-  entities: ConfigEntity[];
+  entities: Array<string | ConfigEntity>;
   columns?: number;
   state_color?: boolean;
 }
@@ -132,8 +135,8 @@ export interface LightCardConfig extends LovelaceCardConfig {
 
 export interface MapCardConfig extends LovelaceCardConfig {
   type: "map";
-  title: string;
-  aspect_ratio: string;
+  title?: string;
+  aspect_ratio?: string;
   default_zoom?: number;
   entities?: Array<EntityConfig | string>;
   geo_location_sources?: string[];
@@ -174,7 +177,7 @@ export interface PictureElementsCardConfig extends LovelaceCardConfig {
   camera_image?: string;
   camera_view?: HuiImage["cameraView"];
   state_image?: {};
-  state_filter: string[];
+  state_filter?: string[];
   aspect_ratio?: string;
   entity?: string;
   elements: LovelaceElementConfig[];
@@ -199,13 +202,13 @@ export interface PictureEntityCardConfig extends LovelaceCardConfig {
 }
 
 export interface PictureGlanceCardConfig extends LovelaceCardConfig {
-  entities: PictureGlanceEntityConfig[];
+  entities: Array<string | PictureGlanceEntityConfig>;
   title?: string;
   image?: string;
   camera_image?: string;
   camera_view?: HuiImage["cameraView"];
   state_image?: {};
-  state_filter: string[];
+  state_filter?: string[];
   aspect_ratio?: string;
   entity?: string;
   tap_action?: ActionConfig;

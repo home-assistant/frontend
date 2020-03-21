@@ -12,7 +12,7 @@ import {
 import { classMap } from "lit-html/directives/class-map";
 import { styleMap } from "lit-html/directives/style-map";
 import Vibrant from "node-vibrant";
-import { Palette } from "node-vibrant/lib/color";
+import { Swatch } from "node-vibrant/lib/color";
 import "@polymer/paper-icon-button/paper-icon-button";
 import "@polymer/paper-progress/paper-progress";
 // tslint:disable-next-line: no-duplicate-imports
@@ -30,10 +30,8 @@ import { stateIcon } from "../../../common/entity/state_icon";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
 import { contrast } from "../common/color/contrast";
 import { findEntities } from "../common/find-entites";
-import { LovelaceConfig } from "../../../data/lovelace";
 import { UNAVAILABLE, UNKNOWN } from "../../../data/entity";
 import {
-  OFF_STATES,
   SUPPORT_PAUSE,
   SUPPORT_TURN_ON,
   SUPPORT_PREVIOUS_TRACK,
@@ -44,17 +42,126 @@ import {
   CONTRAST_RATIO,
   getCurrentProgress,
   computeMediaDescription,
+  SUPPORT_TURN_OFF,
 } from "../../../data/media-player";
 
 import "../../../components/ha-card";
 import "../../../components/ha-icon";
 import "../components/hui-marquee";
+// tslint:disable-next-line: no-duplicate-imports
+import { PaperIconButtonElement } from "@polymer/paper-icon-button/paper-icon-button";
 
 function getContrastRatio(
   rgb1: [number, number, number],
   rgb2: [number, number, number]
 ): number {
   return Math.round((contrast(rgb1, rgb2) + Number.EPSILON) * 100) / 100;
+}
+
+// How much the total diff between 2 RGB colors can be
+// to be considered similar.
+const COLOR_SIMILARITY_THRESHOLD = 150;
+
+// For debug purposes, is being tree shaken.
+const DEBUG_COLOR = __DEV__ && false;
+
+const logColor = (
+  color: Swatch,
+  label: string = `${color.getHex()} - ${color.getPopulation()}`
+) =>
+  // tslint:disable-next-line:no-console
+  console.log(
+    `%c${label}`,
+    `color: ${color.getBodyTextColor()}; background-color: ${color.getHex()}`
+  );
+
+const customGenerator = (colors: Swatch[]) => {
+  colors.sort((colorA, colorB) => colorB.population - colorA.population);
+
+  const backgroundColor = colors[0];
+  let foregroundColor: string | undefined;
+
+  const contrastRatios = new Map<Swatch, number>();
+  const approvedContrastRatio = (color: Swatch) => {
+    if (!contrastRatios.has(color)) {
+      contrastRatios.set(
+        color,
+        getContrastRatio(backgroundColor.rgb, color.rgb)
+      );
+    }
+
+    return contrastRatios.get(color)! > CONTRAST_RATIO;
+  };
+
+  // We take each next color and find one that has better contrast.
+  for (let i = 1; i < colors.length && foregroundColor === undefined; i++) {
+    // If this color matches, score, take it.
+    if (approvedContrastRatio(colors[i])) {
+      if (DEBUG_COLOR) {
+        logColor(colors[i], "PICKED");
+      }
+      foregroundColor = colors[i].hex;
+      break;
+    }
+
+    // This color has the wrong contrast ratio, but it is the right color.
+    // Let's find similar colors that might have the right contrast ratio
+
+    const currentColor = colors[i];
+    if (DEBUG_COLOR) {
+      logColor(colors[i], "Finding similar color with better contrast");
+    }
+
+    for (let j = i + 1; j < colors.length; j++) {
+      const compareColor = colors[j];
+
+      // difference. 0 is same, 765 max difference
+      const diffScore =
+        Math.abs(currentColor.rgb[0] - compareColor.rgb[0]) +
+        Math.abs(currentColor.rgb[1] - compareColor.rgb[1]) +
+        Math.abs(currentColor.rgb[2] - compareColor.rgb[2]);
+
+      if (DEBUG_COLOR) {
+        logColor(colors[j], `${colors[j].hex} - ${diffScore}`);
+      }
+
+      if (diffScore > COLOR_SIMILARITY_THRESHOLD) {
+        continue;
+      }
+
+      if (approvedContrastRatio(compareColor)) {
+        if (DEBUG_COLOR) {
+          logColor(compareColor, "PICKED");
+        }
+        foregroundColor = compareColor.hex;
+        break;
+      }
+    }
+  }
+
+  if (foregroundColor === undefined) {
+    foregroundColor = backgroundColor.bodyTextColor;
+  }
+
+  if (DEBUG_COLOR) {
+    // tslint:disable-next-line:no-console
+    console.log();
+    // tslint:disable-next-line:no-console
+    console.log(
+      "%cPicked colors",
+      `color: ${foregroundColor}; background-color: ${backgroundColor.hex}; font-weight: bold; padding: 16px;`
+    );
+    colors.forEach((color) => logColor(color));
+    // tslint:disable-next-line:no-console
+    console.log();
+  }
+
+  return [foregroundColor, backgroundColor.hex];
+};
+
+interface ControlButton {
+  icon: string;
+  action: string;
 }
 
 @customElement("hui-media-control-card")
@@ -68,22 +175,20 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
 
   public static getStubConfig(
     hass: HomeAssistant,
-    lovelaceConfig: LovelaceConfig,
-    entities?: string[],
-    entitiesFill?: string[]
-  ): object {
+    entities: string[],
+    entitiesFallback: string[]
+  ): MediaControlCardConfig {
     const includeDomains = ["media_player"];
     const maxEntities = 1;
     const foundEntities = findEntities(
       hass,
-      lovelaceConfig,
       maxEntities,
       entities,
-      entitiesFill,
+      entitiesFallback,
       includeDomains
     );
 
-    return { entity: foundEntities[0] || "" };
+    return { type: "media-control", entity: foundEntities[0] || "" };
   }
 
   @property() public hass?: HomeAssistant;
@@ -118,7 +223,7 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
       return;
     }
 
-    const stateObj = this.hass.states[this._config.entity] as MediaEntity;
+    const stateObj = this._stateObj;
 
     if (!stateObj) {
       return;
@@ -130,7 +235,7 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
       stateObj.state === "playing"
     ) {
       this._progressInterval = window.setInterval(
-        () => this._updateProgressBar(stateObj),
+        () => this._updateProgressBar(),
         1000
       );
     }
@@ -147,7 +252,7 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
     if (!this.hass || !this._config) {
       return html``;
     }
-    const stateObj = this.hass.states[this._config.entity] as MediaEntity;
+    const stateObj = this._stateObj;
 
     if (!stateObj) {
       return html`
@@ -162,22 +267,34 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
     }
 
     const imageStyle = {
-      "background-image": `url(${this.hass.hassUrl(this._image)})`,
+      "background-image": this._image
+        ? `url(${this.hass.hassUrl(this._image)})`
+        : "none",
       width: `${this._cardHeight}px`,
-      "background-color": `${this._backgroundColor}`,
+      "background-color": this._backgroundColor || "",
     };
 
     const gradientStyle = {
-      "background-image": `linear-gradient(to right, ${this._backgroundColor}, transparent)`,
+      "background-image": `linear-gradient(to right, ${
+        this._backgroundColor
+      }, ${this._backgroundColor + "00"})`,
       width: `${this._cardHeight}px`,
     };
 
-    const isOffState = OFF_STATES.includes(stateObj.state);
+    const state = stateObj.state;
+
+    const isOffState = state === "off";
     const isUnavailable =
-      stateObj.state === UNAVAILABLE ||
-      stateObj.state === UNKNOWN ||
-      (stateObj.state === "off" && !supportsFeature(stateObj, SUPPORT_TURN_ON));
+      state === UNAVAILABLE ||
+      state === UNKNOWN ||
+      (state === "off" && !supportsFeature(stateObj, SUPPORT_TURN_ON));
     const hasNoImage = !this._image;
+    const controls = this._getControls();
+    const showControls =
+      controls &&
+      (!this._veryNarrow || isOffState || state === "idle" || state === "on");
+
+    const mediaDescription = computeMediaDescription(stateObj);
 
     return html`
       <ha-card>
@@ -190,11 +307,15 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
         >
           <div
             class="color-block"
-            style=${styleMap({ "background-color": this._backgroundColor! })}
+            style=${styleMap({
+              "background-color": this._backgroundColor || "",
+            })}
           ></div>
           <div
             class="no-img"
-            style=${styleMap({ "background-color": this._backgroundColor! })}
+            style=${styleMap({
+              "background-color": this._backgroundColor || "",
+            })}
           ></div>
           <div class="image" style=${styleMap(imageStyle)}></div>
           ${hasNoImage
@@ -211,9 +332,10 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
             "no-image": hasNoImage,
             narrow: this._narrow && !this._veryNarrow,
             off: isOffState || isUnavailable,
-            "no-progress": !this._showProgressBar && !this._veryNarrow,
+            "no-progress": this._veryNarrow || !this._showProgressBar,
+            "no-controls": !showControls,
           })}"
-          style=${styleMap({ color: this._foregroundColor! })}
+          style=${styleMap({ color: this._foregroundColor || "" })}
         >
           <div class="top-info">
             <div class="icon-name">
@@ -242,98 +364,35 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
                       : `${this._cardHeight - 40}px`,
                   })}
                 >
-                  ${isOffState
+                  ${!mediaDescription && !stateObj.attributes.media_title
                     ? ""
                     : html`
                         <div class="media-info">
-                          <div class="title">
-                            <hui-marquee
-                              .text=${stateObj.attributes.media_title ||
-                                computeMediaDescription(stateObj)}
-                              .active=${this._marqueeActive}
-                              @mouseover=${this._marqueeMouseOver}
-                              @mouseleave=${this._marqueeMouseLeave}
-                            ></hui-marquee>
-                          </div>
+                          <hui-marquee
+                            .text=${stateObj.attributes.media_title ||
+                              mediaDescription}
+                            .active=${this._marqueeActive}
+                            @mouseover=${this._marqueeMouseOver}
+                            @mouseleave=${this._marqueeMouseLeave}
+                          ></hui-marquee>
                           ${!stateObj.attributes.media_title
                             ? ""
-                            : computeMediaDescription(stateObj)}
+                            : mediaDescription}
                         </div>
                       `}
-                  ${this._veryNarrow && !isOffState
+                  ${!showControls
                     ? ""
                     : html`
                         <div class="controls">
-                          <div>
-                            ${(stateObj.state === "off" &&
-                              !supportsFeature(stateObj, SUPPORT_TURN_ON)) ||
-                            !isOffState
-                              ? ""
-                              : html`
-                                  <paper-icon-button
-                                    icon="hass:power"
-                                    .action=${stateObj.state === "off"
-                                      ? "turn_on"
-                                      : "turn_off"}
-                                    @click=${this._handleClick}
-                                  ></paper-icon-button>
-                                `}
-                          </div>
-                          ${isOffState
-                            ? ""
-                            : html`
-                                <div class="playback-controls">
-                                  ${!supportsFeature(
-                                    stateObj,
-                                    SUPPORT_PREVIOUS_TRACK
-                                  )
-                                    ? ""
-                                    : html`
-                                        <paper-icon-button
-                                          icon="hass:skip-previous"
-                                          .action=${"media_previous_track"}
-                                          @click=${this._handleClick}
-                                        ></paper-icon-button>
-                                      `}
-                                  ${(stateObj.state !== "playing" &&
-                                    !supportsFeature(
-                                      stateObj,
-                                      SUPPORTS_PLAY
-                                    )) ||
-                                  stateObj.state === UNAVAILABLE ||
-                                  (stateObj.state === "playing" &&
-                                    !supportsFeature(stateObj, SUPPORT_PAUSE) &&
-                                    !supportsFeature(stateObj, SUPPORT_STOP))
-                                    ? ""
-                                    : html`
-                                        <paper-icon-button
-                                          class="playPauseButton"
-                                          .icon=${stateObj.state !== "playing"
-                                            ? "hass:play"
-                                            : supportsFeature(
-                                                stateObj,
-                                                SUPPORT_PAUSE
-                                              )
-                                            ? "hass:pause"
-                                            : "hass:stop"}
-                                          .action=${"media_play_pause"}
-                                          @click=${this._handleClick}
-                                        ></paper-icon-button>
-                                      `}
-                                  ${!supportsFeature(
-                                    stateObj,
-                                    SUPPORT_NEXT_TRACK
-                                  )
-                                    ? ""
-                                    : html`
-                                        <paper-icon-button
-                                          icon="hass:skip-next"
-                                          .action=${"media_next_track"}
-                                          @click=${this._handleClick}
-                                        ></paper-icon-button>
-                                      `}
-                                </div>
-                              `}
+                          ${controls!.map(
+                            (control) => html`
+                              <paper-icon-button
+                                .icon=${control.icon}
+                                action=${control.action}
+                                @click=${this._handleClick}
+                              ></paper-icon-button>
+                            `
+                          )}
                         </div>
                       `}
                 </div>
@@ -342,7 +401,6 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
                   : html`
                       <paper-progress
                         .max=${stateObj.attributes.media_duration}
-                        class="progress"
                         style=${styleMap({
                           "--paper-progress-active-color":
                             this._foregroundColor || "var(--accent-color)",
@@ -350,8 +408,7 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
                             ? "pointer"
                             : "initial",
                         })}
-                        @click=${(e: MouseEvent) =>
-                          this._handleSeek(e, stateObj)}
+                        @click=${this._handleSeek}
                       ></paper-progress>
                     `}
               `}
@@ -370,13 +427,20 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
 
   protected updated(changedProps: PropertyValues): void {
     super.updated(changedProps);
+
     if (!this._config || !this.hass || !changedProps.has("hass")) {
       return;
     }
 
-    const stateObj = this.hass.states[this._config.entity] as MediaEntity;
+    const stateObj = this._stateObj;
 
     if (!stateObj) {
+      if (this._progressInterval) {
+        clearInterval(this._progressInterval);
+        this._progressInterval = undefined;
+      }
+      this._foregroundColor = undefined;
+      this._backgroundColor = undefined;
       return;
     }
 
@@ -394,13 +458,15 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
       applyThemesOnElement(this, this.hass.themes, this._config.theme);
     }
 
+    this._updateProgressBar();
+
     if (
       !this._progressInterval &&
       this._showProgressBar &&
       stateObj.state === "playing"
     ) {
       this._progressInterval = window.setInterval(
-        () => this._updateProgressBar(stateObj),
+        () => this._updateProgressBar(),
         1000
       );
     } else if (
@@ -423,8 +489,89 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
 
     if (this._image !== oldImage) {
       this._setColors();
-      return;
     }
+  }
+
+  private _getControls(): ControlButton[] | undefined {
+    const stateObj = this._stateObj;
+
+    if (!stateObj) {
+      return undefined;
+    }
+
+    const state = stateObj.state;
+
+    if (state === UNAVAILABLE || state === UNKNOWN) {
+      return undefined;
+    }
+
+    if (state === "off") {
+      return supportsFeature(stateObj, SUPPORT_TURN_ON)
+        ? [
+            {
+              icon: "hass:power",
+              action: "turn_on",
+            },
+          ]
+        : undefined;
+    }
+
+    if (state === "on") {
+      return supportsFeature(stateObj, SUPPORT_TURN_OFF)
+        ? [
+            {
+              icon: "hass:power",
+              action: "turn_off",
+            },
+          ]
+        : undefined;
+    }
+
+    if (state === "idle") {
+      return supportsFeature(stateObj, SUPPORTS_PLAY)
+        ? [
+            {
+              icon: "hass:play",
+              action: "media_play",
+            },
+          ]
+        : undefined;
+    }
+
+    const buttons: ControlButton[] = [];
+
+    if (supportsFeature(stateObj, SUPPORT_PREVIOUS_TRACK)) {
+      buttons.push({
+        icon: "hass:skip-previous",
+        action: "media_previous_track",
+      });
+    }
+
+    if (
+      (state === "playing" &&
+        (supportsFeature(stateObj, SUPPORT_PAUSE) ||
+          supportsFeature(stateObj, SUPPORT_STOP))) ||
+      (state === "paused" && supportsFeature(stateObj, SUPPORTS_PLAY))
+    ) {
+      buttons.push({
+        icon:
+          state !== "playing"
+            ? "hass:play"
+            : supportsFeature(stateObj, SUPPORT_PAUSE)
+            ? "hass:pause"
+            : "hass:stop",
+        action: "media_play_pause",
+      });
+    }
+
+    if (supportsFeature(stateObj, SUPPORT_NEXT_TRACK)) {
+      buttons.push({
+        icon: "hass:skip-next",
+        action: "media_next_track",
+      });
+    }
+
+    return buttons.length > 0 ? buttons : undefined;
   }
 
   private get _image() {
@@ -432,7 +579,7 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
       return undefined;
     }
 
-    const stateObj = this.hass.states[this._config.entity] as MediaEntity;
+    const stateObj = this._stateObj;
 
     if (!stateObj) {
       return undefined;
@@ -445,21 +592,20 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
   }
 
   private get _showProgressBar() {
-    if (!this.hass || !this._config) {
+    if (!this.hass || !this._config || this._narrow) {
       return false;
     }
 
-    const stateObj = this.hass.states[this._config.entity] as MediaEntity;
+    const stateObj = this._stateObj;
 
     if (!stateObj) {
       return false;
     }
 
     return (
-      !OFF_STATES.includes(stateObj.state) &&
-      stateObj.attributes.media_duration &&
-      stateObj.attributes.media_position &&
-      !this._narrow
+      (stateObj.state === "playing" || stateObj.state === "paused") &&
+      "media_duration" in stateObj.attributes &&
+      "media_position" in stateObj.attributes
     );
   }
 
@@ -486,7 +632,12 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
       debounce(() => this._measureCard(), 250, false)
     );
 
-    this._resizeObserver.observe(this);
+    const card = this.shadowRoot!.querySelector("ha-card");
+    // If we show an error or warning there is no ha-card
+    if (!card) {
+      return;
+    }
+    this._resizeObserver.observe(card);
   }
 
   private _handleMoreInfo(): void {
@@ -496,18 +647,28 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
   }
 
   private _handleClick(e: MouseEvent): void {
-    this.hass!.callService("media_player", (e.currentTarget! as any).action, {
-      entity_id: this._config!.entity,
-    });
+    this.hass!.callService(
+      "media_player",
+      (e.currentTarget! as PaperIconButtonElement).getAttribute("action")!,
+      {
+        entity_id: this._config!.entity,
+      }
+    );
   }
 
-  private _updateProgressBar(stateObj: MediaEntity): void {
+  private _updateProgressBar(): void {
     if (this._progressBar) {
-      this._progressBar.value = getCurrentProgress(stateObj);
+      this._progressBar.value = getCurrentProgress(this._stateObj!);
     }
   }
 
-  private _handleSeek(e: MouseEvent, stateObj: MediaEntity): void {
+  private get _stateObj(): MediaEntity | undefined {
+    return this.hass!.states[this._config!.entity] as MediaEntity;
+  }
+
+  private _handleSeek(e: MouseEvent): void {
+    const stateObj = this._stateObj!;
+
     if (!supportsFeature(stateObj, SUPPORT_SEEK)) {
       return;
     }
@@ -530,51 +691,14 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
       return;
     }
 
-    Vibrant.from(this._image)
-      .quality(1)
+    new Vibrant(this._image, {
+      colorCount: 16,
+      generator: customGenerator,
+    })
       .getPalette()
-      .then((palette: Palette) => {
-        const paletteColors: any[] = [];
-
-        Object.keys(palette).forEach((color) => {
-          paletteColors.push({
-            hex: palette[color]!.getHex(),
-            rgb: palette[color]!.getRgb(),
-            textColor: palette[color]!.getBodyTextColor(),
-            population: palette[color]!.getPopulation(),
-          });
-        });
-
-        if (!paletteColors.length) {
-          this._foregroundColor = undefined;
-          this._backgroundColor = undefined;
-          return;
-        }
-
-        paletteColors.sort((colorA, colorB) => {
-          if (colorA.population > colorB.population) {
-            return -1;
-          }
-          if (colorA.population < colorB.population) {
-            return 1;
-          }
-
-          return 0;
-        });
-
-        this._backgroundColor = paletteColors[0].hex;
-
-        for (let i = 1; i < paletteColors.length; i++) {
-          if (
-            getContrastRatio(paletteColors[0].rgb, paletteColors[i].rgb) >=
-            CONTRAST_RATIO
-          ) {
-            this._foregroundColor = paletteColors[i].hex;
-            return;
-          }
-        }
-
-        this._foregroundColor = paletteColors[0].textColor;
+      .then(([foreground, background]: [string, string]) => {
+        this._backgroundColor = background;
+        this._foregroundColor = foreground;
       })
       .catch((err: any) => {
         // tslint:disable-next-line:no-console
@@ -706,9 +830,12 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
         height: 44px;
       }
 
-      .playPauseButton {
-        width: 56px !important;
-        height: 56px !important;
+      paper-icon-button[action="media_play"],
+      paper-icon-button[action="media_play_pause"],
+      paper-icon-button[action="turn_on"],
+      paper-icon-button[action="turn_off"] {
+        width: 56px;
+        height: 56px;
       }
 
       .top-info {
@@ -738,19 +865,16 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
         overflow: hidden;
       }
 
+      hui-marquee {
+        font-size: 1.2em;
+        margin: 0px 0 4px;
+      }
+
       .title-controls {
         padding-top: 16px;
       }
 
-      .title {
-        font-size: 1.2em;
-        margin: 0px 0 4px;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-        overflow: hidden;
-      }
-
-      .progress {
+      paper-progress {
         width: 100%;
         height: var(--paper-progress-height, 4px);
         margin-top: 4px;
@@ -766,16 +890,6 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
         filter: grayscale(1);
       }
 
-      .off .controls paper-icon-button {
-        width: 55px;
-        height: 55px;
-      }
-
-      .off.player,
-      .narrow.player {
-        padding-bottom: 16px !important;
-      }
-
       .narrow .controls,
       .no-progress .controls {
         padding-bottom: 0;
@@ -786,12 +900,14 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
         height: 40px;
       }
 
-      .narrow .playPauseButton {
-        width: 50px !important;
-        height: 50px !important;
+      .narrow paper-icon-button[action="media_play"],
+      .narrow paper-icon-button[action="media_play_pause"],
+      .narrow paper-icon-button[action="turn_on"] {
+        width: 50px;
+        height: 50px;
       }
 
-      .no-progress.player {
+      .no-progress.player:not(.no-controls) {
         padding-bottom: 0px;
       }
     `;

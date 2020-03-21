@@ -24,7 +24,6 @@ class HaInputNumberForm extends LitElement {
   private _item?: Partial<InputNumber>;
   @property() private _name!: string;
   @property() private _icon!: string;
-  @property() private _initial?: number;
   @property() private _max?: number;
   @property() private _min?: number;
   @property() private _mode?: string;
@@ -39,7 +38,6 @@ class HaInputNumberForm extends LitElement {
       this._icon = item.icon || "";
       this._max = item.max ?? 100;
       this._min = item.min ?? 0;
-      this._initial = item.initial;
       this._mode = item.mode || "slider";
       this._step = item.step || 1;
       this._unit_of_measurement = item.unit_of_measurement;
@@ -55,6 +53,14 @@ class HaInputNumberForm extends LitElement {
       this._mode = "slider";
       this._step = 1;
     }
+  }
+
+  public focus() {
+    this.updateComplete.then(() =>
+      (this.shadowRoot?.querySelector(
+        "[dialogInitialFocus]"
+      ) as HTMLElement)?.focus()
+    );
   }
 
   protected render(): TemplateResult {
@@ -76,6 +82,7 @@ class HaInputNumberForm extends LitElement {
             "ui.dialogs.helper_settings.required_error_msg"
           )}"
           .invalid=${nameInvalid}
+          dialogInitialFocus
         ></paper-input>
         <ha-icon-input
           .value=${this._icon}
@@ -144,19 +151,6 @@ class HaInputNumberForm extends LitElement {
                 @value-changed=${this._valueChanged}
                 .label=${this.hass!.localize(
                   "ui.dialogs.helper_settings.input_number.unit_of_measurement"
-                )}
-              ></paper-input>
-              <br />
-              ${this.hass!.localize(
-                "ui.dialogs.helper_settings.generic.initial_value_explain"
-              )}
-              <paper-input
-                .value=${this._initial}
-                .configValue=${"initial"}
-                type="number"
-                @value-changed=${this._valueChanged}
-                .label=${this.hass!.localize(
-                  "ui.dialogs.helper_settings.generic.initial_value"
                 )}
               ></paper-input>
             `

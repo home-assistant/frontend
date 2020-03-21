@@ -633,7 +633,7 @@
                     "unavailable": "Questa entità non è attualmente disponibile.",
                     "update": "AGGIORNA"
                 },
-                "no_unique_id": "Questa entità non ha un ID univoco, pertanto le impostazioni non possono essere gestite dall'Interfaccia Utente.",
+                "no_unique_id": "Questa entità non ha un ID univoco, pertanto le sue impostazioni non possono essere gestite dall'Interfaccia Utente.",
                 "related": "Relazionato",
                 "settings": "Impostazioni"
             },
@@ -651,8 +651,12 @@
                     "name": "Nome"
                 },
                 "input_datetime": {
+                    "date": "Data",
+                    "datetime": "Data e ora",
                     "has_date": "Data",
-                    "has_time": "Ora"
+                    "has_time": "Ora",
+                    "mode": "Cosa vuoi inserire",
+                    "time": "Ora"
                 },
                 "input_number": {
                     "box": "Campo di immissione",
@@ -679,9 +683,9 @@
                 },
                 "not_editable": "Non modificabile",
                 "not_editable_text": "Questa entità non può essere modificata dall'Interfaccia Utente perché è definita in configuration.yaml.",
-                "platform_not_loaded": "Il componente {platform} non è caricato, si prega di aggiungerlo alla propria configurazione, aggiungendo 'default_config:' o '{platform}:'.",
+                "platform_not_loaded": "L'integrazione {platform} non è stata caricata. Si prega di aggiungerla alla propria configurazione, aggiungendo 'default_config:' o '{platform}:'.",
                 "required_error_msg": "Questo campo è obbligatorio",
-                "yaml_not_editable": "Le impostazioni di questa entità non possono essere modificate dall'interfaccia utente. Solo le entità impostate dall'interfaccia utente sono configurabili dall'interfaccia utente."
+                "yaml_not_editable": "Le impostazioni di questa entità non possono essere modificate dall'Interfaccia Utente. Solo le entità impostate dall'Interfaccia Utente sono configurabili dall'Interfaccia Utente."
             },
             "more_info_control": {
                 "dismiss": "Chiudi finestra di dialogo",
@@ -806,6 +810,10 @@
                 "areas": {
                     "caption": "Aree",
                     "create_area": "CREA AREA",
+                    "delete": {
+                        "confirmation_text": "Tutti i dispositivi in quest'area non saranno assegnati.",
+                        "confirmation_title": "Sei sicuro di voler cancellare quest'area?"
+                    },
                     "description": "Panoramica di tutte le aree della tua casa.",
                     "editor": {
                         "create": "CREA",
@@ -948,7 +956,7 @@
                         "triggers": {
                             "add": "Aggiungi Attivazione",
                             "delete": "Elimina",
-                            "delete_confirm": "Sicuro di voler eliminare?",
+                            "delete_confirm": "Sei sicuro di voler eliminare questo?",
                             "duplicate": "Duplica",
                             "header": "Attivazioni (o Triggers)",
                             "introduction": "L'Attivazione (o Trigger) avvia l'elaborazione di una regola di automazione. È possibile specificare più Attivazioni per una stessa regola di automazione. Una volta avviata una Attivazione, Home Assistant convaliderà le Condizioni, se presenti, ed eseguirà l'Azione.",
@@ -1309,7 +1317,8 @@
                         "device": "Dispositivo",
                         "integration": "Integrazione",
                         "manufacturer": "Produttore",
-                        "model": "Modello"
+                        "model": "Modello",
+                        "no_devices": "Nessun dispositivo"
                     },
                     "description": "Gestisci i dispositivi collegati",
                     "details": "Ecco tutti i dettagli del tuo dispositivo.",
@@ -1460,6 +1469,7 @@
                         },
                         "failed_create_area": "Impossibile creare l'area.",
                         "finish": "Finire",
+                        "loading_first_time": "Si prega di attendere durante l'installazione dell'integrazione",
                         "name_new_area": "Nome della nuova area?",
                         "not_all_required_fields": "Non tutti i campi obbligatori sono compilati.",
                         "submit": "Invia"
@@ -1491,7 +1501,7 @@
                 "lovelace": {
                     "caption": "Cruscotti Lovelace",
                     "dashboards": {
-                        "cant_edit_default": "Il cruscotto standard Lovelace non può essere modificato dall'interfaccia utente. È possibile nasconderlo impostando un altro cruscotto come predefinito.",
+                        "cant_edit_default": "Il cruscotto standard Lovelace non può essere modificato dall'Interfaccia Utente. È possibile nasconderlo impostando un altro cruscotto come predefinito.",
                         "cant_edit_yaml": "I cruscotti definiti in YAML non possono essere modificati dall'Interfaccia Utente. Modificarli in configuration.yaml.",
                         "caption": "Cruscotti",
                         "conf_mode": {
@@ -1499,22 +1509,23 @@
                             "yaml": "File YAML"
                         },
                         "confirm_delete": "Sei sicuro di voler eliminare questo cruscotto?",
+                        "default_dashboard": "Questo è il cruscotto predefinito",
                         "detail": {
                             "create": "Crea",
                             "delete": "Elimina",
                             "dismiss": "Chiudi",
                             "edit_dashboard": "Modifica cruscotto",
-                            "icon": "Icona della barra laterale",
+                            "icon": "Icona",
                             "new_dashboard": "Aggiungi nuovo cruscotto",
                             "remove_default": "Rimuovi come predefinito su questo dispositivo",
                             "require_admin": "Solo per l'amministratore",
                             "set_default": "Imposta come predefinito su questo dispositivo",
                             "show_sidebar": "Mostra nella barra laterale",
-                            "title": "Titolo della barra laterale",
+                            "title": "Titolo",
                             "title_required": "È richiesto il titolo.",
                             "update": "Aggiorna",
                             "url": "Url",
-                            "url_error_msg": "L'URL non può contenere spazi o caratteri speciali, ad eccezione di _ e -"
+                            "url_error_msg": "L'URL dovrebbe contenere un - e non può contenere spazi o caratteri speciali, ad eccezione di _ e -"
                         },
                         "picker": {
                             "add_dashboard": "Aggiungi cruscotto",
@@ -1551,7 +1562,8 @@
                             "headers": {
                                 "type": "Tipo",
                                 "url": "Url"
-                            }
+                            },
+                            "no_resources": "Nessuna risorsa"
                         },
                         "refresh_body": "Devi aggiornare la pagina per completare la rimozione, vuoi aggiornare ora?",
                         "refresh_header": "Vuoi aggiornare?",
@@ -2041,7 +2053,7 @@
                 "add_entities": {
                     "generated_unsupported": "Questa funzione può essere utilizzata solo dopo aver preso il controllo dell'interfaccia utente di Lovelace.",
                     "saving_failed": "Salvataggio della configurazione dell'interfaccia utente di Lovelace non riuscito.",
-                    "yaml_unsupported": "Non è possibile utilizzare questa funzione quando si utilizza l'interfaccia utente di Lovelace in modalità YAML."
+                    "yaml_unsupported": "Non è possibile utilizzare questa funzione quando si utilizza l'Interfaccia Utente di Lovelace in modalità YAML."
                 },
                 "cards": {
                     "confirm_delete": "Sei sicuro di voler cancellare questa scheda?",
@@ -2241,6 +2253,7 @@
                     "edit_card": {
                         "add": "Aggiungi scheda",
                         "delete": "Elimina scheda",
+                        "duplicate": "Duplica scheda",
                         "edit": "Modifica",
                         "header": "Configurazione della scheda",
                         "move": "Sposta nella vista",
@@ -2267,7 +2280,10 @@
                         "move_right": "Sposta la vista a destra",
                         "tab_badges": "Distintivi",
                         "tab_settings": "Impostazioni",
-                        "tab_visibility": "Visibilità"
+                        "tab_visibility": "Visibilità",
+                        "visibility": {
+                            "select_users": "Selezionare quali utenti dovrebbero vedere questa vista nella navigazione"
+                        }
                     },
                     "header": "Modifica dell'interfaccia utente",
                     "menu": {
@@ -2324,9 +2340,14 @@
                     "exit_edit_mode": "Esci dalla modalità di modifica dell'Interfaccia Utente",
                     "help": "Aiuto",
                     "refresh": "Aggiorna",
+                    "reload_resources": "Ricarica le risorse",
                     "unused_entities": "Entità non utilizzate"
                 },
                 "reload_lovelace": "Ricaricare l'Interfaccia Utente",
+                "reload_resources": {
+                    "refresh_body": "È necessario aggiornare la pagina per completare il ricaricamento, si desidera aggiornare ora?",
+                    "refresh_header": "Vuoi aggiornare?"
+                },
                 "unused_entities": {
                     "available_entities": "Queste sono le entità che hai a disposizione, ma non sono ancora nella tua interfaccia utente di Lovelace.",
                     "domain": "Dominio",
@@ -2344,6 +2365,7 @@
                     "existing_cards": "Non è possibile eliminare una visualizzazione contenente schede. Rimuovere prima le schede."
                 },
                 "warning": {
+                    "attribute_not_found": "Attributo {attribute} non disponibile in: {entity}",
                     "entity_non_numeric": "L'entità non è numerica: {entity}",
                     "entity_not_found": "Entità non disponibile: {entity}"
                 }

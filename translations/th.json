@@ -76,12 +76,22 @@
                 "on": "เปิด"
             },
             "hvac_action": {
+                "cooling": "โหมดเย็น",
+                "drying": "โหมดแห้ง",
+                "fan": "พัดลม",
+                "heating": "โหมดอบอุ่น",
                 "idle": "ไม่ได้ใช้งาน",
                 "off": "ปิด"
             },
             "preset_mode": {
                 "activity": "กิจกรรม",
-                "home": "บ้าน"
+                "away": "ไม่อยู่",
+                "boost": "เพิ่ม",
+                "comfort": "คอม ฟอร์ท",
+                "eco": "ประหยัด",
+                "home": "บ้าน",
+                "none": "ไม่มี",
+                "sleep": "หลับ"
             }
         }
     },
@@ -230,6 +240,7 @@
             "fan_only": "เฉพาะพัดลม",
             "gas": "แก๊ส",
             "heat": "ร้อน",
+            "heat_cool": "ร้อน/เย็น",
             "heat_pump": "ปั๊มความร้อน",
             "high_demand": "ความต้องการสูง",
             "idle": "ไม่ได้ใช้งาน",
@@ -404,6 +415,7 @@
                 "fan_mode": "โหมดของพัดลม",
                 "on_off": "เปิด / ปิด",
                 "operation": "การทำงาน",
+                "preset_mode": "ฟังก์ชันที่ใช้งานบ่อย",
                 "swing_mode": "โหมดแกว่ง",
                 "target_humidity": "ค่าความชื้นที่ต้องการ",
                 "target_temperature": "อุณหภูมิที่ต้องการ"
@@ -441,6 +453,14 @@
             },
             "script": {
                 "execute": "ปฏิบัติ"
+            },
+            "timer": {
+                "actions": {
+                    "cancel": "ยกเลิก",
+                    "finish": "เสร็จสิ้น",
+                    "pause": "หยุดชั่วคราว",
+                    "start": "เริ่มต้น"
+                }
             },
             "vacuum": {
                 "actions": {
@@ -536,6 +556,15 @@
                 "entity_id": "รหัสประจำเอนทิตี",
                 "name": "ชื่อที่สำหรับแทนที่ค่าเดิม",
                 "save": "บันทึก"
+            },
+            "zha_device_info": {
+                "manuf": "โดย {manufacturer}",
+                "no_area": "ไม่มีห้อง",
+                "power_source": "แหล่งพลังงาน",
+                "services": {
+                    "reconfigure": "กำหนดค่าอุปกรณ์ ZHA อีกครั้ง (เพื่อรักษาอุปกรณ์) ใช้สิ่งนี้หากคุณมีปัญหากับอุปกรณ์ หากอุปกรณ์ดังกล่าวเป็นอุปกรณ์ที่ใช้พลังงานจากแบตเตอรี่โปรดตรวจสอบให้แน่ใจว่าอุปกรณ์นั้นเปิดอยู่และยอมรับคำสั่งเมื่อคุณใช้บริการ"
+                },
+                "unknown": "ไม่ทราบสถานะ"
             }
         },
         "duration": {
@@ -605,6 +634,9 @@
                                     "delay": "หน่วงเวลา",
                                     "label": "หน่วงเวลา"
                                 },
+                                "device_id": {
+                                    "label": "อุปกรณ์"
+                                },
                                 "event": {
                                     "event": "การกระทำ",
                                     "label": "กระทำเหตุการณ์",
@@ -633,11 +665,23 @@
                             "learn_more": "เรียนรู้เพิ่มเติมเกี่ยวกับเงื่อนไข",
                             "type_select": "ประเภทเงื่อนไข",
                             "type": {
+                                "and": {
+                                    "label": "และ"
+                                },
+                                "device": {
+                                    "extra_fields": {
+                                        "above": "เหนือกว่า",
+                                        "below": "ต่ำกว่า"
+                                    }
+                                },
                                 "numeric_state": {
                                     "above": "เหนือหัว",
                                     "below": "ต่ำกว่า",
                                     "label": "สถานะตัวเลข",
                                     "value_template": "ค่าของรูปแบบ (ปล่อยว่างได้)"
+                                },
+                                "or": {
+                                    "label": "หรือ"
                                 },
                                 "state": {
                                     "label": "สถานะ",
@@ -670,6 +714,9 @@
                             "unsupported_condition": "ไม่รองรับเงื่อนไข: {condition}"
                         },
                         "default_name": "ระบบอัตโนมัติใหม่",
+                        "description": {
+                            "label": "รายละเอียด"
+                        },
                         "introduction": "ใช้ระบบอัตโนมัติเพื่อทำให้บ้านของคุณมีชีวิตชีวา",
                         "load_error_not_editable": "ระบบอัตโนมัติที่อยู่ในไฟล์ Automations.yaml เท่านั้นที่สามารถแก้ไขได้",
                         "load_error_unknown": "เกิดข้อผิดพลาดในการโหลดระบบอัตโนมัติ ({err_no})",
@@ -684,6 +731,13 @@
                             "learn_more": "เรียนรู้เพิ่มเติมเกี่ยวกับ Trigger",
                             "type_select": "ประเภททริกเกอร์",
                             "type": {
+                                "device": {
+                                    "extra_fields": {
+                                        "above": "เหนือกว่า",
+                                        "below": "ต่ำกว่า"
+                                    },
+                                    "label": "อุปกรณ์"
+                                },
                                 "event": {
                                     "event_data": "ข้อมูลเหตุการณ์",
                                     "event_type": "ชนิดเหตุการณ์",
@@ -771,7 +825,19 @@
                     "caption": "Home Assistant Cloud",
                     "description_features": "ควบคุมการทำงานเมื่อออกจากบ้านร่วมกับ Alexa และ Google Assistant",
                     "description_login": "ลงชื่อเข้าใช้เป็น {email}",
-                    "description_not_login": "ยังไม่ได้เข้าสู่ระบบ"
+                    "description_not_login": "ยังไม่ได้เข้าสู่ระบบ",
+                    "forgot_password": {
+                        "email": "อีเมล์",
+                        "email_error_msg": "อีเมลไม่ถูกต้อง",
+                        "subtitle": "ลืมรหัสผ่าน",
+                        "title": "ลืมรหัสผ่าน"
+                    },
+                    "login": {
+                        "email_error_msg": "อีเมลไม่ถูกต้อง",
+                        "forgot_password": "ลืมรหัสผ่าน?",
+                        "password": "รหัสผ่าน",
+                        "password_error_msg": "รหัสผ่านมีอย่างน้อย 8 ตัวอักษร"
+                    }
                 },
                 "core": {
                     "caption": "ทั่วไป",
@@ -829,6 +895,9 @@
                         "introduction": "ปรับแต่งคุณลักษณะของเอนทิตี้แต่ละตัว เมื่อมีการเพิ่มหรือแก้ไขจะมีผลทันที หากลบคุณลักษณะจะเห็นผลต่อเมื่อเอนทิตี้นั้นได้รับการอัพเดท"
                     }
                 },
+                "devices": {
+                    "caption": "อุปกรณ์"
+                },
                 "entities": {
                     "caption": "เอนทิตีรีจิสทรี",
                     "description": "ภาพรวมของเอนทิตีทั้งหมดที่รู้จัก",
@@ -854,6 +923,7 @@
                         "device_unavailable": "อุปกรณ์นี้ไม่พร้อมใช้งาน",
                         "entity_unavailable": "Entity นี้ไม่พร้อมใช้งาน",
                         "firmware": "Firmware: {version}",
+                        "hub": "เชื่อมต่อผ่านทาง",
                         "manuf": "โดย {manufacturer}",
                         "no_area": "ไม่มีห้อง",
                         "no_device": "เป็น Entities โดยไม่มีอุปกรณ์",
@@ -887,22 +957,31 @@
                 },
                 "script": {
                     "caption": "สคริปต์",
-                    "description": "สร้างและแก้ไขสคริปต์"
+                    "description": "สร้างและแก้ไขสคริปต์",
+                    "picker": {
+                        "add_script": "เพิ่มสคริปต์"
+                    }
                 },
                 "server_control": {
+                    "caption": "การควบคุมเซิร์ฟเวอร์",
                     "section": {
                         "reloading": {
                             "core": "โหลดส่วนกลางใหม่",
                             "group": "โหลดกลุ่มใหม่",
+                            "heading": "โหลดการกำหนดค่า YAML อีกครั้ง",
                             "script": "โหลดสคริปต์อีกครั้ง"
                         },
                         "server_management": {
+                            "confirm_stop": "คุณแน่ใจหรือว่าต้องการหยุดการทำงานของ Home Assistant",
                             "heading": "การจัดการเซิร์ฟเวอร์",
                             "restart": "เริ่มต้นใหม่",
                             "stop": "หยุด"
                         },
                         "validation": {
-                            "check_config": "ตรวจสอบการกำหนดค่า"
+                            "check_config": "ตรวจสอบการกำหนดค่า",
+                            "heading": "ตรวจสอบการกำหนดค่า",
+                            "invalid": "การกำหนดค่าไม่ถูกต้อง",
+                            "valid": "การกำหนดค่าถูกต้อง!"
                         }
                     }
                 },
@@ -950,13 +1029,25 @@
                 "zwave": {
                     "caption": "Z-Wave",
                     "common": {
+                        "index": "ดัชนี",
                         "unknown": "ไม่ทราบ",
-                        "value": "ค่า"
+                        "value": "ค่า",
+                        "wakeup_interval": "ช่วงเวลาการปลุก"
                     },
                     "description": "จัดการเครือข่าย Z-Wave",
+                    "network_management": {
+                        "header": "เริ่มเครือข่าย Z-Wave"
+                    },
+                    "network_status": {
+                        "network_started": "เริ่มเครือข่าย Z-Wave",
+                        "network_stopped": "หยุดเครือข่าย Z-Wave"
+                    },
                     "node_config": {
+                        "false": "เท็จ",
                         "seconds": "วินาที",
-                        "set_config_parameter": "ตั้งค่าพารามิเตอร์การกำหนดค่า"
+                        "set_config_parameter": "ตั้งค่าพารามิเตอร์การกำหนดค่า",
+                        "set_wakeup": "ตั้งค่าช่วงเวลาการปลุก",
+                        "true": "จริง"
                     }
                 }
             },
@@ -1003,7 +1094,8 @@
                         "more_info": "แสดงข้อมูลเพิ่มเติม: {name}",
                         "navigate_to": "นำทางไปยัง {location}",
                         "tap": "แตะ:",
-                        "toggle": "สลับ {name}"
+                        "toggle": "สลับ {name}",
+                        "url": "เปิดหน้าต่างเพื่อไปยัง {url_path}"
                     },
                     "shopping-list": {
                         "add_item": "เพิ่มรายการ",
@@ -1016,6 +1108,30 @@
                     "refresh": "รีเฟรช"
                 },
                 "editor": {
+                    "card": {
+                        "config": {
+                            "optional": "ตัวเลือก"
+                        },
+                        "gauge": {
+                            "severity": {
+                                "green": "เขียว",
+                                "red": "แดง",
+                                "yellow": "เหลือง"
+                            }
+                        },
+                        "generic": {
+                            "icon": "ไอคอน",
+                            "icon_height": "ความสูงของไอคอน",
+                            "image": "เส้นทางของภาพ",
+                            "maximum": "ขีดสุด",
+                            "minimum": "ขั้นต่ำ"
+                        },
+                        "map": {
+                            "dark_mode": "โหมดมืด?",
+                            "default_zoom": "ค่าซูมเริ่มต้น",
+                            "source": "แหล่งที่มา"
+                        }
+                    },
                     "edit_card": {
                         "add": "เพิ่มการ์ดใหม่",
                         "delete": "ลบ",
@@ -1170,6 +1286,49 @@
                 "logging_in_with": "เข้าสู่ระบบด้วย ** {authProviderName} **",
                 "pick_auth_provider": "หรือเข้าสู่ระบบด้วย"
             },
+            "page-demo": {
+                "cards": {
+                    "demo": {
+                        "demo_by": "โดย {name}",
+                        "introduction": "ยินดีต้อนรับกลับบ้าน! คุณมาถึงหน้าสาธิตที่เราแสดง UIs ที่ดีที่สุดที่สร้างโดยชุมชนของเรา",
+                        "learn_more": "เรียนรู้เพิ่มเติมเกี่ยวกับ Home Assistant",
+                        "next_demo": "การสาธิตครั้งต่อไป"
+                    }
+                },
+                "config": {
+                    "arsaboo": {
+                        "labels": {
+                            "activity": "กิจกรรม",
+                            "air": "อากาศ",
+                            "commute_home": "เดินทางกลับบ้าน",
+                            "entertainment": "ความบันเทิง",
+                            "hdmi_input": "ช่องต่อ HDMI",
+                            "hdmi_switcher": "ตัวสลับสัญญาณ HDMI",
+                            "information": "ข้อมูล",
+                            "lights": "ไฟ",
+                            "morning_commute": "การเดินทางยามเช้า",
+                            "total_tv_time": "เวลาที่ใช้กับโทรทัศน์ทั้งหมด",
+                            "turn_tv_off": "ปิดโทรทัศน์",
+                            "volume": "ระดับเสียง"
+                        },
+                        "names": {
+                            "family_room": "ห้องของครอบครัว",
+                            "hallway": "ห้องโถง",
+                            "kitchen": "ห้องครัว",
+                            "left": "ซ้าย",
+                            "master_bedroom": "ห้องนอนใหญ่",
+                            "mirror": "กระจกเงา",
+                            "patio": "ลาน",
+                            "right": "ขวา",
+                            "upstairs": "ชั้นบน"
+                        },
+                        "unit": {
+                            "minutes_abbr": "นาที",
+                            "watching": "ดู"
+                        }
+                    }
+                }
+            },
             "page-onboarding": {
                 "core-config": {
                     "button_detect": "ตรวจจับ",
@@ -1220,6 +1379,7 @@
                     "header": "ภาษา",
                     "link_promo": "ช่วยเราแปลภาษาเป็นประเทศของคุณ"
                 },
+                "logout": "ออกจากระบบ",
                 "long_lived_access_tokens": {
                     "confirm_delete": "คุณแน่ใจหรือไม่ว่าต้องการลบโทเค็นการเข้าถึงของ {name} ?",
                     "create": "สร้าง Token ใหม่",

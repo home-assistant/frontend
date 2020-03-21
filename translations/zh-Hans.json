@@ -651,8 +651,12 @@
                     "name": "名称"
                 },
                 "input_datetime": {
+                    "date": "日期",
+                    "datetime": "日期和时间",
                     "has_date": "日期",
-                    "has_time": "时间"
+                    "has_time": "时间",
+                    "mode": "要输入哪种形式",
+                    "time": "时间"
                 },
                 "input_number": {
                     "box": "输入框",
@@ -806,6 +810,10 @@
                 "areas": {
                     "caption": "区域注册表",
                     "create_area": "创建区域",
+                    "delete": {
+                        "confirmation_text": "此区域中的所有设备都将取消分配。",
+                        "confirmation_title": "您确定要删除此区域吗？"
+                    },
                     "description": "您家中所有区域的概览。",
                     "editor": {
                         "create": "创建",
@@ -833,7 +841,7 @@
                             "delete_confirm": "确认删除？",
                             "duplicate": "复制",
                             "header": "动作",
-                            "introduction": "Actions（动作）是当自动化条件满足时 Home Assistant 执行的操作。\n\n[了解更多关于 Actions 的信息](https://home-assistant.io/docs/automation/action)",
+                            "introduction": "“动作”是当自动化条件满足时 Home Assistant 执行的操作。",
                             "learn_more": "详细了解动作",
                             "name": "执行",
                             "type_select": "动作类型",
@@ -878,7 +886,7 @@
                             "delete_confirm": "确认删除？",
                             "duplicate": "复制",
                             "header": "环境条件",
-                            "introduction": "环境条件是自动化流程中的可选部分，它可用于触发条件触发时拦截不符合条件的动作。环境条件看似像触发条件实则大有不同。触发条件监测系统中事件的发生，也就是瞬时动作；而环境条件监测的是系统当前的状态。触发条件可以观察到开关打开的动作。条件只能查看当前开关是开还是关。",
+                            "introduction": "“环境条件”是自动化流程中的可选部分。除非所有环境条件都符合，否则“动作”不会执行。",
                             "learn_more": "详细了解环境条件",
                             "name": "环境条件",
                             "type_select": "环境条件类型",
@@ -951,7 +959,7 @@
                             "delete_confirm": "确认删除？",
                             "duplicate": "复制",
                             "header": "触发条件",
-                            "introduction": "触发条件是整个自动化流程的起点。一个自动化实例中可以设置多个触发条件。一旦该条件满足，Home Assistant 将验证环境条件（Conditions）是否符合，如果符合，则执行动作（Actions）。\n\n[了解更多内容](https://home-assistant.io/docs/automation/trigger/)",
+                            "introduction": "“触发条件”是整个自动化流程的起点。一个自动化规则中可以设置多个触发条件。一旦该条件满足，Home Assistant 将验证“环境条件”是否符合，如果符合，则执行“动作”。",
                             "learn_more": "详细了解触发条件",
                             "name": "触发条件",
                             "type_select": "触发条件类型",
@@ -1309,7 +1317,8 @@
                         "device": "设备",
                         "integration": "集成",
                         "manufacturer": "制造商",
-                        "model": "型号"
+                        "model": "型号",
+                        "no_devices": "没有设备"
                     },
                     "description": "管理已连接的设备",
                     "details": "这是设备的所有详细信息。",
@@ -1384,7 +1393,7 @@
                         "introduction2": "使用本实体注册工具重写名称，修改实体 ID 或者从 Home Assistant 删除实体。注意，删除实体注册信息并不会删除实体本身。如果要删除实体，请点击下面的链接进入集成页面进行操作。",
                         "remove_selected": {
                             "button": "删除所选实体",
-                            "confirm_partly_text": "在所选的 {removable} 个实体中有 {selected} 个可被删除。实体可被删除的条件是集成不再提供它们。有时，即使集成已删除，也必须先重新启动 Home Assistant 才能删除它们的实体。您确定要删除实体吗？",
+                            "confirm_partly_text": "在所选的 {selected} 个实体中有 {removable} 个可被删除。实体可被删除的条件是集成不再提供它们。有时，即使集成已删除，也必须先重新启动 Home Assistant 才能删除它们的实体。您确定要删除实体吗？",
                             "confirm_partly_title": "所选实体中只有 {number} 个可被删除。",
                             "confirm_text": "如果它们包含这些实体，则应将它们从 Lovelace 配置和自动化中删除。",
                             "confirm_title": "您要删除这 {number} 个实体吗？"
@@ -1460,6 +1469,7 @@
                         },
                         "failed_create_area": "创建区域失败。",
                         "finish": "完成",
+                        "loading_first_time": "正在安装集成，请稍候",
                         "name_new_area": "新区域的名称？",
                         "not_all_required_fields": "请填写所有必填字段",
                         "submit": "提交"
@@ -1473,7 +1483,7 @@
                     "ignore": {
                         "confirm_delete_ignore": "这将使集成在被发现时再次出现在已发现集成中。这可能需要重新启动或等待一段时间。",
                         "confirm_delete_ignore_title": "不再忽略 {name} 吗？",
-                        "confirm_ignore": "您确定不想设置此集成吗？您可以通过单击右上角菜单中的“显示忽略的集成”来撤消此操作。",
+                        "confirm_ignore": "您确定不想设置此集成吗？要撤销此操作，您可以点击右上角菜单中的“显示忽略的集成”。",
                         "confirm_ignore_title": "忽略发现的 {name}？",
                         "hide_ignored": "隐藏忽略的集成",
                         "ignore": "忽略",
@@ -1499,22 +1509,23 @@
                             "yaml": "YAML 文件"
                         },
                         "confirm_delete": "您确定要删除此仪表盘吗？",
+                        "default_dashboard": "这是默认的仪表盘",
                         "detail": {
                             "create": "创建",
                             "delete": "删除",
                             "dismiss": "关闭",
                             "edit_dashboard": "编辑仪表盘",
-                            "icon": "侧边栏图标",
+                            "icon": "图标",
                             "new_dashboard": "添加新仪表盘",
                             "remove_default": "取消在此设备上设为默认",
                             "require_admin": "仅限管理员",
                             "set_default": "在此设备上设为默认",
                             "show_sidebar": "在侧边栏显示",
-                            "title": "侧边栏标题",
+                            "title": "标题",
                             "title_required": "标题为必填项。",
                             "update": "更新",
                             "url": "网址",
-                            "url_error_msg": "网址不可包含除 - 和 _ 以外的特殊字符及空格"
+                            "url_error_msg": "网址应包含“-”，且不可包含除“-”和“_”以外的特殊字符及空格"
                         },
                         "picker": {
                             "add_dashboard": "添加仪表盘",
@@ -1551,7 +1562,8 @@
                             "headers": {
                                 "type": "类型",
                                 "url": "网址"
-                            }
+                            },
+                            "no_resources": "没有资源"
                         },
                         "refresh_body": "您必须刷新页面才能完成删除，是否要立即刷新？",
                         "refresh_header": "要刷新吗？",
@@ -2141,9 +2153,9 @@
                             "icon_height": "图标高度",
                             "image": "图像路径",
                             "manual": "手动模式",
-                            "manual_description": "您是想添加自定义卡片，还是手动编写 yaml 文件？",
-                            "maximum": "最大",
-                            "minimum": "最小",
+                            "manual_description": "需要添加自定义卡片，或者手动编写 yaml 吗？",
+                            "maximum": "最大值",
+                            "minimum": "最小值",
                             "name": "名称",
                             "refresh_interval": "刷新间隔",
                             "show_icon": "显示图标？",
@@ -2153,7 +2165,7 @@
                             "tap_action": "点击动作",
                             "theme": "主题",
                             "title": "标题",
-                            "unit": "单元",
+                            "unit": "单位",
                             "url": "网址"
                         },
                         "glance": {
@@ -2211,7 +2223,7 @@
                             "name": "图片"
                         },
                         "plant-status": {
-                            "description": "“植物状态”卡适用于所有可爱的植物学家。",
+                            "description": "“植物状态”卡片适合所有的植物爱好者。",
                             "name": "植物状态"
                         },
                         "sensor": {
@@ -2241,6 +2253,7 @@
                     "edit_card": {
                         "add": "添加卡片",
                         "delete": "删除",
+                        "duplicate": "复制卡片",
                         "edit": "编辑",
                         "header": "卡片配置",
                         "move": "移动",
@@ -2267,7 +2280,10 @@
                         "move_right": "向右移动视图",
                         "tab_badges": "徽章",
                         "tab_settings": "设置",
-                        "tab_visibility": "可见性"
+                        "tab_visibility": "可见性",
+                        "visibility": {
+                            "select_users": "选择要让哪些用户在导航中看到此视图"
+                        }
                     },
                     "header": "编辑 UI",
                     "menu": {
@@ -2304,7 +2320,7 @@
                         "save": "自行编辑",
                         "yaml_config": "为方便您开始，以下是此仪表盘的当前配置：",
                         "yaml_control": "要以 YAML 模式下自行编辑，请创建 YAML 文件并命名为在配置中为此仪表盘指定的名称，或使用默认的 'ui-lovelace.yaml'。",
-                        "yaml_mode": "您正在使用 YAML 模式，因此无法从 UI 更改 Lovelace 配置。如果要从 UI 更改 Lovelace，请从 'configuration.yaml' 中的 Lovelace 配置中删除 'mode:yaml'。"
+                        "yaml_mode": "您正在使用 YAML 模式，因此无法从 UI 更改 Lovelace 配置。如果要从 UI 更改 Lovelace，请从 'configuration.yaml' 中的 Lovelace 配置中删除 'mode: yaml'。"
                     },
                     "suggest_card": {
                         "add": "添加至 Lovelace UI",
@@ -2324,9 +2340,14 @@
                     "exit_edit_mode": "退出 UI 编辑模式",
                     "help": "帮助",
                     "refresh": "刷新",
+                    "reload_resources": "重载资源",
                     "unused_entities": "未使用的实体"
                 },
                 "reload_lovelace": "重新加载 Lovelace",
+                "reload_resources": {
+                    "refresh_body": "必须刷新页面才能完成重载，是否要立即刷新？",
+                    "refresh_header": "要刷新吗？"
+                },
                 "unused_entities": {
                     "available_entities": "这些是您可用的实体，但尚未在 Lovelace UI 中显示。",
                     "domain": "域",
@@ -2344,6 +2365,7 @@
                     "existing_cards": "无法删除包含卡片的视图。请先移除卡片。"
                 },
                 "warning": {
+                    "attribute_not_found": "属性 {attribute} 对 {entity} 不可用",
                     "entity_non_numeric": "实体 {entity} 非数值",
                     "entity_not_found": "实体 {entity} 不可用"
                 }
@@ -2447,7 +2469,7 @@
                     "working": "请稍候"
                 },
                 "initializing": "正在初始化",
-                "logging_in_with": "正在用 **{authProviderName}** 登录。",
+                "logging_in_with": "正在通过 **{authProviderName}** 登录。",
                 "pick_auth_provider": "或者用以下方式登录"
             },
             "page-demo": {

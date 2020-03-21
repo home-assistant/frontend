@@ -53,7 +53,7 @@ class HaCameraStream extends LitElement {
             <img
               @load=${this._elementResized}
               .src=${__DEMO__
-                ? `/api/camera_proxy_stream/${this.stateObj.entity_id}`
+                ? this.stateObj!.attributes.entity_picture
                 : computeMJPEGStreamUrl(this.stateObj)}
               .alt=${`Preview of the ${computeStateName(
                 this.stateObj

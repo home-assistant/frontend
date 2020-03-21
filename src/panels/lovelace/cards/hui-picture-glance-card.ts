@@ -29,7 +29,7 @@ import { hasConfigOrEntityChanged } from "../common/has-changed";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { actionHandler } from "../common/directives/action-handler-directive";
 import { hasAction } from "../common/has-action";
-import { ActionHandlerEvent, LovelaceConfig } from "../../../data/lovelace";
+import { ActionHandlerEvent } from "../../../data/lovelace";
 import { handleAction } from "../common/handle-action";
 import { findEntities } from "../common/find-entites";
 
@@ -46,22 +46,22 @@ class HuiPictureGlanceCard extends LitElement implements LovelaceCard {
 
   public static getStubConfig(
     hass: HomeAssistant,
-    lovelaceConfig: LovelaceConfig,
-    entities?: string[],
-    entitiesFill?: string[]
-  ): object {
+    entities: string[],
+    entitiesFallback: string[]
+  ): PictureGlanceCardConfig {
     const maxEntities = 2;
     const foundEntities = findEntities(
       hass,
-      lovelaceConfig,
       maxEntities,
       entities,
-      entitiesFill
+      entitiesFallback,
+      ["sensor", "binary_sensor"]
     );
 
     return {
-      image:
-        "https://www.home-assistant.io/images/merchandise/shirt-frontpage.png",
+      type: "picture-glance",
+      title: "Kitchen",
+      image: "https://demo.home-assistant.io/stub_config/kitchen.png",
       entities: foundEntities,
     };
   }
@@ -272,11 +272,17 @@ class HuiPictureGlanceCard extends LitElement implements LovelaceCard {
             `
           : html`
               <div class="state">
-                ${computeStateDisplay(
-                  this.hass!.localize,
-                  stateObj,
-                  this.hass!.language
-                )}
+                ${entityConf.attribute
+                  ? html`
+                      ${entityConf.prefix}${stateObj.attributes[
+                        entityConf.attribute
+                      ]}${entityConf.suffix}
+                    `
+                  : computeStateDisplay(
+                      this.hass!.localize,
+                      stateObj,
+                      this.hass!.language
+                    )}
               </div>
             `}
       </div>

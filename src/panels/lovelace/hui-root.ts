@@ -12,7 +12,6 @@ import "@polymer/app-layout/app-header-layout/app-header-layout";
 import "@polymer/app-layout/app-header/app-header";
 import "@polymer/app-layout/app-scroll-effects/effects/waterfall";
 import "@polymer/app-layout/app-toolbar/app-toolbar";
-import "@polymer/app-route/app-route";
 import "@polymer/paper-icon-button/paper-icon-button";
 import "@material/mwc-button";
 import "@polymer/paper-item/paper-item";
@@ -29,7 +28,7 @@ import "../../components/ha-paper-icon-button-arrow-prev";
 import "../../components/ha-icon";
 import { debounce } from "../../common/util/debounce";
 import { HomeAssistant } from "../../types";
-import { LovelaceConfig } from "../../data/lovelace";
+import { LovelaceConfig, LovelacePanelConfig } from "../../data/lovelace";
 import { navigate } from "../../common/navigate";
 import { fireEvent } from "../../common/dom/fire_event";
 import { swapView } from "./editor/config-util";
@@ -49,7 +48,10 @@ import { haStyle } from "../../resources/styles";
 import { computeRTLDirection } from "../../common/util/compute_rtl";
 import { showVoiceCommandDialog } from "../../dialogs/voice-command-dialog/show-ha-voice-command-dialog";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
-import { showAlertDialog } from "../../dialogs/generic/show-dialog-box";
+import {
+  showAlertDialog,
+  showConfirmationDialog,
+} from "../../dialogs/generic/show-dialog-box";
 import memoizeOne from "memoize-one";
 
 class HUIRoot extends LitElement {
@@ -58,7 +60,6 @@ class HUIRoot extends LitElement {
   @property() public columns?: number;
   @property() public narrow?: boolean;
   @property() public route?: { path: string; prefix: string };
-  @property() private _routeData?: { view: string };
   @property() private _curView?: number | "hass-unused-entities";
   private _viewCache?: { [viewId: string]: HUIView };
 
@@ -81,13 +82,10 @@ class HUIRoot extends LitElement {
 
   protected render(): TemplateResult {
     return html`
-    <app-route .route="${this.route}" pattern="/:view" data="${
-      this._routeData
-    }" @data-changed="${this._routeDataChanged}"></app-route>
     <ha-app-layout id="layout">
-      <app-header slot="header" effects="waterfall" class="${classMap({
+      <app-header slot="header" effects="waterfall" class=${classMap({
         "edit-mode": this._editMode,
-      })}" fixed condenses>
+      })} fixed condenses>
         ${
           this._editMode
             ? html`
@@ -221,6 +219,21 @@ class HUIRoot extends LitElement {
                             >
                               ${this.hass!.localize(
                                 "ui.panel.lovelace.unused_entities.title"
+                              )}
+                            </paper-item>
+                          `
+                        : ""}
+                      ${(this.hass.panels.lovelace
+                        ?.config as LovelacePanelConfig)?.mode === "yaml"
+                        ? html`
+                            <paper-item
+                              aria-label=${this.hass!.localize(
+                                "ui.panel.lovelace.menu.reload_resources"
+                              )}
+                              @tap="${this._handleReloadResources}"
+                            >
+                              ${this.hass!.localize(
+                                "ui.panel.lovelace.menu.reload_resources"
                               )}
                             </paper-item>
                           `
@@ -467,16 +480,18 @@ class HUIRoot extends LitElement {
     let newSelectView;
     let force = false;
 
+    const viewPath = this.route!.path.split("/")[1];
+
     if (changedProperties.has("route")) {
       const views = this.config.views;
-      if (this.route!.path === "" && views.length) {
+      if (!viewPath && views.length) {
         navigate(this, `${this.route!.prefix}/${views[0].path || 0}`, true);
         newSelectView = 0;
-      } else if (this._routeData!.view === "hass-unused-entities") {
+      } else if (viewPath === "hass-unused-entities") {
         newSelectView = "hass-unused-entities";
-      } else if (this._routeData!.view) {
-        const selectedView = this._routeData!.view;
-        const selectedViewInt = parseInt(selectedView, 10);
+      } else if (viewPath) {
+        const selectedView = viewPath;
+        const selectedViewInt = Number(selectedView);
         let index = 0;
         for (let i = 0; i < views.length; i++) {
           if (views[i].path === selectedView || i === selectedViewInt) {
@@ -502,7 +517,7 @@ class HUIRoot extends LitElement {
         // Leave unused entities when leaving edit mode
         if (
           this.lovelace!.mode === "storage" &&
-          this._routeData!.view === "hass-unused-entities"
+          viewPath === "hass-unused-entities"
         ) {
           const views = this.config && this.config.views;
           navigate(this, `${this.route?.prefix}/${views[0]?.path || 0}`);
@@ -542,12 +557,21 @@ class HUIRoot extends LitElement {
     return this.shadowRoot!.getElementById("view") as HTMLDivElement;
   }
 
-  private _routeDataChanged(ev): void {
-    this._routeData = ev.detail.value;
-  }
-
   private _handleRefresh(): void {
     fireEvent(this, "config-refresh");
+  }
+
+  private _handleReloadResources(): void {
+    this.hass.callService("lovelace", "reload_resources");
+    showConfirmationDialog(this, {
+      title: this.hass!.localize(
+        "ui.panel.lovelace.reload_resources.refresh_header"
+      ),
+      text: this.hass!.localize(
+        "ui.panel.lovelace.reload_resources.refresh_body"
+      ),
+      confirm: () => location.reload(),
+    });
   }
 
   private _handleUnusedEntities(): void {

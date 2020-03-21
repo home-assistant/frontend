@@ -19,14 +19,15 @@ import { fireEvent } from "../../../../common/dom/fire_event";
 import { createCardElement } from "../../create-element/create-card-element";
 import { getCardStubConfig } from "../get-card-stub-config";
 import {
-  computeUnusedEntities,
   computeUsedEntities,
+  calcUnusedEntities,
 } from "../../common/compute-unused-entities";
+import { UNKNOWN, UNAVAILABLE } from "../../../../data/entity";
 
 const previewCards: string[] = [
   "alarm-panel",
-  "entities",
   "button",
+  "entities",
   "gauge",
   "glance",
   "history-graph",
@@ -137,8 +138,22 @@ export class HuiCardPicker extends LitElement {
       return;
     }
 
-    this._unusedEntities = computeUnusedEntities(this.hass, this.lovelace);
-    this._usedEntities = [...computeUsedEntities(this.lovelace)];
+    const usedEntities = computeUsedEntities(this.lovelace);
+    const unusedEntities = calcUnusedEntities(this.hass, usedEntities);
+
+    this._usedEntities = [...usedEntities].filter(
+      (eid) =>
+        this.hass!.states[eid] &&
+        this.hass!.states[eid].state !== UNKNOWN &&
+        this.hass!.states[eid].state !== UNAVAILABLE
+    );
+    this._unusedEntities = [...unusedEntities].filter(
+      (eid) =>
+        this.hass!.states[eid] &&
+        this.hass!.states[eid].state !== UNKNOWN &&
+        this.hass!.states[eid].state !== UNAVAILABLE
+    );
+
     this.requestUpdate();
   }
 
@@ -183,7 +198,7 @@ export class HuiCardPicker extends LitElement {
         .preview {
           pointer-events: none;
           margin: 20px;
-          flex: 1 1 0;
+          flex-grow: 1;
           display: flex;
           align-items: center;
           justify-content: center;
@@ -191,10 +206,6 @@ export class HuiCardPicker extends LitElement {
 
         .preview > :first-child {
           zoom: 0.6;
-          -moz-transform: scale(0.6); /* Firefox */
-          -moz-transform-origin: center;
-          -o-transform: scale(0.6); /* Opera */
-          -o-transform-origin: center;
           display: block;
           width: 100%;
         }
@@ -245,10 +256,9 @@ export class HuiCardPicker extends LitElement {
     if (this.hass && this.lovelace) {
       cardConfig = await getCardStubConfig(
         this.hass,
-        this.lovelace,
         type,
-        this._unusedEntities,
-        this._usedEntities
+        this._unusedEntities!,
+        this._usedEntities!
       );
 
       if (!noElement) {

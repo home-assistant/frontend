@@ -4,27 +4,28 @@ import { PolymerElement } from "@polymer/polymer/polymer-element";
 import { provideHass } from "../../../src/fake_data/provide_hass";
 import "../components/demo-cards";
 import { createMediaPlayerEntities } from "../data/media_players";
+import "../../../src/panels/lovelace/cards/hui-media-control-card";
 
 const CONFIGS = [
   {
-    heading: "Skip, no pause",
+    heading: "Paused music",
     config: `
   - type: media-control
-    entity: media_player.bedroom
+    entity: media_player.music_paused
     `,
   },
   {
-    heading: "Paused, music",
+    heading: "Playing music",
     config: `
   - type: media-control
-    entity: media_player.family_room
+    entity: media_player.music_playing
     `,
   },
   {
-    heading: "Paused, no play",
+    heading: "Playing stream",
     config: `
   - type: media-control
-    entity: media_player.family_room_no_play
+    entity: media_player.stream_playing
     `,
   },
   {
@@ -42,10 +43,10 @@ const CONFIGS = [
     `,
   },
   {
-    heading: "Chromcast Idle",
+    heading: "Sonos Idle",
     config: `
   - type: media-control
-    entity: media_player.lounge_room
+    entity: media_player.sonos_idle
     `,
   },
   {
@@ -67,6 +68,20 @@ const CONFIGS = [
     config: `
   - type: media-control
     entity: media_player.unknown
+    `,
+  },
+  {
+    heading: "Receiver On",
+    config: `
+  - type: media-control
+    entity: media_player.receiver_on
+    `,
+  },
+  {
+    heading: "Receiver Off",
+    config: `
+  - type: media-control
+    entity: media_player.receiver_off
     `,
   },
 ];

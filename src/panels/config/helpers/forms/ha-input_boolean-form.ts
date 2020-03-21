@@ -24,18 +24,24 @@ class HaInputBooleanForm extends LitElement {
   private _item?: InputBoolean;
   @property() private _name!: string;
   @property() private _icon!: string;
-  @property() private _initial?: boolean;
 
   set item(item: InputBoolean) {
     this._item = item;
     if (item) {
       this._name = item.name || "";
       this._icon = item.icon || "";
-      this._initial = item.initial;
     } else {
       this._name = "";
       this._icon = "";
     }
+  }
+
+  public focus() {
+    this.updateComplete.then(() =>
+      (this.shadowRoot?.querySelector(
+        "[dialogInitialFocus]"
+      ) as HTMLElement)?.focus()
+    );
   }
 
   protected render(): TemplateResult {
@@ -57,6 +63,7 @@ class HaInputBooleanForm extends LitElement {
             "ui.dialogs.helper_settings.required_error_msg"
           )}"
           .invalid=${nameInvalid}
+          dialogInitialFocus
         ></paper-input>
         <ha-icon-input
           .value=${this._icon}
@@ -70,28 +77,8 @@ class HaInputBooleanForm extends LitElement {
         ${this.hass!.localize(
           "ui.dialogs.helper_settings.generic.initial_value_explain"
         )}
-        ${this.hass.userData?.showAdvanced
-          ? html`
-              <div class="row layout horizontal justified">
-                ${this.hass!.localize(
-                  "ui.dialogs.helper_settings.generic.initial_value"
-                )}:
-                <ha-switch
-                  .checked=${this._initial}
-                  @change=${this._initialChanged}
-                ></ha-switch>
-              </div>
-            `
-          : ""}
       </div>
     `;
-  }
-
-  private _initialChanged(ev) {
-    ev.stopPropagation();
-    fireEvent(this, "value-changed", {
-      value: { ...this._item, initial: ev.target.checked },
-    });
   }
 
   private _valueChanged(ev: CustomEvent) {

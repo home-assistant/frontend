@@ -510,7 +510,7 @@
                     "air_pressure": "大氣壓",
                     "humidity": "濕度",
                     "temperature": "溫度",
-                    "visibility": "能見度",
+                    "visibility": "顯示選項",
                     "wind_speed": "風速"
                 },
                 "cardinal_direction": {
@@ -651,8 +651,12 @@
                     "name": "名稱"
                 },
                 "input_datetime": {
+                    "date": "日期",
+                    "datetime": "日期與時間",
                     "has_date": "日期",
-                    "has_time": "時間"
+                    "has_time": "時間",
+                    "mode": "所要輸入的內容",
+                    "time": "時間"
                 },
                 "input_number": {
                     "box": "輸入欄位",
@@ -679,7 +683,7 @@
                 },
                 "not_editable": "不可編輯",
                 "not_editable_text": "由於 configuration.yaml 內已定義，物件編輯功能已關閉。",
-                "platform_not_loaded": "{platform} 元件未載入。請於設定檔進行添加、新增「default_config:」或「{platform}:」。",
+                "platform_not_loaded": "{platform} 元件未載入。請於設定檔進行添加、新增 'default_config:' 或 '{platform}:'。",
                 "required_error_msg": "必填欄位",
                 "yaml_not_editable": "此物件的設定無法藉由 UI 編輯、僅有透過 UI 設定的物件可於 UI 進行設定。"
             },
@@ -766,7 +770,7 @@
                 "unknown": "未知",
                 "zha_device_card": {
                     "area_picker_label": "分區",
-                    "device_name_placeholder": "使用者姓氏",
+                    "device_name_placeholder": "設備命名",
                     "update_name_button": "更新名稱"
                 }
             }
@@ -806,6 +810,10 @@
                 "areas": {
                     "caption": "分區",
                     "create_area": "建立分區",
+                    "delete": {
+                        "confirmation_text": "所有該分區所屬設備都將變成未指派狀態。",
+                        "confirmation_title": "確定要刪除此分區？"
+                    },
                     "description": "家中所有分區概觀",
                     "editor": {
                         "create": "建立",
@@ -1309,7 +1317,8 @@
                         "device": "設備",
                         "integration": "整合",
                         "manufacturer": "廠牌",
-                        "model": "型號"
+                        "model": "型號",
+                        "no_devices": "沒有設備"
                     },
                     "description": "管理已連線設備",
                     "details": "此處顯示設備所有詳細資訊。",
@@ -1404,7 +1413,7 @@
                 "header": "設定 Home Assistant",
                 "helpers": {
                     "caption": "助手",
-                    "description": "可協助建立自動化的元素。",
+                    "description": "可協助建立自動化的元素",
                     "dialog": {
                         "add_helper": "新增助手",
                         "add_platform": "新增 {platform}",
@@ -1460,13 +1469,14 @@
                         },
                         "failed_create_area": "新增分區失敗。",
                         "finish": "完成",
+                        "loading_first_time": "請稍候、正在安裝整合",
                         "name_new_area": "新分區名稱？",
                         "not_all_required_fields": "所有所需欄位都需要填寫。",
                         "submit": "傳送"
                     },
                     "configure": "設定",
                     "configured": "已設定整合",
-                    "description": "管理已連線設備與整合",
+                    "description": "管理與設定整合",
                     "details": "整合詳細資訊",
                     "discovered": "已掃描",
                     "home_assistant_website": "Home Assistant 網站",
@@ -1492,29 +1502,30 @@
                     "caption": "Lovelace 主面板",
                     "dashboards": {
                         "cant_edit_default": "標準 Lovelace 主面板無法藉由 UI 進行編輯。可以設定其他主面板為預設值後進行隱藏。",
-                        "cant_edit_yaml": "於 YAML 中定義的主面板無法藉由 UI 編輯，請於 Configuration.yaml 進行更改。",
+                        "cant_edit_yaml": "於 YAML 中定義的主面板無法藉由 UI 編輯，請於 configuration.yaml 進行更改。",
                         "caption": "主面板",
                         "conf_mode": {
-                            "storage": "UI 已控制",
+                            "storage": "由 UI 控制",
                             "yaml": "YAML 檔案"
                         },
                         "confirm_delete": "確定要刪除此主面板？",
+                        "default_dashboard": "此為預設主面板",
                         "detail": {
                             "create": "新增",
                             "delete": "刪除",
                             "dismiss": "關閉",
                             "edit_dashboard": "編輯主面板",
-                            "icon": "側邊欄圖示",
+                            "icon": "圖示",
                             "new_dashboard": "新增主面板",
                             "remove_default": "移除此設備預設值",
                             "require_admin": "僅限管理員",
                             "set_default": "設定為此設備預設值",
                             "show_sidebar": "於側邊列顯示",
-                            "title": "側邊欄標題",
+                            "title": "標題",
                             "title_required": "必須輸入標題",
                             "update": "更新",
                             "url": "網址",
-                            "url_error_msg": "網址不能包含空格或特殊字元，除了 _ 及 -。"
+                            "url_error_msg": "網址應該包含一個 -，同時不能包含空格或特殊字元，除了 _ 及 -。"
                         },
                         "picker": {
                             "add_dashboard": "新增主面板",
@@ -1551,14 +1562,15 @@
                             "headers": {
                                 "type": "類別",
                                 "url": "網址"
-                            }
+                            },
+                            "no_resources": "沒有資源"
                         },
                         "refresh_body": "必須更新頁面以完成移除、要立即更新？",
                         "refresh_header": "是否要更新？",
                         "types": {
                             "css": "Stylesheet",
-                            "html": "HTML（已棄用）",
-                            "js": "JavaScript 檔案（已棄用）",
+                            "html": "HTML（不再適用）",
+                            "js": "JavaScript 檔案（不再適用）",
                             "module": "JavaScript 模組"
                         }
                     }
@@ -2241,6 +2253,7 @@
                     "edit_card": {
                         "add": "新增面板",
                         "delete": "刪除面板",
+                        "duplicate": "複製面板",
                         "edit": "編輯",
                         "header": "面板設定",
                         "move": "移動至視圖",
@@ -2265,9 +2278,12 @@
                         "header_name": "{name}面板設定",
                         "move_left": "向左移動視圖",
                         "move_right": "向右移動視圖",
-                        "tab_badges": "園標圖示",
+                        "tab_badges": "圓標圖示",
                         "tab_settings": "設定",
-                        "tab_visibility": "能見度"
+                        "tab_visibility": "顯示選項",
+                        "visibility": {
+                            "select_users": "選擇可觀看此面板的使用者"
+                        }
                     },
                     "header": "編輯 UI",
                     "menu": {
@@ -2313,7 +2329,7 @@
                     },
                     "view": {
                         "panel_mode": {
-                            "description": "將會以全寬繪製第一張卡，視圖中其他面板將不進行呈現。",
+                            "description": "將會以全寬度製作第一張面板，視圖中其他面板將不進行呈現。",
                             "title": "面板模式？"
                         }
                     }
@@ -2324,9 +2340,14 @@
                     "exit_edit_mode": "退出 UI 編輯模式",
                     "help": "說明",
                     "refresh": "更新",
+                    "reload_resources": "重新載入資源",
                     "unused_entities": "未顯示物件"
                 },
                 "reload_lovelace": "重新載入 UI",
+                "reload_resources": {
+                    "refresh_body": "必須更新頁面以完成重新載入、要立即更新？",
+                    "refresh_header": "是否要更新？"
+                },
                 "unused_entities": {
                     "available_entities": "此些為尚未於 Lovelace 介面中、可供使用的物件。",
                     "domain": "區域",
@@ -2344,6 +2365,7 @@
                     "existing_cards": "無法刪除內含面板的視圖，請先移除面板。"
                 },
                 "warning": {
+                    "attribute_not_found": "無法使用屬性 {attribute} 之物件：{entity}",
                     "entity_non_numeric": "物件為非數字：{entity}",
                     "entity_not_found": "物件不可用：{entity}"
                 }

@@ -201,7 +201,7 @@
                 "on": "Ouvert"
             },
             "presence": {
-                "off": "Absent.e",
+                "off": "Absent",
                 "on": "Présent"
             },
             "problem": {
@@ -395,7 +395,7 @@
     "ui": {
         "auth_store": {
             "ask": "Voulez-vous enregistrer cette connexion?",
-            "confirm": "Enregistrer la connexion",
+            "confirm": "Connexion automatique",
             "decline": "Non merci"
         },
         "card": {
@@ -626,6 +626,8 @@
                     "enabled_description": "Les entités désactivées ne seront pas ajoutées à Home Assistant.",
                     "enabled_label": "Activer l'entité",
                     "entity_id": "ID d'entité",
+                    "icon": "Remplacer l'icône",
+                    "icon_error": "Les icônes doivent être au format «préfixe: iconname», par exemple «mdi: home»",
                     "name": "Remplacement de nom",
                     "note": "Remarque: cela peut ne pas encore fonctionner avec toutes les intégrations.",
                     "unavailable": "Cette entité n'est pas disponible actuellement.",
@@ -637,16 +639,38 @@
             },
             "generic": {
                 "cancel": "Annuler",
+                "close": "fermer",
                 "default_confirmation_title": "Êtes-vous sûr ?",
                 "ok": "OK"
             },
             "helper_settings": {
+                "generic": {
+                    "icon": "Icône",
+                    "initial_value": "Valeur initiale au démarrage",
+                    "initial_value_explain": "La valeur que l'élément aura au démarrage de Home Assistant. Lorsqu'elle est laissée vide, la valeur sera restaurée à sa valeur précédente.",
+                    "name": "Nom"
+                },
                 "input_datetime": {
-                    "has_date": "Date"
+                    "date": "Date",
+                    "datetime": "Date et heure",
+                    "has_date": "Date",
+                    "has_time": "Temps",
+                    "mode": "Que voulez-vous saisir",
+                    "time": "Heure"
+                },
+                "input_number": {
+                    "box": "Champ de saisie",
+                    "max": "Valeur maximum",
+                    "min": "Valeur minimum",
+                    "mode": "Mode d'affichage",
+                    "slider": "Curseur",
+                    "step": "Taille de pas du curseur",
+                    "unit_of_measurement": "Unité de mesure"
                 },
                 "input_select": {
                     "add": "Ajouter",
                     "add_option": "Ajouter une option",
+                    "no_options": "Il n'y a aucune option pour le moment.",
                     "options": "Options"
                 },
                 "input_text": {
@@ -654,8 +678,14 @@
                     "min": "Longueur minimum",
                     "mode": "Mode d'affichage",
                     "password": "Mot de passe",
+                    "pattern": "Modèle d'expression régulière pour la validation côté client",
                     "text": "Texte"
-                }
+                },
+                "not_editable": "Non modifiable",
+                "not_editable_text": "Cette entité ne peut pas être modifiée à partir de l'interface utilisateur car elle est définie dans configuration.yaml.",
+                "platform_not_loaded": "L'intégration {platform} n'est pas chargée. Veuillez l'ajouter à votre configuration en ajoutant 'default_config:' ou '{platform}:'.",
+                "required_error_msg": "Ce champ est requis",
+                "yaml_not_editable": "Les paramètres de cette entité ne peuvent pas être modifiés à partir de l'interface utilisateur. Seules les entités configurées à partir de l'interface utilisateur sont configurables à partir de l'interface utilisateur."
             },
             "more_info_control": {
                 "dismiss": "Fermer la fenêtre de dialogue",
@@ -780,6 +810,10 @@
                 "areas": {
                     "caption": "Pièces",
                     "create_area": "CRÉER UNE PIÈCE",
+                    "delete": {
+                        "confirmation_text": "Tous les appareils de cette zone ne seront plus attribués.",
+                        "confirmation_title": "Etes-vous sûr de vouloir supprimer cette zone ?"
+                    },
                     "description": "Vue d'ensemble de toutes les pièces de votre maison.",
                     "editor": {
                         "create": "CRÉER",
@@ -1029,7 +1063,7 @@
                 "cloud": {
                     "account": {
                         "alexa": {
-                            "config_documentation": "Documentation de la configuration",
+                            "config_documentation": "Documentation de configuration",
                             "disable": "désactiver",
                             "enable": "activer",
                             "enable_ha_skill": "Activer le skill Home Assistant pour Alexa",
@@ -1283,7 +1317,8 @@
                         "device": "Appareil",
                         "integration": "Intégration",
                         "manufacturer": "Fabricant",
-                        "model": "Modèle"
+                        "model": "Modèle",
+                        "no_devices": "Aucun appareil"
                     },
                     "description": "Gérer les appareils connectés",
                     "details": "Voici tous les détails de votre appareil.",
@@ -1358,6 +1393,8 @@
                         "introduction2": "Utilisé le registre des entités pour remplacer le nom, modifier l'ID de l'entité ou supprimer l'entrée de Home Assistant.",
                         "remove_selected": {
                             "button": "Supprimer la sélection",
+                            "confirm_partly_text": "Vous ne pouvez supprimer que {removable} des {selected} entités. Les entités ne peuvent être supprimées que lorsque l'intégration ne fournit plus les entités. Parfois, vous devez redémarrer Home Assistant avant de pouvoir supprimer les entités d'une intégration supprimée. Voulez-vous vraiment supprimer les entités obsolètes?",
+                            "confirm_partly_title": "Seules {number} entités sélectionnées peuvent être supprimées.",
                             "confirm_text": "Les entités ne peuvent être supprimées que lorsque l'intégration ne fournit plus les entités.",
                             "confirm_title": "Voulez-vous supprimer {number} entités ?"
                         },
@@ -1367,6 +1404,7 @@
                             "disabled": "Désactivé",
                             "ok": "Ok",
                             "readonly": "Lecture seule",
+                            "restored": "Restauré",
                             "unavailable": "Indisponible"
                         },
                         "unavailable": "(indisponible)"
@@ -1375,20 +1413,26 @@
                 "header": "Configurer Home Assistant",
                 "helpers": {
                     "caption": "Aides",
+                    "description": "Éléments pouvant aider à construire des automatisations.",
                     "dialog": {
                         "add_helper": "Ajouter une aide",
+                        "add_platform": "Ajouter {platform}",
                         "create": "Créer"
                     },
                     "picker": {
                         "add_helper": "Ajouter une aide",
                         "headers": {
                             "editable": "Modifiable",
+                            "entity_id": "ID de l'entité",
                             "name": "Nom",
                             "type": "Type"
                         }
                     },
                     "types": {
+                        "input_boolean": "Permuter",
+                        "input_datetime": "Date et/ou heure",
                         "input_number": "Nombre",
+                        "input_select": "Liste déroulante",
                         "input_text": "Texte"
                     }
                 },
@@ -1425,6 +1469,7 @@
                         },
                         "failed_create_area": "Échec de la création de la zone.",
                         "finish": "Terminer",
+                        "loading_first_time": "Veuillez patienter pendant que l'intégration est en cours d'installation",
                         "name_new_area": "Nom de la nouvelle zone ?",
                         "not_all_required_fields": "Tous les champs obligatoires ne sont pas renseignés.",
                         "submit": "Soumettre"
@@ -1453,6 +1498,83 @@
                     "note_about_website_reference": "D'autres sont disponibles sur le "
                 },
                 "introduction": "Ici, il est possible de configurer vos composants et Home Assistant. Tout n'est pas encore possible de configurer à partir de l'interface utilisateur, mais nous y travaillons.",
+                "lovelace": {
+                    "caption": "Tableaux de bord Lovelace",
+                    "dashboards": {
+                        "cant_edit_default": "Le tableau de bord Lovelace standard ne peut pas être modifié à partir de l'interface utilisateur. Vous pouvez le masquer en définissant un autre tableau de bord par défaut.",
+                        "cant_edit_yaml": "Les tableaux de bord définis dans YAML ne peuvent pas être modifiés à partir de l'interface utilisateur. Modifiez-les dans configuration.yaml.",
+                        "caption": "Tableaux de bord",
+                        "conf_mode": {
+                            "storage": "Contrôle de l'IU",
+                            "yaml": "Fichier YAML"
+                        },
+                        "confirm_delete": "Voulez-vous vraiment supprimer ce tableau de bord ?",
+                        "default_dashboard": "Ceci est le tableau de bord par défaut",
+                        "detail": {
+                            "create": "Créer",
+                            "delete": "Supprimer",
+                            "dismiss": "Fermer",
+                            "edit_dashboard": "Modifier le tableau de bord",
+                            "icon": "Icône",
+                            "new_dashboard": "Ajouter un nouveau tableau de bord",
+                            "remove_default": "Supprimer par défaut sur cet appareil",
+                            "require_admin": "Admin uniquement",
+                            "set_default": "Définir par défaut sur cet appareil",
+                            "show_sidebar": "Afficher dans la barre latérale",
+                            "title": "Titre",
+                            "title_required": "Le titre est requis.",
+                            "update": "Mise à jour",
+                            "url": "Url",
+                            "url_error_msg": "L'url ne peut pas contenir d'espaces ni de caractères spéciaux, sauf pour _ et -"
+                        },
+                        "picker": {
+                            "add_dashboard": "Ajouter un tableau de bord",
+                            "headers": {
+                                "conf_mode": "Méthode de configuration",
+                                "default": "Défaut",
+                                "filename": "Nom de fichier",
+                                "require_admin": "Admin uniquement",
+                                "sidebar": "Afficher dans la barre latérale",
+                                "title": "Titre"
+                            },
+                            "open": "Ouvrir"
+                        }
+                    },
+                    "description": "Configurez vos tableaux de bord Lovelace",
+                    "resources": {
+                        "cant_edit_yaml": "Vous utilisez Lovelace en mode YAML, vous ne pouvez donc pas gérer vos ressources via l'interface utilisateur. Gérez-les dans configuration.yaml.",
+                        "caption": "Ressources",
+                        "confirm_delete": "Voulez-vous vraiment supprimer cette ressource ?",
+                        "detail": {
+                            "create": "Créer",
+                            "delete": "Supprimer",
+                            "dismiss": "Fermer",
+                            "new_resource": "Ajouter une nouvelle ressource",
+                            "type": "Type de ressource",
+                            "update": "Mise à jour",
+                            "url": "Url",
+                            "url_error_msg": "L'URL est un champ obligatoire",
+                            "warning_header": "Soyez prudents !",
+                            "warning_text": "L'ajout de ressources peut être dangereux, assurez-vous de connaître la source de la ressource et faites-lui confiance. De mauvaises ressources peuvent sérieusement endommager votre système."
+                        },
+                        "picker": {
+                            "add_resource": "Ajouter une ressource",
+                            "headers": {
+                                "type": "Type",
+                                "url": "Url"
+                            },
+                            "no_resources": "Pas de ressources"
+                        },
+                        "refresh_body": "Vous devez actualiser la page pour terminer la suppression, voulez-vous actualiser maintenant ?",
+                        "refresh_header": "Voulez-vous vous rafraîchir ?",
+                        "types": {
+                            "css": "Feuille de style",
+                            "html": "HTML (obsolète)",
+                            "js": "Fichier JavaScript (obsolète)",
+                            "module": "Module JavaScript"
+                        }
+                    }
+                },
                 "person": {
                     "add_person": "Ajouter une personne",
                     "caption": "Personnes",
@@ -1974,14 +2096,22 @@
                         },
                         "alarm-panel": {
                             "available_states": "États disponibles",
+                            "description": "La carte du panneau d'alarme vous permet d'armer et de désarmer les intégrations de votre panneau de commande d'alarme.",
                             "name": "Panneau d'alarme"
                         },
                         "button": {
+                            "description": "La carte Boutons vous permet d'ajouter des boutons pour effectuer des tâches.",
                             "name": "Bouton"
                         },
                         "conditional": {
+                            "card": "Carte",
+                            "change_type": "Changer le type",
+                            "condition_explanation": "La carte sera affichée lorsque TOUTES les conditions ci-dessous seront remplies.",
+                            "conditions": "Conditions",
                             "current_state": "actuel",
+                            "description": "La carte conditionnelle affiche une autre carte basée sur les états d'entité.",
                             "name": "Conditionnel",
+                            "state_equal": "L'État est égal à",
                             "state_not_equal": "L'état n'est pas égal à"
                         },
                         "config": {
@@ -1989,6 +2119,7 @@
                             "required": "Requis"
                         },
                         "entities": {
+                            "description": "La carte Entités est le type de carte le plus courant. Il regroupe les éléments dans des listes.",
                             "name": "Entités",
                             "show_header_toggle": "Afficher le bouton d'en-tête ?",
                             "toggle": "Basculer les entités."
@@ -1997,9 +2128,11 @@
                             "name": "Entité Bouton"
                         },
                         "entity-filter": {
+                            "description": "La carte Filtre d'entité vous permet de définir une liste d'entités que vous souhaitez suivre uniquement dans un certain état.",
                             "name": "Filtre d'entité"
                         },
                         "gauge": {
+                            "description": "La carte Jauge est une carte de base qui permet de voir visuellement les données des capteurs.",
                             "name": "Jauge",
                             "severity": {
                                 "define": "Définir la sévérité ?",
@@ -2019,6 +2152,8 @@
                             "icon": "Icône",
                             "icon_height": "Hauteur de l'icône",
                             "image": "Chemin de l'image",
+                            "manual": "Manuel",
+                            "manual_description": "Besoin d'ajouter une carte personnalisée ou simplement d'écrire manuellement le yaml?",
                             "maximum": "Maximum",
                             "minimum": "Minimum",
                             "name": "Nom",
@@ -2026,6 +2161,7 @@
                             "show_icon": "Afficher l'icône ?",
                             "show_name": "Afficher le nom ?",
                             "show_state": "Afficher l'état ?",
+                            "state": "État",
                             "tap_action": "Appui court",
                             "theme": "Thème",
                             "title": "Titre",
@@ -2034,38 +2170,48 @@
                         },
                         "glance": {
                             "columns": "Colonnes",
+                            "description": "La carte Coup d'oeil est utile pour regrouper plusieurs capteurs dans une vue d'ensemble compacte.",
                             "name": "Coup d'œil"
                         },
                         "history-graph": {
+                            "description": "La carte Graphique historique vous permet d'afficher un graphique pour chacune des entités répertoriées.",
                             "name": "Graphique Historique"
                         },
                         "horizontal-stack": {
+                            "description": "La carte de pile horizontale vous permet d'empiler plusieurs cartes, de sorte qu'elles soient toujours côte à côte dans l'espace d'une colonne.",
                             "name": "Pile horizontale"
                         },
                         "iframe": {
-                            "name": "iFrame"
+                            "description": "La carte Page Web vous permet d'intégrer votre page Web préférée directement dans Home Assistant.",
+                            "name": "Page Web"
                         },
                         "light": {
+                            "description": "La carte Lumière vous permet de modifier la luminosité de la lumière.",
                             "name": "Lumière"
                         },
                         "map": {
                             "dark_mode": "Mode sombre ?",
                             "default_zoom": "Zoom par défaut",
+                            "description": "La carte Carte vous permet d'afficher des entités sur une carte.",
                             "geo_location_sources": "Sources de géolocalisation",
                             "name": "Carte",
                             "source": "Source"
                         },
                         "markdown": {
                             "content": "Contenu",
+                            "description": "La carte Markdown est utilisée pour rendre Markdown.",
                             "name": "Markdown"
                         },
                         "media-control": {
+                            "description": "La carte Control des médias est utilisée pour afficher les entités du lecteur multimédia sur une interface avec des commandes faciles à utiliser.",
                             "name": "Contrôle des médias"
                         },
                         "picture-elements": {
+                            "description": "La carte Éléments d'image est l'un des types de cartes les plus polyvalents. La carte vous permet de positionner des icônes ou du texte et même des services! Sur une image basée sur des coordonnées.",
                             "name": "Éléments d'image"
                         },
                         "picture-entity": {
+                            "description": "La carte Entité image affiche une entité sous la forme d'une image. Au lieu d'images provenant d'une URL, il peut également afficher l'image des entités de la caméra.",
                             "name": "Entité image"
                         },
                         "picture-glance": {
@@ -2073,6 +2219,7 @@
                             "name": "Coup d'œil en image"
                         },
                         "picture": {
+                            "description": "La carte Image vous permet de définir une image à utiliser pour la navigation vers divers chemins de votre interface ou d'appeler un service.",
                             "name": "Image"
                         },
                         "plant-status": {
@@ -2106,6 +2253,7 @@
                     "edit_card": {
                         "add": "Ajouter une action",
                         "delete": "Supprimer",
+                        "duplicate": "Carte en double",
                         "edit": "Modifier",
                         "header": "Configuration de la carte",
                         "move": "Déplacer",
@@ -2131,7 +2279,11 @@
                         "move_left": "Déplacer la vue à gauche",
                         "move_right": "Déplacer la vue à droite",
                         "tab_badges": "Badges",
-                        "tab_settings": "Paramètres"
+                        "tab_settings": "Paramètres",
+                        "tab_visibility": "Visibilité",
+                        "visibility": {
+                            "select_users": "Sélectionnez les utilisateurs qui devraient voir cette vue dans la navigation"
+                        }
                     },
                     "header": "Modifier l'interface utilisateur",
                     "menu": {
@@ -2154,16 +2306,21 @@
                         "error_remove": "Impossible de supprimer la configuration: {error}",
                         "error_save_yaml": "Impossible de sauvegarder le YAML : {error}",
                         "header": "Modifier la configuration",
+                        "resources_moved": "Les ressources ne doivent plus être ajoutées à la configuration Lovelace mais peuvent être ajoutées dans le panneau de configuration Lovelace.",
                         "save": "Enregistrer",
                         "saved": "Enregistré",
                         "unsaved_changes": "Modifications non enregistrées"
                     },
                     "save_config": {
                         "cancel": "Oublie ce que j'ai dit, c'est pas grave.",
+                        "close": "Fermer",
                         "header": "Prenez le contrôle de votre Interface Lovelace",
                         "para": "Par défaut, Home Assistant maintient votre interface utilisateur, la met à jour lorsque de nouvelles entités ou de nouveaux composants Lovelace UI sont disponibles. Si vous prenez le contrôle, nous ne ferons plus les changements automatiquement pour vous.",
                         "para_sure": "Êtes-vous sûr de vouloir prendre le contrôle de l'interface utilisateur?",
-                        "save": "Prenez le contrôle"
+                        "save": "Prenez le contrôle",
+                        "yaml_config": "Pour vous aider à démarrer, voici la configuration actuelle de ce tableau de bord:",
+                        "yaml_control": "Pour prendre le contrôle en mode YAML, créez un fichier YAML avec le nom que vous avez spécifié dans votre configuration pour ce tableau de bord, ou le 'ui-lovelace.yaml' par défaut.",
+                        "yaml_mode": "Vous utilisez le mode YAML, ce qui signifie que vous ne pouvez pas modifier votre configuration Lovelace depuis l'interface utilisateur. Si vous souhaitez modifier Lovelace de l'interface utilisateur, supprimez «mode: yaml» de votre configuration Lovelace dans «configuration.yaml»."
                     },
                     "suggest_card": {
                         "add": "Ajouter à Lovelace UI",
@@ -2183,9 +2340,14 @@
                     "exit_edit_mode": "Quitter le mode d'édition de l'interface utilisateur",
                     "help": "Aide",
                     "refresh": "Actualiser",
+                    "reload_resources": "Recharger les ressources",
                     "unused_entities": "Entités inutilisées"
                 },
                 "reload_lovelace": "Recharger Lovelace UI",
+                "reload_resources": {
+                    "refresh_body": "Vous devez actualiser la page pour terminer le rechargement, voulez-vous actualiser maintenant?",
+                    "refresh_header": "Voulez-vous vous rafraîchir ?"
+                },
                 "unused_entities": {
                     "available_entities": "Ce sont les entités dont vous disposez, mais qui ne figurent pas encore dans votre interface utilisateur Lovelace.",
                     "domain": "Domaine",
@@ -2197,9 +2359,13 @@
                 },
                 "views": {
                     "confirm_delete": "Êtes-vous sûr de vouloir supprimer cette vue?",
+                    "confirm_delete_existing_cards": "La suppression de cette vue supprimera également les cartes",
+                    "confirm_delete_existing_cards_text": "Voulez-vous vraiment supprimer votre vue '{name}'? La vue contient {number} cartes qui seront supprimées. Cette action ne peut pas être annulée.",
+                    "confirm_delete_text": "Voulez-vous vraiment supprimer votre vue '{name}'?",
                     "existing_cards": "Vous ne pouvez pas supprimer une vue contenant des cartes. Retirez d'abord les cartes."
                 },
                 "warning": {
+                    "attribute_not_found": "Attribut {attribute} non disponible dans: {entity}",
                     "entity_non_numeric": "L'entité est non numérique: {entity}",
                     "entity_not_found": "Entité non disponible: {entity}"
                 }

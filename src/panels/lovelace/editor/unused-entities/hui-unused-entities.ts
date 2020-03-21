@@ -47,7 +47,7 @@ export class HuiUnusedEntities extends LitElement {
 
   @property() private _unusedEntities: string[] = [];
 
-  private _selectedEntities: string[] = [];
+  @property() private _selectedEntities: string[] = [];
 
   private get _config(): LovelaceConfig {
     return this.lovelace!.config;
@@ -179,14 +179,20 @@ export class HuiUnusedEntities extends LitElement {
         @selection-changed=${this._handleSelectionChanged}
       ></ha-data-table>
 
-      <ha-fab
-        class="${classMap({
-          rtl: computeRTL(this.hass),
-        })}"
-        icon="hass:plus"
-        label="${this.hass.localize("ui.panel.lovelace.editor.edit_card.add")}"
-        @click="${this._addToLovelaceView}"
-      ></ha-fab>
+      ${this._selectedEntities.length
+        ? html`
+            <ha-fab
+              class="${classMap({
+                rtl: computeRTL(this.hass),
+              })}"
+              icon="hass:plus"
+              .label=${this.hass.localize(
+                "ui.panel.lovelace.editor.edit_card.add"
+              )}
+              @click=${this._addToLovelaceView}
+            ></ha-fab>
+          `
+        : ""}
     `;
   }
 
@@ -195,7 +201,8 @@ export class HuiUnusedEntities extends LitElement {
       return;
     }
     this._selectedEntities = [];
-    this._unusedEntities = computeUnusedEntities(this.hass, this._config!);
+    const unusedEntities = computeUnusedEntities(this.hass, this._config!);
+    this._unusedEntities = [...unusedEntities].sort();
   }
 
   private _handleSelectionChanged(

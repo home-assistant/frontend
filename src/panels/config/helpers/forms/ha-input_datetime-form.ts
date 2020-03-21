@@ -24,22 +24,32 @@ class HaInputDateTimeForm extends LitElement {
   private _item?: InputDateTime;
   @property() private _name!: string;
   @property() private _icon!: string;
-  @property() private _initial?: string;
-  @property() private _hasTime?: boolean;
-  @property() private _hasDate?: boolean;
+  @property() private _mode!: "date" | "time" | "datetime";
 
   set item(item: InputDateTime) {
     this._item = item;
     if (item) {
       this._name = item.name || "";
       this._icon = item.icon || "";
-      this._initial = item.initial;
-      this._hasTime = item.has_time;
-      this._hasDate = item.has_date;
+      this._mode =
+        item.has_time && item.has_date
+          ? "datetime"
+          : item.has_time
+          ? "time"
+          : "date";
     } else {
       this._name = "";
       this._icon = "";
+      this._mode = "date";
     }
+  }
+
+  public focus() {
+    this.updateComplete.then(() =>
+      (this.shadowRoot?.querySelector(
+        "[dialogInitialFocus]"
+      ) as HTMLElement)?.focus()
+    );
   }
 
   protected render(): TemplateResult {
@@ -61,6 +71,7 @@ class HaInputDateTimeForm extends LitElement {
             "ui.dialogs.helper_settings.required_error_msg"
           )}"
           .invalid=${nameInvalid}
+          dialogInitialFocus
         ></paper-input>
         <ha-icon-input
           .value=${this._icon}
@@ -70,55 +81,41 @@ class HaInputDateTimeForm extends LitElement {
             "ui.dialogs.helper_settings.generic.icon"
           )}
         ></ha-icon-input>
-        <div class="row layout horizontal justified">
-          ${this.hass!.localize(
-            "ui.dialogs.helper_settings.input_datetime.has_time"
-          )}:
-          <ha-switch
-            .checked=${this._hasTime}
-            @change=${this._hasTimeChanged}
-          ></ha-switch>
-        </div>
-        <div class="row layout horizontal justified">
-          ${this.hass!.localize(
-            "ui.dialogs.helper_settings.input_datetime.has_date"
-          )}:
-          <ha-switch
-            .checked=${this._hasDate}
-            @change=${this._hasDateChanged}
-          ></ha-switch>
-        </div>
-        ${this.hass.userData?.showAdvanced
-          ? html`
-              <br />
-              ${this.hass!.localize(
-                "ui.dialogs.helper_settings.generic.initial_value_explain"
-              )}
-              <paper-input
-                .value=${this._initial}
-                .configValue=${"initial"}
-                @value-changed=${this._valueChanged}
-                .label=${this.hass!.localize(
-                  "ui.dialogs.helper_settings.generic.initial_value"
-                )}
-              ></paper-input>
-            `
-          : ""}
+        <br />
+        ${this.hass.localize("ui.dialogs.helper_settings.input_datetime.mode")}:
+        <br />
+        <paper-radio-group
+          .selected=${this._mode}
+          @selected-changed=${this._modeChanged}
+        >
+          <paper-radio-button name="date">
+            ${this.hass.localize(
+              "ui.dialogs.helper_settings.input_datetime.date"
+            )}
+          </paper-radio-button>
+          <paper-radio-button name="time">
+            ${this.hass.localize(
+              "ui.dialogs.helper_settings.input_datetime.time"
+            )}
+          </paper-radio-button>
+          <paper-radio-button name="datetime">
+            ${this.hass.localize(
+              "ui.dialogs.helper_settings.input_datetime.datetime"
+            )}
+          </paper-radio-button>
+        </paper-radio-group>
       </div>
     `;
   }
 
-  private _hasTimeChanged(ev) {
-    ev.stopPropagation();
+  private _modeChanged(ev: CustomEvent) {
+    const mode = ev.detail.value;
     fireEvent(this, "value-changed", {
-      value: { ...this._item, has_time: ev.target.checked },
-    });
-  }
-
-  private _hasDateChanged(ev) {
-    ev.stopPropagation();
-    fireEvent(this, "value-changed", {
-      value: { ...this._item, has_date: ev.target.checked },
+      value: {
+        ...this._item,
+        has_time: ["time", "datetime"].includes(mode),
+        has_date: ["date", "datetime"].includes(mode),
+      },
     });
   }
 

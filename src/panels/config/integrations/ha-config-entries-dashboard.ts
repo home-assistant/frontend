@@ -344,9 +344,6 @@ export class HaConfigManagerDashboard extends LitElement {
 
   static get styles(): CSSResult {
     return css`
-      ha-card {
-        overflow: hidden;
-      }
       mwc-button {
         align-self: center;
       }

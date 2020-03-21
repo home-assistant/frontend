@@ -394,9 +394,9 @@
     },
     "ui": {
         "auth_store": {
-            "ask": "현재 로그인을 저장하시겠습니까?",
-            "confirm": "로그인 저장하기",
-            "decline": "아니요, 괜찮습니다"
+            "ask": "로그인 상태를 유지하시겠습니까?",
+            "confirm": "예",
+            "decline": "아니요"
         },
         "card": {
             "alarm_control_panel": {
@@ -627,13 +627,13 @@
                     "enabled_label": "구성요소 활성화",
                     "entity_id": "구성요소 ID",
                     "icon": "아이콘 재정의",
-                    "icon_error": "아이콘을 지정할 때 'mdi:home'과 같이 '접두사:아이콘' 형식이어야 합니다.",
+                    "icon_error": "아이콘은 접두사:아이콘이름 형식이어야 합니다. 예: mdi:home",
                     "name": "대체 이름",
                     "note": "참고: 아직 모든 통합 구성요소에 적용되지 않을 수 있습니다.",
                     "unavailable": "이 구성요소는 현재 사용할 수 없습니다.",
                     "update": "업데이트"
                 },
-                "no_unique_id": "이 구성요소는 고유한 ID 가 없으므로 설정을 UI 에서 관리할 수 없습니다.",
+                "no_unique_id": "이 구성요소는 고유한 ID 가 없으므로 UI 에서 설정 내용을 관리할 수 없습니다.",
                 "related": "관련 내용",
                 "settings": "설정 내용"
             },
@@ -647,12 +647,16 @@
                 "generic": {
                     "icon": "아이콘",
                     "initial_value": "시작 시 초기값",
-                    "initial_value_explain": "Home Assistant가 켜질 때 요소가 가지는 초기값입니다. 비워두면 요소의 원래 값으로 복원됩니다.",
+                    "initial_value_explain": "Home Assistant 가 시작될 때 요소가 가지는 초기값입니다. 비워두면 요소의 이전 값으로 복원됩니다.",
                     "name": "이름"
                 },
                 "input_datetime": {
+                    "date": "날짜",
+                    "datetime": "날짜와 시간",
                     "has_date": "날짜",
-                    "has_time": "시간"
+                    "has_time": "시간",
+                    "mode": "무엇을 입력하시겠습니까?",
+                    "time": "시간"
                 },
                 "input_number": {
                     "box": "입력란",
@@ -661,7 +665,7 @@
                     "mode": "디스플레이 모드",
                     "slider": "슬라이더",
                     "step": "슬라이더의 간격 크기",
-                    "unit_of_measurement": "단위"
+                    "unit_of_measurement": "측정 단위"
                 },
                 "input_select": {
                     "add": "추가",
@@ -671,15 +675,17 @@
                 },
                 "input_text": {
                     "max": "최대 길이",
-                    "min": "최대 길이",
+                    "min": "최소 길이",
                     "mode": "디스플레이 모드",
                     "password": "비밀번호",
-                    "pattern": "클라이언트 측 검증을 위한 정규표현식(Regex)",
+                    "pattern": "클라이언트 측 검증을 위한 정규표현식",
                     "text": "텍스트"
                 },
                 "not_editable": "수정 불가능",
-                "not_editable_text": "이 구성요소는 configuration.yaml에서 정의되었기 때문에 UI에서 수정할 수 없습니다.",
-                "required_error_msg": "이 입력란은 필수 요소입니다"
+                "not_editable_text": "이 구성요소는 configuration.yaml 에서 정의되었기 때문에 UI 에서 수정할 수 없습니다.",
+                "platform_not_loaded": "{platform} 통합 구성요소가 로드되지 않았습니다. 'default_config:' 또는 '{platform} :' 을 추가하여 구성을 추가해주세요.",
+                "required_error_msg": "이 입력란은 필수 요소입니다",
+                "yaml_not_editable": "이 구성요소의 설정은 UI 에서 편집할 수 없습니다. UI 에서 설정한 구성요소만 UI 에서 구성할 수 있습니다."
             },
             "more_info_control": {
                 "dismiss": "대화창 닫기",
@@ -804,6 +810,10 @@
                 "areas": {
                     "caption": "영역",
                     "create_area": "영역 만들기",
+                    "delete": {
+                        "confirmation_text": "이 영역에 속한 모든 장치가 할당 해제됩니다.",
+                        "confirmation_title": "이 영역을 삭제하시겠습니까?"
+                    },
                     "description": "영역을 만들고 편집합니다",
                     "editor": {
                         "create": "만들기",
@@ -1237,12 +1247,12 @@
                         },
                         "server_control": {
                             "reloading": {
-                                "automation": "자동화 새로고침",
-                                "core": "코어 새로고침",
-                                "group": "그룹 새로고침",
-                                "heading": "구성 내용 새로고침",
-                                "introduction": "Home Assistant 의 일부 구성 내용은 재시작 없이 다시 읽어들일 수 있습니다. 새로고침을 누르면 현재 구성 내용을 내리고 새로운 구성 내용을 읽어들입니다.",
-                                "script": "스크립트 새로고침"
+                                "automation": "자동화 다시 읽어오기",
+                                "core": "코어 다시 읽어오기",
+                                "group": "그룹 다시 읽어오기",
+                                "heading": "구성 내용 다시 읽어오기",
+                                "introduction": "Home Assistant 의 일부 구성 내용은 재시작 없이 다시 읽어들일 수 있습니다. 다시 읽어오기를 누르면 현재 구성 내용을 내리고 새로운 구성 내용을 읽어들입니다.",
+                                "script": "스크립트 다시 읽어오기"
                             },
                             "server_management": {
                                 "heading": "서버 관리",
@@ -1307,7 +1317,8 @@
                         "device": "기기",
                         "integration": "통합 구성요소",
                         "manufacturer": "제조사",
-                        "model": "모델"
+                        "model": "모델",
+                        "no_devices": "기기 없음"
                     },
                     "description": "연결된 기기를 관리합니다",
                     "details": "기기의 모든 세부 정보는 다음과 같습니다.",
@@ -1382,7 +1393,9 @@
                         "introduction2": "구성요소 레지스트리를 사용하여 이름을 대체하거나 구성요소 ID 변경 또는 Home Assistant 에서 항목을 제거할 수 있습니다.",
                         "remove_selected": {
                             "button": "선택된 구성요소 제거",
-                            "confirm_text": "통합 구성요소가 더 이상 구성요소를 제공하지 않는 경우에만 구성요소를 제거할 수 있습니다.",
+                            "confirm_partly_text": "선택한 {selected} 구성요소 중 {removable} 만 제거할 수 있습니다. 통합 구성요소가 더 이상 구성요소를 제공하지 않는 경우에만 구성요소를 제거할 수 있으며, 제거된 통합 구성요소의 구성요소를 제거하기 전에 Home Assistant 를 다시 시작해야 할 수 있습니다. 제거 가능한 구성요소를 제거하시겠습니까?",
+                            "confirm_partly_title": "선택된 {number} 개의 구성요소만 제거할 수 있습니다.",
+                            "confirm_text": "이러한 구성요소가 포함된 경우 Lovelace 구성 및 자동화에서 제거해야 합니다.",
                             "confirm_title": "{number} 개의 구성요소를 제거하시겠습니까?"
                         },
                         "selected": "{number} 개 선택됨",
@@ -1391,6 +1404,7 @@
                             "disabled": "비활성화",
                             "ok": "확인",
                             "readonly": "읽기 전용",
+                            "restored": "복원됨",
                             "unavailable": "사용불가"
                         },
                         "unavailable": "(사용불가)"
@@ -1399,24 +1413,25 @@
                 "header": "Home Assistant 설정",
                 "helpers": {
                     "caption": "도우미",
-                    "description": "자동화를 구축하는 데 도움이 되는 요소입니다.",
+                    "description": "자동화 구축에 도움이 되는 요소입니다",
                     "dialog": {
                         "add_helper": "도우미 추가",
-                        "add_platform": "{platform} 추가...",
+                        "add_platform": "{platform} 추가",
                         "create": "만들기"
                     },
                     "picker": {
                         "add_helper": "도우미 추가",
                         "headers": {
                             "editable": "수정 가능",
+                            "entity_id": "구성요소 ID",
                             "name": "이름",
-                            "type": "종류"
+                            "type": "유형"
                         }
                     },
                     "types": {
                         "input_boolean": "토글",
                         "input_datetime": "날짜 또는 시간",
-                        "input_number": "수",
+                        "input_number": "숫자",
                         "input_select": "드롭다운",
                         "input_text": "텍스트"
                     }
@@ -1454,6 +1469,7 @@
                         },
                         "failed_create_area": "영역을 만들지 못했습니다.",
                         "finish": "완료",
+                        "loading_first_time": "통합 구성요소가 설치되는 동안 기다려주세요",
                         "name_new_area": "새로운 영역의 이름?",
                         "not_all_required_fields": "필수 입력란이 모두 채워지지 않았습니다.",
                         "submit": "확인"
@@ -1485,69 +1501,76 @@
                 "lovelace": {
                     "caption": "Lovelace 대시보드",
                     "dashboards": {
-                        "cant_edit_yaml": "YAML에 정의된 대시보드는 UI에서 편집할 수 없습니다. configuration.yaml 파일에서 수정하십시오.",
+                        "cant_edit_default": "기본 Lovelace 대시보드는 UI 에서 편집할 수 없습니다. 다른 대시보드를 기본값으로 설정하여 숨길 수 있습니다.",
+                        "cant_edit_yaml": "YAML 에서 정의된 대시보드는 UI 에서 편집할 수 없습니다. configuration.yaml 파일에서 수정해주세요.",
                         "caption": "대시보드",
                         "conf_mode": {
                             "storage": "UI 제어",
                             "yaml": "YAML 파일"
                         },
                         "confirm_delete": "이 대시보드를 삭제하시겠습니까?",
+                        "default_dashboard": "기본 대시보드입니다",
                         "detail": {
                             "create": "만들기",
                             "delete": "삭제",
                             "dismiss": "닫기",
                             "edit_dashboard": "대시보드 편집",
-                            "icon": "사이드바 아이콘",
-                            "new_dashboard": "새로운 대시보드 추가...",
+                            "icon": "아이콘",
+                            "new_dashboard": "새로운 대시보드 추가",
+                            "remove_default": "이 기기에서 기본값으로 제거",
                             "require_admin": "관리자 전용",
-                            "show_sidebar": "사이드바에서 표시",
-                            "title": "사이드바 제목",
+                            "set_default": "이 기기에서 기본값으로 설정",
+                            "show_sidebar": "사이드바에 표시",
+                            "title": "제목",
+                            "title_required": "제목은 필수 요소입니다",
                             "update": "업데이트",
                             "url": "URL",
-                            "url_error_msg": "URL은 _와 -를 제외한 공백이나 특수 문자를 포함할 수 없습니다."
+                            "url_error_msg": "URL 은 - 를 포함해야 하며 _ 및 - 를 제외한 공백이나 특수 문자를 포함할 수 없습니다"
                         },
                         "picker": {
                             "add_dashboard": "대시보드 추가",
                             "headers": {
                                 "conf_mode": "구성 방법",
+                                "default": "기본값",
                                 "filename": "파일 이름",
                                 "require_admin": "관리자 전용",
-                                "sidebar": "사이드바에서 표시",
+                                "sidebar": "사이드바에 표시",
                                 "title": "제목"
                             },
-                            "open": "대시보드 열기"
+                            "open": "열기"
                         }
                     },
-                    "description": "Lovelace 대시보드 구성",
+                    "description": "Lovelace 대시보드를 구성합니다",
                     "resources": {
-                        "cant_edit_yaml": "당신은 Lovelace를 YAML 모드로 사용 중이므로 리소스들을 UI에서 관리할 수 없습니다. configuration.yaml에서 관리하십시오.",
+                        "cant_edit_yaml": "YAML 모드에서 Lovelace 를 사용하고 있으므로 UI 를 통해 리소스를 관리할 수 없습니다. configuration.yaml 에서 관리해주세요.",
                         "caption": "리소스",
-                        "confirm_delete": "이 리소스롤 삭제하시겠습니까?",
+                        "confirm_delete": "이 리소스를 삭제하시겠습니까?",
                         "detail": {
                             "create": "만들기",
                             "delete": "삭제",
                             "dismiss": "닫기",
-                            "new_resource": "새로운 리소스 추가...",
+                            "new_resource": "새로운 리소스 추가",
                             "type": "리소스 유형",
                             "update": "업데이트",
                             "url": "URL",
-                            "url_error_msg": "URL은 필수 입력 입니다",
-                            "warning_header": "주의하세요!",
-                            "warning_text": "리소스를 추가하는 것은 위험할 수 있으므로 신뢰할 수 있는 출처인지 확인하시기 바랍니다. 부적합한 리소스는 시스템에 심각한 손상을 가할 수 있습니다."
+                            "url_error_msg": "URL 은 필수 입력 요소입니다",
+                            "warning_header": "주의해주세요!",
+                            "warning_text": "리소스를 추가하는 것은 위험할 수 있습니다. 리소스의 출처를 알고 신뢰할 수 있는지 확인해주세요. 잘못된 리소스는 시스템에 심각한 손상을 줄 수 있습니다."
                         },
                         "picker": {
-                            "add_resource": "새로운 리소스 추가...",
+                            "add_resource": "새로운 리소스 추가",
                             "headers": {
-                                "type": "종류",
+                                "type": "유형",
                                 "url": "URL"
-                            }
+                            },
+                            "no_resources": "리소스 없음"
                         },
-                        "refresh_body": "삭제를 완료하려면 페이지를 새로 고쳐야야합니다. 지금 새로 고치시겠습니까?",
-                        "refresh_header": "새로고침을 하시겠습니까?",
+                        "refresh_body": "삭제를 완료하려면 페이지를 새로 고쳐야 합니다. 지금 새로 고치시겠습니까?",
+                        "refresh_header": "새로 고치시겠습니까?",
                         "types": {
                             "css": "스타일시트",
-                            "html": "HTML (권장하지 않음)",
-                            "js": "자바스크립트 파일 (권장하지 않음)",
+                            "html": "HTML (더 이상 사용되지 않음)",
+                            "js": "자바스크립트 파일 (더 이상 사용되지 않음)",
                             "module": "자바스크립트 모듈"
                         }
                     }
@@ -1649,15 +1672,15 @@
                     "description": "Home Assistant 서버를 재시작 또는 중지합니다",
                     "section": {
                         "reloading": {
-                            "automation": "자동화 새로고침",
-                            "core": "위치 및 사용자화 새로고침",
-                            "group": "그룹 새로고침",
+                            "automation": "자동화 다시 읽어오기",
+                            "core": "위치 및 사용자화 다시 읽어오기",
+                            "group": "그룹 다시 읽어오기",
                             "heading": "YAML 구성 다시 읽어오기",
-                            "introduction": "Home Assistant 의 일부 구성 내용은 재시작 없이 다시 읽어 들일 수 있습니다. 새로고침을 누르면 현재 사용 중인 YAML 구성 내용을 내리고 새로운 구성 내용을 읽어 들입니다.",
-                            "person": "구성원 새로고침",
-                            "scene": "씬 다시읽기",
-                            "script": "스크립트 새로고침",
-                            "zone": "지역 새로고침"
+                            "introduction": "Home Assistant 의 일부 구성 내용은 재시작 없이 다시 읽어 들일 수 있습니다. 다시 읽어오기를 누르면 현재 사용 중인 YAML 구성 내용을 내리고 새로운 구성 내용을 읽어 들입니다.",
+                            "person": "구성원 다시 읽어오기",
+                            "scene": "씬 다시 읽어오기",
+                            "script": "스크립트 다시 읽어오기",
+                            "zone": "지역 다시 읽어오기"
                         },
                         "server_management": {
                             "confirm_restart": "Home Assistant 를 재시작하시겠습니까?",
@@ -2030,7 +2053,7 @@
                 "add_entities": {
                     "generated_unsupported": "Lovelace UI 를 직접 관리하는 경우에만 이 기능을 사용할 수 있습니다.",
                     "saving_failed": "Lovelace UI 구성을 저장하지 못했습니다.",
-                    "yaml_unsupported": "Lovelace UI 를 YAML 모드로 사용하는 경우 이 기능은 사용할 수 없습니다."
+                    "yaml_unsupported": "YAML 모드에서 Lovelace UI 를 사용하는 경우 이 기능은 사용할 수 없습니다."
                 },
                 "cards": {
                     "confirm_delete": "이 카드를 삭제하시겠습니까?",
@@ -2063,7 +2086,7 @@
                     }
                 },
                 "changed_toast": {
-                    "message": "Lovelace UI 구성이 업데이트되었습니다. 새로고침 하시겠습니까?",
+                    "message": "이 대시보드의 Lovelace UI 구성이 업데이트되었습니다. 새로 고치시겠습니까?",
                     "refresh": "새로고침"
                 },
                 "editor": {
@@ -2073,19 +2096,30 @@
                         },
                         "alarm-panel": {
                             "available_states": "사용 가능한 상태요소",
+                            "description": "알람 패널 카드를 사용하면 알람 제어판 통합 구성요소의 경비를 설정 및 해제할 수 있습니다.",
                             "name": "알람 패널"
                         },
                         "button": {
+                            "description": "버튼 카드를 사용하면 작업을 수행할 수 있는 버튼을 추가할 수 있습니다.",
                             "name": "버튼"
                         },
                         "conditional": {
-                            "name": "조건부"
+                            "card": "카드",
+                            "change_type": "변경 유형",
+                            "condition_explanation": "아래의 모든 조건이 충족되면 카드가 표시됩니다.",
+                            "conditions": "조건",
+                            "current_state": "현재 상태",
+                            "description": "조건부 카드는 구성요소의 상태에 따라 다른 카드를 표시합니다.",
+                            "name": "조건부",
+                            "state_equal": "상태가 다음과 같으면",
+                            "state_not_equal": "상태가 다음과 같지 않다면"
                         },
                         "config": {
                             "optional": "선택 사항",
                             "required": "필수 요소"
                         },
                         "entities": {
+                            "description": "구성요소 카드는 가장 일반적인 유형의 카드입니다. 항목을 목록으로 그룹화합니다.",
                             "name": "구성요소",
                             "show_header_toggle": "헤더 토글 표시",
                             "toggle": "구성요소 토글"
@@ -2094,9 +2128,11 @@
                             "name": "구성요소 버튼"
                         },
                         "entity-filter": {
+                            "description": "구성요소 필터 카드를 사용하면 특정 상태에 있을 때만 추적할 구성요소의 목록을 정의할 수 있습니다.",
                             "name": "구성요소 필터"
                         },
                         "gauge": {
+                            "description": "게이지 카드는 센서 데이터를 시각적으로 볼 수 있는 기본 카드입니다.",
                             "name": "게이지",
                             "severity": {
                                 "define": "게이지 구간 정의하기",
@@ -2116,6 +2152,8 @@
                             "icon": "아이콘",
                             "icon_height": "아이콘 높이",
                             "image": "이미지 경로",
+                            "manual": "수동 구성",
+                            "manual_description": "사용자 정의 카드를 추가하거나 yaml 을 수동으로 작성하시겠습니까?",
                             "maximum": "최대",
                             "minimum": "최소",
                             "name": "이름",
@@ -2123,6 +2161,7 @@
                             "show_icon": "아이콘 표시",
                             "show_name": "이름 표시",
                             "show_state": "상태 표시",
+                            "state": "상태",
                             "tap_action": "탭 동작",
                             "theme": "테마",
                             "title": "제목",
@@ -2131,71 +2170,90 @@
                         },
                         "glance": {
                             "columns": "열",
+                            "description": "한눈에 보기 카드는 여러 센서를 간단한 개요로 그룹화하는 데 유용합니다.",
                             "name": "한눈에 보기"
                         },
                         "history-graph": {
+                            "description": "기록 그래프 카드를 사용하면 나열된 각 구성요소에 대한 그래프를 표시할 수 있습니다.",
                             "name": "기록 그래프"
                         },
                         "horizontal-stack": {
+                            "description": "수평 쌓아보기 카드를 사용하면 여러 카드를 함께 묶을 수 있으며 항상 한 열의 공간에서 옆으로 나열합니다.",
                             "name": "수평 쌓아보기"
                         },
                         "iframe": {
-                            "name": "iFrame"
+                            "description": "웹 페이지 카드를 사용하면 즐겨 찾는 웹 페이지를 Home Assistant 에 삽입할 수 있습니다.",
+                            "name": "웹 페이지"
                         },
                         "light": {
+                            "description": "조명 카드를 사용하면 조명의 밝기를 변경할 수 있습니다.",
                             "name": "조명"
                         },
                         "map": {
                             "dark_mode": "어둡게 표시",
                             "default_zoom": "기본 확대",
+                            "description": "지도 카드는 지도에 구성요소를 표시할 수 있습니다.",
                             "geo_location_sources": "위치정보 소스",
                             "name": "지도",
                             "source": "소스"
                         },
                         "markdown": {
                             "content": "내용",
+                            "description": "마크다운 텍스트 카드는 마크다운을 표시할 수 있습니다.",
                             "name": "마크다운 텍스트"
                         },
                         "media-control": {
+                            "description": "미디어 컨트롤 카드는 조작이 간편한 인터페이스로 미디어 플레이어 구성요소를 표시할 수 있습니다.",
                             "name": "미디어 컨트롤"
                         },
                         "picture-elements": {
+                            "description": "그림 복합요소 카드는 가장 다채로운 유형의 카드 중 하나입니다. 이 카드를 사용하면 좌표를 기준으로 이미지 위에 아이콘이나 텍스트, 심지어 서비스를 배치할 수 있습니다!",
                             "name": "그림 복합요소"
                         },
                         "picture-entity": {
+                            "description": "그림 구성요소 카드는 이미지 형태로 구성요소를 표시합니다. URL 로 지정된 이미지 대신 카메라 구성요소의 화면을 표시할 수도 있습니다.",
                             "name": "그림 구성요소"
                         },
                         "picture-glance": {
+                            "description": "그림 한눈에 보기 카드는 이미지와 해당 구성요소의 상태가 아이콘으로 표시됩니다. 오른쪽의 구성요소는 토글 작업을 허용하고 다른 구성요소는 추가 정보 대화상자를 표시합니다.",
                             "name": "그림 한눈에 보기"
                         },
                         "picture": {
+                            "description": "그림 카드를 사용하면 인터페이스의 다양한 경로를 탐색하거나 서비스를 호출하는 데 사용할 이미지를 설정할 수 있습니다.",
                             "name": "그림"
                         },
                         "plant-status": {
+                            "description": "식물 상태 카드는 사랑스러운 식물들을 위한 카드입니다.",
                             "name": "식물 상태"
                         },
                         "sensor": {
+                            "description": "센서 카드는 시간 경과에 따라 상태 변화를 시각화하는 그래프 옵션을 통해 센서 상태에 대한 빠른 개요보기를 제공합니다.",
                             "graph_detail": "그래프 세부묘사 정도",
                             "graph_type": "그래프 유형",
                             "name": "센서"
                         },
                         "shopping-list": {
+                            "description": "장보기목록 카드를 사용하면 장보기목록에서 항목을 추가, 편집, 확인 및 삭제를 할 수 있습니다.",
                             "integration_not_loaded": "이 카드를 설정하려면 `shopping_list` 통합 구성요소가 필요합니다.",
                             "name": "장보기목록"
                         },
                         "thermostat": {
+                            "description": "온도 조절기 카드는 냉난방 기기를 제어합니다. 구성요소의 온도와 모드를 변경할 수 있습니다.",
                             "name": "온도 조절기"
                         },
                         "vertical-stack": {
+                            "description": "수직 쌓아보기 카드를 사용하면 여러 카드를 그룹화하여 항상 같은 열에 배치할 수 있습니다.",
                             "name": "수직 쌓아보기"
                         },
                         "weather-forecast": {
+                            "description": "날씨 예보 카드는 날씨를 표시합니다. 화면에 날씨를 포함하는 인터페이스를 표시하는데 유용합니다.",
                             "name": "날씨 예보"
                         }
                     },
                     "edit_card": {
                         "add": "카드 추가하기",
                         "delete": "카드 삭제",
+                        "duplicate": "카드 복사",
                         "edit": "편집",
                         "header": "카드 구성",
                         "move": "다른 뷰로 이동",
@@ -2221,7 +2279,11 @@
                         "move_left": "뷰를 왼쪽으로 이동",
                         "move_right": "뷰를 오른쪽으로 이동",
                         "tab_badges": "배지",
-                        "tab_settings": "설정"
+                        "tab_settings": "설정",
+                        "tab_visibility": "가시성",
+                        "visibility": {
+                            "select_users": "탐색에서 이 뷰를 볼 사용자를 선택해주세요"
+                        }
                     },
                     "header": "UI 편집",
                     "menu": {
@@ -2232,7 +2294,7 @@
                         "header": "구성 내용이 호환되지 않습니다",
                         "migrate": "구성 마이그레이션",
                         "para_migrate": "Home Assistant 는 '구성 마이그레이션' 버튼을 눌러 자동으로 모든 카드와 뷰에 ID를 추가할 수 있습니다.",
-                        "para_no_id": "이 구성요소에는 ID가 없습니다. 'ui-lovelace.yaml' 에 구성요소의 ID를 추가해주세요."
+                        "para_no_id": "이 요소에는 ID가 없습니다. 'ui-lovelace.yaml' 에 요소의 ID를 추가해주세요."
                     },
                     "raw_editor": {
                         "confirm_remove_config_text": "Lovelace UI 구성을 제거하면, 영역 및 기기와 함께 Lovelace UI 뷰가 자동으로 생성됩니다.",
@@ -2244,7 +2306,7 @@
                         "error_remove": "구성을 제거할 수 없습니다: {error}",
                         "error_save_yaml": "YAML 을 저장할 수 없습니다: {error}",
                         "header": "구성 코드 편집",
-                        "resources_moved": "리소스는 더이상 Lovelace 구성에 추가하지 말아야 하지만 Lovelace 구성 패널에서 추가할 수 있습니다.",
+                        "resources_moved": "리소스는 더 이상 Lovelace 구성에서 추가할 수 없으며 Lovelace 구성 패널에서 추가할 수 있습니다.",
                         "save": "저장하기",
                         "saved": "저장되었습니다",
                         "unsaved_changes": "저장되지 않은 변경사항"
@@ -2256,9 +2318,9 @@
                         "para": "기본적으로 Home Assistant 는 사용자 인터페이스를 유지 관리하고, 사용할 수 있는 새로운 구성요소 또는 Lovelace 구성요소가 있을 때 업데이트를 합니다. 사용자가 직접 관리하는 경우 Home Assistant 는 더 이상 자동으로 변경하지 않습니다.",
                         "para_sure": "사용자 인터페이스를 직접 관리하시겠습니까?",
                         "save": "직접 관리할게요",
-                        "yaml_config": "대시보드의 현재 설정은 다음과 같습니다.",
-                        "yaml_control": "YAML 모드로 제어하려면 대시보드의 구성에서 지정한 이름 또는 'ui-lovelace.yaml'(기본값)으로 YAML 파일을 만드십시오.",
-                        "yaml_mode": "YAML 모드를 사용 중이므로 UI에서 Lovelace 구성을 변경할 수 없습니다. UI에서 Lovelace를 변경하려면 'configuration.yaml'의 Lovelace 구성에서 'mode : yaml'을 제거하십시오."
+                        "yaml_config": "시작하는데 도움이 될 수 있는 대시보드의 현재 구성은 다음과 같습니다:",
+                        "yaml_control": "YAML 모드로 제어하려면 대시보드의 구성에서 지정한 이름의 YAML 파일을 만들거나 기본 제공된 'ui-lovelace.yaml' 을 사용해주세요.",
+                        "yaml_mode": "YAML 모드를 사용 중이므로 UI 에서 Lovelace 구성을 변경할 수 없습니다. Lovelace 를 UI 에서 변경하려면 'configuration.yaml' 의 Lovelace 구성에서 'mode:yaml' 을 제거해주세요."
                     },
                     "suggest_card": {
                         "add": "Lovelace UI 에 추가",
@@ -2278,9 +2340,14 @@
                     "exit_edit_mode": "UI 편집 모드 종료",
                     "help": "도움말",
                     "refresh": "새로고침",
+                    "reload_resources": "리소스 다시 읽어오기",
                     "unused_entities": "미사용 구성요소"
                 },
-                "reload_lovelace": "UI 새로고침",
+                "reload_lovelace": "UI 다시 읽어오기",
+                "reload_resources": {
+                    "refresh_body": "다시 읽어오기를 완료하려면 페이지를 새로 고쳐야 합니다. 지금 새로 고치시겠습니까?",
+                    "refresh_header": "새로 고치시겠습니까?"
+                },
                 "unused_entities": {
                     "available_entities": "사용 가능한 구성요소이지만 아직 Lovelace UI 에는 등록되지 않았습니다.",
                     "domain": "도메인",
@@ -2292,9 +2359,13 @@
                 },
                 "views": {
                     "confirm_delete": "이 뷰를 삭제하시겠습니까?",
+                    "confirm_delete_existing_cards": "이 뷰를 삭제하면 포함된 카드도 함께 제거됩니다",
+                    "confirm_delete_existing_cards_text": "'{name}' 뷰를 삭제하시겠습니까? 이 뷰에 포함된 {number} 카드도 함께 제거됩니다. 이 작업은 취소할 수 없습니다.",
+                    "confirm_delete_text": "'{name}' 뷰를 삭제하시겠습니까?",
                     "existing_cards": "카드가 포함된 뷰는 삭제할 수 없습니다. 먼저 카드를 제거해주세요."
                 },
                 "warning": {
+                    "attribute_not_found": "{attribute} 속성을 사용할 수 없습니다: {entity}",
                     "entity_non_numeric": "구성요소가 숫자형식이 아닙니다: {entity}",
                     "entity_not_found": "구성요소를 사용할 수 없습니다: {entity}"
                 }
@@ -2492,7 +2563,7 @@
                 },
                 "current_user": "현재 {fullName} 로(으로) 로그인 한 상태 입니다.",
                 "force_narrow": {
-                    "description": "모바일 환경과 마찬가지로 기본적으로 사이드 바가 숨겨집니다.",
+                    "description": "모바일 환경과 마찬가지로 기본적으로 사이드바가 숨겨집니다.",
                     "header": "항상 사이드바 숨기기"
                 },
                 "is_owner": "관리자 계정입니다.",

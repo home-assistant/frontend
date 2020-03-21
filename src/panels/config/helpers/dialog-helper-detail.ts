@@ -6,6 +6,7 @@ import {
   LitElement,
   property,
   TemplateResult,
+  query,
 } from "lit-element";
 import "../../../components/ha-dialog";
 import { HomeAssistant } from "../../../types";
@@ -18,6 +19,7 @@ import { createInputSelect } from "../../../data/input_select";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { Helper } from "./const";
 import "@polymer/paper-item/paper-icon-item";
+import "@polymer/paper-tooltip/paper-tooltip";
 import "./forms/ha-input_boolean-form";
 import "./forms/ha-input_text-form";
 import "./forms/ha-input_datetime-form";
@@ -43,6 +45,7 @@ export class DialogHelperDetail extends LitElement {
   @property() private _platform?: string;
   @property() private _error?: string;
   @property() private _submitting = false;
+  @query(".form") private _form?: HTMLDivElement;
 
   public async showDialog(): Promise<void> {
     this._platform = undefined;
@@ -62,6 +65,8 @@ export class DialogHelperDetail extends LitElement {
         .open=${this._opened}
         @closing=${this.closeDialog}
         class=${classMap({ "button-left": !this._platform })}
+        scrimClickAction
+        escapeKeyAction
         .heading=${this._platform
           ? this.hass.localize(
               "ui.panel.config.helpers.dialog.add_platform",
@@ -103,22 +108,38 @@ export class DialogHelperDetail extends LitElement {
             `
           : html`
               ${Object.keys(HELPERS).map((platform: string) => {
+                const isLoaded = isComponentLoaded(this.hass, platform);
                 return html`
-                  <paper-icon-item
-                    .disabled=${!isComponentLoaded(this.hass, platform)}
-                    @click="${this._platformPicked}"
-                    .platform="${platform}"
-                  >
-                    <ha-icon
-                      slot="item-icon"
-                      .icon=${domainIcon(platform)}
-                    ></ha-icon>
-                    <span class="item-text">
-                      ${this.hass.localize(
-                        `ui.panel.config.helpers.types.${platform}`
-                      ) || platform}
-                    </span>
-                  </paper-icon-item>
+                  <div class="form">
+                    <paper-icon-item
+                      .disabled=${!isLoaded}
+                      @click=${this._platformPicked}
+                      @keydown=${this._handleEnter}
+                      .platform=${platform}
+                      dialogInitialFocus
+                    >
+                      <ha-icon
+                        slot="item-icon"
+                        .icon=${domainIcon(platform)}
+                      ></ha-icon>
+                      <span class="item-text">
+                        ${this.hass.localize(
+                          `ui.panel.config.helpers.types.${platform}`
+                        ) || platform}
+                      </span>
+                    </paper-icon-item>
+                    ${!isLoaded
+                      ? html`
+                          <paper-tooltip
+                            >${this.hass.localize(
+                              "ui.dialogs.helper_settings.platform_not_loaded",
+                              "platform",
+                              platform
+                            )}</paper-tooltip
+                          >
+                        `
+                      : ""}
+                  </div>
                 `;
               })}
               <mwc-button slot="primaryAction" @click="${this.closeDialog}">
@@ -149,12 +170,29 @@ export class DialogHelperDetail extends LitElement {
     }
   }
 
+  private _handleEnter(ev: KeyboardEvent) {
+    if (ev.keyCode !== 13) {
+      return;
+    }
+    ev.stopPropagation();
+    ev.preventDefault();
+    this._platformPicked(ev);
+  }
+
   private _platformPicked(ev: Event): void {
     this._platform = (ev.currentTarget! as any).platform;
+    this._focusForm();
+  }
+
+  private async _focusForm(): Promise<void> {
+    await this.updateComplete;
+    (this._form?.lastElementChild as HTMLElement).focus();
   }
 
   private _goBack() {
     this._platform = undefined;
+    this._item = undefined;
+    this._error = undefined;
   }
 
   static get styles(): CSSResult[] {
