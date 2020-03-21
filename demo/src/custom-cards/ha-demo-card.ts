@@ -12,7 +12,6 @@ import {
   setDemoConfig,
   selectedDemoConfigIndex,
 } from "../configs/demo-configs";
-import { invalidateThemeCache } from "../../../src/common/dom/apply_themes_on_element";
 
 export class HADemoCard extends LitElement implements LovelaceCard {
   @property() public lovelace?: Lovelace;
@@ -96,7 +95,6 @@ export class HADemoCard extends LitElement implements LovelaceCard {
   private async _updateConfig(index: number) {
     this._switching = true;
     try {
-      invalidateThemeCache();
       await setDemoConfig(this.hass, this.lovelace!, index);
     } catch (err) {
       alert("Failed to switch config :-(");
