@@ -1,4 +1,7 @@
-import { applyThemesOnElement } from "../common/dom/apply_themes_on_element";
+import {
+  applyThemesOnElement,
+  invalidateThemeCache,
+} from "../common/dom/apply_themes_on_element";
 
 import { demoConfig } from "./demo_config";
 import { demoServices } from "./demo_services";
@@ -224,6 +227,7 @@ export const provideHass = (
       (eventListeners[event] || []).forEach((fn) => fn(event));
     },
     mockTheme(theme) {
+      invalidateThemeCache();
       hass().updateHass({
         selectedTheme: theme ? "mock" : "default",
         themes: {
