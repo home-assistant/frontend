@@ -50,13 +50,13 @@ const addEntities = (entities: Set<string>, obj) => {
   if (obj.card) {
     addEntities(entities, obj.card);
   }
-  if (obj.cards) {
+  if (obj.cards && Array.isArray(obj.cards)) {
     obj.cards.forEach((card) => addEntities(entities, card));
   }
-  if (obj.elements) {
+  if (obj.elements && Array.isArray(obj.elements)) {
     obj.elements.forEach((card) => addEntities(entities, card));
   }
-  if (obj.badges) {
+  if (obj.badges && Array.isArray(obj.badges)) {
     obj.badges.forEach((badge) => addEntityId(entities, badge));
   }
 };
