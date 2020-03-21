@@ -185,6 +185,9 @@ class HuiEntitiesCard extends LitElement implements LovelaceCard {
 
   static get styles(): CSSResult {
     return css`
+      ha-card {
+        height: 100%;
+      }
       .card-header {
         display: flex;
         justify-content: space-between;
