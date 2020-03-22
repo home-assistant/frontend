@@ -1310,6 +1310,7 @@
                     "automations": "自動化",
                     "cant_edit": "只能編輯於 UI 中新增的物件。",
                     "caption": "設備",
+                    "confirm_delete": "確定要刪除此設備？",
                     "confirm_rename_entity_ids": "是否也要變更物件的物件 ID？",
                     "data_table": {
                         "area": "分區",
@@ -1320,6 +1321,7 @@
                         "model": "型號",
                         "no_devices": "沒有設備"
                     },
+                    "delete": "刪除",
                     "description": "管理已連線設備",
                     "details": "此處顯示設備所有詳細資訊。",
                     "device_not_found": "未找到設備。",
@@ -2157,6 +2159,7 @@
                             "maximum": "最大值",
                             "minimum": "最小值",
                             "name": "名稱",
+                            "no_theme": "沒有主題",
                             "refresh_interval": "更新間隔",
                             "show_icon": "顯示圖示？",
                             "show_name": "顯示名稱？",

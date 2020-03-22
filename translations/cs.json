@@ -395,8 +395,8 @@
     "ui": {
         "auth_store": {
             "ask": "Chcete toto přihlášení uložit?",
-            "confirm": "Uložit login",
-            "decline": "Ne, děkuji"
+            "confirm": "Ano",
+            "decline": "Ne"
         },
         "card": {
             "alarm_control_panel": {
@@ -818,7 +818,7 @@
                     "editor": {
                         "create": "VYTVOŘIT",
                         "default_name": "Nová oblast",
-                        "delete": "SMAZAT",
+                        "delete": "Odstranit",
                         "update": "UPRAVIT"
                     },
                     "no_areas": "Vypadá to, že ještě nemáte žádné oblasti!",
@@ -1053,8 +1053,8 @@
                         "edit_automation": "Upravit automatizaci",
                         "header": "Editor automatizací",
                         "introduction": "Editor automatizací umožňuje vytvářet a upravovat automatizace. Přečtěte si prosím [pokyny] (https://home-assistant.io/docs/automation/editor/), abyste se ujistili, že jste aplikaci Home Assistant nakonfigurovali správně.",
-                        "learn_more": "Další informace o automatizaci",
-                        "no_automations": "Nelze najít žádnou upravitelnou automatizaci",
+                        "learn_more": "Další informace o automatizacích",
+                        "no_automations": "Nemohli jsme najít žádné upravitelné automatizace",
                         "only_editable": "Upravitelné mohou být pouze automatizace definované v automations.yaml.",
                         "pick_automation": "Vyberte automatizaci, kterou chcete upravit",
                         "show_info_automation": "Zobrazit informace o automatizaci"
@@ -1247,7 +1247,7 @@
                         },
                         "server_control": {
                             "reloading": {
-                                "automation": "Znovu načíst automatizaci",
+                                "automation": "Znovu načíst automatizace",
                                 "core": "Znovu načíst jádro",
                                 "group": "Znovu načíst skupiny",
                                 "heading": "Konfigurace se načítá",
@@ -1310,6 +1310,7 @@
                     "automations": "Automatizace",
                     "cant_edit": "Můžete upravovat pouze položky, které jsou vytvořeny v uživatelském rozhraní.",
                     "caption": "Zařízení",
+                    "confirm_delete": "Opravdu chcete toto zařízení odstranit?",
                     "confirm_rename_entity_ids": "Chcete také přejmenovat ID entit vašich entit?",
                     "data_table": {
                         "area": "Oblast",
@@ -1320,6 +1321,7 @@
                         "model": "Model",
                         "no_devices": "Žádná zařízení"
                     },
+                    "delete": "Odstranit",
                     "description": "Správa připojených zařízení",
                     "details": "Zde jsou všechny podrobnosti o vašem zařízení.",
                     "device_not_found": "Zařízení nebylo nalezeno.",
@@ -1460,7 +1462,7 @@
                         "add_area": "Přidat oblast",
                         "area_picker_label": "Oblast",
                         "close": "Zavřít",
-                        "created_config": "Bylo vytvořeno nastavení pro {Name}.",
+                        "created_config": "Bylo vytvořeno nastavení pro {name}.",
                         "dismiss": "Zavřít dialog",
                         "error_saving_area": "Chyba při ukládání oblasti: {error}",
                         "external_step": {
@@ -1672,7 +1674,7 @@
                     "description": "Restart a zastavení serveru Home Asistent",
                     "section": {
                         "reloading": {
-                            "automation": "Znovu načíst automatizaci",
+                            "automation": "Znovu načíst automatizace",
                             "core": "Znovu načíst umístění a přizpůsobení",
                             "group": "Znovu načíst skupiny",
                             "heading": "Konfigurace se načítá",
@@ -2157,6 +2159,7 @@
                             "maximum": "Maximum",
                             "minimum": "Minimum",
                             "name": "Název",
+                            "no_theme": "Žádný motiv",
                             "refresh_interval": "Interval obnovení",
                             "show_icon": "Zobrazit ikonu?",
                             "show_name": "Zobrazit název?",
@@ -2358,7 +2361,7 @@
                     "title": "Nepoužité entity"
                 },
                 "views": {
-                    "confirm_delete": "Opravdu chcete smazat tento pohled?",
+                    "confirm_delete": "Odstranit zobrazení?",
                     "confirm_delete_existing_cards": "Odstraněním tohoto pohledu dojde také k odebrání karet",
                     "confirm_delete_existing_cards_text": "Opravdu chcete smazat pohled '{name}'? Pohled obsahuje {number} karty, které budou smazány. Tuto akci nelze vrátit zpět.",
                     "confirm_delete_text": "Opravdu chcete smazat pohled '{name}'?",

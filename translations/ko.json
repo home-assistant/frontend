@@ -1310,6 +1310,7 @@
                     "automations": "자동화",
                     "cant_edit": "UI 에서 작성된 항목만 편집할 수 있습니다.",
                     "caption": "기기",
+                    "confirm_delete": "이 기기를 삭제하시겠습니까?",
                     "confirm_rename_entity_ids": "구성요소의 ID 이름 또한 바꾸시겠습니까?",
                     "data_table": {
                         "area": "영역",
@@ -1320,6 +1321,7 @@
                         "model": "모델",
                         "no_devices": "기기 없음"
                     },
+                    "delete": "삭제",
                     "description": "연결된 기기를 관리합니다",
                     "details": "기기의 모든 세부 정보는 다음과 같습니다.",
                     "device_not_found": "기기를 찾을 수 없습니다.",
@@ -2157,6 +2159,7 @@
                             "maximum": "최대",
                             "minimum": "최소",
                             "name": "이름",
+                            "no_theme": "테마 없음",
                             "refresh_interval": "새로 고침 간격",
                             "show_icon": "아이콘 표시",
                             "show_name": "이름 표시",

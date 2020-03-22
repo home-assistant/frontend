@@ -1310,6 +1310,7 @@
                     "automations": "自动化",
                     "cant_edit": "您只能编辑在 UI 中创建的项目。",
                     "caption": "设备",
+                    "confirm_delete": "您确定要删除此设备吗？",
                     "confirm_rename_entity_ids": "是否要重命名实体的实体 ID？",
                     "data_table": {
                         "area": "区域",
@@ -1320,6 +1321,7 @@
                         "model": "型号",
                         "no_devices": "没有设备"
                     },
+                    "delete": "删除",
                     "description": "管理已连接的设备",
                     "details": "这是设备的所有详细信息。",
                     "device_not_found": "未找到设备。",
@@ -2157,6 +2159,7 @@
                             "maximum": "最大值",
                             "minimum": "最小值",
                             "name": "名称",
+                            "no_theme": "没有主题",
                             "refresh_interval": "刷新间隔",
                             "show_icon": "显示图标？",
                             "show_name": "显示名称？",
