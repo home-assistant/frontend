@@ -62,7 +62,7 @@ class HaCoverControls extends PolymerElement {
 
   computeOpenIcon(stateObj) {
     console.log(stateObj);
-    if (!stateObj.attributes.hasOwnProperty("device_class")) {
+    if (!stateObj.attributes.device_class) {
       return "hass:arrow-up";
     }
 
@@ -78,7 +78,7 @@ class HaCoverControls extends PolymerElement {
 
   computeCloseIcon(stateObj) {
     console.log(stateObj);
-    if (!stateObj.attributes.hasOwnProperty("device_class")) {
+    if (!stateObj.attributes.device_class) {
       return "hass:arrow-down";
     }
 
