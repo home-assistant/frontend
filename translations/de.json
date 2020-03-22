@@ -621,7 +621,7 @@
                 "dismiss": "Ausblenden",
                 "editor": {
                     "confirm_delete": "Möchtest Du diesen Eintrag wirklich löschen?",
-                    "delete": "LÖSCHEN",
+                    "delete": "Löschen",
                     "enabled_cause": "Deaktiviert durch {cause}.",
                     "enabled_description": "Deaktivierte Entitäten werden nicht zu Home Assistant hinzugefügt.",
                     "enabled_label": "Entität aktivieren",
@@ -631,7 +631,7 @@
                     "name": "Namen überschreiben",
                     "note": "Hinweis: Dies funktioniert möglicherweise noch nicht bei allen Integrationen.",
                     "unavailable": "Diese Entität ist derzeit nicht verfügbar.",
-                    "update": "AKTUALISIEREN"
+                    "update": "Aktualisieren"
                 },
                 "no_unique_id": "Diese Entität hat keine eindeutige ID, daher können die Einstellungen nicht über die UI verwaltet werden.",
                 "related": "Verwandte",
@@ -816,14 +816,14 @@
                     },
                     "description": "Überblick über alle Bereiche in Deinem Haus.",
                     "editor": {
-                        "create": "ERSTELLEN",
+                        "create": "Erstellen",
                         "default_name": "Neuer Bereich",
-                        "delete": "LÖSCHEN",
-                        "update": "AKTUALISIEREN"
+                        "delete": "Löschen",
+                        "update": "Aktualisieren"
                     },
                     "no_areas": "Sieht aus, als hätten Sie noch keine Bereiche!",
                     "picker": {
-                        "create_area": "BEREICH ERSTELLEN",
+                        "create_area": "Bereich erstellen",
                         "header": "Bereiche",
                         "integrations_page": "Integrationsseite",
                         "introduction": "In Bereichen wird festgelegt, wo sich Geräte befinden. Diese Informationen werden in Home Assistant verwendet, um Sie bei der Organisation Ihrer Benutzeroberfläche, Berechtigungen und Integrationen mit anderen Systemen zu unterstützen.",
@@ -1310,6 +1310,7 @@
                     "automations": "Automatisierungen",
                     "cant_edit": "Du kannst nur Elemente bearbeiten, die in der Benutzeroberfläche erstellt wurden.",
                     "caption": "Geräte",
+                    "confirm_delete": "Möchten Sie dieses Gerät wirklich löschen?",
                     "confirm_rename_entity_ids": "Möchten Sie auch die Entitäts-IDs Ihrer Entitäten umbenennen?",
                     "data_table": {
                         "area": "Bereich",
@@ -1320,6 +1321,7 @@
                         "model": "Modell",
                         "no_devices": "keine Geräte"
                     },
+                    "delete": "Löschen",
                     "description": "Verwalte verbundene Geräte",
                     "details": "Hier sind alle Details deines Geräts.",
                     "device_not_found": "Gerät nicht gefunden.",
@@ -1469,6 +1471,7 @@
                         },
                         "failed_create_area": "Der Bereich konnte nicht erstellt werden.",
                         "finish": "Fertig",
+                        "loading_first_time": "Bitte warten Sie, während die Integration installiert wird",
                         "name_new_area": "Name des neuen Bereichs?",
                         "not_all_required_fields": "Nicht alle Pflichtfelder sind ausgefüllt.",
                         "submit": "Absenden"
@@ -1524,7 +1527,7 @@
                             "title_required": "Titel ist erforderlich.",
                             "update": "Aktualisieren",
                             "url": "Url",
-                            "url_error_msg": "Die URL darf keine Leerzeichen oder Sonderzeichen enthalten, außer _ und -"
+                            "url_error_msg": "Die URL sollte ein - enthalten und darf keine Leerzeichen oder Sonderzeichen enthalten, außer _ und -"
                         },
                         "picker": {
                             "add_dashboard": "Dashboard hinzufügen",
@@ -2252,6 +2255,7 @@
                     "edit_card": {
                         "add": "Karte hinzufügen",
                         "delete": "Löschen",
+                        "duplicate": "Karte duplizieren",
                         "edit": "Bearbeiten",
                         "header": "Kartenkonfiguration",
                         "move": "Zur Ansicht Bewegen",

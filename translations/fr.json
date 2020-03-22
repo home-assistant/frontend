@@ -1310,6 +1310,7 @@
                     "automations": "Automations",
                     "cant_edit": "Vous ne pouvez modifier que les éléments créés dans l'interface utilisateur.",
                     "caption": "Appareils",
+                    "confirm_delete": "Voulez-vous vraiment supprimer cet appareil ?",
                     "confirm_rename_entity_ids": "Voulez-vous aussi renommer les ID de vos entités?",
                     "data_table": {
                         "area": "Zone",
@@ -1320,6 +1321,7 @@
                         "model": "Modèle",
                         "no_devices": "Aucun appareil"
                     },
+                    "delete": "Supprimer",
                     "description": "Gérer les appareils connectés",
                     "details": "Voici tous les détails de votre appareil.",
                     "device_not_found": "Appareil non trouvé.",
@@ -2157,6 +2159,7 @@
                             "maximum": "Maximum",
                             "minimum": "Minimum",
                             "name": "Nom",
+                            "no_theme": "Pas de thème",
                             "refresh_interval": "Intervalle de rafraîchissement",
                             "show_icon": "Afficher l'icône ?",
                             "show_name": "Afficher le nom ?",

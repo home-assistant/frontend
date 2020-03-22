@@ -395,8 +395,8 @@
     "ui": {
         "auth_store": {
             "ask": "Vols desar aquest inici de sessió?",
-            "confirm": "Desa inici de sessió",
-            "decline": "No, gràcies"
+            "confirm": "Si",
+            "decline": "No"
         },
         "card": {
             "alarm_control_panel": {
@@ -817,7 +817,7 @@
                     "description": "Visió general de totes les àrees de la casa.",
                     "editor": {
                         "create": "CREAR",
-                        "default_name": "Àrea nova",
+                        "default_name": "Nova àrea",
                         "delete": "ELIMINA",
                         "update": "ACTUALITZAR"
                     },
@@ -1310,6 +1310,7 @@
                     "automations": "Automatitzacions",
                     "cant_edit": "Només pots editar els elements creats a la interfície d'usuari (UI).",
                     "caption": "Dispositius",
+                    "confirm_delete": "Estàs segur que vols eliminar aquest dispositiu?",
                     "confirm_rename_entity_ids": "Vols, també, canviar el nom dels ID's d’entitat de les entitats?",
                     "data_table": {
                         "area": "Àrea",
@@ -1320,6 +1321,7 @@
                         "model": "Model",
                         "no_devices": "Sense dispositius"
                     },
+                    "delete": "Suprimeix",
                     "description": "Gestiona els dispositius connectats",
                     "details": "Aquí tens tots els detalls del dispositiu.",
                     "device_not_found": "Dispositiu no trobat.",
@@ -1515,13 +1517,13 @@
                             "delete": "Suprimeix",
                             "dismiss": "Tanca",
                             "edit_dashboard": "Edita el panell",
-                            "icon": "Icona de la barra lateral",
+                            "icon": "Icona",
                             "new_dashboard": "Afegeix un nou panell",
                             "remove_default": "Elimina'l com a predeterminat en aquest dispositiu",
                             "require_admin": "Només administrador",
                             "set_default": "Estableix-lo com a predeterminat en aquest dispositiu",
                             "show_sidebar": "Mostra a la barra lateral",
-                            "title": "Títol de la barra lateral",
+                            "title": "Títol",
                             "title_required": "El títol és necessari.",
                             "update": "Actualitza",
                             "url": "URL",
@@ -1537,7 +1539,7 @@
                                 "sidebar": "Mostra a la barra lateral",
                                 "title": "Títol"
                             },
-                            "open": "Obre panell"
+                            "open": "Obrir"
                         }
                     },
                     "description": "Configura els teus panells Lovelace",
@@ -1673,7 +1675,7 @@
                     "section": {
                         "reloading": {
                             "automation": "Actualitza automatitzacions",
-                            "core": "Actualitza el nucli",
+                            "core": "Recarrega ubicacions i automatitzacions",
                             "group": "Actualitza grups",
                             "heading": "Torna a carregar la configuració",
                             "introduction": "Algunes parts de la configuració de Home Assistant es poden recarregar sense necessitat de reiniciar. Els botons de sota esborraran la configuració antiga i en carregaran la nova.",
@@ -2105,6 +2107,7 @@
                         },
                         "conditional": {
                             "card": "Targeta",
+                            "change_type": "Canvia el tipus",
                             "condition_explanation": "La targeta es mostrarà quan es compleixin totes les condicions següents.",
                             "conditions": "Condicions",
                             "current_state": "actual",
@@ -2156,6 +2159,7 @@
                             "maximum": "Màxim",
                             "minimum": "Mínim",
                             "name": "Nom",
+                            "no_theme": "Sense temes",
                             "refresh_interval": "Interval d'actualització",
                             "show_icon": "Mostra icona?",
                             "show_name": "Mostra nom?",
@@ -2182,7 +2186,7 @@
                         },
                         "iframe": {
                             "description": "La targeta pàgina web et permet incrustar els teus llocs web preferits directament a Home Assistant.",
-                            "name": "iFrame"
+                            "name": "Pàgina web"
                         },
                         "light": {
                             "description": "La targeta llum et permet ajustar la brillantor d'una llum.",
@@ -2255,7 +2259,7 @@
                         "duplicate": "Duplica targeta",
                         "edit": "Editar",
                         "header": "(configuració de la targeta)",
-                        "move": "Mou",
+                        "move": "Moure a la Vista",
                         "options": "Més opcions",
                         "pick_card": "Tria una targeta que vulguis afegir.",
                         "pick_card_view_title": "Quina targeta vols afegir a la visualització {name}?",
@@ -2323,7 +2327,7 @@
                     },
                     "suggest_card": {
                         "add": "Afegeix a la UI Lovelace",
-                        "create_own": "Crea la teva",
+                        "create_own": "Escull una targeta diferent",
                         "header": "T'hem creat un suggeriment"
                     },
                     "view": {
@@ -2357,14 +2361,14 @@
                     "title": "Entitats sense utilitzar"
                 },
                 "views": {
-                    "confirm_delete": "Estàs segur que vols eliminar aquesta visualització?",
+                    "confirm_delete": "Esborrar visualització?",
                     "confirm_delete_existing_cards": "Si elimines aquesta vista, també s'eliminaran les targetes que conté",
                     "confirm_delete_existing_cards_text": "Estàs segur que vols eliminar la vista '{name}'? La vista conté {number} targetes que també s'eliminaran. Aquesta acció no és reversible.",
                     "confirm_delete_text": "Estàs segur que vols eliminar la vista '{name}'?",
                     "existing_cards": "No pots suprimir una visualització si conté targetes, elimina-les primer."
                 },
                 "warning": {
-                    "attribute_not_found": "L'atribut {attribute} de {entity} no està disponible.",
+                    "attribute_not_found": "L'atribut {attribute} de {entity} no és disponible.",
                     "entity_non_numeric": "Entitat no numèrica: {entity}",
                     "entity_not_found": "Entitat no disponible: {entity}"
                 }

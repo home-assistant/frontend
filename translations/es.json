@@ -621,7 +621,7 @@
                 "dismiss": "Descartar",
                 "editor": {
                     "confirm_delete": "¿Estás seguro de que quieres eliminar este elemento?",
-                    "delete": "ELIMINAR",
+                    "delete": "Eliminar",
                     "enabled_cause": "Desactivado por {cause}.",
                     "enabled_description": "Las entidades deshabilitadas no se agregarán a Home Assistant.",
                     "enabled_label": "Activar entidad",
@@ -631,7 +631,7 @@
                     "name": "Cambio de nombre",
                     "note": "Nota: puede que esto no funcione todavía con todas las integraciones",
                     "unavailable": "Esta entidad no está disponible actualmente.",
-                    "update": "ACTUALIZAR"
+                    "update": "Actualizar"
                 },
                 "no_unique_id": "Esta entidad no tiene una ID única, por lo que su configuración no se puede administrar desde la IU.",
                 "related": "Relacionado",
@@ -683,7 +683,7 @@
                 },
                 "not_editable": "No editable",
                 "not_editable_text": "Esta entidad no se puede cambiar desde la interfaz de usuario porque está definida en configuration.yaml.",
-                "platform_not_loaded": "La integración {platform} no está cargada, por favor añádela a tu configuración. Ya sea agregando \"default_config:\" o \"{platform}:\".",
+                "platform_not_loaded": "La integración {platform} no se ha cargado. Por favor añádela a tu configuración, ya sea agregando 'default_config:' o '{platform}:'.",
                 "required_error_msg": "Este campo es obligatorio",
                 "yaml_not_editable": "La configuración de esta entidad no se puede editar desde la IU. Solo las entidades configuradas desde la IU se pueden configurar desde la IU"
             },
@@ -816,14 +816,14 @@
                     },
                     "description": "Visión general de todas las áreas de tu casa.",
                     "editor": {
-                        "create": "CREAR",
+                        "create": "Crear",
                         "default_name": "Área Nueva",
-                        "delete": "ELIMINAR",
-                        "update": "ACTUALIZAR"
+                        "delete": "Eliminar",
+                        "update": "Actualizar"
                     },
                     "no_areas": "¡Parece que aún no tienes áreas!",
                     "picker": {
-                        "create_area": "CREAR ÁREA",
+                        "create_area": "Crear área",
                         "header": "Áreas",
                         "integrations_page": "Integraciones",
                         "introduction": "Las áreas se utilizan para organizar dónde están los dispositivos. Esta información se utilizará en todo Home Assistant para ayudarte a organizar tu interfaz, permisos e integraciones con otros sistemas.",
@@ -1310,6 +1310,7 @@
                     "automations": "Automatizaciones",
                     "cant_edit": "Solo puedes editar los elementos que se crean en la interfaz de usuario.",
                     "caption": "Dispositivos",
+                    "confirm_delete": "¿Estás seguro de que quieres eliminar este dispositivo?",
                     "confirm_rename_entity_ids": "¿También quieres cambiar el nombre de los identificadores de entidad de tus entidades?",
                     "data_table": {
                         "area": "Área",
@@ -1320,6 +1321,7 @@
                         "model": "Modelo",
                         "no_devices": "Sin dispositivos"
                     },
+                    "delete": "Eliminar",
                     "description": "Administrar dispositivos conectados",
                     "details": "Aquí están todos los detalles de tu dispositivo.",
                     "device_not_found": "Dispositivo no encontrado.",
@@ -1469,6 +1471,7 @@
                         },
                         "failed_create_area": "No se pudo crear el área.",
                         "finish": "Terminar",
+                        "loading_first_time": "Por favor, espera mientras la integración está siendo instalada",
                         "name_new_area": "¿Nombre de la nueva área?",
                         "not_all_required_fields": "No se han completado todos los campos requeridos.",
                         "submit": "Enviar"
@@ -1524,7 +1527,7 @@
                             "title_required": "Se requiere un título.",
                             "update": "Actualizar",
                             "url": "Url",
-                            "url_error_msg": "La url no puede contener espacios o caracteres especiales, excepto _ y -"
+                            "url_error_msg": "La URL debe contener un guión (-) y no puede contener espacios o caracteres especiales, excepto _ y -"
                         },
                         "picker": {
                             "add_dashboard": "Añadir panel de control",
@@ -2156,6 +2159,7 @@
                             "maximum": "Máximo",
                             "minimum": "Mínimo",
                             "name": "Nombre",
+                            "no_theme": "Sin tema",
                             "refresh_interval": "Intervalo de actualización",
                             "show_icon": "¿Mostrar icono?",
                             "show_name": "¿Mostrar nombre?",
@@ -2252,6 +2256,7 @@
                     "edit_card": {
                         "add": "Añadir tarjeta",
                         "delete": "Eliminar tarjeta",
+                        "duplicate": "Duplicar",
                         "edit": "Editar",
                         "header": "Configuración de la tarjeta",
                         "move": "Mover a la vista",

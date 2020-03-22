@@ -664,7 +664,7 @@
                     "min": "Minimum value",
                     "mode": "Display mode",
                     "slider": "Slider",
-                    "step": "Step size of the slider",
+                    "step": "Step size",
                     "unit_of_measurement": "Unit of measurement"
                 },
                 "input_select": {
@@ -2333,7 +2333,8 @@
                     "view": {
                         "panel_mode": {
                             "description": "This renders the first card at full width; other cards in this view will not be rendered.",
-                            "title": "Panel Mode?"
+                            "title": "Panel Mode?",
+                            "warning_multiple_cards": "This view contains more than one card, but a panel view can only show 1 card."
                         }
                     }
                 },
