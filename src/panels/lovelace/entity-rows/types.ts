@@ -7,6 +7,7 @@ export interface EntityConfig {
   name?: string;
   icon?: string;
   image?: string;
+  color?: string;
 }
 export interface ActionRowConfig extends EntityConfig {
   action_name?: string;

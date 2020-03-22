@@ -66,6 +66,11 @@ class HaEntityMarker extends EventsMixin(PolymerElement) {
         type: String,
         value: null,
       },
+
+      entityColor: {
+        type: String,
+        value: null,
+      },
     };
   }
 

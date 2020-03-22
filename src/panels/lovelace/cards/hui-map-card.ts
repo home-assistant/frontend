@@ -1,5 +1,14 @@
 import "@polymer/paper-icon-button/paper-icon-button";
-import { Layer, Marker, Circle, Map } from "leaflet";
+import {
+  Layer,
+  Marker,
+  Circle,
+  Map,
+  LatLngExpression,
+  CircleMarker,
+  Polyline,
+  LatLngTuple,
+} from "leaflet";
 import {
   LitElement,
   TemplateResult,
@@ -31,6 +40,9 @@ import { processConfigEntities } from "../common/process-config-entities";
 import { MapCardConfig } from "./types";
 import { classMap } from "lit-html/directives/class-map";
 import { findEntities } from "../common/find-entites";
+
+import { getRecentWithCache, CacheConfig } from "../../../data/cached-history";
+import "../../../data/ha-state-history-data";
 
 @customElement("hui-map-card")
 class HuiMapCard extends LitElement implements LovelaceCard {
@@ -65,8 +77,17 @@ class HuiMapCard extends LitElement implements LovelaceCard {
   public isPanel = false;
 
   @property()
+  private _stateHistory?: any;
+
+  @property()
+  private _locationHistory?: any;
+
+  @property()
   private _config?: MapCardConfig;
   private _configEntities?: EntityConfig[];
+  private _cacheConfig?: CacheConfig;
+  private _configHistoryEntities?: EntityConfig[];
+
   // tslint:disable-next-line
   private Leaflet?: LeafletModuleType;
   private _leafletMap?: Map;
@@ -84,6 +105,7 @@ class HuiMapCard extends LitElement implements LovelaceCard {
   );
   private _mapItems: Array<Marker | Circle> = [];
   private _mapZones: Array<Marker | Circle> = [];
+  private _mapHistories: Array<Polyline | CircleMarker> = [];
   private _connected = false;
 
   public setConfig(config: MapCardConfig): void {
@@ -91,13 +113,20 @@ class HuiMapCard extends LitElement implements LovelaceCard {
       throw new Error("Error in card configuration.");
     }
 
-    if (!config.entities && !config.geo_location_sources) {
+    if (
+      !config.entities &&
+      !config.geo_location_sources &&
+      !config.history_entities
+    ) {
       throw new Error(
-        "Either entities or geo_location_sources must be defined"
+        "Either entities, hsitory_entities or geo_location_sources must be defined"
       );
     }
     if (config.entities && !Array.isArray(config.entities)) {
       throw new Error("Entities need to be an array");
+    }
+    if (config.history_entities && !Array.isArray(config.history_entities)) {
+      throw new Error("History entities need to be an array");
     }
     if (
       config.geo_location_sources &&
@@ -110,6 +139,18 @@ class HuiMapCard extends LitElement implements LovelaceCard {
     this._configEntities = config.entities
       ? processConfigEntities(config.entities)
       : [];
+    this._configHistoryEntities = config.history_entities
+      ? processConfigEntities(config.history_entities)
+      : [];
+
+    // default history to 24 hours, extend to dynamic hours_to_show in a later version
+    this._cacheConfig = {
+      cacheKey: this._configHistoryEntities
+        .map((entityObj) => entityObj.entity)
+        .join(),
+      hoursToShow: this._config.hours_to_show || 24,
+      refresh: 0,
+    };
   }
 
   public getCardSize(): number {
@@ -179,14 +220,18 @@ class HuiMapCard extends LitElement implements LovelaceCard {
     }
 
     const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
+    const oldLocationHistory = changedProps.get("_locationHistory");
 
-    if (!oldHass || !this._configEntities) {
+    if (!oldHass || !this._configEntities || !this._configHistoryEntities) {
       return true;
     }
 
     // Check if any state has changed
     for (const entity of this._configEntities) {
       if (oldHass.states[entity.entity] !== this.hass!.states[entity.entity]) {
+        return true;
+      }
+      if (oldLocationHistory !== this._locationHistory) {
         return true;
       }
     }
@@ -196,6 +241,7 @@ class HuiMapCard extends LitElement implements LovelaceCard {
 
   protected firstUpdated(changedProps: PropertyValues): void {
     super.firstUpdated(changedProps);
+    this._getStateHistory();
     this.loadMap();
     const root = this.shadowRoot!.getElementById("root");
 
@@ -222,6 +268,16 @@ class HuiMapCard extends LitElement implements LovelaceCard {
 
   protected updated(changedProps: PropertyValues): void {
     if (changedProps.has("hass")) {
+      this._getStateHistory();
+    }
+    if (changedProps.has("_stateHistory")) {
+      this._updateLocationHistory();
+    }
+    if (
+      changedProps.has("hass") ||
+      changedProps.has("_stateHistory") ||
+      changedProps.has("_locationHistory")
+    ) {
       this._drawEntities();
       this._fitMap();
     }
@@ -259,7 +315,8 @@ class HuiMapCard extends LitElement implements LovelaceCard {
     }
     if (
       config.entities !== oldConfig.entities ||
-      config.geo_location_sources !== oldConfig.geo_location_sources
+      config.geo_location_sources !== oldConfig.geo_location_sources ||
+      config.history_entities !== oldConfig.history_entities
     ) {
       this._drawEntities();
     }
@@ -283,9 +340,7 @@ class HuiMapCard extends LitElement implements LovelaceCard {
       return;
     }
 
-    const bounds = this.Leaflet.latLngBounds(
-      this._mapItems ? this._mapItems.map((item) => item.getLatLng()) : []
-    );
+    const bounds = this.Leaflet.featureGroup(this._mapItems).getBounds();
     this._leafletMap.fitBounds(bounds.pad(0.5));
 
     if (zoom && this._leafletMap.getZoom() > zoom) {
@@ -312,6 +367,11 @@ class HuiMapCard extends LitElement implements LovelaceCard {
     }
     const mapZones: Layer[] = (this._mapZones = []);
 
+    if (this._mapHistories) {
+      this._mapHistories.forEach((marker) => marker.remove());
+    }
+    const mapHistories: Layer[] = (this._mapHistories = []);
+
     const allEntities = this._configEntities!.concat();
 
     // Calculate visible geo location sources
@@ -329,8 +389,89 @@ class HuiMapCard extends LitElement implements LovelaceCard {
       }
     }
 
+    // DRAW history
+    if (config.history_entities && this._stateHistory?.timeline) {
+      const colors = [
+        "#0288d1",
+        "#581845",
+        "#99d037 ",
+        "#FFC300",
+        "#1c609c",
+        "#C70039",
+      ];
+      let colorIndex = 0;
+
+      const historyEntities = this._stateHistory.timeline;
+      for (const entity of historyEntities) {
+        const entityId = entity.entity_id;
+        const historyLog = entity.data;
+        if (!history || history.length <= 1) {
+          continue;
+        }
+
+        const path = [] as LatLngExpression[];
+        for (const stateObj of historyLog) {
+          const address = stateObj.state;
+          if (address in this._locationHistory) {
+            path.push(this._locationHistory[address]);
+          }
+        }
+
+        // if there is a device tracker for the geocoded location use this as newst path point
+        const deviceTrackerID = entityId
+          .replace(/^sensor/, "device_tracker")
+          .replace(/_geocoded_location$/, "");
+        const trackerObj = hass.states[deviceTrackerID];
+        if (
+          trackerObj?.attributes.latitude &&
+          trackerObj?.attributes.longitude
+        ) {
+          allEntities.push({
+            entity: deviceTrackerID,
+            color: colors[colorIndex],
+          });
+          const currentLat = trackerObj.attributes.latitude;
+          const currentLng = trackerObj.attributes.longitude;
+          path.pop();
+          path.push([currentLat, currentLng] as LatLngTuple);
+        }
+
+        // DRAW history path
+        for (
+          let markerIndex = 0;
+          markerIndex < path.length - 1;
+          markerIndex++
+        ) {
+          const opacityStep = 1 / path.length;
+          const opacity = 2 * opacityStep + markerIndex * opacityStep;
+          // DRAW history markers
+          mapHistories.push(
+            Leaflet.circleMarker(path[markerIndex], {
+              radius: 5,
+              color: colors[colorIndex],
+              opacity,
+              interactive: false,
+            })
+          );
+
+          // DRAW history path lines
+          const line = [path[markerIndex], path[markerIndex + 1]];
+          mapHistories.push(
+            Leaflet.polyline(line, {
+              color: colors[colorIndex],
+              opacity,
+              interactive: false,
+            })
+          );
+        }
+        colorIndex = (colorIndex + 1) % colors.length;
+      }
+    }
+
+    // DRAW entities
     for (const entity of allEntities) {
       const entityId = entity.entity;
+      const color = entity.color;
       const stateObj = hass.states[entityId];
       if (!stateObj) {
         continue;
@@ -426,7 +567,7 @@ class HuiMapCard extends LitElement implements LovelaceCard {
         mapItems.push(
           Leaflet.circle([latitude, longitude], {
             interactive: false,
-            color: "#0288D1",
+            color: color || "#0288D1",
             radius: gpsAccuracy,
           })
         );
@@ -435,6 +576,7 @@ class HuiMapCard extends LitElement implements LovelaceCard {
 
     this._mapItems.forEach((marker) => map.addLayer(marker));
     this._mapZones.forEach((marker) => map.addLayer(marker));
+    this._mapHistories.forEach((marker) => map.addLayer(marker));
   }
 
   private _attachObserver(): void {
@@ -451,6 +593,79 @@ class HuiMapCard extends LitElement implements LovelaceCard {
     } else {
       window.addEventListener("resize", this._debouncedResizeListener);
     }
+  }
+
+  private _getStateHistory(): void {
+    getRecentWithCache(
+      this.hass!,
+      this._cacheConfig!.cacheKey,
+      this._cacheConfig!,
+      this.hass!.localize,
+      this.hass!.language
+    )
+      .then((stateHistory) => {
+        this._stateHistory = {
+          ...this._stateHistory,
+          ...stateHistory,
+        };
+      })
+      .then(() => this._updateLocationHistory());
+  }
+
+  private _updateLocationHistory(): void {
+    if (!this._locationHistory) {
+      this._locationHistory = {};
+    }
+
+    for (const entity of this._stateHistory?.timeline) {
+      for (const stateObj of entity.data) {
+        if (stateObj.state === "Unknown") {
+          continue;
+        }
+
+        const address = stateObj.state;
+        if (this._locationHistory[address]) {
+          continue;
+        }
+        this._fetchLocationByAddress(address).then((location) => {
+          if (location !== undefined) {
+            this._locationHistory = {
+              ...this._locationHistory,
+              [address]: location,
+            };
+          }
+        });
+      }
+    }
+  }
+
+  private async _fetchLocationByAddress(
+    address: string
+  ): Promise<LatLngTuple | undefined> {
+    const baseUrl =
+      "https://nominatim.openstreetmap.org/search?format=json&limit=1&q=";
+    const searchQuery = address.split("\n").join(" ");
+    const sanitizedUri = encodeURI(baseUrl.concat(searchQuery));
+
+    // we need to wait on every history call
+    // because we do use a free api and do not want get banned
+    await this._delay(1000);
+    if (!this._locationHistory[address]) {
+      const request = new Request(sanitizedUri);
+      return fetch(request, { mode: "cors" })
+        .then((res) => res.json())
+        .then((result) => {
+          let location;
+          if (result.length >= 1) {
+            location = [result[0].lat, result[0].lon] as LatLngTuple;
+          }
+          return location;
+        });
+    }
+  }
+
+  private _delay(ms: number) {
+    return new Promise((resolve) => setTimeout(resolve, ms));
   }
 
   static get styles(): CSSResult {

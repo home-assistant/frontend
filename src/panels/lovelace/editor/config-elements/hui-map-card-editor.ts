@@ -34,6 +34,8 @@ const cardConfigStruct = struct({
   default_zoom: "number?",
   dark_mode: "boolean?",
   entities: [entitiesConfigStruct],
+  history_entities: [entitiesConfigStruct],
+  hours_to_show: "number?",
   geo_location_sources: "array?",
 });
 
@@ -44,11 +46,15 @@ export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
   @property() private _config?: MapCardConfig;
 
   @property() private _configEntities?: EntityConfig[];
+  @property() private _configHistoryEntities?: EntityConfig[];
 
   public setConfig(config: MapCardConfig): void {
     config = cardConfigStruct(config);
     this._config = config;
     this._configEntities = processEditorEntities(config.entities);
+    this._configHistoryEntities = processEditorEntities(
+      config.history_entities
+    );
   }
 
   get _title(): string {
@@ -65,6 +71,10 @@ export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
 
   get _geo_location_sources(): string[] {
     return this._config!.geo_location_sources || [];
+  }
+
+  get _hours_to_show(): number {
+    return this._config!.hours_to_show || NaN;
   }
 
   get _dark_mode(): boolean {
@@ -125,6 +135,25 @@ export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
           .entities="${this._configEntities}"
           @entities-changed="${this._entitiesValueChanged}"
         ></hui-entity-editor>
+        <hui-entity-editor
+          .hass=${this.hass}
+          .entities="${this._configHistoryEntities}"
+          .label="${this.hass.localize(
+            "ui.panel.lovelace.editor.card.map.entites_with_history"
+          )}"
+          @entities-changed="${this._entitiesValueChanged}"
+        ></hui-entity-editor>
+        <paper-input
+          .label="${this.hass.localize(
+            "ui.panel.lovelace.editor.card.map.hours_to_show"
+          )} (${this.hass.localize(
+            "ui.panel.lovelace.editor.card.config.optional"
+          )})"
+          type="number"
+          .value="${this._hours_to_show}"
+          .configValue="${"hours_to_show"}"
+          @value-changed="${this._valueChanged}"
+        ></paper-input>
         <h3>
           ${this.hass.localize(
             "ui.panel.lovelace.editor.card.map.geo_location_sources"
@@ -152,6 +181,9 @@ export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
     if (ev.detail && ev.detail.entities) {
       this._config.entities = ev.detail.entities;
       this._configEntities = processEditorEntities(this._config.entities);
+      this._configHistoryEntities = processEditorEntities(
+        this._config.history_entities
+      );
       fireEvent(this, "config-changed", { config: this._config });
     }
   }
