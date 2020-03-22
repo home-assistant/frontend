@@ -61,10 +61,6 @@ class HaCoverControls extends PolymerElement {
   }
 
   computeOpenIcon(stateObj) {
-    if (!stateObj.attributes.device_class) {
-      return "hass:arrow-up";
-    }
-
     switch (stateObj.attributes.device_class) {
       case "awning":
       case "curtain":
@@ -76,10 +72,6 @@ class HaCoverControls extends PolymerElement {
   }
 
   computeCloseIcon(stateObj) {
-    if (!stateObj.attributes.device_class) {
-      return "hass:arrow-down";
-    }
-
     switch (stateObj.attributes.device_class) {
       case "awning":
       case "curtain":
