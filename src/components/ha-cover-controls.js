@@ -19,7 +19,7 @@ class HaCoverControls extends PolymerElement {
       <div class="state">
         <paper-icon-button
           aria-label="Open cover"
-          icon="hass:arrow-up"
+          icon="[[computeOpenIcon(stateObj)]]"
           on-click="onOpenTap"
           invisible$="[[!entityObj.supportsOpen]]"
           disabled="[[computeOpenDisabled(stateObj, entityObj)]]"
@@ -32,7 +32,7 @@ class HaCoverControls extends PolymerElement {
         ></paper-icon-button>
         <paper-icon-button
           aria-label="Close cover"
-          icon="hass:arrow-down"
+          icon="[[computeCloseIcon(stateObj)]]"
           on-click="onCloseTap"
           invisible$="[[!entityObj.supportsClose]]"
           disabled="[[computeClosedDisabled(stateObj, entityObj)]]"
@@ -58,6 +58,38 @@ class HaCoverControls extends PolymerElement {
 
   computeEntityObj(hass, stateObj) {
     return new CoverEntity(hass, stateObj);
+  }
+
+  computeOpenIcon(stateObj) {
+    console.log(stateObj);
+    if (!stateObj.attributes.hasOwnProperty("device_class")) {
+      return "hass:arrow-up";
+    }
+
+    switch (stateObj.attributes.device_class) {
+      case "awning":
+      case "curtain":
+      case "gate":
+        return "hass:arrow-expand-horizontal";
+      default:
+        return "hass:arrow-up";
+    }
+  }
+
+  computeCloseIcon(stateObj) {
+    console.log(stateObj);
+    if (!stateObj.attributes.hasOwnProperty("device_class")) {
+      return "hass:arrow-down";
+    }
+
+    switch (stateObj.attributes.device_class) {
+      case "awning":
+      case "curtain":
+      case "gate":
+        return "hass:arrow-collapse-horizontal";
+      default:
+        return "hass:arrow-down";
+    }
   }
 
   computeOpenDisabled(stateObj, entityObj) {
