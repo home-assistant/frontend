@@ -8,10 +8,6 @@ import {
   css,
 } from "lit-element";
 import { HomeAssistant } from "../../../../../types";
-import {
-  handleChangeEvent,
-  ConditionElement,
-} from "../ha-automation-condition-row";
 import { WeekdayCondition } from "../../../../../data/automation";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import { HaSwitch } from "../../../../../components/ha-switch";
@@ -22,19 +18,9 @@ interface Weekday {
 }
 
 @customElement("ha-automation-condition-weekday")
-export class HaWeekdayCondition extends LitElement implements ConditionElement {
+export class HaWeekdayCondition extends LitElement {
   @property() public hass!: HomeAssistant;
   @property() public condition!: WeekdayCondition;
-
-  // @property() private _dayz: string[] = [
-  //   "mon",
-  //   "tue",
-  //   "wed",
-  //   "thu",
-  //   "fri",
-  //   "sat",
-  //   "sun",
-  // ];
 
   private _dayss: Weekday[] = [
     { name: "mon", order: 1 },
@@ -51,7 +37,6 @@ export class HaWeekdayCondition extends LitElement implements ConditionElement {
   }
 
   protected render() {
-    this._dayss.map((a, b) => "sdf");
     const { days } = this.condition;
     return html`
       <div class="card-config">
