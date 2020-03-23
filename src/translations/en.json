@@ -1158,6 +1158,17 @@
                   "after": "After",
                   "before": "Before"
                 },
+                "weekday": {
+                  "label": "Weekday",
+                  "days": "Days:",
+                  "mon": "Monday",
+                  "tue": "Tuesday",
+                  "wed": "Wednesday",
+                  "thu": "Thursday",
+                  "fri": "Friday",
+                  "sat": "Saturday",
+                  "sun": "Sunday"
+                },
                 "zone": {
                   "label": "[%key:ui::panel::config::automation::editor::triggers::type::zone::label%]",
                   "entity": "[%key:ui::panel::config::automation::editor::triggers::type::zone::entity%]",

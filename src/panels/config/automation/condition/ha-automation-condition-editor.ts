@@ -14,6 +14,7 @@ import "./types/ha-automation-condition-numeric_state";
 import "./types/ha-automation-condition-sun";
 import "./types/ha-automation-condition-template";
 import "./types/ha-automation-condition-time";
+import "./types/ha-automation-condition-weekday";
 import "./types/ha-automation-condition-zone";
 import "./types/ha-automation-condition-and";
 import "./types/ha-automation-condition-or";
@@ -28,6 +29,7 @@ const OPTIONS = [
   "sun",
   "template",
   "time",
+  "weekday",
   "zone",
 ];
 

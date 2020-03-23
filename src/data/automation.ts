@@ -158,6 +158,11 @@ export interface TimeCondition {
   before: string;
 }
 
+export interface WeekdayCondition {
+  condition: "weekday";
+  days: string[];
+}
+
 export interface TemplateCondition {
   condition: "template";
   value_template: string;
@@ -169,6 +174,7 @@ export type Condition =
   | SunCondition
   | ZoneCondition
   | TimeCondition
+  | WeekdayCondition
   | TemplateCondition
   | DeviceCondition
   | LogicalCondition;
