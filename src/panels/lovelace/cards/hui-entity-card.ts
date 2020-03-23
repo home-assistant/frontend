@@ -24,7 +24,6 @@ import { EntityCardConfig } from "./types";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
 import { actionHandler } from "../common/directives/action-handler-directive";
 import { isValidEntityId } from "../../../common/entity/valid_entity_id";
-import { LovelaceConfig } from "../../../data/lovelace";
 import { findEntities } from "../common/find-entites";
 import { LovelaceHeaderFooterConfig } from "../header-footer/types";
 import { createHeaderFooterElement } from "../create-element/create-header-footer-element";
@@ -41,15 +40,13 @@ class HuiEntityCard extends LitElement implements LovelaceCard {
 
   public static getStubConfig(
     hass: HomeAssistant,
-    lovelaceConfig: LovelaceConfig,
-    entities?: string[],
-    entitiesFill?: string[]
+    entities: string[],
+    entitiesFill: string[]
   ) {
     const includeDomains = ["sensor", "light", "switch"];
     const maxEntities = 1;
     const foundEntities = findEntities(
       hass,
-      lovelaceConfig,
       maxEntities,
       entities,
       entitiesFill,
