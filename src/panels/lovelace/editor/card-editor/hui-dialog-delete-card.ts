@@ -94,7 +94,7 @@ export class HuiDialogDeleteCard extends LitElement {
         hui-card-preview {
           padding-top: 8px;
           margin: 4px auto;
-          max-width: 390px;
+          max-width: 500px;
           display: block;
           width: 100%;
         }
