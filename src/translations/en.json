@@ -519,11 +519,13 @@
     "common": {
       "loading": "Loading",
       "cancel": "Cancel",
+      "delete": "Delete",
       "close": "Close",
       "save": "Save",
       "yes": "Yes",
       "no": "No",
-      "successfully_saved": "Successfully saved"
+      "successfully_saved": "Successfully saved",
+      "successfully_deleted": "Successfully deleted"
     },
     "components": {
       "entity": {
