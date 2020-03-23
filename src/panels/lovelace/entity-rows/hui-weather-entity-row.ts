@@ -82,7 +82,7 @@ class HuiWeatherEntityRow extends LitElement implements LovelaceRow {
         })}
         .hass=${this.hass}
         .stateObj=${stateObj}
-        .overrideIcon=${weatherIcons[stateObj.state]}
+        .overrideIcon=${weatherIcons["clear-night"]}
         @action=${this._handleAction}
         .actionHandler=${actionHandler({
           hasHold: hasAction(this._config!.hold_action),

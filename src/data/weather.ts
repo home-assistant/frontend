@@ -1,7 +1,7 @@
 import { HomeAssistant } from "../types";
 
 export const weatherIcons = {
-  "clear-night": "hass:weather-night",
+  "clear-night": "/static/images/weather/night.png",
   cloudy: "hass:weather-cloudy",
   exceptional: "hass:alert-circle-outline",
   fog: "hass:weather-fog",
