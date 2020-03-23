@@ -11,6 +11,12 @@ export interface ButtonsHeaderFooterConfig extends LovelaceHeaderFooterConfig {
   entities: Array<string | EntityConfig>;
 }
 
+export interface GraphHeaderFooterConfig extends LovelaceHeaderFooterConfig {
+  entity: string;
+  detail?: number;
+  hours_to_show?: number;
+}
+
 export interface PictureHeaderFooterConfig extends LovelaceHeaderFooterConfig {
   image: string;
   tap_action?: ActionConfig;
@@ -31,7 +37,15 @@ export const buttonsHeaderFooterConfigStruct = struct({
   entities: [entitiesConfigStruct],
 });
 
+export const graphHeaderFooterConfigStruct = struct({
+  type: "string",
+  entity: "string",
+  detail: "number?",
+  hours_to_show: "number?",
+});
+
 export const headerFooterConfigStructs = struct.union([
   pictureHeaderFooterConfigStruct,
   buttonsHeaderFooterConfigStruct,
+  graphHeaderFooterConfigStruct,
 ]);
