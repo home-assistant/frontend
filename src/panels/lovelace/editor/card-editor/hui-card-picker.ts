@@ -28,6 +28,7 @@ const previewCards: string[] = [
   "alarm-panel",
   "button",
   "entities",
+  "entity",
   "gauge",
   "glance",
   "history-graph",
