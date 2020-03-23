@@ -2333,7 +2333,8 @@
                     "view": {
                         "panel_mode": {
                             "description": "这将使第一张卡片全屏显示。此视图中的其他卡片将不会呈现。",
-                            "title": "面板模式？"
+                            "title": "面板模式？",
+                            "warning_multiple_cards": "此视图包含多张卡片，但面板视图只能显示一张卡片。"
                         }
                     }
                 },

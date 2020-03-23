@@ -2333,7 +2333,8 @@
                     "view": {
                         "panel_mode": {
                             "description": "Cela affiche la première carte en pleine largeur; les autres cartes de cette vue ne seront pas affichées.",
-                            "title": "Mode panneau?"
+                            "title": "Mode panneau?",
+                            "warning_multiple_cards": "Cette vue contient plusieurs carte, mais un panneau d'affichage ne peut montrer que 1 carte."
                         }
                     }
                 },
