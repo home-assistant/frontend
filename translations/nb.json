@@ -621,7 +621,7 @@
                 "dismiss": "Avvis",
                 "editor": {
                     "confirm_delete": "Er du sikker på at du vil slette denne oppføringen?",
-                    "delete": "SLETT",
+                    "delete": "Slett",
                     "enabled_cause": "Deaktivert av {cause}.",
                     "enabled_description": "Deaktiverte entiteter vil ikke bli lagt til i Home Assistant.",
                     "enabled_label": "Aktiver entitet",
@@ -631,7 +631,7 @@
                     "name": "Overstyr Navn",
                     "note": "Merk: dette fungerer kanskje ikke ennå med alle integrasjoner.",
                     "unavailable": "Denne entiteten er ikke tilgjengelig for øyeblikket.",
-                    "update": "OPPDATÉR"
+                    "update": "Oppdater"
                 },
                 "no_unique_id": "Denne enheten har ikke en unik ID, derfor kan innstillingene ikke administreres fra brukergrensesnittet.",
                 "related": "Relaterte",
@@ -664,7 +664,7 @@
                     "min": "Minimum verdi",
                     "mode": "Visningsmodus",
                     "slider": "Glidebryter",
-                    "step": "Trinnstørrelse på glidebryteren",
+                    "step": "Trinnstørrelse",
                     "unit_of_measurement": "Måleenhet"
                 },
                 "input_select": {
@@ -816,14 +816,14 @@
                     },
                     "description": "Oversikt over alle områder i ditt hjem",
                     "editor": {
-                        "create": "OPPRETT",
+                        "create": "Opprett",
                         "default_name": "Nytt område",
-                        "delete": "SLETT",
-                        "update": "OPPDATER"
+                        "delete": "Slett",
+                        "update": "Oppdater"
                     },
                     "no_areas": "Det ser ikke ut som om du har noen områder ennå!",
                     "picker": {
-                        "create_area": "OPPRETT OMRÅDE",
+                        "create_area": "Opprett område",
                         "header": "Områder",
                         "integrations_page": "Integrasjonsside",
                         "introduction": "Områder brukes til å organisere hvor enheter er. Denne informasjonen vil bli brukt gjennomgående i Home Assistant for å hjelpe deg med å organisere grensesnittet, tillatelser og integrasjoner med andre systemer.",
@@ -1310,6 +1310,7 @@
                     "automations": "Automasjoner",
                     "cant_edit": "Du kan bare redigere elementer som er opprettet i UI.",
                     "caption": "Enheter",
+                    "confirm_delete": "Er du sikker på at du vil slette denne enheten?",
                     "confirm_rename_entity_ids": "Vil du også endre navn på entitets-ID-en for entitetene dine?",
                     "data_table": {
                         "area": "Område",
@@ -1320,6 +1321,7 @@
                         "model": "Modell",
                         "no_devices": "Ingen enheter"
                     },
+                    "delete": "Slett",
                     "description": "Administrer tilkoblede enheter",
                     "details": "Her er alle detaljer for enheten.",
                     "device_not_found": "Enhet ikke funnet",
@@ -2157,6 +2159,7 @@
                             "maximum": "Maksimalt",
                             "minimum": "Minimum",
                             "name": "Navn",
+                            "no_theme": "Ingen tema",
                             "refresh_interval": "Oppdateringsintervall",
                             "show_icon": "Vis ikon?",
                             "show_name": "Vis navn?",
@@ -2330,7 +2333,8 @@
                     "view": {
                         "panel_mode": {
                             "description": "Dette gjengir det første kortet i full bredde; andre kort i denne visningen vil ikke bli gitt.",
-                            "title": "Panel modus?"
+                            "title": "Panel modus?",
+                            "warning_multiple_cards": "Denne visningen inneholder mer enn ett kort, men en panelvisning kan bare vise 1 kort."
                         }
                     }
                 },
