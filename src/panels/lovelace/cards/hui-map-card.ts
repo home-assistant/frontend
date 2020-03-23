@@ -4,7 +4,6 @@ import {
   Marker,
   Circle,
   Map,
-  LatLngExpression,
   CircleMarker,
   Polyline,
   LatLngTuple,
@@ -42,7 +41,6 @@ import { classMap } from "lit-html/directives/class-map";
 import { findEntities } from "../common/find-entites";
 
 import { getRecentWithCache, CacheConfig } from "../../../data/cached-history";
-import "../../../data/ha-state-history-data";
 
 @customElement("hui-map-card")
 class HuiMapCard extends LitElement implements LovelaceCard {
@@ -78,9 +76,6 @@ class HuiMapCard extends LitElement implements LovelaceCard {
 
   @property()
   private _stateHistory?: any;
-
-  @property()
-  private _locationHistory?: any;
 
   @property()
   private _config?: MapCardConfig;
@@ -220,7 +215,6 @@ class HuiMapCard extends LitElement implements LovelaceCard {
     }
 
     const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
-    const oldLocationHistory = changedProps.get("_locationHistory");
 
     if (!oldHass || !this._configEntities || !this._configHistoryEntities) {
       return true;
@@ -229,9 +223,6 @@ class HuiMapCard extends LitElement implements LovelaceCard {
     // Check if any state has changed
     for (const entity of this._configEntities) {
       if (oldHass.states[entity.entity] !== this.hass!.states[entity.entity]) {
-        return true;
-      }
-      if (oldLocationHistory !== this._locationHistory) {
         return true;
       }
     }
@@ -270,14 +261,7 @@ class HuiMapCard extends LitElement implements LovelaceCard {
     if (changedProps.has("hass")) {
       this._getStateHistory();
     }
-    if (changedProps.has("_stateHistory")) {
-      this._updateLocationHistory();
-    }
-    if (
-      changedProps.has("hass") ||
-      changedProps.has("_stateHistory") ||
-      changedProps.has("_locationHistory")
-    ) {
+    if (changedProps.has("hass") || changedProps.has("_stateHistory")) {
       this._drawEntities();
       this._fitMap();
     }
@@ -401,23 +385,29 @@ class HuiMapCard extends LitElement implements LovelaceCard {
       ];
       let colorIndex = 0;
 
-      const historyEntities = this._stateHistory.timeline;
+      const historyEntities = this._stateHistory.line
+        .map((lineElement) => {
+          if (lineElement.unit === "Location") {
+            return lineElement.data;
+          }
+        })
+        .flat();
+
       for (const entity of historyEntities) {
         const entityId = entity.entity_id;
-        const historyLog = entity.data;
-        if (!history || history.length <= 1) {
+        const states = entity.states;
+        if (states?.length <= 1) {
           continue;
         }
 
-        const path = [] as LatLngExpression[];
-        for (const stateObj of historyLog) {
-          const address = stateObj.state;
-          if (address in this._locationHistory) {
-            path.push(this._locationHistory[address]);
+        const path = [] as LatLngTuple[];
+        for (const stateObj of states) {
+          if (stateObj.attributes.Location) {
+            path.push(stateObj.attributes.Location);
           }
         }
 
-        // if there is a device tracker for the geocoded location use this as newst path point
+        // if there is a device tracker for the geocoded location use it as newst path point
         const deviceTrackerID = entityId
           .replace(/^sensor/, "device_tracker")
           .replace(/_geocoded_location$/, "");
@@ -602,70 +592,12 @@ class HuiMapCard extends LitElement implements LovelaceCard {
       this._cacheConfig!,
       this.hass!.localize,
       this.hass!.language
-    )
-      .then((stateHistory) => {
-        this._stateHistory = {
-          ...this._stateHistory,
-          ...stateHistory,
-        };
-      })
-      .then(() => this._updateLocationHistory());
-  }
-
-  private _updateLocationHistory(): void {
-    if (!this._locationHistory) {
-      this._locationHistory = {};
-    }
-
-    for (const entity of this._stateHistory?.timeline) {
-      for (const stateObj of entity.data) {
-        if (stateObj.state === "Unknown") {
-          continue;
-        }
-
-        const address = stateObj.state;
-        if (this._locationHistory[address]) {
-          continue;
-        }
-        this._fetchLocationByAddress(address).then((location) => {
-          if (location !== undefined) {
-            this._locationHistory = {
-              ...this._locationHistory,
-              [address]: location,
-            };
-          }
-        });
-      }
-    }
-  }
-
-  private async _fetchLocationByAddress(
-    address: string
-  ): Promise<LatLngTuple | undefined> {
-    const baseUrl =
-      "https://nominatim.openstreetmap.org/search?format=json&limit=1&q=";
-    const searchQuery = address.split("\n").join(" ");
-    const sanitizedUri = encodeURI(baseUrl.concat(searchQuery));
-
-    // we need to wait on every history call
-    // because we do use a free api and do not want get banned
-    await this._delay(1000);
-    if (!this._locationHistory[address]) {
-      const request = new Request(sanitizedUri);
-      return fetch(request, { mode: "cors" })
-        .then((res) => res.json())
-        .then((result) => {
-          let location;
-          if (result.length >= 1) {
-            location = [result[0].lat, result[0].lon] as LatLngTuple;
-          }
-          return location;
-        });
-    }
-  }
-
-  private _delay(ms: number) {
-    return new Promise((resolve) => setTimeout(resolve, ms));
+    ).then((stateHistory) => {
+      this._stateHistory = {
+        ...this._stateHistory,
+        ...stateHistory,
+      };
+    });
   }
 
   static get styles(): CSSResult {

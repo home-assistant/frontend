@@ -5,13 +5,14 @@ import { HomeAssistant } from "../types";
 import { LocalizeFunc } from "../common/translations/localize";
 import { computeStateDisplay } from "../common/entity/compute_state_display";
 
-const DOMAINS_USE_LAST_UPDATED = ["climate", "water_heater"];
+const DOMAINS_USE_LAST_UPDATED = ["climate", "water_heater", "sensor"];
 const LINE_ATTRIBUTES_TO_KEEP = [
   "temperature",
   "current_temperature",
   "target_temp_low",
   "target_temp_high",
   "hvac_action",
+  "Location",
 ];
 
 export interface LineChartState {
@@ -205,6 +206,11 @@ export const computeHistory = (
       unit = hass.config.unit_system.temperature;
     } else if (computeStateDomain(stateInfo[0]) === "water_heater") {
       unit = hass.config.unit_system.temperature;
+    } else if (
+      computeStateDomain(stateInfo[0]) === "sensor" &&
+      stateInfo[0].entity_id.match(/_geocoded_location$/) !== null
+    ) {
+      unit = "Location";
     }
 
     if (!unit) {
