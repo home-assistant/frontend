@@ -664,7 +664,7 @@
                     "min": "Minimumsværdi",
                     "mode": "Visningstilstand",
                     "slider": "Skyder",
-                    "step": "Skyderens trinstørrelse",
+                    "step": "Trinstørrelse",
                     "unit_of_measurement": "Måleenhed"
                 },
                 "input_select": {
@@ -2333,7 +2333,8 @@
                     "view": {
                         "panel_mode": {
                             "description": "Dette gengiver første kort i fuld bredde; andre kort i denne visning vil ikke blive gengivet.",
-                            "title": "Paneltilstand?"
+                            "title": "Paneltilstand?",
+                            "warning_multiple_cards": "Denne visning indeholder mere end ét kort, men en panelvisning kan kun vise 1 kort."
                         }
                     }
                 },

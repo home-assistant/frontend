@@ -2333,7 +2333,8 @@
                     "view": {
                         "panel_mode": {
                             "description": "Es renderitzarà la primera targeta a amplada completa; les altres targetes d'aquesta visualització no es mostraran.",
-                            "title": "Mode panell?"
+                            "title": "Mode panell?",
+                            "warning_multiple_cards": "Aquesta vista conté més d'una targeta, però una vista en mode panell només pot mostrar una targeta."
                         }
                     }
                 },

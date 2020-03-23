@@ -1226,9 +1226,28 @@
                 },
                 "header": "Konfigurovať Home Assistant",
                 "helpers": {
+                    "caption": "Pomocníci",
                     "description": "Prvky, ktoré môžu pomôcť pri vytváraní automatizácií.",
                     "dialog": {
+                        "add_helper": "Pridať pomocníka",
+                        "add_platform": "Pridať {platform}",
                         "create": "Vytvoriť"
+                    },
+                    "picker": {
+                        "add_helper": "Pridať pomocníka",
+                        "headers": {
+                            "editable": "Editovateľné",
+                            "entity_id": "Entity ID",
+                            "name": "Názov",
+                            "type": "Typ"
+                        }
+                    },
+                    "types": {
+                        "input_boolean": "Prepínač",
+                        "input_datetime": "Dátum a/alebo čas",
+                        "input_number": "Číslo",
+                        "input_select": "Rozbaľovací zoznam",
+                        "input_text": "Text"
                     }
                 },
                 "integrations": {
@@ -1280,20 +1299,79 @@
                 },
                 "introduction": "Tu je možné konfigurovať vaše komponenty a Home Assistant. Aktuálne sa z používateľského rozhrania nedá konfigurovať všetko, ale pracujeme na tom.",
                 "lovelace": {
+                    "caption": "Lovelace dashboardy",
                     "dashboards": {
+                        "cant_edit_default": "Štandardný dashboard Lovelace nie je možné upravovať z používateľského rozhrania. Môžete ho skryť nastavením iného dashboardu ako predvoleného nastavenia.",
+                        "cant_edit_yaml": "Dashboardy definované v YAML nie je možné upravovať z používateľského rozhrania. Zmeňte ich v súbore configuration.yaml.",
+                        "caption": "Dashboardy",
+                        "conf_mode": {
+                            "storage": "Ovládané cez UI",
+                            "yaml": "Súbor YAML"
+                        },
                         "confirm_delete": "Naozaj chcete odstrániť tento dashboard?",
+                        "default_dashboard": "Toto je predvolený dashboard",
                         "detail": {
+                            "create": "Vytvoriť",
                             "delete": "Vymazať",
-                            "update": "Aktualizovať"
+                            "dismiss": "Zavrieť",
+                            "edit_dashboard": "Upraviť dashboard",
+                            "icon": "Ikona",
+                            "new_dashboard": "Pridať nový dashboard",
+                            "remove_default": "Odstrániť ako predvolené na tomto zariadení",
+                            "require_admin": "Len pre správcov",
+                            "set_default": "Nastaviť ako predvolené na tomto zariadení",
+                            "show_sidebar": "Zobraziť v bočnom paneli",
+                            "title": "Názov",
+                            "title_required": "Názov je povinný.",
+                            "update": "Aktualizovať",
+                            "url": "Url",
+                            "url_error_msg": "Adresa URL by mala obsahovať znak - a nemôže obsahovať medzery ani špeciálne znaky, s výnimkou písmen _ a -"
                         },
                         "picker": {
+                            "add_dashboard": "Pridať dashboard",
+                            "headers": {
+                                "conf_mode": "Metóda konfigurácie",
+                                "default": "Predvolený",
+                                "filename": "Názov súboru",
+                                "require_admin": "Len pre správcov",
+                                "sidebar": "Zobraziť v bočnom paneli",
+                                "title": "Názov"
+                            },
                             "open": "Otvoriť"
                         }
                     },
+                    "description": "Nakonfigurujte si svoje Lovelace dashboardy",
                     "resources": {
+                        "cant_edit_yaml": "Používate Lovelace v režime YAML, preto nemôžete spravovať svoje prostriedky cez používateľské rozhranie. Spravujte ich v configuration.yaml.",
+                        "caption": "Prostriedky",
+                        "confirm_delete": "Naozaj chcete odstrániť tento prostriedok?",
                         "detail": {
+                            "create": "Vytvoriť",
                             "delete": "Vymazať",
-                            "update": "Aktualizovať"
+                            "dismiss": "Zavrieť",
+                            "new_resource": "Pridajte nový prostriedok",
+                            "type": "Typ prostriedku",
+                            "update": "Aktualizovať",
+                            "url": "Url",
+                            "url_error_msg": "Adresa URL je povinné pole",
+                            "warning_header": "Buďte opatrní!",
+                            "warning_text": "Pridávanie prostriedkov môže byť nebezpečné, uistite sa, že poznáte zdroj prostriedku a že mu dôverujete. Zlé prostriedky môžu vážne poškodiť váš systém."
+                        },
+                        "picker": {
+                            "add_resource": "Pridať prostriedok",
+                            "headers": {
+                                "type": "Typ",
+                                "url": "Url"
+                            },
+                            "no_resources": "Žiadne prostriedky"
+                        },
+                        "refresh_body": "Ak chcete dokončiť odstránenie, musíte stránku aktualizovať. Chcete ju teraz obnoviť?",
+                        "refresh_header": "Chcete obnoviť?",
+                        "types": {
+                            "css": "Stylesheet",
+                            "html": "HTML (zastarané)",
+                            "js": "JavaScript súbor (zastarané)",
+                            "module": "JavaScript modul"
                         }
                     }
                 },
@@ -1856,6 +1934,7 @@
                         "error_remove": "Nepodarilo sa odstrániť konfiguráciu: {chyby}",
                         "error_save_yaml": "Nepodarilo sa uložiť YAML: {error}",
                         "header": "Upraviť konfiguráciu",
+                        "resources_moved": "Prostriedky by už nemali byť pridané do konfigurácie Lovelace, ale môžu byť pridané v konfiguračnom paneli Lovelace.",
                         "save": "Uložiť",
                         "saved": "Uložené",
                         "unsaved_changes": "Neuložené zmeny"
@@ -1866,7 +1945,9 @@
                         "header": "Prevziať kontrolu rozhrania Lovelace",
                         "para": "Štandardne bude Home Assistant udržiavať vaše používateľské rozhranie a aktualizovať ho, keď budú k dispozícii nové entity alebo komponenty rozhrania Lovelace. Ak prevezmete kontrolu, už za vás nebudeme automaticky robiť zmeny.",
                         "para_sure": "Skutočne chcete prevziať kontrolu vášho používateľského rozhrania?",
-                        "save": "Prevziať kontrolu"
+                        "save": "Prevziať kontrolu",
+                        "yaml_config": "Na začiatok vám pomôžeme so súčasnou konfiguráciou tohto dashboardu:",
+                        "yaml_control": "Ak chcete prevziať kontrolu v režime YAML, vytvorte súbor YAML s názvom, ktorý ste uviedli vo svojej konfigurácii pre tento dashboard alebo predvolený súbor 'ui-lovelace.yaml'."
                     },
                     "suggest_card": {
                         "add": "Pridať do používateľského rozhrania Lovelace",
@@ -1883,9 +1964,14 @@
                     "configure_ui": "Konfigurovať používateľské rozhranie",
                     "help": "Pomoc",
                     "refresh": "Obnoviť",
+                    "reload_resources": "Znovu načítať prostriedky",
                     "unused_entities": "Nepoužité entity"
                 },
                 "reload_lovelace": "Znovu načítať Lovelace",
+                "reload_resources": {
+                    "refresh_body": "Ak chcete dokončiť načítanie, musíte stránku obnoviť. Chcete ju teraz obnoviť?",
+                    "refresh_header": "Chcete obnoviť?"
+                },
                 "views": {
                     "confirm_delete": "Naozaj chcete odstrániť toto zobrazenie?",
                     "confirm_delete_existing_cards_text": "Naozaj chcete odstrániť zobrazenie '{name}'? Toto zobrazenie obsahuje {number} kariet, ktoré budú odstránené. Túto akciu nie je možné vrátiť späť.",
