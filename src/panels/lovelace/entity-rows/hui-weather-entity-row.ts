@@ -22,6 +22,15 @@ import {
   getWindBearing,
   getWeatherUnit,
 } from "../../../data/weather";
+import { DOMAINS_HIDE_MORE_INFO } from "../../../common/const";
+import { computeDomain } from "../../../common/entity/compute_domain";
+import { classMap } from "lit-html/directives/class-map";
+import { actionHandler } from "../common/directives/action-handler-directive";
+import { hasAction } from "../common/has-action";
+import { ifDefined } from "lit-html/directives/if-defined";
+import { computeStateName } from "../../../common/entity/compute_state_name";
+import { ActionHandlerEvent } from "../../../data/lovelace";
+import { handleAction } from "../common/handle-action";
 
 @customElement("hui-weather-entity-row")
 class HuiWeatherEntityRow extends LitElement implements LovelaceRow {
@@ -61,32 +70,56 @@ class HuiWeatherEntityRow extends LitElement implements LovelaceRow {
       `;
     }
 
-    const weatherConfig = {
-      icon: weatherIcons[stateObj.state],
-      ...this._config,
-    };
+    const pointer =
+      (this._config.tap_action && this._config.tap_action.action !== "none") ||
+      (this._config.entity &&
+        !DOMAINS_HIDE_MORE_INFO.includes(computeDomain(this._config.entity)));
 
     return html`
-      <hui-generic-entity-row
-        .hass="${this.hass}"
-        .config="${weatherConfig}"
-        .showSecondary=${false}
+      <state-badge
+        class=${classMap({
+          pointer,
+        })}
+        .hass=${this.hass}
+        .stateObj=${stateObj}
+        .overrideIcon=${weatherIcons[stateObj.state]}
+        @action=${this._handleAction}
+        .actionHandler=${actionHandler({
+          hasHold: hasAction(this._config!.hold_action),
+          hasDoubleClick: hasAction(this._config!.double_tap_action),
+        })}
+        tabindex=${ifDefined(pointer ? "0" : undefined)}
+      ></state-badge>
+      <div>
+        ${stateObj.attributes.temperature}
+        ${getWeatherUnit(this.hass, "temperature")}
+      </div>
+      <div
+        class="info ${classMap({
+          pointer,
+        })}"
+        @action=${this._handleAction}
+        .actionHandler=${actionHandler({
+          hasHold: hasAction(this._config!.hold_action),
+          hasDoubleClick: hasAction(this._config!.double_tap_action),
+        })}
       >
-        <div class="attributes">
-          <div>
-            ${this._getExtrema(stateObj)}
-          </div>
-          <div>
-            ${this._getSecondaryAttribute(stateObj)}
-          </div>
+        <div>
+          ${this._config.name || computeStateName(stateObj)}
         </div>
-        <div slot="secondary">
-          ${stateObj.attributes.temperature}
-          ${getWeatherUnit(this.hass, "temperature")}
+        <div class="secondary">
           ${this.hass.localize(`state.weather.${stateObj.state}`) ||
             stateObj.state}
         </div>
-      </hui-generic-entity-row>
+      </div>
+      <div class="attributes pointer">
+        <div>
+          ${this._getExtrema(stateObj)}
+        </div>
+        <div>
+          ${this._getSecondaryAttribute(stateObj)}
+        </div>
+      </div>
     `;
   }
 
@@ -164,8 +197,38 @@ class HuiWeatherEntityRow extends LitElement implements LovelaceRow {
     `;
   }
 
+  private _handleAction(ev: ActionHandlerEvent) {
+    handleAction(this, this.hass!, this._config!, ev.detail.action!);
+  }
+
   static get styles(): CSSResult {
     return css`
+      :host {
+        display: flex;
+        align-items: center;
+      }
+
+      .pointer {
+        cursor: pointer;
+      }
+
+      .info {
+        flex: 1 0 60px;
+        margin-left: 16px;
+        display: flex;
+        flex-flow: column;
+        justify-content: space-between;
+        min-height: 40px;
+        padding: 4px 0px;
+      }
+
+      .info,
+      .info > * {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
       .attributes {
         margin-left: 16px;
         display: flex;
