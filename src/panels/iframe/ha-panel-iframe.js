@@ -12,6 +12,7 @@ class HaPanelIframe extends PolymerElement {
         iframe {
           border: 0;
           width: 100%;
+          position: absolute;
           height: calc(100% - 64px);
           background-color: var(--primary-background-color);
         }
