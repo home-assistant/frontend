@@ -2285,7 +2285,7 @@
                         "tab_settings": "설정",
                         "tab_visibility": "가시성",
                         "visibility": {
-                            "select_users": "탐색에서 이 뷰를 볼 사용자를 선택해주세요"
+                            "select_users": "이 뷰를 볼 수 있는 사용자를 선택해주세요"
                         }
                     },
                     "header": "UI 편집",
@@ -2334,7 +2334,7 @@
                         "panel_mode": {
                             "description": "패널 모드는 첫 번째 카드를 전체 너비로 보여줍니다. 이 뷰에서는 다른 카드는 보여지지 않습니다.",
                             "title": "패널 모드",
-                            "warning_multiple_cards": "이 뷰에는 카드가 두 개 이상 포함되어 있지만 패널 모드는 한 개의 카드만 표시될 수 있습니다."
+                            "warning_multiple_cards": "이 뷰에는 카드가 두 개 이상 포함되어 있지만 패널 모드는 한 개의 카드만 표시할 수 있습니다."
                         }
                     }
                 },

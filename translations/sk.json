@@ -632,10 +632,12 @@
                 },
                 "restored": {
                     "confirm_remove_text": "Naozaj chcete odstrániť túto entitu?",
+                    "confirm_remove_title": "Odstrániť entitu?",
                     "not_provided": "Táto entita je momentálne nedostupná a je ojedinelou pre odstránenú, zmenenú alebo nefunkčnú integráciu alebo zariadenie."
                 },
                 "script": {
-                    "last_action": "Posledná akcia"
+                    "last_action": "Posledná akcia",
+                    "last_triggered": "Naposledy spustené"
                 },
                 "settings": "Nastavenie entity",
                 "sun": {
@@ -988,7 +990,8 @@
                             "enter_pin_hint": "Ak chcete používať bezpečnostné zariadenia, zadajte kód PIN",
                             "manage_entities": "Spravovať entity",
                             "security_devices": "Zabezpečovacie zariadenia",
-                            "sync_entities": "Synchronizovať entity so službou Google"
+                            "sync_entities": "Synchronizovať entity so službou Google",
+                            "title": "Google Assistant"
                         },
                         "integrations": "Integrácie",
                         "integrations_introduction": "Integrácia Home Assistant Cloud vám umožňuje pripojiť sa k službám v cloude bez toho, aby ste museli verejne publikovať inštanciu Home Assistant do internetu.",
@@ -1021,7 +1024,8 @@
                         }
                     },
                     "alexa": {
-                        "banner": "Úprava týchto entít cez  toto používateľské rozhranie je zakázaná, pretože ste nakonfigurovali filtre entít v súbore Configuration.yaml."
+                        "banner": "Úprava týchto entít cez  toto používateľské rozhranie je zakázaná, pretože ste nakonfigurovali filtre entít v súbore Configuration.yaml.",
+                        "title": "Alexa"
                     },
                     "caption": "Home Assistant Cloud",
                     "description_features": "Ovládanie mimo domova, integrácia s Alexa a Google Assistant.",
@@ -1045,11 +1049,13 @@
                         "check_your_email": "Pokyny na obnovenie hesla nájdete vo svojom e-maile.",
                         "instructions": "Zadajte svoju e-mailovú adresu a my vám pošleme odkaz na obnovenie hesla.",
                         "send_reset_email": "Poslať resetovací e-mail",
+                        "subtitle": "Zabudli ste heslo",
                         "title": "Zabudnuté heslo"
                     },
                     "google": {
                         "banner": "Úprava týchto entít cez  toto používateľské rozhranie je zakázaná, pretože ste nakonfigurovali filtre entít v súbore Configuration.yaml.",
-                        "not_exposed_entities": "Nezverejnené entity"
+                        "not_exposed_entities": "Nezverejnené entity",
+                        "title": "Google Assistant"
                     },
                     "login": {
                         "alert_password_change_required": "Pred prihlásením musíte zmeniť svoje heslo.",
@@ -1061,6 +1067,7 @@
                         "password": "Heslo",
                         "sign_in": "Prihlásiť sa",
                         "start_trial": "Začnite bezplatnú 1-mesačnú skúšobnú verziu",
+                        "title": "Prihlásenie do cloudu",
                         "trial_info": "Nie sú potrebné žiadne platobné informácie"
                     },
                     "register": {
@@ -1159,6 +1166,7 @@
                     "automations": "Automatizácie",
                     "caption": "Zariadenia",
                     "data_table": {
+                        "area": "Oblasť",
                         "battery": "Batérie",
                         "device": "Zariadenie",
                         "integration": "Integrácia",
@@ -1200,7 +1208,11 @@
                     },
                     "picker": {
                         "disable_selected": {
-                            "confirm_text": "Zakázané entity nebudú pridané do Home Assistanta"
+                            "confirm_text": "Zakázané entity nebudú pridané do Home Assistanta",
+                            "confirm_title": "Chcete zakázať {number} entity?"
+                        },
+                        "enable_selected": {
+                            "confirm_title": "Chcete povoliť {number} entity?"
                         },
                         "filter": {
                             "show_disabled": "Zobraziť zakázané entity"
@@ -1215,7 +1227,9 @@
                         "introduction": "Home Assistant vedie register všetkých subjektov, ktoré kedy videl a ktoré môžu byť jednoznačne identifikované. Každá z týchto entít bude mať pridelené ID, ktoré bude vyhradené len pre tento subjekt.",
                         "introduction2": "Použite register entít na prepísanie mena, zmenu ID entity alebo odstránenie položky z Home Assistant. Poznámka: Odstránenie položky databázy entít neodstráni entitu. Postupujte podľa nižšie uvedeného odkazu a odstráňte ho z integračnej stránky.",
                         "remove_selected": {
-                            "confirm_text": "Entity je možné odstrániť, iba ak ich integrácia už neposkytuje."
+                            "confirm_partly_title": "Iba {number} vybrané entity môžu byť odstránené.",
+                            "confirm_text": "Entity je možné odstrániť, iba ak ich integrácia už neposkytuje.",
+                            "confirm_title": "Chcete odstrániť {number} entity?"
                         },
                         "show_disabled": "Zobraziť zakázané entity",
                         "status": {
@@ -1288,7 +1302,10 @@
                     "discovered": "Objavené",
                     "home_assistant_website": "Home Assistant webová stránka",
                     "ignore": {
+                        "confirm_delete_ignore_title": "Prestať ignorovať {name} ?",
                         "confirm_ignore": "Naozaj nechcete nastaviť túto integráciu? Túto akciu môžete vrátiť späť kliknutím na položku „Zobraziť ignorované integrácie“ v ponuke v pravom hornom rohu.",
+                        "confirm_ignore_title": "Ignorovať objav {name}?",
+                        "hide_ignored": "Skryť ignorované integrácie",
                         "show_ignored": "Zobraziť ignorované integrácie",
                         "stop_ignore": "Zastaviť ignorovanie"
                     },
@@ -1505,16 +1522,25 @@
                     "description": "Správa používateľov",
                     "editor": {
                         "activate_user": "Aktivovať používateľa",
+                        "active": "Aktívny",
                         "caption": "Zobraziť používateľa",
                         "change_password": "Zmeniť heslo",
                         "confirm_user_deletion": "Naozaj chcete odstrániť {name}?",
                         "deactivate_user": "Deaktivovať používateľa",
                         "delete_user": "Vymazať používateľa",
+                        "enter_new_name": "Zadajte nový názov",
+                        "group": "Skupina",
                         "group_update_failed": "Aktualizácia skupiny zlyhala:",
+                        "id": "ID",
+                        "owner": "Vlastník",
                         "rename_user": "Premenovať používateľa",
-                        "system_generated_users_not_removable": "Nie je možné odstrániť používateľov generovaných systémom."
+                        "system_generated": "Systémom vytvorený",
+                        "system_generated_users_not_removable": "Nie je možné odstrániť používateľov generovaných systémom.",
+                        "unnamed_user": "Nepomenovaný používateľ",
+                        "user_rename_failed": "Premenovanie používateľa zlyhalo:"
                     },
                     "picker": {
+                        "system_generated": "Systémom vytvorený",
                         "title": "Používatelia"
                     }
                 },
@@ -1581,15 +1607,31 @@
                     "title": "Zigbee Home Automation"
                 },
                 "zone": {
+                    "add_zone": "Pridať zónu",
                     "caption": "Zóny",
                     "configured_in_yaml": "Zóny vytvorené prostredníctvom configuration.yaml nie je možné upravovať pomocou používateľského rozhrania.",
                     "confirm_delete": "Naozaj chcete odstrániť túto zónu?",
+                    "create_zone": "Vytvoriť zónu",
                     "description": "Spravujte zóny, v ktorých chcete sledovať osoby.",
                     "detail": {
+                        "create": "Vytvoriť",
                         "delete": "Odstrániť",
+                        "icon": "Ikona",
+                        "icon_error_msg": "Ikona by mala byť vo formáte predpona:názov-ikony, napríklad: mdi:home",
+                        "latitude": "Zemepisná šírka",
+                        "longitude": "Zemepisná dĺžka",
+                        "name": "Názov",
+                        "new_zone": "Nová zóna",
+                        "passive": "Pasívne",
                         "passive_note": "Pasívne zóny sú skryté vo frontende a nie sú používané ako umiestnenia pre sledovacie zariadenia. Toto je užitočné, ak chcete používať zóny len pre automatizácie.",
+                        "radius": "Okruh",
+                        "required_error_msg": "Toto pole je povinné",
                         "update": "Aktualizovať"
                     },
+                    "edit_home_zone": "Okruh domovskej zóny zatiaľ nie je možné upravovať z frontendu. Presunutím značky na mape presuniete domácu zónu.",
+                    "edit_home_zone_narrow": "Okruh domovskej zóny zatiaľ nie je možné upravovať z frontendu. Poloha sa dá zmeniť zo všeobecnej konfigurácie.",
+                    "go_to_core_config": "Prejsť na všeobecnú konfiguráciu?",
+                    "home_zone_core_config": "Umiestnenie vašej domácej zóny je možné upravovať na stránke so všeobecnou konfiguráciou. Okruh domovskej zóny zatiaľ nie je možné upravovať z frontendu. Chcete prejsť na všeobecnú konfiguráciu?",
                     "introduction": "Zóny vám umožňujú vybrať špecifické oblasti na mape. Ak sa osoba nachádza v nejakej zóne, v stavoch sa zobrazí názov konkrétnej zóny. Zóny môžu byť tiež použité ako spúšťač alebo podmienka v rámci automatizácií.",
                     "no_zones_created_yet": "Zdá sa, že ste ešte nevytvorili žiadne zóny."
                 },
@@ -1766,6 +1808,9 @@
                         "no_devices": "Táto stránka vám umožňuje ovládať vaše zariadenia, zdá sa však, že ešte nemáte nastavené žiadne zariadenia. Ak chcete začať, choďte na stránku integrácií.",
                         "title": "Vitajte doma"
                     },
+                    "entities": {
+                        "never_triggered": "Nikdy nespustené"
+                    },
                     "picture-elements": {
                         "call_service": "Zavolať službu {name}",
                         "hold": "Držať:",
@@ -1829,6 +1874,7 @@
                             "show_state": "Zobraziť stav?",
                             "tap_action": "Akcia pri stlačení",
                             "theme": "Téma",
+                            "title": "Názov",
                             "unit": "Jednotka",
                             "url": "Url"
                         },
@@ -1899,12 +1945,14 @@
                         "move": "Presunúť",
                         "options": "Viac možností",
                         "pick_card": "Ktorú kartu chcete pridať?",
+                        "pick_card_view_title": "Ktorú kartu chcete pridať do svojho zobrazenia {name} ?",
                         "save": "Uložiť",
                         "show_code_editor": "Zobraziť editor kódu",
                         "show_visual_editor": "Zobraziť vizuálny editor",
                         "toggle_editor": "Prepnúť editor"
                     },
                     "edit_lovelace": {
+                        "edit_title": "Upraviť názov",
                         "explanation": "Tento názov sa zobrazuje nad všetkými vašimi zobrazeniami v Lovelace.",
                         "header": "Názov vášho Lovelace UI"
                     },
@@ -1913,7 +1961,13 @@
                         "delete": "Odstrániť zobrazenie",
                         "edit": "Upraviť zobrazenie",
                         "header": "Konfigurácia zobrazenia",
-                        "header_name": "{name} Zobraziť konfiguráciu"
+                        "header_name": "{name} Zobraziť konfiguráciu",
+                        "tab_badges": "Odznaky",
+                        "tab_settings": "Nastavenia",
+                        "tab_visibility": "Viditeľnosť",
+                        "visibility": {
+                            "select_users": "Vyberte, ktorí používatelia môžu vidieť toto zobrazenie v navigácii"
+                        }
                     },
                     "header": "Upraviť používateľské rozhranie",
                     "menu": {
@@ -1971,6 +2025,15 @@
                 "reload_resources": {
                     "refresh_body": "Ak chcete dokončiť načítanie, musíte stránku obnoviť. Chcete ju teraz obnoviť?",
                     "refresh_header": "Chcete obnoviť?"
+                },
+                "unused_entities": {
+                    "available_entities": "Toto sú entity, ktoré máte k dispozícii, ale ešte nie sú vo vašom používateľskom rozhraní Lovelace.",
+                    "domain": "Doména",
+                    "entity": "Entita",
+                    "entity_id": "Entity ID",
+                    "last_changed": "Posledná zmena",
+                    "select_to_add": "Vyberte entity, ktoré chcete pridať na kartu, a potom kliknite na tlačidlo Pridať kartu.",
+                    "title": "Nepoužité entity"
                 },
                 "views": {
                     "confirm_delete": "Naozaj chcete odstrániť toto zobrazenie?",
@@ -2185,6 +2248,7 @@
                 },
                 "logout": "Odhlásiť sa",
                 "logout_text": "Naozaj sa chcete odhlásiť?",
+                "logout_title": "Odhlásiť sa?",
                 "long_lived_access_tokens": {
                     "confirm_delete": "Naozaj chcete odstrániť prístupový token pre {name}?",
                     "create": "Vytvoriť Token",

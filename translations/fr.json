@@ -302,7 +302,7 @@
         },
         "light": {
             "off": "Éteinte",
-            "on": "Allumée"
+            "on": "Actif"
         },
         "lock": {
             "locked": "Verrouillé",
@@ -426,7 +426,7 @@
                 "heating": "{name} chauffage",
                 "high": "haute",
                 "low": "basse",
-                "on_off": "Allumé / Éteint",
+                "on_off": "On / off",
                 "operation": "Opération",
                 "preset_mode": "Préréglage",
                 "swing_mode": "Mode de balancement",
@@ -621,7 +621,7 @@
                 "dismiss": "Ignorer",
                 "editor": {
                     "confirm_delete": "Voulez-vous vraiment supprimer cette entrée ?",
-                    "delete": "SUPPRIMER",
+                    "delete": "Supprimer",
                     "enabled_cause": "Désactivé par {cause} .",
                     "enabled_description": "Les entités désactivées ne seront pas ajoutées à Home Assistant.",
                     "enabled_label": "Activer l'entité",
@@ -631,7 +631,7 @@
                     "name": "Remplacement de nom",
                     "note": "Remarque: cela peut ne pas encore fonctionner avec toutes les intégrations.",
                     "unavailable": "Cette entité n'est pas disponible actuellement.",
-                    "update": "MISE À JOUR"
+                    "update": "Mise à jour"
                 },
                 "no_unique_id": "Cette entité n'a pas d'identifiant unique, ses paramètres ne peuvent donc pas être gérés à partir de l'interface utilisateur.",
                 "related": "Liées",
@@ -664,7 +664,7 @@
                     "min": "Valeur minimum",
                     "mode": "Mode d'affichage",
                     "slider": "Curseur",
-                    "step": "Taille de pas du curseur",
+                    "step": "Taille du pas du curseur",
                     "unit_of_measurement": "Unité de mesure"
                 },
                 "input_select": {
@@ -816,14 +816,14 @@
                     },
                     "description": "Vue d'ensemble de toutes les pièces de votre maison.",
                     "editor": {
-                        "create": "CRÉER",
+                        "create": "Créer",
                         "default_name": "Nouvelle pièce",
-                        "delete": "SUPPRIMER",
-                        "update": "METTRE À JOUR"
+                        "delete": "Supprimer",
+                        "update": "Mise à jour"
                     },
                     "no_areas": "Vous n'avez pas encore configuré de pièce !",
                     "picker": {
-                        "create_area": "CRÉER UNE PIÈCE",
+                        "create_area": "Créer une zone",
                         "header": "Pièces",
                         "integrations_page": "Page des intégrations",
                         "introduction": "Les pièces sont utilisées pour organiser l'emplacement des périphériques. Ces informations seront utilisées partout dans Home Assistant pour vous aider à organiser votre interface, vos autorisations et vos intégrations avec d'autres systèmes.",
@@ -2102,7 +2102,7 @@
                             "name": "Panneau d'alarme"
                         },
                         "button": {
-                            "description": "La carte Boutons vous permet d'ajouter des boutons pour effectuer des tâches.",
+                            "description": "La carte Button vous permet d'ajouter des boutons pour effectuer des tâches.",
                             "name": "Bouton"
                         },
                         "conditional": {
