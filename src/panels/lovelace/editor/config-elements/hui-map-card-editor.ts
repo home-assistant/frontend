@@ -46,16 +46,12 @@ export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
   @property() private _config?: MapCardConfig;
 
   @property() private _configEntities?: EntityConfig[];
-  @property() private _configHistoryEntities?: EntityConfig[];
 
   public setConfig(config: MapCardConfig): void {
     config = cardConfigStruct(config);
     this._config = config;
     this._configEntities = config.entities
       ? processEditorEntities(config.entities)
-      : [];
-    this._configHistoryEntities = config.history_entities
-      ? processEditorEntities(config.history_entities)
       : [];
   }
 
@@ -164,9 +160,7 @@ export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
     if (ev.detail && ev.detail.entities) {
       this._config.entities = ev.detail.entities;
       this._configEntities = processEditorEntities(this._config.entities);
-      this._configHistoryEntities = processEditorEntities(
-        this._config.history_entities
-      );
+
       fireEvent(this, "config-changed", { config: this._config });
     }
   }

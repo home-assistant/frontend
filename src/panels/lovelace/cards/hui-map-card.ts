@@ -114,7 +114,7 @@ class HuiMapCard extends LitElement implements LovelaceCard {
       !config.history_entities
     ) {
       throw new Error(
-        "Either entities, hsitory_entities or geo_location_sources must be defined"
+        "Either entities, history_entities or geo_location_sources must be defined"
       );
     }
     if (config.entities && !Array.isArray(config.entities)) {
@@ -457,7 +457,21 @@ class HuiMapCard extends LitElement implements LovelaceCard {
       }
     }
 
+    // squashes all duplicated entities in an array
+    const unique = (entities: EntityConfig[]) => {
+      for (let index = entities.length - 1; index >= 0; index--) {
+        const duplicate = entities.findIndex(
+          (e) => (e.entity = entities[index].entity)
+        );
+        if (duplicate !== index) {
+          Object.assign(entities[duplicate], entities[index]);
+          entities.splice(index, 1);
+        }
+      }
+    };
+
     // DRAW entities
+    unique(allEntities);
     for (const entity of allEntities) {
       const entityId = entity.entity;
       const color = entity.color;
