@@ -32,6 +32,7 @@ export class HuiDialogDeleteCard extends LitElement {
       this._cardConfig = deepFreeze(this._cardConfig);
     }
     await this.updateComplete;
+    fireEvent(this, "iron-resize");
   }
 
   protected render(): TemplateResult {
@@ -66,10 +67,6 @@ export class HuiDialogDeleteCard extends LitElement {
         </div>
       </ha-paper-dialog>
     `;
-  }
-
-  protected updated(): void {
-    fireEvent(this, "iron-resize");
   }
 
   static get styles(): CSSResultArray {
