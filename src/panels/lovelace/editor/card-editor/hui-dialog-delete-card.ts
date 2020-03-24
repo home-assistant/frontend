@@ -40,6 +40,10 @@ export class HuiDialogDeleteCard extends LitElement {
   }
 
   protected render(): TemplateResult {
+    if (!this._params) {
+      return html``;
+    }
+
     return html`
       <ha-paper-dialog with-backdrop opened>
         <h2>
@@ -61,7 +65,7 @@ export class HuiDialogDeleteCard extends LitElement {
           <mwc-button @click="${this._close}">
             ${this.hass!.localize("ui.common.cancel")}
           </mwc-button>
-          <mwc-button class="delete" @click="${this._delete}">
+          <mwc-button class="warning" @click="${this._delete}">
             ${this.hass!.localize("ui.common.delete")}
           </mwc-button>
         </div>
@@ -73,53 +77,29 @@ export class HuiDialogDeleteCard extends LitElement {
     return [
       haStyleDialog,
       css`
-        @media all and (max-width: 450px), all and (max-height: 500px) {
-          /* overrule the ha-style-dialog max-height on small screens */
-          ha-paper-dialog {
-            max-height: 100%;
-            height: 100%;
-          }
-        }
-        @media all and (min-width: 850px) {
-          ha-paper-dialog {
-            width: 845px;
-          }
-        }
-        ha-paper-dialog {
-          max-width: 845px;
-        }
         .element-preview {
           position: relative;
         }
         hui-card-preview {
-          padding-top: 8px;
           margin: 4px auto;
           max-width: 500px;
           display: block;
           width: 100%;
-        }
-        .delete {
-          --mdc-theme-primary: red;
         }
       `,
     ];
   }
 
   private _close(): void {
-    this._dialog!.close();
     this._params = undefined;
     this._cardConfig = undefined;
   }
 
   private _delete(): void {
-    if (
-      !this._params?.lovelaceConfig ||
-      !this._params?.path ||
-      !this._params?.deleteCard
-    ) {
+    if (!this._params?.deleteCard) {
       return;
     }
-    this._params.deleteCard(this._params.lovelaceConfig, this._params.path);
+    this._params.deleteCard();
     this._close();
   }
 }

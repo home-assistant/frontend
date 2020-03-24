@@ -13,12 +13,10 @@ export async function confDeleteCard(
 ): Promise<void> {
   const cardConfig = lovelace.config.views[path[0]].cards![path[1]];
   showDeleteCardDialog(element, {
-    lovelaceConfig: lovelace!.config,
     cardConfig,
-    path,
-    deleteCard: async (config, cardPath) => {
+    deleteCard: async () => {
       try {
-        await lovelace.saveConfig(deleteCard(config, cardPath));
+        await lovelace.saveConfig(deleteCard(lovelace.config, path));
         showDeleteSuccessToast(element, hass!);
       } catch (err) {
         showAlertDialog(element, {
