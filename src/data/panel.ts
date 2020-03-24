@@ -22,14 +22,13 @@ export const getPanelTitle = (hass: HomeAssistant): string | undefined => {
     return;
   }
 
+  if (panel.url_path === "lovelace") {
+    return hass.localize("panel.states");
+  }
+
   if (panel.url_path === "profile") {
     return hass.localize("panel.profile");
   }
 
-  return (
-    hass.localize(`panel.${panel.title}`) ||
-    panel.title ||
-    // default panel
-    (hass.panels[localStorage.defaultPage] || hass.panels[DEFAULT_PANEL]).title!
-  );
+  return hass.localize(`panel.${panel.title}`) || panel.title || undefined;
 };
