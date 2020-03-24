@@ -5,6 +5,7 @@ export const derivedStyles = {
   "error-state-color": "var(--error-color)",
   "state-icon-unavailable-color": "var(--disabled-text-color)",
   "sidebar-text-color": "var(--primary-text-color)",
+  "sidebar-header-background-color": "var(--primary-background-color))",
   "sidebar-background-color": "var(--paper-listbox-background-color);",
   "sidebar-selected-text-color": "var(--primary-color)",
   "sidebar-selected-icon-color": "var(--primary-color)",
@@ -57,6 +58,11 @@ export const haStyle = css`
   app-header-layout,
   ha-app-layout {
     background-color: var(--primary-background-color);
+  }
+
+  app-toolbar {
+    border-bottom: 1px solid var(--divider-color, transparent);
+    box-sizing: border-box;
   }
 
   app-header,
