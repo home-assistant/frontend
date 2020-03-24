@@ -138,7 +138,6 @@ class HuiMapCard extends LitElement implements LovelaceCard {
       ? processConfigEntities(config.history_entities)
       : [];
 
-    // default history to 24 hours, extend to dynamic hours_to_show in a later version
     this._cacheConfig = {
       cacheKey: this._configHistoryEntities
         .map((entityObj) => entityObj.entity)
@@ -437,7 +436,7 @@ class HuiMapCard extends LitElement implements LovelaceCard {
           // DRAW history markers
           mapHistories.push(
             Leaflet.circleMarker(path[markerIndex], {
-              radius: 5,
+              radius: 3,
               color: colors[colorIndex],
               opacity,
               interactive: false,
