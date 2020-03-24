@@ -621,7 +621,7 @@
                 "dismiss": "Desestimar",
                 "editor": {
                     "confirm_delete": "Estàs segur que vols eliminar aquesta entrada?",
-                    "delete": "ELIMINA",
+                    "delete": "Suprimeix",
                     "enabled_cause": "Desactivada per {cause}.",
                     "enabled_description": "Les entitats desactivades no s’afegiran a Home Assistant.",
                     "enabled_label": "Activa l’entitat",
@@ -631,7 +631,7 @@
                     "name": "Substitució de Nom",
                     "note": "Nota: podria no funcionar amb alguna de les integracions.",
                     "unavailable": "Aquesta entitat no està disponible actualment.",
-                    "update": "ACTUALITZA"
+                    "update": "Actualitza"
                 },
                 "no_unique_id": "Aquesta entitat no té un ID únic, per tant, no pot ser configurada des de la interfície d'usuari.",
                 "related": "Relacionat",
@@ -816,14 +816,14 @@
                     },
                     "description": "Visió general de totes les àrees de la casa.",
                     "editor": {
-                        "create": "CREAR",
+                        "create": "Crea",
                         "default_name": "Nova àrea",
-                        "delete": "ELIMINA",
-                        "update": "ACTUALITZAR"
+                        "delete": "Suprimeix",
+                        "update": "Actualitza"
                     },
                     "no_areas": "Sembla que encara no tens cap àrea!.",
                     "picker": {
-                        "create_area": "CREA ÀREA",
+                        "create_area": "Crea àrea",
                         "header": "Registre d'àrees",
                         "integrations_page": "Pàgina d'integracions",
                         "introduction": "Les àrees s'utilitzen per organitzar la situació dels dispositius. Aquesta informació serà utilitzada per Home Assistant per ajudar-te a organitzar millor la teva interfície, els permisos i les integracions amb d'altres sistemes.",
@@ -2159,7 +2159,7 @@
                             "maximum": "Màxim",
                             "minimum": "Mínim",
                             "name": "Nom",
-                            "no_theme": "Sense temes",
+                            "no_theme": "Sense tema",
                             "refresh_interval": "Interval d'actualització",
                             "show_icon": "Mostra icona?",
                             "show_name": "Mostra nom?",

@@ -2333,7 +2333,8 @@
                     "view": {
                         "panel_mode": {
                             "description": "Esto muestra la primera tarjeta a ancho completo; otras tarjetas en esta vista no se mostrarán.",
-                            "title": "¿Modo de panel?"
+                            "title": "¿Modo de panel?",
+                            "warning_multiple_cards": "Esta vista contiene más de una tarjeta, pero la vista del panel solo puede mostrar 1 tarjeta."
                         }
                     }
                 },
