@@ -627,6 +627,7 @@
                     "enabled_label": "Entitéit aktivéieren",
                     "entity_id": "ID vun der Entitéit",
                     "icon": "Ikon iwwerschreiwen",
+                    "icon_error": "Ikonen sollten am format 'prefix:numm' sinn, Beispill: 'mdi:home'",
                     "name": "Numm iwwerschreiwen",
                     "note": "Nott: dëst funktionéiert villäicht nach net mat all Integratioun.",
                     "unavailable": "Dës Entitéit ass net erreechbar fir de Moment.",
@@ -657,6 +658,7 @@
                     "time": "Zäit"
                 },
                 "input_number": {
+                    "box": "Angab Feld",
                     "max": "Maximale Wäert",
                     "min": "Minimale Wäert",
                     "mode": "Affichage Modus",
@@ -1303,6 +1305,7 @@
                     "automations": "Automatisme",
                     "cant_edit": "Dir kënnt nëmmen Elementer änneren déi an der UI erstallt goufen.",
                     "caption": "Apparater",
+                    "confirm_delete": "Sécher fir dësen Appara ze läsche?",
                     "confirm_rename_entity_ids": "Wëllt Dir och d'Entitéiten-ID vun Ären Entitéiten ëmbenennen?",
                     "data_table": {
                         "area": "Beräich",
@@ -1313,6 +1316,7 @@
                         "model": "Modell",
                         "no_devices": "Keng Apparater"
                     },
+                    "delete": "Läschen",
                     "description": "Verwalt verbonnen Apparater",
                     "details": "Hei sinn all Detailer vun ärem Apparat.",
                     "device_not_found": "Apparat net fonnt.",
@@ -1386,6 +1390,7 @@
                         "introduction2": "Benotzt d'Lëscht vun den Entitéite fir d'Nimm z'änneren, d'Entitéits ID z'änneren oder d'Entrée aus dem Home Assistant ze läschen. Remarque: Läsche vun der Entitéit aus der Lëscht läscht d'Entitéit selwer net. Fir dës ze läsche follegt dem Link ënnen a läscht et op der Integratiouns Säit.",
                         "remove_selected": {
                             "button": "Ausgewielte läschen",
+                            "confirm_partly_text": "Nëmmen {removable} vun den ausgewielten {selected} Entitéite kënne geläscht ginn. Entitéiten kënne nëmmen geläscht ginn wann eng Integratioun déi Entitéiten net méi zur Verfügung stellt. Heiansdo muss Home Assistant frësch gestart ginn fir Entitéiten vun enger geläschten Integratioun ze läschen. Sécher fir déi läschbar Entitéiten ze läschen?",
                             "confirm_text": "Entitéiten kënne nëmmen geläscht gin wann d'Integratioun d'Entitéiten net méi zur Verfügung stellt.",
                             "confirm_title": "Wëllt dir {number} Entitéite läschen?"
                         },
@@ -1395,6 +1400,7 @@
                             "disabled": "Deaktivéiert",
                             "ok": "Ok",
                             "readonly": "Nëmme liesen",
+                            "restored": "Restauréiert",
                             "unavailable": "Net erreechbar"
                         },
                         "unavailable": "(net verfügbar)"
@@ -1459,6 +1465,7 @@
                         },
                         "failed_create_area": "Feeler beim erstellen vum Beräich.",
                         "finish": "Ofschléissen",
+                        "loading_first_time": "Waart w.e.g. während der Installatioun vun der Integratioun",
                         "name_new_area": "Numm vum neie Beräich?",
                         "not_all_required_fields": "Net all erfuerderlech Felder sinn ausgefëllt.",
                         "submit": "Ofschécken"
@@ -1497,6 +1504,7 @@
                             "yaml": "Yaml Fichier"
                         },
                         "confirm_delete": "Sécher fir dëse Tableau de Bord ze läschen?",
+                        "default_dashboard": "Dëst ass den Standard Tableau de Bord",
                         "detail": {
                             "create": "Erstellen",
                             "delete": "Läschen",
@@ -2138,6 +2146,7 @@
                             "maximum": "Maximum",
                             "minimum": "Minimum",
                             "name": "Numm",
+                            "no_theme": "Kee Thema",
                             "refresh_interval": "Aktualiséierungs Intervall",
                             "show_icon": "Ikon uweisen?",
                             "show_name": "Numm uweisen?",
@@ -2157,7 +2166,7 @@
                             "name": "Verlaf Diagramm"
                         },
                         "horizontal-stack": {
-                            "description": "Horizontaé Kaart erlaabt et méi Kaarten ze gruppéieren fir dass se ëmmer an der selwechter Rei ugewise ginn.",
+                            "description": "Horizontal Kaart erlaabt et méi Kaarten ze gruppéieren fir dass se ëmmer an der selwechter Rei ugewise ginn.",
                             "name": "Horizontale Stapel"
                         },
                         "iframe": {
@@ -2229,6 +2238,7 @@
                     "edit_card": {
                         "add": "Kaart dobäisetzen",
                         "delete": "Läschen",
+                        "duplicate": "Kaart Replikéieren",
                         "edit": "Änneren",
                         "header": "Kaart Konfiguratioun",
                         "move": "Réckelen",
@@ -2312,9 +2322,14 @@
                     "exit_edit_mode": "Benotzer Interface Editéierungsmodus verloossen",
                     "help": "Hëllef",
                     "refresh": "Erneieren",
+                    "reload_resources": "Ressource frësch lueden",
                     "unused_entities": "Onbenotzt Entitéiten"
                 },
                 "reload_lovelace": "Lovelace frësch lueden",
+                "reload_resources": {
+                    "refresh_body": "D'Säit muss aktualiséiert gi fir d'Aktualiséierung ofzeschléissen, elo aktualiséieren?",
+                    "refresh_header": "Soll aktualiséiert ginn?"
+                },
                 "unused_entities": {
                     "available_entities": "Dës si verfügbar Entitéiten, déi awer nach net an ärer Lovelace UI sinn.",
                     "domain": "Domän",
@@ -2326,6 +2341,8 @@
                 },
                 "views": {
                     "confirm_delete": "Sécher fir dës Usiicht ze läsche?",
+                    "confirm_delete_existing_cards": "D'Läschen vun dëser Usiicht läscht och d'Kaarten",
+                    "confirm_delete_text": "Sécher fir d'Usiicht '{name}' ze läsche?",
                     "existing_cards": "Dir kënnt keng Usiicht mat Kaarten läschen. Läscht d'Kaarten fir d'éischt."
                 },
                 "warning": {
