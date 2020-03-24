@@ -6,7 +6,6 @@ import {
   CSSResultArray,
   customElement,
   property,
-  query,
 } from "lit-element";
 
 import "./hui-card-preview";
@@ -14,19 +13,17 @@ import "../../../../components/dialog/ha-paper-dialog";
 
 import deepFreeze from "deep-freeze";
 
-// tslint:disable-next-line
-import { HaPaperDialog } from "../../../../components/dialog/ha-paper-dialog";
 import { HomeAssistant } from "../../../../types";
 import { LovelaceCardConfig } from "../../../../data/lovelace";
 import { haStyleDialog } from "../../../../resources/styles";
 import { DeleteCardDialogParams } from "./show-delete-card-dialog";
+import { fireEvent } from "../../../../common/dom/fire_event";
 
 @customElement("hui-dialog-delete-card")
 export class HuiDialogDeleteCard extends LitElement {
   @property() protected hass!: HomeAssistant;
   @property() private _params?: DeleteCardDialogParams;
   @property() private _cardConfig?: LovelaceCardConfig;
-  @query("ha-paper-dialog") private _dialog?: HaPaperDialog;
 
   public async showDialog(params: DeleteCardDialogParams): Promise<void> {
     this._params = params;
@@ -34,9 +31,7 @@ export class HuiDialogDeleteCard extends LitElement {
     if (!Object.isFrozen(this._cardConfig)) {
       this._cardConfig = deepFreeze(this._cardConfig);
     }
-    if (this._dialog) {
-      this._dialog.open();
-    }
+    await this.updateComplete;
   }
 
   protected render(): TemplateResult {
@@ -71,6 +66,10 @@ export class HuiDialogDeleteCard extends LitElement {
         </div>
       </ha-paper-dialog>
     `;
+  }
+
+  protected updated(): void {
+    fireEvent(this, "iron-resize");
   }
 
   static get styles(): CSSResultArray {
