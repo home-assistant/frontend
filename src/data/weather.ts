@@ -2,19 +2,19 @@ import { HomeAssistant } from "../types";
 
 export const weatherIcons = {
   "clear-night": "/static/images/weather/night.png",
-  cloudy: "hass:weather-cloudy",
+  cloudy: "/static/images/weather/cloudy.png",
   exceptional: "hass:alert-circle-outline",
   fog: "hass:weather-fog",
   hail: "hass:weather-hail",
-  lightning: "hass:weather-lightning",
-  "lightning-rainy": "hass:weather-lightning-rainy",
-  partlycloudy: "hass:weather-partly-cloudy",
-  pouring: "hass:weather-pouring",
-  rainy: "hass:weather-rainy",
-  snowy: "hass:weather-snowy",
+  lightning: "/static/images/weather/lightning.png",
+  "lightning-rainy": "/static/images/weather/lightning-rainy.png",
+  partlycloudy: "/static/images/weather/partly-cloudy.png",
+  pouring: "/static/images/weather/pouring.png",
+  rainy: "/static/images/weather/rainy.png",
+  snowy: "/static/images/weather/snowy.png",
   "snowy-rainy": "hass:weather-snowy-rainy",
-  sunny: "hass:weather-sunny",
-  windy: "hass:weather-windy",
+  sunny: "/static/images/weather/sunny-1.png",
+  windy: "/static/images/weather/windy.png",
   "windy-variant": "hass:weather-windy-variant",
 };
 

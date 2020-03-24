@@ -82,7 +82,7 @@ class HuiWeatherEntityRow extends LitElement implements LovelaceRow {
         })}
         .hass=${this.hass}
         .stateObj=${stateObj}
-        .overrideIcon=${weatherIcons["clear-night"]}
+        .overrideImage=${weatherIcons[stateObj.state]}
         @action=${this._handleAction}
         .actionHandler=${actionHandler({
           hasHold: hasAction(this._config!.hold_action),
@@ -90,9 +90,10 @@ class HuiWeatherEntityRow extends LitElement implements LovelaceRow {
         })}
         tabindex=${ifDefined(pointer ? "0" : undefined)}
       ></state-badge>
-      <div>
-        ${stateObj.attributes.temperature}
-        ${getWeatherUnit(this.hass, "temperature")}
+      <div class="temperature">
+        ${stateObj.attributes.temperature}<span
+          >${getWeatherUnit(this.hass, "temperature")}</span
+        >
       </div>
       <div
         class="info ${classMap({
@@ -212,14 +213,29 @@ class HuiWeatherEntityRow extends LitElement implements LovelaceRow {
         cursor: pointer;
       }
 
+      .temperature {
+        font-size: 28px;
+        margin-left: 16px;
+        margin-right: 16px;
+        line-height: 40px;
+        position: relative;
+      }
+
+      .temperature span {
+        font-size: 18px;
+        line-height: 1em;
+        position: absolute;
+        top: 8px;
+      }
+
       .info {
         flex: 1 0 60px;
         margin-left: 16px;
         display: flex;
         flex-flow: column;
-        justify-content: space-between;
+        justify-content: center;
         min-height: 40px;
-        padding: 4px 0px;
+        padding: 4px 0;
       }
 
       .info,
@@ -229,14 +245,18 @@ class HuiWeatherEntityRow extends LitElement implements LovelaceRow {
         text-overflow: ellipsis;
       }
 
+      .secondary {
+        color: var(--secondary-text-color);
+      }
+
       .attributes {
         margin-left: 16px;
         display: flex;
         flex-flow: column;
-        justify-content: space-between;
+        justify-content: center;
         min-height: 40px;
-        padding: 4px 0px;
         align-items: flex-end;
+        padding: 4px 0;
       }
 
       .attributes,
