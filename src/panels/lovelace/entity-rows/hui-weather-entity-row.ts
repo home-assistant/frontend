@@ -9,7 +9,7 @@ import {
   PropertyValues,
 } from "lit-element";
 
-import "../components/hui-generic-entity-row";
+import "../../../components/entity/state-badge";
 import "../components/hui-warning";
 
 import { LovelaceRow } from "./types";
