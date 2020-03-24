@@ -30,7 +30,5 @@ export const getPanelTitle = (hass: HomeAssistant): string | undefined => {
     return hass.localize("panel.profile");
   }
 
-  const title = hass.localize(`panel.${panel.title}`) || panel.title;
-
   return hass.localize(`panel.${panel.title}`) || panel.title || undefined;
 };
