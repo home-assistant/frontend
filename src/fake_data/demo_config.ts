@@ -11,7 +11,7 @@ export const demoConfig: HassConfig = {
     temperature: "°C",
     volume: "L",
   },
-  components: ["notify.html5", "history"],
+  components: ["notify.html5", "history", "shopping_list"],
   time_zone: "America/Los_Angeles",
   config_dir: "/config",
   version: "DEMO",
