@@ -1,12 +1,12 @@
-import "@polymer/paper-input/paper-textarea";
+import { HomeAssistant } from "../../../types";
+import { LovelaceBadgeConfig } from "../../../data/lovelace";
+import { ConfigError } from "./types";
+import { computeRTL } from "../../../common/util/compute_rtl";
+import { LovelaceBadge } from "../types";
+import { createBadgeElement } from "../create-element/create-badge-element";
+import { createErrorBadgeConfig } from "../badges/hui-error-badge";
 
-import { HomeAssistant } from "../../../../types";
-import { LovelaceBadgeConfig } from "../../../../data/lovelace";
-import { ConfigError } from "../types";
-import { computeRTL } from "../../../../common/util/compute_rtl";
-import { LovelaceBadge } from "../../types";
-import { createBadgeElement } from "../../create-element/create-badge-element";
-import { createErrorBadgeConfig } from "../../badges/hui-error-badge";
+import "../../../components/entity/ha-state-label-badge";
 
 export class HuiBadgePreview extends HTMLElement {
   private _hass?: HomeAssistant;
