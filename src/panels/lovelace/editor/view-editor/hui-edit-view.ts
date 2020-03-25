@@ -23,7 +23,7 @@ import { haStyleDialog } from "../../../../resources/styles";
 import "../../components/hui-entity-editor";
 import "./hui-view-editor";
 import "./hui-view-visibility-editor";
-import "../card-editor/hui-badge-preview";
+import "../hui-badge-preview";
 import { HomeAssistant } from "../../../../types";
 import {
   LovelaceViewConfig,
