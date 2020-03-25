@@ -129,11 +129,11 @@ export class HuiEditView extends LitElement {
                 <div class="preview-badges">
                   ${this._badges.map((badgeConfig) => {
                     return html`
-                    <hui-badge-preview
-                      .hass=${this.hass}
-                      .config=${badgeConfig}
-                    ></hui-card-preview>
-                  `;
+                      <hui-badge-preview
+                        .hass=${this.hass}
+                        .config=${badgeConfig}
+                      ></hui-badge-preview>
+                    `;
                   })}
                 </div>
               `

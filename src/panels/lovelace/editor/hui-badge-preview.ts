@@ -14,7 +14,7 @@ export class HuiBadgePreview extends HTMLElement {
   private _config?: LovelaceBadgeConfig;
 
   private get _error() {
-    return this._element?.tagName === "HUI-ERROR-BADGE";
+    return this._element?.tagName === "HUI-ERROR-CARD";
   }
 
   constructor() {
