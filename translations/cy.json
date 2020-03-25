@@ -1149,6 +1149,11 @@
                         "para": "Gwneith Home Assistant gynnal eich rhyngwyneb defnyddiwr yn ddiofyn, a'i diweddaru pan fydd endidau neu gydrannau Lovelace newydd yn dod ar gael. Os ydych yn cymryd rheolaeth nawn ddim gwneud newidiadau awtomatig pellach i chi.",
                         "para_sure": "A ydych yn siŵr bod chi eisiau rheoli eich rhyngwyneb defnyddiwr?",
                         "save": "Cymerwch reolaeth"
+                    },
+                    "view": {
+                        "panel_mode": {
+                            "warning_multiple_cards": "Mae'r golwg yn cynnwys mwy nag un cerdyn, ond dim ond un cerdyn gall y golwg panel ei ddangos."
+                        }
                     }
                 },
                 "menu": {
