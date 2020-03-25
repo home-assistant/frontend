@@ -664,7 +664,7 @@
                     "min": "Minimaler Wert",
                     "mode": "Anzeigemodus",
                     "slider": "Schieberegler",
-                    "step": "Schrittweite des Schiebereglers",
+                    "step": "Schrittgröße",
                     "unit_of_measurement": "Maßeinheit"
                 },
                 "input_select": {
@@ -2332,7 +2332,8 @@
                     "view": {
                         "panel_mode": {
                             "description": "Dadurch wird die erste Karte in voller Breite gerendert. Andere Karten in dieser Ansicht werden nicht gerendert.",
-                            "title": "Panel-Modus?"
+                            "title": "Panel-Modus?",
+                            "warning_multiple_cards": "Diese Ansicht enthält mehr als eine Karte, in einer Bedienfeldansicht kann jedoch nur eine Karte angezeigt werden."
                         }
                     }
                 },
