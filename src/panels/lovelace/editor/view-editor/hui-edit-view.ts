@@ -23,6 +23,7 @@ import { haStyleDialog } from "../../../../resources/styles";
 import "../../components/hui-entity-editor";
 import "./hui-view-editor";
 import "./hui-view-visibility-editor";
+import "../card-editor/hui-badge-preview";
 import { HomeAssistant } from "../../../../types";
 import {
   LovelaceViewConfig,
@@ -123,6 +124,20 @@ export class HuiEditView extends LitElement {
         break;
       case "tab-badges":
         content = html`
+          ${this._badges?.length
+            ? html`
+                <div class="preview-badges">
+                  ${this._badges.map((badgeConfig) => {
+                    return html`
+                    <hui-badge-preview
+                      .hass=${this.hass}
+                      .config=${badgeConfig}
+                    ></hui-card-preview>
+                  `;
+                  })}
+                </div>
+              `
+            : ""}
           <hui-entity-editor
             .hass=${this.hass}
             .entities="${this._badges}"
@@ -310,6 +325,7 @@ export class HuiEditView extends LitElement {
       return;
     }
     this._badges = processEditorEntities(ev.detail.entities);
+    this._resizeDialog();
   }
 
   private _isConfigChanged(): boolean {
@@ -372,8 +388,13 @@ export class HuiEditView extends LitElement {
           color: var(--error-color);
           border-bottom: 1px solid var(--error-color);
         }
-      </style>
-    `,
+        .preview-badges {
+          display: flex;
+          justify-content: center;
+          margin: 8px 16px;
+          flex-wrap: wrap;
+        }
+      `,
     ];
   }
 }
