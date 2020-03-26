@@ -139,7 +139,6 @@ export interface MapCardConfig extends LovelaceCardConfig {
   aspect_ratio?: string;
   default_zoom?: number;
   entities?: Array<EntityConfig | string>;
-  history_entities?: Array<EntityConfig | string>;
   hours_to_show?: number;
   geo_location_sources?: string[];
   dark_mode?: boolean;

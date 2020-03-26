@@ -5,14 +5,13 @@ import { HomeAssistant } from "../types";
 import { LocalizeFunc } from "../common/translations/localize";
 import { computeStateDisplay } from "../common/entity/compute_state_display";
 
-const DOMAINS_USE_LAST_UPDATED = ["climate", "water_heater", "sensor"];
+const DOMAINS_USE_LAST_UPDATED = ["climate", "water_heater"];
 const LINE_ATTRIBUTES_TO_KEEP = [
   "temperature",
   "current_temperature",
   "target_temp_low",
   "target_temp_high",
   "hvac_action",
-  "Location",
 ];
 
 export interface LineChartState {
@@ -56,7 +55,8 @@ export const fetchRecent = (
   entityId,
   startTime,
   endTime,
-  skipInitialState = false
+  skipInitialState = false,
+  includeLocation = false
 ): Promise<HassEntity[][]> => {
   let url = "history/period";
   if (startTime) {
@@ -68,6 +68,9 @@ export const fetchRecent = (
   }
   if (skipInitialState) {
     url += "&skip_initial_state";
+  }
+  if (includeLocation) {
+    url += "&include_location_attributes";
   }
 
   return hass.callApi("GET", url);
@@ -206,11 +209,6 @@ export const computeHistory = (
       unit = hass.config.unit_system.temperature;
     } else if (computeStateDomain(stateInfo[0]) === "water_heater") {
       unit = hass.config.unit_system.temperature;
-    } else if (
-      computeStateDomain(stateInfo[0]) === "sensor" &&
-      stateInfo[0].entity_id.match(/_geocoded_location$/) !== null
-    ) {
-      unit = "Location";
     }
 
     if (!unit) {
