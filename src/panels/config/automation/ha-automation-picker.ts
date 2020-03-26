@@ -30,12 +30,16 @@ import {
   triggerAutomation,
 } from "../../../data/automation";
 import { formatDateTime } from "../../../common/datetime/format_date_time";
-import { fireEvent } from "../../../common/dom/fire_event";
+import { fireEvent, HASSDomEvent } from "../../../common/dom/fire_event";
 import { showThingtalkDialog } from "./show-dialog-thingtalk";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { configSections } from "../ha-panel-config";
-import { DataTableColumnContainer } from "../../../components/data-table/ha-data-table";
+import {
+  DataTableColumnContainer,
+  RowClickedEvent,
+} from "../../../components/data-table/ha-data-table";
 import memoizeOne from "memoize-one";
+import { navigate } from "../../../common/navigate";
 
 @customElement("ha-automation-picker")
 class HaAutomationPicker extends LitElement {
@@ -47,13 +51,16 @@ class HaAutomationPicker extends LitElement {
 
   private _automations = memoizeOne((automations: AutomationEntity[]) => {
     return automations.map((automation) => {
-      return { ...automation, name: computeStateName(automation) };
+      return {
+        ...automation,
+        name: computeStateName(automation),
+      };
     });
   });
 
   private _columns = memoizeOne(
     (narrow: boolean, _language): DataTableColumnContainer => {
-      return {
+      const columns: DataTableColumnContainer = {
         toggle: {
           title: "",
           type: "icon",
@@ -86,28 +93,31 @@ class HaAutomationPicker extends LitElement {
             </div>
           `,
         },
-        excecute: {
+      };
+      if (!narrow) {
+        columns.excecute = {
           title: "",
           template: (_info, automation) => html`
             <mwc-button .automation=${automation} @click=${this._excecute}>
               ${this.hass.localize("ui.card.automation.trigger")}
             </mwc-button>
           `,
-        },
-        info: {
-          title: "",
-          template: (_info, automation) => html`
-            <paper-icon-button
-              .automation=${automation}
-              @click=${this._showInfo}
-              icon="hass:information-outline"
-              title="${this.hass.localize(
-                "ui.panel.config.automation.picker.show_info_automation"
-              )}"
-            ></paper-icon-button>
-          `,
-        },
+        };
+      }
+      columns.info = {
+        title: "",
+        template: (_info, automation) => html`
+          <paper-icon-button
+            .automation=${automation}
+            @click=${this._showInfo}
+            icon="hass:information-outline"
+            title="${this.hass.localize(
+              "ui.panel.config.automation.picker.show_info_automation"
+            )}"
+          ></paper-icon-button>
+        `,
       };
+      return columns;
     }
   );
 
@@ -121,6 +131,7 @@ class HaAutomationPicker extends LitElement {
         .tabs=${configSections.automation}
         .columns=${this._columns(this.narrow, this.hass.language)}
         .data=${this._automations(this.automations)}
+        id="entity_id"
         @row-click=${this._editAutomation}
       >
       </hass-tabs-subpage-data-table>
@@ -139,6 +150,7 @@ class HaAutomationPicker extends LitElement {
   }
 
   private _showInfo(ev) {
+    ev.stopPropagation();
     const entityId = ev.currentTarget.automation.entity_id;
     fireEvent(this, "hass-more-info", { entityId });
   }
@@ -148,7 +160,13 @@ class HaAutomationPicker extends LitElement {
     triggerAutomation(this.hass, entityId);
   }
 
-  private _editAutomation(ev) {}
+  private _editAutomation(ev: HASSDomEvent<RowClickedEvent>) {
+    const entityId = ev.detail.id;
+    const state = this.hass.states[entityId];
+    if (state?.attributes.id) {
+      navigate(this, `/config/automation/edit/${state.attributes.id}`);
+    }
+  }
 
   private _createNew() {
     if (!isComponentLoaded(this.hass, "cloud")) {
