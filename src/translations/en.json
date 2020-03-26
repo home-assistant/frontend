@@ -785,6 +785,10 @@
         "areas": {
           "caption": "Areas",
           "description": "Overview of all areas in your home.",
+          "data_table": {
+            "area": "Area",
+            "devices": "Devices"
+          },
           "picker": {
             "header": "Areas",
             "introduction": "Areas are used to organize where devices are. This information will be used throughout Home Assistant to help you in organizing your interface, permissions and integrations with other systems.",
@@ -1442,6 +1446,7 @@
           "unknown_error": "Unknown error",
           "name": "Name",
           "update": "Update",
+          "no_devices": "No devices",
           "automation": {
             "automations": "Automations",
             "no_automations": "No automations",
