@@ -2159,6 +2159,7 @@
                             "maximum": "Maximum",
                             "minimum": "Minimum",
                             "name": "Name",
+                            "no_theme": "Kein Theme",
                             "refresh_interval": "Aktualisierungsintervall",
                             "show_icon": "Symbol anzeigen?",
                             "show_name": "Namen anzeigen?",

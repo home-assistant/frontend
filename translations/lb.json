@@ -2265,7 +2265,10 @@
                         "move_right": "Usiicht no riets réckelen",
                         "tab_badges": "Badgen",
                         "tab_settings": "Astellungen",
-                        "tab_visibility": "Visibilitéit"
+                        "tab_visibility": "Visibilitéit",
+                        "visibility": {
+                            "select_users": "Wiel d'Benotzer aus déi dës Usiicht an der Navigatioun gesinn"
+                        }
                     },
                     "header": "UI änneren",
                     "menu": {
@@ -2312,7 +2315,8 @@
                     "view": {
                         "panel_mode": {
                             "description": "Dëst stellt déi éischt Kaart op voller Breet duer; aner Kaarte ginn net duergestallt.",
-                            "title": "Panel Modus?"
+                            "title": "Panel Modus?",
+                            "warning_multiple_cards": "Dës Usiicht enthält méi wéi eng Kaart, mee eng Panneau Usiicht kann nëmmen 1 Kaart uweisen."
                         }
                     }
                 },
@@ -2346,6 +2350,7 @@
                     "existing_cards": "Dir kënnt keng Usiicht mat Kaarten läschen. Läscht d'Kaarten fir d'éischt."
                 },
                 "warning": {
+                    "attribute_not_found": "Attribut {attribute} net disponibel an: {entity}",
                     "entity_non_numeric": "Entitéit ass net numerescher Natur: {entity}",
                     "entity_not_found": "Entitéit net erreechbar: {entity}"
                 }
