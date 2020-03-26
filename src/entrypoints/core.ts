@@ -92,12 +92,12 @@ window.hassConnection.then(({ conn }) => {
   subscribeFrontendUserData(conn, "core", noop);
 
   if (location.pathname === "/" || location.pathname.startsWith("/lovelace/")) {
-    (window as WindowWithLovelaceProm).llConfProm = fetchConfig(
-      conn,
-      null,
-      false
-    );
-    (window as WindowWithLovelaceProm).llResProm = fetchResources(conn);
+    const llWindow = window as WindowWithLovelaceProm;
+    llWindow.llConfProm = fetchConfig(conn, null, false);
+    llWindow.llConfProm.catch(() => {
+      // Ignore it, it is handled by Lovelace panel.
+    });
+    llWindow.llResProm = fetchResources(conn);
   }
 });
 
