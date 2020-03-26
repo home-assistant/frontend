@@ -77,7 +77,11 @@ export class HuiIframeCard extends LitElement implements LovelaceCard {
             "padding-top": padding,
           })}"
         >
-          <iframe src="${this._config.url}"></iframe>
+          <iframe
+            src="${this._config.url}"
+            sandbox="allow-forms allow-modals allow-popups allow-pointer-lock allow-same-origin allow-scripts"
+            allowfullscreen="true"
+          ></iframe>
         </div>
       </ha-card>
     `;
