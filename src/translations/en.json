@@ -1982,6 +1982,9 @@
             "migrate": "Migrate configuration"
           },
           "card": {
+            "custom": {
+              "description": "A custom card."
+            },
             "alarm-panel": {
               "name": "Alarm Panel",
               "available_states": "Available States",

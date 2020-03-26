@@ -23,6 +23,11 @@ import {
   calcUnusedEntities,
 } from "../../common/compute-unused-entities";
 import { UNKNOWN, UNAVAILABLE } from "../../../../data/entity";
+import {
+  getCustomCards,
+  getCustomCardEntry,
+} from "../../../../data/lovelace_custom_cards";
+import { localizeConfigFlowTitle } from "../../../../data/config_flow";
 
 const previewCards: string[] = [
   "alarm-panel",
@@ -100,6 +105,20 @@ export class HuiCardPicker extends LitElement {
         })}
       </div>
       <div class="cards-container">
+        ${getCustomCards().map((card) => {
+          return html`
+            ${until(
+              this._renderCardElement(`custom:${card.type}`, true),
+              html`
+                <div class="card spinner">
+                  <paper-spinner active alt="Loading"></paper-spinner>
+                </div>
+              `
+            )}
+          `;
+        })}
+      </div>
+      <div class="cards-container">
         <div
           class="card"
           @click="${this._cardPicked}"
@@ -116,20 +135,6 @@ export class HuiCardPicker extends LitElement {
             )}
           </div>
         </div>
-      </div>
-      <div class="cards-container">
-        ${((window as any).customCards || []).map((card) => {
-          return html`
-            ${until(
-              this._renderCardElement(`custom:${card.type}`),
-              html`
-                <div class="card spinner">
-                  <paper-spinner active alt="Loading"></paper-spinner>
-                </div>
-              `
-            )}
-          `;
-        })}
       </div>
     `;
   }
@@ -266,11 +271,7 @@ export class HuiCardPicker extends LitElement {
   ): Promise<TemplateResult> {
     let element: LovelaceCard | undefined;
     let cardConfig: LovelaceCardConfig = { type };
-    const customCard = type.startsWith("custom:")
-      ? ((window as any).customCards || []).find(
-          (card) => `custom:${card.type}` === type
-        )
-      : undefined;
+    const customCard = getCustomCardEntry(type);
 
     if (this.hass && this.lovelace) {
       cardConfig = await getCardStubConfig(
@@ -280,7 +281,7 @@ export class HuiCardPicker extends LitElement {
         this._usedEntities!
       );
 
-      if (!noElement && !(customCard && !customCard.preview)) {
+      if (!noElement || customCard?.preview) {
         element = this._createCardElement(cardConfig);
       }
     }
@@ -294,8 +295,11 @@ export class HuiCardPicker extends LitElement {
         >
           ${!element || element.tagName === "HUI-ERROR-CARD"
             ? html`
-                ${customCard && customCard.description
-                  ? customCard.description
+                ${customCard
+                  ? customCard.description ||
+                    this.hass!.localize(
+                      `ui.panel.lovelace.editor.card.custom.description`
+                    )
                   : this.hass!.localize(
                       `ui.panel.lovelace.editor.card.${cardConfig.type}.description`
                     )}
@@ -305,8 +309,8 @@ export class HuiCardPicker extends LitElement {
               `}
         </div>
         <div class="card-header">
-          ${customCard && customCard.name
-            ? `Custom: ${customCard.name}`
+          ${customCard
+            ? `Custom: ${customCard.name || customCard.type}`
             : this.hass!.localize(
                 `ui.panel.lovelace.editor.card.${cardConfig.type}.name`
               )}
