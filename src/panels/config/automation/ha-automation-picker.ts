@@ -7,7 +7,6 @@ import {
   property,
   customElement,
 } from "lit-element";
-import { ifDefined } from "lit-html/directives/if-defined";
 import "@polymer/paper-icon-button/paper-icon-button";
 import "@polymer/paper-item/paper-item-body";
 import "@polymer/paper-tooltip/paper-tooltip";
