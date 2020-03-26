@@ -105,6 +105,7 @@ class HaAutomationPicker extends LitElement {
       }
       columns.info = {
         title: "",
+        type: "icon-button",
         template: (_info, automation) => html`
           <paper-icon-button
             .automation=${automation}
@@ -114,6 +115,30 @@ class HaAutomationPicker extends LitElement {
               "ui.panel.config.automation.picker.show_info_automation"
             )}"
           ></paper-icon-button>
+        `,
+      };
+      columns.edit = {
+        title: "",
+        type: "icon-button",
+        template: (_info, automation: any) => html`
+          <paper-icon-button
+            .icon=${automation.attributes.id
+              ? "hass:pencil"
+              : "hass:pencil-off"}
+            .disabled=${!automation.attributes.id}
+            title="${this.hass.localize(
+              "ui.panel.config.automation.picker.show_info_automation"
+            )}"
+          ></paper-icon-button>
+          ${!automation.attributes.id
+            ? html`
+                <paper-tooltip position="left">
+                  ${this.hass.localize(
+                    "ui.panel.config.automation.picker.only_editable"
+                  )}
+                </paper-tooltip>
+              `
+            : ""}
         `,
       };
       return columns;
@@ -131,6 +156,9 @@ class HaAutomationPicker extends LitElement {
         .columns=${this._columns(this.narrow, this.hass.language)}
         .data=${this._automations(this.automations)}
         id="entity_id"
+        .noDataText=${this.hass.localize(
+          "ui.panel.config.automation.picker.no_automations"
+        )}
         @row-click=${this._editAutomation}
       >
       </hass-tabs-subpage-data-table>
