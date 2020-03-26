@@ -112,7 +112,6 @@ class HaAutomationPicker extends LitElement {
   );
 
   protected render(): TemplateResult {
-    console.log(this.automations);
     return html`
       <hass-tabs-subpage-data-table
         .hass=${this.hass}
