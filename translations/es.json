@@ -411,7 +411,7 @@
             },
             "automation": {
                 "last_triggered": "Última activación",
-                "trigger": "Desencadenar"
+                "trigger": "Ejecutar"
             },
             "camera": {
                 "not_available": "Imagen no disponible"
@@ -664,7 +664,7 @@
                     "min": "Valor mínimo",
                     "mode": "Modo de visualización",
                     "slider": "Control deslizante",
-                    "step": "Tamaño del paso del control deslizante",
+                    "step": "Tamaño del paso",
                     "unit_of_measurement": "Unidad de medida"
                 },
                 "input_select": {
@@ -2256,7 +2256,7 @@
                     "edit_card": {
                         "add": "Añadir tarjeta",
                         "delete": "Eliminar tarjeta",
-                        "duplicate": "Duplicar",
+                        "duplicate": "Duplicar tarjeta",
                         "edit": "Editar",
                         "header": "Configuración de la tarjeta",
                         "move": "Mover a la vista",
@@ -2334,7 +2334,7 @@
                         "panel_mode": {
                             "description": "Esto muestra la primera tarjeta a ancho completo; otras tarjetas en esta vista no se mostrarán.",
                             "title": "¿Modo de panel?",
-                            "warning_multiple_cards": "Esta vista contiene más de una tarjeta, pero la vista del panel solo puede mostrar 1 tarjeta."
+                            "warning_multiple_cards": "Esta vista contiene más de una tarjeta, pero una vista de panel solo puede mostrar 1 tarjeta."
                         }
                     }
                 },
