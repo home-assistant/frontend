@@ -530,6 +530,7 @@ class HaSidebar extends LitElement {
         overflow-x: hidden;
         scrollbar-color: var(--scrollbar-thumb-color) transparent;
         scrollbar-width: thin;
+        background: none;
       }
 
       a {

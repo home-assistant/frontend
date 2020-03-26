@@ -15,7 +15,7 @@ import "../../../layouts/hass-tabs-subpage";
 import "../../../layouts/hass-error-screen";
 import "../ha-config-section";
 
-import "./device-detail/ha-device-card";
+import "./device-detail/ha-device-info-card";
 import "./device-detail/ha-device-card-mqtt";
 import "./device-detail/ha-device-entities-card";
 import { HomeAssistant, Route } from "../../../types";
@@ -23,6 +23,7 @@ import { ConfigEntry } from "../../../data/config_entries";
 import {
   EntityRegistryEntry,
   updateEntityRegistryEntry,
+  findBatteryEntity,
 } from "../../../data/entity_registry";
 import {
   DeviceRegistryEntry,
@@ -96,6 +97,10 @@ export class HaConfigDevicePage extends LitElement {
         )
   );
 
+  private _batteryEntity = memoizeOne((entities: EntityRegistryEntry[]):
+    | EntityRegistryEntry
+    | undefined => findBatteryEntity(this.hass, entities));
+
   protected firstUpdated(changedProps) {
     super.firstUpdated(changedProps);
     loadDeviceRegistryDetailDialog();
@@ -123,6 +128,11 @@ export class HaConfigDevicePage extends LitElement {
 
     const integrations = this._integrations(device, this.entries);
     const entities = this._entities(this.deviceId, this.entities);
+    const batteryEntity = this._batteryEntity(entities);
+    const batteryState = batteryEntity
+      ? this.hass.states[batteryEntity.entity_id]
+      : undefined;
+    const areaName = this._computeAreaName(this.areas, device);
 
     return html`
       <hass-tabs-subpage
@@ -148,21 +158,58 @@ export class HaConfigDevicePage extends LitElement {
         ></paper-icon-button>
 
         <div class="container">
-          <div class="left">
-            <div class="device-info">
-              ${
-                this.narrow
-                  ? ""
-                  : html`
+          <div class="header fullwidth">              
+            ${
+              this.narrow
+                ? ""
+                : html`
+                    <div>
                       <h1>${computeDeviceName(device, this.hass)}</h1>
-                    `
-              }
-              <ha-device-card
+                      ${areaName
+                        ? this.hass.localize(
+                            "ui.panel.config.integrations.config_entry.area",
+                            "area",
+                            areaName
+                          )
+                        : ""}
+                    </div>
+                  `
+            }
+                <div class="header-right">
+                  ${
+                    batteryState
+                      ? html`
+                          <div class="battery">
+                            ${batteryState.state}%
+                            <ha-state-icon
+                              .hass=${this.hass!}
+                              .stateObj=${batteryState}
+                            ></ha-state-icon>
+                          </div>
+                        `
+                      : ""
+                  }
+                  <img
+                    src="https://deploy-preview-61--home-assistant-brands.netlify.com/${
+                      integrations[0]
+                    }/logo.png"
+                    srcset="
+                      https://deploy-preview-61--home-assistant-brands.netlify.com/${
+                        integrations[0]
+                      }/logo@2x.png 2x
+                    "
+                    @load=${this._onImageLoad}
+                    @error=${this._onImageError}
+                  />
+                </div>
+          </div>
+          <div class="left">
+              <ha-device-info-card
                 .hass=${this.hass}
                 .areas=${this.areas}
                 .devices=${this.devices}
                 .device=${device}
-              ></ha-device-card>
+              >
               ${
                 integrations.includes("mqtt")
                   ? html`
@@ -173,7 +220,7 @@ export class HaConfigDevicePage extends LitElement {
                     `
                   : html``
               }
-            </div>
+              </ha-device-info-card>
 
             ${
               entities.length
@@ -192,11 +239,20 @@ export class HaConfigDevicePage extends LitElement {
             ${
               isComponentLoaded(this.hass, "automation")
                 ? html`
-                    <ha-card
-                      .header=${this.hass.localize(
-                        "ui.panel.config.devices.automation.automations"
-                      )}
-                      >${this._related?.automation?.length
+                    <ha-card>
+                      <div class="card-header">
+                        ${this.hass.localize(
+                          "ui.panel.config.devices.automation.automations"
+                        )}
+                        <paper-icon-button
+                          @click=${this._showAutomationDialog}
+                          title=${this.hass.localize(
+                            "ui.panel.config.devices.automation.create"
+                          )}
+                          icon="hass:plus-circle"
+                        ></paper-icon-button>
+                      </div>
+                      ${this._related?.automation?.length
                         ? this._related.automation.map((automation) => {
                             const state = this.hass.states[automation];
                             return state
@@ -233,13 +289,6 @@ export class HaConfigDevicePage extends LitElement {
                               )}</paper-item
                             >
                           `}
-                      <div class="card-actions">
-                        <mwc-button @click=${this._showAutomationDialog}>
-                          ${this.hass.localize(
-                            "ui.panel.config.devices.automation.create"
-                          )}
-                        </mwc-button>
-                      </div>
                     </ha-card>
                   `
                 : ""
@@ -249,58 +298,66 @@ export class HaConfigDevicePage extends LitElement {
             ${
               isComponentLoaded(this.hass, "scene")
                 ? html`
-                    <ha-card
-                      .header=${this.hass.localize(
-                        "ui.panel.config.devices.scene.scenes"
-                      )}
-                      >${this._related?.scene?.length
-                        ? this._related.scene.map((scene) => {
-                            const state = this.hass.states[scene];
-                            return state
+                    <ha-card>
+                        <div class="card-header">
+                          ${this.hass.localize(
+                            "ui.panel.config.devices.scene.scenes"
+                          )}
+                          ${
+                            entities.length
                               ? html`
-                                  <div>
-                                    <paper-item
-                                      .scene=${state}
-                                      @click=${this._openScene}
-                                      .disabled=${!state.attributes.id}
-                                    >
-                                      <paper-item-body>
-                                        ${state.attributes.friendly_name ||
-                                          scene}
-                                      </paper-item-body>
-                                      <ha-icon-next></ha-icon-next>
-                                    </paper-item>
-                                    ${!state.attributes.id
-                                      ? html`
-                                          <paper-tooltip
-                                            >${this.hass.localize(
-                                              "ui.panel.config.devices.cant_edit"
-                                            )}
-                                          </paper-tooltip>
-                                        `
-                                      : ""}
-                                  </div>
+                                  <paper-icon-button
+                                    @click=${this._createScene}
+                                    title=${this.hass.localize(
+                                      "ui.panel.config.devices.scene.create"
+                                    )}
+                                    icon="hass:plus-circle"
+                                  ></paper-icon-button>
                                 `
-                              : "";
-                          })
-                        : html`
-                            <paper-item class="no-link"
-                              >${this.hass.localize(
-                                "ui.panel.config.devices.scene.no_scenes"
-                              )}</paper-item
-                            >
-                          `}
-                      ${entities.length
-                        ? html`
-                            <div class="card-actions">
-                              <mwc-button @click=${this._createScene}>
-                                ${this.hass.localize(
-                                  "ui.panel.config.devices.scene.create"
-                                )}
-                              </mwc-button>
-                            </div>
-                          `
-                        : ""}
+                              : ""
+                          }
+                        </div>
+
+                        ${
+                          this._related?.scene?.length
+                            ? this._related.scene.map((scene) => {
+                                const state = this.hass.states[scene];
+                                return state
+                                  ? html`
+                                      <div>
+                                        <paper-item
+                                          .scene=${state}
+                                          @click=${this._openScene}
+                                          .disabled=${!state.attributes.id}
+                                        >
+                                          <paper-item-body>
+                                            ${state.attributes.friendly_name ||
+                                              scene}
+                                          </paper-item-body>
+                                          <ha-icon-next></ha-icon-next>
+                                        </paper-item>
+                                        ${!state.attributes.id
+                                          ? html`
+                                              <paper-tooltip
+                                                >${this.hass.localize(
+                                                  "ui.panel.config.devices.cant_edit"
+                                                )}
+                                              </paper-tooltip>
+                                            `
+                                          : ""}
+                                      </div>
+                                    `
+                                  : "";
+                              })
+                            : html`
+                                <paper-item class="no-link"
+                                  >${this.hass.localize(
+                                    "ui.panel.config.devices.scene.no_scenes"
+                                  )}</paper-item
+                                >
+                              `
+                        }
+                      </ha-card>
                     </ha-card>
                   `
                 : ""
@@ -308,11 +365,20 @@ export class HaConfigDevicePage extends LitElement {
               ${
                 isComponentLoaded(this.hass, "script")
                   ? html`
-                      <ha-card
-                        .header=${this.hass.localize(
-                          "ui.panel.config.devices.script.scripts"
-                        )}
-                        >${this._related?.script?.length
+                      <ha-card>
+                        <div class="card-header">
+                          ${this.hass.localize(
+                            "ui.panel.config.devices.script.scripts"
+                          )}
+                          <paper-icon-button
+                            @click=${this._showScriptDialog}
+                            title=${this.hass.localize(
+                              "ui.panel.config.devices.script.create"
+                            )}
+                            icon="hass:plus-circle"
+                          ></paper-icon-button>
+                        </div>
+                        ${this._related?.script?.length
                           ? this._related.script.map((script) => {
                               const state = this.hass.states[script];
                               return state
@@ -337,13 +403,6 @@ export class HaConfigDevicePage extends LitElement {
                                 )}</paper-item
                               >
                             `}
-                        <div class="card-actions">
-                          <mwc-button @click=${this._showScriptDialog}>
-                            ${this.hass.localize(
-                              "ui.panel.config.devices.script.create"
-                            )}
-                          </mwc-button>
-                        </div>
                       </ha-card>
                     `
                   : ""
@@ -361,6 +420,21 @@ export class HaConfigDevicePage extends LitElement {
     }
     const state = this.hass.states[entity.entity_id];
     return state ? computeStateName(state) : null;
+  }
+
+  private _computeAreaName(areas, device): string | undefined {
+    if (!areas || !device || !device.area_id) {
+      return undefined;
+    }
+    return areas.find((area) => area.area_id === device.area_id).name;
+  }
+
+  private _onImageLoad(ev) {
+    ev.target.style.display = "inline-block";
+  }
+
+  private _onImageError(ev) {
+    ev.target.style.display = "none";
   }
 
   private async _findRelated() {
@@ -478,6 +552,18 @@ export class HaConfigDevicePage extends LitElement {
         margin-bottom: 32px;
       }
 
+      .card-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+
+      .card-header paper-icon-button {
+        margin-right: -8px;
+        color: var(--primary-color);
+        height: auto;
+      }
+
       .device-info {
         padding: 16px;
       }
@@ -486,7 +572,7 @@ export class HaConfigDevicePage extends LitElement {
       }
 
       h1 {
-        margin-top: 0;
+        margin: 0;
         font-family: var(--paper-font-headline_-_font-family);
         -webkit-font-smoothing: var(
           --paper-font-headline_-_-webkit-font-smoothing
@@ -496,6 +582,11 @@ export class HaConfigDevicePage extends LitElement {
         letter-spacing: var(--paper-font-headline_-_letter-spacing);
         line-height: var(--paper-font-headline_-_line-height);
         opacity: var(--dark-primary-opacity);
+      }
+
+      .header {
+        display: flex;
+        justify-content: space-between;
       }
 
       .left,
@@ -520,10 +611,38 @@ export class HaConfigDevicePage extends LitElement {
         width: 100%;
       }
 
+      .header-right {
+        align-self: center;
+      }
+
+      .header-right img {
+        height: 30px;
+      }
+
+      .header-right {
+        display: flex;
+      }
+
+      .header-right:first-child {
+        width: 100%;
+        justify-content: flex-end;
+      }
+
+      .header-right > *:not(:first-child) {
+        margin-left: 16px;
+      }
+
+      .battery {
+        align-self: center;
+        align-items: center;
+        display: flex;
+      }
+
       .column {
         width: 50%;
       }
 
+      .left > *:not(:first-child),
       .column > *:not(:first-child) {
         margin-top: 16px;
       }
@@ -532,10 +651,6 @@ export class HaConfigDevicePage extends LitElement {
       :host([narrow]) .right,
       :host([narrow]) .column {
         width: 100%;
-      }
-
-      :host([narrow]) .container > *:first-child {
-        padding-top: 0;
       }
 
       :host([narrow]) .container {
