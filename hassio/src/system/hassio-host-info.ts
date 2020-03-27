@@ -108,9 +108,7 @@ class HassioHostInfo extends LitElement {
             : ""}
           ${this.hostInfo.version !== this.hostInfo.version_latest
             ? html`
-                <ha-call-api-button
-                  .hass=${this.hass}
-                  path="hassio/os/update"
+                <ha-call-api-button .hass=${this.hass} path="hassio/os/update"
                   >Update</ha-call-api-button
                 >
               `
