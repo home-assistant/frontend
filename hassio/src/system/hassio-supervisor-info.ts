@@ -41,7 +41,7 @@ class HassioSupervisorInfo extends LitElement {
               </tr>
               <tr>
                 <td>Latest version</td>
-                <td>${this.supervisorInfo.last_version}</td>
+                <td>${this.supervisorInfo.version_latest}</td>
               </tr>
               ${this.supervisorInfo.channel !== "stable"
                 ? html`
@@ -63,7 +63,7 @@ class HassioSupervisorInfo extends LitElement {
           <ha-call-api-button .hass=${this.hass} path="hassio/supervisor/reload"
             >Reload</ha-call-api-button
           >
-          ${this.supervisorInfo.version !== this.supervisorInfo.last_version
+          ${this.supervisorInfo.version !== this.supervisorInfo.version_latest
             ? html`
                 <ha-call-api-button
                   .hass=${this.hass}
