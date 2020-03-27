@@ -107,7 +107,7 @@ class HassioAddonInfo extends LitElement {
                 <hassio-card-content
                   .hass=${this.hass}
                   .title="${this.addon.name} ${this.addon
-                    .last_version} is available"
+                    .version_latest} is available"
                   .description="You are currently running version ${this.addon
                     .version}"
                   icon="hassio:arrow-up-bold-circle"
@@ -179,7 +179,7 @@ class HassioAddonInfo extends LitElement {
                         `}
                   `
                 : html`
-                    ${this.addon.last_version}
+                    ${this.addon.version_latest}
                   `}
             </div>
           </div>
@@ -636,7 +636,7 @@ class HassioAddonInfo extends LitElement {
       this.addon &&
       !this.addon.detached &&
       this.addon.version &&
-      this.addon.version !== this.addon.last_version
+      this.addon.version !== this.addon.version_latest
     );
   }
 
