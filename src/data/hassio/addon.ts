@@ -29,7 +29,7 @@ export interface HassioAddonDetails extends HassioAddonInfo {
   arch: "armhf" | "aarch64" | "i386" | "amd64";
   machine: any;
   homeassistant: string;
-  last_version: string;
+  version_latest: string;
   boot: "auto" | "manual";
   build: boolean;
   options: object;
