@@ -1982,9 +1982,6 @@
             "migrate": "Migrate configuration"
           },
           "card": {
-            "custom": {
-              "description": "A custom card."
-            },
             "alarm-panel": {
               "name": "Alarm Panel",
               "available_states": "Available States",
@@ -2145,6 +2142,10 @@
               "description": "This renders the first card at full width; other cards in this view will not be rendered.",
               "warning_multiple_cards": "This view contains more than one card, but a panel view can only show 1 card."
             }
+          },
+          "cardpicker": {
+            "no_description": "No description available.",
+            "custom_card": "Custom"
           }
         },
         "warning": {

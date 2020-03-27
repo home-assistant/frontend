@@ -9,15 +9,13 @@ export interface CustomCardsWindow {
   customCards?: CustomCardEntry[];
 }
 
-export const getCustomCards = () => {
-  return ((window as CustomCardsWindow).customCards || []).filter((card) => {
-    return card.type !== undefined;
-  });
-};
+const customCardsWindow = window as CustomCardsWindow;
 
-export const getCustomCardEntry = (type: string) => {
-  if (type.startsWith("custom:")) {
-    return getCustomCards().find((card) => `custom:${card.type}` === type);
-  }
-  return undefined;
-};
+if (!("customCards" in customCardsWindow)) {
+  customCardsWindow.customCards = [];
+}
+
+export const customCards = customCardsWindow.customCards!;
+
+export const getCustomCardEntry = (type: string) =>
+  customCards.find((card) => `custom:${card.type}` === type);
