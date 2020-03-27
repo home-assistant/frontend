@@ -100,7 +100,7 @@ class HassioHostInfo extends LitElement {
                 <ha-call-api-button
                   class="warning"
                   .hass=${this.hass}
-                  path="hassio/hassos/config/sync"
+                  path="hassio/os/config/sync"
                   title="Load HassOS configs or updates from USB"
                   >Import from USB</ha-call-api-button
                 >
@@ -110,7 +110,7 @@ class HassioHostInfo extends LitElement {
             ? html`
                 <ha-call-api-button
                   .hass=${this.hass}
-                  path="hassio/hassos/update"
+                  path="hassio/os/update"
                   >Update</ha-call-api-button
                 >
               `
