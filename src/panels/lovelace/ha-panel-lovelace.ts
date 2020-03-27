@@ -326,6 +326,7 @@ class LovelacePanel extends LitElement {
       config,
       mode,
       editMode: this.lovelace ? this.lovelace.editMode : false,
+      rebuild: true,
       language: this.hass!.language,
       enableFullEditMode: () => {
         if (!editorLoaded) {
@@ -344,7 +345,10 @@ class LovelacePanel extends LitElement {
           mode: this.panel!.config.mode,
         });
       },
-      saveConfig: async (newConfig: LovelaceConfig): Promise<void> => {
+      saveConfig: async (
+        newConfig: LovelaceConfig,
+        rebuild = true
+      ): Promise<void> => {
         const { config: previousConfig, mode: previousMode } = this.lovelace!;
         newConfig = this._checkLovelaceConfig(newConfig);
         try {
@@ -352,6 +356,7 @@ class LovelacePanel extends LitElement {
           this._updateLovelace({
             config: newConfig,
             mode: "storage",
+            rebuild,
           });
           this._ignoreNextUpdateEvent = true;
           await saveConfig(this.hass!, urlPath, newConfig);
@@ -362,6 +367,7 @@ class LovelacePanel extends LitElement {
           this._updateLovelace({
             config: previousConfig,
             mode: previousMode,
+            rebuild: true,
           });
           throw err;
         }

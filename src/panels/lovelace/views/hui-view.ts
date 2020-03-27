@@ -512,7 +512,7 @@ export class HUIView extends LitElement {
       views,
     };
 
-    this.lovelace!.saveConfig(lovelace.config);
+    this.lovelace!.saveConfig(lovelace.config, false);
   }
 
   private _attachObserver(): void {
