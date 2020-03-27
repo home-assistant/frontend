@@ -2143,6 +2143,7 @@
                             "icon_height": "Héicht vun der Ikon",
                             "image": "Wee zum Bild",
                             "manual": "Manuell",
+                            "manual_description": "Muss Du eng personaliséiert Kaart bäifügen oder wëlls de Yaml manuell schreiwen?",
                             "maximum": "Maximum",
                             "minimum": "Minimum",
                             "name": "Numm",
@@ -2163,6 +2164,7 @@
                             "name": "Usiicht"
                         },
                         "history-graph": {
+                            "description": "D'Verlaf's Grafik Kaart erlaabt Iech eng Grafik fir all eenzel opgelëschten Entitéiten unzeweisen.",
                             "name": "Verlaf Diagramm"
                         },
                         "horizontal-stack": {
@@ -2195,6 +2197,7 @@
                             "name": "Medie Kontroll"
                         },
                         "picture-elements": {
+                            "description": "D'Picture Elements Kaart ass eng vun de villsäitegsten Aarte vu Kaarten. D'Kaarten erlaben Iech Ikonen oder Text ze positionéieren a souguer Servicer! Op engem Bild wat op Koordinate baséiert.",
                             "name": "Biller Elementer"
                         },
                         "picture-entity": {
@@ -2202,9 +2205,11 @@
                             "name": "Biller Entitéit"
                         },
                         "picture-glance": {
+                            "description": "D'Picture Glance Kaart weist e Bild an entspriechend Entitéiten Zoustänn als Ikon un. D'Entitéiten op der rietser Säit erlaben et Aktiounen auszeféieren, oder anerer weise méi Informatioun un.",
                             "name": "Biller Usiicht"
                         },
                         "picture": {
+                            "description": "D'Foto Kaart erlaabt Iech e Bild ze setze fir als Navigatioun ze benotze fir op verschidde Weeër an Ärem Interface oder e Service op ze ruffen.",
                             "name": "Bild"
                         },
                         "plant-status": {
