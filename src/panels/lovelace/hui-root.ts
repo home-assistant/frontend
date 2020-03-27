@@ -529,7 +529,9 @@ class HUIRoot extends LitElement {
           newSelectView = 0;
         }
         // On edit mode change, recreate the current view from scratch
-        force = true;
+        force = this.lovelace!.rebuild;
+        // Recalculate to see if we need to adjust content area for tab bar
+        fireEvent(this, "iron-resize");
       }
     }
 
