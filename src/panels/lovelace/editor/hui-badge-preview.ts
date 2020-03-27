@@ -60,11 +60,7 @@ export class HuiBadgePreview extends HTMLElement {
 
     // in case the element was an error element we always want to recreate it
     if (!this._error && curConfig && configValue.type === curConfig.type) {
-      try {
-        this._element.setConfig(configValue);
-      } catch (err) {
-        this._createBadge(createErrorBadgeConfig(err.message));
-      }
+      this._element.setConfig(configValue);
     } else {
       this._createBadge(configValue);
     }
