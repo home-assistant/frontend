@@ -537,9 +537,11 @@
         "common": {
             "cancel": "Cancel",
             "close": "Close",
+            "delete": "Delete",
             "loading": "Loading",
             "no": "No",
             "save": "Save",
+            "successfully_deleted": "Successfully deleted",
             "successfully_saved": "Successfully saved",
             "yes": "Yes"
         },
