@@ -18,7 +18,7 @@ import { LovelaceElementConfig, LovelaceElement } from "../elements/types";
 import { LovelaceRow, LovelaceRowConfig } from "../entity-rows/types";
 import { LovelaceHeaderFooterConfig } from "../header-footer/types";
 
-const CUSTOM_TYPE_PREFIX = "custom:";
+export const CUSTOM_TYPE_PREFIX = "custom:";
 const TIMEOUT = 2000;
 
 interface CreateElementConfigTypes {

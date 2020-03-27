@@ -18,4 +18,4 @@ if (!("customCards" in customCardsWindow)) {
 export const customCards = customCardsWindow.customCards!;
 
 export const getCustomCardEntry = (type: string) =>
-  customCards.find((card) => `custom:${card.type}` === type);
+  customCards.find((card) => card.type === type);

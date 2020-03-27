@@ -27,6 +27,7 @@ import {
   customCards,
   getCustomCardEntry,
 } from "../../../../data/lovelace_custom_cards";
+import { CUSTOM_TYPE_PREFIX } from "../../create-element/create-element-base";
 
 const previewCards: string[] = [
   "alarm-panel",
@@ -109,7 +110,7 @@ export class HuiCardPicker extends LitElement {
               ${customCards.map((card) => {
                 return html`
                   ${until(
-                    this._renderCardElement(`custom:${card.type}`, true),
+                    this._renderCardElement(card.type, true, true),
                     html`
                       <div class="card spinner">
                         <paper-spinner active alt="Loading"></paper-spinner>
@@ -270,11 +271,16 @@ export class HuiCardPicker extends LitElement {
 
   private async _renderCardElement(
     type: string,
-    noElement: boolean = false
+    noElement: boolean = false,
+    isCustom: boolean = false
   ): Promise<TemplateResult> {
+    const customCard = isCustom ? getCustomCardEntry(type) : undefined;
+    if (isCustom) {
+      type = `${CUSTOM_TYPE_PREFIX}${type}`;
+    }
+
     let element: LovelaceCard | undefined;
     let cardConfig: LovelaceCardConfig = { type };
-    const customCard = getCustomCardEntry(type);
 
     if (this.hass && this.lovelace) {
       cardConfig = await getCardStubConfig(
@@ -296,16 +302,16 @@ export class HuiCardPicker extends LitElement {
             description: !element || element.tagName === "HUI-ERROR-CARD",
           })}"
         >
-          ${!element || element.tagName === "HUI-ERROR-CARD"
-            ? customCard
-              ? customCard.description ||
-                this.hass!.localize(
-                  `ui.panel.lovelace.editor.cardpicker.no_description`
-                )
-              : this.hass!.localize(
-                  `ui.panel.lovelace.editor.card.${cardConfig.type}.description`
-                )
-            : element}
+          ${element && element.tagName !== "HUI-ERROR-CARD"
+            ? element
+            : customCard
+            ? customCard.description ||
+              this.hass!.localize(
+                `ui.panel.lovelace.editor.cardpicker.no_description`
+              )
+            : this.hass!.localize(
+                `ui.panel.lovelace.editor.card.${cardConfig.type}.description`
+              )}
         </div>
         <div class="card-header">
           ${customCard
