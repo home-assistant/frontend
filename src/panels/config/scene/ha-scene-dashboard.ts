@@ -8,14 +8,10 @@ import {
   customElement,
 } from "lit-element";
 import "@polymer/paper-icon-button/paper-icon-button";
-import "@polymer/paper-item/paper-item-body";
 import "@polymer/paper-tooltip/paper-tooltip";
-import "../../../layouts/hass-tabs-subpage";
+import "../../../layouts/hass-tabs-subpage-data-table";
 
-import "../../../components/ha-card";
 import "../../../components/ha-fab";
-
-import "../ha-config-section";
 
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import { computeRTL } from "../../../common/util/compute_rtl";
@@ -180,34 +176,6 @@ class HaSceneDashboard extends LitElement {
     return [
       haStyle,
       css`
-        :host {
-          display: block;
-          height: 100%;
-        }
-
-        ha-card {
-          margin-bottom: 56px;
-        }
-
-        .scene {
-          display: flex;
-          flex-direction: horizontal;
-          align-items: center;
-          padding: 0 8px 0 16px;
-        }
-
-        .scene > *:first-child {
-          margin-right: 8px;
-        }
-
-        .scene a[href] {
-          color: var(--primary-text-color);
-        }
-
-        .actions {
-          display: flex;
-        }
-
         ha-fab {
           position: fixed;
           bottom: 16px;
