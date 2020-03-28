@@ -17,7 +17,11 @@ import "../../../components/ha-card";
 import "../../../components/ha-icon";
 import "../components/hui-warning";
 
-import { LovelaceCard, LovelaceCardEditor } from "../types";
+import {
+  LovelaceCard,
+  LovelaceCardEditor,
+  LovelaceHeaderFooter,
+} from "../types";
 import { HomeAssistant } from "../../../types";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { EntityCardConfig } from "./types";
@@ -25,9 +29,9 @@ import { hasConfigOrEntityChanged } from "../common/has-changed";
 import { actionHandler } from "../common/directives/action-handler-directive";
 import { isValidEntityId } from "../../../common/entity/valid_entity_id";
 import { findEntities } from "../common/find-entites";
-import { LovelaceHeaderFooterConfig } from "../header-footer/types";
 import { createHeaderFooterElement } from "../create-element/create-header-footer-element";
 import { UNKNOWN, UNAVAILABLE } from "../../../data/entity";
+import { HuiErrorCard } from "./hui-error-card";
 
 @customElement("hui-entity-card")
 class HuiEntityCard extends LitElement implements LovelaceCard {
@@ -60,6 +64,7 @@ class HuiEntityCard extends LitElement implements LovelaceCard {
 
   @property() public hass?: HomeAssistant;
   @property() private _config?: EntityCardConfig;
+  private _footerElement?: HuiErrorCard | LovelaceHeaderFooter;
 
   public setConfig(config: EntityCardConfig): void {
     if (config.entity && !isValidEntityId(config.entity)) {
@@ -67,6 +72,10 @@ class HuiEntityCard extends LitElement implements LovelaceCard {
     }
 
     this._config = config;
+
+    if (this._config.footer) {
+      this._footerElement = createHeaderFooterElement(this._config.footer);
+    }
   }
 
   public getCardSize(): number {
@@ -92,11 +101,9 @@ class HuiEntityCard extends LitElement implements LovelaceCard {
       `;
     }
 
-    const showUnit =
-      (!this._config.attribute &&
-        stateObj.state !== UNKNOWN &&
-        stateObj.state !== UNAVAILABLE) ||
-      (this._config.attribute && stateObj.attributes[this._config.attribute]);
+    const showUnit = this._config.attribute
+      ? Boolean(stateObj.attributes[this._config.attribute])
+      : stateObj.state !== UNKNOWN && stateObj.state !== UNAVAILABLE;
 
     return html`
       <ha-card
@@ -104,9 +111,9 @@ class HuiEntityCard extends LitElement implements LovelaceCard {
         .actionHandler=${actionHandler()}
         tabindex="0"
       >
-        <div class="flex header">
+        <div class="header">
           <div class="name">
-            <span>${this._config.name || computeStateName(stateObj)}</span>
+            ${this._config.name || computeStateName(stateObj)}
           </div>
           <div class="icon">
             <ha-icon
@@ -114,24 +121,24 @@ class HuiEntityCard extends LitElement implements LovelaceCard {
             ></ha-icon>
           </div>
         </div>
-        <div class="flex info">
-          <span id="value"
+        <div class="info">
+          <span class="value"
             >${this._config.attribute
               ? stateObj.attributes[this._config.attribute] ||
                 this.hass.localize("state.default.unknown")
               : stateObj.state}</span
           >${showUnit
             ? html`
-                <span id="measurement"
+                <span class="measurement"
                   >${this._config.unit ||
-                    stateObj.attributes.unit_of_measurement}</span
+                    (this._config.attribute
+                      ? ""
+                      : stateObj.attributes.unit_of_measurement)}</span
                 >
               `
             : ""}
         </div>
-        ${this._config.footer
-          ? this.renderHeaderFooter(this._config.footer, "footer")
-          : ""}
+        ${this._footerElement}
       </ha-card>
     `;
   }
@@ -159,19 +166,10 @@ class HuiEntityCard extends LitElement implements LovelaceCard {
     ) {
       applyThemesOnElement(this, this.hass.themes, this._config!.theme);
     }
-  }
 
-  private renderHeaderFooter(
-    conf: LovelaceHeaderFooterConfig,
-    className: string
-  ): TemplateResult {
-    const element = createHeaderFooterElement(conf);
-    if (this.hass) {
-      element.hass = this.hass;
+    if (this._footerElement) {
+      this._footerElement.hass = this.hass;
     }
-    return html`
-      <div class=${"header-footer " + className}>${element}</div>
-    `;
   }
 
   private _handleClick(): void {
@@ -181,55 +179,22 @@ class HuiEntityCard extends LitElement implements LovelaceCard {
   static get styles(): CSSResult {
     return css`
       :host {
-        display: flex;
-        flex-direction: column;
-      }
-
-      ha-card {
-        display: flex;
-        flex-direction: column;
-        flex: 1;
-        position: relative;
         cursor: pointer;
-        overflow: hidden;
-      }
-
-      ha-card:focus {
-        outline: none;
-        background: var(--divider-color);
-      }
-
-      .flex {
-        display: flex;
       }
 
       .header {
-        margin: 8px 16px 0;
+        display: flex;
+        padding: 8px 16px 0;
         justify-content: space-between;
       }
 
       .name {
-        align-items: center;
-        display: flex;
-        min-width: 0;
         opacity: 0.8;
-        position: relative;
-      }
-
-      .name > span {
-        display: block;
-        display: -webkit-box;
-        font-size: 1.2rem;
+        line-height: 40px;
         font-weight: 500;
-        max-height: 1.4rem;
-        top: 2px;
-        opacity: 0.8;
+        font-size: 16px;
         overflow: hidden;
         text-overflow: ellipsis;
-        -webkit-line-clamp: 1;
-        -webkit-box-orient: vertical;
-        word-wrap: break-word;
-        word-break: break-all;
       }
 
       .icon {
@@ -238,26 +203,18 @@ class HuiEntityCard extends LitElement implements LovelaceCard {
       }
 
       .info {
-        flex-wrap: wrap;
-        margin: 0 16px 16px;
+        padding: 0px 16px 16px;
+        margin-top: -4px;
       }
 
-      #value {
-        display: inline-block;
-        font-size: 2rem;
-        font-weight: 400;
-        line-height: 1em;
+      .value {
+        font-size: 28px;
         margin-right: 4px;
       }
 
-      #measurement {
-        align-self: flex-end;
-        display: inline-block;
-        font-size: 1.3rem;
-        line-height: 1.2em;
-        margin-top: 0.1em;
+      .measurement {
+        font-size: 18px;
         opacity: 0.6;
-        vertical-align: bottom;
       }
     `;
   }
