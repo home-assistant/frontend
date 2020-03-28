@@ -26,6 +26,14 @@ import { HomeAssistant, Route } from "../../../types";
 import { triggerScript } from "../../../data/script";
 import { showToast } from "../../../util/toast";
 import { configSections } from "../ha-panel-config";
+import { navigate } from "../../../common/navigate";
+import { fireEvent, HASSDomEvent } from "../../../common/dom/fire_event";
+import {
+  RowClickedEvent,
+  DataTableColumnContainer,
+} from "../../../components/data-table/ha-data-table";
+import memoizeOne from "memoize-one";
+import { formatDateTime } from "../../../common/datetime/format_date_time";
 
 @customElement("ha-script-picker")
 class HaScriptPicker extends LitElement {
@@ -35,91 +43,117 @@ class HaScriptPicker extends LitElement {
   @property() public narrow!: boolean;
   @property() public route!: Route;
 
+  private _scripts = memoizeOne((scripts: HassEntity[]) => {
+    return scripts.map((script) => {
+      return {
+        ...script,
+        name: computeStateName(script),
+      };
+    });
+  });
+
+  private _columns = memoizeOne(
+    (_language): DataTableColumnContainer => {
+      return {
+        activate: {
+          title: "",
+          type: "icon-button",
+          template: (_toggle, script) =>
+            html`
+              <paper-icon-button
+                .script=${script}
+                icon="hass:play"
+                title="${this.hass.localize(
+                  "ui.panel.config.script.picker.activate_script"
+                )}"
+                @click=${(ev: Event) => this._runScript(ev)}
+              ></paper-icon-button>
+            `,
+        },
+        name: {
+          title: this.hass.localize(
+            "ui.panel.config.script.picker.headers.name"
+          ),
+          sortable: true,
+          filterable: true,
+          direction: "asc",
+          grows: true,
+          template: (name, script: any) => html`
+            ${name}
+            <div class="secondary">
+              ${this.hass.localize("ui.card.automation.last_triggered")}:
+              ${script.attributes.last_triggered
+                ? formatDateTime(
+                    new Date(script.attributes.last_triggered),
+                    this.hass.language
+                  )
+                : this.hass.localize("ui.components.relative_time.never")}
+            </div>
+          `,
+        },
+        info: {
+          title: "",
+          type: "icon-button",
+          template: (_info, script) => html`
+            <paper-icon-button
+              .script=${script}
+              @click=${this._showInfo}
+              icon="hass:information-outline"
+              title="${this.hass.localize(
+                "ui.panel.config.script.picker.show_info"
+              )}"
+            ></paper-icon-button>
+          `,
+        },
+        edit: {
+          title: "",
+          type: "icon-button",
+          template: (_info) => html`
+            <paper-icon-button
+              icon="hass:pencil"
+              title="${this.hass.localize(
+                "ui.panel.config.script.picker.edit_script"
+              )}"
+            ></paper-icon-button>
+          `,
+        },
+      };
+    }
+  );
+
   protected render(): TemplateResult {
     return html`
-      <hass-tabs-subpage
+      <hass-tabs-subpage-data-table
         .hass=${this.hass}
         .narrow=${this.narrow}
         back-path="/config"
         .route=${this.route}
         .tabs=${configSections.automation}
+        .columns=${this._columns(this.hass.language)}
+        .data=${this._scripts(this.scripts)}
+        id="entity_id"
+        .noDataText=${this.hass.localize(
+          "ui.panel.config.script.picker.no_scripts"
+        )}
+        @row-click=${this._editScript}
       >
-        <ha-config-section .isWide=${this.isWide}>
-          <div slot="header">
-            ${this.hass.localize("ui.panel.config.script.picker.header")}
-          </div>
-          <div slot="introduction">
-            ${this.hass.localize("ui.panel.config.script.picker.introduction")}
-            <p>
-              <a
-                href="https://home-assistant.io/docs/scripts/editor/"
-                target="_blank"
-                rel="noreferrer"
-              >
-                ${this.hass.localize(
-                  "ui.panel.config.script.picker.learn_more"
-                )}
-              </a>
-            </p>
-          </div>
-
-          <ha-card>
-            ${this.scripts.length === 0
-              ? html`
-                  <div class="card-content">
-                    <p>
-                      ${this.hass.localize(
-                        "ui.panel.config.script.picker.no_scripts"
-                      )}
-                    </p>
-                  </div>
-                `
-              : this.scripts.map(
-                  (script) => html`
-                    <div class="script">
-                      <paper-icon-button
-                        .script=${script}
-                        icon="hass:play"
-                        title="${this.hass.localize(
-                          "ui.panel.config.script.picker.trigger_script"
-                        )}"
-                        @click=${this._runScript}
-                      ></paper-icon-button>
-                      <paper-item-body two-line>
-                        <div>${computeStateName(script)}</div>
-                      </paper-item-body>
-                      <div class="actions">
-                        <a href=${`/config/script/edit/${script.entity_id}`}>
-                          <paper-icon-button
-                            icon="hass:pencil"
-                            title="${this.hass.localize(
-                              "ui.panel.config.script.picker.edit_script"
-                            )}"
-                          ></paper-icon-button>
-                        </a>
-                      </div>
-                    </div>
-                  `
-                )}
-          </ha-card>
-        </ha-config-section>
-
-        <a href="/config/script/new">
-          <ha-fab
-            ?is-wide=${this.isWide}
-            ?narrow=${this.narrow}
-            icon="hass:plus"
-            title="${this.hass.localize(
-              "ui.panel.config.script.picker.add_script"
-            )}"
-            ?rtl=${computeRTL(this.hass)}
-          ></ha-fab>
-        </a>
-      </hass-tabs-subpage>
+      </hass-tabs-subpage-data-table>
+      <a href="/config/script/new">
+        <ha-fab
+          ?is-wide=${this.isWide}
+          ?narrow=${this.narrow}
+          icon="hass:plus"
+          title="${this.hass.localize(
+            "ui.panel.config.script.picker.add_script"
+          )}"
+          ?rtl=${computeRTL(this.hass)}
+        ></ha-fab>
+      </a>
     `;
   }
 
   private async _runScript(ev) {
+    ev.stopPropagation();
     const script = ev.currentTarget.script as HassEntity;
     await triggerScript(this.hass, script.entity_id);
     showToast(this, {
@@ -131,38 +165,22 @@ class HaScriptPicker extends LitElement {
     });
   }
 
+  private _showInfo(ev) {
+    ev.stopPropagation();
+    const entityId = ev.currentTarget.script.entity_id;
+    fireEvent(this, "hass-more-info", { entityId });
+  }
+
+  private _editScript(ev: HASSDomEvent<RowClickedEvent>) {
+    const entityId = ev.detail.id;
+    const state = this.hass.states[entityId];
+    navigate(this, `/config/script/edit/${state.entity_id}`);
+  }
+
   static get styles(): CSSResultArray {
     return [
       haStyle,
       css`
-        :host {
-          display: block;
-        }
-
-        ha-card {
-          margin-bottom: 56px;
-        }
-
-        .script {
-          display: flex;
-          flex-direction: horizontal;
-          align-items: center;
-          padding: 0 8px 0 16px;
-        }
-
-        .script > *:first-child {
-          margin-right: 8px;
-        }
-
-        .script a[href],
-        paper-icon-button {
-          color: var(--primary-text-color);
-        }
-
-        .actions {
-          display: flex;
-        }
-
         ha-fab {
           position: fixed;
           bottom: 16px;
@@ -186,10 +204,6 @@ class HaScriptPicker extends LitElement {
           bottom: 24px;
           right: auto;
           left: 24px;
-        }
-
-        a {
-          color: var(--primary-color);
         }
       `,
     ];

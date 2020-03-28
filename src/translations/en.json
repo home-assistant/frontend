@@ -1230,7 +1230,10 @@
             "no_scripts": "We couldn’t find any editable scripts",
             "add_script": "Add script",
             "trigger_script": "Trigger script",
-            "edit_script": "Edit script"
+            "edit_script": "Edit script",
+            "headers": {
+              "name": "Name"
+            }
           },
           "editor": {
             "alias": "Name",
