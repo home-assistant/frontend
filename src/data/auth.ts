@@ -25,3 +25,16 @@ export const fetchAuthProviders = () =>
   fetch("/auth/providers", {
     credentials: "same-origin",
   });
+
+export const createAuthUser = async (
+  hass: HomeAssistant,
+  userId: string,
+  username: string,
+  password: string
+) =>
+  hass.callWS({
+    type: "config/auth_provider/homeassistant/create",
+    user_id: userId,
+    username,
+    password,
+  });

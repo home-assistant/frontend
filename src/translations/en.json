@@ -1222,8 +1222,12 @@
             "learn_more": "Learn more about scripts",
             "no_scripts": "We couldn’t find any editable scripts",
             "add_script": "Add script",
+            "show_info": "Show info about script",
             "trigger_script": "Trigger script",
-            "edit_script": "Edit script"
+            "edit_script": "Edit script",
+            "headers": {
+              "name": "Name"
+            }
           },
           "editor": {
             "alias": "Name",
@@ -1650,16 +1654,16 @@
           "caption": "Users",
           "description": "Manage users",
           "picker": {
-            "title": "Users",
-            "system_generated": "System generated"
+            "headers": { "name": "Name", "group": "Group", "system": "System" }
           },
           "editor": {
             "caption": "View user",
-            "rename_user": "Rename user",
+            "name": "Name",
             "change_password": "Change password",
             "activate_user": "Activate user",
             "deactivate_user": "Deactivate user",
             "delete_user": "Delete user",
+            "update_user": "Update",
             "id": "ID",
             "owner": "Owner",
             "group": "Group",
@@ -1667,9 +1671,6 @@
             "system_generated": "System generated",
             "system_generated_users_not_removable": "Unable to remove system generated users.",
             "unnamed_user": "Unnamed User",
-            "enter_new_name": "Enter new name",
-            "user_rename_failed": "User rename failed:",
-            "group_update_failed": "Group update failed:",
             "confirm_user_deletion": "Are you sure you want to delete {name}?"
           },
           "add_user": {
