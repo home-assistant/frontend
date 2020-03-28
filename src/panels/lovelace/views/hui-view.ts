@@ -476,8 +476,8 @@ export class HUIView extends LitElement {
     const lovelace = this.lovelace!;
 
     this._grids.forEach((grid) => {
-      maxItems =
-        grid.getItems().length > maxItems ? grid.getItems().length : maxItems;
+      const itemsCount = grid.getItems().length;
+      maxItems = itemsCount > maxItems ? itemsCount : maxItems;
     });
 
     for (let i = 0; i < maxItems; i++) {
