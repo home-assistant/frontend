@@ -18,7 +18,6 @@ import {
   CSSResult,
   customElement,
 } from "lit-element";
-
 import "../../map/ha-entity-marker";
 
 import {
@@ -82,7 +81,6 @@ class HuiMapCard extends LitElement implements LovelaceCard {
   @property()
   private _config?: MapCardConfig;
   private _configEntities?: EntityConfig[];
-
   // tslint:disable-next-line
   private Leaflet?: LeafletModuleType;
   private _leafletMap?: Map;
@@ -266,7 +264,8 @@ class HuiMapCard extends LitElement implements LovelaceCard {
     ) {
       this.updateMap(changedProps.get("_config") as MapCardConfig);
     }
-    if (this._config!._hours_to_show > 0) {
+
+    if (this._config!.hours_to_show) {
       const minute = 60000;
       if (changedProps.has("_config")) {
         this._getHistory();
@@ -571,23 +570,22 @@ class HuiMapCard extends LitElement implements LovelaceCard {
   }
 
   private async _getHistory(): Promise<void> {
-    const endTime = new Date();
-    const startTime = new Date();
-    startTime.setHours(endTime.getHours() - this._config!.hours_to_show!);
-    const skipInitialState = false;
-    const includeLocation = true;
-
     const entityIds = this._configEntities
       ?.map((entity) => entity.entity)
       .join(",");
+    const endTime = new Date();
+    const startTime = new Date();
+    startTime.setHours(endTime.getHours() - this._config!.hours_to_show!);
+    const fillStartPeriod = false;
+    const significantChangesOnly = true;
 
     const stateHistory = await fetchRecent(
       this.hass,
       entityIds,
       startTime,
       endTime,
-      skipInitialState,
-      includeLocation
+      fillStartPeriod,
+      significantChangesOnly
     );
 
     if (stateHistory.length < 1) {

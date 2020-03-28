@@ -33,7 +33,7 @@ const cardConfigStruct = struct({
   aspect_ratio: "string?",
   default_zoom: "number?",
   dark_mode: "boolean?",
-  entities: struct.optional([entitiesConfigStruct]),
+  entities: [entitiesConfigStruct],
   hours_to_show: "number?",
   geo_location_sources: "array?",
 });
@@ -120,6 +120,14 @@ export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
           ></paper-input>
         </div>
         <div class="side-by-side">
+          <ha-switch
+            .checked="${this._dark_mode}"
+            .configValue="${"dark_mode"}"
+            @change="${this._valueChanged}"
+            >${this.hass.localize(
+              "ui.panel.lovelace.editor.card.map.dark_mode"
+            )}</ha-switch
+          >
           <paper-input
             .label="${this.hass.localize(
               "ui.panel.lovelace.editor.card.map.hours_to_show"
@@ -131,14 +139,6 @@ export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
             .configValue="${"hours_to_show"}"
             @value-changed="${this._valueChanged}"
           ></paper-input>
-          <ha-switch
-            .checked="${this._dark_mode}"
-            .configValue="${"dark_mode"}"
-            @change="${this._valueChanged}"
-            >${this.hass.localize(
-              "ui.panel.lovelace.editor.card.map.dark_mode"
-            )}</ha-switch
-          >
         </div>
         <hui-entity-editor
           .hass=${this.hass}
@@ -172,7 +172,6 @@ export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
     if (ev.detail && ev.detail.entities) {
       this._config.entities = ev.detail.entities;
       this._configEntities = processEditorEntities(this._config.entities);
-
       fireEvent(this, "config-changed", { config: this._config });
     }
   }

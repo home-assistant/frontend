@@ -56,7 +56,7 @@ export const fetchRecent = (
   startTime,
   endTime,
   skipInitialState = false,
-  includeLocation = false
+  significantChangesOnly = false
 ): Promise<HassEntity[][]> => {
   let url = "history/period";
   if (startTime) {
@@ -69,8 +69,8 @@ export const fetchRecent = (
   if (skipInitialState) {
     url += "&skip_initial_state";
   }
-  if (includeLocation) {
-    url += "&include_location_attributes";
+  if (significantChangesOnly) {
+    url += "&significant_changes_only";
   }
 
   return hass.callApi("GET", url);
