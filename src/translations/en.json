@@ -998,7 +998,10 @@
             "edit_automation": "Edit automation",
             "show_info_automation": "Show info about automation",
             "delete_automation": "Delete automation",
-            "delete_confirm": "Are you sure you want to delete this automation?"
+            "delete_confirm": "Are you sure you want to delete this automation?",
+            "headers": {
+              "name": "Name"
+            }
           },
           "editor": {
             "enable_disable": "Enable/Disable automation",

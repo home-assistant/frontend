@@ -73,7 +73,7 @@ class HaAutomationPicker extends LitElement {
         },
         name: {
           title: this.hass.localize(
-            "ui.panel.config.lovelace.dashboards.picker.headers.title"
+            "ui.panel.config.automation.picker.headers.name"
           ),
           sortable: true,
           filterable: true,
