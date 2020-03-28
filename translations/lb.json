@@ -537,9 +537,11 @@
         "common": {
             "cancel": "Ofbriechen",
             "close": "Zoumaachen",
+            "delete": "Läschen",
             "loading": "Lued",
             "no": "Nee",
             "save": "Späicheren",
+            "successfully_deleted": "Erfollegräich geläscht.",
             "successfully_saved": "Erfollegräich gespäichert.",
             "yes": "Jo"
         },
@@ -2112,6 +2114,7 @@
                             "required": "Obligatoresch"
                         },
                         "entities": {
+                            "description": "D'Entitéite Kaart ass déi am meeschten allgemengen Zort Kaart. Si gruppéiert Entitéite gemeinsam a Lëschten.",
                             "name": "Entitéiten",
                             "show_header_toggle": "Titel Schalter uweisen?",
                             "toggle": "Entitéiten ëmschalten"
@@ -2120,9 +2123,11 @@
                             "name": "Entitéite Knäppchen"
                         },
                         "entity-filter": {
+                            "description": "D'Entity Filter Kaart erlaabt Iech eng Lëscht vun Entitéiten ze definéieren déi nëmmen ugewise gi wann se an engem bestëmmten Zoustand sinn.",
                             "name": "Entitéite Filter"
                         },
                         "gauge": {
+                            "description": "D'Gauge Kaart ass eng Basis Kaart déi Sensor Date visuell duerstellt.",
                             "name": "Skala",
                             "severity": {
                                 "define": "Schwieregkeetsgrad definéieren?",
@@ -2161,6 +2166,7 @@
                         },
                         "glance": {
                             "columns": "Kolonnen",
+                            "description": "D'Glance Kaart ass nëtzlech fir verschidde Sensoren an enger kompakter Iwwersiicht ze gruppéieren.",
                             "name": "Usiicht"
                         },
                         "history-graph": {
