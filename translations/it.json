@@ -537,9 +537,11 @@
         "common": {
             "cancel": "Annulla",
             "close": "Chiudi",
+            "delete": "Elimina",
             "loading": "Caricamento",
             "no": "No",
             "save": "Salva",
+            "successfully_deleted": "Cancellato con successo",
             "successfully_saved": "Salvataggio riuscito",
             "yes": "Sì"
         },
@@ -1310,6 +1312,7 @@
                     "automations": "Automazioni",
                     "cant_edit": "È possibile modificare solo gli elementi creati nell'Interfaccia Utente.",
                     "caption": "Dispositivi",
+                    "confirm_delete": "Sei sicuro di voler eliminare questo dispositivo?",
                     "confirm_rename_entity_ids": "Vuoi anche rinominare gli ID entità delle tue entità?",
                     "data_table": {
                         "area": "Area",
@@ -1320,6 +1323,7 @@
                         "model": "Modello",
                         "no_devices": "Nessun dispositivo"
                     },
+                    "delete": "Elimina",
                     "description": "Gestisci i dispositivi collegati",
                     "details": "Ecco tutti i dettagli del tuo dispositivo.",
                     "device_not_found": "Dispositivo non trovato.",
@@ -2157,6 +2161,7 @@
                             "maximum": "Massimo",
                             "minimum": "Minimo",
                             "name": "Nome",
+                            "no_theme": "Nessun tema",
                             "refresh_interval": "Intervallo di aggiornamento",
                             "show_icon": "Mostrare l'icona?",
                             "show_name": "Mostrare il nome?",
@@ -2330,7 +2335,8 @@
                     "view": {
                         "panel_mode": {
                             "description": "In questo modo viene eseguito il rendering della prima scheda a larghezza intera; altre schede in questa vista non verranno renderizzate.",
-                            "title": "Modalità pannello?"
+                            "title": "Modalità pannello?",
+                            "warning_multiple_cards": "Questa vista contiene più di una scheda, ma una vista a pannello può mostrare solo una scheda."
                         }
                     }
                 },

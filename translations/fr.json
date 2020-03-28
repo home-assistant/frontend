@@ -537,9 +537,11 @@
         "common": {
             "cancel": "Annuler",
             "close": "Fermer",
+            "delete": "Supprimer",
             "loading": "Chargement",
             "no": "Non",
             "save": "Enregistrer",
+            "successfully_deleted": "Supprimé avec succès",
             "successfully_saved": "Enregistré avec succès",
             "yes": "Oui"
         },

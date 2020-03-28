@@ -537,9 +537,11 @@
         "common": {
             "cancel": "取消",
             "close": "關閉",
+            "delete": "刪除",
             "loading": "讀取中",
             "no": "否",
             "save": "儲存",
+            "successfully_deleted": "成功刪除",
             "successfully_saved": "成功儲存",
             "yes": "是"
         },

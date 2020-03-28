@@ -537,9 +537,11 @@
         "common": {
             "cancel": "Cancel·la",
             "close": "Tanca",
+            "delete": "Suprimeix",
             "loading": "Carregant",
             "no": "No",
             "save": "Desa",
+            "successfully_deleted": "S'ha suprimit correctament",
             "successfully_saved": "S'ha desat correctament",
             "yes": "Sí"
         },
