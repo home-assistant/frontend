@@ -537,9 +537,11 @@
         "common": {
             "cancel": "Abbrechen",
             "close": "Schließen",
+            "delete": "Löschen",
             "loading": "Laden",
             "no": "Nein",
             "save": "Speichern",
+            "successfully_deleted": "Erfolgreich gelöscht",
             "successfully_saved": "Erfolgreich gespeichert",
             "yes": "Ja"
         },
@@ -620,7 +622,7 @@
                 "control": "Steuerung",
                 "dismiss": "Ausblenden",
                 "editor": {
-                    "confirm_delete": "Möchtest Du diesen Eintrag wirklich löschen?",
+                    "confirm_delete": "Möchtest du diesen Eintrag wirklich löschen?",
                     "delete": "Löschen",
                     "enabled_cause": "Deaktiviert durch {cause}.",
                     "enabled_description": "Deaktivierte Entitäten werden nicht zu Home Assistant hinzugefügt.",
@@ -811,7 +813,7 @@
                     "caption": "Bereichsregister",
                     "create_area": "BEREICH ERSTELLEN",
                     "delete": {
-                        "confirmation_text": "Alle Geräte in diesem Bereich werden nicht zugewiesen.",
+                        "confirmation_text": "Alle Geräte in diesem Bereich werden nicht mehr zugewiesen sein.",
                         "confirmation_title": "Möchtest du diesen Bereich wirklich löschen?"
                     },
                     "description": "Überblick über alle Bereiche in Deinem Haus.",
@@ -1272,9 +1274,9 @@
                 },
                 "customize": {
                     "attributes_customize": "Folgende Attribute sind bereits in customize.yaml gesetzt",
-                    "attributes_not_set": "Die folgenden Attribute wurden nicht gesetzt. Setzen Sie sie, wenn Sie möchten.",
+                    "attributes_not_set": "Die folgenden Attribute wurden nicht gesetzt. Setze sie, wenn du möchtest.",
                     "attributes_outside": "Die folgenden Attribute werden außerhalb von customize.yaml angepasst.",
-                    "attributes_override": "Sie können sie überschreiben, wenn Sie möchten.",
+                    "attributes_override": "Du kannst sie überschreiben, wenn du möchtest.",
                     "attributes_set": "Die folgenden Attribute der Entität sind programmatisch festgelegt.",
                     "caption": "Anpassung",
                     "description": "Elemente anpassen",
@@ -1286,7 +1288,7 @@
                     },
                     "warning": {
                         "include_link": "binde customize.yaml ein",
-                        "include_sentence": "Es scheint, dass Deine configuration.yaml nicht korrekt ist.",
+                        "include_sentence": "Es scheint, dass deine configuration.yaml nicht korrekt ist.",
                         "not_applied": "Die hier vorgenommenen Änderungen werden eingetragen, aber erst nach einem erneuten Laden der Konfiguration angewendet, wenn das Include vorhanden ist."
                     }
                 },
@@ -1310,7 +1312,7 @@
                     "automations": "Automatisierungen",
                     "cant_edit": "Du kannst nur Elemente bearbeiten, die in der Benutzeroberfläche erstellt wurden.",
                     "caption": "Geräte",
-                    "confirm_delete": "Möchten Sie dieses Gerät wirklich löschen?",
+                    "confirm_delete": "Möchtest Du dieses Gerät wirklich löschen?",
                     "confirm_rename_entity_ids": "Möchten Sie auch die Entitäts-IDs Ihrer Entitäten umbenennen?",
                     "data_table": {
                         "area": "Bereich",
@@ -1368,7 +1370,7 @@
                     "picker": {
                         "disable_selected": {
                             "button": "Ausgewählte deaktivieren",
-                            "confirm_text": "Deaktivierte Entitäten werden Home Assistant nicht hinzugefügt.",
+                            "confirm_text": "Deaktivierte Entitäten werden zu Home Assistant nicht hinzugefügt.",
                             "confirm_title": "Möchtest du {number} Entitäten deaktivieren?"
                         },
                         "enable_selected": {
@@ -1471,7 +1473,7 @@
                         },
                         "failed_create_area": "Der Bereich konnte nicht erstellt werden.",
                         "finish": "Fertig",
-                        "loading_first_time": "Bitte warten Sie, während die Integration installiert wird",
+                        "loading_first_time": "Bitte warten, während die Integration installiert wird",
                         "name_new_area": "Name des neuen Bereichs?",
                         "not_all_required_fields": "Nicht alle Pflichtfelder sind ausgefüllt.",
                         "submit": "Absenden"
@@ -1526,7 +1528,7 @@
                             "title": "Titel der Seitenleiste",
                             "title_required": "Titel ist erforderlich.",
                             "update": "Aktualisieren",
-                            "url": "Url",
+                            "url": "URL",
                             "url_error_msg": "Die URL sollte ein - enthalten und darf keine Leerzeichen oder Sonderzeichen enthalten, außer _ und -"
                         },
                         "picker": {
@@ -1554,7 +1556,7 @@
                             "new_resource": "Neue Ressource hinzufügen",
                             "type": "Ressource-Typ",
                             "update": "Aktualisieren",
-                            "url": "Url",
+                            "url": "URL",
                             "url_error_msg": "URL ist ein Pflichtfeld",
                             "warning_header": "Sei vorsichtig!",
                             "warning_text": "Das Hinzufügen von Ressourcen kann gefährlich sein. Stelle sicher, dass du die Quelle der Ressource kennst und ihr vertraust. Schlechte Ressourcen können dein System ernsthaft beschädigen."
@@ -1563,7 +1565,7 @@
                             "add_resource": "Ressource hinzufügen",
                             "headers": {
                                 "type": "Typ",
-                                "url": "Url"
+                                "url": "URL"
                             },
                             "no_resources": "keine Ressourcen"
                         },
@@ -1623,7 +1625,7 @@
                             "introduction": "Entitäten, die nicht zu einem Gerät gehören, können hier festgelegt werden.",
                             "without_device": "Entitäten ohne Gerät"
                         },
-                        "introduction": "Benutzen Sie Szenen, um Ihrem Zuhause Leben einzuhauchen.",
+                        "introduction": "Benutze Szenen um deinem Zuhause Leben einzuhauchen.",
                         "load_error_not_editable": "Nur Szenen in der scenes.yaml sind editierbar.",
                         "load_error_unknown": "Fehler beim Laden der Szene ({err_no}).",
                         "name": "Name",
@@ -1786,14 +1788,14 @@
                         "header": "Zigbee Home Automation - Gerät"
                     },
                     "group_binding": {
-                        "bind_button_help": "Binden Sie die ausgewählte Gruppe an die ausgewählten Geräte-Cluster.",
+                        "bind_button_help": "Binde die ausgewählte Gruppe an die ausgewählten Geräte-Cluster.",
                         "bind_button_label": "Gruppe binden",
-                        "cluster_selection_help": "Wählen Sie Cluster aus, die an die ausgewählte Gruppe gebunden werden sollen.",
+                        "cluster_selection_help": "Wähle einen Cluster aus, die an die ausgewählte Gruppe gebunden werden sollen.",
                         "group_picker_help": "Wähle eine Gruppe aus, um einen Bindungsbefehl zu erteilen.",
                         "group_picker_label": "Bindbare Gruppen",
                         "header": "Gruppenbindung",
                         "introduction": "Binden und Aufheben der Bindung von Gruppen.",
-                        "unbind_button_help": "Trennen Sie die Bindung der ausgewählten Gruppe von den ausgewählten Geräte-Clustern.",
+                        "unbind_button_help": "Trenne die Bindung der ausgewählten Gruppe von den ausgewählten Geräte-Clustern.",
                         "unbind_button_label": "Gruppe auflösen"
                     },
                     "groups": {
@@ -1849,7 +1851,7 @@
                     "configured_in_yaml": "Zonen, die über configuration.yaml konfiguriert wurden, können nicht über die Benutzeroberfläche bearbeitet werden.",
                     "confirm_delete": "Möchtest du diesen Bereich wirklich löschen?",
                     "create_zone": "Zone erstellen",
-                    "description": "Verwalte die Zonen, in denen du Personen verfolgen möchten.",
+                    "description": "Verwalte die Zonen, in denen du Personen verfolgen möchtest.",
                     "detail": {
                         "create": "Erstellen",
                         "delete": "Löschen",
@@ -1866,7 +1868,7 @@
                         "update": "Aktualisieren"
                     },
                     "edit_home_zone": "Der Radius der Home-Zone kann noch nicht über das Frontend bearbeitet werden. Ziehe die Markierung auf der Karte, um die Heimatzone zu verschieben.",
-                    "edit_home_zone_narrow": "Der Radius der Home-Zone kann vom Frontend aus noch nicht bearbeitet werden. Der Standort kann von der allgemeinen Konfiguration aus geändert werden.",
+                    "edit_home_zone_narrow": "Der Radius der Home-Zone kann noch nicht vom Frontend aus bearbeitet werden. Der Standort kann von der allgemeinen Konfiguration aus geändert werden.",
                     "go_to_core_config": "Zur allgemeinen Konfiguration gehen?",
                     "home_zone_core_config": "Der Standort deiner Homezone kann auf der allgemeinen Konfigurationsseite bearbeitet werden. Der Radius der Homezone kann vom Frontend aus noch nicht bearbeitet werden. Möchtest du zur allgemeinen Konfiguration gehen?",
                     "introduction": "Mit Zonen kannst du bestimmte Regionen auf der Erde angeben. Befindet sich eine Person in einer Zone, übernimmt der Zustand den Namen aus der Zone. Zonen können auch als Auslöser oder Bedingung in Automatisierungs-Setups verwendet werden.",
@@ -1930,7 +1932,7 @@
                 "external_panel": {
                     "complete_access": "Es wird Zugriff auf alle Daten in Home Assistant haben.",
                     "hide_message": "Überprüfe die Dokumentation für die panel_custom Komponente, um diese Meldung auszublenden.",
-                    "question_trust": "Vertrauen Sie dem externen Panel {name} unter {link}?"
+                    "question_trust": "Vertraust du dem externen Panel {name} unter {link}?"
                 }
             },
             "developer-tools": {
@@ -2053,7 +2055,7 @@
             },
             "lovelace": {
                 "add_entities": {
-                    "generated_unsupported": "Sie können diese Funktion nur verwenden, wenn Sie die Kontrolle über Lovelace übernommen haben.",
+                    "generated_unsupported": "Du kannst diese Funktion nur verwenden, wenn du die Kontrolle über Lovelace übernommen hast.",
                     "saving_failed": "Speichern der Lovelace-Konfiguration ist fehlgeschlagen.",
                     "yaml_unsupported": "Du kannst diese Funktion nicht verwenden, wenn du Lovelace im YAML-Modus verwendest."
                 },
@@ -2102,7 +2104,7 @@
                             "name": "Alarmpanel"
                         },
                         "button": {
-                            "description": "Mit der Schaltflächen-Karte können Sie Schaltflächen hinzufügen, um Aufgaben auszuführen.",
+                            "description": "Mit der Schaltflächen-Karte kannst du Schaltflächen hinzufügen, um Aufgaben auszuführen.",
                             "name": "Schaltfläche"
                         },
                         "conditional": {
@@ -2155,7 +2157,7 @@
                             "icon_height": "Symbol Höhe",
                             "image": "Bildpfad",
                             "manual": "Manuell",
-                            "manual_description": "Möchtest du eine benutzerdefinierte Karte hinzufügen oder den Yaml-Code von Hand bearbeiten?",
+                            "manual_description": "Möchtest du eine benutzerdefinierte Karte hinzufügen, oder den Yaml-Code von Hand bearbeiten?",
                             "maximum": "Maximum",
                             "minimum": "Minimum",
                             "name": "Name",
@@ -2210,11 +2212,11 @@
                             "name": "Mediensteuerung"
                         },
                         "picture-elements": {
-                            "description": "Die Bilder-Karte ist eine der vielseitigsten Arten von Karten. Mit den Karten kannst du Symbole oder Text und sogar Dienste positionieren! Auf einem Bild basierend auf Koordinaten.",
+                            "description": "Die Bilder-Karte ist eine der vielseitigsten Arten von Karten. Mit den Karten kannst du Symbole, Text und sogar Dienste positionieren! Auf einem Bild basierend auf Koordinaten.",
                             "name": "Picture Elements"
                         },
                         "picture-entity": {
-                            "description": "Die Bilder-Karte zeigt eine Entität in Form eines Bildes an. Anstelle von Bildern aus der URL kann auch das Bild von Kamera-entitäten angezeigt werden.",
+                            "description": "Die Bilder-Karte zeigt eine Entität in Form eines Bildes an. Anstelle von Bildern aus der URL kann auch das Bild von Kamera-Entitäten angezeigt werden.",
                             "name": "Picture Entity"
                         },
                         "picture-glance": {
@@ -2222,7 +2224,7 @@
                             "name": "Picture Glance"
                         },
                         "picture": {
-                            "description": "Mit der Bildkarte kannst du ein Bild festlegen, das für die Navigation zu verschiedenen Pfaden in Ihrer Benutzeroberfläche oder zum Aufrufen eines Dienstes verwendet werden soll.",
+                            "description": "Mit der Bildkarte kannst du ein Bild festlegen, das für die Navigation zu verschiedenen Pfaden in deiner Benutzeroberfläche oder zum Aufrufen eines Dienstes verwendet werden soll.",
                             "name": "Picture"
                         },
                         "plant-status": {
@@ -2230,7 +2232,7 @@
                             "name": "Pflanzen Status"
                         },
                         "sensor": {
-                            "description": "Die Sensorkarte gibt Ihnen einen schnellen Überblick über Ihren Sensorstatus mit einem optionalen Diagramm, um Änderungen im Zeitverlauf zu visualisieren.",
+                            "description": "Die Sensorkarte gibt dir einen schnellen Überblick über Ihren Sensorstatus mit einem optionalen Diagramm, um Änderungen im Zeitverlauf zu visualisieren.",
                             "graph_detail": "Diagrammdetail",
                             "graph_type": "Typ",
                             "name": "Sensor"
@@ -2349,8 +2351,8 @@
                 },
                 "reload_lovelace": "Benutzeroberfläche neu laden",
                 "reload_resources": {
-                    "refresh_body": "Sie müssen die Seite aktualisieren, um das Neuladen abzuschließen. Möchten Sie jetzt aktualisieren?",
-                    "refresh_header": "Möchtest du aktualisieren?"
+                    "refresh_body": "Du musst die Seite aktualisieren, um das Neuladen abzuschließen. Möchtest Du sie jetzt aktualisieren?",
+                    "refresh_header": "Möchtest Du aktualisieren?"
                 },
                 "unused_entities": {
                     "available_entities": "Dies sind die Entitäten, die Sie zur Verfügung haben, die aber noch nicht in Ihrer Lovelace-Benutzeroberfläche enthalten sind.",

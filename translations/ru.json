@@ -537,9 +537,11 @@
         "common": {
             "cancel": "Отменить",
             "close": "Закрыть",
+            "delete": "Удалить",
             "loading": "Загрузка",
             "no": "Нет",
             "save": "Сохранить",
+            "successfully_deleted": "Успешно удалено",
             "successfully_saved": "Успешно сохранено",
             "yes": "Да"
         },
