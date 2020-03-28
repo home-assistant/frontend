@@ -8,15 +8,11 @@ import {
   customElement,
 } from "lit-element";
 import "@polymer/paper-icon-button/paper-icon-button";
-import "@polymer/paper-item/paper-item-body";
 import "@polymer/paper-tooltip/paper-tooltip";
-import "../../../layouts/hass-tabs-subpage";
+import "../../../layouts/hass-tabs-subpage-data-table";
 
-import "../../../components/ha-card";
 import "../../../components/ha-fab";
 import "../../../components/entity/ha-entity-toggle";
-
-import "../ha-config-section";
 
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import { computeRTL } from "../../../common/util/compute_rtl";
@@ -210,33 +206,6 @@ class HaAutomationPicker extends LitElement {
     return [
       haStyle,
       css`
-        :host {
-          display: block;
-        }
-
-        ha-card {
-          margin-bottom: 56px;
-        }
-
-        .automation {
-          display: flex;
-          flex-direction: horizontal;
-          align-items: center;
-          padding: 0 8px 0 16px;
-        }
-
-        .automation a[href] {
-          color: var(--primary-text-color);
-        }
-
-        ha-entity-toggle {
-          margin-right: 16px;
-        }
-
-        .actions {
-          display: flex;
-        }
-
         ha-fab {
           position: fixed;
           bottom: 16px;
@@ -261,10 +230,6 @@ class HaAutomationPicker extends LitElement {
           bottom: 24px;
           right: auto;
           left: 24px;
-        }
-
-        a {
-          color: var(--primary-color);
         }
       `,
     ];
