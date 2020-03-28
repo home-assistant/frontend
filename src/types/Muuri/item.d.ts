@@ -17,7 +17,7 @@ export class Item {
    * @memberof Item.prototype
    * @returns {HTMLElement}
    */
-  public getElement(): Element;
+  public getElement(): HTMLElement;
 
   /**
    * Get instance element's cached width.
@@ -138,4 +138,8 @@ export class Item {
    * @returns {Boolean}
    */
   public isDestroyed(): boolean;
+}
+
+export interface DataItem {
+  item: Item;
 }

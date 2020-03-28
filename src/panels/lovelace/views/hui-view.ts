@@ -5,12 +5,12 @@ import {
   PropertyValues,
   TemplateResult,
 } from "lit-element";
-
-import "../../../components/entity/ha-state-label-badge";
-// This one is for types
 import { classMap } from "lit-html/directives/class-map";
+import type { DataItem, Item } from "muuri";
+import type { Options } from "../../../types/Muuri/options";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { computeRTL } from "../../../common/util/compute_rtl";
+import { debounce } from "../../../common/util/debounce";
 import "../../../components/entity/ha-state-label-badge";
 import {
   LovelaceBadgeConfig,
@@ -18,26 +18,17 @@ import {
   LovelaceViewConfig,
 } from "../../../data/lovelace";
 import { HomeAssistant } from "../../../types";
-import { classMap } from "lit-html/directives/class-map";
-import { Lovelace, LovelaceCard, LovelaceBadge, MuuriItem } from "../types";
-import { createCardElement } from "../create-element/create-card-element";
-import { showEditCardDialog } from "../editor/card-editor/show-edit-card-dialog";
 import { HuiErrorCard } from "../cards/hui-error-card";
-import { computeCardSize } from "../common/compute-card-size";
-import { computeRTL } from "../../../common/util/compute_rtl";
-import { debounce } from "../../../common/util/debounce";
-import { createBadgeElement } from "../create-element/create-badge-element";
 import { processConfigEntities } from "../common/process-config-entities";
 import { createBadgeElement } from "../create-element/create-badge-element";
 import { createCardElement } from "../create-element/create-card-element";
 import { showEditCardDialog } from "../editor/card-editor/show-edit-card-dialog";
-import { Lovelace, LovelaceBadge, LovelaceCard } from "../types";
-import { Options } from "../../../@types/Muuri/options";
+import { Lovelace, LovelaceBadge, LovelaceCard, MuuriItem } from "../types";
 
 let muuri: any;
 let installResizeObserver: any;
 
-let options: Options = {
+const gridOptions: Options = {
   dragEnabled: true,
   dragStartPredicate: {
     distance: 10,
@@ -61,9 +52,13 @@ export class HUIView extends LitElement {
   @property() private _cards: Array<LovelaceCard | HuiErrorCard> = [];
 
   @property() private _badges: LovelaceBadge[] = [];
-  @property() private editCodeLoaded: boolean = false;
+
+  @property() private _editCodeLoaded = false;
+
   private _grids: any[] = [];
+
   private _resizeObserver?: ResizeObserver;
+
   private _debouncedResizeListener = debounce(
     () => {
       if (!this._grids.length) {
@@ -247,13 +242,13 @@ export class HUIView extends LitElement {
     const hass = this.hass!;
     const lovelace = this.lovelace!;
 
-    if (lovelace.editMode && !this.editCodeLoaded) {
+    if (lovelace.editMode && !this._editCodeLoaded) {
       import(
         /* webpackChunkName: "hui-view-editable" */ "./hui-view-editable"
       ).then((editCode) => {
         muuri = editCode.Muuri;
         installResizeObserver = editCode.install;
-        this.editCodeLoaded = true;
+        this._editCodeLoaded = true;
       });
     }
 
@@ -290,7 +285,7 @@ export class HUIView extends LitElement {
       this._resizeObserver.disconnect();
     }
 
-    if (this.lovelace!.editMode && this.editCodeLoaded) {
+    if (this.lovelace!.editMode && this._editCodeLoaded) {
       this._attachObserver();
     }
 
@@ -298,7 +293,7 @@ export class HUIView extends LitElement {
       configChanged ||
       editModeChanged ||
       changedProperties.has("columns") ||
-      changedProperties.has("editCodeLoaded")
+      changedProperties.has("_editCodeLoaded")
     ) {
       this._createCards(lovelace.config.views[this.index!]);
     } else if (hassChanged) {
@@ -390,7 +385,7 @@ export class HUIView extends LitElement {
       const itemContent = document.createElement("div");
       itemContent.classList.add("item-content");
 
-      if (!this.lovelace!.editMode || !this.editCodeLoaded) {
+      if (!this.lovelace!.editMode || !this._editCodeLoaded) {
         itemContent.appendChild(element);
       } else {
         const wrapper = document.createElement("hui-card-options");
@@ -436,8 +431,8 @@ export class HUIView extends LitElement {
   }
 
   private _buildMuuriGrids(): void {
-    options = {
-      ...options,
+    const options = {
+      ...gridOptions,
       dragContainer: this.shadowRoot!.getElementById("columns")!,
       dragSort: () => {
         return this._grids;
@@ -449,11 +444,11 @@ export class HUIView extends LitElement {
     columns.forEach((columnEl) => {
       this._grids.push(
         new muuri(columnEl, options)
-          .on("dragStart", (item) => {
+          .on("dragStart", (item: Item) => {
             item.getElement().style.width = item.getWidth() + "px";
             item.getElement().style.height = item.getHeight() + "px";
           })
-          .on("dragReleaseEnd", (item) => {
+          .on("dragReleaseEnd", (item: Item) => {
             item.getElement().style.width = "";
             item.getElement().style.height = "";
             this._storeLayout();
@@ -462,11 +457,11 @@ export class HUIView extends LitElement {
               grid.refreshItems().layout();
             });
           })
-          .on("beforeSend", (data) => {
+          .on("beforeSend", (data: DataItem) => {
             data.item.getElement().style.width = data.item.getWidth() + "px";
             data.item.getElement().style.height = data.item.getHeight() + "px";
           })
-          .on("beforeReceive", (data) => {
+          .on("beforeReceive", (data: DataItem) => {
             data.item.getElement().style.width = data.item.getWidth() + "px";
             data.item.getElement().style.height = data.item.getHeight() + "px";
           })

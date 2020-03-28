@@ -5,6 +5,7 @@ declare module "muuri" {
   type LayoutFunction = import("./options").LayoutFunction;
   type EventListeners = import("./events").EventListeners;
   type ItemSelector = Element | Item | number;
+  type DataItem = import("./item").DataItem;
 
   /**
    * Creates a new Grid instance.
@@ -132,6 +133,7 @@ declare module "muuri" {
      * @returns {Grid}
      */
     public layout(callback: (items: Item[]) => any): void;
+
     public layout(instant?: boolean, callback?: (items: Item[]) => any): void;
 
     /**
@@ -348,6 +350,7 @@ declare module "muuri" {
      * @param {Function} listener
      * @returns {Grid}
      */
+
     public on<T extends keyof EventListeners>(
       event: T,
       listener: EventListeners[T]
@@ -361,6 +364,7 @@ declare module "muuri" {
      * @param {Function} listener
      * @returns {Grid}
      */
+
     public off<T extends keyof EventListeners>(
       event: T,
       listener: EventListeners[T]

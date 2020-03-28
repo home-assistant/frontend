@@ -515,7 +515,7 @@ class HUIRoot extends LitElement {
 
       if (!oldLovelace || oldLovelace.config !== this.lovelace!.config) {
         // On config change, recreate the current view from scratch.
-        force = true;
+        force = this.lovelace!.rebuild;
       }
 
       if (!oldLovelace || oldLovelace.editMode !== this.lovelace!.editMode) {
@@ -529,7 +529,7 @@ class HUIRoot extends LitElement {
           newSelectView = 0;
         }
         // On edit mode change, recreate the current view from scratch
-        force = this.lovelace!.rebuild;
+        force = true;
         // Recalculate to see if we need to adjust content area for tab bar
         fireEvent(this, "iron-resize");
       }
