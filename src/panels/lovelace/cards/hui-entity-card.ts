@@ -128,9 +128,7 @@ class HuiEntityCard extends LitElement implements LovelaceCard {
                 this.hass.localize("state.default.unknown")
               : this.hass.localize(`state.default.${stateObj.state}`) ||
                 this.hass.localize(
-                  `component.${this._config.entity.split(".")[0]}.state.${
-                    stateObj.state
-                  }`
+                  `state.${this._config.entity.split(".")[0]}.${stateObj.state}`
                 ) ||
                 stateObj.state}</span
           >${showUnit
