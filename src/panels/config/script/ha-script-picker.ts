@@ -8,17 +8,13 @@ import {
   customElement,
 } from "lit-element";
 import "@polymer/paper-icon-button/paper-icon-button";
-import "@polymer/paper-item/paper-item-body";
 import { HassEntity } from "home-assistant-js-websocket";
 
-import "../../../layouts/hass-tabs-subpage";
+import "../../../layouts/hass-tabs-subpage-data-table";
 
 import { computeRTL } from "../../../common/util/compute_rtl";
 
-import "../../../components/ha-card";
 import "../../../components/ha-fab";
-
-import "../ha-config-section";
 
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import { haStyle } from "../../../resources/styles";
