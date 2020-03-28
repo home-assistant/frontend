@@ -23,9 +23,15 @@ import { haStyle } from "../../../resources/styles";
 import { HomeAssistant, Route } from "../../../types";
 import { SceneEntity, activateScene } from "../../../data/scene";
 import { showToast } from "../../../util/toast";
-import { ifDefined } from "lit-html/directives/if-defined";
 import { forwardHaptic } from "../../../data/haptics";
 import { configSections } from "../ha-panel-config";
+import memoizeOne from "memoize-one";
+import {
+  DataTableColumnContainer,
+  RowClickedEvent,
+} from "../../../components/data-table/ha-data-table";
+import { HASSDomEvent, fireEvent } from "../../../common/dom/fire_event";
+import { navigate } from "../../../common/navigate";
 
 @customElement("ha-scene-dashboard")
 class HaSceneDashboard extends LitElement {
@@ -35,108 +41,129 @@ class HaSceneDashboard extends LitElement {
   @property() public route!: Route;
   @property() public scenes!: SceneEntity[];
 
+  private _scenes = memoizeOne((scenes: SceneEntity[]) => {
+    return scenes.map((scene) => {
+      return {
+        ...scene,
+        name: computeStateName(scene),
+      };
+    });
+  });
+
+  private _columns = memoizeOne(
+    (_language): DataTableColumnContainer => {
+      return {
+        activate: {
+          title: "",
+          type: "icon-button",
+          template: (_toggle, scene) =>
+            html`
+              <paper-icon-button
+                .scene=${scene}
+                icon="hass:play"
+                title="${this.hass.localize(
+                  "ui.panel.config.scene.picker.activate_scene"
+                )}"
+                @click=${(ev: Event) => this._activateScene(ev)}
+              ></paper-icon-button>
+            `,
+        },
+        name: {
+          title: this.hass.localize(
+            "ui.panel.config.scene.picker.headers.name"
+          ),
+          sortable: true,
+          filterable: true,
+          direction: "asc",
+          grows: true,
+        },
+        info: {
+          title: "",
+          type: "icon-button",
+          template: (_info, automation) => html`
+            <paper-icon-button
+              .automation=${automation}
+              @click=${this._showInfo}
+              icon="hass:information-outline"
+              title="${this.hass.localize(
+                "ui.panel.config.scene.picker.show_info_scene"
+              )}"
+            ></paper-icon-button>
+          `,
+        },
+        edit: {
+          title: "",
+          type: "icon-button",
+          template: (_info, automation: any) => html`
+            <paper-icon-button
+              .icon=${automation.attributes.id
+                ? "hass:pencil"
+                : "hass:pencil-off"}
+              .disabled=${!automation.attributes.id}
+              title="${this.hass.localize(
+                "ui.panel.config.scene.picker.edit_scene"
+              )}"
+            ></paper-icon-button>
+            ${!automation.attributes.id
+              ? html`
+                  <paper-tooltip position="left">
+                    ${this.hass.localize(
+                      "ui.panel.config.scene.picker.only_editable"
+                    )}
+                  </paper-tooltip>
+                `
+              : ""}
+          `,
+        },
+      };
+    }
+  );
+
   protected render(): TemplateResult {
     return html`
-      <hass-tabs-subpage
+      <hass-tabs-subpage-data-table
         .hass=${this.hass}
         .narrow=${this.narrow}
         back-path="/config"
         .route=${this.route}
         .tabs=${configSections.automation}
+        .columns=${this._columns(this.hass.language)}
+        .data=${this._scenes(this.scenes)}
+        id="entity_id"
+        .noDataText=${this.hass.localize(
+          "ui.panel.config.scene.picker.no_scenes"
+        )}
+        @row-click=${this._editScene}
       >
-        <ha-config-section .isWide=${this.isWide}>
-          <div slot="header">
-            ${this.hass.localize("ui.panel.config.scene.picker.header")}
-          </div>
-          <div slot="introduction">
-            ${this.hass.localize("ui.panel.config.scene.picker.introduction")}
-            <p>
-              <a
-                href="https://home-assistant.io/docs/scene/editor/"
-                target="_blank"
-                rel="noreferrer"
-              >
-                ${this.hass.localize("ui.panel.config.scene.picker.learn_more")}
-              </a>
-            </p>
-          </div>
-
-          <ha-card
-            .heading=${this.hass.localize(
-              "ui.panel.config.scene.picker.pick_scene"
-            )}
-          >
-            ${this.scenes.length === 0
-              ? html`
-                  <div class="card-content">
-                    <p>
-                      ${this.hass.localize(
-                        "ui.panel.config.scene.picker.no_scenes"
-                      )}
-                    </p>
-                  </div>
-                `
-              : this.scenes.map(
-                  (scene) => html`
-                    <div class="scene">
-                      <paper-icon-button
-                        .scene=${scene}
-                        icon="hass:play"
-                        title="${this.hass.localize(
-                          "ui.panel.config.scene.picker.activate_scene"
-                        )}"
-                        @click=${this._activateScene}
-                      ></paper-icon-button>
-                      <paper-item-body two-line>
-                        <div>${computeStateName(scene)}</div>
-                      </paper-item-body>
-                      <div class="actions">
-                        <a
-                          href=${ifDefined(
-                            scene.attributes.id
-                              ? `/config/scene/edit/${scene.attributes.id}`
-                              : undefined
-                          )}
-                        >
-                          <paper-icon-button
-                            title="${this.hass.localize(
-                              "ui.panel.config.scene.picker.edit_scene"
-                            )}"
-                            icon="hass:pencil"
-                            .disabled=${!scene.attributes.id}
-                          ></paper-icon-button>
-                          ${!scene.attributes.id
-                            ? html`
-                                <paper-tooltip position="left">
-                                  ${this.hass.localize(
-                                    "ui.panel.config.scene.picker.only_editable"
-                                  )}
-                                </paper-tooltip>
-                              `
-                            : ""}
-                        </a>
-                      </div>
-                    </div>
-                  `
-                )}
-          </ha-card>
-        </ha-config-section>
-        <a href="/config/scene/edit/new">
-          <ha-fab
-            ?is-wide=${this.isWide}
-            ?narrow=${this.narrow}
-            icon="hass:plus"
-            title=${this.hass.localize(
-              "ui.panel.config.scene.picker.add_scene"
-            )}
-            ?rtl=${computeRTL(this.hass)}
-          ></ha-fab>
-        </a>
-      </hass-tabs-subpage>
+      </hass-tabs-subpage-data-table>
+      <a href="/config/scene/edit/new">
+        <ha-fab
+          ?is-wide=${this.isWide}
+          ?narrow=${this.narrow}
+          icon="hass:plus"
+          title=${this.hass.localize("ui.panel.config.scene.picker.add_scene")}
+          ?rtl=${computeRTL(this.hass)}
+        ></ha-fab>
+      </a>
     `;
   }
 
+  private _showInfo(ev) {
+    ev.stopPropagation();
+    const entityId = ev.currentTarget.automation.entity_id;
+    fireEvent(this, "hass-more-info", { entityId });
+  }
+
+  private _editScene(ev: HASSDomEvent<RowClickedEvent>) {
+    const entityId = ev.detail.id;
+    const state = this.hass.states[entityId];
+    if (state?.attributes.id) {
+      navigate(this, `/config/scene/edit/${state.attributes.id}`);
+    }
+  }
+
   private async _activateScene(ev) {
+    ev.stopPropagation();
     const scene = ev.target.scene as SceneEntity;
     await activateScene(this.hass, scene.entity_id);
     showToast(this, {
