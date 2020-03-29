@@ -42,7 +42,7 @@ class HuiMediaPlayerEntityRow extends LitElement implements LovelaceRow {
   private _debouncedResizeListener = debounce(
     () => {
       this._narrow = (this.parentElement?.clientWidth || 0) < 350;
-      this._narrow = (this.parentElement?.clientWidth || 0) < 300;
+      this._veryNarrow = (this.parentElement?.clientWidth || 0) < 300;
     },
     250,
     false
@@ -54,6 +54,13 @@ class HuiMediaPlayerEntityRow extends LitElement implements LovelaceRow {
     }
 
     this._config = config;
+  }
+
+  public connectedCallback(): void {
+    super.connectedCallback();
+    if (!this._resizeObserver) {
+      this._attachObserver();
+    }
   }
 
   public disconnectedCallback(): void {
@@ -93,7 +100,7 @@ class HuiMediaPlayerEntityRow extends LitElement implements LovelaceRow {
         .config=${this._config}
         .secondaryText=${this._computeMediaTitle(stateObj)}
       >
-        ${OFF_STATES.includes(stateObj.state)
+        ${stateObj.state === "off" || stateObj.state === "idle"
           ? supportsFeature(stateObj, SUPPORT_TURN_ON)
           : supportsFeature(stateObj, SUPPORT_TURN_OFF)
           ? html`
@@ -256,7 +263,9 @@ class HuiMediaPlayerEntityRow extends LitElement implements LovelaceRow {
 
     this.hass!.callService(
       "media_player",
-      OFF_STATES.includes(stateObj.state) ? "turn_on" : "turn_off",
+      stateObj.state === "off" || stateObj.state === "idle"
+        ? "turn_on"
+        : "turn_off",
       {
         entity_id: this._config!.entity,
       }
@@ -301,16 +310,10 @@ class HuiMediaPlayerEntityRow extends LitElement implements LovelaceRow {
     });
   }
 
-  private get _inputElement(): Element {
-    return this.shadowRoot!.querySelector("ha-slider")!;
-  }
-
-  private _selectedValueChanged(): void {
-    const element = this._inputElement as any;
-
+  private _selectedValueChanged(ev): void {
     this.hass!.callService("media_player", "volume_set", {
       entity_id: this._config!.entity,
-      volume_level: element.value / 100,
+      volume_level: ev.target.value / 100,
     });
   }
 }
