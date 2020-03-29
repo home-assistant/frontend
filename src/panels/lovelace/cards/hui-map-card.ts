@@ -576,16 +576,12 @@ class HuiMapCard extends LitElement implements LovelaceCard {
     const endTime = new Date();
     const startTime = new Date();
     startTime.setHours(endTime.getHours() - this._config!.hours_to_show!);
-    const fillStartPeriod = false;
-    const significantChangesOnly = true;
 
     const stateHistory = await fetchRecent(
       this.hass,
       entityIds,
       startTime,
-      endTime,
-      fillStartPeriod,
-      significantChangesOnly
+      endTime
     );
 
     if (stateHistory.length < 1) {
