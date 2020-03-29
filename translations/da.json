@@ -537,9 +537,11 @@
         "common": {
             "cancel": "Annuller",
             "close": "Luk",
+            "delete": "Slet",
             "loading": "Indlæser",
             "no": "Nej",
             "save": "Gem",
+            "successfully_deleted": "Slettet",
             "successfully_saved": "Gemt",
             "yes": "Ja"
         },
