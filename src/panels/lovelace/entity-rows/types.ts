@@ -1,6 +1,6 @@
 import { HomeAssistant } from "../../../types";
 import { Condition } from "../common/validate-condition";
-import { EntitiesCardEntityConfig } from "../cards/types";
+import { ActionConfig } from "../../../data/lovelace";
 
 export interface EntityConfig {
   entity: string;
@@ -29,8 +29,15 @@ export interface WeblinkConfig {
   icon?: string;
   url: string;
 }
-export interface ButtonRowConfig extends EntitiesCardEntityConfig {
-  type: "button" | "call-service";
+export interface ButtonRowConfig extends EntityConfig {
+  type: "button";
+  action_name?: string;
+  tap_action?: ActionConfig;
+  hold_action?: ActionConfig;
+  double_tap_action?: ActionConfig;
+}
+export interface CallServiceRowConfig extends EntityConfig {
+  type: "call-service";
   action_name?: string;
   service: string;
   service_data?: { [key: string]: any };
@@ -56,6 +63,7 @@ export type LovelaceRowConfig =
   | ButtonsRowConfig
   | ConditionalRowConfig
   | ButtonRowConfig
+  | CallServiceRowConfig
   | CastConfig;
 
 export interface LovelaceRow extends HTMLElement {

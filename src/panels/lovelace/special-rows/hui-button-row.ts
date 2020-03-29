@@ -24,19 +24,19 @@ export class HuiButtonRow extends LitElement implements LovelaceRow {
   @property() private _config?: ButtonRowConfig;
 
   public setConfig(config: ButtonRowConfig): void {
-    if (!config || !config.name || (!config.service && !config.tap_action)) {
+    if (!config) {
       throw new Error("Error in card configuration.");
     }
 
-    this._config = {
-      icon: "hass:remote",
-      tap_action: {
-        action: "call-service",
-        service: config.service,
-        service_data: config.service_data,
-      },
-      ...config,
-    };
+    if (!config.name) {
+      throw new Error("Error in card configuration. No name specified.");
+    }
+
+    if (!config.tap_action) {
+      throw new Error("Error in card configuration. No action specified.");
+    }
+
+    this._config = config;
   }
 
   protected render(): TemplateResult {
@@ -45,7 +45,7 @@ export class HuiButtonRow extends LitElement implements LovelaceRow {
     }
 
     return html`
-      <ha-icon .icon=${this._config.icon}></ha-icon>
+      <ha-icon .icon=${this._config.icon || "hass:remote"}></ha-icon>
       <div class="flex">
         <div>${this._config.name}</div>
         <mwc-button
