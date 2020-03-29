@@ -33,6 +33,8 @@ export interface EntitiesCardEntityConfig extends EntityConfig {
   hold_action?: ActionConfig;
   double_tap_action?: ActionConfig;
   state_color?: boolean;
+  show_name?: boolean;
+  show_icon?: boolean;
 }
 
 export interface EntitiesCardConfig extends LovelaceCardConfig {
