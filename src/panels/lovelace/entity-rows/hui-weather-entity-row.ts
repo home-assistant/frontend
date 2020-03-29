@@ -42,9 +42,7 @@ class HuiWeatherEntityRow extends LitElement implements LovelaceRow {
       throw new Error("Invalid Configuration: 'entity' required");
     }
 
-    this._config = {
-      ...config,
-    };
+    this._config = config;
   }
 
   protected shouldUpdate(changedProps: PropertyValues): boolean {
@@ -178,7 +176,6 @@ class HuiWeatherEntityRow extends LitElement implements LovelaceRow {
     let tempLow: number | undefined;
     let tempHigh: number | undefined;
     const today = new Date().getDate();
-    const unit = getWeatherUnit(this.hass!, "temperature");
 
     for (const forecast of stateObj.attributes.forecast) {
       if (new Date(forecast.datetime).getDate() !== today) {
@@ -198,6 +195,8 @@ class HuiWeatherEntityRow extends LitElement implements LovelaceRow {
     if (!tempLow && !tempHigh) {
       return undefined;
     }
+
+    const unit = getWeatherUnit(this.hass!, "temperature");
 
     return `
       ${
