@@ -193,22 +193,26 @@ class HuiEntityCard extends LitElement implements LovelaceCard {
       }
 
       .name {
-        opacity: 0.8;
+        color: var(--secondary-text-color);
         line-height: 40px;
         font-weight: 500;
         font-size: 16px;
         overflow: hidden;
+        white-space: nowrap;
         text-overflow: ellipsis;
       }
 
       .icon {
-        color: var(--paper-item-icon-color, #44739e);
+        color: var(--state-icon-color, #44739e);
         line-height: 40px;
       }
 
       .info {
         padding: 0px 16px 16px;
         margin-top: -4px;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
       }
 
       .value {
@@ -218,7 +222,7 @@ class HuiEntityCard extends LitElement implements LovelaceCard {
 
       .measurement {
         font-size: 18px;
-        opacity: 0.6;
+        color: var(--secondary-text-color);
       }
     `;
   }
