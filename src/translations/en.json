@@ -2194,6 +2194,11 @@
           "link_promo": "Learn about themes",
           "dropdown_label": "Theme"
         },
+        "dashboard": {
+          "header": "Dashboard",
+          "description": "Pick a default dashboard for this device.",
+          "dropdown_label": "Dashboard"
+        },
         "change_password": {
           "header": "Change Password",
           "current_password": "Current Password",

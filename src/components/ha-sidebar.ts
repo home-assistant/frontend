@@ -87,7 +87,7 @@ const computePanels = (hass: HomeAssistant): [PanelInfo[], PanelInfo[]] => {
   const beforeSpacer: PanelInfo[] = [];
   const afterSpacer: PanelInfo[] = [];
 
-  const defaultPage = getDefaultPanelUrlPath();
+  const defaultPage = getDefaultPanelUrlPath(hass);
 
   Object.values(panels).forEach((panel) => {
     if (!panel.title || panel.url_path === defaultPage) {
@@ -143,7 +143,7 @@ class HaSidebar extends LitElement {
       }
     }
 
-    const defaultPanel = getDefaultPanel(hass.panels);
+    const defaultPanel = getDefaultPanel(hass);
 
     return html`
       <div class="menu">
@@ -297,7 +297,8 @@ class HaSidebar extends LitElement {
       hass.panelUrl !== oldHass.panelUrl ||
       hass.user !== oldHass.user ||
       hass.localize !== oldHass.localize ||
-      hass.states !== oldHass.states
+      hass.states !== oldHass.states ||
+      hass.defaultPanel !== oldHass.defaultPanel
     );
   }
 
