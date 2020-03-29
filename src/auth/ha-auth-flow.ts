@@ -121,6 +121,12 @@ class HaAuthFlow extends litLocalizeLiteMixin(LitElement) {
       const data = await response.json();
 
       if (response.ok) {
+        // allow auth provider bypass the login form
+        if (data.type === "create_entry") {
+          this._redirect(data.result);
+          return;
+        }
+
         await this._updateStep(data);
       } else {
         this._state = "error";
@@ -255,12 +261,6 @@ class HaAuthFlow extends litLocalizeLiteMixin(LitElement) {
     this._state = "step";
     if (stepData != null) {
       this._stepData = stepData;
-    }
-
-    // allow auth provider bypass the login form
-    if (step.type === "create_entry") {
-      this._redirect(step.result);
-      return;
     }
 
     if (step.type === "external") {
