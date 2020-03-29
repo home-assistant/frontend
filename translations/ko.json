@@ -537,9 +537,11 @@
         "common": {
             "cancel": "취소",
             "close": "닫기",
+            "delete": "삭제",
             "loading": "읽는 중",
             "no": "아니오",
             "save": "저장",
+            "successfully_deleted": "성공적으로 삭제되었습니다",
             "successfully_saved": "성공적으로 저장되었습니다",
             "yes": "예"
         },
