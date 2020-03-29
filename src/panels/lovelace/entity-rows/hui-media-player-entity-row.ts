@@ -21,14 +21,32 @@ import {
   SUPPORTS_PLAY,
   SUPPORT_NEXT_TRACK,
   SUPPORT_PAUSE,
+  SUPPORT_TURN_ON,
+  SUPPORT_TURN_OFF,
+  SUPPORT_PREVIOUS_TRACK,
+  SUPPORT_VOLUME_SET,
+  SUPPORT_VOLUME_MUTE,
+  SUPPORT_VOLUME_BUTTONS,
 } from "../../../data/media-player";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
+import { computeRTLDirection } from "../../../common/util/compute_rtl";
+import { debounce } from "../../../common/util/debounce";
 
 @customElement("hui-media-player-entity-row")
 class HuiMediaPlayerEntityRow extends LitElement implements LovelaceRow {
   @property() public hass?: HomeAssistant;
-
   @property() private _config?: EntityConfig;
+  @property() private _narrow?: boolean = false;
+  @property() private _veryNarrow?: boolean = false;
+  private _resizeObserver?: ResizeObserver;
+  private _debouncedResizeListener = debounce(
+    () => {
+      this._narrow = (this.parentElement?.clientWidth || 0) < 350;
+      this._veryNarrow = (this.parentElement?.clientWidth || 0) < 300;
+    },
+    250,
+    false
+  );
 
   public setConfig(config: EntityConfig): void {
     if (!config || !config.entity) {
@@ -36,6 +54,21 @@ class HuiMediaPlayerEntityRow extends LitElement implements LovelaceRow {
     }
 
     this._config = config;
+  }
+
+  public connectedCallback(): void {
+    super.connectedCallback();
+    if (!this._resizeObserver) {
+      this._attachObserver();
+    }
+  }
+
+  public disconnectedCallback(): void {
+    this._resizeObserver?.unobserve(this);
+  }
+
+  protected firstUpdated(): void {
+    this._attachObserver();
   }
 
   protected shouldUpdate(changedProps: PropertyValues): boolean {
@@ -68,44 +101,126 @@ class HuiMediaPlayerEntityRow extends LitElement implements LovelaceRow {
         .secondaryText=${this._computeMediaTitle(stateObj)}
       >
         ${stateObj.state === "off" || stateObj.state === "idle"
+          ? supportsFeature(stateObj, SUPPORT_TURN_ON)
+          : supportsFeature(stateObj, SUPPORT_TURN_OFF)
           ? html`
-              <div class="text-content">
-                ${this.hass!.localize(`state.media_player.${stateObj.state}`) ||
-                  this.hass!.localize(`state.default.${stateObj.state}`) ||
-                  stateObj.state}
-              </div>
+              <paper-icon-button
+                icon="hass:power"
+                @click=${this._togglePower}
+              ></paper-icon-button>
             `
-          : html`
-              <div class="controls">
-                ${stateObj.state !== "playing" &&
-                !supportsFeature(stateObj, SUPPORTS_PLAY)
-                  ? ""
-                  : html`
-                      <paper-icon-button
-                        icon="${this._computeControlIcon(stateObj)}"
-                        @click="${this._playPause}"
-                      ></paper-icon-button>
-                    `}
-                ${supportsFeature(stateObj, SUPPORT_NEXT_TRACK)
-                  ? html`
-                      <paper-icon-button
-                        icon="hass:skip-next"
-                        @click="${this._nextTrack}"
-                      ></paper-icon-button>
-                    `
-                  : ""}
-              </div>
-            `}
+          : ""}
       </hui-generic-entity-row>
+      <div class="flex">
+        <div class="volume">
+          ${supportsFeature(stateObj, SUPPORT_VOLUME_MUTE)
+            ? html`
+                <paper-icon-button
+                  .icon=${stateObj.attributes.is_volume_muted
+                    ? "hass:volume-off"
+                    : "hass:volume-high"}
+                  @click=${this._toggleMute}
+                ></paper-icon-button>
+              `
+            : ""}
+          ${!this._narrow && supportsFeature(stateObj, SUPPORT_VOLUME_SET)
+            ? html`
+                <ha-slider
+                  .dir=${computeRTLDirection(this.hass!)}
+                  .value=${Number(stateObj.attributes.volume_level) * 100}
+                  pin
+                  @change=${this._selectedValueChanged}
+                  ignore-bar-touch
+                  id="input"
+                ></ha-slider>
+              `
+            : !this._veryNarrow &&
+              supportsFeature(stateObj, SUPPORT_VOLUME_BUTTONS)
+            ? html`
+                <paper-icon-button
+                  icon="hass:volume-minus"
+                  @click=${this._volumeDown}
+                ></paper-icon-button>
+                <paper-icon-button
+                  icon="hass:volume-plus"
+                  @click=${this._volumeUp}
+                ></paper-icon-button>
+              `
+            : ""}
+        </div>
+        <div class="controls">
+          ${!this._veryNarrow &&
+          supportsFeature(stateObj, SUPPORT_PREVIOUS_TRACK)
+            ? html`
+                <paper-icon-button
+                  icon="hass:skip-previous"
+                  @click=${this._previousTrack}
+                ></paper-icon-button>
+              `
+            : ""}
+          ${stateObj.state !== "playing" &&
+          !supportsFeature(stateObj, SUPPORTS_PLAY)
+            ? ""
+            : html`
+                <paper-icon-button
+                  icon=${this._computeControlIcon(stateObj)}
+                  @click=${this._playPause}
+                ></paper-icon-button>
+              `}
+          ${supportsFeature(stateObj, SUPPORT_NEXT_TRACK)
+            ? html`
+                <paper-icon-button
+                  icon="hass:skip-next"
+                  @click=${this._nextTrack}
+                ></paper-icon-button>
+              `
+            : ""}
+        </div>
+      </div>
     `;
   }
 
   static get styles(): CSSResult {
     return css`
+      :host {
+        display: block;
+      }
+      .flex {
+        display: flex;
+        align-items: center;
+        padding-left: 48px;
+        justify-content: space-between;
+      }
+      .volume {
+        display: flex;
+        flex-grow: 2;
+        flex-shrink: 2;
+      }
       .controls {
         white-space: nowrap;
       }
+      ha-slider {
+        flex-grow: 2;
+        flex-shrink: 2;
+        width: 100%;
+      }
     `;
+  }
+
+  private _attachObserver(): void {
+    if (typeof ResizeObserver !== "function") {
+      import("resize-observer").then((modules) => {
+        modules.install();
+        this._attachObserver();
+      });
+      return;
+    }
+
+    this._resizeObserver = new ResizeObserver(() =>
+      this._debouncedResizeListener()
+    );
+
+    this._resizeObserver.observe(this);
   }
 
   private _computeControlIcon(stateObj: HassEntity): string {
@@ -143,17 +258,62 @@ class HuiMediaPlayerEntityRow extends LitElement implements LovelaceRow {
     return prefix && suffix ? `${prefix}: ${suffix}` : prefix || suffix || "";
   }
 
-  private _playPause(ev: MouseEvent): void {
-    ev.stopPropagation();
+  private _togglePower(): void {
+    const stateObj = this.hass!.states[this._config!.entity];
+
+    this.hass!.callService(
+      "media_player",
+      stateObj.state === "off" || stateObj.state === "idle"
+        ? "turn_on"
+        : "turn_off",
+      {
+        entity_id: this._config!.entity,
+      }
+    );
+  }
+
+  private _playPause(): void {
     this.hass!.callService("media_player", "media_play_pause", {
       entity_id: this._config!.entity,
     });
   }
 
-  private _nextTrack(ev: MouseEvent): void {
-    ev.stopPropagation();
+  private _previousTrack(): void {
+    this.hass!.callService("media_player", "media_previous_track", {
+      entity_id: this._config!.entity,
+    });
+  }
+
+  private _nextTrack(): void {
     this.hass!.callService("media_player", "media_next_track", {
       entity_id: this._config!.entity,
+    });
+  }
+
+  private _toggleMute() {
+    this.hass!.callService("media_player", "volume_mute", {
+      entity_id: this._config!.entity,
+      is_volume_muted: !this.hass!.states[this._config!.entity].attributes
+        .is_volume_muted,
+    });
+  }
+
+  private _volumeDown() {
+    this.hass!.callService("media_player", "volume_down", {
+      entity_id: this._config!.entity,
+    });
+  }
+
+  private _volumeUp() {
+    this.hass!.callService("media_player", "volume_up", {
+      entity_id: this._config!.entity,
+    });
+  }
+
+  private _selectedValueChanged(ev): void {
+    this.hass!.callService("media_player", "volume_set", {
+      entity_id: this._config!.entity,
+      volume_level: ev.target.value / 100,
     });
   }
 }
