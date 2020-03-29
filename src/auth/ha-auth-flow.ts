@@ -15,6 +15,7 @@ import { AuthProvider } from "../data/auth";
 import {
   DataEntryFlowStep,
   DataEntryFlowStepForm,
+  DataEntryFlowStepExternal,
 } from "../data/data_entry_flow";
 import { litLocalizeLiteMixin } from "../mixins/lit-localize-lite-mixin";
 
@@ -36,7 +37,6 @@ class HaAuthFlow extends litLocalizeLiteMixin(LitElement) {
   @internalProperty() private _step?: DataEntryFlowStep;
 
   @internalProperty() private _errorMessage?: string;
-  @internalProperty() private _externalWindow?: Window;
 
   protected render() {
     return html`
@@ -66,21 +66,6 @@ class HaAuthFlow extends litLocalizeLiteMixin(LitElement) {
         this._handleSubmit(ev);
       }
     });
-
-    window.addEventListener(
-      "message",
-      async (message) => {
-        if (
-          message.data.type === "externalCallback" &&
-          message.source === this._externalWindow
-        ) {
-          await this._postFlow(`/auth/login_flow/${this._step?.flow_id}`, {
-            client_id: this.clientId,
-          });
-        }
-      },
-      false
-    );
   }
 
   protected updated(changedProps: PropertyValues): void {
@@ -230,6 +215,31 @@ class HaAuthFlow extends litLocalizeLiteMixin(LitElement) {
     document.location.assign(url);
   }
 
+  private _externalStep(step: DataEntryFlowStepExternal) {
+    const external = window.open(step.url);
+    if (external) {
+      window.addEventListener(
+        "message",
+        async (message: MessageEvent) => {
+          if (
+            message.data.type === "externalCallback" &&
+            message.source === external
+          ) {
+            await this._postFlow(`/auth/login_flow/${step.flow_id}`, {
+              client_id: this.clientId,
+            });
+          }
+        },
+        {
+          once: true,
+        }
+      );
+    } else {
+      this._state = "error";
+      this._errorMessage = "Login window was blocked";
+    }
+  }
+
   private async _updateStep(step: DataEntryFlowStep) {
     let stepData: any = null;
     if (
@@ -254,13 +264,7 @@ class HaAuthFlow extends litLocalizeLiteMixin(LitElement) {
     }
 
     if (step.type === "external") {
-      const external = window.open(step.url);
-      if (external) {
-        this._externalWindow = external;
-      } else {
-        this._state = "error";
-        this._errorMessage = "Login window was blocked";
-      }
+      this._externalStep(step);
     }
 
     await this.updateComplete;
