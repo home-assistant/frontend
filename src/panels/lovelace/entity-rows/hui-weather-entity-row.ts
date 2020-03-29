@@ -176,7 +176,7 @@ class HuiWeatherEntityRow extends LitElement implements LovelaceRow {
     }
 
     let tempLow: number | undefined;
-    let tempHigh = stateObj.attributes.temperature;
+    let tempHigh: number | undefined;
     const today = new Date().getDate();
     const unit = getWeatherUnit(this.hass!, "temperature");
 
@@ -193,6 +193,10 @@ class HuiWeatherEntityRow extends LitElement implements LovelaceRow {
       if (!forecast.templow && (!tempLow || forecast.temperature < tempLow)) {
         tempLow = forecast.temperature;
       }
+    }
+
+    if (!tempLow && !tempHigh) {
+      return undefined;
     }
 
     return `
@@ -248,6 +252,10 @@ class HuiWeatherEntityRow extends LitElement implements LovelaceRow {
 
       .name {
         font-weight: 500;
+      }
+
+      .state {
+        color: var(--secondary-text-color);
       }
 
       .temperature {
