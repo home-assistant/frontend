@@ -13,7 +13,7 @@ export const weatherIcons = {
   rainy: "/static/images/weather/rainy.png",
   snowy: "/static/images/weather/snowy.png",
   "snowy-rainy": "hass:weather-snowy-rainy",
-  sunny: "/static/images/weather/sunny-1.png",
+  sunny: "/static/images/weather/sunny.png",
   windy: "/static/images/weather/windy.png",
   "windy-variant": "hass:weather-windy-variant",
 };

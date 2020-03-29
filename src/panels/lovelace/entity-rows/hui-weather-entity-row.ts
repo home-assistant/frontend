@@ -75,28 +75,12 @@ class HuiWeatherEntityRow extends LitElement implements LovelaceRow {
       (this._config.entity &&
         !DOMAINS_HIDE_MORE_INFO.includes(computeDomain(this._config.entity)));
 
+    const secondaryAttribute = this._getSecondaryAttribute(stateObj);
+    const extrema = this._getExtrema(stateObj);
+
     return html`
-      <state-badge
-        class=${classMap({
-          pointer,
-        })}
-        .hass=${this.hass}
-        .stateObj=${stateObj}
-        .overrideImage=${weatherIcons[stateObj.state]}
-        @action=${this._handleAction}
-        .actionHandler=${actionHandler({
-          hasHold: hasAction(this._config!.hold_action),
-          hasDoubleClick: hasAction(this._config!.double_tap_action),
-        })}
-        tabindex=${ifDefined(pointer ? "0" : undefined)}
-      ></state-badge>
-      <div class="temperature">
-        ${stateObj.attributes.temperature}<span
-          >${getWeatherUnit(this.hass, "temperature")}</span
-        >
-      </div>
       <div
-        class="info ${classMap({
+        class="main ${classMap({
           pointer,
         })}"
         @action=${this._handleAction}
@@ -104,29 +88,55 @@ class HuiWeatherEntityRow extends LitElement implements LovelaceRow {
           hasHold: hasAction(this._config!.hold_action),
           hasDoubleClick: hasAction(this._config!.double_tap_action),
         })}
+        tabindex=${ifDefined(pointer ? "0" : undefined)}
       >
-        <div>
-          ${this._config.name || computeStateName(stateObj)}
+        <state-badge
+          .hass=${this.hass}
+          .stateObj=${stateObj}
+          .overrideImage=${weatherIcons[stateObj.state]}
+        ></state-badge>
+        <div class="info">
+          <div class="name">
+            ${this._config.name || computeStateName(stateObj)}
+          </div>
+          <div class="state">
+            ${this.hass.localize(`state.weather.${stateObj.state}`) ||
+              stateObj.state}
+          </div>
         </div>
-        <div class="secondary">
-          ${this.hass.localize(`state.weather.${stateObj.state}`) ||
-            stateObj.state}
+        <div class="temperature">
+          ${stateObj.attributes.temperature}<span
+            >${getWeatherUnit(this.hass, "temperature")}</span
+          >
         </div>
       </div>
-      <div class="attributes pointer">
-        <div>
-          ${this._getExtrema(stateObj)}
-        </div>
-        <div>
-          ${this._getSecondaryAttribute(stateObj)}
-        </div>
+      <div class="attributes">
+        ${secondaryAttribute
+          ? html`
+              <div>
+                ${secondaryAttribute}
+              </div>
+            `
+          : ""}
+        ${secondaryAttribute && extrema
+          ? html`
+              <div>|</div>
+            `
+          : ""}
+        ${extrema
+          ? html`
+              <div>
+                ${extrema}
+              </div>
+            `
+          : ""}
       </div>
     `;
   }
 
-  private _getSecondaryAttribute(stateObj: WeatherEntity): TemplateResult {
+  private _getSecondaryAttribute(stateObj: WeatherEntity): string | undefined {
     if (!stateObj.attributes.forecast?.length) {
-      return html``;
+      return undefined;
     }
 
     const forecastNow = stateObj.attributes.forecast[0];
@@ -141,26 +151,28 @@ class HuiWeatherEntityRow extends LitElement implements LovelaceRow {
       value = forecastNow.humidity.toString();
       attribute = "humidity";
     } else {
-      return html``;
+      return undefined;
     }
 
     if (attribute === "wind_bearing") {
       const cardinalDirection = getWindBearing(value);
-      return html`
+      return `
         ${this.hass!.localize(
           `ui.card.weather.cardinal_direction.${cardinalDirection.toLowerCase()}`
         ) || cardinalDirection}
       `;
     }
 
-    return html`
-      ${value} ${getWeatherUnit(this.hass!, attribute)}
+    return `
+      ${this.hass!.localize(
+        `ui.card.weather.attributes.${attribute}`
+      )}: ${value}${getWeatherUnit(this.hass!, attribute)}
     `;
   }
 
-  private _getExtrema(stateObj: WeatherEntity): TemplateResult {
+  private _getExtrema(stateObj: WeatherEntity): string | undefined {
     if (!stateObj.attributes.forecast?.length) {
-      return html``;
+      return undefined;
     }
 
     let tempLow: number | undefined;
@@ -183,18 +195,37 @@ class HuiWeatherEntityRow extends LitElement implements LovelaceRow {
       }
     }
 
-    return html`
-      ${tempLow
-        ? html`
-            ${tempLow} ${unit}
+    return `
+      ${
+        tempLow
+          ? `
+            ${this.hass!.localize(`ui.card.weather.low`)}
           `
-        : ""}
+          : ""
+      }
+      ${tempLow && tempHigh ? " / " : tempHigh ? "" : ":"}
+      ${
+        tempHigh
+          ? `
+              ${this.hass!.localize(`ui.card.weather.high`)}:
+            `
+          : ""
+      }
+      ${
+        tempLow
+          ? `
+              ${tempLow}${unit}
+            `
+          : ""
+      }
       ${tempLow && tempHigh ? " / " : ""}
-      ${tempHigh
-        ? html`
-            ${tempHigh} ${unit}
-          `
-        : ""}
+      ${
+        tempHigh
+          ? `
+              ${tempHigh}${unit}
+            `
+          : ""
+      }
     `;
   }
 
@@ -204,13 +235,19 @@ class HuiWeatherEntityRow extends LitElement implements LovelaceRow {
 
   static get styles(): CSSResult {
     return css`
-      :host {
-        display: flex;
-        align-items: center;
-      }
-
       .pointer {
         cursor: pointer;
+      }
+
+      .main {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        width: 100%;
+      }
+
+      .name {
+        font-weight: 500;
       }
 
       .temperature {
@@ -229,40 +266,32 @@ class HuiWeatherEntityRow extends LitElement implements LovelaceRow {
       }
 
       .info {
-        flex: 1 0 60px;
-        margin-left: 16px;
+        flex: 1 0;
         display: flex;
         flex-flow: column;
         justify-content: center;
+        margin-left: 16px;
         min-height: 40px;
-        padding: 4px 0;
+        overflow: hidden;
       }
 
-      .info,
       .info > * {
-        white-space: nowrap;
         overflow: hidden;
+        white-space: nowrap;
         text-overflow: ellipsis;
       }
 
-      .secondary {
-        color: var(--secondary-text-color);
-      }
-
       .attributes {
-        margin-left: 16px;
         display: flex;
-        flex-flow: column;
-        justify-content: center;
-        min-height: 40px;
-        align-items: flex-end;
-        padding: 4px 0;
+        justify-content: flex-end;
+        color: var(--secondary-text-color);
+        margin-left: 48px;
       }
 
-      .attributes,
       .attributes > * {
-        white-space: nowrap;
+        padding-left: 8px;
         overflow: hidden;
+        white-space: nowrap;
         text-overflow: ellipsis;
       }
     `;
