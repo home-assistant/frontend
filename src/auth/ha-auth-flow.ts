@@ -325,7 +325,7 @@ class HaAuthFlow extends litLocalizeLiteMixin(LitElement) {
     // To avoid a jumping UI.
     this.style.setProperty("min-height", `${this.offsetHeight}px`);
 
-    await this._postFlow(`/auth/login_flow/${this._step?.flow_id}`, {
+    await this._postFlow(`/auth/login_flow/${this._step.flow_id}`, {
       ...this._stepData,
       client_id: this.clientId,
     });
