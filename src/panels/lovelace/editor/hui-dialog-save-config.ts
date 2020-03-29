@@ -10,6 +10,7 @@ import {
 } from "lit-element";
 import "@polymer/paper-spinner/paper-spinner";
 import "../../../components/dialog/ha-paper-dialog";
+import "../../../components/ha-switch";
 import "../../../components/ha-yaml-editor";
 // tslint:disable-next-line:no-duplicate-imports
 import { HaPaperDialog } from "../../../components/dialog/ha-paper-dialog";
@@ -21,11 +22,14 @@ import { SaveDialogParams } from "./show-save-config-dialog";
 import { PolymerChangedEvent } from "../../../polymer-types";
 import { fireEvent } from "../../../common/dom/fire_event";
 
+const EMPTY_CONFIG = { views: [] };
+
 @customElement("hui-dialog-save-config")
 export class HuiSaveConfig extends LitElement {
   @property() public hass?: HomeAssistant;
 
   @property() private _params?: SaveDialogParams;
+  @property() private _emptyConfig = false;
 
   @property() private _saving: boolean;
   @query("ha-paper-dialog") private _dialog?: HaPaperDialog;
@@ -37,6 +41,7 @@ export class HuiSaveConfig extends LitElement {
 
   public async showDialog(params: SaveDialogParams): Promise<void> {
     this._params = params;
+    this._emptyConfig = false;
     await this.updateComplete;
     this._dialog!.open();
   }
@@ -58,6 +63,7 @@ export class HuiSaveConfig extends LitElement {
           <p>
             ${this.hass!.localize("ui.panel.lovelace.editor.save_config.para")}
           </p>
+
           ${this._params.mode === "storage"
             ? html`
                 <p>
@@ -65,6 +71,11 @@ export class HuiSaveConfig extends LitElement {
                     "ui.panel.lovelace.editor.save_config.para_sure"
                   )}
                 </p>
+                <ha-switch
+                  .checked=${this._emptyConfig}
+                  @change=${this._emptyConfigChanged}
+                  >Start with an empty configuration</ha-switch
+                >
               `
             : html`
                 <p>
@@ -135,6 +146,10 @@ export class HuiSaveConfig extends LitElement {
     fireEvent(this._dialog! as HTMLElement, "iron-resize");
   }
 
+  private _emptyConfigChanged(ev) {
+    this._emptyConfig = ev.target.checked;
+  }
+
   private async _saveConfig(): Promise<void> {
     if (!this.hass || !this._params) {
       return;
@@ -142,7 +157,9 @@ export class HuiSaveConfig extends LitElement {
     this._saving = true;
     try {
       const lovelace = this._params!.lovelace;
-      await lovelace.saveConfig(lovelace.config);
+      await lovelace.saveConfig(
+        this._emptyConfig ? EMPTY_CONFIG : lovelace.config
+      );
       lovelace.setEditMode(true);
       this._saving = false;
       this._closeDialog();
@@ -181,6 +198,9 @@ export class HuiSaveConfig extends LitElement {
           width: 14px;
           height: 14px;
           margin-right: 20px;
+        }
+        ha-switch {
+          padding-bottom: 16px;
         }
       `,
     ];
