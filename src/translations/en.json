@@ -2021,6 +2021,9 @@
               "toggle": "Toggle entities.",
               "description": "The Entities card is the most common type of card. It groups items together into lists."
             },
+            "entity": {
+              "name": "Entity"
+            },
             "button": {
               "name": "Button",
               "description": "The Button card allows you to add buttons to perform tasks."
@@ -2062,6 +2065,7 @@
             },
             "generic": {
               "aspect_ratio": "Aspect Ratio",
+              "attribute": "Attribute",
               "camera_image": "Camera Entity",
               "camera_view": "Camera View",
               "entities": "Entities",
