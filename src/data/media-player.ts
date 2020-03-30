@@ -1,6 +1,9 @@
 import { HassEntity } from "home-assistant-js-websocket";
 import { MediaEntity } from "../types";
 import { computeStateName } from "../common/entity/compute_state_name";
+import { UNAVAILABLE, UNKNOWN } from "./entity";
+import { supportsFeature } from "../common/entity/supports-feature";
+import { stateIcon } from "../common/entity/state_icon";
 
 export const SUPPORT_PAUSE = 1;
 export const SUPPORT_SEEK = 2;
@@ -74,8 +77,9 @@ export class MediaStateController {
   constructor() {}
 
   public addState(stateObj: MediaEntity): void {
-    if (!this._stateObjectArray.length) {
-      this._stateObjectArray.push({ ...stateObj, timestamp: Date.now() });
+    this._stateObjectArray.push({ ...stateObj, timestamp: Date.now() });
+    if (this._updateCallback) {
+      this._updateCallback();
     }
   }
 
@@ -83,14 +87,58 @@ export class MediaStateController {
     this._updateCallback = callback;
   }
 
+  public get state() {
+    return this._mostRecentState.state;
+  }
+
   public get entityName() {
     return computeStateName(this._mostRecentState);
   }
 
-  public get mediaTitle() {
+  public get title() {
+    return this._mostRecentState.attributes.media_title;
+  }
+
+  public get isOff(): boolean {
+    return this._mostRecentState.state === "off";
+  }
+
+  public get isUnavailable(): boolean {
     return (
-      this._mostRecentState.attributes.media_title ||
-      computeMediaDescription(this._mostRecentState)
+      this._mostRecentState.state === UNAVAILABLE ||
+      this._mostRecentState.state === UNKNOWN ||
+      (this.isOff && !supportsFeature(this._mostRecentState, SUPPORT_TURN_ON))
+    );
+  }
+
+  public get description(): string {
+    return computeMediaDescription(this._mostRecentState);
+  }
+
+  public get stateIcon(): string {
+    return stateIcon(this._mostRecentState);
+  }
+
+  public get duration(): number {
+    return this._mostRecentState.attributes.media_duration;
+  }
+
+  public supportsFeature(feature: number): boolean {
+    return supportsFeature(this._mostRecentState, feature);
+  }
+
+  public get showProgressBar(): boolean {
+    return (
+      (this.state === "playing" || this.state === "paused") &&
+      "media_duration" in this._mostRecentState.attributes &&
+      "media_position" in this._mostRecentState.attributes
+    );
+  }
+
+  public get image(): string | undefined {
+    return (
+      this._mostRecentState.attributes.entity_picture_local ||
+      this._mostRecentState.attributes.entity_picture
     );
   }
 
