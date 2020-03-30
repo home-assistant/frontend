@@ -142,11 +142,15 @@ export class MediaStateController {
     );
   }
 
+  public get hasStates(): boolean {
+    return this._stateObjectArray.length !== 0;
+  }
+
   private get _mostRecentState(): MediaEntity {
     return this._stateObjectArray[this._stateObjectArray.length - 1];
   }
 
   private get _oldestState(): MediaEntity {
-    return this._stateObjectArray[this._stateObjectArray.length - 1];
+    return this._stateObjectArray[0];
   }
 }

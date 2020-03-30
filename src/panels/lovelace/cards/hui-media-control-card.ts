@@ -222,14 +222,11 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
       return;
     }
 
-    this._startProgressBar();
+    this._startProgressInterval();
   }
 
   public disconnectedCallback(): void {
-    if (this._progressInterval) {
-      clearInterval(this._progressInterval);
-      this._progressInterval = undefined;
-    }
+    this._clearProgressInterval(true);
   }
 
   protected render(): TemplateResult {
@@ -237,7 +234,7 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
       return html``;
     }
 
-    if (!this.hass!.states[this._config!.entity]) {
+    if (!this._mediaStateController.hasStates) {
       return html`
         <hui-warning
           >${this.hass.localize(
@@ -265,7 +262,7 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
     };
 
     const state = this._mediaStateController.state;
-
+    const mediaDescription = this._mediaStateController.description;
     const isOffState = this._mediaStateController.isOff;
     const isUnavailable = this._mediaStateController.isUnavailable;
     const hasNoImage = !this._mediaStateController.image;
@@ -273,7 +270,6 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
     const showControls =
       controls &&
       (!this._veryNarrow || isOffState || state === "idle" || state === "on");
-    const mediaDescription = this._mediaStateController.description;
 
     return html`
       <ha-card>
@@ -423,10 +419,7 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
     const stateObj = this.hass!.states[this._config!.entity] as MediaEntity;
 
     if (!stateObj) {
-      if (this._progressInterval) {
-        clearInterval(this._progressInterval);
-        this._progressInterval = undefined;
-      }
+      this._clearProgressInterval(true);
       this._foregroundColor = undefined;
       this._backgroundColor = undefined;
       return;
@@ -449,16 +442,8 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
     }
 
     this._updateProgressBar();
-    this._startProgressBar();
-
-    if (
-      this._progressInterval &&
-      ((!this._mediaStateController?.showProgressBar && !this._narrow) ||
-        this._mediaStateController?.state !== "playing")
-    ) {
-      clearInterval(this._progressInterval);
-      this._progressInterval = undefined;
-    }
+    this._startProgressInterval();
+    this._clearProgressInterval();
 
     const oldImage =
       oldHass?.states[this._config.entity]?.attributes.entity_picture_local ||
@@ -476,20 +461,18 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
   }
 
   private _getControls(): ControlButton[] | undefined {
-    const stateObj = this.hass!.states[this._config!.entity] as MediaEntity;
-
-    if (!stateObj) {
+    if (!this._mediaStateController?.hasStates) {
       return undefined;
     }
 
-    const state = stateObj.state;
+    const state = this._mediaStateController.state;
 
     if (state === UNAVAILABLE || state === UNKNOWN) {
       return undefined;
     }
 
     if (state === "off") {
-      return supportsFeature(stateObj, SUPPORT_TURN_ON)
+      return this._mediaStateController.supportsFeature(SUPPORT_TURN_ON)
         ? [
             {
               icon: "hass:power",
@@ -500,7 +483,7 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
     }
 
     if (state === "on") {
-      return supportsFeature(stateObj, SUPPORT_TURN_OFF)
+      return this._mediaStateController.supportsFeature(SUPPORT_TURN_OFF)
         ? [
             {
               icon: "hass:power",
@@ -511,7 +494,7 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
     }
 
     if (state === "idle") {
-      return supportsFeature(stateObj, SUPPORTS_PLAY)
+      return this._mediaStateController.supportsFeature(SUPPORTS_PLAY)
         ? [
             {
               icon: "hass:play",
@@ -523,7 +506,7 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
 
     const buttons: ControlButton[] = [];
 
-    if (supportsFeature(stateObj, SUPPORT_PREVIOUS_TRACK)) {
+    if (this._mediaStateController.supportsFeature(SUPPORT_PREVIOUS_TRACK)) {
       buttons.push({
         icon: "hass:skip-previous",
         action: "media_previous_track",
@@ -532,22 +515,23 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
 
     if (
       (state === "playing" &&
-        (supportsFeature(stateObj, SUPPORT_PAUSE) ||
-          supportsFeature(stateObj, SUPPORT_STOP))) ||
-      (state === "paused" && supportsFeature(stateObj, SUPPORTS_PLAY))
+        (this._mediaStateController.supportsFeature(SUPPORT_PAUSE) ||
+          this._mediaStateController.supportsFeature(SUPPORT_STOP))) ||
+      (state === "paused" &&
+        this._mediaStateController.supportsFeature(SUPPORTS_PLAY))
     ) {
       buttons.push({
         icon:
           state !== "playing"
             ? "hass:play"
-            : supportsFeature(stateObj, SUPPORT_PAUSE)
+            : this._mediaStateController.supportsFeature(SUPPORT_PAUSE)
             ? "hass:pause"
             : "hass:stop",
         action: "media_play_pause",
       });
     }
 
-    if (supportsFeature(stateObj, SUPPORT_NEXT_TRACK)) {
+    if (this._mediaStateController.supportsFeature(SUPPORT_NEXT_TRACK)) {
       buttons.push({
         icon: "hass:skip-next",
         action: "media_next_track",
@@ -559,6 +543,10 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
 
   private _measureCard() {
     const card = this.shadowRoot!.querySelector("ha-card");
+    console.log(this.shadowRoot);
+
+    console.log(card);
+
     if (!card) {
       return;
     }
@@ -581,6 +569,8 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
     );
 
     const card = this.shadowRoot!.querySelector("ha-card");
+    console.log(card);
+
     // If we show an error or warning there is no ha-card
     if (!card) {
       return;
@@ -612,7 +602,7 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
     }
   }
 
-  private _startProgressBar(): void {
+  private _startProgressInterval(): void {
     if (
       !this._progressInterval &&
       this._mediaStateController?.showProgressBar &&
@@ -626,10 +616,20 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
     }
   }
 
-  private _handleSeek(e: MouseEvent): void {
-    const stateObj = this._stateObj!;
+  private _clearProgressInterval(force = false) {
+    if (
+      this._progressInterval &&
+      (force ||
+        (!this._mediaStateController?.showProgressBar && !this._narrow) ||
+        this._mediaStateController?.state !== "playing")
+    ) {
+      clearInterval(this._progressInterval);
+      this._progressInterval = undefined;
+    }
+  }
 
-    if (!supportsFeature(stateObj, SUPPORT_SEEK)) {
+  private _handleSeek(e: MouseEvent): void {
+    if (!this._mediaStateController!.supportsFeature(SUPPORT_SEEK)) {
       return;
     }
 
