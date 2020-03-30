@@ -172,7 +172,7 @@ class HaSceneDashboard extends LitElement {
 
   private _showHelp() {
     showAlertDialog(this, {
-      title: this.hass.localize("ui.panel.config.scene.caption"),
+      title: this.hass.localize("ui.panel.config.scene.picker.header"),
       text: html`
         ${this.hass.localize("ui.panel.config.scene.picker.introduction")}
         <p>
