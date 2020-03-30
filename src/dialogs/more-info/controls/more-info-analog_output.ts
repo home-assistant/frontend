@@ -85,7 +85,7 @@ class MoreInfoAnalogOutput extends LocalizeMixin(EventsMixin(PolymerElement)) {
     };
   }
 
-  stateObjChanged(newVal, oldVal) {
+  private stateObjChanged(newVal, oldVal) {
     const props = {
       value_pctSliderValue: 0,
     };
@@ -103,7 +103,7 @@ class MoreInfoAnalogOutput extends LocalizeMixin(EventsMixin(PolymerElement)) {
     }
   }
 
-  computeClassNames(stateObj) {
+  private computeClassNames(stateObj) {
     const classes = [featureClassNames(stateObj, FEATURE_CLASS_NAMES)];
     if (stateObj && stateObj.state === "on") {
       classes.push("is-on");
@@ -114,14 +114,16 @@ class MoreInfoAnalogOutput extends LocalizeMixin(EventsMixin(PolymerElement)) {
     return classes.join(" ");
   }
 
-  brightnessSliderChanged(ev) {
-    var val_pct = parseInt(ev.target.value, 10);
+  private brightnessSliderChanged(ev) {
+    const valPct = parseInt(ev.target.value, 10);
 
-    if (isNaN(val_pct)) return;
+    if (isNaN(valPct)) {
+      return;
+    }
 
     this.hass.callService("analog_output", "turn_on", {
       entity_id: this.stateObj.entity_id,
-      value_pct: val_pct,
+      value_pct: valPct,
     });
   }
 }
