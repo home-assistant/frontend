@@ -50,15 +50,10 @@ stages:
       - template: templates/azp-job-wheels.yaml@azure
         parameters:
           builderVersion: '$(versionWheels)'
-          builderApk: 'build-base'
-          wheelsLocal: true
+          wheelsRequirement: 'requirement.txt'
           preBuild:
-          - task: NodeTool@0
-            displayName: "Use Node $(versionNode)"
-            inputs:
-              versionSpec: "$(versionNode)"
           - script: |
               set -e
 
-              yarn install
-              script/build_frontend
+              sleep 240
+              echo "home-assistant-frontend==$(Build.SourceBranchName)" > requirement.txt
