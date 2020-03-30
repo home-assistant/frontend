@@ -33,6 +33,8 @@ import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box
 import { RelatedResult, findRelated } from "../../../data/search";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { navigate } from "../../../common/navigate";
+import { computeStateName } from "../../../common/entity/compute_state_name";
+import { ifDefined } from "lit-html/directives/if-defined";
 
 @customElement("ha-config-area-page")
 class HaConfigAreaPage extends LitElement {
@@ -117,15 +119,14 @@ class HaConfigAreaPage extends LitElement {
                 ? devices.map(
                     (device) =>
                       html`
-                        <paper-item
-                          .device=${device}
-                          @click=${this._openDevice}
-                        >
-                          <paper-item-body>
-                            ${computeDeviceName(device, this.hass)}
-                          </paper-item-body>
-                          <ha-icon-next></ha-icon-next>
-                        </paper-item>
+                        <a href="/config/devices/device/${device.id}">
+                          <paper-item>
+                            <paper-item-body>
+                              ${computeDeviceName(device, this.hass)}
+                            </paper-item-body>
+                            <ha-icon-next></ha-icon-next>
+                          </paper-item>
+                        </a>
                       `
                   )
                 : html`
@@ -150,17 +151,22 @@ class HaConfigAreaPage extends LitElement {
                           return state
                             ? html`
                                 <div>
-                                  <paper-item
-                                    .automation=${state}
-                                    @click=${this._openAutomation}
-                                    .disabled=${!state.attributes.id}
+                                  <a
+                                    href=${ifDefined(
+                                      state.attributes.id
+                                        ? `/config/automation/edit/${state.attributes.id}`
+                                        : undefined
+                                    )}
                                   >
-                                    <paper-item-body>
-                                      ${state.attributes.friendly_name ||
-                                        automation}
-                                    </paper-item-body>
-                                    <ha-icon-next></ha-icon-next>
-                                  </paper-item>
+                                    <paper-item
+                                      .disabled=${!state.attributes.id}
+                                    >
+                                      <paper-item-body>
+                                        ${computeStateName(state)}
+                                      </paper-item-body>
+                                      <ha-icon-next></ha-icon-next>
+                                    </paper-item>
+                                  </a>
                                   ${!state.attributes.id
                                     ? html`
                                         <paper-tooltip
@@ -198,16 +204,22 @@ class HaConfigAreaPage extends LitElement {
                           return state
                             ? html`
                                 <div>
-                                  <paper-item
-                                    .scene=${state}
-                                    @click=${this._openScene}
-                                    .disabled=${!state.attributes.id}
+                                  <a
+                                    href=${ifDefined(
+                                      state.attributes.id
+                                        ? `/config/scene/edit/${state.attributes.id}`
+                                        : undefined
+                                    )}
                                   >
-                                    <paper-item-body>
-                                      ${state.attributes.friendly_name || scene}
-                                    </paper-item-body>
-                                    <ha-icon-next></ha-icon-next>
-                                  </paper-item>
+                                    <paper-item
+                                      .disabled=${!state.attributes.id}
+                                    >
+                                      <paper-item-body>
+                                        ${computeStateName(state)}
+                                      </paper-item-body>
+                                      <ha-icon-next></ha-icon-next>
+                                    </paper-item>
+                                  </a>
                                   ${!state.attributes.id
                                     ? html`
                                         <paper-tooltip
@@ -242,15 +254,20 @@ class HaConfigAreaPage extends LitElement {
                           const state = this.hass.states[script];
                           return state
                             ? html`
-                                <paper-item
-                                  .script=${script}
-                                  @click=${this._openScript}
+                                <a
+                                  href=${ifDefined(
+                                    state.attributes.id
+                                      ? `/config/script/edit/${state.attributes.id}`
+                                      : undefined
+                                  )}
                                 >
-                                  <paper-item-body>
-                                    ${state.attributes.friendly_name || script}
-                                  </paper-item-body>
-                                  <ha-icon-next></ha-icon-next>
-                                </paper-item>
+                                  <paper-item>
+                                    <paper-item-body>
+                                      ${computeStateName(state)}
+                                    </paper-item-body>
+                                    <ha-icon-next></ha-icon-next>
+                                  </paper-item>
+                                </a>
                               `
                             : "";
                         })
@@ -310,30 +327,6 @@ class HaConfigAreaPage extends LitElement {
     });
   }
 
-  private _openDevice(ev: Event) {
-    const device = (ev.currentTarget as any).device;
-    navigate(this, `/config/devices/device/${device.id}`);
-  }
-
-  private _openScene(ev: Event) {
-    const state = (ev.currentTarget as any).scene;
-    if (state.attributes.id) {
-      navigate(this, `/config/scene/edit/${state.attributes.id}`);
-    }
-  }
-
-  private _openScript(ev: Event) {
-    const script = (ev.currentTarget as any).script;
-    navigate(this, `/config/script/edit/${script}`);
-  }
-
-  private _openAutomation(ev: Event) {
-    const state = (ev.currentTarget as any).automation;
-    if (state.attributes.id) {
-      navigate(this, `/config/automation/edit/${state.attributes.id}`);
-    }
-  }
-
   static get styles(): CSSResult[] {
     return [
       haStyle,
@@ -382,6 +375,11 @@ class HaConfigAreaPage extends LitElement {
 
         paper-item {
           cursor: pointer;
+        }
+
+        a {
+          text-decoration: none;
+          color: var(--primary-text-color);
         }
 
         paper-item.no-link {
