@@ -11,6 +11,7 @@ import { HomeAssistant } from "../types";
 import { HassEntities } from "home-assistant-js-websocket";
 import { getLocalLanguage } from "../util/hass-translation";
 import { translationMetadata } from "../resources/translations-metadata";
+import { DEFAULT_PANEL } from "../data/panel";
 
 const ensureArray = <T>(val: T | T[]): T[] =>
   Array.isArray(val) ? val : [val];
@@ -172,6 +173,7 @@ export const provideHass = (
       name: "Demo User",
     },
     panelUrl: "lovelace",
+    defaultPanel: DEFAULT_PANEL,
 
     language: localLanguage,
     selectedLanguage: localLanguage,

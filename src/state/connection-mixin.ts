@@ -21,6 +21,7 @@ import { Constructor, ServiceCallResponse } from "../types";
 import { HassBaseEl } from "./hass-base-mixin";
 import { broadcastConnectionStatus } from "../data/connection-status";
 import { subscribeFrontendUserData } from "../data/frontend";
+import { DEFAULT_PANEL } from "../data/panel";
 
 export const connectionMixin = <T extends Constructor<HassBaseEl>>(
   superClass: T
@@ -38,7 +39,7 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
         services: null as any,
         user: null as any,
         panelUrl: (this as any)._panelUrl,
-
+        defaultPanel: DEFAULT_PANEL,
         language: getLocalLanguage(),
         selectedLanguage: null,
         resources: null as any,
