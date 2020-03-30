@@ -72,6 +72,7 @@ export interface DataTableColumnData extends DataTableSortColumnData {
   type?: "numeric" | "icon";
   template?: <T>(data: any, row: T) => TemplateResult | string;
   width?: string;
+  maxWidth?: string;
   grows?: boolean;
 }
 
@@ -241,9 +242,8 @@ export class HaDataTable extends LitElement {
                   class="mdc-data-table__header-cell ${classMap(classes)}"
                   style=${column.width
                     ? styleMap({
-                        [column.grows ? "minWidth" : "width"]: String(
-                          column.width
-                        ),
+                        [column.grows ? "minWidth" : "width"]: column.width,
+                        maxWidth: column.maxWidth || "",
                       })
                     : ""}
                   role="columnheader"
@@ -329,7 +329,10 @@ export class HaDataTable extends LitElement {
                                 ? styleMap({
                                     [column.grows
                                       ? "minWidth"
-                                      : "width"]: String(column.width),
+                                      : "width"]: column.width,
+                                    maxWidth: column.maxWidth
+                                      ? column.maxWidth
+                                      : "",
                                   })
                                 : ""}
                             >
@@ -532,6 +535,7 @@ export class HaDataTable extends LitElement {
         overflow: hidden;
         text-overflow: ellipsis;
         flex-shrink: 0;
+        box-sizing: border-box;
       }
 
       .mdc-data-table__cell.mdc-data-table__cell--icon {
@@ -544,7 +548,7 @@ export class HaDataTable extends LitElement {
         padding-left: 16px;
         /* @noflip */
         padding-right: 0;
-        width: 40px;
+        width: 56px;
       }
       [dir="rtl"] .mdc-data-table__header-cell--checkbox,
       .mdc-data-table__header-cell--checkbox[dir="rtl"],
@@ -591,7 +595,7 @@ export class HaDataTable extends LitElement {
 
       .mdc-data-table__header-cell--icon,
       .mdc-data-table__cell--icon {
-        width: 24px;
+        width: 54px;
       }
 
       .mdc-data-table__header-cell.mdc-data-table__header-cell--icon {
@@ -694,6 +698,9 @@ export class HaDataTable extends LitElement {
       }
       .center {
         text-align: center;
+      }
+      .secondary {
+        color: var(--secondary-text-color);
       }
       .scroller {
         display: flex;
