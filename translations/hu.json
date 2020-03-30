@@ -537,9 +537,11 @@
         "common": {
             "cancel": "Mégse",
             "close": "Bezárás",
+            "delete": "Törlés",
             "loading": "Betöltés",
             "no": "Nem",
             "save": "Mentés",
+            "successfully_deleted": "Sikeresen törölve",
             "successfully_saved": "Sikeresen elmentve",
             "yes": "Igen"
         },
@@ -2076,7 +2078,7 @@
                         "url": "Ablak megnyitása: {url_path}"
                     },
                     "safe-mode": {
-                        "description": "A Home Assistant a konfiguráció betöltése közben bajba került, és most csökkentett módban fut. Vessen egy pillantást a hibanaplóra, hogy lássa, mi romlott el.",
+                        "description": "A Home Assistant a konfiguráció betöltése során problémába ütközött, ezért most csökkentett módban fut. Vess egy pillantást a hibanaplóra, hogy megtudd, mi romlott el.",
                         "header": "Csökkentett mód aktiválva",
                         "show_errors": "Hibák megjelenítése"
                     },
@@ -2171,7 +2173,7 @@
                         },
                         "glance": {
                             "columns": "Oszlopok",
-                            "description": "A Pillantás kártyával több érzékelő csoportosítható egy kompakt nézetbe.",
+                            "description": "A Pillantás kártyával több érzékelő csoportosítható egy kompakt áttekintő nézetbe.",
                             "name": "Pillantás"
                         },
                         "history-graph": {
@@ -2219,6 +2221,7 @@
                             "name": "Kép"
                         },
                         "plant-status": {
+                            "description": "A Növényállapot kártya az összes kedves botanikus számára készült.",
                             "name": "Növény állapota"
                         },
                         "sensor": {
