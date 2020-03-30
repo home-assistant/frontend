@@ -25,16 +25,12 @@ import {
   triggerAutomation,
 } from "../../../data/automation";
 import { formatDateTime } from "../../../common/datetime/format_date_time";
-import { fireEvent, HASSDomEvent } from "../../../common/dom/fire_event";
+import { fireEvent } from "../../../common/dom/fire_event";
 import { showThingtalkDialog } from "./show-dialog-thingtalk";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { configSections } from "../ha-panel-config";
-import {
-  DataTableColumnContainer,
-  RowClickedEvent,
-} from "../../../components/data-table/ha-data-table";
+import { DataTableColumnContainer } from "../../../components/data-table/ha-data-table";
 import memoizeOne from "memoize-one";
-import { navigate } from "../../../common/navigate";
 import { ifDefined } from "lit-html/directives/if-defined";
 
 @customElement("ha-automation-picker")
