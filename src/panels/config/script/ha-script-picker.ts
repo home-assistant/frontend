@@ -1,35 +1,29 @@
-import {
-  LitElement,
-  html,
-  CSSResultArray,
-  css,
-  TemplateResult,
-  property,
-  customElement,
-} from "lit-element";
 import "@polymer/paper-icon-button/paper-icon-button";
 import { HassEntity } from "home-assistant-js-websocket";
-
-import "../../../layouts/hass-tabs-subpage-data-table";
-
-import { computeRTL } from "../../../common/util/compute_rtl";
-
-import "../../../components/ha-fab";
-
-import { computeStateName } from "../../../common/entity/compute_state_name";
-import { haStyle } from "../../../resources/styles";
-import { HomeAssistant, Route } from "../../../types";
-import { triggerScript } from "../../../data/script";
-import { showToast } from "../../../util/toast";
-import { configSections } from "../ha-panel-config";
-import { navigate } from "../../../common/navigate";
-import { fireEvent, HASSDomEvent } from "../../../common/dom/fire_event";
 import {
-  RowClickedEvent,
-  DataTableColumnContainer,
-} from "../../../components/data-table/ha-data-table";
+  css,
+  CSSResultArray,
+  customElement,
+  html,
+  LitElement,
+  property,
+  TemplateResult,
+} from "lit-element";
+import { ifDefined } from "lit-html/directives/if-defined";
 import memoizeOne from "memoize-one";
 import { formatDateTime } from "../../../common/datetime/format_date_time";
+import { fireEvent } from "../../../common/dom/fire_event";
+import { computeStateName } from "../../../common/entity/compute_state_name";
+import { computeRTL } from "../../../common/util/compute_rtl";
+import { DataTableColumnContainer } from "../../../components/data-table/ha-data-table";
+import "../../../components/ha-fab";
+import { triggerScript } from "../../../data/script";
+import "../../../layouts/hass-tabs-subpage-data-table";
+import { haStyle } from "../../../resources/styles";
+import { HomeAssistant, Route } from "../../../types";
+import { showToast } from "../../../util/toast";
+import { configSections } from "../ha-panel-config";
+import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
 
 @customElement("ha-script-picker")
 class HaScriptPicker extends LitElement {
@@ -104,13 +98,15 @@ class HaScriptPicker extends LitElement {
         edit: {
           title: "",
           type: "icon-button",
-          template: (_info) => html`
-            <paper-icon-button
-              icon="hass:pencil"
-              title="${this.hass.localize(
-                "ui.panel.config.script.picker.edit_script"
-              )}"
-            ></paper-icon-button>
+          template: (_info, script: any) => html`
+            <a href="/config/script/edit/${script.entity_id}">
+              <paper-icon-button
+                icon="hass:pencil"
+                title="${this.hass.localize(
+                  "ui.panel.config.script.picker.edit_script"
+                )}"
+              ></paper-icon-button>
+            </a>
           `,
         },
       };
@@ -131,8 +127,12 @@ class HaScriptPicker extends LitElement {
         .noDataText=${this.hass.localize(
           "ui.panel.config.script.picker.no_scripts"
         )}
-        @row-click=${this._editScript}
       >
+        <paper-icon-button
+          slot="toolbar-icon"
+          icon="hass:help-circle"
+          @click=${this._showHelp}
+        ></paper-icon-button>
       </hass-tabs-subpage-data-table>
       <a href="/config/script/new">
         <ha-fab
@@ -167,10 +167,22 @@ class HaScriptPicker extends LitElement {
     fireEvent(this, "hass-more-info", { entityId });
   }
 
-  private _editScript(ev: HASSDomEvent<RowClickedEvent>) {
-    const entityId = ev.detail.id;
-    const state = this.hass.states[entityId];
-    navigate(this, `/config/script/edit/${state.entity_id}`);
+  private _showHelp() {
+    showAlertDialog(this, {
+      title: this.hass.localize("ui.panel.config.script.caption"),
+      text: html`
+        ${this.hass.localize("ui.panel.config.script.picker.introduction")}
+        <p>
+          <a
+            href="https://home-assistant.io/docs/scripts/editor/"
+            target="_blank"
+            rel="noreferrer"
+          >
+            ${this.hass.localize("ui.panel.config.script.picker.learn_more")}
+          </a>
+        </p>
+      `,
+    });
   }
 
   static get styles(): CSSResultArray {

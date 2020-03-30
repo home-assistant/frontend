@@ -622,8 +622,20 @@ export class HaDataTable extends LitElement {
 
       .mdc-data-table__header-cell--icon-button,
       .mdc-data-table__cell--icon-button {
-        width: 40px;
-        padding: 4px;
+        width: 56px;
+        padding: 8px;
+      }
+
+      .mdc-data-table__header-cell--icon-button:first-child,
+      .mdc-data-table__cell--icon-button:first-child {
+        width: 64px;
+        padding-left: 16px;
+      }
+
+      .mdc-data-table__header-cell--icon-button:last-child,
+      .mdc-data-table__cell--icon-button:last-child {
+        width: 64px;
+        padding-right: 16px;
       }
 
       .mdc-data-table__cell--icon-button a {
