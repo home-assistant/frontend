@@ -45,6 +45,7 @@ import { SceneEntities, showSceneEditor } from "../../../data/scene";
 import { navigate } from "../../../common/navigate";
 import { showDeviceAutomationDialog } from "./device-detail/show-dialog-device-automation";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
+import { ifDefined } from "lit-html/directives/if-defined";
 
 export interface EntityRegistryStateEntry extends EntityRegistryEntry {
   stateName?: string;
@@ -203,7 +204,7 @@ export class HaConfigDevicePage extends LitElement {
                   />
                 </div>
           </div>
-          <div class="left">
+          <div class="column">
               <ha-device-info-card
                 .hass=${this.hass}
                 .areas=${this.areas}
@@ -234,7 +235,6 @@ export class HaConfigDevicePage extends LitElement {
                 : html``
             }
           </div>
-          <div class="right">
             <div class="column">
             ${
               isComponentLoaded(this.hass, "automation")
@@ -258,16 +258,23 @@ export class HaConfigDevicePage extends LitElement {
                             return state
                               ? html`
                                   <div>
-                                    <paper-item
-                                      .automation=${state}
-                                      @click=${this._openAutomation}
-                                      .disabled=${!state.attributes.id}
+                                    <a
+                                      href=${ifDefined(
+                                        state.attributes.id
+                                          ? `/config/automation/edit/${state.attributes.id}`
+                                          : undefined
+                                      )}
                                     >
-                                      <paper-item-body>
-                                        ${computeStateName(state)}
-                                      </paper-item-body>
-                                      <ha-icon-next></ha-icon-next>
-                                    </paper-item>
+                                      <paper-item
+                                        .automation=${state}
+                                        .disabled=${!state.attributes.id}
+                                      >
+                                        <paper-item-body>
+                                          ${computeStateName(state)}
+                                        </paper-item-body>
+                                        <ha-icon-next></ha-icon-next>
+                                      </paper-item>
+                                    </a>
                                     ${!state.attributes.id
                                       ? html`
                                           <paper-tooltip
@@ -324,16 +331,23 @@ export class HaConfigDevicePage extends LitElement {
                                 return state
                                   ? html`
                                       <div>
-                                        <paper-item
-                                          .scene=${state}
-                                          @click=${this._openScene}
-                                          .disabled=${!state.attributes.id}
+                                        <a
+                                          href=${ifDefined(
+                                            state.attributes.id
+                                              ? `/config/scene/edit/${state.attributes.id}`
+                                              : undefined
+                                          )}
                                         >
-                                          <paper-item-body>
-                                            ${computeStateName(state)}
-                                          </paper-item-body>
-                                          <ha-icon-next></ha-icon-next>
-                                        </paper-item>
+                                          <paper-item
+                                            .scene=${state}
+                                            .disabled=${!state.attributes.id}
+                                          >
+                                            <paper-item-body>
+                                              ${computeStateName(state)}
+                                            </paper-item-body>
+                                            <ha-icon-next></ha-icon-next>
+                                          </paper-item>
+                                        </a>
                                         ${!state.attributes.id
                                           ? html`
                                               <paper-tooltip
@@ -381,15 +395,20 @@ export class HaConfigDevicePage extends LitElement {
                               const state = this.hass.states[script];
                               return state
                                 ? html`
-                                    <paper-item
-                                      .script=${script}
-                                      @click=${this._openScript}
+                                    <a
+                                      href=${ifDefined(
+                                        state.attributes.id
+                                          ? `/config/script/edit/${state.attributes.id}`
+                                          : undefined
+                                      )}
                                     >
-                                      <paper-item-body>
-                                        ${computeStateName(state)}
-                                      </paper-item-body>
-                                      <ha-icon-next></ha-icon-next>
-                                    </paper-item>
+                                      <paper-item .script=${script}>
+                                        <paper-item-body>
+                                          ${computeStateName(state)}
+                                        </paper-item-body>
+                                        <ha-icon-next></ha-icon-next>
+                                      </paper-item>
+                                    </a>
                                   `
                                 : "";
                             })
@@ -405,7 +424,6 @@ export class HaConfigDevicePage extends LitElement {
                   : ""
               }
             </div>
-          </div>
         </div>
         </ha-config-section>
       </hass-tabs-subpage>    `;
@@ -446,25 +464,6 @@ export class HaConfigDevicePage extends LitElement {
     showSceneEditor(this, {
       entities,
     });
-  }
-
-  private _openScene(ev: Event) {
-    const state = (ev.currentTarget as any).scene;
-    if (state.attributes.id) {
-      navigate(this, `/config/scene/edit/${state.attributes.id}`);
-    }
-  }
-
-  private _openScript(ev: Event) {
-    const script = (ev.currentTarget as any).script;
-    navigate(this, `/config/script/edit/${script}`);
-  }
-
-  private _openAutomation(ev: Event) {
-    const state = (ev.currentTarget as any).automation;
-    if (state.attributes.id) {
-      navigate(this, `/config/automation/edit/${state.attributes.id}`);
-    }
   }
 
   private _showScriptDialog() {
@@ -586,26 +585,18 @@ export class HaConfigDevicePage extends LitElement {
         justify-content: space-between;
       }
 
-      .left,
       .column,
       .fullwidth {
         padding: 8px;
         box-sizing: border-box;
       }
-
-      .left {
-        width: 33.33%;
-        padding-bottom: 0;
+      .column {
+        width: 33%;
+        flex-grow: 1;
       }
-
-      .right {
-        width: 66.66%;
-        display: flex;
-        flex-wrap: wrap;
-      }
-
       .fullwidth {
         width: 100%;
+        flex-grow: 1;
       }
 
       .header-right {
@@ -635,17 +626,10 @@ export class HaConfigDevicePage extends LitElement {
         display: flex;
       }
 
-      .column {
-        width: 50%;
-      }
-
-      .left > *:not(:first-child),
       .column > *:not(:first-child) {
         margin-top: 16px;
       }
 
-      :host([narrow]) .left,
-      :host([narrow]) .right,
       :host([narrow]) .column {
         width: 100%;
       }
@@ -660,6 +644,11 @@ export class HaConfigDevicePage extends LitElement {
 
       paper-item.no-link {
         cursor: default;
+      }
+
+      a {
+        text-decoration: none;
+        color: var(--primary-text-color);
       }
     `;
   }
