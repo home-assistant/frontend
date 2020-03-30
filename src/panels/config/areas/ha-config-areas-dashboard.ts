@@ -172,29 +172,12 @@ export class HaConfigAreasDashboard extends LitElement {
         --app-header-background-color: var(--sidebar-background-color);
         --app-header-text-color: var(--sidebar-text-color);
       }
-      a {
-        color: var(--primary-color);
-      }
-      ha-card {
-        max-width: 600px;
-        margin: 16px auto;
-        overflow: hidden;
-      }
-      .empty {
-        text-align: center;
-      }
-      paper-item {
-        cursor: pointer;
-        padding-top: 4px;
-        padding-bottom: 4px;
-      }
       ha-fab {
         position: fixed;
         bottom: 16px;
         right: 16px;
         z-index: 1;
       }
-
       ha-fab[is-wide] {
         bottom: 24px;
         right: 24px;
