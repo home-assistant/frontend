@@ -5,18 +5,16 @@ import { fireEvent } from "../common/dom/fire_event";
 export const DEFAULT_PANEL = "lovelace";
 
 export const getStorageDefaultPanelUrlPath = () =>
-  localStorage.defaultPanel || DEFAULT_PANEL;
-
-export const getDefaultPanelUrlPath = (hass: HomeAssistant) =>
-  hass.defaultPanel || DEFAULT_PANEL;
+  localStorage.defaultPanel
+    ? JSON.parse(localStorage.defaultPanel)
+    : DEFAULT_PANEL;
 
 export const setDefaultPanel = (element: HTMLElement, urlPath: string) => {
   fireEvent(element, "hass-default-panel", { defaultPanel: urlPath });
 };
 
 export const getDefaultPanel = (hass: HomeAssistant) =>
-  (hass.defaultPanel && hass.panels[hass.defaultPanel]) ||
-  hass.panels[DEFAULT_PANEL];
+  hass.panels[hass.defaultPanel];
 
 export const getPanelTitle = (hass: HomeAssistant): string | undefined => {
   if (!hass.panels) {

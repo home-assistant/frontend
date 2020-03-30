@@ -32,7 +32,7 @@ import { classMap } from "lit-html/directives/class-map";
 import { PaperIconItemElement } from "@polymer/paper-item/paper-icon-item";
 import { computeRTL } from "../common/util/compute_rtl";
 import { compare } from "../common/string/compare";
-import { getDefaultPanelUrlPath, getDefaultPanel } from "../data/panel";
+import { getDefaultPanel } from "../data/panel";
 
 const SHOW_AFTER_SPACER = ["config", "developer-tools", "hassio"];
 
@@ -87,10 +87,8 @@ const computePanels = (hass: HomeAssistant): [PanelInfo[], PanelInfo[]] => {
   const beforeSpacer: PanelInfo[] = [];
   const afterSpacer: PanelInfo[] = [];
 
-  const defaultPage = getDefaultPanelUrlPath(hass);
-
   Object.values(panels).forEach((panel) => {
-    if (!panel.title || panel.url_path === defaultPage) {
+    if (!panel.title || panel.url_path === hass.defaultPanel) {
       return;
     }
     (SHOW_AFTER_SPACER.includes(panel.url_path)

@@ -19,11 +19,7 @@ import { PolymerChangedEvent } from "../../../../polymer-types";
 import { HaSwitch } from "../../../../components/ha-switch";
 import { createCloseHeading } from "../../../../components/ha-dialog";
 import { haStyleDialog } from "../../../../resources/styles";
-import {
-  setDefaultPanel,
-  getDefaultPanelUrlPath,
-  DEFAULT_PANEL,
-} from "../../../../data/panel";
+import { setDefaultPanel, DEFAULT_PANEL } from "../../../../data/panel";
 
 @customElement("dialog-lovelace-dashboard-detail")
 export class DialogLovelaceDashboardDetail extends LitElement {
@@ -62,7 +58,7 @@ export class DialogLovelaceDashboardDetail extends LitElement {
     if (!this._params) {
       return html``;
     }
-    const defaultPanelUrlPath = getDefaultPanelUrlPath(this.hass);
+    const defaultPanelUrlPath = this.hass.defaultPanel;
     const urlInvalid =
       this._params.urlPath !== "lovelace" &&
       !/^[a-zA-Z0-9_-]+-[a-zA-Z0-9_-]+$/.test(this._urlPath);
@@ -249,7 +245,7 @@ export class DialogLovelaceDashboardDetail extends LitElement {
     }
     setDefaultPanel(
       this,
-      urlPath === getDefaultPanelUrlPath(this.hass) ? DEFAULT_PANEL : urlPath
+      urlPath === this.hass.defaultPanel ? DEFAULT_PANEL : urlPath
     );
   }
 

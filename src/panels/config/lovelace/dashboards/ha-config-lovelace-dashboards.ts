@@ -32,7 +32,6 @@ import { compare } from "../../../../common/string/compare";
 import { showConfirmationDialog } from "../../../../dialogs/generic/show-dialog-box";
 import { lovelaceTabs } from "../ha-config-lovelace";
 import { navigate } from "../../../../common/navigate";
-import { getDefaultPanelUrlPath } from "../../../../data/panel";
 
 @customElement("ha-config-lovelace-dashboards")
 export class HaConfigLovelaceDashboards extends LitElement {
@@ -185,7 +184,7 @@ export class HaConfigLovelaceDashboards extends LitElement {
   private _getItems = memoize((dashboards: LovelaceDashboard[]) => {
     const defaultMode = (this.hass.panels?.lovelace
       ?.config as LovelacePanelConfig).mode;
-    const defaultUrlPath = getDefaultPanelUrlPath(this.hass);
+    const defaultUrlPath = this.hass.defaultPanel;
     const isDefault = defaultUrlPath === "lovelace";
     return [
       {

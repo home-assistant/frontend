@@ -14,7 +14,7 @@ import "../../components/ha-paper-dropdown-menu";
 
 import { HomeAssistant } from "../../types";
 import { LovelaceDashboard, fetchDashboards } from "../../data/lovelace";
-import { getDefaultPanelUrlPath, setDefaultPanel } from "../../data/panel";
+import { setDefaultPanel } from "../../data/panel";
 
 @customElement("ha-pick-dashboard-row")
 class HaPickDashboardRow extends LitElement {
@@ -45,7 +45,7 @@ class HaPickDashboardRow extends LitElement {
         >
           <paper-listbox
             slot="dropdown-content"
-            .selected=${getDefaultPanelUrlPath(this.hass)}
+            .selected=${this.hass.defaultPanel}
             @iron-select=${this._dashboardChanged}
             attr-for-selected="url-path"
           >
@@ -72,7 +72,7 @@ class HaPickDashboardRow extends LitElement {
 
   private _dashboardChanged(ev: CustomEvent) {
     const urlPath = ev.detail.item.getAttribute("url-path");
-    if (!urlPath || urlPath === getDefaultPanelUrlPath(this.hass)) {
+    if (!urlPath || urlPath === this.hass.defaultPanel) {
       return;
     }
     setDefaultPanel(this, urlPath);
