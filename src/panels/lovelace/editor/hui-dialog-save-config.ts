@@ -74,7 +74,9 @@ export class HuiSaveConfig extends LitElement {
                 <ha-switch
                   .checked=${this._emptyConfig}
                   @change=${this._emptyConfigChanged}
-                  >Start with an empty configuration</ha-switch
+                  >${this.hass!.localize(
+                    "ui.panel.lovelace.editor.save_config.empty_config"
+                  )}</ha-switch
                 >
               `
             : html`
