@@ -35,6 +35,7 @@ import {
 } from "../../../components/data-table/ha-data-table";
 import memoizeOne from "memoize-one";
 import { navigate } from "../../../common/navigate";
+import { ifDefined } from "lit-html/directives/if-defined";
 
 @customElement("ha-automation-picker")
 class HaAutomationPicker extends LitElement {
@@ -90,10 +91,10 @@ class HaAutomationPicker extends LitElement {
         },
       };
       if (!narrow) {
-        columns.excecute = {
+        columns.execute = {
           title: "",
           template: (_info, automation) => html`
-            <mwc-button .automation=${automation} @click=${this._excecute}>
+            <mwc-button .automation=${automation} @click=${this._execute}>
               ${this.hass.localize("ui.card.automation.trigger")}
             </mwc-button>
           `,
@@ -117,15 +118,23 @@ class HaAutomationPicker extends LitElement {
         title: "",
         type: "icon-button",
         template: (_info, automation: any) => html`
-          <paper-icon-button
-            .icon=${automation.attributes.id
-              ? "hass:pencil"
-              : "hass:pencil-off"}
-            .disabled=${!automation.attributes.id}
-            title="${this.hass.localize(
-              "ui.panel.config.automation.picker.show_info_automation"
-            )}"
-          ></paper-icon-button>
+          <a
+            href=${ifDefined(
+              automation.attributes.id
+                ? `/config/automation/edit/${automation.attributes.id}`
+                : undefined
+            )}
+          >
+            <paper-icon-button
+              .icon=${automation.attributes.id
+                ? "hass:pencil"
+                : "hass:pencil-off"}
+              .disabled=${!automation.attributes.id}
+              title="${this.hass.localize(
+                "ui.panel.config.automation.picker.show_info_automation"
+              )}"
+            ></paper-icon-button>
+          </a>
           ${!automation.attributes.id
             ? html`
                 <paper-tooltip position="left">
@@ -155,7 +164,6 @@ class HaAutomationPicker extends LitElement {
         .noDataText=${this.hass.localize(
           "ui.panel.config.automation.picker.no_automations"
         )}
-        @row-click=${this._editAutomation}
       >
       </hass-tabs-subpage-data-table>
       <ha-fab
@@ -178,17 +186,9 @@ class HaAutomationPicker extends LitElement {
     fireEvent(this, "hass-more-info", { entityId });
   }
 
-  private _excecute(ev) {
+  private _execute(ev) {
     const entityId = ev.currentTarget.automation.entity_id;
     triggerAutomation(this.hass, entityId);
-  }
-
-  private _editAutomation(ev: HASSDomEvent<RowClickedEvent>) {
-    const entityId = ev.detail.id;
-    const state = this.hass.states[entityId];
-    if (state?.attributes.id) {
-      navigate(this, `/config/automation/edit/${state.attributes.id}`);
-    }
   }
 
   private _createNew() {
