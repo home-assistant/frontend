@@ -246,7 +246,7 @@ class HaEntityPicker extends LitElement {
       paper-input > paper-icon-button {
         width: 24px;
         height: 24px;
-        padding: 2px;
+        padding: 0px 2px;
         color: var(--secondary-text-color);
       }
       [hidden] {

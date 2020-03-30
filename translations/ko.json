@@ -537,9 +537,11 @@
         "common": {
             "cancel": "취소",
             "close": "닫기",
+            "delete": "삭제",
             "loading": "읽는 중",
             "no": "아니오",
             "save": "저장",
+            "successfully_deleted": "성공적으로 삭제되었습니다",
             "successfully_saved": "성공적으로 저장되었습니다",
             "yes": "예"
         },
@@ -633,7 +635,7 @@
                     "unavailable": "이 구성요소는 현재 사용할 수 없습니다.",
                     "update": "업데이트"
                 },
-                "no_unique_id": "이 구성요소는 고유한 ID 가 없으므로 설정을 UI 에서 관리할 수 없습니다.",
+                "no_unique_id": "이 구성요소는 고유한 ID 가 없으므로 UI 에서 설정 내용을 관리할 수 없습니다.",
                 "related": "관련 내용",
                 "settings": "설정 내용"
             },
@@ -664,7 +666,7 @@
                     "min": "최소값",
                     "mode": "디스플레이 모드",
                     "slider": "슬라이더",
-                    "step": "슬라이더의 간격 크기",
+                    "step": "슬라이더 간격",
                     "unit_of_measurement": "측정 단위"
                 },
                 "input_select": {
@@ -683,7 +685,7 @@
                 },
                 "not_editable": "수정 불가능",
                 "not_editable_text": "이 구성요소는 configuration.yaml 에서 정의되었기 때문에 UI 에서 수정할 수 없습니다.",
-                "platform_not_loaded": "{platform} 통합 구성요소가 로드되지 않았습니다. 구성을 추가해주세요. 'default_config:' 또는 '{platform} :' 을 추가해주세요.",
+                "platform_not_loaded": "{platform} 통합 구성요소가 로드되지 않았습니다. 'default_config:' 또는 '{platform} :' 을 추가하여 구성을 추가해주세요.",
                 "required_error_msg": "이 입력란은 필수 요소입니다",
                 "yaml_not_editable": "이 구성요소의 설정은 UI 에서 편집할 수 없습니다. UI 에서 설정한 구성요소만 UI 에서 구성할 수 있습니다."
             },
@@ -1247,12 +1249,12 @@
                         },
                         "server_control": {
                             "reloading": {
-                                "automation": "자동화 새로고침",
-                                "core": "코어 새로고침",
-                                "group": "그룹 새로고침",
-                                "heading": "구성 내용 새로고침",
-                                "introduction": "Home Assistant 의 일부 구성 내용은 재시작 없이 다시 읽어들일 수 있습니다. 새로고침을 누르면 현재 구성 내용을 내리고 새로운 구성 내용을 읽어들입니다.",
-                                "script": "스크립트 새로고침"
+                                "automation": "자동화 다시 읽어오기",
+                                "core": "코어 다시 읽어오기",
+                                "group": "그룹 다시 읽어오기",
+                                "heading": "구성 내용 다시 읽어오기",
+                                "introduction": "Home Assistant 의 일부 구성 내용은 재시작 없이 다시 읽어들일 수 있습니다. 다시 읽어오기를 누르면 현재 구성 내용을 내리고 새로운 구성 내용을 읽어들입니다.",
+                                "script": "스크립트 다시 읽어오기"
                             },
                             "server_management": {
                                 "heading": "서버 관리",
@@ -1310,6 +1312,7 @@
                     "automations": "자동화",
                     "cant_edit": "UI 에서 작성된 항목만 편집할 수 있습니다.",
                     "caption": "기기",
+                    "confirm_delete": "이 기기를 삭제하시겠습니까?",
                     "confirm_rename_entity_ids": "구성요소의 ID 이름 또한 바꾸시겠습니까?",
                     "data_table": {
                         "area": "영역",
@@ -1320,6 +1323,7 @@
                         "model": "모델",
                         "no_devices": "기기 없음"
                     },
+                    "delete": "삭제",
                     "description": "연결된 기기를 관리합니다",
                     "details": "기기의 모든 세부 정보는 다음과 같습니다.",
                     "device_not_found": "기기를 찾을 수 없습니다.",
@@ -1413,7 +1417,7 @@
                 "header": "Home Assistant 설정",
                 "helpers": {
                     "caption": "도우미",
-                    "description": "자동화를 구축하는 데 도움이 되는 요소입니다.",
+                    "description": "자동화 구축에 도움이 되는 요소입니다",
                     "dialog": {
                         "add_helper": "도우미 추가",
                         "add_platform": "{platform} 추가",
@@ -1469,6 +1473,7 @@
                         },
                         "failed_create_area": "영역을 만들지 못했습니다.",
                         "finish": "완료",
+                        "loading_first_time": "통합 구성요소가 설치되는 동안 기다려주세요",
                         "name_new_area": "새로운 영역의 이름?",
                         "not_all_required_fields": "필수 입력란이 모두 채워지지 않았습니다.",
                         "submit": "확인"
@@ -1500,7 +1505,7 @@
                 "lovelace": {
                     "caption": "Lovelace 대시보드",
                     "dashboards": {
-                        "cant_edit_default": "표준 Lovelace 대시보드는 UI 에서 편집할 수 없습니다. 다른 대시보드를 기본값으로 설정하여 숨길 수 있습니다.",
+                        "cant_edit_default": "기본 Lovelace 대시보드는 UI 에서 편집할 수 없습니다. 다른 대시보드를 기본값으로 설정하여 숨길 수 있습니다.",
                         "cant_edit_yaml": "YAML 에서 정의된 대시보드는 UI 에서 편집할 수 없습니다. configuration.yaml 파일에서 수정해주세요.",
                         "caption": "대시보드",
                         "conf_mode": {
@@ -1524,7 +1529,7 @@
                             "title_required": "제목은 필수 요소입니다",
                             "update": "업데이트",
                             "url": "URL",
-                            "url_error_msg": "URL 은 _ 와 - 를 제외한 공백이나 특수 문자를 포함할 수 없습니다."
+                            "url_error_msg": "URL 은 - 를 포함해야 하며 _ 및 - 를 제외한 공백이나 특수 문자를 포함할 수 없습니다"
                         },
                         "picker": {
                             "add_dashboard": "대시보드 추가",
@@ -1541,7 +1546,7 @@
                     },
                     "description": "Lovelace 대시보드를 구성합니다",
                     "resources": {
-                        "cant_edit_yaml": "Lovelace 를 YAML 모드로 사용 중 이므로 UI 에서 리소스를 관리할 수 없습니다. configuration.yaml 에서 관리해주세요.",
+                        "cant_edit_yaml": "YAML 모드에서 Lovelace 를 사용하고 있으므로 UI 를 통해 리소스를 관리할 수 없습니다. configuration.yaml 에서 관리해주세요.",
                         "caption": "리소스",
                         "confirm_delete": "이 리소스를 삭제하시겠습니까?",
                         "detail": {
@@ -1671,15 +1676,15 @@
                     "description": "Home Assistant 서버를 재시작 또는 중지합니다",
                     "section": {
                         "reloading": {
-                            "automation": "자동화 새로고침",
-                            "core": "위치 및 사용자화 새로고침",
-                            "group": "그룹 새로고침",
+                            "automation": "자동화 다시 읽어오기",
+                            "core": "위치 및 사용자화 다시 읽어오기",
+                            "group": "그룹 다시 읽어오기",
                             "heading": "YAML 구성 다시 읽어오기",
-                            "introduction": "Home Assistant 의 일부 구성 내용은 재시작 없이 다시 읽어 들일 수 있습니다. 새로고침을 누르면 현재 사용 중인 YAML 구성 내용을 내리고 새로운 구성 내용을 읽어 들입니다.",
-                            "person": "구성원 새로고침",
-                            "scene": "씬 다시읽기",
-                            "script": "스크립트 새로고침",
-                            "zone": "지역 새로고침"
+                            "introduction": "Home Assistant 의 일부 구성 내용은 재시작 없이 다시 읽어 들일 수 있습니다. 다시 읽어오기를 누르면 현재 사용 중인 YAML 구성 내용을 내리고 새로운 구성 내용을 읽어 들입니다.",
+                            "person": "구성원 다시 읽어오기",
+                            "scene": "씬 다시 읽어오기",
+                            "script": "스크립트 다시 읽어오기",
+                            "zone": "지역 다시 읽어오기"
                         },
                         "server_management": {
                             "confirm_restart": "Home Assistant 를 재시작하시겠습니까?",
@@ -2052,7 +2057,7 @@
                 "add_entities": {
                     "generated_unsupported": "Lovelace UI 를 직접 관리하는 경우에만 이 기능을 사용할 수 있습니다.",
                     "saving_failed": "Lovelace UI 구성을 저장하지 못했습니다.",
-                    "yaml_unsupported": "Lovelace UI 를 YAML 모드로 사용하는 경우 이 기능은 사용할 수 없습니다."
+                    "yaml_unsupported": "YAML 모드에서 Lovelace UI 를 사용하는 경우 이 기능은 사용할 수 없습니다."
                 },
                 "cards": {
                     "confirm_delete": "이 카드를 삭제하시겠습니까?",
@@ -2156,6 +2161,7 @@
                             "maximum": "최대",
                             "minimum": "최소",
                             "name": "이름",
+                            "no_theme": "테마 없음",
                             "refresh_interval": "새로 고침 간격",
                             "show_icon": "아이콘 표시",
                             "show_name": "이름 표시",
@@ -2252,6 +2258,7 @@
                     "edit_card": {
                         "add": "카드 추가하기",
                         "delete": "카드 삭제",
+                        "duplicate": "카드 복사",
                         "edit": "편집",
                         "header": "카드 구성",
                         "move": "다른 뷰로 이동",
@@ -2280,7 +2287,7 @@
                         "tab_settings": "설정",
                         "tab_visibility": "가시성",
                         "visibility": {
-                            "select_users": "탐색에서 이 뷰를 볼 사용자를 선택해주세요"
+                            "select_users": "이 뷰를 볼 수 있는 사용자를 선택해주세요"
                         }
                     },
                     "header": "UI 편집",
@@ -2318,7 +2325,7 @@
                         "save": "직접 관리할게요",
                         "yaml_config": "시작하는데 도움이 될 수 있는 대시보드의 현재 구성은 다음과 같습니다:",
                         "yaml_control": "YAML 모드로 제어하려면 대시보드의 구성에서 지정한 이름의 YAML 파일을 만들거나 기본 제공된 'ui-lovelace.yaml' 을 사용해주세요.",
-                        "yaml_mode": "YAML 모드를 사용 중이므로 UI 에서 Lovelace 구성을 변경할 수 없습니다. Lovelace 를 UI 에서 변경하려면 'configuration.yaml' 의 Lovelace 구성에서 'mode:yaml'을 제거해주세요."
+                        "yaml_mode": "YAML 모드를 사용 중이므로 UI 에서 Lovelace 구성을 변경할 수 없습니다. Lovelace 를 UI 에서 변경하려면 'configuration.yaml' 의 Lovelace 구성에서 'mode:yaml' 을 제거해주세요."
                     },
                     "suggest_card": {
                         "add": "Lovelace UI 에 추가",
@@ -2328,7 +2335,8 @@
                     "view": {
                         "panel_mode": {
                             "description": "패널 모드는 첫 번째 카드를 전체 너비로 보여줍니다. 이 뷰에서는 다른 카드는 보여지지 않습니다.",
-                            "title": "패널 모드"
+                            "title": "패널 모드",
+                            "warning_multiple_cards": "이 뷰에는 카드가 두 개 이상 포함되어 있지만 패널 모드는 한 개의 카드만 표시할 수 있습니다."
                         }
                     }
                 },
@@ -2338,9 +2346,14 @@
                     "exit_edit_mode": "UI 편집 모드 종료",
                     "help": "도움말",
                     "refresh": "새로고침",
+                    "reload_resources": "리소스 다시 읽어오기",
                     "unused_entities": "미사용 구성요소"
                 },
-                "reload_lovelace": "UI 새로고침",
+                "reload_lovelace": "UI 다시 읽어오기",
+                "reload_resources": {
+                    "refresh_body": "다시 읽어오기를 완료하려면 페이지를 새로 고쳐야 합니다. 지금 새로 고치시겠습니까?",
+                    "refresh_header": "새로 고치시겠습니까?"
+                },
                 "unused_entities": {
                     "available_entities": "사용 가능한 구성요소이지만 아직 Lovelace UI 에는 등록되지 않았습니다.",
                     "domain": "도메인",

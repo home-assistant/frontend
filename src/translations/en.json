@@ -519,11 +519,13 @@
     "common": {
       "loading": "Loading",
       "cancel": "Cancel",
+      "delete": "Delete",
       "close": "Close",
       "save": "Save",
       "yes": "Yes",
       "no": "No",
-      "successfully_saved": "Successfully saved"
+      "successfully_saved": "Successfully saved",
+      "successfully_deleted": "Successfully deleted"
     },
     "components": {
       "entity": {
@@ -652,9 +654,9 @@
           "enabled_label": "Enable entity",
           "enabled_cause": "Disabled by {cause}.",
           "enabled_description": "Disabled entities will not be added to Home Assistant.",
-          "delete": "DELETE",
+          "delete": "Delete",
           "confirm_delete": "Are you sure you want to delete this entry?",
-          "update": "UPDATE",
+          "update": "Update",
           "note": "Note: this might not work yet with all integrations."
         }
       },
@@ -686,7 +688,7 @@
           "mode": "Display mode",
           "box": "Input field",
           "slider": "Slider",
-          "step": "Step size of the slider",
+          "step": "Step size",
           "unit_of_measurement": "Unit of measurement"
         },
         "input_select": {
@@ -783,19 +785,23 @@
         "areas": {
           "caption": "Areas",
           "description": "Overview of all areas in your home.",
+          "data_table": {
+            "area": "Area",
+            "devices": "Devices"
+          },
           "picker": {
             "header": "Areas",
             "introduction": "Areas are used to organize where devices are. This information will be used throughout Home Assistant to help you in organizing your interface, permissions and integrations with other systems.",
             "introduction2": "To place devices in an area, use the link below to navigate to the integrations page and then click on a configured integration to get to the device cards.",
             "integrations_page": "Integrations page",
             "no_areas": "Looks like you have no areas yet!",
-            "create_area": "CREATE AREA"
+            "create_area": "Create Area"
           },
           "editor": {
             "default_name": "New Area",
-            "delete": "DELETE",
-            "update": "UPDATE",
-            "create": "CREATE"
+            "delete": "Delete",
+            "update": "Update",
+            "create": "Create"
           },
           "delete": {
             "confirmation_title": "Are you sure you want to delete this area?",
@@ -887,7 +893,7 @@
               "title": "Title",
               "title_required": "Title is required.",
               "url": "Url",
-              "url_error_msg": "The url should contain a - and cannot contain spaces or special characters, except for _ and -",
+              "url_error_msg": "The URL should contain a - and cannot contain spaces or special characters, except for _ and -",
               "require_admin": "Admin only",
               "delete": "Delete",
               "update": "Update",
@@ -996,7 +1002,10 @@
             "edit_automation": "Edit automation",
             "show_info_automation": "Show info about automation",
             "delete_automation": "Delete automation",
-            "delete_confirm": "Are you sure you want to delete this automation?"
+            "delete_confirm": "Are you sure you want to delete this automation?",
+            "headers": {
+              "name": "Name"
+            }
           },
           "editor": {
             "enable_disable": "Enable/Disable automation",
@@ -1220,8 +1229,12 @@
             "learn_more": "Learn more about scripts",
             "no_scripts": "We couldn’t find any editable scripts",
             "add_script": "Add script",
+            "show_info": "Show info about script",
             "trigger_script": "Trigger script",
-            "edit_script": "Edit script"
+            "edit_script": "Edit script",
+            "headers": {
+              "name": "Name"
+            }
           },
           "editor": {
             "alias": "Name",
@@ -1251,7 +1264,10 @@
             "edit_scene": "Edit scene",
             "show_info_scene": "Show info about scene",
             "delete_scene": "Delete scene",
-            "delete_confirm": "Are you sure you want to delete this scene?"
+            "delete_confirm": "Are you sure you want to delete this scene?",
+            "headers": {
+              "name": "Name"
+            }
           },
           "editor": {
             "introduction": "Use scenes to bring your home alive.",
@@ -1440,6 +1456,7 @@
           "unknown_error": "Unknown error",
           "name": "Name",
           "update": "Update",
+          "no_devices": "No devices",
           "automation": {
             "automations": "Automations",
             "no_automations": "No automations",
@@ -1483,7 +1500,9 @@
             "integration": "Integration",
             "battery": "Battery",
             "no_devices": "No devices"
-          }
+          },
+          "delete": "Delete",
+          "confirm_delete": "Are you sure you want to delete this device?"
         },
         "entities": {
           "caption": "Entities",
@@ -1638,23 +1657,24 @@
             "external_step": {
               "description": "This step requires you to visit an external website to be completed.",
               "open_site": "Open website"
-            }
+            },
+            "loading_first_time": "Please wait while the integration is being installed"
           }
         },
         "users": {
           "caption": "Users",
           "description": "Manage users",
           "picker": {
-            "title": "Users",
-            "system_generated": "System generated"
+            "headers": { "name": "Name", "group": "Group", "system": "System" }
           },
           "editor": {
             "caption": "View user",
-            "rename_user": "Rename user",
+            "name": "Name",
             "change_password": "Change password",
             "activate_user": "Activate user",
             "deactivate_user": "Deactivate user",
             "delete_user": "Delete user",
+            "update_user": "Update",
             "id": "ID",
             "owner": "Owner",
             "group": "Group",
@@ -1662,9 +1682,6 @@
             "system_generated": "System generated",
             "system_generated_users_not_removable": "Unable to remove system generated users.",
             "unnamed_user": "Unnamed User",
-            "enter_new_name": "Enter new name",
-            "user_rename_failed": "User rename failed:",
-            "group_update_failed": "Group update failed:",
             "confirm_user_deletion": "Are you sure you want to delete {name}?"
           },
           "add_user": {
@@ -1950,6 +1967,7 @@
             "add": "Add Card",
             "edit": "Edit",
             "delete": "Delete Card",
+            "duplicate": "Duplicate Card",
             "move": "Move to View",
             "options": "More options"
           },
@@ -1965,6 +1983,7 @@
             "yaml_mode": "You are using YAML mode, which means you cannot change your Lovelace config from the UI. If you want to change Lovelace from the UI, remove 'mode: yaml' from your Lovelace configuration in 'configuration.yaml.'",
             "yaml_control": "To take control in YAML mode, create a YAML file with the name you specified in your config for this dashboard, or the default 'ui-lovelace.yaml'.",
             "yaml_config": "To help you start here is the current config of this dashboard:",
+            "empty_config": "Start with an empty dashboard",
             "cancel": "Never mind",
             "close": "Close",
             "save": "Take control"
@@ -2064,6 +2083,7 @@
               "tap_action": "Tap Action",
               "title": "Title",
               "theme": "Theme",
+              "no_theme": "No theme",
               "unit": "Unit",
               "url": "Url",
               "state": "State"
@@ -2132,7 +2152,8 @@
           "view": {
             "panel_mode": {
               "title": "Panel Mode?",
-              "description": "This renders the first card at full width; other cards in this view will not be rendered."
+              "description": "This renders the first card at full width; other cards in this view will not be rendered.",
+              "warning_multiple_cards": "This view contains more than one card, but a panel view can only show 1 card."
             }
           }
         },
@@ -2185,6 +2206,11 @@
           "error_no_theme": "No themes available.",
           "link_promo": "Learn about themes",
           "dropdown_label": "Theme"
+        },
+        "dashboard": {
+          "header": "Dashboard",
+          "description": "Pick a default dashboard for this device.",
+          "dropdown_label": "Dashboard"
         },
         "change_password": {
           "header": "Change Password",
@@ -2388,11 +2414,6 @@
         "tabs": {
           "info": {
             "title": "Info",
-            "remove": "Remove",
-            "set": "Set",
-            "default_ui": "{action} {name} as default page on this device",
-            "lovelace_ui": "Go to the Lovelace UI",
-            "states_ui": "Go to the states UI",
             "home_assistant_logo": "Home Assistant logo",
             "path_configuration": "Path to configuration.yaml: {path}",
             "developed_by": "Developed by a bunch of awesome people.",

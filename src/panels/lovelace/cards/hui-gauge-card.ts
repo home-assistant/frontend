@@ -22,7 +22,6 @@ import { fireEvent } from "../../../common/dom/fire_event";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
 import { LovelaceCard, LovelaceCardEditor } from "../types";
 import { GaugeCardConfig } from "./types";
-import { LovelaceConfig } from "../../../data/lovelace";
 import { findEntities } from "../common/find-entites";
 import { HassEntity } from "home-assistant-js-websocket/dist/types";
 
@@ -44,10 +43,9 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
 
   public static getStubConfig(
     hass: HomeAssistant,
-    lovelaceConfig: LovelaceConfig,
-    entities?: string[],
-    entitiesFill?: string[]
-  ): object {
+    entities: string[],
+    entitiesFallback: string[]
+  ): GaugeCardConfig {
     const includeDomains = ["sensor"];
     const maxEntities = 1;
     const entityFilter = (stateObj: HassEntity): boolean => {
@@ -56,15 +54,14 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
 
     const foundEntities = findEntities(
       hass,
-      lovelaceConfig,
       maxEntities,
       entities,
-      entitiesFill,
+      entitiesFallback,
       includeDomains,
       entityFilter
     );
 
-    return { entity: foundEntities[0] || "" };
+    return { type: "gauge", entity: foundEntities[0] || "" };
   }
 
   @property() public hass?: HomeAssistant;
@@ -136,7 +133,6 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
       >
         <div class="container">
           <div class="gauge-a"></div>
-          <div class="gauge-b"></div>
           <div
             class="gauge-c"
             style=${styleMap({
@@ -144,16 +140,17 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
               "background-color": this._computeSeverity(state),
             })}
           ></div>
-          <div class="gauge-data">
-            <div id="percent">
-              ${stateObj.state}
-              ${this._config.unit ||
-                stateObj.attributes.unit_of_measurement ||
-                ""}
-            </div>
-            <div id="name">
-              ${this._config.name || computeStateName(stateObj)}
-            </div>
+          <div class="gauge-b"></div>
+        </div>
+        <div class="gauge-data">
+          <div id="percent">
+            ${stateObj.state}
+            ${this._config.unit ||
+              stateObj.attributes.unit_of_measurement ||
+              ""}
+          </div>
+          <div id="name">
+            ${this._config.name || computeStateName(stateObj)}
           </div>
         </div>
       </ha-card>
@@ -250,9 +247,14 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
   static get styles(): CSSResult {
     return css`
       ha-card {
-        height: calc(var(--base-unit) * 3);
-        position: relative;
         cursor: pointer;
+        padding: 16px 16px 0 16px;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        box-sizing: border-box;
+        justify-content: center;
+        align-items: center;
       }
       ha-card:focus {
         outline: none;
@@ -261,15 +263,10 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
       .container {
         width: calc(var(--base-unit) * 4);
         height: calc(var(--base-unit) * 2);
-        position: absolute;
-        top: calc(var(--base-unit) * 1.5);
-        left: 50%;
         overflow: hidden;
-        text-align: center;
-        transform: translate(-50%, -50%);
+        position: relative;
       }
       .gauge-a {
-        z-index: 1;
         position: absolute;
         background-color: var(--primary-background-color);
         width: calc(var(--base-unit) * 4);
@@ -279,7 +276,6 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
           0px 0px;
       }
       .gauge-b {
-        z-index: 3;
         position: absolute;
         background-color: var(--paper-card-background-color);
         width: calc(var(--base-unit) * 2.5);
@@ -291,7 +287,6 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
           0px 0px;
       }
       .gauge-c {
-        z-index: 2;
         position: absolute;
         background-color: var(--label-badge-blue);
         width: calc(var(--base-unit) * 4);
@@ -307,15 +302,12 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
         transition: all 1.3s ease-in-out;
       }
       .gauge-data {
-        z-index: 4;
+        text-align: center;
         color: var(--primary-text-color);
         line-height: calc(var(--base-unit) * 0.3);
-        position: absolute;
-        width: calc(var(--base-unit) * 4);
-        height: var(--base-unit);
-        top: var(--base-unit);
-        margin-left: auto;
-        margin-right: auto;
+        width: 100%;
+        position: relative;
+        top: calc(var(--base-unit) * -0.5);
       }
       .init .gauge-data {
         transition: all 1s ease-out;

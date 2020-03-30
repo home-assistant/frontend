@@ -14,9 +14,8 @@ export class HuiUnavailable extends LitElement {
 
   protected render(): TemplateResult {
     return html`
-      <div class="disabled-overlay">
-        <div>${this.text}</div>
-      </div>
+      <div class="disabled-overlay"></div>
+      <div class="disabled-overlay-text">${this.text}</div>
     `;
   }
 
@@ -31,11 +30,11 @@ export class HuiUnavailable extends LitElement {
         right: 0;
         bottom: 0;
         background-color: var(--state-icon-unavailable-color);
-        opacity: 0.5;
+        opacity: 0.6;
         z-index: 50;
       }
 
-      .disabled-overlay div {
+      .disabled-overlay-text {
         position: absolute;
         top: 50%;
         left: 50%;
@@ -44,6 +43,8 @@ export class HuiUnavailable extends LitElement {
         color: var(--primary-text-color);
         transform: translate(-50%, -50%);
         -ms-transform: translate(-50%, -50%);
+        z-index: 50;
+        opacity: 0.7;
       }
     `;
   }

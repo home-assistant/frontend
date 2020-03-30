@@ -33,13 +33,15 @@ export interface EntitiesCardEntityConfig extends EntityConfig {
   hold_action?: ActionConfig;
   double_tap_action?: ActionConfig;
   state_color?: boolean;
+  show_name?: boolean;
+  show_icon?: boolean;
 }
 
 export interface EntitiesCardConfig extends LovelaceCardConfig {
   type: "entities";
   show_header_toggle?: boolean;
   title?: string;
-  entities: EntitiesCardEntityConfig[];
+  entities: Array<EntitiesCardEntityConfig | string>;
   theme?: string;
   icon?: string;
   header?: LovelaceHeaderFooterConfig;
@@ -135,8 +137,8 @@ export interface LightCardConfig extends LovelaceCardConfig {
 
 export interface MapCardConfig extends LovelaceCardConfig {
   type: "map";
-  title: string;
-  aspect_ratio: string;
+  title?: string;
+  aspect_ratio?: string;
   default_zoom?: number;
   entities?: Array<EntityConfig | string>;
   geo_location_sources?: string[];

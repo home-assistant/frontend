@@ -394,7 +394,7 @@
     },
     "ui": {
         "auth_store": {
-            "ask": "Wil je de inloggegevens opslaan?",
+            "ask": "Wil je de ingelogd blijven?",
             "confirm": "Login opslaan",
             "decline": "Nee, bedankt"
         },
@@ -537,9 +537,11 @@
         "common": {
             "cancel": "Annuleren",
             "close": "Sluiten",
+            "delete": "Verwijderen",
             "loading": "Bezig met laden",
             "no": "Nee",
             "save": "Opslaan",
+            "successfully_deleted": "Succesvol verwijderd",
             "successfully_saved": "Succesvol opgeslagen",
             "yes": "Ja"
         },
@@ -621,7 +623,7 @@
                 "dismiss": "Sluiten",
                 "editor": {
                     "confirm_delete": "Weet je zeker dat je dit item wilt verwijderen?",
-                    "delete": "VERWIJDEREN",
+                    "delete": "Verwijderen",
                     "enabled_cause": "Uitgeschakeld vanwege {cause}",
                     "enabled_description": "Uitgeschakelde entiteiten zullen niet aan Home Assistant worden toegevoegd",
                     "enabled_label": "Schakel entiteit in",
@@ -631,7 +633,7 @@
                     "name": "Naam overschrijven",
                     "note": "Nota bene: dit werkt mogelijk nog niet met alle integraties.",
                     "unavailable": "Deze entiteit is momenteel niet beschikbaar.",
-                    "update": "BIJWERKEN"
+                    "update": "Bijwerken"
                 },
                 "no_unique_id": "Deze entiteit heeft geen unieke ID, daarom kunnen de instellingen niet worden beheerd vanuit de gebruikersinterface.",
                 "related": "Gerelateerd",
@@ -651,8 +653,12 @@
                     "name": "Naam"
                 },
                 "input_datetime": {
+                    "date": "Datum",
+                    "datetime": "Datum en tijd",
                     "has_date": "Datum",
-                    "has_time": "Tijd"
+                    "has_time": "Tijd",
+                    "mode": "Wat wil je invoeren",
+                    "time": "Tijd"
                 },
                 "input_number": {
                     "box": "Invoerveld",
@@ -804,16 +810,20 @@
                 "areas": {
                     "caption": "Gebieden",
                     "create_area": "MAAK GEBIED",
+                    "delete": {
+                        "confirmation_text": "Alle apparaten in dit gebied zullen niet meer toegewezen zijn.",
+                        "confirmation_title": "Weet je zeker dat je dit gebied wilt verwijderen?"
+                    },
                     "description": "Overzicht van alle gebieden in je huis.",
                     "editor": {
-                        "create": "MAKEN",
+                        "create": "Aanmaken",
                         "default_name": "Nieuw Gebied",
-                        "delete": "VERWIJDEREN",
-                        "update": "BIJWERKEN"
+                        "delete": "Verwijderen",
+                        "update": "Bijwerken"
                     },
                     "no_areas": "Het lijkt erop dat je nog geen gebieden hebt!",
                     "picker": {
-                        "create_area": "GEBIED MAKEN",
+                        "create_area": "Gebied maken",
                         "header": "Gebieden",
                         "integrations_page": "Integratiespagina",
                         "introduction": "Gebieden worden gebruikt om te bepalen waar apparaten zijn. Deze informatie wordt overal in de Home Assistant gebruikt om je te helpen bij het organiseren van je interface, machtigingen en integraties met andere systemen.",
@@ -946,7 +956,7 @@
                         "triggers": {
                             "add": "Trigger toevoegen",
                             "delete": "Verwijderen",
-                            "delete_confirm": "Zeker dat je wil verwijderen?",
+                            "delete_confirm": "Weet je zeker dat je dit item wilt verwijderen?",
                             "duplicate": "Dupliceren",
                             "header": "",
                             "introduction": "Triggers starten de verwerking van een automatiseringsregel. Het is mogelijk om meerdere triggers voor dezelfde regel op te geven. Zodra een trigger start, valideert Home Assistant de eventuele voorwaarden en roept hij de actie aan.",
@@ -1300,6 +1310,7 @@
                     "automations": "Automatiseringen",
                     "cant_edit": "Je kunt alleen items bewerken die in de gebruikersinterface zijn gemaakt.",
                     "caption": "Apparaten",
+                    "confirm_delete": "Weet je zeker dat je dit apparaat wilt verwijderen?",
                     "confirm_rename_entity_ids": "Wil je ook de entiteits-ID's van je entiteiten hernoemen?",
                     "data_table": {
                         "area": "Gebied",
@@ -1307,8 +1318,10 @@
                         "device": "Apparaat",
                         "integration": "Integratie",
                         "manufacturer": "Fabrikant",
-                        "model": "Model"
+                        "model": "Model",
+                        "no_devices": "Geen apparaten"
                     },
+                    "delete": "Verwijderen",
                     "description": "Beheer verbonden apparaten",
                     "details": "Hier zijn alle details van uw apparaat",
                     "device_not_found": "Apparaat niet gevonden.",
@@ -1382,7 +1395,8 @@
                         "introduction2": "Gebruik het entiteitenregister om de naam te overschrijven, de entiteits-ID te wijzigen of het item te verwijderen uit Home Assistant.",
                         "remove_selected": {
                             "button": "Verwijder geselecteerde",
-                            "confirm_text": "Entiteiten kunnen alleen worden verwijderd wanneer de integratie de entiteiten niet langer levert.",
+                            "confirm_partly_title": "Alleen {number} geselecteerde entiteiten kunnen worden verwijderd.",
+                            "confirm_text": "Je moet ze zelf nog verwijderen uit je Lovelace-configuratie en automatiseringen als ze deze entiteiten bevatten.",
                             "confirm_title": "Wilt je {number} entiteiten verwijderen?"
                         },
                         "selected": "{number} geselecteerd",
@@ -1391,6 +1405,7 @@
                             "disabled": "Uitgeschakeld",
                             "ok": "OK",
                             "readonly": "Alleen-lezen",
+                            "restored": "Hersteld",
                             "unavailable": "Onbeschikbaar"
                         },
                         "unavailable": "(niet beschikbaar)"
@@ -1455,6 +1470,7 @@
                         },
                         "failed_create_area": "Kan het gebied niet maken.",
                         "finish": "Voltooien",
+                        "loading_first_time": "Even geduld a.u.b. terwijl de integratie wordt geïnstalleerd",
                         "name_new_area": "Naam van het nieuwe gebied?",
                         "not_all_required_fields": "Niet alle verplichte velden zijn ingevuld.",
                         "submit": "Opslaan"
@@ -1493,17 +1509,23 @@
                             "yaml": "YAML-bestand"
                         },
                         "confirm_delete": "Weet je zeker dat je deze dashboard wilt verwijderen?",
+                        "default_dashboard": "Dit is het standaard dashboard",
                         "detail": {
                             "create": "Aanmaken",
                             "delete": "Verwijderen",
                             "dismiss": "Sluiten",
                             "edit_dashboard": "Dashboard bewerken",
+                            "icon": "Pictogram",
                             "new_dashboard": "Nieuw dashboard toevoegen",
+                            "remove_default": "Verwijderen als standaard op dit apparaat",
                             "require_admin": "Alleen beheerder",
+                            "set_default": "Als standaard instellen op dit apparaat",
                             "show_sidebar": "Toon in de zijbalk",
+                            "title": "Titel",
+                            "title_required": "Titel is vereist.",
                             "update": "Bijwerken",
                             "url": "Url",
-                            "url_error_msg": "De URL mag geen spaties of speciale tekens bevatten, behalve _ en -"
+                            "url_error_msg": "De URL moet een - bevatten en mag geen spaties of speciale tekens bevatten, behalve _ en -"
                         },
                         "picker": {
                             "add_dashboard": "Dashboard toevoegen",
@@ -1515,26 +1537,33 @@
                                 "sidebar": "Toon in de zijbalk",
                                 "title": "Titel"
                             },
-                            "open": "Dashboard openen"
+                            "open": "Open"
                         }
                     },
                     "description": "Configureer je Lovelace-dashboards",
                     "resources": {
+                        "cant_edit_yaml": "Je gebruikt Lovelace in YAML-modus, daarom kun je je bronnen niet beheren via de gebruikersinterface. Beheer ze in configuration.yaml.",
                         "caption": "Bronnen",
+                        "confirm_delete": "Weet u zeker dat u deze bron wilt verwijderen?",
                         "detail": {
                             "create": "Aanmaken",
                             "delete": "Verwijder",
                             "dismiss": "Sluiten",
+                            "new_resource": "Voeg nieuwe bron toe",
+                            "type": "Type bron",
                             "update": "Bijwerken",
                             "url": "Url",
                             "url_error_msg": "Url is een verplicht veld",
-                            "warning_header": "Wees voorzichtig!"
+                            "warning_header": "Wees voorzichtig!",
+                            "warning_text": "Het toevoegen van bronnen kan gevaarlijk zijn, zorg ervoor dat u de bron van de bron kent en vertrouw ze. Slechte bronnen kunnen uw systeem ernstig beschadigen."
                         },
                         "picker": {
+                            "add_resource": "Voeg bron toe",
                             "headers": {
                                 "type": "Type",
                                 "url": "Url"
-                            }
+                            },
+                            "no_resources": "Geen Lovelace bronnen"
                         },
                         "refresh_body": "Je moet de pagina vernieuwen om de verwijdering te voltooien. Wil je nu vernieuwen?",
                         "refresh_header": "Wil je verversen?",
@@ -2057,7 +2086,7 @@
                     }
                 },
                 "changed_toast": {
-                    "message": "De Lovelace configuratie is bijgewerkt. Wil je de pagina vernieuwen?",
+                    "message": "De Lovelace configuratie van dit dashboard is bijgewerkt. Wil je de pagina vernieuwen?",
                     "refresh": "Vernieuwen"
                 },
                 "editor": {
@@ -2070,10 +2099,18 @@
                             "name": "Alarm paneel"
                         },
                         "button": {
+                            "description": "Met de Button-kaart kun je knoppen toevoegen om taken uit te voeren.",
                             "name": "Knop"
                         },
                         "conditional": {
-                            "name": "Conditioneel"
+                            "card": "Kaart",
+                            "change_type": "Wijzig type",
+                            "condition_explanation": "De kaart wordt weergegeven als aan ALLE onderstaande voorwaarden is voldaan.",
+                            "conditions": "Voorwaarden",
+                            "current_state": "huidige",
+                            "name": "Conditioneel",
+                            "state_equal": "Staat is gelijk aan",
+                            "state_not_equal": "Staat is niet gelijk aan"
                         },
                         "config": {
                             "optional": "Optioneel",
@@ -2091,6 +2128,7 @@
                             "name": "Entiteit-filter"
                         },
                         "gauge": {
+                            "description": "De meterkaart is een basiskaart waarmee u sensorgegevens visueel kunt zien.",
                             "name": "Meter",
                             "severity": {
                                 "define": "Ernst definiëren?",
@@ -2114,6 +2152,7 @@
                             "maximum": "Maximaal",
                             "minimum": "Minimum",
                             "name": "Naam",
+                            "no_theme": "Geen thema",
                             "refresh_interval": "Vernieuwingsinterval",
                             "show_icon": "Pictogram Weergeven?",
                             "show_name": "Naam weergeven?",
@@ -2136,7 +2175,7 @@
                             "name": "Horizontale stapel"
                         },
                         "iframe": {
-                            "name": "iFrame"
+                            "name": "Webpagina"
                         },
                         "light": {
                             "name": "Lamp"
@@ -2171,27 +2210,33 @@
                             "name": "toestand plant"
                         },
                         "sensor": {
+                            "description": "De Sensor-kaart geeft u een snel overzicht van de status van uw sensoren met een optionele grafiek om veranderingen in de tijd te visualiseren.",
                             "graph_detail": "Grafiek Detail",
                             "graph_type": "Grafiektype",
                             "name": "Sensor"
                         },
                         "shopping-list": {
+                            "description": "Met de Shopping List-kaart kunt u items aan uw boodschappenlijst toevoegen, bewerken, afvinken en wissen.",
                             "integration_not_loaded": "Voor deze kaart moet de integratie 'shopping_list' zijn ingesteld.",
                             "name": "Boodschappenlijst"
                         },
                         "thermostat": {
+                            "description": "De Thermostat-kaart geeft controle over uw klimaateenheid. Hiermee kunt u de temperatuur en modus van de entiteit wijzigen.",
                             "name": "Thermostaat"
                         },
                         "vertical-stack": {
+                            "description": "Met de Vertical Stack-kaart kunt u meerdere kaarten groeperen, zodat ze altijd in dezelfde kolom zitten.",
                             "name": "Verticale stapel"
                         },
                         "weather-forecast": {
+                            "description": "De Weather Forecast-kaart geeft het weer weer. Erg handig om op te nemen op interfaces die mensen aan de muur hangen.",
                             "name": "Weersverwachting"
                         }
                     },
                     "edit_card": {
                         "add": "Kaart toevoegen",
                         "delete": "Verwijder kaart",
+                        "duplicate": "Dubbele kaart",
                         "edit": "Bewerken",
                         "header": "Kaart configuratie",
                         "move": "Verplaatsen",
@@ -2217,7 +2262,11 @@
                         "move_left": "Verplaats weergave naar links",
                         "move_right": "Verplaats weergave naar rechts",
                         "tab_badges": "Badges",
-                        "tab_settings": "instellingen"
+                        "tab_settings": "instellingen",
+                        "tab_visibility": "Zichtbaarheid",
+                        "visibility": {
+                            "select_users": "Selecteer welke gebruikers deze weergave in de navigatie moeten zien"
+                        }
                     },
                     "header": "Bewerk UI",
                     "menu": {
@@ -2251,7 +2300,8 @@
                         "header": "Neem de controle over je Lovelace UI",
                         "para": "Home Assistant onderhoudt je gebruikersinterface en update die met nieuwe entiteiten of Lovelace-onderdelen wanneer deze beschikbaar zijn. Als je het beheer overneemt, zullen we niet langer automatisch wijzigingen aanbrengen.",
                         "para_sure": "Weet je zeker dat je de controle wilt over je gebruikersinterface?",
-                        "save": "Neem over"
+                        "save": "Neem over",
+                        "yaml_config": "Om je te helpen te beginnen, hier is de huidige configuratie van dit dashboard:"
                     },
                     "suggest_card": {
                         "add": "Voeg toe aan de Lovelace gebruikersinterface",
@@ -2261,7 +2311,8 @@
                     "view": {
                         "panel_mode": {
                             "description": "Hierdoor wordt de eerste kaart op volledige breedte weergegeven; andere kaarten in deze weergave worden niet weergegeven.",
-                            "title": "Paneelmodus?"
+                            "title": "Paneelmodus?",
+                            "warning_multiple_cards": "Deze weergave bevat meer dan één kaart, maar een paneelweergave kan slechts 1 kaart tonen."
                         }
                     }
                 },
@@ -2271,9 +2322,14 @@
                     "exit_edit_mode": "UI-bewerkingsmodus afsluiten",
                     "help": "Help",
                     "refresh": "Vernieuwen",
+                    "reload_resources": "Herlaad Lovelace gegevens",
                     "unused_entities": "Ongebruikte entiteiten"
                 },
                 "reload_lovelace": "Lovelace herladen",
+                "reload_resources": {
+                    "refresh_body": "Je moet de pagina vernieuwen om het herladen te voltooien, wil je nu vernieuwen?",
+                    "refresh_header": "Wil je de gegevens vernieuwen?"
+                },
                 "unused_entities": {
                     "available_entities": "Dit zijn de entiteiten die je beschikbaar hebt, maar die nog niet in je Lovelace UI staan.",
                     "domain": "Domein",
@@ -2284,7 +2340,9 @@
                     "title": "Ongebruikte entiteiten"
                 },
                 "views": {
-                    "confirm_delete": "Weet je zeker dat je dit item wilt verwijderen?",
+                    "confirm_delete": "Weergave verwijderen?",
+                    "confirm_delete_existing_cards": "Als u deze weergave verwijdert, worden ook de kaarten verwijderd",
+                    "confirm_delete_text": "Weet u zeker dat u uw '{naam}'-weergave wilt verwijderen?",
                     "existing_cards": "U kunt een weergave met kaarten niet verwijderen. Verwijder eerst de kaarten."
                 },
                 "warning": {
@@ -2420,15 +2478,15 @@
                             "volume": "Volume"
                         },
                         "names": {
-                            "family_room": "Familiekamer",
+                            "family_room": "Woonkamer",
                             "hallway": "Gang",
                             "kitchen": "Keuken",
                             "left": "Links",
-                            "master_bedroom": "Hoofdslaapkamer",
+                            "master_bedroom": "Slaapkamer",
                             "mirror": "Spiegel",
                             "patio": "Achtertuin",
                             "right": "Rechts",
-                            "temperature_study": "Temperatuur bestuderen",
+                            "temperature_study": "Temperatuur studeerkamer",
                             "upstairs": "Boven"
                         },
                         "unit": {

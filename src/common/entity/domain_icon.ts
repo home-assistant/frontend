@@ -77,7 +77,16 @@ export const domainIcon = (domain: string, state?: string): string => {
         : "hass:checkbox-marked-circle";
 
     case "cover":
-      return state === "closed" ? "hass:window-closed" : "hass:window-open";
+      switch (state) {
+        case "opening":
+          return "hass:arrow-up-box";
+        case "closing":
+          return "hass:arrow-down-box";
+        case "closed":
+          return "hass:window-closed";
+        default:
+          return "hass:window-open";
+      }
 
     case "lock":
       return state && state === "unlocked" ? "hass:lock-open" : "hass:lock";

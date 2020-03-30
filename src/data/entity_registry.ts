@@ -27,6 +27,16 @@ export interface EntityRegistryEntryUpdateParams {
   new_entity_id?: string;
 }
 
+export const findBatteryEntity = (
+  hass: HomeAssistant,
+  entities: EntityRegistryEntry[]
+): EntityRegistryEntry | undefined =>
+  entities.find(
+    (entity) =>
+      hass.states[entity.entity_id] &&
+      hass.states[entity.entity_id].attributes.device_class === "battery"
+  );
+
 export const computeEntityRegistryName = (
   hass: HomeAssistant,
   entry: EntityRegistryEntry

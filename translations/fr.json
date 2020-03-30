@@ -201,7 +201,7 @@
                 "on": "Ouvert"
             },
             "presence": {
-                "off": "Absent.e",
+                "off": "Absent",
                 "on": "Présent"
             },
             "problem": {
@@ -302,7 +302,7 @@
         },
         "light": {
             "off": "Éteinte",
-            "on": "Allumée"
+            "on": "Actif"
         },
         "lock": {
             "locked": "Verrouillé",
@@ -426,7 +426,7 @@
                 "heating": "{name} chauffage",
                 "high": "haute",
                 "low": "basse",
-                "on_off": "Allumé / Éteint",
+                "on_off": "On / off",
                 "operation": "Opération",
                 "preset_mode": "Préréglage",
                 "swing_mode": "Mode de balancement",
@@ -537,9 +537,11 @@
         "common": {
             "cancel": "Annuler",
             "close": "Fermer",
+            "delete": "Supprimer",
             "loading": "Chargement",
             "no": "Non",
             "save": "Enregistrer",
+            "successfully_deleted": "Supprimé avec succès",
             "successfully_saved": "Enregistré avec succès",
             "yes": "Oui"
         },
@@ -576,7 +578,7 @@
             },
             "related-items": {
                 "area": "Zone",
-                "automation": "Parties des automations suivantes",
+                "automation": "Partie des automatisations suivantes",
                 "device": "Appareil",
                 "entity": "Entités liées",
                 "group": "Partie des groupes suivants",
@@ -621,7 +623,7 @@
                 "dismiss": "Ignorer",
                 "editor": {
                     "confirm_delete": "Voulez-vous vraiment supprimer cette entrée ?",
-                    "delete": "SUPPRIMER",
+                    "delete": "Supprimer",
                     "enabled_cause": "Désactivé par {cause} .",
                     "enabled_description": "Les entités désactivées ne seront pas ajoutées à Home Assistant.",
                     "enabled_label": "Activer l'entité",
@@ -631,7 +633,7 @@
                     "name": "Remplacement de nom",
                     "note": "Remarque: cela peut ne pas encore fonctionner avec toutes les intégrations.",
                     "unavailable": "Cette entité n'est pas disponible actuellement.",
-                    "update": "MISE À JOUR"
+                    "update": "Mise à jour"
                 },
                 "no_unique_id": "Cette entité n'a pas d'identifiant unique, ses paramètres ne peuvent donc pas être gérés à partir de l'interface utilisateur.",
                 "related": "Liées",
@@ -664,7 +666,7 @@
                     "min": "Valeur minimum",
                     "mode": "Mode d'affichage",
                     "slider": "Curseur",
-                    "step": "Taille de pas du curseur",
+                    "step": "Taille du pas du curseur",
                     "unit_of_measurement": "Unité de mesure"
                 },
                 "input_select": {
@@ -816,14 +818,14 @@
                     },
                     "description": "Vue d'ensemble de toutes les pièces de votre maison.",
                     "editor": {
-                        "create": "CRÉER",
+                        "create": "Créer",
                         "default_name": "Nouvelle pièce",
-                        "delete": "SUPPRIMER",
-                        "update": "METTRE À JOUR"
+                        "delete": "Supprimer",
+                        "update": "Mise à jour"
                     },
                     "no_areas": "Vous n'avez pas encore configuré de pièce !",
                     "picker": {
-                        "create_area": "CRÉER UNE PIÈCE",
+                        "create_area": "Créer une zone",
                         "header": "Pièces",
                         "integrations_page": "Page des intégrations",
                         "introduction": "Les pièces sont utilisées pour organiser l'emplacement des périphériques. Ces informations seront utilisées partout dans Home Assistant pour vous aider à organiser votre interface, vos autorisations et vos intégrations avec d'autres systèmes.",
@@ -1048,16 +1050,16 @@
                     },
                     "picker": {
                         "add_automation": "Ajouter une automation",
-                        "delete_automation": "Supprimer l'automation",
-                        "delete_confirm": "Êtes-vous sûr de vouloir supprimer cette automation ?",
-                        "edit_automation": "Modifier l'automation",
+                        "delete_automation": "Supprimer l'automatisation",
+                        "delete_confirm": "Voulez-vous vraiment supprimer cette automatisation ?",
+                        "edit_automation": "Modifier l'automatisation",
                         "header": "Éditeur d'automation",
                         "introduction": "L'éditeur d'automations vous permet de créer et modifier des automations. Veuillez lire les instructions ci-dessous pour vous assurer d'avoir configuré Home Assistant correctement.",
-                        "learn_more": "En savoir plus sur les automations",
+                        "learn_more": "En savoir plus sur les automatisations",
                         "no_automations": "Il n'y a aucune automation modifiable.",
-                        "only_editable": "Seules les automations définies dans automations.yaml sont modifiables.",
+                        "only_editable": "Seules les automatisations définies dans automations.yaml sont modifiables.",
                         "pick_automation": "Choisissez l'automation à modifier",
-                        "show_info_automation": "Afficher des informations sur l'automation"
+                        "show_info_automation": "Afficher des informations sur l'automatisation"
                     }
                 },
                 "cloud": {
@@ -1120,7 +1122,7 @@
                             "loading": "Chargement ...",
                             "manage": "Gérer",
                             "no_hooks_yet": "Il semble que vous n'ayez pas encore de Webhooks. Commencez en configurer un ",
-                            "no_hooks_yet_link_automation": "automation du Webhook",
+                            "no_hooks_yet_link_automation": "automatisation webhook",
                             "no_hooks_yet_link_integration": "intégration basée sur un Webhook",
                             "no_hooks_yet2": "ou en créant un",
                             "title": "Webhooks"
@@ -1296,12 +1298,12 @@
                         "actions": {
                             "caption": "Quand quelque chose est déclenché ..."
                         },
-                        "automations": "Automations",
+                        "automations": "Automatisations",
                         "conditions": {
                             "caption": "Ne faire quelque chose que si ..."
                         },
-                        "create": "Créer une automation avec l'appareil",
-                        "no_automations": "Aucune automation",
+                        "create": "Créer une automatisation avec l'appareil",
+                        "no_automations": "Aucune automatisation",
                         "no_device_automations": "Aucune automatisation n'est disponible pour cet appareil.",
                         "triggers": {
                             "caption": "Faire quelque chose quand ..."
@@ -1310,6 +1312,7 @@
                     "automations": "Automations",
                     "cant_edit": "Vous ne pouvez modifier que les éléments créés dans l'interface utilisateur.",
                     "caption": "Appareils",
+                    "confirm_delete": "Voulez-vous vraiment supprimer cet appareil ?",
                     "confirm_rename_entity_ids": "Voulez-vous aussi renommer les ID de vos entités?",
                     "data_table": {
                         "area": "Zone",
@@ -1320,6 +1323,7 @@
                         "model": "Modèle",
                         "no_devices": "Aucun appareil"
                     },
+                    "delete": "Supprimer",
                     "description": "Gérer les appareils connectés",
                     "details": "Voici tous les détails de votre appareil.",
                     "device_not_found": "Appareil non trouvé.",
@@ -1469,6 +1473,7 @@
                         },
                         "failed_create_area": "Échec de la création de la zone.",
                         "finish": "Terminer",
+                        "loading_first_time": "Veuillez patienter pendant que l'intégration est en cours d'installation",
                         "name_new_area": "Nom de la nouvelle zone ?",
                         "not_all_required_fields": "Tous les champs obligatoires ne sont pas renseignés.",
                         "submit": "Soumettre"
@@ -1671,7 +1676,7 @@
                     "description": "Redémarrer et arrêter le serveur Home Assistant",
                     "section": {
                         "reloading": {
-                            "automation": "Recharger les automations",
+                            "automation": "Recharger les automatisations",
                             "core": "Recharger l'emplacement et les personnalisations",
                             "group": "Recharger les groupes",
                             "heading": "Rechargement de la configuration",
@@ -1857,7 +1862,7 @@
                         "name": "Nom",
                         "new_zone": "Nouvelle zone",
                         "passive": "Passif",
-                        "passive_note": "Les zones passives sont cachées dans l'interface utilisateur et ne sont pas utilisées comme emplacement pour les appareils suivis. Elles sont utiles si vous voulez les utiliser pour des automations.",
+                        "passive_note": "Les zones passives sont cachées dans l'interface utilisateur et ne sont pas utilisées comme emplacement pour les appareils suivis. Elles sont utiles si vous voulez les utiliser pour des automatisations.",
                         "radius": "Rayon",
                         "required_error_msg": "Ce champ est requis",
                         "update": "Mettre à jour"
@@ -1866,7 +1871,7 @@
                     "edit_home_zone_narrow": "Le rayon de la zone d'habitation ne peut pas encore être modifié depuis le frontend. L'emplacement peut être modifié par rapport à la configuration générale.",
                     "go_to_core_config": "Configuration générale",
                     "home_zone_core_config": "L'emplacement de votre zone d'habitation est modifiable à partir de la page de configuration générale. Le rayon de la zone d'habitation ne peut pas encore être modifié depuis le frontend. Voulez-vous passer à la configuration générale ?",
-                    "introduction": "Les zones vous permettent de spécifier certaines régions sur la terre. Lorsqu'une personne se trouve dans une zone, l'état prend le nom de la zone. Les zones peuvent également être utilisées comme déclencheur ou condition dans les configurations d'automation.",
+                    "introduction": "Les zones vous permettent de spécifier certaines régions sur la terre. Lorsqu'une personne se trouve dans une zone, l'état prend le nom de la zone. Les zones peuvent également être utilisées comme déclencheur ou condition dans les configurations d'automatisation.",
                     "no_zones_created_yet": "Il semble que vous n'ayez pas encore créé de zones."
                 },
                 "zwave": {
@@ -2099,7 +2104,7 @@
                             "name": "Panneau d'alarme"
                         },
                         "button": {
-                            "description": "La carte Boutons vous permet d'ajouter des boutons pour effectuer des tâches.",
+                            "description": "La carte Button vous permet d'ajouter des boutons pour effectuer des tâches.",
                             "name": "Bouton"
                         },
                         "conditional": {
@@ -2156,6 +2161,7 @@
                             "maximum": "Maximum",
                             "minimum": "Minimum",
                             "name": "Nom",
+                            "no_theme": "Pas de thème",
                             "refresh_interval": "Intervalle de rafraîchissement",
                             "show_icon": "Afficher l'icône ?",
                             "show_name": "Afficher le nom ?",
@@ -2252,11 +2258,12 @@
                     "edit_card": {
                         "add": "Ajouter une action",
                         "delete": "Supprimer",
+                        "duplicate": "Carte en double",
                         "edit": "Modifier",
                         "header": "Configuration de la carte",
                         "move": "Déplacer",
                         "options": "Plus d'options",
-                        "pick_card": "Choisissez l'automation à ajouter",
+                        "pick_card": "Quelle carte aimeriez-vous ajouter ?",
                         "pick_card_view_title": "Quelle carte souhaitez-vous ajouter à votre vue {name} ?",
                         "save": "Enregistrer",
                         "show_code_editor": "Afficher l'éditeur de code",
@@ -2328,7 +2335,8 @@
                     "view": {
                         "panel_mode": {
                             "description": "Cela affiche la première carte en pleine largeur; les autres cartes de cette vue ne seront pas affichées.",
-                            "title": "Mode panneau?"
+                            "title": "Mode panneau?",
+                            "warning_multiple_cards": "Cette vue contient plusieurs carte, mais un panneau d'affichage ne peut montrer que 1 carte."
                         }
                     }
                 },

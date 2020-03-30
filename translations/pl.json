@@ -537,9 +537,11 @@
         "common": {
             "cancel": "Anuluj",
             "close": "Zamknij",
+            "delete": "Usuń",
             "loading": "Ładowanie",
             "no": "Nie",
             "save": "Zapisz",
+            "successfully_deleted": "Pomyślnie usunięto",
             "successfully_saved": "Pomyślnie zapisano",
             "yes": "Tak"
         },
@@ -1310,6 +1312,7 @@
                     "automations": "Automatyzacje",
                     "cant_edit": "Możesz edytować tylko elementy utworzone w interfejsie użytkownika.",
                     "caption": "Urządzenia",
+                    "confirm_delete": "Na pewno chcesz usunąć to urządzenie?",
                     "confirm_rename_entity_ids": "Czy chcesz także zmienić identyfikatory encji?",
                     "data_table": {
                         "area": "Obszar",
@@ -1320,6 +1323,7 @@
                         "model": "Model",
                         "no_devices": "Brak urządzeń"
                     },
+                    "delete": "Usuń",
                     "description": "Zarządzaj podłączonymi urządzeniami",
                     "details": "Oto wszystkie szczegóły dotyczące twojego urządzenia.",
                     "device_not_found": "Urządzenie nie zostało znalezione.",
@@ -1469,6 +1473,7 @@
                         },
                         "failed_create_area": "Nie udało się utworzyć obszaru.",
                         "finish": "Zakończ",
+                        "loading_first_time": "Proszę czekać, trwa instalowanie integracji...",
                         "name_new_area": "Nazwa nowego obszaru?",
                         "not_all_required_fields": "Nie wszystkie wymagane pola są wypełnione.",
                         "submit": "Zatwierdź"
@@ -2156,6 +2161,7 @@
                             "maximum": "Maksimum",
                             "minimum": "Minimum",
                             "name": "Nazwa",
+                            "no_theme": "Bez motywu",
                             "refresh_interval": "Częstotliwość odświeżania",
                             "show_icon": "Wyświetlanie ikony",
                             "show_name": "Wyświetlanie nazwy",
@@ -2252,6 +2258,7 @@
                     "edit_card": {
                         "add": "Dodaj kartę",
                         "delete": "Usuń",
+                        "duplicate": "Duplikuj kartę",
                         "edit": "Edytuj",
                         "header": "Konfiguracja karty",
                         "move": "Przenieś",
@@ -2328,7 +2335,8 @@
                     "view": {
                         "panel_mode": {
                             "description": "Pierwsza karta renderowana jest w pełnej szerokości; inne karty w tym widoku nie będą renderowane.",
-                            "title": "Tryb panelu?"
+                            "title": "Tryb panelu?",
+                            "warning_multiple_cards": "Ten widok zawiera więcej niż jedną kartę, a widok panelu może wyświetlać tylko jedną kartę."
                         }
                     }
                 },

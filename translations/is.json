@@ -517,6 +517,13 @@
             "yes": "Já"
         },
         "components": {
+            "area-picker": {
+                "add_dialog": {
+                    "add": "Bæta við",
+                    "name": "Nafn"
+                },
+                "clear": "Hreinsa"
+            },
             "device-picker": {
                 "clear": "Hreinsa",
                 "device": "Tæki",
@@ -531,6 +538,10 @@
             "history_charts": {
                 "loading_history": "Hleð stöðusögu...",
                 "no_history_found": "Engin stöðusaga fannst."
+            },
+            "related-items": {
+                "device": "Tæki",
+                "integration": "Samþætting"
             },
             "relative_time": {
                 "duration": {
@@ -551,12 +562,45 @@
         "dialogs": {
             "config_entry_system_options": {
                 "enable_new_entities_label": "Virkja einingar sem nýlega var bætt við",
-                "title": "Kerfisvalkostir"
+                "title": "Kerfisvalkostir",
+                "update": "Uppfæra"
             },
             "confirmation": {
                 "cancel": "Hætta við",
                 "ok": "Í lagi",
                 "title": "Ertu viss?"
+            },
+            "entity_registry": {
+                "dismiss": "Vísa frá",
+                "editor": {
+                    "delete": "Eyða",
+                    "update": "Uppfæra"
+                }
+            },
+            "generic": {
+                "cancel": "Hætta við",
+                "close": "loka",
+                "ok": "Í lagi"
+            },
+            "helper_settings": {
+                "generic": {
+                    "icon": "Táknmynd",
+                    "name": "Nafn"
+                },
+                "input_datetime": {
+                    "date": "Dagsetning",
+                    "has_date": "Dagsetning",
+                    "has_time": "Tími",
+                    "time": "Tími"
+                },
+                "input_select": {
+                    "add": "Bæta við"
+                },
+                "input_text": {
+                    "password": "Lykilorð",
+                    "text": "Texti"
+                },
+                "required_error_msg": "þetta er skilyrtur reitur"
             },
             "more_info_control": {
                 "script": {
@@ -1022,14 +1066,22 @@
                         "battery": "Rafhlaða",
                         "device": "Tæki",
                         "integration": "Samþætting",
-                        "manufacturer": "Framleiðandi"
+                        "manufacturer": "Framleiðandi",
+                        "no_devices": "Engin tæki"
                     },
+                    "delete": "Eyða",
                     "description": "Stjórna tengdum tækjum",
                     "device_not_found": "Tæki fannst ekki.",
                     "entities": {
                         "entities": "Einingar"
                     },
                     "info": "Upplýsingar um tæki",
+                    "name": "Nafn",
+                    "scene": {
+                        "no_scenes": "Engar senur",
+                        "scenes": "Senur"
+                    },
+                    "scenes": "Senur",
                     "unknown_error": "Óþekkt villa",
                     "unnamed_device": "Ónefnt tæki"
                 },
@@ -1074,10 +1126,25 @@
                     }
                 },
                 "header": "Stilla af Home Assistant",
+                "helpers": {
+                    "dialog": {
+                        "create": "Stofna"
+                    },
+                    "picker": {
+                        "headers": {
+                            "name": "Nafn",
+                            "type": "Gerð"
+                        }
+                    },
+                    "types": {
+                        "input_text": "Texti"
+                    }
+                },
                 "integrations": {
                     "caption": "Samþættingar",
                     "config_entry": {
                         "area": "Í {area}",
+                        "delete_button": "Eyða {integration}",
                         "delete_confirm": "Ertu viss um að þú viljir eyða þessari samþættingu?",
                         "device_unavailable": "Tæki ekki tiltækt",
                         "entity_unavailable": "Eining ekki tiltæk",
@@ -1118,6 +1185,42 @@
                     "none": "Ekkert skilgreint sem stendur"
                 },
                 "introduction": "Hér er mögulegt að stilla af íhluti og Home Assistant. Því miður er ekki hægt að breyta öllu í gegnum viðmótið ennþá, en við erum að vinna í því.",
+                "lovelace": {
+                    "dashboards": {
+                        "conf_mode": {
+                            "yaml": "YAML skrá"
+                        },
+                        "detail": {
+                            "create": "Stofna",
+                            "delete": "Eyða",
+                            "dismiss": "Loka",
+                            "icon": "Táknmynd",
+                            "title": "Titill",
+                            "update": "Uppfæra"
+                        },
+                        "picker": {
+                            "headers": {
+                                "default": "Sjálfgefið",
+                                "filename": "Skráarnafn",
+                                "title": "Titill"
+                            },
+                            "open": "Opna"
+                        }
+                    },
+                    "resources": {
+                        "detail": {
+                            "create": "Stofna",
+                            "delete": "Eyða",
+                            "dismiss": "Loka",
+                            "update": "Uppfæra"
+                        },
+                        "picker": {
+                            "headers": {
+                                "type": "Gerð"
+                            }
+                        }
+                    }
+                },
                 "person": {
                     "add_person": "Bæta við persónu",
                     "caption": "Persónur",
@@ -1287,6 +1390,18 @@
                         "updateDeviceName": "Stilltu sérsniðið heiti fyrir þetta tæki í tækjaskránni."
                     }
                 },
+                "zone": {
+                    "detail": {
+                        "create": "Stofna",
+                        "delete": "Eyða",
+                        "icon": "Táknmynd",
+                        "latitude": "Breiddargráða",
+                        "longitude": "Lengdargráða",
+                        "name": "Nafn",
+                        "radius": "Radíus",
+                        "update": "Uppfæra"
+                    }
+                },
                 "zwave": {
                     "caption": "Z-Wave",
                     "common": {
@@ -1350,6 +1465,8 @@
                         "copied": "Afritað á klemmuspjald",
                         "copy_entity_state": "Afrita stöðu",
                         "more_info": "Frekari upplýsingar",
+                        "set_state": "Setja stöðu",
+                        "state": "Staða",
                         "title": "Stöður"
                     },
                     "templates": {
@@ -1381,6 +1498,9 @@
                         "toggle": "Víxla {name}",
                         "url": "Opna glugga á {url_path}"
                     },
+                    "safe-mode": {
+                        "show_errors": "Sýna villur"
+                    },
                     "shopping-list": {
                         "add_item": "Bæta við hlut",
                         "checked_items": "Valdir hlutir",
@@ -1398,6 +1518,12 @@
                         },
                         "alarm-panel": {
                             "available_states": "Tiltækar stöður"
+                        },
+                        "button": {
+                            "name": "Hnappur"
+                        },
+                        "conditional": {
+                            "conditions": "Skilyrði"
                         },
                         "config": {
                             "optional": "Valfrjálst",
@@ -1437,6 +1563,7 @@
                             "show_icon": "Birta táknmynd?",
                             "show_name": "Birta nafn?",
                             "show_state": "Birta stöðu?",
+                            "state": "Staða",
                             "theme": "Þema",
                             "title": "Titill",
                             "unit": "Eining",
@@ -1523,6 +1650,7 @@
                     },
                     "save_config": {
                         "cancel": "Gleymdu þessu",
+                        "close": "Loka",
                         "header": "Taka yfir stjórn á Lovelace viðmótinu",
                         "para": "Home Assistant mun sjálfgefið halda utan um notendaviðmótið og uppfæra það þegar nýjar einingar eða Lovlace íhlutir verða aðgengilegir. Ef þú tekur yfir stjórn á viðmótinu þá mun þetta ekki gerast sjálfkrafa fyrir þig.",
                         "para_sure": "Ertu viss um að þú viljir taka yfir stjórn á notendaviðmótinu þínu?",
@@ -1740,6 +1868,7 @@
                     "link_promo": "Hjálpa við að þýða"
                 },
                 "logout": "Skrá út",
+                "logout_title": "Skrá út?",
                 "long_lived_access_tokens": {
                     "confirm_delete": "Ertu viss um að þú viljir eyða aðgangstóka fyrir {name}?",
                     "create": "Búa til tóka",

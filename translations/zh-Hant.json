@@ -537,9 +537,11 @@
         "common": {
             "cancel": "取消",
             "close": "關閉",
+            "delete": "刪除",
             "loading": "讀取中",
             "no": "否",
             "save": "儲存",
+            "successfully_deleted": "成功刪除",
             "successfully_saved": "成功儲存",
             "yes": "是"
         },
@@ -1310,6 +1312,7 @@
                     "automations": "自動化",
                     "cant_edit": "只能編輯於 UI 中新增的物件。",
                     "caption": "設備",
+                    "confirm_delete": "確定要刪除此設備？",
                     "confirm_rename_entity_ids": "是否也要變更物件的物件 ID？",
                     "data_table": {
                         "area": "分區",
@@ -1320,6 +1323,7 @@
                         "model": "型號",
                         "no_devices": "沒有設備"
                     },
+                    "delete": "刪除",
                     "description": "管理已連線設備",
                     "details": "此處顯示設備所有詳細資訊。",
                     "device_not_found": "未找到設備。",
@@ -1469,6 +1473,7 @@
                         },
                         "failed_create_area": "新增分區失敗。",
                         "finish": "完成",
+                        "loading_first_time": "請稍候、正在安裝整合",
                         "name_new_area": "新分區名稱？",
                         "not_all_required_fields": "所有所需欄位都需要填寫。",
                         "submit": "傳送"
@@ -1524,7 +1529,7 @@
                             "title_required": "必須輸入標題",
                             "update": "更新",
                             "url": "網址",
-                            "url_error_msg": "網址不能包含空格或特殊字元，除了 _ 及 -。"
+                            "url_error_msg": "網址應該包含一個 -，同時不能包含空格或特殊字元，除了 _ 及 -。"
                         },
                         "picker": {
                             "add_dashboard": "新增主面板",
@@ -2156,6 +2161,7 @@
                             "maximum": "最大值",
                             "minimum": "最小值",
                             "name": "名稱",
+                            "no_theme": "沒有主題",
                             "refresh_interval": "更新間隔",
                             "show_icon": "顯示圖示？",
                             "show_name": "顯示名稱？",
@@ -2252,6 +2258,7 @@
                     "edit_card": {
                         "add": "新增面板",
                         "delete": "刪除面板",
+                        "duplicate": "複製面板",
                         "edit": "編輯",
                         "header": "面板設定",
                         "move": "移動至視圖",
@@ -2272,15 +2279,15 @@
                         "add": "新增視圖",
                         "delete": "刪除視圖",
                         "edit": "編輯視圖",
-                        "header": "面板設定",
-                        "header_name": "{name}面板設定",
+                        "header": "視圖設定",
+                        "header_name": "{name}視圖設定",
                         "move_left": "向左移動視圖",
                         "move_right": "向右移動視圖",
                         "tab_badges": "圓標圖示",
                         "tab_settings": "設定",
                         "tab_visibility": "顯示選項",
                         "visibility": {
-                            "select_users": "選擇可觀看此面板的使用者"
+                            "select_users": "選擇可觀看此視圖的使用者"
                         }
                     },
                     "header": "編輯 UI",
@@ -2295,8 +2302,8 @@
                         "para_no_id": "該元件未含 ID，請於「ui-lovelace.yaml」中為該元件新增 ID。"
                     },
                     "raw_editor": {
-                        "confirm_remove_config_text": "假如移除 Lovelace UI 設定的話，將自動以區域與設備產生 Lovelace UI 面板。",
-                        "confirm_remove_config_title": "確定要移除 Lovelace UI 設定？將依據區域與設備自動產生 Lovelace UI 面板。",
+                        "confirm_remove_config_text": "假如移除 Lovelace UI 設定的話，將自動以區域與設備產生 Lovelace UI 視圖。",
+                        "confirm_remove_config_title": "確定要移除 Lovelace UI 設定？將依據區域與設備自動產生 Lovelace UI 視圖。",
                         "confirm_unsaved_changes": "變更尚未儲存，確定要退出？",
                         "confirm_unsaved_comments": "設定包含命令、將不會被儲存。是否要繼續？",
                         "error_invalid_config": "設定無效：{error}",
@@ -2328,7 +2335,8 @@
                     "view": {
                         "panel_mode": {
                             "description": "將會以全寬度製作第一張面板，視圖中其他面板將不進行呈現。",
-                            "title": "面板模式？"
+                            "title": "面板模式？",
+                            "warning_multiple_cards": "此視圖包含超過一張面板，但面板視圖僅能顯示一張面板。"
                         }
                     }
                 },
@@ -2356,10 +2364,10 @@
                     "title": "未使用物件"
                 },
                 "views": {
-                    "confirm_delete": "刪除面板？",
-                    "confirm_delete_existing_cards": "刪除此主面板同時將移除面板。",
-                    "confirm_delete_existing_cards_text": "確定要刪除「{name}」面板？面板內包含 {number} 張面板也同時將被刪除。此動作將無法回復。",
-                    "confirm_delete_text": "確定要刪除「{name}」面板？",
+                    "confirm_delete": "刪除視圖？",
+                    "confirm_delete_existing_cards": "刪除此視圖同時將移除面板。",
+                    "confirm_delete_existing_cards_text": "確定要刪除「{name}」視圖？視圖內包含 {number} 張面板也同時將被刪除。此動作將無法回復。",
+                    "confirm_delete_text": "確定要刪除「{name}」視圖？",
                     "existing_cards": "無法刪除內含面板的視圖，請先移除面板。"
                 },
                 "warning": {

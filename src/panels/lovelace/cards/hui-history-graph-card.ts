@@ -20,7 +20,6 @@ import { HomeAssistant } from "../../../types";
 import { HistoryGraphCardConfig } from "./types";
 import { LovelaceCard } from "../types";
 import { EntityConfig } from "../entity-rows/types";
-import { LovelaceConfig } from "../../../data/lovelace";
 import { findEntities } from "../common/find-entites";
 
 @customElement("hui-history-graph-card")
@@ -34,22 +33,20 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
 
   public static getStubConfig(
     hass: HomeAssistant,
-    lovelaceConfig: LovelaceConfig,
-    entities?: string[],
-    entitiesFill?: string[]
-  ): object {
+    entities: string[],
+    entitiesFallback: string[]
+  ): HistoryGraphCardConfig {
     const includeDomains = ["sensor"];
     const maxEntities = 1;
     const foundEntities = findEntities(
       hass,
-      lovelaceConfig,
       maxEntities,
       entities,
-      entitiesFill,
+      entitiesFallback,
       includeDomains
     );
 
-    return { entities: foundEntities };
+    return { type: "history-graph", entities: foundEntities };
   }
 
   @property() public hass?: HomeAssistant;
