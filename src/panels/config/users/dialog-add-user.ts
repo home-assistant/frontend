@@ -22,7 +22,7 @@ import {
   createUser,
   deleteUser,
 } from "../../../data/user";
-import { createAuthUser } from "../../../data/auth";
+import { createAuthForUser } from "../../../data/auth";
 
 @customElement("dialog-add-user")
 export class DialogAddUser extends LitElement {
@@ -41,7 +41,7 @@ export class DialogAddUser extends LitElement {
     this._name = "";
     this._username = "";
     this._password = "";
-    this._group = SYSTEM_GROUP_ID_ADMIN;
+    this._group = SYSTEM_GROUP_ID_USER;
     this._error = undefined;
     this._loading = false;
   }
@@ -218,7 +218,12 @@ export class DialogAddUser extends LitElement {
     }
 
     try {
-      await createAuthUser(this.hass, user.id, this._username, this._password);
+      await createAuthForUser(
+        this.hass,
+        user.id,
+        this._username,
+        this._password
+      );
     } catch (err) {
       await deleteUser(this.hass, user.id);
       this._loading = false;

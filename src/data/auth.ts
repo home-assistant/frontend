@@ -26,7 +26,7 @@ export const fetchAuthProviders = () =>
     credentials: "same-origin",
   });
 
-export const createAuthUser = async (
+export const createAuthForUser = async (
   hass: HomeAssistant,
   userId: string,
   username: string,

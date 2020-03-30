@@ -166,7 +166,7 @@ class DialogUserDetail extends LitElement {
       });
       this._close();
     } catch (err) {
-      this._error = err ? err.message : "Unknown error";
+      this._error = err?.message || "Unknown error";
     } finally {
       this._submitting = false;
     }
