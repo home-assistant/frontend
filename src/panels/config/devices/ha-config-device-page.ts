@@ -198,6 +198,7 @@ export class HaConfigDevicePage extends LitElement {
                         integrations[0]
                       }/logo@2x.png 2x
                     "
+                    referrerpolicy="no-referrer"
                     @load=${this._onImageLoad}
                     @error=${this._onImageError}
                   />
