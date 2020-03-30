@@ -154,6 +154,11 @@ class HuiEntityCard extends LitElement implements LovelaceCard {
   }
 
   protected shouldUpdate(changedProps: PropertyValues): boolean {
+    // Side Effect used to update footer hass while keeping optimizations
+    if (this._footerElement) {
+      this._footerElement.hass = this.hass;
+    }
+
     return hasConfigOrEntityChanged(this, changedProps);
   }
 
@@ -175,10 +180,6 @@ class HuiEntityCard extends LitElement implements LovelaceCard {
       oldConfig.theme !== this._config.theme
     ) {
       applyThemesOnElement(this, this.hass.themes, this._config!.theme);
-    }
-
-    if (this._footerElement) {
-      this._footerElement.hass = this.hass;
     }
   }
 
