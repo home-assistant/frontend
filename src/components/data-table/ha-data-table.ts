@@ -69,7 +69,7 @@ export interface DataTableSortColumnData {
 
 export interface DataTableColumnData extends DataTableSortColumnData {
   title: string;
-  type?: "numeric" | "icon";
+  type?: "numeric" | "icon" | "icon-button";
   template?: <T>(data: any, row: T) => TemplateResult | string;
   width?: string;
   maxWidth?: string;
@@ -228,10 +228,13 @@ export class HaDataTable extends LitElement {
               const sorted = key === this._sortColumn;
               const classes = {
                 "mdc-data-table__header-cell--numeric": Boolean(
-                  column.type && column.type === "numeric"
+                  column.type === "numeric"
                 ),
                 "mdc-data-table__header-cell--icon": Boolean(
-                  column.type && column.type === "icon"
+                  column.type === "icon"
+                ),
+                "mdc-data-table__header-cell--icon-button": Boolean(
+                  column.type === "icon-button"
                 ),
                 sortable: Boolean(column.sortable),
                 "not-sorted": Boolean(column.sortable && !sorted),
@@ -318,10 +321,13 @@ export class HaDataTable extends LitElement {
                             <div
                               class="mdc-data-table__cell ${classMap({
                                 "mdc-data-table__cell--numeric": Boolean(
-                                  column.type && column.type === "numeric"
+                                  column.type === "numeric"
                                 ),
                                 "mdc-data-table__cell--icon": Boolean(
-                                  column.type && column.type === "icon"
+                                  column.type === "icon"
+                                ),
+                                "mdc-data-table__cell--icon-button": Boolean(
+                                  column.type === "icon-button"
                                 ),
                                 grows: Boolean(column.grows),
                               })}"
@@ -612,6 +618,16 @@ export class HaDataTable extends LitElement {
 
       .mdc-data-table__cell--icon:first-child state-badge {
         margin-right: -8px;
+      }
+
+      .mdc-data-table__header-cell--icon-button,
+      .mdc-data-table__cell--icon-button {
+        width: 40px;
+        padding: 4px;
+      }
+
+      .mdc-data-table__cell--icon-button a {
+        color: var(--primary-text-color);
       }
 
       .mdc-data-table__header-cell {
