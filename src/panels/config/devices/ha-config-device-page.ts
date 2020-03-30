@@ -190,11 +190,11 @@ export class HaConfigDevicePage extends LitElement {
                       : ""
                   }
                   <img
-                    src="https://deploy-preview-61--home-assistant-brands.netlify.com/${
+                    src="https://brands.home-assistant.io/${
                       integrations[0]
                     }/logo.png"
                     srcset="
-                      https://deploy-preview-61--home-assistant-brands.netlify.com/${
+                      https://brands.home-assistant.io/${
                         integrations[0]
                       }/logo@2x.png 2x
                     "
@@ -264,8 +264,7 @@ export class HaConfigDevicePage extends LitElement {
                                       .disabled=${!state.attributes.id}
                                     >
                                       <paper-item-body>
-                                        ${state.attributes.friendly_name ||
-                                          automation}
+                                        ${computeStateName(state)}
                                       </paper-item-body>
                                       <ha-icon-next></ha-icon-next>
                                     </paper-item>
@@ -331,8 +330,7 @@ export class HaConfigDevicePage extends LitElement {
                                           .disabled=${!state.attributes.id}
                                         >
                                           <paper-item-body>
-                                            ${state.attributes.friendly_name ||
-                                              scene}
+                                            ${computeStateName(state)}
                                           </paper-item-body>
                                           <ha-icon-next></ha-icon-next>
                                         </paper-item>
@@ -388,8 +386,7 @@ export class HaConfigDevicePage extends LitElement {
                                       @click=${this._openScript}
                                     >
                                       <paper-item-body>
-                                        ${state.attributes.friendly_name ||
-                                          script}
+                                        ${computeStateName(state)}
                                       </paper-item-body>
                                       <ha-icon-next></ha-icon-next>
                                     </paper-item>

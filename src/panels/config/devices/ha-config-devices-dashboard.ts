@@ -152,9 +152,9 @@ export class HaConfigDeviceDashboard extends LitElement {
                 const battery = batteryEntity
                   ? this.hass.states[batteryEntity]
                   : undefined;
-                return battery && !isNaN(battery.state as any)
+                return battery
                   ? html`
-                      ${battery.state}%
+                      ${isNaN(battery.state as any) ? "-" : battery.state}%
                       <ha-state-icon
                         .hass=${this.hass!}
                         .stateObj=${battery}

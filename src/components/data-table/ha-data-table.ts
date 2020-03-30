@@ -243,7 +243,7 @@ export class HaDataTable extends LitElement {
                   style=${column.width
                     ? styleMap({
                         [column.grows ? "minWidth" : "width"]: column.width,
-                        maxWidth: column.maxWidth ? column.maxWidth : "",
+                        maxWidth: column.maxWidth || "",
                       })
                     : ""}
                   role="columnheader"
