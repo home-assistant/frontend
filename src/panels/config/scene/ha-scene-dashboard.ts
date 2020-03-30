@@ -1,34 +1,29 @@
-import {
-  LitElement,
-  TemplateResult,
-  html,
-  CSSResultArray,
-  css,
-  property,
-  customElement,
-} from "lit-element";
 import "@polymer/paper-icon-button/paper-icon-button";
 import "@polymer/paper-tooltip/paper-tooltip";
-import "../../../layouts/hass-tabs-subpage-data-table";
-
-import "../../../components/ha-fab";
-
+import {
+  css,
+  CSSResultArray,
+  customElement,
+  html,
+  LitElement,
+  property,
+  TemplateResult,
+} from "lit-element";
+import { ifDefined } from "lit-html/directives/if-defined";
+import memoizeOne from "memoize-one";
+import { fireEvent } from "../../../common/dom/fire_event";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import { computeRTL } from "../../../common/util/compute_rtl";
+import { DataTableColumnContainer } from "../../../components/data-table/ha-data-table";
+import "../../../components/ha-fab";
+import { forwardHaptic } from "../../../data/haptics";
+import { activateScene, SceneEntity } from "../../../data/scene";
+import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
+import "../../../layouts/hass-tabs-subpage-data-table";
 import { haStyle } from "../../../resources/styles";
 import { HomeAssistant, Route } from "../../../types";
-import { SceneEntity, activateScene } from "../../../data/scene";
 import { showToast } from "../../../util/toast";
-import { forwardHaptic } from "../../../data/haptics";
 import { configSections } from "../ha-panel-config";
-import memoizeOne from "memoize-one";
-import {
-  DataTableColumnContainer,
-  RowClickedEvent,
-} from "../../../components/data-table/ha-data-table";
-import { HASSDomEvent, fireEvent } from "../../../common/dom/fire_event";
-import { navigate } from "../../../common/navigate";
-import { ifDefined } from "lit-html/directives/if-defined";
 
 @customElement("ha-scene-dashboard")
 class HaSceneDashboard extends LitElement {
@@ -137,6 +132,11 @@ class HaSceneDashboard extends LitElement {
           "ui.panel.config.scene.picker.no_scenes"
         )}
       >
+        <paper-icon-button
+          slot="toolbar-icon"
+          icon="hass:help-circle"
+          @click=${this._showHelp}
+        ></paper-icon-button>
       </hass-tabs-subpage-data-table>
       <a href="/config/scene/edit/new">
         <ha-fab
@@ -168,6 +168,24 @@ class HaSceneDashboard extends LitElement {
       ),
     });
     forwardHaptic("light");
+  }
+
+  private _showHelp() {
+    showAlertDialog(this, {
+      title: this.hass.localize("ui.panel.config.scene.caption"),
+      text: html`
+        ${this.hass.localize("ui.panel.config.scene.picker.introduction")}
+        <p>
+          <a
+            href="https://home-assistant.io/docs/scene/editor/"
+            target="_blank"
+            rel="noreferrer"
+          >
+            ${this.hass.localize("ui.panel.config.scene.picker.learn_more")}
+          </a>
+        </p>
+      `,
+    });
   }
 
   static get styles(): CSSResultArray {
