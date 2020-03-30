@@ -32,7 +32,6 @@ import {
 import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
 import { RelatedResult, findRelated } from "../../../data/search";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
-import { navigate } from "../../../common/navigate";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import { ifDefined } from "lit-html/directives/if-defined";
 
