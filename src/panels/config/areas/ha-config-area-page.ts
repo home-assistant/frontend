@@ -356,6 +356,7 @@ class HaConfigAreaPage extends LitElement {
           padding: 8px;
           box-sizing: border-box;
           width: 33%;
+          flex-grow: 1;
         }
         .fullwidth {
           padding: 8px;
