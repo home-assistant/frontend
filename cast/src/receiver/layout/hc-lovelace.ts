@@ -38,6 +38,7 @@ class HcLovelace extends LitElement {
       enableFullEditMode: () => undefined,
       mode: "storage",
       language: "en",
+      rebuild: true,
       saveConfig: async () => undefined,
       deleteConfig: async () => undefined,
       setEditMode: () => undefined,
