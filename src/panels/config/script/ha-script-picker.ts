@@ -9,7 +9,6 @@ import {
   property,
   TemplateResult,
 } from "lit-element";
-import { ifDefined } from "lit-html/directives/if-defined";
 import memoizeOne from "memoize-one";
 import { formatDateTime } from "../../../common/datetime/format_date_time";
 import { fireEvent } from "../../../common/dom/fire_event";
