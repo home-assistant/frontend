@@ -75,11 +75,13 @@ class HuiEntityCard extends LitElement implements LovelaceCard {
 
     if (this._config.footer) {
       this._footerElement = createHeaderFooterElement(this._config.footer);
+    } else if (this._footerElement) {
+      this._footerElement = undefined;
     }
   }
 
   public getCardSize(): number {
-    return 2;
+    return 1 + (this._config?.footer ? 1 : 0);
   }
 
   protected render(): TemplateResult {
@@ -102,45 +104,49 @@ class HuiEntityCard extends LitElement implements LovelaceCard {
     }
 
     const showUnit = this._config.attribute
-      ? Boolean(stateObj.attributes[this._config.attribute])
+      ? this._config.attribute in stateObj.attributes
       : stateObj.state !== UNKNOWN && stateObj.state !== UNAVAILABLE;
 
     return html`
-      <ha-card
-        @action=${this._handleClick}
-        .actionHandler=${actionHandler()}
-        tabindex="0"
-      >
-        <div class="header">
-          <div class="name">
-            ${this._config.name || computeStateName(stateObj)}
+      <ha-card>
+        <div
+          @action=${this._handleClick}
+          .actionHandler=${actionHandler()}
+          tabindex="0"
+        >
+          <div class="header">
+            <div class="name">
+              ${this._config.name || computeStateName(stateObj)}
+            </div>
+            <div class="icon">
+              <ha-icon
+                .icon=${this._config.icon || stateIcon(stateObj)}
+              ></ha-icon>
+            </div>
           </div>
-          <div class="icon">
-            <ha-icon
-              .icon=${this._config.icon || stateIcon(stateObj)}
-            ></ha-icon>
+          <div class="info">
+            <span class="value"
+              >${"attribute" in this._config
+                ? stateObj.attributes[this._config.attribute!] ||
+                  this.hass.localize("state.default.unknown")
+                : this.hass.localize(`state.default.${stateObj.state}`) ||
+                  this.hass.localize(
+                    `state.${this._config.entity.split(".")[0]}.${
+                      stateObj.state
+                    }`
+                  ) ||
+                  stateObj.state}</span
+            >${showUnit
+              ? html`
+                  <span class="measurement"
+                    >${this._config.unit ||
+                      (this._config.attribute
+                        ? ""
+                        : stateObj.attributes.unit_of_measurement)}</span
+                  >
+                `
+              : ""}
           </div>
-        </div>
-        <div class="info">
-          <span class="value"
-            >${this._config.attribute
-              ? stateObj.attributes[this._config.attribute] ||
-                this.hass.localize("state.default.unknown")
-              : this.hass.localize(`state.default.${stateObj.state}`) ||
-                this.hass.localize(
-                  `state.${this._config.entity.split(".")[0]}.${stateObj.state}`
-                ) ||
-                stateObj.state}</span
-          >${showUnit
-            ? html`
-                <span class="measurement"
-                  >${this._config.unit ||
-                    (this._config.attribute
-                      ? ""
-                      : stateObj.attributes.unit_of_measurement)}</span
-                >
-              `
-            : ""}
         </div>
         ${this._footerElement}
       </ha-card>
@@ -182,7 +188,7 @@ class HuiEntityCard extends LitElement implements LovelaceCard {
 
   static get styles(): CSSResult {
     return css`
-      :host {
+      ha-card > div {
         cursor: pointer;
       }
 
