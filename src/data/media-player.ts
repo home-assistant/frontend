@@ -1,4 +1,6 @@
 import { HassEntity } from "home-assistant-js-websocket";
+import { MediaEntity } from "../types";
+import { computeStateName } from "../common/entity/compute_state_name";
 
 export const SUPPORT_PAUSE = 1;
 export const SUPPORT_SEEK = 2;
@@ -60,3 +62,43 @@ export const computeMediaDescription = (stateObj: HassEntity): string => {
 
   return secondaryTitle;
 };
+
+interface MediaState extends MediaEntity {
+  timestamp: number;
+}
+
+export class MediaStateController {
+  private _stateObjectArray: MediaState[] = [];
+  private _updateCallback?: () => void;
+
+  constructor() {}
+
+  public addState(stateObj: MediaEntity): void {
+    if (!this._stateObjectArray.length) {
+      this._stateObjectArray.push({ ...stateObj, timestamp: Date.now() });
+    }
+  }
+
+  public set updateCallback(callback: () => void) {
+    this._updateCallback = callback;
+  }
+
+  public get entityName() {
+    return computeStateName(this._mostRecentState);
+  }
+
+  public get mediaTitle() {
+    return (
+      this._mostRecentState.attributes.media_title ||
+      computeMediaDescription(this._mostRecentState)
+    );
+  }
+
+  private get _mostRecentState(): MediaEntity {
+    return this._stateObjectArray[this._stateObjectArray.length - 1];
+  }
+
+  private get _oldestState(): MediaEntity {
+    return this._stateObjectArray[this._stateObjectArray.length - 1];
+  }
+}

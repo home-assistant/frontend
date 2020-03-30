@@ -43,6 +43,7 @@ import {
   getCurrentProgress,
   computeMediaDescription,
   SUPPORT_TURN_OFF,
+  MediaStateController,
 } from "../../../data/media-player";
 
 import "../../../components/ha-card";
@@ -202,6 +203,7 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
   @property() private _marqueeActive: boolean = false;
   private _progressInterval?: number;
   private _resizeObserver?: ResizeObserver;
+  private _mediaStateController?: MediaStateController;
 
   public getCardSize(): number {
     return 3;
@@ -249,7 +251,7 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
   }
 
   protected render(): TemplateResult {
-    if (!this.hass || !this._config) {
+    if (!this.hass || !this._config || !this._mediaStateController) {
       return html``;
     }
     const stateObj = this._stateObj;
@@ -341,8 +343,7 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
             <div class="icon-name">
               <ha-icon class="icon" .icon=${stateIcon(stateObj)}></ha-icon>
               <div>
-                ${this._config!.name ||
-                  computeStateName(this.hass!.states[this._config!.entity])}
+                ${this._config!.name || this._mediaStateController.entityName}
               </div>
             </div>
             <div>
@@ -423,6 +424,8 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
 
   protected firstUpdated(): void {
     this._attachObserver();
+
+    this._mediaStateController = new MediaStateController();
   }
 
   protected updated(changedProps: PropertyValues): void {
@@ -443,6 +446,8 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
       this._backgroundColor = undefined;
       return;
     }
+
+    this._mediaStateController!.addState(stateObj);
 
     const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
     const oldConfig = changedProps.get("_config") as
