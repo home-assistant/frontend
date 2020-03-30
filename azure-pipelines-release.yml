@@ -53,7 +53,5 @@ stages:
           wheelsRequirement: 'requirement.txt'
           preBuild:
           - script: |
-              set -e
-
               sleep 240
               echo "home-assistant-frontend==$(Build.SourceBranchName)" > requirement.txt
