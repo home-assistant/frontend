@@ -5,6 +5,7 @@ export const ENTITY_COMPONENT_DOMAINS = [
   "air_quality",
   "alarm_control_panel",
   "alert",
+  "analog_output",
   "automation",
   "binary_sensor",
   "calendar",
