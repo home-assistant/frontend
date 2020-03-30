@@ -17,7 +17,6 @@ import { AddUserDialogParams } from "./show-dialog-add-user";
 import {
   User,
   SYSTEM_GROUP_ID_USER,
-  SYSTEM_GROUP_ID_ADMIN,
   GROUPS,
   createUser,
   deleteUser,
