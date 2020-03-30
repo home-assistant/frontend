@@ -623,7 +623,7 @@
                 "dismiss": "Annullare",
                 "editor": {
                     "confirm_delete": "Sei sicuro di voler eliminare questa voce?",
-                    "delete": "ELIMINA",
+                    "delete": "Elimina",
                     "enabled_cause": "Disabilitato da {cause}.",
                     "enabled_description": "Le entità disabilitate non saranno aggiunte a Home Assistant",
                     "enabled_label": "Abilita entità",
@@ -633,7 +633,7 @@
                     "name": "Sostituzione nome",
                     "note": "Nota: questo potrebbe non funzionare ancora con tutte le integrazioni.",
                     "unavailable": "Questa entità non è attualmente disponibile.",
-                    "update": "AGGIORNA"
+                    "update": "Aggiorna"
                 },
                 "no_unique_id": "Questa entità non ha un ID univoco, pertanto le sue impostazioni non possono essere gestite dall'Interfaccia Utente.",
                 "related": "Relazionato",
@@ -666,7 +666,7 @@
                     "min": "Valore minimo",
                     "mode": "Modalità di visualizzazione",
                     "slider": "Cursore",
-                    "step": "Dimensione del passo del cursore",
+                    "step": "Dimensione del passo",
                     "unit_of_measurement": "Unità di misura"
                 },
                 "input_select": {
@@ -818,14 +818,14 @@
                     },
                     "description": "Panoramica di tutte le aree della tua casa.",
                     "editor": {
-                        "create": "CREA",
+                        "create": "Crea",
                         "default_name": "Nuova area",
-                        "delete": "ELIMINA",
-                        "update": "AGGIORNA"
+                        "delete": "Elimina",
+                        "update": "Aggiorna"
                     },
                     "no_areas": "Sembra che tu non abbia ancora delle aree!",
                     "picker": {
-                        "create_area": "CREA AREA",
+                        "create_area": "Crea Area",
                         "header": "Aree",
                         "integrations_page": "Integrazioni",
                         "introduction": "Le aree sono utilizzate per organizzare dove sono i dispositivi. Queste informazioni saranno utilizzate in Home Assistant per aiutarti ad organizzare la tua interfaccia, permessi e integrazioni con altri sistemi.",
