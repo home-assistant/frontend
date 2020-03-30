@@ -28,6 +28,7 @@ import {
 } from "../../../components/data-table/ha-data-table";
 import { HASSDomEvent, fireEvent } from "../../../common/dom/fire_event";
 import { navigate } from "../../../common/navigate";
+import { ifDefined } from "lit-html/directives/if-defined";
 
 @customElement("ha-scene-dashboard")
 class HaSceneDashboard extends LitElement {
@@ -76,9 +77,9 @@ class HaSceneDashboard extends LitElement {
         info: {
           title: "",
           type: "icon-button",
-          template: (_info, automation) => html`
+          template: (_info, scene) => html`
             <paper-icon-button
-              .automation=${automation}
+              .scene=${scene}
               @click=${this._showInfo}
               icon="hass:information-outline"
               title="${this.hass.localize(
@@ -90,17 +91,23 @@ class HaSceneDashboard extends LitElement {
         edit: {
           title: "",
           type: "icon-button",
-          template: (_info, automation: any) => html`
-            <paper-icon-button
-              .icon=${automation.attributes.id
-                ? "hass:pencil"
-                : "hass:pencil-off"}
-              .disabled=${!automation.attributes.id}
-              title="${this.hass.localize(
-                "ui.panel.config.scene.picker.edit_scene"
-              )}"
-            ></paper-icon-button>
-            ${!automation.attributes.id
+          template: (_info, scene: any) => html`
+            <a
+              href=${ifDefined(
+                scene.attributes.id
+                  ? `/config/scene/edit/${scene.attributes.id}`
+                  : undefined
+              )}
+            >
+              <paper-icon-button
+                .icon=${scene.attributes.id ? "hass:pencil" : "hass:pencil-off"}
+                .disabled=${!scene.attributes.id}
+                title="${this.hass.localize(
+                  "ui.panel.config.scene.picker.edit_scene"
+                )}"
+              ></paper-icon-button>
+            </a>
+            ${!scene.attributes.id
               ? html`
                   <paper-tooltip position="left">
                     ${this.hass.localize(
@@ -129,7 +136,6 @@ class HaSceneDashboard extends LitElement {
         .noDataText=${this.hass.localize(
           "ui.panel.config.scene.picker.no_scenes"
         )}
-        @row-click=${this._editScene}
       >
       </hass-tabs-subpage-data-table>
       <a href="/config/scene/edit/new">
@@ -146,16 +152,8 @@ class HaSceneDashboard extends LitElement {
 
   private _showInfo(ev) {
     ev.stopPropagation();
-    const entityId = ev.currentTarget.automation.entity_id;
+    const entityId = ev.currentTarget.scene.entity_id;
     fireEvent(this, "hass-more-info", { entityId });
-  }
-
-  private _editScene(ev: HASSDomEvent<RowClickedEvent>) {
-    const entityId = ev.detail.id;
-    const state = this.hass.states[entityId];
-    if (state?.attributes.id) {
-      navigate(this, `/config/scene/edit/${state.attributes.id}`);
-    }
   }
 
   private async _activateScene(ev) {
