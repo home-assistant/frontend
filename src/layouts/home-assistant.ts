@@ -86,7 +86,7 @@ export class HomeAssistantAppEl extends HassElement {
       this._route === undefined &&
       (route.path === "" || route.path === "/")
     ) {
-      navigate(window, getStorageDefaultPanelUrlPath(), true);
+      navigate(window, `/${getStorageDefaultPanelUrlPath()}`, true);
       return;
     }
 
