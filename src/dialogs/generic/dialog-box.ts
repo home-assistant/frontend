@@ -142,6 +142,9 @@ class DialogBox extends LitElement {
             min-width: initial;
           }
         }
+        a {
+          color: var(--primary-color);
+        }
         p {
           margin: 0;
           padding-top: 6px;
