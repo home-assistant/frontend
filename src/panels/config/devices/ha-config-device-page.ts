@@ -42,7 +42,6 @@ import { createValidEntityId } from "../../../common/entity/valid_entity_id";
 import { configSections } from "../ha-panel-config";
 import { RelatedResult, findRelated } from "../../../data/search";
 import { SceneEntities, showSceneEditor } from "../../../data/scene";
-import { navigate } from "../../../common/navigate";
 import { showDeviceAutomationDialog } from "./device-detail/show-dialog-device-automation";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { ifDefined } from "lit-html/directives/if-defined";
