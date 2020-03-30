@@ -88,6 +88,7 @@ export class HaTabsSubpageDataTable extends LitElement {
         .route=${this.route}
         .tabs=${this.tabs}
       >
+        <div slot="toolbar-icon"><slot name="toolbar-icon"></slot></div>
         ${this.narrow
           ? html`
               <div slot="header">

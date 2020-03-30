@@ -537,9 +537,11 @@
         "common": {
             "cancel": "Ofbriechen",
             "close": "Zoumaachen",
+            "delete": "Läschen",
             "loading": "Lued",
             "no": "Nee",
             "save": "Späicheren",
+            "successfully_deleted": "Erfollegräich geläscht.",
             "successfully_saved": "Erfollegräich gespäichert.",
             "yes": "Jo"
         },
@@ -627,6 +629,7 @@
                     "enabled_label": "Entitéit aktivéieren",
                     "entity_id": "ID vun der Entitéit",
                     "icon": "Ikon iwwerschreiwen",
+                    "icon_error": "Ikonen sollten am format 'prefix:numm' sinn, Beispill: 'mdi:home'",
                     "name": "Numm iwwerschreiwen",
                     "note": "Nott: dëst funktionéiert villäicht nach net mat all Integratioun.",
                     "unavailable": "Dës Entitéit ass net erreechbar fir de Moment.",
@@ -657,6 +660,7 @@
                     "time": "Zäit"
                 },
                 "input_number": {
+                    "box": "Angab Feld",
                     "max": "Maximale Wäert",
                     "min": "Minimale Wäert",
                     "mode": "Affichage Modus",
@@ -1303,6 +1307,7 @@
                     "automations": "Automatisme",
                     "cant_edit": "Dir kënnt nëmmen Elementer änneren déi an der UI erstallt goufen.",
                     "caption": "Apparater",
+                    "confirm_delete": "Sécher fir dësen Appara ze läsche?",
                     "confirm_rename_entity_ids": "Wëllt Dir och d'Entitéiten-ID vun Ären Entitéiten ëmbenennen?",
                     "data_table": {
                         "area": "Beräich",
@@ -1310,8 +1315,10 @@
                         "device": "Apparat",
                         "integration": "Integratioun",
                         "manufacturer": "Hiersteller",
-                        "model": "Modell"
+                        "model": "Modell",
+                        "no_devices": "Keng Apparater"
                     },
+                    "delete": "Läschen",
                     "description": "Verwalt verbonnen Apparater",
                     "details": "Hei sinn all Detailer vun ärem Apparat.",
                     "device_not_found": "Apparat net fonnt.",
@@ -1385,6 +1392,7 @@
                         "introduction2": "Benotzt d'Lëscht vun den Entitéite fir d'Nimm z'änneren, d'Entitéits ID z'änneren oder d'Entrée aus dem Home Assistant ze läschen. Remarque: Läsche vun der Entitéit aus der Lëscht läscht d'Entitéit selwer net. Fir dës ze läsche follegt dem Link ënnen a läscht et op der Integratiouns Säit.",
                         "remove_selected": {
                             "button": "Ausgewielte läschen",
+                            "confirm_partly_text": "Nëmmen {removable} vun den ausgewielten {selected} Entitéite kënne geläscht ginn. Entitéiten kënne nëmmen geläscht ginn wann eng Integratioun déi Entitéiten net méi zur Verfügung stellt. Heiansdo muss Home Assistant frësch gestart ginn fir Entitéiten vun enger geläschten Integratioun ze läschen. Sécher fir déi läschbar Entitéiten ze läschen?",
                             "confirm_text": "Entitéiten kënne nëmmen geläscht gin wann d'Integratioun d'Entitéiten net méi zur Verfügung stellt.",
                             "confirm_title": "Wëllt dir {number} Entitéite läschen?"
                         },
@@ -1394,6 +1402,7 @@
                             "disabled": "Deaktivéiert",
                             "ok": "Ok",
                             "readonly": "Nëmme liesen",
+                            "restored": "Restauréiert",
                             "unavailable": "Net erreechbar"
                         },
                         "unavailable": "(net verfügbar)"
@@ -1458,6 +1467,7 @@
                         },
                         "failed_create_area": "Feeler beim erstellen vum Beräich.",
                         "finish": "Ofschléissen",
+                        "loading_first_time": "Waart w.e.g. während der Installatioun vun der Integratioun",
                         "name_new_area": "Numm vum neie Beräich?",
                         "not_all_required_fields": "Net all erfuerderlech Felder sinn ausgefëllt.",
                         "submit": "Ofschécken"
@@ -1496,6 +1506,7 @@
                             "yaml": "Yaml Fichier"
                         },
                         "confirm_delete": "Sécher fir dëse Tableau de Bord ze läschen?",
+                        "default_dashboard": "Dëst ass den Standard Tableau de Bord",
                         "detail": {
                             "create": "Erstellen",
                             "delete": "Läschen",
@@ -1503,7 +1514,9 @@
                             "edit_dashboard": "Tableau de Bord änneren",
                             "icon": "Ikon vun der Säite Läischt",
                             "new_dashboard": "Neien Tableau de Bord dobäisetzen",
+                            "remove_default": "Als Standard op dësem Apparat ewech huelen",
                             "require_admin": "Admin nëmmen",
+                            "set_default": "Als Standard op dësem Apparat définéieren",
                             "show_sidebar": "An der Säite Läischt uweisen",
                             "title": "Titel vun der Säite Läischt",
                             "title_required": "Titel ass erfuerderlech.",
@@ -1515,6 +1528,7 @@
                             "add_dashboard": "Tableau de Bord dobäisetzen",
                             "headers": {
                                 "conf_mode": "Konfiguratioun's Method",
+                                "default": "Standard",
                                 "filename": "Numm vum Fichier",
                                 "require_admin": "Admin nëmmen",
                                 "sidebar": "An der Säite Läischt uweisen",
@@ -1545,7 +1559,8 @@
                             "headers": {
                                 "type": "Typ",
                                 "url": "Url"
-                            }
+                            },
+                            "no_resources": "Keng Ressourcen"
                         },
                         "refresh_body": "D'Säit muss aktualiséiert gi fir d'Läschen ofzeschléissen, elo aktualiséieren?",
                         "refresh_header": "Soll aktualiséiert ginn?",
@@ -2099,6 +2114,7 @@
                             "required": "Obligatoresch"
                         },
                         "entities": {
+                            "description": "D'Entitéite Kaart ass déi am meeschten allgemengen Zort Kaart. Si gruppéiert Entitéite gemeinsam a Lëschten.",
                             "name": "Entitéiten",
                             "show_header_toggle": "Titel Schalter uweisen?",
                             "toggle": "Entitéiten ëmschalten"
@@ -2107,9 +2123,11 @@
                             "name": "Entitéite Knäppchen"
                         },
                         "entity-filter": {
+                            "description": "D'Entity Filter Kaart erlaabt Iech eng Lëscht vun Entitéiten ze definéieren déi nëmmen ugewise gi wann se an engem bestëmmten Zoustand sinn.",
                             "name": "Entitéite Filter"
                         },
                         "gauge": {
+                            "description": "D'Gauge Kaart ass eng Basis Kaart déi Sensor Date visuell duerstellt.",
                             "name": "Skala",
                             "severity": {
                                 "define": "Schwieregkeetsgrad definéieren?",
@@ -2130,9 +2148,11 @@
                             "icon_height": "Héicht vun der Ikon",
                             "image": "Wee zum Bild",
                             "manual": "Manuell",
+                            "manual_description": "Muss Du eng personaliséiert Kaart bäifügen oder wëlls de Yaml manuell schreiwen?",
                             "maximum": "Maximum",
                             "minimum": "Minimum",
                             "name": "Numm",
+                            "no_theme": "Kee Thema",
                             "refresh_interval": "Aktualiséierungs Intervall",
                             "show_icon": "Ikon uweisen?",
                             "show_name": "Numm uweisen?",
@@ -2146,13 +2166,15 @@
                         },
                         "glance": {
                             "columns": "Kolonnen",
+                            "description": "D'Glance Kaart ass nëtzlech fir verschidde Sensoren an enger kompakter Iwwersiicht ze gruppéieren.",
                             "name": "Usiicht"
                         },
                         "history-graph": {
+                            "description": "D'Verlaf's Grafik Kaart erlaabt Iech eng Grafik fir all eenzel opgelëschten Entitéiten unzeweisen.",
                             "name": "Verlaf Diagramm"
                         },
                         "horizontal-stack": {
-                            "description": "Horizontaé Kaart erlaabt et méi Kaarten ze gruppéieren fir dass se ëmmer an der selwechter Rei ugewise ginn.",
+                            "description": "Horizontal Kaart erlaabt et méi Kaarten ze gruppéieren fir dass se ëmmer an der selwechter Rei ugewise ginn.",
                             "name": "Horizontale Stapel"
                         },
                         "iframe": {
@@ -2181,6 +2203,7 @@
                             "name": "Medie Kontroll"
                         },
                         "picture-elements": {
+                            "description": "D'Picture Elements Kaart ass eng vun de villsäitegsten Aarte vu Kaarten. D'Kaarten erlaben Iech Ikonen oder Text ze positionéieren a souguer Servicer! Op engem Bild wat op Koordinate baséiert.",
                             "name": "Biller Elementer"
                         },
                         "picture-entity": {
@@ -2188,9 +2211,11 @@
                             "name": "Biller Entitéit"
                         },
                         "picture-glance": {
+                            "description": "D'Picture Glance Kaart weist e Bild an entspriechend Entitéiten Zoustänn als Ikon un. D'Entitéiten op der rietser Säit erlaben et Aktiounen auszeféieren, oder anerer weise méi Informatioun un.",
                             "name": "Biller Usiicht"
                         },
                         "picture": {
+                            "description": "D'Foto Kaart erlaabt Iech e Bild ze setze fir als Navigatioun ze benotze fir op verschidde Weeër an Ärem Interface oder e Service op ze ruffen.",
                             "name": "Bild"
                         },
                         "plant-status": {
@@ -2224,6 +2249,7 @@
                     "edit_card": {
                         "add": "Kaart dobäisetzen",
                         "delete": "Läschen",
+                        "duplicate": "Kaart Replikéieren",
                         "edit": "Änneren",
                         "header": "Kaart Konfiguratioun",
                         "move": "Réckelen",
@@ -2250,7 +2276,10 @@
                         "move_right": "Usiicht no riets réckelen",
                         "tab_badges": "Badgen",
                         "tab_settings": "Astellungen",
-                        "tab_visibility": "Visibilitéit"
+                        "tab_visibility": "Visibilitéit",
+                        "visibility": {
+                            "select_users": "Wiel d'Benotzer aus déi dës Usiicht an der Navigatioun gesinn"
+                        }
                     },
                     "header": "UI änneren",
                     "menu": {
@@ -2297,7 +2326,8 @@
                     "view": {
                         "panel_mode": {
                             "description": "Dëst stellt déi éischt Kaart op voller Breet duer; aner Kaarte ginn net duergestallt.",
-                            "title": "Panel Modus?"
+                            "title": "Panel Modus?",
+                            "warning_multiple_cards": "Dës Usiicht enthält méi wéi eng Kaart, mee eng Panneau Usiicht kann nëmmen 1 Kaart uweisen."
                         }
                     }
                 },
@@ -2307,9 +2337,14 @@
                     "exit_edit_mode": "Benotzer Interface Editéierungsmodus verloossen",
                     "help": "Hëllef",
                     "refresh": "Erneieren",
+                    "reload_resources": "Ressource frësch lueden",
                     "unused_entities": "Onbenotzt Entitéiten"
                 },
                 "reload_lovelace": "Lovelace frësch lueden",
+                "reload_resources": {
+                    "refresh_body": "D'Säit muss aktualiséiert gi fir d'Aktualiséierung ofzeschléissen, elo aktualiséieren?",
+                    "refresh_header": "Soll aktualiséiert ginn?"
+                },
                 "unused_entities": {
                     "available_entities": "Dës si verfügbar Entitéiten, déi awer nach net an ärer Lovelace UI sinn.",
                     "domain": "Domän",
@@ -2321,9 +2356,12 @@
                 },
                 "views": {
                     "confirm_delete": "Sécher fir dës Usiicht ze läsche?",
+                    "confirm_delete_existing_cards": "D'Läschen vun dëser Usiicht läscht och d'Kaarten",
+                    "confirm_delete_text": "Sécher fir d'Usiicht '{name}' ze läsche?",
                     "existing_cards": "Dir kënnt keng Usiicht mat Kaarten läschen. Läscht d'Kaarten fir d'éischt."
                 },
                 "warning": {
+                    "attribute_not_found": "Attribut {attribute} net disponibel an: {entity}",
                     "entity_non_numeric": "Entitéit ass net numerescher Natur: {entity}",
                     "entity_not_found": "Entitéit net erreechbar: {entity}"
                 }

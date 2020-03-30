@@ -184,8 +184,8 @@ export class HaConfigLovelaceDashboards extends LitElement {
   private _getItems = memoize((dashboards: LovelaceDashboard[]) => {
     const defaultMode = (this.hass.panels?.lovelace
       ?.config as LovelacePanelConfig).mode;
-    const isDefault =
-      !localStorage.defaultPage || localStorage.defaultPage === "lovelace";
+    const defaultUrlPath = this.hass.defaultPanel;
+    const isDefault = defaultUrlPath === "lovelace";
     return [
       {
         icon: "hass:view-dashboard",
@@ -201,7 +201,7 @@ export class HaConfigLovelaceDashboards extends LitElement {
         return {
           filename: "",
           ...dashboard,
-          default: localStorage.defaultPage === dashboard.url_path,
+          default: defaultUrlPath === dashboard.url_path,
         };
       }),
     ];

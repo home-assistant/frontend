@@ -29,7 +29,7 @@ import { hasConfigOrEntityChanged } from "../common/has-changed";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { actionHandler } from "../common/directives/action-handler-directive";
 import { hasAction } from "../common/has-action";
-import { ActionHandlerEvent, LovelaceConfig } from "../../../data/lovelace";
+import { ActionHandlerEvent } from "../../../data/lovelace";
 import { handleAction } from "../common/handle-action";
 import { findEntities } from "../common/find-entites";
 
@@ -46,17 +46,15 @@ class HuiPictureGlanceCard extends LitElement implements LovelaceCard {
 
   public static getStubConfig(
     hass: HomeAssistant,
-    lovelaceConfig: LovelaceConfig,
-    entities?: string[],
-    entitiesFill?: string[]
+    entities: string[],
+    entitiesFallback: string[]
   ): PictureGlanceCardConfig {
     const maxEntities = 2;
     const foundEntities = findEntities(
       hass,
-      lovelaceConfig,
       maxEntities,
       entities,
-      entitiesFill,
+      entitiesFallback,
       ["sensor", "binary_sensor"]
     );
 

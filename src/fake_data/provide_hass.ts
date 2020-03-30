@@ -1,4 +1,7 @@
-import { applyThemesOnElement } from "../common/dom/apply_themes_on_element";
+import {
+  applyThemesOnElement,
+  invalidateThemeCache,
+} from "../common/dom/apply_themes_on_element";
 
 import { demoConfig } from "./demo_config";
 import { demoServices } from "./demo_services";
@@ -8,6 +11,7 @@ import { HomeAssistant } from "../types";
 import { HassEntities } from "home-assistant-js-websocket";
 import { getLocalLanguage } from "../util/hass-translation";
 import { translationMetadata } from "../resources/translations-metadata";
+import { DEFAULT_PANEL } from "../data/panel";
 
 const ensureArray = <T>(val: T | T[]): T[] =>
   Array.isArray(val) ? val : [val];
@@ -169,6 +173,7 @@ export const provideHass = (
       name: "Demo User",
     },
     panelUrl: "lovelace",
+    defaultPanel: DEFAULT_PANEL,
 
     language: localLanguage,
     selectedLanguage: localLanguage,
@@ -224,6 +229,7 @@ export const provideHass = (
       (eventListeners[event] || []).forEach((fn) => fn(event));
     },
     mockTheme(theme) {
+      invalidateThemeCache();
       hass().updateHass({
         selectedTheme: theme ? "mock" : "default",
         themes: {
@@ -237,8 +243,7 @@ export const provideHass = (
       applyThemesOnElement(
         document.documentElement,
         themes,
-        selectedTheme,
-        true
+        selectedTheme as string
       );
     },
 

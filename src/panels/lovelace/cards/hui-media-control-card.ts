@@ -30,7 +30,6 @@ import { stateIcon } from "../../../common/entity/state_icon";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
 import { contrast } from "../common/color/contrast";
 import { findEntities } from "../common/find-entites";
-import { LovelaceConfig } from "../../../data/lovelace";
 import { UNAVAILABLE, UNKNOWN } from "../../../data/entity";
 import {
   SUPPORT_PAUSE,
@@ -176,22 +175,20 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
 
   public static getStubConfig(
     hass: HomeAssistant,
-    lovelaceConfig: LovelaceConfig,
-    entities?: string[],
-    entitiesFill?: string[]
-  ): object {
+    entities: string[],
+    entitiesFallback: string[]
+  ): MediaControlCardConfig {
     const includeDomains = ["media_player"];
     const maxEntities = 1;
     const foundEntities = findEntities(
       hass,
-      lovelaceConfig,
       maxEntities,
       entities,
-      entitiesFill,
+      entitiesFallback,
       includeDomains
     );
 
-    return { entity: foundEntities[0] || "" };
+    return { type: "media-control", entity: foundEntities[0] || "" };
   }
 
   @property() public hass?: HomeAssistant;
@@ -694,8 +691,10 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
       return;
     }
 
-    Vibrant.from(this._image)
-      .useGenerator(customGenerator)
+    new Vibrant(this._image, {
+      colorCount: 16,
+      generator: customGenerator,
+    })
       .getPalette()
       .then(([foreground, background]: [string, string]) => {
         this._backgroundColor = background;

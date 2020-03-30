@@ -23,7 +23,7 @@ export const fetchHassioHomeAssistantInfo = async (hass: HomeAssistant) => {
   return hassioApiResultExtractor(
     await hass.callApi<HassioResponse<HassioHomeAssistantInfo>>(
       "GET",
-      "hassio/homeassistant/info"
+      "hassio/core/info"
     )
   );
 };

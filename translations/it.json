@@ -537,9 +537,11 @@
         "common": {
             "cancel": "Annulla",
             "close": "Chiudi",
+            "delete": "Elimina",
             "loading": "Caricamento",
             "no": "No",
             "save": "Salva",
+            "successfully_deleted": "Cancellato con successo",
             "successfully_saved": "Salvataggio riuscito",
             "yes": "Sì"
         },
@@ -621,7 +623,7 @@
                 "dismiss": "Annullare",
                 "editor": {
                     "confirm_delete": "Sei sicuro di voler eliminare questa voce?",
-                    "delete": "ELIMINA",
+                    "delete": "Elimina",
                     "enabled_cause": "Disabilitato da {cause}.",
                     "enabled_description": "Le entità disabilitate non saranno aggiunte a Home Assistant",
                     "enabled_label": "Abilita entità",
@@ -631,9 +633,9 @@
                     "name": "Sostituzione nome",
                     "note": "Nota: questo potrebbe non funzionare ancora con tutte le integrazioni.",
                     "unavailable": "Questa entità non è attualmente disponibile.",
-                    "update": "AGGIORNA"
+                    "update": "Aggiorna"
                 },
-                "no_unique_id": "Questa entità non ha un ID univoco, pertanto le impostazioni non possono essere gestite dall'Interfaccia Utente.",
+                "no_unique_id": "Questa entità non ha un ID univoco, pertanto le sue impostazioni non possono essere gestite dall'Interfaccia Utente.",
                 "related": "Relazionato",
                 "settings": "Impostazioni"
             },
@@ -664,7 +666,7 @@
                     "min": "Valore minimo",
                     "mode": "Modalità di visualizzazione",
                     "slider": "Cursore",
-                    "step": "Dimensione del passo del cursore",
+                    "step": "Dimensione del passo",
                     "unit_of_measurement": "Unità di misura"
                 },
                 "input_select": {
@@ -683,9 +685,9 @@
                 },
                 "not_editable": "Non modificabile",
                 "not_editable_text": "Questa entità non può essere modificata dall'Interfaccia Utente perché è definita in configuration.yaml.",
-                "platform_not_loaded": "L'integrazione {platform} non è stata caricata, si prega di aggiungerla alla propria configurazione, aggiungendo 'default_config:' o '{platform}:'.",
+                "platform_not_loaded": "L'integrazione {platform} non è stata caricata. Si prega di aggiungerla alla propria configurazione, aggiungendo 'default_config:' o '{platform}:'.",
                 "required_error_msg": "Questo campo è obbligatorio",
-                "yaml_not_editable": "Le impostazioni di questa entità non possono essere modificate dall'interfaccia utente. Solo le entità impostate dall'interfaccia utente sono configurabili dall'interfaccia utente."
+                "yaml_not_editable": "Le impostazioni di questa entità non possono essere modificate dall'Interfaccia Utente. Solo le entità impostate dall'Interfaccia Utente sono configurabili dall'Interfaccia Utente."
             },
             "more_info_control": {
                 "dismiss": "Chiudi finestra di dialogo",
@@ -816,14 +818,14 @@
                     },
                     "description": "Panoramica di tutte le aree della tua casa.",
                     "editor": {
-                        "create": "CREA",
+                        "create": "Crea",
                         "default_name": "Nuova area",
-                        "delete": "ELIMINA",
-                        "update": "AGGIORNA"
+                        "delete": "Elimina",
+                        "update": "Aggiorna"
                     },
                     "no_areas": "Sembra che tu non abbia ancora delle aree!",
                     "picker": {
-                        "create_area": "CREA AREA",
+                        "create_area": "Crea Area",
                         "header": "Aree",
                         "integrations_page": "Integrazioni",
                         "introduction": "Le aree sono utilizzate per organizzare dove sono i dispositivi. Queste informazioni saranno utilizzate in Home Assistant per aiutarti ad organizzare la tua interfaccia, permessi e integrazioni con altri sistemi.",
@@ -1310,6 +1312,7 @@
                     "automations": "Automazioni",
                     "cant_edit": "È possibile modificare solo gli elementi creati nell'Interfaccia Utente.",
                     "caption": "Dispositivi",
+                    "confirm_delete": "Sei sicuro di voler eliminare questo dispositivo?",
                     "confirm_rename_entity_ids": "Vuoi anche rinominare gli ID entità delle tue entità?",
                     "data_table": {
                         "area": "Area",
@@ -1320,6 +1323,7 @@
                         "model": "Modello",
                         "no_devices": "Nessun dispositivo"
                     },
+                    "delete": "Elimina",
                     "description": "Gestisci i dispositivi collegati",
                     "details": "Ecco tutti i dettagli del tuo dispositivo.",
                     "device_not_found": "Dispositivo non trovato.",
@@ -1469,6 +1473,7 @@
                         },
                         "failed_create_area": "Impossibile creare l'area.",
                         "finish": "Finire",
+                        "loading_first_time": "Si prega di attendere durante l'installazione dell'integrazione",
                         "name_new_area": "Nome della nuova area?",
                         "not_all_required_fields": "Non tutti i campi obbligatori sono compilati.",
                         "submit": "Invia"
@@ -1500,7 +1505,7 @@
                 "lovelace": {
                     "caption": "Cruscotti Lovelace",
                     "dashboards": {
-                        "cant_edit_default": "Il cruscotto standard Lovelace non può essere modificato dall'interfaccia utente. È possibile nasconderlo impostando un altro cruscotto come predefinito.",
+                        "cant_edit_default": "Il cruscotto standard Lovelace non può essere modificato dall'Interfaccia Utente. È possibile nasconderlo impostando un altro cruscotto come predefinito.",
                         "cant_edit_yaml": "I cruscotti definiti in YAML non possono essere modificati dall'Interfaccia Utente. Modificarli in configuration.yaml.",
                         "caption": "Cruscotti",
                         "conf_mode": {
@@ -1524,7 +1529,7 @@
                             "title_required": "È richiesto il titolo.",
                             "update": "Aggiorna",
                             "url": "Url",
-                            "url_error_msg": "L'URL non può contenere spazi o caratteri speciali, ad eccezione di _ e -"
+                            "url_error_msg": "L'URL dovrebbe contenere un - e non può contenere spazi o caratteri speciali, ad eccezione di _ e -"
                         },
                         "picker": {
                             "add_dashboard": "Aggiungi cruscotto",
@@ -2052,7 +2057,7 @@
                 "add_entities": {
                     "generated_unsupported": "Questa funzione può essere utilizzata solo dopo aver preso il controllo dell'interfaccia utente di Lovelace.",
                     "saving_failed": "Salvataggio della configurazione dell'interfaccia utente di Lovelace non riuscito.",
-                    "yaml_unsupported": "Non è possibile utilizzare questa funzione quando si utilizza l'interfaccia utente di Lovelace in modalità YAML."
+                    "yaml_unsupported": "Non è possibile utilizzare questa funzione quando si utilizza l'Interfaccia Utente di Lovelace in modalità YAML."
                 },
                 "cards": {
                     "confirm_delete": "Sei sicuro di voler cancellare questa scheda?",
@@ -2156,6 +2161,7 @@
                             "maximum": "Massimo",
                             "minimum": "Minimo",
                             "name": "Nome",
+                            "no_theme": "Nessun tema",
                             "refresh_interval": "Intervallo di aggiornamento",
                             "show_icon": "Mostrare l'icona?",
                             "show_name": "Mostrare il nome?",
@@ -2252,6 +2258,7 @@
                     "edit_card": {
                         "add": "Aggiungi scheda",
                         "delete": "Elimina scheda",
+                        "duplicate": "Duplica scheda",
                         "edit": "Modifica",
                         "header": "Configurazione della scheda",
                         "move": "Sposta nella vista",
@@ -2328,7 +2335,8 @@
                     "view": {
                         "panel_mode": {
                             "description": "In questo modo viene eseguito il rendering della prima scheda a larghezza intera; altre schede in questa vista non verranno renderizzate.",
-                            "title": "Modalità pannello?"
+                            "title": "Modalità pannello?",
+                            "warning_multiple_cards": "Questa vista contiene più di una scheda, ma una vista a pannello può mostrare solo una scheda."
                         }
                     }
                 },
@@ -2338,9 +2346,14 @@
                     "exit_edit_mode": "Esci dalla modalità di modifica dell'Interfaccia Utente",
                     "help": "Aiuto",
                     "refresh": "Aggiorna",
+                    "reload_resources": "Ricarica le risorse",
                     "unused_entities": "Entità non utilizzate"
                 },
                 "reload_lovelace": "Ricaricare l'Interfaccia Utente",
+                "reload_resources": {
+                    "refresh_body": "È necessario aggiornare la pagina per completare il ricaricamento, si desidera aggiornare ora?",
+                    "refresh_header": "Vuoi aggiornare?"
+                },
                 "unused_entities": {
                     "available_entities": "Queste sono le entità che hai a disposizione, ma non sono ancora nella tua interfaccia utente di Lovelace.",
                     "domain": "Dominio",

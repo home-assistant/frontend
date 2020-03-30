@@ -15,10 +15,11 @@ class HuiConditionalCard extends HuiConditionalBase implements LovelaceCard {
     return document.createElement("hui-conditional-card-editor");
   }
 
-  public static getStubConfig(): object {
+  public static getStubConfig(): ConditionalCardConfig {
     return {
+      type: "conditional",
       conditions: [],
-      card: {},
+      card: { type: "" },
     };
   }
 

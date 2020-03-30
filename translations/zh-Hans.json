@@ -537,9 +537,11 @@
         "common": {
             "cancel": "取消",
             "close": "关闭",
+            "delete": "删除",
             "loading": "加载中",
             "no": "否",
             "save": "保存",
+            "successfully_deleted": "已成功删除",
             "successfully_saved": "保存成功",
             "yes": "是"
         },
@@ -841,7 +843,7 @@
                             "delete_confirm": "确认删除？",
                             "duplicate": "复制",
                             "header": "动作",
-                            "introduction": "Actions（动作）是当自动化条件满足时 Home Assistant 执行的操作。\n\n[了解更多关于 Actions 的信息](https://home-assistant.io/docs/automation/action)",
+                            "introduction": "“动作”是当自动化条件满足时 Home Assistant 执行的操作。",
                             "learn_more": "详细了解动作",
                             "name": "执行",
                             "type_select": "动作类型",
@@ -886,7 +888,7 @@
                             "delete_confirm": "确认删除？",
                             "duplicate": "复制",
                             "header": "环境条件",
-                            "introduction": "环境条件是自动化流程中的可选部分，它可用于触发条件触发时拦截不符合条件的动作。环境条件看似像触发条件实则大有不同。触发条件监测系统中事件的发生，也就是瞬时动作；而环境条件监测的是系统当前的状态。触发条件可以观察到开关打开的动作。条件只能查看当前开关是开还是关。",
+                            "introduction": "“环境条件”是自动化流程中的可选部分。除非所有环境条件都符合，否则“动作”不会执行。",
                             "learn_more": "详细了解环境条件",
                             "name": "环境条件",
                             "type_select": "环境条件类型",
@@ -959,7 +961,7 @@
                             "delete_confirm": "确认删除？",
                             "duplicate": "复制",
                             "header": "触发条件",
-                            "introduction": "触发条件是整个自动化流程的起点。一个自动化实例中可以设置多个触发条件。一旦该条件满足，Home Assistant 将验证环境条件（Conditions）是否符合，如果符合，则执行动作（Actions）。\n\n[了解更多内容](https://home-assistant.io/docs/automation/trigger/)",
+                            "introduction": "“触发条件”是整个自动化流程的起点。一个自动化规则中可以设置多个触发条件。一旦该条件满足，Home Assistant 将验证“环境条件”是否符合，如果符合，则执行“动作”。",
                             "learn_more": "详细了解触发条件",
                             "name": "触发条件",
                             "type_select": "触发条件类型",
@@ -1310,6 +1312,7 @@
                     "automations": "自动化",
                     "cant_edit": "您只能编辑在 UI 中创建的项目。",
                     "caption": "设备",
+                    "confirm_delete": "您确定要删除此设备吗？",
                     "confirm_rename_entity_ids": "是否要重命名实体的实体 ID？",
                     "data_table": {
                         "area": "区域",
@@ -1320,6 +1323,7 @@
                         "model": "型号",
                         "no_devices": "没有设备"
                     },
+                    "delete": "删除",
                     "description": "管理已连接的设备",
                     "details": "这是设备的所有详细信息。",
                     "device_not_found": "未找到设备。",
@@ -1393,7 +1397,7 @@
                         "introduction2": "使用本实体注册工具重写名称，修改实体 ID 或者从 Home Assistant 删除实体。注意，删除实体注册信息并不会删除实体本身。如果要删除实体，请点击下面的链接进入集成页面进行操作。",
                         "remove_selected": {
                             "button": "删除所选实体",
-                            "confirm_partly_text": "在所选的 {removable} 个实体中有 {selected} 个可被删除。实体可被删除的条件是集成不再提供它们。有时，即使集成已删除，也必须先重新启动 Home Assistant 才能删除它们的实体。您确定要删除实体吗？",
+                            "confirm_partly_text": "在所选的 {selected} 个实体中有 {removable} 个可被删除。实体可被删除的条件是集成不再提供它们。有时，即使集成已删除，也必须先重新启动 Home Assistant 才能删除它们的实体。您确定要删除实体吗？",
                             "confirm_partly_title": "所选实体中只有 {number} 个可被删除。",
                             "confirm_text": "如果它们包含这些实体，则应将它们从 Lovelace 配置和自动化中删除。",
                             "confirm_title": "您要删除这 {number} 个实体吗？"
@@ -1469,6 +1473,7 @@
                         },
                         "failed_create_area": "创建区域失败。",
                         "finish": "完成",
+                        "loading_first_time": "正在安装集成，请稍候",
                         "name_new_area": "新区域的名称？",
                         "not_all_required_fields": "请填写所有必填字段",
                         "submit": "提交"
@@ -2152,10 +2157,11 @@
                             "icon_height": "图标高度",
                             "image": "图像路径",
                             "manual": "手动模式",
-                            "manual_description": "您是想添加自定义卡片，还是手动编写 yaml 文件？",
-                            "maximum": "最大",
-                            "minimum": "最小",
+                            "manual_description": "需要添加自定义卡片，或者手动编写 yaml 吗？",
+                            "maximum": "最大值",
+                            "minimum": "最小值",
                             "name": "名称",
+                            "no_theme": "没有主题",
                             "refresh_interval": "刷新间隔",
                             "show_icon": "显示图标？",
                             "show_name": "显示名称？",
@@ -2164,7 +2170,7 @@
                             "tap_action": "点击动作",
                             "theme": "主题",
                             "title": "标题",
-                            "unit": "单元",
+                            "unit": "单位",
                             "url": "网址"
                         },
                         "glance": {
@@ -2252,6 +2258,7 @@
                     "edit_card": {
                         "add": "添加卡片",
                         "delete": "删除",
+                        "duplicate": "复制卡片",
                         "edit": "编辑",
                         "header": "卡片配置",
                         "move": "移动",
@@ -2328,7 +2335,8 @@
                     "view": {
                         "panel_mode": {
                             "description": "这将使第一张卡片全屏显示。此视图中的其他卡片将不会呈现。",
-                            "title": "面板模式？"
+                            "title": "面板模式？",
+                            "warning_multiple_cards": "此视图包含多张卡片，但面板视图只能显示一张卡片。"
                         }
                     }
                 },
@@ -2467,7 +2475,7 @@
                     "working": "请稍候"
                 },
                 "initializing": "正在初始化",
-                "logging_in_with": "正在用 **{authProviderName}** 登录。",
+                "logging_in_with": "正在通过 **{authProviderName}** 登录。",
                 "pick_auth_provider": "或者用以下方式登录"
             },
             "page-demo": {
