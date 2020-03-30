@@ -6,11 +6,11 @@ import {
 
 export interface AreaRegistryDetailDialogParams {
   entry?: AreaRegistryEntry;
-  createEntry: (values: AreaRegistryEntryMutableParams) => Promise<unknown>;
-  updateEntry: (
+  createEntry?: (values: AreaRegistryEntryMutableParams) => Promise<unknown>;
+  updateEntry?: (
     updates: Partial<AreaRegistryEntryMutableParams>
   ) => Promise<unknown>;
-  removeEntry: () => Promise<boolean>;
+  removeEntry?: () => Promise<boolean>;
 }
 
 export const loadAreaRegistryDetailDialog = () =>
