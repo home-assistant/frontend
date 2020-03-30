@@ -87,8 +87,6 @@ const computePanels = (hass: HomeAssistant): [PanelInfo[], PanelInfo[]] => {
   const beforeSpacer: PanelInfo[] = [];
   const afterSpacer: PanelInfo[] = [];
 
-  const defaultPage = getDefaultPanelUrlPath();
-
   Object.values(panels).forEach((panel) => {
     if (!panel.title || panel.url_path === hass.defaultPanel) {
       return;
