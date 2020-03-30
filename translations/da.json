@@ -537,9 +537,11 @@
         "common": {
             "cancel": "Annuller",
             "close": "Luk",
+            "delete": "Slet",
             "loading": "Indlæser",
             "no": "Nej",
             "save": "Gem",
+            "successfully_deleted": "Slettet",
             "successfully_saved": "Gemt",
             "yes": "Ja"
         },
@@ -621,7 +623,7 @@
                 "dismiss": "Afvis",
                 "editor": {
                     "confirm_delete": "Er du sikker på, at du vil slette denne post?",
-                    "delete": "SLET",
+                    "delete": "Slet",
                     "enabled_cause": "Deaktiveret af {cause}.",
                     "enabled_description": "Deaktiverede entiteter tilføjes ikke til Home Assistant.",
                     "enabled_label": "Aktivér entitet",
@@ -631,7 +633,7 @@
                     "name": "Brugerdefineret navn",
                     "note": "Bemærk: Dette virker muligvis ikke med alle integrationer endnu.",
                     "unavailable": "Denne entitet er ikke tilgængelig i øjeblikket.",
-                    "update": "OPDATER"
+                    "update": "Opdater"
                 },
                 "no_unique_id": "Denne entitet har ikke et unikt id. Derfor kan dens indstillinger ikke styres fra brugerfladen.",
                 "related": "Relaterede",
@@ -664,7 +666,7 @@
                     "min": "Minimumsværdi",
                     "mode": "Visningstilstand",
                     "slider": "Skyder",
-                    "step": "Skyderens trinstørrelse",
+                    "step": "Trinstørrelse",
                     "unit_of_measurement": "Måleenhed"
                 },
                 "input_select": {
@@ -715,7 +717,7 @@
                 },
                 "vacuum": {
                     "clean_spot": "Rengør område",
-                    "commands": "Støvsuger kommandoer",
+                    "commands": "Støvsugerkommandoer",
                     "fan_speed": "Blæserhastighed",
                     "locate": "Lokaliser",
                     "pause": "Pause",
@@ -816,14 +818,14 @@
                     },
                     "description": "Oversigt over alle områder i dit hjem.",
                     "editor": {
-                        "create": "OPRET",
+                        "create": "Opret",
                         "default_name": "Nyt område",
-                        "delete": "SLET",
-                        "update": "OPDATER"
+                        "delete": "Slet",
+                        "update": "Opdater"
                     },
                     "no_areas": "Du ikke har ingen områder endnu!",
                     "picker": {
-                        "create_area": "OPRET OMRÅDE",
+                        "create_area": "Opret område",
                         "header": "Områder",
                         "integrations_page": "Integrationsside",
                         "introduction": "Områder bruges til at organisere hvor enheder befinder sig. Disse oplysninger vil blive brugt i Home Assistant til at hjælpe dig med at organisere din brugerflade, tilladelser og integrationer med andre systemer.",
@@ -1310,6 +1312,7 @@
                     "automations": "Automatiseringer",
                     "cant_edit": "Du kan kun redigere elementer, der er oprettet i brugerfladen.",
                     "caption": "Enheder",
+                    "confirm_delete": "Er du sikker på, at du vil slette denne enhed?",
                     "confirm_rename_entity_ids": "Vil du også omdøbe entitet-id'et for dine entiteter?",
                     "data_table": {
                         "area": "Område",
@@ -1320,6 +1323,7 @@
                         "model": "Model",
                         "no_devices": "Ingen enheder"
                     },
+                    "delete": "Slet",
                     "description": "Administrer tilsluttede enheder",
                     "details": "Her er alle oplysninger om din enhed.",
                     "device_not_found": "Enhed blev ikke fundet.",
@@ -1469,6 +1473,7 @@
                         },
                         "failed_create_area": "Området kunne ikke oprettes.",
                         "finish": "Afslut",
+                        "loading_first_time": "Vent mens integrationen installeres",
                         "name_new_area": "Navnet på det nye område?",
                         "not_all_required_fields": "Ikke alle påkrævede felter er udfyldt.",
                         "submit": "Send"
@@ -2156,6 +2161,7 @@
                             "maximum": "Maksimum",
                             "minimum": "Minimum",
                             "name": "Navn",
+                            "no_theme": "Intet tema",
                             "refresh_interval": "Opdateringsinterval",
                             "show_icon": "Vis ikon?",
                             "show_name": "Vis navn?",
@@ -2252,6 +2258,7 @@
                     "edit_card": {
                         "add": "Tilføj kort",
                         "delete": "Slet kort",
+                        "duplicate": "Dubliker kort",
                         "edit": "Rediger",
                         "header": "Kortkonfiguration",
                         "move": "Flyt til visning",
@@ -2328,7 +2335,8 @@
                     "view": {
                         "panel_mode": {
                             "description": "Dette gengiver første kort i fuld bredde; andre kort i denne visning vil ikke blive gengivet.",
-                            "title": "Paneltilstand?"
+                            "title": "Paneltilstand?",
+                            "warning_multiple_cards": "Denne visning indeholder mere end ét kort, men en panelvisning kan kun vise 1 kort."
                         }
                     }
                 },

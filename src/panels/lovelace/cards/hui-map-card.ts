@@ -30,7 +30,6 @@ import { EntityConfig } from "../entity-rows/types";
 import { processConfigEntities } from "../common/process-config-entities";
 import { MapCardConfig } from "./types";
 import { classMap } from "lit-html/directives/class-map";
-import { LovelaceConfig } from "../../../data/lovelace";
 import { findEntities } from "../common/find-entites";
 
 @customElement("hui-map-card")
@@ -44,28 +43,28 @@ class HuiMapCard extends LitElement implements LovelaceCard {
 
   public static getStubConfig(
     hass: HomeAssistant,
-    lovelaceConfig: LovelaceConfig,
-    entities?: string[],
-    entitiesFill?: string[]
-  ): object {
+    entities: string[],
+    entitiesFallback: string[]
+  ): MapCardConfig {
     const includeDomains = ["device_tracker"];
     const maxEntities = 2;
     const foundEntities = findEntities(
       hass,
-      lovelaceConfig,
       maxEntities,
       entities,
-      entitiesFill,
+      entitiesFallback,
       includeDomains
     );
 
-    return { entities: foundEntities };
+    return { type: "map", entities: foundEntities };
   }
 
   @property() public hass?: HomeAssistant;
 
   @property({ type: Boolean, reflect: true })
   public isPanel = false;
+  @property({ type: Boolean, reflect: true })
+  public editMode = false;
 
   @property()
   private _config?: MapCardConfig;
@@ -116,9 +115,10 @@ class HuiMapCard extends LitElement implements LovelaceCard {
   }
 
   public getCardSize(): number {
-    if (!this._config) {
-      return 3;
+    if (!this._config?.aspect_ratio) {
+      return 5;
     }
+
     const ratio = parseAspectRatio(this._config.aspect_ratio);
     const ar =
       ratio && ratio.w > 0 && ratio.h > 0
@@ -207,6 +207,11 @@ class HuiMapCard extends LitElement implements LovelaceCard {
 
     if (this._connected) {
       this._attachObserver();
+    }
+
+    if (!this._config.aspect_ratio) {
+      root.style.paddingBottom = "100%";
+      return;
     }
 
     const ratio = parseAspectRatio(this._config.aspect_ratio);
@@ -453,15 +458,12 @@ class HuiMapCard extends LitElement implements LovelaceCard {
   static get styles(): CSSResult {
     return css`
       :host([ispanel]) ha-card {
-        left: 0;
-        top: 0;
         width: 100%;
-        /**
-       * In panel mode we want a full height map. Since parent #view
-       * only sets min-height, we need absolute positioning here
-       */
         height: 100%;
-        position: absolute;
+      }
+
+      :host([ispanel][editMode]) ha-card {
+        height: calc(100% - 51px);
       }
 
       ha-card {

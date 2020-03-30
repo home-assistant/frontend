@@ -40,8 +40,8 @@ export class HassioUpdate extends LitElement {
     ].filter((value) => {
       return (
         !!value &&
-        (value.last_version
-          ? value.version !== value.last_version
+        (value.version_latest
+          ? value.version !== value.version_latest
           : value.version_latest
           ? value.version !== value.version_latest
           : false)
@@ -68,26 +68,26 @@ export class HassioUpdate extends LitElement {
           ${this._renderUpdateCard(
             "Home Assistant Core",
             this.hassInfo.version,
-            this.hassInfo.last_version,
+            this.hassInfo.version_latest,
             "hassio/homeassistant/update",
             `https://${
-              this.hassInfo.last_version.includes("b") ? "rc" : "www"
+              this.hassInfo.version_latest.includes("b") ? "rc" : "www"
             }.home-assistant.io/latest-release-notes/`,
             "hassio:home-assistant"
           )}
           ${this._renderUpdateCard(
             "Supervisor",
             this.supervisorInfo.version,
-            this.supervisorInfo.last_version,
+            this.supervisorInfo.version_latest,
             "hassio/supervisor/update",
-            `https://github.com//home-assistant/hassio/releases/tag/${this.supervisorInfo.last_version}`
+            `https://github.com//home-assistant/hassio/releases/tag/${this.supervisorInfo.version_latest}`
           )}
           ${this.hassOsInfo
             ? this._renderUpdateCard(
                 "Operating System",
                 this.hassOsInfo.version,
                 this.hassOsInfo.version_latest,
-                "hassio/hassos/update",
+                "hassio/os/update",
                 `https://github.com//home-assistant/hassos/releases/tag/${this.hassOsInfo.version_latest}`
               )
             : ""}

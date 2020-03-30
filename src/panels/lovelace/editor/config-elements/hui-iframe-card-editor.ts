@@ -81,11 +81,10 @@ export class HuiIframeCardEditor extends LitElement
             )} (${this.hass.localize(
               "ui.panel.lovelace.editor.card.config.optional"
             )})"
-            .value="${this._aspect_ratio.replace("%", "")}"
+            .value="${this._aspect_ratio}"
             .configValue="${"aspect_ratio"}"
             @value-changed="${this._valueChanged}"
-            ><div slot="suffix">%</div></paper-input
-          >
+          ></paper-input>
         </div>
       </div>
     `;
@@ -96,17 +95,13 @@ export class HuiIframeCardEditor extends LitElement
       return;
     }
     const target = ev.target! as EditorTarget;
-    let value = target.value;
-
-    if (target.configValue! === "aspect_ratio" && target.value) {
-      value += "%";
-    }
+    const value = target.value;
 
     if (this[`_${target.configValue}`] === value) {
       return;
     }
     if (target.configValue) {
-      if (target.value === "") {
+      if (value === "") {
         delete this._config[target.configValue!];
       } else {
         this._config = { ...this._config, [target.configValue!]: value };

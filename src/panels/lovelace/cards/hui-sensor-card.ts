@@ -26,7 +26,6 @@ import { fetchRecent } from "../../../data/history";
 import { SensorCardConfig } from "./types";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
 import { actionHandler } from "../common/directives/action-handler-directive";
-import { LovelaceConfig } from "../../../data/lovelace";
 import { findEntities } from "../common/find-entites";
 import { HassEntity } from "home-assistant-js-websocket/dist/types";
 
@@ -179,10 +178,9 @@ class HuiSensorCard extends LitElement implements LovelaceCard {
 
   public static getStubConfig(
     hass: HomeAssistant,
-    lovelaceConfig: LovelaceConfig,
-    entities?: string[],
-    entitiesFill?: string[]
-  ): object {
+    entities: string[],
+    entitiesFallback: string[]
+  ): SensorCardConfig {
     const includeDomains = ["sensor"];
     const maxEntities = 1;
     const entityFilter = (stateObj: HassEntity): boolean => {
@@ -194,15 +192,14 @@ class HuiSensorCard extends LitElement implements LovelaceCard {
 
     const foundEntities = findEntities(
       hass,
-      lovelaceConfig,
       maxEntities,
       entities,
-      entitiesFill,
+      entitiesFallback,
       includeDomains,
       entityFilter
     );
 
-    return { entity: foundEntities[0] || "", graph: "line" };
+    return { type: "sensor", entity: foundEntities[0] || "", graph: "line" };
   }
 
   @property() public hass?: HomeAssistant;

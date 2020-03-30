@@ -56,7 +56,7 @@ export class HuiDialogEditCard extends LitElement {
     const [view, card] = params.path;
     this._viewConfig = params.lovelaceConfig.views[view];
     this._cardConfig =
-      card !== undefined ? this._viewConfig.cards![card] : undefined;
+      card !== undefined ? this._viewConfig.cards![card] : params.cardConfig;
     if (this._cardConfig && !Object.isFrozen(this._cardConfig)) {
       this._cardConfig = deepFreeze(this._cardConfig);
     }

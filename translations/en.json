@@ -537,9 +537,11 @@
         "common": {
             "cancel": "Cancel",
             "close": "Close",
+            "delete": "Delete",
             "loading": "Loading",
             "no": "No",
             "save": "Save",
+            "successfully_deleted": "Successfully deleted",
             "successfully_saved": "Successfully saved",
             "yes": "Yes"
         },
@@ -621,7 +623,7 @@
                 "dismiss": "Dismiss",
                 "editor": {
                     "confirm_delete": "Are you sure you want to delete this entry?",
-                    "delete": "DELETE",
+                    "delete": "Delete",
                     "enabled_cause": "Disabled by {cause}.",
                     "enabled_description": "Disabled entities will not be added to Home Assistant.",
                     "enabled_label": "Enable entity",
@@ -631,7 +633,7 @@
                     "name": "Name Override",
                     "note": "Note: this might not work yet with all integrations.",
                     "unavailable": "This entity is not currently available.",
-                    "update": "UPDATE"
+                    "update": "Update"
                 },
                 "no_unique_id": "This entity does not have a unique ID, therefore its settings cannot be managed from the UI.",
                 "related": "Related",
@@ -664,7 +666,7 @@
                     "min": "Minimum value",
                     "mode": "Display mode",
                     "slider": "Slider",
-                    "step": "Step size of the slider",
+                    "step": "Step size",
                     "unit_of_measurement": "Unit of measurement"
                 },
                 "input_select": {
@@ -816,14 +818,14 @@
                     },
                     "description": "Overview of all areas in your home.",
                     "editor": {
-                        "create": "CREATE",
+                        "create": "Create",
                         "default_name": "New Area",
-                        "delete": "DELETE",
-                        "update": "UPDATE"
+                        "delete": "Delete",
+                        "update": "Update"
                     },
                     "no_areas": "Looks like you have no areas yet!",
                     "picker": {
-                        "create_area": "CREATE AREA",
+                        "create_area": "Create Area",
                         "header": "Areas",
                         "integrations_page": "Integrations page",
                         "introduction": "Areas are used to organize where devices are. This information will be used throughout Home Assistant to help you in organizing your interface, permissions and integrations with other systems.",
@@ -1310,6 +1312,7 @@
                     "automations": "Automations",
                     "cant_edit": "You can only edit items that are created in the UI.",
                     "caption": "Devices",
+                    "confirm_delete": "Are you sure you want to delete this device?",
                     "confirm_rename_entity_ids": "Do you also want to rename the entity id's of your entities?",
                     "data_table": {
                         "area": "Area",
@@ -1320,6 +1323,7 @@
                         "model": "Model",
                         "no_devices": "No devices"
                     },
+                    "delete": "Delete",
                     "description": "Manage connected devices",
                     "details": "Here are all the details of your device.",
                     "device_not_found": "Device not found.",
@@ -1469,6 +1473,7 @@
                         },
                         "failed_create_area": "Failed to create area.",
                         "finish": "Finish",
+                        "loading_first_time": "Please wait while the integration is being installed",
                         "name_new_area": "Name of the new area?",
                         "not_all_required_fields": "Not all required fields are filled in.",
                         "submit": "Submit"
@@ -1524,7 +1529,7 @@
                             "title_required": "Title is required.",
                             "update": "Update",
                             "url": "Url",
-                            "url_error_msg": "The url should contain a - and cannot contain spaces or special characters, except for _ and -"
+                            "url_error_msg": "The URL should contain a - and cannot contain spaces or special characters, except for _ and -"
                         },
                         "picker": {
                             "add_dashboard": "Add dashboard",
@@ -2156,6 +2161,7 @@
                             "maximum": "Maximum",
                             "minimum": "Minimum",
                             "name": "Name",
+                            "no_theme": "No theme",
                             "refresh_interval": "Refresh Interval",
                             "show_icon": "Show Icon?",
                             "show_name": "Show Name?",
@@ -2252,6 +2258,7 @@
                     "edit_card": {
                         "add": "Add Card",
                         "delete": "Delete Card",
+                        "duplicate": "Duplicate Card",
                         "edit": "Edit",
                         "header": "Card Configuration",
                         "move": "Move to View",
@@ -2328,7 +2335,8 @@
                     "view": {
                         "panel_mode": {
                             "description": "This renders the first card at full width; other cards in this view will not be rendered.",
-                            "title": "Panel Mode?"
+                            "title": "Panel Mode?",
+                            "warning_multiple_cards": "This view contains more than one card, but a panel view can only show 1 card."
                         }
                     }
                 },

@@ -25,7 +25,7 @@ import { AlarmPanelCardConfig } from "./types";
 import { PaperInputElement } from "@polymer/paper-input/paper-input";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { findEntities } from "../common/find-entites";
-import { LovelaceConfig } from "../../../data/lovelace";
+import { fireEvent } from "../../../common/dom/fire_event";
 
 const ICONS = {
   armed_away: "hass:shield-lock",
@@ -50,22 +50,21 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
 
   public static getStubConfig(
     hass: HomeAssistant,
-    lovelaceConfig: LovelaceConfig,
-    entities?: string[],
-    entitiesFill?: string[]
-  ) {
+    entities: string[],
+    entitiesFallback: string[]
+  ): AlarmPanelCardConfig {
     const includeDomains = ["alarm_control_panel"];
     const maxEntities = 1;
     const foundEntities = findEntities(
       hass,
-      lovelaceConfig,
       maxEntities,
       entities,
-      entitiesFill,
+      entitiesFallback,
       includeDomains
     );
 
     return {
+      type: "alarm-panel",
       states: ["arm_home", "arm_away"],
       entity: foundEntities[0] || "",
     };
@@ -173,6 +172,7 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
           class="${classMap({ [stateObj.state]: true })}"
           .icon="${ICONS[stateObj.state] || "hass:shield-outline"}"
           .label="${this._stateIconLabel(stateObj.state)}"
+          @click=${this._handleMoreInfo}
         ></ha-label-badge>
         <div id="armActions" class="actions">
           ${(stateObj.state === "disarmed"
@@ -248,16 +248,22 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
   }
 
   private _handleActionClick(e: MouseEvent): void {
-    const input = this._input!;
-    const code =
-      input && input.value && input.value.length > 0 ? input.value : "";
+    const input = this._input;
     callAlarmAction(
       this.hass!,
       this._config!.entity,
       (e.currentTarget! as any).action,
-      code
+      input?.value || undefined
     );
-    input.value = "";
+    if (input) {
+      input.value = "";
+    }
+  }
+
+  private _handleMoreInfo() {
+    fireEvent(this, "hass-more-info", {
+      entityId: this._config!.entity,
+    });
   }
 
   static get styles(): CSSResult {
@@ -281,6 +287,7 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
         position: absolute;
         right: 12px;
         top: 12px;
+        cursor: pointer;
       }
 
       .disarmed {
