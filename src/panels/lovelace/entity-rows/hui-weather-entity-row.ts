@@ -164,7 +164,7 @@ class HuiWeatherEntityRow extends LitElement implements LovelaceRow {
     return `
       ${this.hass!.localize(
         `ui.card.weather.attributes.${attribute}`
-      )}: ${value}${getWeatherUnit(this.hass!, attribute)}
+      )} ${value}${getWeatherUnit(this.hass!, attribute)}
     `;
   }
 
@@ -200,33 +200,18 @@ class HuiWeatherEntityRow extends LitElement implements LovelaceRow {
 
     return `
       ${
-        tempLow
-          ? `
-            ${this.hass!.localize(`ui.card.weather.low`)}
-          `
-          : ""
-      }
-      ${tempLow && tempHigh ? " / " : tempHigh ? "" : ":"}
-      ${
         tempHigh
           ? `
-              ${this.hass!.localize(`ui.card.weather.high`)}:
-            `
-          : ""
-      }
-      ${
-        tempLow
-          ? `
-              ${tempLow}${unit}
+              ${this.hass!.localize(`ui.card.weather.high`)} ${tempHigh}${unit}
             `
           : ""
       }
       ${tempLow && tempHigh ? " / " : ""}
       ${
-        tempHigh
+        tempLow
           ? `
-              ${tempHigh}${unit}
-            `
+            ${this.hass!.localize(`ui.card.weather.low`)} ${tempLow}${unit}
+          `
           : ""
       }
     `;
@@ -282,12 +267,6 @@ class HuiWeatherEntityRow extends LitElement implements LovelaceRow {
         overflow: hidden;
       }
 
-      .info > * {
-        overflow: hidden;
-        white-space: nowrap;
-        text-overflow: ellipsis;
-      }
-
       .attributes {
         display: flex;
         justify-content: flex-end;
@@ -295,11 +274,15 @@ class HuiWeatherEntityRow extends LitElement implements LovelaceRow {
         margin-left: 48px;
       }
 
+      .info > *,
       .attributes > * {
-        padding-left: 8px;
         overflow: hidden;
         white-space: nowrap;
         text-overflow: ellipsis;
+      }
+
+      .attributes > * {
+        padding-left: 8px;
       }
     `;
   }
