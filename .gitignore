@@ -31,3 +31,6 @@ src/cast/dev_const.ts
 # Secrets
 .lokalise_token
 yarn-error.log
+
+#asdf
+.tool-versions
