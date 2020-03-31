@@ -83,10 +83,7 @@ export const fetchDate = (
 ): Promise<HassEntity[][]> => {
   return hass.callApi(
     "GET",
-    `history/period/${startTime.toISOString()}
-      ?end_time=${endTime.toISOString()}
-      &significant_changes_only
-    `
+    `history/period/${startTime.toISOString()}?end_time=${endTime.toISOString()}`
   );
 };
 
