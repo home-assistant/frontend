@@ -7,6 +7,31 @@ export interface MQTTMessage {
   retain: number;
 }
 
+export interface MQTTTopicDebugInfo {
+  topic: string;
+  messages: [string];
+}
+
+export interface MQTTDiscoveryDebugInfo {
+  discovery_topic: string;
+  discovery_payload: string;
+}
+
+export interface MQTTEntityDebugInfo {
+  entity_id: string;
+  discovery_data: MQTTDiscoveryDebugInfo;
+  topics: [MQTTTopicDebugInfo];
+}
+
+export interface MQTTTriggerDebugInfo {
+  discovery_data: MQTTDiscoveryDebugInfo;
+}
+
+export interface MQTTDeviceDebugInfo {
+  entities: [MQTTEntityDebugInfo];
+  triggers: [MQTTTriggerDebugInfo];
+}
+
 export const subscribeMQTTTopic = (
   hass: HomeAssistant,
   topic: string,
@@ -24,5 +49,14 @@ export const removeMQTTDeviceEntry = (
 ): Promise<void> =>
   hass.callWS({
     type: "mqtt/device/remove",
+    device_id: deviceId,
+  });
+
+export const fetchMQTTDebugInfo = (
+  hass: HomeAssistant,
+  deviceId: string
+): Promise<MQTTDeviceDebugInfo> =>
+  hass.callWS<MQTTDeviceDebugInfo>({
+    type: "mqtt/device/debug_info",
     device_id: deviceId,
   });
