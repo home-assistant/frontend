@@ -3,22 +3,22 @@ import { HomeAssistant } from "../types";
 export const weatherImages = {
   "clear-night": "/static/images/weather/night.png",
   cloudy: "/static/images/weather/cloudy.png",
+  fog: "/static/images/weather/cloudy.png",
+  hail: "/static/images/weather/rainy.png",
   lightning: "/static/images/weather/lightning.png",
   "lightning-rainy": "/static/images/weather/lightning-rainy.png",
   partlycloudy: "/static/images/weather/partly-cloudy.png",
   pouring: "/static/images/weather/pouring.png",
   rainy: "/static/images/weather/rainy.png",
   snowy: "/static/images/weather/snowy.png",
+  "snowy-rainy": "/static/images/weather/rainy.png",
   sunny: "/static/images/weather/sunny.png",
   windy: "/static/images/weather/windy.png",
+  "windy-variant": "/static/images/weather/windy.png",
 };
 
 export const weatherIcons = {
   exceptional: "hass:alert-circle-outline",
-  fog: "hass:weather-fog",
-  hail: "hass:weather-hail",
-  "snowy-rainy": "hass:weather-snowy-rainy",
-  "windy-variant": "hass:weather-windy-variant",
 };
 
 export const cardinalDirections = [
