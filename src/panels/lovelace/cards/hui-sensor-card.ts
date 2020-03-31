@@ -48,10 +48,10 @@ class HuiSensorCard extends HuiEntityCard {
       throw new Error("Specify an entity from within the sensor domain.");
     }
 
-    let entityCardConfig: EntityCardConfig = {
+    const entityCardConfig: EntityCardConfig = {
       type: "entity",
       entity: config.entity,
-      theme: config.theme || "default",
+      ...(config.theme && { theme: config.theme }),
       ...(config.name && { name: config.name }),
       ...(config.unit && { unit: config.unit }),
       ...(config.icon && { icon: config.icon }),
@@ -65,10 +65,7 @@ class HuiSensorCard extends HuiEntityCard {
         hours_to_show: config.hours_to_show || 24,
       };
 
-      entityCardConfig = {
-        ...entityCardConfig,
-        footer: footerConfig,
-      };
+      entityCardConfig.footer = footerConfig;
     }
 
     super.setConfig(entityCardConfig);
