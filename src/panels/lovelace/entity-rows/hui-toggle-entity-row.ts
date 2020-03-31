@@ -15,6 +15,7 @@ import { computeStateDisplay } from "../../../common/entity/compute_state_displa
 import { HomeAssistant } from "../../../types";
 import { LovelaceRow, EntityConfig } from "./types";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
+import { UNAVAILABLE } from "../../../data/entity";
 
 @customElement("hui-toggle-entity-row")
 class HuiToggleEntityRow extends LitElement implements LovelaceRow {
@@ -54,7 +55,9 @@ class HuiToggleEntityRow extends LitElement implements LovelaceRow {
 
     return html`
       <hui-generic-entity-row .hass=${this.hass} .config=${this._config}>
-        ${stateObj.state === "on" || stateObj.state === "off"
+        ${stateObj.state === "on" ||
+        stateObj.state === "off" ||
+        stateObj.state === UNAVAILABLE
           ? html`
               <ha-entity-toggle
                 .hass=${this.hass}

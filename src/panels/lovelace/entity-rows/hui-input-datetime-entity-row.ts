@@ -19,6 +19,7 @@ import { HomeAssistant } from "../../../types";
 import { LovelaceRow, EntityConfig } from "./types";
 import { setInputDateTimeValue } from "../../../data/input_datetime";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
+import { UNAVAILABLE } from "../../../data/entity";
 
 @customElement("hui-input-datetime-entity-row")
 class HuiInputDatetimeEntityRow extends LitElement implements LovelaceRow {
@@ -60,6 +61,7 @@ class HuiInputDatetimeEntityRow extends LitElement implements LovelaceRow {
         ${stateObj.attributes.has_date
           ? html`
               <ha-date-input
+                .disabled=${stateObj.state === UNAVAILABLE}
                 .year=${stateObj.attributes.year}
                 .month=${("0" + stateObj.attributes.month).slice(-2)}
                 .day=${("0" + stateObj.attributes.day).slice(-2)}
@@ -72,6 +74,7 @@ class HuiInputDatetimeEntityRow extends LitElement implements LovelaceRow {
         ${stateObj.attributes.has_time
           ? html`
               <paper-time-input
+                .disabled=${stateObj.state === UNAVAILABLE}
                 .hour=${stateObj.state === "unknown"
                   ? ""
                   : ("0" + stateObj.attributes.hour).slice(-2)}

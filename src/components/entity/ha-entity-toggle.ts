@@ -18,6 +18,7 @@ import { computeStateDomain } from "../../common/entity/compute_state_domain";
 import { computeStateName } from "../../common/entity/compute_state_name";
 
 import "../ha-switch";
+import { UNAVAILABLE } from "../../data/entity";
 
 const isOn = (stateObj?: HassEntity) =>
   stateObj !== undefined && !STATES_OFF.includes(stateObj.state);
@@ -40,12 +41,14 @@ class HaEntityToggle extends LitElement {
         <paper-icon-button
           aria-label=${`Turn ${computeStateName(this.stateObj)} off`}
           icon="hass:flash-off"
+          .disabled=${this.stateObj.state === UNAVAILABLE}
           @click=${this._turnOff}
           ?state-active=${!this._isOn}
         ></paper-icon-button>
         <paper-icon-button
           aria-label=${`Turn ${computeStateName(this.stateObj)} on`}
           icon="hass:flash"
+          .disabled=${this.stateObj.state === UNAVAILABLE}
           @click=${this._turnOn}
           ?state-active=${this._isOn}
         ></paper-icon-button>
@@ -58,6 +61,7 @@ class HaEntityToggle extends LitElement {
           this._isOn ? "off" : "on"
         }`}
         .checked=${this._isOn}
+        .disabled=${this.stateObj.state === UNAVAILABLE}
         @change=${this._toggleChanged}
       ></ha-switch>
     `;

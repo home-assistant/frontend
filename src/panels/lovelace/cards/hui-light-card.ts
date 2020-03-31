@@ -19,7 +19,6 @@ import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_elemen
 
 import "../../../components/ha-card";
 import "../components/hui-warning";
-import "../components/hui-unavailable";
 
 import { fireEvent } from "../../../common/dom/fire_event";
 import { HomeAssistant, LightEntity } from "../../../types";
@@ -107,14 +106,6 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
 
     return html`
       <ha-card>
-        ${stateObj.state === UNAVAILABLE
-          ? html`
-              <hui-unavailable
-                .text=${this.hass.localize("state.default.unavailable")}
-                @click=${this._handleMoreInfo}
-              ></hui-unavailable>
-            `
-          : ""}
         <paper-icon-button
           icon="hass:dots-vertical"
           class="more-info"
@@ -145,6 +136,7 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
                   "state-on": stateObj.state === "on",
                   "state-unavailable": stateObj.state === "unavailable",
                 })}"
+                .disabled=${stateObj.state === UNAVAILABLE}
                 .icon=${this._config.icon || stateIcon(stateObj)}
                 style=${styleMap({
                   filter: this._computeBrightness(stateObj),
@@ -265,10 +257,6 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
     return css`
       :host {
         display: block;
-      }
-
-      hui-unavailable {
-        cursor: pointer;
       }
 
       ha-card {

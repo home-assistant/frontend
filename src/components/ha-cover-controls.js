@@ -3,6 +3,7 @@ import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 
 import CoverEntity from "../util/cover-model";
+import { UNAVAILABLE } from "../data/entity";
 
 class HaCoverControls extends PolymerElement {
   static get template() {
@@ -81,11 +82,17 @@ class HaCoverControls extends PolymerElement {
   }
 
   computeOpenDisabled(stateObj, entityObj) {
+    if (stateObj.state === UNAVAILABLE) {
+      return true;
+    }
     var assumedState = stateObj.attributes.assumed_state === true;
     return (entityObj.isFullyOpen || entityObj.isOpening) && !assumedState;
   }
 
   computeClosedDisabled(stateObj, entityObj) {
+    if (stateObj.state === UNAVAILABLE) {
+      return true;
+    }
     var assumedState = stateObj.attributes.assumed_state === true;
     return (entityObj.isFullyClosed || entityObj.isClosing) && !assumedState;
   }

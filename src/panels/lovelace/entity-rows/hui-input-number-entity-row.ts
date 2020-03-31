@@ -18,6 +18,7 @@ import { LovelaceRow, EntityConfig } from "./types";
 import { HomeAssistant } from "../../../types";
 import { setValue } from "../../../data/input_text";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
+import { UNAVAILABLE } from "../../../data/entity";
 
 @customElement("hui-input-number-entity-row")
 class HuiInputNumberEntityRow extends LitElement implements LovelaceRow {
@@ -79,6 +80,7 @@ class HuiInputNumberEntityRow extends LitElement implements LovelaceRow {
           ? html`
               <div class="flex">
                 <ha-slider
+                  .disabled=${stateObj.state === UNAVAILABLE}
                   .dir="${computeRTLDirection(this.hass!)}"
                   .step="${Number(stateObj.attributes.step)}"
                   .min="${Number(stateObj.attributes.min)}"
@@ -99,6 +101,7 @@ class HuiInputNumberEntityRow extends LitElement implements LovelaceRow {
               <paper-input
                 no-label-float
                 auto-validate
+                .disabled=${stateObj.state === UNAVAILABLE}
                 .pattern="[0-9]+([\\.][0-9]+)?"
                 .step="${Number(stateObj.attributes.step)}"
                 .min="${Number(stateObj.attributes.min)}"
