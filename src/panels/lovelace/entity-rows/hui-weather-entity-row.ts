@@ -131,7 +131,8 @@ class HuiWeatherEntityRow extends LitElement implements LovelaceRow {
 
     if (
       stateObj.attributes.forecast?.length &&
-      stateObj.attributes.forecast[0].precipitation !== undefined && stateObj.attributes.forecast[0].precipitation !== null
+      stateObj.attributes.forecast[0].precipitation !== undefined &&
+      stateObj.attributes.forecast[0].precipitation !== null
     ) {
       value = stateObj.attributes.forecast[0].precipitation!;
       attribute = "precipitation";
