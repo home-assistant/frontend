@@ -31,6 +31,7 @@ const LAZY_LOAD_TYPES = {
   "lock-entity": () => import("../entity-rows/hui-lock-entity-row"),
   "timer-entity": () => import("../entity-rows/hui-timer-entity-row"),
   conditional: () => import("../special-rows/hui-conditional-row"),
+  "weather-entity": () => import("../entity-rows/hui-weather-entity-row"),
   divider: () => import("../special-rows/hui-divider-row"),
   section: () => import("../special-rows/hui-section-row"),
   weblink: () => import("../special-rows/hui-weblink-row"),
@@ -63,6 +64,7 @@ const DOMAIN_TO_ELEMENT_TYPE = {
   // water heater should get it's own row.
   water_heater: "climate",
   input_datetime: "input-datetime",
+  weather: "weather",
 };
 
 export const createRowElement = (config: EntityConfig) =>
