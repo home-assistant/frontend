@@ -18,8 +18,19 @@ import {
 import { HomeAssistant, WeatherEntity } from "../../../types";
 import { EntitiesCardEntityConfig } from "../cards/types";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
-import "../components/hui-warning";
-import { LovelaceRow } from "./types";
+import { UNAVAILABLE } from "../../../data/entity";
+import {
+  weatherIcons,
+  getWeatherUnit,
+  getSecondaryWeatherAttribute,
+} from "../../../data/weather";
+import { DOMAINS_HIDE_MORE_INFO } from "../../../common/const";
+import { computeDomain } from "../../../common/entity/compute_domain";
+import { actionHandler } from "../common/directives/action-handler-directive";
+import { hasAction } from "../common/has-action";
+import { computeStateName } from "../../../common/entity/compute_state_name";
+import { ActionHandlerEvent } from "../../../data/lovelace";
+import { handleAction } from "../common/handle-action";
 
 @customElement("hui-weather-entity-row")
 class HuiWeatherEntityRow extends LitElement implements LovelaceRow {
@@ -58,11 +69,15 @@ class HuiWeatherEntityRow extends LitElement implements LovelaceRow {
       `;
     }
 
-    const weatherRowConfig = {
-      ...this._config,
-      icon: weatherIcons[stateObj.state],
-      image: weatherImages[stateObj.state],
-    };
+    const pointer =
+      (this._config.tap_action && this._config.tap_action.action !== "none") ||
+      (this._config.entity &&
+        !DOMAINS_HIDE_MORE_INFO.includes(computeDomain(this._config.entity)));
+
+    const secondaryAttribute = getSecondaryWeatherAttribute(
+      this.hass,
+      stateObj
+    );
 
     return html`
       <hui-generic-entity-row .hass=${this.hass} .config=${weatherRowConfig}>
@@ -86,84 +101,8 @@ class HuiWeatherEntityRow extends LitElement implements LovelaceRow {
     `;
   }
 
-  private _getSecondaryAttribute(stateObj: WeatherEntity): string | undefined {
-    const extrema = this._getExtrema(stateObj);
-
-    if (extrema) {
-      return extrema;
-    }
-
-    let value: number;
-    let attribute: string;
-
-    if (
-      stateObj.attributes.forecast?.length &&
-      stateObj.attributes.forecast[0].precipitation !== undefined &&
-      stateObj.attributes.forecast[0].precipitation !== null
-    ) {
-      value = stateObj.attributes.forecast[0].precipitation!;
-      attribute = "precipitation";
-    } else if ("humidity" in stateObj.attributes) {
-      value = stateObj.attributes.humidity!;
-      attribute = "humidity";
-    } else {
-      return undefined;
-    }
-
-    return `
-      ${this.hass!.localize(
-        `ui.card.weather.attributes.${attribute}`
-      )} ${value} ${getWeatherUnit(this.hass!, attribute)}
-    `;
-  }
-
-  private _getExtrema(stateObj: WeatherEntity): string | undefined {
-    if (!stateObj.attributes.forecast?.length) {
-      return undefined;
-    }
-
-    let tempLow: number | undefined;
-    let tempHigh: number | undefined;
-    const today = new Date().getDate();
-
-    for (const forecast of stateObj.attributes.forecast!) {
-      if (new Date(forecast.datetime).getDate() !== today) {
-        break;
-      }
-      if (!tempHigh || forecast.temperature > tempHigh) {
-        tempHigh = forecast.temperature;
-      }
-      if (!tempLow || (forecast.templow && forecast.templow < tempLow)) {
-        tempLow = forecast.templow;
-      }
-      if (!forecast.templow && (!tempLow || forecast.temperature < tempLow)) {
-        tempLow = forecast.temperature;
-      }
-    }
-
-    if (!tempLow && !tempHigh) {
-      return undefined;
-    }
-
-    const unit = getWeatherUnit(this.hass!, "temperature");
-
-    return `
-      ${
-        tempHigh
-          ? `
-              ${this.hass!.localize(`ui.card.weather.high`)} ${tempHigh} ${unit}
-            `
-          : ""
-      }
-      ${tempLow && tempHigh ? " / " : ""}
-      ${
-        tempLow
-          ? `
-            ${this.hass!.localize(`ui.card.weather.low`)} ${tempLow} ${unit}
-          `
-          : ""
-      }
-    `;
+  private _handleAction(ev: ActionHandlerEvent) {
+    handleAction(this, this.hass!, this._config!, ev.detail.action!);
   }
 
   static get styles(): CSSResult {

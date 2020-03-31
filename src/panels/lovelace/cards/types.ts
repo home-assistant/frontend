@@ -269,4 +269,5 @@ export interface ThermostatCardConfig extends LovelaceCardConfig {
 export interface WeatherForecastCardConfig extends LovelaceCardConfig {
   entity: string;
   name?: string;
+  show_forecast?: boolean;
 }

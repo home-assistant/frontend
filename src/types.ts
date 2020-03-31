@@ -252,6 +252,7 @@ interface ForecastAttribute {
   templow?: number;
   precipitation?: number;
   humidity?: number;
+  condition?: string;
 }
 
 export type WeatherEntity = HassEntityBase & {
