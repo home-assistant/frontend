@@ -58,24 +58,17 @@ class HuiAttributeRow extends LitElement implements LovelaceRow {
       `;
     }
 
-    if (!attribute && !this._config.default) {
-      return html`
-        <hui-warning
-          >${this.hass.localize(
-            "ui.panel.lovelace.warning.attribute_not_found",
-            "attribute",
-            this._config.attribute
-          )}</hui-warning
-        >
-      `;
-    }
-
     return html`
       <hui-generic-entity-row .hass=${this.hass} .config=${this._config}>
-        <div>
-          ${this._config.prefix} ${attribute || this._config.default}
-          ${this._config.suffix}
-        </div>
+        ${attribute
+          ? html`
+              <div>
+                ${this._config.prefix} ${attribute} ${this._config.suffix}
+              </div>
+            `
+          : html`
+              <span>-</span>
+            `}
       </hui-generic-entity-row>
     `;
   }
@@ -84,6 +77,9 @@ class HuiAttributeRow extends LitElement implements LovelaceRow {
     return css`
       div {
         text-align: right;
+      }
+      span {
+        padding-right: 16px;
       }
     `;
   }
