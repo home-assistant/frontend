@@ -233,14 +233,6 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
                             </div>
                           `
                         : ""}
-                      ${"precipitation" in item && item.precipitation !== null
-                        ? html`
-                            <div class="precipitation">
-                              ${item.precipitation || 0.5}
-                              ${this.getUnit("precipitation")}
-                            </div>
-                          `
-                        : ""}
                     </div>
                   `
                 )}
