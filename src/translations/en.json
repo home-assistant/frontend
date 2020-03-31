@@ -2100,6 +2100,7 @@
               "geo_location_sources": "Geolocation Sources",
               "dark_mode": "Dark Mode?",
               "default_zoom": "Default Zoom",
+              "hours_to_show": "Hours to Show",
               "source": "Source",
               "description": "The Map card that allows you to display entities on a map."
             },

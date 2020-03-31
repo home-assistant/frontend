@@ -34,6 +34,7 @@ const cardConfigStruct = struct({
   default_zoom: "number?",
   dark_mode: "boolean?",
   entities: [entitiesConfigStruct],
+  hours_to_show: "number?",
   geo_location_sources: "array?",
 });
 
@@ -48,7 +49,9 @@ export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
   public setConfig(config: MapCardConfig): void {
     config = cardConfigStruct(config);
     this._config = config;
-    this._configEntities = processEditorEntities(config.entities);
+    this._configEntities = config.entities
+      ? processEditorEntities(config.entities)
+      : [];
   }
 
   get _title(): string {
@@ -65,6 +68,10 @@ export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
 
   get _geo_location_sources(): string[] {
     return this._config!.geo_location_sources || [];
+  }
+
+  get _hours_to_show(): number {
+    return this._config!.hours_to_show || 0;
   }
 
   get _dark_mode(): boolean {
@@ -112,14 +119,27 @@ export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
             @value-changed="${this._valueChanged}"
           ></paper-input>
         </div>
-        <ha-switch
-          .checked="${this._dark_mode}"
-          .configValue="${"dark_mode"}"
-          @change="${this._valueChanged}"
-          >${this.hass.localize(
-            "ui.panel.lovelace.editor.card.map.dark_mode"
-          )}</ha-switch
-        >
+        <div class="side-by-side">
+          <ha-switch
+            .checked="${this._dark_mode}"
+            .configValue="${"dark_mode"}"
+            @change="${this._valueChanged}"
+            >${this.hass.localize(
+              "ui.panel.lovelace.editor.card.map.dark_mode"
+            )}</ha-switch
+          >
+          <paper-input
+            .label="${this.hass.localize(
+              "ui.panel.lovelace.editor.card.map.hours_to_show"
+            )} (${this.hass.localize(
+              "ui.panel.lovelace.editor.card.config.optional"
+            )})"
+            type="number"
+            .value="${this._hours_to_show}"
+            .configValue="${"hours_to_show"}"
+            @value-changed="${this._valueChanged}"
+          ></paper-input>
+        </div>
         <hui-entity-editor
           .hass=${this.hass}
           .entities="${this._configEntities}"
