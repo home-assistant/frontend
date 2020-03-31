@@ -8,8 +8,6 @@ import {
   customElement,
   PropertyValues,
 } from "lit-element";
-import { ifDefined } from "lit-html/directives/if-defined";
-import { classMap } from "lit-html/directives/class-map";
 
 import "../../../components/entity/state-badge";
 import "../components/hui-warning";
@@ -18,15 +16,11 @@ import { LovelaceRow } from "./types";
 import { HomeAssistant, WeatherEntity } from "../../../types";
 import { EntitiesCardEntityConfig } from "../cards/types";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
-import { UNAVAILABLE } from "../../../data/entity";
-import { weatherIcons, getWeatherUnit } from "../../../data/weather";
-import { DOMAINS_HIDE_MORE_INFO } from "../../../common/const";
-import { computeDomain } from "../../../common/entity/compute_domain";
-import { actionHandler } from "../common/directives/action-handler-directive";
-import { hasAction } from "../common/has-action";
-import { computeStateName } from "../../../common/entity/compute_state_name";
-import { ActionHandlerEvent } from "../../../data/lovelace";
-import { handleAction } from "../common/handle-action";
+import {
+  weatherIcons,
+  getWeatherUnit,
+  weatherImages,
+} from "../../../data/weather";
 
 @customElement("hui-weather-entity-row")
 class HuiWeatherEntityRow extends LitElement implements LovelaceRow {
@@ -52,7 +46,7 @@ class HuiWeatherEntityRow extends LitElement implements LovelaceRow {
 
     const stateObj = this.hass.states[this._config.entity] as WeatherEntity;
 
-    if (!stateObj || stateObj.state === UNAVAILABLE) {
+    if (!stateObj) {
       return html`
         <hui-warning
           >${this.hass.localize(
@@ -64,58 +58,24 @@ class HuiWeatherEntityRow extends LitElement implements LovelaceRow {
       `;
     }
 
-    const pointer =
-      (this._config.tap_action && this._config.tap_action.action !== "none") ||
-      (this._config.entity &&
-        !DOMAINS_HIDE_MORE_INFO.includes(computeDomain(this._config.entity)));
-
-    const secondaryAttribute = this._getSecondaryAttribute(stateObj);
+    const weatherRowConfig = {
+      ...this._config,
+      icon: weatherIcons[stateObj.state],
+      image: weatherImages[stateObj.state],
+    };
 
     return html`
-      <div
-        class="main ${classMap({
-          pointer,
-        })}"
-        @action=${this._handleAction}
-        .actionHandler=${actionHandler({
-          hasHold: hasAction(this._config!.hold_action),
-          hasDoubleClick: hasAction(this._config!.double_tap_action),
-        })}
-      >
-        <state-badge
-          .hass=${this.hass}
-          .stateObj=${stateObj}
-          .overrideImage=${weatherIcons[stateObj.state]}
-          tabindex=${ifDefined(pointer ? "0" : undefined)}
-        ></state-badge>
-        <div class="container">
-          <div style="display: flex;">
-            <div class="info">
-              <div class="name">
-                ${this._config.name || computeStateName(stateObj)}
-              </div>
-              <div class="state">
-                ${this.hass.localize(`state.weather.${stateObj.state}`) ||
-                  stateObj.state}
-              </div>
-            </div>
-            <div class="temperature">
-              ${stateObj.attributes.temperature}<span
-                >${getWeatherUnit(this.hass, "temperature")}</span
-              >
-            </div>
+      <hui-generic-entity-row .hass=${this.hass} .config=${weatherRowConfig}>
+        <div class="attributes">
+          <div>
+            ${stateObj.attributes.temperature}
+            ${getWeatherUnit(this.hass, "temperature")}
           </div>
-          ${secondaryAttribute
-            ? html`
-                <div class="attributes">
-                  <span>
-                    ${secondaryAttribute}
-                  </span>
-                </div>
-              `
-            : ""}
+          <div class="secondary">
+            ${this._getSecondaryAttribute(stateObj)}
+          </div>
         </div>
-      </div>
+      </hui-generic-entity-row>
     `;
   }
 
@@ -199,74 +159,17 @@ class HuiWeatherEntityRow extends LitElement implements LovelaceRow {
     `;
   }
 
-  private _handleAction(ev: ActionHandlerEvent) {
-    handleAction(this, this.hass!, this._config!, ev.detail.action!);
-  }
-
   static get styles(): CSSResult {
     return css`
-      .pointer {
-        cursor: pointer;
-      }
-
-      .main {
+      .attributes {
         display: flex;
-        align-items: center;
-        justify-content: flex-end;
-        width: 100%;
-      }
-
-      .name {
-        font-weight: 500;
-      }
-
-      .state {
-        color: var(--secondary-text-color);
-      }
-
-      .temperature {
-        font-size: 28px;
-        margin-right: 16px;
-      }
-
-      .temperature span {
-        font-size: 18px;
-        position: absolute;
-      }
-
-      .container {
-        flex: 1 0;
-        display: flex;
-        flex-flow: column;
-      }
-
-      .info {
-        display: flex;
-        flex-flow: column;
+        flex-direction: column;
         justify-content: center;
+        text-align: right;
       }
 
-      .info,
-      .attributes {
-        flex: 1 0;
-        margin-left: 16px;
-        overflow: hidden;
-      }
-
-      .info > *,
-      .attributes > * {
-        overflow: hidden;
-        white-space: nowrap;
-        text-overflow: ellipsis;
-      }
-
-      .attributes {
-        padding-top: 1px;
+      .secondary {
         color: var(--secondary-text-color);
-      }
-
-      .attributes > *:not(:first-child) {
-        padding-left: 4px;
       }
     `;
   }
