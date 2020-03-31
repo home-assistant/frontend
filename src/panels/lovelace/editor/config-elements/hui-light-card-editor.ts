@@ -95,10 +95,10 @@ export class HuiLightCardEditor extends LitElement
             "ui.panel.lovelace.editor.card.config.required"
           )})"
           .hass=${this.hass}
-          .value="${this._entity}"
+          .value=${this._entity}
           .configValue=${"entity"}
           include-domains='["light"]'
-          @change="${this._valueChanged}"
+          @change=${this._valueChanged}
           allow-custom-entity
         ></ha-entity-picker>
         <div class="side-by-side">
@@ -108,9 +108,9 @@ export class HuiLightCardEditor extends LitElement
             )} (${this.hass.localize(
               "ui.panel.lovelace.editor.card.config.optional"
             )})"
-            .value="${this._name}"
-            .configValue="${"name"}"
-            @value-changed="${this._valueChanged}"
+            .value=${this._name}
+            .configValue=${"name"}
+            @value-changed=${this._valueChanged}
           ></paper-input>
           <ha-icon-input
             .label="${this.hass.localize(
@@ -118,19 +118,19 @@ export class HuiLightCardEditor extends LitElement
             )} (${this.hass.localize(
               "ui.panel.lovelace.editor.card.config.optional"
             )})"
-            .value="${this._icon}"
+            .value=${this._icon}
             .placeholder=${this._icon ||
               stateIcon(this.hass.states[this._entity])}
-            .configValue="${"icon"}"
-            @value-changed="${this._valueChanged}"
+            .configValue=${"icon"}
+            @value-changed=${this._valueChanged}
           ></ha-icon-input>
         </div>
 
         <hui-theme-select-editor
           .hass=${this.hass}
-          .value="${this._theme}"
-          .configValue="${"theme"}"
-          @value-changed="${this._valueChanged}"
+          .value=${this._theme}
+          .configValue=${"theme"}
+          @value-changed=${this._valueChanged}
         ></hui-theme-select-editor>
 
         <hui-action-editor
@@ -140,10 +140,10 @@ export class HuiLightCardEditor extends LitElement
             "ui.panel.lovelace.editor.card.config.optional"
           )})"
           .hass=${this.hass}
-          .config="${this._hold_action}"
-          .actions="${actions}"
-          .configValue="${"hold_action"}"
-          @action-changed="${this._valueChanged}"
+          .config=${this._hold_action}
+          .actions=${actions}
+          .configValue=${"hold_action"}
+          @action-changed=${this._valueChanged}
         ></hui-action-editor>
 
         <hui-action-editor
@@ -153,10 +153,10 @@ export class HuiLightCardEditor extends LitElement
             "ui.panel.lovelace.editor.card.config.optional"
           )})"
           .hass=${this.hass}
-          .config="${this._double_tap_action}"
-          .actions="${actions}"
-          .configValue="${"double_tap_action"}"
-          @action-changed="${this._valueChanged}"
+          .config=${this._double_tap_action}
+          .actions=${actions}
+          .configValue=${"double_tap_action"}
+          @action-changed=${this._valueChanged}
         ></hui-action-editor>
       </div>
     `;
