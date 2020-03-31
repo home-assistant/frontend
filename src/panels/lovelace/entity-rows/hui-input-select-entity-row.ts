@@ -33,7 +33,6 @@ import { hasAction } from "../common/has-action";
 import { ActionHandlerEvent } from "../../../data/lovelace";
 import { handleAction } from "../common/handle-action";
 import { UNAVAILABLE } from "../../../data/entity";
-import { fireEvent } from "../../../common/dom/fire_event";
 
 @customElement("hui-input-select-entity-row")
 class HuiInputSelectEntityRow extends LitElement implements LovelaceRow {
