@@ -8,6 +8,8 @@ import {
   customElement,
   PropertyValues,
 } from "lit-element";
+import { ifDefined } from "lit-html/directives/if-defined";
+import { classMap } from "lit-html/directives/class-map";
 
 import "../../../components/entity/state-badge";
 import "../components/hui-warning";
@@ -17,17 +19,11 @@ import { HomeAssistant, WeatherEntity } from "../../../types";
 import { EntitiesCardEntityConfig } from "../cards/types";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
 import { UNAVAILABLE } from "../../../data/entity";
-import {
-  weatherIcons,
-  getWindBearing,
-  getWeatherUnit,
-} from "../../../data/weather";
+import { weatherIcons, getWeatherUnit } from "../../../data/weather";
 import { DOMAINS_HIDE_MORE_INFO } from "../../../common/const";
 import { computeDomain } from "../../../common/entity/compute_domain";
-import { classMap } from "lit-html/directives/class-map";
 import { actionHandler } from "../common/directives/action-handler-directive";
 import { hasAction } from "../common/has-action";
-import { ifDefined } from "lit-html/directives/if-defined";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import { ActionHandlerEvent } from "../../../data/lovelace";
 import { handleAction } from "../common/handle-action";
@@ -74,7 +70,6 @@ class HuiWeatherEntityRow extends LitElement implements LovelaceRow {
         !DOMAINS_HIDE_MORE_INFO.includes(computeDomain(this._config.entity)));
 
     const secondaryAttribute = this._getSecondaryAttribute(stateObj);
-    const extrema = this._getExtrema(stateObj);
 
     return html`
       <div
@@ -110,27 +105,15 @@ class HuiWeatherEntityRow extends LitElement implements LovelaceRow {
               >
             </div>
           </div>
-          <div class="attributes">
-            ${secondaryAttribute
-              ? html`
+          ${secondaryAttribute
+            ? html`
+                <div class="attributes">
                   <span>
                     ${secondaryAttribute}
                   </span>
-                `
-              : ""}
-            ${secondaryAttribute && extrema
-              ? html`
-                  <span>|</span>
-                `
-              : ""}
-            ${extrema
-              ? html`
-                  <span>
-                    ${extrema}
-                  </span>
-                `
-              : ""}
-          </div>
+                </div>
+              `
+            : ""}
         </div>
       </div>
     `;
@@ -141,28 +124,23 @@ class HuiWeatherEntityRow extends LitElement implements LovelaceRow {
       return undefined;
     }
 
-    const forecastNow = stateObj.attributes.forecast[0];
+    const extrema = this._getExtrema(stateObj);
+
+    if (extrema) {
+      return extrema;
+    }
 
     let value: string;
     let attribute: string;
 
-    if (forecastNow.precipitation) {
-      value = forecastNow.precipitation.toString();
+    if ("precipitation" in stateObj.attributes.forecast[0]) {
+      value = stateObj.attributes.forecast[0].precipitation!.toString();
       attribute = "precipitation";
-    } else if (forecastNow.humidity) {
-      value = forecastNow.humidity.toString();
+    } else if ("humidity" in stateObj.attributes) {
+      value = stateObj.attributes.humidity!.toString();
       attribute = "humidity";
     } else {
       return undefined;
-    }
-
-    if (attribute === "wind_bearing") {
-      const cardinalDirection = getWindBearing(value);
-      return `
-        ${this.hass!.localize(
-          `ui.card.weather.cardinal_direction.${cardinalDirection.toLowerCase()}`
-        ) || cardinalDirection}
-      `;
     }
 
     return `
@@ -173,15 +151,11 @@ class HuiWeatherEntityRow extends LitElement implements LovelaceRow {
   }
 
   private _getExtrema(stateObj: WeatherEntity): string | undefined {
-    if (!stateObj.attributes.forecast?.length) {
-      return undefined;
-    }
-
     let tempLow: number | undefined;
     let tempHigh: number | undefined;
     const today = new Date().getDate();
 
-    for (const forecast of stateObj.attributes.forecast) {
+    for (const forecast of stateObj.attributes.forecast!) {
       if (new Date(forecast.datetime).getDate() !== today) {
         break;
       }

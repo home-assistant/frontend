@@ -241,6 +241,7 @@ interface ForecastAttribute {
 export type WeatherEntity = HassEntityBase & {
   attributes: HassEntityAttributeBase & {
     temperature: number;
+    humidity?: number;
     forecast?: ForecastAttribute[];
   };
 };
