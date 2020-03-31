@@ -493,7 +493,8 @@
           "humidity": "Humidity",
           "temperature": "Temperature",
           "visibility": "Visibility",
-          "wind_speed": "Wind speed"
+          "wind_speed": "Wind speed",
+          "precipitation": "Precipitation"
         },
         "cardinal_direction": {
           "e": "E",
@@ -513,7 +514,9 @@
           "wnw": "WNW",
           "wsw": "WSW"
         },
-        "forecast": "Forecast"
+        "forecast": "Forecast",
+        "high": "High",
+        "low": "Low"
       }
     },
     "common": {
