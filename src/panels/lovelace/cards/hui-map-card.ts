@@ -265,7 +265,7 @@ class HuiMapCard extends LitElement implements LovelaceCard {
       this.updateMap(changedProps.get("_config") as MapCardConfig);
     }
 
-    if (this._config!.hours_to_show) {
+    if (this._config!.hours_to_show && this._configEntities?.length) {
       const minute = 60000;
       if (changedProps.has("_config")) {
         this._getHistory();
@@ -333,14 +333,14 @@ class HuiMapCard extends LitElement implements LovelaceCard {
     }
   }
 
-  private _getColor(name: string) {
+  private _getColor(entityId: string) {
     let color;
-    if (this._colorDict[name]) {
-      color = this._colorDict[name];
+    if (this._colorDict[entityId]) {
+      color = this._colorDict[entityId];
     } else {
       color = this._colors[this._colorIndex];
       this._colorIndex = (this._colorIndex + 1) % this._colors.length;
-      this._colorDict[name] = color;
+      this._colorDict[entityId] = color;
     }
     return color;
   }
@@ -393,9 +393,6 @@ class HuiMapCard extends LitElement implements LovelaceCard {
           continue;
         }
         const entityId = entityStates[0].entity_id;
-        const entity: EntityConfig = this._configEntities!.filter(
-          (x) => x.entity === entityId
-        )[0];
 
         // filter location data from states and remove all invalid locations
         const path = entityStates.reduce(
@@ -410,20 +407,22 @@ class HuiMapCard extends LitElement implements LovelaceCard {
           []
         ) as LatLngTuple[];
 
+        path.push([48, 10]);
+        path.push([47.7, 11.9]);
         // DRAW HISTORY
         for (
           let markerIndex = 0;
           markerIndex < path.length - 1;
           markerIndex++
         ) {
-          const opacityStep = 1 / path.length;
-          const opacity = 2 * opacityStep + markerIndex * opacityStep;
+          const opacityStep = 0.8 / (path.length - 2);
+          const opacity = 0.2 + markerIndex * opacityStep;
 
           // DRAW history path dots
           mapPaths.push(
             Leaflet.circleMarker(path[markerIndex], {
               radius: 3,
-              color: entity.color || this._getColor(entityId),
+              color: this._getColor(entityId),
               opacity,
               interactive: false,
             })
@@ -433,7 +432,7 @@ class HuiMapCard extends LitElement implements LovelaceCard {
           const line = [path[markerIndex], path[markerIndex + 1]];
           mapPaths.push(
             Leaflet.polyline(line, {
-              color: entity.color || this._getColor(entityId),
+              color: this._getColor(entityId),
               opacity,
               interactive: false,
             })
@@ -526,7 +525,7 @@ class HuiMapCard extends LitElement implements LovelaceCard {
                 entity-id="${entityId}"
                 entity-name="${entityName}"
                 entity-picture="${entityPicture || ""}"
-                entity-color="${entity.color || this._getColor(entityId)}"
+                entity-color="${this._getColor(entityId)}"
               ></ha-entity-marker>
             `,
             iconSize: [48, 48],
@@ -541,7 +540,7 @@ class HuiMapCard extends LitElement implements LovelaceCard {
         mapItems.push(
           Leaflet.circle([latitude, longitude], {
             interactive: false,
-            color: entity.color || this._getColor(entityId),
+            color: this._getColor(entityId),
             radius: gpsAccuracy,
           })
         );
@@ -570,18 +569,28 @@ class HuiMapCard extends LitElement implements LovelaceCard {
   }
 
   private async _getHistory(): Promise<void> {
-    const entityIds = this._configEntities
-      ?.map((entity) => entity.entity)
-      .join(",");
+    this._date = new Date();
+
+    if (!this._configEntities) {
+      return;
+    }
+
+    const entityIds = this._configEntities!.map((entity) => entity.entity).join(
+      ","
+    );
     const endTime = new Date();
     const startTime = new Date();
     startTime.setHours(endTime.getHours() - this._config!.hours_to_show!);
+    const skipInitialState = false;
+    const significantChangesOnly = false;
 
     const stateHistory = await fetchRecent(
       this.hass,
       entityIds,
       startTime,
-      endTime
+      endTime,
+      skipInitialState,
+      significantChangesOnly
     );
 
     if (stateHistory.length < 1) {
@@ -589,7 +598,6 @@ class HuiMapCard extends LitElement implements LovelaceCard {
     }
 
     this._history = stateHistory;
-    this._date = new Date();
   }
 
   static get styles(): CSSResult {
