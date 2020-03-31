@@ -120,24 +120,23 @@ class HuiWeatherEntityRow extends LitElement implements LovelaceRow {
   }
 
   private _getSecondaryAttribute(stateObj: WeatherEntity): string | undefined {
-    if (!stateObj.attributes.forecast?.length) {
-      return undefined;
-    }
-
     const extrema = this._getExtrema(stateObj);
 
     if (extrema) {
       return extrema;
     }
 
-    let value: string;
+    let value: number;
     let attribute: string;
 
-    if ("precipitation" in stateObj.attributes.forecast[0]) {
-      value = stateObj.attributes.forecast[0].precipitation!.toString();
+    if (
+      stateObj.attributes.forecast?.length &&
+      "precipitation" in stateObj.attributes.forecast[0]
+    ) {
+      value = stateObj.attributes.forecast[0].precipitation!;
       attribute = "precipitation";
     } else if ("humidity" in stateObj.attributes) {
-      value = stateObj.attributes.humidity!.toString();
+      value = stateObj.attributes.humidity!;
       attribute = "humidity";
     } else {
       return undefined;
@@ -151,6 +150,10 @@ class HuiWeatherEntityRow extends LitElement implements LovelaceRow {
   }
 
   private _getExtrema(stateObj: WeatherEntity): string | undefined {
+    if (!stateObj.attributes.forecast?.length) {
+      return undefined;
+    }
+
     let tempLow: number | undefined;
     let tempHigh: number | undefined;
     const today = new Date().getDate();
