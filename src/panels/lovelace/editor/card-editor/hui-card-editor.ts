@@ -33,7 +33,7 @@ declare global {
       config: LovelaceCardConfig;
       error?: string;
     };
-    "GUImode-changed": {};
+    "GUImode-changed": { guiMode: boolean };
   }
 }
 
