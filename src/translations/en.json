@@ -2068,6 +2068,7 @@
               "attribute": "Attribute",
               "camera_image": "Camera Entity",
               "camera_view": "Camera View",
+              "double_tap_action": "Double Tap Action",
               "entities": "Entities",
               "entity": "Entity",
               "hold_action": "Hold Action",

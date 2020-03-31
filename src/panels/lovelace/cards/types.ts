@@ -138,6 +138,9 @@ export interface LightCardConfig extends LovelaceCardConfig {
   name?: string;
   theme?: string;
   icon?: string;
+  tap_action?: ActionConfig;
+  hold_action?: ActionConfig;
+  double_tap_action?: ActionConfig;
 }
 
 export interface MapCardConfig extends LovelaceCardConfig {
