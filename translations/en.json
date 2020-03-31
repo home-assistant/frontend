@@ -812,6 +812,10 @@
                 "areas": {
                     "caption": "Areas",
                     "create_area": "CREATE AREA",
+                    "data_table": {
+                        "area": "Area",
+                        "devices": "Devices"
+                    },
                     "delete": {
                         "confirmation_text": "All devices in this area will become unassigned.",
                         "confirmation_title": "Are you sure you want to delete this area?"
@@ -1054,6 +1058,9 @@
                         "delete_confirm": "Are you sure you want to delete this automation?",
                         "edit_automation": "Edit automation",
                         "header": "Automation Editor",
+                        "headers": {
+                            "name": "Name"
+                        },
                         "introduction": "The automation editor allows you to create and edit automations. Please follow the link below to read the instructions to make sure that you have configured Home Assistant correctly.",
                         "learn_more": "Learn more about automations",
                         "no_automations": "We couldn’t find any editable automations",
@@ -1334,6 +1341,7 @@
                     },
                     "info": "Device info",
                     "name": "Name",
+                    "no_devices": "No devices",
                     "scene": {
                         "create": "Create scene with device",
                         "no_scenes": "No scenes",
@@ -1638,6 +1646,9 @@
                         "delete_scene": "Delete scene",
                         "edit_scene": "Edit scene",
                         "header": "Scene Editor",
+                        "headers": {
+                            "name": "Name"
+                        },
                         "introduction": "The scene editor allows you to create and edit scenes. Please follow the link below to read the instructions to make sure that you have configured Home Assistant correctly.",
                         "learn_more": "Learn more about scenes",
                         "no_scenes": "We couldn’t find any editable scenes",
@@ -1665,9 +1676,13 @@
                         "add_script": "Add script",
                         "edit_script": "Edit script",
                         "header": "Script Editor",
+                        "headers": {
+                            "name": "Name"
+                        },
                         "introduction": "The script editor allows you to create and edit scripts. Please follow the link below to read the instructions to make sure that you have configured Home Assistant correctly.",
                         "learn_more": "Learn more about scripts",
                         "no_scripts": "We couldn’t find any editable scripts",
+                        "show_info": "Show info about script",
                         "trigger_script": "Trigger script"
                     }
                 },
@@ -1725,14 +1740,21 @@
                         "group": "Group",
                         "group_update_failed": "Group update failed:",
                         "id": "ID",
+                        "name": "Name",
                         "owner": "Owner",
                         "rename_user": "Rename user",
                         "system_generated": "System generated",
                         "system_generated_users_not_removable": "Unable to remove system generated users.",
                         "unnamed_user": "Unnamed User",
+                        "update_user": "Update",
                         "user_rename_failed": "User rename failed:"
                     },
                     "picker": {
+                        "headers": {
+                            "group": "Group",
+                            "name": "Name",
+                            "system": "System"
+                        },
                         "system_generated": "System generated",
                         "title": "Users"
                     }
@@ -2135,6 +2157,9 @@
                             "description": "The Entity Filter card allows you to define a list of entities that you want to track only when in a certain state.",
                             "name": "Entity Filter"
                         },
+                        "entity": {
+                            "name": "Entity"
+                        },
                         "gauge": {
                             "description": "The Gauge card is a basic card that allows visually seeing sensor data.",
                             "name": "Gauge",
@@ -2147,6 +2172,7 @@
                         },
                         "generic": {
                             "aspect_ratio": "Aspect Ratio",
+                            "attribute": "Attribute",
                             "camera_image": "Camera Entity",
                             "camera_view": "Camera View",
                             "entities": "Entities",
@@ -2319,6 +2345,7 @@
                     "save_config": {
                         "cancel": "Never mind",
                         "close": "Close",
+                        "empty_config": "Start with an empty dashboard",
                         "header": "Take control of your Lovelace UI",
                         "para": "By default Home Assistant will maintain your user interface, updating it when new entities or Lovelace UI components become available. If you take control we will no longer make changes automatically for you.",
                         "para_sure": "Are you sure you want to take control of your user interface?",
@@ -2568,6 +2595,11 @@
                     "submit": "Submit"
                 },
                 "current_user": "You are currently logged in as {fullName}.",
+                "dashboard": {
+                    "description": "Pick a default dashboard for this device.",
+                    "dropdown_label": "Dashboard",
+                    "header": "Dashboard"
+                },
                 "force_narrow": {
                     "description": "This will hide the sidebar by default, similar to the mobile experience.",
                     "header": "Always hide the sidebar"

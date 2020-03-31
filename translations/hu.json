@@ -2348,7 +2348,7 @@
                     "domain": "Domain",
                     "entity": "Entitás",
                     "entity_id": "Entitás ID",
-                    "last_changed": "Utoljára módosítva",
+                    "last_changed": "Utoljára változott",
                     "select_to_add": "Válaszd ki azokat az entitásokat, amelyeket hozzá akarsz adni egy kártyához, majd kattints a kártya hozzáadása gombra.",
                     "title": "Nem használt entitások"
                 },
