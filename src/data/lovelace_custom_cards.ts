@@ -9,6 +9,8 @@ export interface CustomCardsWindow {
   customCards?: CustomCardEntry[];
 }
 
+export const CUSTOM_TYPE_PREFIX = "custom:";
+
 const customCardsWindow = window as CustomCardsWindow;
 
 if (!("customCards" in customCardsWindow)) {
