@@ -9,10 +9,14 @@ import {
   TemplateResult,
   property,
   customElement,
+  query,
 } from "lit-element";
 import { HomeAssistant } from "../../../types";
 // tslint:disable-next-line
-import { DataTableColumnContainer } from "../../../components/data-table/ha-data-table";
+import {
+  DataTableColumnContainer,
+  HaDataTable,
+} from "../../../components/data-table/ha-data-table";
 // tslint:disable-next-line
 import { ZHAGroup, ZHADevice } from "../../../data/zha";
 import { formatAsPaddedHex } from "./functions";
@@ -29,6 +33,7 @@ export class ZHAGroupsDataTable extends LitElement {
   @property() public narrow = false;
   @property() public groups: ZHAGroup[] = [];
   @property() public selectable = false;
+  @query("ha-data-table") private _dataTable!: HaDataTable;
 
   private _groups = memoizeOne((groups: ZHAGroup[]) => {
     let outputGroups: GroupRowData[] = groups;
@@ -97,6 +102,10 @@ export class ZHAGroupsDataTable extends LitElement {
             },
           }
   );
+
+  public clearSelection() {
+    this._dataTable.clearSelection();
+  }
 
   protected render(): TemplateResult {
     return html`
