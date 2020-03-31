@@ -99,7 +99,7 @@ class StateCardAnalogOutput extends mixinBehaviors(
     `;
   }
 
-  ready() {
+  public ready() {
     super.ready();
     if (typeof ResizeObserver === "function") {
       const ro = new ResizeObserver((entries) => {
@@ -150,8 +150,10 @@ class StateCardAnalogOutput extends mixinBehaviors(
     };
   }
 
-  hiddenState() {
-    if (this.mode !== "slider") return;
+  public hiddenState() {
+    if (this.mode !== "slider") {
+      return;
+    }
     const sliderwidth = this.$.slider.offsetWidth;
     if (sliderwidth < 100) {
       this.$.sliderstate.hidden = true;
@@ -160,7 +162,7 @@ class StateCardAnalogOutput extends mixinBehaviors(
     }
   }
 
-  stateObjectChanged(newVal) {
+  public stateObjectChanged(newVal) {
     const prevMode = this.mode;
     this.setProperties({
       min: Number(newVal.attributes.min),
@@ -177,7 +179,7 @@ class StateCardAnalogOutput extends mixinBehaviors(
     }
   }
 
-  selectedValueChanged() {
+  public selectedValueChanged() {
     if (this.value === Number(this.stateObj.state)) {
       return;
     }
@@ -187,7 +189,7 @@ class StateCardAnalogOutput extends mixinBehaviors(
     });
   }
 
-  stopPropagation(ev) {
+  public stopPropagation(ev) {
     ev.stopPropagation();
   }
 }
