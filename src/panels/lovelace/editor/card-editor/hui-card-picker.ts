@@ -26,8 +26,8 @@ import { UNKNOWN, UNAVAILABLE } from "../../../../data/entity";
 import {
   customCards,
   getCustomCardEntry,
+  CUSTOM_TYPE_PREFIX,
 } from "../../../../data/lovelace_custom_cards";
-import { CUSTOM_TYPE_PREFIX } from "../../create-element/create-element-base";
 
 const previewCards: string[] = [
   "alarm-panel",
