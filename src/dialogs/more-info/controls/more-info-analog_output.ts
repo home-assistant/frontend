@@ -90,17 +90,9 @@ class MoreInfoAnalogOutput extends LocalizeMixin(EventsMixin(PolymerElement)) {
       value_pctSliderValue: 0,
     };
 
-    if (newVal && newVal.state === "on") {
-      props.brightnessSliderValue = newVal.attributes.value_pct;
-    }
+    props.pctSliderValue = newVal.attributes.value_pct;
 
     this.setProperties(props);
-
-    if (oldVal) {
-      setTimeout(() => {
-        this.fire("iron-resize");
-      }, 500);
-    }
   }
 
   public computeClassNames(stateObj) {
@@ -114,7 +106,7 @@ class MoreInfoAnalogOutput extends LocalizeMixin(EventsMixin(PolymerElement)) {
     return classes.join(" ");
   }
 
-  public brightnessSliderChanged(ev) {
+  public pctSliderChanged(ev) {
     const valPct = parseInt(ev.target.value, 10);
 
     if (isNaN(valPct)) {
