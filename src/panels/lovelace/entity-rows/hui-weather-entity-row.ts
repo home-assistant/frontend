@@ -81,12 +81,12 @@ class HuiWeatherEntityRow extends LitElement implements LovelaceRow {
           hasHold: hasAction(this._config!.hold_action),
           hasDoubleClick: hasAction(this._config!.double_tap_action),
         })}
-        tabindex=${ifDefined(pointer ? "0" : undefined)}
       >
         <state-badge
           .hass=${this.hass}
           .stateObj=${stateObj}
           .overrideImage=${weatherIcons[stateObj.state]}
+          tabindex=${ifDefined(pointer ? "0" : undefined)}
         ></state-badge>
         <div class="container">
           <div style="display: flex;">
