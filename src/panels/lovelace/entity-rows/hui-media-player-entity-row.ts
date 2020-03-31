@@ -41,8 +41,8 @@ class HuiMediaPlayerEntityRow extends LitElement implements LovelaceRow {
   private _resizeObserver?: ResizeObserver;
   private _debouncedResizeListener = debounce(
     () => {
-      this._narrow = (this.parentElement?.clientWidth || 0) < 350;
-      this._veryNarrow = (this.parentElement?.clientWidth || 0) < 300;
+      this._narrow = (this.clientWidth || 0) < 300;
+      this._veryNarrow = (this.clientWidth || 0) < 225;
     },
     250,
     false
@@ -124,7 +124,7 @@ class HuiMediaPlayerEntityRow extends LitElement implements LovelaceRow {
                 ></paper-icon-button>
               `
             : ""}
-          ${!this._narrow && supportsFeature(stateObj, SUPPORT_VOLUME_SET)
+          ${!this._veryNarrow && supportsFeature(stateObj, SUPPORT_VOLUME_SET)
             ? html`
                 <ha-slider
                   .dir=${computeRTLDirection(this.hass!)}
@@ -150,8 +150,7 @@ class HuiMediaPlayerEntityRow extends LitElement implements LovelaceRow {
             : ""}
         </div>
         <div class="controls">
-          ${!this._veryNarrow &&
-          supportsFeature(stateObj, SUPPORT_PREVIOUS_TRACK)
+          ${!this._narrow && supportsFeature(stateObj, SUPPORT_PREVIOUS_TRACK)
             ? html`
                 <paper-icon-button
                   icon="hass:skip-previous"
@@ -178,33 +177,6 @@ class HuiMediaPlayerEntityRow extends LitElement implements LovelaceRow {
             : ""}
         </div>
       </div>
-    `;
-  }
-
-  static get styles(): CSSResult {
-    return css`
-      :host {
-        display: block;
-      }
-      .flex {
-        display: flex;
-        align-items: center;
-        padding-left: 48px;
-        justify-content: space-between;
-      }
-      .volume {
-        display: flex;
-        flex-grow: 2;
-        flex-shrink: 2;
-      }
-      .controls {
-        white-space: nowrap;
-      }
-      ha-slider {
-        flex-grow: 2;
-        flex-shrink: 2;
-        width: 100%;
-      }
     `;
   }
 
@@ -316,6 +288,33 @@ class HuiMediaPlayerEntityRow extends LitElement implements LovelaceRow {
       entity_id: this._config!.entity,
       volume_level: ev.target.value / 100,
     });
+  }
+
+  static get styles(): CSSResult {
+    return css`
+      :host {
+        display: block;
+      }
+      .flex {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+      .volume {
+        display: flex;
+        flex-grow: 2;
+        flex-shrink: 2;
+      }
+      .controls {
+        white-space: nowrap;
+      }
+      ha-slider {
+        flex-grow: 2;
+        flex-shrink: 2;
+        width: 100%;
+        margin: 0 -8px;
+      }
+    `;
   }
 }
 
