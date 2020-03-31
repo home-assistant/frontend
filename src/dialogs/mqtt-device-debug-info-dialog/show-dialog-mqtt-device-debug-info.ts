@@ -1,7 +1,8 @@
 import { fireEvent } from "../../common/dom/fire_event";
+import { DeviceRegistryEntry } from "../../data/device_registry";
 
 export interface MQTTDeviceDebugInfoDialogParams {
-  deviceId: string;
+  device: DeviceRegistryEntry;
 }
 
 export const loadMQTTDeviceDebugInfoDialog = () =>
