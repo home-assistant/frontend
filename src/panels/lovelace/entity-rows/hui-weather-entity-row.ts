@@ -93,41 +93,45 @@ class HuiWeatherEntityRow extends LitElement implements LovelaceRow {
           .stateObj=${stateObj}
           .overrideImage=${weatherIcons[stateObj.state]}
         ></state-badge>
-        <div class="info">
-          <div class="name">
-            ${this._config.name || computeStateName(stateObj)}
+        <div class="container">
+          <div style="display: flex;">
+            <div class="info">
+              <div class="name">
+                ${this._config.name || computeStateName(stateObj)}
+              </div>
+              <div class="state">
+                ${this.hass.localize(`state.weather.${stateObj.state}`) ||
+                  stateObj.state}
+              </div>
+            </div>
+            <div class="temperature">
+              ${stateObj.attributes.temperature}<span
+                >${getWeatherUnit(this.hass, "temperature")}</span
+              >
+            </div>
           </div>
-          <div class="state">
-            ${this.hass.localize(`state.weather.${stateObj.state}`) ||
-              stateObj.state}
+          <div class="attributes">
+            ${secondaryAttribute
+              ? html`
+                  <span>
+                    ${secondaryAttribute}
+                  </span>
+                `
+              : ""}
+            ${secondaryAttribute && extrema
+              ? html`
+                  <span>|</span>
+                `
+              : ""}
+            ${extrema
+              ? html`
+                  <span>
+                    ${extrema}
+                  </span>
+                `
+              : ""}
           </div>
         </div>
-        <div class="temperature">
-          ${stateObj.attributes.temperature}<span
-            >${getWeatherUnit(this.hass, "temperature")}</span
-          >
-        </div>
-      </div>
-      <div class="attributes">
-        ${secondaryAttribute
-          ? html`
-              <div>
-                ${secondaryAttribute}
-              </div>
-            `
-          : ""}
-        ${secondaryAttribute && extrema
-          ? html`
-              <div>|</div>
-            `
-          : ""}
-        ${extrema
-          ? html`
-              <div>
-                ${extrema}
-              </div>
-            `
-          : ""}
       </div>
     `;
   }
@@ -244,34 +248,31 @@ class HuiWeatherEntityRow extends LitElement implements LovelaceRow {
 
       .temperature {
         font-size: 28px;
-        margin-left: 16px;
         margin-right: 16px;
-        line-height: 40px;
-        position: relative;
       }
 
       .temperature span {
         font-size: 18px;
-        line-height: 1em;
         position: absolute;
-        top: 8px;
       }
 
-      .info {
+      .container {
         flex: 1 0;
         display: flex;
         flex-flow: column;
-        justify-content: center;
-        margin-left: 16px;
-        min-height: 40px;
-        overflow: hidden;
       }
 
-      .attributes {
+      .info {
         display: flex;
-        justify-content: flex-end;
-        color: var(--secondary-text-color);
-        margin-left: 48px;
+        flex-flow: column;
+        justify-content: center;
+      }
+
+      .info,
+      .attributes {
+        flex: 1 0;
+        margin-left: 16px;
+        overflow: hidden;
       }
 
       .info > *,
@@ -281,8 +282,13 @@ class HuiWeatherEntityRow extends LitElement implements LovelaceRow {
         text-overflow: ellipsis;
       }
 
-      .attributes > * {
-        padding-left: 8px;
+      .attributes {
+        padding-top: 1px;
+        color: var(--secondary-text-color);
+      }
+
+      .attributes > *:not(:first-child) {
+        padding-left: 4px;
       }
     `;
   }
