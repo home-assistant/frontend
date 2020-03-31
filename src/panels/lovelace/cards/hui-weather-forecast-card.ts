@@ -23,7 +23,6 @@ import "../components/hui-warning";
 import { LovelaceCard, LovelaceCardEditor } from "../types";
 import { WeatherForecastCardConfig } from "./types";
 import { fireEvent } from "../../../common/dom/fire_event";
-import { toggleAttribute } from "../../../common/dom/toggle_attribute";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { actionHandler } from "../common/directives/action-handler-directive";
 import { findEntities } from "../common/find-entites";
@@ -234,9 +233,7 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
                             </div>
                           `
                         : ""}
-                      ${("precipitation" in item &&
-                        item.precipitation !== null) ||
-                      true
+                      ${"precipitation" in item && item.precipitation !== null
                         ? html`
                             <div class="precipitation">
                               ${item.precipitation || 0.5}
@@ -365,7 +362,7 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
       }
 
       .main {
-        padding: 16px 16px 0;
+        padding: 16px;
         display: flex;
         justify-content: space-between;
         align-items: center;
@@ -419,7 +416,7 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
       .forecast {
         display: flex;
         justify-content: space-between;
-        padding: 16px;
+        padding: 0 16px 16px;
       }
 
       .forecast > div {
