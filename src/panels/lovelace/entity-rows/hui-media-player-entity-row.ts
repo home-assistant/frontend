@@ -12,6 +12,7 @@ import "@polymer/paper-icon-button/paper-icon-button";
 
 import "../components/hui-generic-entity-row";
 import "../components/hui-warning";
+import "../../../components/ha-slider";
 
 import { LovelaceRow, EntityConfig } from "./types";
 import { HomeAssistant } from "../../../types";
