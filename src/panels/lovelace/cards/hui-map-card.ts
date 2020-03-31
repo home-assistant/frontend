@@ -141,6 +141,8 @@ class HuiMapCard extends LitElement implements LovelaceCard {
     this._configEntities = config.entities
       ? processConfigEntities(config.entities)
       : [];
+
+    this._cleanupHistory();
   }
 
   public getCardSize(): number {
@@ -249,8 +251,6 @@ class HuiMapCard extends LitElement implements LovelaceCard {
       ratio && ratio.w > 0 && ratio.h > 0
         ? `${((100 * ratio.h) / ratio.w).toFixed(2)}%`
         : (root.style.paddingBottom = "100%");
-
-    this._date = new Date();
   }
 
   protected updated(changedProps: PropertyValues): void {
@@ -407,8 +407,6 @@ class HuiMapCard extends LitElement implements LovelaceCard {
           []
         ) as LatLngTuple[];
 
-        path.push([48, 10]);
-        path.push([47.7, 11.9]);
         // DRAW HISTORY
         for (
           let markerIndex = 0;
@@ -598,6 +596,30 @@ class HuiMapCard extends LitElement implements LovelaceCard {
     }
 
     this._history = stateHistory;
+  }
+
+  private _cleanupHistory() {
+    if (!this._history) {
+      return;
+    }
+    if (this._config!.hours_to_show! <= 0) {
+      this._history = undefined;
+    } else {
+      // remove unused entities
+      const configEntityIds = this._configEntities?.map(
+        (configEntity) => configEntity.entity
+      );
+      this._history = this._history!.reduce(
+        (accumulator: HassEntity[][], entityStates) => {
+          const entityId = entityStates[0].entity_id;
+          if (configEntityIds?.includes(entityId)) {
+            accumulator.push(entityStates);
+          }
+          return accumulator;
+        },
+        []
+      ) as HassEntity[][];
+    }
   }
 
   static get styles(): CSSResult {
