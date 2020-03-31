@@ -100,9 +100,10 @@ class HuiMediaPlayerEntityRow extends LitElement implements LovelaceRow {
         .config=${this._config}
         .secondaryText=${this._computeMediaTitle(stateObj)}
       >
-        ${stateObj.state === "off" || stateObj.state === "idle"
-          ? supportsFeature(stateObj, SUPPORT_TURN_ON)
-          : supportsFeature(stateObj, SUPPORT_TURN_OFF)
+        ${(supportsFeature(stateObj, SUPPORT_TURN_ON) &&
+          (stateObj.state === "off" || stateObj.state === "idle")) ||
+        (supportsFeature(stateObj, SUPPORT_TURN_OFF) &&
+          stateObj.state !== "off")
           ? html`
               <paper-icon-button
                 icon="hass:power"
