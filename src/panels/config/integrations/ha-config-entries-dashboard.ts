@@ -200,6 +200,15 @@ export class HaConfigManagerDashboard extends LitElement {
                           href="/config/integrations/config_entry/${item.entry_id}"
                         >
                           <paper-item data-index=${idx}>
+                            <img
+                              src="https://brands.home-assistant.io/${item.domain}/icon.png"
+                              srcset="
+                                https://brands.home-assistant.io/${item.domain}/icon@2x.png 2x
+                              "
+                              referrerpolicy="no-referrer"
+                              @error=${this._onImageError}
+                              @load=${this._onImageLoad}
+                            />
                             <paper-item-body two-line>
                               <div>
                                 ${this.hass.localize(
@@ -342,6 +351,14 @@ export class HaConfigManagerDashboard extends LitElement {
     return states;
   }
 
+  private _onImageLoad(ev) {
+    ev.target.style.visibility = "initial";
+  }
+
+  private _onImageError(ev) {
+    ev.target.style.visibility = "hidden";
+  }
+
   static get styles(): CSSResult {
     return css`
       mwc-button {
@@ -354,6 +371,9 @@ export class HaConfigManagerDashboard extends LitElement {
       ha-icon {
         cursor: pointer;
         margin: 8px;
+      }
+      .configured {
+        padding-bottom: 24px;
       }
       .configured a {
         color: var(--primary-text-color);
@@ -374,6 +394,10 @@ export class HaConfigManagerDashboard extends LitElement {
       }
       .overflow {
         width: 56px;
+      }
+      img {
+        width: 50px;
+        margin-right: 16px;
       }
     `;
   }
