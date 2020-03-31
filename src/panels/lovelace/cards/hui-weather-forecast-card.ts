@@ -182,7 +182,7 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
             </div>
           </div>
         </div>
-        ${this._config.show_forecast && forecast
+        ${this._config.show_forecast !== false && forecast
           ? html`
               <div class="forecast">
                 ${forecast.map(
