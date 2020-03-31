@@ -1615,12 +1615,12 @@
                             "add": "Ein Gerät hinzufügen",
                             "delete": "Gerät löschen",
                             "header": "Geräte",
-                            "introduction": "Fügen Sie die Geräte hinzu, die in Ihrer Szene aufgenommen werden sollen. Stellen Sie alle Geräte so ein, wie sie in der Szene sein sollen."
+                            "introduction": "Füge die Geräte hinzu, die in deine Szene aufgenommen werden sollen. Stelle alle Geräte so ein, wie sie in der Szene sein sollen."
                         },
                         "entities": {
                             "add": "Eine Entität hinzufügen",
                             "delete": "Entität löschen",
-                            "device_entities": "Wenn Sie eine Entität hinzufügen, die zu einem Gerät gehört, wird das Gerät hinzugefügt.",
+                            "device_entities": "Wenn du eine Entität hinzufügst, die zu einem Gerät gehört, wird das Gerät hinzugefügt.",
                             "header": "Entitäten",
                             "introduction": "Entitäten, die nicht zu einem Gerät gehören, können hier festgelegt werden.",
                             "without_device": "Entitäten ohne Gerät"
@@ -1634,7 +1634,7 @@
                     },
                     "picker": {
                         "add_scene": "Szene hinzufügen",
-                        "delete_confirm": "Sind Sie sicher, dass Sie diese Szene löschen möchten?",
+                        "delete_confirm": "Bist du sicher, dass du diese Szene löschen möchtest?",
                         "delete_scene": "Szene löschen",
                         "edit_scene": "Szene bearbeiten",
                         "header": "Szenen-Editor",
@@ -2355,7 +2355,7 @@
                     "refresh_header": "Möchtest Du aktualisieren?"
                 },
                 "unused_entities": {
-                    "available_entities": "Dies sind die Entitäten, die Sie zur Verfügung haben, die aber noch nicht in Ihrer Lovelace-Benutzeroberfläche enthalten sind.",
+                    "available_entities": "Dies sind die Entitäten, die du zur Verfügung hast, die aber noch nicht in deiner Lovelace-Benutzeroberfläche enthalten sind.",
                     "domain": "Domain",
                     "entity": "Entität",
                     "entity_id": "Entitäts-ID",
