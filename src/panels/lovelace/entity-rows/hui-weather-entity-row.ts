@@ -106,7 +106,7 @@ class HuiWeatherEntityRow extends LitElement implements LovelaceRow {
     return `
       ${this.hass!.localize(
         `ui.card.weather.attributes.${attribute}`
-      )} ${value}${getWeatherUnit(this.hass!, attribute)}
+      )} ${value} ${getWeatherUnit(this.hass!, attribute)}
     `;
   }
 
@@ -144,7 +144,7 @@ class HuiWeatherEntityRow extends LitElement implements LovelaceRow {
       ${
         tempHigh
           ? `
-              ${this.hass!.localize(`ui.card.weather.high`)} ${tempHigh}${unit}
+              ${this.hass!.localize(`ui.card.weather.high`)} ${tempHigh} ${unit}
             `
           : ""
       }
@@ -152,7 +152,7 @@ class HuiWeatherEntityRow extends LitElement implements LovelaceRow {
       ${
         tempLow
           ? `
-            ${this.hass!.localize(`ui.card.weather.low`)} ${tempLow}${unit}
+            ${this.hass!.localize(`ui.card.weather.low`)} ${tempLow} ${unit}
           `
           : ""
       }
