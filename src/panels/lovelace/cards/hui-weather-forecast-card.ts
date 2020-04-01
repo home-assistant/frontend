@@ -127,12 +127,13 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
 
     if (stateObj.state === UNAVAILABLE) {
       return html`
-        <div class="unavailable">
-          <hui-unavailable
-            .text=${this.hass.localize("state.default.unavailable")}
-            @click=${this._handleAction}
-          ></hui-unavailable>
-        </div>
+        <ha-card class="unavailable" @click=${this._handleAction}>
+          ${this.hass.localize(
+            "ui.panel.lovelace.warning.entity_unavailable",
+            "entity",
+            this._config.entity
+          )}
+        </ha-card>
       `;
     }
 
@@ -320,6 +321,8 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
         display: flex;
         align-items: center;
         overflow: hidden;
+        min-width: 0;
+        flex: 1;
       }
 
       .icon-header state-badge {
@@ -351,7 +354,6 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
         display: flex;
         flex-direction: column;
         align-items: flex-end;
-        flex: 0 0 140px;
       }
 
       .temp-attribute .temp {
@@ -409,10 +411,6 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
         flex: 0 0 62px;
       }
 
-      :host([narrow]) .temp-attribute {
-        flex: initial;
-      }
-
       :host([narrow]) .temp-attribute .temp {
         font-size: 44px;
         line-height: 44px;
@@ -464,7 +462,10 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
 
       .unavailable {
         height: 100px;
-        position: relative;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 16px;
       }
     `;
   }
