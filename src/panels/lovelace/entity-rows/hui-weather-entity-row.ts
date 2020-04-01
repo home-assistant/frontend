@@ -22,6 +22,7 @@ import { UNAVAILABLE } from "../../../data/entity";
 import {
   weatherIcons,
   getWeatherUnit,
+  weatherImages,
   getSecondaryWeatherAttribute,
 } from "../../../data/weather";
 import { DOMAINS_HIDE_MORE_INFO } from "../../../common/const";
@@ -69,15 +70,11 @@ class HuiWeatherEntityRow extends LitElement implements LovelaceRow {
       `;
     }
 
-    const pointer =
-      (this._config.tap_action && this._config.tap_action.action !== "none") ||
-      (this._config.entity &&
-        !DOMAINS_HIDE_MORE_INFO.includes(computeDomain(this._config.entity)));
-
-    const secondaryAttribute = getSecondaryWeatherAttribute(
-      this.hass,
-      stateObj
-    );
+    const weatherRowConfig = {
+      ...this._config,
+      icon: weatherIcons[stateObj.state],
+      image: weatherImages[stateObj.state],
+    };
 
     return html`
       <hui-generic-entity-row .hass=${this.hass} .config=${weatherRowConfig}>
@@ -92,17 +89,11 @@ class HuiWeatherEntityRow extends LitElement implements LovelaceRow {
                 `}
           </div>
           <div class="secondary">
-            ${!UNAVAILABLE_STATES.includes(stateObj.state)
-              ? this._getSecondaryAttribute(stateObj)
-              : ""}
+            ${getSecondaryWeatherAttribute(this.hass!, stateObj)}
           </div>
         </div>
       </hui-generic-entity-row>
     `;
-  }
-
-  private _handleAction(ev: ActionHandlerEvent) {
-    handleAction(this, this.hass!, this._config!, ev.detail.action!);
   }
 
   static get styles(): CSSResult {

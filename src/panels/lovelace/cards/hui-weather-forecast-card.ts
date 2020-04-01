@@ -300,7 +300,7 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
       .main {
         padding: 16px;
         display: flex;
-        flex-wrap: wrap;
+        flex-wrap: nowrap;
         justify-content: space-between;
         align-items: center;
       }
@@ -325,6 +325,7 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
         line-height: 28px;
         overflow: hidden;
         text-overflow: ellipsis;
+        white-space: nowrap;
       }
 
       .name {
@@ -333,6 +334,13 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
+      }
+
+      .temp-attribute {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        flex: 0 0 140px;
       }
 
       .temp-attribute .temp {
@@ -347,12 +355,6 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
         font-size: 24px;
         line-height: 24px;
         top: 4px;
-      }
-
-      .temp-attribute {
-        display: flex;
-        flex-direction: column;
-        align-items: flex-end;
       }
 
       .forecast {
@@ -396,6 +398,10 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
         flex: 0 0 62px;
       }
 
+      :host([narrow]) .temp-attribute {
+        flex: initial;
+      }
+
       :host([narrow]) .temp-attribute .temp {
         font-size: 44px;
         line-height: 44px;
@@ -437,6 +443,7 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
       }
 
       :host([veryVeryNarrow]) .main {
+        flex-wrap: wrap;
         justify-content: center;
       }
 
