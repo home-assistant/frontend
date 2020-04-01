@@ -1,5 +1,13 @@
 import "@polymer/paper-icon-button/paper-icon-button";
-import { Layer, Marker, Circle, Map } from "leaflet";
+import {
+  Layer,
+  Marker,
+  Circle,
+  Map,
+  CircleMarker,
+  Polyline,
+  LatLngTuple,
+} from "leaflet";
 import {
   LitElement,
   TemplateResult,
@@ -10,7 +18,6 @@ import {
   CSSResult,
   customElement,
 } from "lit-element";
-
 import "../../map/ha-entity-marker";
 
 import {
@@ -31,6 +38,9 @@ import { processConfigEntities } from "../common/process-config-entities";
 import { MapCardConfig } from "./types";
 import { classMap } from "lit-html/directives/class-map";
 import { findEntities } from "../common/find-entites";
+
+import { HassEntity } from "home-assistant-js-websocket";
+import { fetchRecent } from "../../../data/history";
 
 @customElement("hui-map-card")
 class HuiMapCard extends LitElement implements LovelaceCard {
@@ -67,6 +77,10 @@ class HuiMapCard extends LitElement implements LovelaceCard {
   public editMode = false;
 
   @property()
+  private _history?: HassEntity[][];
+  private _date?: Date;
+
+  @property()
   private _config?: MapCardConfig;
   private _configEntities?: EntityConfig[];
   // tslint:disable-next-line
@@ -86,7 +100,24 @@ class HuiMapCard extends LitElement implements LovelaceCard {
   );
   private _mapItems: Array<Marker | Circle> = [];
   private _mapZones: Array<Marker | Circle> = [];
+  private _mapPaths: Array<Polyline | CircleMarker> = [];
   private _connected = false;
+  private _colorDict: { [key: string]: string } = {};
+  private _colorIndex: number = 0;
+  private _colors: string[] = [
+    "#0288D1",
+    "#00AA00",
+    "#984ea3",
+    "#00d2d5",
+    "#ff7f00",
+    "#af8d00",
+    "#7f80cd",
+    "#b3e900",
+    "#c42e60",
+    "#a65628",
+    "#f781bf",
+    "#8dd3c7",
+  ];
 
   public setConfig(config: MapCardConfig): void {
     if (!config) {
@@ -112,6 +143,8 @@ class HuiMapCard extends LitElement implements LovelaceCard {
     this._configEntities = config.entities
       ? processConfigEntities(config.entities)
       : [];
+
+    this._cleanupHistory();
   }
 
   public getCardSize(): number {
@@ -223,7 +256,7 @@ class HuiMapCard extends LitElement implements LovelaceCard {
   }
 
   protected updated(changedProps: PropertyValues): void {
-    if (changedProps.has("hass")) {
+    if (changedProps.has("hass") || changedProps.has("_history")) {
       this._drawEntities();
       this._fitMap();
     }
@@ -232,6 +265,15 @@ class HuiMapCard extends LitElement implements LovelaceCard {
       changedProps.get("_config") !== undefined
     ) {
       this.updateMap(changedProps.get("_config") as MapCardConfig);
+    }
+
+    if (this._config!.hours_to_show && this._configEntities?.length) {
+      const minute = 60000;
+      if (changedProps.has("_config")) {
+        this._getHistory();
+      } else if (Date.now() - this._date!.getTime() >= minute) {
+        this._getHistory();
+      }
     }
   }
 
@@ -285,14 +327,24 @@ class HuiMapCard extends LitElement implements LovelaceCard {
       return;
     }
 
-    const bounds = this.Leaflet.latLngBounds(
-      this._mapItems ? this._mapItems.map((item) => item.getLatLng()) : []
-    );
+    const bounds = this.Leaflet.featureGroup(this._mapItems).getBounds();
     this._leafletMap.fitBounds(bounds.pad(0.5));
 
     if (zoom && this._leafletMap.getZoom() > zoom) {
       this._leafletMap.setZoom(zoom);
     }
+  }
+
+  private _getColor(entityId: string) {
+    let color;
+    if (this._colorDict[entityId]) {
+      color = this._colorDict[entityId];
+    } else {
+      color = this._colors[this._colorIndex];
+      this._colorIndex = (this._colorIndex + 1) % this._colors.length;
+      this._colorDict[entityId] = color;
+    }
+    return color;
   }
 
   private _drawEntities(): void {
@@ -314,6 +366,11 @@ class HuiMapCard extends LitElement implements LovelaceCard {
     }
     const mapZones: Layer[] = (this._mapZones = []);
 
+    if (this._mapPaths) {
+      this._mapPaths.forEach((marker) => marker.remove());
+    }
+    const mapPaths: Layer[] = (this._mapPaths = []);
+
     const allEntities = this._configEntities!.concat();
 
     // Calculate visible geo location sources
@@ -331,6 +388,60 @@ class HuiMapCard extends LitElement implements LovelaceCard {
       }
     }
 
+    // DRAW history
+    if (this._config!.hours_to_show && this._history) {
+      for (const entityStates of this._history) {
+        if (entityStates?.length <= 1) {
+          continue;
+        }
+        const entityId = entityStates[0].entity_id;
+
+        // filter location data from states and remove all invalid locations
+        const path = entityStates.reduce(
+          (accumulator: LatLngTuple[], state) => {
+            const latitude = state.attributes.latitude;
+            const longitude = state.attributes.longitude;
+            if (latitude && longitude) {
+              accumulator.push([latitude, longitude] as LatLngTuple);
+            }
+            return accumulator;
+          },
+          []
+        ) as LatLngTuple[];
+
+        // DRAW HISTORY
+        for (
+          let markerIndex = 0;
+          markerIndex < path.length - 1;
+          markerIndex++
+        ) {
+          const opacityStep = 0.8 / (path.length - 2);
+          const opacity = 0.2 + markerIndex * opacityStep;
+
+          // DRAW history path dots
+          mapPaths.push(
+            Leaflet.circleMarker(path[markerIndex], {
+              radius: 3,
+              color: this._getColor(entityId),
+              opacity,
+              interactive: false,
+            })
+          );
+
+          // DRAW history path lines
+          const line = [path[markerIndex], path[markerIndex + 1]];
+          mapPaths.push(
+            Leaflet.polyline(line, {
+              color: this._getColor(entityId),
+              opacity,
+              interactive: false,
+            })
+          );
+        }
+      }
+    }
+
+    // DRAW entities
     for (const entity of allEntities) {
       const entityId = entity.entity;
       const stateObj = hass.states[entityId];
@@ -414,6 +525,7 @@ class HuiMapCard extends LitElement implements LovelaceCard {
                 entity-id="${entityId}"
                 entity-name="${entityName}"
                 entity-picture="${entityPicture || ""}"
+                entity-color="${this._getColor(entityId)}"
               ></ha-entity-marker>
             `,
             iconSize: [48, 48],
@@ -428,7 +540,7 @@ class HuiMapCard extends LitElement implements LovelaceCard {
         mapItems.push(
           Leaflet.circle([latitude, longitude], {
             interactive: false,
-            color: "#0288D1",
+            color: this._getColor(entityId),
             radius: gpsAccuracy,
           })
         );
@@ -437,6 +549,7 @@ class HuiMapCard extends LitElement implements LovelaceCard {
 
     this._mapItems.forEach((marker) => map.addLayer(marker));
     this._mapZones.forEach((marker) => map.addLayer(marker));
+    this._mapPaths.forEach((marker) => map.addLayer(marker));
   }
 
   private _attachObserver(): void {
@@ -452,6 +565,62 @@ class HuiMapCard extends LitElement implements LovelaceCard {
       this._resizeObserver.observe(this._mapEl);
     } else {
       window.addEventListener("resize", this._debouncedResizeListener);
+    }
+  }
+
+  private async _getHistory(): Promise<void> {
+    this._date = new Date();
+
+    if (!this._configEntities) {
+      return;
+    }
+
+    const entityIds = this._configEntities!.map((entity) => entity.entity).join(
+      ","
+    );
+    const endTime = new Date();
+    const startTime = new Date();
+    startTime.setHours(endTime.getHours() - this._config!.hours_to_show!);
+    const skipInitialState = false;
+    const significantChangesOnly = false;
+
+    const stateHistory = await fetchRecent(
+      this.hass,
+      entityIds,
+      startTime,
+      endTime,
+      skipInitialState,
+      significantChangesOnly
+    );
+
+    if (stateHistory.length < 1) {
+      return;
+    }
+
+    this._history = stateHistory;
+  }
+
+  private _cleanupHistory() {
+    if (!this._history) {
+      return;
+    }
+    if (this._config!.hours_to_show! <= 0) {
+      this._history = undefined;
+    } else {
+      // remove unused entities
+      const configEntityIds = this._configEntities?.map(
+        (configEntity) => configEntity.entity
+      );
+      this._history = this._history!.reduce(
+        (accumulator: HassEntity[][], entityStates) => {
+          const entityId = entityStates[0].entity_id;
+          if (configEntityIds?.includes(entityId)) {
+            accumulator.push(entityStates);
+          }
+          return accumulator;
+        },
+        []
+      ) as HassEntity[][];
     }
   }
 

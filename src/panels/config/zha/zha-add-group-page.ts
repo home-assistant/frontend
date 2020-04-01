@@ -6,6 +6,7 @@ import {
   css,
   CSSResult,
   PropertyValues,
+  query,
 } from "lit-element";
 
 import "../../../layouts/hass-subpage";
@@ -18,7 +19,7 @@ import {
   addGroup,
   ZHAGroup,
 } from "../../../data/zha";
-import "./zha-devices-data-table";
+import { ZHADevicesDataTable } from "./zha-devices-data-table";
 import { SelectionChangedEvent } from "../../../components/data-table/ha-data-table";
 import { navigate } from "../../../common/navigate";
 import { PolymerChangedEvent } from "../../../polymer-types";
@@ -34,6 +35,8 @@ export class ZHAAddGroupPage extends LitElement {
   @property() public devices: ZHADevice[] = [];
   @property() private _processingAdd: boolean = false;
   @property() private _groupName: string = "";
+  @query("zha-devices-data-table")
+  private _zhaDevicesDataTable!: ZHADevicesDataTable;
 
   private _firstUpdatedCalled: boolean = false;
   private _selectedDevicesToAdd: string[] = [];
@@ -130,6 +133,7 @@ export class ZHAAddGroupPage extends LitElement {
     this._selectedDevicesToAdd = [];
     this._processingAdd = false;
     this._groupName = "";
+    this._zhaDevicesDataTable.clearSelection();
     navigate(this, `/config/zha/group/${group.group_id}`, true);
   }
 

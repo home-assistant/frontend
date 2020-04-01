@@ -157,7 +157,7 @@ export class HaConfigUsers extends LitElement {
     showAddUserDialog(this, {
       userAddedCallback: async (user: User) => {
         if (user) {
-          this._users = { ...this._users, ...user };
+          this._users = [...this._users, user];
         }
       },
     });

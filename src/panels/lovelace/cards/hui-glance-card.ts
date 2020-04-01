@@ -74,7 +74,7 @@ export class HuiGlanceCard extends LitElement implements LovelaceCard {
   }
 
   public setConfig(config: GlanceCardConfig): void {
-    this._config = { theme: "default", state_color: true, ...config };
+    this._config = { state_color: true, ...config };
     const entities = processConfigEntities<GlanceConfigEntity>(config.entities);
 
     for (const entity of entities) {
