@@ -109,7 +109,7 @@ export const getSecondaryWeatherAttribute = (
   return `
     ${hass!.localize(
       `ui.card.weather.attributes.${attribute}`
-    )} ${value}${getWeatherUnit(hass!, attribute)}
+    )} ${value} ${getWeatherUnit(hass!, attribute)}
   `;
 };
 
@@ -150,7 +150,7 @@ const getWeatherExtrema = (
     ${
       tempHigh
         ? `
-            ${hass!.localize(`ui.card.weather.high`)} ${tempHigh}${unit}
+            ${hass!.localize(`ui.card.weather.high`)} ${tempHigh} ${unit}
           `
         : ""
     }
@@ -158,7 +158,7 @@ const getWeatherExtrema = (
     ${
       tempLow
         ? `
-          ${hass!.localize(`ui.card.weather.low`)} ${tempLow}${unit}
+          ${hass!.localize(`ui.card.weather.low`)} ${tempLow} ${unit}
         `
         : ""
     }
