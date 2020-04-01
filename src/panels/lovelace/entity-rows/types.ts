@@ -60,11 +60,11 @@ export type LovelaceRowConfig =
   | DividerConfig
   | SectionConfig
   | WeblinkConfig
+  | CallServiceConfig
+  | CastConfig
   | ButtonRowConfig
   | ButtonsRowConfig
   | ConditionalRowConfig
-  | CallServiceConfig
-  | CastConfig
   | AttributeRowConfig;
 
 export interface LovelaceRow extends HTMLElement {
