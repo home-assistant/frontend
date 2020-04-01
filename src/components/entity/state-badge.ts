@@ -60,6 +60,7 @@ export class StateBadge extends LitElement {
     const iconStyle: Partial<CSSStyleDeclaration> = {
       color: "",
       filter: "",
+      display: "",
     };
     const hostStyle: Partial<CSSStyleDeclaration> = {
       backgroundImage: "",
