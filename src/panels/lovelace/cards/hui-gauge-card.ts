@@ -82,7 +82,7 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
     if (!isValidEntityId(config.entity)) {
       throw new Error("Invalid Entity");
     }
-    this._config = { min: 0, max: 100, theme: "default", ...config };
+    this._config = { min: 0, max: 100, ...config };
   }
 
   public connectedCallback(): void {

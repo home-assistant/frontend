@@ -12,6 +12,7 @@ import "@polymer/paper-icon-button/paper-icon-button";
 
 import "../components/hui-generic-entity-row";
 import "../components/hui-warning";
+import "../../../components/ha-slider";
 
 import { LovelaceRow, EntityConfig } from "./types";
 import { HomeAssistant } from "../../../types";
@@ -31,6 +32,7 @@ import {
 import { hasConfigOrEntityChanged } from "../common/has-changed";
 import { computeRTLDirection } from "../../../common/util/compute_rtl";
 import { debounce } from "../../../common/util/debounce";
+import { UNAVAILABLE, UNKNOWN } from "../../../data/entity";
 
 @customElement("hui-media-player-entity-row")
 class HuiMediaPlayerEntityRow extends LitElement implements LovelaceRow {
@@ -41,8 +43,8 @@ class HuiMediaPlayerEntityRow extends LitElement implements LovelaceRow {
   private _resizeObserver?: ResizeObserver;
   private _debouncedResizeListener = debounce(
     () => {
-      this._narrow = (this.parentElement?.clientWidth || 0) < 350;
-      this._veryNarrow = (this.parentElement?.clientWidth || 0) < 300;
+      this._narrow = (this.clientWidth || 0) < 300;
+      this._veryNarrow = (this.clientWidth || 0) < 225;
     },
     250,
     false
@@ -82,6 +84,34 @@ class HuiMediaPlayerEntityRow extends LitElement implements LovelaceRow {
 
     const stateObj = this.hass.states[this._config.entity];
 
+    const buttons = html`
+      ${!this._narrow && supportsFeature(stateObj, SUPPORT_PREVIOUS_TRACK)
+        ? html`
+            <paper-icon-button
+              icon="hass:skip-previous"
+              @click=${this._previousTrack}
+            ></paper-icon-button>
+          `
+        : ""}
+      ${stateObj.state !== "playing" &&
+      !supportsFeature(stateObj, SUPPORTS_PLAY)
+        ? ""
+        : html`
+            <paper-icon-button
+              icon=${this._computeControlIcon(stateObj)}
+              @click=${this._playPause}
+            ></paper-icon-button>
+          `}
+      ${supportsFeature(stateObj, SUPPORT_NEXT_TRACK)
+        ? html`
+            <paper-icon-button
+              icon="hass:skip-next"
+              @click=${this._nextTrack}
+            ></paper-icon-button>
+          `
+        : ""}
+    `;
+
     if (!stateObj) {
       return html`
         <hui-warning
@@ -100,110 +130,78 @@ class HuiMediaPlayerEntityRow extends LitElement implements LovelaceRow {
         .config=${this._config}
         .secondaryText=${this._computeMediaTitle(stateObj)}
       >
-        ${stateObj.state === "off" || stateObj.state === "idle"
-          ? supportsFeature(stateObj, SUPPORT_TURN_ON)
-          : supportsFeature(stateObj, SUPPORT_TURN_OFF)
-          ? html`
-              <paper-icon-button
-                icon="hass:power"
-                @click=${this._togglePower}
-              ></paper-icon-button>
-            `
-          : ""}
-      </hui-generic-entity-row>
-      <div class="flex">
-        <div class="volume">
-          ${supportsFeature(stateObj, SUPPORT_VOLUME_MUTE)
-            ? html`
-                <paper-icon-button
-                  .icon=${stateObj.attributes.is_volume_muted
-                    ? "hass:volume-off"
-                    : "hass:volume-high"}
-                  @click=${this._toggleMute}
-                ></paper-icon-button>
-              `
-            : ""}
-          ${!this._narrow && supportsFeature(stateObj, SUPPORT_VOLUME_SET)
-            ? html`
-                <ha-slider
-                  .dir=${computeRTLDirection(this.hass!)}
-                  .value=${Number(stateObj.attributes.volume_level) * 100}
-                  pin
-                  @change=${this._selectedValueChanged}
-                  ignore-bar-touch
-                  id="input"
-                ></ha-slider>
-              `
-            : !this._veryNarrow &&
-              supportsFeature(stateObj, SUPPORT_VOLUME_BUTTONS)
-            ? html`
-                <paper-icon-button
-                  icon="hass:volume-minus"
-                  @click=${this._volumeDown}
-                ></paper-icon-button>
-                <paper-icon-button
-                  icon="hass:volume-plus"
-                  @click=${this._volumeUp}
-                ></paper-icon-button>
-              `
-            : ""}
-        </div>
         <div class="controls">
-          ${!this._veryNarrow &&
-          supportsFeature(stateObj, SUPPORT_PREVIOUS_TRACK)
+          ${supportsFeature(stateObj, SUPPORT_TURN_ON) &&
+          stateObj.state === "off"
             ? html`
                 <paper-icon-button
-                  icon="hass:skip-previous"
-                  @click=${this._previousTrack}
+                  icon="hass:power"
+                  @click=${this._togglePower}
                 ></paper-icon-button>
               `
-            : ""}
-          ${stateObj.state !== "playing" &&
-          !supportsFeature(stateObj, SUPPORTS_PLAY)
-            ? ""
-            : html`
-                <paper-icon-button
-                  icon=${this._computeControlIcon(stateObj)}
-                  @click=${this._playPause}
-                ></paper-icon-button>
-              `}
-          ${supportsFeature(stateObj, SUPPORT_NEXT_TRACK)
+            : !supportsFeature(stateObj, SUPPORT_VOLUME_SET) &&
+              !supportsFeature(stateObj, SUPPORT_VOLUME_BUTTONS)
+            ? buttons
+            : supportsFeature(stateObj, SUPPORT_TURN_OFF) &&
+              stateObj.state !== "off"
             ? html`
                 <paper-icon-button
-                  icon="hass:skip-next"
-                  @click=${this._nextTrack}
+                  icon="hass:power"
+                  @click=${this._togglePower}
                 ></paper-icon-button>
               `
             : ""}
         </div>
-      </div>
-    `;
-  }
+      </hui-generic-entity-row>
+      ${(supportsFeature(stateObj, SUPPORT_VOLUME_SET) ||
+        supportsFeature(stateObj, SUPPORT_VOLUME_BUTTONS)) &&
+      ![UNAVAILABLE, UNKNOWN, "off"].includes(stateObj.state)
+        ? html`
+            <div class="flex">
+              <div class="volume">
+                ${supportsFeature(stateObj, SUPPORT_VOLUME_MUTE)
+                  ? html`
+                      <paper-icon-button
+                        .icon=${stateObj.attributes.is_volume_muted
+                          ? "hass:volume-off"
+                          : "hass:volume-high"}
+                        @click=${this._toggleMute}
+                      ></paper-icon-button>
+                    `
+                  : ""}
+                ${!this._veryNarrow &&
+                supportsFeature(stateObj, SUPPORT_VOLUME_SET)
+                  ? html`
+                      <ha-slider
+                        .dir=${computeRTLDirection(this.hass!)}
+                        .value=${Number(stateObj.attributes.volume_level) * 100}
+                        pin
+                        @change=${this._selectedValueChanged}
+                        ignore-bar-touch
+                        id="input"
+                      ></ha-slider>
+                    `
+                  : !this._veryNarrow &&
+                    supportsFeature(stateObj, SUPPORT_VOLUME_BUTTONS)
+                  ? html`
+                      <paper-icon-button
+                        icon="hass:volume-minus"
+                        @click=${this._volumeDown}
+                      ></paper-icon-button>
+                      <paper-icon-button
+                        icon="hass:volume-plus"
+                        @click=${this._volumeUp}
+                      ></paper-icon-button>
+                    `
+                  : ""}
+              </div>
 
-  static get styles(): CSSResult {
-    return css`
-      :host {
-        display: block;
-      }
-      .flex {
-        display: flex;
-        align-items: center;
-        padding-left: 48px;
-        justify-content: space-between;
-      }
-      .volume {
-        display: flex;
-        flex-grow: 2;
-        flex-shrink: 2;
-      }
-      .controls {
-        white-space: nowrap;
-      }
-      ha-slider {
-        flex-grow: 2;
-        flex-shrink: 2;
-        width: 100%;
-      }
+              <div class="controls">
+                ${buttons}
+              </div>
+            </div>
+          `
+        : ""}
     `;
   }
 
@@ -315,6 +313,33 @@ class HuiMediaPlayerEntityRow extends LitElement implements LovelaceRow {
       entity_id: this._config!.entity,
       volume_level: ev.target.value / 100,
     });
+  }
+
+  static get styles(): CSSResult {
+    return css`
+      :host {
+        display: block;
+      }
+      .flex {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+      .volume {
+        display: flex;
+        flex-grow: 2;
+        flex-shrink: 2;
+      }
+      .controls {
+        white-space: nowrap;
+      }
+      ha-slider {
+        flex-grow: 2;
+        flex-shrink: 2;
+        width: 100%;
+        margin: 0 -8px 0 1px;
+      }
+    `;
   }
 }
 

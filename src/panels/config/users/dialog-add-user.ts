@@ -1,8 +1,7 @@
 import "@material/mwc-button";
 import "@polymer/paper-spinner/paper-spinner";
-
+import "../../../components/ha-switch";
 import "../../../components/ha-dialog";
-import "../../../resources/ha-style";
 import {
   LitElement,
   html,
@@ -10,6 +9,8 @@ import {
   customElement,
   property,
   PropertyValues,
+  CSSResult,
+  css,
 } from "lit-element";
 import { HomeAssistant } from "../../../types";
 import { PolymerChangedEvent } from "../../../polymer-types";
@@ -17,11 +18,12 @@ import { AddUserDialogParams } from "./show-dialog-add-user";
 import {
   User,
   SYSTEM_GROUP_ID_USER,
-  GROUPS,
   createUser,
   deleteUser,
+  SYSTEM_GROUP_ID_ADMIN,
 } from "../../../data/user";
 import { createAuthForUser } from "../../../data/auth";
+import { haStyleDialog } from "../../../resources/styles";
 
 @customElement("dialog-add-user")
 export class DialogAddUser extends LitElement {
@@ -33,14 +35,14 @@ export class DialogAddUser extends LitElement {
   @property() private _name?: string;
   @property() private _username?: string;
   @property() private _password?: string;
-  @property() private _group?: string;
+  @property() private _isAdmin?: boolean;
 
   public showDialog(params: AddUserDialogParams) {
     this._params = params;
     this._name = "";
     this._username = "";
     this._password = "";
-    this._group = SYSTEM_GROUP_ID_USER;
+    this._isAdmin = false;
     this._error = undefined;
     this._loading = false;
   }
@@ -106,25 +108,10 @@ export class DialogAddUser extends LitElement {
             @value-changed=${this._passwordChanged}
             error-message="Required"
           ></paper-input>
-          <ha-paper-dropdown-menu
-            .label=${this.hass.localize("ui.panel.config.users.editor.group")}
-          >
-            <paper-listbox
-              slot="dropdown-content"
-              .selected=${this._group}
-              @iron-select=${this._handleGroupChange}
-              attr-for-selected="group-id"
-            >
-              ${GROUPS.map(
-                (groupId) => html`
-                  <paper-item group-id=${groupId}>
-                    ${this.hass.localize(`groups.${groupId}`)}
-                  </paper-item>
-                `
-              )}
-            </paper-listbox>
-          </ha-paper-dropdown-menu>
-          ${this._group === SYSTEM_GROUP_ID_USER
+          <ha-switch .checked=${this._isAdmin} @change=${this._adminChanged}>
+            ${this.hass.localize("ui.panel.config.users.editor.admin")}
+          </ha-switch>
+          ${!this._isAdmin
             ? html`
                 <br />
                 The users group is a work in progress. The user will be unable
@@ -191,8 +178,8 @@ export class DialogAddUser extends LitElement {
     this._password = ev.detail.value;
   }
 
-  private async _handleGroupChange(ev): Promise<void> {
-    this._group = ev.detail.item.getAttribute("group-id");
+  private async _adminChanged(ev): Promise<void> {
+    this._isAdmin = ev.target.checked;
   }
 
   private async _createUser(ev) {
@@ -207,7 +194,7 @@ export class DialogAddUser extends LitElement {
     let user: User;
     try {
       const userResponse = await createUser(this.hass, this._name, [
-        this._group!,
+        this._isAdmin ? SYSTEM_GROUP_ID_ADMIN : SYSTEM_GROUP_ID_USER,
       ]);
       user = userResponse.user;
     } catch (err) {
@@ -232,6 +219,20 @@ export class DialogAddUser extends LitElement {
 
     this._params!.userAddedCallback(user);
     this._close();
+  }
+
+  static get styles(): CSSResult[] {
+    return [
+      haStyleDialog,
+      css`
+        ha-dialog {
+          --mdc-dialog-max-width: 500px;
+        }
+        ha-switch {
+          margin-top: 8px;
+        }
+      `,
+    ];
   }
 }
 

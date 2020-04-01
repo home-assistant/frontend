@@ -16,6 +16,7 @@ import {
   property,
   PropertyValues,
   TemplateResult,
+  query,
 } from "lit-element";
 
 import {
@@ -26,7 +27,7 @@ import {
   Cluster,
   fetchClustersForZhaNode,
 } from "../../../data/zha";
-import "./zha-clusters-data-table";
+import { ZHAClustersDataTable } from "./zha-clusters-data-table";
 import { haStyle } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
 import { ItemSelectedEvent } from "./types";
@@ -47,6 +48,8 @@ export class ZHAGroupBindingControl extends LitElement {
   @property() private _clusters: Cluster[] = [];
   private _groupToBind?: ZHAGroup;
   private _clustersToBind?: Cluster[];
+  @query("zha-devices-data-table")
+  private _zhaClustersDataTable!: ZHAClustersDataTable;
 
   protected updated(changedProperties: PropertyValues): void {
     if (changedProperties.has("selectedDevice")) {
@@ -187,6 +190,7 @@ export class ZHAGroupBindingControl extends LitElement {
         this._groupToBind!.group_id,
         this._clustersToBind!
       );
+      this._zhaClustersDataTable.clearSelection();
     }
   }
 
@@ -198,6 +202,7 @@ export class ZHAGroupBindingControl extends LitElement {
         this._groupToBind!.group_id,
         this._clustersToBind!
       );
+      this._zhaClustersDataTable.clearSelection();
     }
   }
 

@@ -117,7 +117,11 @@ export class HUIView extends LitElement {
           padding: 4px 4px 0;
           transform: translateZ(0);
           position: relative;
-          background: var(--lovelace-background);
+          color: var(--primary-text-color);
+          background: var(
+            --lovelace-background,
+            var(--primary-background-color)
+          );
         }
 
         #badges {

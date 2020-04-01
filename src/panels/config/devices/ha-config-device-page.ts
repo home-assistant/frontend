@@ -97,6 +97,15 @@ export class HaConfigDevicePage extends LitElement {
         )
   );
 
+  private _computeArea = memoizeOne((areas, device):
+    | AreaRegistryEntry
+    | undefined => {
+    if (!areas || !device || !device.area_id) {
+      return undefined;
+    }
+    return areas.find((area) => area.area_id === device.area_id);
+  });
+
   private _batteryEntity = memoizeOne((entities: EntityRegistryEntry[]):
     | EntityRegistryEntry
     | undefined => findBatteryEntity(this.hass, entities));
@@ -132,7 +141,7 @@ export class HaConfigDevicePage extends LitElement {
     const batteryState = batteryEntity
       ? this.hass.states[batteryEntity.entity_id]
       : undefined;
-    const areaName = this._computeAreaName(this.areas, device);
+    const area = this._computeArea(this.areas, device);
 
     return html`
       <hass-tabs-subpage
@@ -165,12 +174,16 @@ export class HaConfigDevicePage extends LitElement {
                 : html`
                     <div>
                       <h1>${computeDeviceName(device, this.hass)}</h1>
-                      ${areaName
-                        ? this.hass.localize(
-                            "ui.panel.config.integrations.config_entry.area",
-                            "area",
-                            areaName
-                          )
+                      ${area
+                        ? html`
+                            <a href="/config/areas/area/${area.area_id}"
+                              >${this.hass.localize(
+                                "ui.panel.config.integrations.config_entry.area",
+                                "area",
+                                area.name || "Unnamed Area"
+                              )}</a
+                            >
+                          `
                         : ""}
                     </div>
                   `
@@ -437,13 +450,6 @@ export class HaConfigDevicePage extends LitElement {
     return state ? computeStateName(state) : null;
   }
 
-  private _computeAreaName(areas, device): string | undefined {
-    if (!areas || !device || !device.area_id) {
-      return undefined;
-    }
-    return areas.find((area) => area.area_id === device.area_id).name;
-  }
-
   private _onImageLoad(ev) {
     ev.target.style.display = "inline-block";
   }
@@ -648,6 +654,10 @@ export class HaConfigDevicePage extends LitElement {
 
       a {
         text-decoration: none;
+        color: var(--primary-color);
+      }
+
+      ha-card a {
         color: var(--primary-text-color);
       }
     `;

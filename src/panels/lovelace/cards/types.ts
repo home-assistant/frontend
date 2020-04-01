@@ -138,6 +138,9 @@ export interface LightCardConfig extends LovelaceCardConfig {
   name?: string;
   theme?: string;
   icon?: string;
+  tap_action?: ActionConfig;
+  hold_action?: ActionConfig;
+  double_tap_action?: ActionConfig;
 }
 
 export interface MapCardConfig extends LovelaceCardConfig {
@@ -146,6 +149,7 @@ export interface MapCardConfig extends LovelaceCardConfig {
   aspect_ratio?: string;
   default_zoom?: number;
   entities?: Array<EntityConfig | string>;
+  hours_to_show?: number;
   geo_location_sources?: string[];
   dark_mode?: boolean;
 }
