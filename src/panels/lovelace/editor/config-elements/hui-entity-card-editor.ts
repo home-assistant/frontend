@@ -65,7 +65,7 @@ export class HuiEntityCardEditor extends LitElement
   }
 
   get _theme(): string {
-    return this._config!.theme || "default";
+    return this._config!.theme || "";
   }
 
   protected render(): TemplateResult {
@@ -136,7 +136,7 @@ export class HuiEntityCardEditor extends LitElement
           .hass=${this.hass}
           .value=${this._theme}
           .configValue=${"theme"}
-          @theme-changed=${this._valueChanged}
+          @value-changed=${this._valueChanged}
         ></hui-theme-select-editor>
       </div>
     `;
