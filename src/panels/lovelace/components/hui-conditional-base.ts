@@ -30,26 +30,19 @@ export class HuiConditionalBase extends UpdatingElement {
       throw new Error("Conditions are invalid.");
     }
 
-    if (this._element && this._element.parentElement) {
-      this.removeChild(this._element);
-    }
-
     this._config = config;
+    this.style.display = "none";
   }
 
   protected update(): void {
-    if (!this._element || !this.hass) {
+    if (!this._element || !this.hass || !this._config) {
       return;
     }
 
-    const visible =
-      this._config && checkConditionsMet(this._config.conditions, this.hass);
+    const visible = checkConditionsMet(this._config.conditions, this.hass);
 
     if (visible) {
       this._element.hass = this.hass;
-      if (!this._element.parentElement) {
-        this.appendChild(this._element);
-      }
     }
 
     this.style.setProperty("display", visible ? "" : "none");

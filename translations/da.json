@@ -812,6 +812,10 @@
                 "areas": {
                     "caption": "Områder",
                     "create_area": "OPRET OMRÅDE",
+                    "data_table": {
+                        "area": "Område",
+                        "devices": "Enheder"
+                    },
                     "delete": {
                         "confirmation_text": "Alle enheder i dette område vil blive utildelte.",
                         "confirmation_title": "Er du sikker på, at du vil slette dette område?"
@@ -1054,6 +1058,9 @@
                         "delete_confirm": "Er du sikker på, at du vil slette denne automatisering?",
                         "edit_automation": "Rediger automatisering",
                         "header": "Automatiserings-editor",
+                        "headers": {
+                            "name": "Navn"
+                        },
                         "introduction": "Automationseditoren giver dig mulighed for at oprette og redigere automatiseringer. Følg nedenstående link for at læse instruktionerne for at sikre dig, at du har konfigureret Home Assistant korrekt.",
                         "learn_more": "Lær om automatiseringer",
                         "no_automations": "Vi kunne ikke finde nogen redigerbare automatiseringer",
@@ -1334,6 +1341,7 @@
                     },
                     "info": "Oplysninger om enhed",
                     "name": "Navn",
+                    "no_devices": "Ingen enheder",
                     "scene": {
                         "create": "Opret scene med enhed",
                         "no_scenes": "Ingen scener",
@@ -1638,6 +1646,9 @@
                         "delete_scene": "Slet scene",
                         "edit_scene": "Rediger scene",
                         "header": "Sceneredigering",
+                        "headers": {
+                            "name": "Navn"
+                        },
                         "introduction": "Sceneredigering giver dig mulighed for at oprette og redigere scener. Følg nedenstående link for at læse instruktionerne for at sikre dig, at du har konfigureret Home Assistant korrekt.",
                         "learn_more": "Lær mere om scener",
                         "no_scenes": "Vi kunne ikke finde nogen redigerbare scener",
@@ -1665,9 +1676,13 @@
                         "add_script": "Tilføj script",
                         "edit_script": "Rediger script",
                         "header": "Script-redigering",
+                        "headers": {
+                            "name": "Navn"
+                        },
                         "introduction": "Script-redigering giver dig mulighed for at oprette og redigere scripts. Følg nedenstående link for at læse instruktionerne for at sikre, at du har konfigureret Home Assistant korrekt.",
                         "learn_more": "Lær mere om scripts",
                         "no_scripts": "Vi kunne ikke finde nogen redigerbare scripts",
+                        "show_info": "Vis info om script",
                         "trigger_script": "Udløs script"
                     }
                 },
@@ -1725,14 +1740,21 @@
                         "group": "Gruppe",
                         "group_update_failed": "Gruppeopdatering mislykkedes:",
                         "id": "Id",
+                        "name": "Navn",
                         "owner": "Ejer",
                         "rename_user": "Omdøb bruger",
                         "system_generated": "Systemgenereret",
                         "system_generated_users_not_removable": "Kan ikke fjerne systemgenererede brugere.",
                         "unnamed_user": "Unavngiven bruger",
+                        "update_user": "Opdater",
                         "user_rename_failed": "Omdøbning af bruger mislykkedes:"
                     },
                     "picker": {
+                        "headers": {
+                            "group": "Gruppe",
+                            "name": "Navn",
+                            "system": "System"
+                        },
                         "system_generated": "Systemgenereret",
                         "title": "Brugere"
                     }
@@ -2135,6 +2157,9 @@
                             "description": "Entitetsfilterkortet giver dig mulighed for at definere en liste af entiteter, du kun vil vise, når en bestemt tilstand er tilstede.",
                             "name": "Entitetsfilter"
                         },
+                        "entity": {
+                            "name": "Entitet"
+                        },
                         "gauge": {
                             "description": "Målerkortet er et basalt kort, der gør det muligt visuelt at se sensordata.",
                             "name": "Måler",
@@ -2147,6 +2172,7 @@
                         },
                         "generic": {
                             "aspect_ratio": "Størrelsesforhold",
+                            "attribute": "Egenskab",
                             "camera_image": "Kameraentitet",
                             "camera_view": "Kameravisning",
                             "entities": "Entiteter",
@@ -2319,6 +2345,7 @@
                     "save_config": {
                         "cancel": "Glem det",
                         "close": "Luk",
+                        "empty_config": "Start med et tomt betjeningspanel",
                         "header": "Tag kontrol over din 'Lovelace'-brugerflade",
                         "para": "Som standard vil Home Assistant vedligeholde din brugerflade ved at opdatere den, når nye entiteter eller Lovelace-brugerfladekomponenter bliver tilgængelige. Hvis du overtager kontrollen, vil vi ikke længere foretage ændringer automatisk for dig.",
                         "para_sure": "Er du sikker på du ønsker at tage kontrol over din brugerflade?",
@@ -2568,6 +2595,11 @@
                     "submit": "Indsend"
                 },
                 "current_user": "Du er logget ind som {fullName}.",
+                "dashboard": {
+                    "description": "Vælg et standardbetjeningspanel for denne enhed.",
+                    "dropdown_label": "Betjeningspanel",
+                    "header": "Betjeningspanel"
+                },
                 "force_narrow": {
                     "description": "Dette vil skjule sidebjælken som standard, svarende til den mobile oplevelse.",
                     "header": "Skjul altid sidebjælken"

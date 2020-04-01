@@ -812,6 +812,10 @@
                 "areas": {
                     "caption": "영역",
                     "create_area": "영역 만들기",
+                    "data_table": {
+                        "area": "영역",
+                        "devices": "기기"
+                    },
                     "delete": {
                         "confirmation_text": "이 영역에 속한 모든 장치가 할당 해제됩니다.",
                         "confirmation_title": "이 영역을 삭제하시겠습니까?"
@@ -1054,6 +1058,9 @@
                         "delete_confirm": "이 자동화를 삭제하시겠습니까?",
                         "edit_automation": "자동화 편집",
                         "header": "자동화 편집",
+                        "headers": {
+                            "name": "이름"
+                        },
                         "introduction": "자동화 편집기를 사용하여 자동화를 작성하고 편집할 수 있습니다. 아래 링크를 따라 안내사항을 읽고 Home Assistant 를 올바르게 구성했는지 확인해보세요.",
                         "learn_more": "자동화에 대해 더 알아보기",
                         "no_automations": "편집 가능한 자동화를 찾을 수 없습니다",
@@ -1334,6 +1341,7 @@
                     },
                     "info": "기기 정보",
                     "name": "이름",
+                    "no_devices": "기기 없음",
                     "scene": {
                         "create": "기기로 씬 구성하기",
                         "no_scenes": "씬 없음",
@@ -1638,6 +1646,9 @@
                         "delete_scene": "씬 삭제",
                         "edit_scene": "씬 편집",
                         "header": "씬 편집기",
+                        "headers": {
+                            "name": "이름"
+                        },
                         "introduction": "씬 편집기를 사용하여 씬을 작성하고 편집 할 수 있습니다. 아래 링크를 따라 안내사항을 읽고 Home Assistant 를 올바르게 구성했는지 확인해보세요.",
                         "learn_more": "씬에 대해 더 알아보기",
                         "no_scenes": "편집 가능한 씬을 찾을 수 없습니다",
@@ -1665,9 +1676,13 @@
                         "add_script": "스크립트 추가",
                         "edit_script": "스크립트 편집",
                         "header": "스크립트 편집기",
+                        "headers": {
+                            "name": "이름"
+                        },
                         "introduction": "스크립트 편집기를 사용하여 스크립트를 작성하고 편집할 수 있습니다. 아래 링크를 따라 안내사항을 읽고 Home Assistant 를 올바르게 구성했는지 확인해보세요.",
                         "learn_more": "스크립트에 대해 더 알아보기",
                         "no_scripts": "편집 가능한 스크립트를 찾을 수 없습니다",
+                        "show_info": "스크립트에 대한 정보 표시",
                         "trigger_script": "스크립트 트리거"
                     }
                 },
@@ -1725,14 +1740,21 @@
                         "group": "그룹",
                         "group_update_failed": "그룹 업데이트가 실패했습니다:",
                         "id": "ID",
+                        "name": "이름",
                         "owner": "소유자",
                         "rename_user": "사용자 이름 변경",
                         "system_generated": "시스템 자동 생성",
                         "system_generated_users_not_removable": "시스템 자동 생성 사용자는 제거할 수 없습니다.",
                         "unnamed_user": "이름이 없는 사용자",
+                        "update_user": "업데이트",
                         "user_rename_failed": "사용자 이름 변경이 실패했습니다:"
                     },
                     "picker": {
+                        "headers": {
+                            "group": "그룹",
+                            "name": "이름",
+                            "system": "시스템"
+                        },
                         "system_generated": "시스템 자동 생성",
                         "title": "사용자"
                     }
@@ -2135,6 +2157,9 @@
                             "description": "구성요소 필터 카드를 사용하면 특정 상태에 있을 때만 추적할 구성요소의 목록을 정의할 수 있습니다.",
                             "name": "구성요소 필터"
                         },
+                        "entity": {
+                            "name": "구성요소"
+                        },
                         "gauge": {
                             "description": "게이지 카드는 센서 데이터를 시각적으로 볼 수 있는 기본 카드입니다.",
                             "name": "게이지",
@@ -2147,6 +2172,7 @@
                         },
                         "generic": {
                             "aspect_ratio": "종횡비",
+                            "attribute": "속성",
                             "camera_image": "카메라 구성요소",
                             "camera_view": "카메라 뷰",
                             "entities": "구성요소",
@@ -2319,6 +2345,7 @@
                     "save_config": {
                         "cancel": "아닙니다",
                         "close": "닫기",
+                        "empty_config": "비어있는 대시보드로시작",
                         "header": "Lovelace UI 직접 관리하기",
                         "para": "기본적으로 Home Assistant 는 사용자 인터페이스를 유지 관리하고, 사용할 수 있는 새로운 구성요소 또는 Lovelace 구성요소가 있을 때 업데이트를 합니다. 사용자가 직접 관리하는 경우 Home Assistant 는 더 이상 자동으로 변경하지 않습니다.",
                         "para_sure": "사용자 인터페이스를 직접 관리하시겠습니까?",
@@ -2568,6 +2595,11 @@
                     "submit": "변경하기"
                 },
                 "current_user": "현재 {fullName} 로(으로) 로그인 한 상태 입니다.",
+                "dashboard": {
+                    "description": "이 기기에서 사용할 기본 대시보드를 선택합니다.",
+                    "dropdown_label": "대시보드",
+                    "header": "대시보드"
+                },
                 "force_narrow": {
                     "description": "모바일 환경과 마찬가지로 기본적으로 사이드바가 숨겨집니다.",
                     "header": "항상 사이드바 숨기기"

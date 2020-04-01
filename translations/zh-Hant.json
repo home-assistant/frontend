@@ -812,6 +812,10 @@
                 "areas": {
                     "caption": "分區",
                     "create_area": "建立分區",
+                    "data_table": {
+                        "area": "分區",
+                        "devices": "設備"
+                    },
                     "delete": {
                         "confirmation_text": "所有該分區所屬設備都將變成未指派狀態。",
                         "confirmation_title": "確定要刪除此分區？"
@@ -1054,6 +1058,9 @@
                         "delete_confirm": "確定要刪除此自動化？",
                         "edit_automation": "編輯自動化",
                         "header": "自動化編輯器",
+                        "headers": {
+                            "name": "名稱"
+                        },
                         "introduction": "自動化編輯器允許新增或編輯自動化。請參考下方教學連結，以確保正確的設定 Home Assistant。",
                         "learn_more": "詳細了解自動化",
                         "no_automations": "沒有任何可編輯的自動化",
@@ -1334,6 +1341,7 @@
                     },
                     "info": "設備資訊",
                     "name": "名稱",
+                    "no_devices": "沒有設備",
                     "scene": {
                         "create": "以設備新增場景",
                         "no_scenes": "沒有場景",
@@ -1638,6 +1646,9 @@
                         "delete_scene": "刪除場景",
                         "edit_scene": "編輯場景",
                         "header": "場景編輯器",
+                        "headers": {
+                            "name": "名稱"
+                        },
                         "introduction": "場景編輯器允許新增或編輯場景。請參考下方教學連結，以確保正確的設定 Home Assistant。",
                         "learn_more": "詳細了解場景",
                         "no_scenes": "找不到任何可編輯場景",
@@ -1665,9 +1676,13 @@
                         "add_script": "新增腳本",
                         "edit_script": "編輯腳本",
                         "header": "腳本編輯器",
+                        "headers": {
+                            "name": "名稱"
+                        },
                         "introduction": "腳本編輯器允許新增或編輯腳本。請參考下方教學連結，以確保正確的設定 Home Assistant。",
                         "learn_more": "詳細了解腳本",
                         "no_scripts": "無法找到任何可編輯的腳本",
+                        "show_info": "顯示關於腳本資訊",
                         "trigger_script": "觸發腳本"
                     }
                 },
@@ -1725,14 +1740,21 @@
                         "group": "群組",
                         "group_update_failed": "群組更新失敗：",
                         "id": "ID",
+                        "name": "名稱",
                         "owner": "擁有者",
                         "rename_user": "重命名用戶",
                         "system_generated": "系統產生",
                         "system_generated_users_not_removable": "無法移除系統產生用戶",
                         "unnamed_user": "未命名用戶",
+                        "update_user": "更新",
                         "user_rename_failed": "用戶重新命名失敗："
                     },
                     "picker": {
+                        "headers": {
+                            "group": "群組",
+                            "name": "名稱",
+                            "system": "系統"
+                        },
                         "system_generated": "系統產生",
                         "title": "用戶"
                     }
@@ -2135,6 +2157,9 @@
                             "description": "物件過濾式面板可供定義於特定狀態下、所要進行追蹤的物件列表。",
                             "name": "物件過濾式面板"
                         },
+                        "entity": {
+                            "name": "物件"
+                        },
                         "gauge": {
                             "description": "量表式面板可供視覺化檢視傳感器資料。",
                             "name": "量表式面板",
@@ -2147,6 +2172,7 @@
                         },
                         "generic": {
                             "aspect_ratio": "長寬比",
+                            "attribute": "屬性",
                             "camera_image": "攝影機物件",
                             "camera_view": "攝影機視角",
                             "entities": "物件",
@@ -2319,6 +2345,7 @@
                     "save_config": {
                         "cancel": "我再想想",
                         "close": "關閉",
+                        "empty_config": "以空白主面板開始",
                         "header": "自行編輯 Lovelace UI",
                         "para": "Home Assistant 於預設下，將維護您的使用者介面、於新物件或 Lovelace UI 元件可使用時進行更新。假如選擇自行編輯，系統將不再為您自動進行變更。",
                         "para_sure": "確定要自行編輯使用者介面？",
@@ -2568,6 +2595,11 @@
                     "submit": "傳送"
                 },
                 "current_user": "目前登入身份：{fullName}。",
+                "dashboard": {
+                    "description": "選擇此設備的預設主面板。",
+                    "dropdown_label": "主面板",
+                    "header": "主面板"
+                },
                 "force_narrow": {
                     "description": "將預設隱藏側邊列，類似於手機 App 使用方式。",
                     "header": "總是隱藏側邊列"

@@ -812,6 +812,10 @@
                 "areas": {
                     "caption": "Áreas",
                     "create_area": "CREAR ÁREA",
+                    "data_table": {
+                        "area": "Área",
+                        "devices": "Dispositivos"
+                    },
                     "delete": {
                         "confirmation_text": "Todos los dispositivos en esta área quedarán sin asignar.",
                         "confirmation_title": "¿Estás seguro de que deseas eliminar esta área?"
@@ -1054,6 +1058,9 @@
                         "delete_confirm": "¿Estás seguro de que quieres eliminar esta automatización?",
                         "edit_automation": "Editar automatización",
                         "header": "Editor de automatización",
+                        "headers": {
+                            "name": "Nombre"
+                        },
                         "introduction": "El editor de automatización te permite crear y editar automatizaciones. En el enlace siguiente puedes leer las instrucciones para asegurarte de que has configurado correctamente Home Assistant.",
                         "learn_more": "Saber más sobre las automatizaciones",
                         "no_automations": "No pudimos encontrar ninguna automatización editable",
@@ -1334,6 +1341,7 @@
                     },
                     "info": "Información del dispositivo",
                     "name": "Nombre",
+                    "no_devices": "Sin dispositivos",
                     "scene": {
                         "create": "Crear escena con el dispositivo",
                         "no_scenes": "Sin escenas",
@@ -1638,6 +1646,9 @@
                         "delete_scene": "Eliminar escena",
                         "edit_scene": "Editar escena",
                         "header": "Editor de escenas",
+                        "headers": {
+                            "name": "Nombre"
+                        },
                         "introduction": "El editor de escenas te permite crear y editar escenas. En el enlace siguiente puedes leer las instrucciones para asegurarte de que has configurado Home Assistant correctamente.",
                         "learn_more": "Saber más sobre las escenas",
                         "no_scenes": "No pudimos encontrar ninguna escena editable",
@@ -1665,9 +1676,13 @@
                         "add_script": "Añadir script",
                         "edit_script": "Editar script",
                         "header": "Editor de scripts",
+                        "headers": {
+                            "name": "Nombre"
+                        },
                         "introduction": "El editor de scripts te permite crear y editar scripts. En el enlace siguiente puedes leer las instrucciones para asegurarte de que has configurado Home Assistant correctamente.",
                         "learn_more": "Saber más sobre los scripts",
                         "no_scripts": "No hemos encontrado ningún script editable",
+                        "show_info": "Mostrar información sobre el script",
                         "trigger_script": "Script de desencadenante"
                     }
                 },
@@ -1725,14 +1740,21 @@
                         "group": "Grupo",
                         "group_update_failed": "La actualización del grupo falló:",
                         "id": "ID",
+                        "name": "Nombre",
                         "owner": "Propietario",
                         "rename_user": "Renombrar usuario",
                         "system_generated": "Generado por el sistema",
                         "system_generated_users_not_removable": "No se pueden eliminar los usuarios generados por el sistema.",
                         "unnamed_user": "Usuario sin nombre",
+                        "update_user": "Actualizar",
                         "user_rename_failed": "El cambio de nombre del usuario falló:"
                     },
                     "picker": {
+                        "headers": {
+                            "group": "Grupo",
+                            "name": "Nombre",
+                            "system": "Sistema"
+                        },
                         "system_generated": "Generado por el sistema",
                         "title": "Usuarios"
                     }
@@ -2135,6 +2157,9 @@
                             "description": "La tarjeta Filtro de Entidades te permite definir una lista de entidades de las que deseas realizar un seguimiento solo cuando se encuentra en un estado determinado.",
                             "name": "Filtro de entidad"
                         },
+                        "entity": {
+                            "name": "Entidad"
+                        },
                         "gauge": {
                             "description": "La tarjeta Indicador es una tarjeta básica que permite ver visualmente los datos de los sensores.",
                             "name": "Indicador",
@@ -2147,6 +2172,7 @@
                         },
                         "generic": {
                             "aspect_ratio": "Relación de aspecto",
+                            "attribute": "Atributo",
                             "camera_image": "Entidad de cámara",
                             "camera_view": "Vista de cámara",
                             "entities": "Entidades",
@@ -2319,6 +2345,7 @@
                     "save_config": {
                         "cancel": "No importa",
                         "close": "Cerrar",
+                        "empty_config": "Empezar con un panel de control vacío",
                         "header": "Tomar el control de la interfaz de usuario Lovelace",
                         "para": "Por defecto Home Assistant se encargará de tu interfaz de usuario, actualizándola cuando haya nuevas entidades o componentes Lovelace disponibles. Si asumes el control, ya no haremos más cambios automáticamente por ti.",
                         "para_sure": "¿Estás seguro de que quieres tomar el control de tu interfaz de usuario?",
@@ -2568,6 +2595,11 @@
                     "submit": "Enviar"
                 },
                 "current_user": "Has iniciado sesión como {fullName}.",
+                "dashboard": {
+                    "description": "Selecciona un panel de control predeterminado para este dispositivo.",
+                    "dropdown_label": "Panel de control",
+                    "header": "Panel de control"
+                },
                 "force_narrow": {
                     "description": "Esto ocultará la barra lateral de forma predeterminada, similar a la experiencia móvil.",
                     "header": "Ocultar siempre la barra lateral"

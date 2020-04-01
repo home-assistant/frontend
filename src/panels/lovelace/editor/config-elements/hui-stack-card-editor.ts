@@ -6,6 +6,7 @@ import {
   property,
   CSSResult,
   css,
+  query,
 } from "lit-element";
 import "@polymer/paper-tabs";
 
@@ -13,8 +14,10 @@ import { struct } from "../../common/structs/struct";
 import { HomeAssistant } from "../../../../types";
 import { LovelaceCardEditor } from "../../types";
 import { StackCardConfig } from "../../cards/types";
-import { fireEvent } from "../../../../common/dom/fire_event";
+import { fireEvent, HASSDomEvent } from "../../../../common/dom/fire_event";
 import { LovelaceConfig } from "../../../../data/lovelace";
+import { HuiCardEditor } from "../card-editor/hui-card-editor";
+import { GUIModeChangedEvent } from "../types";
 
 const cardConfigStruct = struct({
   type: "string",
@@ -29,6 +32,8 @@ export class HuiStackCardEditor extends LitElement
   @property() public lovelace?: LovelaceConfig;
   @property() private _config?: StackCardConfig;
   @property() private _selectedCard: number = 0;
+  @property() private _GUImode?: boolean;
+  @query("hui-card-editor") private _cardEditorEl?: HuiCardEditor;
 
   public setConfig(config: StackCardConfig): void {
     this._config = cardConfigStruct(config);
@@ -73,6 +78,18 @@ export class HuiStackCardEditor extends LitElement
             selected < numcards
               ? html`
                   <div id="card-options">
+                    <mwc-button
+                      @click=${this._toggleMode}
+                      ?disabled=${this._cardEditorEl?.hasWarning ||
+                        this._cardEditorEl?.hasError}
+                      class="gui-mode-button"
+                    >
+                      ${this.hass!.localize(
+                        !this._cardEditorEl || this._GUImode
+                          ? "ui.panel.lovelace.editor.edit_card.show_code_editor"
+                          : "ui.panel.lovelace.editor.edit_card.show_visual_editor"
+                      )}
+                    </mwc-button>
                     <paper-icon-button
                       id="move-before"
                       title="Move card before"
@@ -97,9 +114,10 @@ export class HuiStackCardEditor extends LitElement
 
                   <hui-card-editor
                     .hass=${this.hass}
-                    .value="${this._config.cards[selected]}"
+                    .value=${this._config.cards[selected]}
                     .lovelace=${this.lovelace}
-                    @config-changed="${this._handleConfigChanged}"
+                    @config-changed=${this._handleConfigChanged}
+                    @GUImode-changed=${this._handleGUIModeChanged}
                   ></hui-card-editor>
                 `
               : html`
@@ -162,6 +180,15 @@ export class HuiStackCardEditor extends LitElement
     fireEvent(this, "config-changed", { config: this._config });
   }
 
+  private _handleGUIModeChanged(ev: HASSDomEvent<GUIModeChangedEvent>): void {
+    ev.stopPropagation();
+    this._GUImode = ev.detail.guiMode;
+  }
+
+  private _toggleMode(): void {
+    this._cardEditorEl?.toggleMode();
+  }
+
   static get styles(): CSSResult {
     return css`
       .toolbar {
@@ -193,6 +220,10 @@ export class HuiStackCardEditor extends LitElement
         #editor {
           margin: 0 -12px;
         }
+      }
+
+      .gui-mode-button {
+        margin-right: auto;
       }
     `;
   }
