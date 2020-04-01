@@ -73,14 +73,31 @@ interface MediaState extends MediaEntity {
 export class MediaStateController {
   private _stateObjectArray: MediaState[] = [];
   private _updateCallback?: () => void;
+  private _stateTimeout?: number;
 
   constructor() {}
 
   public addState(stateObj: MediaEntity): void {
-    this._stateObjectArray.push({ ...stateObj, timestamp: Date.now() });
+    const timestamp = Date.now();
+    this._stateObjectArray.push({ ...stateObj, timestamp });
     if (this._updateCallback) {
       this._updateCallback();
     }
+
+    // if (this._stateObjectArray.length > 1 && !this._stateTimeout) {
+    //   this._stateTimeout = window.setTimeout(() => {
+    //     this._stateTimeout = undefined;
+    //     this._stateObjectArray.slice(
+    //       0,
+    //       this._stateObjectArray.findIndex(
+    //         (state) => state.timestamp === timestamp
+    //       )
+    //     );
+    //     if (this._updateCallback) {
+    //       this._updateCallback();
+    //     }
+    //   }, 3000);
+    // }
   }
 
   public set updateCallback(callback: () => void) {
@@ -100,7 +117,7 @@ export class MediaStateController {
   }
 
   public get isOff(): boolean {
-    return this._mostRecentState.state === "off";
+    return this._mostRecentState === "off";
   }
 
   public get isUnavailable(): boolean {
@@ -144,6 +161,10 @@ export class MediaStateController {
 
   public get hasStates(): boolean {
     return this._stateObjectArray.length !== 0;
+  }
+
+  public get currentProgress(): number {
+    return getCurrentProgress(this._mostRecentState);
   }
 
   private get _mostRecentState(): MediaEntity {

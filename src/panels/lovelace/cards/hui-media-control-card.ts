@@ -24,7 +24,6 @@ import { HomeAssistant, MediaEntity } from "../../../types";
 import { debounce } from "../../../common/util/debounce";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
-import { supportsFeature } from "../../../common/entity/supports-feature";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
 import { contrast } from "../common/color/contrast";
 import { findEntities } from "../common/find-entites";
@@ -38,7 +37,6 @@ import {
   SUPPORT_STOP,
   SUPPORT_SEEK,
   CONTRAST_RATIO,
-  getCurrentProgress,
   SUPPORT_TURN_OFF,
   MediaStateController,
 } from "../../../data/media-player";
@@ -216,9 +214,12 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
 
   public connectedCallback(): void {
     super.connectedCallback();
+    this._mediaStateController = new MediaStateController();
+    this._mediaStateController.updateCallback = () => this.requestUpdate();
+
     this.updateComplete.then(() => this._measureCard());
 
-    if (!this.hass || !this._config || !this._mediaStateController) {
+    if (!this.hass || !this._config) {
       return;
     }
 
@@ -230,11 +231,11 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
   }
 
   protected render(): TemplateResult {
-    if (!this.hass || !this._config || !this._mediaStateController) {
+    if (!this.hass || !this._config) {
       return html``;
     }
 
-    if (!this._mediaStateController.hasStates) {
+    if (!this._mediaStateController!.hasStates) {
       return html`
         <hui-warning
           >${this.hass.localize(
@@ -247,8 +248,8 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
     }
 
     const imageStyle = {
-      "background-image": this._mediaStateController.image
-        ? `url(${this.hass.hassUrl(this._mediaStateController.image)})`
+      "background-image": this._mediaStateController!.image
+        ? `url(${this.hass.hassUrl(this._mediaStateController!.image)})`
         : "none",
       width: `${this._cardHeight}px`,
       "background-color": this._backgroundColor || "",
@@ -261,11 +262,11 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
       width: `${this._cardHeight}px`,
     };
 
-    const state = this._mediaStateController.state;
-    const mediaDescription = this._mediaStateController.description;
-    const isOffState = this._mediaStateController.isOff;
-    const isUnavailable = this._mediaStateController.isUnavailable;
-    const hasNoImage = !this._mediaStateController.image;
+    const state = this._mediaStateController!.state;
+    const mediaDescription = this._mediaStateController!.description;
+    const isOffState = this._mediaStateController!.isOff;
+    const isUnavailable = this._mediaStateController!.isUnavailable;
+    const hasNoImage = !this._mediaStateController!.image;
     const controls = this._getControls();
     const showControls =
       controls &&
@@ -309,7 +310,7 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
             off: isOffState || isUnavailable,
             "no-progress":
               this._veryNarrow ||
-              (!this._mediaStateController.showProgressBar && !this._narrow),
+              (!this._mediaStateController!.showProgressBar && !this._narrow),
             "no-controls": !showControls,
           })}"
           style=${styleMap({ color: this._foregroundColor || "" })}
@@ -318,10 +319,10 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
             <div class="icon-name">
               <ha-icon
                 class="icon"
-                .icon=${this._mediaStateController.stateIcon}
+                .icon=${this._mediaStateController!.stateIcon}
               ></ha-icon>
               <div>
-                ${this._config!.name || this._mediaStateController.entityName}
+                ${this._config!.name || this._mediaStateController!.entityName}
               </div>
             </div>
             <div>
@@ -343,18 +344,18 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
                       : `${this._cardHeight - 40}px`,
                   })}
                 >
-                  ${!mediaDescription && !this._mediaStateController.title
+                  ${!mediaDescription && !this._mediaStateController!.title
                     ? ""
                     : html`
                         <div class="media-info">
                           <hui-marquee
-                            .text=${this._mediaStateController.title ||
+                            .text=${this._mediaStateController!.title ||
                               mediaDescription}
                             .active=${this._marqueeActive}
                             @mouseover=${this._marqueeMouseOver}
                             @mouseleave=${this._marqueeMouseLeave}
                           ></hui-marquee>
-                          ${!this._mediaStateController.title
+                          ${!this._mediaStateController!.title
                             ? ""
                             : mediaDescription}
                         </div>
@@ -375,15 +376,15 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
                         </div>
                       `}
                 </div>
-                ${!this._mediaStateController.showProgressBar && !this._narrow
+                ${!this._mediaStateController!.showProgressBar && !this._narrow
                   ? ""
                   : html`
                       <paper-progress
-                        .max=${this._mediaStateController.duration}
+                        .max=${this._mediaStateController!.duration}
                         style=${styleMap({
                           "--paper-progress-active-color":
                             this._foregroundColor || "var(--accent-color)",
-                          cursor: this._mediaStateController.supportsFeature(
+                          cursor: this._mediaStateController!.supportsFeature(
                             SUPPORT_SEEK
                           )
                             ? "pointer"
@@ -404,9 +405,6 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
 
   protected firstUpdated(): void {
     this._attachObserver();
-
-    this._mediaStateController = new MediaStateController();
-    this._mediaStateController.updateCallback = () => this.requestUpdate();
   }
 
   protected updated(changedProps: PropertyValues): void {
@@ -543,13 +541,10 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
 
   private _measureCard() {
     const card = this.shadowRoot!.querySelector("ha-card");
-    console.log(this.shadowRoot);
-
-    console.log(card);
-
     if (!card) {
       return;
     }
+
     this._narrow = card.offsetWidth < 350;
     this._veryNarrow = card.offsetWidth < 300;
     this._cardHeight = card.offsetHeight;
@@ -569,8 +564,6 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
     );
 
     const card = this.shadowRoot!.querySelector("ha-card");
-    console.log(card);
-
     // If we show an error or warning there is no ha-card
     if (!card) {
       return;
@@ -596,15 +589,14 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
 
   private _updateProgressBar(): void {
     if (this._progressBar) {
-      this._progressBar.value = getCurrentProgress(
-        this.hass!.states[this._config!.entity]
-      );
+      this._progressBar.value = this._mediaStateController!.currentProgress;
     }
   }
 
   private _startProgressInterval(): void {
     if (
       !this._progressInterval &&
+      this._mediaStateController?.hasStates &&
       this._mediaStateController?.showProgressBar &&
       this._mediaStateController?.state === "playing" &&
       !this._narrow
@@ -633,9 +625,7 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
       return;
     }
 
-    const progressWidth = (this.shadowRoot!.querySelector(
-      "paper-progress"
-    ) as HTMLElement).offsetWidth;
+    const progressWidth = this._progressBar!.offsetWidth;
 
     const percent = e.offsetX / progressWidth;
     const position = (e.currentTarget! as any).max * percent;
