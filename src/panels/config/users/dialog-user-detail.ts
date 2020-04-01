@@ -10,20 +10,22 @@ import {
   TemplateResult,
   css,
 } from "lit-element";
-import "../../../components/entity/ha-entities-picker";
-import "../../../components/user/ha-user-picker";
 import { PolymerChangedEvent } from "../../../polymer-types";
 import { haStyleDialog } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
 import { UserDetailDialogParams } from "./show-dialog-user-detail";
+import "../../../components/ha-switch";
 import { createCloseHeading } from "../../../components/ha-dialog";
-import { GROUPS, SYSTEM_GROUP_ID_USER } from "../../../data/user";
+import {
+  SYSTEM_GROUP_ID_ADMIN,
+  SYSTEM_GROUP_ID_USER,
+} from "../../../data/user";
 
 @customElement("dialog-user-detail")
 class DialogUserDetail extends LitElement {
   @property() public hass!: HomeAssistant;
   @property() private _name!: string;
-  @property() private _group?: string;
+  @property() private _isAdmin?: boolean;
   @property() private _error?: string;
   @property() private _params?: UserDetailDialogParams;
   @property() private _submitting: boolean = false;
@@ -32,7 +34,7 @@ class DialogUserDetail extends LitElement {
     this._params = params;
     this._error = undefined;
     this._name = params.entry.name || "";
-    this._group = params.entry.group_ids[0];
+    this._isAdmin = params.entry.group_ids[0] === SYSTEM_GROUP_ID_ADMIN;
     await this.updateComplete;
   }
 
@@ -55,31 +57,55 @@ class DialogUserDetail extends LitElement {
                 <div class="error">${this._error}</div>
               `
             : ""}
+          <div class="secondary">
+            ${this.hass.localize("ui.panel.config.users.editor.id")}: ${user.id}
+          </div>
+          <div>
+            ${user.is_owner
+              ? html`
+                  <span class="state"
+                    >${this.hass.localize(
+                      "ui.panel.config.users.editor.owner"
+                    )}</span
+                  >
+                `
+              : ""}
+            ${user.system_generated
+              ? html`
+                  <span class="state">
+                    ${this.hass.localize(
+                      "ui.panel.config.users.editor.system_generated"
+                    )}
+                  </span>
+                `
+              : ""}
+            ${user.is_active
+              ? html`
+                  <span class="state"
+                    >${this.hass.localize(
+                      "ui.panel.config.users.editor.active"
+                    )}</span
+                  >
+                `
+              : ""}
+          </div>
           <div class="form">
             <paper-input
               .value=${this._name}
+              .disabled=${user.system_generated}
               @value-changed=${this._nameChanged}
-              label="${this.hass!.localize("ui.panel.config.user.editor.name")}"
+              label="${this.hass!.localize(
+                "ui.panel.config.users.editor.name"
+              )}"
             ></paper-input>
-            <ha-paper-dropdown-menu
-              .label=${this.hass.localize("ui.panel.config.users.editor.group")}
+            <ha-switch
+              .disabled=${user.system_generated}
+              .checked=${this._isAdmin}
+              @change=${this._adminChanged}
             >
-              <paper-listbox
-                slot="dropdown-content"
-                .selected=${this._group}
-                @iron-select=${this._handleGroupChange}
-                attr-for-selected="group-id"
-              >
-                ${GROUPS.map(
-                  (groupId) => html`
-                    <paper-item group-id=${groupId}>
-                      ${this.hass.localize(`groups.${groupId}`)}
-                    </paper-item>
-                  `
-                )}
-              </paper-listbox>
-            </ha-paper-dropdown-menu>
-            ${this._group === SYSTEM_GROUP_ID_USER
+              ${this.hass.localize("ui.panel.config.users.editor.admin")}
+            </ha-switch>
+            ${!this._isAdmin
               ? html`
                   <br />
                   The users group is a work in progress. The user will be unable
@@ -88,34 +114,6 @@ class DialogUserDetail extends LitElement {
                   limit access to administrators.
                 `
               : ""}
-            <table>
-              <tr>
-                <td>
-                  ${this.hass.localize("ui.panel.config.users.editor.id")}
-                </td>
-                <td>${user.id}</td>
-              </tr>
-              <tr>
-                <td>
-                  ${this.hass.localize("ui.panel.config.users.editor.owner")}
-                </td>
-                <td>${user.is_owner}</td>
-              </tr>
-              <tr>
-                <td>
-                  ${this.hass.localize("ui.panel.config.users.editor.active")}
-                </td>
-                <td>${user.is_active}</td>
-              </tr>
-              <tr>
-                <td>
-                  ${this.hass.localize(
-                    "ui.panel.config.users.editor.system_generated"
-                  )}
-                </td>
-                <td>${user.system_generated}</td>
-              </tr>
-            </table>
           </div>
         </div>
 
@@ -129,21 +127,33 @@ class DialogUserDetail extends LitElement {
           </mwc-button>
           ${user.system_generated
             ? html`
-                <paper-tooltip position="right"
-                  >${this.hass.localize(
+                <paper-tooltip position="right">
+                  ${this.hass.localize(
                     "ui.panel.config.users.editor.system_generated_users_not_removable"
-                  )}</paper-tooltip
-                >
+                  )}
+                </paper-tooltip>
               `
             : ""}
         </div>
-        <mwc-button
-          slot="primaryAction"
-          @click=${this._updateEntry}
-          .disabled=${!this._name}
-        >
-          ${this.hass!.localize("ui.panel.config.users.editor.update_user")}
-        </mwc-button>
+        <div slot="primaryAction">
+          <mwc-button
+            @click=${this._updateEntry}
+            .disabled=${!this._name ||
+              this._submitting ||
+              user.system_generated}
+          >
+            ${this.hass!.localize("ui.panel.config.users.editor.update_user")}
+          </mwc-button>
+          ${user.system_generated
+            ? html`
+                <paper-tooltip position="left">
+                  ${this.hass.localize(
+                    "ui.panel.config.users.editor.system_generated_users_not_editable"
+                  )}
+                </paper-tooltip>
+              `
+            : ""}
+        </div>
       </ha-dialog>
     `;
   }
@@ -153,8 +163,8 @@ class DialogUserDetail extends LitElement {
     this._name = ev.detail.value;
   }
 
-  private async _handleGroupChange(ev): Promise<void> {
-    this._group = ev.detail.item.getAttribute("group-id");
+  private async _adminChanged(ev): Promise<void> {
+    this._isAdmin = ev.target.checked;
   }
 
   private async _updateEntry() {
@@ -162,7 +172,9 @@ class DialogUserDetail extends LitElement {
     try {
       await this._params!.updateEntry({
         name: this._name.trim(),
-        group_ids: [this._group!],
+        group_ids: [
+          this._isAdmin ? SYSTEM_GROUP_ID_ADMIN : SYSTEM_GROUP_ID_USER,
+        ],
       });
       this._close();
     } catch (err) {
@@ -194,8 +206,24 @@ class DialogUserDetail extends LitElement {
         ha-dialog {
           --mdc-dialog-min-width: 500px;
         }
-        table {
-          width: 100%;
+        .form {
+          padding-top: 16px;
+        }
+        .secondary {
+          color: var(--secondary-text-color);
+        }
+        .state {
+          background-color: rgba(var(--rgb-primary-text-color), 0.15);
+          border-radius: 16px;
+          padding: 4px 8px;
+          margin-top: 8px;
+          display: inline-block;
+        }
+        .state:not(:first-child) {
+          margin-left: 8px;
+        }
+        ha-switch {
+          margin-top: 8px;
         }
       `,
     ];
