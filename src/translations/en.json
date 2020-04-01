@@ -493,7 +493,8 @@
           "humidity": "Humidity",
           "temperature": "Temperature",
           "visibility": "Visibility",
-          "wind_speed": "Wind speed"
+          "wind_speed": "Wind speed",
+          "precipitation": "Precipitation"
         },
         "cardinal_direction": {
           "e": "E",
@@ -513,7 +514,9 @@
           "wnw": "WNW",
           "wsw": "WSW"
         },
-        "forecast": "Forecast"
+        "forecast": "Forecast",
+        "high": "High",
+        "low": "Low"
       }
     },
     "common": {
@@ -785,6 +788,10 @@
         "areas": {
           "caption": "Areas",
           "description": "Overview of all areas in your home.",
+          "data_table": {
+            "area": "Area",
+            "devices": "Devices"
+          },
           "picker": {
             "header": "Areas",
             "introduction": "Areas are used to organize where devices are. This information will be used throughout Home Assistant to help you in organizing your interface, permissions and integrations with other systems.",
@@ -843,7 +850,6 @@
                 "longitude": "Longitude",
                 "elevation": "Elevation",
                 "elevation_meters": "meters",
-                "elevation_feet": "feet",
                 "time_zone": "Time Zone",
                 "unit_system": "Unit System",
                 "unit_system_imperial": "Imperial",
@@ -998,7 +1004,10 @@
             "edit_automation": "Edit automation",
             "show_info_automation": "Show info about automation",
             "delete_automation": "Delete automation",
-            "delete_confirm": "Are you sure you want to delete this automation?"
+            "delete_confirm": "Are you sure you want to delete this automation?",
+            "headers": {
+              "name": "Name"
+            }
           },
           "editor": {
             "enable_disable": "Enable/Disable automation",
@@ -1222,8 +1231,12 @@
             "learn_more": "Learn more about scripts",
             "no_scripts": "We couldn’t find any editable scripts",
             "add_script": "Add script",
+            "show_info": "Show info about script",
             "trigger_script": "Trigger script",
-            "edit_script": "Edit script"
+            "edit_script": "Edit script",
+            "headers": {
+              "name": "Name"
+            }
           },
           "editor": {
             "alias": "Name",
@@ -1253,7 +1266,10 @@
             "edit_scene": "Edit scene",
             "show_info_scene": "Show info about scene",
             "delete_scene": "Delete scene",
-            "delete_confirm": "Are you sure you want to delete this scene?"
+            "delete_confirm": "Are you sure you want to delete this scene?",
+            "headers": {
+              "name": "Name"
+            }
           },
           "editor": {
             "introduction": "Use scenes to bring your home alive.",
@@ -1442,6 +1458,7 @@
           "unknown_error": "Unknown error",
           "name": "Name",
           "update": "Update",
+          "no_devices": "No devices",
           "automation": {
             "automations": "Automations",
             "no_automations": "No automations",
@@ -1650,16 +1667,16 @@
           "caption": "Users",
           "description": "Manage users",
           "picker": {
-            "title": "Users",
-            "system_generated": "System generated"
+            "headers": { "name": "Name", "group": "Group", "system": "System" }
           },
           "editor": {
             "caption": "View user",
-            "rename_user": "Rename user",
+            "name": "Name",
             "change_password": "Change password",
             "activate_user": "Activate user",
             "deactivate_user": "Deactivate user",
             "delete_user": "Delete user",
+            "update_user": "Update",
             "id": "ID",
             "owner": "Owner",
             "group": "Group",
@@ -1667,9 +1684,6 @@
             "system_generated": "System generated",
             "system_generated_users_not_removable": "Unable to remove system generated users.",
             "unnamed_user": "Unnamed User",
-            "enter_new_name": "Enter new name",
-            "user_rename_failed": "User rename failed:",
-            "group_update_failed": "Group update failed:",
             "confirm_user_deletion": "Are you sure you want to delete {name}?"
           },
           "add_user": {
@@ -1971,6 +1985,7 @@
             "yaml_mode": "You are using YAML mode, which means you cannot change your Lovelace config from the UI. If you want to change Lovelace from the UI, remove 'mode: yaml' from your Lovelace configuration in 'configuration.yaml.'",
             "yaml_control": "To take control in YAML mode, create a YAML file with the name you specified in your config for this dashboard, or the default 'ui-lovelace.yaml'.",
             "yaml_config": "To help you start here is the current config of this dashboard:",
+            "empty_config": "Start with an empty dashboard",
             "cancel": "Never mind",
             "close": "Close",
             "save": "Take control"
@@ -2007,6 +2022,9 @@
               "show_header_toggle": "Show Header Toggle?",
               "toggle": "Toggle entities.",
               "description": "The Entities card is the most common type of card. It groups items together into lists."
+            },
+            "entity": {
+              "name": "Entity"
             },
             "button": {
               "name": "Button",
@@ -2049,8 +2067,10 @@
             },
             "generic": {
               "aspect_ratio": "Aspect Ratio",
+              "attribute": "Attribute",
               "camera_image": "Camera Entity",
               "camera_view": "Camera View",
+              "double_tap_action": "Double Tap Action",
               "entities": "Entities",
               "entity": "Entity",
               "hold_action": "Hold Action",
@@ -2080,6 +2100,7 @@
               "geo_location_sources": "Geolocation Sources",
               "dark_mode": "Dark Mode?",
               "default_zoom": "Default Zoom",
+              "hours_to_show": "Hours to Show",
               "source": "Source",
               "description": "The Map card that allows you to display entities on a map."
             },
@@ -2142,6 +2163,10 @@
               "description": "This renders the first card at full width; other cards in this view will not be rendered.",
               "warning_multiple_cards": "This view contains more than one card, but a panel view can only show 1 card."
             }
+          },
+          "cardpicker": {
+            "no_description": "No description available.",
+            "custom_card": "Custom"
           }
         },
         "warning": {
@@ -2193,6 +2218,11 @@
           "error_no_theme": "No themes available.",
           "link_promo": "Learn about themes",
           "dropdown_label": "Theme"
+        },
+        "dashboard": {
+          "header": "Dashboard",
+          "description": "Pick a default dashboard for this device.",
+          "dropdown_label": "Dashboard"
         },
         "change_password": {
           "header": "Change Password",

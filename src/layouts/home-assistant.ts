@@ -10,7 +10,7 @@ import { registerServiceWorker } from "../util/register-service-worker";
 import { Route, HomeAssistant } from "../types";
 import { navigate } from "../common/navigate";
 import { HassElement } from "../state/hass-element";
-import { getDefaultPanelUrlPath } from "../data/panel";
+import { getStorageDefaultPanelUrlPath } from "../data/panel";
 
 export class HomeAssistantAppEl extends HassElement {
   @property() private _route?: Route;
@@ -86,7 +86,7 @@ export class HomeAssistantAppEl extends HassElement {
       this._route === undefined &&
       (route.path === "" || route.path === "/")
     ) {
-      navigate(window, `/${getDefaultPanelUrlPath()}`, true);
+      navigate(window, `/${getStorageDefaultPanelUrlPath()}`, true);
       return;
     }
 

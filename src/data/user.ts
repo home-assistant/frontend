@@ -5,6 +5,8 @@ export const SYSTEM_GROUP_ID_ADMIN = "system-admin";
 export const SYSTEM_GROUP_ID_USER = "system-users";
 export const SYSTEM_GROUP_ID_READ_ONLY = "system-read-only";
 
+export const GROUPS = [SYSTEM_GROUP_ID_USER, SYSTEM_GROUP_ID_ADMIN];
+
 export interface User {
   id: string;
   name: string;
@@ -15,7 +17,7 @@ export interface User {
   credentials: Credential[];
 }
 
-interface UpdateUserParams {
+export interface UpdateUserParams {
   name?: User["name"];
   group_ids?: User["group_ids"];
 }
@@ -25,10 +27,16 @@ export const fetchUsers = async (hass: HomeAssistant) =>
     type: "config/auth/list",
   });
 
-export const createUser = async (hass: HomeAssistant, name: string) =>
+export const createUser = async (
+  hass: HomeAssistant,
+  name: string,
+  // tslint:disable-next-line: variable-name
+  group_ids?: User["group_ids"]
+) =>
   hass.callWS<{ user: User }>({
     type: "config/auth/create",
     name,
+    group_ids,
   });
 
 export const updateUser = async (

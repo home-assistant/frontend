@@ -23,7 +23,10 @@ import {
   computeDeviceName,
   DeviceEntityLookup,
 } from "../../../data/device_registry";
-import { EntityRegistryEntry } from "../../../data/entity_registry";
+import {
+  EntityRegistryEntry,
+  findBatteryEntity,
+} from "../../../data/entity_registry";
 import { ConfigEntry } from "../../../data/config_entries";
 import { AreaRegistryEntry } from "../../../data/area_registry";
 import { navigate } from "../../../common/navigate";
@@ -204,7 +207,8 @@ export class HaDevicesDataTable extends LitElement {
               ),
               sortable: true,
               type: "numeric",
-              width: "60px",
+              width: "15%",
+              maxWidth: "90px",
               template: (batteryEntity: string) => {
                 const battery = batteryEntity
                   ? this.hass.states[batteryEntity]
@@ -250,12 +254,10 @@ export class HaDevicesDataTable extends LitElement {
     deviceId: string,
     deviceEntityLookup: DeviceEntityLookup
   ): string | undefined {
-    const batteryEntity = (deviceEntityLookup[deviceId] || []).find(
-      (entity) =>
-        this.hass.states[entity.entity_id] &&
-        this.hass.states[entity.entity_id].attributes.device_class === "battery"
+    const batteryEntity = findBatteryEntity(
+      this.hass,
+      deviceEntityLookup[deviceId] || []
     );
-
     return batteryEntity ? batteryEntity.entity_id : undefined;
   }
 

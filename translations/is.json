@@ -521,7 +521,8 @@
                 "add_dialog": {
                     "add": "Bæta við",
                     "name": "Nafn"
-                }
+                },
+                "clear": "Hreinsa"
             },
             "device-picker": {
                 "clear": "Hreinsa",
@@ -537,6 +538,10 @@
             "history_charts": {
                 "loading_history": "Hleð stöðusögu...",
                 "no_history_found": "Engin stöðusaga fannst."
+            },
+            "related-items": {
+                "device": "Tæki",
+                "integration": "Samþætting"
             },
             "relative_time": {
                 "duration": {
@@ -557,7 +562,8 @@
         "dialogs": {
             "config_entry_system_options": {
                 "enable_new_entities_label": "Virkja einingar sem nýlega var bætt við",
-                "title": "Kerfisvalkostir"
+                "title": "Kerfisvalkostir",
+                "update": "Uppfæra"
             },
             "confirmation": {
                 "cancel": "Hætta við",
@@ -565,6 +571,7 @@
                 "title": "Ertu viss?"
             },
             "entity_registry": {
+                "dismiss": "Vísa frá",
                 "editor": {
                     "delete": "Eyða",
                     "update": "Uppfæra"
@@ -577,7 +584,14 @@
             },
             "helper_settings": {
                 "generic": {
+                    "icon": "Táknmynd",
                     "name": "Nafn"
+                },
+                "input_datetime": {
+                    "date": "Dagsetning",
+                    "has_date": "Dagsetning",
+                    "has_time": "Tími",
+                    "time": "Tími"
                 },
                 "input_select": {
                     "add": "Bæta við"
@@ -585,7 +599,8 @@
                 "input_text": {
                     "password": "Lykilorð",
                     "text": "Texti"
-                }
+                },
+                "required_error_msg": "þetta er skilyrtur reitur"
             },
             "more_info_control": {
                 "script": {
@@ -1061,6 +1076,7 @@
                         "entities": "Einingar"
                     },
                     "info": "Upplýsingar um tæki",
+                    "name": "Nafn",
                     "scene": {
                         "no_scenes": "Engar senur",
                         "scenes": "Senur"
@@ -1128,6 +1144,7 @@
                     "caption": "Samþættingar",
                     "config_entry": {
                         "area": "Í {area}",
+                        "delete_button": "Eyða {integration}",
                         "delete_confirm": "Ertu viss um að þú viljir eyða þessari samþættingu?",
                         "device_unavailable": "Tæki ekki tiltækt",
                         "entity_unavailable": "Eining ekki tiltæk",
@@ -1170,10 +1187,14 @@
                 "introduction": "Hér er mögulegt að stilla af íhluti og Home Assistant. Því miður er ekki hægt að breyta öllu í gegnum viðmótið ennþá, en við erum að vinna í því.",
                 "lovelace": {
                     "dashboards": {
+                        "conf_mode": {
+                            "yaml": "YAML skrá"
+                        },
                         "detail": {
                             "create": "Stofna",
                             "delete": "Eyða",
                             "dismiss": "Loka",
+                            "icon": "Táknmynd",
                             "title": "Titill",
                             "update": "Uppfæra"
                         },
@@ -1373,7 +1394,11 @@
                     "detail": {
                         "create": "Stofna",
                         "delete": "Eyða",
+                        "icon": "Táknmynd",
+                        "latitude": "Breiddargráða",
+                        "longitude": "Lengdargráða",
                         "name": "Nafn",
+                        "radius": "Radíus",
                         "update": "Uppfæra"
                     }
                 },
@@ -1440,6 +1465,8 @@
                         "copied": "Afritað á klemmuspjald",
                         "copy_entity_state": "Afrita stöðu",
                         "more_info": "Frekari upplýsingar",
+                        "set_state": "Setja stöðu",
+                        "state": "Staða",
                         "title": "Stöður"
                     },
                     "templates": {
@@ -1536,6 +1563,7 @@
                             "show_icon": "Birta táknmynd?",
                             "show_name": "Birta nafn?",
                             "show_state": "Birta stöðu?",
+                            "state": "Staða",
                             "theme": "Þema",
                             "title": "Titill",
                             "unit": "Eining",
@@ -1840,6 +1868,7 @@
                     "link_promo": "Hjálpa við að þýða"
                 },
                 "logout": "Skrá út",
+                "logout_title": "Skrá út?",
                 "long_lived_access_tokens": {
                     "confirm_delete": "Ertu viss um að þú viljir eyða aðgangstóka fyrir {name}?",
                     "create": "Búa til tóka",

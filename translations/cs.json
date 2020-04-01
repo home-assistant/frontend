@@ -537,9 +537,11 @@
         "common": {
             "cancel": "Zrušit",
             "close": "Zavřít",
+            "delete": "Smazat",
             "loading": "Načítání",
             "no": "Ne",
             "save": "Uložit",
+            "successfully_deleted": "Úspěšně smazáno",
             "successfully_saved": "Úspěšně uloženo",
             "yes": "Ano"
         },
@@ -2333,7 +2335,8 @@
                     "view": {
                         "panel_mode": {
                             "description": "Toto vykreslí první kartu v plné šířce; ostatní karty v tomto pohledu nebudou vykresleny.",
-                            "title": "Režim panelu?"
+                            "title": "Režim panelu?",
+                            "warning_multiple_cards": "Toto zobrazení obsahuje více než jednu kartu, ale v panelovém zobrazení může zobrazovat pouze 1 kartu."
                         }
                     }
                 },

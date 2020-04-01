@@ -53,6 +53,9 @@ export const fallbackDeviceName = (
   return undefined;
 };
 
+export const devicesInArea = (devices: DeviceRegistryEntry[], areaId: string) =>
+  devices.filter((device) => device.area_id === areaId);
+
 export const updateDeviceRegistryEntry = (
   hass: HomeAssistant,
   deviceId: string,

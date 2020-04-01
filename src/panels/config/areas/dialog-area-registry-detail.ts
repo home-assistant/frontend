@@ -109,9 +109,9 @@ class DialogAreaDetail extends LitElement {
         name: this._name.trim(),
       };
       if (this._params!.entry) {
-        await this._params!.updateEntry(values);
+        await this._params!.updateEntry!(values);
       } else {
-        await this._params!.createEntry(values);
+        await this._params!.createEntry!(values);
       }
       this._params = undefined;
     } catch (err) {
@@ -124,7 +124,7 @@ class DialogAreaDetail extends LitElement {
   private async _deleteEntry() {
     this._submitting = true;
     try {
-      if (await this._params!.removeEntry()) {
+      if (await this._params!.removeEntry!()) {
         this._params = undefined;
       }
     } finally {

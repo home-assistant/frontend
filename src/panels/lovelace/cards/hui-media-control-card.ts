@@ -212,7 +212,7 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
       throw new Error("Specify an entity from within the media_player domain.");
     }
 
-    this._config = { theme: "default", ...config };
+    this._config = config;
   }
 
   public connectedCallback(): void {

@@ -22,6 +22,11 @@ export interface EmptyStateCardConfig extends LovelaceCardConfig {
   title?: string;
 }
 
+export interface EntityCardConfig extends LovelaceCardConfig {
+  attribute?: string;
+  unit?: string;
+}
+
 export interface EntitiesCardEntityConfig extends EntityConfig {
   type?: string;
   secondary_info?: "entity-id" | "last-changed";
@@ -33,6 +38,8 @@ export interface EntitiesCardEntityConfig extends EntityConfig {
   hold_action?: ActionConfig;
   double_tap_action?: ActionConfig;
   state_color?: boolean;
+  show_name?: boolean;
+  show_icon?: boolean;
 }
 
 export interface EntitiesCardConfig extends LovelaceCardConfig {
@@ -131,6 +138,9 @@ export interface LightCardConfig extends LovelaceCardConfig {
   name?: string;
   theme?: string;
   icon?: string;
+  tap_action?: ActionConfig;
+  hold_action?: ActionConfig;
+  double_tap_action?: ActionConfig;
 }
 
 export interface MapCardConfig extends LovelaceCardConfig {
@@ -139,6 +149,7 @@ export interface MapCardConfig extends LovelaceCardConfig {
   aspect_ratio?: string;
   default_zoom?: number;
   entities?: Array<EntityConfig | string>;
+  hours_to_show?: number;
   geo_location_sources?: string[];
   dark_mode?: boolean;
 }

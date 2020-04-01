@@ -9,10 +9,14 @@ import {
   TemplateResult,
   property,
   customElement,
+  query,
 } from "lit-element";
 import { HomeAssistant } from "../../../types";
 // tslint:disable-next-line
-import { DataTableColumnContainer } from "../../../components/data-table/ha-data-table";
+import {
+  DataTableColumnContainer,
+  HaDataTable,
+} from "../../../components/data-table/ha-data-table";
 // tslint:disable-next-line
 import { Cluster } from "../../../data/zha";
 import { formatAsPaddedHex } from "./functions";
@@ -27,6 +31,7 @@ export class ZHAClustersDataTable extends LitElement {
   @property() public hass!: HomeAssistant;
   @property() public narrow = false;
   @property() public clusters: Cluster[] = [];
+  @query("ha-data-table") private _dataTable!: HaDataTable;
 
   private _clusters = memoizeOne((clusters: Cluster[]) => {
     let outputClusters: ClusterRowData[] = clusters;
@@ -76,6 +81,10 @@ export class ZHAClustersDataTable extends LitElement {
             },
           }
   );
+
+  public clearSelection() {
+    this._dataTable.clearSelection();
+  }
 
   protected render(): TemplateResult {
     return html`

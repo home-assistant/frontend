@@ -166,6 +166,9 @@ export class HaDeviceEntitiesCard extends LitElement {
 
   static get styles(): CSSResult {
     return css`
+      :host {
+        display: block;
+      }
       ha-icon {
         width: 40px;
       }
@@ -181,6 +184,9 @@ export class HaDeviceEntitiesCard extends LitElement {
       }
       #entities > * {
         margin: 8px 16px 8px 8px;
+      }
+      #entities > paper-icon-item {
+        margin: 0;
       }
       paper-icon-item {
         min-height: 40px;

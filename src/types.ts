@@ -154,6 +154,7 @@ export interface HomeAssistant {
 
   vibrate: boolean;
   dockedSidebar: "docked" | "always_hidden" | "auto";
+  defaultPanel: string;
   moreInfoEntityId: string | null;
   user?: CurrentUser;
   userData?: CoreFrontendUserData | null;
@@ -242,3 +243,19 @@ export interface LocalizeMixin {
   hass?: HomeAssistant;
   localize: LocalizeFunc;
 }
+
+interface ForecastAttribute {
+  temperature: number;
+  datetime: string;
+  templow?: number;
+  precipitation?: number;
+  humidity?: number;
+}
+
+export type WeatherEntity = HassEntityBase & {
+  attributes: HassEntityAttributeBase & {
+    temperature: number;
+    humidity?: number;
+    forecast?: ForecastAttribute[];
+  };
+};

@@ -84,7 +84,7 @@ export class HuiButtonCardEditor extends LitElement
   }
 
   get _theme(): string {
-    return this._config!.theme || "default";
+    return this._config!.theme || "";
   }
 
   protected render(): TemplateResult {

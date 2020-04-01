@@ -1,8 +1,9 @@
 import { fireEvent } from "../../common/dom/fire_event";
+import { TemplateResult } from "lit-html";
 
 interface BaseDialogParams {
   confirmText?: string;
-  text?: string;
+  text?: string | TemplateResult;
   title?: string;
 }
 

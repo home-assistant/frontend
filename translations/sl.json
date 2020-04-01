@@ -537,9 +537,11 @@
         "common": {
             "cancel": "Prekliči",
             "close": "Zapri",
+            "delete": "Izbriši",
             "loading": "Nalaganje",
             "no": "Ne",
             "save": "Shrani",
+            "successfully_deleted": "Uspešno odstranjeno",
             "successfully_saved": "Shranjeno",
             "yes": "Da"
         },
@@ -1310,6 +1312,7 @@
                     "automations": "Avtomatizacije",
                     "cant_edit": "Urejate lahko samo elemente, ki so ustvarjeni v uporabniškem vmesniku.",
                     "caption": "Naprave",
+                    "confirm_delete": "Ali ste prepričani, da želite odstraniti to napravo?",
                     "confirm_rename_entity_ids": "Ali želite preimenovati tudi ID entitete vaših entitet?",
                     "data_table": {
                         "area": "Območje",
@@ -1320,6 +1323,7 @@
                         "model": "Model",
                         "no_devices": "Brez naprav"
                     },
+                    "delete": "Izbriši",
                     "description": "Upravljajte povezane naprave",
                     "details": "Tu so vse podrobnosti vaše naprave.",
                     "device_not_found": "Naprave ni bilo mogoče najti",
@@ -2157,6 +2161,7 @@
                             "maximum": "Največ",
                             "minimum": "Najmanj",
                             "name": "Ime",
+                            "no_theme": "Brez teme",
                             "refresh_interval": "Interval osveževanja",
                             "show_icon": "Prikaži ikono?",
                             "show_name": "Prikaži ime?",
@@ -2330,7 +2335,8 @@
                     "view": {
                         "panel_mode": {
                             "description": "To prikaže prvo kartico v polni širini, ostale ne bodo prikazane.",
-                            "title": "Način panel?"
+                            "title": "Način panel?",
+                            "warning_multiple_cards": "Ta pogled vsebuje več kartic, na plošči je lahko prikazana največ ena kartica."
                         }
                     }
                 },

@@ -26,9 +26,9 @@
         "device_tracker": "Enhetssporing",
         "fan": "Vifte",
         "group": "Gruppe",
-        "hassio": "Hass.io",
-        "history_graph": "Historisk graf",
-        "homeassistant": "Home Assistant",
+        "hassio": "",
+        "history_graph": "Historie graf",
+        "homeassistant": "",
         "image_processing": "Bildebehandling",
         "input_boolean": "Angi boolsk",
         "input_datetime": "Angi datotid",
@@ -37,24 +37,24 @@
         "input_text": "Angi tekst",
         "light": "Lys",
         "lock": "Lås",
-        "lovelace": "Lovelace",
+        "lovelace": "",
         "mailbox": "Postkasse",
         "media_player": "Mediaspiller",
         "notify": "Varsle",
-        "person": "Person",
+        "person": "",
         "plant": "Plante",
         "proximity": "Nærhet",
         "remote": "Fjernkontroll",
         "scene": "Scene",
         "script": "Skript",
-        "sensor": "Sensor",
+        "sensor": "",
         "sun": "Sol",
         "switch": "Bryter",
         "system_health": "Systemhelse",
-        "updater": "Oppdateringer",
+        "updater": "Oppdater",
         "vacuum": "Støvsuger",
-        "weblink": "Lenke",
-        "zha": "ZHA",
+        "weblink": "Nettlink",
+        "zha": "",
         "zwave": "Z-Wave"
     },
     "groups": {
@@ -153,7 +153,7 @@
                 "on": "Lavt"
             },
             "cold": {
-                "off": "Normal",
+                "off": "",
                 "on": "Kald"
             },
             "connectivity": {
@@ -205,8 +205,8 @@
                 "on": "Hjemme"
             },
             "problem": {
-                "off": "OK",
-                "on": "Problem"
+                "off": "",
+                "on": ""
             },
             "safety": {
                 "off": "Sikker",
@@ -288,7 +288,7 @@
             "locked": "Låst",
             "not_home": "Borte",
             "off": "Av",
-            "ok": "OK",
+            "ok": "",
             "on": "På",
             "open": "Åpen",
             "opening": "Åpner",
@@ -321,7 +321,7 @@
             "not_home": "Borte"
         },
         "plant": {
-            "ok": "OK",
+            "ok": "",
             "problem": "Problem"
         },
         "remote": {
@@ -485,8 +485,8 @@
                 "actions": {
                     "cancel": "Avbryt",
                     "finish": "Ferdig",
-                    "pause": "pause",
-                    "start": "start"
+                    "pause": "",
+                    "start": ""
                 }
             },
             "vacuum": {
@@ -537,9 +537,11 @@
         "common": {
             "cancel": "Avbryt",
             "close": "Lukk",
+            "delete": "Slett",
             "loading": "Laster",
             "no": "Nei",
             "save": "Lagre",
+            "successfully_deleted": "Slettet",
             "successfully_saved": "Vellykket lagring",
             "yes": "Ja"
         },
@@ -593,7 +595,7 @@
                     "second": "{count} {count, plural,\n  one {sekund}\n  other {sekunder}\n}",
                     "week": "{count} {count, plural,\n  one {uke}\n  other {uker}\n}"
                 },
-                "future": "Om {time}",
+                "future": "om {time}",
                 "never": "Aldri",
                 "past": "{time} siden"
             },
@@ -610,7 +612,7 @@
             },
             "confirmation": {
                 "cancel": "Avbryt",
-                "ok": "OK",
+                "ok": "",
                 "title": "Er du sikker?"
             },
             "domain_toggler": {
@@ -627,13 +629,13 @@
                     "enabled_label": "Aktiver entitet",
                     "entity_id": "Entitets-ID",
                     "icon": "Overstyring av ikon",
-                    "icon_error": "Ikoner bør være i formatet 'prefix:iconname', f.eks .",
+                    "icon_error": "Ikoner bør være i formatet 'prefiks:ikonnavn', f.eks 'mdi:home'",
                     "name": "Overstyr Navn",
-                    "note": "Merk: dette fungerer kanskje ikke ennå med alle integrasjoner.",
+                    "note": "Merk: dette fungerer kanskje ikke enda med alle integrasjoner.",
                     "unavailable": "Denne entiteten er ikke tilgjengelig for øyeblikket.",
                     "update": "Oppdater"
                 },
-                "no_unique_id": "Denne enheten har ikke en unik ID, derfor kan innstillingene ikke administreres fra brukergrensesnittet.",
+                "no_unique_id": "Denne entiteten har ikke en unik ID, derfor kan innstillingene ikke administreres fra brukergrensesnittet.",
                 "related": "Relaterte",
                 "settings": "Innstillinger"
             },
@@ -641,7 +643,7 @@
                 "cancel": "Avbryt",
                 "close": "Lukk",
                 "default_confirmation_title": "Er du sikker?",
-                "ok": "OK"
+                "ok": ""
             },
             "helper_settings": {
                 "generic": {
@@ -682,10 +684,10 @@
                     "text": "Tekst"
                 },
                 "not_editable": "Kan ikke redigeres",
-                "not_editable_text": "Denne enheten kan ikke endres fra brukergrensesnittet fordi den er definert i configuration.yaml.",
+                "not_editable_text": "Denne entiteten kan ikke endres fra brukergrensesnittet fordi den er definert i configuration.yaml.",
                 "platform_not_loaded": "{platform}-integreringen er ikke lastet inn. Legg til konfigurasjonen ved å legge til 'default_config:' eller '{platform}:'.",
                 "required_error_msg": "Dette feltet er påkrevd",
-                "yaml_not_editable": "Innstillingene for denne enheten kan ikke redigeres fra brukergrensesnittet. Bare enheter som er konfigurert fra brukergrensesnittet, kan konfigureres fra brukergrensesnittet."
+                "yaml_not_editable": "Innstillingene for denne entiteten kan ikke redigeres fra brukergrensesnittet. Bare entiteter som er konfigurert fra brukergrensesnittet, kan konfigureres fra brukergrensesnittet."
             },
             "more_info_control": {
                 "dismiss": "Avvis dialogboksen",
@@ -718,11 +720,11 @@
                     "commands": "Støvsugerkommandoer:",
                     "fan_speed": "Viftehastighet",
                     "locate": "Lokaliser",
-                    "pause": "Pause",
-                    "return_home": "Vende hjem",
-                    "start": "Start",
+                    "pause": "",
+                    "return_home": "Returner hjem",
+                    "start": "",
                     "start_pause": "Start / Pause",
-                    "status": "Status",
+                    "status": "",
                     "stop": "Stopp"
                 }
             },
@@ -761,7 +763,7 @@
                 "manuf": "av {manufacturer}",
                 "no_area": "Intet område",
                 "power_source": "Strømkilde",
-                "quirk": "Quirk",
+                "quirk": "",
                 "services": {
                     "reconfigure": "Rekonfigurer ZHA-enhet (heal enhet). Bruk dette hvis du har problemer med enheten. Hvis den aktuelle enheten er en batteridrevet enhet, sørg for at den er våken og aksepterer kommandoer når du bruker denne tjenesten.",
                     "remove": "Fjern en enhet fra Zigbee-nettverket.",
@@ -917,9 +919,9 @@
                                 },
                                 "sun": {
                                     "after": "Etter:",
-                                    "after_offset": "Utsette (valgfritt)",
+                                    "after_offset": "Etter forskyvning (valgfritt)",
                                     "before": "Før:",
-                                    "before_offset": "Fremskynde (valgfritt)",
+                                    "before_offset": "Før forskyvning (valgfritt)",
                                     "label": "Sol",
                                     "sunrise": "Soloppgang",
                                     "sunset": "Solnedgang"
@@ -987,12 +989,12 @@
                                 },
                                 "homeassistant": {
                                     "event": "Hendelse:",
-                                    "label": "Home Assistant",
+                                    "label": "",
                                     "shutdown": "Slå av",
-                                    "start": "Start"
+                                    "start": ""
                                 },
                                 "mqtt": {
-                                    "label": "MQTT",
+                                    "label": "",
                                     "payload": "Nyttelast (valgfritt)",
                                     "topic": "Emne"
                                 },
@@ -1074,7 +1076,7 @@
                             "state_reporting_error": "Kan ikke {enable_disable} rapportere status.",
                             "sync_entities": "Synkronisér entiteter",
                             "sync_entities_error": "Kunne ikke synkronisere entiteter:",
-                            "title": "Alexa"
+                            "title": ""
                         },
                         "connected": "Tilkoblet",
                         "connection_status": "Status for skytilkobling",
@@ -1093,7 +1095,7 @@
                             "security_devices": "Sikkerhetsenheter",
                             "sync_entities": "Synkronisér entiteter til Google",
                             "sync_entities_404_message": "Kunne ikke synkronisere enhetene dine med Google, be Google 'Hei Google, synkroniser enhetene mine' for å synkronisere enhetene dine.",
-                            "title": "Google Assistant"
+                            "title": ""
                         },
                         "integrations": "Integrasjoner",
                         "integrations_introduction": "Integrasjoner for Home Assistant Cloud lar deg koble til tjenester i skyen uten å måtte avsløre Home Assistant-forekomsten offentlig på internett.",
@@ -1131,9 +1133,9 @@
                         "expose": "Eksponer til Alexa",
                         "exposed_entities": "Eksponerte entiteter",
                         "not_exposed_entities": "Ikke-eksponerte entiteter",
-                        "title": "Alexa"
+                        "title": ""
                     },
-                    "caption": "Home Assistant Cloud",
+                    "caption": "",
                     "description_features": "Kontroller borte fra hjemmet, integrere med Alexa og Google Assistant.",
                     "description_login": "Logget inn som {email}",
                     "description_not_login": "Ikke pålogget",
@@ -1171,7 +1173,7 @@
                         "exposed_entities": "Eksponerte entiteter",
                         "not_exposed_entities": "Ikke-eksponerte entiteter",
                         "sync_to_google": "Synkroniserer endringer til Google.",
-                        "title": "Google Assistant"
+                        "title": ""
                     },
                     "login": {
                         "alert_email_confirm_necessary": "Du må bekrefte e-posten din før du logger inn.",
@@ -1377,7 +1379,7 @@
                             "confirm_title": "Vil du aktivere {number} enheter?"
                         },
                         "filter": {
-                            "filter": "Filter",
+                            "filter": "",
                             "show_disabled": "Vis deaktiverte entiteter",
                             "show_readonly": "Vis skrivebeskyttede enheter",
                             "show_unavailable": "Vis utilgjengelige enheter"
@@ -1388,7 +1390,7 @@
                             "entity_id": "Entitets-ID",
                             "integration": "Integrering",
                             "name": "Navn",
-                            "status": "Status"
+                            "status": ""
                         },
                         "integrations_page": "Integrasjonsside",
                         "introduction": "Home Assistant bygger opp et register over hver entitet den har sett som kan identifiseres unikt. Hver av disse entitetene vil ha en ID som er reservert kun til denne.",
@@ -1404,7 +1406,7 @@
                         "show_disabled": "Vis deaktiverte entiteter",
                         "status": {
                             "disabled": "Deaktivert",
-                            "ok": "Ok",
+                            "ok": "",
                             "readonly": "Skrivebeskyttet",
                             "restored": "Gjennopprettet",
                             "unavailable": "Utilgjengelig"
@@ -1427,7 +1429,7 @@
                             "editable": "Redigerbare",
                             "entity_id": "Entitets-ID",
                             "name": "Navn",
-                            "type": "Type"
+                            "type": ""
                         }
                     },
                     "types": {
@@ -1501,24 +1503,24 @@
                 },
                 "introduction": "Her er det mulig å konfigurere dine komponenter og Home Assistant. Ikke alt er mulig å konfigurere fra brukergrensesnittet enda, men vi jobber med det.",
                 "lovelace": {
-                    "caption": "Lovelace Dashboards",
+                    "caption": "Lovelace dashbord",
                     "dashboards": {
                         "cant_edit_default": "Standard Lovelace-dashbordet kan ikke redigeres fra brukergrensesnittet. Du kan skjule det ved å angi et annet instrumentbord som standard.",
-                        "cant_edit_yaml": "Instrumentbord som er definert i YAML, kan ikke redigeres fra brukergrensesnittet. Endre dem i configuration.yaml.",
-                        "caption": "Oversikter",
+                        "cant_edit_yaml": "Dashbord som er definert i YAML, kan ikke redigeres fra brukergrensesnittet. Endringer gjøres i configuration.yaml.",
+                        "caption": "Dashbord",
                         "conf_mode": {
                             "storage": "UI kontrollert",
                             "yaml": "YAML-fil"
                         },
-                        "confirm_delete": "Er du sikker på at du vil slette dette instrumentbordet?",
+                        "confirm_delete": "Er du sikker på at du vil slette dette dashbordet?",
                         "default_dashboard": "Dette er standard instrumentbord",
                         "detail": {
                             "create": "Opprett",
                             "delete": "Slett",
                             "dismiss": "Lukk",
-                            "edit_dashboard": "Redigere instrumentbord",
+                            "edit_dashboard": "Redigere dashbord",
                             "icon": "Ikon",
-                            "new_dashboard": "Legg til nytt instrumentbord",
+                            "new_dashboard": "Legg til nytt dashbord",
                             "remove_default": "Fjern som standard på denne enheten",
                             "require_admin": "Bare administrator",
                             "set_default": "Angi som standard på denne enheten",
@@ -1526,11 +1528,11 @@
                             "title": "Tittel",
                             "title_required": "Tittel er nødvendig.",
                             "update": "Oppdater",
-                            "url": "Url",
+                            "url": "",
                             "url_error_msg": "URLen skal inneholde en - og kan ikke inneholde mellomrom eller spesialtegn, bortsett fra _ og -"
                         },
                         "picker": {
-                            "add_dashboard": "Legge til instrumentbord",
+                            "add_dashboard": "Legg til dashbord",
                             "headers": {
                                 "conf_mode": "Konfigurasjonsmetode",
                                 "default": "Standard",
@@ -1542,7 +1544,7 @@
                             "open": "Åpne"
                         }
                     },
-                    "description": "Konfigurer Lovelace Dashboards",
+                    "description": "Konfigurer dine Lovelace dashbord",
                     "resources": {
                         "cant_edit_yaml": "Du bruker Lovelace i YAML-modus, derfor kan du ikke administrere ressursene dine via brukergrensesnittet. Behandle dem i configuration.yaml.",
                         "caption": "Ressurser",
@@ -1554,7 +1556,7 @@
                             "new_resource": "Legg til ny ressurs",
                             "type": "Ressurstype",
                             "update": "Oppdater",
-                            "url": "Url",
+                            "url": "",
                             "url_error_msg": "Url-adresse er et obligatorisk felt",
                             "warning_header": "Vær forsiktig!",
                             "warning_text": "Det kan være farlig å legge til ressurser, sørg for at du kjenner kilden til ressursen og stoler på dem. Dårlige ressurser kan skade systemet ditt alvorlig."
@@ -1562,8 +1564,8 @@
                         "picker": {
                             "add_resource": "Legg til ressurs",
                             "headers": {
-                                "type": "Type",
-                                "url": "Url"
+                                "type": "",
+                                "url": ""
                             },
                             "no_resources": "Ingen ressurser"
                         },
@@ -1722,7 +1724,7 @@
                         "enter_new_name": "Skriv inn nytt navn",
                         "group": "Gruppe",
                         "group_update_failed": "Gruppeoppdatering mislyktes:",
-                        "id": "ID",
+                        "id": "Id",
                         "owner": "Eier",
                         "rename_user": "Gi nytt navn til bruker",
                         "system_generated": "System generert",
@@ -1746,7 +1748,7 @@
                         "caption": "Legg til enheter",
                         "description": "Legg til enheter i Zigbee-nettverket"
                     },
-                    "caption": "ZHA",
+                    "caption": "",
                     "cluster_attributes": {
                         "attributes_of_cluster": "Attributter for den valgte klyngen",
                         "get_zigbee_attribute": "Hent ZigBee-attributt",
@@ -1860,8 +1862,8 @@
                         "name": "Navn",
                         "new_zone": "Ny sone",
                         "passive": "Passiv",
-                        "passive_note": "Passive soner er skjult i frontend og brukes ikke som sted for enhetssporere. Dette er nyttig hvis du bare vil bruke det til automatiseringer.",
-                        "radius": "Radius",
+                        "passive_note": "Passive soner er skjult i grensesnittet og brukes ikke som sted for enhetssporere. Dette er nyttig hvis du bare vil bruke det til automatiseringer.",
+                        "radius": "",
                         "required_error_msg": "Dette feltet er påkrevd",
                         "update": "Oppdater"
                     },
@@ -1971,7 +1973,7 @@
                         "source": "Kilde:",
                         "states_ui": "Gå til states UI",
                         "system_health_error": "System Health-komponenten er ikke lastet. Legg til 'system_health:' til configurasjon.yaml",
-                        "title": "Info"
+                        "title": "Informasjon"
                     },
                     "logs": {
                         "clear": "Tøm",
@@ -2002,7 +2004,7 @@
                         "call_service": "Kall tjeneste",
                         "column_description": "Beskrivelse",
                         "column_example": "Eksempel",
-                        "column_parameter": "Parameter",
+                        "column_parameter": "",
                         "data": "Tjenestedata (YAML, valgfritt)",
                         "description": "Med verktøyet for tjenesteutvikling kan du utføre alle tilgjengelige tjenester i Home Assistant.",
                         "fill_example_data": "Fyll ut eksempeldata",
@@ -2088,7 +2090,7 @@
                     }
                 },
                 "changed_toast": {
-                    "message": "Lovelace UI-konfigurasjonen ble oppdatert. refresh for å se endringer?",
+                    "message": "Lovelace UI-konfigurasjonen ble oppdatert for dette dashbordet. oppdater for å se endringer?",
                     "refresh": "Oppdater"
                 },
                 "editor": {
@@ -2111,7 +2113,7 @@
                             "condition_explanation": "Kortet vil vises når ALLE betingelser nedenfor er oppfylt.",
                             "conditions": "Forhold",
                             "current_state": "Gjeldende",
-                            "description": "Betingelseskortet viser et annet kort basert på enhetstilstander.",
+                            "description": "Betingelseskortet viser et annet kort basert på entitetstilstander.",
                             "name": "Betinget",
                             "state_equal": "Tilstanden er lik",
                             "state_not_equal": "Tilstanden er ikke lik"
@@ -2121,7 +2123,7 @@
                             "required": "Nødvendig"
                         },
                         "entities": {
-                            "description": " Entities card er den vanligste typen kort. Den grupperer elementer i lister.",
+                            "description": "Entities card er den vanligste typen kort. Den grupperer elementer i lister.",
                             "name": "Entiteter",
                             "show_header_toggle": "Vis kortbryter?",
                             "toggle": "Aktivér/deaktivér entiteter."
@@ -2130,7 +2132,7 @@
                             "name": "Entitetsknapp"
                         },
                         "entity-filter": {
-                            "description": "Entity Filter-kortet lar deg definere en liste over enheter du bare vil spore når du er i en viss tilstand.",
+                            "description": "Entity Filter-kortet lar deg definere en liste over entiteter du bare vil spore når de er i en viss tilstand.",
                             "name": "Entitetsfilter"
                         },
                         "gauge": {
@@ -2157,7 +2159,7 @@
                             "manual": "Manuell",
                             "manual_description": "Trenger du å legge til et tilpasset kort eller bare ønsker å skrive yaml manuelt?",
                             "maximum": "Maksimalt",
-                            "minimum": "Minimum",
+                            "minimum": "",
                             "name": "Navn",
                             "no_theme": "Ingen tema",
                             "refresh_interval": "Oppdateringsintervall",
@@ -2169,7 +2171,7 @@
                             "theme": "Tema",
                             "title": "Tittel",
                             "unit": "Betegnelse",
-                            "url": "Url"
+                            "url": ""
                         },
                         "glance": {
                             "columns": "Kolonner",
@@ -2214,11 +2216,11 @@
                             "name": "Bildeelementer"
                         },
                         "picture-entity": {
-                            "description": "Picture Entity-kortet viser en enhet i form av et bilde. I stedet for bilder fra URL, kan det også vise bilde av kameraenheter.",
+                            "description": "Picture Entity-kortet viser en entitet i form av et bilde. I stedet for bilder fra URL, kan det også vise bilde av kameraenheter.",
                             "name": "Bildeoppføring"
                         },
                         "picture-glance": {
-                            "description": "Picture Glance-kortet viser et bilde og tilhørende entitetstilstander som et ikon. Enhetene på høyre side tillater veksling av handlinger, andre viser dialogboksen mer informasjon.",
+                            "description": "Picture Glance-kortet viser et bilde og tilhørende entitetstilstander som et ikon. Entitetene på høyre side tillater veksling av handlinger, andre viser dialogboksen mer informasjon.",
                             "name": "Bilde blikk"
                         },
                         "picture": {
@@ -2233,7 +2235,7 @@
                             "description": "Sensorkortet gir deg en rask oversikt over sensortilstanden din med en valgfri graf for å visualisere endring over tid.",
                             "graph_detail": "Detaljer for graf",
                             "graph_type": "Graf type",
-                            "name": "Sensor"
+                            "name": ""
                         },
                         "shopping-list": {
                             "description": "På Shopping List-kortet kan du legge til, redigere, sjekke av og fjerne gjenstander fra handlelisten din.",
@@ -2241,7 +2243,7 @@
                             "name": "Handleliste"
                         },
                         "thermostat": {
-                            "description": "Termostatkortet gir kontroll over din klimaenhet. Lar deg endre temperaturen og modus for enheten.",
+                            "description": "Termostatkortet gir kontroll over din klimaentitet. Lar deg endre temperaturen og modus for entiteten.",
                             "name": "Termostat"
                         },
                         "vertical-stack": {
@@ -2256,7 +2258,7 @@
                     "edit_card": {
                         "add": "Legg til kort",
                         "delete": "Slett kort",
-                        "duplicate": "Duplikatkort",
+                        "duplicate": "Kopiér kort",
                         "edit": "Rediger",
                         "header": "Kortkonfigurasjon",
                         "move": "Flytt til visning",
@@ -2323,7 +2325,7 @@
                         "save": "Ta kontroll",
                         "yaml_config": "For å hjelpe deg med å starte, her er den gjeldende konfigurasjonen av dette dashbordet:",
                         "yaml_control": "Hvis du vil ta kontroll i YAML-modus, oppretter du en YAML-fil med navnet du angav i konfigurasjonen for dette instrumentbordet, eller standard 'ui-lovelace.yaml'.",
-                        "yaml_mode": "Du bruker YAML-modus, det betyr at du ikke kan endre Lovelace config fra brukergrensesnittet. Hvis du vil endre Lovelace fra brukergrensesnittet, fjerner du «modus: yaml» fra Lovelace-konfigurasjonen i 'configuration.yaml'."
+                        "yaml_mode": "Du bruker YAML-modus, det betyr at du ikke kan endre Lovelace config fra brukergrensesnittet. Hvis du vil endre Lovelace fra brukergrensesnittet, fjerner du 'modus: yaml' fra Lovelace-konfigurasjonen i 'configuration.yaml'."
                     },
                     "suggest_card": {
                         "add": "Legg til i Lovelace UI",
@@ -2344,7 +2346,7 @@
                     "exit_edit_mode": "Avslutt redigeringsmodus for brukergrensesnitt",
                     "help": "Hjelp",
                     "refresh": "Oppdater",
-                    "reload_resources": "Last inn ressursene på nytt",
+                    "reload_resources": "Last inn ressurser på nytt",
                     "unused_entities": "Ubrukte entiteter"
                 },
                 "reload_lovelace": "Last inn UI",
@@ -2369,7 +2371,7 @@
                     "existing_cards": "Du kan ikke slette en visning som har kort i den. Fjern kortene først."
                 },
                 "warning": {
-                    "attribute_not_found": "Attributtet {attributt} er ikke tilgjengelig i: {entity}",
+                    "attribute_not_found": "Attributtet {attribute} er ikke tilgjengelig i: {entity}",
                     "entity_non_numeric": "Entiteten er ikke-numerisk: {entity}",
                     "entity_not_found": "Entitet ikke tilgjengelig: {entity}"
                 }

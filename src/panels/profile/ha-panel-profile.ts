@@ -20,6 +20,7 @@ import "./ha-long-lived-access-tokens-card";
 import "./ha-advanced-mode-row";
 import "./ha-pick-language-row";
 import "./ha-pick-theme-row";
+import "./ha-pick-dashboard-row";
 import "./ha-push-notifications-row";
 import "./ha-force-narrow-row";
 import "./ha-set-vibrate-row";
@@ -98,6 +99,10 @@ class HaPanelProfile extends LitElement {
               .narrow=${this.narrow}
               .hass=${this.hass}
             ></ha-pick-theme-row>
+            <ha-pick-dashboard-row
+              .narrow=${this.narrow}
+              .hass=${this.hass}
+            ></ha-pick-dashboard-row>
             ${this.hass.dockedSidebar !== "auto" || !this.narrow
               ? html`
                   <ha-force-narrow-row

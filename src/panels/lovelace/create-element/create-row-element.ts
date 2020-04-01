@@ -5,6 +5,7 @@ import "../entity-rows/hui-sensor-entity-row";
 import "../entity-rows/hui-text-entity-row";
 import "../entity-rows/hui-toggle-entity-row";
 import "../special-rows/hui-button-row";
+import "../special-rows/hui-attribute-row";
 import "../special-rows/hui-call-service-row";
 import { EntityConfig } from "../entity-rows/types";
 import { createLovelaceElement } from "./create-element-base";
@@ -33,11 +34,13 @@ const LAZY_LOAD_TYPES = {
   "lock-entity": () => import("../entity-rows/hui-lock-entity-row"),
   "timer-entity": () => import("../entity-rows/hui-timer-entity-row"),
   conditional: () => import("../special-rows/hui-conditional-row"),
+  "weather-entity": () => import("../entity-rows/hui-weather-entity-row"),
   divider: () => import("../special-rows/hui-divider-row"),
   section: () => import("../special-rows/hui-section-row"),
   weblink: () => import("../special-rows/hui-weblink-row"),
   cast: () => import("../special-rows/hui-cast-row"),
   buttons: () => import("../special-rows/hui-buttons-row"),
+  attribute: () => import("../special-rows/hui-attribute-row"),
 };
 const DOMAIN_TO_ELEMENT_TYPE = {
   _domain_not_found: "text",
@@ -65,6 +68,7 @@ const DOMAIN_TO_ELEMENT_TYPE = {
   // water heater should get it's own row.
   water_heater: "climate",
   input_datetime: "input-datetime",
+  weather: "weather",
 };
 
 export const createRowElement = (config: EntityConfig) =>

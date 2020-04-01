@@ -70,7 +70,7 @@ export class HuiSensorCardEditor extends LitElement
   }
 
   get _theme(): string {
-    return this._config!.theme || "default";
+    return this._config!.theme || "";
   }
 
   get _hours_to_show(): number | string {

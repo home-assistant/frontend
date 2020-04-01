@@ -87,7 +87,7 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
       throw new Error("Specify an entity from within the climate domain.");
     }
 
-    this._config = { theme: "default", ...config };
+    this._config = config;
   }
 
   public connectedCallback(): void {

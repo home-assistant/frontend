@@ -535,9 +535,11 @@
         "common": {
             "cancel": "İptal",
             "close": "Kapat",
+            "delete": "Sil",
             "loading": "Yükleniyor",
             "no": "Hayır",
             "save": "Kaydet",
+            "successfully_deleted": "Başarıyla silindi",
             "successfully_saved": "Başarıyla kaydedildi",
             "yes": "Evet"
         },
@@ -1493,6 +1495,8 @@
                     },
                     "description": "Lovelace kontrol panellerinizi yapılandırın",
                     "resources": {
+                        "caption": "Kaynaklar",
+                        "confirm_delete": "Bu kaynağı silmek istediğinizden emin misiniz?",
                         "detail": {
                             "create": "Oluştur",
                             "delete": "Sil",
@@ -1501,7 +1505,8 @@
                             "type": "Kaynak tipi",
                             "update": "Güncelle",
                             "url": "URL",
-                            "url_error_msg": "URL zorunlu bir alandır"
+                            "url_error_msg": "URL zorunlu bir alandır",
+                            "warning_header": "Dikkatli olun!"
                         },
                         "picker": {
                             "add_resource": "Kaynak ekle",
@@ -1510,6 +1515,12 @@
                                 "url": "URL"
                             },
                             "no_resources": "Kaynak yok"
+                        },
+                        "refresh_header": "Yenilemek istiyor musunuz?",
+                        "types": {
+                            "html": "HTML (kullanımdan kaldırıldı)",
+                            "js": "JavaScript Dosyası (kullanımdan kaldırıldı)",
+                            "module": "JavaScript Modülü"
                         }
                     }
                 },
