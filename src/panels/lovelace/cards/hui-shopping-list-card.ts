@@ -209,6 +209,10 @@ class HuiShoppingListCard extends LitElement implements LovelaceCard {
 
   static get styles(): CSSResult {
     return css`
+      ha-card {
+        padding-bottom: 16px;
+      }
+
       .editRow,
       .addRow {
         display: flex;
