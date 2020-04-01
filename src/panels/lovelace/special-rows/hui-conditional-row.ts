@@ -13,7 +13,12 @@ class HuiConditionalRow extends HuiConditionalBase implements LovelaceRow {
       throw new Error("No row configured.");
     }
 
+    if (this._element && this._element.parentElement) {
+      this.removeChild(this._element);
+    }
+
     this._element = createRowElement(config.row) as LovelaceRow;
+    this.appendChild(this._element);
   }
 }
 
