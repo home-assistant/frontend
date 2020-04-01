@@ -36,12 +36,6 @@ export interface ButtonRowConfig extends EntityConfig {
   hold_action?: ActionConfig;
   double_tap_action?: ActionConfig;
 }
-export interface CallServiceRowConfig extends EntityConfig {
-  type: "call-service";
-  action_name?: string;
-  service: string;
-  service_data?: { [key: string]: any };
-}
 export interface CastConfig {
   type: "cast";
   icon: string;
@@ -63,7 +57,6 @@ export type LovelaceRowConfig =
   | ButtonsRowConfig
   | ConditionalRowConfig
   | ButtonRowConfig
-  | CallServiceRowConfig
   | CastConfig;
 
 export interface LovelaceRow extends HTMLElement {
