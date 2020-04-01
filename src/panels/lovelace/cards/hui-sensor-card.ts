@@ -217,7 +217,6 @@ class HuiSensorCard extends LitElement implements LovelaceCard {
 
     const cardConfig = {
       detail: 1,
-      theme: "default",
       hours_to_show: 24,
       ...config,
     };
