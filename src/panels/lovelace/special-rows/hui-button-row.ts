@@ -21,7 +21,7 @@ import { handleAction } from "../common/handle-action";
 @customElement("hui-button-row")
 export class HuiButtonRow extends LitElement implements LovelaceRow {
   public hass?: HomeAssistant;
-  @property() protected _config?: ButtonRowConfig;
+  @property() private _config?: ButtonRowConfig;
 
   public setConfig(config: ButtonRowConfig): void {
     if (!config) {

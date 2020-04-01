@@ -20,7 +20,7 @@ export class HuiCallServiceRow extends HuiButtonRow {
       throw new Error("Error in card configuration. No service specified.");
     }
 
-    this._config = {
+    super.setConfig({
       tap_action: {
         action: "call-service",
         service: callServiceConfig.service,
@@ -28,7 +28,7 @@ export class HuiCallServiceRow extends HuiButtonRow {
       },
       ...callServiceConfig,
       type: "button",
-    };
+    });
   }
 }
 
