@@ -1,49 +1,39 @@
 import {
   LitElement,
+  css,
   html,
   CSSResult,
   TemplateResult,
   customElement,
   property,
 } from "lit-element";
-import { safeDump } from "js-yaml";
+import "../../components/ha-dialog";
+import "../../components/ha-switch";
 import { computeDeviceName } from "../../data/device_registry";
 import { computeStateName } from "../../common/entity/compute_state_name";
-import "../../components/ha-dialog";
 import { haStyleDialog } from "../../resources/styles";
+// tslint:disable-next-line: no-duplicate-imports
+import { HaSwitch } from "../../components/ha-switch";
 import { HomeAssistant } from "../../types";
 import { MQTTDeviceDebugInfoDialogParams } from "./show-dialog-mqtt-device-debug-info";
 import { MQTTDeviceDebugInfo, fetchMQTTDebugInfo } from "../../data/mqtt";
-
-function tryParseJSON(jsonString) {
-  try {
-    const o = JSON.parse(jsonString);
-
-    // Handle non-exception-throwing cases:
-    // Neither JSON.parse(false) or JSON.parse(1234) throw errors, hence the type-checking,
-    // but... JSON.parse(null) returns null, and typeof null === "object",
-    // so we must check for that, too. Thankfully, null is falsey, so this suffices:
-    if (o && typeof o === "object") {
-      return o;
-    }
-  } catch (e) {
-    return false;
-  }
-
-  return false;
-}
+import "./mqtt-payload";
 
 @customElement("dialog-mqtt-device-debug-info")
 class DialogMQTTDeviceDebugInfo extends LitElement {
-  @property() public hass!: HomeAssistant;
+  public hass!: HomeAssistant;
   @property() private _params?: MQTTDeviceDebugInfoDialogParams;
   @property() private _debugInfo?: MQTTDeviceDebugInfo;
+  @property() private _showAsYaml: boolean = false;
+  @property() private _showDeserialized: boolean = false;
 
   public async showDialog(
     params: MQTTDeviceDebugInfoDialogParams
   ): Promise<void> {
     this._params = params;
-    this._debugInfo = await fetchMQTTDebugInfo(this.hass, params.device.id);
+    fetchMQTTDebugInfo(this.hass, params.device.id).then((results) => {
+      this._debugInfo = results;
+    });
     await this.updateComplete;
   }
 
@@ -56,122 +46,177 @@ class DialogMQTTDeviceDebugInfo extends LitElement {
       <ha-dialog
         open
         @closing="${this._close}"
-        .heading="${computeDeviceName(
-          this._params.device,
-          this.hass
-        )} debug info"
+        .heading="${this.hass!.localize(
+          "ui.dialogs.mqtt_device_debug_info.title",
+          "device",
+          computeDeviceName(this._params.device, this.hass)
+        )}"
       >
-        Entities
+        <h4>Payload display</h4>
+        <ha-switch
+          .checked=${this._showDeserialized}
+          @change=${this._showDeserializedChanged}
+        >
+          ${this.hass!.localize(
+            "ui.dialogs.mqtt_device_debug_info.deserialize",
+            "format",
+            "YAML"
+          )}
+        </ha-switch>
+        <ha-switch
+          .checked=${this._showAsYaml}
+          @change=${this._showAsYamlChanged}
+        >
+          ${this.hass!.localize(
+            "ui.dialogs.mqtt_device_debug_info.show_as",
+            "format",
+            "YAML"
+          )}
+        </ha-switch>
+        <h4>Entities</h4>
         <ul>
           ${this._debugInfo.entities.length
-            ? html`
-                ${this._debugInfo.entities.map(
-                  (entity) => html`
-                    <li>
-                      '${computeStateName(this.hass.states[entity.entity_id])}'
-                      (<code>${entity.entity_id}</code>)
-                      <br />Discovery topic:
-                      <code>${entity.discovery_data.discovery_topic}</code>
-                      <details>
-                        <summary>
-                          Discovery payload (JSON)
-                        </summary>
-                        <pre>
-      ${JSON.stringify(entity.discovery_data.discovery_payload, null, 2)}</pre
-                        >
-                      </details>
-                      <details>
-                        <summary>
-                          Discovery payload (YAML)
-                        </summary>
-                        <pre>
-      ${safeDump(entity.discovery_data.discovery_payload)}</pre
-                        >
-                      </details>
-                      Subscribed topics
-                      <ul>
-                        ${entity.topics.map(
-                          (topic) => html`
-                            <li>
-                              <code>${topic.topic}</code>
-                              <details>
-                                <summary>
-                                  ${topic.messages.length} most recent received
-                                  message(s)
-                                </summary>
-                                <ul>
-                                  ${topic.messages.map(
-                                    (message) => html`
-                                      <li>
-                                        ${tryParseJSON(message)
-                                          ? html`
-                                              <pre>
-      ${safeDump(JSON.parse(message))}</pre
-                                              >
-                                            `
-                                          : html`
-                                              <code>${message}</code>
-                                            `}
-                                      </li>
-                                    `
-                                  )}
-                                </ul>
-                              </details>
-                            </li>
-                          `
-                        )}
-                      </ul>
-                    </li>
-                  `
-                )}
-              `
+            ? this._renderEntities()
             : html`
-                &lt;No entities&gt;
+                ${this.hass!.localize(
+                  "ui.dialogs.mqtt_device_debug_info.no_entities"
+                )}
               `}
         </ul>
-        Triggers
+        <h4>Triggers</h4>
         <ul>
           ${this._debugInfo.triggers.length
-            ? html`
-                ${this._debugInfo.triggers.map(
-                  (trigger) => html`
-                    <li>
-                      Discovery topic:
-                      <code>${trigger.discovery_data.discovery_topic}</code>
-                      <details>
-                        <summary>
-                          Discovery payload (JSON)
-                        </summary>
-                        <pre>
-      ${JSON.stringify(trigger.discovery_data.discovery_payload, null, 2)}</pre
-                        >
-                      </details>
-                      <details>
-                        <summary>
-                          Discovery payload (YAML)
-                        </summary>
-                        <pre>
-      ${safeDump(trigger.discovery_data.discovery_payload)}</pre
-                        >
-                      </details>
-                    </li>
-                  `
-                )}
-              `
+            ? this._renderTriggers()
             : html`
-                &lt;No triggers&gt;
+                ${this.hass!.localize(
+                  "ui.dialogs.mqtt_device_debug_info.no_triggers"
+                )}
               `}
         </ul>
+        <mwc-button slot="primaryAction" @click="${this._close}">
+          Close
+        </mwc-button>
       </ha-dialog>
     `;
   }
 
   private _close(): void {
     this._params = undefined;
+    this._debugInfo = undefined;
+  }
+
+  private _showAsYamlChanged(ev: Event): void {
+    this._showAsYaml = (ev.target as HaSwitch).checked;
+  }
+
+  private _showDeserializedChanged(ev: Event): void {
+    this._showDeserialized = (ev.target as HaSwitch).checked;
+  }
+
+  private _renderEntities() {
+    return html`
+      ${this._debugInfo!.entities.map(
+        (entity) => html`
+          <li>
+            '${computeStateName(this.hass.states[entity.entity_id])}'
+            (<code>${entity.entity_id}</code>)
+            <br />MQTT discovery data:
+            <ul>
+            <li>
+            Topic:
+            <code>${entity.discovery_data.topic}</code>
+            </li>
+            <li>
+            <details>
+              <summary>
+                Payload
+              </summary>
+              <mqtt-payload
+                .hass=${this.hass}
+                .payload=${entity.discovery_data.payload}
+                ._showDeserialized=${true}
+                ._showAsYaml=${this._showAsYaml}
+              >
+              </mqtt-payload>
+            </li>
+            </details>
+            </ul>
+            Subscribed topics:
+            <ul>
+              ${entity.topics.map(
+                (topic) => html`
+                  <li>
+                    <code>${topic.topic}</code>
+                    <details>
+                      <summary>
+                        ${this.hass!.localize(
+                          "ui.dialogs.mqtt_device_debug_info.recent_messages",
+                          "n",
+                          topic.messages.length
+                        )}
+                      </summary>
+                      <ul>
+                        ${topic.messages.map(
+                          (message) => html`
+                            <li>
+                              <mqtt-payload
+                                .hass=${this.hass}
+                                .payload=${message}
+                                ._showDeserialized=${this._showDeserialized}
+                                ._showAsYaml=${this._showAsYaml}
+                              >
+                            </li>
+                          `
+                        )}
+                      </ul>
+                    </details>
+                  </li>
+                `
+              )}
+            </ul>
+          </li>
+        `
+      )}
+    `;
+  }
+
+  private _renderTriggers() {
+    return html`
+      ${this._debugInfo!.triggers.map(
+        (trigger) => html`
+          <li>
+            Discovery topic:
+            <code>${trigger.discovery_data.topic}</code>
+            <details>
+              <summary>
+                Discovery payload
+              </summary>
+              <mqtt-payload
+                .hass=${this.hass}
+                .payload=${trigger.discovery_data.payload}
+                ._showDeserialized=${true}
+                ._showAsYaml=${this._showAsYaml}
+              >
+              </mqtt-payload>
+            </details>
+          </li>
+        `
+      )}
+    `;
   }
 
   static get styles(): CSSResult[] {
-    return [haStyleDialog];
+    return [
+      haStyleDialog,
+      css`
+        ha-dialog {
+          --mdc-dialog-max-width: 95%;
+        }
+        ha-switch {
+          margin: 16px;
+        }
+      `,
+    ];
   }
 }
 

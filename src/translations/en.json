@@ -747,6 +747,14 @@
       },
       "domain_toggler": {
         "title": "Toggle Domains"
+      },
+      "mqtt_device_debug_info": {
+        "title": "{device} debug info",
+        "deserialize": "Attempt to deserialize payload",
+        "no_entities": "No entities",
+        "no_triggers": "No triggers",
+        "recent_messages": "{n} most recently received message(s)",
+        "show_as": "Show as {format}"
       }
     },
     "duration": {

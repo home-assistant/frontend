@@ -13,8 +13,8 @@ export interface MQTTTopicDebugInfo {
 }
 
 export interface MQTTDiscoveryDebugInfo {
-  discovery_topic: string;
-  discovery_payload: string;
+  topic: string;
+  payload: string;
 }
 
 export interface MQTTEntityDebugInfo {
