@@ -812,6 +812,10 @@
                 "areas": {
                     "caption": "Bereichsregister",
                     "create_area": "BEREICH ERSTELLEN",
+                    "data_table": {
+                        "area": "Bereich",
+                        "devices": "Geräte"
+                    },
                     "delete": {
                         "confirmation_text": "Alle Geräte in diesem Bereich werden nicht mehr zugewiesen sein.",
                         "confirmation_title": "Möchtest du diesen Bereich wirklich löschen?"
@@ -1054,6 +1058,9 @@
                         "delete_confirm": "Bist du sicher, dass du diese Automatisierung löschen möchtest?",
                         "edit_automation": "Automatisierung bearbeiten",
                         "header": "Automatisierungseditor",
+                        "headers": {
+                            "name": "Name"
+                        },
                         "introduction": "Mit dem Automations-Editor können Automatisierungen erstellt und bearbeitet werden. Bitte folgen Sie dem nachfolgenden Link, um die Anleitung zu lesen und um sicherzustellen, dass Sie Home Assistant richtig konfiguriert haben.",
                         "learn_more": "Erfahre mehr über Automatisierungen",
                         "no_automations": "Wir konnten keine editierbaren Automatisierungen finden",
@@ -1334,6 +1341,7 @@
                     },
                     "info": "Geräteinformationen",
                     "name": "Name",
+                    "no_devices": "Keine Geräte",
                     "scene": {
                         "create": "Szene mit Gerät erstellen",
                         "no_scenes": "Keine Szenen",
@@ -1638,6 +1646,9 @@
                         "delete_scene": "Szene löschen",
                         "edit_scene": "Szene bearbeiten",
                         "header": "Szenen-Editor",
+                        "headers": {
+                            "name": "Name"
+                        },
                         "introduction": "Mit dem Szeneneditor können Szenen erstellt und bearbeitet werden. Bitte folge dem untenstehenden Link, um die Anleitung zu finden. Dies stellt sicher, dass Home Assistant korrekt konfiguriert ist.",
                         "learn_more": "Erfahre mehr über Szenen.",
                         "no_scenes": "Wir konnten keine editierbaren Szenen finden",
@@ -1665,9 +1676,13 @@
                         "add_script": "Skript hinzufügen",
                         "edit_script": "Skript bearbeiten",
                         "header": "Skript-Editor",
+                        "headers": {
+                            "name": "Name"
+                        },
                         "introduction": "Mit dem Skript-Editor können Skripte erstellt und bearbeitet werden. Bitte folge Sie dem untenstehenden Link, um die Anleitung zu finden. Das stellt sicher, dass Home Assistant richtig konfiguriert ist.",
                         "learn_more": "Weitere Informationen zu Skripten",
                         "no_scripts": "Wir konnten keine bearbeitbaren Skripte finden",
+                        "show_info": "Informationen zum Skript anzeigen",
                         "trigger_script": "Skript auslösen"
                     }
                 },
@@ -1725,14 +1740,21 @@
                         "group": "Gruppe",
                         "group_update_failed": "Gruppenaktualisierung fehlgeschlagen:",
                         "id": "ID",
+                        "name": "Name",
                         "owner": "Besitzer",
                         "rename_user": "Benutzer umbenennen",
                         "system_generated": "System generiert",
                         "system_generated_users_not_removable": "Vom System generierte Benutzer können nicht entfernt werden.",
                         "unnamed_user": "Unbenannter Benutzer",
+                        "update_user": "Aktualisieren",
                         "user_rename_failed": "Umbenennen des Benutzers fehlgeschlagen:"
                     },
                     "picker": {
+                        "headers": {
+                            "group": "Gruppe",
+                            "name": "Name",
+                            "system": "System"
+                        },
                         "system_generated": "System generiert",
                         "title": "Benutzer"
                     }
@@ -2129,11 +2151,14 @@
                             "toggle": "Entitäten umschalten"
                         },
                         "entity-button": {
-                            "name": "Entity Button"
+                            "name": "Entität Button"
                         },
                         "entity-filter": {
                             "description": "Mit der Entitätsfilter-Karte kannst du eine Liste von Entitäten definieren, die du nur in einem bestimmten Status verfolgen möchtest.",
-                            "name": "Entity Filter"
+                            "name": "Entität Filter"
+                        },
+                        "entity": {
+                            "name": "Entität"
                         },
                         "gauge": {
                             "description": "Die Messkarte ist eine Basiskarte, mit der Sensordaten visuell angezeigt werden können.",
@@ -2147,6 +2172,7 @@
                         },
                         "generic": {
                             "aspect_ratio": "Seitenverhältnis",
+                            "attribute": "Attribut",
                             "camera_image": "Kamera-Entität",
                             "camera_view": "Kameraansicht",
                             "entities": "Ungenutzte Elemente",
@@ -2217,7 +2243,7 @@
                         },
                         "picture-entity": {
                             "description": "Die Bilder-Karte zeigt eine Entität in Form eines Bildes an. Anstelle von Bildern aus der URL kann auch das Bild von Kamera-Entitäten angezeigt werden.",
-                            "name": "Picture Entity"
+                            "name": "Bild-Entität"
                         },
                         "picture-glance": {
                             "description": "Die Bild Glance-Karte zeigt ein Bild und die entsprechenden Entitätszustände als Symbol. Die Entitäten auf der rechten Seite ermöglichen das Umschalten von Aktionen, andere zeigen den Dialog mit weiteren Informationen an.",
@@ -2319,6 +2345,7 @@
                     "save_config": {
                         "cancel": "Abbrechen",
                         "close": "Schließen",
+                        "empty_config": "Beginnen Sie mit einem leeren Dashboard",
                         "header": "Lovelace Userinterface selbst verwalten",
                         "para": "Standardmäßig verwaltet Home Assistant deine Benutzeroberfläche und aktualisiert sie, sobald neue Entitäten oder Lovelace-Komponenten verfügbar sind. Wenn du die Verwaltung selbst übernehmen möchtest, nehmen wir für dich keine Änderungen mehr vor.",
                         "para_sure": "Bist du dir sicher, dass du die Benutzeroberfläche selbst verwalten möchtest?",
@@ -2568,6 +2595,11 @@
                     "submit": "Absenden"
                 },
                 "current_user": "Sie sind derzeit als {fullName} angemeldet.",
+                "dashboard": {
+                    "description": "Wählen Sie ein Standard-Dashboard für dieses Gerät.",
+                    "dropdown_label": "Dashboard",
+                    "header": "Dashboard"
+                },
                 "force_narrow": {
                     "description": "Dies blendet die Seitenleiste standardmäßig aus, ähnlich der Nutzung auf Mobilgeräten.",
                     "header": "Verstecke die Seitenleiste immer"

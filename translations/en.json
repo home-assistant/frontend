@@ -509,6 +509,7 @@
                 "attributes": {
                     "air_pressure": "Air pressure",
                     "humidity": "Humidity",
+                    "precipitation": "Precipitation",
                     "temperature": "Temperature",
                     "visibility": "Visibility",
                     "wind_speed": "Wind speed"
@@ -531,7 +532,9 @@
                     "wnw": "WNW",
                     "wsw": "WSW"
                 },
-                "forecast": "Forecast"
+                "forecast": "Forecast",
+                "high": "High",
+                "low": "Low"
             }
         },
         "common": {
@@ -2175,6 +2178,7 @@
                             "attribute": "Attribute",
                             "camera_image": "Camera Entity",
                             "camera_view": "Camera View",
+                            "double_tap_action": "Double Tap Action",
                             "entities": "Entities",
                             "entity": "Entity",
                             "hold_action": "Hold Action",
@@ -2225,6 +2229,7 @@
                             "default_zoom": "Default Zoom",
                             "description": "The Map card that allows you to display entities on a map.",
                             "geo_location_sources": "Geolocation Sources",
+                            "hours_to_show": "Hours to Show",
                             "name": "Map",
                             "source": "Source"
                         },
@@ -2280,6 +2285,10 @@
                             "description": "The Weather Forecast card displays the weather. Very useful to include on interfaces that people display on the wall.",
                             "name": "Weather Forecast"
                         }
+                    },
+                    "cardpicker": {
+                        "custom_card": "Custom",
+                        "no_description": "No description available."
                     },
                     "edit_card": {
                         "add": "Add Card",

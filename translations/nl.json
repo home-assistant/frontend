@@ -395,8 +395,8 @@
     "ui": {
         "auth_store": {
             "ask": "Wil je de ingelogd blijven?",
-            "confirm": "Login opslaan",
-            "decline": "Nee, bedankt"
+            "confirm": "Ja",
+            "decline": "Nee"
         },
         "card": {
             "alarm_control_panel": {
@@ -685,7 +685,9 @@
                 },
                 "not_editable": "Niet bewerkbaar",
                 "not_editable_text": "Deze entiteit kan niet worden gewijzigd vanuit de gebruikersinterface omdat deze is gedefinieerd in configuration.yaml.",
-                "required_error_msg": "Dit veld is verplicht"
+                "platform_not_loaded": "De {platform} integratie is niet geladen. Voeg het aan je configuratie toe door 'default_config:' of '{platform}:' toe te voegen.",
+                "required_error_msg": "Dit veld is verplicht",
+                "yaml_not_editable": "De instellingen van deze entiteit kunnen niet worden bewerkt vanuit de gebruikersinterface. Alleen entiteiten die zijn ingesteld vanuit de gebruikersinterface, kunnen worden geconfigureerd vanuit de gebruikersinterface."
             },
             "more_info_control": {
                 "dismiss": "Dialoogvenster sluiten",
@@ -810,6 +812,10 @@
                 "areas": {
                     "caption": "Gebieden",
                     "create_area": "MAAK GEBIED",
+                    "data_table": {
+                        "area": "Gebied",
+                        "devices": "Apparaten"
+                    },
                     "delete": {
                         "confirmation_text": "Alle apparaten in dit gebied zullen niet meer toegewezen zijn.",
                         "confirmation_title": "Weet je zeker dat je dit gebied wilt verwijderen?"
@@ -1052,6 +1058,9 @@
                         "delete_confirm": "Weet je zeker dat je deze automatisering wilt verwijderen?",
                         "edit_automation": "Bewerk automatisering",
                         "header": "Automatiseringsbewerker",
+                        "headers": {
+                            "name": "Naam"
+                        },
                         "introduction": "Met de automatiseringsbewerker kun je automatiseringen maken en bewerken. Volg de link hieronder om er zeker van te zijn dat je Home Assistant juist hebt geconfigureerd.",
                         "learn_more": "Meer informatie over automatiseringen",
                         "no_automations": "We konden geen bewerkbare automatiseringen vinden",
@@ -1332,6 +1341,7 @@
                     },
                     "info": "Apparaat info",
                     "name": "Naam",
+                    "no_devices": "Geen apparaten",
                     "scene": {
                         "create": "Maak een scène aan met het apparaat",
                         "no_scenes": "Geen scènes",
@@ -1395,6 +1405,7 @@
                         "introduction2": "Gebruik het entiteitenregister om de naam te overschrijven, de entiteits-ID te wijzigen of het item te verwijderen uit Home Assistant.",
                         "remove_selected": {
                             "button": "Verwijder geselecteerde",
+                            "confirm_partly_text": "U kunt alleen {removable} van de geselecteerde {selected} entiteiten verwijderen. Entiteiten kunnen alleen worden verwijderd als de integratie de entiteiten niet meer levert. Soms moet u Home Assistant opnieuw opstarten voordat u de entiteiten van een verwijderde integratie kunt verwijderen. Weet u zeker dat u de verwijderbare entiteiten wilt verwijderen?",
                             "confirm_partly_title": "Alleen {number} geselecteerde entiteiten kunnen worden verwijderd.",
                             "confirm_text": "Je moet ze zelf nog verwijderen uit je Lovelace-configuratie en automatiseringen als ze deze entiteiten bevatten.",
                             "confirm_title": "Wilt je {number} entiteiten verwijderen?"
@@ -1502,6 +1513,7 @@
                 "lovelace": {
                     "caption": "Lovelace-dashboards",
                     "dashboards": {
+                        "cant_edit_default": "Het standaard Lovelace-dashboard kan niet vanuit de gebruikersinterface worden bewerkt. Je kunt het verbergen door standaard een ander dashboard in te stellen.",
                         "cant_edit_yaml": "Dashboards die zijn gedefinieerd in YAML kunnen niet worden bewerkt vanuit de gebruikersinterface. Wijzig ze in configuration.yaml.",
                         "caption": "Dashboards",
                         "conf_mode": {
@@ -1634,6 +1646,9 @@
                         "delete_scene": "Scène verwijderen",
                         "edit_scene": "Scène bewerken",
                         "header": "Scene Editor",
+                        "headers": {
+                            "name": "Naam"
+                        },
                         "introduction": "Met de scene editor kun je scenes maken en bewerken. Volg de onderstaande link om de instructies te lezen om ervoor te zorgen dat je Home Assistant correct hebt geconfigureerd.",
                         "learn_more": "Meer informatie over scènes",
                         "no_scenes": "We konden geen bewerkbare scènes vinden.",
@@ -1661,9 +1676,13 @@
                         "add_script": "Script toevoegen",
                         "edit_script": "Bewerk script",
                         "header": "Script Editor",
+                        "headers": {
+                            "name": "Naam"
+                        },
                         "introduction": "Met de editor kunt u scripts maken en bewerken. Volg de onderstaande link om de instructies te lezen om ervoor te zorgen dat u Home Assistant correct hebt geconfigureerd.",
                         "learn_more": "Meer informatie over scripts",
                         "no_scripts": "We hebben geen bewerkbare scrips gevonden",
+                        "show_info": "Toon info over script",
                         "trigger_script": "Trigger script"
                     }
                 },
@@ -1721,14 +1740,21 @@
                         "group": "Groep",
                         "group_update_failed": "Groepsupdate mislukt:",
                         "id": "ID",
+                        "name": "Naam",
                         "owner": "Eigenaar",
                         "rename_user": "Naam wijzigen",
                         "system_generated": "Gegenereerd door systeem",
                         "system_generated_users_not_removable": "Kan door het systeem gegenereerde gebruikers niet verwijderen.",
                         "unnamed_user": "Naamloze gebruiker",
+                        "update_user": "Bijwerken",
                         "user_rename_failed": "Hernoemen gebruiker mislukt:"
                     },
                     "picker": {
+                        "headers": {
+                            "group": "Groep",
+                            "name": "Naam",
+                            "system": "Systeem"
+                        },
                         "system_generated": "Gemaakt door het systeem",
                         "title": "Gebruikers"
                     }
@@ -2096,6 +2122,7 @@
                         },
                         "alarm-panel": {
                             "available_states": "Beschikbare statussen",
+                            "description": "Met de Alarm Panel-kaart kunt u de integraties van uw alarmcentrale in- en uitschakelen.",
                             "name": "Alarm paneel"
                         },
                         "button": {
@@ -2108,6 +2135,7 @@
                             "condition_explanation": "De kaart wordt weergegeven als aan ALLE onderstaande voorwaarden is voldaan.",
                             "conditions": "Voorwaarden",
                             "current_state": "huidige",
+                            "description": "Op de Conditional-kaart wordt een andere kaart weergegeven op basis van entiteitstoestanden.",
                             "name": "Conditioneel",
                             "state_equal": "Staat is gelijk aan",
                             "state_not_equal": "Staat is niet gelijk aan"
@@ -2117,6 +2145,7 @@
                             "required": "Verplicht"
                         },
                         "entities": {
+                            "description": "De Entities-kaart is het meest voorkomende type kaart. Het groepeert items samen in lijsten.",
                             "name": "Entiteiten",
                             "show_header_toggle": "Titel schakelaar weergeven?",
                             "toggle": "Entiteiten in- en uitschakelen"
@@ -2125,7 +2154,11 @@
                             "name": "Entiteit-knop"
                         },
                         "entity-filter": {
+                            "description": "Met de Entity Filter-kaart kunt u een lijst met entiteiten definiëren die u alleen wilt volgen in een bepaalde staat.",
                             "name": "Entiteit-filter"
+                        },
+                        "entity": {
+                            "name": "Entiteit"
                         },
                         "gauge": {
                             "description": "De meterkaart is een basiskaart waarmee u sensorgegevens visueel kunt zien.",
@@ -2139,6 +2172,7 @@
                         },
                         "generic": {
                             "aspect_ratio": "Beeldverhouding",
+                            "attribute": "Kenmerk",
                             "camera_image": "Camera-entiteit",
                             "camera_view": "Cameraweergave",
                             "entities": "Entiteiten",
@@ -2149,6 +2183,7 @@
                             "icon_height": "Pictogram hoogte",
                             "image": "Afbeeldingspad",
                             "manual": "Handmatig",
+                            "manual_description": "Wilt u een aangepaste kaart toevoegen of wilt u de YAML handmatig schrijven?",
                             "maximum": "Maximaal",
                             "minimum": "Minimum",
                             "name": "Naam",
@@ -2166,47 +2201,60 @@
                         },
                         "glance": {
                             "columns": "Kolommen",
+                            "description": "De Glance-kaart is handig om meerdere sensoren in een compact overzicht te groeperen.",
                             "name": "Oogopslag"
                         },
                         "history-graph": {
+                            "description": "Met de History Graph-kaart kunt u een grafiek weergeven voor elk van de vermelde entiteiten.",
                             "name": "Geschiedenis grafiek"
                         },
                         "horizontal-stack": {
+                            "description": "Met de Horizontal Stack-kaart kun je meerdere kaarten op elkaar stapelen, zodat ze altijd naast elkaar in de ruimte van één kolom zitten.",
                             "name": "Horizontale stapel"
                         },
                         "iframe": {
+                            "description": "Met de Webpage-kaart kunt u uw favoriete webpagina rechtstreeks in de Home Assistant insluiten.",
                             "name": "Webpagina"
                         },
                         "light": {
+                            "description": "Met de Light-kaart kunt u de helderheid van het licht wijzigen.",
                             "name": "Lamp"
                         },
                         "map": {
                             "dark_mode": "Donkere modus?",
                             "default_zoom": "Standaard zoom",
+                            "description": "Met de Map-kaart kun je entiteiten op een kaart kunt weergeven.",
                             "geo_location_sources": "Geolocatiebronnen",
                             "name": "Kaart",
                             "source": "Bron"
                         },
                         "markdown": {
                             "content": "Inhoud",
+                            "description": "De Markdown-kaart wordt gebruikt om Markdown weer te geven.",
                             "name": "Markdown"
                         },
                         "media-control": {
+                            "description": "De Media Control-kaart wordt gebruikt om entiteiten van mediaspelers weer te geven op een interface met gebruiksvriendelijke bedieningselementen.",
                             "name": "Mediaspeler"
                         },
                         "picture-elements": {
+                            "description": "De Picture Elements-kaart is een van de meest veelzijdige soorten kaarten. Met de kaarten kunt u pictogrammen of tekst en zelfs services plaatsen! Op een afbeelding gebaseerd op coördinaten.",
                             "name": "Afbeeldingselementen"
                         },
                         "picture-entity": {
+                            "description": "De Picture Entity-kaart geeft een entiteit weer in de vorm van een afbeelding. In plaats van afbeeldingen van URL, kan het ook de afbeelding van camera-entiteiten weergeven.",
                             "name": "Afbeelding-entiteit"
                         },
                         "picture-glance": {
+                            "description": "De Picture Glance-kaart toont een afbeelding en de bijbehorende entiteitstoestanden als een pictogram. De entiteiten aan de rechterkant staan schakelacties toe, andere tonen het dialoogvenster met meer informatie.",
                             "name": "Afbeelding oogopslag"
                         },
                         "picture": {
+                            "description": "Met de Picture-kaart kunt u een afbeelding instellen voor navigatie naar verschillende paden in uw interface of om een service te activeren.",
                             "name": "Afbeelding"
                         },
                         "plant-status": {
+                            "description": "De Plant Status-kaart is voor alle mooie botanici die er zijn.",
                             "name": "toestand plant"
                         },
                         "sensor": {
@@ -2297,11 +2345,14 @@
                     "save_config": {
                         "cancel": "Laat maar",
                         "close": "Sluiten",
+                        "empty_config": "Begin met een leeg dashboard",
                         "header": "Neem de controle over je Lovelace UI",
                         "para": "Home Assistant onderhoudt je gebruikersinterface en update die met nieuwe entiteiten of Lovelace-onderdelen wanneer deze beschikbaar zijn. Als je het beheer overneemt, zullen we niet langer automatisch wijzigingen aanbrengen.",
                         "para_sure": "Weet je zeker dat je de controle wilt over je gebruikersinterface?",
                         "save": "Neem over",
-                        "yaml_config": "Om je te helpen te beginnen, hier is de huidige configuratie van dit dashboard:"
+                        "yaml_config": "Om je te helpen te beginnen, hier is de huidige configuratie van dit dashboard:",
+                        "yaml_control": "Om de controle over te nemen in de YAML-modus, maak je een YAML-bestand met de naam die je hebt opgegeven in je configuratie voor dit dashboard, of de standaard 'ui-lovelace.yaml'.",
+                        "yaml_mode": "Je gebruikt de YAML-modus, wat betekent dat je jouw Lovelace-configuratie niet vanuit de gebruikersinterface kunt wijzigen. Als je Lovelace vanuit de gebruikersinterface wilt wijzigen, verwijder dan 'mode: yaml' uit de Lovelace-configuratie in 'configuration.yaml.'"
                     },
                     "suggest_card": {
                         "add": "Voeg toe aan de Lovelace gebruikersinterface",
@@ -2342,10 +2393,12 @@
                 "views": {
                     "confirm_delete": "Weergave verwijderen?",
                     "confirm_delete_existing_cards": "Als u deze weergave verwijdert, worden ook de kaarten verwijderd",
+                    "confirm_delete_existing_cards_text": "Weet u zeker dat u uw weergave '{name}' wilt verwijderen? De weergave bevat {number} kaarten die worden verwijderd. Deze actie kan niet ongedaan gemaakt worden.",
                     "confirm_delete_text": "Weet u zeker dat u uw '{naam}'-weergave wilt verwijderen?",
                     "existing_cards": "U kunt een weergave met kaarten niet verwijderen. Verwijder eerst de kaarten."
                 },
                 "warning": {
+                    "attribute_not_found": "Kenmerk {attribute} niet beschikbaar in: {entity}",
                     "entity_non_numeric": "Entiteit is niet-numeriek: {entity}",
                     "entity_not_found": "Entiteit niet beschikbaar: {entity}"
                 }
@@ -2542,6 +2595,11 @@
                     "submit": "Verzenden"
                 },
                 "current_user": "Je bent momenteel ingelogd als {fullName}.",
+                "dashboard": {
+                    "description": "Kies een standaarddashboard voor dit apparaat.",
+                    "dropdown_label": "Dashboard",
+                    "header": "Dashboard"
+                },
                 "force_narrow": {
                     "description": "De zijbalk standaard verbergen, vergelijkbaar met de mobiele ervaring.",
                     "header": "Zijbalk altijd verbergen"
