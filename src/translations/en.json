@@ -1679,10 +1679,12 @@
             "update_user": "Update",
             "id": "ID",
             "owner": "Owner",
+            "admin": "Administrator",
             "group": "Group",
             "active": "Active",
             "system_generated": "System generated",
             "system_generated_users_not_removable": "Unable to remove system generated users.",
+            "system_generated_users_not_editable": "Unable to update system generated users.",
             "unnamed_user": "Unnamed User",
             "confirm_user_deletion": "Are you sure you want to delete {name}?"
           },
