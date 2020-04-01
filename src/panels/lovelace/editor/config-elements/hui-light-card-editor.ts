@@ -52,7 +52,7 @@ export class HuiLightCardEditor extends LitElement
   }
 
   get _theme(): string {
-    return this._config!.theme || "default";
+    return this._config!.theme || "";
   }
 
   get _entity(): string {

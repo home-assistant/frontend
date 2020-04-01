@@ -57,7 +57,7 @@ export class HuiGaugeCardEditor extends LitElement
   }
 
   get _theme(): string {
-    return this._config!.theme || "default";
+    return this._config!.theme || "";
   }
 
   get _min(): number {
