@@ -32,6 +32,8 @@ import {
   weatherImages,
 } from "../../../data/weather";
 
+const DAY = 86400000;
+
 @customElement("hui-weather-forecast-card")
 class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
   public static async getConfigElement(): Promise<LovelaceCardEditor> {
@@ -148,7 +150,7 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
       const date2 = new Date(forecast[1].datetime);
       const timeDiff = date2.getTime() - date1.getTime();
 
-      hourly = timeDiff === 3600000;
+      hourly = timeDiff < DAY;
     }
 
     return html`
