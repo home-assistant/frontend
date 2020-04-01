@@ -10,12 +10,11 @@ import {
   TemplateResult,
   css,
 } from "lit-element";
-import "../../../components/entity/ha-entities-picker";
-import "../../../components/user/ha-user-picker";
 import { PolymerChangedEvent } from "../../../polymer-types";
 import { haStyleDialog } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
 import { UserDetailDialogParams } from "./show-dialog-user-detail";
+import "../../../components/ha-switch";
 import { createCloseHeading } from "../../../components/ha-dialog";
 import {
   SYSTEM_GROUP_ID_ADMIN,
@@ -173,9 +172,9 @@ class DialogUserDetail extends LitElement {
     try {
       await this._params!.updateEntry({
         name: this._name.trim(),
-        group_ids: this._isAdmin
-          ? [SYSTEM_GROUP_ID_ADMIN]
-          : [SYSTEM_GROUP_ID_USER],
+        group_ids: [
+          this._isAdmin ? SYSTEM_GROUP_ID_ADMIN : SYSTEM_GROUP_ID_USER,
+        ],
       });
       this._close();
     } catch (err) {
@@ -207,8 +206,11 @@ class DialogUserDetail extends LitElement {
         ha-dialog {
           --mdc-dialog-min-width: 500px;
         }
-        table {
-          width: 100%;
+        .form {
+          padding-top: 16px;
+        }
+        .secondary {
+          color: var(--secondary-text-color);
         }
         .state {
           background-color: rgba(var(--rgb-primary-text-color), 0.15);
