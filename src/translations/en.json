@@ -750,7 +750,7 @@
       },
       "mqtt_device_debug_info": {
         "title": "{device} debug info",
-        "deserialize": "Attempt to deserialize payload",
+        "deserialize": "Attempt to parse MQTT messages as JSON",
         "no_entities": "No entities",
         "no_triggers": "No triggers",
         "recent_messages": "{n} most recently received message(s)",
