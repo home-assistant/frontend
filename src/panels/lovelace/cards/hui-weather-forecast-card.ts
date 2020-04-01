@@ -113,7 +113,7 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
 
     const stateObj = this.hass.states[this._config.entity] as WeatherEntity;
 
-    if (!stateObj || stateObj.state === UNAVAILABLE) {
+    if (!stateObj) {
       return html`
         <hui-warning
           >${this.hass.localize(
@@ -122,6 +122,17 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
             this._config.entity
           )}</hui-warning
         >
+      `;
+    }
+
+    if (stateObj.state === UNAVAILABLE) {
+      return html`
+        <div class="unavailable">
+          <hui-unavailable
+            .text=${this.hass.localize("state.default.unavailable")}
+            @click=${this._handleAction}
+          ></hui-unavailable>
+        </div>
       `;
     }
 
@@ -449,6 +460,11 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
 
       :host([veryVeryNarrow]) .temp-attribute {
         padding-top: 4px;
+      }
+
+      .unavailable {
+        height: 100px;
+        position: relative;
       }
     `;
   }
