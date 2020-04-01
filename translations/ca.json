@@ -812,6 +812,10 @@
                 "areas": {
                     "caption": "Registre d'àrees",
                     "create_area": "CREA ÀREA",
+                    "data_table": {
+                        "area": "Àrea",
+                        "devices": "Dispositius"
+                    },
                     "delete": {
                         "confirmation_text": "Tots els dispositius d'aquesta àrea quedaran sense assignar.",
                         "confirmation_title": "Estàs segur que vols eliminar aquesta àrea?"
@@ -1054,6 +1058,9 @@
                         "delete_confirm": "Estàs segur que vols eliminar aquesta automatització?",
                         "edit_automation": "Edita automatització",
                         "header": "Editor d'automatitzacions",
+                        "headers": {
+                            "name": "Nom"
+                        },
                         "introduction": "L'editor d'automatitzacions et permet crear i editar automatitzacions. Vés a l'enllaç de sota per veure'n les instruccions i assegurar-te que has configurat el Home Assistant correctament.",
                         "learn_more": "Més informació sobre les automatitzacions",
                         "no_automations": "No s'ha pogut trobar cap automatització editable",
@@ -1334,6 +1341,7 @@
                     },
                     "info": "Informació del dispositiu",
                     "name": "Nom",
+                    "no_devices": "No hi ha dispositius",
                     "scene": {
                         "create": "Crea una escena amb el dispositiu",
                         "no_scenes": "No hi ha escenes",
@@ -1638,6 +1646,9 @@
                         "delete_scene": "Suprimeix l'escena",
                         "edit_scene": "Edita escena",
                         "header": "Editor d’escenes",
+                        "headers": {
+                            "name": "Nom"
+                        },
                         "introduction": "L'editor d'escenes et permet crear i editar escenes. Vés a l'enllaç de sota per veure'n les instruccions i assegurar-te que has configurat el Home Assistant correctament.",
                         "learn_more": "Més informació sobre les escenes",
                         "no_scenes": "No s'ha pogut trobar cap escena editable",
@@ -1665,6 +1676,9 @@
                         "add_script": "Afegeix script",
                         "edit_script": "Edita l'script",
                         "header": "Editor de scripts",
+                        "headers": {
+                            "name": "Nom"
+                        },
                         "introduction": "L'editor de scripts et permet crear i editar scripts. Vés a l'enllaç de sota per veure'n les instruccions i assegurar-te que has configurat el Home Assistant correctament.",
                         "learn_more": "Més informació sobre els scripts",
                         "no_scripts": "No hem trobat cap script editable",
@@ -1725,14 +1739,21 @@
                         "group": "Grup",
                         "group_update_failed": "L'actualització del grup ha fallat:",
                         "id": "ID",
+                        "name": "Nom",
                         "owner": "Propietari",
                         "rename_user": "Canviar el nom d'usuari",
                         "system_generated": "Generat pel sistema",
                         "system_generated_users_not_removable": "No es poden eliminar usuaris generats pel sistema.",
                         "unnamed_user": "Usuari sense nom",
+                        "update_user": "Actualitza",
                         "user_rename_failed": "El canvi de nom d'usuari ha fallat:"
                     },
                     "picker": {
+                        "headers": {
+                            "group": "Grup",
+                            "name": "Nom",
+                            "system": "Sistema"
+                        },
                         "system_generated": "Generat pel sistema",
                         "title": "Usuaris"
                     }
@@ -2135,6 +2156,9 @@
                             "description": "La targeta filtre d'entitats et permet definir una llista d'entitats les quals vols seguir/visualitzar només quan es trobin en un cert estat.",
                             "name": "Filtre d'entitats"
                         },
+                        "entity": {
+                            "name": "Entitat"
+                        },
                         "gauge": {
                             "description": "La galga és una targeta bàsica que et permet mostrar les dades d'un sensor de manera visual.",
                             "name": "Galga",
@@ -2147,6 +2171,7 @@
                         },
                         "generic": {
                             "aspect_ratio": "Relació d'aspecte",
+                            "attribute": "Atribut",
                             "camera_image": "Entitat de càmera",
                             "camera_view": "Visualització de càmera",
                             "entities": "Entitats",
@@ -2568,6 +2593,10 @@
                     "submit": "Envia"
                 },
                 "current_user": "Has iniciat la sessió com a {fullName}.",
+                "dashboard": {
+                    "dropdown_label": "Panell",
+                    "header": "Panell"
+                },
                 "force_narrow": {
                     "description": "Això ocultarà la barra lateral de manera similar als mòbils i tablets.",
                     "header": "Amaga sempre la barra lateral"

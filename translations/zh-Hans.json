@@ -812,6 +812,10 @@
                 "areas": {
                     "caption": "区域注册表",
                     "create_area": "创建区域",
+                    "data_table": {
+                        "area": "区域",
+                        "devices": "设备"
+                    },
                     "delete": {
                         "confirmation_text": "此区域中的所有设备都将取消分配。",
                         "confirmation_title": "您确定要删除此区域吗？"
@@ -1054,6 +1058,9 @@
                         "delete_confirm": "您确定要删除此自动化吗？",
                         "edit_automation": "编辑自动化",
                         "header": "自动化编辑器",
+                        "headers": {
+                            "name": "名称"
+                        },
                         "introduction": "自动化编辑器方便您创建及编辑自动化。请按照下面的链接阅读说明，以确保配置正确。",
                         "learn_more": "详细了解自动化",
                         "no_automations": "未找到可编辑的自动化",
@@ -1334,6 +1341,7 @@
                     },
                     "info": "设备信息",
                     "name": "名称",
+                    "no_devices": "没有设备",
                     "scene": {
                         "create": "通过设备创建场景",
                         "no_scenes": "没有场景",
@@ -1638,6 +1646,9 @@
                         "delete_scene": "删除场景",
                         "edit_scene": "编辑场景",
                         "header": "场景编辑器",
+                        "headers": {
+                            "name": "名称"
+                        },
                         "introduction": "场景编辑器方便您创建及编辑场景。请按照下面的链接阅读说明，以确保配置正确。",
                         "learn_more": "详细了解场景",
                         "no_scenes": "未找到可编辑的场景",
@@ -1665,9 +1676,13 @@
                         "add_script": "添加脚本",
                         "edit_script": "编辑脚本",
                         "header": "脚本编辑器",
+                        "headers": {
+                            "name": "名称"
+                        },
                         "introduction": "脚本编辑器方便您创建及编辑脚本。请按照下面的链接阅读说明，以确保配置正确。",
                         "learn_more": "详细了解脚本",
                         "no_scripts": "未找到可编辑的脚本",
+                        "show_info": "显示有关脚本的信息",
                         "trigger_script": "触发脚本"
                     }
                 },
@@ -1725,14 +1740,21 @@
                         "group": "群组",
                         "group_update_failed": "组更新失败：",
                         "id": "ID",
+                        "name": "名称",
                         "owner": "所有者",
                         "rename_user": "重命名用户",
                         "system_generated": "系统生成",
                         "system_generated_users_not_removable": "无法删除系统生成的用户。",
                         "unnamed_user": "未命名的用户",
+                        "update_user": "更新",
                         "user_rename_failed": "用户重命名失败："
                     },
                     "picker": {
+                        "headers": {
+                            "group": "群组",
+                            "name": "名称",
+                            "system": "系统"
+                        },
                         "system_generated": "系统生成",
                         "title": "用户"
                     }
@@ -2135,6 +2157,9 @@
                             "description": "“实体筛选”卡片用于定义一个实体的列表，只显示处于指定状态的实体。",
                             "name": "实体筛选"
                         },
+                        "entity": {
+                            "name": "实体"
+                        },
                         "gauge": {
                             "description": "“表盘”卡片是基础卡片，用于直观地展示传感器数据。",
                             "name": "表盘",
@@ -2147,6 +2172,7 @@
                         },
                         "generic": {
                             "aspect_ratio": "长宽比",
+                            "attribute": "属性",
                             "camera_image": "相机实体",
                             "camera_view": "相机视图",
                             "entities": "实体",
@@ -2319,6 +2345,7 @@
                     "save_config": {
                         "cancel": "算了吧",
                         "close": "关闭",
+                        "empty_config": "从空白仪表盘开始",
                         "header": "自行编辑您的 Lovelace UI",
                         "para": "默认情况下，Home Assistant 将维护您的用户界面，并在新的实体或 Lovelace 组件可用时更新它。如果您选择自行编辑，我们将不再自动为您进行更改。",
                         "para_sure": "您确定要自行编辑用户界面吗？",
@@ -2568,6 +2595,11 @@
                     "submit": "提交"
                 },
                 "current_user": "您目前以 {fullName} 的身份登录。",
+                "dashboard": {
+                    "description": "选择此设备的默认仪表盘。",
+                    "dropdown_label": "仪表盘",
+                    "header": "仪表盘"
+                },
                 "force_narrow": {
                     "description": "这将默认隐藏侧边栏，体验与手机版类似。",
                     "header": "始终隐藏侧边栏"
