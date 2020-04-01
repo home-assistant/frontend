@@ -60,15 +60,9 @@ class HuiAttributeRow extends LitElement implements LovelaceRow {
 
     return html`
       <hui-generic-entity-row .hass=${this.hass} .config=${this._config}>
-        ${attribute
-          ? html`
-              <div>
-                ${this._config.prefix} ${attribute} ${this._config.suffix}
-              </div>
-            `
-          : html`
-              <span>-</span>
-            `}
+        <div>
+          ${this._config.prefix} ${attribute || "-"} ${this._config.suffix}
+        </div>
       </hui-generic-entity-row>
     `;
   }
@@ -77,9 +71,6 @@ class HuiAttributeRow extends LitElement implements LovelaceRow {
     return css`
       div {
         text-align: right;
-      }
-      span {
-        padding-right: 16px;
       }
     `;
   }
