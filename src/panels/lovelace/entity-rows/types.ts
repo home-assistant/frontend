@@ -29,6 +29,12 @@ export interface WeblinkConfig {
   icon?: string;
   url: string;
 }
+export interface CallServiceConfig extends EntityConfig {
+  type: "call-service";
+  service: string;
+  service_data?: { [key: string]: any };
+  action_name?: string;
+}
 export interface ButtonRowConfig extends EntityConfig {
   type: "button";
   action_name?: string;
@@ -57,6 +63,7 @@ export type LovelaceRowConfig =
   | ButtonsRowConfig
   | ConditionalRowConfig
   | ButtonRowConfig
+  | CallServiceConfig
   | CastConfig;
 
 export interface LovelaceRow extends HTMLElement {

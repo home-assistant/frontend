@@ -1,12 +1,12 @@
 import { customElement } from "lit-element";
 
-import { ButtonRowConfig } from "../entity-rows/types";
+import { CallServiceConfig } from "../entity-rows/types";
 import { HuiButtonRow } from "./hui-button-row";
 
 @customElement("hui-call-service-row")
 export class HuiCallServiceRow extends HuiButtonRow {
-  public setConfig(config: ButtonRowConfig): void {
-    const callServiceConfig: any = config;
+  public setConfig(config: any): void {
+    const callServiceConfig: CallServiceConfig = config;
 
     if (!callServiceConfig) {
       throw new Error("Error in card configuration.");
