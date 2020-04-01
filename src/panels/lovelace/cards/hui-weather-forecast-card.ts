@@ -13,26 +13,24 @@ import "../../../components/entity/state-badge";
 import "../../../components/ha-card";
 import "../components/hui-warning";
 
+import { WeatherForecastCardConfig } from "./types";
+import { LovelaceCard, LovelaceCardEditor } from "../types";
+import { HomeAssistant, WeatherEntity } from "../../../types";
+import { findEntities } from "../common/find-entites";
+import { hasConfigOrEntityChanged } from "../common/has-changed";
+import { actionHandler } from "../common/directives/action-handler-directive";
 import { isValidEntityId } from "../../../common/entity/valid_entity_id";
 import { computeStateName } from "../../../common/entity/compute_state_name";
-
-import { HomeAssistant, WeatherEntity } from "../../../types";
-import { hasConfigOrEntityChanged } from "../common/has-changed";
-import "../components/hui-warning";
-import { LovelaceCard, LovelaceCardEditor } from "../types";
-import { WeatherForecastCardConfig } from "./types";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
-import { actionHandler } from "../common/directives/action-handler-directive";
-import { findEntities } from "../common/find-entites";
 import { debounce } from "../../../common/util/debounce";
+import { UNAVAILABLE } from "../../../data/entity";
 import {
   weatherIcons,
   getSecondaryWeatherAttribute,
   getWeatherUnit,
   weatherImages,
 } from "../../../data/weather";
-import { UNAVAILABLE } from "../../../data/entity";
 
 @customElement("hui-weather-forecast-card")
 class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
@@ -159,25 +157,21 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
                   ></state-badge>
                 `
               : ""}
-            ${!this._narrow
-              ? html`
-                  <div class="header">
-                    <div class="name">
-                      ${this._config.name || computeStateName(stateObj)}
-                    </div>
-                    ${this.hass.localize(`state.weather.${stateObj.state}`) ||
-                      stateObj.state}
-                  </div>
-                `
-              : ""}
+            <div class="header">
+              <div class="name">
+                ${this._config.name || computeStateName(stateObj)}
+              </div>
+              ${this.hass.localize(`state.weather.${stateObj.state}`) ||
+                stateObj.state}
+            </div>
           </div>
-          <div class="temp-extrema">
+          <div class="temp-attribute">
             <div class="temp">
               ${stateObj.attributes.temperature}<span
                 >${getWeatherUnit(this.hass, "temperature")}</span
               >
             </div>
-            <div class="extrema">
+            <div class="attribute">
               ${getSecondaryWeatherAttribute(this.hass, stateObj)}
             </div>
           </div>
@@ -280,7 +274,17 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
     if (!card) {
       return;
     }
-    this._narrow = card.offsetWidth < 350;
+    this._narrow = card.offsetWidth < 375;
+    if (card.offsetWidth < 300) {
+      this.setAttribute("verynarrow", "");
+    } else {
+      this.removeAttribute("verynarrow");
+    }
+    if (card.offsetWidth < 200) {
+      this.setAttribute("veryverynarrow", "");
+    } else {
+      this.removeAttribute("veryverynarrow");
+    }
   }
 
   static get styles(): CSSResult {
@@ -304,6 +308,7 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
       .icon-header {
         display: flex;
         align-items: center;
+        overflow: hidden;
       }
 
       .icon-header state-badge {
@@ -311,34 +316,40 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
         width: 72px;
         --iron-icon-width: 72px;
         --iron-icon-height: 72px;
+        flex: 0 0 72px;
         margin-right: 16px;
       }
 
       .header {
         font-size: 28px;
         line-height: 28px;
+        overflow: hidden;
+        text-overflow: ellipsis;
       }
 
       .name {
         font-size: 16px;
         color: var(--secondary-text-color);
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
       }
 
-      .temp-extrema .temp {
+      .temp-attribute .temp {
         position: relative;
         font-size: 52px;
         line-height: 52px;
         margin-right: 24px;
       }
 
-      .temp-extrema .temp span {
+      .temp-attribute .temp span {
         position: absolute;
         font-size: 24px;
         line-height: 24px;
         top: 4px;
       }
 
-      .temp-extrema {
+      .temp-attribute {
         display: flex;
         flex-direction: column;
         align-items: flex-end;
@@ -363,9 +374,74 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
         font-size: 16px;
       }
 
-      .extrema,
+      .attribute,
       .templow {
         color: var(--secondary-text-color);
+      }
+
+      :host([narrow]) .forecast {
+        justify-content: space-around;
+      }
+
+      :host([narrow]) .header {
+        font-size: 22px;
+        line-height: 22px;
+      }
+
+      :host([narrow]) .icon-header state-badge {
+        height: 62px;
+        width: 62px;
+        --iron-icon-width: 62px;
+        --iron-icon-height: 62px;
+        flex: 0 0 62px;
+      }
+
+      :host([narrow]) .temp-attribute .temp {
+        font-size: 44px;
+        line-height: 44px;
+        margin-right: 24px;
+      }
+
+      :host([narrow]) .temp-attribute .temp span {
+        font-size: 24px;
+        line-height: 24px;
+        top: 3px;
+      }
+
+      :host([narrow]) .attribute {
+        display: none;
+      }
+
+      :host([veryNarrow]) .header {
+        display: none;
+      }
+
+      :host([veryNarrow]) .icon-header state-badge {
+        height: 52px;
+        width: 52px;
+        --iron-icon-width: 52px;
+        --iron-icon-height: 52px;
+        flex: 0 0 52px;
+      }
+
+      :host([veryNarrow]) .temp-attribute .temp {
+        font-size: 36px;
+        line-height: 36px;
+        margin-right: 18px;
+      }
+
+      :host([veryNarrow]) .temp-attribute .temp span {
+        font-size: 18px;
+        line-height: 18px;
+        top: 3px;
+      }
+
+      :host([veryVeryNarrow]) .main {
+        justify-content: center;
+      }
+
+      :host([veryVeryNarrow]) .temp-attribute {
+        padding-top: 4px;
       }
     `;
   }
