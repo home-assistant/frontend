@@ -2127,8 +2127,7 @@
         },
         "warning": {
           "entity_not_found": "Entity not available: {entity}",
-          "entity_non_numeric": "Entity is non-numeric: {entity}",
-          "attribute_not_found": "Attribute not available: {attribute}"
+          "entity_non_numeric": "Entity is non-numeric: {entity}"
         },
         "changed_toast": {
           "message": "The Lovelace UI configuration for this dashboard was updated, refresh to see changes?",
