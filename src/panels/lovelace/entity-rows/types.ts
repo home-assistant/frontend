@@ -55,7 +55,8 @@ export type LovelaceRowConfig =
   | CallServiceConfig
   | CastConfig
   | ButtonsRowConfig
-  | ConditionalRowConfig;
+  | ConditionalRowConfig
+  | AttributeRowConfig;
 
 export interface LovelaceRow extends HTMLElement {
   hass?: HomeAssistant;
@@ -65,4 +66,9 @@ export interface LovelaceRow extends HTMLElement {
 export interface ConditionalRowConfig extends EntityConfig {
   row: EntityConfig;
   conditions: Condition[];
+}
+export interface AttributeRowConfig extends EntityConfig {
+  attribute: string;
+  prefix?: string;
+  suffix?: string;
 }
