@@ -70,7 +70,7 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
       throw new Error("Entities need to be an array");
     }
 
-    this._config = { theme: "default", ...config };
+    this._config = config;
     this._configEntities = config.entities
       ? processConfigEntities(config.entities)
       : [];

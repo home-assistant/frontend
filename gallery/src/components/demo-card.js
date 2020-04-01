@@ -16,7 +16,8 @@ class DemoCard extends PolymerElement {
           color: var(--primary-color);
         }
         #card {
-          width: 400px;
+          max-width: 400px;
+          width: 100vw;
         }
         pre {
           width: 400px;

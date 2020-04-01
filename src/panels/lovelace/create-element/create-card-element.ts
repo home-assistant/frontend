@@ -1,4 +1,5 @@
 import "../cards/hui-entities-card";
+import "../cards/hui-entity-card";
 import "../cards/hui-button-card";
 import "../cards/hui-entity-button-card";
 import "../cards/hui-glance-card";
@@ -16,6 +17,7 @@ import {
 } from "./create-element-base";
 
 const ALWAYS_LOADED_TYPES = new Set([
+  "entity",
   "entities",
   "button",
   "entity-button",
