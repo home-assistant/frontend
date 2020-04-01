@@ -14,7 +14,7 @@ import { struct } from "../../common/structs/struct";
 import { HomeAssistant } from "../../../../types";
 import { LovelaceCardEditor } from "../../types";
 import { StackCardConfig } from "../../cards/types";
-import { fireEvent } from "../../../../common/dom/fire_event";
+import { fireEvent, HASSDomEvent } from "../../../../common/dom/fire_event";
 import { LovelaceConfig } from "../../../../data/lovelace";
 import { HuiCardEditor } from "../card-editor/hui-card-editor";
 import { GUIModeChangedEvent } from "../types";
@@ -180,7 +180,8 @@ export class HuiStackCardEditor extends LitElement
     fireEvent(this, "config-changed", { config: this._config });
   }
 
-  private _handleGUIModeChanged(ev: GUIModeChangedEvent): void {
+  private _handleGUIModeChanged(ev: HASSDomEvent<GUIModeChangedEvent>): void {
+    ev.stopPropagation();
     this._GUImode = ev.detail.guiMode;
   }
 

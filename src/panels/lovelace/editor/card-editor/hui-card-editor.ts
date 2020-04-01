@@ -23,6 +23,7 @@ import { HaCodeEditor } from "../../../../components/ha-code-editor";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { EntityConfig } from "../../entity-rows/types";
 import { getCardElementClass } from "../../create-element/create-card-element";
+import { GUIModeChangedEvent } from "../types";
 
 declare global {
   interface HASSDomEvents {
@@ -33,7 +34,7 @@ declare global {
       config: LovelaceCardConfig;
       error?: string;
     };
-    "GUImode-changed": { guiMode: boolean };
+    "GUImode-changed": GUIModeChangedEvent;
   }
 }
 
@@ -100,9 +101,7 @@ export class HuiCardEditor extends LitElement {
 
   public set GUImode(guiMode: boolean) {
     this._GUImode = guiMode;
-    fireEvent(this as HTMLElement, "GUImode-changed", {
-      guiMode,
-    });
+    fireEvent(this as HTMLElement, "GUImode-changed", { guiMode });
   }
 
   private get _yamlEditor(): HaCodeEditor {

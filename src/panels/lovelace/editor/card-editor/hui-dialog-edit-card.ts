@@ -299,7 +299,8 @@ export class HuiDialogEditCard extends LitElement {
     }
   }
 
-  private _handleGUIModeChanged(ev: GUIModeChangedEvent): void {
+  private _handleGUIModeChanged(ev: HASSDomEvent<GUIModeChangedEvent>): void {
+    ev.stopPropagation();
     this._GUImode = ev.detail.guiMode;
   }
 
