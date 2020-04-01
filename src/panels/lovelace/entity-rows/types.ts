@@ -60,6 +60,7 @@ export type LovelaceRowConfig =
   | DividerConfig
   | SectionConfig
   | WeblinkConfig
+  | ButtonRowConfig
   | ButtonsRowConfig
   | ConditionalRowConfig
   | CallServiceConfig
