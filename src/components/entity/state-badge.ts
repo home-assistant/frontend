@@ -76,7 +76,7 @@ export class StateBadge extends LitElement {
         }
         hostStyle.backgroundImage = `url(${imageUrl})`;
         iconStyle.display = "none";
-      } else {
+      } else if (stateObj.state === "on") {
         if (stateObj.attributes.hs_color && this.stateColor !== false) {
           const hue = stateObj.attributes.hs_color[0];
           const sat = stateObj.attributes.hs_color[1];
