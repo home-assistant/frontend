@@ -11,7 +11,7 @@ import "../components/ha-slider";
 
 class StateCardAnalogOutput extends mixinBehaviors(
   [IronResizableBehavior],
-  PolymerElement
+  LitElement
 ) {
   static get template() {
     return html`
