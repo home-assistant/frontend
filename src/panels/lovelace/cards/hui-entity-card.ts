@@ -34,7 +34,7 @@ import { UNKNOWN, UNAVAILABLE } from "../../../data/entity";
 import { HuiErrorCard } from "./hui-error-card";
 
 @customElement("hui-entity-card")
-class HuiEntityCard extends LitElement implements LovelaceCard {
+export class HuiEntityCard extends LitElement implements LovelaceCard {
   public static async getConfigElement(): Promise<LovelaceCardEditor> {
     await import(
       /* webpackChunkName: "hui-entity-card-editor" */ "../editor/config-elements/hui-entity-card-editor"
