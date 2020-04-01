@@ -1,5 +1,6 @@
 import { HomeAssistant } from "../../../types";
 import { Condition } from "../common/validate-condition";
+import { ActionConfig } from "../../../data/lovelace";
 
 export interface EntityConfig {
   entity: string;
@@ -30,9 +31,16 @@ export interface WeblinkConfig {
 }
 export interface CallServiceConfig extends EntityConfig {
   type: "call-service";
-  action_name?: string;
   service: string;
   service_data?: { [key: string]: any };
+  action_name?: string;
+}
+export interface ButtonRowConfig extends EntityConfig {
+  type: "button";
+  action_name?: string;
+  tap_action?: ActionConfig;
+  hold_action?: ActionConfig;
+  double_tap_action?: ActionConfig;
 }
 export interface CastConfig {
   type: "cast";
@@ -54,6 +62,7 @@ export type LovelaceRowConfig =
   | WeblinkConfig
   | CallServiceConfig
   | CastConfig
+  | ButtonRowConfig
   | ButtonsRowConfig
   | ConditionalRowConfig
   | AttributeRowConfig;
