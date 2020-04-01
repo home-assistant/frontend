@@ -127,7 +127,7 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
       `;
     }
 
-    if (stateObj.state === UNAVAILABLE || 1) {
+    if (stateObj.state === UNAVAILABLE) {
       return html`
         <ha-card class="unavailable" @click=${this._handleAction}>
           ${this.hass.localize(
@@ -468,6 +468,8 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
         justify-content: center;
         align-items: center;
         font-size: 16px;
+        padding: 10px 20px;
+        text-align: center;
       }
     `;
   }

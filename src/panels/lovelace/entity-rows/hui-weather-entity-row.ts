@@ -103,8 +103,6 @@ class HuiWeatherEntityRow extends LitElement implements LovelaceRow {
         flex-direction: column;
         justify-content: center;
         text-align: right;
-        padding: 10px 20px;
-        text-align: center;
       }
 
       .secondary {
