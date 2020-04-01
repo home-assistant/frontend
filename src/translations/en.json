@@ -1,6 +1,7 @@
 {
   "domain": {
     "alarm_control_panel": "Alarm control panel",
+    "analog_output": "Analog output",
     "automation": "Automation",
     "binary_sensor": "Binary sensor",
     "calendar": "Calendar",
