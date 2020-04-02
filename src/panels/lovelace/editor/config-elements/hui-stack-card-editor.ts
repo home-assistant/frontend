@@ -56,7 +56,7 @@ export class HuiStackCardEditor extends LitElement
           <paper-tabs
             .selected=${selected}
             scrollable
-            @iron-select=${this._handleSelectedCard}
+            @iron-activate=${this._handleSelectedCard}
           >
             ${this._config.cards.map((_card, i) => {
               return html`
@@ -69,7 +69,7 @@ export class HuiStackCardEditor extends LitElement
           <paper-tabs
             id="add-card"
             .selected=${selected === numcards ? "0" : undefined}
-            @iron-select=${this._handleSelectedCard}
+            @iron-activate=${this._handleSelectedCard}
           >
             <paper-tab>
               <ha-icon icon="hass:plus"></ha-icon>
@@ -143,7 +143,7 @@ export class HuiStackCardEditor extends LitElement
     }
     this._setMode(true);
     this._guiModeAvailable = true;
-    this._selectedCard = parseInt(ev.target.selected, 10);
+    this._selectedCard = parseInt(ev.detail.selected, 10);
   }
 
   private _handleConfigChanged(ev: HASSDomEvent<ConfigChangedEvent>) {
@@ -198,7 +198,10 @@ export class HuiStackCardEditor extends LitElement
   }
 
   private _setMode(value: boolean): void {
-    this._GUImode = this._cardEditorEl!.GUImode = value;
+    this._GUImode = value;
+    if (this._cardEditorEl) {
+      this._cardEditorEl!.GUImode = value;
+    }
   }
 
   static get styles(): CSSResult {

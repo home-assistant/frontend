@@ -291,7 +291,6 @@ export class HuiDialogEditCard extends LitElement {
   }
 
   private _handleConfigChanged(ev: HASSDomEvent<ConfigChangedEvent>) {
-    console.log(ev);
     this._cardConfig = deepFreeze(ev.detail.config);
     this._error = ev.detail.error;
     this._guiModeAvailable = ev.detail.guiModeAvailable;
@@ -305,7 +304,6 @@ export class HuiDialogEditCard extends LitElement {
 
   private _handleGUIModeChanged(ev: HASSDomEvent<GUIModeChangedEvent>): void {
     ev.stopPropagation();
-    console.log(ev);
     this._GUImode = ev.detail.guiMode;
     this._guiModeAvailable = ev.detail.guiModeAvailable;
   }
