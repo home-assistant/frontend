@@ -200,6 +200,7 @@ export class HuiCardPicker extends LitElement {
           background: var(--primary-background-color, #fafafa);
           cursor: pointer;
           box-sizing: border-box;
+          position: relative;
         }
 
         .card-header {
@@ -241,6 +242,13 @@ export class HuiCardPicker extends LitElement {
         .spinner {
           align-items: center;
           justify-content: center;
+        }
+
+        .overlay {
+          position: absolute;
+          width: 100%;
+          height: 100%;
+          z-index: 1;
         }
       `,
     ];
@@ -297,7 +305,12 @@ export class HuiCardPicker extends LitElement {
     }
 
     return html`
-      <div class="card" @click="${this._cardPicked}" .config="${cardConfig}">
+      <div class="card">
+        <div
+          class="overlay"
+          @click=${this._cardPicked}
+          .config=${cardConfig}
+        ></div>
         <div
           class="preview ${classMap({
             description: !element || element.tagName === "HUI-ERROR-CARD",
