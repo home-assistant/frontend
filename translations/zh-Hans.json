@@ -509,6 +509,7 @@
                 "attributes": {
                     "air_pressure": "气压",
                     "humidity": "湿度",
+                    "precipitation": "降水量",
                     "temperature": "温度",
                     "visibility": "能见度",
                     "wind_speed": "风速"
@@ -531,7 +532,9 @@
                     "wnw": "西北偏西",
                     "wsw": "西南偏西"
                 },
-                "forecast": "预报"
+                "forecast": "预报",
+                "high": "高",
+                "low": "低"
             }
         },
         "common": {
@@ -2175,6 +2178,7 @@
                             "attribute": "属性",
                             "camera_image": "相机实体",
                             "camera_view": "相机视图",
+                            "double_tap_action": "双击动作",
                             "entities": "实体",
                             "entity": "实体",
                             "hold_action": "保持操作",
@@ -2225,6 +2229,7 @@
                             "default_zoom": "默认缩放",
                             "description": "“地图”卡片用于在地图上显示实体。",
                             "geo_location_sources": "地理位置来源",
+                            "hours_to_show": "显示时间",
                             "name": "地图",
                             "source": "位置来源"
                         },
@@ -2280,6 +2285,10 @@
                             "description": "“天气预报”卡片用于显示天气。对于将界面挂墙显示的情况非常有用。",
                             "name": "天气预报"
                         }
+                    },
+                    "cardpicker": {
+                        "custom_card": "自定义",
+                        "no_description": "没有描述。"
                     },
                     "edit_card": {
                         "add": "添加卡片",
