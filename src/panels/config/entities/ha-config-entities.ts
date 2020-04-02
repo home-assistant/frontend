@@ -108,7 +108,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
         type: "icon",
         sortable: true,
         filterable: true,
-        width: "55px",
+        width: "68px",
         template: (_status, entity: any) =>
           entity.unavailable || entity.disabled_by || entity.readonly
             ? html`
@@ -169,7 +169,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
         ),
         sortable: true,
         filterable: true,
-        width: "20%",
+        width: "25%",
       };
       columns.platform = {
         title: this.hass.localize(
