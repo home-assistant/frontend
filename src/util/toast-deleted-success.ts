@@ -9,7 +9,7 @@ export const showDeleteSuccessToast = (
   showToast(el, {
     message: hass!.localize("ui.common.successfully_deleted"),
     action: {
-      text: "Undo",
+      text: hass!.localize("ui.common.undo"),
       action,
     },
   });
