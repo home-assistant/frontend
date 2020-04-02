@@ -28,7 +28,7 @@ class StateCardAnalogOutput extends LitElement {
           >${this.hass.localize(
             "ui.panel.lovelace.warning.entity_not_found",
             "entity",
-            this._config.entity
+            "analog_output"
           )}</hui-warning
         >
       `;
@@ -93,9 +93,9 @@ class StateCardAnalogOutput extends LitElement {
       }
       paper-input {
         text-align: end;
+        margin-right: 30px;
       }
       ha-slider {
-        width: 60%;
         max-width: 200px;
       }
     `;
