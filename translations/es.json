@@ -509,6 +509,7 @@
                 "attributes": {
                     "air_pressure": "Presión del aire",
                     "humidity": "Humedad",
+                    "precipitation": "Precipitación",
                     "temperature": "Temperatura",
                     "visibility": "Visibilidad",
                     "wind_speed": "Velocidad del viento"
@@ -531,7 +532,9 @@
                     "wnw": "ONO",
                     "wsw": "OSO"
                 },
-                "forecast": "Pronóstico"
+                "forecast": "Pronóstico",
+                "high": "Máxima",
+                "low": "Mínima"
             }
         },
         "common": {
@@ -1117,7 +1120,7 @@
                             "info": "Home Assistant Cloud proporciona una conexión remota segura a tu instancia mientras estás fuera de casa.",
                             "instance_is_available": "Tu instancia está disponible en",
                             "instance_will_be_available": "Tu instancia estará disponible en",
-                            "link_learn_how_it_works": "Aprender cómo funciona",
+                            "link_learn_how_it_works": "Aprende cómo funciona",
                             "title": "Control remoto"
                         },
                         "sign_out": "Cerrar sesión",
@@ -1517,11 +1520,11 @@
                         "cant_edit_yaml": "Los paneles de control definidos en YAML no se pueden editar desde la IU. Cámbialos en configuration.yaml.",
                         "caption": "Paneles de control",
                         "conf_mode": {
-                            "storage": "Controlado por la interfaz de usuario",
+                            "storage": "Controlado por la IU",
                             "yaml": "Archivo YAML"
                         },
                         "confirm_delete": "¿Estás seguro de que quieres eliminar este panel de control?",
-                        "default_dashboard": "Este es el panel predeterminado",
+                        "default_dashboard": "Este es el panel de control predeterminado",
                         "detail": {
                             "create": "Crear",
                             "delete": "Eliminar",
@@ -1649,7 +1652,7 @@
                         "headers": {
                             "name": "Nombre"
                         },
-                        "introduction": "El editor de escenas te permite crear y editar escenas. En el enlace siguiente puedes leer las instrucciones para asegurarte de que has configurado Home Assistant correctamente.",
+                        "introduction": "El editor de escenas te permite crear y editar escenas. Por favor, sigue el siguiente enlace para leer las instrucciones para asegurarte de que has configurado Home Assistant correctamente.",
                         "learn_more": "Saber más sobre las escenas",
                         "no_scenes": "No pudimos encontrar ninguna escena editable",
                         "only_editable": "Solo las escenas definidas en scenes.yaml son editables.",
@@ -1679,7 +1682,7 @@
                         "headers": {
                             "name": "Nombre"
                         },
-                        "introduction": "El editor de scripts te permite crear y editar scripts. En el enlace siguiente puedes leer las instrucciones para asegurarte de que has configurado Home Assistant correctamente.",
+                        "introduction": "El editor de scripts te permite crear y editar scripts. Por favor, sigue el siguiente enlace para leer las instrucciones para asegurarte de que has configurado Home Assistant correctamente.",
                         "learn_more": "Saber más sobre los scripts",
                         "no_scripts": "No hemos encontrado ningún script editable",
                         "show_info": "Mostrar información sobre el script",
@@ -2175,6 +2178,7 @@
                             "attribute": "Atributo",
                             "camera_image": "Entidad de cámara",
                             "camera_view": "Vista de cámara",
+                            "double_tap_action": "Acción de doble toque",
                             "entities": "Entidades",
                             "entity": "Entidad",
                             "hold_action": "Acción de mantener",
@@ -2225,6 +2229,7 @@
                             "default_zoom": "Zoom predeterminado",
                             "description": "La tarjeta Mapa que te permite mostrar entidades en un mapa.",
                             "geo_location_sources": "Fuentes de geolocalización",
+                            "hours_to_show": "Horas para mostrar",
                             "name": "Mapa",
                             "source": "Fuente"
                         },
@@ -2280,6 +2285,10 @@
                             "description": "La tarjeta de Pronóstico del tiempo muestra el clima. Muy útil para incluir en las interfaces que las personas muestran en la pared.",
                             "name": "Pronóstico del tiempo"
                         }
+                    },
+                    "cardpicker": {
+                        "custom_card": "Personalizado",
+                        "no_description": "No hay descripción disponible."
                     },
                     "edit_card": {
                         "add": "Añadir tarjeta",
@@ -2608,7 +2617,7 @@
                 "language": {
                     "dropdown_label": "Idioma",
                     "header": "Idioma",
-                    "link_promo": "Ayudar traduciendo"
+                    "link_promo": "Ayuda a traducir"
                 },
                 "logout": "Cerrar sesión",
                 "logout_text": "¿Estás seguro de que quieres cerrar la sesión?",
@@ -2623,7 +2632,7 @@
                     "empty_state": "Aún no tienes tokens de acceso de larga duración.",
                     "header": "Tokens de acceso de larga duración",
                     "last_used": "Último uso el {date} desde {location}",
-                    "learn_auth_requests": "Aprender cómo realizar solicitudes autenticadas.",
+                    "learn_auth_requests": "Aprende cómo realizar solicitudes autenticadas.",
                     "not_used": "Nunca ha sido usado",
                     "prompt_copy_token": "Copia tu token de acceso. No se mostrará de nuevo.",
                     "prompt_name": "¿Nombre?"
@@ -2664,7 +2673,7 @@
                     "dropdown_label": "Tema",
                     "error_no_theme": "No hay temas disponibles",
                     "header": "Tema",
-                    "link_promo": "Saber más sobre los temas"
+                    "link_promo": "Aprende sobre los temas"
                 },
                 "vibrate": {
                     "description": "Activar o deshabilitar la vibración en este dispositivo al controlar dispositivos.",

@@ -509,6 +509,7 @@
                 "attributes": {
                     "air_pressure": "Pressió atmosfèrica",
                     "humidity": "Humitat",
+                    "precipitation": "Precipitació",
                     "temperature": "Temperatura",
                     "visibility": "Visibilitat",
                     "wind_speed": "Velocitat del vent"
@@ -2174,6 +2175,7 @@
                             "attribute": "Atribut",
                             "camera_image": "Entitat de càmera",
                             "camera_view": "Visualització de càmera",
+                            "double_tap_action": "Acció en tocar dues vegades",
                             "entities": "Entitats",
                             "entity": "Entitat",
                             "hold_action": "Acció en mantenir",
@@ -2224,6 +2226,7 @@
                             "default_zoom": "Zoom predeterminat",
                             "description": "La targeta mapa et permet mostrar diferents entitats sobre un mapa.",
                             "geo_location_sources": "Fonts de geolocalització",
+                            "hours_to_show": "Hores a mostrar",
                             "name": "Mapa",
                             "source": "Font"
                         },
@@ -2279,6 +2282,10 @@
                             "description": "La targeta de previsió meteorològica, és molt útil per incloure en interfícies integrades en parets.",
                             "name": "Previsió meteorològica"
                         }
+                    },
+                    "cardpicker": {
+                        "custom_card": "Personalitzada",
+                        "no_description": "No hi ha cap descripció disponible."
                     },
                     "edit_card": {
                         "add": "Afegir targeta",

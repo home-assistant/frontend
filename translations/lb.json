@@ -509,6 +509,7 @@
                 "attributes": {
                     "air_pressure": "Loftdrock",
                     "humidity": "Fiichtegkeet",
+                    "precipitation": "Nidderschlag",
                     "temperature": "Temperatur",
                     "visibility": "Visibilitéit",
                     "wind_speed": "Wandvitesse"
@@ -531,7 +532,9 @@
                     "wnw": "WNW",
                     "wsw": "WSW"
                 },
-                "forecast": "Prognose"
+                "forecast": "Prognose",
+                "high": "Héich",
+                "low": "Niddreg"
             }
         },
         "common": {
@@ -807,6 +810,10 @@
                 "areas": {
                     "caption": "Lëscht vun de Beräicher",
                     "create_area": "Beräich erstellen",
+                    "data_table": {
+                        "area": "Beräich",
+                        "devices": "Apparater"
+                    },
                     "delete": {
                         "confirmation_text": "All Apparater an dësem Beräich ginn néirens zougewisen.",
                         "confirmation_title": "Sécher fir dëse Beräich ze läsche?"
@@ -1049,6 +1056,9 @@
                         "delete_confirm": "Sécher fir dës Automatisme ze läschen?",
                         "edit_automation": "Automatisme änneren",
                         "header": "Automatismen editéieren",
+                        "headers": {
+                            "name": "Numm"
+                        },
                         "introduction": "Den Automatismen-Editor erméiglecht et fir Automatismen z'erstellen an ze änneren. Lies w.e.g. [d'Instruktioune](https://home-assistant.io/docs/automation/editor/) fir sécher ze stellen dass den Home Assistant richteg agestallt ass.",
                         "learn_more": "Méi iwwert Automatioune liesen",
                         "no_automations": "Keen Automatismus fir ze ännere fonnt",
@@ -1329,6 +1339,7 @@
                     },
                     "info": "Informatioune vum Apparat",
                     "name": "Numm",
+                    "no_devices": "Keng Apparater",
                     "scene": {
                         "create": "Zeen mat Apparat erstellen",
                         "no_scenes": "Keng Zeenen",
@@ -1631,6 +1642,9 @@
                         "delete_scene": "Zeen läschen",
                         "edit_scene": "Zeen änneren",
                         "header": "Zeen Editeur",
+                        "headers": {
+                            "name": "Numm"
+                        },
                         "introduction": "De Zeenen Editeur erlaabt Iech Zeenen z'erstellen an z'änneren. Follegt de Link hei ënnendrënner fir d'Instruktiounen ze liese fir sécher ze stellen, datt Dir den Home Assistant richteg konfiguréiert hutt.",
                         "learn_more": "Méi iwwert Zeene léieren",
                         "no_scenes": "Keng Zeene fir ze ännere fonnt",
@@ -1658,9 +1672,13 @@
                         "add_script": "Skript dobäisetze",
                         "edit_script": "Skript änneren",
                         "header": "Skript Editeur",
+                        "headers": {
+                            "name": "Numm"
+                        },
                         "introduction": "De Skript Editeur erlaabt Iech Skripten ze erstellen an z'änneren. Follegt de Link hei ënnendrënner fir d'Instruktiounen ze liese fir sécher ze stellen, datt Dir den Home Assistant richteg konfiguréiert hutt",
                         "learn_more": "Méi iwwert Skripten léieren",
                         "no_scripts": "Keng Skripte fir ze ännere fonnt",
+                        "show_info": "Informatiounen vum Skript uweisen",
                         "trigger_script": "Skript ausléisen"
                     }
                 },
@@ -1718,14 +1736,21 @@
                         "group": "Gruppe",
                         "group_update_failed": "Feeler bei der aktualiséiereung vum Gruppe",
                         "id": "ID",
+                        "name": "Numm",
                         "owner": "Proprietär",
                         "rename_user": "Benotzer ëmbenennen",
                         "system_generated": "Vum System generéiert",
                         "system_generated_users_not_removable": "Ka keng System generéiert Benotzer läschen.",
                         "unnamed_user": "Benotzer ouni Numm",
+                        "update_user": "Aktualiséieren",
                         "user_rename_failed": "Feeler beim ëmbenennen vum Benotzer:"
                     },
                     "picker": {
+                        "headers": {
+                            "group": "Grupp",
+                            "name": "Numm",
+                            "system": "System"
+                        },
                         "system_generated": "Vum System generéiert",
                         "title": "Benotzer"
                     }
@@ -2126,6 +2151,9 @@
                             "description": "D'Entity Filter Kaart erlaabt Iech eng Lëscht vun Entitéiten ze definéieren déi nëmmen ugewise gi wann se an engem bestëmmten Zoustand sinn.",
                             "name": "Entitéite Filter"
                         },
+                        "entity": {
+                            "name": "Entitéit"
+                        },
                         "gauge": {
                             "description": "D'Gauge Kaart ass eng Basis Kaart déi Sensor Date visuell duerstellt.",
                             "name": "Skala",
@@ -2138,8 +2166,10 @@
                         },
                         "generic": {
                             "aspect_ratio": "Säiteverhältnis",
+                            "attribute": "Attribut",
                             "camera_image": "Kamera Entitéit",
                             "camera_view": "Kamera Usiicht",
+                            "double_tap_action": "Aktioun beim 2-mol tippen",
                             "entities": "Entitéiten",
                             "entity": "Entitéit",
                             "hold_action": "Aktioun beim unhalen",
@@ -2190,6 +2220,7 @@
                             "default_zoom": "Standard Zoom",
                             "description": "Kaarte Kaart erméiglecht d'Visualisatioun vun Entitéiten op enger Kaart.",
                             "geo_location_sources": "Quell vun der Geolokalisatioun",
+                            "hours_to_show": "Stonnen uweisen",
                             "name": "Kaart",
                             "source": "Quell"
                         },
@@ -2245,6 +2276,10 @@
                             "description": "Wieder Previsoune Kaart weist d'Météo un. Immens nëtzlech fir Interfacen déi Benotzer un d'Mauer hänken.",
                             "name": "Wiederprevisioune"
                         }
+                    },
+                    "cardpicker": {
+                        "custom_card": "Personnaliséiert",
+                        "no_description": "Keng Beschreiwung verfügbar"
                     },
                     "edit_card": {
                         "add": "Kaart dobäisetzen",
@@ -2310,6 +2345,7 @@
                     "save_config": {
                         "cancel": "Vergiess et",
                         "close": "Zoumaachen",
+                        "empty_config": "Mat engem eidelen Tableau de Bord ufänken",
                         "header": "Kontroll iwwert Loveloce UI iwwerhuelen",
                         "para": "Standardméisseg verwalt Home Assistant de Benotzer Interface an aktualiséiert en soubal nei Entitéiten oder Lovelace-Komponenten disponibel sinn. Wann dir d'Kontrolle iwwerhuelt, kënne mir keng automatesch Ännerung méi fir iech maachen.",
                         "para_sure": "Sécher fir d'Kontrolle iwwert de Benotzer Interface z'iwwerhuelen?",
@@ -2558,6 +2594,11 @@
                     "submit": "Ofschécken"
                 },
                 "current_user": "Dir sidd aktuell ageloggt als {fullName}.",
+                "dashboard": {
+                    "description": "Wiel ee Tableau de Bord als Standard op dësem Apparat.",
+                    "dropdown_label": "Tableau de Bord",
+                    "header": "Tableau de Bord"
+                },
                 "force_narrow": {
                     "description": "Dës Optioun verstoppt d'Säite Läischt esou wéi op engem mobillen Apparat.",
                     "header": "Säite Läischt ëmmer verstoppen"
