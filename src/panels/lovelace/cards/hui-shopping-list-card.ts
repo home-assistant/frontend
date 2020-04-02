@@ -27,6 +27,7 @@ import {
 import { ShoppingListCardConfig, SensorCardConfig } from "./types";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { actionHandler } from "../common/directives/action-handler-directive";
+import { classMap } from "lit-html/directives/class-map";
 
 @customElement("hui-shopping-list-card")
 class HuiShoppingListCard extends LitElement implements LovelaceCard {
@@ -108,7 +109,12 @@ class HuiShoppingListCard extends LitElement implements LovelaceCard {
     }
 
     return html`
-      <ha-card .header="${this._config.title}">
+      <ha-card
+        .header=${this._config.title}
+        class=${classMap({
+          "has-header": "title" in this._config,
+        })}
+      >
         <div class="addRow">
           <ha-icon
             class="addButton"
@@ -211,6 +217,11 @@ class HuiShoppingListCard extends LitElement implements LovelaceCard {
     return css`
       ha-card {
         padding-bottom: 16px;
+        padding-top: 16px;
+      }
+
+      .has-header {
+        padding-top: 0;
       }
 
       .editRow,
