@@ -19,7 +19,7 @@ import {
 } from "../../../../data/lovelace";
 import "./hui-card-editor";
 // tslint:disable-next-line
-import { HuiCardEditor } from "./hui-card-editor";
+import { HuiCardEditor, ConfigChangedEvent } from "./hui-card-editor";
 import "./hui-card-preview";
 import "./hui-card-picker";
 import { EditCardDialogParams } from "./show-edit-card-dialog";
@@ -52,12 +52,15 @@ export class HuiDialogEditCard extends LitElement {
 
   @property() private _saving: boolean = false;
   @property() private _error?: string;
+  @property() private _guiModeAvailable? = true;
 
   @query("hui-card-editor") private _cardEditorEl?: HuiCardEditor;
-  @property() private _GUImode?: boolean;
+  @property() private _GUImode = true;
 
   public async showDialog(params: EditCardDialogParams): Promise<void> {
     this._params = params;
+    this._GUImode = true;
+    this._guiModeAvailable = true;
     const [view, card] = params.path;
     this._viewConfig = params.lovelaceConfig.views[view];
     this._cardConfig =
@@ -139,8 +142,7 @@ export class HuiDialogEditCard extends LitElement {
             ? html`
                 <mwc-button
                   @click=${this._toggleMode}
-                  ?disabled=${this._cardEditorEl?.hasWarning ||
-                    this._cardEditorEl?.hasError}
+                  .disabled=${!this._guiModeAvailable}
                   class="gui-mode-button"
                 >
                   ${this.hass!.localize(
@@ -288,9 +290,11 @@ export class HuiDialogEditCard extends LitElement {
     this._error = ev.detail.error;
   }
 
-  private _handleConfigChanged(ev) {
+  private _handleConfigChanged(ev: HASSDomEvent<ConfigChangedEvent>) {
+    console.log(ev);
     this._cardConfig = deepFreeze(ev.detail.config);
     this._error = ev.detail.error;
+    this._guiModeAvailable = ev.detail.guiModeAvailable;
   }
 
   private _handleKeyUp(ev: KeyboardEvent) {
@@ -301,7 +305,9 @@ export class HuiDialogEditCard extends LitElement {
 
   private _handleGUIModeChanged(ev: HASSDomEvent<GUIModeChangedEvent>): void {
     ev.stopPropagation();
+    console.log(ev);
     this._GUImode = ev.detail.guiMode;
+    this._guiModeAvailable = ev.detail.guiModeAvailable;
   }
 
   private _toggleMode(): void {

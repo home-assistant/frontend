@@ -78,7 +78,7 @@ export class HuiSensorCardEditor extends LitElement
   }
 
   protected render(): TemplateResult {
-    if (!this.hass) {
+    if (!this.hass || !this._config) {
       return html``;
     }
 

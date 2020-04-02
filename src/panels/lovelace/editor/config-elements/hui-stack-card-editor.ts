@@ -16,7 +16,10 @@ import { LovelaceCardEditor } from "../../types";
 import { StackCardConfig } from "../../cards/types";
 import { fireEvent, HASSDomEvent } from "../../../../common/dom/fire_event";
 import { LovelaceConfig } from "../../../../data/lovelace";
-import { HuiCardEditor } from "../card-editor/hui-card-editor";
+import {
+  HuiCardEditor,
+  ConfigChangedEvent,
+} from "../card-editor/hui-card-editor";
 import { GUIModeChangedEvent } from "../types";
 
 const cardConfigStruct = struct({
@@ -32,7 +35,8 @@ export class HuiStackCardEditor extends LitElement
   @property() public lovelace?: LovelaceConfig;
   @property() private _config?: StackCardConfig;
   @property() private _selectedCard: number = 0;
-  @property() private _GUImode?: boolean;
+  @property() private _GUImode = true;
+  @property() private _guiModeAvailable? = true;
   @query("hui-card-editor") private _cardEditorEl?: HuiCardEditor;
 
   public setConfig(config: StackCardConfig): void {
@@ -80,8 +84,7 @@ export class HuiStackCardEditor extends LitElement
                   <div id="card-options">
                     <mwc-button
                       @click=${this._toggleMode}
-                      ?disabled=${this._cardEditorEl?.hasWarning ||
-                        this._cardEditorEl?.hasError}
+                      .disabled=${!this._guiModeAvailable}
                       class="gui-mode-button"
                     >
                       ${this.hass!.localize(
@@ -94,7 +97,7 @@ export class HuiStackCardEditor extends LitElement
                       id="move-before"
                       title="Move card before"
                       icon="hass:arrow-left"
-                      ?disabled=${selected === 0}
+                      .disabled=${selected === 0}
                       @click=${this._handleMove}
                     ></paper-icon-button>
 
@@ -102,7 +105,7 @@ export class HuiStackCardEditor extends LitElement
                       id="move-after"
                       title="Move card after"
                       icon="hass:arrow-right"
-                      ?disabled=${selected === numcards - 1}
+                      .disabled=${selected === numcards - 1}
                       @click=${this._handleMove}
                     ></paper-icon-button>
 
@@ -134,18 +137,22 @@ export class HuiStackCardEditor extends LitElement
   }
 
   private _handleSelectedCard(ev) {
-    this._selectedCard =
-      ev.target.id === "add-card"
-        ? this._config!.cards.length
-        : parseInt(ev.target.selected, 10);
+    if (ev.target.id === "add-card") {
+      this._selectedCard = this._config!.cards.length;
+      return;
+    }
+    this._setMode(true);
+    this._guiModeAvailable = true;
+    this._selectedCard = parseInt(ev.target.selected, 10);
   }
 
-  private _handleConfigChanged(ev) {
+  private _handleConfigChanged(ev: HASSDomEvent<ConfigChangedEvent>) {
     ev.stopPropagation();
     if (!this._config) {
       return;
     }
     this._config.cards[this._selectedCard] = ev.detail.config;
+    this._guiModeAvailable = ev.detail.guiModeAvailable;
     fireEvent(this, "config-changed", { config: this._config });
   }
 
@@ -183,10 +190,15 @@ export class HuiStackCardEditor extends LitElement
   private _handleGUIModeChanged(ev: HASSDomEvent<GUIModeChangedEvent>): void {
     ev.stopPropagation();
     this._GUImode = ev.detail.guiMode;
+    this._guiModeAvailable = ev.detail.guiModeAvailable;
   }
 
   private _toggleMode(): void {
     this._cardEditorEl?.toggleMode();
+  }
+
+  private _setMode(value: boolean): void {
+    this._GUImode = this._cardEditorEl!.GUImode = value;
   }
 
   static get styles(): CSSResult {
