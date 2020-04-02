@@ -84,6 +84,18 @@ class HuiMediaPlayerEntityRow extends LitElement implements LovelaceRow {
 
     const stateObj = this.hass.states[this._config.entity];
 
+    if (!stateObj) {
+      return html`
+        <hui-warning
+          >${this.hass.localize(
+            "ui.panel.lovelace.warning.entity_not_found",
+            "entity",
+            this._config.entity
+          )}</hui-warning
+        >
+      `;
+    }
+
     const buttons = html`
       ${!this._narrow && supportsFeature(stateObj, SUPPORT_PREVIOUS_TRACK)
         ? html`
@@ -111,18 +123,6 @@ class HuiMediaPlayerEntityRow extends LitElement implements LovelaceRow {
           `
         : ""}
     `;
-
-    if (!stateObj) {
-      return html`
-        <hui-warning
-          >${this.hass.localize(
-            "ui.panel.lovelace.warning.entity_not_found",
-            "entity",
-            this._config.entity
-          )}</hui-warning
-        >
-      `;
-    }
 
     return html`
       <hui-generic-entity-row
