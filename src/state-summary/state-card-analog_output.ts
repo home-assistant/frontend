@@ -10,14 +10,14 @@ import {
 
 import "../components/ha-slider";
 import "../components/entity/state-info";
-import { HomeAssistant, InputSelectEntity } from "../types";
+import { HomeAssistant, AnalogOutputEntity } from "../types";
 import { computeRTLDirection } from "../common/util/compute_rtl";
 import { setValue } from "../data/input_text";
 
 @customElement("state-card-analog_output")
 class StateCardAnalogOutput extends LitElement {
   @property() public hass!: HomeAssistant;
-  @property() public stateObj!: InputSelectEntity;
+  @property() public stateObj!: AnalogOutputEntity;
 
   protected render(): TemplateResult {
     const stateObj = this.stateObj;

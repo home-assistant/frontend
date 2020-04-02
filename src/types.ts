@@ -183,6 +183,15 @@ export type LightEntity = HassEntityBase & {
   };
 };
 
+export type AnalogOutputEntity = HassEntityBase & {
+  attributes: HassEntityAttributeBase & {
+    mode: string;
+    step: number;
+    min: number;
+    max: number;
+  };
+};
+
 export type GroupEntity = HassEntityBase & {
   attributes: HassEntityAttributeBase & {
     entity_id: string[];
