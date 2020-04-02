@@ -1,14 +1,19 @@
 import { showToast } from "./toast";
 import { HomeAssistant } from "../types";
-import { ToastActionParams } from "../managers/notification-manager";
+import { ShowToastParams } from "../managers/notification-manager";
 
 export const showDeleteSuccessToast = (
   el: HTMLElement,
   hass: HomeAssistant,
-  action?: ToastActionParams
+  action?: () => void
 ) => {
-  showToast(el, {
+  const toastParams: ShowToastParams = {
     message: hass!.localize("ui.common.successfully_deleted"),
-    action,
-  });
+  };
+
+  if (action) {
+    toastParams.action = { action, text: hass!.localize("ui.common.undo") };
+  }
+
+  showToast(el, toastParams);
 };
