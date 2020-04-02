@@ -509,6 +509,7 @@
                 "attributes": {
                     "air_pressure": "Lufttryk",
                     "humidity": "Luftfugtighed",
+                    "precipitation": "Nedbør",
                     "temperature": "Temperatur",
                     "visibility": "Sigtbarhed",
                     "wind_speed": "Vindhastighed"
@@ -531,7 +532,9 @@
                     "wnw": "VNV",
                     "wsw": "VSV"
                 },
-                "forecast": "Vejrudsigt"
+                "forecast": "Vejrudsigt",
+                "high": "Maks.",
+                "low": "Min."
             }
         },
         "common": {
@@ -687,7 +690,7 @@
                 "not_editable_text": "Denne entitet kan ikke ændres fra brugerfladen, fordi det er defineret i configuration.yaml.",
                 "platform_not_loaded": "{platform}-integrationen er ikke indlæst. Tilføj den til din konfiguration. Enten ved at tilføje 'default_config:' eller '{platform}:'.",
                 "required_error_msg": "Dette felt er påkrævet",
-                "yaml_not_editable": "Indstillingerne for denne entitet kan ikke redigeres fra brugerfladen. Det er kun entiteter, der er konfigureret fra brugergrænsefladen, der kan konfigureres herfra."
+                "yaml_not_editable": "Indstillingerne for denne entitet kan ikke redigeres fra brugerfladen. Det er kun entiteter, der er konfigureret fra brugerfladen, der kan konfigureres herfra."
             },
             "more_info_control": {
                 "dismiss": "Afvis dialog",
@@ -1488,7 +1491,7 @@
                     },
                     "configure": "Konfigurer",
                     "configured": "Konfigureret",
-                    "description": "Administrer tilsluttede enheder og tjenester",
+                    "description": "Administrer og opsæt integrationer",
                     "details": "Integrationsdetaljer",
                     "discovered": "Fundet",
                     "home_assistant_website": "Home Assistants hjemmeside",
@@ -2175,6 +2178,7 @@
                             "attribute": "Egenskab",
                             "camera_image": "Kameraentitet",
                             "camera_view": "Kameravisning",
+                            "double_tap_action": "Handling ved dobbelttryk",
                             "entities": "Entiteter",
                             "entity": "Entitet",
                             "hold_action": "Handling ved hold",
@@ -2225,6 +2229,7 @@
                             "default_zoom": "Standard-zoom",
                             "description": "Kort-kortet giver dig mulighed for at vise entiteter på et kort.",
                             "geo_location_sources": "Lokalitetskilder",
+                            "hours_to_show": "Vis i antal timer",
                             "name": "Kort",
                             "source": "Kilde"
                         },
@@ -2280,6 +2285,10 @@
                             "description": "Vejrudsigtskortet viser vejret - meget nyttigt at medtage på brugerflader, som folk viser på væggen.",
                             "name": "Vejrudsigt"
                         }
+                    },
+                    "cardpicker": {
+                        "custom_card": "Brugerdefineret",
+                        "no_description": "Ingen beskrivelse tilgængelig."
                     },
                     "edit_card": {
                         "add": "Tilføj kort",

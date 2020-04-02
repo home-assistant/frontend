@@ -509,6 +509,7 @@
                 "attributes": {
                     "air_pressure": "Lufttrykk",
                     "humidity": "Luftfuktighet",
+                    "precipitation": "Nedbør",
                     "temperature": "Temperatur",
                     "visibility": "Sikt",
                     "wind_speed": "Vindstyrke"
@@ -531,7 +532,9 @@
                     "wnw": "VNV",
                     "wsw": "VSV"
                 },
-                "forecast": "Prognose"
+                "forecast": "Prognose",
+                "high": "Høy",
+                "low": "Lav"
             }
         },
         "common": {
@@ -812,6 +815,10 @@
                 "areas": {
                     "caption": "Områder",
                     "create_area": "OPPRETT OMRÅDE",
+                    "data_table": {
+                        "area": "Område",
+                        "devices": "Enheter"
+                    },
                     "delete": {
                         "confirmation_text": "Alle enheter som tilhører dette området vil ikke bli tildelt.",
                         "confirmation_title": "Er du sikker på at du vil slette dette området?"
@@ -1054,6 +1061,9 @@
                         "delete_confirm": "Er du sikker på at du vil slette denne automatiseringen?",
                         "edit_automation": "Rediger automasjon",
                         "header": "Automasjonsredigering",
+                        "headers": {
+                            "name": "Navn"
+                        },
                         "introduction": "Automasjonsredigeringen lar deg lage og redigere automasjoner. Følg lenken under for å forsikre deg om at du har konfigurert Home Assistant riktig.",
                         "learn_more": "Lær mer om automasjoner",
                         "no_automations": "Vi kunne ikke finne noen redigerbare automasjoner",
@@ -1334,6 +1344,7 @@
                     },
                     "info": "Enhetsinformasjon",
                     "name": "Navn",
+                    "no_devices": "Ingen enheter",
                     "scene": {
                         "create": "Lag scene med enheten",
                         "no_scenes": "Ingen scener",
@@ -1638,6 +1649,9 @@
                         "delete_scene": "Slett scene",
                         "edit_scene": "Rediger scene",
                         "header": "Sceneditor",
+                        "headers": {
+                            "name": "Navn"
+                        },
                         "introduction": "Sceneditoren lar deg lage og redigere scener. Følg lenken nedenfor for å lese instruksjonene for å forsikre deg om at du har konfigurert Home Assistant riktig.",
                         "learn_more": "Lær mer om scener",
                         "no_scenes": "Vi fant ingen redigerbare scener",
@@ -1665,9 +1679,13 @@
                         "add_script": "Legg til skript",
                         "edit_script": "Rediger skript",
                         "header": "Skriptredigering",
+                        "headers": {
+                            "name": "Navn"
+                        },
                         "introduction": "Skripteditoren lar deg lage og redigere skript. Følg lenken nedenfor for å lese instruksjonene for å forsikre deg om at du har konfigurert Home Assistant riktig.",
                         "learn_more": "Lær mer om skript",
                         "no_scripts": "Vi kunne ikke finne noen redigerbare skript",
+                        "show_info": "Vis informasjon om skript",
                         "trigger_script": "Utløse skript"
                     }
                 },
@@ -1725,14 +1743,21 @@
                         "group": "Gruppe",
                         "group_update_failed": "Gruppeoppdatering mislyktes:",
                         "id": "Id",
+                        "name": "Navn",
                         "owner": "Eier",
                         "rename_user": "Gi nytt navn til bruker",
                         "system_generated": "System generert",
                         "system_generated_users_not_removable": "Kan ikke fjerne systemgenererte brukere.",
                         "unnamed_user": "Bruker uten navn",
+                        "update_user": "Oppdater",
                         "user_rename_failed": "Brukernavn mislyktes:"
                     },
                     "picker": {
+                        "headers": {
+                            "group": "Gruppe",
+                            "name": "Navn",
+                            "system": "System"
+                        },
                         "system_generated": "System generert",
                         "title": "Brukere"
                     }
@@ -2135,6 +2160,9 @@
                             "description": "Entity Filter-kortet lar deg definere en liste over entiteter du bare vil spore når de er i en viss tilstand.",
                             "name": "Entitetsfilter"
                         },
+                        "entity": {
+                            "name": "Entitet"
+                        },
                         "gauge": {
                             "description": "Gauge-kortet er et grunnleggende kort som gjør det mulig å se sensordata visuelt.",
                             "name": "Måler",
@@ -2147,8 +2175,10 @@
                         },
                         "generic": {
                             "aspect_ratio": "Størrelsesforholdet",
+                            "attribute": "Attributtet",
                             "camera_image": "Kameraentitet",
                             "camera_view": "Kameravisning",
+                            "double_tap_action": "Dobbelttrykk Handling",
                             "entities": "Entiteter",
                             "entity": "Entitet",
                             "hold_action": "Hold handling",
@@ -2199,6 +2229,7 @@
                             "default_zoom": "Standard zoom",
                             "description": "Kartkortet som lar deg vise enheter på et kart.",
                             "geo_location_sources": "Kilder for geolokasjon",
+                            "hours_to_show": "Timer som skal vises",
                             "name": "Kart",
                             "source": "Kilde"
                         },
@@ -2254,6 +2285,10 @@
                             "description": "Værmeldingskortet viser været. Veldig nyttig å ta med på grensesnitt som folk viser på veggen.",
                             "name": "Værmelding"
                         }
+                    },
+                    "cardpicker": {
+                        "custom_card": "Tilpasset",
+                        "no_description": "Ingen beskrivelse tilgjengelig."
                     },
                     "edit_card": {
                         "add": "Legg til kort",
@@ -2319,6 +2354,7 @@
                     "save_config": {
                         "cancel": "Glem det",
                         "close": "Lukk",
+                        "empty_config": "Start med et tomt instrumentbord",
                         "header": "Ta kontroll over Lovelace brukergrensesnittet ditt",
                         "para": "Som standard vil Home Assistant opprettholde brukergrensesnittet ditt, oppdatere det når nye enheter eller Lovelace UI-komponenter blir tilgjengelige. Hvis du tar kontroll, vil vi ikke lenger gjøre endringer automatisk for deg.",
                         "para_sure": "Er du sikker på at du vil ta kontroll over brukergrensesnittet ditt?",
@@ -2568,6 +2604,11 @@
                     "submit": "Send inn"
                 },
                 "current_user": "Du er logget inn som {fullName}.",
+                "dashboard": {
+                    "description": "Velg et standard dashbord for denne enheten.",
+                    "dropdown_label": "Dashboard",
+                    "header": "Dashboard"
+                },
                 "force_narrow": {
                     "description": "Dette vil skjule sidepanelet som standard, tilsvarende opplevelsen på en mobil.",
                     "header": "Skjul alltid sidepanelet"

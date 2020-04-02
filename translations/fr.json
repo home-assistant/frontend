@@ -509,6 +509,7 @@
                 "attributes": {
                     "air_pressure": "Pression atmosphérique",
                     "humidity": "Humidité",
+                    "precipitation": "Précipitation",
                     "temperature": "Température",
                     "visibility": "Visibilité",
                     "wind_speed": "Vitesse du vent"
@@ -531,7 +532,9 @@
                     "wnw": "O-NO",
                     "wsw": "O-SO"
                 },
-                "forecast": "Prévisions"
+                "forecast": "Prévisions",
+                "high": "Haute",
+                "low": "Faible"
             }
         },
         "common": {
@@ -2225,6 +2228,7 @@
                             "default_zoom": "Zoom par défaut",
                             "description": "La carte Carte vous permet d'afficher des entités sur une carte.",
                             "geo_location_sources": "Sources de géolocalisation",
+                            "hours_to_show": "Heures à montrer",
                             "name": "Carte",
                             "source": "Source"
                         },
@@ -2280,6 +2284,10 @@
                             "description": "La carte Prévisions météorologiques affiche la météo. Très utile pour les écrans placés au mur.",
                             "name": "Prévisions Météo"
                         }
+                    },
+                    "cardpicker": {
+                        "custom_card": "Personnalisé",
+                        "no_description": "Aucune description disponible."
                     },
                     "edit_card": {
                         "add": "Ajouter une action",
