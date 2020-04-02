@@ -1,197 +1,125 @@
-import "@polymer/iron-flex-layout/iron-flex-layout-classes";
-import { IronResizableBehavior } from "@polymer/iron-resizable-behavior/iron-resizable-behavior";
-import "@polymer/paper-input/paper-input";
-import { mixinBehaviors } from "@polymer/polymer/lib/legacy/class";
-import { html } from "@polymer/polymer/lib/utils/html-tag";
-import { LitElement } from "lit-element";
+import {
+  html,
+  LitElement,
+  TemplateResult,
+  property,
+  customElement,
+  css,
+  CSSResult,
+} from "lit-element";
 
-import "../components/entity/ha-entity-toggle";
-import "../components/entity/state-info";
 import "../components/ha-slider";
+import "../components/entity/state-info";
+import { HomeAssistant, InputSelectEntity } from "../types";
+import { computeRTLDirection } from "../common/util/compute_rtl";
+import { setValue } from "../data/input_text";
 
-class StateCardAnalogOutput extends mixinBehaviors(
-  [IronResizableBehavior],
-  LitElement
-) {
-  static get template() {
+@customElement("state-card-analog_output")
+class StateCardAnalogOutput extends LitElement {
+  @property() public hass!: HomeAssistant;
+  @property() public stateObj!: InputSelectEntity;
+
+  protected render(): TemplateResult {
+    const stateObj = this.stateObj;
+
+    if (!stateObj) {
+      return html`
+        <hui-warning
+          >${this.hass.localize(
+            "ui.panel.lovelace.warning.entity_not_found",
+            "entity",
+            this._config.entity
+          )}</hui-warning
+        >
+      `;
+    }
+
     return html`
-      <style include="iron-flex iron-flex-alignment"></style>
-      <style>
-        ha-entity-toggle {
-          margin: -4px -16px -4px 0;
-          padding: 4px 16px;
-        }
-        ha-slider {
-          margin-left: auto;
-        }
-        .state {
-          @apply --paper-font-body1;
-          color: var(--primary-text-color);
-          text-align: right;
-          line-height: 40px;
-        }
-        .sliderstate {
-          min-width: 45px;
-        }
-        ha-slider[hidden] {
-          display: none !important;
-        }
-        paper-input {
-          text-align: right;
-          margin-left: auto;
-        }
-      </style>
-
       <div class="horizontal justified layout" id="analog_output_card">
-        ${this.stateInfoTemplate}
-        <ha-slider
-          min="[[min]]"
-          max="[[max]]"
-          value="{{value}}"
-          step="[[step]]"
-          hidden="[[hiddenslider]]"
-          pin=""
-          on-change="selectedValueChanged"
-          on-click="stopPropagation"
-          id="slider"
-          ignore-bar-touch=""
-        >
-        </ha-slider>
-        <paper-input
-          no-label-float=""
-          auto-validate=""
-          pattern="[0-9]+([\\.][0-9]+)?"
-          step="[[step]]"
-          min="[[min]]"
-          max="[[max]]"
-          value="{{value}}"
-          type="number"
-          on-change="selectedValueChanged"
-          on-click="stopPropagation"
-          hidden="[[hiddenbox]]"
-        >
-        </paper-input>
-        <div class="state" hidden="[[hiddenbox]]">
-          [[stateObj.attributes.unit_of_measurement]]
+        <div class="flex">
+          <state-badge .stateObj=${stateObj}></state-badge>
+          ${stateObj.attributes.mode === "slider"
+            ? html`
+                <ha-slider
+                  .dir="${computeRTLDirection(this.hass!)}"
+                  .step="${Number(stateObj.attributes.step)}"
+                  .min="${Number(stateObj.attributes.min)}"
+                  .max="${Number(stateObj.attributes.max)}"
+                  .value="${Number(stateObj.state)}"
+                  pin
+                  @change="${this._selectedValueChanged}"
+                  ignore-bar-touch
+                  id="input"
+                ></ha-slider>
+                <span class="state">
+                  ${Number(stateObj.state)}
+                  ${stateObj.attributes.unit_of_measurement}
+                </span>
+              `
+            : html`
+                <paper-input
+                  no-label-float
+                  auto-validate
+                  .pattern="[0-9]+([\\.][0-9]+)?"
+                  .step="${Number(stateObj.attributes.step)}"
+                  .min="${Number(stateObj.attributes.min)}"
+                  .max="${Number(stateObj.attributes.max)}"
+                  .value="${Number(stateObj.state)}"
+                  type="number"
+                  @change="${this._selectedValueChanged}"
+                  id="input"
+                ></paper-input>
+              `}
+          <ha-entity-toggle
+            .hass=${this.hass}
+            .stateObj=${stateObj}
+          ></ha-entity-toggle>
         </div>
-        <div
-          id="sliderstate"
-          class="state sliderstate"
-          hidden="[[hiddenslider]]"
-        >
-          [[value]] [[stateObj.attributes.unit_of_measurement]]
-        </div>
-        <ha-entity-toggle
-          state-obj="[[stateObj]]"
-          hass="[[hass]]"
-        ></ha-entity-toggle>
       </div>
     `;
   }
 
-  static get stateInfoTemplate() {
-    return html`
-      <state-info
-        hass="[[hass]]"
-        state-obj="[[stateObj]]"
-        in-dialog="[[inDialog]]"
-      ></state-info>
+  static get styles(): CSSResult {
+    return css`
+      .flex {
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+        width: 100%;
+      }
+      .state {
+        min-width: 45px;
+        text-align: end;
+      }
+      paper-input {
+        text-align: end;
+      }
+      ha-slider {
+        width: 60%;
+        max-width: 200px;
+      }
     `;
   }
 
-  public ready() {
-    super.ready();
-    if (typeof ResizeObserver === "function") {
-      const ro = new ResizeObserver((entries) => {
-        entries.forEach(() => {
-          this.hiddenState();
-        });
-      });
-      ro.observe(this.$.analog_output_card);
-    } else {
-      this.addEventListener("iron-resize", this.hiddenState);
-    }
-  }
-
-  static get properties() {
-    return {
-      hass: Object,
-      hiddenbox: {
-        type: Boolean,
-        value: true,
-      },
-      hiddenslider: {
-        type: Boolean,
-        value: true,
-      },
-      inDialog: {
-        type: Boolean,
-        value: false,
-      },
-      stateObj: {
-        type: Object,
-        observer: "stateObjectChanged",
-      },
-      min: {
-        type: Number,
-        value: 0,
-      },
-      max: {
-        type: Number,
-        value: 100,
-      },
-      maxlength: {
-        type: Number,
-        value: 3,
-      },
-      step: Number,
-      value: Number,
-      mode: String,
+  private get _inputElement(): { value: string } {
+    // linter recommended the following syntax
+    return (this.shadowRoot!.getElementById("input") as unknown) as {
+      value: string;
     };
   }
 
-  public hiddenState() {
-    if (this.mode !== "slider") {
-      return;
-    }
-    const sliderwidth = this.$.slider.offsetWidth;
-    if (sliderwidth < 100) {
-      this.$.sliderstate.hidden = true;
-    } else if (sliderwidth >= 145) {
-      this.$.sliderstate.hidden = false;
-    }
-  }
+  private _selectedValueChanged(): void {
+    const element = this._inputElement;
+    const stateObj = this.stateObj;
 
-  public stateObjectChanged(newVal) {
-    const prevMode = this.mode;
-    this.setProperties({
-      min: Number(newVal.attributes.min),
-      max: Number(newVal.attributes.max),
-      step: Number(newVal.attributes.step),
-      value: Number(newVal.state),
-      mode: String(newVal.attributes.mode),
-      maxlength: String(newVal.attributes.max).length,
-      hiddenbox: newVal.attributes.mode !== "box",
-      hiddenslider: newVal.attributes.mode !== "slider",
-    });
-    if (this.mode === "slider" && prevMode !== "slider") {
-      this.hiddenState();
+    if (element.value !== stateObj.state) {
+      setValue(this.hass!, stateObj.entity_id, element.value!);
     }
-  }
-
-  public selectedValueChanged() {
-    if (this.value === Number(this.stateObj.state)) {
-      return;
-    }
-    this.hass.callService("analog_output", "set_value", {
-      value: this.value,
-      entity_id: this.stateObj.entity_id,
-    });
-  }
-
-  public stopPropagation(ev) {
-    ev.stopPropagation();
   }
 }
 
-customElements.define("state-card-analog_output", StateCardAnalogOutput);
+declare global {
+  interface HTMLElementTagNameMap {
+    "state-card-analog_output": StateCardAnalogOutput;
+  }
+}
