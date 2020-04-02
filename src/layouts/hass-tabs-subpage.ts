@@ -45,7 +45,8 @@ class HassTabsSubpage extends LitElement {
       activeTab: PageNavigation | undefined,
       showAdvanced: boolean | undefined,
       _components,
-      _language
+      _language,
+      _narrow
     ) => {
       const shownTabs = tabs.filter(
         (page) =>
@@ -101,7 +102,8 @@ class HassTabsSubpage extends LitElement {
       this._activeTab,
       this.hass.userData?.showAdvanced,
       this.hass.config.components,
-      this.hass.language
+      this.hass.language,
+      this.narrow
     );
 
     return html`
@@ -190,10 +192,8 @@ class HassTabsSubpage extends LitElement {
       }
 
       #tabbar:not(.bottom-bar) {
-        margin: auto;
-        left: 50%;
-        position: absolute;
-        transform: translate(-50%, 0);
+        flex: 1;
+        justify-content: center;
       }
 
       .tab {
