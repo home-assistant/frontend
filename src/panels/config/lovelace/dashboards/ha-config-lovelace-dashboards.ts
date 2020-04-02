@@ -104,7 +104,7 @@ export class HaConfigLovelaceDashboards extends LitElement {
           ),
           sortable: true,
           filterable: true,
-          width: "15%",
+          width: "20%",
           template: (mode) =>
             html`
               ${this.hass.localize(
@@ -143,7 +143,7 @@ export class HaConfigLovelaceDashboards extends LitElement {
             "ui.panel.config.lovelace.dashboards.picker.headers.sidebar"
           ),
           type: "icon",
-          width: "100px",
+          width: "121px",
           template: (sidebar) =>
             sidebar
               ? html`

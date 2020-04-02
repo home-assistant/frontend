@@ -27,7 +27,7 @@ class SearchInput extends LitElement {
   protected render(): TemplateResult {
     return html`
       <style>
-        .no-underline {
+        .no-underline:not(.focused) {
           --paper-input-container-underline: {
             display: none;
             height: 0;
