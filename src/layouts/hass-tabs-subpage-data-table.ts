@@ -95,6 +95,8 @@ export class HaTabsSubpageDataTable extends LitElement {
                 <slot name="header">
                   <div class="search-toolbar">
                     <search-input
+                      .filter=${this.filter}
+                      class="header"
                       no-label-float
                       no-underline
                       @value-changed=${this._handleSearchChange}
@@ -119,6 +121,7 @@ export class HaTabsSubpageDataTable extends LitElement {
                     <slot name="header">
                       <div class="table-header">
                         <search-input
+                          .filter=${this.filter}
                           no-label-float
                           no-underline
                           @value-changed=${this._handleSearchChange}
@@ -153,12 +156,15 @@ export class HaTabsSubpageDataTable extends LitElement {
         border-bottom: 1px solid rgba(var(--rgb-primary-text-color), 0.12);
       }
       .search-toolbar {
-        margin-left: -24px;
         color: var(--secondary-text-color);
       }
       search-input {
         position: relative;
         top: 2px;
+      }
+      search-input.header {
+        left: -8px;
+        top: -7px;
       }
     `;
   }
