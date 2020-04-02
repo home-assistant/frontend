@@ -21,7 +21,10 @@ export async function confDeleteCard(
         const action = async () => {
           await lovelace.saveConfig(insertCard(newLovelace, path, cardConfig));
         };
-        showDeleteSuccessToast(element, hass!, action);
+        showDeleteSuccessToast(element, hass!, {
+          text: hass!.localize("ui.common.undo"),
+          action,
+        });
       } catch (err) {
         showAlertDialog(element, {
           text: `Deleting failed: ${err.message}`,
