@@ -19,7 +19,7 @@ import {
   addGroup,
   ZHAGroup,
 } from "../../../data/zha";
-import { ZHADevicesDataTable } from "./zha-devices-data-table";
+import "./zha-devices-data-table";
 import { SelectionChangedEvent } from "../../../components/data-table/ha-data-table";
 import { navigate } from "../../../common/navigate";
 import { PolymerChangedEvent } from "../../../polymer-types";
@@ -27,6 +27,8 @@ import "@polymer/paper-spinner/paper-spinner";
 import "@material/mwc-button";
 import { PaperInputElement } from "@polymer/paper-input/paper-input";
 import { HASSDomEvent } from "../../../common/dom/fire_event";
+// tslint:disable-next-line: no-duplicate-imports
+import { ZHADevicesDataTable } from "./zha-devices-data-table";
 
 @customElement("zha-add-group-page")
 export class ZHAAddGroupPage extends LitElement {

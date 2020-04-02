@@ -27,13 +27,15 @@ import {
   Cluster,
   fetchClustersForZhaNode,
 } from "../../../data/zha";
-import { ZHAClustersDataTable } from "./zha-clusters-data-table";
+import "./zha-clusters-data-table";
 import { haStyle } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
 import { ItemSelectedEvent } from "./types";
 import "@polymer/paper-item/paper-item";
 import { SelectionChangedEvent } from "../../../components/data-table/ha-data-table";
 import { HASSDomEvent } from "../../../common/dom/fire_event";
+// tslint:disable-next-line: no-duplicate-imports
+import { ZHAClustersDataTable } from "./zha-clusters-data-table";
 
 @customElement("zha-group-binding-control")
 export class ZHAGroupBindingControl extends LitElement {
@@ -48,7 +50,7 @@ export class ZHAGroupBindingControl extends LitElement {
   @property() private _clusters: Cluster[] = [];
   private _groupToBind?: ZHAGroup;
   private _clustersToBind?: Cluster[];
-  @query("zha-devices-data-table")
+  @query("zha-clusters-data-table")
   private _zhaClustersDataTable!: ZHAClustersDataTable;
 
   protected updated(changedProperties: PropertyValues): void {
