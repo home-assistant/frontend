@@ -82,9 +82,10 @@ class NotificationManager extends LitElement {
 
   static get styles(): CSSResult {
     return css`
-      :host {
+      ha-toast {
         display: flex;
         align-items: center;
+        justify-content: space-between;
       }
       mwc-button {
         color: var(--primary-color);
