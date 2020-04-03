@@ -99,7 +99,6 @@ export class HaDataTable extends LitElement {
   @property({ type: Array }) private _filteredData: DataTableRowData[] = [];
   @query("slot[name='header']") private _header!: HTMLSlotElement;
   @query(".mdc-data-table__table") private _table!: HTMLDivElement;
-  @query(".scroller") private _scroller?: HTMLDivElement;
 
   private _checkableRowsCount?: number;
   private _checkedRows: string[] = [];
@@ -472,12 +471,13 @@ export class HaDataTable extends LitElement {
     this._table.style.height = `calc(100% - ${this._header.clientHeight}px)`;
   }
 
-  private _rangeChanged() {
+  private _rangeChanged(ev: CustomEvent) {
     if (this._fabPaddingAdded || !this.hasFab) {
       return;
     }
     this._fabPaddingAdded = true;
-    (this._scroller!.firstElementChild! as HTMLElement).style.height = "70px";
+    ((ev.currentTarget! as HTMLElement)
+      .firstElementChild! as HTMLElement).style.height = "70px";
   }
 
   static get styles(): CSSResult {
