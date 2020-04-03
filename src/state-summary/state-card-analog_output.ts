@@ -10,6 +10,7 @@ import {
 
 import "../components/ha-slider";
 import "../components/entity/state-info";
+
 import { HomeAssistant, AnalogOutputEntity } from "../types";
 import { computeRTLDirection } from "../common/util/compute_rtl";
 import { setValue } from "../data/input_text";
