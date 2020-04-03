@@ -31,7 +31,6 @@ import { nextRender } from "../../common/util/render-status";
 import { debounce } from "../../common/util/debounce";
 import { styleMap } from "lit-html/directives/style-map";
 import { ifDefined } from "lit-html/directives/if-defined";
-import { until } from "lit-html/directives/until";
 
 declare global {
   // for fire event
@@ -109,6 +108,7 @@ export class HaDataTable extends LitElement {
   } = {};
   private curRequest = 0;
   private _worker: any | undefined;
+  private _fabPaddingAdded = false;
 
   private _debounceSearch = debounce(
     (value: string) => {
@@ -283,26 +283,10 @@ export class HaDataTable extends LitElement {
                 </div>
               `
             : html`
-                <div class="mdc-data-table__content scroller">
-                  ${this.hasFab
-                    ? until(
-                        nextRender().then(() =>
-                          this._scroller &&
-                          this._scroller.scrollHeight >
-                            this._scroller.clientHeight
-                            ? html`
-                                <div
-                                  style=${styleMap({
-                                    height: `${this._scroller.scrollHeight +
-                                      56}px`,
-                                  })}
-                                ></div>
-                              `
-                            : ""
-                        ),
-                        ""
-                      )
-                    : ""}
+                <div
+                  class="mdc-data-table__content scroller"
+                  @rangechange=${this._rangeChanged}
+                >
                   ${scroll({
                     items: this._filteredData,
                     renderItem: (row: DataTableRowData) => html`
@@ -486,6 +470,14 @@ export class HaDataTable extends LitElement {
     }
     await this.updateComplete;
     this._table.style.height = `calc(100% - ${this._header.clientHeight}px)`;
+  }
+
+  private _rangeChanged() {
+    if (this._fabPaddingAdded || !this.hasFab) {
+      return;
+    }
+    this._fabPaddingAdded = true;
+    (this._scroller!.firstElementChild! as HTMLElement).style.height = "70px";
   }
 
   static get styles(): CSSResult {
