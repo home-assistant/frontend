@@ -32,7 +32,7 @@ import {
   weatherImages,
 } from "../../../data/weather";
 
-const DAY = 86400000;
+const DAY_IN_MILLISECONDS = 86400000;
 
 @customElement("hui-weather-forecast-card")
 class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
@@ -145,12 +145,12 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
 
     let hourly: boolean | undefined;
 
-    if (forecast) {
+    if (forecast?.length && forecast?.length > 1) {
       const date1 = new Date(forecast[0].datetime);
       const date2 = new Date(forecast[1].datetime);
       const timeDiff = date2.getTime() - date1.getTime();
 
-      hourly = timeDiff < DAY;
+      hourly = timeDiff < DAY_IN_MILLISECONDS;
     }
 
     return html`
@@ -159,7 +159,7 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
         .actionHandler=${actionHandler()}
         tabindex="0"
       >
-        <div class="main">
+        <div class="content">
           <div class="icon-header">
             ${stateObj.state in weatherIcons || stateObj.state in weatherImages
               ? html`
@@ -215,7 +215,7 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
                       </div>
                       ${item.condition !== undefined && item.condition !== null
                         ? html`
-                            <div class="icon">
+                            <div>
                               <state-badge
                                 .hass=${this.hass}
                                 .stateObj=${stateObj}
@@ -236,7 +236,7 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
                       ${item.templow !== undefined && item.templow !== null
                         ? html`
                             <div class="templow">
-                              ${item.templow || 44}°
+                              ${item.templow}°
                             </div>
                           `
                         : ""}
@@ -305,14 +305,14 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
     return css`
       ha-card {
         cursor: pointer;
+        padding: 16px;
       }
 
       state-badge {
         color: var(--state-icon-color);
       }
 
-      .main {
-        padding: 16px;
+      .content {
         display: flex;
         flex-wrap: nowrap;
         justify-content: space-between;
@@ -375,7 +375,7 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
       .forecast {
         display: flex;
         justify-content: space-between;
-        padding: 0 16px 16px;
+        padding-top: 16px;
       }
 
       .forecast > div {
@@ -396,21 +396,17 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
         color: var(--secondary-text-color);
       }
 
-      :host([narrow]) .forecast {
-        justify-content: space-around;
-      }
-
-      :host([narrow]) .header {
-        font-size: 22px;
-        line-height: 22px;
-      }
-
       :host([narrow]) .icon-header state-badge {
         height: 62px;
         width: 62px;
         --iron-icon-width: 62px;
         --iron-icon-height: 62px;
         flex: 0 0 62px;
+      }
+
+      :host([narrow]) .header {
+        font-size: 22px;
+        line-height: 22px;
       }
 
       :host([narrow]) .temp-attribute .temp {
@@ -429,8 +425,17 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
         display: none;
       }
 
-      :host([veryNarrow]) .header {
-        display: none;
+      :host([narrow]) .forecast {
+        justify-content: space-around;
+      }
+
+      :host([veryVeryNarrow]) .content {
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+
+      :host([veryNarrow]) .icon-header {
+        flex: initial;
       }
 
       :host([veryNarrow]) .icon-header state-badge {
@@ -439,6 +444,10 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
         --iron-icon-width: 52px;
         --iron-icon-height: 52px;
         flex: 0 0 52px;
+      }
+
+      :host([veryNarrow]) .header {
+        display: none;
       }
 
       :host([veryNarrow]) .temp-attribute .temp {
@@ -451,11 +460,6 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
         font-size: 18px;
         line-height: 18px;
         top: 3px;
-      }
-
-      :host([veryVeryNarrow]) .main {
-        flex-wrap: wrap;
-        justify-content: center;
       }
 
       :host([veryVeryNarrow]) .temp-attribute {
