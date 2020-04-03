@@ -189,6 +189,12 @@ export class HuiEntityCard extends LitElement implements LovelaceCard {
 
   static get styles(): CSSResult {
     return css`
+      ha-card {
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+      }
       ha-card > div {
         cursor: pointer;
       }
