@@ -13,8 +13,6 @@ class ZHAConfigDashboardRouter extends HassRouterPage {
 
   protected routerOptions: RouterOptions = {
     defaultPage: "dashboard",
-    cacheAll: true,
-    preloadAll: true,
     showLoading: true,
     routes: {
       dashboard: {
