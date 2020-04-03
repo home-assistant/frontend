@@ -36,7 +36,7 @@ export class HuiCardOptions extends LitElement {
       <ha-card>
         <div class="options">
           <div class="primary-actions">
-            <mwc-button @click="${this._editCard}"
+            <mwc-button @click=${this._editCard}
               >${this.hass!.localize(
                 "ui.panel.lovelace.editor.edit_card.edit"
               )}</mwc-button
@@ -47,17 +47,17 @@ export class HuiCardOptions extends LitElement {
               title="Move card down"
               class="move-arrow"
               icon="hass:arrow-down"
-              @click="${this._cardDown}"
-              ?disabled="${this.lovelace!.config.views[this.path![0]].cards!
+              @click=${this._cardDown}
+              ?disabled=${this.lovelace!.config.views[this.path![0]].cards!
                 .length ===
-                this.path![1] + 1}"
+                this.path![1] + 1}
             ></paper-icon-button>
             <paper-icon-button
               title="Move card up"
               class="move-arrow"
               icon="hass:arrow-up"
-              @click="${this._cardUp}"
-              ?disabled="${this.path![1] === 0}"
+              @click=${this._cardUp}
+              ?disabled=${this.path![1] === 0}
             ></paper-icon-button>
             <paper-menu-button
               horizontal-align="right"
@@ -73,7 +73,7 @@ export class HuiCardOptions extends LitElement {
                 )}
               ></paper-icon-button>
               <paper-listbox slot="dropdown-content">
-                <paper-item @tap="${this._moveCard}">
+                <paper-item @tap=${this._moveCard}>
                   ${this.hass!.localize(
                     "ui.panel.lovelace.editor.edit_card.move"
                   )}</paper-item
@@ -83,7 +83,7 @@ export class HuiCardOptions extends LitElement {
                     "ui.panel.lovelace.editor.edit_card.duplicate"
                   )}</paper-item
                 >
-                <paper-item .class="delete-item" @tap="${this._deleteCard}">
+                <paper-item class="delete-item" @tap=${this._deleteCard}>
                   ${this.hass!.localize(
                     "ui.panel.lovelace.editor.edit_card.delete"
                   )}</paper-item
