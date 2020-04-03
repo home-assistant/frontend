@@ -141,6 +141,10 @@ export class HuiCardOptions extends LitElement {
         padding: 0;
       }
 
+      paper-listbox {
+        padding: 0;
+      }
+
       paper-item.header {
         color: var(--primary-text-color);
         text-transform: uppercase;
@@ -150,6 +154,7 @@ export class HuiCardOptions extends LitElement {
 
       paper-item {
         cursor: pointer;
+        white-space: nowrap;
       }
 
       paper-item.delete-item {
