@@ -160,7 +160,7 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
         tabindex="0"
       >
         <div class="content">
-          <div class="icon-header">
+          <div class="icon-info">
             ${stateObj.state in weatherIcons || stateObj.state in weatherImages
               ? html`
                   <state-badge
@@ -171,12 +171,14 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
                   ></state-badge>
                 `
               : ""}
-            <div class="header">
+            <div class="info">
               <div class="name">
                 ${this._config.name || computeStateName(stateObj)}
               </div>
-              ${this.hass.localize(`state.weather.${stateObj.state}`) ||
-                stateObj.state}
+              <div class="state">
+                ${this.hass.localize(`state.weather.${stateObj.state}`) ||
+                  stateObj.state}
+              </div>
             </div>
           </div>
           <div class="temp-attribute">
@@ -319,34 +321,36 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
         align-items: center;
       }
 
-      .icon-header {
+      .icon-info {
         display: flex;
         align-items: center;
-        overflow: hidden;
         min-width: 0;
         flex: 1;
       }
 
-      .icon-header state-badge {
-        height: 72px;
-        width: 72px;
-        --iron-icon-width: 72px;
-        --iron-icon-height: 72px;
-        flex: 0 0 72px;
+      .icon-info state-badge {
+        height: 66px;
+        flex: 0 0 66px;
         margin-right: 16px;
+        --iron-icon-width: 66px;
+        --iron-icon-height: 66px;
       }
 
-      .header {
-        font-size: 28px;
-        line-height: 28px;
+      .info {
         overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
       }
 
       .name {
         font-size: 16px;
         color: var(--secondary-text-color);
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      .state {
+        font-size: 28px;
+        line-height: 1.2;
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
@@ -361,14 +365,13 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
       .temp-attribute .temp {
         position: relative;
         font-size: 52px;
-        line-height: 52px;
+        line-height: 1;
         margin-right: 24px;
       }
 
       .temp-attribute .temp span {
         position: absolute;
         font-size: 24px;
-        line-height: 24px;
         top: 4px;
       }
 
@@ -391,33 +394,33 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
         font-size: 16px;
       }
 
+      .attribute {
+        line-height: 1;
+      }
+
       .attribute,
       .templow {
         color: var(--secondary-text-color);
       }
 
-      :host([narrow]) .icon-header state-badge {
-        height: 62px;
-        width: 62px;
-        --iron-icon-width: 62px;
-        --iron-icon-height: 62px;
-        flex: 0 0 62px;
+      :host([narrow]) .icon-info state-badge {
+        height: 58px;
+        flex: 0 0 58px;
+        --iron-icon-width: 58px;
+        --iron-icon-height: 58px;
       }
 
-      :host([narrow]) .header {
+      :host([narrow]) .state {
         font-size: 22px;
-        line-height: 22px;
       }
 
       :host([narrow]) .temp-attribute .temp {
         font-size: 44px;
-        line-height: 44px;
-        margin-right: 24px;
+        margin-right: 18px;
       }
 
       :host([narrow]) .temp-attribute .temp span {
-        font-size: 24px;
-        line-height: 24px;
+        font-size: 18px;
         top: 3px;
       }
 
@@ -434,32 +437,27 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
         justify-content: center;
       }
 
-      :host([veryNarrow]) .icon-header {
+      :host([veryNarrow]) .icon-info {
         flex: initial;
       }
 
-      :host([veryNarrow]) .icon-header state-badge {
-        height: 52px;
-        width: 52px;
-        --iron-icon-width: 52px;
-        --iron-icon-height: 52px;
-        flex: 0 0 52px;
+      :host([veryNarrow]) .icon-info state-badge {
+        height: 48px;
+        flex: 0 0 48px;
+        --iron-icon-width: 48px;
+        --iron-icon-height: 48px;
       }
 
-      :host([veryNarrow]) .header {
+      :host([veryNarrow]) .info {
         display: none;
       }
 
       :host([veryNarrow]) .temp-attribute .temp {
         font-size: 36px;
-        line-height: 36px;
-        margin-right: 18px;
       }
 
       :host([veryNarrow]) .temp-attribute .temp span {
-        font-size: 18px;
-        line-height: 18px;
-        top: 3px;
+        top: 2px;
       }
 
       :host([veryVeryNarrow]) .temp-attribute {
