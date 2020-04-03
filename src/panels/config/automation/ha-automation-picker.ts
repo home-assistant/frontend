@@ -160,6 +160,7 @@ class HaAutomationPicker extends LitElement {
         .noDataText=${this.hass.localize(
           "ui.panel.config.automation.picker.no_automations"
         )}
+        hasFab
       >
       </hass-tabs-subpage-data-table>
       <ha-fab
