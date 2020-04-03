@@ -229,6 +229,7 @@ export class HaConfigLovelaceDashboards extends LitElement {
         .data=${this._getItems(this._dashboards)}
         @row-click=${this._editDashboard}
         id="url_path"
+        hasFab
       >
       </hass-tabs-subpage-data-table>
       <ha-fab

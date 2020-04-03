@@ -126,6 +126,7 @@ class HaScriptPicker extends LitElement {
         .noDataText=${this.hass.localize(
           "ui.panel.config.script.picker.no_scripts"
         )}
+        hasFab
       >
         <paper-icon-button
           slot="toolbar-icon"

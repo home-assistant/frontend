@@ -87,6 +87,7 @@ export class HaDataTable extends LitElement {
   @property({ type: Object }) public columns: DataTableColumnContainer = {};
   @property({ type: Array }) public data: DataTableRowData[] = [];
   @property({ type: Boolean }) public selectable = false;
+  @property({ type: Boolean }) public hasFab = false;
   @property({ type: Boolean, attribute: "auto-height" })
   public autoHeight = false;
   @property({ type: String }) public id = "id";
@@ -283,21 +284,25 @@ export class HaDataTable extends LitElement {
               `
             : html`
                 <div class="mdc-data-table__content scroller">
-                  ${until(
-                    nextRender().then(() =>
-                      this._scroller &&
-                      this._scroller.scrollHeight > this._scroller.clientHeight
-                        ? html`
-                            <div
-                              style=${styleMap({
-                                height: `${this._scroller.scrollHeight + 56}px`,
-                              })}
-                            ></div>
-                          `
-                        : ""
-                    ),
-                    ""
-                  )}
+                  ${this.hasFab
+                    ? until(
+                        nextRender().then(() =>
+                          this._scroller &&
+                          this._scroller.scrollHeight >
+                            this._scroller.clientHeight
+                            ? html`
+                                <div
+                                  style=${styleMap({
+                                    height: `${this._scroller.scrollHeight +
+                                      56}px`,
+                                  })}
+                                ></div>
+                              `
+                            : ""
+                        ),
+                        ""
+                      )
+                    : ""}
                   ${scroll({
                     items: this._filteredData,
                     renderItem: (row: DataTableRowData) => html`
