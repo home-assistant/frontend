@@ -20,6 +20,7 @@ declare global {
   // for fire event
   interface HASSDomEvents {
     "chip-clicked": { index: number };
+    "chip-removed": { index: number };
   }
 }
 
@@ -82,7 +83,7 @@ export class HaChips extends LitElement {
 
   private _handleRemove(ev: MouseEvent): void {
     ev.stopPropagation();
-    fireEvent(this, "chip-clicked", {
+    fireEvent(this, "chip-removed", {
       index: (ev.currentTarget as any).index,
     });
   }
