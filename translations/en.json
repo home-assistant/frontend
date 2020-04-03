@@ -546,6 +546,7 @@
             "save": "Save",
             "successfully_deleted": "Successfully deleted",
             "successfully_saved": "Successfully saved",
+            "undo": "Undo",
             "yes": "Yes"
         },
         "components": {
