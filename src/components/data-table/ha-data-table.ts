@@ -31,6 +31,7 @@ import { nextRender } from "../../common/util/render-status";
 import { debounce } from "../../common/util/debounce";
 import { styleMap } from "lit-html/directives/style-map";
 import { ifDefined } from "lit-html/directives/if-defined";
+import { until } from "lit-html/directives/until";
 
 declare global {
   // for fire event
@@ -98,6 +99,8 @@ export class HaDataTable extends LitElement {
   @property({ type: Array }) private _filteredData: DataTableRowData[] = [];
   @query("slot[name='header']") private _header!: HTMLSlotElement;
   @query(".mdc-data-table__table") private _table!: HTMLDivElement;
+  @query(".scroller") private _scroller?: HTMLDivElement;
+
   private _checkableRowsCount?: number;
   private _checkedRows: string[] = [];
   private _sortColumns: {
@@ -280,6 +283,21 @@ export class HaDataTable extends LitElement {
               `
             : html`
                 <div class="mdc-data-table__content scroller">
+                  ${until(
+                    nextRender().then(() =>
+                      this._scroller &&
+                      this._scroller.scrollHeight > this._scroller.clientHeight
+                        ? html`
+                            <div
+                              style=${styleMap({
+                                height: `${this._scroller.scrollHeight + 56}px`,
+                              })}
+                            ></div>
+                          `
+                        : ""
+                    ),
+                    ""
+                  )}
                   ${scroll({
                     items: this._filteredData,
                     renderItem: (row: DataTableRowData) => html`
