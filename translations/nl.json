@@ -509,6 +509,7 @@
                 "attributes": {
                     "air_pressure": "Luchtdruk",
                     "humidity": "Vochtigheid",
+                    "precipitation": "Neerslag",
                     "temperature": "Temperatuur",
                     "visibility": "Zicht",
                     "wind_speed": "Windsnelheid"
@@ -531,7 +532,9 @@
                     "wnw": "WNW",
                     "wsw": "WZW"
                 },
-                "forecast": "Verwachting"
+                "forecast": "Verwachting",
+                "high": "hoog",
+                "low": "Laag"
             }
         },
         "common": {
@@ -2175,6 +2178,7 @@
                             "attribute": "Kenmerk",
                             "camera_image": "Camera-entiteit",
                             "camera_view": "Cameraweergave",
+                            "double_tap_action": "Dubbele tik Actie",
                             "entities": "Entiteiten",
                             "entity": "Entiteit",
                             "hold_action": "Actie vasthouden",
@@ -2225,6 +2229,7 @@
                             "default_zoom": "Standaard zoom",
                             "description": "Met de Map-kaart kun je entiteiten op een kaart kunt weergeven.",
                             "geo_location_sources": "Geolocatiebronnen",
+                            "hours_to_show": "Uren om weer te geven",
                             "name": "Kaart",
                             "source": "Bron"
                         },
@@ -2280,6 +2285,10 @@
                             "description": "De Weather Forecast-kaart geeft het weer weer. Erg handig om op te nemen op interfaces die mensen aan de muur hangen.",
                             "name": "Weersverwachting"
                         }
+                    },
+                    "cardpicker": {
+                        "custom_card": "Aangepaste UI's:",
+                        "no_description": "Er is geen beschrijving beschikbaar"
                     },
                     "edit_card": {
                         "add": "Kaart toevoegen",

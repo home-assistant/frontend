@@ -391,7 +391,7 @@ export class HuiEditView extends LitElement {
         .preview-badges {
           display: flex;
           justify-content: center;
-          margin: 8px 16px;
+          margin: 12px 16px;
           flex-wrap: wrap;
         }
       `,

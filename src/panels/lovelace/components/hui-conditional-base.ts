@@ -12,6 +12,7 @@ import { ConditionalCardConfig } from "../cards/types";
 @customElement("hui-conditional-base")
 export class HuiConditionalBase extends UpdatingElement {
   @property() public hass?: HomeAssistant;
+  @property() public editMode?: boolean;
   @property() protected _config?: ConditionalCardConfig | ConditionalRowConfig;
   protected _element?: LovelaceCard | LovelaceRow;
 
@@ -30,8 +31,11 @@ export class HuiConditionalBase extends UpdatingElement {
       throw new Error("Conditions are invalid.");
     }
 
+    if (this.lastChild) {
+      this.removeChild(this.lastChild);
+    }
+
     this._config = config;
-    this.style.display = "none";
   }
 
   protected update(): void {
@@ -39,13 +43,19 @@ export class HuiConditionalBase extends UpdatingElement {
       return;
     }
 
-    const visible = checkConditionsMet(this._config.conditions, this.hass);
+    this._element.editMode = this.editMode;
+
+    const visible =
+      this.editMode || checkConditionsMet(this._config.conditions, this.hass);
+
+    this.style.setProperty("display", visible ? "" : "none");
 
     if (visible) {
       this._element.hass = this.hass;
+      if (!this._element.parentElement) {
+        this.appendChild(this._element);
+      }
     }
-
-    this.style.setProperty("display", visible ? "" : "none");
   }
 }
 

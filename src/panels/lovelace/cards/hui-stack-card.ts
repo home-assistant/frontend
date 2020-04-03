@@ -5,6 +5,7 @@ import {
   CSSResult,
   css,
   property,
+  PropertyValues,
 } from "lit-element";
 
 import { createCardElement } from "../create-element/create-card-element";
@@ -25,21 +26,10 @@ export abstract class HuiStackCard extends LitElement implements LovelaceCard {
     return { cards: [] };
   }
 
+  @property() public hass?: HomeAssistant;
+  @property() public editMode?: boolean;
   @property() protected _cards?: LovelaceCard[];
   @property() private _config?: StackCardConfig;
-  private _hass?: HomeAssistant;
-
-  set hass(hass: HomeAssistant) {
-    this._hass = hass;
-
-    if (!this._cards) {
-      return;
-    }
-
-    for (const element of this._cards) {
-      element.hass = this._hass;
-    }
-  }
 
   public getCardSize(): number {
     return 1;
@@ -54,6 +44,21 @@ export abstract class HuiStackCard extends LitElement implements LovelaceCard {
       const element = this._createCardElement(card) as LovelaceCard;
       return element;
     });
+  }
+
+  protected updated(changedProps: PropertyValues) {
+    super.updated(changedProps);
+    if (
+      !this._cards ||
+      (!changedProps.has("hass") && !changedProps.has("editMode"))
+    ) {
+      return;
+    }
+
+    for (const element of this._cards) {
+      element.hass = this.hass;
+      element.editMode = this.editMode;
+    }
   }
 
   protected render(): TemplateResult {
@@ -87,8 +92,8 @@ export abstract class HuiStackCard extends LitElement implements LovelaceCard {
 
   private _createCardElement(cardConfig: LovelaceCardConfig) {
     const element = createCardElement(cardConfig) as LovelaceCard;
-    if (this._hass) {
-      element.hass = this._hass;
+    if (this.hass) {
+      element.hass = this.hass;
     }
     element.addEventListener(
       "ll-rebuild",

@@ -509,6 +509,7 @@
                 "attributes": {
                     "air_pressure": "Luftdruck",
                     "humidity": "Luftfeuchtigkeit",
+                    "precipitation": "Niederschlag",
                     "temperature": "Temperatur",
                     "visibility": "Sichtweite",
                     "wind_speed": "Windgeschwindigkeit"
@@ -531,7 +532,9 @@
                     "wnw": "WNW",
                     "wsw": "WSW"
                 },
-                "forecast": "Prognose"
+                "forecast": "Prognose",
+                "high": "Hoch",
+                "low": "Niedrig"
             }
         },
         "common": {
@@ -1731,6 +1734,7 @@
                     "editor": {
                         "activate_user": "Benutzer aktivieren",
                         "active": "Aktiv",
+                        "admin": "Administrator",
                         "caption": "Benutzer anzeigen",
                         "change_password": "Passwort ändern",
                         "confirm_user_deletion": "Möchten Sie {name} wirklich löschen?",
@@ -1744,6 +1748,7 @@
                         "owner": "Besitzer",
                         "rename_user": "Benutzer umbenennen",
                         "system_generated": "System generiert",
+                        "system_generated_users_not_editable": "Systemgenerierte Benutzer können nicht aktualisiert werden.",
                         "system_generated_users_not_removable": "Vom System generierte Benutzer können nicht entfernt werden.",
                         "unnamed_user": "Unbenannter Benutzer",
                         "update_user": "Aktualisieren",
@@ -2175,6 +2180,7 @@
                             "attribute": "Attribut",
                             "camera_image": "Kamera-Entität",
                             "camera_view": "Kameraansicht",
+                            "double_tap_action": "Doppeltipp-Aktion",
                             "entities": "Ungenutzte Elemente",
                             "entity": "Entität",
                             "hold_action": "Halte-Aktion",
@@ -2225,6 +2231,7 @@
                             "default_zoom": "Standard-Zoom",
                             "description": "Mit der Map-Karte kannst du Objekte auf einer Karte anzeigen lassen.",
                             "geo_location_sources": "Geolocation-Quellen",
+                            "hours_to_show": "Zu zeigende Stunden",
                             "name": "Karte",
                             "source": "Quelle"
                         },
@@ -2280,6 +2287,10 @@
                             "description": "Die Wettervorhersagekarte zeigt das vorhergesagte Wetter an. Sehr nützlich für wandmontierte Displays.",
                             "name": "Wettervorhersage"
                         }
+                    },
+                    "cardpicker": {
+                        "custom_card": "Benutzerdefiniert",
+                        "no_description": "Keine Beschreibung verfügbar."
                     },
                     "edit_card": {
                         "add": "Karte hinzufügen",
