@@ -8,7 +8,7 @@ schedules:
     branches:
       include:
       - dev
-    always: false
+    always: true
 variables:
   - group: netlify
 
