@@ -1734,6 +1734,7 @@
                     "editor": {
                         "activate_user": "Activer l'utilisateur",
                         "active": "Actif",
+                        "admin": "Administrateur",
                         "caption": "Voir l'utilisateur",
                         "change_password": "Changer le mot de passe",
                         "confirm_user_deletion": "Êtes-vous sûr de vouloir supprimer {name} ?",
@@ -1747,6 +1748,7 @@
                         "owner": "Propriétaire",
                         "rename_user": "Renommer l'utilisateur",
                         "system_generated": "Généré par le système",
+                        "system_generated_users_not_editable": "Impossible de mettre à jour les utilisateurs générés par le système.",
                         "system_generated_users_not_removable": "Impossible de supprimer les utilisateurs générés par le système.",
                         "unnamed_user": "Utilisateur sans nom",
                         "update_user": "Mise à jour",

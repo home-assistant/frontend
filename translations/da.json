@@ -40,7 +40,7 @@
         "lovelace": "Lovelace",
         "mailbox": "Postkasse",
         "media_player": "Medieafspiller",
-        "notify": "Meddelelser",
+        "notify": "Notifikationer",
         "person": "Person",
         "plant": "Plante",
         "proximity": "Nærhed",
@@ -795,8 +795,8 @@
         "notification_drawer": {
             "click_to_configure": "Klik på knappen for at konfigurere {entity}",
             "close": "Luk",
-            "empty": "Ingen meddelelser",
-            "title": "Meddelelser"
+            "empty": "Ingen notifikationer",
+            "title": "Notifikationer"
         },
         "notification_toast": {
             "connection_lost": "Forbindelse afbrudt. Opretter forbindelse igen...",
@@ -1734,6 +1734,7 @@
                     "editor": {
                         "activate_user": "Aktivér bruger",
                         "active": "Aktiv",
+                        "admin": "Administrator",
                         "caption": "Vis bruger",
                         "change_password": "Skift adgangskode",
                         "confirm_user_deletion": "Er du sikker på, at du vil slette {name}?",
@@ -1747,6 +1748,7 @@
                         "owner": "Ejer",
                         "rename_user": "Omdøb bruger",
                         "system_generated": "Systemgenereret",
+                        "system_generated_users_not_editable": "Systemoprettede brugere kan ikke opdateres.",
                         "system_generated_users_not_removable": "Kan ikke fjerne systemgenererede brugere.",
                         "unnamed_user": "Unavngiven bruger",
                         "update_user": "Opdater",
@@ -2651,12 +2653,12 @@
                     "header": "Multifaktor-godkendelsesmoduler"
                 },
                 "push_notifications": {
-                    "description": "Send meddelelser til denne enhed.",
+                    "description": "Send notifikationer til denne enhed.",
                     "error_load_platform": "Konfigurer notify.html5",
                     "error_use_https": "Kræver SSL aktiveret til brugerflade.",
-                    "header": "Push-meddelelser",
+                    "header": "Push-notifikationer",
                     "link_promo": "Lær mere",
-                    "push_notifications": "Push-meddelelser"
+                    "push_notifications": "Push-notifikationer"
                 },
                 "refresh_tokens": {
                     "confirm_delete": "Er du sikker på, at du vil slette opdateringsstoken til {name}?",
