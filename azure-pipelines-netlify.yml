@@ -24,4 +24,7 @@ jobs:
 
       # Demo
       curl -X POST -d {} https://api.netlify.com/build_hooks/${NETLIFY_DEMO}
+
+      # Gallery
+      curl -X POST -d {} https://api.netlify.com/build_hooks/${NETLIFY_GALLERY}
     displayName: 'Trigger netlify build preview'
