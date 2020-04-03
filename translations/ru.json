@@ -1731,6 +1731,7 @@
                     "editor": {
                         "activate_user": "Активировать",
                         "active": "Активен",
+                        "admin": "Администратор",
                         "caption": "Просмотр пользователя",
                         "change_password": "Изменить пароль",
                         "confirm_user_deletion": "Вы уверены, что хотите удалить {name}?",

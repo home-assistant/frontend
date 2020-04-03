@@ -1734,6 +1734,7 @@
                     "editor": {
                         "activate_user": "激活用戶",
                         "active": "啟用",
+                        "admin": "管理員",
                         "caption": "檢視用戶",
                         "change_password": "更改密碼",
                         "confirm_user_deletion": "確定要刪除 {name}？",
@@ -1747,6 +1748,7 @@
                         "owner": "擁有者",
                         "rename_user": "重命名用戶",
                         "system_generated": "系統產生",
+                        "system_generated_users_not_editable": "無法更新系統產生用戶",
                         "system_generated_users_not_removable": "無法移除系統產生用戶",
                         "unnamed_user": "未命名用戶",
                         "update_user": "更新",

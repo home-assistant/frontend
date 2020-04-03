@@ -1734,6 +1734,7 @@
                     "editor": {
                         "activate_user": "激活用户",
                         "active": "激活",
+                        "admin": "管理员",
                         "caption": "用户信息",
                         "change_password": "更改密码",
                         "confirm_user_deletion": "您确定要删除{name}吗？",
@@ -1747,6 +1748,7 @@
                         "owner": "所有者",
                         "rename_user": "重命名用户",
                         "system_generated": "系统生成",
+                        "system_generated_users_not_editable": "无法更新系统生成的用户。",
                         "system_generated_users_not_removable": "无法删除系统生成的用户。",
                         "unnamed_user": "未命名的用户",
                         "update_user": "更新",
