@@ -285,7 +285,7 @@ class ZHADeviceCard extends LitElement {
                 <div class="card-actions">
                   ${this.device!.device_type !== "Coordinator"
                     ? html`
-                        <mwc-button @click="${this._onReconfigureNodeClick}">
+                        <mwc-button @click=${this._onReconfigureNodeClick}>
                           ${this.hass!.localize(
                             "ui.dialogs.zha_device_info.buttons.reconfigure"
                           )}
