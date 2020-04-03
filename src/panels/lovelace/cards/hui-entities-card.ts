@@ -187,6 +187,9 @@ class HuiEntitiesCard extends LitElement implements LovelaceCard {
     return css`
       ha-card {
         height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
       }
       .card-header {
         display: flex;
@@ -197,6 +200,10 @@ class HuiEntitiesCard extends LitElement implements LovelaceCard {
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
+      }
+
+      #states {
+        flex: 1;
       }
 
       #states > * {

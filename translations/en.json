@@ -546,6 +546,7 @@
             "save": "Save",
             "successfully_deleted": "Successfully deleted",
             "successfully_saved": "Successfully saved",
+            "undo": "Undo",
             "yes": "Yes"
         },
         "components": {
@@ -1734,6 +1735,7 @@
                     "editor": {
                         "activate_user": "Activate user",
                         "active": "Active",
+                        "admin": "Administrator",
                         "caption": "View user",
                         "change_password": "Change password",
                         "confirm_user_deletion": "Are you sure you want to delete {name}?",
@@ -1747,6 +1749,7 @@
                         "owner": "Owner",
                         "rename_user": "Rename user",
                         "system_generated": "System generated",
+                        "system_generated_users_not_editable": "Unable to update system generated users.",
                         "system_generated_users_not_removable": "Unable to remove system generated users.",
                         "unnamed_user": "Unnamed User",
                         "update_user": "Update",

@@ -6,18 +6,24 @@ import {
   property,
   CSSResult,
   css,
+  query,
 } from "lit-element";
 import "@polymer/paper-tabs";
 
 import { struct } from "../../common/structs/struct";
 import { HomeAssistant } from "../../../../types";
 import { LovelaceCardEditor } from "../../types";
-import { StackCardConfig } from "../../cards/types";
-import { fireEvent } from "../../../../common/dom/fire_event";
+import { ConditionalCardConfig } from "../../cards/types";
+import { fireEvent, HASSDomEvent } from "../../../../common/dom/fire_event";
 import { LovelaceConfig } from "../../../../data/lovelace";
 
 import "../../../../components/entity/ha-entity-picker";
 import "../../../../components/ha-switch";
+import {
+  HuiCardEditor,
+  ConfigChangedEvent,
+} from "../card-editor/hui-card-editor";
+import { GUIModeChangedEvent } from "../types";
 
 const conditionStruct = struct({
   entity: "string",
@@ -35,10 +41,13 @@ export class HuiConditionalCardEditor extends LitElement
   implements LovelaceCardEditor {
   @property() public hass?: HomeAssistant;
   @property() public lovelace?: LovelaceConfig;
-  @property() private _config?: StackCardConfig;
+  @property() private _config?: ConditionalCardConfig;
+  @property() private _GUImode = true;
+  @property() private _guiModeAvailable? = true;
   @property() private _cardTab: boolean = false;
+  @query("hui-card-editor") private _cardEditorEl?: HuiCardEditor;
 
-  public setConfig(config: StackCardConfig): void {
+  public setConfig(config: ConditionalCardConfig): void {
     this._config = cardConfigStruct(config);
   }
 
@@ -66,9 +75,20 @@ export class HuiConditionalCardEditor extends LitElement
       ${this._cardTab
         ? html`
             <div class="card">
-              ${this._config.card.type
+              ${this._config.card.type !== undefined
                 ? html`
                     <div class="card-options">
+                      <mwc-button
+                        @click=${this._toggleMode}
+                        .disabled=${!this._guiModeAvailable}
+                        class="gui-mode-button"
+                      >
+                        ${this.hass!.localize(
+                          !this._cardEditorEl || this._GUImode
+                            ? "ui.panel.lovelace.editor.edit_card.show_code_editor"
+                            : "ui.panel.lovelace.editor.edit_card.show_visual_editor"
+                        )}
+                      </mwc-button>
                       <mwc-button @click=${this._handleReplaceCard}
                         >${this.hass!.localize(
                           "ui.panel.lovelace.editor.card.conditional.change_type"
@@ -80,13 +100,14 @@ export class HuiConditionalCardEditor extends LitElement
                       .value=${this._config.card}
                       .lovelace=${this.lovelace}
                       @config-changed=${this._handleCardChanged}
+                      @GUImode-changed=${this._handleGUIModeChanged}
                     ></hui-card-editor>
                   `
                 : html`
                     <hui-card-picker
                       .hass=${this.hass}
                       .lovelace=${this.lovelace}
-                      @config-changed=${this._handleCardChanged}
+                      @config-changed=${this._handleCardPicked}
                     ></hui-card-picker>
                   `}
             </div>
@@ -162,18 +183,49 @@ export class HuiConditionalCardEditor extends LitElement
     this._cardTab = parseInt((ev.target! as any).selected!, 10) === 1;
   }
 
-  private _handleCardChanged(ev: CustomEvent): void {
+  private _toggleMode(): void {
+    this._cardEditorEl?.toggleMode();
+  }
+
+  private _setMode(value: boolean): void {
+    this._GUImode = value;
+    if (this._cardEditorEl) {
+      this._cardEditorEl!.GUImode = value;
+    }
+  }
+
+  private _handleGUIModeChanged(ev: HASSDomEvent<GUIModeChangedEvent>): void {
+    ev.stopPropagation();
+    this._GUImode = ev.detail.guiMode;
+    this._guiModeAvailable = ev.detail.guiModeAvailable;
+  }
+
+  private _handleCardPicked(ev: CustomEvent): void {
+    ev.stopPropagation();
+    if (!this._config) {
+      return;
+    }
+    this._setMode(true);
+    this._guiModeAvailable = true;
+    this._config.card = ev.detail.config;
+    fireEvent(this, "config-changed", { config: this._config });
+  }
+
+  private _handleCardChanged(ev: HASSDomEvent<ConfigChangedEvent>): void {
     ev.stopPropagation();
     if (!this._config) {
       return;
     }
     this._config.card = ev.detail.config;
+    this._guiModeAvailable = ev.detail.guiModeAvailable;
     fireEvent(this, "config-changed", { config: this._config });
   }
+
   private _handleReplaceCard(): void {
     if (!this._config) {
       return;
     }
+    // @ts-ignore
     this._config.card = {};
     fireEvent(this, "config-changed", { config: this._config });
   }
@@ -266,6 +318,9 @@ export class HuiConditionalCardEditor extends LitElement
         display: flex;
         justify-content: flex-end;
         width: 100%;
+      }
+      .gui-mode-button {
+        margin-right: auto;
       }
     `;
   }
