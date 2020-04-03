@@ -25,15 +25,18 @@ import { EntityConfig } from "../../entity-rows/types";
 import { getCardElementClass } from "../../create-element/create-card-element";
 import { GUIModeChangedEvent } from "../types";
 
+export interface ConfigChangedEvent {
+  config: LovelaceCardConfig;
+  error?: string;
+  guiModeAvailable?: boolean;
+}
+
 declare global {
   interface HASSDomEvents {
     "entities-changed": {
       entities: EntityConfig[];
     };
-    "config-changed": {
-      config: LovelaceCardConfig;
-      error?: string;
-    };
+    "config-changed": ConfigChangedEvent;
     "GUImode-changed": GUIModeChangedEvent;
   }
 }
@@ -75,6 +78,7 @@ export class HuiCardEditor extends LitElement {
     fireEvent(this, "config-changed", {
       config: this.value!,
       error: this._error,
+      guiModeAvailable: !(this.hasWarning || this.hasError),
     });
   }
 
@@ -101,7 +105,10 @@ export class HuiCardEditor extends LitElement {
 
   public set GUImode(guiMode: boolean) {
     this._GUImode = guiMode;
-    fireEvent(this as HTMLElement, "GUImode-changed", { guiMode });
+    fireEvent(this as HTMLElement, "GUImode-changed", {
+      guiMode,
+      guiModeAvailable: !(this.hasWarning || this.hasError),
+    });
   }
 
   private get _yamlEditor(): HaCodeEditor {
@@ -174,6 +181,13 @@ export class HuiCardEditor extends LitElement {
       }
       fireEvent(this as HTMLElement, "iron-resize");
     }
+
+    if (this._configElement && changedProperties.has("hass")) {
+      this._configElement.hass = this.hass;
+    }
+    if (this._configElement && changedProperties.has("lovelace")) {
+      this._configElement.lovelace = this.lovelace;
+    }
   }
 
   private _refreshYamlEditor(focus = false) {
@@ -232,6 +246,13 @@ export class HuiCardEditor extends LitElement {
 
         this._configElement = configElement;
         this._configElType = cardType;
+
+        // Perform final setup
+        this._configElement.hass = this.hass;
+        this._configElement.lovelace = this.lovelace;
+        this._configElement.addEventListener("config-changed", (ev) =>
+          this._handleUIConfigChanged(ev as UIConfigChangedEvent)
+        );
       }
 
       // Setup GUI editor and check that it can handle the current config
@@ -240,16 +261,6 @@ export class HuiCardEditor extends LitElement {
       } catch (err) {
         throw Error(`WARNING: ${err.message}`);
       }
-
-      // Perform final setup
-      this._configElement!.hass = this.hass;
-      this._configElement!.lovelace = this.lovelace;
-      this._configElement!.addEventListener("config-changed", (ev) =>
-        this._handleUIConfigChanged(ev as UIConfigChangedEvent)
-      );
-
-      this.GUImode = true;
-      return;
     } catch (err) {
       if (err.message.startsWith("WARNING:")) {
         this._warning = err.message.substr(8);

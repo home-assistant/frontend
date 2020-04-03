@@ -148,6 +148,7 @@ export class HaConfigHelpers extends LitElement {
         .columns=${this._columns(this.narrow, this.hass.language)}
         .data=${this._getItems(this._stateItems)}
         @row-click=${this._openEditDialog}
+        hasFab
       >
       </hass-tabs-subpage-data-table>
       <ha-fab

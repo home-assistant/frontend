@@ -45,7 +45,8 @@ class HassTabsSubpage extends LitElement {
       activeTab: PageNavigation | undefined,
       showAdvanced: boolean | undefined,
       _components,
-      _language
+      _language,
+      _narrow
     ) => {
       const shownTabs = tabs.filter(
         (page) =>
@@ -101,7 +102,8 @@ class HassTabsSubpage extends LitElement {
       this._activeTab,
       this.hass.userData?.showAdvanced,
       this.hass.config.components,
-      this.hass.language
+      this.hass.language,
+      this.narrow
     );
 
     return html`
@@ -113,7 +115,7 @@ class HassTabsSubpage extends LitElement {
         ></ha-paper-icon-button-arrow-prev>
         ${this.narrow
           ? html`
-              <div main-title><slot name="header"></slot></div>
+              <div class="main-title"><slot name="header"></slot></div>
             `
           : ""}
         ${tabs.length > 1 || !this.narrow
@@ -190,10 +192,8 @@ class HassTabsSubpage extends LitElement {
       }
 
       #tabbar:not(.bottom-bar) {
-        margin: auto;
-        left: 50%;
-        position: absolute;
-        transform: translate(-50%, 0);
+        flex: 1;
+        justify-content: center;
       }
 
       .tab {
@@ -228,14 +228,17 @@ class HassTabsSubpage extends LitElement {
       ha-menu-button,
       ha-paper-icon-button-arrow-prev,
       ::slotted([slot="toolbar-icon"]) {
+        flex-shrink: 0;
         pointer-events: auto;
         color: var(--sidebar-icon-color);
       }
 
-      [main-title] {
-        margin: 0 0 0 24px;
+      .main-title {
+        flex: 1;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-height: 40px;
         line-height: 20px;
-        flex-grow: 1;
       }
 
       .content {
@@ -245,11 +248,6 @@ class HassTabsSubpage extends LitElement {
         overflow-y: auto;
         overflow: auto;
         -webkit-overflow-scrolling: touch;
-      }
-
-      #toolbar-icon {
-        position: absolute;
-        right: 16px;
       }
 
       :host([narrow]) .content {

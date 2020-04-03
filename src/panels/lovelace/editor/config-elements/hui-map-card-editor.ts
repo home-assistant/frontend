@@ -79,7 +79,7 @@ export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
   }
 
   protected render(): TemplateResult {
-    if (!this.hass) {
+    if (!this.hass || !this._config) {
       return html``;
     }
 

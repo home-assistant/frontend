@@ -79,6 +79,7 @@ class HuiMapCard extends LitElement implements LovelaceCard {
   @property()
   private _history?: HassEntity[][];
   private _date?: Date;
+  private _loaded = false;
 
   @property()
   private _config?: MapCardConfig;
@@ -282,6 +283,10 @@ class HuiMapCard extends LitElement implements LovelaceCard {
   }
 
   private async loadMap(): Promise<void> {
+    if (this._loaded) {
+      return;
+    }
+    this._loaded = true;
     [this._leafletMap, this.Leaflet] = await setupLeafletMap(
       this._mapEl,
       this._config !== undefined ? this._config.dark_mode === true : false

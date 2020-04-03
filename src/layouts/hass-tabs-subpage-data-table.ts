@@ -41,6 +41,11 @@ export class HaTabsSubpageDataTable extends LitElement {
    */
   @property({ type: Boolean }) public selectable = false;
   /**
+   * Do we need to add padding for a fab.
+   * @type {Boolean}
+   */
+  @property({ type: Boolean }) public hasFab = false;
+  /**
    * Field with a unique id per entry in data.
    * @type {String}
    */
@@ -95,6 +100,8 @@ export class HaTabsSubpageDataTable extends LitElement {
                 <slot name="header">
                   <div class="search-toolbar">
                     <search-input
+                      .filter=${this.filter}
+                      class="header"
                       no-label-float
                       no-underline
                       @value-changed=${this._handleSearchChange}
@@ -109,6 +116,7 @@ export class HaTabsSubpageDataTable extends LitElement {
           .data=${this.data}
           .filter=${this.filter}
           .selectable=${this.selectable}
+          .hasFab=${this.hasFab}
           .id=${this.id}
           .noDataText=${this.noDataText}
         >
@@ -119,6 +127,7 @@ export class HaTabsSubpageDataTable extends LitElement {
                     <slot name="header">
                       <div class="table-header">
                         <search-input
+                          .filter=${this.filter}
                           no-label-float
                           no-underline
                           @value-changed=${this._handleSearchChange}
@@ -153,12 +162,15 @@ export class HaTabsSubpageDataTable extends LitElement {
         border-bottom: 1px solid rgba(var(--rgb-primary-text-color), 0.12);
       }
       .search-toolbar {
-        margin-left: -24px;
         color: var(--secondary-text-color);
       }
       search-input {
         position: relative;
         top: 2px;
+      }
+      search-input.header {
+        left: -8px;
+        top: -7px;
       }
     `;
   }

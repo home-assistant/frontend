@@ -509,6 +509,7 @@
                 "attributes": {
                     "air_pressure": "기압",
                     "humidity": "습도",
+                    "precipitation": "강수량",
                     "temperature": "기온",
                     "visibility": "시정",
                     "wind_speed": "풍속"
@@ -531,7 +532,9 @@
                     "wnw": "서북서",
                     "wsw": "서남서"
                 },
-                "forecast": "일기 예보"
+                "forecast": "일기 예보",
+                "high": "높음",
+                "low": "낮음"
             }
         },
         "common": {
@@ -630,7 +633,7 @@
                     "entity_id": "구성요소 ID",
                     "icon": "아이콘 재정의",
                     "icon_error": "아이콘은 접두사:아이콘이름 형식이어야 합니다. 예: mdi:home",
-                    "name": "대체 이름",
+                    "name": "이름 재정의",
                     "note": "참고: 아직 모든 통합 구성요소에 적용되지 않을 수 있습니다.",
                     "unavailable": "이 구성요소는 현재 사용할 수 없습니다.",
                     "update": "업데이트"
@@ -731,7 +734,7 @@
             "more_info_settings": {
                 "back": "뒤로가기",
                 "entity_id": "구성요소 ID",
-                "name": "대체 이름",
+                "name": "이름 재정의",
                 "save": "저장"
             },
             "options_flow": {
@@ -1370,7 +1373,7 @@
                         "enabled_description": "비활성화 된 구성요소는 Home Assistant 에 추가되지 않습니다.",
                         "enabled_label": "구성요소 활성화",
                         "entity_id": "구성요소 ID",
-                        "name": "대체 이름",
+                        "name": "이름 재정의",
                         "note": "참고 : 아직 모든 통합 구성요소에 적용되지 않을 수 있습니다.",
                         "unavailable": "이 구성요소는 현재 사용할 수 없습니다.",
                         "update": "업데이트"
@@ -1731,6 +1734,7 @@
                     "editor": {
                         "activate_user": "사용자 활성화",
                         "active": "활성화",
+                        "admin": "관리자",
                         "caption": "사용자 보기",
                         "change_password": "비밀번호 변경",
                         "confirm_user_deletion": "{name} 을(를) 삭제하시겠습니까?",
@@ -1744,6 +1748,7 @@
                         "owner": "소유자",
                         "rename_user": "사용자 이름 변경",
                         "system_generated": "시스템 자동 생성",
+                        "system_generated_users_not_editable": "시스템 자동 생성 사용자는 업데이트할 수 없습니다.",
                         "system_generated_users_not_removable": "시스템 자동 생성 사용자는 제거할 수 없습니다.",
                         "unnamed_user": "이름이 없는 사용자",
                         "update_user": "업데이트",
@@ -2175,6 +2180,7 @@
                             "attribute": "속성",
                             "camera_image": "카메라 구성요소",
                             "camera_view": "카메라 뷰",
+                            "double_tap_action": "더블 탭 동작",
                             "entities": "구성요소",
                             "entity": "구성요소",
                             "hold_action": "길게 누르기 동작",
@@ -2225,6 +2231,7 @@
                             "default_zoom": "기본 확대",
                             "description": "지도 카드는 지도에 구성요소를 표시할 수 있습니다.",
                             "geo_location_sources": "위치정보 소스",
+                            "hours_to_show": "표시 시간",
                             "name": "지도",
                             "source": "소스"
                         },
@@ -2280,6 +2287,10 @@
                             "description": "날씨 예보 카드는 날씨를 표시합니다. 화면에 날씨를 포함하는 인터페이스를 표시하는데 유용합니다.",
                             "name": "날씨 예보"
                         }
+                    },
+                    "cardpicker": {
+                        "custom_card": "사용자 정의",
+                        "no_description": "상세정보가 없습니다"
                     },
                     "edit_card": {
                         "add": "카드 추가하기",

@@ -509,6 +509,7 @@
                 "attributes": {
                     "air_pressure": "大氣壓",
                     "humidity": "濕度",
+                    "precipitation": "降雨量",
                     "temperature": "溫度",
                     "visibility": "顯示選項",
                     "wind_speed": "風速"
@@ -531,7 +532,9 @@
                     "wnw": "西北西",
                     "wsw": "西南西"
                 },
-                "forecast": "預報"
+                "forecast": "預報",
+                "high": "高",
+                "low": "低"
             }
         },
         "common": {
@@ -1731,6 +1734,7 @@
                     "editor": {
                         "activate_user": "激活用戶",
                         "active": "啟用",
+                        "admin": "管理員",
                         "caption": "檢視用戶",
                         "change_password": "更改密碼",
                         "confirm_user_deletion": "確定要刪除 {name}？",
@@ -1744,6 +1748,7 @@
                         "owner": "擁有者",
                         "rename_user": "重命名用戶",
                         "system_generated": "系統產生",
+                        "system_generated_users_not_editable": "無法更新系統產生用戶",
                         "system_generated_users_not_removable": "無法移除系統產生用戶",
                         "unnamed_user": "未命名用戶",
                         "update_user": "更新",
@@ -2175,6 +2180,7 @@
                             "attribute": "屬性",
                             "camera_image": "攝影機物件",
                             "camera_view": "攝影機視角",
+                            "double_tap_action": "雙點擊觸發",
                             "entities": "物件",
                             "entity": "物件",
                             "hold_action": "保持觸發",
@@ -2225,6 +2231,7 @@
                             "default_zoom": "預設大小",
                             "description": "地圖面板可供顯示地圖物件。",
                             "geo_location_sources": "地理位置來源",
+                            "hours_to_show": "顯示小時",
                             "name": "地圖面板",
                             "source": "來源"
                         },
@@ -2280,6 +2287,10 @@
                             "description": "天氣預報面板顯示天氣狀態。對於放置於牆上顯示非常實用。",
                             "name": "天氣預報面板"
                         }
+                    },
+                    "cardpicker": {
+                        "custom_card": "自訂面板",
+                        "no_description": "無描述可使用。"
                     },
                     "edit_card": {
                         "add": "新增面板",
