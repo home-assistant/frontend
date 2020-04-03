@@ -99,6 +99,7 @@ export class HuiCardOptions extends LitElement {
   static get styles(): CSSResult {
     return css`
       :host(:hover) {
+        overflow: hidden;
         outline: 2px solid var(--primary-color);
       }
 
