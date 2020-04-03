@@ -97,6 +97,7 @@ export class HaConfigLovelaceRescources extends LitElement {
           "ui.panel.config.lovelace.resources.picker.no_resources"
         )}
         @row-click=${this._editResource}
+        hasFab
       >
       </hass-tabs-subpage-data-table>
       <ha-fab

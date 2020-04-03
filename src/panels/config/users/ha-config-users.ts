@@ -94,6 +94,7 @@ export class HaConfigUsers extends LitElement {
         .columns=${this._columns(this.hass.language)}
         .data=${this._users}
         @row-click=${this._editUser}
+        hasFab
       >
       </hass-tabs-subpage-data-table>
       <ha-fab

@@ -86,6 +86,7 @@ export class HaDataTable extends LitElement {
   @property({ type: Object }) public columns: DataTableColumnContainer = {};
   @property({ type: Array }) public data: DataTableRowData[] = [];
   @property({ type: Boolean }) public selectable = false;
+  @property({ type: Boolean }) public hasFab = false;
   @property({ type: Boolean, attribute: "auto-height" })
   public autoHeight = false;
   @property({ type: String }) public id = "id";
@@ -98,6 +99,7 @@ export class HaDataTable extends LitElement {
   @property({ type: Array }) private _filteredData: DataTableRowData[] = [];
   @query("slot[name='header']") private _header!: HTMLSlotElement;
   @query(".mdc-data-table__table") private _table!: HTMLDivElement;
+
   private _checkableRowsCount?: number;
   private _checkedRows: string[] = [];
   private _sortColumns: {
@@ -281,75 +283,84 @@ export class HaDataTable extends LitElement {
             : html`
                 <div class="mdc-data-table__content scroller">
                   ${scroll({
-                    items: this._filteredData,
-                    renderItem: (row: DataTableRowData) => html`
-                      <div
-                        .rowId="${row[this.id]}"
-                        @click=${this._handleRowClick}
-                        class="mdc-data-table__row ${classMap({
-                          "mdc-data-table__row--selected": this._checkedRows.includes(
-                            String(row[this.id])
-                          ),
-                        })}"
-                        aria-selected=${ifDefined(
-                          this._checkedRows.includes(String(row[this.id]))
-                            ? true
-                            : undefined
-                        )}
-                        .selectable=${row.selectable !== false}
-                      >
-                        ${this.selectable
-                          ? html`
-                              <div
-                                class="mdc-data-table__cell mdc-data-table__cell--checkbox"
-                              >
-                                <ha-checkbox
-                                  class="mdc-data-table__row-checkbox"
-                                  @change=${this._handleRowCheckboxClick}
-                                  .disabled=${row.selectable === false}
-                                  .checked=${this._checkedRows.includes(
-                                    String(row[this.id])
-                                  )}
+                    items: !this.hasFab
+                      ? this._filteredData
+                      : [...this._filteredData, ...[{ empty: true }]],
+                    renderItem: (row: DataTableRowData) => {
+                      if (row.empty) {
+                        return html`
+                          <div class="mdc-data-table__row"></div>
+                        `;
+                      }
+                      return html`
+                        <div
+                          .rowId="${row[this.id]}"
+                          @click=${this._handleRowClick}
+                          class="mdc-data-table__row ${classMap({
+                            "mdc-data-table__row--selected": this._checkedRows.includes(
+                              String(row[this.id])
+                            ),
+                          })}"
+                          aria-selected=${ifDefined(
+                            this._checkedRows.includes(String(row[this.id]))
+                              ? true
+                              : undefined
+                          )}
+                          .selectable=${row.selectable !== false}
+                        >
+                          ${this.selectable
+                            ? html`
+                                <div
+                                  class="mdc-data-table__cell mdc-data-table__cell--checkbox"
                                 >
-                                </ha-checkbox>
+                                  <ha-checkbox
+                                    class="mdc-data-table__row-checkbox"
+                                    @change=${this._handleRowCheckboxClick}
+                                    .disabled=${row.selectable === false}
+                                    .checked=${this._checkedRows.includes(
+                                      String(row[this.id])
+                                    )}
+                                  >
+                                  </ha-checkbox>
+                                </div>
+                              `
+                            : ""}
+                          ${Object.entries(this.columns).map((columnEntry) => {
+                            const [key, column] = columnEntry;
+                            return html`
+                              <div
+                                class="mdc-data-table__cell ${classMap({
+                                  "mdc-data-table__cell--numeric": Boolean(
+                                    column.type === "numeric"
+                                  ),
+                                  "mdc-data-table__cell--icon": Boolean(
+                                    column.type === "icon"
+                                  ),
+                                  "mdc-data-table__cell--icon-button": Boolean(
+                                    column.type === "icon-button"
+                                  ),
+                                  grows: Boolean(column.grows),
+                                })}"
+                                style=${column.width
+                                  ? styleMap({
+                                      [column.grows
+                                        ? "minWidth"
+                                        : "width"]: column.width,
+                                      maxWidth: column.maxWidth
+                                        ? column.maxWidth
+                                        : "",
+                                    })
+                                  : ""}
+                              >
+                                ${column.template
+                                  ? column.template(row[key], row)
+                                  : row[key]}
                               </div>
-                            `
-                          : ""}
-                        ${Object.entries(this.columns).map((columnEntry) => {
-                          const [key, column] = columnEntry;
-                          return html`
-                            <div
-                              class="mdc-data-table__cell ${classMap({
-                                "mdc-data-table__cell--numeric": Boolean(
-                                  column.type === "numeric"
-                                ),
-                                "mdc-data-table__cell--icon": Boolean(
-                                  column.type === "icon"
-                                ),
-                                "mdc-data-table__cell--icon-button": Boolean(
-                                  column.type === "icon-button"
-                                ),
-                                grows: Boolean(column.grows),
-                              })}"
-                              style=${column.width
-                                ? styleMap({
-                                    [column.grows
-                                      ? "minWidth"
-                                      : "width"]: column.width,
-                                    maxWidth: column.maxWidth
-                                      ? column.maxWidth
-                                      : "",
-                                  })
-                                : ""}
-                            >
-                              ${column.template
-                                ? column.template(row[key], row)
-                                : row[key]}
-                            </div>
-                          `;
-                        })}
-                      </div>
-                    `,
+                            `;
+                          })}
+                        </div>
+                      `;
+                    },
                   })}
                 </div>
               `}
