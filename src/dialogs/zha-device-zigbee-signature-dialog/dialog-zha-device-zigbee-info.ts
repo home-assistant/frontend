@@ -70,13 +70,14 @@ class DialogZHADeviceZigbeeInfo extends LitElement {
               <div class="error">${this._error}</div>
             `
           : html`
-              <ha-code-editor
-                class="editor"
-                mode="yaml"
-                .value="${this._signature}"
-                .hass=${this.hass}
-              >
-              </ha-code-editor>
+              <paper-dialog-scrollable>
+                <ha-code-editor
+                  mode="yaml"
+                  .value="${this._signature}"
+                  .hass=${this.hass}
+                >
+                </ha-code-editor>
+              </paper-dialog-scrollable>
             `}
       </ha-paper-dialog>
     `;
@@ -98,9 +99,7 @@ class DialogZHADeviceZigbeeInfo extends LitElement {
           margin: 0;
           display: block;
           padding: 0;
-        }
-        .editor {
-          min-width: 400;
+          min-width: 400px;
           max-width: 600px;
         }
         .error {
