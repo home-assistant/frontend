@@ -543,6 +543,7 @@
             "save": "Сохранить",
             "successfully_deleted": "Успешно удалено",
             "successfully_saved": "Успешно сохранено",
+            "undo": "Отменить",
             "yes": "Да"
         },
         "components": {
@@ -2176,6 +2177,7 @@
                             "attribute": "Атрибут",
                             "camera_image": "Объект Камеры",
                             "camera_view": "Вид Камеры",
+                            "double_tap_action": "При двойном нажатии",
                             "entities": "Объекты",
                             "entity": "Объект",
                             "hold_action": "При длительном нажатии",
@@ -2226,6 +2228,7 @@
                             "default_zoom": "Масштаб по умолчанию",
                             "description": "Позволяет отображать объекты на карте.",
                             "geo_location_sources": "Источники геолокации",
+                            "hours_to_show": "Количество часов",
                             "name": "Карта",
                             "source": "Источник"
                         },
@@ -2282,10 +2285,14 @@
                             "name": "Прогноз погоды"
                         }
                     },
+                    "cardpicker": {
+                        "custom_card": "Custom",
+                        "no_description": "Описание недоступно."
+                    },
                     "edit_card": {
                         "add": "Добавить карточку",
                         "delete": "Удалить",
-                        "duplicate": "Дублировать карточку",
+                        "duplicate": "Копировать",
                         "edit": "Изменить",
                         "header": "Настройка карточки",
                         "move": "Переместить",
