@@ -29,7 +29,8 @@ export class HuiGraphHeaderFooter extends LitElement
 
   @property() protected _config?: GraphHeaderFooterConfig;
   @property() private _coordinates?: number[][];
-  @property() private _loadingInitialData: boolean = true;
+
+  private _loadingInitialData: boolean = true;
   private _date?: Date;
 
   public setConfig(config: GraphHeaderFooterConfig): void {
