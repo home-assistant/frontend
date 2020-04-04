@@ -10,6 +10,8 @@ import {
 } from "lit-element";
 import { HomeAssistant } from "../../../types";
 import { getHistoryCoordinates } from "../common/graph/get-history-coordinates";
+
+import "@polymer/paper-spinner/paper-spinner";
 import "../components/hui-graph-base";
 import { LovelaceHeaderFooter } from "../types";
 import { GraphHeaderFooterConfig } from "./types";
@@ -57,6 +59,14 @@ export class HuiGraphHeaderFooter extends LitElement
       return html``;
     }
 
+    if (this._loadingInitialData) {
+      return html`
+        <div class="spinner">
+          <paper-spinner active></paper-spinner>
+        </div>
+      `;
+    }
+
     if (!this._coordinates) {
       return html`
         <div class="info">
@@ -84,6 +94,7 @@ export class HuiGraphHeaderFooter extends LitElement
     } else if (Date.now() - this._date!.getTime() >= MINUTE) {
       this._getCoordinates();
     }
+    this._loadingInitialData = false;
   }
 
   private async _getCoordinates(): Promise<void> {
@@ -99,6 +110,10 @@ export class HuiGraphHeaderFooter extends LitElement
 
   static get styles(): CSSResult {
     return css`
+      .spinner {
+        height: 58px;
+        text-align: center;
+      }
       .info {
         text-align: center;
         line-height: 58px;
