@@ -94,7 +94,6 @@ export class HuiGraphHeaderFooter extends LitElement
     } else if (Date.now() - this._date!.getTime() >= MINUTE) {
       this._getCoordinates();
     }
-    this._loadingInitialData = false;
   }
 
   private async _getCoordinates(): Promise<void> {
@@ -106,6 +105,7 @@ export class HuiGraphHeaderFooter extends LitElement
     );
 
     this._date = new Date();
+    this._loadingInitialData = false;
   }
 
   static get styles(): CSSResult {
