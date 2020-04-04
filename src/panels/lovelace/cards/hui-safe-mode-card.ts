@@ -37,18 +37,8 @@ export class HuiSafeModeCard extends LitElement implements LovelaceCard {
           ${this.hass!.localize(
             "ui.panel.lovelace.cards.safe-mode.description"
           )}
-
-          <error-log-card .hass=${this.hass}></error-log-card>
         </div>
-        <div class="card-actions">
-          <a href="/developer-tools/logs">
-            <mwc-button>
-              ${this.hass!.localize(
-                "ui.panel.lovelace.cards.safe-mode.go_to_logs"
-              )}
-            </mwc-button>
-          </a>
-        </div>
+        <error-log-card .hass=${this.hass}></error-log-card>
       </ha-card>
     `;
   }
@@ -58,8 +48,9 @@ export class HuiSafeModeCard extends LitElement implements LovelaceCard {
       ha-card {
         --ha-card-header-color: var(--primary-color);
       }
-      .card-actions a {
-        text-decoration: none;
+      error-log-card {
+        display: block;
+        padding-bottom: 16px;
       }
     `;
   }
