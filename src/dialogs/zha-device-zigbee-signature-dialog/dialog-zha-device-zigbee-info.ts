@@ -22,6 +22,7 @@ import { ZHADeviceZigbeeInfoDialogParams } from "./show-dialog-zha-device-zigbee
 // tslint:disable-next-line: no-duplicate-imports
 import { HaCodeEditor } from "../../components/ha-code-editor";
 import { afterNextRender } from "../../common/util/render-status";
+import { fireEvent } from "../../common/dom/fire_event";
 
 @customElement("dialog-zha-device-zigbee-info")
 class DialogZHADeviceZigbeeInfo extends LitElement {
@@ -30,6 +31,7 @@ class DialogZHADeviceZigbeeInfo extends LitElement {
   @property() private _error?: string;
   @property() private _signature: any;
   @query("ha-code-editor") private _codeEditor?: HaCodeEditor;
+  @query("ha-paper-dialog") private _dialog!: HaPaperDialog;
 
   public async showDialog(
     params: ZHADeviceZigbeeInfoDialogParams
@@ -45,6 +47,9 @@ class DialogZHADeviceZigbeeInfo extends LitElement {
       if (this._codeEditor?.codemirror) {
         this._codeEditor.codemirror.refresh();
       }
+      afterNextRender(() =>
+        fireEvent(this._dialog as HTMLElement, "iron-resize")
+      );
     });
   }
 
@@ -57,6 +62,7 @@ class DialogZHADeviceZigbeeInfo extends LitElement {
       <ha-paper-dialog
         with-backdrop
         opened
+        autofocus
         @opened-changed=${this._openedChanged}
       >
         ${this._error
@@ -82,10 +88,6 @@ class DialogZHADeviceZigbeeInfo extends LitElement {
       this._error = undefined;
       this._signature = undefined;
     }
-  }
-
-  private get _dialog(): HaPaperDialog {
-    return this.shadowRoot!.querySelector("ha-paper-dialog")!;
   }
 
   static get styles(): CSSResult[] {
