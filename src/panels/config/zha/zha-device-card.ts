@@ -371,16 +371,16 @@ class ZHADeviceCard extends LitElement {
                   ${this.device!.device_type !== "Coordinator"
                     ? html`
                         <mwc-button @click="${this._handleZigbeeInfoClicked}">
-                          <iron-icon
-                            icon="hass:zigbee"
-                            class="icon"
-                          ></iron-icon>
-                          Zigbee Information
+                          ${this.hass!.localize(
+                            "ui.dialogs.zha_device_info.buttons.zigbee_information"
+                          )}
                         </mwc-button>
                         ${this.showHelp
                           ? html`
                               <div class="help-text">
-                                View the Zigbee information for the device.
+                                ${this.hass!.localize(
+                                  "ui.dialogs.zha_device_info.services.zigbee_information"
+                                )}
                               </div>
                             `
                           : ""}

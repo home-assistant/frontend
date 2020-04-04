@@ -722,12 +722,14 @@
         "buttons": {
           "add": "Add Devices",
           "remove": "Remove Device",
-          "reconfigure": "Reconfigure Device"
+          "reconfigure": "Reconfigure Device",
+          "zigbee_information": "Zigbee Information"
         },
         "services": {
           "reconfigure": "Reconfigure ZHA device (heal device). Use this if you are having issues with the device. If the device in question is a battery powered device please ensure it is awake and accepting commands when you use this service.",
           "updateDeviceName": "Set a custom name for this device in the device registry.",
-          "remove": "Remove a device from the Zigbee network."
+          "remove": "Remove a device from the Zigbee network.",
+          "zigbee_information": "View the Zigbee information for the device."
         },
         "confirmations": {
           "remove": "Are you sure that you want to remove the device?"
