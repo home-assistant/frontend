@@ -118,46 +118,40 @@ class HuiShoppingListCard extends LitElement implements LovelaceCard {
         <div class="addRow">
           <ha-icon
             class="addButton"
-            @click="${this._addItem}"
             icon="hass:plus"
-            .title="${this.hass!.localize(
+            .title=${this.hass!.localize(
               "ui.panel.lovelace.cards.shopping-list.add_item"
-            )}"
+            )}
+            @click=${this._addItem}
           >
           </ha-icon>
-          <paper-item-body>
-            <paper-input
-              no-label-float
-              class="addBox"
-              placeholder="${this.hass!.localize(
-                "ui.panel.lovelace.cards.shopping-list.add_item"
-              )}"
-              @keydown="${this._addKeyPress}"
-            ></paper-input>
-          </paper-item-body>
+          <paper-input
+            no-label-float
+            class="addBox"
+            placeholder=${this.hass!.localize(
+              "ui.panel.lovelace.cards.shopping-list.add_item"
+            )}
+            @keydown=${this._addKeyPress}
+          ></paper-input>
         </div>
         ${repeat(
           this._uncheckedItems!,
           (item) => item.id,
-          (item, index) =>
+          (item) =>
             html`
               <div class="editRow">
                 <paper-checkbox
-                  slot="item-icon"
-                  id="${index}"
-                  ?checked="${item.complete}"
-                  .itemId="${item.id}"
-                  @click="${this._completeItem}"
                   tabindex="0"
+                  ?checked=${item.complete}
+                  .itemId=${item.id}
+                  @click=${this._completeItem}
                 ></paper-checkbox>
-                <paper-item-body>
-                  <paper-input
-                    no-label-float
-                    .value="${item.name}"
-                    .itemId="${item.id}"
-                    @change="${this._saveEdit}"
-                  ></paper-input>
-                </paper-item-body>
+                <paper-input
+                  no-label-float
+                  .value=${item.name}
+                  .itemId=${item.id}
+                  @change=${this._saveEdit}
+                ></paper-input>
               </div>
             `
         )}
@@ -165,45 +159,41 @@ class HuiShoppingListCard extends LitElement implements LovelaceCard {
           ? html`
               <div class="divider"></div>
               <div class="checked">
-                <span class="label">
+                <span>
                   ${this.hass!.localize(
                     "ui.panel.lovelace.cards.shopping-list.checked_items"
                   )}
                 </span>
                 <ha-icon
                   class="clearall"
-                  @action=${this._clearItems}
-                  .actionHandler=${actionHandler()}
                   tabindex="0"
                   icon="hass:notification-clear-all"
-                  .title="${this.hass!.localize(
+                  .title=${this.hass!.localize(
                     "ui.panel.lovelace.cards.shopping-list.clear_items"
-                  )}"
+                  )}
+                  .actionHandler=${actionHandler()}
+                  @action=${this._clearItems}
                 >
                 </ha-icon>
               </div>
               ${repeat(
                 this._checkedItems!,
                 (item) => item.id,
-                (item, index) =>
+                (item) =>
                   html`
                     <div class="editRow">
                       <paper-checkbox
-                        slot="item-icon"
-                        id="${index}"
-                        ?checked="${item.complete}"
-                        .itemId="${item.id}"
-                        @click="${this._completeItem}"
                         tabindex="0"
+                        ?checked=${item.complete}
+                        .itemId=${item.id}
+                        @click=${this._completeItem}
                       ></paper-checkbox>
-                      <paper-item-body>
-                        <paper-input
-                          no-label-float
-                          .value="${item.name}"
-                          .itemId="${item.id}"
-                          @change="${this._saveEdit}"
-                        ></paper-input>
-                      </paper-item-body>
+                      <paper-input
+                        no-label-float
+                        .value=${item.name}
+                        .itemId=${item.id}
+                        @change=${this._saveEdit}
+                      ></paper-input>
                     </div>
                   `
               )}
@@ -216,8 +206,7 @@ class HuiShoppingListCard extends LitElement implements LovelaceCard {
   static get styles(): CSSResult {
     return css`
       ha-card {
-        padding-bottom: 16px;
-        padding-top: 16px;
+        padding: 16px;
       }
 
       .has-header {
@@ -225,63 +214,51 @@ class HuiShoppingListCard extends LitElement implements LovelaceCard {
       }
 
       .editRow,
-      .addRow {
+      .addRow,
+      .checked {
         display: flex;
         flex-direction: row;
+        align-items: center;
+      }
+
+      .addRow ha-icon {
+        color: var(--secondary-text-color);
+        --iron-icon-width: 26px;
+        --iron-icon-height: 26px;
       }
 
       .addButton {
-        padding: 9px 15px 11px 15px;
+        padding-right: 16px;
         cursor: pointer;
       }
 
-      paper-item-body {
-        width: 75%;
-      }
-
       paper-checkbox {
-        padding: 11px 11px 11px 18px;
+        padding-left: 4px;
+        padding-right: 20px;
+        --paper-checkbox-label-spacing: 0px;
       }
 
       paper-input {
-        --paper-input-container-underline: {
-          display: none;
-        }
-        --paper-input-container-underline-focus: {
-          display: none;
-        }
-        --paper-input-container-underline-disabled: {
-          display: none;
-        }
-        position: relative;
-        top: 1px;
+        flex-grow: 1;
       }
 
       .checked {
-        margin-left: 17px;
-        margin-bottom: 11px;
-        margin-top: 11px;
+        margin: 12px 0;
+        justify-content: space-between;
       }
 
-      .label {
+      .checked span {
         color: var(--primary-color);
       }
 
       .divider {
         height: 1px;
         background-color: var(--divider-color);
-        margin: 10px;
+        margin: 10px 0;
       }
 
       .clearall {
         cursor: pointer;
-        margin-bottom: 3px;
-        float: right;
-        padding-right: 10px;
-      }
-
-      .addRow > ha-icon {
-        color: var(--secondary-text-color);
       }
     `;
   }
