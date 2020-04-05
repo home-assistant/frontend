@@ -10,11 +10,11 @@ import { safeDump } from "js-yaml";
 @customElement("mqtt-payload")
 class MQTTPayload extends LitElement {
   @property() public payload?: object | string;
-  @property() public _showAsYaml: boolean = false;
-  @property() public _showDeserialized: boolean = false;
+  @property() public showAsYaml: boolean = false;
+  @property() public showDeserialized: boolean = false;
   @property() private _payloadJson?: object;
 
-  protected firstUpdated() {
+  protected firstUpdated(): void {
     let o = this.payload;
 
     // If the payload is a string, determine if the payload is valid JSON and if it

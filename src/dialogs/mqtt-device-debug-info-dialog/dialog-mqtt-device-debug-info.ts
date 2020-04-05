@@ -45,7 +45,7 @@ class DialogMQTTDeviceDebugInfo extends LitElement {
     return html`
       <ha-dialog
         open
-        @closing="${this._close}"
+        @closing=${this._close}
         .heading="${this.hass!.localize(
           "ui.dialogs.mqtt_device_debug_info.title",
           "device",
@@ -93,7 +93,7 @@ class DialogMQTTDeviceDebugInfo extends LitElement {
                 )}
               `}
         </ul>
-        <mwc-button slot="primaryAction" @click="${this._close}">
+        <mwc-button slot="primaryAction" @click=${this._close}>
           Close
         </mwc-button>
       </ha-dialog>
@@ -113,7 +113,7 @@ class DialogMQTTDeviceDebugInfo extends LitElement {
     this._showDeserialized = (ev.target as HaSwitch).checked;
   }
 
-  private _renderEntities() {
+  private _renderEntities(): TemplateResult {
     return html`
       ${this._debugInfo!.entities.map(
         (entity) => html`
@@ -180,7 +180,7 @@ class DialogMQTTDeviceDebugInfo extends LitElement {
     `;
   }
 
-  private _renderTriggers() {
+  private _renderTriggers(): TemplateResult {
     return html`
       ${this._debugInfo!.triggers.map(
         (trigger) => html`

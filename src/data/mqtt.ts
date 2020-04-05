@@ -9,7 +9,7 @@ export interface MQTTMessage {
 
 export interface MQTTTopicDebugInfo {
   topic: string;
-  messages: [string];
+  messages: string[];
 }
 
 export interface MQTTDiscoveryDebugInfo {
@@ -20,7 +20,7 @@ export interface MQTTDiscoveryDebugInfo {
 export interface MQTTEntityDebugInfo {
   entity_id: string;
   discovery_data: MQTTDiscoveryDebugInfo;
-  topics: [MQTTTopicDebugInfo];
+  topics: MQTTTopicDebugInfo[];
 }
 
 export interface MQTTTriggerDebugInfo {
@@ -28,8 +28,8 @@ export interface MQTTTriggerDebugInfo {
 }
 
 export interface MQTTDeviceDebugInfo {
-  entities: [MQTTEntityDebugInfo];
-  triggers: [MQTTTriggerDebugInfo];
+  entities: MQTTEntityDebugInfo[];
+  triggers: MQTTTriggerDebugInfo[];
 }
 
 export const subscribeMQTTTopic = (
