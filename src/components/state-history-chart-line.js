@@ -6,6 +6,7 @@ import "./entity/ha-chart-base";
 
 import LocalizeMixin from "../mixins/localize-mixin";
 import { formatDateTimeWithSeconds } from "../common/datetime/format_date_time";
+import { fireEvent } from "../common/dom/fire_event";
 
 class StateHistoryChartLine extends LocalizeMixin(PolymerElement) {
   static get template() {
@@ -311,6 +312,12 @@ class StateHistoryChartLine extends LocalizeMixin(PolymerElement) {
 
       // Concat two arrays
       Array.prototype.push.apply(datasets, data);
+
+      // Fire event to change dialog position
+      // Wait 500ms for the 0.3s transition to finish
+      setTimeout(() => {
+        fireEvent(this, "iron-resize");
+      }, 500);
     });
 
     const formatTooltipTitle = (items, data) => {

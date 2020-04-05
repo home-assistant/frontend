@@ -74,6 +74,7 @@ export class HuiCardEditor extends LitElement {
       this._error = undefined;
     } catch (err) {
       this._error = err.message;
+      fireEvent(this, "iron-resize");
     }
     fireEvent(this, "config-changed", {
       config: this.value!,
@@ -218,6 +219,7 @@ export class HuiCardEditor extends LitElement {
 
   private async _updateConfigElement(): Promise<void> {
     if (!this.value) {
+      fireEvent(this, "iron-resize");
       return;
     }
 
