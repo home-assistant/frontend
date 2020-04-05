@@ -26,7 +26,7 @@ class MQTTPayload extends LitElement {
         return;
       }
     } else {
-      this._showDeserialized = true;
+      this.showDeserialized = true;
     }
     // Handle non-exception-throwing cases:
     // Neither JSON.parse(false) or JSON.parse(1234) throw errors, hence the type-checking,
@@ -38,9 +38,9 @@ class MQTTPayload extends LitElement {
   }
 
   protected render(): TemplateResult {
-    return this._payloadJson && this._showDeserialized
+    return this._payloadJson && this.showDeserialized
       ? html`
-          ${this._showAsYaml
+          ${this.showAsYaml
             ? html`
                 <pre>${safeDump(this._payloadJson)}</pre>
               `
