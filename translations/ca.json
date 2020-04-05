@@ -532,7 +532,9 @@
                     "wnw": "ONO",
                     "wsw": "OSO"
                 },
-                "forecast": "Previsió"
+                "forecast": "Previsió",
+                "high": "Alt",
+                "low": "Baix"
             }
         },
         "common": {
@@ -544,6 +546,7 @@
             "save": "Desa",
             "successfully_deleted": "S'ha suprimit correctament",
             "successfully_saved": "S'ha desat correctament",
+            "undo": "Desfés",
             "yes": "Sí"
         },
         "components": {
@@ -1683,6 +1686,7 @@
                         "introduction": "L'editor de scripts et permet crear i editar scripts. Vés a l'enllaç de sota per veure'n les instruccions i assegurar-te que has configurat el Home Assistant correctament.",
                         "learn_more": "Més informació sobre els scripts",
                         "no_scripts": "No hem trobat cap script editable",
+                        "show_info": "Mostra informació sobre l'script",
                         "trigger_script": "Dispara l'script"
                     }
                 },
@@ -1731,6 +1735,7 @@
                     "editor": {
                         "activate_user": "Activar usuari",
                         "active": "Actiu",
+                        "admin": "Administrador",
                         "caption": "Mostra usuari",
                         "change_password": "Canviar contrasenya",
                         "confirm_user_deletion": "Estàs segur que vols eliminar {name}?",
@@ -1744,6 +1749,7 @@
                         "owner": "Propietari",
                         "rename_user": "Canviar el nom d'usuari",
                         "system_generated": "Generat pel sistema",
+                        "system_generated_users_not_editable": "No es poden actualitzar usuaris generats pel sistema.",
                         "system_generated_users_not_removable": "No es poden eliminar usuaris generats pel sistema.",
                         "unnamed_user": "Usuari sense nom",
                         "update_user": "Actualitza",
@@ -2351,6 +2357,7 @@
                     "save_config": {
                         "cancel": "M'ho he repensat",
                         "close": "Tanca",
+                        "empty_config": "Comença amb un panell buit",
                         "header": "Pren el control de la interfície d'usuari Lovelace",
                         "para": "De manera predeterminada, Home Assistant mantindrà al dia la teva interfície d'usuari, actualitzant-la quan hi hagi noves entitats o nous components de Lovelace disponibles. Si prens el control, ja no es faran aquests canvis automàticament.",
                         "para_sure": "Estàs segur que vols prendre el control de la interfície d'usuari?",
@@ -2601,6 +2608,7 @@
                 },
                 "current_user": "Has iniciat la sessió com a {fullName}.",
                 "dashboard": {
+                    "description": "Tria un panell per defecte per a aquest dispositiu.",
                     "dropdown_label": "Panell",
                     "header": "Panell"
                 },
