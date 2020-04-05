@@ -12,15 +12,15 @@ import {
 
 import { PaperInputElement } from "@polymer/paper-input/paper-input";
 
-import { HomeAssistant } from "../../../src/types";
+import { HomeAssistant } from "../../../../src/types";
 import {
   HassioAddonDetails,
   HassioAddonSetOptionParams,
   setHassioAddonOption,
-} from "../../../src/data/hassio/addon";
-import { hassioStyle } from "../resources/hassio-style";
-import { haStyle } from "../../../src/resources/styles";
-import { fireEvent } from "../../../src/common/dom/fire_event";
+} from "../../../../src/data/hassio/addon";
+import { hassioStyle } from "../../resources/hassio-style";
+import { haStyle } from "../../../../src/resources/styles";
+import { fireEvent } from "../../../../src/common/dom/fire_event";
 
 interface NetworkItem {
   description: string;

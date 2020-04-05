@@ -16,18 +16,18 @@ import {
   TemplateResult,
 } from "lit-element";
 
-import { HomeAssistant } from "../../../src/types";
+import { HomeAssistant } from "../../../../src/types";
 import {
   HassioAddonDetails,
   setHassioAddonOption,
   HassioAddonSetOptionParams,
-} from "../../../src/data/hassio/addon";
+} from "../../../../src/data/hassio/addon";
 import {
   HassioHardwareAudioDevice,
   fetchHassioHardwareAudio,
-} from "../../../src/data/hassio/hardware";
-import { hassioStyle } from "../resources/hassio-style";
-import { haStyle } from "../../../src/resources/styles";
+} from "../../../../src/data/hassio/hardware";
+import { hassioStyle } from "../../resources/hassio-style";
+import { haStyle } from "../../../../src/resources/styles";
 
 @customElement("hassio-addon-audio")
 class HassioAddonAudio extends LitElement {

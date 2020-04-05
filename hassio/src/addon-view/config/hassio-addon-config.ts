@@ -13,19 +13,19 @@ import {
   query,
 } from "lit-element";
 
-import { HomeAssistant } from "../../../src/types";
+import { HomeAssistant } from "../../../../src/types";
 import {
   HassioAddonDetails,
   setHassioAddonOption,
   HassioAddonSetOptionParams,
-} from "../../../src/data/hassio/addon";
-import { hassioStyle } from "../resources/hassio-style";
-import { haStyle } from "../../../src/resources/styles";
-import { fireEvent } from "../../../src/common/dom/fire_event";
-import "../../../src/components/ha-yaml-editor";
+} from "../../../../src/data/hassio/addon";
+import { hassioStyle } from "../../resources/hassio-style";
+import { haStyle } from "../../../../src/resources/styles";
+import { fireEvent } from "../../../../src/common/dom/fire_event";
+import "../../../../src/components/ha-yaml-editor";
 // tslint:disable-next-line: no-duplicate-imports
-import { HaYamlEditor } from "../../../src/components/ha-yaml-editor";
-import { showConfirmationDialog } from "../../../src/dialogs/generic/show-dialog-box";
+import { HaYamlEditor } from "../../../../src/components/ha-yaml-editor";
+import { showConfirmationDialog } from "../../../../src/dialogs/generic/show-dialog-box";
 
 @customElement("hassio-addon-config")
 class HassioAddonConfig extends LitElement {

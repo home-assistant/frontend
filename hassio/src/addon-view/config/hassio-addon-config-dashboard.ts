@@ -1,0 +1,78 @@
+import {
+  css,
+  CSSResult,
+  customElement,
+  html,
+  LitElement,
+  property,
+  TemplateResult,
+} from "lit-element";
+
+import { HomeAssistant } from "../../../../src/types";
+import { HassioAddonDetails } from "../../../../src/data/hassio/addon";
+import { hassioStyle } from "../../resources/hassio-style";
+import { haStyle } from "../../../../src/resources/styles";
+
+import "./hassio-addon-audio";
+import "./hassio-addon-config";
+import "./hassio-addon-network";
+
+@customElement("hassio-addon-config-dashboard")
+class HassioAddonConfigDashboard extends LitElement {
+  @property() public hass!: HomeAssistant;
+  @property() public addon?: HassioAddonDetails;
+
+  protected render(): TemplateResult {
+    if (!this.addon) {
+      return html`
+        <paper-spinner-lite active></paper-spinner-lite>
+      `;
+    }
+    return html`
+      <div class="content">
+        <hassio-addon-config
+          .hass=${this.hass}
+          .addon=${this.addon}
+        ></hassio-addon-config>
+        ${this.addon.network
+          ? html`
+              <hassio-addon-network
+                .hass=${this.hass}
+                .addon=${this.addon}
+              ></hassio-addon-network>
+            `
+          : ""}
+        ${this.addon.audio
+          ? html`
+              <hassio-addon-audio
+                .hass=${this.hass}
+                .addon=${this.addon}
+              ></hassio-addon-audio>
+            `
+          : ""}
+      </div>
+    `;
+  }
+
+  static get styles(): CSSResult[] {
+    return [
+      haStyle,
+      hassioStyle,
+      css`
+        .content {
+        }
+        hassio-addon-network,
+        hassio-addon-audio,
+        hassio-addon-config {
+          margin-bottom: 24px;
+        }
+      `,
+    ];
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "hassio-addon-config-dashboard": HassioAddonConfigDashboard;
+  }
+}

@@ -10,14 +10,14 @@ import {
   TemplateResult,
   query,
 } from "lit-element";
-import { HomeAssistant } from "../../../src/types";
+import { HomeAssistant } from "../../../../src/types";
 import {
   HassioAddonDetails,
   fetchHassioAddonLogs,
-} from "../../../src/data/hassio/addon";
-import { ANSI_HTML_STYLE, parseTextToColoredPre } from "../ansi-to-html";
-import { hassioStyle } from "../resources/hassio-style";
-import { haStyle } from "../../../src/resources/styles";
+} from "../../../../src/data/hassio/addon";
+import { ANSI_HTML_STYLE, parseTextToColoredPre } from "../../ansi-to-html";
+import { hassioStyle } from "../../resources/hassio-style";
+import { haStyle } from "../../../../src/resources/styles";
 
 @customElement("hassio-addon-logs")
 class HassioAddonLogs extends LitElement {
