@@ -36,6 +36,7 @@ const cardConfigStruct = struct({
   camera_image: "string?",
   camera_view: "string?",
   aspect_ratio: "string?",
+  refresh_rate: "string?",
   tap_action: struct.optional(actionConfigStruct),
   hold_action: struct.optional(actionConfigStruct),
   show_name: "boolean?",
@@ -77,6 +78,10 @@ export class HuiPictureEntityCardEditor extends LitElement
 
   get _aspect_ratio(): string {
     return this._config!.aspect_ratio || "50";
+  }
+
+  get _refresh_rate(): string {
+    return this._config!.refresh_rate || "10";
   }
 
   get _tap_action(): ActionConfig {
@@ -185,6 +190,19 @@ export class HuiPictureEntityCardEditor extends LitElement
             type="number"
             .value="${Number(this._aspect_ratio.replace("%", ""))}"
             .configValue="${"aspect_ratio"}"
+            @value-changed="${this._valueChanged}"
+          ></paper-input>
+        </div>
+        <div class="side-by-side">
+          <paper-input
+            .label="${this.hass.localize(
+              "ui.panel.lovelace.editor.card.generic.refresh_rate"
+            )} (${this.hass.localize(
+              "ui.panel.lovelace.editor.card.config.optional"
+            )})"
+            type="number"
+            .value="${this._refresh_rate}"
+            .configValue="${"refresh_rate"}"
             @value-changed="${this._valueChanged}"
           ></paper-input>
         </div>

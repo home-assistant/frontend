@@ -2175,6 +2175,7 @@
                         },
                         "generic": {
                             "aspect_ratio": "Beeldverhouding",
+                            "refresh_rate": "Vernieuwingsfrequentie (seconden)",
                             "attribute": "Kenmerk",
                             "camera_image": "Camera-entiteit",
                             "camera_view": "Cameraweergave",

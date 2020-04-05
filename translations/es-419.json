@@ -1960,6 +1960,7 @@
                         },
                         "generic": {
                             "aspect_ratio": "Relación de aspecto",
+                            "refresh_rate": "Frecuencia de actualización (segundos)",
                             "camera_image": "Entidad de la cámara",
                             "camera_view": "Vista de la cámara",
                             "entities": "Entidades",

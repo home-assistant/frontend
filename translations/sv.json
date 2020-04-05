@@ -2104,6 +2104,7 @@
                         },
                         "generic": {
                             "aspect_ratio": "Bildförhållande",
+                            "refresh_rate": "Uppdateringsfrekvens (sekunder)",
                             "camera_image": "Kameraentitet",
                             "camera_view": "Kamerauppdatering",
                             "entities": "Entiteter",

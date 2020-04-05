@@ -2070,6 +2070,7 @@
             },
             "generic": {
               "aspect_ratio": "Aspect Ratio",
+              "refresh_rate": "Refresh Rate (seconds)",
               "attribute": "Attribute",
               "camera_image": "Camera Entity",
               "camera_view": "Camera View",

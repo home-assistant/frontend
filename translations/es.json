@@ -2177,6 +2177,7 @@
                         },
                         "generic": {
                             "aspect_ratio": "Relación de aspecto",
+                            "refresh_rate": "Frecuencia de actualización (segundos)",
                             "attribute": "Atributo",
                             "camera_image": "Entidad de cámara",
                             "camera_view": "Vista de cámara",

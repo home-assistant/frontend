@@ -1823,6 +1823,7 @@
                         },
                         "generic": {
                             "aspect_ratio": "Пропорції",
+                            "refresh_rate": "Частота оновлення (секунди)",
                             "camera_image": "Сутність камери",
                             "camera_view": "Перегляд камери",
                             "entities": "Об'єкти",

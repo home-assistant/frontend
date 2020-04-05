@@ -2177,6 +2177,7 @@
                         },
                         "generic": {
                             "aspect_ratio": "Størrelsesforhold",
+                            "refresh_rate": "Opdateringsfrekvens (sekunder)",
                             "attribute": "Egenskab",
                             "camera_image": "Kameraentitet",
                             "camera_view": "Kameravisning",

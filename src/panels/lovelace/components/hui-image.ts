@@ -17,7 +17,7 @@ import { styleMap } from "lit-html/directives/style-map";
 import { classMap } from "lit-html/directives/class-map";
 import { fetchThumbnailUrlWithCache } from "../../../data/camera";
 
-const UPDATE_INTERVAL = 10000;
+const DEFAULT_REFRESH_RATE = 10;
 const DEFAULT_FILTER = "grayscale(100%)";
 
 export interface StateSpecificConfig {
@@ -39,6 +39,8 @@ export class HuiImage extends LitElement {
   @property() public cameraView?: "live" | "auto";
 
   @property() public aspectRatio?: string;
+
+  @property() public refreshRate?: string;
 
   @property() public filter?: string;
 
@@ -173,7 +175,8 @@ export class HuiImage extends LitElement {
     if (this.cameraImage && this._attached) {
       this._cameraUpdater = window.setInterval(
         () => this._updateCameraImageSrc(),
-        UPDATE_INTERVAL
+        Number(this.refreshRate ? this.refreshRate : DEFAULT_REFRESH_RATE) *
+          1000
       );
     }
   }
@@ -208,9 +211,13 @@ export class HuiImage extends LitElement {
       return;
     }
 
+    var cacheTime =
+      (Number(this.refreshRate ? this.refreshRate : DEFAULT_REFRESH_RATE) - 1) *
+      1000;
     this._cameraImageSrc = await fetchThumbnailUrlWithCache(
       this.hass,
-      this.cameraImage
+      this.cameraImage,
+      cacheTime
     );
   }
 

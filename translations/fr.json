@@ -2177,6 +2177,7 @@
                         },
                         "generic": {
                             "aspect_ratio": "Ratio d'aspect",
+                            "refresh_rate": "Taux de rafraîchissement (secondes)",
                             "attribute": "Attribut",
                             "camera_image": "Caméra entité",
                             "camera_view": "Vue de la caméra",

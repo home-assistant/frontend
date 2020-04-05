@@ -1819,6 +1819,7 @@
                         },
                         "generic": {
                             "aspect_ratio": "Proportsioonid",
+                            "refresh_rate": "Värskendussagedus (sekundites)",
                             "camera_image": "Kaamera olem",
                             "entities": "Olemid",
                             "entity": "Olem",

@@ -4,6 +4,7 @@ import { getSignedPath } from "./auth";
 
 export const CAMERA_SUPPORT_ON_OFF = 1;
 export const CAMERA_SUPPORT_STREAM = 2;
+export const DEFAULT_THUMBNAIL_CACHE = 9000;
 
 export interface CameraPreferences {
   preload_stream: boolean;
@@ -23,11 +24,12 @@ export const computeMJPEGStreamUrl = (entity: CameraEntity) =>
 
 export const fetchThumbnailUrlWithCache = (
   hass: HomeAssistant,
-  entityId: string
+  entityId: string,
+  cacheTime: number = DEFAULT_THUMBNAIL_CACHE
 ) =>
   timeCachePromiseFunc(
     "_cameraTmbUrl",
-    9000,
+    cacheTime >= 0 ? cacheTime : DEFAULT_THUMBNAIL_CACHE,
     fetchThumbnailUrl,
     hass,
     entityId

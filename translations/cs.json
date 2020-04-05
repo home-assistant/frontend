@@ -2147,6 +2147,7 @@
                         },
                         "generic": {
                             "aspect_ratio": "Poměr stran",
+                            "refresh_rate": "Obnovovací frekvence (v sekundách)",
                             "camera_image": "Entita kamery",
                             "camera_view": "Zobrazení kamery",
                             "entities": "Entity",

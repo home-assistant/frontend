@@ -2173,6 +2173,7 @@
                         },
                         "generic": {
                             "aspect_ratio": "Соотношение сторон",
+                            "refresh_rate": "Частота обновления (секунды)",
                             "attribute": "Атрибут",
                             "camera_image": "Объект Камеры",
                             "camera_view": "Вид Камеры",

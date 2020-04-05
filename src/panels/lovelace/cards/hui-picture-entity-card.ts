@@ -167,6 +167,7 @@ class HuiPictureEntityCard extends LitElement implements LovelaceCard {
           .cameraView=${this._config.camera_view}
           .entity=${this._config.entity}
           .aspectRatio=${this._config.aspect_ratio}
+          .refreshRate=${this._config.refresh_rate}
           @action=${this._handleAction}
           .actionHandler=${actionHandler({
             hasHold: hasAction(this._config!.hold_action),
