@@ -15,7 +15,7 @@ import { HomeAssistant } from "../../../types";
 import { LovelaceRow, EntityConfig } from "./types";
 import { setValue } from "../../../data/input_text";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
-import { UNAVAILABLE } from "../../../data/entity";
+import { UNAVAILABLE_STATES } from "../../../data/entity";
 
 @customElement("hui-input-text-entity-row")
 class HuiInputTextEntityRow extends LitElement implements LovelaceRow {
@@ -57,7 +57,7 @@ class HuiInputTextEntityRow extends LitElement implements LovelaceRow {
       <hui-generic-entity-row .hass=${this.hass} .config=${this._config}>
         <paper-input
           no-label-float
-          .disabled=${stateObj.state === UNAVAILABLE}
+          .disabled=${UNAVAILABLE_STATES.includes(stateObj.state)}
           .value="${stateObj.state}"
           .minlength="${stateObj.attributes.min}"
           .maxlength="${stateObj.attributes.max}"

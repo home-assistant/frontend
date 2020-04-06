@@ -32,7 +32,7 @@ import { actionHandler } from "../common/directives/action-handler-directive";
 import { hasAction } from "../common/has-action";
 import { ActionHandlerEvent } from "../../../data/lovelace";
 import { handleAction } from "../common/handle-action";
-import { UNAVAILABLE } from "../../../data/entity";
+import { UNAVAILABLE_STATES } from "../../../data/entity";
 
 @customElement("hui-input-select-entity-row")
 class HuiInputSelectEntityRow extends LitElement implements LovelaceRow {
@@ -97,7 +97,7 @@ class HuiInputSelectEntityRow extends LitElement implements LovelaceRow {
       <ha-paper-dropdown-menu
         .label=${this._config.name || computeStateName(stateObj)}
         .value=${stateObj.state}
-        .disabled=${stateObj.state === UNAVAILABLE}
+        .disabled=${UNAVAILABLE_STATES.includes(stateObj.state)}
         @iron-select=${this._selectedChanged}
         @click=${stopPropagation}
       >

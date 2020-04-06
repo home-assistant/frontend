@@ -34,7 +34,7 @@ import {
 import { HassEntity } from "home-assistant-js-websocket";
 import { actionHandler } from "../common/directives/action-handler-directive";
 import { findEntities } from "../common/find-entites";
-import { UNAVAILABLE } from "../../../data/entity";
+import { UNAVAILABLE_STATES } from "../../../data/entity";
 
 const modeIcons: { [mode in HvacMode]: string } = {
   auto: "hass:calendar-repeat",
@@ -126,23 +126,22 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
         ? stateObj.attributes.temperature
         : stateObj.attributes.min_temp;
 
-    const slider =
-      stateObj.state === UNAVAILABLE
-        ? html`
-            <round-slider disabled="true"></round-slider>
-          `
-        : html`
-            <round-slider
-              .value=${targetTemp}
-              .low=${stateObj.attributes.target_temp_low}
-              .high=${stateObj.attributes.target_temp_high}
-              .min=${stateObj.attributes.min_temp}
-              .max=${stateObj.attributes.max_temp}
-              .step=${this._stepSize}
-              @value-changing=${this._dragEvent}
-              @value-changed=${this._setTemperature}
-            ></round-slider>
-          `;
+    const slider = UNAVAILABLE_STATES.includes(stateObj.state)
+      ? html`
+          <round-slider disabled="true"></round-slider>
+        `
+      : html`
+          <round-slider
+            .value=${targetTemp}
+            .low=${stateObj.attributes.target_temp_low}
+            .high=${stateObj.attributes.target_temp_high}
+            .min=${stateObj.attributes.min_temp}
+            .max=${stateObj.attributes.max_temp}
+            .step=${this._stepSize}
+            @value-changing=${this._dragEvent}
+            @value-changed=${this._setTemperature}
+          ></round-slider>
+        `;
 
     const currentTemperature = !isNaN(stateObj.attributes.current_temperature)
       ? svg`
@@ -324,7 +323,7 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
   }
 
   private _getSetTemp(stateObj: HassEntity) {
-    if (stateObj.state === UNAVAILABLE) {
+    if (UNAVAILABLE_STATES.includes(stateObj.state)) {
       return this.hass!.localize("state.default.unavailable");
     }
 

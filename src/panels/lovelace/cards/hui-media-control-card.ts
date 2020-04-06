@@ -30,7 +30,7 @@ import { stateIcon } from "../../../common/entity/state_icon";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
 import { contrast } from "../common/color/contrast";
 import { findEntities } from "../common/find-entites";
-import { UNAVAILABLE, UNKNOWN } from "../../../data/entity";
+import { UNAVAILABLE_STATES } from "../../../data/entity";
 import {
   SUPPORT_PAUSE,
   SUPPORT_TURN_ON,
@@ -285,8 +285,7 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
 
     const isOffState = state === "off";
     const isUnavailable =
-      state === UNAVAILABLE ||
-      state === UNKNOWN ||
+      UNAVAILABLE_STATES.includes(state) ||
       (state === "off" && !supportsFeature(stateObj, SUPPORT_TURN_ON));
     const hasNoImage = !this._image;
     const controls = this._getControls();
@@ -501,7 +500,7 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
 
     const state = stateObj.state;
 
-    if (state === UNAVAILABLE || state === UNKNOWN) {
+    if (UNAVAILABLE_STATES.includes(state)) {
       return undefined;
     }
 

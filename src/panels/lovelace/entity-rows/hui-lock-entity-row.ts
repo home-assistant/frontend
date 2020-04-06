@@ -15,7 +15,7 @@ import "../components/hui-warning";
 import { HomeAssistant } from "../../../types";
 import { LovelaceRow, EntityConfig } from "./types";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
-import { UNAVAILABLE } from "../../../data/entity";
+import { UNAVAILABLE_STATES } from "../../../data/entity";
 
 @customElement("hui-lock-entity-row")
 class HuiLockEntityRow extends LitElement implements LovelaceRow {
@@ -57,7 +57,7 @@ class HuiLockEntityRow extends LitElement implements LovelaceRow {
       <hui-generic-entity-row .hass=${this.hass} .config=${this._config}>
         <mwc-button
           @click="${this._callService}"
-          .disabled=${stateObj.state === UNAVAILABLE}
+          .disabled=${UNAVAILABLE_STATES.includes(stateObj.state)}
           class="text-content"
         >
           ${stateObj.state === "locked"

@@ -1,5 +1,3 @@
-import { UNAVAILABLE } from "../data/entity";
-
 /** Constants to be used in the frontend. */
 
 // Constants should be alphabetically sorted by name.
@@ -71,7 +69,7 @@ export const DOMAINS_MORE_INFO_NO_HISTORY = [
 ];
 
 /** States that we consider "off". */
-export const STATES_OFF = ["closed", "locked", "off", UNAVAILABLE];
+export const STATES_OFF = ["closed", "locked", "off"];
 
 /** Domains where we allow toggle in Lovelace. */
 export const DOMAINS_TOGGLE = new Set([

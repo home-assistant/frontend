@@ -17,7 +17,7 @@ import { HomeAssistant } from "../../../types";
 import { LovelaceRow, ActionRowConfig } from "./types";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
 import { activateScene } from "../../../data/scene";
-import { UNAVAILABLE } from "../../../data/entity";
+import { UNAVAILABLE_STATES } from "../../../data/entity";
 
 @customElement("hui-scene-entity-row")
 class HuiSceneEntityRow extends LitElement implements LovelaceRow {
@@ -59,7 +59,7 @@ class HuiSceneEntityRow extends LitElement implements LovelaceRow {
       <hui-generic-entity-row .hass=${this.hass} .config=${this._config}>
         <mwc-button
           @click="${this._callService}"
-          .disabled=${stateObj.state === UNAVAILABLE}
+          .disabled=${UNAVAILABLE_STATES.includes(stateObj.state)}
           class="text-content"
         >
           ${this._config.action_name ||

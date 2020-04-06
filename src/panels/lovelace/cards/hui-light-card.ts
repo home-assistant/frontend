@@ -28,7 +28,7 @@ import { LightCardConfig } from "./types";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import { SUPPORT_BRIGHTNESS } from "../../../data/light";
 import { findEntities } from "../common/find-entites";
-import { UNAVAILABLE } from "../../../data/entity";
+import { UNAVAILABLE_STATES } from "../../../data/entity";
 import { actionHandler } from "../common/directives/action-handler-directive";
 import { hasAction } from "../common/has-action";
 import { ActionHandlerEvent } from "../../../data/lovelace";
@@ -119,6 +119,7 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
               <round-slider
                 min="0"
                 .value=${brightness}
+                .disabled=${UNAVAILABLE_STATES.includes(stateObj.state)}
                 @value-changing=${this._dragEvent}
                 @value-changed=${this._setBrightness}
                 style=${styleMap({
@@ -136,7 +137,7 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
                   "state-on": stateObj.state === "on",
                   "state-unavailable": stateObj.state === "unavailable",
                 })}"
-                .disabled=${stateObj.state === UNAVAILABLE}
+                .disabled=${UNAVAILABLE_STATES.includes(stateObj.state)}
                 .icon=${this._config.icon || stateIcon(stateObj)}
                 style=${styleMap({
                   filter: this._computeBrightness(stateObj),
@@ -153,9 +154,18 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
           </div>
 
           <div id="info">
-            <div class="brightness">
-              %
-            </div>
+            ${UNAVAILABLE_STATES.includes(stateObj.state)
+              ? html`
+                  <div>
+                    ${this.hass.localize(`state.default.${stateObj.state}`) ||
+                      stateObj.state}
+                  </div>
+                `
+              : html`
+                  <div class="brightness">
+                    %
+                  </div>
+                `}
             ${this._config.name || computeStateName(stateObj)}
           </div>
         </div>
@@ -341,9 +351,6 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
         transition: opacity 0.5s ease-in-out;
         -moz-transition: opacity 0.5s ease-in-out;
         -webkit-transition: opacity 0.5s ease-in-out;
-        cursor: pointer;
-        pointer-events: none;
-        padding-left: 0.5em;
       }
 
       .show_brightness {

@@ -30,7 +30,7 @@ import { actionHandler } from "../common/directives/action-handler-directive";
 import { isValidEntityId } from "../../../common/entity/valid_entity_id";
 import { findEntities } from "../common/find-entites";
 import { createHeaderFooterElement } from "../create-element/create-header-footer-element";
-import { UNKNOWN, UNAVAILABLE } from "../../../data/entity";
+import { UNAVAILABLE_STATES } from "../../../data/entity";
 import { HuiErrorCard } from "./hui-error-card";
 
 @customElement("hui-entity-card")
@@ -105,7 +105,7 @@ export class HuiEntityCard extends LitElement implements LovelaceCard {
 
     const showUnit = this._config.attribute
       ? this._config.attribute in stateObj.attributes
-      : stateObj.state !== UNKNOWN && stateObj.state !== UNAVAILABLE;
+      : !UNAVAILABLE_STATES.includes(stateObj.state);
 
     return html`
       <ha-card>
