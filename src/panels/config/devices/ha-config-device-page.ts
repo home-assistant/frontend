@@ -15,6 +15,8 @@ import "../../../layouts/hass-tabs-subpage";
 import "../../../layouts/hass-error-screen";
 import "../ha-config-section";
 
+import "../../../components/ha-state-icon";
+
 import "./device-detail/ha-device-info-card";
 import "./device-detail/ha-device-card-mqtt";
 import "./device-detail/ha-device-entities-card";
