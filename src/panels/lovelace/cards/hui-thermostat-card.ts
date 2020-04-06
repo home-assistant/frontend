@@ -239,24 +239,26 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
           tabindex="0"
         ></paper-icon-button>
 
-        <div id="controls">
-          <div id="slider">
-            ${slider}
-            <div id="slider-center">
-              <div id="temperature">
-                ${currentTemperature} ${setValues}
+        <div class="content">
+          <div id="controls">
+            <div id="slider">
+              ${slider}
+              <div id="slider-center">
+                <div id="temperature">
+                  ${currentTemperature} ${setValues}
+                </div>
               </div>
             </div>
           </div>
-        </div>
-        <div id="info">
-          <div id="modes">
-            ${(stateObj.attributes.hvac_modes || [])
-              .concat()
-              .sort(compareClimateHvacModes)
-              .map((modeItem) => this._renderIcon(modeItem, mode))}
+          <div id="info">
+            <div id="modes">
+              ${(stateObj.attributes.hvac_modes || [])
+                .concat()
+                .sort(compareClimateHvacModes)
+                .map((modeItem) => this._renderIcon(modeItem, mode))}
+            </div>
+            ${name}
           </div>
-          ${name}
         </div>
       </ha-card>
     `;
@@ -423,6 +425,7 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
       }
 
       ha-card {
+        height: 100%;
         position: relative;
         overflow: hidden;
         --name-font-size: 1.2rem;
@@ -479,6 +482,13 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
         border-radius: 100%;
         color: var(--secondary-text-color);
         z-index: 25;
+      }
+
+      .content {
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
       }
 
       #controls {

@@ -13,7 +13,7 @@ import "@polymer/paper-tabs";
 import { struct } from "../../common/structs/struct";
 import { HomeAssistant } from "../../../../types";
 import { LovelaceCardEditor } from "../../types";
-import { StackCardConfig } from "../../cards/types";
+import { ConditionalCardConfig } from "../../cards/types";
 import { fireEvent, HASSDomEvent } from "../../../../common/dom/fire_event";
 import { LovelaceConfig } from "../../../../data/lovelace";
 
@@ -41,13 +41,13 @@ export class HuiConditionalCardEditor extends LitElement
   implements LovelaceCardEditor {
   @property() public hass?: HomeAssistant;
   @property() public lovelace?: LovelaceConfig;
-  @property() private _config?: StackCardConfig;
+  @property() private _config?: ConditionalCardConfig;
   @property() private _GUImode = true;
   @property() private _guiModeAvailable? = true;
   @property() private _cardTab: boolean = false;
   @query("hui-card-editor") private _cardEditorEl?: HuiCardEditor;
 
-  public setConfig(config: StackCardConfig): void {
+  public setConfig(config: ConditionalCardConfig): void {
     this._config = cardConfigStruct(config);
   }
 
@@ -75,7 +75,7 @@ export class HuiConditionalCardEditor extends LitElement
       ${this._cardTab
         ? html`
             <div class="card">
-              ${this._config.card.type
+              ${this._config.card.type !== undefined
                 ? html`
                     <div class="card-options">
                       <mwc-button
@@ -225,6 +225,7 @@ export class HuiConditionalCardEditor extends LitElement
     if (!this._config) {
       return;
     }
+    // @ts-ignore
     this._config.card = {};
     fireEvent(this, "config-changed", { config: this._config });
   }

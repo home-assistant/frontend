@@ -546,6 +546,7 @@
             "save": "저장",
             "successfully_deleted": "성공적으로 삭제되었습니다",
             "successfully_saved": "성공적으로 저장되었습니다",
+            "undo": "되돌리기",
             "yes": "예"
         },
         "components": {

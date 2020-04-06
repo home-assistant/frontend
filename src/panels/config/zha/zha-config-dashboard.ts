@@ -20,6 +20,8 @@ import { HomeAssistant, Route } from "../../../types";
 import { fetchDevices, ZHADevice } from "../../../data/zha";
 import { sortZHADevices, formatAsPaddedHex } from "./functions";
 import memoizeOne from "memoize-one";
+import "../../../components/data-table/ha-data-table";
+// tslint:disable-next-line: no-duplicate-imports
 import {
   DataTableColumnContainer,
   RowClickedEvent,
