@@ -201,9 +201,9 @@ export class HuiPictureEntityCardEditor extends LitElement
               "ui.panel.lovelace.editor.card.config.optional"
             )})"
             type="number"
-            .value="${this._refresh_rate}"
-            .configValue="${"refresh_rate"}"
-            @value-changed="${this._valueChanged}"
+            .value=${this._refresh_rate}
+            .configValue=${"refresh_rate"}
+            @value-changed=${this._valueChanged}
           ></paper-input>
         </div>
         <div class="side-by-side">
