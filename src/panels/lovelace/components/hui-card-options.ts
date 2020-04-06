@@ -213,14 +213,14 @@ export class HuiCardOptions extends LitElement {
     if (!cardMoveHandle.moveActive) {
       cardMoveHandle.sourceCard = this;
       document.addEventListener("click", moveHandle, false);
-    } else if (cardMoveHandle.sourceCard != this) {
+    } else if (cardMoveHandle.sourceCard !== this) {
       this.style.outline = "2px solid var(--google-red-500)";
       cardMoveHandle.movePositionCard(this.lovelace!, this.path!);
     }
   }
 }
 
-class cardMoveHandler {
+class CardMoveHandler {
   public sourceCard: HuiCardOptions | undefined;
   public moveActive: boolean;
 
@@ -241,7 +241,7 @@ class cardMoveHandler {
 
   public movePositionCard(lovelace, targetPath): void {
     const sourceIndex = this.sourceCard!.path![1];
-    var newCards = [...lovelace.config.views[targetPath[0]].cards!];
+    const newCards = [...lovelace.config.views[targetPath[0]].cards!];
     const sourceCard = newCards[sourceIndex];
 
     newCards.splice(sourceIndex, 1);
@@ -262,7 +262,7 @@ class cardMoveHandler {
   }
 }
 
-var cardMoveHandle = new cardMoveHandler();
+const cardMoveHandle = new CardMoveHandler();
 
 function moveHandle(_event): void {
   if (cardMoveHandle.moveActive && cardMoveHandle.sourceCard) {
