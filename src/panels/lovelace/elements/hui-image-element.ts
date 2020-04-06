@@ -52,7 +52,7 @@ export class HuiImageElement extends LitElement implements LovelaceElement {
         .stateFilter="${this._config.state_filter}"
         .title="${computeTooltip(this.hass, this._config)}"
         .aspectRatio="${this._config.aspect_ratio}"
-        .refreshRate="${this._config.refresh_rate}"
+        .refreshRate=${this._config.refresh_rate}
         @action=${this._handleAction}
         .actionHandler=${actionHandler({
           hasHold: hasAction(this._config!.hold_action),
