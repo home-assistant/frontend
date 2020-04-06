@@ -46,7 +46,7 @@ export interface ImageElementConfig extends LovelaceElementConfigBase {
   filter?: string;
   state_filter?: string;
   aspect_ratio?: string;
-  refresh_rate?: string;
+  refresh_rate?: number;
 }
 
 export interface ServiceButtonElementConfig extends LovelaceElementConfigBase {
