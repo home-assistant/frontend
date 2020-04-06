@@ -80,7 +80,7 @@ export class HuiPictureEntityCardEditor extends LitElement
     return this._config!.aspect_ratio || "50";
   }
 
-  get _refresh_rate(): string {
+  get _refresh_rate(): number {
     return this._config!.refresh_rate || 10;
   }
 
