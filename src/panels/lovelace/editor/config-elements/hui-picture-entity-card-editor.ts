@@ -81,7 +81,7 @@ export class HuiPictureEntityCardEditor extends LitElement
   }
 
   get _refresh_rate(): number {
-    return this._config!.refresh_rate || 10;
+    return this._config!.refresh_rate || NaN;
   }
 
   get _tap_action(): ActionConfig {
