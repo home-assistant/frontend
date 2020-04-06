@@ -74,6 +74,7 @@ export interface DataTableColumnData extends DataTableSortColumnData {
   width?: string;
   maxWidth?: string;
   grows?: boolean;
+  hidden?: boolean;
 }
 
 export interface DataTableRowData {
@@ -225,50 +226,52 @@ export class HaDataTable extends LitElement {
                   </div>
                 `
               : ""}
-            ${Object.entries(this.columns).map((columnEntry) => {
-              const [key, column] = columnEntry;
-              const sorted = key === this._sortColumn;
-              const classes = {
-                "mdc-data-table__header-cell--numeric": Boolean(
-                  column.type === "numeric"
-                ),
-                "mdc-data-table__header-cell--icon": Boolean(
-                  column.type === "icon"
-                ),
-                "mdc-data-table__header-cell--icon-button": Boolean(
-                  column.type === "icon-button"
-                ),
-                sortable: Boolean(column.sortable),
-                "not-sorted": Boolean(column.sortable && !sorted),
-                grows: Boolean(column.grows),
-              };
-              return html`
-                <div
-                  class="mdc-data-table__header-cell ${classMap(classes)}"
-                  style=${column.width
-                    ? styleMap({
-                        [column.grows ? "minWidth" : "width"]: column.width,
-                        maxWidth: column.maxWidth || "",
-                      })
-                    : ""}
-                  role="columnheader"
-                  scope="col"
-                  @click=${this._handleHeaderClick}
-                  .columnId=${key}
-                >
-                  ${column.sortable
-                    ? html`
-                        <ha-icon
-                          .icon=${sorted && this._sortDirection === "desc"
-                            ? "hass:arrow-down"
-                            : "hass:arrow-up"}
-                        ></ha-icon>
-                      `
-                    : ""}
-                  <span>${column.title}</span>
-                </div>
-              `;
-            })}
+            ${Object.entries(this.columns)
+              .filter((columnEntry) => !columnEntry[1].hidden)
+              .map((columnEntry) => {
+                const [key, column] = columnEntry;
+                const sorted = key === this._sortColumn;
+                const classes = {
+                  "mdc-data-table__header-cell--numeric": Boolean(
+                    column.type === "numeric"
+                  ),
+                  "mdc-data-table__header-cell--icon": Boolean(
+                    column.type === "icon"
+                  ),
+                  "mdc-data-table__header-cell--icon-button": Boolean(
+                    column.type === "icon-button"
+                  ),
+                  sortable: Boolean(column.sortable),
+                  "not-sorted": Boolean(column.sortable && !sorted),
+                  grows: Boolean(column.grows),
+                };
+                return html`
+                  <div
+                    class="mdc-data-table__header-cell ${classMap(classes)}"
+                    style=${column.width
+                      ? styleMap({
+                          [column.grows ? "minWidth" : "width"]: column.width,
+                          maxWidth: column.maxWidth || "",
+                        })
+                      : ""}
+                    role="columnheader"
+                    scope="col"
+                    @click=${this._handleHeaderClick}
+                    .columnId=${key}
+                  >
+                    ${column.sortable
+                      ? html`
+                          <ha-icon
+                            .icon=${sorted && this._sortDirection === "desc"
+                              ? "hass:arrow-down"
+                              : "hass:arrow-up"}
+                          ></ha-icon>
+                        `
+                      : ""}
+                    <span>${column.title}</span>
+                  </div>
+                `;
+              })}
           </div>
           ${!this._filteredData.length
             ? html`
@@ -325,39 +328,41 @@ export class HaDataTable extends LitElement {
                                 </div>
                               `
                             : ""}
-                          ${Object.entries(this.columns).map((columnEntry) => {
-                            const [key, column] = columnEntry;
-                            return html`
-                              <div
-                                class="mdc-data-table__cell ${classMap({
-                                  "mdc-data-table__cell--numeric": Boolean(
-                                    column.type === "numeric"
-                                  ),
-                                  "mdc-data-table__cell--icon": Boolean(
-                                    column.type === "icon"
-                                  ),
-                                  "mdc-data-table__cell--icon-button": Boolean(
-                                    column.type === "icon-button"
-                                  ),
-                                  grows: Boolean(column.grows),
-                                })}"
-                                style=${column.width
-                                  ? styleMap({
-                                      [column.grows
-                                        ? "minWidth"
-                                        : "width"]: column.width,
-                                      maxWidth: column.maxWidth
-                                        ? column.maxWidth
-                                        : "",
-                                    })
-                                  : ""}
-                              >
-                                ${column.template
-                                  ? column.template(row[key], row)
-                                  : row[key]}
-                              </div>
-                            `;
-                          })}
+                          ${Object.entries(this.columns)
+                            .filter((columnEntry) => !columnEntry[1].hidden)
+                            .map((columnEntry) => {
+                              const [key, column] = columnEntry;
+                              return html`
+                                <div
+                                  class="mdc-data-table__cell ${classMap({
+                                    "mdc-data-table__cell--numeric": Boolean(
+                                      column.type === "numeric"
+                                    ),
+                                    "mdc-data-table__cell--icon": Boolean(
+                                      column.type === "icon"
+                                    ),
+                                    "mdc-data-table__cell--icon-button": Boolean(
+                                      column.type === "icon-button"
+                                    ),
+                                    grows: Boolean(column.grows),
+                                  })}"
+                                  style=${column.width
+                                    ? styleMap({
+                                        [column.grows
+                                          ? "minWidth"
+                                          : "width"]: column.width,
+                                        maxWidth: column.maxWidth
+                                          ? column.maxWidth
+                                          : "",
+                                      })
+                                    : ""}
+                                >
+                                  ${column.template
+                                    ? column.template(row[key], row)
+                                    : row[key]}
+                                </div>
+                              `;
+                            })}
                         </div>
                       `;
                     },

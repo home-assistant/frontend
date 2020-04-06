@@ -159,8 +159,6 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
               entity.platform}
           `;
         };
-        columns.status = statusColumn;
-        return columns;
       }
 
       columns.entity_id = {
@@ -169,6 +167,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
         ),
         sortable: true,
         filterable: true,
+        hidden: narrow,
         width: "25%",
       };
       columns.platform = {
@@ -177,6 +176,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
         ),
         sortable: true,
         filterable: true,
+        hidden: narrow,
         width: "20%",
         template: (platform) =>
           this.hass.localize(`component.${platform}.config.title`) || platform,
