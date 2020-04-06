@@ -70,16 +70,15 @@ export class HaConfigHelpers extends LitElement {
             `,
         },
       };
-      if (!narrow) {
-        columns.entity_id = {
-          title: this.hass.localize(
-            "ui.panel.config.helpers.picker.headers.entity_id"
-          ),
-          sortable: true,
-          filterable: true,
-          width: "25%",
-        };
-      }
+      columns.entity_id = {
+        title: this.hass.localize(
+          "ui.panel.config.helpers.picker.headers.entity_id"
+        ),
+        sortable: true,
+        filterable: true,
+        hidden: narrow,
+        width: "25%",
+      };
       columns.type = {
         title: this.hass.localize(
           "ui.panel.config.helpers.picker.headers.type"

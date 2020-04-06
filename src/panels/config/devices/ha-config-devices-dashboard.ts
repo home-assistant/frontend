@@ -123,117 +123,88 @@ export class HaConfigDeviceDashboard extends LitElement {
   );
 
   private _columns = memoizeOne(
-    (narrow: boolean): DataTableColumnContainer =>
-      narrow
-        ? {
-            name: {
-              title: "Device",
-              sortable: true,
-              filterable: true,
-              direction: "asc",
-              grows: true,
-              template: (name, device: DataTableRowData) => {
-                return html`
-                  ${name}
-                  <div class="secondary">
-                    ${device.area} | ${device.integration}
-                  </div>
+    (narrow: boolean): DataTableColumnContainer => {
+      const columns: DataTableColumnContainer = {
+        name: {
+          title: this.hass.localize(
+            "ui.panel.config.devices.data_table.device"
+          ),
+          sortable: true,
+          filterable: true,
+          grows: true,
+          direction: "asc",
+        },
+        manufacturer: {
+          title: this.hass.localize(
+            "ui.panel.config.devices.data_table.manufacturer"
+          ),
+          sortable: true,
+          filterable: !narrow,
+          hidden: narrow,
+          width: "15%",
+        },
+        model: {
+          title: this.hass.localize("ui.panel.config.devices.data_table.model"),
+          sortable: true,
+          filterable: !narrow,
+          hidden: narrow,
+          width: "15%",
+        },
+        area: {
+          title: this.hass.localize("ui.panel.config.devices.data_table.area"),
+          sortable: true,
+          filterable: true,
+          hidden: narrow,
+          width: "15%",
+        },
+        integration: {
+          title: this.hass.localize(
+            "ui.panel.config.devices.data_table.integration"
+          ),
+          sortable: true,
+          filterable: true,
+          hidden: narrow,
+          width: "15%",
+        },
+        battery_entity: {
+          title: this.hass.localize(
+            "ui.panel.config.devices.data_table.battery"
+          ),
+          sortable: true,
+          hidden: narrow,
+          type: "numeric",
+          width: narrow ? "90px" : "15%",
+          maxWidth: "90px",
+          template: (batteryEntity: string) => {
+            const battery = batteryEntity
+              ? this.hass.states[batteryEntity]
+              : undefined;
+            return battery && !isNaN(battery.state as any)
+              ? html`
+                  ${battery.state}%
+                  <ha-state-icon
+                    .hass=${this.hass!}
+                    .stateObj=${battery}
+                  ></ha-state-icon>
+                `
+              : html`
+                  -
                 `;
-              },
-            },
-            battery_entity: {
-              title: this.hass.localize(
-                "ui.panel.config.devices.data_table.battery"
-              ),
-              sortable: true,
-              type: "numeric",
-              width: "90px",
-              template: (batteryEntity: string) => {
-                const battery = batteryEntity
-                  ? this.hass.states[batteryEntity]
-                  : undefined;
-                return battery
-                  ? html`
-                      ${isNaN(battery.state as any) ? "-" : battery.state}%
-                      <ha-state-icon
-                        .hass=${this.hass!}
-                        .stateObj=${battery}
-                      ></ha-state-icon>
-                    `
-                  : html`
-                      -
-                    `;
-              },
-            },
-          }
-        : {
-            name: {
-              title: this.hass.localize(
-                "ui.panel.config.devices.data_table.device"
-              ),
-              sortable: true,
-              filterable: true,
-              grows: true,
-              direction: "asc",
-            },
-            manufacturer: {
-              title: this.hass.localize(
-                "ui.panel.config.devices.data_table.manufacturer"
-              ),
-              sortable: true,
-              filterable: true,
-              width: "15%",
-            },
-            model: {
-              title: this.hass.localize(
-                "ui.panel.config.devices.data_table.model"
-              ),
-              sortable: true,
-              filterable: true,
-              width: "15%",
-            },
-            area: {
-              title: this.hass.localize(
-                "ui.panel.config.devices.data_table.area"
-              ),
-              sortable: true,
-              filterable: true,
-              width: "15%",
-            },
-            integration: {
-              title: this.hass.localize(
-                "ui.panel.config.devices.data_table.integration"
-              ),
-              sortable: true,
-              filterable: true,
-              width: "15%",
-            },
-            battery_entity: {
-              title: this.hass.localize(
-                "ui.panel.config.devices.data_table.battery"
-              ),
-              sortable: true,
-              type: "numeric",
-              width: "15%",
-              maxWidth: "90px",
-              template: (batteryEntity: string) => {
-                const battery = batteryEntity
-                  ? this.hass.states[batteryEntity]
-                  : undefined;
-                return battery && !isNaN(battery.state as any)
-                  ? html`
-                      ${battery.state}%
-                      <ha-state-icon
-                        .hass=${this.hass!}
-                        .stateObj=${battery}
-                      ></ha-state-icon>
-                    `
-                  : html`
-                      -
-                    `;
-              },
-            },
-          }
+          },
+        },
+      };
+      if (narrow) {
+        columns.name.template = (name, device: DataTableRowData) => {
+          return html`
+            ${name}
+            <div class="secondary">
+              ${device.area} | ${device.integration}
+            </div>
+          `;
+        };
+      }
+      return columns;
+    }
   );
 
   protected render(): TemplateResult {
