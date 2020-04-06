@@ -175,8 +175,7 @@ export class HuiImage extends LitElement {
     if (this.cameraImage && this._attached) {
       this._cameraUpdater = window.setInterval(
         () => this._updateCameraImageSrc(),
-        Number(this.refreshRate ? this.refreshRate : DEFAULT_REFRESH_RATE) *
-          1000
+        (this.refreshRate || DEFAULT_REFRESH_RATE) * 1000
       );
     }
   }
