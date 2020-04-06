@@ -204,7 +204,7 @@ class DialogUserDetail extends LitElement {
       haStyleDialog,
       css`
         ha-dialog {
-          --mdc-dialog-min-width: 500px;
+          --mdc-dialog-max-width: 500px;
         }
         .form {
           padding-top: 16px;
