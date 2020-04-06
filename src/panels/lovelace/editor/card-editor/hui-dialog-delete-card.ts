@@ -45,7 +45,7 @@ export class HuiDialogDeleteCard extends LitElement {
     }
 
     return html`
-      <ha-paper-dialog with-backdrop opened>
+      <ha-paper-dialog with-backdrop opened modal>
         <h2>
           ${this.hass.localize("ui.panel.lovelace.cards.confirm_delete")}
         </h2>

@@ -509,6 +509,7 @@
                 "attributes": {
                     "air_pressure": "Ciśnienie",
                     "humidity": "Wilgotność",
+                    "precipitation": "Opady",
                     "temperature": "Temperatura",
                     "visibility": "Widoczność",
                     "wind_speed": "Prędkość wiatru"
@@ -531,7 +532,9 @@
                     "wnw": "zach. płn.-zach.",
                     "wsw": "zach. płd.-zach."
                 },
-                "forecast": "Prognoza"
+                "forecast": "Prognoza",
+                "high": "wysoka",
+                "low": "niska"
             }
         },
         "common": {
@@ -543,6 +546,7 @@
             "save": "Zapisz",
             "successfully_deleted": "Pomyślnie usunięto",
             "successfully_saved": "Pomyślnie zapisano",
+            "undo": "Cofnij",
             "yes": "Tak"
         },
         "components": {
@@ -1731,6 +1735,7 @@
                     "editor": {
                         "activate_user": "Aktywuj użytkownika",
                         "active": "Aktywny",
+                        "admin": "Administrator",
                         "caption": "Wyświetl użytkownika",
                         "change_password": "Zmień hasło",
                         "confirm_user_deletion": "Na pewno chcesz usunąć {name}?",
@@ -1744,6 +1749,7 @@
                         "owner": "Właściciel",
                         "rename_user": "Zmień nazwę użytkownika",
                         "system_generated": "Wygenerowany przez system",
+                        "system_generated_users_not_editable": "Nie można zaktualizować użytkowników generowanych przez system.",
                         "system_generated_users_not_removable": "Nie można usunąć użytkowników wygenerowanych przez system.",
                         "unnamed_user": "Nienazwany użytkownik",
                         "update_user": "Aktualizuj",
@@ -2175,6 +2181,7 @@
                             "attribute": "Atrybut",
                             "camera_image": "Encja kamery",
                             "camera_view": "Widok kamery",
+                            "double_tap_action": "Akcja podwójnego dotknięcia",
                             "entities": "Encje",
                             "entity": "Encja",
                             "hold_action": "Akcja przytrzymania",
@@ -2225,6 +2232,7 @@
                             "default_zoom": "Domyślne powiększenie",
                             "description": "Karta mapy, która pozwala wyświetlać encje na mapie.",
                             "geo_location_sources": "Źródła geolokalizacji",
+                            "hours_to_show": "Godziny do wyświetlenia",
                             "name": "Mapa",
                             "source": "Źródło"
                         },
@@ -2280,6 +2288,10 @@
                             "description": "Karta prognozy pogody wyświetla pogodę. Bardzo przydatna w przypadku interfejsów wyświetlanych na urządzeniach zawieszonych na ścianie.",
                             "name": "Prognoza pogody"
                         }
+                    },
+                    "cardpicker": {
+                        "custom_card": "Niestandardowa",
+                        "no_description": "Brak dostępnego opisu."
                     },
                     "edit_card": {
                         "add": "Dodaj kartę",

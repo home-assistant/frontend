@@ -546,6 +546,7 @@
             "save": "Enregistrer",
             "successfully_deleted": "Supprimé avec succès",
             "successfully_saved": "Enregistré avec succès",
+            "undo": "Annuler",
             "yes": "Oui"
         },
         "components": {
@@ -2180,6 +2181,7 @@
                             "attribute": "Attribut",
                             "camera_image": "Caméra entité",
                             "camera_view": "Vue de la caméra",
+                            "double_tap_action": "Double appui court",
                             "entities": "Entités",
                             "entity": "Entité",
                             "hold_action": "Appui long",
@@ -2294,7 +2296,7 @@
                     "edit_card": {
                         "add": "Ajouter une action",
                         "delete": "Supprimer",
-                        "duplicate": "Carte en double",
+                        "duplicate": "Dupliquer la carte",
                         "edit": "Modifier",
                         "header": "Configuration de la carte",
                         "move": "Déplacer",
