@@ -1409,6 +1409,7 @@
                         "introduction2": "Az entitás nyilvántartás használatával felülbírálhatod a nevet, módosíthatod az entitás ID-t vagy eltávolíthatod a bejegyzést a Home Assistant-ból.",
                         "remove_selected": {
                             "button": "Kiválasztottak eltávolítása",
+                            "confirm_partly_text": "A kiválasztott {selected} entitás közül csak {removable} távolítható el. Az entitások csak akkor távolíthatók el, ha az integráció már nem biztosítja azokat. Néha újra kell indítani a Home Assistant-et, mielőtt el tudnád távolítani egy már eltávolított integráció entitásait. Biztosan el szeretnéd távolítani az eltávolítható entitásokat?",
                             "confirm_partly_title": "Csak {number} kiválasztott entitás távolítható el.",
                             "confirm_text": "El kell távolítanod őket a Lovelace konfigurációból és az automatizálásokból, ha tartalmazzák ezeket az entitásokat.",
                             "confirm_title": "El szeretnél távolítani {number} entitást?"
@@ -1685,6 +1686,7 @@
                         "introduction": "A szkript szerkesztő lehetővé teszi szkriptek létrehozását és szerkesztését. Kérlek, olvasd el az útmutatót az alábbi linken, hogy megbizonyosodj róla, hogy a Home Assistant helyesen van konfigurálva.",
                         "learn_more": "Tudj meg többet a szkriptekről",
                         "no_scripts": "Nem találtunk szerkeszthető szkripteket",
+                        "show_info": "Információ megjelenítése a szkriptről",
                         "trigger_script": "Sckript triggerelése"
                     }
                 },
@@ -2188,6 +2190,7 @@
                             "icon_height": "Ikon magassága",
                             "image": "Kép elérési útja",
                             "manual": "Manuális",
+                            "manual_description": "Egyéni kártyát akarsz hozzáadni, vagy csak manuálisan szeretnéd megírni a yaml-t?",
                             "maximum": "Maximum",
                             "minimum": "Minimum",
                             "name": "Név",
@@ -2239,18 +2242,23 @@
                             "name": "Markdown"
                         },
                         "media-control": {
+                            "description": "A Média Vezérlő kártya a médialejátszó entitások megjelenítésére szolgál egy könnyen használható vezérlővel rendelkező felületen.",
                             "name": "Médiavezérlés"
                         },
                         "picture-elements": {
+                            "description": "A Képelemek kártya az egyik legsokoldalúbb kártya. Lehetővé teszi, hogy ikonokat, szöveget vagy akár szolgáltatásokat helyezz el egy koordinátákon alapuló képen!",
                             "name": "Kép elemek"
                         },
                         "picture-entity": {
+                            "description": "A Képentitás kártya kép formájában jelenít meg egy entitást. Az URL-ből származó képek helyett, akár a kameraentitások képét is meg tudja jeleníteni.",
                             "name": "Kép entitás"
                         },
                         "picture-glance": {
+                            "description": "A Kép Pillantás kártya egy képet és a meghatározott entitások állapotát ikonként jeleníti meg. A jobb oldali entitások lehetővé teszik a műveletek váltását, a többi pedig a további infók párbeszédpanelt nyitja meg.",
                             "name": "Kép pillantás"
                         },
                         "picture": {
+                            "description": "A Képkártya lehetővé teszi, hogy beállíts egy képet hivatkozásként a felületen való navigáláshoz, vagy hogy meghívj egy szolgáltatást.",
                             "name": "Kép"
                         },
                         "plant-status": {
@@ -2258,6 +2266,7 @@
                             "name": "Növény állapota"
                         },
                         "sensor": {
+                            "description": "Az Érzékelő kártya gyors áttekintést nyújt az érzékelők állapotáról egy opcionális grafikon segítségével, amely az időbeli változásokat szemlélteti.",
                             "graph_detail": "Grafikon részletei",
                             "graph_type": "Grafikon típusa",
                             "name": "Érzékelő"
@@ -2268,6 +2277,7 @@
                             "name": "Bevásárló lista"
                         },
                         "thermostat": {
+                            "description": "A Termosztát kártyával a hűtő/fűtő berendezés entitások vezérelhetők. Lehetővé teszi a hőmérséklet, illetve a mód megváltoztatását.",
                             "name": "Termosztát"
                         },
                         "vertical-stack": {
@@ -2275,6 +2285,7 @@
                             "name": "Függőleges Készlet"
                         },
                         "weather-forecast": {
+                            "description": "Az Időjárás Előrejelzés kártya az időjárást jeleníti meg. Nagyon hasznos hozzáadni a falra felszerelt kezelő interfészek felületéhez.",
                             "name": "Időjárás előrejelzés"
                         }
                     },
@@ -2352,6 +2363,7 @@
                         "para_sure": "Biztosan át szeretnéd venni az irányítást a felhasználói felületed felett?",
                         "save": "Irányítás átvétele",
                         "yaml_config": "A kezdéshez itt a jelenlegi konfigurációja ennek az irányítópultnak:",
+                        "yaml_control": "Ahhoz, hogy átvedd az irányítást YAML módban, hozz létre egy YAML fájlt az irányítópult konfigurációjában megadott  vagy az alapértelmezett 'ui-lovelace.yaml' névvel.",
                         "yaml_mode": "YAML módot használsz, ezért nem módosíthatod a Lovelace konfigurációt a felhasználói felületről. Ha mégis onnan szeretnéd, akkor távolítsd el a 'mode: yaml' bejegyzést a Lovelace konfigurációból a 'configuration.yaml' fájlban."
                     },
                     "suggest_card": {
