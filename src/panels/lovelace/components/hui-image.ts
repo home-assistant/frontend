@@ -211,7 +211,7 @@ export class HuiImage extends LitElement {
       return;
     }
 
-    var cacheTime =
+    const cacheTime =
       (Number(this.refreshRate ? this.refreshRate : DEFAULT_REFRESH_RATE) - 1) *
       1000;
     this._cameraImageSrc = await fetchThumbnailUrlWithCache(
