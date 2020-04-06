@@ -9,6 +9,7 @@ import {
   PropertyValues,
 } from "lit-element";
 import { repeat } from "lit-html/directives/repeat";
+import { classMap } from "lit-html/directives/class-map";
 import { PaperInputElement } from "@polymer/paper-input/paper-input";
 import "@polymer/paper-checkbox/paper-checkbox";
 
@@ -26,8 +27,6 @@ import {
 } from "../../../data/shopping-list";
 import { ShoppingListCardConfig, SensorCardConfig } from "./types";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
-import { actionHandler } from "../common/directives/action-handler-directive";
-import { classMap } from "lit-html/directives/class-map";
 
 @customElement("hui-shopping-list-card")
 class HuiShoppingListCard extends LitElement implements LovelaceCard {
@@ -171,8 +170,7 @@ class HuiShoppingListCard extends LitElement implements LovelaceCard {
                   .title=${this.hass!.localize(
                     "ui.panel.lovelace.cards.shopping-list.clear_items"
                   )}
-                  .actionHandler=${actionHandler()}
-                  @action=${this._clearItems}
+                  @click=${this._clearItems}
                 >
                 </ha-icon>
               </div>
