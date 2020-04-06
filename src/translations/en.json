@@ -1885,8 +1885,7 @@
           },
           "safe-mode": {
             "header": "Safe Mode Activated",
-            "description": "Home Assistant ran into trouble while loading your configuration and is now running in safe mode. Take a look at the error log to see what went wrong.",
-            "show_errors": "Show errors"
+            "description": "Home Assistant ran into trouble while loading your configuration and is now running in safe mode. Take a look at the error log to see what went wrong."
           }
         },
         "unused_entities": {
@@ -2027,7 +2026,8 @@
               "description": "The Entities card is the most common type of card. It groups items together into lists."
             },
             "entity": {
-              "name": "Entity"
+              "name": "Entity",
+              "description": "The Entity card gives you a quick overview of your entity’s state."
             },
             "button": {
               "name": "Button",

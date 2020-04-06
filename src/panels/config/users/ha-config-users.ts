@@ -63,7 +63,6 @@ export class HaConfigUsers extends LitElement {
             "ui.panel.config.users.picker.headers.system"
           ),
           type: "icon",
-          width: "10%",
           sortable: true,
           filterable: true,
           template: (generated) => html`
