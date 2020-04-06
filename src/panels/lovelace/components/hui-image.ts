@@ -40,7 +40,7 @@ export class HuiImage extends LitElement {
 
   @property() public aspectRatio?: string;
 
-  @property() public refreshRate?: string;
+  @property() public refreshRate?: number;
 
   @property() public filter?: string;
 
@@ -211,8 +211,7 @@ export class HuiImage extends LitElement {
     }
 
     const cacheTime =
-      (Number(this.refreshRate ? this.refreshRate : DEFAULT_REFRESH_RATE) - 1) *
-      1000;
+      ((this.refreshRate ? this.refreshRate : DEFAULT_REFRESH_RATE) - 1) * 1000;
     this._cameraImageSrc = await fetchThumbnailUrlWithCache(
       this.hass,
       this.cameraImage,
