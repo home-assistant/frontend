@@ -9,48 +9,84 @@ import { safeDump } from "js-yaml";
 
 @customElement("mqtt-payload")
 class MQTTPayload extends LitElement {
-  @property() public payload?: object | string;
+  @property() public payloads!: Array<object | string>;
   @property() public showAsYaml: boolean = false;
   @property() public showDeserialized: boolean = false;
-  @property() private _payloadJson?: object;
+  @property() public summary!: string;
+  @property() private _payloadsJson!: Array<object | undefined>;
+  @property() private _open: boolean = false;
 
   protected firstUpdated(): void {
-    let o = this.payload;
+    const nPayloads = this.payloads.length;
+    this._payloadsJson = new Array(nPayloads);
+    for (let i = 0; i < nPayloads; i++) {
+      const payload = this.payloads[i];
+      let o = payload;
 
-    // If the payload is a string, determine if the payload is valid JSON and if it
-    // is, assign the object representation to this._payloadJson.
-    if (typeof this.payload === "string") {
-      try {
-        o = JSON.parse(this.payload);
-      } catch (e) {
-        return;
+      // If the payload is a string, determine if the payload is valid JSON and if it
+      // is, assign the object representation to this._payloadJson.
+      if (typeof payload === "string") {
+        try {
+          o = JSON.parse(payload);
+        } catch (e) {
+          continue;
+        }
+      } else {
+        //  this.showDeserialized = true;
       }
-    } else {
-      this.showDeserialized = true;
-    }
-    // Handle non-exception-throwing cases:
-    // Neither JSON.parse(false) or JSON.parse(1234) throw errors, hence the type-checking,
-    // but... JSON.parse(null) returns null, and typeof null === "object",
-    // so we must check for that, too. Thankfully, null is falsey, so this suffices:
-    if (o && typeof o === "object") {
-      this._payloadJson = o;
+      // Handle non-exception-throwing cases:
+      // Neither JSON.parse(false) or JSON.parse(1234) throw errors, hence the type-checking,
+      // but... JSON.parse(null) returns null, and typeof null === "object",
+      // so we must check for that, too. Thankfully, null is falsey, so this suffices:
+      if (o && typeof o === "object") {
+        this._payloadsJson[i] = o;
+      }
     }
   }
 
   protected render(): TemplateResult {
-    return this._payloadJson && this.showDeserialized
+    return html`
+      <details @toggle=${this._handleToggle}>
+        <summary>
+          ${this.summary}
+        </summary>
+        ${this._open
+          ? !this.payloads.length
+            ? this._renderSinglePayload(0)
+            : html`
+                <ul>
+                  ${this.payloads.map(
+                    (_, i) => html`
+                      <li>
+                        ${this._renderSinglePayload(i)}
+                      </li>
+                    `
+                  )}
+                </ul>
+              `
+          : html``}
+      </details>
+    `;
+  }
+
+  private _renderSinglePayload(i: number): TemplateResult {
+    return this._payloadsJson && this._payloadsJson[i] && this.showDeserialized
       ? html`
           ${this.showAsYaml
             ? html`
-                <pre>${safeDump(this._payloadJson)}</pre>
+                <pre>${safeDump(this._payloadsJson[i])}</pre>
               `
             : html`
-                <pre>${JSON.stringify(this._payloadJson, null, 2)}</pre>
+                <pre>${JSON.stringify(this._payloadsJson[i], null, 2)}</pre>
               `}
         `
       : html`
-          <code>${this.payload}</code>
+          <code>${this.payloads[i]}</code>
         `;
+  }
+
+  private _handleToggle(ev) {
+    this._open = ev.target.open;
   }
 }
 

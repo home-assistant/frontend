@@ -122,24 +122,20 @@ class DialogMQTTDeviceDebugInfo extends LitElement {
             (<code>${entity.entity_id}</code>)
             <br />MQTT discovery data:
             <ul>
-            <li>
-            Topic:
-            <code>${entity.discovery_data.topic}</code>
-            </li>
-            <li>
-            <details>
-              <summary>
-                Payload
-              </summary>
-              <mqtt-payload
-                .hass=${this.hass}
-                .payload=${entity.discovery_data.payload}
-                ._showDeserialized=${true}
-                ._showAsYaml=${this._showAsYaml}
-              >
-              </mqtt-payload>
-            </li>
-            </details>
+              <li>
+                Topic:
+                <code>${entity.discovery_data.topic}</code>
+              </li>
+              <li>
+                <mqtt-payload
+                  .hass=${this.hass}
+                  .payloads=${[entity.discovery_data.payload]}
+                  .summary=${"Payload"}
+                  .showDeserialized=${true}
+                  .showAsYaml=${this._showAsYaml}
+                >
+                </mqtt-payload>
+              </li>
             </ul>
             Subscribed topics:
             <ul>
@@ -147,29 +143,18 @@ class DialogMQTTDeviceDebugInfo extends LitElement {
                 (topic) => html`
                   <li>
                     <code>${topic.topic}</code>
-                    <details>
-                      <summary>
-                        ${this.hass!.localize(
-                          "ui.dialogs.mqtt_device_debug_info.recent_messages",
-                          "n",
-                          topic.messages.length
-                        )}
-                      </summary>
-                      <ul>
-                        ${topic.messages.map(
-                          (message) => html`
-                            <li>
-                              <mqtt-payload
-                                .hass=${this.hass}
-                                .payload=${message}
-                                ._showDeserialized=${this._showDeserialized}
-                                ._showAsYaml=${this._showAsYaml}
-                              >
-                            </li>
-                          `
-                        )}
-                      </ul>
-                    </details>
+                    <mqtt-payload
+                      .hass=${this.hass}
+                      .payloads=${topic.messages}
+                      .showDeserialized=${this._showDeserialized}
+                      .showAsYaml=${this._showAsYaml}
+                      .summary=${this.hass!.localize(
+                        "ui.dialogs.mqtt_device_debug_info.recent_messages",
+                        "n",
+                        topic.messages.length
+                      )}
+                    >
+                    </mqtt-payload>
                   </li>
                 `
               )}
@@ -187,18 +172,14 @@ class DialogMQTTDeviceDebugInfo extends LitElement {
           <li>
             Discovery topic:
             <code>${trigger.discovery_data.topic}</code>
-            <details>
-              <summary>
-                Discovery payload
-              </summary>
-              <mqtt-payload
-                .hass=${this.hass}
-                .payload=${trigger.discovery_data.payload}
-                ._showDeserialized=${true}
-                ._showAsYaml=${this._showAsYaml}
-              >
-              </mqtt-payload>
-            </details>
+            <mqtt-payload
+              .hass=${this.hass}
+              .payloads=${[trigger.discovery_data.payload]}
+              .showDeserialized=${true}
+              .showAsYaml=${this._showAsYaml}
+              .summary=${"Discovery payload"}
+            >
+            </mqtt-payload>
           </li>
         `
       )}
@@ -211,6 +192,7 @@ class DialogMQTTDeviceDebugInfo extends LitElement {
       css`
         ha-dialog {
           --mdc-dialog-max-width: 95%;
+          --mdc-dialog-min-width: 640px;
         }
         ha-switch {
           margin: 16px;
