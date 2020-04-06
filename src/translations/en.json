@@ -2026,7 +2026,8 @@
               "description": "The Entities card is the most common type of card. It groups items together into lists."
             },
             "entity": {
-              "name": "Entity"
+              "name": "Entity",
+              "description": "The Entity card gives you a quick overview of your entity’s state."
             },
             "button": {
               "name": "Button",
