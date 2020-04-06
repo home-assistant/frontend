@@ -546,6 +546,7 @@
             "save": "Späicheren",
             "successfully_deleted": "Erfollegräich geläscht.",
             "successfully_saved": "Erfollegräich gespäichert.",
+            "undo": "Réckgängeg maachen",
             "yes": "Jo"
         },
         "components": {
@@ -1404,6 +1405,7 @@
                         "remove_selected": {
                             "button": "Ausgewielte läschen",
                             "confirm_partly_text": "Nëmmen {removable} vun den ausgewielten {selected} Entitéite kënne geläscht ginn. Entitéiten kënne nëmmen geläscht ginn wann eng Integratioun déi Entitéiten net méi zur Verfügung stellt. Heiansdo muss Home Assistant frësch gestart ginn fir Entitéiten vun enger geläschten Integratioun ze läschen. Sécher fir déi läschbar Entitéiten ze läschen?",
+                            "confirm_partly_title": "Nëmmen {number} ausgewielten Entitéiten kënne geläscht ginn.",
                             "confirm_text": "Entitéiten kënne nëmmen geläscht gin wann d'Integratioun d'Entitéiten net méi zur Verfügung stellt.",
                             "confirm_title": "Wëllt dir {number} Entitéite läschen?"
                         },
@@ -1510,6 +1512,7 @@
                 "lovelace": {
                     "caption": "Lovelace Tableau de Bord",
                     "dashboards": {
+                        "cant_edit_default": "De Standard Lovelace Tableau de Bord kann net vum Benotzer Interface aus verännert ginn. Et kann verstoppt ginn andeems een aneren Tableau de Bord als Standard définéiert gëtt.",
                         "cant_edit_yaml": "Tableau de Bord déi am YAML définéiert sinn kënnen net vum Benotzer Interface aus verännert ginn. Änner se an der configuration.yaml",
                         "caption": "Tableau de Bord",
                         "conf_mode": {
@@ -1727,6 +1730,7 @@
                     "editor": {
                         "activate_user": "Benotzer aktivéieren",
                         "active": "Aktiv",
+                        "admin": "Administrator",
                         "caption": "Benotzer kucken",
                         "change_password": "Passwuert änneren",
                         "confirm_user_deletion": "Sécher fir {name} ze läsche?",
@@ -1740,6 +1744,7 @@
                         "owner": "Proprietär",
                         "rename_user": "Benotzer ëmbenennen",
                         "system_generated": "Vum System generéiert",
+                        "system_generated_users_not_editable": "Net méiglech System generéiert Benotzer z'aktualiséieren.",
                         "system_generated_users_not_removable": "Ka keng System generéiert Benotzer läschen.",
                         "unnamed_user": "Benotzer ouni Numm",
                         "update_user": "Aktualiséieren",
@@ -2118,6 +2123,7 @@
                         },
                         "alarm-panel": {
                             "available_states": "Verfügbar Zoustänn",
+                            "description": "D'Alarm Panel Kaart erlaabt et d'Integratioun vun der Alarm Kontroll Panel ze arméieren an ze desaktivéieren.",
                             "name": "Alarm Zentral"
                         },
                         "button": {
@@ -2130,6 +2136,7 @@
                             "condition_explanation": "D'Kaart gëtt réischt ugewisen wann ALL Konditiounen erfëllt sinn.",
                             "conditions": "Konditiounen",
                             "current_state": "aktuell",
+                            "description": "D'Konditiounskaart weist eng aner Kaart baséierend op den Zoustand vun Entitéiten.",
                             "name": "Bedingungen",
                             "state_equal": "Zoustand ass gläich mat",
                             "state_not_equal": "Zoustand ass net gläich mat"
@@ -2394,6 +2401,7 @@
                 "views": {
                     "confirm_delete": "Sécher fir dës Usiicht ze läsche?",
                     "confirm_delete_existing_cards": "D'Läschen vun dëser Usiicht läscht och d'Kaarten",
+                    "confirm_delete_existing_cards_text": "Sécher fir d'Usiicht '{name}' ze läsche? Dës Usiicht enthält {number} Kaart(en) déi och geläscht ginn. Dës Aktioun kann net réckgängeg gemaach ginn.",
                     "confirm_delete_text": "Sécher fir d'Usiicht '{name}' ze läsche?",
                     "existing_cards": "Dir kënnt keng Usiicht mat Kaarten läschen. Läscht d'Kaarten fir d'éischt."
                 },

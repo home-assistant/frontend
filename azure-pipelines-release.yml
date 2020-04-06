@@ -47,6 +47,8 @@ stages:
 
               script/release
             displayName: "Build and release package"
+  - stage: "Wheels"
+    jobs:
       - template: templates/azp-job-wheels.yaml@azure
         parameters:
           builderVersion: '$(versionWheels)'

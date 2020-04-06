@@ -546,6 +546,7 @@
             "save": "Speichern",
             "successfully_deleted": "Erfolgreich gelöscht",
             "successfully_saved": "Erfolgreich gespeichert",
+            "undo": "Rückgängig machen",
             "yes": "Ja"
         },
         "components": {

@@ -546,6 +546,7 @@
             "save": "Gem",
             "successfully_deleted": "Slettet",
             "successfully_saved": "Gemt",
+            "undo": "Fortryd",
             "yes": "Ja"
         },
         "components": {

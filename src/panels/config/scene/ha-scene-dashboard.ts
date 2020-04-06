@@ -131,6 +131,7 @@ class HaSceneDashboard extends LitElement {
         .noDataText=${this.hass.localize(
           "ui.panel.config.scene.picker.no_scenes"
         )}
+        hasFab
       >
         <paper-icon-button
           slot="toolbar-icon"

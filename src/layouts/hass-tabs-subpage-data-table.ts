@@ -41,6 +41,11 @@ export class HaTabsSubpageDataTable extends LitElement {
    */
   @property({ type: Boolean }) public selectable = false;
   /**
+   * Do we need to add padding for a fab.
+   * @type {Boolean}
+   */
+  @property({ type: Boolean }) public hasFab = false;
+  /**
    * Field with a unique id per entry in data.
    * @type {String}
    */
@@ -111,6 +116,7 @@ export class HaTabsSubpageDataTable extends LitElement {
           .data=${this.data}
           .filter=${this.filter}
           .selectable=${this.selectable}
+          .hasFab=${this.hasFab}
           .id=${this.id}
           .noDataText=${this.noDataText}
         >
