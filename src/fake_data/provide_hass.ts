@@ -9,9 +9,10 @@ import { demoPanels } from "./demo_panels";
 import { getEntity, Entity } from "./entity";
 import { HomeAssistant } from "../types";
 import { HassEntities } from "home-assistant-js-websocket";
-import { getLocalLanguage } from "../util/hass-translation";
+import { getLocalLanguage, getTranslation } from "../util/hass-translation";
 import { translationMetadata } from "../resources/translations-metadata";
 import { DEFAULT_PANEL } from "../data/panel";
+import { computeLocalize } from "../common/translations/localize";
 
 const ensureArray = <T>(val: T | T[]): T[] =>
   Array.isArray(val) ? val : [val];
@@ -28,6 +29,7 @@ export interface MockHomeAssistant extends HomeAssistant {
   updateHass(obj: Partial<MockHomeAssistant>);
   updateStates(newStates: HassEntities);
   addEntities(entites: Entity | Entity[], replace?: boolean);
+  updateTranslations(fragment: null | string, language?: string);
   mockWS(
     type: string,
     callback: (msg: any, onChange?: (response: any) => void) => any
@@ -51,6 +53,22 @@ export const provideHass = (
     [event: string]: Array<(event) => void>;
   } = {};
   const entities = {};
+
+  function updateTranslations(fragment: null | string, language?: string) {
+    language = language || getLocalLanguage();
+    getTranslation(fragment, language).then((translation) => {
+      const resources = {
+        [language!]: {
+          ...(hass().resources && hass().resources[language]),
+          ...translation.data,
+        },
+      };
+      hass().updateHass({
+        resources,
+        localize: computeLocalize(elements[0], language!, resources),
+      });
+    });
+  }
 
   function updateStates(newStates: HassEntities) {
     hass().updateHass({
@@ -220,6 +238,7 @@ export const provideHass = (
       });
     },
     updateStates,
+    updateTranslations,
     addEntities,
     mockWS(type, callback) {
       wsCommands[type] = callback;

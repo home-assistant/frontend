@@ -146,6 +146,7 @@ class DemoPicElements extends PolymerElement {
   public ready() {
     super.ready();
     const hass = provideHass(this.$.demos);
+    hass.updateTranslations(null, "en");
     hass.addEntities(ENTITIES);
   }
 }
