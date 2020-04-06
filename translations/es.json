@@ -546,6 +546,7 @@
             "save": "Guardar",
             "successfully_deleted": "Eliminado correctamente",
             "successfully_saved": "Guardado correctamente",
+            "undo": "Deshacer",
             "yes": "Sí"
         },
         "components": {
