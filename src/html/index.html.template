@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="">
+<html>
   <head>
     <link rel="preload" href="<%= latestCoreJS %>" as="script" crossorigin="use-credentials" />
     <link

@@ -27,7 +27,10 @@ export const litLocalizeLiteMixin = <T extends Constructor<LitElement>>(
         this._initializeLocalizeLite();
       }
       if (changedProperties.has("language")) {
-        document.querySelector("html")!.setAttribute("lang", this.language!);
+        const html = document.querySelector("html")!;
+        if (html.getAttribute("lang") !== this.language) {
+          html.setAttribute("lang", this.language!);
+        }
       }
       if (
         this.language &&
