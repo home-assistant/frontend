@@ -68,6 +68,16 @@ export class HomeAssistantAppEl extends HassElement {
     try {
       const { auth, conn } = await window.hassConnection;
       this.initializeHass(auth, conn);
+
+      const curVersion = conn.haVersion;
+
+      // Force a reload if we reconnect to a new version so we load
+      // latest frontend.
+      conn.addEventListener("ready", (conn2) => {
+        if (conn2.haVersion !== curVersion) {
+          location.reload(true);
+        }
+      });
     } catch (err) {
       this._error = true;
       return;
