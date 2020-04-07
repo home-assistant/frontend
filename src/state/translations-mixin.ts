@@ -72,11 +72,11 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
     }
 
     private _applyTranslations(hass: HomeAssistant) {
+      document.querySelector("html")!.setAttribute("lang", hass.language);
       this.style.direction = computeRTL(hass) ? "rtl" : "ltr";
       this._loadCoreTranslations(hass.language);
       this._loadHassTranslations(hass.language);
       this._loadFragmentTranslations(hass.language, hass.panelUrl);
-      document.querySelector("html")!.setAttribute("lang", hass.language);
     }
 
     private async _loadHassTranslations(language: string) {
