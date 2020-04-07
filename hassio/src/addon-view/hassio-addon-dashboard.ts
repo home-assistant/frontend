@@ -90,6 +90,7 @@ class HassioAddonDashboard extends LitElement {
         .hassio=${true}
         .tabs=${addonTabs}
       >
+        <span slot="header">${this.addon.name}</span>
         <hassio-addon-router
           .route=${route}
           .hass=${this.hass}
