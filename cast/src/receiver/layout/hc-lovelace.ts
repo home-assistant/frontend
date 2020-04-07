@@ -46,6 +46,7 @@ class HcLovelace extends LitElement {
       ? html`
           <hui-panel-view
             .hass=${this.hass}
+            .lovelace=${lovelace}
             .config=${this.lovelaceConfig.views[index]}
           ></hui-panel-view>
         `
