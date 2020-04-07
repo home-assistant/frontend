@@ -19,15 +19,13 @@ export const litLocalizeLiteMixin = <T extends Constructor<LitElement>>(
     public connectedCallback(): void {
       super.connectedCallback();
       this._initializeLocalizeLite();
-      this.localize = computeLocalize(
-        this.constructor.prototype,
-        this.language!,
-        this.resources!
-      );
     }
 
     protected updated(changedProperties: PropertyValues) {
       super.updated(changedProperties);
+      if (changedProperties.has("language")) {
+        document.querySelector("html")!.setAttribute("lang", this.language!);
+      }
       if (
         changedProperties.has("language") ||
         changedProperties.has("resources")

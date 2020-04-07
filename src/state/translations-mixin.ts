@@ -68,7 +68,6 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
       if (saveToBackend) {
         saveTranslationPreferences(this.hass, { language });
       }
-
       this._applyTranslations(this.hass);
     }
 
@@ -77,6 +76,7 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
       this._loadCoreTranslations(hass.language);
       this._loadHassTranslations(hass.language);
       this._loadFragmentTranslations(hass.language, hass.panelUrl);
+      document.querySelector("html")!.setAttribute("lang", hass.language);
     }
 
     private async _loadHassTranslations(language: string) {
