@@ -90,7 +90,6 @@ class HassTabsSubpage extends LitElement {
   protected updated(changedProperties: PropertyValues) {
     super.updated(changedProperties);
     if (changedProperties.has("route")) {
-      console.log(this.route);
       this._activeTab = this.tabs.find((tab) =>
         `${this.route.prefix}${this.route.path}`.includes(tab.path)
       );
