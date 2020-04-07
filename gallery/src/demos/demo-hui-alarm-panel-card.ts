@@ -81,7 +81,7 @@ class DemoAlarmPanelEntity extends PolymerElement {
     };
   }
 
-  public async ready() {
+  public ready() {
     super.ready();
     const hass = provideHass(this.$.demos);
     hass.updateTranslations(null, "en");
