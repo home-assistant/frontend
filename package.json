@@ -178,7 +178,7 @@
     "web-component-tester": "^6.9.2",
     "webpack": "^4.40.2",
     "webpack-cli": "^3.3.9",
-    "webpack-dev-server": "^3.8.1",
+    "webpack-dev-server": "^3.10.3",
     "webpack-manifest-plugin": "^2.0.4",
     "workbox-webpack-plugin": "^4.1.1",
     "workerize-loader": "^1.1.0"

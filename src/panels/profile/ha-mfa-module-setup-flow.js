@@ -28,6 +28,9 @@ class HaMfaModuleSetupFlow extends LocalizeMixin(EventsMixin(PolymerElement)) {
         ha-paper-dialog {
           max-width: 500px;
         }
+        h2 {
+          white-space: normal;
+        }
         ha-markdown img:first-child:last-child,
         ha-markdown svg:first-child:last-child {
           background-color: white;
