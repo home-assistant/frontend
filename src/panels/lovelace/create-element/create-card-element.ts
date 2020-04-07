@@ -13,6 +13,7 @@ import "../cards/hui-weather-forecast-card";
 import { LovelaceCardConfig } from "../../../data/lovelace";
 import {
   createLovelaceElement,
+  tryCreateLovelaceElement,
   getLovelaceElementClass,
 } from "./create-element-base";
 
@@ -51,8 +52,12 @@ const LAZY_LOAD_TYPES = {
   picture: () => import("../cards/hui-picture-card"),
 };
 
-export const createCardElement = (config: LovelaceCardConfig) =>
-  createLovelaceElement(
+export const createCardElement = (
+  config: LovelaceCardConfig,
+  handleErr: boolean = true // handles create error and returns HuiErrorCard
+) => {
+  const fCreate = handleErr ? createLovelaceElement : tryCreateLovelaceElement;
+  return fCreate(
     "card",
     config,
     ALWAYS_LOADED_TYPES,
@@ -60,6 +65,7 @@ export const createCardElement = (config: LovelaceCardConfig) =>
     undefined,
     undefined
   );
+};
 
 export const getCardElementClass = (type: string) =>
   getLovelaceElementClass(type, "card", ALWAYS_LOADED_TYPES, LAZY_LOAD_TYPES);

@@ -262,7 +262,7 @@ export class HuiCardPicker extends LitElement {
   }
 
   private _createCardElement(cardConfig: LovelaceCardConfig) {
-    const element = createCardElement(cardConfig) as LovelaceCard;
+    const element = createCardElement(cardConfig, false) as LovelaceCard;
     element.hass = this.hass;
     element.addEventListener(
       "ll-rebuild",
@@ -300,7 +300,11 @@ export class HuiCardPicker extends LitElement {
       );
 
       if (!noElement || customCard?.preview) {
-        element = this._createCardElement(cardConfig);
+        try {
+          element = this._createCardElement(cardConfig);
+        } catch (_e) {
+          // ignore exceptions
+        }
       }
     }
 

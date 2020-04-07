@@ -49,10 +49,22 @@ interface CreateElementConfigTypes {
   };
 }
 
+class CreateElementException {
+  public tag: string;
+  public err: any;
+  public errorCard: HuiErrorCard;
+
+  constructor(tag: string, err, errorCard: HuiErrorCard) {
+    this.tag = tag;
+    this.err = err;
+    this.errorCard = errorCard;
+  }
+}
+
 const _createElement = <T extends keyof CreateElementConfigTypes>(
   tag: string,
   config: CreateElementConfigTypes[T]["config"]
-): CreateElementConfigTypes[T]["element"] | HuiErrorCard => {
+): CreateElementConfigTypes[T]["element"] => {
   const element = document.createElement(
     tag
   ) as CreateElementConfigTypes[T]["element"];
@@ -60,9 +72,11 @@ const _createElement = <T extends keyof CreateElementConfigTypes>(
     // @ts-ignore
     element.setConfig(config);
   } catch (err) {
-    // tslint:disable-next-line
-    console.error(tag, err);
-    return _createErrorElement(err.message, config);
+    throw new CreateElementException(
+      tag,
+      err,
+      _createErrorElement(err.message, config)
+    );
   }
   return element;
 };
@@ -75,7 +89,7 @@ const _createErrorElement = <T extends keyof CreateElementConfigTypes>(
 const _maybeCreate = <T extends keyof CreateElementConfigTypes>(
   tag: string,
   config: CreateElementConfigTypes[T]["config"]
-) => {
+): CreateElementConfigTypes[T]["element"] => {
   if (customElements.get(tag)) {
     return _createElement(tag, config);
   }
@@ -94,7 +108,7 @@ const _maybeCreate = <T extends keyof CreateElementConfigTypes>(
     fireEvent(element, "ll-rebuild");
   });
 
-  return element;
+  throw element;
 };
 
 const _getCustomTag = (type: string) =>
@@ -102,7 +116,9 @@ const _getCustomTag = (type: string) =>
     ? type.substr(CUSTOM_TYPE_PREFIX.length)
     : undefined;
 
-export const createLovelaceElement = <T extends keyof CreateElementConfigTypes>(
+export const tryCreateLovelaceElement = <
+  T extends keyof CreateElementConfigTypes
+>(
   tagSuffix: T,
   config: CreateElementConfigTypes[T]["config"],
   alwaysLoadTypes?: Set<string>,
@@ -111,7 +127,7 @@ export const createLovelaceElement = <T extends keyof CreateElementConfigTypes>(
   domainTypes?: { _domain_not_found: string; [domain: string]: string },
   // Default type if no type given. If given, entity types will not work.
   defaultType?: string
-): CreateElementConfigTypes[T]["element"] | HuiErrorCard => {
+): CreateElementConfigTypes[T]["element"] => {
   if (!config || typeof config !== "object") {
     return _createErrorElement("Config is not an object", config);
   }
@@ -159,6 +175,38 @@ export const createLovelaceElement = <T extends keyof CreateElementConfigTypes>(
   }
 
   return _createErrorElement(`Unknown type encountered: ${type}.`, config);
+};
+
+export const createLovelaceElement = <T extends keyof CreateElementConfigTypes>(
+  tagSuffix: T,
+  config: CreateElementConfigTypes[T]["config"],
+  alwaysLoadTypes?: Set<string>,
+  lazyLoadTypes?: { [domain: string]: () => Promise<unknown> },
+  // Allow looking at "entity" in config and mapping that to a type
+  domainTypes?: { _domain_not_found: string; [domain: string]: string },
+  // Default type if no type given. If given, entity types will not work.
+  defaultType?: string
+): CreateElementConfigTypes[T]["element"] | HuiErrorCard => {
+  try {
+    return tryCreateLovelaceElement(
+      tagSuffix,
+      config,
+      alwaysLoadTypes,
+      lazyLoadTypes,
+      domainTypes,
+      defaultType
+    );
+  } catch (e) {
+    if (e instanceof CreateElementException) {
+      // tslint:disable-next-line: no-console
+      console.error(e.tag, e.err);
+      return e.errorCard;
+    } else if (e instanceof HuiErrorCard) {
+      return e;
+    } else {
+      throw e;
+    }
+  }
 };
 
 export const getLovelaceElementClass = async <
