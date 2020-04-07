@@ -9,7 +9,7 @@ import {
   property,
   TemplateResult,
 } from "lit-element";
-
+import memoizeOne from "memoize-one";
 import { HomeAssistant, Route } from "../../../src/types";
 import {
   HassioAddonDetails,
@@ -35,6 +35,19 @@ class HassioAddonDashboard extends LitElement {
   @property() public route!: Route;
   @property() public addon?: HassioAddonDetails;
   @property({ type: Boolean, reflect: true }) public narrow!: boolean;
+
+  private _computeTail = memoizeOne((route: Route) => {
+    const dividerPos = route.path.indexOf("/", 1);
+    return dividerPos === -1
+      ? {
+          prefix: route.prefix + route.path,
+          path: "",
+        }
+      : {
+          prefix: route.prefix + route.path.substr(0, dividerPos),
+          path: route.path.substr(dividerPos),
+        };
+  });
 
   protected render(): TemplateResult {
     if (!this.addon) {
@@ -66,10 +79,8 @@ class HassioAddonDashboard extends LitElement {
       );
     }
 
-    const route: Route = {
-      prefix: `${this.route.prefix}/${this.addon.slug}`,
-      path: `/${this.route.path.split("/").pop() || "info"}`,
-    };
+    const route = this._computeTail(this.route);
+
     return html`
       <hass-tabs-subpage
         .hass=${this.hass}
