@@ -17,7 +17,7 @@ import "./hassio-addon-audio";
 import "./hassio-addon-config";
 import "./hassio-addon-network";
 
-@customElement("hassio-addon-config-dashboard")
+@customElement("hassio-addon-config-tab")
 class HassioAddonConfigDashboard extends LitElement {
   @property() public hass!: HomeAssistant;
   @property() public addon?: HassioAddonDetails;
@@ -73,6 +73,6 @@ class HassioAddonConfigDashboard extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "hassio-addon-config-dashboard": HassioAddonConfigDashboard;
+    "hassio-addon-config-tab": HassioAddonConfigDashboard;
   }
 }

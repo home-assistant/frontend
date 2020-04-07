@@ -15,7 +15,7 @@ import { haStyle } from "../../../../src/resources/styles";
 
 import "./hassio-addon-info";
 
-@customElement("hassio-addon-info-dashboard")
+@customElement("hassio-addon-info-tab")
 class HassioAddonInfoDashboard extends LitElement {
   @property() public hass!: HomeAssistant;
   @property() public addon?: HassioAddonDetails;
@@ -50,6 +50,6 @@ class HassioAddonInfoDashboard extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "hassio-addon-info-dashboard": HassioAddonInfoDashboard;
+    "hassio-addon-info-tab": HassioAddonInfoDashboard;
   }
 }
