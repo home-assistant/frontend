@@ -93,6 +93,7 @@ const PERMIS_DESC = {
 
 @customElement("hassio-addon-info")
 class HassioAddonInfo extends LitElement {
+  @property({ type: Boolean, reflect: true }) public narrow!: boolean;
   @property() public hass!: HomeAssistant;
   @property() public addon!: HassioAddonDetails;
   @property() private _error?: string;
@@ -157,7 +158,7 @@ class HassioAddonInfo extends LitElement {
       <paper-card>
         <div class="card-content">
           <div class="addon-header">
-            ${this.addon.name}
+            ${!this.narrow ? this.addon.name : ""}
             <div class="addon-version light-color">
               ${this.addon.version
                 ? html`

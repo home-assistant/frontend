@@ -1,5 +1,4 @@
 import {
-  css,
   CSSResult,
   customElement,
   html,
@@ -17,6 +16,7 @@ import "./hassio-addon-info";
 
 @customElement("hassio-addon-info-tab")
 class HassioAddonInfoDashboard extends LitElement {
+  @property({ type: Boolean, reflect: true }) public narrow!: boolean;
   @property() public hass!: HomeAssistant;
   @property() public addon?: HassioAddonDetails;
 
@@ -26,9 +26,11 @@ class HassioAddonInfoDashboard extends LitElement {
         <paper-spinner-lite active></paper-spinner-lite>
       `;
     }
+    console.log(this.narrow);
     return html`
       <div class="content">
         <hassio-addon-info
+          .narrow=${this.narrow}
           .hass=${this.hass}
           .addon=${this.addon}
         ></hassio-addon-info>
@@ -37,14 +39,7 @@ class HassioAddonInfoDashboard extends LitElement {
   }
 
   static get styles(): CSSResult[] {
-    return [
-      haStyle,
-      hassioStyle,
-      css`
-        .content {
-        }
-      `,
-    ];
+    return [haStyle, hassioStyle];
   }
 }
 

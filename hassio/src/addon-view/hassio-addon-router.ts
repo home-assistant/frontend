@@ -12,6 +12,7 @@ import { HassioAddonDetails } from "../../../src/data/hassio/addon";
 
 @customElement("hassio-addon-router")
 class HassioAddonRouter extends HassRouterPage {
+  @property({ type: Boolean, reflect: true }) public narrow = false;
   @property() public hass!: HomeAssistant;
   @property() public addon!: HassioAddonDetails;
 
@@ -32,9 +33,10 @@ class HassioAddonRouter extends HassRouterPage {
   };
 
   protected updatePageEl(el) {
+    el.route = this.routeTail;
     el.hass = this.hass;
     el.addon = this.addon;
-    el.route = this.routeTail;
+    el.narrow = this.narrow;
   }
 }
 
