@@ -1,50 +1,47 @@
+import "@polymer/paper-tooltip/paper-tooltip";
 import {
-  property,
-  LitElement,
-  html,
-  customElement,
   css,
   CSSResult,
+  customElement,
+  html,
+  LitElement,
+  property,
 } from "lit-element";
-
+import { ifDefined } from "lit-html/directives/if-defined";
 import memoizeOne from "memoize-one";
-
-import "@polymer/paper-tooltip/paper-tooltip";
-
-import "../../../layouts/hass-tabs-subpage";
-import "../../../layouts/hass-error-screen";
-import "../ha-config-section";
-
-import "./device-detail/ha-device-info-card";
-import "./device-detail/ha-device-card-mqtt";
-import "./device-detail/ha-device-entities-card";
-import { HomeAssistant, Route } from "../../../types";
+import { isComponentLoaded } from "../../../common/config/is_component_loaded";
+import { computeStateName } from "../../../common/entity/compute_state_name";
+import { createValidEntityId } from "../../../common/entity/valid_entity_id";
+import { compare } from "../../../common/string/compare";
+import "../../../components/ha-icon-next";
+import "../../../components/entity/ha-state-icon";
+import { AreaRegistryEntry } from "../../../data/area_registry";
 import { ConfigEntry } from "../../../data/config_entries";
 import {
-  EntityRegistryEntry,
-  updateEntityRegistryEntry,
-  findBatteryEntity,
-} from "../../../data/entity_registry";
-import {
-  DeviceRegistryEntry,
   computeDeviceName,
+  DeviceRegistryEntry,
   updateDeviceRegistryEntry,
 } from "../../../data/device_registry";
-import { AreaRegistryEntry } from "../../../data/area_registry";
+import {
+  EntityRegistryEntry,
+  findBatteryEntity,
+  updateEntityRegistryEntry,
+} from "../../../data/entity_registry";
+import { SceneEntities, showSceneEditor } from "../../../data/scene";
+import { findRelated, RelatedResult } from "../../../data/search";
 import {
   loadDeviceRegistryDetailDialog,
   showDeviceRegistryDetailDialog,
 } from "../../../dialogs/device-registry-detail/show-dialog-device-registry-detail";
-import "../../../components/ha-icon-next";
-import { compare } from "../../../common/string/compare";
-import { computeStateName } from "../../../common/entity/compute_state_name";
-import { createValidEntityId } from "../../../common/entity/valid_entity_id";
+import "../../../layouts/hass-error-screen";
+import "../../../layouts/hass-tabs-subpage";
+import { HomeAssistant, Route } from "../../../types";
+import "../ha-config-section";
 import { configSections } from "../ha-panel-config";
-import { RelatedResult, findRelated } from "../../../data/search";
-import { SceneEntities, showSceneEditor } from "../../../data/scene";
+import "./device-detail/ha-device-card-mqtt";
+import "./device-detail/ha-device-entities-card";
+import "./device-detail/ha-device-info-card";
 import { showDeviceAutomationDialog } from "./device-detail/show-dialog-device-automation";
-import { isComponentLoaded } from "../../../common/config/is_component_loaded";
-import { ifDefined } from "lit-html/directives/if-defined";
 
 export interface EntityRegistryStateEntry extends EntityRegistryEntry {
   stateName?: string;

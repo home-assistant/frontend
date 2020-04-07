@@ -57,6 +57,13 @@ class DemoCard extends PolymerElement {
     };
   }
 
+  ready() {
+    super.ready();
+    this.addEventListener("ll-rebuild", () => {
+      this._configChanged(this.config);
+    });
+  }
+
   _configChanged(config) {
     const card = this.$.card;
     while (card.lastChild) {

@@ -245,9 +245,6 @@ const createHassioConfig = ({ isProdBuild, latestBuild }) => {
 };
 
 const createGalleryConfig = ({ isProdBuild, latestBuild }) => {
-  if (!latestBuild) {
-    throw new Error("Gallery only supports latest build!");
-  }
   const config = createWebpackConfig({
     entry: {
       entrypoint: path.resolve(paths.gallery_dir, "src/entrypoint.js"),

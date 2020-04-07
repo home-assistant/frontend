@@ -2164,6 +2164,7 @@
                             "name": "Entity Filter"
                         },
                         "entity": {
+                            "description": "The Entity card gives you a quick overview of your entity’s state.",
                             "name": "Entity"
                         },
                         "gauge": {
