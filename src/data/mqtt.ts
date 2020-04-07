@@ -9,7 +9,7 @@ export interface MQTTMessage {
 
 export interface MQTTTopicDebugInfo {
   topic: string;
-  messages: string[];
+  messages: MQTTMessage[];
 }
 
 export interface MQTTDiscoveryDebugInfo {
@@ -20,7 +20,7 @@ export interface MQTTDiscoveryDebugInfo {
 export interface MQTTEntityDebugInfo {
   entity_id: string;
   discovery_data: MQTTDiscoveryDebugInfo;
-  topics: MQTTTopicDebugInfo[];
+  subscriptions: MQTTTopicDebugInfo[];
 }
 
 export interface MQTTTriggerDebugInfo {

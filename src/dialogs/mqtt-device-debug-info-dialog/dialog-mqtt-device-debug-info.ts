@@ -17,15 +17,16 @@ import { HaSwitch } from "../../components/ha-switch";
 import { HomeAssistant } from "../../types";
 import { MQTTDeviceDebugInfoDialogParams } from "./show-dialog-mqtt-device-debug-info";
 import { MQTTDeviceDebugInfo, fetchMQTTDebugInfo } from "../../data/mqtt";
-import "./mqtt-payload";
+import "./mqtt-messages";
+import "./mqtt-discovery-payload";
 
 @customElement("dialog-mqtt-device-debug-info")
 class DialogMQTTDeviceDebugInfo extends LitElement {
   public hass!: HomeAssistant;
   @property() private _params?: MQTTDeviceDebugInfoDialogParams;
   @property() private _debugInfo?: MQTTDeviceDebugInfo;
-  @property() private _showAsYaml: boolean = false;
-  @property() private _showDeserialized: boolean = false;
+  @property() private _showAsYaml: boolean = true;
+  @property() private _showDeserialized: boolean = true;
 
   public async showDialog(
     params: MQTTDeviceDebugInfoDialogParams
@@ -34,7 +35,6 @@ class DialogMQTTDeviceDebugInfo extends LitElement {
     fetchMQTTDebugInfo(this.hass, params.device.id).then((results) => {
       this._debugInfo = results;
     });
-    await this.updateComplete;
   }
 
   protected render(): TemplateResult {
@@ -127,34 +127,34 @@ class DialogMQTTDeviceDebugInfo extends LitElement {
                 <code>${entity.discovery_data.topic}</code>
               </li>
               <li>
-                <mqtt-payload
+                <mqtt-discovery-payload
                   .hass=${this.hass}
-                  .payloads=${[entity.discovery_data.payload]}
-                  .summary=${"Payload"}
-                  .showDeserialized=${true}
+                  .payload=${entity.discovery_data.payload}
                   .showAsYaml=${this._showAsYaml}
+                  .summary=${"Payload"}
                 >
-                </mqtt-payload>
+                </mqtt-discovery-payload>
               </li>
             </ul>
             Subscribed topics:
             <ul>
-              ${entity.topics.map(
+              ${entity.subscriptions.map(
                 (topic) => html`
                   <li>
                     <code>${topic.topic}</code>
-                    <mqtt-payload
+                    <mqtt-messages
                       .hass=${this.hass}
-                      .payloads=${topic.messages}
+                      .messages=${topic.messages}
                       .showDeserialized=${this._showDeserialized}
                       .showAsYaml=${this._showAsYaml}
+                      .subscribedTopic=${topic.topic}
                       .summary=${this.hass!.localize(
                         "ui.dialogs.mqtt_device_debug_info.recent_messages",
                         "n",
                         topic.messages.length
                       )}
                     >
-                    </mqtt-payload>
+                    </mqtt-messages>
                   </li>
                 `
               )}
@@ -172,14 +172,13 @@ class DialogMQTTDeviceDebugInfo extends LitElement {
           <li>
             Discovery topic:
             <code>${trigger.discovery_data.topic}</code>
-            <mqtt-payload
+            <mqtt-discovery-payload
               .hass=${this.hass}
-              .payloads=${[trigger.discovery_data.payload]}
-              .showDeserialized=${true}
+              .payload=${trigger.discovery_data.payload}
               .showAsYaml=${this._showAsYaml}
               .summary=${"Discovery payload"}
             >
-            </mqtt-payload>
+            </mqtt-discovery-payload>
           </li>
         `
       )}

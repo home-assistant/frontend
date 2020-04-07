@@ -6,21 +6,31 @@ import {
   property,
 } from "lit-element";
 import { safeDump } from "js-yaml";
+import { MQTTMessage } from "../../data/mqtt";
 
-@customElement("mqtt-payload")
-class MQTTPayload extends LitElement {
-  @property() public payloads!: Array<object | string>;
+@customElement("mqtt-messages")
+class MQTTMessages extends LitElement {
+  @property() public messages!: MQTTMessage[];
   @property() public showAsYaml: boolean = false;
   @property() public showDeserialized: boolean = false;
+  @property() public subscribedTopic!: string;
   @property() public summary!: string;
-  @property() private _payloadsJson!: Array<object | undefined>;
   @property() private _open: boolean = false;
+  @property() private _payloadsJson!: Array<object | undefined>;
+  @property() private _showTopic: boolean = false;
 
   protected firstUpdated(): void {
-    const nPayloads = this.payloads.length;
+    const nPayloads = this.messages.length;
     this._payloadsJson = new Array(nPayloads);
     for (let i = 0; i < nPayloads; i++) {
-      const payload = this.payloads[i];
+      const payload = this.messages[i].payload;
+      const topic = this.messages[i].topic;
+
+      // If any message's topic differs from the subscribed topic, show topics + payload
+      if (this.subscribedTopic !== topic) {
+        this._showTopic = true;
+      }
+
       let o = payload;
 
       // If the payload is a string, determine if the payload is valid JSON and if it
@@ -51,22 +61,36 @@ class MQTTPayload extends LitElement {
           ${this.summary}
         </summary>
         ${this._open
-          ? !this.payloads.length
-            ? this._renderSinglePayload(0)
-            : html`
-                <ul>
-                  ${this.payloads.map(
-                    (_, i) => html`
-                      <li>
-                        ${this._renderSinglePayload(i)}
-                      </li>
-                    `
-                  )}
-                </ul>
-              `
+          ? html`
+              <ul>
+                ${this.messages.map(
+                  (_, i) => html`
+                    <li>
+                      ${this._renderSingleMessage(i)}
+                    </li>
+                  `
+                )}
+              </ul>
+            `
           : html``}
       </details>
     `;
+  }
+
+  private _renderSingleMessage(i: number): TemplateResult {
+    const topic = this.messages[i].topic;
+    return this._showTopic
+      ? html`
+          <ul>
+            <li>
+              Topic: ${topic}
+            </li>
+            <li>
+              Payload: ${this._renderSinglePayload(i)}
+            </li>
+          </ul>
+        `
+      : this._renderSinglePayload(i);
   }
 
   private _renderSinglePayload(i: number): TemplateResult {
@@ -81,7 +105,7 @@ class MQTTPayload extends LitElement {
               `}
         `
       : html`
-          <code>${this.payloads[i]}</code>
+          <code>${this.messages[i].payload}</code>
         `;
   }
 
@@ -92,6 +116,6 @@ class MQTTPayload extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "mqtt-payload": MQTTPayload;
+    "mqtt-messages": MQTTMessages;
   }
 }
