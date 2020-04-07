@@ -10,6 +10,7 @@ import "@polymer/paper-input/paper-input";
 import "../../components/hui-action-editor";
 import "../../components/hui-theme-select-editor";
 import "../../components/hui-entity-editor";
+import "../../../../components/ha-icon-input";
 
 import { struct } from "../../common/structs/struct";
 import { EntitiesEditorEvent, EditorTarget } from "../types";
@@ -19,6 +20,7 @@ import { fireEvent } from "../../../../common/dom/fire_event";
 import { configElementStyle } from "./config-elements-style";
 import { EntityCardConfig } from "../../cards/types";
 import { headerFooterConfigStructs } from "../../header-footer/types";
+import { stateIcon } from "../../../../common/entity/state_icon";
 
 const cardConfigStruct = struct({
   type: "string",
@@ -28,7 +30,6 @@ const cardConfigStruct = struct({
   attribute: "string?",
   unit: "string?",
   theme: "string?",
-  header: struct.optional(headerFooterConfigStructs),
   footer: struct.optional(headerFooterConfigStructs),
 });
 
@@ -99,16 +100,18 @@ export class HuiEntityCardEditor extends LitElement
             .configValue=${"name"}
             @value-changed=${this._valueChanged}
           ></paper-input>
-          <paper-input
+          <ha-icon-input
             .label="${this.hass.localize(
               "ui.panel.lovelace.editor.card.generic.icon"
             )} (${this.hass.localize(
               "ui.panel.lovelace.editor.card.config.optional"
             )})"
             .value=${this._icon}
+            .placeholder=${this._icon ||
+              stateIcon(this.hass.states[this._entity])}
             .configValue=${"icon"}
             @value-changed=${this._valueChanged}
-          ></paper-input>
+          ></ha-icon-input>
         </div>
         <div class="side-by-side">
           <paper-input

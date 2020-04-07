@@ -222,7 +222,7 @@ gulp.task("gen-index-gallery-dev", (done) => {
   // In dev mode we don't mangle names, so we hardcode urls. That way we can
   // run webpack as last in watch mode, which blocks output.
   const content = renderGalleryTemplate("index", {
-    latestGalleryJS: "./entrypoint.js",
+    latestGalleryJS: "./frontend_latest/entrypoint.js",
   });
 
   fs.outputFileSync(path.resolve(config.gallery_root, "index.html"), content);
