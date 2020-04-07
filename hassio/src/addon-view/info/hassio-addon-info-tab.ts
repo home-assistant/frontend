@@ -26,7 +26,7 @@ class HassioAddonInfoDashboard extends LitElement {
         <paper-spinner-lite active></paper-spinner-lite>
       `;
     }
-    console.log(this.narrow);
+
     return html`
       <div class="content">
         <hassio-addon-info
