@@ -55,17 +55,17 @@ export const provideHass = (
   const entities = {};
 
   function updateTranslations(fragment: null | string, language?: string) {
-    language = language || getLocalLanguage();
-    getTranslation(fragment, language).then((translation) => {
+    const lang = language || getLocalLanguage();
+    getTranslation(fragment, lang).then((translation) => {
       const resources = {
-        [language!]: {
-          ...(hass().resources && hass().resources[language]),
+        [lang]: {
+          ...(hass().resources && hass().resources[lang]),
           ...translation.data,
         },
       };
       hass().updateHass({
         resources,
-        localize: computeLocalize(elements[0], language!, resources),
+        localize: computeLocalize(elements[0], lang, resources),
       });
     });
   }
