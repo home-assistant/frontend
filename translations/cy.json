@@ -1173,21 +1173,26 @@
                             "name": "Elfennau'r Llun"
                         },
                         "picture-entity": {
+                            "description": "Mae'r cerdyn Endid Lluniau yn arddangos endid ar ffurf delwedd. Yn lle delweddau o URL, gall hefyd ddangos y llun o endidau camera.",
                             "name": "Endid Llun"
                         },
                         "picture-glance": {
+                            "description": "Mae'r cerdyn Cipolwg Llun yn dangos delwedd a chyflyrau endidau cyfatebol fel eicon. Mae'r endidau ar yr ochr dde yn caniatáu toglo gweithredoedd, mae eraill yn dangos y dialog mwy o wybodaeth.",
                             "name": "Cipolwg ar lun"
                         },
                         "picture": {
                             "name": "Llun"
                         },
                         "plant-status": {
+                            "description": "Mae'r cerdyn Statws Planhigion ar gyfer yr holl fotanegwyr hyfryd allan yna.",
                             "name": "Statws planhigyn"
                         },
                         "sensor": {
+                            "description": "Mae'r cerdyn Synhwyrydd yn rhoi trosolwg cyflym o gyflwr eich synwyryddion gyda graff dewisol i ddelweddu newid dros amser.",
                             "name": "Synhwyrydd"
                         },
                         "shopping-list": {
+                            "description": "Mae'r cerdyn Rhestr Siopa yn caniatáu ichi ychwanegu, golygu, gwirio a chlirio eitemau o'ch rhestr siopa.",
                             "name": "Rhestr siopa"
                         },
                         "thermostat": {
