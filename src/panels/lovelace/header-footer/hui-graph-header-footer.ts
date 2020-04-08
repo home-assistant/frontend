@@ -62,8 +62,8 @@ export class HuiGraphHeaderFooter extends LitElement
 
     if (this._loadingInitialData) {
       return html`
-        <div class="spinner">
-          <paper-spinner active></paper-spinner>
+        <div class="spinner-container">
+          <paper-spinner class="spinner" active></paper-spinner>
         </div>
       `;
     }
@@ -111,10 +111,12 @@ export class HuiGraphHeaderFooter extends LitElement
 
   static get styles(): CSSResult {
     return css`
+      .spinner-container {
+        margin-bottom: 20%;
+      }
       .spinner {
-        display: flex;
-        height: 98px;
-        justify-content: center;
+        position: absolute;
+        left: calc(50% - 12px);
       }
       .info {
         text-align: center;
