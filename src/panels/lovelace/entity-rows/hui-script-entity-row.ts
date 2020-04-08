@@ -16,6 +16,7 @@ import "../components/hui-warning";
 import { HomeAssistant } from "../../../types";
 import { LovelaceRow, ActionRowConfig } from "./types";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
+import { UNAVAILABLE_STATES } from "../../../data/entity";
 
 @customElement("hui-script-entity-row")
 class HuiScriptEntityRow extends LitElement implements LovelaceRow {
@@ -58,12 +59,17 @@ class HuiScriptEntityRow extends LitElement implements LovelaceRow {
         ${stateObj.attributes.can_cancel
           ? html`
               <ha-entity-toggle
+                .disabled=${UNAVAILABLE_STATES.includes(stateObj.state)}
                 .hass=${this.hass}
                 .stateObj=${stateObj}
               ></ha-entity-toggle>
             `
           : html`
-              <mwc-button @click=${this._callService} class="text-content">
+              <mwc-button
+                @click=${this._callService}
+                .disabled=${UNAVAILABLE_STATES.includes(stateObj.state)}
+                class="text-content"
+              >
                 ${this._config.action_name ||
                   this.hass!.localize("ui.card.script.execute")}
               </mwc-button>

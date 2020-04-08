@@ -22,6 +22,8 @@ import {
   weatherImages,
 } from "../../../data/weather";
 
+import { UNAVAILABLE_STATES } from "../../../data/entity";
+
 @customElement("hui-weather-entity-row")
 class HuiWeatherEntityRow extends LitElement implements LovelaceRow {
   @property() public hass?: HomeAssistant;
@@ -68,11 +70,18 @@ class HuiWeatherEntityRow extends LitElement implements LovelaceRow {
       <hui-generic-entity-row .hass=${this.hass} .config=${weatherRowConfig}>
         <div class="attributes">
           <div>
-            ${stateObj.attributes.temperature}
-            ${getWeatherUnit(this.hass, "temperature")}
+            ${UNAVAILABLE_STATES.includes(stateObj.state)
+              ? this.hass.localize(`state.default.${stateObj.state}`) ||
+                stateObj.state
+              : html`
+                  ${stateObj.attributes.temperature}
+                  ${getWeatherUnit(this.hass, "temperature")}
+                `}
           </div>
           <div class="secondary">
-            ${this._getSecondaryAttribute(stateObj)}
+            ${!UNAVAILABLE_STATES.includes(stateObj.state)
+              ? this._getSecondaryAttribute(stateObj)
+              : ""}
           </div>
         </div>
       </hui-generic-entity-row>

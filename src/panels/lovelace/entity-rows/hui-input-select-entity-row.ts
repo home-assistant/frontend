@@ -32,8 +32,7 @@ import { actionHandler } from "../common/directives/action-handler-directive";
 import { hasAction } from "../common/has-action";
 import { ActionHandlerEvent } from "../../../data/lovelace";
 import { handleAction } from "../common/handle-action";
-import { UNAVAILABLE } from "../../../data/entity";
-import { fireEvent } from "../../../common/dom/fire_event";
+import { UNAVAILABLE_STATES } from "../../../data/entity";
 
 @customElement("hui-input-select-entity-row")
 class HuiInputSelectEntityRow extends LitElement implements LovelaceRow {
@@ -80,14 +79,6 @@ class HuiInputSelectEntityRow extends LitElement implements LovelaceRow {
         !DOMAINS_HIDE_MORE_INFO.includes(computeDomain(this._config.entity)));
 
     return html`
-      ${stateObj.state === UNAVAILABLE
-        ? html`
-            <hui-unavailable
-              .text=${this.hass.localize("state.default.unavailable")}
-              @click=${this._showMoreInfo}
-            ></hui-unavailable>
-          `
-        : ""}
       <state-badge
         .stateObj=${stateObj}
         .stateColor=${this._config.state_color}
@@ -106,6 +97,7 @@ class HuiInputSelectEntityRow extends LitElement implements LovelaceRow {
       <ha-paper-dropdown-menu
         .label=${this._config.name || computeStateName(stateObj)}
         .value=${stateObj.state}
+        .disabled=${UNAVAILABLE_STATES.includes(stateObj.state)}
         @iron-select=${this._selectedChanged}
         @click=${stopPropagation}
       >
@@ -149,10 +141,6 @@ class HuiInputSelectEntityRow extends LitElement implements LovelaceRow {
     handleAction(this, this.hass!, this._config!, ev.detail.action!);
   }
 
-  private _showMoreInfo() {
-    fireEvent(this, "hass-more-info", { entityId: this._config!.entity });
-  }
-
   static get styles(): CSSResult {
     return css`
       :host {
@@ -174,9 +162,6 @@ class HuiInputSelectEntityRow extends LitElement implements LovelaceRow {
         outline: none;
         background: var(--divider-color);
         border-radius: 100%;
-      }
-      hui-unavailable {
-        cursor: pointer;
       }
     `;
   }
