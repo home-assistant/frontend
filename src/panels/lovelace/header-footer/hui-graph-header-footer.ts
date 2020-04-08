@@ -117,7 +117,7 @@ export class HuiGraphHeaderFooter extends LitElement
       }
       .spinner {
         position: absolute;
-        top: calc(50% - 12px);
+        top: calc(50% - 28px);
         left: calc(50% - 12px);
       }
       .info {
