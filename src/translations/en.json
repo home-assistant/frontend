@@ -719,6 +719,7 @@
       "zha_device_info": {
         "manuf": "by {manufacturer}",
         "no_area": "No Area",
+        "device_signature": "Zigbee device signature",
         "buttons": {
           "add": "Add Devices",
           "remove": "Remove Device",
