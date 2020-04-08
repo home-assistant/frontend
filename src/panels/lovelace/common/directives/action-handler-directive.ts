@@ -46,6 +46,7 @@ class ActionHandler extends HTMLElement implements ActionHandler {
       height: isTouch ? "100px" : "50px",
       transform: "translate(-50%, -50%)",
       pointerEvents: "none",
+      zIndex: "999",
     });
 
     this.appendChild(this.ripple);
