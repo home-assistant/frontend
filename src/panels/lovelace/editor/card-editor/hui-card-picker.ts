@@ -188,6 +188,11 @@ export class HuiCardPicker extends LitElement {
 
     this._loadCards();
 
+    setTimeout(
+      () => this.shadowRoot!.querySelector("search-input")!.focus(),
+      0
+    );
+
     this.requestUpdate();
   }
 
