@@ -152,10 +152,19 @@ export class HaConfigManagerDashboard extends LitElement {
                     "ui.panel.config.integrations.discovered"
                   )}</span
                 >
-                <ha-card>
+                <ha-card class="discovered">
                   ${this.configEntriesInProgress.map(
                     (flow) => html`
                       <div class="config-entry-row">
+                        <img
+                          src="https://brands.home-assistant.io/${flow.handler}/icon.png"
+                          srcset="
+                            https://brands.home-assistant.io/${flow.handler}/icon@2x.png 2x
+                          "
+                          referrerpolicy="no-referrer"
+                          @error=${this._onImageError}
+                          @load=${this._onImageLoad}
+                        />
                         <paper-item-body>
                           ${localizeConfigFlowTitle(this.hass.localize, flow)}
                         </paper-item-body>
@@ -392,6 +401,15 @@ export class HaConfigManagerDashboard extends LitElement {
       ha-fab[rtl] {
         right: auto;
         left: 16px;
+      }
+      .discovered {
+        padding: 8px 0;
+      }
+      .discovered .config-entry-row {
+        margin: 2px 0;
+      }
+      .discovered img {
+        width: 36px;
       }
       .overflow {
         width: 56px;
