@@ -37,7 +37,7 @@ export class HuiGraphHeaderFooter extends LitElement
   @property() private _coordinates?: number[][];
 
   private _date?: Date;
-  private _stateHistory: HassEntity[] = [];
+  private _stateHistory?: HassEntity[];
 
   public setConfig(config: GraphHeaderFooterConfig): void {
     if (!config?.entity || config.entity.split(".")[0] !== "sensor") {
@@ -99,6 +99,11 @@ export class HuiGraphHeaderFooter extends LitElement
     }
 
     if (changedProps.has("_config")) {
+      const oldConfig = changedProps.get("_config") as GraphHeaderFooterConfig;
+      if (!oldConfig || oldConfig.entity !== this._config.entity) {
+        this._stateHistory = [];
+      }
+
       this._getCoordinates();
     } else if (Date.now() - this._date!.getTime() >= MINUTE) {
       this._getCoordinates();
@@ -107,16 +112,21 @@ export class HuiGraphHeaderFooter extends LitElement
 
   private async _getCoordinates(): Promise<void> {
     const endTime = new Date();
-    const startTime = !this._date
-      ? new Date(
-          new Date().setHours(endTime.getHours() - this._config!.hours_to_show!)
-        )
-      : this._date;
+    const startTime =
+      !this._date || !this._stateHistory?.length
+        ? new Date(
+            new Date().setHours(
+              endTime.getHours() - this._config!.hours_to_show!
+            )
+          )
+        : this._date;
 
-    this._stateHistory = this._stateHistory.filter(
-      (entity) =>
-        endTime.getTime() - new Date(entity.last_changed).getTime() <= DAY
-    );
+    if (this._stateHistory!.length) {
+      this._stateHistory = this._stateHistory!.filter(
+        (entity) =>
+          endTime.getTime() - new Date(entity.last_changed).getTime() <= DAY
+      );
+    }
 
     const stateHistory = await fetchRecent(
       this.hass!,
@@ -126,7 +136,7 @@ export class HuiGraphHeaderFooter extends LitElement
     );
 
     if (stateHistory.length && stateHistory[0].length) {
-      this._stateHistory.push(...stateHistory[0]);
+      this._stateHistory!.push(...stateHistory[0]);
     }
 
     this._coordinates = coordinates(
