@@ -4,6 +4,7 @@ import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 
 import CoverEntity from "../util/cover-model";
+import { UNAVAILABLE_STATES } from "../data/entity";
 
 class HaCoverTiltControls extends PolymerElement {
   static get template() {
@@ -63,11 +64,17 @@ class HaCoverTiltControls extends PolymerElement {
   }
 
   computeOpenDisabled(stateObj, entityObj) {
+    if (UNAVAILABLE_STATES.includes(stateObj.state)) {
+      return true;
+    }
     var assumedState = stateObj.attributes.assumed_state === true;
     return entityObj.isFullyOpenTilt && !assumedState;
   }
 
   computeClosedDisabled(stateObj, entityObj) {
+    if (UNAVAILABLE_STATES.includes(stateObj.state)) {
+      return true;
+    }
     var assumedState = stateObj.attributes.assumed_state === true;
     return entityObj.isFullyClosedTilt && !assumedState;
   }

@@ -22,7 +22,7 @@ import {
   computeUsedEntities,
   calcUnusedEntities,
 } from "../../common/compute-unused-entities";
-import { UNKNOWN, UNAVAILABLE } from "../../../../data/entity";
+import { UNAVAILABLE_STATES } from "../../../../data/entity";
 import {
   customCards,
   getCustomCardEntry,
@@ -168,14 +168,12 @@ export class HuiCardPicker extends LitElement {
     this._usedEntities = [...usedEntities].filter(
       (eid) =>
         this.hass!.states[eid] &&
-        this.hass!.states[eid].state !== UNKNOWN &&
-        this.hass!.states[eid].state !== UNAVAILABLE
+        !UNAVAILABLE_STATES.includes(this.hass!.states[eid].state)
     );
     this._unusedEntities = [...unusedEntities].filter(
       (eid) =>
         this.hass!.states[eid] &&
-        this.hass!.states[eid].state !== UNKNOWN &&
-        this.hass!.states[eid].state !== UNAVAILABLE
+        !UNAVAILABLE_STATES.includes(this.hass!.states[eid].state)
     );
 
     this.requestUpdate();
