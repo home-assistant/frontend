@@ -39,6 +39,7 @@ class DemoShoppingListEntity extends PolymerElement {
   public ready() {
     super.ready();
     const hass = provideHass(this.$.demos);
+    hass.updateTranslations(null, "en");
 
     hass.mockAPI("shopping_list", () => [
       { name: "list", id: 1, complete: false },
