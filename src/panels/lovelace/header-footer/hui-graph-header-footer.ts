@@ -112,10 +112,12 @@ export class HuiGraphHeaderFooter extends LitElement
   static get styles(): CSSResult {
     return css`
       .spinner-container {
-        margin-bottom: 20%;
+        position: relative;
+        padding-bottom: 20%;
       }
       .spinner {
         position: absolute;
+        top: calc(50% - 12px);
         left: calc(50% - 12px);
       }
       .info {
