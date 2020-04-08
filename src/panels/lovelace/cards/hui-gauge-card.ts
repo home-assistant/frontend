@@ -9,6 +9,7 @@ import {
   customElement,
 } from "lit-element";
 import { styleMap } from "lit-html/directives/style-map";
+import "@thomasloven/round-slider";
 
 import "../../../components/ha-card";
 import "../components/hui-warning";
@@ -65,10 +66,8 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
   }
 
   @property() public hass?: HomeAssistant;
-
   @property() private _baseUnit = "50px";
   @property() private _config?: GaugeCardConfig;
-
   private _updated?: boolean;
 
   public getCardSize(): number {
@@ -125,32 +124,35 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
 
     return html`
       <ha-card
-        @click="${this._handleClick}"
+        @click=${this._handleClick}
         tabindex="0"
         style=${styleMap({
           "--base-unit": this._baseUnit,
         })}
       >
-        <div class="container">
-          <div class="gauge-a"></div>
-          <div
-            class="gauge-c"
-            style=${styleMap({
-              transform: `rotate(${this._translateTurn(state)}turn)`,
-              "background-color": this._computeSeverity(state),
-            })}
-          ></div>
-          <div class="gauge-b"></div>
-        </div>
-        <div class="gauge-data">
-          <div id="percent">
-            ${stateObj.state}
-            ${this._config.unit ||
-              stateObj.attributes.unit_of_measurement ||
-              ""}
+        <div class="content">
+          <div class="controls">
+            <div class="slider">
+              <round-slider
+                .readonly=${true}
+                .arcLength=${180}
+                .startAngle=${180}
+                .value=${state}
+                .min=${this._config.min}
+                .max=${this._config.max}
+              ></round-slider>
+            </div>
           </div>
-          <div id="name">
-            ${this._config.name || computeStateName(stateObj)}
+          <div class="gauge-data">
+            <div id="percent">
+              ${stateObj.state}
+              ${this._config.unit ||
+                stateObj.attributes.unit_of_measurement ||
+                ""}
+            </div>
+            <div id="name">
+              ${this._config.name || computeStateName(stateObj)}
+            </div>
           </div>
         </div>
       </ha-card>
@@ -198,44 +200,6 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
     }
   }
 
-  private _computeSeverity(numberValue: number): string {
-    const sections = this._config!.severity;
-
-    if (!sections) {
-      return severityMap.normal;
-    }
-
-    const sectionsArray = Object.keys(sections);
-    const sortable = sectionsArray.map((severity) => [
-      severity,
-      sections[severity],
-    ]);
-
-    for (const severity of sortable) {
-      if (severityMap[severity[0]] == null || isNaN(severity[1])) {
-        return severityMap.normal;
-      }
-    }
-    sortable.sort((a, b) => a[1] - b[1]);
-
-    if (numberValue >= sortable[0][1] && numberValue < sortable[1][1]) {
-      return severityMap[sortable[0][0]];
-    }
-    if (numberValue >= sortable[1][1] && numberValue < sortable[2][1]) {
-      return severityMap[sortable[1][0]];
-    }
-    if (numberValue >= sortable[2][1]) {
-      return severityMap[sortable[2][0]];
-    }
-    return severityMap.normal;
-  }
-
-  private _translateTurn(value: number): number {
-    const { min, max } = this._config!;
-    const maxTurnValue = Math.min(Math.max(value, min!), max!);
-    return (5 * (maxTurnValue - min!)) / (max! - min!) / 10;
-  }
-
   private _computeBaseUnit(): string {
     return this.clientWidth < 200 ? this.clientWidth / 5 + "px" : "50px";
   }
@@ -246,79 +210,89 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
 
   static get styles(): CSSResult {
     return css`
+      :host {
+        display: block;
+      }
+
       ha-card {
-        cursor: pointer;
-        padding: 16px 16px 0 16px;
+        height: 100%;
+        position: relative;
+        overflow: hidden;
+        /* cursor: pointer;
+        padding: 16px;
+        height: 100%;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        align-items: center; */
+        --value-font-size: calc(var(--base-unit) * 0.55);
+        --name-font-size: calc(var(--base-unit) * 0.3);
+      }
+
+      /* ha-card:focus {
+        outline: none;
+        background: var(--divider-color);
+      } */
+
+      .content {
         height: 100%;
         display: flex;
         flex-direction: column;
-        box-sizing: border-box;
         justify-content: center;
-        align-items: center;
       }
-      ha-card:focus {
-        outline: none;
-        background: var(--divider-color);
-      }
-      .container {
-        width: calc(var(--base-unit) * 4);
-        height: calc(var(--base-unit) * 2);
-        overflow: hidden;
+
+      .controls {
+        display: flex;
+        justify-content: center;
+        padding: 16px;
         position: relative;
       }
-      .gauge-a {
-        position: absolute;
-        background-color: var(--primary-background-color);
+
+      .slider {
+        /* height: calc(var(--base-unit) * 3);
         width: calc(var(--base-unit) * 4);
-        height: calc(var(--base-unit) * 2);
-        top: 0%;
-        border-radius: calc(var(--base-unit) * 2.5) calc(var(--base-unit) * 2.5)
-          0px 0px;
-      }
-      .gauge-b {
-        position: absolute;
-        background-color: var(--paper-card-background-color);
-        width: calc(var(--base-unit) * 2.5);
-        height: calc(var(--base-unit) * 1.25);
-        top: calc(var(--base-unit) * 0.75);
-        margin-left: calc(var(--base-unit) * 0.75);
-        margin-right: auto;
-        border-radius: calc(var(--base-unit) * 2.5) calc(var(--base-unit) * 2.5)
-          0px 0px;
-      }
-      .gauge-c {
-        position: absolute;
-        background-color: var(--label-badge-blue);
-        width: calc(var(--base-unit) * 4);
-        height: calc(var(--base-unit) * 2);
-        top: calc(var(--base-unit) * 2);
-        margin-left: auto;
-        margin-right: auto;
-        border-radius: 0px 0px calc(var(--base-unit) * 2)
-          calc(var(--base-unit) * 2);
-        transform-origin: center top;
-      }
-      .init .gauge-c {
-        transition: all 1.3s ease-in-out;
-      }
-      .gauge-data {
-        text-align: center;
-        color: var(--primary-text-color);
-        line-height: calc(var(--base-unit) * 0.3);
+        display: flex;
+        align-items: center; */
+        height: 100%;
         width: 100%;
         position: relative;
-        top: calc(var(--base-unit) * -0.5);
+        max-width: 250px;
+        min-width: 100px;
       }
+
+      round-slider {
+        --round-slider-path-width: calc(var(--base-unit) - 10);
+        --round-slider-path-color: var(--disabled-text-color);
+        --round-slider-linecap: "butt";
+        padding-bottom: 10%;
+      }
+
+      .gauge-data {
+        /* position: absolute;
+        top: calc(var(--base-unit) * 2.2);
+        color: var(--primary-text-color);
+        line-height: 1;
+        text-align: center; */
+        display: flex-vertical;
+        justify-content: center;
+        text-align: center;
+        padding: 16px;
+        margin-top: -60px;
+        /* font-size: var(--name-font-size); */
+      }
+
       .init .gauge-data {
         transition: all 1s ease-out;
       }
+
       .gauge-data #percent {
-        font-size: calc(var(--base-unit) * 0.55);
-        line-height: calc(var(--base-unit) * 0.55);
+        font-size: var(--value-font-size);
+        /* line-height: 1; */
       }
+
       .gauge-data #name {
-        padding-top: calc(var(--base-unit) * 0.15);
-        font-size: calc(var(--base-unit) * 0.3);
+        /* padding-top: calc(var(--base-unit) * 0.15); */
+        font-size: var(--name-font-size);
       }
     `;
   }
