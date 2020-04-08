@@ -2164,6 +2164,7 @@
                             "name": "Filtre d'entitats"
                         },
                         "entity": {
+                            "description": "La targeta entitat mostra una visualització ràpida dels estats d'una o més entitats.",
                             "name": "Entitat"
                         },
                         "gauge": {

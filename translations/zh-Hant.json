@@ -546,7 +546,7 @@
             "save": "儲存",
             "successfully_deleted": "成功刪除",
             "successfully_saved": "成功儲存",
-            "undo": "還原",
+            "undo": "撤消",
             "yes": "是"
         },
         "components": {
