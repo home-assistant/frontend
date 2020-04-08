@@ -61,7 +61,6 @@ export const haStyle = css`
   }
 
   app-toolbar {
-    border-bottom: 1px solid var(--divider-color, transparent);
     box-sizing: border-box;
   }
 
