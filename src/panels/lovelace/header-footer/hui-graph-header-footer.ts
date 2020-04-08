@@ -10,13 +10,18 @@ import {
 } from "lit-element";
 import { HomeAssistant } from "../../../types";
 import { getHistoryCoordinates } from "../common/graph/get-history-coordinates";
+import { HassEntity } from "home-assistant-js-websocket";
 
 import "@polymer/paper-spinner/paper-spinner";
 import "../components/hui-graph-base";
 import { LovelaceHeaderFooter } from "../types";
 import { GraphHeaderFooterConfig } from "./types";
+import { hasConfigOrEntityChanged } from "../common/has-changed";
+import { fetchRecent } from "../../../data/history";
+import { coordinates } from "../common/graph/coordinates";
 
 const MINUTE = 60000;
+const DAY = 86400000;
 
 @customElement("hui-graph-header-footer")
 export class HuiGraphHeaderFooter extends LitElement
@@ -32,6 +37,7 @@ export class HuiGraphHeaderFooter extends LitElement
   @property() private _coordinates?: number[][];
 
   private _date?: Date;
+  private _stateHistory: HassEntity[] = [];
 
   public setConfig(config: GraphHeaderFooterConfig): void {
     if (!config?.entity || config.entity.split(".")[0] !== "sensor") {
@@ -83,8 +89,8 @@ export class HuiGraphHeaderFooter extends LitElement
     `;
   }
 
-  protected firstUpdated(): void {
-    this._date = new Date();
+  protected shouldUpdate(changedProps: PropertyValues): boolean {
+    return hasConfigOrEntityChanged(this, changedProps);
   }
 
   protected updated(changedProps: PropertyValues) {
@@ -100,14 +106,37 @@ export class HuiGraphHeaderFooter extends LitElement
   }
 
   private async _getCoordinates(): Promise<void> {
-    this._coordinates = await getHistoryCoordinates(
+    const endTime = new Date();
+    const startTime = !this._date
+      ? new Date(
+          new Date().setHours(endTime.getHours() - this._config!.hours_to_show!)
+        )
+      : this._date;
+
+    this._stateHistory = this._stateHistory.filter(
+      (entity) =>
+        endTime.getTime() - new Date(entity.last_changed).getTime() <= DAY
+    );
+
+    const stateHistory = await fetchRecent(
       this.hass!,
       this._config!.entity,
+      startTime,
+      endTime
+    );
+
+    if (stateHistory.length && stateHistory[0].length) {
+      this._stateHistory.push(...stateHistory[0]);
+    }
+
+    this._coordinates = coordinates(
+      this._stateHistory,
       this._config!.hours_to_show!,
+      500,
       this._config!.detail!
     );
 
-    this._date = new Date();
+    this._date = endTime;
   }
 
   static get styles(): CSSResult {
