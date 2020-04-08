@@ -493,7 +493,8 @@
           "humidity": "Humidity",
           "temperature": "Temperature",
           "visibility": "Visibility",
-          "wind_speed": "Wind speed"
+          "wind_speed": "Wind speed",
+          "precipitation": "Precipitation"
         },
         "cardinal_direction": {
           "e": "E",
@@ -513,7 +514,9 @@
           "wnw": "WNW",
           "wsw": "WSW"
         },
-        "forecast": "Forecast"
+        "forecast": "Forecast",
+        "high": "High",
+        "low": "Low"
       }
     },
     "common": {
@@ -521,6 +524,7 @@
       "cancel": "Cancel",
       "delete": "Delete",
       "close": "Close",
+      "undo": "Undo",
       "save": "Save",
       "yes": "Yes",
       "no": "No",
@@ -847,7 +851,6 @@
                 "longitude": "Longitude",
                 "elevation": "Elevation",
                 "elevation_meters": "meters",
-                "elevation_feet": "feet",
                 "time_zone": "Time Zone",
                 "unit_system": "Unit System",
                 "unit_system_imperial": "Imperial",
@@ -1677,10 +1680,12 @@
             "update_user": "Update",
             "id": "ID",
             "owner": "Owner",
+            "admin": "Administrator",
             "group": "Group",
             "active": "Active",
             "system_generated": "System generated",
             "system_generated_users_not_removable": "Unable to remove system generated users.",
+            "system_generated_users_not_editable": "Unable to update system generated users.",
             "unnamed_user": "Unnamed User",
             "confirm_user_deletion": "Are you sure you want to delete {name}?"
           },
@@ -1880,8 +1885,7 @@
           },
           "safe-mode": {
             "header": "Safe Mode Activated",
-            "description": "Home Assistant ran into trouble while loading your configuration and is now running in safe mode. Take a look at the error log to see what went wrong.",
-            "show_errors": "Show errors"
+            "description": "Home Assistant ran into trouble while loading your configuration and is now running in safe mode. Take a look at the error log to see what went wrong."
           }
         },
         "unused_entities": {
@@ -2022,7 +2026,8 @@
               "description": "The Entities card is the most common type of card. It groups items together into lists."
             },
             "entity": {
-              "name": "Entity"
+              "name": "Entity",
+              "description": "The Entity card gives you a quick overview of your entity’s state."
             },
             "button": {
               "name": "Button",
@@ -2068,6 +2073,7 @@
               "attribute": "Attribute",
               "camera_image": "Camera Entity",
               "camera_view": "Camera View",
+              "double_tap_action": "Double Tap Action",
               "entities": "Entities",
               "entity": "Entity",
               "hold_action": "Hold Action",
@@ -2097,6 +2103,7 @@
               "geo_location_sources": "Geolocation Sources",
               "dark_mode": "Dark Mode?",
               "default_zoom": "Default Zoom",
+              "hours_to_show": "Hours to Show",
               "source": "Source",
               "description": "The Map card that allows you to display entities on a map."
             },
@@ -2159,6 +2166,10 @@
               "description": "This renders the first card at full width; other cards in this view will not be rendered.",
               "warning_multiple_cards": "This view contains more than one card, but a panel view can only show 1 card."
             }
+          },
+          "cardpicker": {
+            "no_description": "No description available.",
+            "custom_card": "Custom"
           }
         },
         "warning": {

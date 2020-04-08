@@ -63,7 +63,6 @@ export class HaConfigUsers extends LitElement {
             "ui.panel.config.users.picker.headers.system"
           ),
           type: "icon",
-          width: "10%",
           sortable: true,
           filterable: true,
           template: (generated) => html`
@@ -94,6 +93,7 @@ export class HaConfigUsers extends LitElement {
         .columns=${this._columns(this.hass.language)}
         .data=${this._users}
         @row-click=${this._editUser}
+        hasFab
       >
       </hass-tabs-subpage-data-table>
       <ha-fab
@@ -157,7 +157,7 @@ export class HaConfigUsers extends LitElement {
     showAddUserDialog(this, {
       userAddedCallback: async (user: User) => {
         if (user) {
-          this._users = { ...this._users, ...user };
+          this._users = [...this._users, user];
         }
       },
     });

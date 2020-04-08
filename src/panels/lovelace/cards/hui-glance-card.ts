@@ -30,7 +30,7 @@ import { hasAction } from "../common/has-action";
 import { ActionHandlerEvent } from "../../../data/lovelace";
 import { handleAction } from "../common/handle-action";
 import { computeDomain } from "../../../common/entity/compute_domain";
-import { UNAVAILABLE, UNKNOWN } from "../../../data/entity";
+import { UNAVAILABLE_STATES } from "../../../data/entity";
 import { findEntities } from "../common/find-entites";
 
 @customElement("hui-glance-card")
@@ -74,7 +74,7 @@ export class HuiGlanceCard extends LitElement implements LovelaceCard {
   }
 
   public setConfig(config: GlanceCardConfig): void {
-    this._config = { theme: "default", state_color: true, ...config };
+    this._config = { state_color: true, ...config };
     const entities = processConfigEntities<GlanceConfigEntity>(config.entities);
 
     for (const entity of entities) {
@@ -263,8 +263,7 @@ export class HuiGlanceCard extends LitElement implements LovelaceCard {
               <div>
                 ${computeDomain(entityConf.entity) === "sensor" &&
                 stateObj.attributes.device_class === "timestamp" &&
-                stateObj.state !== UNAVAILABLE &&
-                stateObj.state !== UNKNOWN
+                !UNAVAILABLE_STATES.includes(stateObj.state)
                   ? html`
                       <hui-timestamp-display
                         .hass=${this.hass}

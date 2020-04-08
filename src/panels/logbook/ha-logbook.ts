@@ -39,12 +39,14 @@ class HaLogbook extends LitElement {
   protected render(): TemplateResult {
     if (!this.entries?.length) {
       return html`
-        ${this.hass.localize("ui.panel.logbook.entries_not_found")}
+        <div class="container">
+          ${this.hass.localize("ui.panel.logbook.entries_not_found")}
+        </div>
       `;
     }
 
     return html`
-      <div>
+      <div class="container">
         ${scroll({
           items: this.entries,
           renderItem: (item: LogbookEntry, index?: number) =>
@@ -58,7 +60,7 @@ class HaLogbook extends LitElement {
     item: LogbookEntry,
     index?: number
   ): TemplateResult {
-    if (!index) {
+    if (index === undefined) {
       return html``;
     }
     const previous = this.entries[index - 1];
@@ -154,13 +156,16 @@ class HaLogbook extends LitElement {
         color: var(--primary-color);
       }
 
+      .container {
+        padding: 0 16px;
+      }
+
       .uni-virtualizer-host {
         display: block;
         position: relative;
         contain: strict;
         height: 100%;
         overflow: auto;
-        padding: 0 16px;
       }
 
       .uni-virtualizer-host > * {

@@ -90,7 +90,10 @@ class HaAutomationPicker extends LitElement {
         columns.execute = {
           title: "",
           template: (_info, automation) => html`
-            <mwc-button .automation=${automation} @click=${this._execute}>
+            <mwc-button
+              .automation=${automation}
+              @click=${(ev) => this._execute(ev)}
+            >
               ${this.hass.localize("ui.card.automation.trigger")}
             </mwc-button>
           `,
@@ -160,6 +163,7 @@ class HaAutomationPicker extends LitElement {
         .noDataText=${this.hass.localize(
           "ui.panel.config.automation.picker.no_automations"
         )}
+        hasFab
       >
       </hass-tabs-subpage-data-table>
       <ha-fab

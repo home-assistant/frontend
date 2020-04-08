@@ -12,6 +12,7 @@ import "@polymer/paper-listbox/paper-listbox";
 
 import "../../components/hui-theme-select-editor";
 import "../../../../components/entity/ha-entity-picker";
+import "../../../../components/ha-icon-input";
 
 import { struct } from "../../common/structs/struct";
 import { EntitiesEditorEvent, EditorTarget } from "../types";
@@ -20,6 +21,7 @@ import { LovelaceCardEditor } from "../../types";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { configElementStyle } from "./config-elements-style";
 import { SensorCardConfig } from "../../cards/types";
+import { stateIcon } from "../../../../common/entity/state_icon";
 
 const cardConfigStruct = struct({
   type: "string",
@@ -70,7 +72,7 @@ export class HuiSensorCardEditor extends LitElement
   }
 
   get _theme(): string {
-    return this._config!.theme || "default";
+    return this._config!.theme || "";
   }
 
   get _hours_to_show(): number | string {
@@ -78,7 +80,7 @@ export class HuiSensorCardEditor extends LitElement
   }
 
   protected render(): TemplateResult {
-    if (!this.hass) {
+    if (!this.hass || !this._config) {
       return html``;
     }
 
@@ -111,16 +113,18 @@ export class HuiSensorCardEditor extends LitElement
           @value-changed="${this._valueChanged}"
         ></paper-input>
         <div class="side-by-side">
-          <paper-input
+          <ha-icon-input
             .label="${this.hass.localize(
               "ui.panel.lovelace.editor.card.generic.icon"
             )} (${this.hass.localize(
               "ui.panel.lovelace.editor.card.config.optional"
             )})"
-            .value="${this._icon}"
-            .configValue="${"icon"}"
-            @value-changed="${this._valueChanged}"
-          ></paper-input>
+            .value=${this._icon}
+            .placeholder=${this._icon ||
+              stateIcon(this.hass.states[this._entity])}
+            .configValue=${"icon"}
+            @value-changed=${this._valueChanged}
+          ></ha-icon-input>
           <paper-dropdown-menu
             .label="${this.hass.localize(
               "ui.panel.lovelace.editor.card.sensor.graph_type"

@@ -395,6 +395,7 @@
                 "attributes": {
                     "air_pressure": "Pwysedd aer",
                     "humidity": "Lleithder",
+                    "precipitation": "Dyodiad",
                     "temperature": "Tymheredd",
                     "visibility": "Gwelededd",
                     "wind_speed": "Cyflymder gwynt"
@@ -417,7 +418,9 @@
                     "wnw": "GGO",
                     "wsw": "GDO"
                 },
-                "forecast": "Rhagolwg"
+                "forecast": "Rhagolwg",
+                "high": "Uchel",
+                "low": "Isel"
             }
         },
         "common": {
@@ -425,7 +428,8 @@
             "delete": "Dileu",
             "loading": "Llwytho",
             "save": "Arbed",
-            "successfully_deleted": "Dileuwyd yn llwyddiannus"
+            "successfully_deleted": "Dileuwyd yn llwyddiannus",
+            "undo": "Dad-wneud"
         },
         "components": {
             "device-picker": {
@@ -509,6 +513,10 @@
                 "areas": {
                     "caption": "Gofrestrfa ardal",
                     "create_area": "CREU ARDAL",
+                    "data_table": {
+                        "area": "Ardal",
+                        "devices": "Dyfeisiau"
+                    },
                     "delete": {
                         "confirmation_text": "Bydd pob dyfais yn yr ardal hon yn cael ei ddadneilltuo.",
                         "confirmation_title": "Ydych chi'n siŵr bod chi eisiau dileu'r ardal hon?"
@@ -711,6 +719,9 @@
                     "picker": {
                         "add_automation": "Ychwanegu awtomeiddiad",
                         "header": "Golygydd awtomeiddio",
+                        "headers": {
+                            "name": "Enw"
+                        },
                         "introduction": "Mae'r olygydd awtomeiddio yn caniatáu ichi greu a golygu awtomeiddiau. Darllenwch [y cyfarwyddiadau] (https://home-assistant.io/docs/automation/editor/) i sicrhau bod chi wedi ffurfweddu'r Home Assistant yn gywir.",
                         "learn_more": "Dysgu mwy am awtomeiddio",
                         "no_automations": "Doeddem ddim yn gallu darganfod unrhyw awtomeiddiau",
@@ -797,6 +808,7 @@
                     "details": "Dyma holl fanylion eich dyfais.",
                     "device_not_found": "Heb ganfod y ddyfais.",
                     "info": "Gwybodaeth am ddyfais",
+                    "no_devices": "Dim dyfeisiau",
                     "unknown_error": "Gwall anhysbys",
                     "unnamed_device": "Dyfais ddienw"
                 },
@@ -916,11 +928,22 @@
                         "name": "Enw",
                         "save": "Arbed",
                         "unsaved_confirm": "Mae gennych newidiadau heb eu cadw. Ydych chi'n siŵr bod chi eisiau gadael?"
+                    },
+                    "picker": {
+                        "headers": {
+                            "name": "Enw"
+                        }
                     }
                 },
                 "script": {
                     "caption": "Sgript",
-                    "description": "Creu a golygu sgriptiau"
+                    "description": "Creu a golygu sgriptiau",
+                    "picker": {
+                        "headers": {
+                            "name": "Enw"
+                        },
+                        "show_info": "Dangos gwybodaeth am y sgript"
+                    }
                 },
                 "server_control": {
                     "caption": "Rheoli gweinydd",
@@ -956,7 +979,18 @@
                         "username": "Enw Defnyddiwr"
                     },
                     "editor": {
-                        "caption": "Gweld defnyddiwr"
+                        "admin": "Gweinyddwr",
+                        "caption": "Gweld defnyddiwr",
+                        "name": "Enw",
+                        "system_generated_users_not_editable": "Methu diweddaru defnyddwyr a gynhyrchir gan system.",
+                        "update_user": "Diweddaru"
+                    },
+                    "picker": {
+                        "headers": {
+                            "group": "Grŵp",
+                            "name": "Enw",
+                            "system": "System"
+                        }
                     }
                 },
                 "zha": {
@@ -1099,10 +1133,15 @@
                         "entity-filter": {
                             "name": "Hidlo Endid"
                         },
+                        "entity": {
+                            "name": "Endid"
+                        },
                         "gauge": {
                             "name": "Medrydd"
                         },
                         "generic": {
+                            "attribute": "Priodoledd",
+                            "double_tap_action": "Gweithred tab dwbl",
                             "no_theme": "Dim thema"
                         },
                         "glance": {
@@ -1121,6 +1160,7 @@
                             "name": "Golau"
                         },
                         "map": {
+                            "hours_to_show": "Oriau i'w Dangos",
                             "name": "Map"
                         },
                         "markdown": {
@@ -1133,21 +1173,26 @@
                             "name": "Elfennau'r Llun"
                         },
                         "picture-entity": {
+                            "description": "Mae'r cerdyn Endid Lluniau yn arddangos endid ar ffurf delwedd. Yn lle delweddau o URL, gall hefyd ddangos y llun o endidau camera.",
                             "name": "Endid Llun"
                         },
                         "picture-glance": {
+                            "description": "Mae'r cerdyn Cipolwg Llun yn dangos delwedd a chyflyrau endidau cyfatebol fel eicon. Mae'r endidau ar yr ochr dde yn caniatáu toglo gweithredoedd, mae eraill yn dangos y dialog mwy o wybodaeth.",
                             "name": "Cipolwg ar lun"
                         },
                         "picture": {
                             "name": "Llun"
                         },
                         "plant-status": {
+                            "description": "Mae'r cerdyn Statws Planhigion ar gyfer yr holl fotanegwyr hyfryd allan yna.",
                             "name": "Statws planhigyn"
                         },
                         "sensor": {
+                            "description": "Mae'r cerdyn Synhwyrydd yn rhoi trosolwg cyflym o gyflwr eich synwyryddion gyda graff dewisol i ddelweddu newid dros amser.",
                             "name": "Synhwyrydd"
                         },
                         "shopping-list": {
+                            "description": "Mae'r cerdyn Rhestr Siopa yn caniatáu ichi ychwanegu, golygu, gwirio a chlirio eitemau o'ch rhestr siopa.",
                             "name": "Rhestr siopa"
                         },
                         "thermostat": {
@@ -1162,6 +1207,10 @@
                             "description": "Mae'r cerdyn rhagolygon tywydd yn dangos y tywydd. Defnyddiol iawn i'w cynnwys ar ryngwynebau y mae pobl yn eu harddangos ar y wal.",
                             "name": "Rhagolwg tywydd"
                         }
+                    },
+                    "cardpicker": {
+                        "custom_card": "Custom",
+                        "no_description": "Dim disgrifiad ar gael."
                     },
                     "edit_card": {
                         "add": "Ychwanegu Cerdyn",
@@ -1213,6 +1262,7 @@
                     },
                     "save_config": {
                         "cancel": "Dim ots",
+                        "empty_config": "Dechreuwch gyda dangosfwrdd gwag",
                         "header": "Cymerwch reolaeth ar eich rhyngwyneb defnyddiwr Lovelace",
                         "para": "Gwneith Home Assistant gynnal eich rhyngwyneb defnyddiwr yn ddiofyn, a'i diweddaru pan fydd endidau neu gydrannau Lovelace newydd yn dod ar gael. Os ydych yn cymryd rheolaeth nawn ddim gwneud newidiadau awtomatig pellach i chi.",
                         "para_sure": "A ydych yn siŵr bod chi eisiau rheoli eich rhyngwyneb defnyddiwr?",
@@ -1358,6 +1408,11 @@
                 "advanced_mode": {
                     "description": "Mae Home Assistant yn cuddio nodweddion uwch ac opsiynau yn ddiofyn. Gallwch wneud y nodweddion hyn yn hygyrch trwy ticio'r toggle hwn. Mae hwn yn leoliad penodol i ddefnyddwyr ac nid yw'n effeithio ar ddefnyddwyr eraill sy'n defnyddio Home Assistant.",
                     "title": "Modd Uwch"
+                },
+                "dashboard": {
+                    "description": "Dewiswch ddangosfwrdd diofyn ar gyfer y ddyfais hon.",
+                    "dropdown_label": "Dangosfwrdd",
+                    "header": "Dangosfwrdd"
                 }
             },
             "shopping-list": {

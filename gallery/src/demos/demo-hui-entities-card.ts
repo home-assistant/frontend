@@ -60,6 +60,36 @@ const ENTITIES = [
     friendly_name: "Allowed Noise",
     icon: "mdi:bell-ring",
   }),
+  getEntity("light", "unavailable", "unavailable", {
+    friendly_name: "Bed Light",
+  }),
+  getEntity("lock", "unavailable", "unavailable", {
+    friendly_name: "Kitchen Door",
+  }),
+  getEntity("cover", "unavailable", "unavailable", {
+    friendly_name: "Kitchen Window",
+    supported_features: 11,
+  }),
+  getEntity("scene", "unavailable", "unavailable", {
+    friendly_name: "Romantic lights",
+  }),
+  getEntity("device_tracker", "unavailable", "unavailable", {
+    friendly_name: "Paulus",
+  }),
+  getEntity("climate", "unavailable", "unavailable", {
+    unit_of_measurement: "°F",
+    friendly_name: "Ecobee",
+    supported_features: 1014,
+  }),
+  getEntity("input_number", "unavailable", "unavailable", {
+    friendly_name: "Allowed Noise",
+    icon: "mdi:bell-ring",
+  }),
+  getEntity("input_select", "unavailable", "unavailable", {
+    unit_of_measurement: "dB",
+    friendly_name: "Who cooks",
+    icon: "mdi:cheff",
+  }),
 ];
 
 const CONFIGS = [
@@ -119,6 +149,21 @@ const CONFIGS = [
   entities:
     - device_tracker.demo_paulus
   title: Random group
+    `,
+  },
+  {
+    heading: "Unavailable",
+    config: `
+- type: entities
+  entities:
+    - scene.unavailable
+    - device_tracker.unavailable
+    - cover.unavailable
+    - lock.unavailable
+    - light.unavailable
+    - climate.unavailable
+    - input_number.unavailable
+    - input_select.unavailable
     `,
   },
   {
@@ -191,6 +236,7 @@ class DemoEntities extends PolymerElement {
   public ready() {
     super.ready();
     const hass = provideHass(this.$.demos);
+    hass.updateTranslations(null, "en");
     hass.addEntities(ENTITIES);
   }
 }

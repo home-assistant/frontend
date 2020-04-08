@@ -68,11 +68,11 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
       if (saveToBackend) {
         saveTranslationPreferences(this.hass, { language });
       }
-
       this._applyTranslations(this.hass);
     }
 
     private _applyTranslations(hass: HomeAssistant) {
+      document.querySelector("html")!.setAttribute("lang", hass.language);
       this.style.direction = computeRTL(hass) ? "rtl" : "ltr";
       this._loadCoreTranslations(hass.language);
       this._loadHassTranslations(hass.language);

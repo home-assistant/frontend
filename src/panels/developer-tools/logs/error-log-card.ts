@@ -38,6 +38,14 @@ class ErrorLogCard extends LitElement {
     `;
   }
 
+  protected firstUpdated(changedProps) {
+    super.firstUpdated(changedProps);
+
+    if (this.hass?.config.safe_mode) {
+      this._refreshErrorLog();
+    }
+  }
+
   static get styles(): CSSResult {
     return css`
       .error-log-intro {

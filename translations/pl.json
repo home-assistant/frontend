@@ -509,6 +509,7 @@
                 "attributes": {
                     "air_pressure": "Ciśnienie",
                     "humidity": "Wilgotność",
+                    "precipitation": "Opady",
                     "temperature": "Temperatura",
                     "visibility": "Widoczność",
                     "wind_speed": "Prędkość wiatru"
@@ -531,7 +532,9 @@
                     "wnw": "zach. płn.-zach.",
                     "wsw": "zach. płd.-zach."
                 },
-                "forecast": "Prognoza"
+                "forecast": "Prognoza",
+                "high": "wysoka",
+                "low": "niska"
             }
         },
         "common": {
@@ -543,6 +546,7 @@
             "save": "Zapisz",
             "successfully_deleted": "Pomyślnie usunięto",
             "successfully_saved": "Pomyślnie zapisano",
+            "undo": "Cofnij",
             "yes": "Tak"
         },
         "components": {
@@ -812,6 +816,10 @@
                 "areas": {
                     "caption": "Rejestr obszarów",
                     "create_area": "UTWÓRZ OBSZAR",
+                    "data_table": {
+                        "area": "Obszar",
+                        "devices": "Urządzenia"
+                    },
                     "delete": {
                         "confirmation_text": "Wszystkie urządzenia z tego obszaru pozostaną bez przypisanego obszaru.",
                         "confirmation_title": "Czy na pewno chcesz usunąć ten obszar?"
@@ -1054,6 +1062,9 @@
                         "delete_confirm": "Na pewno chcesz usunąć tę automatyzację?",
                         "edit_automation": "Edytuj automatyzację",
                         "header": "Edytor automatyzacji",
+                        "headers": {
+                            "name": "Nazwa"
+                        },
                         "introduction": "Edytor automatyzacji pozwala tworzyć i edytować automatyzacje Kliknij poniższy link, aby przeczytać instrukcję, jak poprawnie konfigurować automatyzacje w Home Assistant.",
                         "learn_more": "Dowiedz się więcej o automatyzacjach",
                         "no_automations": "Nie znaleziono żadnych edytowalnych automatyzacji",
@@ -1334,6 +1345,7 @@
                     },
                     "info": "Informacje o urządzeniu",
                     "name": "Nazwa",
+                    "no_devices": "Brak urządzeń",
                     "scene": {
                         "create": "Utwórz scenę z urządzeniem",
                         "no_scenes": "Brak scen",
@@ -1638,6 +1650,9 @@
                         "delete_scene": "Usuń scenę",
                         "edit_scene": "Edytuj scenę",
                         "header": "Edytor scen",
+                        "headers": {
+                            "name": "Nazwa"
+                        },
                         "introduction": "Edytor scen pozwala tworzyć i edytować sceny. Kliknij poniższy link, aby przeczytać instrukcję, jak poprawnie konfigurować sceny w Home Assistant.",
                         "learn_more": "Dowiedz się więcej o scenach",
                         "no_scenes": "Nie znaleziono żadnych edytowalnych scen",
@@ -1665,9 +1680,13 @@
                         "add_script": "Dodaj skrypt",
                         "edit_script": "Edytuj skrypt",
                         "header": "Edytor skryptów",
+                        "headers": {
+                            "name": "Nazwa"
+                        },
                         "introduction": "Edytor skryptów pozwala tworzyć i edytować skrypty. Kliknij poniższy link, aby przeczytać instrukcję, jak poprawnie konfigurować skrypty w Home Assistant.",
                         "learn_more": "Dowiedz się więcej o skryptach",
                         "no_scripts": "Nie znaleziono żadnych edytowalnych skryptów",
+                        "show_info": "Pokaż informacje o skrypcie",
                         "trigger_script": "Uruchom skrypt"
                     }
                 },
@@ -1716,6 +1735,7 @@
                     "editor": {
                         "activate_user": "Aktywuj użytkownika",
                         "active": "Aktywny",
+                        "admin": "Administrator",
                         "caption": "Wyświetl użytkownika",
                         "change_password": "Zmień hasło",
                         "confirm_user_deletion": "Na pewno chcesz usunąć {name}?",
@@ -1725,14 +1745,22 @@
                         "group": "Grupa",
                         "group_update_failed": "Nie powiodła się aktualizacja grupy:",
                         "id": "Identyfikator",
+                        "name": "Nazwa",
                         "owner": "Właściciel",
                         "rename_user": "Zmień nazwę użytkownika",
                         "system_generated": "Wygenerowany przez system",
+                        "system_generated_users_not_editable": "Nie można zaktualizować użytkowników generowanych przez system.",
                         "system_generated_users_not_removable": "Nie można usunąć użytkowników wygenerowanych przez system.",
                         "unnamed_user": "Nienazwany użytkownik",
+                        "update_user": "Aktualizuj",
                         "user_rename_failed": "Nie powiodła się zmiana nazwy użytkownika:"
                     },
                     "picker": {
+                        "headers": {
+                            "group": "Grupa",
+                            "name": "Nazwa",
+                            "system": "System"
+                        },
                         "system_generated": "Wygenerowany przez system",
                         "title": "Użytkownicy"
                     }
@@ -2135,6 +2163,10 @@
                             "description": "Karta filtr encji umożliwia zdefiniowanie listy encji, które mają być śledzone tylko w określonym stanie.",
                             "name": "Filtr encji"
                         },
+                        "entity": {
+                            "description": "Karta encja zapewnia szybki przegląd stanu encji.",
+                            "name": "Encja"
+                        },
                         "gauge": {
                             "description": "Karta wskaźnika to podstawowa karta, która umożliwia wizualne przedstawienie danych liczbowych sensora.",
                             "name": "Wskaźnik",
@@ -2147,8 +2179,10 @@
                         },
                         "generic": {
                             "aspect_ratio": "Proporcje obrazu",
+                            "attribute": "Atrybut",
                             "camera_image": "Encja kamery",
                             "camera_view": "Widok kamery",
+                            "double_tap_action": "Akcja podwójnego dotknięcia",
                             "entities": "Encje",
                             "entity": "Encja",
                             "hold_action": "Akcja przytrzymania",
@@ -2199,6 +2233,7 @@
                             "default_zoom": "Domyślne powiększenie",
                             "description": "Karta mapy, która pozwala wyświetlać encje na mapie.",
                             "geo_location_sources": "Źródła geolokalizacji",
+                            "hours_to_show": "Godziny do wyświetlenia",
                             "name": "Mapa",
                             "source": "Źródło"
                         },
@@ -2232,7 +2267,7 @@
                             "name": "Stan rośliny"
                         },
                         "sensor": {
-                            "description": "Karta sensor zapewnia szybki przegląd stanu czujników z opcjonalnym wykresem, aby wizualizować zmiany w czasie.",
+                            "description": "Karta sensor zapewnia szybki przegląd stanu sensorów z opcjonalnym wykresem, aby wizualizować zmiany w czasie.",
                             "graph_detail": "Szczegół wykresu",
                             "graph_type": "Rodzaj wykresu",
                             "name": "Sensor"
@@ -2254,6 +2289,10 @@
                             "description": "Karta prognozy pogody wyświetla pogodę. Bardzo przydatna w przypadku interfejsów wyświetlanych na urządzeniach zawieszonych na ścianie.",
                             "name": "Prognoza pogody"
                         }
+                    },
+                    "cardpicker": {
+                        "custom_card": "Niestandardowa",
+                        "no_description": "Brak dostępnego opisu."
                     },
                     "edit_card": {
                         "add": "Dodaj kartę",
@@ -2319,6 +2358,7 @@
                     "save_config": {
                         "cancel": "Nieważne",
                         "close": "Zamknij",
+                        "empty_config": "Zacznij od pustego dashboardu",
                         "header": "Przejmij kontrolę nad interfejsem użytkownika Lovelace",
                         "para": "Domyślnie Home Assistant będzie zarządzać interfejsem użytkownika, aktualizując go, gdy pojawią się nowe encje lub komponenty Lovelace. Jeśli przejmiesz kontrolę, Home Assistant nie będzie już automatycznie wprowadzać dla ciebie zmian.",
                         "para_sure": "Na pewno chcesz przejąć kontrolę nad interfejsem użytkownika?",
@@ -2568,6 +2608,11 @@
                     "submit": "Zatwierdź"
                 },
                 "current_user": "Jesteś obecnie zalogowany jako {fullName}.",
+                "dashboard": {
+                    "description": "Wybierz domyślny dashboard dla tego urządzenia.",
+                    "dropdown_label": "Dashboard",
+                    "header": "Dashboard"
+                },
                 "force_narrow": {
                     "description": "Spowoduje to domyślne ukrycie paska bocznego, podobnie jak w przypadku urządzeń przenośnych.",
                     "header": "Zawsze ukrywaj pasek boczny"

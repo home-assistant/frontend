@@ -6,6 +6,7 @@ import {
   property,
   CSSResult,
   css,
+  query,
 } from "lit-element";
 import "@polymer/paper-tabs";
 
@@ -13,8 +14,13 @@ import { struct } from "../../common/structs/struct";
 import { HomeAssistant } from "../../../../types";
 import { LovelaceCardEditor } from "../../types";
 import { StackCardConfig } from "../../cards/types";
-import { fireEvent } from "../../../../common/dom/fire_event";
+import { fireEvent, HASSDomEvent } from "../../../../common/dom/fire_event";
 import { LovelaceConfig } from "../../../../data/lovelace";
+import {
+  HuiCardEditor,
+  ConfigChangedEvent,
+} from "../card-editor/hui-card-editor";
+import { GUIModeChangedEvent } from "../types";
 
 const cardConfigStruct = struct({
   type: "string",
@@ -29,6 +35,9 @@ export class HuiStackCardEditor extends LitElement
   @property() public lovelace?: LovelaceConfig;
   @property() private _config?: StackCardConfig;
   @property() private _selectedCard: number = 0;
+  @property() private _GUImode = true;
+  @property() private _guiModeAvailable? = true;
+  @query("hui-card-editor") private _cardEditorEl?: HuiCardEditor;
 
   public setConfig(config: StackCardConfig): void {
     this._config = cardConfigStruct(config);
@@ -47,7 +56,7 @@ export class HuiStackCardEditor extends LitElement
           <paper-tabs
             .selected=${selected}
             scrollable
-            @iron-select=${this._handleSelectedCard}
+            @iron-activate=${this._handleSelectedCard}
           >
             ${this._config.cards.map((_card, i) => {
               return html`
@@ -60,7 +69,7 @@ export class HuiStackCardEditor extends LitElement
           <paper-tabs
             id="add-card"
             .selected=${selected === numcards ? "0" : undefined}
-            @iron-select=${this._handleSelectedCard}
+            @iron-activate=${this._handleSelectedCard}
           >
             <paper-tab>
               <ha-icon icon="hass:plus"></ha-icon>
@@ -73,11 +82,22 @@ export class HuiStackCardEditor extends LitElement
             selected < numcards
               ? html`
                   <div id="card-options">
+                    <mwc-button
+                      @click=${this._toggleMode}
+                      .disabled=${!this._guiModeAvailable}
+                      class="gui-mode-button"
+                    >
+                      ${this.hass!.localize(
+                        !this._cardEditorEl || this._GUImode
+                          ? "ui.panel.lovelace.editor.edit_card.show_code_editor"
+                          : "ui.panel.lovelace.editor.edit_card.show_visual_editor"
+                      )}
+                    </mwc-button>
                     <paper-icon-button
                       id="move-before"
                       title="Move card before"
                       icon="hass:arrow-left"
-                      ?disabled=${selected === 0}
+                      .disabled=${selected === 0}
                       @click=${this._handleMove}
                     ></paper-icon-button>
 
@@ -85,7 +105,7 @@ export class HuiStackCardEditor extends LitElement
                       id="move-after"
                       title="Move card after"
                       icon="hass:arrow-right"
-                      ?disabled=${selected === numcards - 1}
+                      .disabled=${selected === numcards - 1}
                       @click=${this._handleMove}
                     ></paper-icon-button>
 
@@ -97,9 +117,10 @@ export class HuiStackCardEditor extends LitElement
 
                   <hui-card-editor
                     .hass=${this.hass}
-                    .value="${this._config.cards[selected]}"
+                    .value=${this._config.cards[selected]}
                     .lovelace=${this.lovelace}
-                    @config-changed="${this._handleConfigChanged}"
+                    @config-changed=${this._handleConfigChanged}
+                    @GUImode-changed=${this._handleGUIModeChanged}
                   ></hui-card-editor>
                 `
               : html`
@@ -116,18 +137,22 @@ export class HuiStackCardEditor extends LitElement
   }
 
   private _handleSelectedCard(ev) {
-    this._selectedCard =
-      ev.target.id === "add-card"
-        ? this._config!.cards.length
-        : parseInt(ev.target.selected, 10);
+    if (ev.target.id === "add-card") {
+      this._selectedCard = this._config!.cards.length;
+      return;
+    }
+    this._setMode(true);
+    this._guiModeAvailable = true;
+    this._selectedCard = parseInt(ev.detail.selected, 10);
   }
 
-  private _handleConfigChanged(ev) {
+  private _handleConfigChanged(ev: HASSDomEvent<ConfigChangedEvent>) {
     ev.stopPropagation();
     if (!this._config) {
       return;
     }
     this._config.cards[this._selectedCard] = ev.detail.config;
+    this._guiModeAvailable = ev.detail.guiModeAvailable;
     fireEvent(this, "config-changed", { config: this._config });
   }
 
@@ -162,6 +187,23 @@ export class HuiStackCardEditor extends LitElement
     fireEvent(this, "config-changed", { config: this._config });
   }
 
+  private _handleGUIModeChanged(ev: HASSDomEvent<GUIModeChangedEvent>): void {
+    ev.stopPropagation();
+    this._GUImode = ev.detail.guiMode;
+    this._guiModeAvailable = ev.detail.guiModeAvailable;
+  }
+
+  private _toggleMode(): void {
+    this._cardEditorEl?.toggleMode();
+  }
+
+  private _setMode(value: boolean): void {
+    this._GUImode = value;
+    if (this._cardEditorEl) {
+      this._cardEditorEl!.GUImode = value;
+    }
+  }
+
   static get styles(): CSSResult {
     return css`
       .toolbar {
@@ -193,6 +235,10 @@ export class HuiStackCardEditor extends LitElement
         #editor {
           margin: 0 -12px;
         }
+      }
+
+      .gui-mode-button {
+        margin-right: auto;
       }
     `;
   }

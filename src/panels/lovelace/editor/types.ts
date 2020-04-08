@@ -14,6 +14,11 @@ export interface YamlChangedEvent extends Event {
   };
 }
 
+export interface GUIModeChangedEvent {
+  guiMode: boolean;
+  guiModeAvailable: boolean;
+}
+
 export interface ViewEditEvent extends Event {
   detail: {
     config: LovelaceViewConfig;

@@ -509,6 +509,7 @@
                 "attributes": {
                     "air_pressure": "Pressió atmosfèrica",
                     "humidity": "Humitat",
+                    "precipitation": "Precipitació",
                     "temperature": "Temperatura",
                     "visibility": "Visibilitat",
                     "wind_speed": "Velocitat del vent"
@@ -531,7 +532,9 @@
                     "wnw": "ONO",
                     "wsw": "OSO"
                 },
-                "forecast": "Previsió"
+                "forecast": "Previsió",
+                "high": "Alt",
+                "low": "Baix"
             }
         },
         "common": {
@@ -543,6 +546,7 @@
             "save": "Desa",
             "successfully_deleted": "S'ha suprimit correctament",
             "successfully_saved": "S'ha desat correctament",
+            "undo": "Desfés",
             "yes": "Sí"
         },
         "components": {
@@ -812,6 +816,10 @@
                 "areas": {
                     "caption": "Registre d'àrees",
                     "create_area": "CREA ÀREA",
+                    "data_table": {
+                        "area": "Àrea",
+                        "devices": "Dispositius"
+                    },
                     "delete": {
                         "confirmation_text": "Tots els dispositius d'aquesta àrea quedaran sense assignar.",
                         "confirmation_title": "Estàs segur que vols eliminar aquesta àrea?"
@@ -1054,6 +1062,9 @@
                         "delete_confirm": "Estàs segur que vols eliminar aquesta automatització?",
                         "edit_automation": "Edita automatització",
                         "header": "Editor d'automatitzacions",
+                        "headers": {
+                            "name": "Nom"
+                        },
                         "introduction": "L'editor d'automatitzacions et permet crear i editar automatitzacions. Vés a l'enllaç de sota per veure'n les instruccions i assegurar-te que has configurat el Home Assistant correctament.",
                         "learn_more": "Més informació sobre les automatitzacions",
                         "no_automations": "No s'ha pogut trobar cap automatització editable",
@@ -1334,6 +1345,7 @@
                     },
                     "info": "Informació del dispositiu",
                     "name": "Nom",
+                    "no_devices": "No hi ha dispositius",
                     "scene": {
                         "create": "Crea una escena amb el dispositiu",
                         "no_scenes": "No hi ha escenes",
@@ -1638,6 +1650,9 @@
                         "delete_scene": "Suprimeix l'escena",
                         "edit_scene": "Edita escena",
                         "header": "Editor d’escenes",
+                        "headers": {
+                            "name": "Nom"
+                        },
                         "introduction": "L'editor d'escenes et permet crear i editar escenes. Vés a l'enllaç de sota per veure'n les instruccions i assegurar-te que has configurat el Home Assistant correctament.",
                         "learn_more": "Més informació sobre les escenes",
                         "no_scenes": "No s'ha pogut trobar cap escena editable",
@@ -1665,9 +1680,13 @@
                         "add_script": "Afegeix script",
                         "edit_script": "Edita l'script",
                         "header": "Editor de scripts",
+                        "headers": {
+                            "name": "Nom"
+                        },
                         "introduction": "L'editor de scripts et permet crear i editar scripts. Vés a l'enllaç de sota per veure'n les instruccions i assegurar-te que has configurat el Home Assistant correctament.",
                         "learn_more": "Més informació sobre els scripts",
                         "no_scripts": "No hem trobat cap script editable",
+                        "show_info": "Mostra informació sobre l'script",
                         "trigger_script": "Dispara l'script"
                     }
                 },
@@ -1716,6 +1735,7 @@
                     "editor": {
                         "activate_user": "Activar usuari",
                         "active": "Actiu",
+                        "admin": "Administrador",
                         "caption": "Mostra usuari",
                         "change_password": "Canviar contrasenya",
                         "confirm_user_deletion": "Estàs segur que vols eliminar {name}?",
@@ -1725,14 +1745,22 @@
                         "group": "Grup",
                         "group_update_failed": "L'actualització del grup ha fallat:",
                         "id": "ID",
+                        "name": "Nom",
                         "owner": "Propietari",
                         "rename_user": "Canviar el nom d'usuari",
                         "system_generated": "Generat pel sistema",
+                        "system_generated_users_not_editable": "No es poden actualitzar usuaris generats pel sistema.",
                         "system_generated_users_not_removable": "No es poden eliminar usuaris generats pel sistema.",
                         "unnamed_user": "Usuari sense nom",
+                        "update_user": "Actualitza",
                         "user_rename_failed": "El canvi de nom d'usuari ha fallat:"
                     },
                     "picker": {
+                        "headers": {
+                            "group": "Grup",
+                            "name": "Nom",
+                            "system": "Sistema"
+                        },
                         "system_generated": "Generat pel sistema",
                         "title": "Usuaris"
                     }
@@ -2135,6 +2163,10 @@
                             "description": "La targeta filtre d'entitats et permet definir una llista d'entitats les quals vols seguir/visualitzar només quan es trobin en un cert estat.",
                             "name": "Filtre d'entitats"
                         },
+                        "entity": {
+                            "description": "La targeta entitat mostra una visualització ràpida dels estats d'una o més entitats.",
+                            "name": "Entitat"
+                        },
                         "gauge": {
                             "description": "La galga és una targeta bàsica que et permet mostrar les dades d'un sensor de manera visual.",
                             "name": "Galga",
@@ -2147,8 +2179,10 @@
                         },
                         "generic": {
                             "aspect_ratio": "Relació d'aspecte",
+                            "attribute": "Atribut",
                             "camera_image": "Entitat de càmera",
                             "camera_view": "Visualització de càmera",
+                            "double_tap_action": "Acció en tocar dues vegades",
                             "entities": "Entitats",
                             "entity": "Entitat",
                             "hold_action": "Acció en mantenir",
@@ -2199,6 +2233,7 @@
                             "default_zoom": "Zoom predeterminat",
                             "description": "La targeta mapa et permet mostrar diferents entitats sobre un mapa.",
                             "geo_location_sources": "Fonts de geolocalització",
+                            "hours_to_show": "Hores a mostrar",
                             "name": "Mapa",
                             "source": "Font"
                         },
@@ -2254,6 +2289,10 @@
                             "description": "La targeta de previsió meteorològica, és molt útil per incloure en interfícies integrades en parets.",
                             "name": "Previsió meteorològica"
                         }
+                    },
+                    "cardpicker": {
+                        "custom_card": "Personalitzada",
+                        "no_description": "No hi ha cap descripció disponible."
                     },
                     "edit_card": {
                         "add": "Afegir targeta",
@@ -2319,6 +2358,7 @@
                     "save_config": {
                         "cancel": "M'ho he repensat",
                         "close": "Tanca",
+                        "empty_config": "Comença amb un panell buit",
                         "header": "Pren el control de la interfície d'usuari Lovelace",
                         "para": "De manera predeterminada, Home Assistant mantindrà al dia la teva interfície d'usuari, actualitzant-la quan hi hagi noves entitats o nous components de Lovelace disponibles. Si prens el control, ja no es faran aquests canvis automàticament.",
                         "para_sure": "Estàs segur que vols prendre el control de la interfície d'usuari?",
@@ -2568,6 +2608,11 @@
                     "submit": "Envia"
                 },
                 "current_user": "Has iniciat la sessió com a {fullName}.",
+                "dashboard": {
+                    "description": "Tria un panell per defecte per a aquest dispositiu.",
+                    "dropdown_label": "Panell",
+                    "header": "Panell"
+                },
                 "force_narrow": {
                     "description": "Això ocultarà la barra lateral de manera similar als mòbils i tablets.",
                     "header": "Amaga sempre la barra lateral"

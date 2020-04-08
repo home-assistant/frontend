@@ -10,6 +10,7 @@ import "@polymer/paper-input/paper-input";
 import "../../components/hui-action-editor";
 import "../../components/hui-theme-select-editor";
 import "../../components/hui-entity-editor";
+import "../../../../components/ha-icon-input";
 
 import { struct } from "../../common/structs/struct";
 import {
@@ -23,6 +24,7 @@ import { fireEvent } from "../../../../common/dom/fire_event";
 import { configElementStyle } from "./config-elements-style";
 import { ActionConfig } from "../../../../data/lovelace";
 import { ButtonCardConfig } from "../../cards/types";
+import { stateIcon } from "../../../../common/entity/state_icon";
 
 const cardConfigStruct = struct({
   type: "string",
@@ -84,11 +86,11 @@ export class HuiButtonCardEditor extends LitElement
   }
 
   get _theme(): string {
-    return this._config!.theme || "default";
+    return this._config!.theme || "";
   }
 
   protected render(): TemplateResult {
-    if (!this.hass) {
+    if (!this.hass || !this._config) {
       return html``;
     }
 
@@ -127,16 +129,18 @@ export class HuiButtonCardEditor extends LitElement
             .configValue="${"name"}"
             @value-changed="${this._valueChanged}"
           ></paper-input>
-          <paper-input
-          .label="${this.hass.localize(
-            "ui.panel.lovelace.editor.card.generic.icon"
-          )} (${this.hass.localize(
+          <ha-icon-input
+            .label="${this.hass.localize(
+              "ui.panel.lovelace.editor.card.generic.icon"
+            )} (${this.hass.localize(
       "ui.panel.lovelace.editor.card.config.optional"
     )})"
-            .value="${this._icon}"
-            .configValue="${"icon"}"
-            @value-changed="${this._valueChanged}"
-          ></paper-input>
+            .value=${this._icon}
+            .placeholder=${this._icon ||
+              stateIcon(this.hass.states[this._entity])}
+            .configValue=${"icon"}
+            @value-changed=${this._valueChanged}
+          ></ha-icon-input>
         </div>
         <div class="side-by-side">
           <ha-switch

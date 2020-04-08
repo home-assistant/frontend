@@ -16,7 +16,8 @@ class DemoCard extends PolymerElement {
           color: var(--primary-color);
         }
         #card {
-          width: 400px;
+          max-width: 400px;
+          width: 100vw;
         }
         pre {
           width: 400px;
@@ -56,15 +57,39 @@ class DemoCard extends PolymerElement {
     };
   }
 
+  ready() {
+    super.ready();
+  }
+
   _configChanged(config) {
     const card = this.$.card;
     while (card.lastChild) {
       card.removeChild(card.lastChild);
     }
 
-    const el = createCardElement(safeLoad(config.config)[0]);
-    el.hass = this.hass;
+    const el = this._createCardElement(safeLoad(config.config)[0]);
     card.appendChild(el);
+  }
+
+  _createCardElement(cardConfig) {
+    const element = createCardElement(cardConfig);
+    if (this.hass) {
+      element.hass = this.hass;
+    }
+    element.addEventListener(
+      "ll-rebuild",
+      (ev) => {
+        ev.stopPropagation();
+        this._rebuildCard(element, cardConfig);
+      },
+      { once: true }
+    );
+    return element;
+  }
+
+  _rebuildCard(cardElToReplace, config) {
+    const newCardEl = this._createCardElement(config);
+    cardElToReplace.parentElement.replaceChild(newCardEl, cardElToReplace);
   }
 
   _hassChanged(hass) {

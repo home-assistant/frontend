@@ -108,6 +108,7 @@ export class HaConfigAreasDashboard extends LitElement {
           "ui.panel.config.areas.picker.no_areas"
         )}
         id="area_id"
+        hasFab
       >
         <paper-icon-button
           slot="toolbar-icon"

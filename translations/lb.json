@@ -395,8 +395,8 @@
     "ui": {
         "auth_store": {
             "ask": "Soll dëse Login gespäichert ginn?",
-            "confirm": "Login späicheren",
-            "decline": "Nee Merci"
+            "confirm": "Jo",
+            "decline": "Nee"
         },
         "card": {
             "alarm_control_panel": {
@@ -411,7 +411,7 @@
             },
             "automation": {
                 "last_triggered": "Läscht ausgeléist",
-                "trigger": "Ausléiser"
+                "trigger": "Ausléisen"
             },
             "camera": {
                 "not_available": "Bild net disponibel"
@@ -509,6 +509,7 @@
                 "attributes": {
                     "air_pressure": "Loftdrock",
                     "humidity": "Fiichtegkeet",
+                    "precipitation": "Nidderschlag",
                     "temperature": "Temperatur",
                     "visibility": "Visibilitéit",
                     "wind_speed": "Wandvitesse"
@@ -531,7 +532,9 @@
                     "wnw": "WNW",
                     "wsw": "WSW"
                 },
-                "forecast": "Prognose"
+                "forecast": "Prognose",
+                "high": "Héich",
+                "low": "Niddreg"
             }
         },
         "common": {
@@ -543,6 +546,7 @@
             "save": "Späicheren",
             "successfully_deleted": "Erfollegräich geläscht.",
             "successfully_saved": "Erfollegräich gespäichert.",
+            "undo": "Réckgängeg maachen",
             "yes": "Jo"
         },
         "components": {
@@ -623,7 +627,7 @@
                 "dismiss": "Verwerfen",
                 "editor": {
                     "confirm_delete": "Sécher fir dës Entrée ze läsche?",
-                    "delete": "LÄSCHEN",
+                    "delete": "Läschen",
                     "enabled_cause": "Desaktivéiert duerch {cause}.",
                     "enabled_description": "Deaktivéiert Entitéiten ginn net am Home Assistant bäigesat.",
                     "enabled_label": "Entitéit aktivéieren",
@@ -633,7 +637,7 @@
                     "name": "Numm iwwerschreiwen",
                     "note": "Nott: dëst funktionéiert villäicht nach net mat all Integratioun.",
                     "unavailable": "Dës Entitéit ass net erreechbar fir de Moment.",
-                    "update": "AKTUALISEIEREN"
+                    "update": "Aktualiséieren"
                 },
                 "no_unique_id": "Dës Entitéit huet keng eenzegaarteg ID, dofir kënnen hir Astellungen net am Benotzer Interface geréiert ginn.",
                 "related": "Relatioun",
@@ -649,6 +653,7 @@
                 "generic": {
                     "icon": "Ikon",
                     "initial_value": "Initial Wäert beim start",
+                    "initial_value_explain": "De Wäert deen den Element huet wann Home Assistant start. Wann eidel gelooss, gëtt de Wäert op de fiirechte Wäert zeréckgesat.",
                     "name": "Numm"
                 },
                 "input_datetime": {
@@ -665,7 +670,7 @@
                     "min": "Minimale Wäert",
                     "mode": "Affichage Modus",
                     "slider": "Slider",
-                    "step": "Schrëtt Gréisst vum Slider",
+                    "step": "Schrëtt Gréisst",
                     "unit_of_measurement": "Moosseenheet"
                 },
                 "input_select": {
@@ -679,10 +684,14 @@
                     "min": "Minimal Längt",
                     "mode": "Affichage Modus",
                     "password": "Passwuert",
+                    "pattern": "Regex Muster fir Client-Säiteg Validatioun",
                     "text": "Text"
                 },
                 "not_editable": "Net Editéierbar",
-                "required_error_msg": "Dëst Feld ass erfuerderlech"
+                "not_editable_text": "Dës Entitéit kann net vum Benotzer Interface aus geännert\nginn well se iwwer configuration.yaml erstallt ass.",
+                "platform_not_loaded": "{platform} Integratioun ass net gelueden. Setz et an deng Konfiguration dobäi mat  'default_config:' oder '{platform}:'.",
+                "required_error_msg": "Dëst Feld ass erfuerderlech",
+                "yaml_not_editable": "D'Astellunge vun dëser Entitéit kënnen net vun vum Benotzer Interface as  geännert ginn. Nëmmen Entitéiten déi iwwer den Benotzer Interface aus konfiguréiert sinn kënnen vun do aus geännert ginn."
             },
             "more_info_control": {
                 "dismiss": "Dialog ofbriechen",
@@ -805,8 +814,12 @@
                     "link_profile_page": "är Profil Säit"
                 },
                 "areas": {
-                    "caption": "Lëscht vun de Beräicher",
+                    "caption": "Beräicher",
                     "create_area": "Beräich erstellen",
+                    "data_table": {
+                        "area": "Beräich",
+                        "devices": "Apparater"
+                    },
                     "delete": {
                         "confirmation_text": "All Apparater an dësem Beräich ginn néirens zougewisen.",
                         "confirmation_title": "Sécher fir dëse Beräich ze läsche?"
@@ -821,7 +834,7 @@
                     "no_areas": "Et sinn nach keng Beräicher do!",
                     "picker": {
                         "create_area": "Beräich erstellen",
-                        "header": "Lëscht vun de Beräicher",
+                        "header": "Beräicher",
                         "integrations_page": "Integratiouns Säit",
                         "introduction": "Beräicher gi benotzt fir d'Organisatioun vum Standuert vun den Apparater. Dës Informatioun gëtt vum Home Assistant benotzt fir iech ze hëllefe fir den Interface, Berechtegungen an Integratioune mat aner Systemer ze geréieren.",
                         "introduction2": "Fir Apparater an e Beräich ze setzen, benotzt de Link ënne fir op d'Integratiouns Säit ze kommen a klickt do op eng konfiguréiert Integratioun fir d'Kaart vum Apparat unzeweisen.",
@@ -883,7 +896,7 @@
                             "delete_confirm": "Sëcher fir ze läschen?",
                             "duplicate": "Duplikéiere",
                             "header": "Konditiounen",
-                            "introduction": "Konditioune sinn een optionalen Deel vun engem Automatismus a kënne benotzt gi fir ze bestëmme wann eng Aktioun ausgeféiert gëtt. Konditioune gläichen den Ausléiser mee sinn awer ganz ënnerschiddlech. Een Ausléiser iwwerwaacht d'Evenementer am System, an eng Konditioun iwwerwaacht de Status vum System. Een Ausléiser gesäit wann ee Schalter ugeschalt gëtt. Eng Konditioun gesäit nëmmen op de Schalter un oder aus ass.\n\n[Léier méi iwwer Konditioune.](https://home-assistant.io/docs/scripts/conditions/)",
+                            "introduction": "Konditioune sinn een optionalen Deel a kënne benotzt gi fir ze bestëmme wann eng Aktioun ausgeféiert gëtt. ",
                             "learn_more": "Méi iwwert Konditioune liesen",
                             "name": "Konditioun",
                             "type_select": "Typ vun Konditioun",
@@ -953,7 +966,7 @@
                         "triggers": {
                             "add": "Ausléiser dobäisetzen",
                             "delete": "Läschen",
-                            "delete_confirm": "Sëcher fir ze läschen?",
+                            "delete_confirm": "Sëcher fir dëst ze läschen?",
                             "duplicate": "Replikéieren",
                             "header": "Ausléiser",
                             "introduction": "Een Ausléiser start de Prozess vun engem Automatismus. Et ass méiglech méi wéi een Ausléiser fir een Automatismus unzeginn. Wann een Ausléiser start validéiert Home Assistant d'Konditiounen a féiert - de Fall gesat - eng Aktioun aus.\n\n[Léier méi iwwert Ausléiser.](https://home-assistant.io/docs/automation/trigger/)",
@@ -1049,6 +1062,9 @@
                         "delete_confirm": "Sécher fir dës Automatisme ze läschen?",
                         "edit_automation": "Automatisme änneren",
                         "header": "Automatismen editéieren",
+                        "headers": {
+                            "name": "Numm"
+                        },
                         "introduction": "Den Automatismen-Editor erméiglecht et fir Automatismen z'erstellen an ze änneren. Lies w.e.g. [d'Instruktioune](https://home-assistant.io/docs/automation/editor/) fir sécher ze stellen dass den Home Assistant richteg agestallt ass.",
                         "learn_more": "Méi iwwert Automatioune liesen",
                         "no_automations": "Keen Automatismus fir ze ännere fonnt",
@@ -1329,6 +1345,7 @@
                     },
                     "info": "Informatioune vum Apparat",
                     "name": "Numm",
+                    "no_devices": "Keng Apparater",
                     "scene": {
                         "create": "Zeen mat Apparat erstellen",
                         "no_scenes": "Keng Zeenen",
@@ -1346,7 +1363,7 @@
                     "update": "Aktualiséieren"
                 },
                 "entities": {
-                    "caption": "Lëscht vun den Entitéiten",
+                    "caption": "Entitéiten",
                     "description": "Iwwersiicht vun all bekannten Entitéiten.",
                     "editor": {
                         "confirm_delete": "Sécher fir dës Entrée ze läsche?",
@@ -1379,7 +1396,7 @@
                             "show_readonly": "Schreifgeséchert Entitéiten uweisen",
                             "show_unavailable": "Net ereechbar Entitéite uweisen"
                         },
-                        "header": "Lëscht vun den Entitéiten",
+                        "header": "Entitéiten",
                         "headers": {
                             "enabled": "Aktivéiert",
                             "entity_id": "ID vun der Entitéit",
@@ -1389,10 +1406,11 @@
                         },
                         "integrations_page": "Integratiouns Säit",
                         "introduction": "Home Assistant hält eng Lëscht vun all Entitéit's ID déi eenzel erkennbar ass a bis elo vum System erkannt gouf. All eenzel vun dësen Entitéite kritt eng ID zougewise welch nëmme fir dës Entitéit reservéiert ass.",
-                        "introduction2": "Benotzt d'Lëscht vun den Entitéite fir d'Nimm z'änneren, d'Entitéits ID z'änneren oder d'Entrée aus dem Home Assistant ze läschen. Remarque: Läsche vun der Entitéit aus der Lëscht läscht d'Entitéit selwer net. Fir dës ze läsche follegt dem Link ënnen a läscht et op der Integratiouns Säit.",
+                        "introduction2": "Benotzt d'Lëscht vun den Entitéite fir d'Nimm z'änneren, d'Entitéits ID z'änneren oder d'Entrée aus dem Home Assistant ze läschen.",
                         "remove_selected": {
                             "button": "Ausgewielte läschen",
                             "confirm_partly_text": "Nëmmen {removable} vun den ausgewielten {selected} Entitéite kënne geläscht ginn. Entitéiten kënne nëmmen geläscht ginn wann eng Integratioun déi Entitéiten net méi zur Verfügung stellt. Heiansdo muss Home Assistant frësch gestart ginn fir Entitéiten vun enger geläschten Integratioun ze läschen. Sécher fir déi läschbar Entitéiten ze läschen?",
+                            "confirm_partly_title": "Nëmmen {number} ausgewielten Entitéiten kënne geläscht ginn.",
                             "confirm_text": "Entitéiten kënne nëmmen geläscht gin wann d'Integratioun d'Entitéiten net méi zur Verfügung stellt.",
                             "confirm_title": "Wëllt dir {number} Entitéite läschen?"
                         },
@@ -1474,7 +1492,7 @@
                     },
                     "configure": "Astellen",
                     "configured": "Konfiguréiert",
-                    "description": "Verwalt verbonnen Apparater an Servicen",
+                    "description": "Integratioune verwalten an ariichten",
                     "details": "Detailer vun der Integratioun",
                     "discovered": "Entdeckt",
                     "home_assistant_website": "Home Assistant Websäit",
@@ -1499,6 +1517,7 @@
                 "lovelace": {
                     "caption": "Lovelace Tableau de Bord",
                     "dashboards": {
+                        "cant_edit_default": "De Standard Lovelace Tableau de Bord kann net vum Benotzer Interface aus verännert ginn. Et kann verstoppt ginn andeems een aneren Tableau de Bord als Standard définéiert gëtt.",
                         "cant_edit_yaml": "Tableau de Bord déi am YAML définéiert sinn kënnen net vum Benotzer Interface aus verännert ginn. Änner se an der configuration.yaml",
                         "caption": "Tableau de Bord",
                         "conf_mode": {
@@ -1512,13 +1531,13 @@
                             "delete": "Läschen",
                             "dismiss": "Zoumaachen",
                             "edit_dashboard": "Tableau de Bord änneren",
-                            "icon": "Ikon vun der Säite Läischt",
+                            "icon": "Ikon",
                             "new_dashboard": "Neien Tableau de Bord dobäisetzen",
                             "remove_default": "Als Standard op dësem Apparat ewech huelen",
                             "require_admin": "Admin nëmmen",
                             "set_default": "Als Standard op dësem Apparat définéieren",
                             "show_sidebar": "An der Säite Läischt uweisen",
-                            "title": "Titel vun der Säite Läischt",
+                            "title": "Titel",
                             "title_required": "Titel ass erfuerderlech.",
                             "update": "Aktualiséieren",
                             "url": "Url",
@@ -1534,7 +1553,7 @@
                                 "sidebar": "An der Säite Läischt uweisen",
                                 "title": "Titel"
                             },
-                            "open": "Tableau de Bord opmaachen"
+                            "open": "Opmaachen"
                         }
                     },
                     "description": "Deng Lovelace Tableau de Bord konfiguréieren",
@@ -1631,6 +1650,9 @@
                         "delete_scene": "Zeen läschen",
                         "edit_scene": "Zeen änneren",
                         "header": "Zeen Editeur",
+                        "headers": {
+                            "name": "Numm"
+                        },
                         "introduction": "De Zeenen Editeur erlaabt Iech Zeenen z'erstellen an z'änneren. Follegt de Link hei ënnendrënner fir d'Instruktiounen ze liese fir sécher ze stellen, datt Dir den Home Assistant richteg konfiguréiert hutt.",
                         "learn_more": "Méi iwwert Zeene léieren",
                         "no_scenes": "Keng Zeene fir ze ännere fonnt",
@@ -1640,7 +1662,7 @@
                     }
                 },
                 "script": {
-                    "caption": "Skript",
+                    "caption": "Skripten",
                     "description": "Skript erstellen an änneren",
                     "editor": {
                         "alias": "Numm",
@@ -1658,9 +1680,13 @@
                         "add_script": "Skript dobäisetze",
                         "edit_script": "Skript änneren",
                         "header": "Skript Editeur",
+                        "headers": {
+                            "name": "Numm"
+                        },
                         "introduction": "De Skript Editeur erlaabt Iech Skripten ze erstellen an z'änneren. Follegt de Link hei ënnendrënner fir d'Instruktiounen ze liese fir sécher ze stellen, datt Dir den Home Assistant richteg konfiguréiert hutt",
                         "learn_more": "Méi iwwert Skripten léieren",
                         "no_scripts": "Keng Skripte fir ze ännere fonnt",
+                        "show_info": "Informatiounen vum Skript uweisen",
                         "trigger_script": "Skript ausléisen"
                     }
                 },
@@ -1709,6 +1735,7 @@
                     "editor": {
                         "activate_user": "Benotzer aktivéieren",
                         "active": "Aktiv",
+                        "admin": "Administrator",
                         "caption": "Benotzer kucken",
                         "change_password": "Passwuert änneren",
                         "confirm_user_deletion": "Sécher fir {name} ze läsche?",
@@ -1718,14 +1745,22 @@
                         "group": "Gruppe",
                         "group_update_failed": "Feeler bei der aktualiséiereung vum Gruppe",
                         "id": "ID",
+                        "name": "Numm",
                         "owner": "Proprietär",
                         "rename_user": "Benotzer ëmbenennen",
                         "system_generated": "Vum System generéiert",
+                        "system_generated_users_not_editable": "Net méiglech System generéiert Benotzer z'aktualiséieren.",
                         "system_generated_users_not_removable": "Ka keng System generéiert Benotzer läschen.",
                         "unnamed_user": "Benotzer ouni Numm",
+                        "update_user": "Aktualiséieren",
                         "user_rename_failed": "Feeler beim ëmbenennen vum Benotzer:"
                     },
                     "picker": {
+                        "headers": {
+                            "group": "Grupp",
+                            "name": "Numm",
+                            "system": "System"
+                        },
                         "system_generated": "Vum System generéiert",
                         "title": "Benotzer"
                     }
@@ -1860,7 +1895,7 @@
                         "required_error_msg": "Dëst Feld ass erfuerderlech",
                         "update": "Aktualiséieren"
                     },
-                    "edit_home_zone": "De Standuert vun Ärem Doheem kann an der allgemenger Konfiguratioun geännert ginn.",
+                    "edit_home_zone": "De Radius vun der Heemzon kann net vum Frontend aus geännert ginn. Zéi d'Markéierung op der Kaart fir d'Heemezone ze réckelen.",
                     "edit_home_zone_narrow": "De Radius vun der Home Zone kann nach net vum Frontend aus geännert ginn. De Standuert kann an der allgemenger Konfiguratioun geännert ginn.",
                     "go_to_core_config": "Zur genereller Konfiguratioun wiesselen?",
                     "home_zone_core_config": "De Standuert vun Ärer Heemzon kann vun der allgemenger Konfiguratiounssäit aus geännert ginn. De Radius vun der Home Zone kann nach net am Frontend geännert ginn. Wëllt Dir op d'allgemeng Konfiguratioun goen?",
@@ -2093,6 +2128,7 @@
                         },
                         "alarm-panel": {
                             "available_states": "Verfügbar Zoustänn",
+                            "description": "D'Alarm Panel Kaart erlaabt et d'Integratioun vun der Alarm Kontroll Panel ze arméieren an ze desaktivéieren.",
                             "name": "Alarm Zentral"
                         },
                         "button": {
@@ -2105,6 +2141,7 @@
                             "condition_explanation": "D'Kaart gëtt réischt ugewisen wann ALL Konditiounen erfëllt sinn.",
                             "conditions": "Konditiounen",
                             "current_state": "aktuell",
+                            "description": "D'Konditiounskaart weist eng aner Kaart baséierend op den Zoustand vun Entitéiten.",
                             "name": "Bedingungen",
                             "state_equal": "Zoustand ass gläich mat",
                             "state_not_equal": "Zoustand ass net gläich mat"
@@ -2126,6 +2163,10 @@
                             "description": "D'Entity Filter Kaart erlaabt Iech eng Lëscht vun Entitéiten ze definéieren déi nëmmen ugewise gi wann se an engem bestëmmten Zoustand sinn.",
                             "name": "Entitéite Filter"
                         },
+                        "entity": {
+                            "description": "D'Entity Kaart gëtt Dir e séieren Iwwerbléck iwwer den Zoustand vun enger Entitéit.",
+                            "name": "Entitéit"
+                        },
                         "gauge": {
                             "description": "D'Gauge Kaart ass eng Basis Kaart déi Sensor Date visuell duerstellt.",
                             "name": "Skala",
@@ -2138,8 +2179,10 @@
                         },
                         "generic": {
                             "aspect_ratio": "Säiteverhältnis",
+                            "attribute": "Attribut",
                             "camera_image": "Kamera Entitéit",
                             "camera_view": "Kamera Usiicht",
+                            "double_tap_action": "Aktioun beim 2-mol tippen",
                             "entities": "Entitéiten",
                             "entity": "Entitéit",
                             "hold_action": "Aktioun beim unhalen",
@@ -2179,7 +2222,7 @@
                         },
                         "iframe": {
                             "description": "Websäit Kaart erlaabt et eng aaner Websäit am Home Assistant unzeweisen.",
-                            "name": "iFrame"
+                            "name": "Websäit"
                         },
                         "light": {
                             "description": "Luucht Kaart erlaabt et d'Hellegkeet vun de Luuchten ze veränneren.",
@@ -2190,6 +2233,7 @@
                             "default_zoom": "Standard Zoom",
                             "description": "Kaarte Kaart erméiglecht d'Visualisatioun vun Entitéiten op enger Kaart.",
                             "geo_location_sources": "Quell vun der Geolokalisatioun",
+                            "hours_to_show": "Stonnen uweisen",
                             "name": "Kaart",
                             "source": "Quell"
                         },
@@ -2246,13 +2290,17 @@
                             "name": "Wiederprevisioune"
                         }
                     },
+                    "cardpicker": {
+                        "custom_card": "Personnaliséiert",
+                        "no_description": "Keng Beschreiwung verfügbar"
+                    },
                     "edit_card": {
                         "add": "Kaart dobäisetzen",
-                        "delete": "Läschen",
+                        "delete": "Kaart läschen",
                         "duplicate": "Kaart Replikéieren",
                         "edit": "Änneren",
                         "header": "Kaart Konfiguratioun",
-                        "move": "Réckelen",
+                        "move": "Zur Usiicht réckelen",
                         "options": "Méi Optiounen",
                         "pick_card": "Wielt eng Kaart aus déi soll dobäigesat ginn.",
                         "pick_card_view_title": "Wéieng Kaart wëllt dir zu ärer {name}Usiicht dobäisetzen?",
@@ -2310,6 +2358,7 @@
                     "save_config": {
                         "cancel": "Vergiess et",
                         "close": "Zoumaachen",
+                        "empty_config": "Mat engem eidelen Tableau de Bord ufänken",
                         "header": "Kontroll iwwert Loveloce UI iwwerhuelen",
                         "para": "Standardméisseg verwalt Home Assistant de Benotzer Interface an aktualiséiert en soubal nei Entitéiten oder Lovelace-Komponenten disponibel sinn. Wann dir d'Kontrolle iwwerhuelt, kënne mir keng automatesch Ännerung méi fir iech maachen.",
                         "para_sure": "Sécher fir d'Kontrolle iwwert de Benotzer Interface z'iwwerhuelen?",
@@ -2340,7 +2389,7 @@
                     "reload_resources": "Ressource frësch lueden",
                     "unused_entities": "Onbenotzt Entitéiten"
                 },
-                "reload_lovelace": "Lovelace frësch lueden",
+                "reload_lovelace": "Benotzer frësch lueden",
                 "reload_resources": {
                     "refresh_body": "D'Säit muss aktualiséiert gi fir d'Aktualiséierung ofzeschléissen, elo aktualiséieren?",
                     "refresh_header": "Soll aktualiséiert ginn?"
@@ -2355,8 +2404,9 @@
                     "title": "Onbenotzten Entitéiten"
                 },
                 "views": {
-                    "confirm_delete": "Sécher fir dës Usiicht ze läsche?",
+                    "confirm_delete": "Usiicht läschen?",
                     "confirm_delete_existing_cards": "D'Läschen vun dëser Usiicht läscht och d'Kaarten",
+                    "confirm_delete_existing_cards_text": "Sécher fir d'Usiicht '{name}' ze läsche? Dës Usiicht enthält {number} Kaart(en) déi och geläscht ginn. Dës Aktioun kann net réckgängeg gemaach ginn.",
                     "confirm_delete_text": "Sécher fir d'Usiicht '{name}' ze läsche?",
                     "existing_cards": "Dir kënnt keng Usiicht mat Kaarten läschen. Läscht d'Kaarten fir d'éischt."
                 },
@@ -2545,7 +2595,7 @@
             },
             "profile": {
                 "advanced_mode": {
-                    "description": "Home Assistant verstoppt standardméisseg avancéiert Features an Optiounen. Dir kënnt dës Funktiounen zougänglech maachen andeems Dir dës Optioun aktivéiert. Dës ass eng Benotzer spezifesch Astellung an huet keen Impakt op aner Home Assistant Benotzer.",
+                    "description": "Entspär fortgeschratt Funktiounen.",
                     "link_promo": "Méi liesen",
                     "title": "Avancéierte Modus"
                 },
@@ -2558,6 +2608,11 @@
                     "submit": "Ofschécken"
                 },
                 "current_user": "Dir sidd aktuell ageloggt als {fullName}.",
+                "dashboard": {
+                    "description": "Wiel ee Tableau de Bord als Standard op dësem Apparat.",
+                    "dropdown_label": "Tableau de Bord",
+                    "header": "Tableau de Bord"
+                },
                 "force_narrow": {
                     "description": "Dës Optioun verstoppt d'Säite Läischt esou wéi op engem mobillen Apparat.",
                     "header": "Säite Läischt ëmmer verstoppen"

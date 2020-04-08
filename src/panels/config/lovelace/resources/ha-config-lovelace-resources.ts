@@ -20,6 +20,7 @@ import {
   RowClickedEvent,
 } from "../../../../components/data-table/ha-data-table";
 import "../../../../components/ha-icon";
+import "../../../../components/ha-fab";
 import "../../../../layouts/hass-loading-screen";
 import "../../../../layouts/hass-tabs-subpage-data-table";
 import { HomeAssistant, Route } from "../../../../types";
@@ -97,6 +98,7 @@ export class HaConfigLovelaceRescources extends LitElement {
           "ui.panel.config.lovelace.resources.picker.no_resources"
         )}
         @row-click=${this._editResource}
+        hasFab
       >
       </hass-tabs-subpage-data-table>
       <ha-fab
