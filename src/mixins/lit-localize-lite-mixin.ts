@@ -26,12 +26,7 @@ export const litLocalizeLiteMixin = <T extends Constructor<LitElement>>(
       if (changedProperties.get("translationFragment")) {
         this._initializeLocalizeLite();
       }
-      if (changedProperties.has("language")) {
-        const html = document.querySelector("html")!;
-        if (html.getAttribute("lang") !== this.language) {
-          html.setAttribute("lang", this.language!);
-        }
-      }
+
       if (
         this.language &&
         this.resources &&
