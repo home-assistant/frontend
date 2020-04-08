@@ -90,6 +90,7 @@ export class HomeAssistantAppEl extends HassElement {
   protected async _initialize() {
     try {
       const { auth, conn } = await window.hassConnection;
+      this._haVersion = conn.haVersion;
       this.initializeHass(auth, conn);
     } catch (err) {
       this._error = true;
