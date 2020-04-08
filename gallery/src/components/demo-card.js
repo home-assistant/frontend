@@ -59,9 +59,6 @@ class DemoCard extends PolymerElement {
 
   ready() {
     super.ready();
-    this.addEventListener("ll-rebuild", () => {
-      this._configChanged(this.config);
-    });
   }
 
   _configChanged(config) {
@@ -70,9 +67,29 @@ class DemoCard extends PolymerElement {
       card.removeChild(card.lastChild);
     }
 
-    const el = createCardElement(safeLoad(config.config)[0]);
-    el.hass = this.hass;
+    const el = this._createCardElement(safeLoad(config.config)[0]);
     card.appendChild(el);
+  }
+
+  _createCardElement(cardConfig) {
+    const element = createCardElement(cardConfig);
+    if (this.hass) {
+      element.hass = this.hass;
+    }
+    element.addEventListener(
+      "ll-rebuild",
+      (ev) => {
+        ev.stopPropagation();
+        this._rebuildCard(element, cardConfig);
+      },
+      { once: true }
+    );
+    return element;
+  }
+
+  _rebuildCard(cardElToReplace, config) {
+    const newCardEl = this._createCardElement(config);
+    cardElToReplace.parentElement.replaceChild(newCardEl, cardElToReplace);
   }
 
   _hassChanged(hass) {
