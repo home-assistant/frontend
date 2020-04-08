@@ -21,7 +21,7 @@ import { computeStateName } from "../../../common/entity/compute_state_name";
 import { computeStateDisplay } from "../../../common/entity/compute_state_display";
 import { HomeAssistant } from "../../../types";
 import { LovelaceCard, LovelaceCardEditor } from "../types";
-import { UNAVAILABLE } from "../../../data/entity";
+import { UNAVAILABLE_STATES } from "../../../data/entity";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
 import { PictureEntityCardConfig } from "./types";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
@@ -178,7 +178,7 @@ class HuiPictureEntityCard extends LitElement implements LovelaceCard {
               : undefined
           )}
           class=${classMap({
-            clickable: stateObj.state !== UNAVAILABLE,
+            clickable: !UNAVAILABLE_STATES.includes(stateObj.state),
           })}
         ></hui-image>
         ${footer}
