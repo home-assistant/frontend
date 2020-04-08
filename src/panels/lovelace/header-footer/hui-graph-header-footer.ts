@@ -112,8 +112,9 @@ export class HuiGraphHeaderFooter extends LitElement
   static get styles(): CSSResult {
     return css`
       .spinner {
-        height: 58px;
-        text-align: center;
+        display: flex;
+        height: 98px;
+        justify-content: center;
       }
       .info {
         text-align: center;
