@@ -60,10 +60,6 @@ export const haStyle = css`
     background-color: var(--primary-background-color);
   }
 
-  app-toolbar {
-    box-sizing: border-box;
-  }
-
   app-header,
   app-toolbar {
     background-color: var(--app-header-background-color);
