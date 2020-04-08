@@ -25,6 +25,7 @@ class DialogZHADeviceZigbeeInfo extends LitElement {
         ...params.device.signature,
         manufacturer: params.device.manufacturer,
         model: params.device.model,
+        class: params.device.quirk_class,
       },
       null,
       2
