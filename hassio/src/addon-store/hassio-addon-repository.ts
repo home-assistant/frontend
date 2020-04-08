@@ -64,52 +64,57 @@ class HassioAddonRepositoryEl extends LitElement {
         <div class="card-group">
           ${addons.map(
             (addon) => html`
-              <paper-card
-                .addon=${addon}
-                class=${addon.available ? "" : "not_available"}
-                @click=${this._addonTapped}
-              >
-                <div class="card-content">
-                  <hassio-card-content
-                    .hass=${this.hass}
-                    .title=${addon.name}
-                    .description=${addon.description}
-                    .available=${addon.available}
-                    .icon=${addon.installed && addon.installed !== addon.version
-                      ? "hassio:arrow-up-bold-circle"
-                      : "hassio:puzzle"}
-                    .iconTitle=${addon.installed
-                      ? addon.installed !== addon.version
-                        ? "New version available"
-                        : "Add-on is installed"
-                      : addon.available
-                      ? "Add-on is not installed"
-                      : "Add-on is not available on your system"}
-                    .iconClass=${addon.installed
-                      ? addon.installed !== addon.version
-                        ? "update"
-                        : "installed"
-                      : !addon.available
-                      ? "not_available"
-                      : ""}
-                    .iconImage=${atLeastVersion(
-                      this.hass.config.version,
-                      0,
-                      105
-                    ) && addon.icon
-                      ? `/api/hassio/addons/${addon.slug}/icon`
-                      : undefined}
-                    .showTopbar=${addon.installed || !addon.available}
-                    .topbarClass=${addon.installed
-                      ? addon.installed !== addon.version
-                        ? "update"
-                        : "installed"
-                      : !addon.available
-                      ? "unavailable"
-                      : ""}
-                  ></hassio-card-content>
-                </div>
-              </paper-card>
+              ${addon.advanced && !this.hass.userData?.showAdvanced
+                ? ""
+                : html`
+                    <paper-card
+                      .addon=${addon}
+                      class=${addon.available ? "" : "not_available"}
+                      @click=${this._addonTapped}
+                    >
+                      <div class="card-content">
+                        <hassio-card-content
+                          .hass=${this.hass}
+                          .title=${addon.name}
+                          .description=${addon.description}
+                          .available=${addon.available}
+                          .icon=${addon.installed &&
+                          addon.installed !== addon.version
+                            ? "hassio:arrow-up-bold-circle"
+                            : "hassio:puzzle"}
+                          .iconTitle=${addon.installed
+                            ? addon.installed !== addon.version
+                              ? "New version available"
+                              : "Add-on is installed"
+                            : addon.available
+                            ? "Add-on is not installed"
+                            : "Add-on is not available on your system"}
+                          .iconClass=${addon.installed
+                            ? addon.installed !== addon.version
+                              ? "update"
+                              : "installed"
+                            : !addon.available
+                            ? "not_available"
+                            : ""}
+                          .iconImage=${atLeastVersion(
+                            this.hass.config.version,
+                            0,
+                            105
+                          ) && addon.icon
+                            ? `/api/hassio/addons/${addon.slug}/icon`
+                            : undefined}
+                          .showTopbar=${addon.installed || !addon.available}
+                          .topbarClass=${addon.installed
+                            ? addon.installed !== addon.version
+                              ? "update"
+                              : "installed"
+                            : !addon.available
+                            ? "unavailable"
+                            : ""}
+                        ></hassio-card-content>
+                      </div>
+                    </paper-card>
+                  `}
             `
           )}
         </div>
