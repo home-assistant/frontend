@@ -46,7 +46,8 @@ class DialogZHADeviceZigbeeInfo extends LitElement {
           this.hass.localize(`ui.dialogs.zha_device_info.device_signature`)
         )}
       >
-        <ha-code-editor mode="yaml" .value=${this._signature}> </ha-code-editor>
+        <ha-code-editor mode="yaml" readonly .value=${this._signature}>
+        </ha-code-editor>
       </ha-dialog>
     `;
   }
