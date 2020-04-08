@@ -9,7 +9,7 @@ import {
   TemplateResult,
 } from "lit-element";
 
-import "../../../components/entity/state-badge";
+import "../../../components/ha-icon";
 import "../../../components/ha-card";
 import "../components/hui-warning";
 
@@ -31,6 +31,7 @@ import {
   getWeatherUnit,
   weatherImages,
 } from "../../../data/weather";
+import { stateIcon } from "../../../common/entity/state_icon";
 
 const DAY_IN_MILLISECONDS = 86400000;
 
@@ -161,16 +162,19 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
       >
         <div class="content">
           <div class="icon-info">
-            ${stateObj.state in weatherIcons || stateObj.state in weatherImages
+            ${stateObj.state in weatherImages
               ? html`
-                  <state-badge
-                    .hass=${this.hass}
-                    .stateObj=${stateObj}
-                    .overrideImage=${weatherImages[stateObj.state]}
-                    .overrideIcon=${weatherIcons[stateObj.state]}
-                  ></state-badge>
+                  <img
+                    class="weather-image"
+                    src="${weatherImages[stateObj.state]}"
+                  />
                 `
-              : ""}
+              : html`
+                  <ha-icon
+                    class="weather-icon"
+                    .icon=${weatherIcons[stateObj.state] || stateIcon(stateObj)}
+                  ></ha-icon>
+                `}
             <div class="info">
               <div class="name">
                 ${this._config.name || computeStateName(stateObj)}
@@ -218,12 +222,21 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
                       ${item.condition !== undefined && item.condition !== null
                         ? html`
                             <div>
-                              <state-badge
-                                .hass=${this.hass}
-                                .stateObj=${stateObj}
-                                .overrideImage=${weatherImages[item.condition!]}
-                                .overrideIcon=${weatherIcons[item.condition!]}
-                              ></state-badge>
+                              ${item.condition in weatherImages
+                                ? html`
+                                    <img
+                                      class="forecast-image"
+                                      src="${weatherImages[item.condition]}"
+                                    />
+                                  `
+                                : item.condition in weatherIcons
+                                ? html`
+                                    <ha-icon
+                                      class="forecast-icon"
+                                      .icon=${weatherIcons[item.condition]}
+                                    ></ha-icon>
+                                  `
+                                : ""}
                             </div>
                           `
                         : ""}
@@ -286,17 +299,13 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
   }
 
   private _measureCard() {
-    const card = this.shadowRoot!.querySelector("ha-card");
-    if (!card) {
-      return;
-    }
-    this._narrow = card.offsetWidth < 375;
-    if (card.offsetWidth < 300) {
+    this._narrow = this.offsetWidth < 375;
+    if (this.offsetWidth < 300) {
       this.setAttribute("verynarrow", "");
     } else {
       this.removeAttribute("verynarrow");
     }
-    if (card.offsetWidth < 200) {
+    if (this.offsetWidth < 200) {
       this.setAttribute("veryverynarrow", "");
     } else {
       this.removeAttribute("veryverynarrow");
@@ -308,10 +317,6 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
       ha-card {
         cursor: pointer;
         padding: 16px;
-      }
-
-      state-badge {
-        color: var(--state-icon-color);
       }
 
       .content {
@@ -328,10 +333,13 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
         flex: 1;
       }
 
-      .icon-info state-badge {
-        height: 66px;
+      .weather-image,
+      .weather-icon {
         flex: 0 0 66px;
         margin-right: 16px;
+      }
+
+      .weather-icon {
         --iron-icon-width: 66px;
         --iron-icon-height: 66px;
       }
@@ -394,6 +402,15 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
         font-size: 16px;
       }
 
+      .forecast-image {
+        width: 40px;
+      }
+
+      .forecast-icon {
+        --iron-icon-width: 40px;
+        --iron-icon-height: 40px;
+      }
+
       .attribute {
         line-height: 1;
       }
@@ -403,9 +420,11 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
         color: var(--secondary-text-color);
       }
 
-      :host([narrow]) .icon-info state-badge {
-        height: 58px;
+      :host([narrow]) .weather-image {
         flex: 0 0 58px;
+      }
+
+      :host([narrow]) .weather-icon {
         --iron-icon-width: 58px;
         --iron-icon-height: 58px;
       }
@@ -441,9 +460,11 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
         flex: initial;
       }
 
-      :host([veryNarrow]) .icon-info state-badge {
-        height: 48px;
+      :host([narrow]) .weather-image {
         flex: 0 0 48px;
+      }
+
+      :host([narrow]) .weather-icon {
         --iron-icon-width: 48px;
         --iron-icon-height: 48px;
       }
