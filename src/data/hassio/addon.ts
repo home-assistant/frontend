@@ -12,6 +12,7 @@ export interface HassioAddonInfo {
   detached: boolean;
   available: boolean;
   build: boolean;
+  advanced: boolean;
   url: string | null;
   icon: boolean;
   logo: boolean;
