@@ -36,6 +36,9 @@ const ENTITIES = [
     friendly_name: "Nest",
     supported_features: 43,
   }),
+  getEntity("climate", "unavailable", "unavailable", {
+    supported_features: 43,
+  }),
 ];
 
 const CONFIGS = [
@@ -53,6 +56,20 @@ const CONFIGS = [
     config: `
 - type: thermostat
   entity: climate.nest
+    `,
+  },
+  {
+    heading: "Unavailable",
+    config: `
+- type: thermostat
+  entity: climate.unavailable
+    `,
+  },
+  {
+    heading: "Non existing",
+    config: `
+- type: thermostat
+  entity: climate.nonexisting
     `,
   },
 ];
@@ -76,6 +93,7 @@ class DemoThermostatEntity extends PolymerElement {
   public ready() {
     super.ready();
     const hass = provideHass(this.$.demos);
+    hass.updateTranslations(null, "en");
     hass.addEntities(ENTITIES);
   }
 }

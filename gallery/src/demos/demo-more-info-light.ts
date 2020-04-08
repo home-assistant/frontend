@@ -43,6 +43,7 @@ class DemoMoreInfoLight extends PolymerElement {
   public ready() {
     super.ready();
     const hass = provideHass(this);
+    hass.updateTranslations(null, "en");
     hass.addEntities(ENTITIES);
   }
 }
