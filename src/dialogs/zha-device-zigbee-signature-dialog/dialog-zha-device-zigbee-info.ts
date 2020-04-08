@@ -1,14 +1,13 @@
 import {
-  LitElement,
-  html,
   CSSResult,
-  TemplateResult,
   customElement,
+  html,
+  LitElement,
   property,
+  TemplateResult,
 } from "lit-element";
 import "../../components/ha-code-editor";
-import "../../components/ha-dialog";
-
+import { createCloseHeading } from "../../components/ha-dialog";
 import { haStyleDialog } from "../../resources/styles";
 import { HomeAssistant } from "../../types";
 import { ZHADeviceZigbeeInfoDialogParams } from "./show-dialog-zha-device-zigbee-info";
@@ -42,8 +41,9 @@ class DialogZHADeviceZigbeeInfo extends LitElement {
         open
         hideActions
         @closing="${this._close}"
-        .heading=${this.hass.localize(
-          `ui.dialogs.zha_device_info.device_signature`
+        .heading=${createCloseHeading(
+          this.hass,
+          this.hass.localize(`ui.dialogs.zha_device_info.device_signature`)
         )}
       >
         <ha-code-editor mode="yaml" .value=${this._signature}> </ha-code-editor>
