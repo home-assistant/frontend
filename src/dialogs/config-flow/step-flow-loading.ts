@@ -32,6 +32,9 @@ class StepFlowLoading extends LitElement {
         padding: 50px 100px;
         text-align: center;
       }
+      paper-spinner-lite {
+        margin-top: 16px;
+      }
     `;
   }
 }

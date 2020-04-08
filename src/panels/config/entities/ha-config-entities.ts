@@ -624,6 +624,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
         border-bottom: 1px solid rgba(var(--rgb-primary-text-color), 0.12);
       }
       search-input {
+        margin-left: 16px;
         flex-grow: 1;
         position: relative;
         top: 2px;
