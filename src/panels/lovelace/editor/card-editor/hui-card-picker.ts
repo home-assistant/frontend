@@ -116,6 +116,7 @@ export class HuiCardPicker extends LitElement {
     return html`
       <search-input
         .filter=${this._filter}
+        no-autofocus
         no-label-float
         @value-changed=${this._handleSearchChange}
       ></search-input>
@@ -187,11 +188,6 @@ export class HuiCardPicker extends LitElement {
     );
 
     this._loadCards();
-
-    setTimeout(
-      () => this.shadowRoot!.querySelector("search-input")!.focus(),
-      0
-    );
 
     this.requestUpdate();
   }
