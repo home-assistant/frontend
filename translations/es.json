@@ -2164,6 +2164,7 @@
                             "name": "Filtro de entidad"
                         },
                         "entity": {
+                            "description": "La tarjeta Entidad te ofrece una visión rápida del estado de tu entidad.",
                             "name": "Entidad"
                         },
                         "gauge": {
@@ -2262,7 +2263,7 @@
                             "name": "Imagen"
                         },
                         "plant-status": {
-                            "description": "La tarjeta Estado de la Planta es para todos los botánicos encantadores que hay.",
+                            "description": "La tarjeta Estado de la Planta es para todos los encantadores botánicos que hay por ahí.",
                             "name": "Estado de la planta"
                         },
                         "sensor": {
