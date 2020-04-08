@@ -95,6 +95,13 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
     this.addEventListener("onboarding-step", (ev) => this._handleStepDone(ev));
   }
 
+  protected updated(changedProps: PropertyValues) {
+    super.updated(changedProps);
+    if (changedProps.has("language")) {
+      document.querySelector("html")!.setAttribute("lang", this.language!);
+    }
+  }
+
   private _curStep() {
     return this._steps ? this._steps.find((stp) => !stp.done) : undefined;
   }
