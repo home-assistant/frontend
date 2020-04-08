@@ -112,18 +112,19 @@ class HassioSupervisorLog extends LitElement {
 
   private async _loadData(): Promise<void> {
     this._error = undefined;
-    let content;
+    let content!: string;
     try {
-      if (this._logSource === "Supervisor")
+      if (this._logSource === "Supervisor") {
         content = await fetchSupervisorLogs(this.hass);
-      else if (this._logSource == "Host")
+      } else if (this._logSource == "Host") {
         content = await fetchHostLogs(this.hass);
-      else if (this._logSource == "DNS")
+      } else if (this._logSource == "DNS") {
         content = await fetchDNSLogs(this.hass);
-      else if (this._logSource == "Audio")
+      } else if (this._logSource == "Audio") {
         content = await fetchAudioLogs(this.hass);
-      else if (this._logSource == "Multicast")
+      } else if (this._logSource == "Multicast") {
         content = await fetchMulticastLogs(this.hass);
+      }
       while (this._logContent.lastChild) {
         this._logContent.removeChild(this._logContent.lastChild as Node);
       }
