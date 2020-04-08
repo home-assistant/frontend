@@ -10,12 +10,18 @@ import {
 } from "lit-element";
 import { classMap } from "lit-html/directives/class-map";
 import { until } from "lit-html/directives/until";
+import memoizeOne from "memoize-one";
+import * as Fuse from "fuse.js";
+
+import { CardPickTarget } from "../types";
+import { LovelaceCard } from "../../types";
+import { LovelaceCardConfig, LovelaceConfig } from "../../../../data/lovelace";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { UNAVAILABLE_STATES } from "../../../../data/entity";
-import { LovelaceCardConfig, LovelaceConfig } from "../../../../data/lovelace";
 import {
-  customCards,
   CUSTOM_TYPE_PREFIX,
+  CustomCardEntry,
+  customCards,
   getCustomCardEntry,
 } from "../../../../data/lovelace_custom_cards";
 import { HomeAssistant } from "../../../../types";
@@ -24,9 +30,17 @@ import {
   computeUsedEntities,
 } from "../../common/compute-unused-entities";
 import { createCardElement } from "../../create-element/create-card-element";
-import { LovelaceCard } from "../../types";
 import { getCardStubConfig } from "../get-card-stub-config";
-import { CardPickTarget } from "../types";
+
+import "../../../../common/search/search-input";
+
+interface Card {
+  type: string;
+  name?: string;
+  description?: string;
+  noElement?: boolean;
+  isCustom?: boolean;
+}
 
 const previewCards: string[] = [
   "alarm-panel",
@@ -67,9 +81,27 @@ export class HuiCardPicker extends LitElement {
 
   public cardPicked?: (cardConf: LovelaceCardConfig) => void;
 
+  private _cards: Card[] = [];
+
+  private _filter?: string;
+
   private _unusedEntities?: string[];
 
   private _usedEntities?: string[];
+
+  private _filterCards = memoizeOne((cards: Card[], filter?: string) => {
+    if (filter) {
+      const options: Fuse.FuseOptions<Card> = {
+        keys: ["type", "name", "description"],
+        caseSensitive: false,
+        minMatchCharLength: 2,
+        threshold: 0.2,
+      };
+      const fuse = new Fuse(cards, options);
+      cards = fuse.search(filter);
+    }
+    return cards;
+  });
 
   protected render(): TemplateResult {
     if (
@@ -82,23 +114,16 @@ export class HuiCardPicker extends LitElement {
     }
 
     return html`
+      <search-input
+        .filter=${this._filter}
+        no-label-float
+        @value-changed=${this._handleSearchChange}
+      ></search-input>
       <div class="cards-container">
-        ${previewCards.map((type: string) => {
+        ${this._filterCards(this._cards, this._filter).map((card: Card) => {
           return html`
             ${until(
-              this._renderCardElement(type),
-              html`
-                <div class="card spinner">
-                  <paper-spinner active alt="Loading"></paper-spinner>
-                </div>
-              `
-            )}
-          `;
-        })}
-        ${nonPreviewCards.map((type: string) => {
-          return html`
-            ${until(
-              this._renderCardElement(type, true),
+              this._renderCardElement(card),
               html`
                 <div class="card spinner">
                   <paper-spinner active alt="Loading"></paper-spinner>
@@ -108,24 +133,6 @@ export class HuiCardPicker extends LitElement {
           `;
         })}
       </div>
-      ${customCards.length
-        ? html`
-            <div class="cards-container">
-              ${customCards.map((card) => {
-                return html`
-                  ${until(
-                    this._renderCardElement(card.type, true, true),
-                    html`
-                      <div class="card spinner">
-                        <paper-spinner active alt="Loading"></paper-spinner>
-                      </div>
-                    `
-                  )}
-                `;
-              })}
-            </div>
-          `
-        : ""}
       <div class="cards-container">
         <div
           class="card"
@@ -179,6 +186,48 @@ export class HuiCardPicker extends LitElement {
         !UNAVAILABLE_STATES.includes(this.hass!.states[eid].state)
     );
 
+    this._loadCards();
+
+    this.requestUpdate();
+  }
+
+  private _loadCards() {
+    const cards: Card[] = previewCards
+      .map((type: string) => ({
+        type,
+        name: this.hass!.localize(`ui.panel.lovelace.editor.card.${type}.name`),
+        description: this.hass!.localize(
+          `ui.panel.lovelace.editor.card.${type}.description`
+        ),
+      }))
+      .concat(
+        nonPreviewCards.map((type: string) => ({
+          type,
+          name: this.hass!.localize(
+            `ui.panel.lovelace.editor.card.${type}.name`
+          ),
+          description: this.hass!.localize(
+            `ui.panel.lovelace.editor.card.${type}.description`
+          ),
+          noElement: true,
+        }))
+      );
+    if (customCards.length > 0) {
+      cards.concat(
+        customCards.map((ccard: CustomCardEntry) => ({
+          type: ccard.type,
+          name: ccard.name,
+          description: ccard.description,
+          noElement: true,
+          isCustom: true,
+        }))
+      );
+    }
+    this._cards = cards;
+  }
+
+  private _handleSearchChange(ev: CustomEvent) {
+    this._filter = ev.detail.value;
     this.requestUpdate();
   }
 
@@ -279,11 +328,9 @@ export class HuiCardPicker extends LitElement {
     return element;
   }
 
-  private async _renderCardElement(
-    type: string,
-    noElement = false,
-    isCustom = false
-  ): Promise<TemplateResult> {
+  private async _renderCardElement(card: Card): Promise<TemplateResult> {
+    let { type } = card;
+    const { noElement, isCustom, name, description } = card;
     const customCard = isCustom ? getCustomCardEntry(type) : undefined;
     if (isCustom) {
       type = `${CUSTOM_TYPE_PREFIX}${type}`;
@@ -324,18 +371,14 @@ export class HuiCardPicker extends LitElement {
               this.hass!.localize(
                 `ui.panel.lovelace.editor.cardpicker.no_description`
               )
-            : this.hass!.localize(
-                `ui.panel.lovelace.editor.card.${cardConfig.type}.description`
-              )}
+            : description}
         </div>
         <div class="card-header">
           ${customCard
             ? `${this.hass!.localize(
                 "ui.panel.lovelace.editor.cardpicker.custom_card"
               )}: ${customCard.name || customCard.type}`
-            : this.hass!.localize(
-                `ui.panel.lovelace.editor.card.${cardConfig.type}.name`
-              )}
+            : name}
         </div>
       </div>
     `;
