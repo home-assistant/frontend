@@ -247,6 +247,9 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
       return;
     }
     var state = this.hass.states[this._entityId];
+    if (!state) {
+      return;
+    }
     this._state = state.state;
     this._stateAttributes = safeDump(state.attributes);
   }
