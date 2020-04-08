@@ -546,6 +546,7 @@
             "save": "Opslaan",
             "successfully_deleted": "Succesvol verwijderd",
             "successfully_saved": "Succesvol opgeslagen",
+            "undo": "Ongedaan maken",
             "yes": "Ja"
         },
         "components": {
@@ -1734,6 +1735,7 @@
                     "editor": {
                         "activate_user": "Activeer gebruiker",
                         "active": "Actief",
+                        "admin": "Beheerder",
                         "caption": "Bekijk gebruiker",
                         "change_password": "Wachtwoord wijzigen",
                         "confirm_user_deletion": "Weet je zeker dat je {name} wilt verwijderen?",
@@ -1747,6 +1749,7 @@
                         "owner": "Eigenaar",
                         "rename_user": "Naam wijzigen",
                         "system_generated": "Gegenereerd door systeem",
+                        "system_generated_users_not_editable": "Kan door het systeem gegenereerde gebruikers niet bijwerken.",
                         "system_generated_users_not_removable": "Kan door het systeem gegenereerde gebruikers niet verwijderen.",
                         "unnamed_user": "Naamloze gebruiker",
                         "update_user": "Bijwerken",
@@ -2161,6 +2164,7 @@
                             "name": "Entiteit-filter"
                         },
                         "entity": {
+                            "description": "De Entiteitskaart geeft u een snel overzicht van de status van uw entiteit.",
                             "name": "Entiteit"
                         },
                         "gauge": {

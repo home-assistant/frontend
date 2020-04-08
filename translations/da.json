@@ -2164,6 +2164,7 @@
                             "name": "Entitetsfilter"
                         },
                         "entity": {
+                            "description": "Entitetskortet giver dig et hurtigt overblik over din entitets tilstand.",
                             "name": "Entitet"
                         },
                         "gauge": {
