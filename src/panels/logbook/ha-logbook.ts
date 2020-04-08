@@ -60,7 +60,7 @@ class HaLogbook extends LitElement {
     item: LogbookEntry,
     index?: number
   ): TemplateResult {
-    if (!index) {
+    if (index === undefined) {
       return html``;
     }
     const previous = this.entries[index - 1];
