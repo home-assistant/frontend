@@ -13,6 +13,7 @@ import {
 import { classMap } from "lit-html/directives/class-map";
 import { navigate } from "../../../common/navigate";
 import { computeRTL } from "../../../common/util/compute_rtl";
+import "../../../components/ha-card";
 import "../../../components/ha-fab";
 import "../../../components/ha-paper-icon-button-arrow-prev";
 import {
@@ -30,14 +31,15 @@ import {
   showConfirmationDialog,
 } from "../../../dialogs/generic/show-dialog-box";
 import "../../../layouts/ha-app-layout";
+import "../../../layouts/hass-tabs-subpage";
 import { haStyle } from "../../../resources/styles";
 import { HomeAssistant, Route } from "../../../types";
+import "../ha-config-section";
+import { configSections } from "../ha-panel-config";
 import "./action/ha-automation-action";
+import { HaDeviceAction } from "./action/types/ha-automation-action-device_id";
 import "./condition/ha-automation-condition";
 import "./trigger/ha-automation-trigger";
-import "../../../layouts/hass-tabs-subpage";
-import { configSections } from "../ha-panel-config";
-import { HaDeviceAction } from "./action/types/ha-automation-action-device_id";
 import { HaDeviceTrigger } from "./trigger/types/ha-automation-trigger-device";
 
 export class HaAutomationEditor extends LitElement {
