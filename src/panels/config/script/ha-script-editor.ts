@@ -11,25 +11,27 @@ import {
   TemplateResult,
 } from "lit-element";
 import { classMap } from "lit-html/directives/class-map";
+import { computeObjectId } from "../../../common/entity/compute_object_id";
 import { navigate } from "../../../common/navigate";
 import { computeRTL } from "../../../common/util/compute_rtl";
+import "../../../components/ha-card";
 import "../../../components/ha-fab";
 import "../../../components/ha-paper-icon-button-arrow-prev";
 import {
   Action,
-  ScriptEntity,
-  ScriptConfig,
   deleteScript,
   getScriptEditorInitData,
+  ScriptConfig,
+  ScriptEntity,
 } from "../../../data/script";
 import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
 import "../../../layouts/ha-app-layout";
 import { haStyle } from "../../../resources/styles";
 import { HomeAssistant, Route } from "../../../types";
 import "../automation/action/ha-automation-action";
-import { computeObjectId } from "../../../common/entity/compute_object_id";
-import { configSections } from "../ha-panel-config";
 import { HaDeviceAction } from "../automation/action/types/ha-automation-action-device_id";
+import "../ha-config-section";
+import { configSections } from "../ha-panel-config";
 
 export class HaScriptEditor extends LitElement {
   @property() public hass!: HomeAssistant;
