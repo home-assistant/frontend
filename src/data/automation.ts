@@ -189,7 +189,7 @@ export const showAutomationEditor = (
   data?: Partial<AutomationConfig>
 ) => {
   inititialAutomationEditorData = data;
-  navigate(el, "/config/automation/new");
+  navigate(el, "/config/automation/edit/new");
 };
 
 export const getAutomationEditorInitData = () => {
