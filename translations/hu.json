@@ -2176,7 +2176,6 @@
                         },
                         "generic": {
                             "aspect_ratio": "Oldalarány",
-                            "refresh_rate": "Frissítési gyakoriság (másodpercben)",
                             "attribute": "Attribútum",
                             "camera_image": "Kamera entitás",
                             "camera_view": "Kamera nézet",

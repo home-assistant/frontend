@@ -2147,7 +2147,6 @@
                         },
                         "generic": {
                             "aspect_ratio": "Proporzioni",
-                            "refresh_rate": "Frequenza di aggiornamento (secondi)",
                             "camera_image": "Entità Fotocamera",
                             "camera_view": "Vista fotocamera",
                             "entities": "Entità",

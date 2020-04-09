@@ -2178,7 +2178,6 @@
                         },
                         "generic": {
                             "aspect_ratio": "长宽比",
-                            "refresh_rate": "刷新率（秒）",
                             "attribute": "属性",
                             "camera_image": "相机实体",
                             "camera_view": "相机视图",

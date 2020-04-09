@@ -1728,7 +1728,6 @@
                         },
                         "generic": {
                             "aspect_ratio": "יחס תצוגה",
-                            "refresh_rate": "קצב רענון (שניות)",
                             "camera_image": "ישות מצלמה",
                             "camera_view": "תצוגת מצלמה",
                             "entities": "ישויות",

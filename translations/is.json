@@ -1549,7 +1549,6 @@
                         },
                         "generic": {
                             "aspect_ratio": "Hlutfall",
-                            "refresh_rate": "Hressa hlutfall (sekúndur)",
                             "camera_image": "Myndavélaeining",
                             "camera_view": "Sjónarhorn myndavélar",
                             "entities": "Einingar",

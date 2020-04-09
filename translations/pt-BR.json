@@ -1924,7 +1924,6 @@
                         },
                         "generic": {
                             "aspect_ratio": "Proporção da tela",
-                            "refresh_rate": "Taxa de atualização (segundos)",
                             "camera_image": "Entidade da câmera",
                             "camera_view": "Vista da câmera",
                             "entities": "Entidades",

@@ -2178,7 +2178,6 @@
                         },
                         "generic": {
                             "aspect_ratio": "Seitenverhältnis",
-                            "refresh_rate": "Aktualisierungsrate (Sekunden)",
                             "attribute": "Attribut",
                             "camera_image": "Kamera-Entität",
                             "camera_view": "Kameraansicht",

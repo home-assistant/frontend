@@ -2173,7 +2173,6 @@
                         },
                         "generic": {
                             "aspect_ratio": "Säiteverhältnis",
-                            "refresh_rate": "Aktualiséierungstaux (Sekonnen)",
                             "attribute": "Attribut",
                             "camera_image": "Kamera Entitéit",
                             "camera_view": "Kamera Usiicht",

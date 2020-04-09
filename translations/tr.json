@@ -2036,7 +2036,6 @@
                         },
                         "generic": {
                             "aspect_ratio": "En boy oranı",
-                            "refresh_rate": "Yenileme Hızı (saniye)",
                             "camera_image": "Kamera Varlığı",
                             "camera_view": "Kamera Görünümü",
                             "entities": "Varlıklar",

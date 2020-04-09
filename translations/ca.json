@@ -2178,7 +2178,6 @@
                         },
                         "generic": {
                             "aspect_ratio": "Relació d'aspecte",
-                            "refresh_rate": "Velocitat d’actualització (segons)",
                             "attribute": "Atribut",
                             "camera_image": "Entitat de càmera",
                             "camera_view": "Visualització de càmera",

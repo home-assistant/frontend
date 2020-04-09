@@ -2147,7 +2147,6 @@
                         },
                         "generic": {
                             "aspect_ratio": "Razmerje Med Širino In Višino",
-                            "refresh_rate": "Hitrost osveževanja (sekunde)",
                             "camera_image": "Subjekt kamere",
                             "camera_view": "Pogled kamere",
                             "entities": "Subjekti",

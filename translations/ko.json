@@ -2178,7 +2178,6 @@
                         },
                         "generic": {
                             "aspect_ratio": "종횡비",
-                            "refresh_rate": "재생률 (초)",
                             "attribute": "속성",
                             "camera_image": "카메라 구성요소",
                             "camera_view": "카메라 뷰",

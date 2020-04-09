@@ -2178,7 +2178,6 @@
                         },
                         "generic": {
                             "aspect_ratio": "Proporcje obrazu",
-                            "refresh_rate": "Częstotliwość odświeżania (sekundy)",
                             "attribute": "Atrybut",
                             "camera_image": "Encja kamery",
                             "camera_view": "Widok kamery",

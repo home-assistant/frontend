@@ -1526,7 +1526,6 @@
                         },
                         "generic": {
                             "aspect_ratio": "Omjer",
-                            "refresh_rate": "Brzina osvježavanja (u sekundama)",
                             "camera_image": "Entitet kamere",
                             "camera_view": "Prikaz kamere",
                             "entities": "Entiteti",
