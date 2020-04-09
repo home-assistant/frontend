@@ -5,7 +5,6 @@ import { PolymerElement } from "@polymer/polymer/polymer-element";
 import "./ha-script-editor";
 import "./ha-script-picker";
 
-import { computeStateName } from "../../../common/entity/compute_state_name";
 import { computeStateDomain } from "../../../common/entity/compute_state_domain";
 
 class HaConfigScript extends PolymerElement {
@@ -103,18 +102,7 @@ class HaConfigScript extends PolymerElement {
       }
     });
 
-    return scripts.sort(function entitySortBy(entityA, entityB) {
-      var nameA = computeStateName(entityA);
-      var nameB = computeStateName(entityB);
-
-      if (nameA < nameB) {
-        return -1;
-      }
-      if (nameA > nameB) {
-        return 1;
-      }
-      return 0;
-    });
+    return scripts;
   }
 
   computeShowEditor(_edittingScript, _creatingNew) {
