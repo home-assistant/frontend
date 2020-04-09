@@ -21,6 +21,7 @@ class SearchInput extends LitElement {
 
   @property({ type: Boolean, attribute: "no-underline" })
   public noUnderline = false;
+
   @property({ type: Boolean, attribute: "no-autofocus" })
   public noAutofocus = false;
 
@@ -38,29 +39,27 @@ class SearchInput extends LitElement {
           }
         }
       </style>
-      <div class="search-container">
-        <paper-input
-          class=${classMap({ "no-underline": this.noUnderline })}
-          autofocus=${this.noAutofocus === false}
-          label="Search"
-          .value=${this.filter}
-          @value-changed=${this._filterInputChanged}
-          .noLabelFloat=${this.noLabelFloat}
-        >
-          <ha-icon icon="hass:magnify" slot="prefix" class="prefix"></ha-icon>
-          ${this.filter &&
-          html`
-            <paper-icon-button
-              slot="suffix"
-              class="suffix"
-              @click=${this._clearSearch}
-              icon="hass:close"
-              alt="Clear"
-              title="Clear"
-            ></paper-icon-button>
-          `}
-        </paper-input>
-      </div>
+      <paper-input
+        class=${classMap({ "no-underline": this.noUnderline })}
+        autofocus=${this.noAutofocus === false}
+        label="Search"
+        .value=${this.filter}
+        @value-changed=${this._filterInputChanged}
+        .noLabelFloat=${this.noLabelFloat}
+      >
+        <ha-icon icon="hass:magnify" slot="prefix" class="prefix"></ha-icon>
+        ${this.filter &&
+        html`
+          <paper-icon-button
+            slot="suffix"
+            class="suffix"
+            @click=${this._clearSearch}
+            icon="hass:close"
+            alt="Clear"
+            title="Clear"
+          ></paper-icon-button>
+        `}
+      </paper-input>
     `;
   }
 
