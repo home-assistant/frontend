@@ -95,7 +95,11 @@ export class HuiGraphHeaderFooter extends LitElement
   }
 
   protected updated(changedProps: PropertyValues) {
-    if (!this._config || !this.hass || this._fetching) {
+    if (
+      !this._config ||
+      !this.hass ||
+      (this._fetching && !changedProps.has("_config"))
+    ) {
       return;
     }
 
@@ -134,7 +138,8 @@ export class HuiGraphHeaderFooter extends LitElement
       this.hass!,
       this._config!.entity,
       startTime,
-      endTime
+      endTime,
+      Boolean(this._stateHistory!.length)
     );
 
     if (stateHistory.length && stateHistory[0].length) {
