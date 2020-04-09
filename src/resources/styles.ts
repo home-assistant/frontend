@@ -7,7 +7,7 @@ export const derivedStyles = {
   "sidebar-text-color": "var(--primary-text-color)",
   "sidebar-header-background-color": "var(--primary-background-color))",
   "sidebar-header-height": "64px",
-  "sidebar-background-color": "var(--card-background-color);",
+  "sidebar-background-color": "var(--card-background-color)",
   "sidebar-selected-text-color": "var(--primary-color)",
   "sidebar-selected-icon-color": "var(--primary-color)",
   "sidebar-icon-color": "rgba(var(--rgb-primary-text-color), 0.6)",
