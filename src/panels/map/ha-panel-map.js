@@ -22,7 +22,7 @@ class HaPanelMap extends LocalizeMixin(PolymerElement) {
     return html`
       <style include="ha-style">
         #map {
-          height: calc(100% - 64px);
+          height: calc(100% - var(--app-header-height));
           width: 100%;
           z-index: 0;
         }

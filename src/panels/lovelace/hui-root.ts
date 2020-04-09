@@ -447,7 +447,7 @@ class HUIRoot extends LitElement {
           max-width: 100%;
         }
         #view.tabs-hidden {
-          min-height: calc(100vh - 64px);
+          min-height: calc(100vh - var(--app-header-height));
         }
         paper-item {
           cursor: pointer;

@@ -53,7 +53,7 @@ class HassSubpage extends LitElement {
         display: flex;
         align-items: center;
         font-size: 20px;
-        height: 65px;
+        height: var(--app-header-height);
         padding: 0 16px;
         pointer-events: none;
         background-color: var(--app-header-background-color);
@@ -82,7 +82,7 @@ class HassSubpage extends LitElement {
       .content {
         position: relative;
         width: 100%;
-        height: calc(100% - 65px);
+        height: calc(100vh - var(--app-header-height));
         overflow-y: auto;
         overflow: auto;
         -webkit-overflow-scrolling: touch;

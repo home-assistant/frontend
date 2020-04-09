@@ -6,6 +6,7 @@ export const derivedStyles = {
   "state-icon-unavailable-color": "var(--disabled-text-color)",
   "sidebar-text-color": "var(--primary-text-color)",
   "sidebar-header-background-color": "var(--primary-background-color))",
+  "sidebar-header-height": "64px",
   "sidebar-background-color": "var(--paper-listbox-background-color);",
   "sidebar-selected-text-color": "var(--primary-color)",
   "sidebar-selected-icon-color": "var(--primary-color)",
@@ -45,6 +46,7 @@ export const derivedStyles = {
   "mdc-theme-on-surface": "var(--primary-text-color)",
   "app-header-text-color": "var(--text-primary-color)",
   "app-header-background-color": "var(--primary-color)",
+  "app-header-height": "64px",
   "material-body-text-color": "var(--primary-text-color)",
   "material-background-color": "var(--card-background-color)",
   "material-secondary-background-color": "var(--secondary-background-color)",
@@ -58,6 +60,10 @@ export const haStyle = css`
   app-header-layout,
   ha-app-layout {
     background-color: var(--primary-background-color);
+  }
+
+  app-toolbar {
+    height: var(--app-header-height);
   }
 
   app-header,
@@ -188,7 +194,7 @@ export const haStyleDialog = css`
     ha-paper-dialog {
       margin: 0;
       width: 100% !important;
-      max-height: calc(100% - 64px);
+      max-height: calc(100% - var(--app-header-height));
 
       position: fixed !important;
       bottom: 0px;

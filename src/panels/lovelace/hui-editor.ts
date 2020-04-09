@@ -133,7 +133,7 @@ class LovelaceFullConfigEditor extends LitElement {
         }
 
         .content {
-          height: calc(100vh - 68px);
+          height: calc(100vh - calc(var(--app-header-height) + 4px));
         }
 
         hui-code-editor {

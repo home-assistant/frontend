@@ -56,7 +56,7 @@ class HassLoadingScreen extends LitElement {
           background-color: var(--primary-background-color);
         }
         .content {
-          height: calc(100% - 64px);
+          height: calc(100% - var(--app-header-height));
           display: flex;
           align-items: center;
           justify-content: center;

@@ -163,7 +163,7 @@ class HassTabsSubpage extends LitElement {
         display: flex;
         align-items: center;
         font-size: 20px;
-        height: 65px;
+        height: var(--app-header-height);
         background-color: var(--sidebar-background-color);
         font-weight: 400;
         color: var(--sidebar-text-color);
@@ -244,7 +244,7 @@ class HassTabsSubpage extends LitElement {
       .content {
         position: relative;
         width: 100%;
-        height: calc(100% - 65px);
+        height: calc(100% - var(--app-header-height));
         overflow-y: auto;
         overflow: auto;
         -webkit-overflow-scrolling: touch;

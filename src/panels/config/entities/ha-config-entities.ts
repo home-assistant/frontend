@@ -611,7 +611,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
         --data-table-border-width: 0;
       }
       :host(:not([narrow])) ha-data-table {
-        height: calc(100vh - 65px);
+        height: calc(100vh - var(--app-header-height));
         display: block;
       }
       ha-switch {

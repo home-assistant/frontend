@@ -36,7 +36,7 @@ class HassErrorScreen extends LitElement {
     return [
       css`
         .content {
-          height: calc(100% - 64px);
+          height: calc(100% - var(--app-header-height));
           display: flex;
           align-items: center;
           justify-content: center;
