@@ -30,7 +30,6 @@ export class HuiGraphHeaderFooter extends LitElement
   @property() protected _config?: GraphHeaderFooterConfig;
   @property() private _coordinates?: number[][];
 
-  private _loadingInitialData: boolean = true;
   private _date?: Date;
 
   public setConfig(config: GraphHeaderFooterConfig): void {
@@ -60,7 +59,7 @@ export class HuiGraphHeaderFooter extends LitElement
       return html``;
     }
 
-    if (this._loadingInitialData) {
+    if (!this._coordinates) {
       return html`
         <div class="spinner-container">
           <paper-spinner class="spinner" active></paper-spinner>
@@ -68,10 +67,12 @@ export class HuiGraphHeaderFooter extends LitElement
       `;
     }
 
-    if (!this._coordinates) {
+    if (this._coordinates.length < 1) {
       return html`
-        <div class="info">
-          No state history found.
+        <div class="info-container">
+          <div class="info">
+            No state history found.
+          </div>
         </div>
       `;
     }
@@ -106,7 +107,6 @@ export class HuiGraphHeaderFooter extends LitElement
     );
 
     this._date = new Date();
-    this._loadingInitialData = false;
   }
 
   static get styles(): CSSResult {
@@ -120,10 +120,16 @@ export class HuiGraphHeaderFooter extends LitElement
         top: calc(50% - 28px);
         left: calc(50% - 12px);
       }
+      .info-container {
+        position: relative;
+        padding-bottom: 20%;
+      }
       .info {
-        text-align: center;
-        line-height: 58px;
+        position: absolute;
+        width: 100%;
+        top: calc(50% - 16px);
         color: var(--secondary-text-color);
+        text-align: center;
       }
     `;
   }
