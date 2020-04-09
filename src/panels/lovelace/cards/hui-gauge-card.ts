@@ -130,29 +130,23 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
           "--base-unit": this._baseUnit,
         })}
       >
-        <div class="content">
-          <div class="controls">
-            <div class="slider">
-              <round-slider
-                .readonly=${true}
-                .arcLength=${180}
-                .startAngle=${180}
-                .value=${state}
-                .min=${this._config.min}
-                .max=${this._config.max}
-              ></round-slider>
-            </div>
+        <round-slider
+          .readonly=${true}
+          .arcLength=${180}
+          .startAngle=${180}
+          .value=${state}
+          .min=${this._config.min}
+          .max=${this._config.max}
+        ></round-slider>
+        <div class="gauge-data">
+          <div class="percent">
+            ${stateObj.state}
+            ${this._config.unit ||
+              stateObj.attributes.unit_of_measurement ||
+              ""}
           </div>
-          <div class="gauge-data">
-            <div id="percent">
-              ${stateObj.state}
-              ${this._config.unit ||
-                stateObj.attributes.unit_of_measurement ||
-                ""}
-            </div>
-            <div id="name">
-              ${this._config.name || computeStateName(stateObj)}
-            </div>
+          <div class="name">
+            ${this._config.name || computeStateName(stateObj)}
           </div>
         </div>
       </ha-card>
@@ -166,7 +160,6 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
   protected firstUpdated(): void {
     this._updated = true;
     this._setBaseUnit();
-    this.classList.add("init");
   }
 
   protected updated(changedProps: PropertyValues): void {
@@ -210,88 +203,49 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
 
   static get styles(): CSSResult {
     return css`
-      :host {
-        display: block;
-      }
-
       ha-card {
-        height: 100%;
-        position: relative;
-        overflow: hidden;
-        /* cursor: pointer;
-        padding: 16px;
+        cursor: pointer;
         height: 100%;
         overflow: hidden;
+        padding: 16px 16px 0 16px;
         display: flex;
+        align-items: center;
         flex-direction: column;
-        align-items: center; */
+        box-sizing: border-box;
+
         --value-font-size: calc(var(--base-unit) * 0.55);
         --name-font-size: calc(var(--base-unit) * 0.3);
+        --name-padding-top: calc(var(--base-unit) * 0.15);
+        --slider-width: calc(var(--base-unit) * 4);
+        --gauge-data-top: calc(var(--base-unit) * -0.5);
       }
 
-      /* ha-card:focus {
+      ha-card:focus {
         outline: none;
         background: var(--divider-color);
-      } */
-
-      .content {
-        height: 100%;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-      }
-
-      .controls {
-        display: flex;
-        justify-content: center;
-        padding: 16px;
-        position: relative;
-      }
-
-      .slider {
-        /* height: calc(var(--base-unit) * 3);
-        width: calc(var(--base-unit) * 4);
-        display: flex;
-        align-items: center; */
-        height: 100%;
-        width: 100%;
-        position: relative;
-        max-width: 250px;
-        min-width: 100px;
       }
 
       round-slider {
-        --round-slider-path-width: calc(var(--base-unit) - 10);
+        --round-slider-path-width: calc(var(--base-unit) * 0.7);
         --round-slider-path-color: var(--disabled-text-color);
         --round-slider-linecap: "butt";
-        padding-bottom: 10%;
+        width: var(--slider-width);
       }
 
       .gauge-data {
-        /* position: absolute;
-        top: calc(var(--base-unit) * 2.2);
-        color: var(--primary-text-color);
         line-height: 1;
-        text-align: center; */
-        display: flex-vertical;
-        justify-content: center;
         text-align: center;
-        padding: 16px;
-        margin-top: -60px;
-        /* font-size: var(--name-font-size); */
+        position: relative;
+        color: var(--primary-text-color);
+        top: var(--gauge-data-top);
       }
 
-      .init .gauge-data {
-        transition: all 1s ease-out;
-      }
-
-      .gauge-data #percent {
+      .gauge-data .percent {
         font-size: var(--value-font-size);
-        /* line-height: 1; */
       }
 
-      .gauge-data #name {
-        /* padding-top: calc(var(--base-unit) * 0.15); */
+      .gauge-data .name {
+        padding-top: var(--name-padding-top);
         font-size: var(--name-font-size);
       }
     `;
