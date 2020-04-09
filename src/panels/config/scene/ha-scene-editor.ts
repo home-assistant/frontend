@@ -1,61 +1,59 @@
-import {
-  LitElement,
-  TemplateResult,
-  html,
-  CSSResult,
-  css,
-  PropertyValues,
-  property,
-  customElement,
-} from "lit-element";
 import "@polymer/app-layout/app-header/app-header";
 import "@polymer/app-layout/app-toolbar/app-toolbar";
 import "@polymer/paper-icon-button/paper-icon-button";
-import "@polymer/paper-item/paper-item";
 import "@polymer/paper-item/paper-icon-item";
+import "@polymer/paper-item/paper-item";
 import "@polymer/paper-item/paper-item-body";
-
+import { HassEvent } from "home-assistant-js-websocket";
+import {
+  css,
+  CSSResult,
+  customElement,
+  html,
+  LitElement,
+  property,
+  PropertyValues,
+  TemplateResult,
+} from "lit-element";
 import { classMap } from "lit-html/directives/class-map";
-
-import "../../../components/ha-fab";
-import "../../../components/device/ha-device-picker";
-import "../../../components/entity/ha-entities-picker";
-import "../../../components/ha-paper-icon-button-arrow-prev";
-import "../../../layouts/ha-app-layout";
-
+import memoizeOne from "memoize-one";
+import { fireEvent } from "../../../common/dom/fire_event";
+import { computeDomain } from "../../../common/entity/compute_domain";
 import { computeStateName } from "../../../common/entity/compute_state_name";
-
-import { haStyle } from "../../../resources/styles";
-import { HomeAssistant, Route } from "../../../types";
 import { navigate } from "../../../common/navigate";
 import { computeRTL } from "../../../common/util/compute_rtl";
+import "../../../components/device/ha-device-picker";
+import "../../../components/entity/ha-entities-picker";
+import "../../../components/ha-card";
+import "../../../components/ha-fab";
+import "../../../components/ha-paper-icon-button-arrow-prev";
 import {
-  SceneEntity,
-  SceneConfig,
-  getSceneConfig,
-  deleteScene,
-  saveScene,
-  SCENE_IGNORED_DOMAINS,
-  SceneEntities,
-  applyScene,
-  activateScene,
-  getSceneEditorInitData,
-} from "../../../data/scene";
-import { fireEvent } from "../../../common/dom/fire_event";
-import {
+  computeDeviceName,
   DeviceRegistryEntry,
   subscribeDeviceRegistry,
-  computeDeviceName,
 } from "../../../data/device_registry";
 import {
   EntityRegistryEntry,
   subscribeEntityRegistry,
 } from "../../../data/entity_registry";
-import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
-import memoizeOne from "memoize-one";
-import { computeDomain } from "../../../common/entity/compute_domain";
-import { HassEvent } from "home-assistant-js-websocket";
+import {
+  activateScene,
+  applyScene,
+  deleteScene,
+  getSceneConfig,
+  getSceneEditorInitData,
+  saveScene,
+  SceneConfig,
+  SceneEntities,
+  SceneEntity,
+  SCENE_IGNORED_DOMAINS,
+} from "../../../data/scene";
 import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
+import "../../../layouts/ha-app-layout";
+import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
+import { haStyle } from "../../../resources/styles";
+import { HomeAssistant, Route } from "../../../types";
+import "../ha-config-section";
 import { configSections } from "../ha-panel-config";
 
 interface DeviceEntities {
