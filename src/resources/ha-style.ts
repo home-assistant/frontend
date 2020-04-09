@@ -94,7 +94,7 @@ documentContainer.innerHTML = `<custom-style>
       --rgb-text-primary-color: 255, 255, 255;
 
       /* Height of app-header and menu header */
-      --header-height: 96px;
+      --header-height: 64px;
 
       ${Object.entries(derivedStyles)
         .map(([key, value]) => `--${key}: ${value};`)
