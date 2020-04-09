@@ -1,4 +1,4 @@
-import { HassEntities } from "home-assistant-js-websocket";
+import { HassEntities, HassEntity } from "home-assistant-js-websocket";
 import { customElement, property, PropertyValues } from "lit-element";
 import memoizeOne from "memoize-one";
 import { computeStateDomain } from "../../../common/entity/compute_state_domain";
@@ -16,7 +16,7 @@ class HaConfigScript extends HassRouterPage {
   @property() public narrow!: boolean;
   @property() public isWide!: boolean;
   @property() public showAdvanced!: boolean;
-  @property() public scripts: HassEntities = [];
+  @property() public scripts: HassEntity[] = [];
 
   protected routerOptions: RouterOptions = {
     defaultPage: "dashboard",
@@ -32,7 +32,7 @@ class HaConfigScript extends HassRouterPage {
   };
 
   private _computeScripts = memoizeOne((states: HassEntities) => {
-    const scripts: HassEntities = [];
+    const scripts: HassEntity[] = [];
     Object.values(states).forEach((state) => {
       if (computeStateDomain(state) === "script" && !state.attributes.hidden) {
         scripts.push(state);
@@ -64,7 +64,7 @@ class HaConfigScript extends HassRouterPage {
         scriptEntityId === "new"
           ? undefined
           : pageEl.scripts.find(
-              (entity: HassEntitity) => entity.entity_id === scriptEntityId
+              (entity: HassEntity) => entity.entity_id === scriptEntityId
             );
     }
   }
