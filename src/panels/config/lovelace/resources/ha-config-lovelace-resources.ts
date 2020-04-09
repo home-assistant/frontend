@@ -14,7 +14,6 @@ import {
   css,
 } from "lit-element";
 import memoize from "memoize-one";
-import "../../../../common/search/search-input";
 import {
   DataTableColumnContainer,
   RowClickedEvent,
