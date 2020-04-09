@@ -116,13 +116,13 @@ class HassioSupervisorLog extends LitElement {
     try {
       if (this._logSource === "Supervisor") {
         content = await fetchSupervisorLogs(this.hass);
-      } else if (this._logSource == "Host") {
+      } else if (this._logSource === "Host") {
         content = await fetchHostLogs(this.hass);
-      } else if (this._logSource == "DNS") {
+      } else if (this._logSource === "DNS") {
         content = await fetchDNSLogs(this.hass);
-      } else if (this._logSource == "Audio") {
+      } else if (this._logSource === "Audio") {
         content = await fetchAudioLogs(this.hass);
-      } else if (this._logSource == "Multicast") {
+      } else if (this._logSource === "Multicast") {
         content = await fetchMulticastLogs(this.hass);
       }
       while (this._logContent.lastChild) {
