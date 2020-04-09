@@ -93,6 +93,9 @@ documentContainer.innerHTML = `<custom-style>
       --rgb-secondary-text-color: 114, 114, 114;
       --rgb-text-primary-color: 255, 255, 255;
 
+      /* Height of app-header and menu header */
+      --header-height: 96px;
+
       ${Object.entries(derivedStyles)
         .map(([key, value]) => `--${key}: ${value};`)
         .join("")}
