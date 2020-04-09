@@ -122,12 +122,15 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
       `;
     }
 
+    const sliderBarColor = this._computeSeverity(state);
+
     return html`
       <ha-card
         @click=${this._handleClick}
         tabindex="0"
         style=${styleMap({
           "--base-unit": this._baseUnit,
+          "--round-slider-bar-color": sliderBarColor,
         })}
       >
         <round-slider
@@ -181,6 +184,38 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
     ) {
       applyThemesOnElement(this, this.hass.themes, this._config.theme);
     }
+  }
+
+  private _computeSeverity(numberValue: number): string {
+    const sections = this._config!.severity;
+
+    if (!sections) {
+      return severityMap.normal;
+    }
+
+    const sectionsArray = Object.keys(sections);
+    const sortable = sectionsArray.map((severity) => [
+      severity,
+      sections[severity],
+    ]);
+
+    for (const severity of sortable) {
+      if (severityMap[severity[0]] == null || isNaN(severity[1])) {
+        return severityMap.normal;
+      }
+    }
+    sortable.sort((a, b) => a[1] - b[1]);
+
+    if (numberValue >= sortable[0][1] && numberValue < sortable[1][1]) {
+      return severityMap[sortable[0][0]];
+    }
+    if (numberValue >= sortable[1][1] && numberValue < sortable[2][1]) {
+      return severityMap[sortable[1][0]];
+    }
+    if (numberValue >= sortable[2][1]) {
+      return severityMap[sortable[2][0]];
+    }
+    return severityMap.normal;
   }
 
   private _setBaseUnit(): void {
