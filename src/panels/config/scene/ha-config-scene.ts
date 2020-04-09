@@ -1,5 +1,3 @@
-import "@polymer/app-route/app-route";
-
 import "./ha-scene-editor";
 import "./ha-scene-dashboard";
 
@@ -10,8 +8,6 @@ import {
 import { property, customElement, PropertyValues } from "lit-element";
 import { HomeAssistant } from "../../../types";
 import { computeStateDomain } from "../../../common/entity/compute_state_domain";
-import { computeStateName } from "../../../common/entity/compute_state_name";
-import { compare } from "../../../common/string/compare";
 import { SceneEntity } from "../../../data/scene";
 import memoizeOne from "memoize-one";
 import { HassEntities } from "home-assistant-js-websocket";
@@ -45,14 +41,8 @@ class HaConfigScene extends HassRouterPage {
       }
     });
 
-    return scenes.sort((a, b) => {
-      return compare(computeStateName(a), computeStateName(b));
-    });
+    return scenes;
   });
-
-  public disconnectedCallback() {
-    super.disconnectedCallback();
-  }
 
   protected updatePageEl(pageEl, changedProps: PropertyValues) {
     pageEl.hass = this.hass;

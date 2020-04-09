@@ -108,18 +108,7 @@ class HaConfigAutomation extends PolymerElement {
       }
     });
 
-    return automations.sort(function entitySortBy(entityA, entityB) {
-      var nameA = (entityA.attributes.alias || entityA.entity_id).toLowerCase();
-      var nameB = (entityB.attributes.alias || entityB.entity_id).toLowerCase();
-
-      if (nameA < nameB) {
-        return -1;
-      }
-      if (nameA > nameB) {
-        return 1;
-      }
-      return 0;
-    });
+    return automations;
   }
 
   computeShowEditor(_edittingAutomation, _creatingNew) {
