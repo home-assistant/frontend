@@ -61,15 +61,15 @@ export class HuiGraphHeaderFooter extends LitElement
 
     if (!this._coordinates) {
       return html`
-        <div class="spinner-container">
-          <paper-spinner class="spinner" active></paper-spinner>
+        <div class="container">
+          <paper-spinner active></paper-spinner>
         </div>
       `;
     }
 
     if (this._coordinates.length < 1) {
       return html`
-        <div class="info-container">
+        <div class="container">
           <div class="info">
             No state history found.
           </div>
@@ -111,16 +111,12 @@ export class HuiGraphHeaderFooter extends LitElement
 
   static get styles(): CSSResult {
     return css`
-      .spinner-container {
-        position: relative;
-        padding-bottom: 20%;
-      }
-      .spinner {
+      paper-spinner {
         position: absolute;
         top: calc(50% - 28px);
         left: calc(50% - 12px);
       }
-      .info-container {
+      .container {
         position: relative;
         padding-bottom: 20%;
       }
