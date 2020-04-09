@@ -160,9 +160,11 @@ export class HaTabsSubpageDataTable extends LitElement {
       }
       .table-header {
         border-bottom: 1px solid rgba(var(--rgb-primary-text-color), 0.12);
+        padding: 0 16px;
       }
       .search-toolbar {
         color: var(--secondary-text-color);
+        padding: 0 16px;
       }
       search-input {
         position: relative;
