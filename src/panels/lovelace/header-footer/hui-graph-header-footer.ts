@@ -38,6 +38,7 @@ export class HuiGraphHeaderFooter extends LitElement
 
   private _date?: Date;
   private _stateHistory?: HassEntity[];
+  private _fetching: boolean = false;
 
   public setConfig(config: GraphHeaderFooterConfig): void {
     if (!config?.entity || config.entity.split(".")[0] !== "sensor") {
@@ -94,7 +95,7 @@ export class HuiGraphHeaderFooter extends LitElement
   }
 
   protected updated(changedProps: PropertyValues) {
-    if (!this._config || !this.hass) {
+    if (!this._config || !this.hass || this._fetching) {
       return;
     }
 
@@ -111,6 +112,7 @@ export class HuiGraphHeaderFooter extends LitElement
   }
 
   private async _getCoordinates(): Promise<void> {
+    this._fetching = true;
     const endTime = new Date();
     const startTime =
       !this._date || !this._stateHistory?.length
@@ -147,6 +149,7 @@ export class HuiGraphHeaderFooter extends LitElement
     );
 
     this._date = endTime;
+    this._fetching = false;
   }
 
   static get styles(): CSSResult {
