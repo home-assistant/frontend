@@ -727,6 +727,7 @@ export class HaDataTable extends LitElement {
       }
       .table-header {
         border-bottom: 1px solid rgba(var(--rgb-primary-text-color), 0.12);
+        padding: 0 16px;
       }
       search-input {
         position: relative;
