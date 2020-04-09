@@ -509,6 +509,7 @@
                 "attributes": {
                     "air_pressure": "Pressão do ar",
                     "humidity": "Umidade",
+                    "precipitation": "Precipitação",
                     "temperature": "Temperatura",
                     "visibility": "Visibilidade",
                     "wind_speed": "Velocidade do vento"
@@ -531,16 +532,21 @@
                     "wnw": "ONO",
                     "wsw": "OSO"
                 },
-                "forecast": "Previsão"
+                "forecast": "Previsão",
+                "high": "Alto",
+                "low": "Fraco"
             }
         },
         "common": {
             "cancel": "Cancelar",
             "close": "Fechar",
+            "delete": "Eliminar",
             "loading": "Carregando",
             "no": "Não",
             "save": "Salvar",
+            "successfully_deleted": "Eliminado com sucesso",
             "successfully_saved": "Salvo com sucesso",
+            "undo": "Voltar para trás",
             "yes": "Sim"
         },
         "components": {
@@ -755,6 +761,10 @@
                 "areas": {
                     "caption": "Registro de Áreas",
                     "create_area": "CRIAR ÁREA",
+                    "data_table": {
+                        "area": "Área",
+                        "devices": "Dispositivos"
+                    },
                     "description": "Visão geral de todas as áreas da sua casa.",
                     "editor": {
                         "create": "CRIAR",
@@ -992,6 +1002,9 @@
                         "delete_confirm": "Tem certeza de que deseja excluir essa automação?",
                         "edit_automation": "Editar automação",
                         "header": "Editor de automação",
+                        "headers": {
+                            "name": "Nome"
+                        },
                         "introduction": "O editor de automação permite criar e editar automações. Por favor, siga o link abaixo para ler as instruções para se certificar de que você configurou o Home Assistant corretamente.",
                         "learn_more": "Saiba mais sobre automações",
                         "no_automations": "Não encontramos nenhuma automação editável",
@@ -1249,6 +1262,7 @@
                     "automations": "Automações",
                     "cant_edit": "Você só pode editar itens que são criados na IU.",
                     "caption": "Dispositivos",
+                    "confirm_delete": "Tem certeza de que deseja excluir este dispositivo?",
                     "confirm_rename_entity_ids": "Você também deseja renomear os IDs das entidades?",
                     "data_table": {
                         "area": "Área",
@@ -1258,6 +1272,7 @@
                         "manufacturer": "Fabricante",
                         "model": "Modelo"
                     },
+                    "delete": "Eliminar",
                     "description": "Gerenciar dispositivos conectados",
                     "details": "Aqui estão todos os detalhes do seu dispositivo.",
                     "device_not_found": "Dispositivo não encontrado.",
@@ -1268,6 +1283,7 @@
                     },
                     "info": "Informação do dispositivo",
                     "name": "Nome",
+                    "no_devices": "Sem dispositivos",
                     "scene": {
                         "create": "Criar cenário com o dispositivo",
                         "no_scenes": "Sem cenários",
@@ -1377,6 +1393,7 @@
                         },
                         "failed_create_area": "Falha ao criar a área.",
                         "finish": "Terminar",
+                        "loading_first_time": "Aguarde enquanto a integração está sendo instalada",
                         "name_new_area": "Nome da nova área?",
                         "not_all_required_fields": "Nem todos os campos obrigatórios são preenchidos.",
                         "submit": "Enviar"
@@ -1405,6 +1422,11 @@
                     "note_about_website_reference": "Existem mais disponíveis no "
                 },
                 "introduction": "Aqui é possível configurar seus componentes e Home Assistant. Nem tudo é possível configurar via UI, mas estamos trabalhando nisso.",
+                "lovelace": {
+                    "dashboards": {
+                        "default_dashboard": "Este é o painel de instrumentos padrão"
+                    }
+                },
                 "person": {
                     "add_person": "Adicionar pessoa",
                     "caption": "Pessoas",
@@ -1464,6 +1486,9 @@
                         "delete_scene": "Excluir cena",
                         "edit_scene": "Editar cena",
                         "header": "Editor de cena",
+                        "headers": {
+                            "name": "Nome"
+                        },
                         "introduction": "O editor de cenas permite criar e editar cenas. Siga o link abaixo para ler as instruções para garantir que você tenha configurado o Home Assistant corretamente.",
                         "learn_more": "Saiba mais sobre cenas",
                         "no_scenes": "Não foi possível encontrar cenas editáveis",
@@ -1491,9 +1516,13 @@
                         "add_script": "Adicionar script",
                         "edit_script": "Editar script",
                         "header": "Editor de Scripts",
+                        "headers": {
+                            "name": "Nome"
+                        },
                         "introduction": "O editor de scripts permite criar e editar scripts. Por favor, siga o link abaixo para ler as instruções e garantir que você configurou o Home Assistant corretamente.",
                         "learn_more": "Saiba mais sobre scripts",
                         "no_scripts": "Não foi possível encontrar nenhum script editável",
+                        "show_info": "Mostrar informações sobre a cena",
                         "trigger_script": "Disparar o script"
                     }
                 },
@@ -1542,6 +1571,7 @@
                     "editor": {
                         "activate_user": "Ativar usuário",
                         "active": "Ativo",
+                        "admin": "Administrador",
                         "caption": "Visualizar usuário",
                         "change_password": "Mudar senha",
                         "confirm_user_deletion": "Tem certeza de que deseja excluir {name} ?",
@@ -1551,14 +1581,22 @@
                         "group": "Grupo",
                         "group_update_failed": "Falha ao atualizar grupo:",
                         "id": "ID",
+                        "name": "Nome",
                         "owner": "Proprietário",
                         "rename_user": "Renomear usuário",
                         "system_generated": "Gerado pelo sistema",
+                        "system_generated_users_not_editable": "Não é possível remover utilizadores gerados pelo sistema.",
                         "system_generated_users_not_removable": "Não foi possível remover usuários gerados pelo sistema.",
                         "unnamed_user": "Usuário sem nome",
+                        "update_user": "Atualizar",
                         "user_rename_failed": "Falha ao renomear usuário:"
                     },
                     "picker": {
+                        "headers": {
+                            "group": "Grupo",
+                            "name": "Nome",
+                            "system": "Sistema"
+                        },
                         "system_generated": "Gerado pelo sistema",
                         "title": "Usuários"
                     }
@@ -1913,6 +1951,9 @@
                         "entity-filter": {
                             "name": "Entidade Filtro"
                         },
+                        "entity": {
+                            "name": "Entidade"
+                        },
                         "gauge": {
                             "name": "Indicador",
                             "severity": {
@@ -1924,8 +1965,10 @@
                         },
                         "generic": {
                             "aspect_ratio": "Proporção da tela",
+                            "attribute": "Atributo",
                             "camera_image": "Entidade da câmera",
                             "camera_view": "Vista da câmera",
+                            "double_tap_action": "Ação de toque duplo",
                             "entities": "Entidades",
                             "entity": "Entidade",
                             "hold_action": "Manter Ação",
@@ -1936,6 +1979,7 @@
                             "maximum": "Máximo",
                             "minimum": "Mínimo",
                             "name": "Nome",
+                            "no_theme": "Nenhum tema",
                             "refresh_interval": "Intervalo de atualização",
                             "show_icon": "Mostrar Icone?",
                             "show_name": "Mostrar nome?",
@@ -1966,6 +2010,7 @@
                             "dark_mode": "Modo escuro?",
                             "default_zoom": "Zoom padrão",
                             "geo_location_sources": "Fontes de geolocalização",
+                            "hours_to_show": "Horas a Mostrar",
                             "name": "Mapa",
                             "source": "Origem"
                         },
@@ -2010,9 +2055,14 @@
                             "name": "Previsão do Tempo"
                         }
                     },
+                    "cardpicker": {
+                        "custom_card": "Personalizado",
+                        "no_description": "Nenhuma descrição disponível"
+                    },
                     "edit_card": {
                         "add": "Adicionar Cartão",
                         "delete": "Excluir",
+                        "duplicate": "Duplicar",
                         "edit": "Editar",
                         "header": "Configuração de cartão",
                         "move": "Mover",
@@ -2036,7 +2086,10 @@
                         "header": "Configurações",
                         "header_name": "Ver Configuração de {nome}",
                         "move_left": "Mover à esquerda",
-                        "move_right": "Mover à direita"
+                        "move_right": "Mover à direita",
+                        "visibility": {
+                            "select_users": "Selecione quais usuários devem ver essa visualização na navegação"
+                        }
                     },
                     "header": "Editar “interface” do usuário",
                     "menu": {
@@ -2062,6 +2115,7 @@
                     },
                     "save_config": {
                         "cancel": "Esquecer",
+                        "empty_config": "Comece com um painel de instrumentos vazio",
                         "header": "Assuma o controle da sua interface do Lovelace",
                         "para": "Por padrão, o Home Assistant manterá sua interface de usuário, atualizando-a quando novas entidades ou componentes do Lovelace estiverem disponíveis. Se você assumir o controle, não faremos mais alterações automaticamente para você.",
                         "para_sure": "Tem certeza de que deseja assumir o controle da sua interface de usuário?",
@@ -2070,7 +2124,8 @@
                     "view": {
                         "panel_mode": {
                             "description": "Isso renderiza o primeiro cartão em largura total; outros cartões nesta visualização não serão renderizados.",
-                            "title": "Modo Painel?"
+                            "title": "Modo Painel?",
+                            "warning_multiple_cards": "Esta vista contém mais do que uma carta, mas uma vista de painel só pode mostrar 1 carta."
                         }
                     }
                 },
@@ -2080,9 +2135,14 @@
                     "exit_edit_mode": "Sair do modo de edição de interface",
                     "help": "Ajuda",
                     "refresh": "Atualizar",
+                    "reload_resources": "Recarregar recursos",
                     "unused_entities": "Entidades não utilizadas"
                 },
                 "reload_lovelace": "Recarregar Lovelace",
+                "reload_resources": {
+                    "refresh_body": "Você precisa atualizar a página para concluir a recarga. Deseja atualizar agora?",
+                    "refresh_header": "Deseja atualizar?"
+                },
                 "unused_entities": {
                     "available_entities": "Essas são as entidades que você tem disponíveis, mas ainda não estão na sua interface do Lovelace.",
                     "domain": "Domínio",
@@ -2097,6 +2157,7 @@
                     "existing_cards": "Você não pode excluir uma exibição que contenha cartões. Remova os cartões primeiro."
                 },
                 "warning": {
+                    "attribute_not_found": "O atributo {attribute} não está disponível em: {entity}",
                     "entity_non_numeric": "Entidade não é numérica: {entity}",
                     "entity_not_found": "Entidade não disponível: {entity}"
                 }
@@ -2293,6 +2354,11 @@
                     "submit": "Enviar"
                 },
                 "current_user": "Você está logado como {fullName}.",
+                "dashboard": {
+                    "description": "Escolha um painel padrão para este dispositivo.",
+                    "dropdown_label": "painel de controle",
+                    "header": "painel de controle"
+                },
                 "force_narrow": {
                     "description": "Isto irá ocultar a barra lateral por padrão, semelhante à experiência móvel.",
                     "header": "Sempre ocultar a barra lateral"
