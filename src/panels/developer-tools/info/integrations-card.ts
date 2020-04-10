@@ -34,9 +34,6 @@ class IntegrationsCard extends LitElement {
                     <img
                       loading="lazy"
                       src="https://brands.home-assistant.io/_/${domain}/icon.png"
-                      srcset="
-                        https://brands.home-assistant.io/_/${domain}/icon@2x.png 2x
-                      "
                       referrerpolicy="no-referrer"
                     />
                   </td>
