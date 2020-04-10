@@ -134,7 +134,7 @@ class HaScriptPicker extends LitElement {
           @click=${this._showHelp}
         ></paper-icon-button>
       </hass-tabs-subpage-data-table>
-      <a href="/config/script/new">
+      <a href="/config/script/edit/new">
         <ha-fab
           ?is-wide=${this.isWide}
           ?narrow=${this.narrow}
