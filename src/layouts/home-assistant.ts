@@ -5,7 +5,10 @@ import "./home-assistant-main";
 import "./ha-init-page";
 import "../resources/ha-style";
 import "../resources/custom-card-support";
-import { registerServiceWorker } from "../util/register-service-worker";
+import {
+  registerServiceWorker,
+  supportsServiceWorker,
+} from "../util/register-service-worker";
 
 import { Route, HomeAssistant } from "../types";
 import { navigate } from "../common/navigate";
@@ -16,6 +19,7 @@ export class HomeAssistantAppEl extends HassElement {
   @property() private _route?: Route;
   @property() private _error = false;
   @property() private _panelUrl?: string;
+  private _haVersion?: string;
 
   protected render() {
     const hass = this.hass;
@@ -64,9 +68,29 @@ export class HomeAssistantAppEl extends HassElement {
     }
   }
 
+  protected hassReconnected() {
+    super.hassReconnected();
+
+    // If backend has been upgraded, make sure we update frontend
+    if (this.hass!.connection.haVersion !== this._haVersion) {
+      if (supportsServiceWorker()) {
+        navigator.serviceWorker.getRegistration().then((registration) => {
+          if (registration) {
+            registration.update();
+          } else {
+            location.reload(true);
+          }
+        });
+      } else {
+        location.reload(true);
+      }
+    }
+  }
+
   protected async _initialize() {
     try {
       const { auth, conn } = await window.hassConnection;
+      this._haVersion = conn.haVersion;
       this.initializeHass(auth, conn);
     } catch (err) {
       this._error = true;
