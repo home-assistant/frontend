@@ -9,19 +9,16 @@ import {
 } from "lit-element";
 
 import { LovelaceRow, TextConfig } from "../entity-rows/types";
-import { HomeAssistant } from "../../../types";
 
 import "../../../components/ha-icon";
 
 @customElement("hui-text-row")
 class HuiTextRow extends LitElement implements LovelaceRow {
-  public hass?: HomeAssistant;
-
   @property() private _config?: TextConfig;
 
   public setConfig(config: TextConfig): void {
     if (!config || !config.name || !config.text) {
-      throw new Error("Invalid Configuration: 'name' and 'url' required");
+      throw new Error("Invalid Configuration: 'name' and 'text' required");
     }
 
     this._config = config;
