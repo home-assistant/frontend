@@ -74,7 +74,7 @@ export const showScriptEditor = (
   data?: Partial<ScriptConfig>
 ) => {
   inititialScriptEditorData = data;
-  navigate(el, "/config/script/new");
+  navigate(el, "/config/script/edit/new");
 };
 
 export const getScriptEditorInitData = () => {
