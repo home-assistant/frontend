@@ -32,7 +32,6 @@ class IntegrationsCard extends LitElement {
                 <tr>
                   <td>
                     <img
-                      slot="item-icon"
                       loading="lazy"
                       src="https://brands.home-assistant.io/_/${domain}/icon.png"
                       srcset="
