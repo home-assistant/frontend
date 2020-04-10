@@ -30,6 +30,16 @@ class IntegrationsCard extends LitElement {
             ${this._sortedIntegrations(this.hass!.config.components).map(
               (domain) => html`
                 <tr>
+                  <td>
+                    <img
+                      loading="lazy"
+                      src="https://brands.home-assistant.io/_/${domain}/icon.png"
+                      srcset="
+                        https://brands.home-assistant.io/_/${domain}/icon@2x.png 2x
+                      "
+                      referrerpolicy="no-referrer"
+                    />
+                  </td>
                   <td>${domain}</td>
                   <td>
                     <a
@@ -66,6 +76,11 @@ class IntegrationsCard extends LitElement {
       }
       td:first-child {
         padding-left: 0;
+      }
+      img {
+        display: block;
+        max-height: 24px;
+        max-width: 24px;
       }
       a {
         color: var(--primary-color);
