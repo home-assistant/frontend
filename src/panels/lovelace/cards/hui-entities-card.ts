@@ -210,6 +210,14 @@ class HuiEntitiesCard extends LitElement implements LovelaceCard {
         margin: 8px 0;
       }
 
+      #states > *:first-child {
+        margin-top: 0;
+      }
+
+      #states > *:last-child {
+        margin-bottom: 0;
+      }
+
       #states > div > * {
         overflow: hidden;
       }
