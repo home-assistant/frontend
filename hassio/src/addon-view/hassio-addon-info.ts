@@ -19,6 +19,7 @@ import "../../../src/components/ha-label-badge";
 import "../../../src/components/ha-markdown";
 import "../../../src/components/ha-switch";
 import "../components/hassio-card-content";
+import "../../../src/layouts/hass-tabs-subpage";
 
 import { fireEvent } from "../../../src/common/dom/fire_event";
 import {
@@ -26,7 +27,6 @@ import {
   HassioAddonSetOptionParams,
   HassioAddonSetSecurityParams,
   fetchHassioAddonChangelog,
-  fetchHassioAddonDocumentation,
   installHassioAddon,
   setHassioAddonOption,
   setHassioAddonSecurity,
@@ -34,10 +34,11 @@ import {
 } from "../../../src/data/hassio/addon";
 import { hassioStyle } from "../resources/hassio-style";
 import { haStyle } from "../../../src/resources/styles";
-import { HomeAssistant } from "../../../src/types";
+import { HomeAssistant, Route } from "../../../src/types";
 import { navigate } from "../../../src/common/navigate";
 import { showHassioMarkdownDialog } from "../dialogs/markdown/show-dialog-hassio-markdown";
 import { atLeastVersion } from "../../../src/common/config/version";
+import { getAddonSections } from "./data/hassio-addon-sections";
 
 const PERMIS_DESC = {
   rating: {
@@ -96,55 +97,67 @@ const PERMIS_DESC = {
 class HassioAddonInfo extends LitElement {
   @property() public hass!: HomeAssistant;
   @property() public addon!: HassioAddonDetails;
+  @property() public narrow!: boolean;
+  @property() public isWide!: boolean;
+  @property() public showAdvanced!: boolean;
+  @property() public route!: Route;
   @property() private _error?: string;
   @property({ type: Boolean }) private _installing = false;
 
-  private _documentation?: string;
-
   protected render(): TemplateResult {
     return html`
-      ${this._computeUpdateAvailable
-        ? html`
-            <paper-card heading="Update available! 🎉">
-              <div class="card-content">
-                <hassio-card-content
-                  .hass=${this.hass}
-                  .title="${this.addon.name} ${this.addon
-                    .version_latest} is available"
-                  .description="You are currently running version ${this.addon
-                    .version}"
-                  icon="hassio:arrow-up-bold-circle"
-                  iconClass="update"
-                ></hassio-card-content>
-                ${!this.addon.available
-                  ? html`
-                      <p>
-                        This update is no longer compatible with your system.
-                      </p>
-                    `
-                  : ""}
-              </div>
-              <div class="card-actions">
-                <ha-call-api-button
-                  .hass=${this.hass}
-                  .disabled=${!this.addon.available}
-                  path="hassio/addons/${this.addon.slug}/update"
-                >
-                  Update
-                </ha-call-api-button>
-                ${this.addon.changelog
-                  ? html`
-                      <mwc-button @click=${this._openChangelog}>
-                        Changelog
-                      </mwc-button>
-                    `
-                  : ""}
-              </div>
-            </paper-card>
-          `
-        : ""}
-      ${!this.addon.protected
-        ? html`
+      <hass-tabs-subpage
+        .hass=${this.hass}
+        .narrow=${this.narrow}
+        .route=${this.route}
+        .tabs=${getAddonSections(this.addon)}
+        hassio
+      >
+        <div class="container">
+          <div class="content">
+            ${this._computeUpdateAvailable
+              ? html`
+                  <paper-card heading="Update available! 🎉">
+                    <div class="card-content">
+                      <hassio-card-content
+                        .hass=${this.hass}
+                        .title="${this.addon.name} ${this.addon
+                          .version_latest} is available"
+                        .description="You are currently running version ${this
+                          .addon.version}"
+                        icon="hassio:arrow-up-bold-circle"
+                        iconClass="update"
+                      ></hassio-card-content>
+                      ${!this.addon.available
+                        ? html`
+                            <p>
+                              This update is no longer compatible with your
+                              system.
+                            </p>
+                          `
+                        : ""}
+                    </div>
+                    <div class="card-actions">
+                      <ha-call-api-button
+                        .hass=${this.hass}
+                        .disabled=${!this.addon.available}
+                        path="hassio/addons/${this.addon.slug}/update"
+                      >
+                        Update
+                      </ha-call-api-button>
+                      ${this.addon.changelog
+                        ? html`
+                            <mwc-button @click=${this._openChangelog}>
+                              Changelog
+                            </mwc-button>
+                          `
+                        : ""}
+                    </div>
+                  </paper-card>
+                `
+              : ""}
+            ${!this.addon.protected
+              ? html`
         <paper-card heading="Warning: Protection mode is disabled!" class="warning">
           <div class="card-content">
             Protection mode on this add-on is disabled! This gives the add-on full access to the entire system, which adds security risks, and could damage your system when used incorrectly. Only disable the protection mode if you know, need AND trust the source of this add-on.
@@ -155,343 +168,344 @@ class HassioAddonInfo extends LitElement {
           </div>
         </paper-card>
       `
-        : ""}
-
-      <paper-card>
-        <div class="card-content">
-          <div class="addon-header">
-            ${this.addon.name}
-            <div class="addon-version light-color">
-              ${this.addon.version
-                ? html`
-                    ${this.addon.version}
-                    ${this._computeIsRunning
+              : ""}
+            <paper-card>
+              <div class="card-content">
+                <div class="addon-header">
+                  ${this.addon.name}
+                  <div class="addon-version light-color">
+                    ${this.addon.version
                       ? html`
-                          <iron-icon
-                            title="Add-on is running"
-                            class="running"
-                            icon="hassio:circle"
-                          ></iron-icon>
+                          ${this.addon.version}
+                          ${this._computeIsRunning
+                            ? html`
+                                <iron-icon
+                                  title="Add-on is running"
+                                  class="running"
+                                  icon="hassio:circle"
+                                ></iron-icon>
+                              `
+                            : html`
+                                <iron-icon
+                                  title="Add-on is stopped"
+                                  class="stopped"
+                                  icon="hassio:circle"
+                                ></iron-icon>
+                              `}
                         `
                       : html`
-                          <iron-icon
-                            title="Add-on is stopped"
-                            class="stopped"
-                            icon="hassio:circle"
-                          ></iron-icon>
+                          ${this.addon.version_latest}
                         `}
-                  `
-                : html`
-                    ${this.addon.version_latest}
-                  `}
-            </div>
-          </div>
-          <div class="description light-color">
-            ${this.addon.description}.<br />
-            Visit
-            <a href="${this.addon.url}" target="_blank" rel="noreferrer">
-              ${this.addon.name} page</a
-            >
-            for details.
-          </div>
-          ${this.addon.logo
-            ? html`
-                <a
-                  href="${this.addon.url}"
-                  target="_blank"
-                  class="logo"
-                  rel="noreferrer"
-                >
-                  <img src="/api/hassio/addons/${this.addon.slug}/logo" />
-                </a>
-              `
-            : ""}
-          <div class="security">
-            <ha-label-badge
-              class=${classMap({
-                green: [5, 6].includes(Number(this.addon.rating)),
-                yellow: [3, 4].includes(Number(this.addon.rating)),
-                red: [1, 2].includes(Number(this.addon.rating)),
-              })}
-              @click=${this._showMoreInfo}
-              id="rating"
-              .value=${this.addon.rating}
-              label="rating"
-              description=""
-            ></ha-label-badge>
-            ${this.addon.host_network
-              ? html`
-                  <ha-label-badge
-                    @click=${this._showMoreInfo}
-                    id="host_network"
-                    icon="hassio:network"
-                    label="host"
-                    description=""
-                  ></ha-label-badge>
-                `
-              : ""}
-            ${this.addon.full_access
-              ? html`
-                  <ha-label-badge
-                    @click=${this._showMoreInfo}
-                    id="full_access"
-                    icon="hassio:chip"
-                    label="hardware"
-                    description=""
-                  ></ha-label-badge>
-                `
-              : ""}
-            ${this.addon.homeassistant_api
-              ? html`
-                  <ha-label-badge
-                    @click=${this._showMoreInfo}
-                    id="homeassistant_api"
-                    icon="hassio:home-assistant"
-                    label="hass"
-                    description=""
-                  ></ha-label-badge>
-                `
-              : ""}
-            ${this._computeHassioApi
-              ? html`
-                  <ha-label-badge
-                    @click=${this._showMoreInfo}
-                    id="hassio_api"
-                    icon="hassio:home-assistant"
-                    label="hassio"
-                    .description=${this.addon.hassio_role}
-                  ></ha-label-badge>
-                `
-              : ""}
-            ${this.addon.docker_api
-              ? html`
-                  <ha-label-badge
-                    @click=${this._showMoreInfo}
-                    id="docker_api"
-                    icon="hassio:docker"
-                    label="docker"
-                    description=""
-                  ></ha-label-badge>
-                `
-              : ""}
-            ${this.addon.host_pid
-              ? html`
-                  <ha-label-badge
-                    @click=${this._showMoreInfo}
-                    id="host_pid"
-                    icon="hassio:pound"
-                    label="host pid"
-                    description=""
-                  ></ha-label-badge>
-                `
-              : ""}
-            ${this.addon.apparmor
-              ? html`
-                  <ha-label-badge
-                    @click=${this._showMoreInfo}
-                    class=${this._computeApparmorClassName}
-                    id="apparmor"
-                    icon="hassio:shield"
-                    label="apparmor"
-                    description=""
-                  ></ha-label-badge>
-                `
-              : ""}
-            ${this.addon.auth_api
-              ? html`
-                  <ha-label-badge
-                    @click=${this._showMoreInfo}
-                    id="auth_api"
-                    icon="hassio:key"
-                    label="auth"
-                    description=""
-                  ></ha-label-badge>
-                `
-              : ""}
-            ${this.addon.ingress
-              ? html`
-                  <ha-label-badge
-                    @click=${this._showMoreInfo}
-                    id="ingress"
-                    icon="hassio:cursor-default-click-outline"
-                    label="ingress"
-                    description=""
-                  ></ha-label-badge>
-                `
-              : ""}
-          </div>
-
-          ${this.addon.version
-            ? html`
-                <div class="state">
-                  <div>Start on boot</div>
-                  <ha-switch
-                    @change=${this._startOnBootToggled}
-                    .checked=${this.addon.boot === "auto"}
-                    haptic
-                  ></ha-switch>
+                  </div>
                 </div>
-                <div class="state">
-                  <div>Auto update</div>
-                  <ha-switch
-                    @change=${this._autoUpdateToggled}
-                    .checked=${this.addon.auto_update}
-                    haptic
-                  ></ha-switch>
+                <div class="description light-color">
+                  ${this.addon.description}.<br />
+                  Visit
+                  <a href="${this.addon.url}" target="_blank" rel="noreferrer">
+                    ${this.addon.name} page</a
+                  >
+                  for details.
                 </div>
-                ${this.addon.ingress
-                  ? html`
-                      <div class="state">
-                        <div>Show in sidebar</div>
-                        <ha-switch
-                          @change=${this._panelToggled}
-                          .checked=${this.addon.ingress_panel}
-                          .disabled=${this._computeCannotIngressSidebar}
-                          haptic
-                        ></ha-switch>
-                        ${this._computeCannotIngressSidebar
-                          ? html`
-                              <span>
-                                This option requires Home Assistant 0.92 or
-                                later.
-                              </span>
-                            `
-                          : ""}
-                      </div>
-                    `
-                  : ""}
-                ${this._computeUsesProtectedOptions
-                  ? html`
-                      <div class="state">
-                        <div>
-                          Protection mode
-                          <span>
-                            <iron-icon icon="hassio:information"></iron-icon>
-                            <paper-tooltip>
-                              Grant the add-on elevated system access.
-                            </paper-tooltip>
-                          </span>
-                        </div>
-                        <ha-switch
-                          @change=${this._protectionToggled}
-                          .checked=${this.addon.protected}
-                          haptic
-                        ></ha-switch>
-                      </div>
-                    `
-                  : ""}
-              `
-            : ""}
-          ${this._error
-            ? html`
-                <div class="errors">${this._error}</div>
-              `
-            : ""}
-        </div>
-        <div class="card-actions">
-          ${this.addon.version
-            ? html`
-                <mwc-button class="warning" @click=${this._uninstallClicked}>
-                  Uninstall
-                </mwc-button>
-                ${this.addon.build
-                  ? html`
-                      <ha-call-api-button
-                        class="warning"
-                        .hass=${this.hass}
-                        .path="hassio/addons/${this.addon.slug}/rebuild"
-                      >
-                        Rebuild
-                      </ha-call-api-button>
-                    `
-                  : ""}
-                ${this._computeIsRunning
-                  ? html`
-                      <ha-call-api-button
-                        class="warning"
-                        .hass=${this.hass}
-                        .path="hassio/addons/${this.addon.slug}/restart"
-                      >
-                        Restart
-                      </ha-call-api-button>
-                      <ha-call-api-button
-                        class="warning"
-                        .hass=${this.hass}
-                        .path="hassio/addons/${this.addon.slug}/stop"
-                      >
-                        Stop
-                      </ha-call-api-button>
-                    `
-                  : html`
-                      <ha-call-api-button
-                        .hass=${this.hass}
-                        .path="hassio/addons/${this.addon.slug}/start"
-                      >
-                        Start
-                      </ha-call-api-button>
-                    `}
-                ${this._computeShowWebUI
+                ${this.addon.logo
                   ? html`
                       <a
-                        .href=${this._pathWebui}
-                        tabindex="-1"
+                        href="${this.addon.url}"
                         target="_blank"
-                        class="right"
-                        rel="noopener"
+                        class="logo"
+                        rel="noreferrer"
                       >
-                        <mwc-button>
-                          Open web UI
-                        </mwc-button>
+                        <img src="/api/hassio/addons/${this.addon.slug}/logo" />
                       </a>
                     `
                   : ""}
-                ${this._computeShowIngressUI
-                  ? html`
-                      <mwc-button class="right" @click=${this._openIngress}>
-                        Open web UI
-                      </mwc-button>
-                    `
-                  : ""}
-              `
-            : html`
-                ${!this.addon.available
-                  ? html`
-                      <p class="warning">
-                        This add-on is not available on your system.
-                      </p>
-                    `
-                  : ""}
-                <ha-progress-button
-                  .disabled=${!this.addon.available || this._installing}
-                  .progress=${this._installing}
-                  @click=${this._installClicked}
-                >
-                  Install
-                </ha-progress-button>
-              `}
-        </div>
-      </paper-card>
+                <div class="security">
+                  <ha-label-badge
+                    class=${classMap({
+                      green: [5, 6].includes(Number(this.addon.rating)),
+                      yellow: [3, 4].includes(Number(this.addon.rating)),
+                      red: [1, 2].includes(Number(this.addon.rating)),
+                    })}
+                    @click=${this._showMoreInfo}
+                    id="rating"
+                    .value=${this.addon.rating}
+                    label="rating"
+                    description=""
+                  ></ha-label-badge>
+                  ${this.addon.host_network
+                    ? html`
+                        <ha-label-badge
+                          @click=${this._showMoreInfo}
+                          id="host_network"
+                          icon="hassio:network"
+                          label="host"
+                          description=""
+                        ></ha-label-badge>
+                      `
+                    : ""}
+                  ${this.addon.full_access
+                    ? html`
+                        <ha-label-badge
+                          @click=${this._showMoreInfo}
+                          id="full_access"
+                          icon="hassio:chip"
+                          label="hardware"
+                          description=""
+                        ></ha-label-badge>
+                      `
+                    : ""}
+                  ${this.addon.homeassistant_api
+                    ? html`
+                        <ha-label-badge
+                          @click=${this._showMoreInfo}
+                          id="homeassistant_api"
+                          icon="hassio:home-assistant"
+                          label="hass"
+                          description=""
+                        ></ha-label-badge>
+                      `
+                    : ""}
+                  ${this._computeHassioApi
+                    ? html`
+                        <ha-label-badge
+                          @click=${this._showMoreInfo}
+                          id="hassio_api"
+                          icon="hassio:home-assistant"
+                          label="hassio"
+                          .description=${this.addon.hassio_role}
+                        ></ha-label-badge>
+                      `
+                    : ""}
+                  ${this.addon.docker_api
+                    ? html`
+                        <ha-label-badge
+                          @click=${this._showMoreInfo}
+                          id="docker_api"
+                          icon="hassio:docker"
+                          label="docker"
+                          description=""
+                        ></ha-label-badge>
+                      `
+                    : ""}
+                  ${this.addon.host_pid
+                    ? html`
+                        <ha-label-badge
+                          @click=${this._showMoreInfo}
+                          id="host_pid"
+                          icon="hassio:pound"
+                          label="host pid"
+                          description=""
+                        ></ha-label-badge>
+                      `
+                    : ""}
+                  ${this.addon.apparmor
+                    ? html`
+                        <ha-label-badge
+                          @click=${this._showMoreInfo}
+                          class=${this._computeApparmorClassName}
+                          id="apparmor"
+                          icon="hassio:shield"
+                          label="apparmor"
+                          description=""
+                        ></ha-label-badge>
+                      `
+                    : ""}
+                  ${this.addon.auth_api
+                    ? html`
+                        <ha-label-badge
+                          @click=${this._showMoreInfo}
+                          id="auth_api"
+                          icon="hassio:key"
+                          label="auth"
+                          description=""
+                        ></ha-label-badge>
+                      `
+                    : ""}
+                  ${this.addon.ingress
+                    ? html`
+                        <ha-label-badge
+                          @click=${this._showMoreInfo}
+                          id="ingress"
+                          icon="hassio:cursor-default-click-outline"
+                          label="ingress"
+                          description=""
+                        ></ha-label-badge>
+                      `
+                    : ""}
+                </div>
 
-      ${this._documentation
-        ? html`
-            <paper-card>
-              <div class="card-content">
-                <ha-markdown .content=${this._documentation}></ha-markdown>
+                ${this.addon.version
+                  ? html`
+                      <div class="state">
+                        <div>Start on boot</div>
+                        <ha-switch
+                          @change=${this._startOnBootToggled}
+                          .checked=${this.addon.boot === "auto"}
+                          haptic
+                        ></ha-switch>
+                      </div>
+                      <div class="state">
+                        <div>Auto update</div>
+                        <ha-switch
+                          @change=${this._autoUpdateToggled}
+                          .checked=${this.addon.auto_update}
+                          haptic
+                        ></ha-switch>
+                      </div>
+                      ${this.addon.ingress
+                        ? html`
+                            <div class="state">
+                              <div>Show in sidebar</div>
+                              <ha-switch
+                                @change=${this._panelToggled}
+                                .checked=${this.addon.ingress_panel}
+                                .disabled=${this._computeCannotIngressSidebar}
+                                haptic
+                              ></ha-switch>
+                              ${this._computeCannotIngressSidebar
+                                ? html`
+                                    <span>
+                                      This option requires Home Assistant 0.92
+                                      or later.
+                                    </span>
+                                  `
+                                : ""}
+                            </div>
+                          `
+                        : ""}
+                      ${this._computeUsesProtectedOptions
+                        ? html`
+                            <div class="state">
+                              <div>
+                                Protection mode
+                                <span>
+                                  <iron-icon
+                                    icon="hassio:information"
+                                  ></iron-icon>
+                                  <paper-tooltip>
+                                    Grant the add-on elevated system access.
+                                  </paper-tooltip>
+                                </span>
+                              </div>
+                              <ha-switch
+                                @change=${this._protectionToggled}
+                                .checked=${this.addon.protected}
+                                haptic
+                              ></ha-switch>
+                            </div>
+                          `
+                        : ""}
+                    `
+                  : ""}
+                ${this._error
+                  ? html`
+                      <div class="errors">${this._error}</div>
+                    `
+                  : ""}
+              </div>
+              <div class="card-actions">
+                ${this.addon.version
+                  ? html`
+                      <mwc-button
+                        class="warning"
+                        @click=${this._uninstallClicked}
+                      >
+                        Uninstall
+                      </mwc-button>
+                      ${this.addon.build
+                        ? html`
+                            <ha-call-api-button
+                              class="warning"
+                              .hass=${this.hass}
+                              .path="hassio/addons/${this.addon.slug}/rebuild"
+                            >
+                              Rebuild
+                            </ha-call-api-button>
+                          `
+                        : ""}
+                      ${this._computeIsRunning
+                        ? html`
+                            <ha-call-api-button
+                              class="warning"
+                              .hass=${this.hass}
+                              .path="hassio/addons/${this.addon.slug}/restart"
+                            >
+                              Restart
+                            </ha-call-api-button>
+                            <ha-call-api-button
+                              class="warning"
+                              .hass=${this.hass}
+                              .path="hassio/addons/${this.addon.slug}/stop"
+                            >
+                              Stop
+                            </ha-call-api-button>
+                          `
+                        : html`
+                            <ha-call-api-button
+                              .hass=${this.hass}
+                              .path="hassio/addons/${this.addon.slug}/start"
+                            >
+                              Start
+                            </ha-call-api-button>
+                          `}
+                      ${this._computeShowWebUI
+                        ? html`
+                            <a
+                              .href=${this._pathWebui}
+                              tabindex="-1"
+                              target="_blank"
+                              class="right"
+                              rel="noopener"
+                            >
+                              <mwc-button>
+                                Open web UI
+                              </mwc-button>
+                            </a>
+                          `
+                        : ""}
+                      ${this._computeShowIngressUI
+                        ? html`
+                            <mwc-button
+                              class="right"
+                              @click=${this._openIngress}
+                            >
+                              Open web UI
+                            </mwc-button>
+                          `
+                        : ""}
+                    `
+                  : html`
+                      ${!this.addon.available
+                        ? html`
+                            <p class="warning">
+                              This add-on is not available on your system.
+                            </p>
+                          `
+                        : ""}
+                      <ha-progress-button
+                        .disabled=${!this.addon.available || this._installing}
+                        .progress=${this._installing}
+                        @click=${this._installClicked}
+                      >
+                        Install
+                      </ha-progress-button>
+                    `}
               </div>
             </paper-card>
-          `
-        : ""}
-      ${this.addon.long_description
-        ? html`
-            <paper-card>
-              <div class="card-content">
-                <ha-markdown
-                  .content=${this.addon.long_description}
-                ></ha-markdown>
-              </div>
-            </paper-card>
-          `
-        : ""}
+
+            ${this.addon.long_description
+              ? html`
+                  <paper-card>
+                    <div class="card-content">
+                      <ha-markdown
+                        .content=${this.addon.long_description}
+                      ></ha-markdown>
+                    </div>
+                  </paper-card>
+                `
+              : ""}
+          </div>
+        </div>
+      </hass-tabs-subpage>
     `;
   }
 
@@ -500,8 +514,23 @@ class HassioAddonInfo extends LitElement {
       haStyle,
       hassioStyle,
       css`
-        :host {
-          display: block;
+        .container {
+          display: flex;
+          width: 100%;
+          justify-content: center;
+        }
+        .content {
+          display: flex;
+          width: 600px;
+          margin-bottom: 24px;
+          padding: 24px 0 32px;
+          flex-direction: column;
+        }
+        @media only screen and (max-width: 600px) {
+          .content {
+            max-width: 100%;
+            min-width: 100%;
+          }
         }
         paper-card {
           display: block;
@@ -611,11 +640,6 @@ class HassioAddonInfo extends LitElement {
         }
       `,
     ];
-  }
-
-  protected firstUpdated(changedProps) {
-    super.firstUpdated(changedProps);
-    this._loadDocumentation();
   }
 
   private get _computeHassioApi(): boolean {
@@ -810,17 +834,6 @@ class HassioAddonInfo extends LitElement {
       fireEvent(this, "hass-api-called", eventdata);
     } catch (err) {
       this._error = `Failed to uninstall addon, ${err.body?.message || err}`;
-    }
-  }
-
-  private async _loadDocumentation(): Promise<void> {
-    if (this.addon.documentation) {
-      const documentation = await fetchHassioAddonDocumentation(
-        this.hass,
-        this.addon.slug
-      );
-      this._documentation = String(documentation);
-      this.requestUpdate();
     }
   }
 }

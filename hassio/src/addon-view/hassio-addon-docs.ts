@@ -1,5 +1,7 @@
 import "@material/mwc-button";
+import "@polymer/iron-icon/iron-icon";
 import "@polymer/paper-card/paper-card";
+import "@polymer/paper-tooltip/paper-tooltip";
 import {
   css,
   CSSResult,
@@ -8,35 +10,30 @@ import {
   LitElement,
   property,
   TemplateResult,
-  query,
 } from "lit-element";
-import { HomeAssistant, Route } from "../../../src/types";
+
 import {
   HassioAddonDetails,
-  fetchHassioAddonLogs,
+  fetchHassioAddonDocumentation,
 } from "../../../src/data/hassio/addon";
-import { ANSI_HTML_STYLE, parseTextToColoredPre } from "../ansi-to-html";
 import { hassioStyle } from "../resources/hassio-style";
 import { haStyle } from "../../../src/resources/styles";
+import { HomeAssistant, Route } from "../../../src/types";
 import { getAddonSections } from "./data/hassio-addon-sections";
 
+import "../../../src/components/ha-markdown";
 import "../../../src/layouts/hass-tabs-subpage";
 
-@customElement("hassio-addon-logs")
-class HassioAddonLogs extends LitElement {
+@customElement("hassio-addon-docs")
+class HassioAddonDocs extends LitElement {
   @property() public hass!: HomeAssistant;
   @property() public addon!: HassioAddonDetails;
   @property() public narrow!: boolean;
   @property() public isWide!: boolean;
   @property() public showAdvanced!: boolean;
   @property() public route!: Route;
-  @property() private _error?: string;
-  @query("#content") private _logContent!: any;
 
-  public async connectedCallback(): Promise<void> {
-    super.connectedCallback();
-    await this._loadData();
-  }
+  private _documentation?: string;
 
   protected render(): TemplateResult {
     return html`
@@ -49,17 +46,17 @@ class HassioAddonLogs extends LitElement {
       >
         <div class="container">
           <div class="content">
-            <paper-card heading="Log">
-              ${this._error
-                ? html`
-                    <div class="errors">${this._error}</div>
-                  `
-                : ""}
-              <div class="card-content" id="content"></div>
-              <div class="card-actions">
-                <mwc-button @click=${this._refresh}>Refresh</mwc-button>
-              </div>
-            </paper-card>
+            ${this._documentation
+              ? html`
+                  <paper-card>
+                    <div class="card-content">
+                      <ha-markdown
+                        .content=${this._documentation}
+                      ></ha-markdown>
+                    </div>
+                  </paper-card>
+                `
+              : ""}
           </div>
         </div>
       </hass-tabs-subpage>
@@ -70,7 +67,6 @@ class HassioAddonLogs extends LitElement {
     return [
       haStyle,
       hassioStyle,
-      ANSI_HTML_STYLE,
       css`
         .container {
           display: flex;
@@ -80,8 +76,6 @@ class HassioAddonLogs extends LitElement {
         .content {
           display: flex;
           width: 600px;
-          min-width: 600px;
-          max-width: calc(100% - 8px);
           margin-bottom: 24px;
           padding: 24px 0 32px;
           flex-direction: column;
@@ -92,43 +86,32 @@ class HassioAddonLogs extends LitElement {
             min-width: 100%;
           }
         }
-        :host,
         paper-card {
           display: block;
-        }
-        pre {
-          overflow-x: auto;
-          white-space: pre-wrap;
-          overflow-wrap: break-word;
-        }
-        .errors {
-          color: var(--google-red-500);
           margin-bottom: 16px;
         }
       `,
     ];
   }
 
-  private async _loadData(): Promise<void> {
-    this._error = undefined;
-    try {
-      const content = await fetchHassioAddonLogs(this.hass, this.addon.slug);
-      while (this._logContent.lastChild) {
-        this._logContent.removeChild(this._logContent.lastChild as Node);
-      }
-      this._logContent.appendChild(parseTextToColoredPre(content));
-    } catch (err) {
-      this._error = `Failed to get addon logs, ${err.body?.message || err}`;
+  protected firstUpdated(changedProps) {
+    super.firstUpdated(changedProps);
+    this._loadDocumentation();
+  }
+
+  private async _loadDocumentation(): Promise<void> {
+    if (this.addon.documentation) {
+      const documentation = await fetchHassioAddonDocumentation(
+        this.hass,
+        this.addon.slug
+      );
+      this._documentation = String(documentation);
+      this.requestUpdate();
     }
   }
-
-  private async _refresh(): Promise<void> {
-    await this._loadData();
-  }
 }
-
 declare global {
   interface HTMLElementTagNameMap {
-    "hassio-addon-logs": HassioAddonLogs;
+    "hassio-addon-docs": HassioAddonDocs;
   }
 }

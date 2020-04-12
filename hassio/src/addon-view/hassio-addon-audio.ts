@@ -16,7 +16,7 @@ import {
   TemplateResult,
 } from "lit-element";
 
-import { HomeAssistant } from "../../../src/types";
+import { HomeAssistant, Route } from "../../../src/types";
 import {
   HassioAddonDetails,
   setHassioAddonOption,
@@ -28,11 +28,18 @@ import {
 } from "../../../src/data/hassio/hardware";
 import { hassioStyle } from "../resources/hassio-style";
 import { haStyle } from "../../../src/resources/styles";
+import { getAddonSections } from "./data/hassio-addon-sections";
+
+import "../../../src/layouts/hass-tabs-subpage";
 
 @customElement("hassio-addon-audio")
 class HassioAddonAudio extends LitElement {
   @property() public hass!: HomeAssistant;
   @property() public addon!: HassioAddonDetails;
+  @property() public narrow!: boolean;
+  @property() public isWide!: boolean;
+  @property() public showAdvanced!: boolean;
+  @property() public route!: Route;
   @property() private _error?: string;
   @property() private _inputDevices?: HassioHardwareAudioDevice[];
   @property() private _outputDevices?: HassioHardwareAudioDevice[];
@@ -41,57 +48,69 @@ class HassioAddonAudio extends LitElement {
 
   protected render(): TemplateResult {
     return html`
-      <paper-card heading="Audio">
-        <div class="card-content">
-          ${this._error
-            ? html`
-                <div class="errors">${this._error}</div>
-              `
-            : ""}
+      <hass-tabs-subpage
+        .hass=${this.hass}
+        .narrow=${this.narrow}
+        .route=${this.route}
+        .tabs=${getAddonSections(this.addon)}
+        hassio
+      >
+        <div class="container">
+          <div class="content">
+            <paper-card heading="Audio">
+              <div class="card-content">
+                ${this._error
+                  ? html`
+                      <div class="errors">${this._error}</div>
+                    `
+                  : ""}
 
-          <paper-dropdown-menu
-            label="Input"
-            @iron-select=${this._setInputDevice}
-          >
-            <paper-listbox
-              slot="dropdown-content"
-              attr-for-selected="device"
-              .selected=${this._selectedInput}
-            >
-              ${this._inputDevices &&
-                this._inputDevices.map((item) => {
-                  return html`
-                    <paper-item device=${item.device || ""}
-                      >${item.name}</paper-item
-                    >
-                  `;
-                })}
-            </paper-listbox>
-          </paper-dropdown-menu>
-          <paper-dropdown-menu
-            label="Output"
-            @iron-select=${this._setOutputDevice}
-          >
-            <paper-listbox
-              slot="dropdown-content"
-              attr-for-selected="device"
-              .selected=${this._selectedOutput}
-            >
-              ${this._outputDevices &&
-                this._outputDevices.map((item) => {
-                  return html`
-                    <paper-item device=${item.device || ""}
-                      >${item.name}</paper-item
-                    >
-                  `;
-                })}
-            </paper-listbox>
-          </paper-dropdown-menu>
+                <paper-dropdown-menu
+                  label="Input"
+                  @iron-select=${this._setInputDevice}
+                >
+                  <paper-listbox
+                    slot="dropdown-content"
+                    attr-for-selected="device"
+                    .selected=${this._selectedInput}
+                  >
+                    ${this._inputDevices &&
+                      this._inputDevices.map((item) => {
+                        return html`
+                          <paper-item device=${item.device || ""}
+                            >${item.name}</paper-item
+                          >
+                        `;
+                      })}
+                  </paper-listbox>
+                </paper-dropdown-menu>
+                <paper-dropdown-menu
+                  label="Output"
+                  @iron-select=${this._setOutputDevice}
+                >
+                  <paper-listbox
+                    slot="dropdown-content"
+                    attr-for-selected="device"
+                    .selected=${this._selectedOutput}
+                  >
+                    ${this._outputDevices &&
+                      this._outputDevices.map((item) => {
+                        return html`
+                          <paper-item device=${item.device || ""}
+                            >${item.name}</paper-item
+                          >
+                        `;
+                      })}
+                  </paper-listbox>
+                </paper-dropdown-menu>
+              </div>
+              <div class="card-actions">
+                <mwc-button @click=${this._saveSettings}>Save</mwc-button>
+              </div>
+            </paper-card>
+          </div>
         </div>
-        <div class="card-actions">
-          <mwc-button @click=${this._saveSettings}>Save</mwc-button>
-        </div>
-      </paper-card>
+      </hass-tabs-subpage>
     `;
   }
 
@@ -100,6 +119,24 @@ class HassioAddonAudio extends LitElement {
       haStyle,
       hassioStyle,
       css`
+        .container {
+          display: flex;
+          width: 100%;
+          justify-content: center;
+        }
+        .content {
+          display: flex;
+          width: 600px;
+          margin-bottom: 24px;
+          padding: 24px 0 32px;
+          flex-direction: column;
+        }
+        @media only screen and (max-width: 600px) {
+          .content {
+            max-width: 100%;
+            min-width: 100%;
+          }
+        }
         :host,
         paper-card,
         paper-dropdown-menu {

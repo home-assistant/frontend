@@ -76,7 +76,7 @@ class HassTabsSubpage extends LitElement {
                     <span class="name"
                       >${page.translationKey
                         ? this.hass.localize(page.translationKey)
-                        : name}</span
+                        : page.name}</span
                     >
                   `
                 : ""}

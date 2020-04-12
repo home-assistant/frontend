@@ -13,7 +13,7 @@ import {
   query,
 } from "lit-element";
 
-import { HomeAssistant } from "../../../src/types";
+import { HomeAssistant, Route } from "../../../src/types";
 import {
   HassioAddonDetails,
   setHassioAddonOption,
@@ -26,11 +26,18 @@ import "../../../src/components/ha-yaml-editor";
 // tslint:disable-next-line: no-duplicate-imports
 import { HaYamlEditor } from "../../../src/components/ha-yaml-editor";
 import { showConfirmationDialog } from "../../../src/dialogs/generic/show-dialog-box";
+import { getAddonSections } from "./data/hassio-addon-sections";
+
+import "../../../src/layouts/hass-tabs-subpage";
 
 @customElement("hassio-addon-config")
 class HassioAddonConfig extends LitElement {
   @property() public hass!: HomeAssistant;
   @property() public addon!: HassioAddonDetails;
+  @property() public narrow!: boolean;
+  @property() public isWide!: boolean;
+  @property() public showAdvanced!: boolean;
+  @property() public route!: Route;
   @property() private _error?: string;
   @property({ type: Boolean }) private _configHasChanged = false;
 
@@ -42,34 +49,46 @@ class HassioAddonConfig extends LitElement {
     const valid = editor ? editor.isValid : true;
 
     return html`
-      <paper-card heading="Config">
-        <div class="card-content">
-          <ha-yaml-editor
-            @value-changed=${this._configChanged}
-          ></ha-yaml-editor>
-          ${this._error
-            ? html`
-                <div class="errors">${this._error}</div>
-              `
-            : ""}
-          ${valid
-            ? ""
-            : html`
-                <div class="errors">Invalid YAML</div>
-              `}
+      <hass-tabs-subpage
+        .hass=${this.hass}
+        .narrow=${this.narrow}
+        .route=${this.route}
+        .tabs=${getAddonSections(this.addon)}
+        hassio
+      >
+        <div class="container">
+          <div class="content">
+            <paper-card heading="Config">
+              <div class="card-content">
+                <ha-yaml-editor
+                  @value-changed=${this._configChanged}
+                ></ha-yaml-editor>
+                ${this._error
+                  ? html`
+                      <div class="errors">${this._error}</div>
+                    `
+                  : ""}
+                ${valid
+                  ? ""
+                  : html`
+                      <div class="errors">Invalid YAML</div>
+                    `}
+              </div>
+              <div class="card-actions">
+                <mwc-button class="warning" @click=${this._resetTapped}>
+                  Reset to defaults
+                </mwc-button>
+                <mwc-button
+                  @click=${this._saveTapped}
+                  .disabled=${!this._configHasChanged || !valid}
+                >
+                  Save
+                </mwc-button>
+              </div>
+            </paper-card>
+          </div>
         </div>
-        <div class="card-actions">
-          <mwc-button class="warning" @click=${this._resetTapped}>
-            Reset to defaults
-          </mwc-button>
-          <mwc-button
-            @click=${this._saveTapped}
-            .disabled=${!this._configHasChanged || !valid}
-          >
-            Save
-          </mwc-button>
-        </div>
-      </paper-card>
+      </hass-tabs-subpage>
     `;
   }
 
@@ -78,8 +97,23 @@ class HassioAddonConfig extends LitElement {
       haStyle,
       hassioStyle,
       css`
-        :host {
-          display: block;
+        .container {
+          display: flex;
+          width: 100%;
+          justify-content: center;
+        }
+        .content {
+          display: flex;
+          width: 600px;
+          margin-bottom: 24px;
+          padding: 24px 0 32px;
+          flex-direction: column;
+        }
+        @media only screen and (max-width: 600px) {
+          .content {
+            max-width: 100%;
+            min-width: 100%;
+          }
         }
         paper-card {
           display: block;

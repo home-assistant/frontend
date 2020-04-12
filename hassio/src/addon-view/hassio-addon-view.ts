@@ -21,17 +21,16 @@ import {
 import { hassioStyle } from "../resources/hassio-style";
 import { haStyle } from "../../../src/resources/styles";
 
-import "./hassio-addon-audio";
-import "./hassio-addon-config";
-import "./hassio-addon-info";
-import "./hassio-addon-logs";
-import "./hassio-addon-network";
+import "./hassio-addon-router";
 
 @customElement("hassio-addon-view")
 class HassioAddonView extends LitElement {
   @property() public hass!: HomeAssistant;
   @property() public route!: Route;
   @property() public addon?: HassioAddonDetails;
+  @property() public narrow!: boolean;
+  @property() public isWide!: boolean;
+  @property() public showAdvanced!: boolean;
 
   protected render(): TemplateResult {
     if (!this.addon) {
@@ -39,46 +38,23 @@ class HassioAddonView extends LitElement {
         <paper-spinner-lite active></paper-spinner-lite>
       `;
     }
+
+    const route: Route = {
+      prefix: `${this.route.prefix}/${this.addon.slug}`,
+      path: this.addon
+        ? this.route.path.substr(1).replace(this.addon.slug, "")
+        : "",
+    };
+
     return html`
-      <hass-subpage header="Hass.io: add-on details" hassio>
-        <div class="content">
-          <hassio-addon-info
-            .hass=${this.hass}
-            .addon=${this.addon}
-          ></hassio-addon-info>
-
-          ${this.addon && this.addon.version
-            ? html`
-                <hassio-addon-config
-                  .hass=${this.hass}
-                  .addon=${this.addon}
-                ></hassio-addon-config>
-
-                ${this.addon.audio
-                  ? html`
-                      <hassio-addon-audio
-                        .hass=${this.hass}
-                        .addon=${this.addon}
-                      ></hassio-addon-audio>
-                    `
-                  : ""}
-                ${this.addon.network
-                  ? html`
-                      <hassio-addon-network
-                        .hass=${this.hass}
-                        .addon=${this.addon}
-                      ></hassio-addon-network>
-                    `
-                  : ""}
-
-                <hassio-addon-logs
-                  .hass=${this.hass}
-                  .addon=${this.addon}
-                ></hassio-addon-logs>
-              `
-            : ""}
-        </div>
-      </hass-subpage>
+      <hassio-addon-router
+        .hass=${this.hass}
+        .route=${route}
+        .addon=${this.addon}
+        .narrow=${this.narrow}
+        .isWide=${this.isWide}
+        .showAdvanced=${this.showAdvanced}
+      ></hassio-addon-router>
     `;
   }
 
@@ -91,32 +67,10 @@ class HassioAddonView extends LitElement {
           color: var(--primary-text-color);
           --paper-card-header-color: var(--primary-text-color);
         }
-        .content {
-          padding: 24px 0 32px;
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-        }
-        hassio-addon-info,
-        hassio-addon-network,
-        hassio-addon-audio,
-        hassio-addon-config {
-          margin-bottom: 24px;
-          width: 600px;
-        }
-        hassio-addon-logs {
-          max-width: calc(100% - 8px);
-          min-width: 600px;
-        }
-        @media only screen and (max-width: 600px) {
-          hassio-addon-info,
-          hassio-addon-network,
-          hassio-addon-audio,
-          hassio-addon-config,
-          hassio-addon-logs {
-            max-width: 100%;
-            min-width: 100%;
-          }
+        paper-spinner-lite {
+          position: absolute;
+          top: calc(50% - 14px);
+          left: calc(50% - 14px);
         }
       `,
     ];
@@ -142,7 +96,10 @@ class HassioAddonView extends LitElement {
   }
 
   private async _routeDataChanged(routeData: Route): Promise<void> {
-    const addon = routeData.path.substr(1);
+    let addon = routeData.path.substr(1);
+    if (addon.includes("/")) {
+      addon = addon.substring(0, addon.indexOf("/"));
+    }
     try {
       const addoninfo = await fetchHassioAddonInfo(this.hass, addon);
       this.addon = addoninfo;

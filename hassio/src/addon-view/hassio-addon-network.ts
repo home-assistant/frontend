@@ -12,7 +12,7 @@ import {
 
 import { PaperInputElement } from "@polymer/paper-input/paper-input";
 
-import { HomeAssistant } from "../../../src/types";
+import { HomeAssistant, Route } from "../../../src/types";
 import {
   HassioAddonDetails,
   HassioAddonSetOptionParams,
@@ -21,6 +21,9 @@ import {
 import { hassioStyle } from "../resources/hassio-style";
 import { haStyle } from "../../../src/resources/styles";
 import { fireEvent } from "../../../src/common/dom/fire_event";
+import { getAddonSections } from "./data/hassio-addon-sections";
+
+import "../../../src/layouts/hass-tabs-subpage";
 
 interface NetworkItem {
   description: string;
@@ -36,6 +39,10 @@ interface NetworkItemInput extends PaperInputElement {
 class HassioAddonNetwork extends LitElement {
   @property() public hass!: HomeAssistant;
   @property() public addon!: HassioAddonDetails;
+  @property() public narrow!: boolean;
+  @property() public isWide!: boolean;
+  @property() public showAdvanced!: boolean;
+  @property() public route!: Route;
   @property() private _error?: string;
   @property() private _config?: NetworkItem[];
 
@@ -45,53 +52,65 @@ class HassioAddonNetwork extends LitElement {
   }
 
   protected render(): TemplateResult {
-    if (!this._config) {
-      return html``;
-    }
-
     return html`
-      <paper-card heading="Network">
-        <div class="card-content">
-          ${this._error
-            ? html`
-                <div class="errors">${this._error}</div>
-              `
-            : ""}
+      <hass-tabs-subpage
+        .hass=${this.hass}
+        .narrow=${this.narrow}
+        .route=${this.route}
+        .tabs=${getAddonSections(this.addon)}
+        hassio
+      >
+        ${this._config
+          ? html`
+              <div class="container">
+                <div class="content">
+                  <paper-card heading="Network">
+                    <div class="card-content">
+                      ${this._error
+                        ? html`
+                            <div class="errors">${this._error}</div>
+                          `
+                        : ""}
 
-          <table>
-            <tbody>
-              <tr>
-                <th>Container</th>
-                <th>Host</th>
-                <th>Description</th>
-              </tr>
-              ${this._config!.map((item) => {
-                return html`
-                  <tr>
-                    <td>${item.container}</td>
-                    <td>
-                      <paper-input
-                        @value-changed=${this._configChanged}
-                        placeholder="disabled"
-                        .value=${item.host}
-                        .container=${item.container}
-                        no-label-float
-                      ></paper-input>
-                    </td>
-                    <td>${item.description}</td>
-                  </tr>
-                `;
-              })}
-            </tbody>
-          </table>
-        </div>
-        <div class="card-actions">
-          <mwc-button class="warning" @click=${this._resetTapped}>
-            Reset to defaults
-          </mwc-button>
-          <mwc-button @click=${this._saveTapped}>Save</mwc-button>
-        </div>
-      </paper-card>
+                      <table>
+                        <tbody>
+                          <tr>
+                            <th>Container</th>
+                            <th>Host</th>
+                            <th>Description</th>
+                          </tr>
+                          ${this._config!.map((item) => {
+                            return html`
+                              <tr>
+                                <td>${item.container}</td>
+                                <td>
+                                  <paper-input
+                                    @value-changed=${this._configChanged}
+                                    placeholder="disabled"
+                                    .value=${item.host}
+                                    .container=${item.container}
+                                    no-label-float
+                                  ></paper-input>
+                                </td>
+                                <td>${item.description}</td>
+                              </tr>
+                            `;
+                          })}
+                        </tbody>
+                      </table>
+                    </div>
+                    <div class="card-actions">
+                      <mwc-button class="warning" @click=${this._resetTapped}>
+                        Reset to defaults
+                      </mwc-button>
+                      <mwc-button @click=${this._saveTapped}>Save</mwc-button>
+                    </div>
+                  </paper-card>
+                </div>
+              </div>
+            `
+          : ""}
+      </hass-tabs-subpage>
     `;
   }
 
@@ -100,8 +119,23 @@ class HassioAddonNetwork extends LitElement {
       haStyle,
       hassioStyle,
       css`
-        :host {
-          display: block;
+        .container {
+          display: flex;
+          width: 100%;
+          justify-content: center;
+        }
+        .content {
+          display: flex;
+          width: 600px;
+          margin-bottom: 24px;
+          padding: 24px 0 32px;
+          flex-direction: column;
+        }
+        @media only screen and (max-width: 600px) {
+          .content {
+            max-width: 100%;
+            min-width: 100%;
+          }
         }
         paper-card {
           display: block;
