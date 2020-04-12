@@ -2164,6 +2164,7 @@
                             "name": "Entitás szűrő"
                         },
                         "entity": {
+                            "description": "Az Entitás kártya gyors áttekintést nyújt az entitás állapotáról.",
                             "name": "Entitás"
                         },
                         "gauge": {
