@@ -38,7 +38,6 @@ import { HomeAssistant } from "../../../src/types";
 import { navigate } from "../../../src/common/navigate";
 import { showHassioMarkdownDialog } from "../dialogs/markdown/show-dialog-hassio-markdown";
 import { atLeastVersion } from "../../../src/common/config/version";
-import { HassioResponse } from "../../../src/data/hassio/common";
 
 const PERMIS_DESC = {
   rating: {
