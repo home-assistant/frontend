@@ -26,7 +26,7 @@ import "../../../src/components/ha-yaml-editor";
 // tslint:disable-next-line: no-duplicate-imports
 import { HaYamlEditor } from "../../../src/components/ha-yaml-editor";
 import { showConfirmationDialog } from "../../../src/dialogs/generic/show-dialog-box";
-import { getAddonSections } from "./data/hassio-addon-sections";
+import { PageNavigation } from "../../../src/layouts/hass-tabs-subpage";
 
 import "../../../src/layouts/hass-tabs-subpage";
 
@@ -38,6 +38,7 @@ class HassioAddonConfig extends LitElement {
   @property() public isWide!: boolean;
   @property() public showAdvanced!: boolean;
   @property() public route!: Route;
+  @property() public sections!: PageNavigation[];
   @property() private _error?: string;
   @property({ type: Boolean }) private _configHasChanged = false;
 
@@ -53,7 +54,7 @@ class HassioAddonConfig extends LitElement {
         .hass=${this.hass}
         .narrow=${this.narrow}
         .route=${this.route}
-        .tabs=${getAddonSections(this.addon)}
+        .tabs=${this.sections}
         hassio
       >
         <div class="container">

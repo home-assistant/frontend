@@ -100,11 +100,15 @@ export interface HassioAddonSetOptionParams {
   network?: object | null;
 }
 
-export const reloadHassioAddons = async (hass: HomeAssistant) => {
+export const reloadHassioAddons = async (
+  hass: HomeAssistant
+): Promise<void> => {
   await hass.callApi<HassioResponse<void>>("POST", `hassio/addons/reload`);
 };
 
-export const fetchHassioAddonsInfo = async (hass: HomeAssistant) => {
+export const fetchHassioAddonsInfo = async (
+  hass: HomeAssistant
+): Promise<HassioAddonsInfo> => {
   return hassioApiResultExtractor(
     await hass.callApi<HassioResponse<HassioAddonsInfo>>("GET", `hassio/addons`)
   );
@@ -113,7 +117,7 @@ export const fetchHassioAddonsInfo = async (hass: HomeAssistant) => {
 export const fetchHassioAddonInfo = async (
   hass: HomeAssistant,
   slug: string
-) => {
+): Promise<HassioAddonDetails> => {
   return hassioApiResultExtractor(
     await hass.callApi<HassioResponse<HassioAddonDetails>>(
       "GET",
@@ -125,25 +129,21 @@ export const fetchHassioAddonInfo = async (
 export const fetchHassioAddonDocumentation = async (
   hass: HomeAssistant,
   slug: string
-): Promise<HassioResponse<string>> => {
-  const response = await hass.callApi<HassioResponse<any>>(
-    "GET",
-    `hassio/addons/${slug}/documentation`
-  );
-  return response;
+): Promise<string> => {
+  return hass.callApi<string>("GET", `hassio/addons/${slug}/documentation`);
 };
 
 export const fetchHassioAddonChangelog = async (
   hass: HomeAssistant,
   slug: string
-) => {
+): Promise<string> => {
   return hass.callApi<string>("GET", `hassio/addons/${slug}/changelog`);
 };
 
 export const fetchHassioAddonLogs = async (
   hass: HomeAssistant,
   slug: string
-) => {
+): Promise<string> => {
   return hass.callApi<string>("GET", `hassio/addons/${slug}/logs`);
 };
 
@@ -163,7 +163,7 @@ export const setHassioAddonSecurity = async (
   hass: HomeAssistant,
   slug: string,
   data: HassioAddonSetSecurityParams
-) => {
+): Promise<void> => {
   await hass.callApi<HassioResponse<void>>(
     "POST",
     `hassio/addons/${slug}/security`,
@@ -171,7 +171,10 @@ export const setHassioAddonSecurity = async (
   );
 };
 
-export const installHassioAddon = async (hass: HomeAssistant, slug: string) => {
+export const installHassioAddon = async (
+  hass: HomeAssistant,
+  slug: string
+): Promise<HassioResponse<void>> => {
   return hass.callApi<HassioResponse<void>>(
     "POST",
     `hassio/addons/${slug}/install`
@@ -181,7 +184,7 @@ export const installHassioAddon = async (hass: HomeAssistant, slug: string) => {
 export const uninstallHassioAddon = async (
   hass: HomeAssistant,
   slug: string
-) => {
+): Promise<void> => {
   await hass.callApi<HassioResponse<void>>(
     "POST",
     `hassio/addons/${slug}/uninstall`

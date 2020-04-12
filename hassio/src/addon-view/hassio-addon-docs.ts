@@ -19,10 +19,10 @@ import {
 import { hassioStyle } from "../resources/hassio-style";
 import { haStyle } from "../../../src/resources/styles";
 import { HomeAssistant, Route } from "../../../src/types";
-import { getAddonSections } from "./data/hassio-addon-sections";
+import { PageNavigation } from "../../../src/layouts/hass-tabs-subpage";
 
-import "../../../src/components/ha-markdown";
 import "../../../src/layouts/hass-tabs-subpage";
+import "../../../src/components/ha-markdown";
 
 @customElement("hassio-addon-docs")
 class HassioAddonDocs extends LitElement {
@@ -32,6 +32,7 @@ class HassioAddonDocs extends LitElement {
   @property() public isWide!: boolean;
   @property() public showAdvanced!: boolean;
   @property() public route!: Route;
+  @property() public sections!: PageNavigation[];
 
   private _documentation?: string;
 
@@ -41,14 +42,14 @@ class HassioAddonDocs extends LitElement {
         .hass=${this.hass}
         .narrow=${this.narrow}
         .route=${this.route}
-        .tabs=${getAddonSections(this.addon)}
+        .tabs=${this.sections}
         hassio
       >
         <div class="container">
           <div class="content">
             ${this._documentation
               ? html`
-                  <paper-card>
+                  <paper-card heading="Documentation">
                     <div class="card-content">
                       <ha-markdown
                         .content=${this._documentation}
@@ -85,6 +86,9 @@ class HassioAddonDocs extends LitElement {
             max-width: 100%;
             min-width: 100%;
           }
+        }
+        .card-content {
+          padding: 0 16px 16px;
         }
         paper-card {
           display: block;

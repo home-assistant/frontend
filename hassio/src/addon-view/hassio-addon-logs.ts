@@ -18,7 +18,7 @@ import {
 import { ANSI_HTML_STYLE, parseTextToColoredPre } from "../ansi-to-html";
 import { hassioStyle } from "../resources/hassio-style";
 import { haStyle } from "../../../src/resources/styles";
-import { getAddonSections } from "./data/hassio-addon-sections";
+import { PageNavigation } from "../../../src/layouts/hass-tabs-subpage";
 
 import "../../../src/layouts/hass-tabs-subpage";
 
@@ -30,6 +30,7 @@ class HassioAddonLogs extends LitElement {
   @property() public isWide!: boolean;
   @property() public showAdvanced!: boolean;
   @property() public route!: Route;
+  @property() public sections!: PageNavigation[];
   @property() private _error?: string;
   @query("#content") private _logContent!: any;
 
@@ -44,18 +45,19 @@ class HassioAddonLogs extends LitElement {
         .hass=${this.hass}
         .narrow=${this.narrow}
         .route=${this.route}
-        .tabs=${getAddonSections(this.addon)}
+        .tabs=${this.sections}
         hassio
       >
         <div class="container">
           <div class="content">
             <paper-card heading="Log">
-              ${this._error
-                ? html`
-                    <div class="errors">${this._error}</div>
-                  `
-                : ""}
-              <div class="card-content" id="content"></div>
+              <div class="card-content" id="content">
+                ${this._error
+                  ? html`
+                      <div class="errors">${this._error}</div>
+                    `
+                  : ""}
+              </div>
               <div class="card-actions">
                 <mwc-button @click=${this._refresh}>Refresh</mwc-button>
               </div>
@@ -79,7 +81,6 @@ class HassioAddonLogs extends LitElement {
         }
         .content {
           display: flex;
-          width: 600px;
           min-width: 600px;
           max-width: calc(100% - 8px);
           margin-bottom: 24px;
@@ -92,11 +93,11 @@ class HassioAddonLogs extends LitElement {
             min-width: 100%;
           }
         }
-        :host,
         paper-card {
           display: block;
         }
         pre {
+          margin: 0;
           overflow-x: auto;
           white-space: pre-wrap;
           overflow-wrap: break-word;

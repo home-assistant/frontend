@@ -21,7 +21,7 @@ import {
 import { hassioStyle } from "../resources/hassio-style";
 import { haStyle } from "../../../src/resources/styles";
 import { fireEvent } from "../../../src/common/dom/fire_event";
-import { getAddonSections } from "./data/hassio-addon-sections";
+import { PageNavigation } from "../../../src/layouts/hass-tabs-subpage";
 
 import "../../../src/layouts/hass-tabs-subpage";
 
@@ -43,6 +43,7 @@ class HassioAddonNetwork extends LitElement {
   @property() public isWide!: boolean;
   @property() public showAdvanced!: boolean;
   @property() public route!: Route;
+  @property() public sections!: PageNavigation[];
   @property() private _error?: string;
   @property() private _config?: NetworkItem[];
 
@@ -57,7 +58,7 @@ class HassioAddonNetwork extends LitElement {
         .hass=${this.hass}
         .narrow=${this.narrow}
         .route=${this.route}
-        .tabs=${getAddonSections(this.addon)}
+        .tabs=${this.sections}
         hassio
       >
         ${this._config

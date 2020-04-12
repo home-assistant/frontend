@@ -28,7 +28,7 @@ import {
 } from "../../../src/data/hassio/hardware";
 import { hassioStyle } from "../resources/hassio-style";
 import { haStyle } from "../../../src/resources/styles";
-import { getAddonSections } from "./data/hassio-addon-sections";
+import { PageNavigation } from "../../../src/layouts/hass-tabs-subpage";
 
 import "../../../src/layouts/hass-tabs-subpage";
 
@@ -40,6 +40,7 @@ class HassioAddonAudio extends LitElement {
   @property() public isWide!: boolean;
   @property() public showAdvanced!: boolean;
   @property() public route!: Route;
+  @property() public sections!: PageNavigation[];
   @property() private _error?: string;
   @property() private _inputDevices?: HassioHardwareAudioDevice[];
   @property() private _outputDevices?: HassioHardwareAudioDevice[];
@@ -52,7 +53,7 @@ class HassioAddonAudio extends LitElement {
         .hass=${this.hass}
         .narrow=${this.narrow}
         .route=${this.route}
-        .tabs=${getAddonSections(this.addon)}
+        .tabs=${this.sections}
         hassio
       >
         <div class="container">
@@ -137,7 +138,6 @@ class HassioAddonAudio extends LitElement {
             min-width: 100%;
           }
         }
-        :host,
         paper-card,
         paper-dropdown-menu {
           display: block;

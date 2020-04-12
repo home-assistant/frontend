@@ -13,14 +13,6 @@ import {
 } from "lit-element";
 import { classMap } from "lit-html/directives/class-map";
 
-import "../../../src/components/buttons/ha-call-api-button";
-import "../../../src/components/buttons/ha-progress-button";
-import "../../../src/components/ha-label-badge";
-import "../../../src/components/ha-markdown";
-import "../../../src/components/ha-switch";
-import "../components/hassio-card-content";
-import "../../../src/layouts/hass-tabs-subpage";
-
 import { fireEvent } from "../../../src/common/dom/fire_event";
 import {
   HassioAddonDetails,
@@ -38,7 +30,15 @@ import { HomeAssistant, Route } from "../../../src/types";
 import { navigate } from "../../../src/common/navigate";
 import { showHassioMarkdownDialog } from "../dialogs/markdown/show-dialog-hassio-markdown";
 import { atLeastVersion } from "../../../src/common/config/version";
-import { getAddonSections } from "./data/hassio-addon-sections";
+import { PageNavigation } from "../../../src/layouts/hass-tabs-subpage";
+
+import "../../../src/layouts/hass-tabs-subpage";
+import "../../../src/components/buttons/ha-call-api-button";
+import "../../../src/components/buttons/ha-progress-button";
+import "../../../src/components/ha-label-badge";
+import "../../../src/components/ha-markdown";
+import "../../../src/components/ha-switch";
+import "../components/hassio-card-content";
 
 const PERMIS_DESC = {
   rating: {
@@ -101,6 +101,7 @@ class HassioAddonInfo extends LitElement {
   @property() public isWide!: boolean;
   @property() public showAdvanced!: boolean;
   @property() public route!: Route;
+  @property() public sections!: PageNavigation[];
   @property() private _error?: string;
   @property({ type: Boolean }) private _installing = false;
 
@@ -110,7 +111,7 @@ class HassioAddonInfo extends LitElement {
         .hass=${this.hass}
         .narrow=${this.narrow}
         .route=${this.route}
-        .tabs=${getAddonSections(this.addon)}
+        .tabs=${this.sections}
         hassio
       >
         <div class="container">
@@ -457,7 +458,7 @@ class HassioAddonInfo extends LitElement {
                               rel="noopener"
                             >
                               <mwc-button>
-                                Open web UI
+                                Open Web UI
                               </mwc-button>
                             </a>
                           `
@@ -468,7 +469,7 @@ class HassioAddonInfo extends LitElement {
                               class="right"
                               @click=${this._openIngress}
                             >
-                              Open web UI
+                              Open Web UI
                             </mwc-button>
                           `
                         : ""}

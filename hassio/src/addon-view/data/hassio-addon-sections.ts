@@ -8,7 +8,7 @@ export const getAddonSections = memoizeOne(
     const sections: PageNavigation[] = [
       {
         component: "hassio-addon-info",
-        name: "Info",
+        name: "Details",
         path: `/hassio/addon/${addon.slug}/info`,
         icon: "hassio:information-outline",
         core: true,
@@ -21,19 +21,17 @@ export const getAddonSections = memoizeOne(
           component: "hassio-addon-docs",
           name: "Documentation",
           path: `/hassio/addon/${addon.slug}/docs`,
-          icon: "hassio:books",
+          icon: "hassio:book-outline",
           core: true,
         });
       }
-
       sections.push({
         component: "hassio-addon-config",
         name: "Configuration",
         path: `/hassio/addon/${addon.slug}/config`,
-        icon: "hassio:cog-outline",
+        icon: "hassio:settings-outline",
         core: true,
       });
-
       if (addon.audio) {
         sections.push({
           component: "hassio-addon-audio",
@@ -52,15 +50,14 @@ export const getAddonSections = memoizeOne(
           core: true,
         });
       }
+      sections.push({
+        component: "hassio-addon-logs",
+        name: "Logs",
+        path: `/hassio/addon/${addon.slug}/logs`,
+        icon: "hassio:text",
+        core: true,
+      });
     }
-
-    sections.push({
-      component: "hassio-addon-logs",
-      name: "Logs",
-      path: `/hassio/addon/${addon.slug}/logs`,
-      icon: "hassio:cog-outline",
-      core: true,
-    });
 
     return sections;
   }

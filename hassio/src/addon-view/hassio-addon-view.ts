@@ -20,6 +20,8 @@ import {
 } from "../../../src/data/hassio/addon";
 import { hassioStyle } from "../resources/hassio-style";
 import { haStyle } from "../../../src/resources/styles";
+import { PageNavigation } from "../../../src/layouts/hass-tabs-subpage";
+import { getAddonSections } from "./data/hassio-addon-sections";
 
 import "./hassio-addon-router";
 
@@ -46,9 +48,12 @@ class HassioAddonView extends LitElement {
         : "",
     };
 
+    const sections: PageNavigation[] = getAddonSections(this.addon);
+
     return html`
       <hassio-addon-router
         .hass=${this.hass}
+        .sections=${sections}
         .route=${route}
         .addon=${this.addon}
         .narrow=${this.narrow}
