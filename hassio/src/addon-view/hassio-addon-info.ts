@@ -25,11 +25,12 @@ import {
   HassioAddonDetails,
   HassioAddonSetOptionParams,
   HassioAddonSetSecurityParams,
+  fetchHassioAddonChangelog,
+  fetchHassioAddonDocumentation,
+  installHassioAddon,
   setHassioAddonOption,
   setHassioAddonSecurity,
   uninstallHassioAddon,
-  installHassioAddon,
-  fetchHassioAddonChangelog,
 } from "../../../src/data/hassio/addon";
 import { hassioStyle } from "../resources/hassio-style";
 import { haStyle } from "../../../src/resources/styles";
@@ -37,6 +38,7 @@ import { HomeAssistant } from "../../../src/types";
 import { navigate } from "../../../src/common/navigate";
 import { showHassioMarkdownDialog } from "../dialogs/markdown/show-dialog-hassio-markdown";
 import { atLeastVersion } from "../../../src/common/config/version";
+import { HassioResponse } from "../../../src/data/hassio/common";
 
 const PERMIS_DESC = {
   rating: {
@@ -97,6 +99,8 @@ class HassioAddonInfo extends LitElement {
   @property() public addon!: HassioAddonDetails;
   @property() private _error?: string;
   @property({ type: Boolean }) private _installing = false;
+
+  private _documentation?: string;
 
   protected render(): TemplateResult {
     return html`
@@ -469,6 +473,15 @@ class HassioAddonInfo extends LitElement {
         </div>
       </paper-card>
 
+      ${this._documentation
+        ? html`
+            <paper-card>
+              <div class="card-content">
+                <ha-markdown .content=${this._documentation}></ha-markdown>
+              </div>
+            </paper-card>
+          `
+        : ""}
       ${this.addon.long_description
         ? html`
             <paper-card>
@@ -599,6 +612,11 @@ class HassioAddonInfo extends LitElement {
         }
       `,
     ];
+  }
+
+  protected firstUpdated(changedProps) {
+    super.firstUpdated(changedProps);
+    this._loadDocumentation();
   }
 
   private get _computeHassioApi(): boolean {
@@ -793,6 +811,17 @@ class HassioAddonInfo extends LitElement {
       fireEvent(this, "hass-api-called", eventdata);
     } catch (err) {
       this._error = `Failed to uninstall addon, ${err.body?.message || err}`;
+    }
+  }
+
+  private async _loadDocumentation(): Promise<void> {
+    if (this.addon.documentation) {
+      const documentation = await fetchHassioAddonDocumentation(
+        this.hass,
+        this.addon.slug
+      );
+      this._documentation = String(documentation);
+      this.requestUpdate();
     }
   }
 }

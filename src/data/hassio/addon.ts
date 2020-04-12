@@ -70,6 +70,7 @@ export interface HassioAddonDetails extends HassioAddonInfo {
   ingress_panel: boolean;
   ingress_entry: null | string;
   ingress_url: null | string;
+  documentation: boolean;
 }
 
 export interface HassioAddonsInfo {
@@ -119,6 +120,17 @@ export const fetchHassioAddonInfo = async (
       `hassio/addons/${slug}/info`
     )
   );
+};
+
+export const fetchHassioAddonDocumentation = async (
+  hass: HomeAssistant,
+  slug: string
+): Promise<HassioResponse<string>> => {
+  const response = await hass.callApi<HassioResponse<any>>(
+    "GET",
+    `hassio/addons/${slug}/documentation`
+  );
+  return response;
 };
 
 export const fetchHassioAddonChangelog = async (
