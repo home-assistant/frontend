@@ -2164,6 +2164,7 @@
                             "name": "Entität Filter"
                         },
                         "entity": {
+                            "description": "Mit der Entitätskarte erhalten Sie einen schnellen Überblick über den Status Ihrer Entität.",
                             "name": "Entität"
                         },
                         "gauge": {
