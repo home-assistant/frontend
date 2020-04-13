@@ -974,9 +974,20 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
       }
 
       ha-slider {
-        --paper-slider-active-color: var(--foreground-color);
-        --paper-slider-knob-color: var(--foreground-color);
-        --paper-slider-knob-start-color: var(--foreground-color);
+        --paper-slider-active-color: var(
+          --foreground-color,
+          var(--accent-color)
+        );
+        --paper-slider-knob-color: var(--foreground-color, var(--accent-color));
+        --paper-slider-knob-start-color: var(
+          --foreground-color,
+          var(--accent-color)
+        );
+        --paper-slider-pin-color: var(--foreground-color, var(--accent-color));
+        --paper-slider-font-color: var(
+          --background-color,
+          var(--primary-color)
+        );
         --paper-progress-container-color: rgba(200, 200, 200, 0.5);
         width: 100%;
         max-width: 200px;
