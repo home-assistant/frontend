@@ -208,6 +208,8 @@ export type MediaEntity = HassEntityBase & {
     media_duration: number;
     media_position: number;
     media_title: string;
+    volume_level?: number;
+    is_volume_muted?: boolean;
     icon?: string;
     entity_picture_local?: string;
   };
