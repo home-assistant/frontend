@@ -900,10 +900,18 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
         display: flex;
         height: fit-content;
         align-items: center;
+        white-space: nowrap;
+        overflow: hidden;
       }
 
       .icon-name ha-icon {
         width: 18px;
+        padding-right: 8px;
+      }
+
+      .icon-name div {
+        text-overflow: ellipsis;
+        overflow: hidden;
         padding-right: 8px;
       }
 
