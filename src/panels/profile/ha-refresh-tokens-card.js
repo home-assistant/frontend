@@ -1,14 +1,12 @@
 import "@polymer/paper-icon-button/paper-icon-button";
 import "@polymer/paper-tooltip/paper-tooltip";
-
-import "../../components/ha-card";
-
 import { html } from "@polymer/polymer/lib/utils/html-tag";
+/* eslint-plugin-disable lit */
 import { PolymerElement } from "@polymer/polymer/polymer-element";
+import { formatDateTime } from "../../common/datetime/format_date_time";
+import "../../components/ha-card";
 import { EventsMixin } from "../../mixins/events-mixin";
 import LocalizeMixin from "../../mixins/localize-mixin";
-import { formatDateTime } from "../../common/datetime/format_date_time";
-
 import "./ha-settings-row";
 
 /*

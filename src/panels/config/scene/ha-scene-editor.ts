@@ -69,22 +69,39 @@ interface DeviceEntitiesLookup {
 @customElement("ha-scene-editor")
 export class HaSceneEditor extends SubscribeMixin(LitElement) {
   @property() public hass!: HomeAssistant;
+
   @property() public narrow!: boolean;
+
   @property() public isWide!: boolean;
+
   @property() public route!: Route;
+
   @property() public scene?: SceneEntity;
+
   @property() public creatingNew?: boolean;
+
   @property() public showAdvanced!: boolean;
+
   @property() private _dirty?: boolean;
+
   @property() private _errors?: string;
+
   @property() private _config!: SceneConfig;
+
   @property() private _entities: string[] = [];
+
   @property() private _devices: string[] = [];
+
   @property() private _deviceRegistryEntries: DeviceRegistryEntry[] = [];
+
   @property() private _entityRegistryEntries: EntityRegistryEntry[] = [];
+
   private _storedStates: SceneEntities = {};
+
   private _unsubscribeEvents?: () => void;
+
   @property() private _deviceEntityLookup: DeviceEntitiesLookup = {};
+
   private _activateContextId?: string;
 
   private _getEntitiesDevices = memoizeOne(
@@ -188,18 +205,10 @@ export class HaSceneEditor extends SubscribeMixin(LitElement) {
 
           ${
             this._errors
-              ? html`
-                  <div class="errors">${this._errors}</div>
-                `
+              ? html` <div class="errors">${this._errors}</div> `
               : ""
           }
-          ${
-            this.narrow
-              ? html`
-                  <span slot="header">${name}</span>
-                `
-              : ""
-          }
+          ${this.narrow ? html` <span slot="header">${name}</span> ` : ""}
           <div
             id="root"
             class="${classMap({
@@ -207,13 +216,7 @@ export class HaSceneEditor extends SubscribeMixin(LitElement) {
             })}"
           >
             <ha-config-section .isWide=${this.isWide}>
-              ${
-                !this.narrow
-                  ? html`
-                      <span slot="header">${name}</span>
-                    `
-                  : ""
-              }
+              ${!this.narrow ? html` <span slot="header">${name}</span> ` : ""}
               <div slot="introduction">
                 ${this.hass.localize(
                   "ui.panel.config.scene.editor.introduction"
@@ -296,7 +299,7 @@ export class HaSceneEditor extends SubscribeMixin(LitElement) {
                     .label=${this.hass.localize(
                       "ui.panel.config.scene.editor.devices.add"
                     )}
-                  />
+                  ></ha-device-picker>
                 </div>
               </ha-card>
             </ha-config-section>
@@ -372,7 +375,7 @@ export class HaSceneEditor extends SubscribeMixin(LitElement) {
                             label=${this.hass.localize(
                               "ui.panel.config.scene.editor.entities.add"
                             )}
-                          />
+                          ></ha-entity-picker>
                         </div>
                       </ha-card>
                     </ha-config-section>
@@ -640,7 +643,7 @@ export class HaSceneEditor extends SubscribeMixin(LitElement) {
   private _getCurrentState(entityId: string) {
     const stateObj = this.hass.states[entityId];
     if (!stateObj) {
-      return;
+      return undefined;
     }
     return { ...stateObj.attributes, state: stateObj.state };
   }

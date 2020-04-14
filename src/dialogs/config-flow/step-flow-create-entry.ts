@@ -1,27 +1,27 @@
-import {
-  LitElement,
-  TemplateResult,
-  html,
-  customElement,
-  property,
-  CSSResultArray,
-  css,
-} from "lit-element";
 import "@material/mwc-button";
 import "@polymer/paper-dropdown-menu/paper-dropdown-menu-light";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
-import "../../components/ha-area-picker";
-import { HomeAssistant } from "../../types";
+import {
+  css,
+  CSSResultArray,
+  customElement,
+  html,
+  LitElement,
+  property,
+  TemplateResult,
+} from "lit-element";
 import { fireEvent } from "../../common/dom/fire_event";
-import { configFlowContentStyles } from "./styles";
+import "../../components/ha-area-picker";
+import { DataEntryFlowStepCreateEntry } from "../../data/data_entry_flow";
 import {
   DeviceRegistryEntry,
   updateDeviceRegistryEntry,
 } from "../../data/device_registry";
-import { DataEntryFlowStepCreateEntry } from "../../data/data_entry_flow";
-import { FlowConfig } from "./show-dialog-data-entry-flow";
+import { HomeAssistant } from "../../types";
 import { showAlertDialog } from "../generic/show-dialog-box";
+import { FlowConfig } from "./show-dialog-data-entry-flow";
+import { configFlowContentStyles } from "./styles";
 
 @customElement("step-flow-create-entry")
 class StepFlowCreateEntry extends LitElement {

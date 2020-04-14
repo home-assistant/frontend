@@ -62,7 +62,7 @@ const processTheme = (
   themes: HomeAssistant["themes"]
 ): ProcessedTheme | undefined => {
   if (!themes.themes[themeName]) {
-    return;
+    return undefined;
   }
   const theme: Theme = {
     ...derivedStyles,

@@ -1,11 +1,12 @@
 import { HassElement } from "../state/hass-element";
 import { showToast } from "./toast";
 
+export const supportsServiceWorker = () =>
+  "serviceWorker" in navigator &&
+  (location.protocol === "https:" || location.hostname === "localhost");
+
 export const registerServiceWorker = (notifyUpdate = true) => {
-  if (
-    !("serviceWorker" in navigator) ||
-    (location.protocol !== "https:" && location.hostname !== "localhost")
-  ) {
+  if (!supportsServiceWorker()) {
     return;
   }
 

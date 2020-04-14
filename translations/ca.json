@@ -540,11 +540,11 @@
         "common": {
             "cancel": "Cancel·la",
             "close": "Tanca",
-            "delete": "Suprimeix",
+            "delete": "Elimina",
             "loading": "Carregant",
             "no": "No",
             "save": "Desa",
-            "successfully_deleted": "S'ha suprimit correctament",
+            "successfully_deleted": "S'ha eliminat correctament",
             "successfully_saved": "S'ha desat correctament",
             "undo": "Desfés",
             "yes": "Sí"
@@ -627,7 +627,7 @@
                 "dismiss": "Desestimar",
                 "editor": {
                     "confirm_delete": "Estàs segur que vols eliminar aquesta entrada?",
-                    "delete": "Suprimeix",
+                    "delete": "Elimina",
                     "enabled_cause": "Desactivada per {cause}.",
                     "enabled_description": "Les entitats desactivades no s’afegiran a Home Assistant.",
                     "enabled_label": "Activa l’entitat",
@@ -828,7 +828,7 @@
                     "editor": {
                         "create": "Crea",
                         "default_name": "Nova àrea",
-                        "delete": "Suprimeix",
+                        "delete": "Elimina",
                         "update": "Actualitza"
                     },
                     "no_areas": "Sembla que encara no tens cap àrea!.",
@@ -1058,7 +1058,7 @@
                     },
                     "picker": {
                         "add_automation": "Afegeix automatització",
-                        "delete_automation": "Suprimeix l'automatització",
+                        "delete_automation": "Elimina l'automatització",
                         "delete_confirm": "Estàs segur que vols eliminar aquesta automatització?",
                         "edit_automation": "Edita automatització",
                         "header": "Editor d'automatitzacions",
@@ -1334,7 +1334,7 @@
                         "model": "Model",
                         "no_devices": "Sense dispositius"
                     },
-                    "delete": "Suprimeix",
+                    "delete": "Elimina",
                     "description": "Gestiona els dispositius connectats",
                     "details": "Aquí tens tots els detalls del dispositiu.",
                     "device_not_found": "Dispositiu no trobat.",
@@ -1367,7 +1367,7 @@
                     "description": "Visió general de totes les entitats conegudes.",
                     "editor": {
                         "confirm_delete": "Estàs segur que vols eliminar aquesta entrada?",
-                        "confirm_delete2": "Si suprimeixes una entrada, no suprimiras l'entitat de Home Assistant. Per fer-ho, has de suprimir la integració '{plataform}' de Home Assistant.",
+                        "confirm_delete2": "Si elimines una entrada, no eliminaràs l'entitat de Home Assistant. Per fer-ho, has d'eliminar la integració '{plataform}' de Home Assistant.",
                         "default_name": "Àrea nova",
                         "delete": "ELIMINA",
                         "enabled_cause": "Desactivada per {cause}.",
@@ -1409,7 +1409,7 @@
                         "introduction2": "Utilitza el registre d'entitats per canviar el nom, canviar l'ID o eliminar l'entrada de Home Assistant.",
                         "remove_selected": {
                             "button": "Elimina seleccionada/es",
-                            "confirm_partly_text": "Només pots eliminar {removable} de les {selected} entitats seleccionades. Les entitats només es poden eliminar quan la integració ja no les està proporcionant.\nA vegades pot ser que hagis de reiniciar Home Assistant per poder eliminar les entitats d'una antiga integració eliminada. Segur que vols eliminar les entitats suprimibles?",
+                            "confirm_partly_text": "Només pots eliminar {removable} de les {selected} entitats seleccionades. Les entitats només es poden eliminar quan la integració ja no les està proporcionant.\nA vegades pot ser que hagis de reiniciar Home Assistant per poder eliminar les entitats d'una antiga integració eliminada. Segur que vols eliminar les entitats?",
                             "confirm_partly_title": "Només es poden eliminar {number} entitats seleccionades.",
                             "confirm_text": "Les entitats només poden eliminar-se quan la seva integració ja no les està proporcionant.",
                             "confirm_title": "Vols eliminar {number} entitat/s?"
@@ -1456,7 +1456,7 @@
                     "caption": "Integracions",
                     "config_entry": {
                         "area": "A {area}",
-                        "delete_button": "Suprimeix {integration}",
+                        "delete_button": "Elimina {integration}",
                         "delete_confirm": "Estàs segur que vols eliminar aquesta integració?",
                         "device_unavailable": "dispositiu no disponible",
                         "entity_unavailable": "entitat no disponible",
@@ -1528,7 +1528,7 @@
                         "default_dashboard": "Aquest és el panell per defecte",
                         "detail": {
                             "create": "Crea",
-                            "delete": "Suprimeix",
+                            "delete": "Elimina",
                             "dismiss": "Tanca",
                             "edit_dashboard": "Edita el panell",
                             "icon": "Icona",
@@ -1563,7 +1563,7 @@
                         "confirm_delete": "Estàs segur que vols eliminar aquest recurs?",
                         "detail": {
                             "create": "Crea",
-                            "delete": "Suprimeix",
+                            "delete": "Elimina",
                             "dismiss": "Tanca",
                             "new_resource": "Afegeix nou recurs",
                             "type": "Tipus de recurs",
@@ -1600,7 +1600,7 @@
                     "description": "Gestiona a quines persones fa seguiment Home Assistant.",
                     "detail": {
                         "create": "Crea",
-                        "delete": "Suprimeix",
+                        "delete": "Elimina",
                         "device_tracker_intro": "Selecciona els dispositius que pertanyen a aquesta persona.",
                         "device_tracker_pick": "Tria un dispositiu per fer-li el seguiment",
                         "device_tracker_picked": "Seguint dispositiu",
@@ -1625,13 +1625,13 @@
                         "default_name": "Nova escena",
                         "devices": {
                             "add": "Afegeix un dispositiu",
-                            "delete": "Suprimeix el dispositiu",
+                            "delete": "Elimina el dispositiu",
                             "header": "Dispositius",
                             "introduction": "Afegeix els dispositius que vols incloure a l'escena. Configura tots els dispositius en els estats que es corresponguin amb aquesta escena."
                         },
                         "entities": {
                             "add": "Afegeix una entitat",
-                            "delete": "Suprimeix l'entitat",
+                            "delete": "Elimina l'entitat",
                             "device_entities": "Si afegeixes una entitat que pertany a un dispositiu, s'afegirà el dispositiu.",
                             "header": "Entitats",
                             "introduction": "Les entitats que no pertanyen a cap dispositiu es poden configurar aquí.",
@@ -1647,7 +1647,7 @@
                     "picker": {
                         "add_scene": "Afegeix escena",
                         "delete_confirm": "Estàs segur que vols eliminar aquesta escena?",
-                        "delete_scene": "Suprimeix l'escena",
+                        "delete_scene": "Elimina l'escena",
                         "edit_scene": "Edita escena",
                         "header": "Editor d’escenes",
                         "headers": {
@@ -1668,7 +1668,7 @@
                         "alias": "Nom",
                         "default_name": "Nou script",
                         "delete_confirm": "Estàs segur que vols eliminar aquest script?",
-                        "delete_script": "Suprimeix l'script",
+                        "delete_script": "Elimina l'script",
                         "header": "Script: {name}",
                         "introduction": "Utilitza els scripts per executar seqüències d’accions.",
                         "link_available_actions": "Més informació sobre les accions disponibles.",
@@ -1882,7 +1882,7 @@
                     "description": "Gestiona les zones en les quals es fa seguiment de persones.",
                     "detail": {
                         "create": "Crea",
-                        "delete": "Suprimeix",
+                        "delete": "Elimina",
                         "icon": "Icona",
                         "icon_error_msg": "El nom de la icona ha de tenir el format prefix:nom_icona, per exemple: mdi: home",
                         "latitude": "Latitud",
@@ -2164,6 +2164,7 @@
                             "name": "Filtre d'entitats"
                         },
                         "entity": {
+                            "description": "La targeta entitat mostra una visualització ràpida dels estats d'una o més entitats.",
                             "name": "Entitat"
                         },
                         "gauge": {
@@ -2407,7 +2408,7 @@
                     "confirm_delete_existing_cards": "Si elimines aquesta vista, també s'eliminaran les targetes que conté",
                     "confirm_delete_existing_cards_text": "Estàs segur que vols eliminar la vista '{name}'? La vista conté {number} targetes que també s'eliminaran. Aquesta acció no és reversible.",
                     "confirm_delete_text": "Estàs segur que vols eliminar la vista '{name}'?",
-                    "existing_cards": "No pots suprimir una visualització si conté targetes, elimina-les primer."
+                    "existing_cards": "No pots eliminar una visualització si conté targetes, elimina-les primer."
                 },
                 "warning": {
                     "attribute_not_found": "L'atribut {attribute} de {entity} no és disponible.",

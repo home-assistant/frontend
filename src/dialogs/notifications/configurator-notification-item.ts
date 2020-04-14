@@ -1,17 +1,15 @@
+import "@material/mwc-button";
 import {
+  customElement,
   html,
   LitElement,
-  TemplateResult,
   property,
-  customElement,
+  TemplateResult,
 } from "lit-element";
-import "@material/mwc-button";
-
-import "./notification-item-template";
-
-import { HomeAssistant } from "../../types";
 import { fireEvent } from "../../common/dom/fire_event";
 import { PersitentNotificationEntity } from "../../data/persistent_notification";
+import { HomeAssistant } from "../../types";
+import "./notification-item-template";
 
 @customElement("configurator-notification-item")
 export class HuiConfiguratorNotificationItem extends LitElement {

@@ -1,5 +1,5 @@
 import { HomeAssistant, PanelInfo } from "../../types";
-import { HassioResponse, hassioApiResultExtractor } from "./common";
+import { hassioApiResultExtractor, HassioResponse } from "./common";
 
 export type HassioHomeAssistantInfo = any;
 export type HassioSupervisorInfo = any;

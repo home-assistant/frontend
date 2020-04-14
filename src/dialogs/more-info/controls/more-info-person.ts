@@ -1,25 +1,24 @@
-import {
-  LitElement,
-  html,
-  TemplateResult,
-  CSSResult,
-  css,
-  property,
-  customElement,
-} from "lit-element";
-import { HassEntity } from "home-assistant-js-websocket";
 import "@material/mwc-button";
-
-import "../../../components/map/ha-map";
-
-import { HomeAssistant } from "../../../types";
-import { showZoneEditor } from "../../../data/zone";
-import { fireEvent } from "../../../common/dom/fire_event";
+import { HassEntity } from "home-assistant-js-websocket";
+import {
+  css,
+  CSSResult,
+  customElement,
+  html,
+  LitElement,
+  property,
+  TemplateResult,
+} from "lit-element";
 import memoizeOne from "memoize-one";
+import { fireEvent } from "../../../common/dom/fire_event";
+import "../../../components/map/ha-map";
+import { showZoneEditor } from "../../../data/zone";
+import { HomeAssistant } from "../../../types";
 
 @customElement("more-info-person")
 class MoreInfoPerson extends LitElement {
   @property() public hass!: HomeAssistant;
+
   @property() public stateObj?: HassEntity;
 
   private _entityArray = memoizeOne((entityId: string) => [entityId]);

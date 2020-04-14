@@ -1,6 +1,6 @@
 import { html } from "@polymer/polymer/lib/utils/html-tag";
+/* eslint-plugin-disable lit */
 import { PolymerElement } from "@polymer/polymer/polymer-element";
-
 import { getEntity } from "../../../src/fake_data/entity";
 import { provideHass } from "../../../src/fake_data/provide_hass";
 import "../components/demo-cards";
@@ -185,6 +185,7 @@ class DemoMap extends PolymerElement {
   public ready() {
     super.ready();
     const hass = provideHass(this.$.demos);
+    hass.updateTranslations(null, "en");
     hass.addEntities(ENTITIES);
   }
 }

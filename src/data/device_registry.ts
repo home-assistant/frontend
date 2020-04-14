@@ -1,8 +1,8 @@
-import { HomeAssistant } from "../types";
-import { createCollection, Connection } from "home-assistant-js-websocket";
-import { debounce } from "../common/util/debounce";
-import { EntityRegistryEntry } from "./entity_registry";
+import { Connection, createCollection } from "home-assistant-js-websocket";
 import { computeStateName } from "../common/entity/compute_state_name";
+import { debounce } from "../common/util/debounce";
+import { HomeAssistant } from "../types";
+import { EntityRegistryEntry } from "./entity_registry";
 
 export interface DeviceRegistryEntry {
   id: string;
@@ -26,19 +26,6 @@ export interface DeviceRegistryEntryMutableParams {
   name_by_user?: string | null;
 }
 
-export const computeDeviceName = (
-  device: DeviceRegistryEntry,
-  hass: HomeAssistant,
-  entities?: EntityRegistryEntry[] | string[]
-) => {
-  return (
-    device.name_by_user ||
-    device.name ||
-    (entities && fallbackDeviceName(hass, entities)) ||
-    hass.localize("ui.panel.config.devices.unnamed_device")
-  );
-};
-
 export const fallbackDeviceName = (
   hass: HomeAssistant,
   entities: EntityRegistryEntry[] | string[]
@@ -51,6 +38,19 @@ export const fallbackDeviceName = (
     }
   }
   return undefined;
+};
+
+export const computeDeviceName = (
+  device: DeviceRegistryEntry,
+  hass: HomeAssistant,
+  entities?: EntityRegistryEntry[] | string[]
+) => {
+  return (
+    device.name_by_user ||
+    device.name ||
+    (entities && fallbackDeviceName(hass, entities)) ||
+    hass.localize("ui.panel.config.devices.unnamed_device")
+  );
 };
 
 export const devicesInArea = (devices: DeviceRegistryEntry[], areaId: string) =>

@@ -1,8 +1,7 @@
 import { dom } from "@polymer/polymer/lib/legacy/polymer.dom";
+/* eslint-plugin-disable lit */
 import { PolymerElement } from "@polymer/polymer/polymer-element";
-
 import relativeTime from "../common/datetime/relative_time";
-
 import LocalizeMixin from "../mixins/localize-mixin";
 
 /*

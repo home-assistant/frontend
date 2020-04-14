@@ -1,12 +1,11 @@
 import {
+  css,
+  CSSResult,
+  customElement,
   html,
   LitElement,
   TemplateResult,
-  customElement,
-  css,
-  CSSResult,
 } from "lit-element";
-
 import "../../components/ha-card";
 
 @customElement("notification-item-template")

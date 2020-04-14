@@ -1,28 +1,26 @@
+import "@material/mwc-button";
 import "@polymer/app-layout/app-toolbar/app-toolbar";
 import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable";
 import "@polymer/paper-icon-button/paper-icon-button";
-import "@material/mwc-button";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
+/* eslint-plugin-disable lit */
 import { PolymerElement } from "@polymer/polymer/polymer-element";
-
-import "../../components/state-history-charts";
-import "../../data/ha-state-history-data";
-import "../../resources/ha-style";
-import "../../state-summary/state-card-content";
-
-import "./controls/more-info-content";
-
-import { navigate } from "../../common/navigate";
-import { computeStateName } from "../../common/entity/compute_state_name";
-import { computeStateDomain } from "../../common/entity/compute_state_domain";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import { DOMAINS_MORE_INFO_NO_HISTORY } from "../../common/const";
+import { computeStateDomain } from "../../common/entity/compute_state_domain";
+import { computeStateName } from "../../common/entity/compute_state_name";
+import { navigate } from "../../common/navigate";
+import { computeRTL } from "../../common/util/compute_rtl";
+import "../../components/state-history-charts";
+import { removeEntityRegistryEntry } from "../../data/entity_registry";
+import "../../data/ha-state-history-data";
 import { EventsMixin } from "../../mixins/events-mixin";
 import LocalizeMixin from "../../mixins/localize-mixin";
-import { computeRTL } from "../../common/util/compute_rtl";
-import { removeEntityRegistryEntry } from "../../data/entity_registry";
-import { showConfirmationDialog } from "../generic/show-dialog-box";
 import { showEntityEditorDialog } from "../../panels/config/entities/show-dialog-entity-editor";
+import "../../resources/ha-style";
+import "../../state-summary/state-card-content";
+import { showConfirmationDialog } from "../generic/show-dialog-box";
+import "./controls/more-info-content";
 
 const DOMAINS_NO_INFO = ["camera", "configurator", "history_graph"];
 const EDITABLE_DOMAINS_WITH_ID = ["scene", "automation"];

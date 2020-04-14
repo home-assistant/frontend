@@ -1,23 +1,21 @@
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
-// tslint:disable-next-line
-import { PaperListboxElement } from "@polymer/paper-listbox/paper-listbox";
+import type { PaperListboxElement } from "@polymer/paper-listbox/paper-listbox";
 import { customElement, html, LitElement, property } from "lit-element";
 import { dynamicElement } from "../../../../common/dom/dynamic-element-directive";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-card";
-import { HomeAssistant } from "../../../../types";
-
+import type { Condition } from "../../../../data/automation";
+import type { HomeAssistant } from "../../../../types";
+import "./types/ha-automation-condition-and";
 import "./types/ha-automation-condition-device";
-import "./types/ha-automation-condition-state";
 import "./types/ha-automation-condition-numeric_state";
+import "./types/ha-automation-condition-or";
+import "./types/ha-automation-condition-state";
 import "./types/ha-automation-condition-sun";
 import "./types/ha-automation-condition-template";
 import "./types/ha-automation-condition-time";
 import "./types/ha-automation-condition-zone";
-import "./types/ha-automation-condition-and";
-import "./types/ha-automation-condition-or";
-import { Condition } from "../../../../data/automation";
 
 const OPTIONS = [
   "device",
@@ -34,7 +32,9 @@ const OPTIONS = [
 @customElement("ha-automation-condition-editor")
 export default class HaAutomationConditionEditor extends LitElement {
   @property() public hass!: HomeAssistant;
+
   @property() public condition!: Condition;
+
   @property() public yamlMode = false;
 
   protected render() {

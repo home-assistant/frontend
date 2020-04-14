@@ -1,11 +1,6 @@
-import "../../../components/ha-service-description";
-import "../../../components/ha-textarea";
-import "../../../layouts/hass-subpage";
-import "./zha-device-card";
 import "@material/mwc-button";
 import "@polymer/paper-icon-button/paper-icon-button";
 import "@polymer/paper-spinner/paper-spinner";
-
 import {
   css,
   CSSResult,
@@ -15,30 +10,45 @@ import {
   property,
   TemplateResult,
 } from "lit-element";
-
+import "../../../components/ha-service-description";
+import "../../../components/ha-textarea";
 import { ZHADevice } from "../../../data/zha";
+import "../../../layouts/hass-subpage";
 import { haStyle } from "../../../resources/styles";
 import { HomeAssistant, Route } from "../../../types";
+import "./zha-device-card";
 
 @customElement("zha-add-devices-page")
 class ZHAAddDevicesPage extends LitElement {
   @property() public hass!: HomeAssistant;
+
   @property() public isWide?: boolean;
+
   @property() public route?: Route;
+
   @property() private _error?: string;
+
   @property() private _discoveredDevices: ZHADevice[] = [];
-  @property() private _formattedEvents: string = "";
-  @property() private _active: boolean = false;
-  @property() private _showHelp: boolean = false;
+
+  @property() private _formattedEvents = "";
+
+  @property() private _active = false;
+
+  @property() private _showHelp = false;
+
   private _ieeeAddress?: string;
+
   private _addDevicesTimeoutHandle: any = undefined;
+
   private _subscribed?: Promise<() => Promise<void>>;
 
   public connectedCallback(): void {
     super.connectedCallback();
-    this.route && this.route.path && this.route.path !== ""
-      ? (this._ieeeAddress = this.route.path.substring(1))
-      : (this._ieeeAddress = undefined);
+    if (this.route && this.route.path && this.route.path !== "") {
+      this._ieeeAddress = this.route.path.substring(1);
+    } else {
+      this._ieeeAddress = undefined;
+    }
     this._subscribe();
   }
 
@@ -88,16 +98,12 @@ class ZHAAddDevicesPage extends LitElement {
                         domain="zha"
                         service="permit"
                         class="help-text"
-                      />
+                      ></ha-service-description>
                     `
                   : ""}
               </div>
             `}
-        ${this._error
-          ? html`
-              <div class="error">${this._error}</div>
-            `
-          : ""}
+        ${this._error ? html` <div class="error">${this._error}</div> ` : ""}
         <div class="content-header"></div>
         <div class="content">
           ${this._discoveredDevices.length < 1
@@ -170,7 +176,7 @@ class ZHAAddDevicesPage extends LitElement {
     this._active = true;
     this._addDevicesTimeoutHandle = setTimeout(
       () => this._unsubscribe(),
-      75000
+      120000
     );
   }
 

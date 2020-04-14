@@ -1,40 +1,39 @@
 import "@polymer/paper-input/paper-input";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-item/paper-item-body";
-import "@vaadin/vaadin-combo-box/theme/material/vaadin-combo-box-light";
 import "@polymer/paper-listbox/paper-listbox";
-import memoizeOne from "memoize-one";
+import "@vaadin/vaadin-combo-box/theme/material/vaadin-combo-box-light";
+import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import {
-  LitElement,
-  TemplateResult,
-  html,
   css,
   CSSResult,
   customElement,
+  html,
+  LitElement,
   property,
+  TemplateResult,
 } from "lit-element";
-import { UnsubscribeFunc } from "home-assistant-js-websocket";
-import { SubscribeMixin } from "../../mixins/subscribe-mixin";
-
-import { HomeAssistant } from "../../types";
+import memoizeOne from "memoize-one";
 import { fireEvent } from "../../common/dom/fire_event";
-import {
-  DeviceRegistryEntry,
-  subscribeDeviceRegistry,
-  computeDeviceName,
-  DeviceEntityLookup,
-} from "../../data/device_registry";
+import { computeDomain } from "../../common/entity/compute_domain";
 import { compare } from "../../common/string/compare";
-import { PolymerChangedEvent } from "../../polymer-types";
 import {
   AreaRegistryEntry,
   subscribeAreaRegistry,
 } from "../../data/area_registry";
 import {
+  computeDeviceName,
+  DeviceEntityLookup,
+  DeviceRegistryEntry,
+  subscribeDeviceRegistry,
+} from "../../data/device_registry";
+import {
   EntityRegistryEntry,
   subscribeEntityRegistry,
 } from "../../data/entity_registry";
-import { computeDomain } from "../../common/entity/compute_domain";
+import { SubscribeMixin } from "../../mixins/subscribe-mixin";
+import { PolymerChangedEvent } from "../../polymer-types";
+import { HomeAssistant } from "../../types";
 
 interface Device {
   name: string;
@@ -67,11 +66,17 @@ const rowRenderer = (root: HTMLElement, _owner, model: { item: Device }) => {
 @customElement("ha-device-picker")
 export class HaDevicePicker extends SubscribeMixin(LitElement) {
   @property() public hass!: HomeAssistant;
+
   @property() public label?: string;
+
   @property() public value?: string;
+
   @property() public devices?: DeviceRegistryEntry[];
+
   @property() public areas?: AreaRegistryEntry[];
+
   @property() public entities?: EntityRegistryEntry[];
+
   /**
    * Show only devices with entities from specific domains.
    * @type {Array}
@@ -79,6 +84,7 @@ export class HaDevicePicker extends SubscribeMixin(LitElement) {
    */
   @property({ type: Array, attribute: "include-domains" })
   public includeDomains?: string[];
+
   /**
    * Show no devices with entities of these domains.
    * @type {Array}
@@ -86,6 +92,7 @@ export class HaDevicePicker extends SubscribeMixin(LitElement) {
    */
   @property({ type: Array, attribute: "exclude-domains" })
   public excludeDomains?: string[];
+
   /**
    * Show only deviced with entities of these device classes.
    * @type {Array}
@@ -93,6 +100,7 @@ export class HaDevicePicker extends SubscribeMixin(LitElement) {
    */
   @property({ type: Array, attribute: "include-device-classes" })
   public includeDeviceClasses?: string[];
+
   @property({ type: Boolean })
   private _opened?: boolean;
 

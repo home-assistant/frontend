@@ -1,7 +1,7 @@
-import { HomeAssistant } from "../types";
 import { EntityFilter } from "../common/entity/entity_filter";
-import { AutomationConfig } from "./automation";
 import { PlaceholderContainer } from "../panels/config/automation/thingtalk/dialog-thingtalk";
+import { HomeAssistant } from "../types";
+import { AutomationConfig } from "./automation";
 
 interface CloudStatusBase {
   logged_in: boolean;

@@ -1,16 +1,14 @@
 import "@polymer/paper-radio-button/paper-radio-button";
 import "@polymer/paper-radio-group/paper-radio-group";
-// tslint:disable-next-line
-import { PaperRadioGroupElement } from "@polymer/paper-radio-group/paper-radio-group";
-import "../../../../../components/entity/ha-entity-picker";
-
-import { hasLocation } from "../../../../../common/entity/has_location";
-import { computeStateDomain } from "../../../../../common/entity/compute_state_domain";
-import { LitElement, property, html, customElement } from "lit-element";
-import { HomeAssistant } from "../../../../../types";
-import { PolymerChangedEvent } from "../../../../../polymer-types";
+import type { PaperRadioGroupElement } from "@polymer/paper-radio-group/paper-radio-group";
+import { customElement, html, LitElement, property } from "lit-element";
 import { fireEvent } from "../../../../../common/dom/fire_event";
-import { ZoneTrigger } from "../../../../../data/automation";
+import { computeStateDomain } from "../../../../../common/entity/compute_state_domain";
+import { hasLocation } from "../../../../../common/entity/has_location";
+import "../../../../../components/entity/ha-entity-picker";
+import type { ZoneTrigger } from "../../../../../data/automation";
+import type { PolymerChangedEvent } from "../../../../../polymer-types";
+import type { HomeAssistant } from "../../../../../types";
 
 function zoneAndLocationFilter(stateObj) {
   return hasLocation(stateObj) && computeStateDomain(stateObj) !== "zone";
@@ -19,6 +17,7 @@ function zoneAndLocationFilter(stateObj) {
 @customElement("ha-automation-trigger-zone")
 export class HaZoneTrigger extends LitElement {
   @property() public hass!: HomeAssistant;
+
   @property() public trigger!: ZoneTrigger;
 
   public static get defaultConfig() {

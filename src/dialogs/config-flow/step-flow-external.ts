@@ -1,22 +1,21 @@
-import {
-  LitElement,
-  TemplateResult,
-  html,
-  customElement,
-  property,
-  CSSResultArray,
-  css,
-} from "lit-element";
 import "@material/mwc-button";
-
-import { HomeAssistant } from "../../types";
-import { fireEvent } from "../../common/dom/fire_event";
-import { configFlowContentStyles } from "./styles";
 import {
-  DataEntryFlowStepExternal,
+  css,
+  CSSResultArray,
+  customElement,
+  html,
+  LitElement,
+  property,
+  TemplateResult,
+} from "lit-element";
+import { fireEvent } from "../../common/dom/fire_event";
+import {
   DataEntryFlowProgressedEvent,
+  DataEntryFlowStepExternal,
 } from "../../data/data_entry_flow";
+import { HomeAssistant } from "../../types";
 import { FlowConfig } from "./show-dialog-data-entry-flow";
+import { configFlowContentStyles } from "./styles";
 
 @customElement("step-flow-external")
 class StepFlowExternal extends LitElement {

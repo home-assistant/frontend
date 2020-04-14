@@ -1,15 +1,15 @@
 import "@polymer/paper-radio-button/paper-radio-button";
 import "@polymer/paper-radio-group/paper-radio-group";
-// tslint:disable-next-line
-import { PaperRadioGroupElement } from "@polymer/paper-radio-group/paper-radio-group";
-import { LitElement, html, property, customElement } from "lit-element";
+import type { PaperRadioGroupElement } from "@polymer/paper-radio-group/paper-radio-group";
+import { customElement, html, LitElement, property } from "lit-element";
 import { fireEvent } from "../../../../../common/dom/fire_event";
-import { HomeAssistant } from "../../../../../types";
-import { HassTrigger } from "../../../../../data/automation";
+import type { HassTrigger } from "../../../../../data/automation";
+import type { HomeAssistant } from "../../../../../types";
 
 @customElement("ha-automation-trigger-homeassistant")
 export default class HaHassTrigger extends LitElement {
   @property() public hass!: HomeAssistant;
+
   @property() public trigger!: HassTrigger;
 
   public static get defaultConfig() {

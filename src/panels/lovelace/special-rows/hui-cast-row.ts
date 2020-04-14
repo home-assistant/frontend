@@ -1,23 +1,21 @@
 import {
-  html,
-  LitElement,
-  TemplateResult,
-  customElement,
-  property,
   css,
   CSSResult,
+  customElement,
+  html,
+  LitElement,
+  property,
+  TemplateResult,
 } from "lit-element";
 import { classMap } from "lit-html/directives/class-map";
-
-import { LovelaceRow, CastConfig } from "../entity-rows/types";
-import { HomeAssistant } from "../../../types";
-
-import "../../../components/ha-icon";
 import { CastManager } from "../../../cast/cast_manager";
 import {
-  ensureConnectedCastSession,
   castSendShowLovelaceView,
+  ensureConnectedCastSession,
 } from "../../../cast/receiver_messages";
+import "../../../components/ha-icon";
+import { HomeAssistant } from "../../../types";
+import { CastConfig, LovelaceRow } from "../entity-rows/types";
 
 @customElement("hui-cast-row")
 class HuiCastRow extends LitElement implements LovelaceRow {
@@ -57,25 +55,19 @@ class HuiCastRow extends LitElement implements LovelaceRow {
       <div class="flex">
         <div class="name">${this._config.name}</div>
         ${this._noHTTPS
-          ? html`
-              Cast requires HTTPS
-            `
+          ? html` Cast requires HTTPS `
           : this._castManager === undefined
           ? html``
           : this._castManager === null
-          ? html`
-              Cast API unavailable
-            `
+          ? html` Cast API unavailable `
           : this._castManager.castState === "NO_DEVICES_AVAILABLE"
-          ? html`
-              No devices found
-            `
+          ? html` No devices found `
           : html`
               <div class="controls">
                 <google-cast-launcher></google-cast-launcher>
                 <mwc-button
                   @click=${this._sendLovelace}
-                  class=${classMap({ inactive: !Boolean(active) })}
+                  class=${classMap({ inactive: !active })}
                   .unelevated=${active}
                   .disabled=${!this._castManager.status}
                 >

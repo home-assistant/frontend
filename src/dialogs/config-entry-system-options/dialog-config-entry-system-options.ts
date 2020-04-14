@@ -1,36 +1,38 @@
-import {
-  LitElement,
-  html,
-  css,
-  CSSResult,
-  TemplateResult,
-  customElement,
-  property,
-} from "lit-element";
 import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable";
 import "@polymer/paper-input/paper-input";
-
+import {
+  css,
+  CSSResult,
+  customElement,
+  html,
+  LitElement,
+  property,
+  TemplateResult,
+} from "lit-element";
 import "../../components/dialog/ha-paper-dialog";
 import "../../components/ha-switch";
-
-import { HomeAssistant } from "../../types";
-import { ConfigEntrySystemOptionsDialogParams } from "./show-dialog-config-entry-system-options";
+import type { HaSwitch } from "../../components/ha-switch";
 import {
   getConfigEntrySystemOptions,
   updateConfigEntrySystemOptions,
 } from "../../data/config_entries";
-import { PolymerChangedEvent } from "../../polymer-types";
+import type { PolymerChangedEvent } from "../../polymer-types";
 import { haStyleDialog } from "../../resources/styles";
-// tslint:disable-next-line: no-duplicate-imports
-import { HaSwitch } from "../../components/ha-switch";
+import type { HomeAssistant } from "../../types";
+import { ConfigEntrySystemOptionsDialogParams } from "./show-dialog-config-entry-system-options";
 
 @customElement("dialog-config-entry-system-options")
 class DialogConfigEntrySystemOptions extends LitElement {
   @property() public hass!: HomeAssistant;
+
   @property() private _disableNewEntities!: boolean;
+
   @property() private _error?: string;
+
   @property() private _params?: ConfigEntrySystemOptionsDialogParams;
+
   @property() private _loading?: boolean;
+
   @property() private _submitting?: boolean;
 
   public async showDialog(
@@ -77,9 +79,7 @@ class DialogConfigEntrySystemOptions extends LitElement {
               `
             : html`
                 ${this._error
-                  ? html`
-                      <div class="error">${this._error}</div>
-                    `
+                  ? html` <div class="error">${this._error}</div> `
                   : ""}
                 <div class="form">
                   <ha-switch

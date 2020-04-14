@@ -39,9 +39,7 @@ jobs:
       - name: Build translations
         run: ./node_modules/.bin/gulp build-translations
       - name: Run eslint
-        run: ./node_modules/.bin/eslint src hassio/src gallery/src
-      - name: Run tslint
-        run: ./node_modules/.bin/tslint 'src/**/*.ts' 'hassio/src/**/*.ts' 'gallery/src/**/*.ts' 'cast/src/**/*.ts' 'test-mocha/**/*.ts'
+        run: ./node_modules/.bin/eslint '{**/src,src}/**/*.{js,ts,html}' --ignore-path .gitignore
       - name: Run tsc
         run: ./node_modules/.bin/tsc
   test:

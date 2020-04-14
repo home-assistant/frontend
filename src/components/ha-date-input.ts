@@ -1,21 +1,22 @@
-import {
-  html,
-  css,
-  LitElement,
-  TemplateResult,
-  property,
-  customElement,
-} from "lit-element";
-
 import "@polymer/paper-input/paper-input";
-// tslint:disable-next-line:no-duplicate-imports
-import { PaperInputElement } from "@polymer/paper-input/paper-input";
+import type { PaperInputElement } from "@polymer/paper-input/paper-input";
+import {
+  css,
+  customElement,
+  html,
+  LitElement,
+  property,
+  TemplateResult,
+} from "lit-element";
 
 @customElement("ha-date-input")
 export class HaDateInput extends LitElement {
   @property() public year?: string;
+
   @property() public month?: string;
+
   @property() public day?: string;
+
   @property({ type: Boolean }) public disabled = false;
 
   static get styles() {

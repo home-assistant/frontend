@@ -44,7 +44,7 @@ export const cardinalDirections = [
 const getWindBearingText = (degree: string): string => {
   const degreenum = parseInt(degree, 10);
   if (isFinite(degreenum)) {
-    // tslint:disable-next-line: no-bitwise
+    // eslint-disable-next-line no-bitwise
     return cardinalDirections[(((degreenum + 11.25) / 22.5) | 0) % 16];
   }
   return degree;

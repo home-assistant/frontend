@@ -1,23 +1,23 @@
-import { HomeAssistantAppEl } from "../../src/layouts/home-assistant";
-import {
-  provideHass,
-  MockHomeAssistant,
-} from "../../src/fake_data/provide_hass";
+import { isNavigationClick } from "../../src/common/dom/is-navigation-click";
 import { navigate } from "../../src/common/navigate";
-import { mockLovelace } from "./stubs/lovelace";
-import { mockAuth } from "./stubs/auth";
+import {
+  MockHomeAssistant,
+  provideHass,
+} from "../../src/fake_data/provide_hass";
+import { HomeAssistantAppEl } from "../../src/layouts/home-assistant";
+import { HomeAssistant } from "../../src/types";
 import { selectedDemoConfig } from "./configs/demo-configs";
-import { mockTranslations } from "./stubs/translations";
+import { mockAuth } from "./stubs/auth";
+import { mockEvents } from "./stubs/events";
+import { mockFrontend } from "./stubs/frontend";
 import { mockHistory } from "./stubs/history";
+import { mockLovelace } from "./stubs/lovelace";
+import { mockMediaPlayer } from "./stubs/media_player";
+import { mockPersistentNotification } from "./stubs/persistent_notification";
 import { mockShoppingList } from "./stubs/shopping_list";
 import { mockSystemLog } from "./stubs/system_log";
 import { mockTemplate } from "./stubs/template";
-import { mockEvents } from "./stubs/events";
-import { mockMediaPlayer } from "./stubs/media_player";
-import { HomeAssistant } from "../../src/types";
-import { mockFrontend } from "./stubs/frontend";
-import { mockPersistentNotification } from "./stubs/persistent_notification";
-import { isNavigationClick } from "../../src/common/dom/is-navigation-click";
+import { mockTranslations } from "./stubs/translations";
 
 class HaDemo extends HomeAssistantAppEl {
   protected async _initialize() {

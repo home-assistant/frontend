@@ -1,14 +1,16 @@
+import { customElement, property } from "lit-element";
 import {
   HassRouterPage,
   RouterOptions,
 } from "../../../layouts/hass-router-page";
-import { customElement, property } from "lit-element";
 import { HomeAssistant } from "../../../types";
 
 @customElement("zha-config-dashboard-router")
 class ZHAConfigDashboardRouter extends HassRouterPage {
   @property() public hass!: HomeAssistant;
+
   @property() public isWide!: boolean;
+
   @property() public narrow!: boolean;
 
   protected routerOptions: RouterOptions = {

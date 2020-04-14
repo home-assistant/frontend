@@ -1,26 +1,29 @@
-import {
-  customElement,
-  LitElement,
-  html,
-  property,
-  TemplateResult,
-  query,
-  CSSResult,
-  css,
-} from "lit-element";
-import { HaFormElement, HaFormSelectData, HaFormSelectSchema } from "./ha-form";
-import { fireEvent } from "../../common/dom/fire_event";
-
 import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
-import "@polymer/paper-listbox/paper-listbox";
 import "@polymer/paper-item/paper-item";
+import "@polymer/paper-listbox/paper-listbox";
+import {
+  css,
+  CSSResult,
+  customElement,
+  html,
+  LitElement,
+  property,
+  query,
+  TemplateResult,
+} from "lit-element";
+import { fireEvent } from "../../common/dom/fire_event";
+import { HaFormElement, HaFormSelectData, HaFormSelectSchema } from "./ha-form";
 
 @customElement("ha-form-select")
 export class HaFormSelect extends LitElement implements HaFormElement {
   @property() public schema!: HaFormSelectSchema;
+
   @property() public data!: HaFormSelectData;
+
   @property() public label!: string;
+
   @property() public suffix!: string;
+
   @query("paper-dropdown-menu") private _input?: HTMLElement;
 
   public focus() {

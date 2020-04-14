@@ -1,32 +1,30 @@
+import "@polymer/paper-checkbox/paper-checkbox";
+import { PaperInputElement } from "@polymer/paper-input/paper-input";
 import {
-  html,
-  LitElement,
-  TemplateResult,
   css,
   CSSResult,
-  property,
   customElement,
+  html,
+  LitElement,
+  property,
   PropertyValues,
+  TemplateResult,
 } from "lit-element";
-import { repeat } from "lit-html/directives/repeat";
 import { classMap } from "lit-html/directives/class-map";
-import { PaperInputElement } from "@polymer/paper-input/paper-input";
-import "@polymer/paper-checkbox/paper-checkbox";
-
+import { repeat } from "lit-html/directives/repeat";
+import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import "../../../components/ha-card";
 import "../../../components/ha-icon";
-
+import {
+  addItem,
+  clearItems,
+  fetchItems,
+  ShoppingListItem,
+  updateItem,
+} from "../../../data/shopping-list";
 import { HomeAssistant } from "../../../types";
 import { LovelaceCard, LovelaceCardEditor } from "../types";
-import {
-  fetchItems,
-  updateItem,
-  ShoppingListItem,
-  clearItems,
-  addItem,
-} from "../../../data/shopping-list";
-import { ShoppingListCardConfig, SensorCardConfig } from "./types";
-import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
+import { SensorCardConfig, ShoppingListCardConfig } from "./types";
 
 @customElement("hui-shopping-list-card")
 class HuiShoppingListCard extends LitElement implements LovelaceCard {
