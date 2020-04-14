@@ -30,14 +30,14 @@ import "./hassio-addon-network";
 @customElement("hassio-addon-view")
 class HassioAddonView extends LitElement {
   @property() public hass!: HomeAssistant;
+
   @property() public route!: Route;
+
   @property() public addon?: HassioAddonDetails;
 
   protected render(): TemplateResult {
     if (!this.addon) {
-      return html`
-        <paper-spinner-lite active></paper-spinner-lite>
-      `;
+      return html` <paper-spinner-lite active></paper-spinner-lite> `;
     }
     return html`
       <hass-subpage header="Hass.io: add-on details" hassio>

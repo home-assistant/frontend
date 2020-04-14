@@ -7,8 +7,8 @@ import {
   CSSResult,
   css,
 } from "lit-element";
-import { HomeAssistant } from "../../../types";
 import memoizeOne from "memoize-one";
+import { HomeAssistant } from "../../../types";
 import {
   integrationDocsUrl,
   integrationIssuesUrl,

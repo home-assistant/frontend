@@ -16,6 +16,7 @@ import { haStyleDialog } from "../../resources/styles";
 @customElement("dialog-domain-toggler")
 class DomainTogglerDialog extends LitElement {
   public hass!: HomeAssistant;
+
   @property() private _params?: HaDomainTogglerDialogParams;
 
   public async showDialog(params: HaDomainTogglerDialogParams): Promise<void> {

@@ -22,6 +22,7 @@ import { handleAction } from "../common/handle-action";
 @customElement("hui-icon-element")
 export class HuiIconElement extends LitElement implements LovelaceElement {
   public hass?: HomeAssistant;
+
   @property() private _config?: IconElementConfig;
 
   public setConfig(config: IconElementConfig): void {

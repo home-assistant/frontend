@@ -1,4 +1,5 @@
 import { html } from "@polymer/polymer/lib/utils/html-tag";
+/* eslint-plugin-disable lit */
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 
 import { getEntity } from "../../../src/fake_data/entity";
@@ -76,9 +77,7 @@ const CONFIGS = [
 
 class DemoThermostatEntity extends PolymerElement {
   static get template() {
-    return html`
-      <demo-cards id="demos" configs="[[_configs]]"></demo-cards>
-    `;
+    return html` <demo-cards id="demos" configs="[[_configs]]"></demo-cards> `;
   }
 
   static get properties() {

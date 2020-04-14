@@ -49,7 +49,7 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
         clearState();
         document.location.href = "/";
       } catch (err) {
-        // tslint:disable-next-line
+        // eslint-disable-next-line
         console.error(err);
         alert("Log out failed");
       }

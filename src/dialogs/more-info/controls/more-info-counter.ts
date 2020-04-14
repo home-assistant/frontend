@@ -15,6 +15,7 @@ import { HomeAssistant } from "../../../types";
 @customElement("more-info-counter")
 class MoreInfoCounter extends LitElement {
   @property() public hass!: HomeAssistant;
+
   @property() public stateObj?: HassEntity;
 
   protected render(): TemplateResult {

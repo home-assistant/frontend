@@ -11,16 +11,17 @@ import "@material/mwc-button";
 import "../../../../components/ha-card";
 import "../../../../components/ha-switch";
 
-// tslint:disable-next-line: no-duplicate-imports
-import { HaSwitch } from "../../../../components/ha-switch";
+import type { HaSwitch } from "../../../../components/ha-switch";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import { HomeAssistant } from "../../../../types";
+import type { HomeAssistant } from "../../../../types";
 import { CloudStatusLoggedIn, updateCloudPref } from "../../../../data/cloud";
 import { syncCloudAlexaEntities } from "../../../../data/alexa";
 
 export class CloudAlexaPref extends LitElement {
   @property() public hass?: HomeAssistant;
+
   @property() public cloudStatus?: CloudStatusLoggedIn;
+
   @property() private _syncing = false;
 
   protected render(): TemplateResult {

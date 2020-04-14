@@ -11,14 +11,12 @@ import {
   customElement,
   query,
 } from "lit-element";
-import { HomeAssistant } from "../../../types";
-// tslint:disable-next-line
-import {
+import type { HomeAssistant } from "../../../types";
+import type {
   DataTableColumnContainer,
   HaDataTable,
 } from "../../../components/data-table/ha-data-table";
-// tslint:disable-next-line
-import { ZHADevice } from "../../../data/zha";
+import type { ZHADevice } from "../../../data/zha";
 import { showZHADeviceInfoDialog } from "../../../dialogs/zha-device-info-dialog/show-dialog-zha-device-info";
 
 export interface DeviceRowData extends ZHADevice {
@@ -28,9 +26,13 @@ export interface DeviceRowData extends ZHADevice {
 @customElement("zha-devices-data-table")
 export class ZHADevicesDataTable extends LitElement {
   @property() public hass!: HomeAssistant;
+
   @property() public narrow = false;
+
   @property({ type: Boolean }) public selectable = false;
+
   @property() public devices: ZHADevice[] = [];
+
   @query("ha-data-table") private _dataTable!: HaDataTable;
 
   private _devices = memoizeOne((devices: ZHADevice[]) => {

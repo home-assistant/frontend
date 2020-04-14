@@ -7,6 +7,7 @@ import {
   property,
   customElement,
 } from "lit-element";
+import memoizeOne from "memoize-one";
 import { HomeAssistant, Route } from "../../../types";
 import {
   DeviceRegistryEntry,
@@ -20,7 +21,6 @@ import {
 import { ConfigEntry } from "../../../data/config_entries";
 import { AreaRegistryEntry } from "../../../data/area_registry";
 import { configSections } from "../ha-panel-config";
-import memoizeOne from "memoize-one";
 import { LocalizeFunc } from "../../../common/translations/localize";
 import { DeviceRowData } from "./ha-devices-data-table";
 import {
@@ -34,13 +34,21 @@ import { HASSDomEvent } from "../../../common/dom/fire_event";
 @customElement("ha-config-devices-dashboard")
 export class HaConfigDeviceDashboard extends LitElement {
   @property() public hass!: HomeAssistant;
+
   @property() public narrow = false;
+
   @property() public isWide = false;
+
   @property() public devices!: DeviceRegistryEntry[];
+
   @property() public entries!: ConfigEntry[];
+
   @property() public entities!: EntityRegistryEntry[];
+
   @property() public areas!: AreaRegistryEntry[];
+
   @property() public domain!: string;
+
   @property() public route!: Route;
 
   private _devices = memoizeOne(
@@ -160,9 +168,7 @@ export class HaConfigDeviceDashboard extends LitElement {
                         .stateObj=${battery}
                       ></ha-state-icon>
                     `
-                  : html`
-                      -
-                    `;
+                  : html` - `;
               },
             },
           }
@@ -228,9 +234,7 @@ export class HaConfigDeviceDashboard extends LitElement {
                         .stateObj=${battery}
                       ></ha-state-icon>
                     `
-                  : html`
-                      -
-                    `;
+                  : html` - `;
               },
             },
           }

@@ -42,9 +42,13 @@ import { loadLovelaceResources } from "../../../lovelace/common/load-resources";
 @customElement("ha-config-lovelace-resources")
 export class HaConfigLovelaceRescources extends LitElement {
   @property() public hass!: HomeAssistant;
+
   @property() public isWide!: boolean;
+
   @property() public narrow!: boolean;
+
   @property() public route!: Route;
+
   @property() private _resources: LovelaceResource[] = [];
 
   private _columns = memoize(
@@ -79,9 +83,7 @@ export class HaConfigLovelaceRescources extends LitElement {
 
   protected render(): TemplateResult {
     if (!this.hass || this._resources === undefined) {
-      return html`
-        <hass-loading-screen></hass-loading-screen>
-      `;
+      return html` <hass-loading-screen></hass-loading-screen> `;
     }
 
     return html`

@@ -1,4 +1,3 @@
-import { computeStateName } from "../../../common/entity/compute_state_name";
 import {
   LitElement,
   html,
@@ -9,18 +8,19 @@ import {
   TemplateResult,
 } from "lit-element";
 import { ifDefined } from "lit-html/directives/if-defined";
+import { classMap } from "lit-html/directives/class-map";
+import { computeStateName } from "../../../common/entity/compute_state_name";
 
 import "../../../components/entity/state-badge";
 import "../../../components/ha-relative-time";
 import "../../../components/ha-icon";
-import "../components/hui-warning";
+import "./hui-warning";
 
 import { HomeAssistant } from "../../../types";
 import { computeRTL } from "../../../common/util/compute_rtl";
 import { toggleAttribute } from "../../../common/dom/toggle_attribute";
 import { DOMAINS_HIDE_MORE_INFO } from "../../../common/const";
 import { computeDomain } from "../../../common/entity/compute_domain";
-import { classMap } from "lit-html/directives/class-map";
 import { EntitiesCardEntityConfig } from "../cards/types";
 import { actionHandler } from "../common/directives/action-handler-directive";
 import { hasAction } from "../common/has-action";
@@ -94,27 +94,27 @@ class HuiGenericEntityRow extends LitElement {
           ? html`
               <div class="secondary">
                 ${this.secondaryText ||
-                  (this.config.secondary_info === "entity-id"
-                    ? stateObj.entity_id
-                    : this.config.secondary_info === "last-changed"
+                (this.config.secondary_info === "entity-id"
+                  ? stateObj.entity_id
+                  : this.config.secondary_info === "last-changed"
+                  ? html`
+                      <ha-relative-time
+                        .hass=${this.hass}
+                        .datetime=${stateObj.last_changed}
+                      ></ha-relative-time>
+                    `
+                  : this.config.secondary_info === "last-triggered"
+                  ? stateObj.attributes.last_triggered
                     ? html`
                         <ha-relative-time
                           .hass=${this.hass}
-                          .datetime=${stateObj.last_changed}
+                          .datetime=${stateObj.attributes.last_triggered}
                         ></ha-relative-time>
                       `
-                    : this.config.secondary_info === "last-triggered"
-                    ? stateObj.attributes.last_triggered
-                      ? html`
-                          <ha-relative-time
-                            .hass=${this.hass}
-                            .datetime=${stateObj.attributes.last_triggered}
-                          ></ha-relative-time>
-                        `
-                      : this.hass.localize(
-                          "ui.panel.lovelace.cards.entities.never_triggered"
-                        )
-                    : "")}
+                    : this.hass.localize(
+                        "ui.panel.lovelace.cards.entities.never_triggered"
+                      )
+                  : "")}
               </div>
             `
           : ""}

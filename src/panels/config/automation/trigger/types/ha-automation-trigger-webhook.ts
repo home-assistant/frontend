@@ -7,6 +7,7 @@ import { WebhookTrigger } from "../../../../../data/automation";
 @customElement("ha-automation-trigger-webhook")
 export class HaWebhookTrigger extends LitElement {
   @property() public hass!: HomeAssistant;
+
   @property() public trigger!: WebhookTrigger;
 
   public static get defaultConfig() {

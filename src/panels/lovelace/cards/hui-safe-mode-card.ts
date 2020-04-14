@@ -10,7 +10,7 @@ import {
 import "@material/mwc-button";
 
 import "../../../components/ha-card";
-import "../../../panels/developer-tools/logs/error-log-card";
+import "../../developer-tools/logs/error-log-card";
 import { LovelaceCard } from "../types";
 import { HomeAssistant } from "../../../types";
 

@@ -9,17 +9,16 @@ import {
 } from "lit-element";
 import "@polymer/paper-spinner/paper-spinner";
 import "../../../../components/dialog/ha-paper-dialog";
-// tslint:disable-next-line:no-duplicate-imports
-import { HaPaperDialog } from "../../../../components/dialog/ha-paper-dialog";
+import type { HaPaperDialog } from "../../../../components/dialog/ha-paper-dialog";
 import "@material/mwc-button";
 import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable";
 
 import { haStyleDialog } from "../../../../resources/styles";
 
 import "./hui-lovelace-editor";
-import { HomeAssistant } from "../../../../types";
-import { LovelaceConfig } from "../../../../data/lovelace";
-import { Lovelace } from "../../types";
+import type { HomeAssistant } from "../../../../types";
+import type { LovelaceConfig } from "../../../../data/lovelace";
+import type { Lovelace } from "../../types";
 
 @customElement("hui-dialog-edit-lovelace")
 export class HuiDialogEditLovelace extends LitElement {

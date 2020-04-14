@@ -22,8 +22,11 @@ import { atLeastVersion } from "../../../src/common/config/version";
 
 class HassioAddonRepositoryEl extends LitElement {
   @property() public hass!: HomeAssistant;
+
   @property() public repo!: HassioAddonRepository;
+
   @property() public addons!: HassioAddonInfo[];
+
   @property() public filter!: string;
 
   private _getAddons = memoizeOne(

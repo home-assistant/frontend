@@ -10,16 +10,18 @@ import { HaFormElement, HaFormFloatData, HaFormFloatSchema } from "./ha-form";
 import { fireEvent } from "../../common/dom/fire_event";
 
 import "@polymer/paper-input/paper-input";
-// Not duplicate, is for typing
-// tslint:disable-next-line
-import { PaperInputElement } from "@polymer/paper-input/paper-input";
+import type { PaperInputElement } from "@polymer/paper-input/paper-input";
 
 @customElement("ha-form-float")
 export class HaFormFloat extends LitElement implements HaFormElement {
   @property() public schema!: HaFormFloatSchema;
+
   @property() public data!: HaFormFloatData;
+
   @property() public label!: string;
+
   @property() public suffix!: string;
+
   @query("paper-input") private _input?: HTMLElement;
 
   public focus() {

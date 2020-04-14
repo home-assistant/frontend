@@ -13,7 +13,7 @@ import {
   query,
 } from "lit-element";
 
-import { HomeAssistant } from "../../../src/types";
+import type { HomeAssistant } from "../../../src/types";
 import {
   HassioAddonDetails,
   setHassioAddonOption,
@@ -23,15 +23,17 @@ import { hassioStyle } from "../resources/hassio-style";
 import { haStyle } from "../../../src/resources/styles";
 import { fireEvent } from "../../../src/common/dom/fire_event";
 import "../../../src/components/ha-yaml-editor";
-// tslint:disable-next-line: no-duplicate-imports
-import { HaYamlEditor } from "../../../src/components/ha-yaml-editor";
+import type { HaYamlEditor } from "../../../src/components/ha-yaml-editor";
 import { showConfirmationDialog } from "../../../src/dialogs/generic/show-dialog-box";
 
 @customElement("hassio-addon-config")
 class HassioAddonConfig extends LitElement {
   @property() public hass!: HomeAssistant;
+
   @property() public addon!: HassioAddonDetails;
+
   @property() private _error?: string;
+
   @property({ type: Boolean }) private _configHasChanged = false;
 
   @query("ha-yaml-editor") private _editor!: HaYamlEditor;
@@ -47,16 +49,8 @@ class HassioAddonConfig extends LitElement {
           <ha-yaml-editor
             @value-changed=${this._configChanged}
           ></ha-yaml-editor>
-          ${this._error
-            ? html`
-                <div class="errors">${this._error}</div>
-              `
-            : ""}
-          ${valid
-            ? ""
-            : html`
-                <div class="errors">Invalid YAML</div>
-              `}
+          ${this._error ? html` <div class="errors">${this._error}</div> ` : ""}
+          ${valid ? "" : html` <div class="errors">Invalid YAML</div> `}
         </div>
         <div class="card-actions">
           <mwc-button class="warning" @click=${this._resetTapped}>
@@ -140,8 +134,9 @@ class HassioAddonConfig extends LitElement {
       };
       fireEvent(this, "hass-api-called", eventdata);
     } catch (err) {
-      this._error = `Failed to reset addon configuration, ${err.body?.message ||
-        err}`;
+      this._error = `Failed to reset addon configuration, ${
+        err.body?.message || err
+      }`;
     }
   }
 
@@ -166,8 +161,9 @@ class HassioAddonConfig extends LitElement {
       };
       fireEvent(this, "hass-api-called", eventdata);
     } catch (err) {
-      this._error = `Failed to save addon configuration, ${err.body?.message ||
-        err}`;
+      this._error = `Failed to save addon configuration, ${
+        err.body?.message || err
+      }`;
     }
   }
 }

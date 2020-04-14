@@ -14,6 +14,8 @@ import "../../../layouts/hass-tabs-subpage-data-table";
 import "../../../components/ha-fab";
 import "../../../components/entity/ha-entity-toggle";
 
+import memoizeOne from "memoize-one";
+import { ifDefined } from "lit-html/directives/if-defined";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import { computeRTL } from "../../../common/util/compute_rtl";
 import { haStyle } from "../../../resources/styles";
@@ -30,15 +32,17 @@ import { showThingtalkDialog } from "./show-dialog-thingtalk";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { configSections } from "../ha-panel-config";
 import { DataTableColumnContainer } from "../../../components/data-table/ha-data-table";
-import memoizeOne from "memoize-one";
-import { ifDefined } from "lit-html/directives/if-defined";
 
 @customElement("ha-automation-picker")
 class HaAutomationPicker extends LitElement {
   @property() public hass!: HomeAssistant;
+
   @property() public isWide!: boolean;
+
   @property() public narrow!: boolean;
+
   @property() public route!: Route;
+
   @property() public automations!: AutomationEntity[];
 
   private _automations = memoizeOne((automations: AutomationEntity[]) => {

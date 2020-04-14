@@ -1,10 +1,10 @@
+import { html } from "lit-element";
 import {
   fetchOptionsFlow,
   handleOptionsFlowStep,
   deleteOptionsFlow,
   createOptionsFlow,
 } from "../../data/options_flow";
-import { html } from "lit-element";
 import { localizeKey } from "../../common/translations/localize";
 import {
   showFlowDialog,
@@ -38,9 +38,7 @@ export const showOptionsFlowDialog = (
         );
 
         return description
-          ? html`
-              <ha-markdown allowsvg .content=${description}></ha-markdown>
-            `
+          ? html` <ha-markdown allowsvg .content=${description}></ha-markdown> `
           : "";
       },
 
@@ -59,9 +57,7 @@ export const showOptionsFlowDialog = (
           step.description_placeholders
         );
         return description
-          ? html`
-              <ha-markdown allowsvg .content=${description}></ha-markdown>
-            `
+          ? html` <ha-markdown allowsvg .content=${description}></ha-markdown> `
           : "";
       },
 

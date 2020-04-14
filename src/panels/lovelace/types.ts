@@ -7,7 +7,7 @@ import {
 import { LovelaceHeaderFooterConfig } from "./header-footer/types";
 
 declare global {
-  // tslint:disable-next-line
+  // eslint-disable-next-line
   interface HASSDomEvents {
     "ll-rebuild": {};
     "ll-badge-rebuild": {};

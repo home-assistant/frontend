@@ -27,6 +27,7 @@ import { UNAVAILABLE_STATES } from "../../../data/entity";
 @customElement("hui-weather-entity-row")
 class HuiWeatherEntityRow extends LitElement implements LovelaceRow {
   @property() public hass?: HomeAssistant;
+
   @property() private _config?: EntitiesCardEntityConfig;
 
   public setConfig(config: EntitiesCardEntityConfig): void {

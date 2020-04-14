@@ -94,8 +94,11 @@ const PERMIS_DESC = {
 @customElement("hassio-addon-info")
 class HassioAddonInfo extends LitElement {
   @property() public hass!: HomeAssistant;
+
   @property() public addon!: HassioAddonDetails;
+
   @property() private _error?: string;
+
   @property({ type: Boolean }) private _installing = false;
 
   protected render(): TemplateResult {
@@ -178,9 +181,7 @@ class HassioAddonInfo extends LitElement {
                           ></iron-icon>
                         `}
                   `
-                : html`
-                    ${this.addon.version_latest}
-                  `}
+                : html` ${this.addon.version_latest} `}
             </div>
           </div>
           <div class="description light-color">
@@ -379,11 +380,7 @@ class HassioAddonInfo extends LitElement {
                   : ""}
               `
             : ""}
-          ${this._error
-            ? html`
-                <div class="errors">${this._error}</div>
-              `
-            : ""}
+          ${this._error ? html` <div class="errors">${this._error}</div> ` : ""}
         </div>
         <div class="card-actions">
           ${this.addon.version
@@ -721,8 +718,9 @@ class HassioAddonInfo extends LitElement {
       };
       fireEvent(this, "hass-api-called", eventdata);
     } catch (err) {
-      this._error = `Failed to set addon security option, ${err.body?.message ||
-        err}`;
+      this._error = `Failed to set addon security option, ${
+        err.body?.message || err
+      }`;
     }
   }
 
@@ -756,8 +754,9 @@ class HassioAddonInfo extends LitElement {
         content,
       });
     } catch (err) {
-      this._error = `Failed to get addon changelog, ${err.body?.message ||
-        err}`;
+      this._error = `Failed to get addon changelog, ${
+        err.body?.message || err
+      }`;
     }
   }
 

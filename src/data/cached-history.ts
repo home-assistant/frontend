@@ -1,3 +1,4 @@
+import { HassEntity } from "home-assistant-js-websocket";
 import {
   computeHistory,
   fetchRecent,
@@ -6,7 +7,6 @@ import {
   LineChartUnit,
 } from "./history";
 import { HomeAssistant } from "../types";
-import { HassEntity } from "home-assistant-js-websocket";
 import { LocalizeFunc } from "../common/translations/localize";
 
 export interface CacheConfig {

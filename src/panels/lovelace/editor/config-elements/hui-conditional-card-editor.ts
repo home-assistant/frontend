@@ -40,11 +40,17 @@ const cardConfigStruct = struct({
 export class HuiConditionalCardEditor extends LitElement
   implements LovelaceCardEditor {
   @property() public hass?: HomeAssistant;
+
   @property() public lovelace?: LovelaceConfig;
+
   @property() private _config?: ConditionalCardConfig;
+
   @property() private _GUImode = true;
+
   @property() private _guiModeAvailable? = true;
-  @property() private _cardTab: boolean = false;
+
+  @property() private _cardTab = false;
+
   @query("hui-card-editor") private _cardEditorEl?: HuiCardEditor;
 
   public setConfig(config: ConditionalCardConfig): void {
@@ -242,6 +248,7 @@ export class HuiConditionalCardEditor extends LitElement
     target.value = "";
     fireEvent(this, "config-changed", { config: this._config });
   }
+
   private _changeCondition(ev: Event): void {
     const target = ev.target as any;
     if (!this._config || !target) {
@@ -265,11 +272,9 @@ export class HuiConditionalCardEditor extends LitElement
             condition.state_not = condition.state;
             delete condition.state;
           }
-        } else {
-          if (condition.state_not) {
-            condition.state = condition.state_not;
-            delete condition.state_not;
-          }
+        } else if (condition.state_not) {
+          condition.state = condition.state_not;
+          delete condition.state_not;
         }
       }
       this._config.conditions[target.index] = condition;

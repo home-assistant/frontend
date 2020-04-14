@@ -1,3 +1,4 @@
+import { HassEntities } from "home-assistant-js-websocket";
 import {
   applyThemesOnElement,
   invalidateThemeCache,
@@ -8,7 +9,6 @@ import { demoServices } from "./demo_services";
 import { demoPanels } from "./demo_panels";
 import { getEntity, Entity } from "./entity";
 import { HomeAssistant } from "../types";
-import { HassEntities } from "home-assistant-js-websocket";
 import { getLocalLanguage, getTranslation } from "../util/hass-translation";
 import { translationMetadata } from "../resources/translations-metadata";
 import { DEFAULT_PANEL } from "../data/panel";
@@ -76,7 +76,7 @@ export const provideHass = (
     });
   }
 
-  function addEntities(newEntities, replace: boolean = false) {
+  function addEntities(newEntities, replace = false) {
     const states = {};
     ensureArray(newEntities).forEach((ent) => {
       ent.hass = hass();
@@ -132,7 +132,7 @@ export const provideHass = (
         if (callback) {
           callback(msg);
         } else {
-          // tslint:disable-next-line
+          // eslint-disable-next-line
           console.error(`Unknown WS command: ${msg.type}`);
         }
       },
@@ -211,7 +211,7 @@ export const provideHass = (
           )
         );
       } else {
-        // tslint:disable-next-line
+        // eslint-disable-next-line
         console.log("unmocked callService", domain, service, data);
       }
     },

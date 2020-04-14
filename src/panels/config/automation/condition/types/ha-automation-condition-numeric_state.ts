@@ -11,6 +11,7 @@ import { NumericStateCondition } from "../../../../../data/automation";
 @customElement("ha-automation-condition-numeric_state")
 export default class HaNumericStateCondition extends LitElement {
   @property() public hass!: HomeAssistant;
+
   @property() public condition!: NumericStateCondition;
 
   public static get defaultConfig() {

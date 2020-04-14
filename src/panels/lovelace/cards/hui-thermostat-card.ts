@@ -16,6 +16,7 @@ import "@thomasloven/round-slider";
 import "../../../components/ha-card";
 import "../components/hui-warning";
 
+import { HassEntity } from "home-assistant-js-websocket";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 
@@ -31,7 +32,6 @@ import {
   compareClimateHvacModes,
   CLIMATE_PRESET_NONE,
 } from "../../../data/climate";
-import { HassEntity } from "home-assistant-js-websocket";
 import { actionHandler } from "../common/directives/action-handler-directive";
 import { findEntities } from "../common/find-entites";
 import { UNAVAILABLE_STATES } from "../../../data/entity";
@@ -74,7 +74,9 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
   }
 
   @property() public hass?: HomeAssistant;
+
   @property() private _config?: ThermostatCardConfig;
+
   @property() private _setTemp?: number | number[];
 
   public getCardSize(): number {
@@ -127,9 +129,7 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
         : stateObj.attributes.min_temp;
 
     const slider = UNAVAILABLE_STATES.includes(stateObj.state)
-      ? html`
-          <round-slider disabled="true"></round-slider>
-        `
+      ? html` <round-slider disabled="true"></round-slider> `
       : html`
           <round-slider
             .value=${targetTemp}

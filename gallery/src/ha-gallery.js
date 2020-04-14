@@ -6,11 +6,13 @@ import "@polymer/paper-item/paper-item";
 import "@polymer/paper-item/paper-item-body";
 import "@polymer/paper-icon-button/paper-icon-button";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
+/* eslint-plugin-disable lit */
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 
 import "../../src/managers/notification-manager";
 import "../../src/components/ha-card";
 
+// eslint-disable-next-line no-undef
 const DEMOS = require.context("./demos", true, /^(.*\.(ts$))[^.]*$/im);
 
 const fixPath = (path) => path.substr(2, path.length - 5);

@@ -13,6 +13,7 @@ import { StateCondition } from "../../../../../data/automation";
 @customElement("ha-automation-condition-state")
 export class HaStateCondition extends LitElement implements ConditionElement {
   @property() public hass!: HomeAssistant;
+
   @property() public condition!: StateCondition;
 
   public static get defaultConfig() {

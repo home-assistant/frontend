@@ -1,3 +1,4 @@
+/* eslint-plugin-disable lit */
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 
 import "./state-card-climate";

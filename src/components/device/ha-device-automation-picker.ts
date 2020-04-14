@@ -16,7 +16,7 @@ import {
   DeviceAutomation,
   deviceAutomationsEqual,
 } from "../../data/device_automation";
-import "../../components/ha-paper-dropdown-menu";
+import "../ha-paper-dropdown-menu";
 
 const NO_AUTOMATION_KEY = "NO_AUTOMATION";
 const UNKNOWN_AUTOMATION_KEY = "UNKNOWN_AUTOMATION";
@@ -25,11 +25,17 @@ export abstract class HaDeviceAutomationPicker<
   T extends DeviceAutomation
 > extends LitElement {
   @property() public hass!: HomeAssistant;
+
   @property() public label?: string;
+
   @property() public deviceId?: string;
+
   @property() public value?: T;
+
   protected NO_AUTOMATION_TEXT = "No automations";
+
   protected UNKNOWN_AUTOMATION_TEXT = "Unknown automation";
+
   @property() private _automations: T[] = [];
 
   // Trigger an empty render so we start with a clean DOM.
@@ -40,10 +46,12 @@ export abstract class HaDeviceAutomationPicker<
     hass: HomeAssistant,
     automation: T
   ) => string;
+
   private _fetchDeviceAutomations: (
     hass: HomeAssistant,
     deviceId: string
   ) => Promise<T[]>;
+
   private _createNoAutomation: (deviceId?: string) => T;
 
   constructor(

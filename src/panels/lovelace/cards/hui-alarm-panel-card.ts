@@ -15,14 +15,15 @@ import "../../../components/ha-card";
 import "../../../components/ha-label-badge";
 import "../components/hui-warning";
 
-import { LovelaceCard } from "../types";
-import { HomeAssistant } from "../../../types";
+import "@polymer/paper-input/paper-input";
+import type { PaperInputElement } from "@polymer/paper-input/paper-input";
+import type { LovelaceCard } from "../types";
+import type { HomeAssistant } from "../../../types";
 import {
   callAlarmAction,
   FORMAT_NUMBER,
 } from "../../../data/alarm_control_panel";
 import { AlarmPanelCardConfig } from "./types";
-import { PaperInputElement } from "@polymer/paper-input/paper-input";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { findEntities } from "../common/find-entites";
 import { fireEvent } from "../../../common/dom/fire_event";
@@ -165,8 +166,8 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
     return html`
       <ha-card
         .header="${this._config.name ||
-          stateObj.attributes.friendly_name ||
-          this._label(stateObj.state)}"
+        stateObj.attributes.friendly_name ||
+        this._label(stateObj.state)}"
       >
         <ha-label-badge
           class="${classMap({ [stateObj.state]: true })}"
@@ -205,9 +206,7 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
               <div id="keypad">
                 ${BUTTONS.map((value) => {
                   return value === ""
-                    ? html`
-                        <mwc-button disabled></mwc-button>
-                      `
+                    ? html` <mwc-button disabled></mwc-button> `
                     : html`
                         <mwc-button
                           .value="${value}"

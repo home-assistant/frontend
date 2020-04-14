@@ -18,17 +18,16 @@ import "@polymer/paper-icon-button/paper-icon-button";
 import "@polymer/paper-spinner/paper-spinner";
 
 import { struct } from "./common/structs/struct";
-import { Lovelace } from "./types";
+import type { Lovelace } from "./types";
 
 import "../../components/ha-icon";
 import { haStyle } from "../../resources/styles";
+
 import "../../components/ha-code-editor";
-// This is not a duplicate import, one is for types, one is for element.
-// tslint:disable-next-line
-import { HaCodeEditor } from "../../components/ha-code-editor";
-import { HomeAssistant } from "../../types";
+import type { HaCodeEditor } from "../../components/ha-code-editor";
+import type { HomeAssistant } from "../../types";
 import { computeRTL } from "../../common/util/compute_rtl";
-import { LovelaceConfig } from "../../data/lovelace";
+import type { LovelaceConfig } from "../../data/lovelace";
 import {
   showAlertDialog,
   showConfirmationDialog,
@@ -42,9 +41,13 @@ const lovelaceStruct = struct.interface({
 @customElement("hui-editor")
 class LovelaceFullConfigEditor extends LitElement {
   @property() public hass!: HomeAssistant;
+
   @property() public lovelace?: Lovelace;
+
   @property() public closeEditor?: () => void;
+
   @property() private _saving?: boolean;
+
   @property() private _changed?: boolean;
 
   private _generation = 1;

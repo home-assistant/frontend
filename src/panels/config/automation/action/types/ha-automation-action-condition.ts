@@ -9,6 +9,7 @@ import { Condition } from "../../../../../data/automation";
 @customElement("ha-automation-action-condition")
 export class HaConditionAction extends LitElement implements ActionElement {
   @property() public hass!: HomeAssistant;
+
   @property() public action!: Condition;
 
   public static get defaultConfig() {

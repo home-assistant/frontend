@@ -97,7 +97,7 @@ export class HuiLightCardEditor extends LitElement
           .hass=${this.hass}
           .value=${this._entity}
           .configValue=${"entity"}
-          include-domains='["light"]'
+          .include-domains=${["light"]}
           @change=${this._valueChanged}
           allow-custom-entity
         ></ha-entity-picker>
@@ -120,7 +120,7 @@ export class HuiLightCardEditor extends LitElement
             )})"
             .value=${this._icon}
             .placeholder=${this._icon ||
-              stateIcon(this.hass.states[this._entity])}
+            stateIcon(this.hass.states[this._entity])}
             .configValue=${"icon"}
             @value-changed=${this._valueChanged}
           ></ha-icon-input>

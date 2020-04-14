@@ -1,8 +1,8 @@
+/* eslint-disable no-console */
 import { HassBaseEl } from "./hass-base-mixin";
 import { fireEvent } from "../common/dom/fire_event";
 import { Constructor } from "../types";
 
-/* tslint:disable:no-console */
 const DEBUG = false;
 
 export const urlSyncMixin = <T extends Constructor<HassBaseEl>>(
@@ -13,7 +13,9 @@ export const urlSyncMixin = <T extends Constructor<HassBaseEl>>(
     ? superClass
     : class extends superClass {
         private _ignoreNextHassChange = false;
+
         private _ignoreNextPopstate = false;
+
         private _moreInfoOpenedFromPath?: string;
 
         public connectedCallback(): void {

@@ -75,13 +75,21 @@ interface FolderItem {
 @customElement("dialog-hassio-snapshot")
 class HassioSnapshotDialog extends LitElement {
   @property() public hass!: HomeAssistant;
+
   @property() private _error?: string;
+
   @property() private snapshot?: HassioSnapshotDetail;
+
   @property() private _folders!: FolderItem[];
+
   @property() private _addons!: AddonItem[];
+
   @property() private _dialogParams?: HassioSnapshotDialogParams;
+
   @property() private _snapshotPassword!: string;
+
   @property() private _restoreHass: boolean | null | undefined = true;
+
   @query("#dialog") private _dialog!: PaperDialogElement;
 
   public async showDialog(params: HassioSnapshotDialogParams) {
@@ -129,8 +137,9 @@ class HassioSnapshotDialog extends LitElement {
         <div>Home Assistant:</div>
         <paper-checkbox
           .checked=${this._restoreHass}
-          @change="${(ev: Event) =>
-            (this._restoreHass = (ev.target as PaperCheckboxElement).checked)}"
+          @change="${(ev: Event) => {
+            this._restoreHass = (ev.target as PaperCheckboxElement).checked;
+          }}"
         >
           Home Assistant ${this.snapshot.homeassistant}
         </paper-checkbox>
@@ -187,11 +196,7 @@ class HassioSnapshotDialog extends LitElement {
               ></paper-input>
             `
           : ""}
-        ${this._error
-          ? html`
-              <p class="error">Error: ${this._error}</p>
-            `
-          : ""}
+        ${this._error ? html` <p class="error">Error: ${this._error}</p> ` : ""}
 
         <div>Actions:</div>
         <ul class="buttons">

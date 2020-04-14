@@ -13,6 +13,7 @@ export class HaDeviceConditionsCard extends HaDeviceAutomationCard<
   DeviceCondition
 > {
   protected type = "condition";
+
   protected headerKey = "ui.panel.config.devices.automation.conditions.caption";
 
   constructor() {

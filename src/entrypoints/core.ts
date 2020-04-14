@@ -22,6 +22,7 @@ import {
   fetchResources,
   WindowWithLovelaceProm,
 } from "../data/lovelace";
+import type { ExternalAuth } from "../external_app/external_auth";
 
 declare global {
   interface Window {
@@ -76,7 +77,9 @@ if (__DEV__) {
   delete Document.prototype.adoptedStyleSheets;
   performance.mark("hass-start");
 }
-window.hassConnection = authProm().then(connProm);
+window.hassConnection = (authProm() as Promise<Auth | ExternalAuth>).then(
+  connProm
+);
 
 // Start fetching some of the data that we will need.
 window.hassConnection.then(({ conn }) => {

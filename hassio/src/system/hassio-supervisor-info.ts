@@ -25,7 +25,9 @@ import "../../../src/components/buttons/ha-call-api-button";
 @customElement("hassio-supervisor-info")
 class HassioSupervisorInfo extends LitElement {
   @property() public hass!: HomeAssistant;
+
   @property() public supervisorInfo!: HassioSupervisorInfoType;
+
   @property() private _errors?: string;
 
   public render(): TemplateResult | void {
@@ -54,9 +56,7 @@ class HassioSupervisorInfo extends LitElement {
             </tbody>
           </table>
           ${this._errors
-            ? html`
-                <div class="errors">Error: ${this._errors}</div>
-              `
+            ? html` <div class="errors">Error: ${this._errors}</div> `
             : ""}
         </div>
         <div class="card-actions">

@@ -20,6 +20,8 @@ import {
 } from "lit-element";
 import "../../map/ha-entity-marker";
 
+import { classMap } from "lit-html/directives/class-map";
+import { HassEntity } from "home-assistant-js-websocket";
 import {
   setupLeafletMap,
   createTileLayer,
@@ -36,10 +38,8 @@ import { LovelaceCard } from "../types";
 import { EntityConfig } from "../entity-rows/types";
 import { processConfigEntities } from "../common/process-config-entities";
 import { MapCardConfig } from "./types";
-import { classMap } from "lit-html/directives/class-map";
 import { findEntities } from "../common/find-entites";
 
-import { HassEntity } from "home-assistant-js-websocket";
 import { fetchRecent } from "../../../data/history";
 
 @customElement("hui-map-card")
@@ -73,21 +73,28 @@ class HuiMapCard extends LitElement implements LovelaceCard {
 
   @property({ type: Boolean, reflect: true })
   public isPanel = false;
+
   @property({ type: Boolean, reflect: true })
   public editMode = false;
 
   @property()
   private _history?: HassEntity[][];
+
   private _date?: Date;
 
   @property()
   private _config?: MapCardConfig;
+
   private _configEntities?: EntityConfig[];
-  // tslint:disable-next-line
+
+  // eslint-disable-next-line
   private Leaflet?: LeafletModuleType;
+
   private _leafletMap?: Map;
+
   // @ts-ignore
   private _resizeObserver?: ResizeObserver;
+
   private _debouncedResizeListener = debounce(
     () => {
       if (!this._leafletMap) {
@@ -98,12 +105,19 @@ class HuiMapCard extends LitElement implements LovelaceCard {
     100,
     false
   );
+
   private _mapItems: Array<Marker | Circle> = [];
+
   private _mapZones: Array<Marker | Circle> = [];
+
   private _mapPaths: Array<Polyline | CircleMarker> = [];
+
   private _connected = false;
+
   private _colorDict: { [key: string]: string } = {};
-  private _colorIndex: number = 0;
+
+  private _colorIndex = 0;
+
   private _colors: string[] = [
     "#0288D1",
     "#00AA00",

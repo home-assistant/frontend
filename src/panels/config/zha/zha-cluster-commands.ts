@@ -35,13 +35,21 @@ import {
 
 export class ZHAClusterCommands extends LitElement {
   @property() public hass?: HomeAssistant;
+
   @property() public isWide?: boolean;
+
   @property() public selectedNode?: ZHADevice;
+
   @property() public selectedCluster?: Cluster;
+
   @property() private _showHelp = false;
+
   @property() private _commands: Command[] = [];
+
   @property() private _selectedCommandIndex = -1;
+
   @property() private _manufacturerCodeOverride?: number;
+
   @property() private _issueClusterCommandServiceData?: IssueCommandServiceData;
 
   protected updated(changedProperties: PropertyValues): void {
@@ -92,9 +100,9 @@ export class ZHAClusterCommands extends LitElement {
                   (entry) => html`
                     <paper-item
                       >${entry.name +
-                        " (id: " +
-                        formatAsPaddedHex(entry.id) +
-                        ")"}</paper-item
+                      " (id: " +
+                      formatAsPaddedHex(entry.id) +
+                      ")"}</paper-item
                     >
                   `
                 )}
@@ -173,7 +181,7 @@ export class ZHAClusterCommands extends LitElement {
     | IssueCommandServiceData
     | undefined {
     if (!this.selectedNode || !this.selectedCluster) {
-      return;
+      return undefined;
     }
     return {
       ieee: this.selectedNode!.ieee,

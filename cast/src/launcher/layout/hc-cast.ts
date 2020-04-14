@@ -36,16 +36,18 @@ import { atLeastVersion } from "../../../../src/common/config/version";
 @customElement("hc-cast")
 class HcCast extends LitElement {
   @property() public auth!: Auth;
+
   @property() public connection!: Connection;
+
   @property() public castManager!: CastManager;
+
   @property() private askWrite = false;
+
   @property() private lovelaceConfig?: LovelaceConfig | null;
 
   protected render(): TemplateResult {
     if (this.lovelaceConfig === undefined) {
-      return html`
-        <loading-screen></loading-screen>>
-      `;
+      return html` <loading-screen></loading-screen>> `;
     }
 
     const error =
@@ -75,9 +77,7 @@ class HcCast extends LitElement {
             `
           : ""}
         ${error
-          ? html`
-              <div class="card-content">${error}</div>
-            `
+          ? html` <div class="card-content">${error}</div> `
           : !this.castManager.status
           ? html`
               <p class="center-item">

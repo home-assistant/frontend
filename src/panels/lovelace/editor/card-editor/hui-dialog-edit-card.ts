@@ -11,24 +11,23 @@ import {
 
 import deepFreeze from "deep-freeze";
 
-import { HomeAssistant } from "../../../../types";
-import { HASSDomEvent } from "../../../../common/dom/fire_event";
-import {
+import type { HomeAssistant } from "../../../../types";
+import type { HASSDomEvent } from "../../../../common/dom/fire_event";
+import type {
   LovelaceCardConfig,
   LovelaceViewConfig,
 } from "../../../../data/lovelace";
 import "./hui-card-editor";
-// tslint:disable-next-line
-import { HuiCardEditor, ConfigChangedEvent } from "./hui-card-editor";
+import type { HuiCardEditor, ConfigChangedEvent } from "./hui-card-editor";
 import "./hui-card-preview";
 import "./hui-card-picker";
-import { EditCardDialogParams } from "./show-edit-card-dialog";
+import type { EditCardDialogParams } from "./show-edit-card-dialog";
 import { addCard, replaceCard } from "../config-util";
 
 import "../../../../components/dialog/ha-paper-dialog";
 import { haStyleDialog } from "../../../../resources/styles";
 import { showSaveSuccessToast } from "../../../../util/toast-saved-success";
-import { GUIModeChangedEvent } from "../types";
+import type { GUIModeChangedEvent } from "../types";
 
 declare global {
   // for fire event
@@ -48,13 +47,17 @@ export class HuiDialogEditCard extends LitElement {
   @property() private _params?: EditCardDialogParams;
 
   @property() private _cardConfig?: LovelaceCardConfig;
+
   @property() private _viewConfig!: LovelaceViewConfig;
 
-  @property() private _saving: boolean = false;
+  @property() private _saving = false;
+
   @property() private _error?: string;
+
   @property() private _guiModeAvailable? = true;
 
   @query("hui-card-editor") private _cardEditorEl?: HuiCardEditor;
+
   @property() private _GUImode = true;
 
   public async showDialog(params: EditCardDialogParams): Promise<void> {

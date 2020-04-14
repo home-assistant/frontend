@@ -24,6 +24,7 @@ import { getLoggedErrorIntegration } from "../../../data/system_log";
 
 class DialogSystemLogDetail extends LitElement {
   @property() public hass!: HomeAssistant;
+
   @property() private _params?: SystemLogDetailDialogParams;
 
   public async showDialog(params: SystemLogDetailDialogParams): Promise<void> {
@@ -91,20 +92,11 @@ class DialogSystemLogDetail extends LitElement {
           ${item.message.length > 1
             ? html`
                 <ul>
-                  ${item.message.map(
-                    (msg) =>
-                      html`
-                        <li>${msg}</li>
-                      `
-                  )}
+                  ${item.message.map((msg) => html` <li>${msg}</li> `)}
                 </ul>
               `
             : item.message[0]}
-          ${item.exception
-            ? html`
-                <pre>${item.exception}</pre>
-              `
-            : html``}
+          ${item.exception ? html` <pre>${item.exception}</pre> ` : html``}
         </paper-dialog-scrollable>
       </ha-paper-dialog>
     `;

@@ -10,17 +10,17 @@ import {
 import "@polymer/paper-spinner/paper-spinner-lite";
 import "@polymer/paper-item/paper-icon-item";
 import "@polymer/paper-item/paper-item-body";
-import { HomeAssistant } from "../../types";
-import { fireEvent } from "../../common/dom/fire_event";
 import memoizeOne from "memoize-one";
 import * as Fuse from "fuse.js";
+import { styleMap } from "lit-html/directives/style-map";
+import { classMap } from "lit-html/directives/class-map";
+import { HomeAssistant } from "../../types";
+import { fireEvent } from "../../common/dom/fire_event";
 
 import "../../components/ha-icon-next";
 import "../../common/search/search-input";
-import { styleMap } from "lit-html/directives/style-map";
 import { FlowConfig } from "./show-dialog-data-entry-flow";
 import { configFlowContentStyles } from "./styles";
-import { classMap } from "lit-html/directives/class-map";
 
 interface HandlerObj {
   name: string;
@@ -32,9 +32,13 @@ class StepFlowPickHandler extends LitElement {
   public flowConfig!: FlowConfig;
 
   @property() public hass!: HomeAssistant;
+
   @property() public handlers!: string[];
+
   @property() public showAdvanced?: boolean;
+
   @property() private filter?: string;
+
   private _width?: number;
 
   private _getHandlers = memoizeOne((h: string[], filter?: string) => {

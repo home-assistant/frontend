@@ -11,12 +11,12 @@ import {
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-item/paper-item-body";
 
+import memoizeOne from "memoize-one";
 import { HomeAssistant } from "../../../../types";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { LovelaceViewConfig, ShowViewConfig } from "../../../../data/lovelace";
 
 import { fetchUsers, User } from "../../../../data/user";
-import memoizeOne from "memoize-one";
 import { compare } from "../../../../common/string/compare";
 import { HaSwitch } from "../../../../components/ha-switch";
 
@@ -37,8 +37,11 @@ export class HuiViewVisibilityEditor extends LitElement {
   }
 
   @property() public hass!: HomeAssistant;
+
   @property() public _config!: LovelaceViewConfig;
+
   @property() private _users!: User[];
+
   @property() private _visible!: boolean | ShowViewConfig[];
 
   private _sortedUsers = memoizeOne((users: User[]) => {

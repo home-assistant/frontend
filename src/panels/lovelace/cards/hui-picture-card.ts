@@ -12,9 +12,9 @@ import { ifDefined } from "lit-html/directives/if-defined";
 
 import "../../../components/ha-card";
 
+import { classMap } from "lit-html/directives/class-map";
 import { LovelaceCard, LovelaceCardEditor } from "../types";
 import { HomeAssistant } from "../../../types";
-import { classMap } from "lit-html/directives/class-map";
 import { PictureCardConfig } from "./types";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { actionHandler } from "../common/directives/action-handler-directive";
@@ -30,6 +30,7 @@ export class HuiPictureCard extends LitElement implements LovelaceCard {
     );
     return document.createElement("hui-picture-card-editor");
   }
+
   public static getStubConfig(): PictureCardConfig {
     return {
       type: "picture",

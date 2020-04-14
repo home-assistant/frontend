@@ -33,9 +33,13 @@ import "../ha-config-section";
 @customElement("zwave-network")
 export class ZwaveNetwork extends LitElement {
   @property() public hass!: HomeAssistant;
+
   @property() public isWide!: boolean;
+
   @property() private _showHelp = false;
+
   @property() private _networkStatus?: ZWaveNetworkStatus;
+
   @property() private _unsubs: Array<Promise<UnsubscribeFunc>> = [];
 
   public disconnectedCallback(): void {
@@ -133,9 +137,7 @@ export class ZwaveNetwork extends LitElement {
                         ${this._generateServiceButton("heal_network")}
                         ${this._generateServiceButton("test_network")}
                       `
-                    : html`
-                        ${this._generateServiceButton("start_network")}
-                      `}
+                    : html` ${this._generateServiceButton("start_network")} `}
                 </div>
                 ${this._networkStatus.state >= ZWAVE_NETWORK_STATE_AWAKED
                   ? html`

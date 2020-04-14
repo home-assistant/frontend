@@ -49,9 +49,13 @@ import { configSections } from "../ha-panel-config";
 @customElement("ha-config-entries-dashboard")
 export class HaConfigManagerDashboard extends LitElement {
   @property() public hass!: HomeAssistant;
+
   @property() public showAdvanced!: boolean;
+
   @property() public isWide!: boolean;
+
   @property() public narrow!: boolean;
+
   @property() public route!: Route;
 
   @property() private configEntries!: ConfigEntry[];
@@ -66,6 +70,7 @@ export class HaConfigManagerDashboard extends LitElement {
    * For example, can be discovered devices that require more config.
    */
   @property() private configEntriesInProgress!: DataEntryFlowProgress[];
+
   @property() private _showIgnored = false;
 
   public connectedCallback() {

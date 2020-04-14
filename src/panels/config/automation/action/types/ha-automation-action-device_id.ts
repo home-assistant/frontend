@@ -2,22 +2,26 @@ import "../../../../../components/device/ha-device-picker";
 import "../../../../../components/device/ha-device-action-picker";
 import "../../../../../components/ha-form/ha-form";
 
+import { LitElement, customElement, property, html } from "lit-element";
+import memoizeOne from "memoize-one";
 import {
   fetchDeviceActionCapabilities,
   deviceAutomationsEqual,
   DeviceAction,
 } from "../../../../../data/device_automation";
-import { LitElement, customElement, property, html } from "lit-element";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import { HomeAssistant } from "../../../../../types";
-import memoizeOne from "memoize-one";
 
 @customElement("ha-automation-action-device_id")
 export class HaDeviceAction extends LitElement {
   @property() public hass!: HomeAssistant;
+
   @property() public action!: DeviceAction;
+
   @property() private _deviceId?: string;
+
   @property() private _capabilities?;
+
   private _origAction?: DeviceAction;
 
   public static get defaultConfig() {

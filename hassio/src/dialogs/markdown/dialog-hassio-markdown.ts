@@ -23,7 +23,9 @@ import "../../../../src/components/ha-markdown";
 @customElement("dialog-hassio-markdown")
 class HassioMarkdownDialog extends LitElement {
   @property() public title!: string;
+
   @property() public content!: string;
+
   @query("#dialog") private _dialog!: PaperDialogElement;
 
   public showDialog(params: HassioMarkdownDialogParams) {

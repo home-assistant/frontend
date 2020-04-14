@@ -15,8 +15,10 @@ import { classMap } from "lit-html/directives/class-map";
 class HassSubpage extends LitElement {
   @property()
   public header?: string;
+
   @property({ type: Boolean })
   public showBackButton = true;
+
   @property({ type: Boolean })
   public hassio = false;
 

@@ -98,7 +98,7 @@ export class HuiSensorCardEditor extends LitElement
           .hass=${this.hass}
           .value="${this._entity}"
           .configValue=${"entity"}
-          include-domains='["sensor"]'
+          .include-domains=${["sensor"]}
           @change="${this._valueChanged}"
           allow-custom-entity
         ></ha-entity-picker>
@@ -121,7 +121,7 @@ export class HuiSensorCardEditor extends LitElement
             )})"
             .value=${this._icon}
             .placeholder=${this._icon ||
-              stateIcon(this.hass.states[this._entity])}
+            stateIcon(this.hass.states[this._entity])}
             .configValue=${"icon"}
             @value-changed=${this._valueChanged}
           ></ha-icon-input>
@@ -139,9 +139,7 @@ export class HuiSensorCardEditor extends LitElement
               .selected="${graphs.indexOf(this._graph)}"
             >
               ${graphs.map((graph) => {
-                return html`
-                  <paper-item>${graph}</paper-item>
-                `;
+                return html` <paper-item>${graph}</paper-item> `;
               })}
             </paper-listbox>
           </paper-dropdown-menu>

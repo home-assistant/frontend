@@ -11,9 +11,10 @@ import {
   TemplateResult,
 } from "lit-element";
 import "../../../components/dialog/ha-paper-dialog";
+import memoizeOne from "memoize-one";
+import { ifDefined } from "lit-html/directives/if-defined";
 import { haStyle } from "../../../resources/styles";
 import { HomeAssistant, Route } from "../../../types";
-import memoizeOne from "memoize-one";
 import {
   AreaRegistryEntry,
   updateAreaRegistryEntry,
@@ -33,18 +34,25 @@ import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box
 import { RelatedResult, findRelated } from "../../../data/search";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { computeStateName } from "../../../common/entity/compute_state_name";
-import { ifDefined } from "lit-html/directives/if-defined";
 
 @customElement("ha-config-area-page")
 class HaConfigAreaPage extends LitElement {
   @property() public hass!: HomeAssistant;
+
   @property() public areaId!: string;
+
   @property() public areas!: AreaRegistryEntry[];
+
   @property() public devices!: DeviceRegistryEntry[];
+
   @property({ type: Boolean, reflect: true }) public narrow!: boolean;
+
   @property() public isWide!: boolean;
+
   @property() public showAdvanced!: boolean;
+
   @property() public route!: Route;
+
   @property() private _related?: RelatedResult;
 
   private _area = memoizeOne((areaId: string, areas: AreaRegistryEntry[]):

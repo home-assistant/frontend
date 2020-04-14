@@ -9,8 +9,8 @@ import {
 } from "lit-element";
 import "@polymer/paper-listbox/paper-listbox";
 import "@polymer/paper-item/paper-icon-item";
-import "../../../../src/components/ha-icon";
-import { toggleAttribute } from "../../../../src/common/dom/toggle_attribute";
+import "../../../components/ha-icon";
+import { toggleAttribute } from "../../../common/dom/toggle_attribute";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { LovelaceConfig } from "../../../data/lovelace";
 
@@ -25,6 +25,7 @@ declare global {
 @customElement("hui-views-list")
 class HuiViewsList extends LitElement {
   @property() private lovelaceConfig?: LovelaceConfig | undefined;
+
   @property() private selected?: number | undefined;
 
   protected render(): TemplateResult {

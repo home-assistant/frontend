@@ -15,8 +15,10 @@ import { classMap } from "lit-html/directives/class-map";
 @customElement("search-input")
 class SearchInput extends LitElement {
   @property() public filter?: string;
+
   @property({ type: Boolean, attribute: "no-label-float" })
   public noLabelFloat? = false;
+
   @property({ type: Boolean, attribute: "no-underline" })
   public noUnderline = false;
 
@@ -44,16 +46,16 @@ class SearchInput extends LitElement {
       >
         <ha-icon icon="hass:magnify" slot="prefix" class="prefix"></ha-icon>
         ${this.filter &&
-          html`
-            <paper-icon-button
-              slot="suffix"
-              class="suffix"
-              @click=${this._clearSearch}
-              icon="hass:close"
-              alt="Clear"
-              title="Clear"
-            ></paper-icon-button>
-          `}
+        html`
+          <paper-icon-button
+            slot="suffix"
+            class="suffix"
+            @click=${this._clearSearch}
+            icon="hass:close"
+            alt="Clear"
+            title="Clear"
+          ></paper-icon-button>
+        `}
       </paper-input>
     `;
   }

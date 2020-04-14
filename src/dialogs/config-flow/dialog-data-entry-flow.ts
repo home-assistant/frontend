@@ -13,15 +13,13 @@ import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable";
 import "@polymer/paper-tooltip/paper-tooltip";
 import "@polymer/paper-icon-button/paper-icon-button";
 import "@polymer/paper-spinner/paper-spinner";
-import { UnsubscribeFunc } from "home-assistant-js-websocket";
+import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 
 import "../../components/ha-form/ha-form";
 import "../../components/ha-markdown";
 import "../../resources/ha-style";
 import "../../components/dialog/ha-paper-dialog";
-// Not duplicate, is for typing
-// tslint:disable-next-line
-import { HaPaperDialog } from "../../components/dialog/ha-paper-dialog";
+import type { HaPaperDialog } from "../../components/dialog/ha-paper-dialog";
 import { haStyleDialog } from "../../resources/styles";
 import { PolymerChangedEvent } from "../../polymer-types";
 import { DataEntryFlowDialogParams } from "./show-dialog-data-entry-flow";
@@ -40,8 +38,8 @@ import {
   AreaRegistryEntry,
   subscribeAreaRegistry,
 } from "../../data/area_registry";
-import { HomeAssistant } from "../../types";
-import { DataEntryFlowStep } from "../../data/data_entry_flow";
+import type { HomeAssistant } from "../../types";
+import type { DataEntryFlowStep } from "../../data/data_entry_flow";
 
 let instance = 0;
 
@@ -58,18 +56,27 @@ declare global {
 @customElement("dialog-data-entry-flow")
 class DataEntryFlowDialog extends LitElement {
   public hass!: HomeAssistant;
+
   @property() private _params?: DataEntryFlowDialogParams;
+
   @property() private _loading = true;
+
   private _instance = instance;
+
   @property() private _step:
     | DataEntryFlowStep
     | undefined
     // Null means we need to pick a config flow
     | null;
+
   @property() private _devices?: DeviceRegistryEntry[];
+
   @property() private _areas?: AreaRegistryEntry[];
+
   @property() private _handlers?: string[];
+
   private _unsubAreas?: UnsubscribeFunc;
+
   private _unsubDevices?: UnsubscribeFunc;
 
   public async showDialog(params: DataEntryFlowDialogParams): Promise<void> {
@@ -184,9 +191,7 @@ class DataEntryFlowDialog extends LitElement {
                   `
                 : this._devices === undefined || this._areas === undefined
                 ? // When it's a create entry result, we will fetch device & area registry
-                  html`
-                    <step-flow-loading></step-flow-loading>
-                  `
+                  html` <step-flow-loading></step-flow-loading> `
                 : html`
                     <step-flow-create-entry
                       .flowConfig=${this._params.flowConfig}

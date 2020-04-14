@@ -36,8 +36,11 @@ const sortRepos = (a: HassioAddonRepository, b: HassioAddonRepository) => {
 
 class HassioAddonStore extends LitElement {
   @property() public hass!: HomeAssistant;
+
   @property() private _addons?: HassioAddonInfo[];
+
   @property() private _repos?: HassioAddonRepository[];
+
   @property() private _filter?: string;
 
   public async refreshData() {
@@ -50,9 +53,7 @@ class HassioAddonStore extends LitElement {
 
   protected render(): TemplateResult {
     if (!this._addons || !this._repos) {
-      return html`
-        <loading-screen></loading-screen>
-      `;
+      return html` <loading-screen></loading-screen> `;
     }
     const repos: TemplateResult[] = [];
 

@@ -20,14 +20,14 @@ import "../../../src/layouts/hass-subpage";
 @customElement("hassio-ingress-view")
 class HassioIngressView extends LitElement {
   @property() public hass!: HomeAssistant;
+
   @property() public route!: Route;
+
   @property() private _addon?: HassioAddonDetails;
 
   protected render(): TemplateResult {
     if (!this._addon) {
-      return html`
-        <hass-loading-screen></hass-loading-screen>
-      `;
+      return html` <hass-loading-screen></hass-loading-screen> `;
     }
 
     return html`
@@ -71,7 +71,7 @@ class HassioIngressView extends LitElement {
 
       this._addon = addon;
     } catch (err) {
-      // tslint:disable-next-line
+      // eslint-disable-next-line
       console.error(err);
       alert(err.message || "Unknown error starting ingress.");
       history.back();

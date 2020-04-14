@@ -9,6 +9,7 @@ import {
   css,
 } from "lit-element";
 import "@material/mwc-button/mwc-button";
+import { genClientId } from "home-assistant-js-websocket";
 import {
   loadConfigFlowDialog,
   showConfigFlowDialog,
@@ -20,7 +21,6 @@ import "./integration-badge";
 import { LocalizeFunc } from "../common/translations/localize";
 import { fireEvent } from "../common/dom/fire_event";
 import { onboardIntegrationStep } from "../data/onboarding";
-import { genClientId } from "home-assistant-js-websocket";
 import { DataEntryFlowProgress } from "../data/data_entry_flow";
 import {
   localizeConfigFlowTitle,
@@ -31,9 +31,13 @@ import {
 @customElement("onboarding-integrations")
 class OnboardingIntegrations extends LitElement {
   @property() public hass!: HomeAssistant;
+
   @property() public onboardingLocalize!: LocalizeFunc;
+
   @property() private _entries?: ConfigEntry[];
+
   @property() private _discovered?: DataEntryFlowProgress[];
+
   private _unsubEvents?: () => void;
 
   public connectedCallback() {

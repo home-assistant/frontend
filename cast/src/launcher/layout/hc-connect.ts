@@ -61,13 +61,19 @@ const INTRO = html`
 @customElement("hc-connect")
 export class HcConnect extends LitElement {
   @property() private loading = false;
+
   // If we had stored credentials but we cannot connect,
   // show a screen asking retry or logout.
   @property() private cannotConnect = false;
+
   @property() private error?: string | TemplateResult;
+
   @property() private auth?: Auth;
+
   @property() private connection?: Connection;
+
   @property() private castManager?: CastManager | null;
+
   private openDemo = false;
 
   protected render(): TemplateResult {
@@ -92,9 +98,7 @@ export class HcConnect extends LitElement {
     }
 
     if (this.castManager === undefined || this.loading) {
-      return html`
-        <loading-screen></loading-screen>
-      `;
+      return html` <loading-screen></loading-screen> `;
     }
 
     if (this.castManager === null) {
@@ -127,11 +131,7 @@ export class HcConnect extends LitElement {
                 @keydown=${this._handleInputKeyDown}
               ></paper-input>
             </p>
-            ${this.error
-              ? html`
-                  <p class="error">${this.error}</p>
-                `
-              : ""}
+            ${this.error ? html` <p class="error">${this.error}</p> ` : ""}
           </div>
           <div class="card-actions">
             <mwc-button @click=${this._handleDemo}>
@@ -211,7 +211,8 @@ export class HcConnect extends LitElement {
     if (value === "") {
       this.error = "Please enter a Home Assistant URL.";
       return;
-    } else if (value.indexOf("://") === -1) {
+    }
+    if (value.indexOf("://") === -1) {
       this.error =
         "Please enter your full URL, including the protocol part (https://).";
       return;

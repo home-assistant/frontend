@@ -35,8 +35,11 @@ interface NetworkItemInput extends PaperInputElement {
 @customElement("hassio-addon-network")
 class HassioAddonNetwork extends LitElement {
   @property() public hass!: HomeAssistant;
+
   @property() public addon!: HassioAddonDetails;
+
   @property() private _error?: string;
+
   @property() private _config?: NetworkItem[];
 
   public connectedCallback(): void {
@@ -52,11 +55,7 @@ class HassioAddonNetwork extends LitElement {
     return html`
       <paper-card heading="Network">
         <div class="card-content">
-          ${this._error
-            ? html`
-                <div class="errors">${this._error}</div>
-              `
-            : ""}
+          ${this._error ? html` <div class="errors">${this._error}</div> ` : ""}
 
           <table>
             <tbody>
@@ -164,8 +163,9 @@ class HassioAddonNetwork extends LitElement {
       };
       fireEvent(this, "hass-api-called", eventdata);
     } catch (err) {
-      this._error = `Failed to set addon network configuration, ${err.body
-        ?.message || err}`;
+      this._error = `Failed to set addon network configuration, ${
+        err.body?.message || err
+      }`;
     }
   }
 
@@ -189,8 +189,9 @@ class HassioAddonNetwork extends LitElement {
       };
       fireEvent(this, "hass-api-called", eventdata);
     } catch (err) {
-      this._error = `Failed to set addon network configuration, ${err.body
-        ?.message || err}`;
+      this._error = `Failed to set addon network configuration, ${
+        err.body?.message || err
+      }`;
     }
   }
 }

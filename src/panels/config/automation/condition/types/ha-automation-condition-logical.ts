@@ -8,6 +8,7 @@ import { LogicalCondition } from "../../../../../data/automation";
 @customElement("ha-automation-condition-logical")
 export class HaLogicalCondition extends LitElement implements ConditionElement {
   @property() public hass!: HomeAssistant;
+
   @property() public condition!: LogicalCondition;
 
   public static get defaultConfig() {

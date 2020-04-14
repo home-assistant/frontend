@@ -16,7 +16,9 @@ import "./ha-device-picker";
 @customElement("ha-devices-picker")
 class HaDevicesPicker extends LitElement {
   @property() public hass?: HomeAssistant;
+
   @property() public value?: string[];
+
   /**
    * Show entities from specific domains.
    * @type {string}
@@ -24,6 +26,7 @@ class HaDevicesPicker extends LitElement {
    */
   @property({ type: Array, attribute: "include-domains" })
   public includeDomains?: string[];
+
   /**
    * Show no entities of these domains.
    * @type {Array}
@@ -31,10 +34,13 @@ class HaDevicesPicker extends LitElement {
    */
   @property({ type: Array, attribute: "exclude-domains" })
   public excludeDomains?: string[];
+
   @property({ attribute: "picked-device-label" })
   @property({ type: Array, attribute: "include-device-classes" })
   public includeDeviceClasses?: string[];
+
   public pickedDeviceLabel?: string;
+
   @property({ attribute: "pick-device-label" }) public pickDeviceLabel?: string;
 
   protected render(): TemplateResult {

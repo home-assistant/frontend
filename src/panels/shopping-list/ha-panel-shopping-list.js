@@ -10,6 +10,7 @@ import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
 import "@polymer/paper-menu-button/paper-menu-button";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
+/* eslint-plugin-disable lit */
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 
 import "../../components/ha-menu-button";
@@ -166,7 +167,7 @@ class HaPanelShoppingList extends LocalizeMixin(PolymerElement) {
     this.hass.connection
       .subscribeEvents(this._fetchData, "shopping_list_updated")
       .then(
-        function(unsub) {
+        function (unsub) {
           this._unsubEvents = unsub;
         }.bind(this)
       );
@@ -180,7 +181,7 @@ class HaPanelShoppingList extends LocalizeMixin(PolymerElement) {
 
   _fetchData() {
     this.hass.callApi("get", "shopping_list").then(
-      function(items) {
+      function (items) {
         items.reverse();
         this.items = items;
       }.bind(this)

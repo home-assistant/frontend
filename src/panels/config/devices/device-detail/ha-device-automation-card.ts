@@ -18,11 +18,15 @@ export abstract class HaDeviceAutomationCard<
   T extends DeviceAutomation
 > extends LitElement {
   @property() public hass!: HomeAssistant;
+
   @property() public deviceId?: string;
+
   @property() public script = false;
+
   @property() public automations: T[] = [];
 
   protected headerKey = "";
+
   protected type = "";
 
   private _localizeDeviceAutomation: (

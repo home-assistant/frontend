@@ -4,8 +4,8 @@ import "../../../../layouts/hass-error-screen";
 
 import "../../devices/ha-devices-data-table";
 import "./ha-ce-entities-card";
-import { showOptionsFlowDialog } from "../../../../dialogs/config-flow/show-dialog-options-flow";
 import { property, LitElement, CSSResult, css, html } from "lit-element";
+import { showOptionsFlowDialog } from "../../../../dialogs/config-flow/show-dialog-options-flow";
 import { navigate } from "../../../../common/navigate";
 import { HomeAssistant } from "../../../../types";
 import {
@@ -24,11 +24,17 @@ import {
 
 class HaConfigEntryPage extends LitElement {
   @property() public hass!: HomeAssistant;
+
   @property() public narrow!: boolean;
+
   @property() public configEntryId!: string;
+
   @property() public configEntries!: ConfigEntry[];
+
   @property() public entityRegistryEntries!: EntityRegistryEntry[];
+
   @property() public deviceRegistryEntries!: DeviceRegistryEntry[];
+
   @property() public areas!: AreaRegistryEntry[];
 
   private get _configEntry(): ConfigEntry | undefined {

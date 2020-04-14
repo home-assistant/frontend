@@ -16,6 +16,7 @@ import "../../../components/ha-paper-slider";
 import "../../../components/ha-paper-dropdown-menu";
 import "../../../components/ha-switch";
 
+import { classMap } from "lit-html/directives/class-map";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 
 import { computeRTLDirection } from "../../../common/util/compute_rtl";
@@ -32,11 +33,12 @@ import {
   compareClimateHvacModes,
 } from "../../../data/climate";
 import { fireEvent } from "../../../common/dom/fire_event";
-import { classMap } from "lit-html/directives/class-map";
 
 class MoreInfoClimate extends LitElement {
   @property() public hass!: HomeAssistant;
+
   @property() public stateObj?: ClimateEntity;
+
   private _resizeDebounce?: number;
 
   protected render(): TemplateResult {

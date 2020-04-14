@@ -1,3 +1,4 @@
+/* eslint-plugin-disable lit */
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 import { IronResizableBehavior } from "@polymer/iron-resizable-behavior/iron-resizable-behavior";
 import "@polymer/paper-icon-button/paper-icon-button";

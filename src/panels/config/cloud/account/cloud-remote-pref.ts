@@ -13,10 +13,10 @@ import "@polymer/paper-item/paper-item-body";
 import "../../../../components/ha-card";
 import "../../../../components/ha-switch";
 
-// tslint:disable-next-line
-import { HaSwitch } from "../../../../components/ha-switch";
+// eslint-disable-next-line
+import type { HaSwitch } from "../../../../components/ha-switch";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import { HomeAssistant } from "../../../../types";
+import type { HomeAssistant } from "../../../../types";
 import {
   connectCloudRemote,
   disconnectCloudRemote,
@@ -27,6 +27,7 @@ import { showCloudCertificateDialog } from "../dialog-cloud-certificate/show-dia
 @customElement("cloud-remote-pref")
 export class CloudRemotePref extends LitElement {
   @property() public hass?: HomeAssistant;
+
   @property() public cloudStatus?: CloudStatusLoggedIn;
 
   protected render(): TemplateResult {

@@ -27,9 +27,13 @@ import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
 @customElement("ha-script-picker")
 class HaScriptPicker extends LitElement {
   @property() public hass!: HomeAssistant;
+
   @property() public scripts!: HassEntity[];
+
   @property() public isWide!: boolean;
+
   @property() public narrow!: boolean;
+
   @property() public route!: Route;
 
   private _scripts = memoizeOne((scripts: HassEntity[]) => {

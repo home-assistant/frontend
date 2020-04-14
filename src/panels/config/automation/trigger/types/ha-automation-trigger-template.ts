@@ -7,6 +7,7 @@ import { TemplateTrigger } from "../../../../../data/automation";
 @customElement("ha-automation-trigger-template")
 export class HaTemplateTrigger extends LitElement {
   @property() public hass!: HomeAssistant;
+
   @property() public trigger!: TemplateTrigger;
 
   public static get defaultConfig() {

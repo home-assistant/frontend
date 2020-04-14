@@ -17,8 +17,11 @@ import { getStorageDefaultPanelUrlPath } from "../data/panel";
 
 export class HomeAssistantAppEl extends HassElement {
   @property() private _route?: Route;
+
   @property() private _error = false;
+
   @property() private _panelUrl?: string;
+
   private _haVersion?: string;
 
   protected render() {
@@ -38,9 +41,7 @@ export class HomeAssistantAppEl extends HassElement {
               .route=${this._route}
             ></home-assistant-main>
           `
-        : html`
-            <ha-init-page .error=${this._error}></ha-init-page>
-          `}
+        : html` <ha-init-page .error=${this._error}></ha-init-page> `}
     `;
   }
 
@@ -94,7 +95,6 @@ export class HomeAssistantAppEl extends HassElement {
       this.initializeHass(auth, conn);
     } catch (err) {
       this._error = true;
-      return;
     }
   }
 

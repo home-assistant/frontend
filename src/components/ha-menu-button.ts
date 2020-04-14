@@ -9,20 +9,26 @@ import {
   css,
 } from "lit-element";
 
+import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { fireEvent } from "../common/dom/fire_event";
 import { HomeAssistant } from "../types";
-import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { subscribeNotifications } from "../data/persistent_notification";
 import { computeDomain } from "../common/entity/compute_domain";
 
 @customElement("ha-menu-button")
 class HaMenuButton extends LitElement {
   @property({ type: Boolean }) public hassio = false;
+
   @property() public narrow!: boolean;
+
   @property() public hass!: HomeAssistant;
+
   @property() private _hasNotifications = false;
+
   private _alwaysVisible = false;
+
   private _attachNotifOnConnect = false;
+
   private _unsubNotifications?: UnsubscribeFunc;
 
   public connectedCallback() {
@@ -55,11 +61,7 @@ class HaMenuButton extends LitElement {
         .icon=${this.hassio ? "hassio:menu" : "hass:menu"}
         @click=${this._toggleMenu}
       ></paper-icon-button>
-      ${hasNotifications
-        ? html`
-            <div class="dot"></div>
-          `
-        : ""}
+      ${hasNotifications ? html` <div class="dot"></div> ` : ""}
     `;
   }
 

@@ -30,7 +30,7 @@ export const fetchUsers = async (hass: HomeAssistant) =>
 export const createUser = async (
   hass: HomeAssistant,
   name: string,
-  // tslint:disable-next-line: variable-name
+  // eslint-disable-next-line: variable-name
   group_ids?: User["group_ids"]
 ) =>
   hass.callWS<{ user: User }>({

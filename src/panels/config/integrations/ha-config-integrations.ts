@@ -3,6 +3,7 @@ import { property, customElement, PropertyValues } from "lit-element";
 
 import "./ha-config-entries-dashboard";
 import "./config-entry/ha-config-entry-page";
+import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { compare } from "../../../common/string/compare";
 import {
   subscribeAreaRegistry,
@@ -22,7 +23,6 @@ import {
   DeviceRegistryEntry,
   subscribeDeviceRegistry,
 } from "../../../data/device_registry";
-import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { DataEntryFlowProgress } from "../../../data/data_entry_flow";
 import {
   subscribeConfigFlowInProgress,
@@ -38,8 +38,11 @@ declare global {
 @customElement("ha-config-integrations")
 class HaConfigIntegrations extends HassRouterPage {
   @property() public hass!: HomeAssistant;
+
   @property() public narrow!: boolean;
+
   @property() public isWide!: boolean;
+
   @property() public showAdvanced!: boolean;
 
   protected routerOptions: RouterOptions = {
@@ -55,9 +58,13 @@ class HaConfigIntegrations extends HassRouterPage {
   };
 
   @property() private _configEntries: ConfigEntry[] = [];
+
   @property() private _configEntriesInProgress: DataEntryFlowProgress[] = [];
+
   @property() private _entityRegistryEntries: EntityRegistryEntry[] = [];
+
   @property() private _deviceRegistryEntries: DeviceRegistryEntry[] = [];
+
   @property() private _areas: AreaRegistryEntry[] = [];
 
   private _unsubs?: UnsubscribeFunc[];

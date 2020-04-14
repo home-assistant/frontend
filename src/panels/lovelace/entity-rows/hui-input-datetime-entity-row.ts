@@ -8,15 +8,17 @@ import {
 } from "lit-element";
 
 import "../components/hui-generic-entity-row";
-import "../../../components/paper-time-input.js";
-// tslint:disable-next-line:no-duplicate-imports
-import { PaperTimeInput } from "../../../components/paper-time-input.js";
-import "../../../components/ha-date-input";
-// tslint:disable-next-line:no-duplicate-imports
-import { HaDateInput } from "../../../components/ha-date-input";
 
-import { HomeAssistant } from "../../../types";
-import { LovelaceRow, EntityConfig } from "./types";
+import "../../../components/paper-time-input";
+
+import type { PaperTimeInput } from "../../../components/paper-time-input";
+
+import "../../../components/ha-date-input";
+
+import type { HaDateInput } from "../../../components/ha-date-input";
+
+import type { HomeAssistant } from "../../../types";
+import type { LovelaceRow, EntityConfig } from "./types";
 import { setInputDateTimeValue } from "../../../data/input_datetime";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
 import { UNAVAILABLE_STATES } from "../../../data/entity";
@@ -24,6 +26,7 @@ import { UNAVAILABLE_STATES } from "../../../data/entity";
 @customElement("hui-input-datetime-entity-row")
 class HuiInputDatetimeEntityRow extends LitElement implements LovelaceRow {
   @property() public hass?: HomeAssistant;
+
   @property() private _config?: EntityConfig;
 
   public setConfig(config: EntityConfig): void {

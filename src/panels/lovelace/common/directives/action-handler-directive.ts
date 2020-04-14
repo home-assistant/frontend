@@ -1,7 +1,6 @@
 import { directive, PropertyPart } from "lit-html";
 import "@material/mwc-ripple";
-// tslint:disable-next-line
-import { Ripple } from "@material/mwc-ripple";
+import type { Ripple } from "@material/mwc-ripple";
 import {
   ActionHandlerOptions,
   ActionHandlerDetail,
@@ -29,9 +28,13 @@ declare global {
 
 class ActionHandler extends HTMLElement implements ActionHandler {
   public holdTime = 500;
+
   public ripple: Ripple;
+
   protected timer?: number;
+
   protected held = false;
+
   private dblClickTimeout?: number;
 
   constructor() {
@@ -110,13 +113,6 @@ class ActionHandler extends HTMLElement implements ActionHandler {
       }, this.holdTime);
     };
 
-    const handleEnter = (ev: KeyboardEvent) => {
-      if (ev.keyCode !== 13) {
-        return;
-      }
-      end(ev);
-    };
-
     const end = (ev: Event) => {
       // Prevent mouse event if touch event
       ev.preventDefault();
@@ -148,6 +144,13 @@ class ActionHandler extends HTMLElement implements ActionHandler {
       } else {
         fireEvent(element, "action", { action: "tap" });
       }
+    };
+
+    const handleEnter = (ev: KeyboardEvent) => {
+      if (ev.keyCode !== 13) {
+        return;
+      }
+      end(ev);
     };
 
     element.addEventListener("touchstart", start, { passive: true });

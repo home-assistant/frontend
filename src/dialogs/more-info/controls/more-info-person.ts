@@ -12,14 +12,15 @@ import "@material/mwc-button";
 
 import "../../../components/map/ha-map";
 
+import memoizeOne from "memoize-one";
 import { HomeAssistant } from "../../../types";
 import { showZoneEditor } from "../../../data/zone";
 import { fireEvent } from "../../../common/dom/fire_event";
-import memoizeOne from "memoize-one";
 
 @customElement("more-info-person")
 class MoreInfoPerson extends LitElement {
   @property() public hass!: HomeAssistant;
+
   @property() public stateObj?: HassEntity;
 
   private _entityArray = memoizeOne((entityId: string) => [entityId]);

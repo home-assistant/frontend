@@ -35,9 +35,13 @@ import { domainIcon } from "../../../common/entity/domain_icon";
 @customElement("ha-config-helpers")
 export class HaConfigHelpers extends LitElement {
   @property() public hass!: HomeAssistant;
+
   @property() public isWide!: boolean;
+
   @property() public narrow!: boolean;
+
   @property() public route!: Route;
+
   @property() private _stateItems: HassEntity[] = [];
 
   private _columns = memoize(
@@ -91,7 +95,7 @@ export class HaConfigHelpers extends LitElement {
         template: (type) =>
           html`
             ${this.hass.localize(`ui.panel.config.helpers.types.${type}`) ||
-              type}
+            type}
           `,
       };
       columns.editable = {
@@ -134,9 +138,7 @@ export class HaConfigHelpers extends LitElement {
 
   protected render(): TemplateResult {
     if (!this.hass || this._stateItems === undefined) {
-      return html`
-        <hass-loading-screen></hass-loading-screen>
-      `;
+      return html` <hass-loading-screen></hass-loading-screen> `;
     }
 
     return html`

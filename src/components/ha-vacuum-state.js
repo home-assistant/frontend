@@ -1,5 +1,6 @@
 import "@material/mwc-button";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
+/* eslint-plugin-disable lit */
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 
 import LocalizeMixin from "../mixins/localize-mixin";

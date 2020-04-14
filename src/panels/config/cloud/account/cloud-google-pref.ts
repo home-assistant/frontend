@@ -10,18 +10,18 @@ import "@material/mwc-button";
 import "../../../../components/buttons/ha-call-api-button";
 
 import "../../../../components/ha-card";
-import "../../../../components/ha-switch";
+import "@polymer/paper-input/paper-input";
+import type { PaperInputElement } from "@polymer/paper-input/paper-input";
+import type { HaSwitch } from "../../../../components/ha-switch";
 
-// tslint:disable-next-line
-import { HaSwitch } from "../../../../components/ha-switch";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import { HomeAssistant } from "../../../../types";
+import type { HomeAssistant } from "../../../../types";
 import { CloudStatusLoggedIn, updateCloudPref } from "../../../../data/cloud";
-import { PaperInputElement } from "@polymer/paper-input/paper-input";
 import { showSaveSuccessToast } from "../../../../util/toast-saved-success";
 
 export class CloudGooglePref extends LitElement {
   @property() public hass?: HomeAssistant;
+
   @property() public cloudStatus?: CloudStatusLoggedIn;
 
   protected render(): TemplateResult {

@@ -10,6 +10,7 @@ import { SceneAction } from "../../../../../data/script";
 @customElement("ha-automation-action-scene")
 export class HaSceneAction extends LitElement implements ActionElement {
   @property() public hass!: HomeAssistant;
+
   @property() public action!: SceneAction;
 
   public static get defaultConfig(): SceneAction {

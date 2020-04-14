@@ -37,9 +37,13 @@ import { navigate } from "../../../../common/navigate";
 @customElement("ha-config-lovelace-dashboards")
 export class HaConfigLovelaceDashboards extends LitElement {
   @property() public hass!: HomeAssistant;
+
   @property() public isWide!: boolean;
+
   @property() public narrow!: boolean;
+
   @property() public route!: Route;
+
   @property() private _dashboards: LovelaceDashboard[] = [];
 
   private _columns = memoize(
@@ -50,9 +54,7 @@ export class HaConfigLovelaceDashboards extends LitElement {
           type: "icon",
           template: (icon) =>
             icon
-              ? html`
-                  <ha-icon slot="item-icon" .icon=${icon}></ha-icon>
-                `
+              ? html` <ha-icon slot="item-icon" .icon=${icon}></ha-icon> `
               : html``,
         },
         title: {
@@ -87,9 +89,7 @@ export class HaConfigLovelaceDashboards extends LitElement {
                     ${this.hass.localize(
                       `ui.panel.config.lovelace.dashboards.conf_mode.${dashboard.mode}`
                     )}${dashboard.filename
-                      ? html`
-                          - ${dashboard.filename}
-                        `
+                      ? html` - ${dashboard.filename} `
                       : ""}
                   </div>
                 `
@@ -132,12 +132,8 @@ export class HaConfigLovelaceDashboards extends LitElement {
           width: "100px",
           template: (requireAdmin: boolean) =>
             requireAdmin
-              ? html`
-                  <ha-icon icon="hass:check"></ha-icon>
-                `
-              : html`
-                  -
-                `,
+              ? html` <ha-icon icon="hass:check"></ha-icon> `
+              : html` - `,
         };
         columns.show_in_sidebar = {
           title: this.hass.localize(
@@ -146,13 +142,7 @@ export class HaConfigLovelaceDashboards extends LitElement {
           type: "icon",
           width: "121px",
           template: (sidebar) =>
-            sidebar
-              ? html`
-                  <ha-icon icon="hass:check"></ha-icon>
-                `
-              : html`
-                  -
-                `,
+            sidebar ? html` <ha-icon icon="hass:check"></ha-icon> ` : html` - `,
         };
       }
 
@@ -210,9 +200,7 @@ export class HaConfigLovelaceDashboards extends LitElement {
 
   protected render(): TemplateResult {
     if (!this.hass || this._dashboards === undefined) {
-      return html`
-        <hass-loading-screen></hass-loading-screen>
-      `;
+      return html` <hass-loading-screen></hass-loading-screen> `;
     }
 
     return html`

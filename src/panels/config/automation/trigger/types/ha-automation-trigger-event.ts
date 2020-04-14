@@ -2,17 +2,18 @@ import "@polymer/paper-input/paper-input";
 import "../../../../../components/ha-yaml-editor";
 
 import { LitElement, property, customElement } from "lit-element";
+import { html } from "lit-html";
 import {
   TriggerElement,
   handleChangeEvent,
 } from "../ha-automation-trigger-row";
 import { HomeAssistant } from "../../../../../types";
-import { html } from "lit-html";
 import { EventTrigger } from "../../../../../data/automation";
 
 @customElement("ha-automation-trigger-event")
 export class HaEventTrigger extends LitElement implements TriggerElement {
   @property() public hass!: HomeAssistant;
+
   @property() public trigger!: EventTrigger;
 
   public static get defaultConfig() {

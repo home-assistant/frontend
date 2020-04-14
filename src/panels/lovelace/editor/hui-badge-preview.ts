@@ -10,7 +10,9 @@ import "../../../components/entity/ha-state-label-badge";
 
 export class HuiBadgePreview extends HTMLElement {
   private _hass?: HomeAssistant;
+
   private _element?: LovelaceBadge;
+
   private _config?: LovelaceBadgeConfig;
 
   private get _error() {

@@ -17,8 +17,11 @@ import { HomeAssistant } from "../../../types";
 export class HuiServiceButtonElement extends LitElement
   implements LovelaceElement {
   public hass?: HomeAssistant;
+
   @property() private _config?: ServiceButtonElementConfig;
+
   private _domain?: string;
+
   private _service?: string;
 
   static get properties() {

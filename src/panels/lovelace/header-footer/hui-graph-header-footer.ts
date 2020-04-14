@@ -26,8 +26,11 @@ export class HuiGraphHeaderFooter extends LitElement
   }
 
   @property() public hass?: HomeAssistant;
+
   @property() protected _config?: GraphHeaderFooterConfig;
+
   @property() private _coordinates?: any;
+
   private _date?: Date;
 
   public setConfig(config: GraphHeaderFooterConfig): void {

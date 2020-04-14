@@ -10,7 +10,9 @@ import { computeRTL } from "../../../../common/util/compute_rtl";
 
 export class HuiCardPreview extends HTMLElement {
   private _hass?: HomeAssistant;
+
   private _element?: LovelaceCard;
+
   private _config?: LovelaceCardConfig;
 
   private get _error() {

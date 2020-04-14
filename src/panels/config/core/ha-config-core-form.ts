@@ -11,11 +11,11 @@ import "@material/mwc-button/mwc-button";
 import "@polymer/paper-input/paper-input";
 import "@polymer/paper-radio-group/paper-radio-group";
 import "@polymer/paper-radio-button/paper-radio-button";
-import { HomeAssistant } from "../../../types";
+import type { HomeAssistant } from "../../../types";
 import "../../../components/ha-card";
-import { PolymerChangedEvent } from "../../../polymer-types";
-// tslint:disable-next-line: no-duplicate-imports
-import { PaperInputElement } from "@polymer/paper-input/paper-input";
+import type { PolymerChangedEvent } from "../../../polymer-types";
+
+import type { PaperInputElement } from "@polymer/paper-input/paper-input";
 import { UNIT_C } from "../../../common/const";
 import { ConfigUpdateValues, saveCoreConfig } from "../../../data/core";
 import { createTimezoneListEl } from "../../../components/timezone-datalist";
@@ -30,7 +30,9 @@ class ConfigCoreForm extends LitElement {
   @property() private _location!: [number, number];
 
   @property() private _elevation!: string;
+
   @property() private _unitSystem!: ConfigUpdateValues["unit_system"];
+
   @property() private _timeZone!: string;
 
   protected render(): TemplateResult {

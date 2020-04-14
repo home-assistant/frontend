@@ -9,14 +9,18 @@ import {
 } from "lit-element";
 import "@polymer/app-layout/app-toolbar/app-toolbar";
 import "@polymer/paper-icon-button/paper-icon-button";
+
 import "@polymer/paper-item/paper-icon-item";
+import type { PaperIconItemElement } from "@polymer/paper-item/paper-icon-item";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
 import "./ha-icon";
 
-import "../components/user/ha-user-badge";
-import "../components/ha-menu-button";
-import { HomeAssistant, PanelInfo } from "../types";
+import "./user/ha-user-badge";
+import "./ha-menu-button";
+import { classMap } from "lit-html/directives/class-map";
+
+import type { HomeAssistant, PanelInfo } from "../types";
 import { fireEvent } from "../common/dom/fire_event";
 import {
   getExternalConfig,
@@ -27,9 +31,6 @@ import {
   subscribeNotifications,
 } from "../data/persistent_notification";
 import { computeDomain } from "../common/entity/compute_domain";
-import { classMap } from "lit-html/directives/class-map";
-// tslint:disable-next-line: no-duplicate-imports
-import { PaperIconItemElement } from "@polymer/paper-item/paper-icon-item";
 import { computeRTL } from "../common/util/compute_rtl";
 import { compare } from "../common/string/compare";
 import { getDefaultPanel } from "../data/panel";
@@ -108,19 +109,25 @@ const computePanels = (hass: HomeAssistant): [PanelInfo[], PanelInfo[]] => {
  */
 class HaSidebar extends LitElement {
   @property() public hass!: HomeAssistant;
+
   @property() public narrow!: boolean;
 
   @property({ type: Boolean }) public alwaysExpand = false;
+
   @property({ type: Boolean, reflect: true }) public expanded = false;
 
   @property() private _externalConfig?: ExternalConfig;
+
   @property() private _notifications?: PersistentNotification[];
+
   // property used only in css
   // @ts-ignore
   @property({ type: Boolean, reflect: true }) private _rtl = false;
 
   private _mouseLeaveTimeout?: number;
+
   private _tooltipHideTimeout?: number;
+
   private _recentKeydownActiveUntil = 0;
 
   protected render() {

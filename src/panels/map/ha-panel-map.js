@@ -1,5 +1,6 @@
 import "@polymer/app-layout/app-toolbar/app-toolbar";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
+/* eslint-plugin-disable lit */
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 
 import "../../components/ha-menu-button";
@@ -108,14 +109,14 @@ class HaPanelMap extends LocalizeMixin(PolymerElement) {
     if (!map) return;
 
     if (this._mapItems) {
-      this._mapItems.forEach(function(marker) {
+      this._mapItems.forEach(function (marker) {
         marker.remove();
       });
     }
     var mapItems = (this._mapItems = []);
 
     if (this._mapZones) {
-      this._mapZones.forEach(function(marker) {
+      this._mapZones.forEach(function (marker) {
         marker.remove();
       });
     }
@@ -190,7 +191,7 @@ class HaPanelMap extends LocalizeMixin(PolymerElement) {
       var entityPicture = entity.attributes.entity_picture || "";
       var entityName = title
         .split(" ")
-        .map(function(part) {
+        .map(function (part) {
           return part.substr(0, 1);
         })
         .join("");

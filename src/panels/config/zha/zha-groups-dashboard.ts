@@ -24,11 +24,16 @@ import { HASSDomEvent } from "../../../common/dom/fire_event";
 @customElement("zha-groups-dashboard")
 export class ZHAGroupsDashboard extends LitElement {
   @property() public hass!: HomeAssistant;
+
   @property() public narrow = false;
+
   @property() public _groups?: ZHAGroup[];
-  @property() private _processingRemove: boolean = false;
+
+  @property() private _processingRemove = false;
+
   @property() private _selectedGroupsToRemove: number[] = [];
-  private _firstUpdatedCalled: boolean = false;
+
+  private _firstUpdatedCalled = false;
 
   public connectedCallback(): void {
     super.connectedCallback();
@@ -80,7 +85,7 @@ export class ZHAGroupsDashboard extends LitElement {
         <div class="paper-dialog-buttons">
           <mwc-button
             ?disabled="${!this._selectedGroupsToRemove.length ||
-              this._processingRemove}"
+            this._processingRemove}"
             @click="${this._removeGroup}"
             class="button"
           >

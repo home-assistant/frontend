@@ -11,10 +11,11 @@ import {
 import "@polymer/paper-spinner/paper-spinner";
 import "@polymer/paper-tabs/paper-tab";
 import "@polymer/paper-tabs/paper-tabs";
-import "@polymer/paper-icon-button/paper-icon-button.js";
+import "@polymer/paper-icon-button/paper-icon-button";
+
 import "../../../../components/dialog/ha-paper-dialog";
-// tslint:disable-next-line:no-duplicate-imports
-import { HaPaperDialog } from "../../../../components/dialog/ha-paper-dialog";
+
+import type { HaPaperDialog } from "../../../../components/dialog/ha-paper-dialog";
 import "@material/mwc-button";
 import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable";
 
@@ -24,8 +25,8 @@ import "../../components/hui-entity-editor";
 import "./hui-view-editor";
 import "./hui-view-visibility-editor";
 import "../hui-badge-preview";
-import { HomeAssistant } from "../../../../types";
-import {
+import type { HomeAssistant } from "../../../../types";
+import type {
   LovelaceViewConfig,
   LovelaceCardConfig,
   LovelaceBadgeConfig,
@@ -38,7 +39,7 @@ import {
 } from "../types";
 import { processEditorEntities } from "../process-editor-entities";
 import { navigate } from "../../../../common/navigate";
-import { Lovelace } from "../../types";
+import type { Lovelace } from "../../types";
 import { deleteView, addView, replaceView } from "../config-util";
 import {
   showAlertDialog,
@@ -155,9 +156,7 @@ export class HuiEditView extends LitElement {
         `;
         break;
       case "tab-cards":
-        content = html`
-          Cards
-        `;
+        content = html` Cards `;
         break;
     }
     return html`

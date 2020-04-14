@@ -33,11 +33,17 @@ import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box
 
 class HaConfigPerson extends LitElement {
   @property() public hass?: HomeAssistant;
+
   @property() public isWide?: boolean;
+
   @property() public narrow?: boolean;
+
   @property() public route!: Route;
+
   @property() private _storageItems?: Person[];
+
   @property() private _configItems?: Person[];
+
   private _usersLoad?: Promise<User[]>;
 
   protected render(): TemplateResult {
@@ -46,9 +52,7 @@ class HaConfigPerson extends LitElement {
       this._storageItems === undefined ||
       this._configItems === undefined
     ) {
-      return html`
-        <hass-loading-screen></hass-loading-screen>
-      `;
+      return html` <hass-loading-screen></hass-loading-screen> `;
     }
     const hass = this.hass;
     return html`

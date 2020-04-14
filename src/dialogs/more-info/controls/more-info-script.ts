@@ -14,6 +14,7 @@ import "../../../components/ha-relative-time";
 @customElement("more-info-script")
 class MoreInfoScript extends LitElement {
   @property() public hass!: HomeAssistant;
+
   @property() public stateObj?: HassEntity;
 
   protected render(): TemplateResult {

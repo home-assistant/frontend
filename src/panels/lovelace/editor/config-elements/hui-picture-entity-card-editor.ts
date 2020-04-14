@@ -152,7 +152,7 @@ export class HuiPictureEntityCardEditor extends LitElement
           .value="${this._camera_image}"
           .configValue=${"camera_image"}
           @change="${this._valueChanged}"
-          include-domains='["camera"]'
+          .include-domains=${["camera"]}
           allow-custom-entity
         ></ha-entity-picker>
         <div class="side-by-side">
@@ -170,9 +170,7 @@ export class HuiPictureEntityCardEditor extends LitElement
               .selected="${views.indexOf(this._camera_view)}"
             >
               ${views.map((view) => {
-                return html`
-                  <paper-item>${view}</paper-item>
-                `;
+                return html` <paper-item>${view}</paper-item> `;
               })}
             </paper-listbox>
           </paper-dropdown-menu>
@@ -268,9 +266,7 @@ export class HuiPictureEntityCardEditor extends LitElement
           [target.configValue!]:
             target.checked !== undefined
               ? target.checked
-              : value
-              ? value
-              : target.config,
+              : value || target.config,
         };
       }
     }

@@ -10,6 +10,7 @@ import { TimeTrigger } from "../../../../../data/automation";
 @customElement("ha-automation-trigger-time")
 export class HaTimeTrigger extends LitElement implements TriggerElement {
   @property() public hass!: HomeAssistant;
+
   @property() public trigger!: TimeTrigger;
 
   public static get defaultConfig() {

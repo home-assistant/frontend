@@ -1,6 +1,5 @@
 import "@polymer/paper-icon-button/paper-icon-button";
 
-import { STATES_OFF } from "../../common/const";
 import {
   LitElement,
   TemplateResult,
@@ -10,8 +9,9 @@ import {
   property,
   PropertyValues,
 } from "lit-element";
-import { HomeAssistant } from "../../types";
 import { HassEntity } from "home-assistant-js-websocket";
+import { STATES_OFF } from "../../common/const";
+import { HomeAssistant } from "../../types";
 import { forwardHaptic } from "../../data/haptics";
 
 import { computeStateDomain } from "../../common/entity/compute_state_domain";
@@ -28,14 +28,14 @@ const isOn = (stateObj?: HassEntity) =>
 class HaEntityToggle extends LitElement {
   // hass is not a property so that we only re-render on stateObj changes
   public hass?: HomeAssistant;
+
   @property() public stateObj?: HassEntity;
-  @property() private _isOn: boolean = false;
+
+  @property() private _isOn = false;
 
   protected render(): TemplateResult {
     if (!this.stateObj) {
-      return html`
-        <ha-switch disabled></ha-switch>
-      `;
+      return html` <ha-switch disabled></ha-switch> `;
     }
 
     if (this.stateObj.attributes.assumed_state) {

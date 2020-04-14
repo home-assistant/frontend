@@ -31,10 +31,15 @@ import { LovelaceRow } from "../../../lovelace/entity-rows/types";
 @customElement("ha-device-entities-card")
 export class HaDeviceEntitiesCard extends LitElement {
   @property() public hass!: HomeAssistant;
+
   @property() public deviceId!: string;
+
   @property() public entities!: EntityRegistryStateEntry[];
+
   @property() public narrow!: boolean;
+
   @property() private _showDisabled = false;
+
   @queryAll("#entities > *") private _entityRows?: LovelaceRow[];
 
   protected updated(changedProps: PropertyValues): void {
@@ -126,9 +131,7 @@ export class HaDeviceEntitiesCard extends LitElement {
     element.entry = entry;
     element.addEventListener("hass-more-info", (ev) => this._openEditEntry(ev));
 
-    return html`
-      <div>${element}</div>
-    `;
+    return html` <div>${element}</div> `;
   }
 
   private _renderEntry(entry: EntityRegistryStateEntry): TemplateResult {

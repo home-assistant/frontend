@@ -60,6 +60,7 @@ class HuiEntitiesCard extends LitElement implements LovelaceCard {
   private _hass?: HomeAssistant;
 
   private _configEntities?: EntitiesCardEntityConfig[];
+
   private _showHeaderToggle?: boolean;
 
   set hass(hass: HomeAssistant) {
@@ -254,9 +255,7 @@ class HuiEntitiesCard extends LitElement implements LovelaceCard {
     if (this._hass) {
       element.hass = this._hass;
     }
-    return html`
-      <div class=${"header-footer " + className}>${element}</div>
-    `;
+    return html` <div class=${"header-footer " + className}>${element}</div> `;
   }
 
   private renderEntity(entityConf: EntitiesCardEntityConfig): TemplateResult {
@@ -272,9 +271,7 @@ class HuiEntitiesCard extends LitElement implements LovelaceCard {
       element.hass = this._hass;
     }
 
-    return html`
-      <div>${element}</div>
-    `;
+    return html` <div>${element}</div> `;
   }
 }
 

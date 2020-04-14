@@ -16,6 +16,7 @@ import { getPath } from "../common/graph/get-path";
 @customElement("hui-graph-base")
 export class HuiGraphBase extends LitElement {
   @property() public coordinates?: any;
+
   @property() private _path?: string;
 
   protected render(): TemplateResult {

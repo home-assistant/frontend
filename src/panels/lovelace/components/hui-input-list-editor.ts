@@ -17,7 +17,9 @@ import { EditorTarget } from "../editor/types";
 @customElement("hui-input-list-editor")
 export class HuiInputListEditor extends LitElement {
   @property() protected value?: string[];
+
   @property() protected hass?: HomeAssistant;
+
   @property() protected inputLabel?: string;
 
   protected render(): TemplateResult {

@@ -11,6 +11,7 @@ import {
 
 import "../../../../components/device/ha-area-devices-picker";
 
+import { HassEntity } from "home-assistant-js-websocket";
 import { HomeAssistant } from "../../../../types";
 import { PolymerChangedEvent } from "../../../../polymer-types";
 import { fireEvent } from "../../../../common/dom/fire_event";
@@ -19,7 +20,6 @@ import { PlaceholderContainer, Placeholder } from "./dialog-thingtalk";
 import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
 import { subscribeEntityRegistry } from "../../../../data/entity_registry";
 import { computeDomain } from "../../../../common/entity/compute_domain";
-import { HassEntity } from "home-assistant-js-websocket";
 import { getPath, applyPatch } from "../../../../common/util/patch";
 import {
   subscribeAreaRegistry,
@@ -64,15 +64,25 @@ interface DeviceEntitiesLookup {
 @customElement("ha-thingtalk-placeholders")
 export class ThingTalkPlaceholders extends SubscribeMixin(LitElement) {
   @property() public hass!: HomeAssistant;
+
   @property() public opened!: boolean;
+
   public skip!: () => void;
+
   @property() public placeholders!: PlaceholderContainer;
+
   @property() private _error?: string;
+
   private _deviceEntityLookup: DeviceEntitiesLookup = {};
+
   @property() private _extraInfo: ExtraInfo = {};
+
   @property() private _placeholderValues: PlaceholderValues = {};
+
   private _devices?: DeviceRegistryEntry[];
+
   private _areas?: AreaRegistryEntry[];
+
   private _search = false;
 
   public hassSubscribe() {
@@ -122,11 +132,7 @@ export class ThingTalkPlaceholders extends SubscribeMixin(LitElement) {
       >
         <h2>Great! Now we need to link some devices.</h2>
         <paper-dialog-scrollable>
-          ${this._error
-            ? html`
-                <div class="error">${this._error}</div>
-              `
-            : ""}
+          ${this._error ? html` <div class="error">${this._error}</div> ` : ""}
           ${Object.entries(this.placeholders).map(
             ([type, placeholders]) =>
               html`
@@ -200,7 +206,8 @@ export class ThingTalkPlaceholders extends SubscribeMixin(LitElement) {
                           `
                         : ""}
                     `;
-                  } else if (placeholder.fields.includes("entity_id")) {
+                  }
+                  if (placeholder.fields.includes("entity_id")) {
                     return html`
                       <ha-entity-picker
                         .type=${type}
@@ -221,10 +228,7 @@ export class ThingTalkPlaceholders extends SubscribeMixin(LitElement) {
                       Unknown placeholder<br />
                       ${placeholder.domains}<br />
                       ${placeholder.fields.map(
-                        (field) =>
-                          html`
-                            ${field}<br />
-                          `
+                        (field) => html` ${field}<br /> `
                       )}
                     </div>
                   `;

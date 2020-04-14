@@ -30,7 +30,9 @@ import { HomeAssistant } from "../../../types";
 
 class MoreInfoContent extends UpdatingElement {
   @property() public hass?: HomeAssistant;
+
   @property() public stateObj?: HassEntity;
+
   private _detachedChild?: ChildNode;
 
   protected firstUpdated(): void {

@@ -1,14 +1,14 @@
+import {
+  HassEntity,
+  HassEntities,
+  HassConfig,
+} from "home-assistant-js-websocket";
 import { HomeAssistant, GroupEntity } from "../../../types";
 import {
   LovelaceConfig,
   LovelaceCardConfig,
   LovelaceViewConfig,
 } from "../../../data/lovelace";
-import {
-  HassEntity,
-  HassEntities,
-  HassConfig,
-} from "home-assistant-js-websocket";
 
 import { extractViews } from "../../../common/entity/extract_views";
 import { getViewEntities } from "../../../common/entity/get_view_entities";
@@ -193,6 +193,7 @@ export const computeCards = (
       const entityConf =
         titlePrefix &&
         stateObj &&
+        // eslint-disable-next-line no-cond-assign
         (name = computeStateName(stateObj)).startsWith(titlePrefix)
           ? {
               entity: entityId,
@@ -227,61 +228,6 @@ const computeDefaultViewStates = (entities: HassEntities): HassEntities => {
     }
   });
   return states;
-};
-
-export const generateDefaultViewConfig = (
-  areaEntries: AreaRegistryEntry[],
-  deviceEntries: DeviceRegistryEntry[],
-  entityEntries: EntityRegistryEntry[],
-  entities: HassEntities,
-  localize: LocalizeFunc
-): LovelaceViewConfig => {
-  const states = computeDefaultViewStates(entities);
-  const path = "default_view";
-  const title = "Home";
-  const icon = undefined;
-
-  // In the case of a default view, we want to use the group order attribute
-  const groupOrders = {};
-  Object.keys(states).forEach((entityId) => {
-    const stateObj = states[entityId];
-    if (stateObj.attributes.order) {
-      groupOrders[entityId] = stateObj.attributes.order;
-    }
-  });
-
-  const splittedByAreas = splitByAreas(
-    areaEntries,
-    deviceEntries,
-    entityEntries,
-    states
-  );
-
-  const config = generateViewConfig(
-    localize,
-    path,
-    title,
-    icon,
-    splittedByAreas.otherEntities,
-    groupOrders
-  );
-
-  const areaCards: LovelaceCardConfig[] = [];
-
-  splittedByAreas.areasWithEntities.forEach(([area, areaEntities]) => {
-    areaCards.push(
-      ...computeCards(
-        areaEntities.map((entity) => [entity.entity_id, entity]),
-        {
-          title: area.name,
-        }
-      )
-    );
-  });
-
-  config.cards!.unshift(...areaCards);
-
-  return config;
 };
 
 const generateViewConfig = (
@@ -377,30 +323,59 @@ const generateViewConfig = (
   return view;
 };
 
-export const generateLovelaceConfigFromHass = async (hass: HomeAssistant) => {
-  // We want to keep the registry subscriptions alive after generating the UI
-  // so that we don't serve up stale data after changing areas.
-  if (!subscribedRegistries) {
-    subscribedRegistries = true;
-    subscribeAreaRegistry(hass.connection, () => undefined);
-    subscribeDeviceRegistry(hass.connection, () => undefined);
-    subscribeEntityRegistry(hass.connection, () => undefined);
-  }
+export const generateDefaultViewConfig = (
+  areaEntries: AreaRegistryEntry[],
+  deviceEntries: DeviceRegistryEntry[],
+  entityEntries: EntityRegistryEntry[],
+  entities: HassEntities,
+  localize: LocalizeFunc
+): LovelaceViewConfig => {
+  const states = computeDefaultViewStates(entities);
+  const path = "default_view";
+  const title = "Home";
+  const icon = undefined;
 
-  const [areaEntries, deviceEntries, entityEntries] = await Promise.all([
-    subscribeOne(hass.connection, subscribeAreaRegistry),
-    subscribeOne(hass.connection, subscribeDeviceRegistry),
-    subscribeOne(hass.connection, subscribeEntityRegistry),
-  ]);
+  // In the case of a default view, we want to use the group order attribute
+  const groupOrders = {};
+  Object.keys(states).forEach((entityId) => {
+    const stateObj = states[entityId];
+    if (stateObj.attributes.order) {
+      groupOrders[entityId] = stateObj.attributes.order;
+    }
+  });
 
-  return generateLovelaceConfigFromData(
-    hass.config,
+  const splittedByAreas = splitByAreas(
     areaEntries,
     deviceEntries,
     entityEntries,
-    hass.states,
-    hass.localize
+    states
   );
+
+  const config = generateViewConfig(
+    localize,
+    path,
+    title,
+    icon,
+    splittedByAreas.otherEntities,
+    groupOrders
+  );
+
+  const areaCards: LovelaceCardConfig[] = [];
+
+  splittedByAreas.areasWithEntities.forEach(([area, areaEntities]) => {
+    areaCards.push(
+      ...computeCards(
+        areaEntities.map((entity) => [entity.entity_id, entity]),
+        {
+          title: area.name,
+        }
+      )
+    );
+  });
+
+  config.cards!.unshift(...areaCards);
+
+  return config;
 };
 
 export const generateLovelaceConfigFromData = async (
@@ -488,4 +463,32 @@ export const generateLovelaceConfigFromData = async (
     title,
     views,
   };
+};
+
+export const generateLovelaceConfigFromHass = async (
+  hass: HomeAssistant
+): Promise<LovelaceConfig> => {
+  // We want to keep the registry subscriptions alive after generating the UI
+  // so that we don't serve up stale data after changing areas.
+  if (!subscribedRegistries) {
+    subscribedRegistries = true;
+    subscribeAreaRegistry(hass.connection, () => undefined);
+    subscribeDeviceRegistry(hass.connection, () => undefined);
+    subscribeEntityRegistry(hass.connection, () => undefined);
+  }
+
+  const [areaEntries, deviceEntries, entityEntries] = await Promise.all([
+    subscribeOne(hass.connection, subscribeAreaRegistry),
+    subscribeOne(hass.connection, subscribeDeviceRegistry),
+    subscribeOne(hass.connection, subscribeEntityRegistry),
+  ]);
+
+  return generateLovelaceConfigFromData(
+    hass.config,
+    areaEntries,
+    deviceEntries,
+    entityEntries,
+    hass.states,
+    hass.localize
+  );
 };

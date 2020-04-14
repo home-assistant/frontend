@@ -18,8 +18,11 @@ import "../../../../src/components/ha-card";
 @customElement("hc-layout")
 class HcLayout extends LitElement {
   @property() public subtitle?: string | undefined;
+
   @property() public auth?: Auth;
+
   @property() public connection?: Connection;
+
   @property() public user?: HassUser;
 
   protected render(): TemplateResult {
@@ -37,11 +40,7 @@ class HcLayout extends LitElement {
                         this.auth.data.hassUrl.indexOf("//") + 2
                       )}</a
                     >
-                    ${this.user
-                      ? html`
-                          – ${this.user.name}
-                        `
-                      : ""}
+                    ${this.user ? html` – ${this.user.name} ` : ""}
                   </div>
                 `
               : ""}

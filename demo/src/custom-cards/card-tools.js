@@ -1,3 +1,4 @@
+/* eslint-disable */
 import { LitElement, html } from "lit-element";
 
 if (!window.cardTools) {

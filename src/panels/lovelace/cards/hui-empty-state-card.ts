@@ -23,7 +23,7 @@ export class HuiEmptyStateCard extends LitElement implements LovelaceCard {
   }
 
   public setConfig(_config: EmptyStateCardConfig): void {
-    // tslint:disable-next-line
+    // eslint-disable-next-line
   }
 
   protected render(): TemplateResult {

@@ -1,5 +1,6 @@
 import "@material/mwc-button";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
+/* eslint-plugin-disable lit */
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 
 import { safeDump, safeLoad } from "js-yaml";
@@ -241,7 +242,7 @@ class HaPanelDevService extends LocalizeMixin(PolymerElement) {
     if (!(service in serviceDomains[domain])) return [];
 
     const fields = serviceDomains[domain][service].fields;
-    return Object.keys(fields).map(function(field) {
+    return Object.keys(fields).map(function (field) {
       return { key: field, ...fields[field] };
     });
   }

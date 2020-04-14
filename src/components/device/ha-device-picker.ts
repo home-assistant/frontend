@@ -67,11 +67,17 @@ const rowRenderer = (root: HTMLElement, _owner, model: { item: Device }) => {
 @customElement("ha-device-picker")
 export class HaDevicePicker extends SubscribeMixin(LitElement) {
   @property() public hass!: HomeAssistant;
+
   @property() public label?: string;
+
   @property() public value?: string;
+
   @property() public devices?: DeviceRegistryEntry[];
+
   @property() public areas?: AreaRegistryEntry[];
+
   @property() public entities?: EntityRegistryEntry[];
+
   /**
    * Show only devices with entities from specific domains.
    * @type {Array}
@@ -79,6 +85,7 @@ export class HaDevicePicker extends SubscribeMixin(LitElement) {
    */
   @property({ type: Array, attribute: "include-domains" })
   public includeDomains?: string[];
+
   /**
    * Show no devices with entities of these domains.
    * @type {Array}
@@ -86,6 +93,7 @@ export class HaDevicePicker extends SubscribeMixin(LitElement) {
    */
   @property({ type: Array, attribute: "exclude-domains" })
   public excludeDomains?: string[];
+
   /**
    * Show only deviced with entities of these device classes.
    * @type {Array}
@@ -93,6 +101,7 @@ export class HaDevicePicker extends SubscribeMixin(LitElement) {
    */
   @property({ type: Array, attribute: "include-device-classes" })
   public includeDeviceClasses?: string[];
+
   @property({ type: Boolean })
   private _opened?: boolean;
 

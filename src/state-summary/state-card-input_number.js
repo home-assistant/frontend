@@ -3,6 +3,7 @@ import { IronResizableBehavior } from "@polymer/iron-resizable-behavior/iron-res
 import "@polymer/paper-input/paper-input";
 import { mixinBehaviors } from "@polymer/polymer/lib/legacy/class";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
+/* eslint-plugin-disable lit */
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 
 import "../components/entity/state-info";

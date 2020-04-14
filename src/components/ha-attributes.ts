@@ -9,14 +9,15 @@ import {
 } from "lit-element";
 import { HassEntity } from "home-assistant-js-websocket";
 
-import hassAttributeUtil from "../util/hass-attributes-util";
 import { until } from "lit-html/directives/until";
+import hassAttributeUtil from "../util/hass-attributes-util";
 
 let jsYamlPromise: Promise<typeof import("js-yaml")>;
 
 @customElement("ha-attributes")
 class HaAttributes extends LitElement {
   @property() public stateObj?: HassEntity;
+
   @property() public extraFilters?: string;
 
   protected render(): TemplateResult {
@@ -102,9 +103,7 @@ class HaAttributes extends LitElement {
         jsYamlPromise = import(/* webpackChunkName: "js-yaml" */ "js-yaml");
       }
       const yaml = jsYamlPromise.then((jsYaml) => jsYaml.safeDump(value));
-      return html`
-        <pre>${until(yaml, "")}</pre>
-      `;
+      return html` <pre>${until(yaml, "")}</pre> `;
     }
     return Array.isArray(value) ? value.join(", ") : value;
   }

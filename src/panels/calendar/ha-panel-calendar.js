@@ -5,6 +5,7 @@ import "@polymer/paper-listbox/paper-listbox";
 import "@polymer/paper-checkbox/paper-checkbox";
 import "@polymer/paper-item/paper-item";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
+/* eslint-plugin-disable lit */
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 import moment from "moment";
 import dates from "react-big-calendar/lib/utils/dates";
@@ -195,17 +196,11 @@ class HaPanelCalendar extends LocalizeMixin(PolymerElement) {
       startDate = moment(this.currentDate).startOf("isoWeek");
       endDate = moment(this.currentDate).endOf("isoWeek");
     } else if (this.currentView === "month") {
-      startDate = moment(this.currentDate)
-        .startOf("month")
-        .subtract(7, "days");
-      endDate = moment(this.currentDate)
-        .endOf("month")
-        .add(7, "days");
+      startDate = moment(this.currentDate).startOf("month").subtract(7, "days");
+      endDate = moment(this.currentDate).endOf("month").add(7, "days");
     } else if (this.currentView === "agenda") {
       startDate = moment(this.currentDate).startOf("day");
-      endDate = moment(this.currentDate)
-        .endOf("day")
-        .add(1, "month");
+      endDate = moment(this.currentDate).endOf("day").add(1, "month");
     }
     return [startDate.toISOString(), endDate.toISOString()];
   }

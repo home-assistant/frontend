@@ -38,7 +38,7 @@ export const loadLovelaceResources = (
         break;
 
       default:
-        // tslint:disable-next-line
+        // eslint-disable-next-line
         console.warn(`Unknown resource type specified: ${resource.type}`);
     }
   });

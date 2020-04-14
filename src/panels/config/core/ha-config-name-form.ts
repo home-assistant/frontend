@@ -9,11 +9,10 @@ import "@material/mwc-button/mwc-button";
 import "@polymer/paper-input/paper-input";
 import "@polymer/paper-radio-group/paper-radio-group";
 import "@polymer/paper-radio-button/paper-radio-button";
-import { HomeAssistant } from "../../../types";
+import type { HomeAssistant } from "../../../types";
 import "../../../components/ha-card";
-import { PolymerChangedEvent } from "../../../polymer-types";
-// tslint:disable-next-line: no-duplicate-imports
-import { PaperInputElement } from "@polymer/paper-input/paper-input";
+import type { PolymerChangedEvent } from "../../../polymer-types";
+import type { PaperInputElement } from "@polymer/paper-input/paper-input";
 import { ConfigUpdateValues, saveCoreConfig } from "../../../data/core";
 
 @customElement("ha-config-name-form")

@@ -20,10 +20,15 @@ import { InputDateTime } from "../../../../data/input_datetime";
 @customElement("ha-input_datetime-form")
 class HaInputDateTimeForm extends LitElement {
   @property() public hass!: HomeAssistant;
+
   @property() public new?: boolean;
+
   private _item?: InputDateTime;
+
   @property() private _name!: string;
+
   @property() private _icon!: string;
+
   @property() private _mode!: "date" | "time" | "datetime";
 
   set item(item: InputDateTime) {

@@ -11,11 +11,10 @@ import {
 
 import "../../../components/ha-switch";
 
-// tslint:disable-next-line: no-duplicate-imports
-import { HaSwitch } from "../../../components/ha-switch";
+import type { HaSwitch } from "../../../components/ha-switch";
 import { DOMAINS_TOGGLE } from "../../../common/const";
 import { turnOnOffEntities } from "../common/entity/turn-on-off-entities";
-import { HomeAssistant } from "../../../types";
+import type { HomeAssistant } from "../../../types";
 import { forwardHaptic } from "../../../data/haptics";
 
 @customElement("hui-entities-toggle")

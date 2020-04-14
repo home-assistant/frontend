@@ -25,13 +25,19 @@ class HaMap extends LitElement {
   @property() public hass?: HomeAssistant;
 
   @property() public entities?: string[];
+
   @property() public darkMode = false;
+
   @property() public zoom?: number;
-  // tslint:disable-next-line
+
+  // eslint-disable-next-line
   private Leaflet?: LeafletModuleType;
+
   private _leafletMap?: Map;
+
   // @ts-ignore
   private _resizeObserver?: ResizeObserver;
+
   private _debouncedResizeListener = debounce(
     () => {
       if (!this._leafletMap) {
@@ -42,8 +48,11 @@ class HaMap extends LitElement {
     100,
     false
   );
+
   private _mapItems: Array<Marker | Circle> = [];
+
   private _mapZones: Array<Marker | Circle> = [];
+
   private _connected = false;
 
   public connectedCallback(): void {
@@ -76,9 +85,7 @@ class HaMap extends LitElement {
     if (!this.entities) {
       return html``;
     }
-    return html`
-      <div id="map"></div>
-    `;
+    return html` <div id="map"></div> `;
   }
 
   protected firstUpdated(changedProps: PropertyValues): void {

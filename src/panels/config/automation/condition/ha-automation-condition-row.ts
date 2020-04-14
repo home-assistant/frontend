@@ -49,7 +49,9 @@ export const handleChangeEvent = (
 @customElement("ha-automation-condition-row")
 export default class HaAutomationConditionRow extends LitElement {
   @property() public hass!: HomeAssistant;
+
   @property() public condition!: Condition;
+
   @property() private _yamlMode = false;
 
   protected render() {

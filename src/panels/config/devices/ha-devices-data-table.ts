@@ -10,14 +10,12 @@ import {
   property,
   customElement,
 } from "lit-element";
-import { HomeAssistant } from "../../../types";
-// tslint:disable-next-line
-import {
+import type { HomeAssistant } from "../../../types";
+import type {
   DataTableColumnContainer,
   RowClickedEvent,
   DataTableRowData,
 } from "../../../components/data-table/ha-data-table";
-// tslint:disable-next-line
 import {
   DeviceRegistryEntry,
   computeDeviceName,
@@ -27,8 +25,8 @@ import {
   EntityRegistryEntry,
   findBatteryEntity,
 } from "../../../data/entity_registry";
-import { ConfigEntry } from "../../../data/config_entries";
-import { AreaRegistryEntry } from "../../../data/area_registry";
+import type { ConfigEntry } from "../../../data/config_entries";
+import type { AreaRegistryEntry } from "../../../data/area_registry";
 import { navigate } from "../../../common/navigate";
 import { LocalizeFunc } from "../../../common/translations/localize";
 
@@ -42,11 +40,17 @@ export interface DeviceRowData extends DeviceRegistryEntry {
 @customElement("ha-devices-data-table")
 export class HaDevicesDataTable extends LitElement {
   @property() public hass!: HomeAssistant;
+
   @property() public narrow = false;
+
   @property() public devices!: DeviceRegistryEntry[];
+
   @property() public entries!: ConfigEntry[];
+
   @property() public entities!: EntityRegistryEntry[];
+
   @property() public areas!: AreaRegistryEntry[];
+
   @property() public domain!: string;
 
   private _devices = memoizeOne(
@@ -221,9 +225,7 @@ export class HaDevicesDataTable extends LitElement {
                         .stateObj=${battery}
                       ></ha-state-icon>
                     `
-                  : html`
-                      -
-                    `;
+                  : html` - `;
               },
             },
           }

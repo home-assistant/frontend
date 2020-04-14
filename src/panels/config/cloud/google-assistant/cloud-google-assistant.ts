@@ -16,7 +16,7 @@ import "../../../../components/ha-card";
 import "../../../../components/entity/state-info";
 import "../../../../components/ha-switch";
 
-import { HomeAssistant } from "../../../../types";
+import type { HomeAssistant } from "../../../../types";
 import {
   CloudStatusLoggedIn,
   CloudPreferences,
@@ -37,8 +37,8 @@ import {
   GoogleEntity,
   fetchCloudGoogleEntities,
 } from "../../../../data/google_assistant";
-// tslint:disable-next-line: no-duplicate-imports
-import { HaSwitch } from "../../../../components/ha-switch";
+
+import type { HaSwitch } from "../../../../components/ha-switch";
 
 import { computeStateName } from "../../../../common/entity/compute_state_name";
 import { computeDomain } from "../../../../common/entity/compute_domain";
@@ -53,13 +53,20 @@ const configIsExposed = (config: GoogleEntityConfig) =>
 @customElement("cloud-google-assistant")
 class CloudGoogleAssistant extends LitElement {
   @property() public hass!: HomeAssistant;
+
   @property() public cloudStatus!: CloudStatusLoggedIn;
+
   @property() public narrow!: boolean;
+
   @property() private _entities?: GoogleEntity[];
+
   @property()
   private _entityConfigs: CloudPreferences["google_entity_configs"] = {};
+
   private _popstateSyncAttached = false;
+
   private _popstateReloadStatusAttached = false;
+
   private _isInitialExposed?: Set<string>;
 
   private _getEntityFilterFunc = memoizeOne((filter: EntityFilter) =>
@@ -73,9 +80,7 @@ class CloudGoogleAssistant extends LitElement {
 
   protected render(): TemplateResult {
     if (this._entities === undefined) {
-      return html`
-        <hass-loading-screen></hass-loading-screen>
-      `;
+      return html` <hass-loading-screen></hass-loading-screen> `;
     }
     const emptyFilter = isEmptyFilter(this.cloudStatus.google_entities);
     const filterFunc = this._getEntityFilterFunc(
@@ -161,13 +166,7 @@ class CloudGoogleAssistant extends LitElement {
         "ui.panel.config.cloud.google.title"
       )}">
         <span slot="toolbar-icon">
-          ${selected}${
-      !this.narrow
-        ? html`
-            selected
-          `
-        : ""
-    }
+          ${selected}${!this.narrow ? html` selected ` : ""}
         </span>
         ${
           emptyFilter

@@ -1,5 +1,6 @@
 import { MutableData } from "@polymer/polymer/lib/mixins/mutable-data";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
+/* eslint-plugin-disable lit */
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 
 import "./ha-customize-attribute";

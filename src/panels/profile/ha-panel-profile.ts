@@ -28,6 +28,7 @@ import "../../components/ha-card";
 import "../../components/ha-menu-button";
 import "../../resources/ha-style";
 
+import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import {
   getOptimisticFrontendUserDataCollection,
   CoreFrontendUserData,
@@ -36,14 +37,17 @@ import { isExternal } from "../../data/external";
 import { haStyle } from "../../resources/styles";
 import { HomeAssistant } from "../../types";
 import { fireEvent } from "../../common/dom/fire_event";
-import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { showConfirmationDialog } from "../../dialogs/generic/show-dialog-box";
 
 class HaPanelProfile extends LitElement {
   @property() public hass!: HomeAssistant;
+
   @property() public narrow!: boolean;
+
   @property() private _refreshTokens?: unknown[];
+
   @property() private _coreUserData?: CoreFrontendUserData | null;
+
   private _unsubCoreData?: UnsubscribeFunc;
 
   public connectedCallback() {

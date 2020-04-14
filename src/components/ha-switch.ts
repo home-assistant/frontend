@@ -8,12 +8,11 @@ import {
 } from "lit-element";
 import "@material/mwc-switch";
 import { style } from "@material/mwc-switch/mwc-switch-css";
-// tslint:disable-next-line
-import { Switch } from "@material/mwc-switch";
+import type { Switch } from "@material/mwc-switch";
+import { ripple } from "@material/mwc-ripple/ripple-directive";
 import { Constructor } from "../types";
 import { forwardHaptic } from "../data/haptics";
-import { ripple } from "@material/mwc-ripple/ripple-directive";
-// tslint:disable-next-line
+
 const MwcSwitch = customElements.get("mwc-switch") as Constructor<Switch>;
 
 @customElement("ha-switch")
@@ -22,6 +21,7 @@ export class HaSwitch extends MwcSwitch {
   // Only set to true if the new value of the switch is applied right away when toggling.
   // Do not add haptic when a user is required to press save.
   @property({ type: Boolean }) public haptic = false;
+
   @query("slot") private _slot!: HTMLSlotElement;
 
   protected firstUpdated() {

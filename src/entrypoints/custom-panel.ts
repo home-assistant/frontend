@@ -1,9 +1,9 @@
+import { PolymerElement } from "@polymer/polymer";
 import { loadJS } from "../common/dom/load_resource";
 import { loadCustomPanel } from "../util/custom-panel/load-custom-panel";
 import { createCustomPanelElement } from "../util/custom-panel/create-custom-panel-element";
 import { setCustomPanelProperties } from "../util/custom-panel/set-custom-panel-properties";
 import { fireEvent } from "../common/dom/fire_event";
-import { PolymerElement } from "@polymer/polymer";
 import { CustomPanelInfo } from "../data/panel_custom";
 import { webComponentsSupported } from "../common/feature-detect/support-web-components";
 
@@ -82,7 +82,7 @@ function initialize(panel: CustomPanelInfo, properties: {}) {
         document.body.appendChild(panelEl!);
       },
       (err) => {
-        // tslint:disable-next-line
+        // eslint-disable-next-line
         console.error(err, panel);
         alert(`Unable to load the panel source: ${err}.`);
       }

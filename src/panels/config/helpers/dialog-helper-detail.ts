@@ -9,6 +9,7 @@ import {
   query,
 } from "lit-element";
 import "../../../components/ha-dialog";
+import { classMap } from "lit-html/directives/class-map";
 import { HomeAssistant } from "../../../types";
 import { dynamicElement } from "../../../common/dom/dynamic-element-directive";
 import { createInputBoolean } from "../../../data/input_boolean";
@@ -26,7 +27,6 @@ import "./forms/ha-input_datetime-form";
 import "./forms/ha-input_select-form";
 import "./forms/ha-input_number-form";
 import { domainIcon } from "../../../common/entity/domain_icon";
-import { classMap } from "lit-html/directives/class-map";
 import { haStyleDialog } from "../../../resources/styles";
 
 const HELPERS = {
@@ -40,11 +40,17 @@ const HELPERS = {
 @customElement("dialog-helper-detail")
 export class DialogHelperDetail extends LitElement {
   @property() public hass!: HomeAssistant;
+
   @property() private _item?: Helper;
+
   @property() private _opened = false;
+
   @property() private _platform?: string;
+
   @property() private _error?: string;
+
   @property() private _submitting = false;
+
   @query(".form") private _form?: HTMLDivElement;
 
   public async showDialog(): Promise<void> {
@@ -81,9 +87,7 @@ export class DialogHelperDetail extends LitElement {
           ? html`
               <div class="form" @value-changed=${this._valueChanged}>
                 ${this._error
-                  ? html`
-                      <div class="error">${this._error}</div>
-                    `
+                  ? html` <div class="error">${this._error}</div> `
                   : ""}
                 ${dynamicElement(`ha-${this._platform}-form`, {
                   hass: this.hass,

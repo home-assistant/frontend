@@ -13,21 +13,23 @@ import "@material/mwc-ripple";
 import "../../../components/entity/state-badge";
 import "../../../components/ha-icon";
 
-import { HomeAssistant } from "../../../types";
+import type { HomeAssistant } from "../../../types";
 import { computeTooltip } from "../common/compute-tooltip";
-// tslint:disable-next-line: no-duplicate-imports
-import { StateBadge } from "../../../components/entity/state-badge";
+
+import type { StateBadge } from "../../../components/entity/state-badge";
 import { actionHandler } from "../common/directives/action-handler-directive";
 import { hasAction } from "../common/has-action";
-import { ActionHandlerEvent } from "../../../data/lovelace";
+import type { ActionHandlerEvent } from "../../../data/lovelace";
 import { handleAction } from "../common/handle-action";
-import { EntitiesCardEntityConfig } from "../cards/types";
+import type { EntitiesCardEntityConfig } from "../cards/types";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 
 @customElement("hui-buttons-base")
 export class HuiButtonsBase extends LitElement {
   @property() public configEntities?: EntitiesCardEntityConfig[];
+
   @queryAll("state-badge") protected _badges!: StateBadge[];
+
   private _hass?: HomeAssistant;
 
   set hass(hass: HomeAssistant) {

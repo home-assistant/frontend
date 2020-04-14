@@ -10,6 +10,7 @@ import { TimeCondition } from "../../../../../data/automation";
 @customElement("ha-automation-condition-time")
 export class HaTimeCondition extends LitElement implements ConditionElement {
   @property() public hass!: HomeAssistant;
+
   @property() public condition!: TimeCondition;
 
   public static get defaultConfig() {

@@ -2,6 +2,7 @@ import "@polymer/iron-icon/iron-icon";
 import "@polymer/paper-icon-button/paper-icon-button";
 import "../../components/dialog/ha-paper-dialog";
 import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable";
+import type { PaperDialogScrollableElement } from "@polymer/paper-dialog-scrollable/paper-dialog-scrollable";
 
 import {
   LitElement,
@@ -14,7 +15,11 @@ import {
   PropertyValues,
   TemplateResult,
 } from "lit-element";
-import { HomeAssistant } from "../../types";
+import { classMap } from "lit-html/directives/class-map";
+import "@polymer/paper-input/paper-input";
+import type { PaperInputElement } from "@polymer/paper-input/paper-input";
+
+import type { HomeAssistant } from "../../types";
 import { fireEvent } from "../../common/dom/fire_event";
 import { SpeechRecognition } from "../../common/dom/speech-recognition";
 import {
@@ -23,11 +28,7 @@ import {
   setConversationOnboarding,
   AgentInfo,
 } from "../../data/conversation";
-import { classMap } from "lit-html/directives/class-map";
-import { PaperInputElement } from "@polymer/paper-input/paper-input";
 import { haStyleDialog } from "../../resources/styles";
-// tslint:disable-next-line
-import { PaperDialogScrollableElement } from "@polymer/paper-dialog-scrollable/paper-dialog-scrollable";
 import { uid } from "../../common/util/uid";
 
 interface Message {
@@ -44,17 +45,24 @@ interface Results {
 @customElement("ha-voice-command-dialog")
 export class HaVoiceCommandDialog extends LitElement {
   @property() public hass!: HomeAssistant;
+
   @property() public results: Results | null = null;
+
   @property() private _conversation: Message[] = [
     {
       who: "hass",
       text: "",
     },
   ];
+
   @property() private _opened = false;
+
   @property() private _agentInfo?: AgentInfo;
+
   @query("#messages") private messages!: PaperDialogScrollableElement;
+
   private recognition!: SpeechRecognition;
+
   private _conversationId?: string;
 
   public async showDialog(): Promise<void> {
@@ -244,6 +252,7 @@ export class HaVoiceCommandDialog extends LitElement {
     };
     this.recognition.onerror = (event) => {
       this.recognition!.abort();
+      // @ts-ignore
       if (event.error !== "aborted") {
         const text =
           this.results && this.results.transcript

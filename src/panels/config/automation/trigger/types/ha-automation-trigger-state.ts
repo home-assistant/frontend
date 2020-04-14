@@ -13,6 +13,7 @@ import { StateTrigger, ForDict } from "../../../../../data/automation";
 @customElement("ha-automation-trigger-state")
 export class HaStateTrigger extends LitElement implements TriggerElement {
   @property() public hass!: HomeAssistant;
+
   @property() public trigger!: StateTrigger;
 
   public static get defaultConfig() {

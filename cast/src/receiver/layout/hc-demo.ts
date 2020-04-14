@@ -14,6 +14,7 @@ import { mockHistory } from "../../../../demo/src/stubs/history";
 @customElement("hc-demo")
 class HcDemo extends HassElement {
   @property() public lovelacePath!: string;
+
   @property() private _lovelaceConfig?: LovelaceConfig;
 
   protected render(): TemplateResult {
@@ -28,6 +29,7 @@ class HcDemo extends HassElement {
       ></hc-lovelace>
     `;
   }
+
   protected firstUpdated(changedProps) {
     super.firstUpdated(changedProps);
     this._initialize();

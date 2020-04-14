@@ -9,14 +9,13 @@ import {
 } from "lit-element";
 import "@polymer/paper-item/paper-item";
 import "../../../../components/dialog/ha-paper-dialog";
-// tslint:disable-next-line:no-duplicate-imports
-import { HaPaperDialog } from "../../../../components/dialog/ha-paper-dialog";
+import type { HaPaperDialog } from "../../../../components/dialog/ha-paper-dialog";
 
 import "../../components/hui-views-list";
 
 import { moveCard } from "../config-util";
-import { MoveCardViewDialogParams } from "./show-move-card-view-dialog";
-import { PolymerChangedEvent } from "../../../../polymer-types";
+import type { MoveCardViewDialogParams } from "./show-move-card-view-dialog";
+import type { PolymerChangedEvent } from "../../../../polymer-types";
 
 @customElement("hui-dialog-move-card-view")
 export class HuiDialogMoveCardView extends LitElement {

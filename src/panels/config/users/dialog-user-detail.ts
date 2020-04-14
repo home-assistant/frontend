@@ -24,11 +24,16 @@ import {
 @customElement("dialog-user-detail")
 class DialogUserDetail extends LitElement {
   @property() public hass!: HomeAssistant;
+
   @property() private _name!: string;
+
   @property() private _isAdmin?: boolean;
+
   @property() private _error?: string;
+
   @property() private _params?: UserDetailDialogParams;
-  @property() private _submitting: boolean = false;
+
+  @property() private _submitting = false;
 
   public async showDialog(params: UserDetailDialogParams): Promise<void> {
     this._params = params;
@@ -52,11 +57,7 @@ class DialogUserDetail extends LitElement {
         .heading=${createCloseHeading(this.hass, user.name)}
       >
         <div>
-          ${this._error
-            ? html`
-                <div class="error">${this._error}</div>
-              `
-            : ""}
+          ${this._error ? html` <div class="error">${this._error}</div> ` : ""}
           <div class="secondary">
             ${this.hass.localize("ui.panel.config.users.editor.id")}: ${user.id}
           </div>
@@ -139,8 +140,8 @@ class DialogUserDetail extends LitElement {
           <mwc-button
             @click=${this._updateEntry}
             .disabled=${!this._name ||
-              this._submitting ||
-              user.system_generated}
+            this._submitting ||
+            user.system_generated}
           >
             ${this.hass!.localize("ui.panel.config.users.editor.update_user")}
           </mwc-button>

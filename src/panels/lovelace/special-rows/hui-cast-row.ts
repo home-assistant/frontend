@@ -57,25 +57,19 @@ class HuiCastRow extends LitElement implements LovelaceRow {
       <div class="flex">
         <div class="name">${this._config.name}</div>
         ${this._noHTTPS
-          ? html`
-              Cast requires HTTPS
-            `
+          ? html` Cast requires HTTPS `
           : this._castManager === undefined
           ? html``
           : this._castManager === null
-          ? html`
-              Cast API unavailable
-            `
+          ? html` Cast API unavailable `
           : this._castManager.castState === "NO_DEVICES_AVAILABLE"
-          ? html`
-              No devices found
-            `
+          ? html` No devices found `
           : html`
               <div class="controls">
                 <google-cast-launcher></google-cast-launcher>
                 <mwc-button
                   @click=${this._sendLovelace}
-                  class=${classMap({ inactive: !Boolean(active) })}
+                  class=${classMap({ inactive: !active })}
                   .unelevated=${active}
                   .disabled=${!this._castManager.status}
                 >

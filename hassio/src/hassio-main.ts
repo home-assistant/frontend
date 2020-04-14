@@ -44,7 +44,9 @@ customElements.get("paper-icon-button").prototype._keyBindings = {};
 @customElement("hassio-main")
 class HassioMain extends ProvideHassLitMixin(HassRouterPage) {
   @property() public hass!: HomeAssistant;
+
   @property() public panel!: HassioPanelInfo;
+
   @property() public narrow!: boolean;
 
   protected routerOptions: RouterOptions = {
@@ -76,9 +78,13 @@ class HassioMain extends ProvideHassLitMixin(HassRouterPage) {
       },
     },
   };
+
   @property() private _supervisorInfo: HassioSupervisorInfo;
+
   @property() private _hostInfo: HassioHostInfo;
+
   @property() private _hassOsInfo?: HassioHassOSInfo;
+
   @property() private _hassInfo: HassioHomeAssistantInfo;
 
   protected firstUpdated(changedProps: PropertyValues) {

@@ -12,7 +12,10 @@ import {
 import "../../../layouts/hass-subpage";
 import "../../../layouts/hass-error-screen";
 import "../ha-config-section";
-import { HomeAssistant } from "../../../types";
+import "@polymer/paper-input/paper-input";
+
+import type { PaperInputElement } from "@polymer/paper-input/paper-input";
+import type { HomeAssistant } from "../../../types";
 import {
   ZHADevice,
   fetchGroupableDevices,
@@ -20,27 +23,32 @@ import {
   ZHAGroup,
 } from "../../../data/zha";
 import "./zha-devices-data-table";
-import { SelectionChangedEvent } from "../../../components/data-table/ha-data-table";
+import type { SelectionChangedEvent } from "../../../components/data-table/ha-data-table";
 import { navigate } from "../../../common/navigate";
-import { PolymerChangedEvent } from "../../../polymer-types";
+import type { PolymerChangedEvent } from "../../../polymer-types";
 import "@polymer/paper-spinner/paper-spinner";
 import "@material/mwc-button";
-import { PaperInputElement } from "@polymer/paper-input/paper-input";
-import { HASSDomEvent } from "../../../common/dom/fire_event";
-// tslint:disable-next-line: no-duplicate-imports
-import { ZHADevicesDataTable } from "./zha-devices-data-table";
+import type { HASSDomEvent } from "../../../common/dom/fire_event";
+
+import type { ZHADevicesDataTable } from "./zha-devices-data-table";
 
 @customElement("zha-add-group-page")
 export class ZHAAddGroupPage extends LitElement {
   @property() public hass!: HomeAssistant;
+
   @property() public narrow!: boolean;
+
   @property() public devices: ZHADevice[] = [];
-  @property() private _processingAdd: boolean = false;
-  @property() private _groupName: string = "";
+
+  @property() private _processingAdd = false;
+
+  @property() private _groupName = "";
+
   @query("zha-devices-data-table")
   private _zhaDevicesDataTable!: ZHADevicesDataTable;
 
-  private _firstUpdatedCalled: boolean = false;
+  private _firstUpdatedCalled = false;
+
   private _selectedDevicesToAdd: string[] = [];
 
   public connectedCallback(): void {
@@ -94,8 +102,8 @@ export class ZHAAddGroupPage extends LitElement {
           <div class="paper-dialog-buttons">
             <mwc-button
               .disabled="${!this._groupName ||
-                this._groupName === "" ||
-                this._processingAdd}"
+              this._groupName === "" ||
+              this._processingAdd}"
               @click="${this._createGroup}"
               class="button"
             >

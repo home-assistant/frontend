@@ -30,8 +30,11 @@ declare global {
 @customElement("hui-view-editor")
 export class HuiViewEditor extends LitElement {
   @property() public hass!: HomeAssistant;
+
   @property() public isNew!: boolean;
+
   @property() private _config!: LovelaceViewConfig;
+
   private _suggestedPath = false;
 
   get _path(): string {

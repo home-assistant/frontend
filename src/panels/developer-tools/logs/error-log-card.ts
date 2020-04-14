@@ -14,6 +14,7 @@ import { fetchErrorLog } from "../../../data/error_log";
 
 class ErrorLogCard extends LitElement {
   @property() public hass!: HomeAssistant;
+
   @property() private _errorLog?: string;
 
   protected render(): TemplateResult {

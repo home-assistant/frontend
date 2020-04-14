@@ -15,23 +15,31 @@ import { HomeAssistant } from "../../../src/types";
 @customElement("hassio-card-content")
 class HassioCardContent extends LitElement {
   @property() public hass!: HomeAssistant;
+
   @property() public title!: string;
+
   @property() public description?: string;
-  @property({ type: Boolean }) public available: boolean = true;
-  @property({ type: Boolean }) public showTopbar: boolean = false;
+
+  @property({ type: Boolean }) public available = true;
+
+  @property({ type: Boolean }) public showTopbar = false;
+
   @property() public topbarClass?: string;
+
   @property() public datetime?: string;
+
   @property() public iconTitle?: string;
+
   @property() public iconClass?: string;
+
   @property() public icon = "hass:help-circle";
+
   @property() public iconImage?: string;
 
   protected render(): TemplateResult {
     return html`
       ${this.showTopbar
-        ? html`
-            <div class="topbar ${this.topbarClass}"></div>
-          `
+        ? html` <div class="topbar ${this.topbarClass}"></div> `
         : ""}
       ${this.iconImage
         ? html`

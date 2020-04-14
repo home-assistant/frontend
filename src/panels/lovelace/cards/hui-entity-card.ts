@@ -63,7 +63,9 @@ export class HuiEntityCard extends LitElement implements LovelaceCard {
   }
 
   @property() public hass?: HomeAssistant;
+
   @property() private _config?: EntityCardConfig;
+
   private _footerElement?: HuiErrorCard | LovelaceHeaderFooter;
 
   public setConfig(config: EntityCardConfig): void {
@@ -140,9 +142,9 @@ export class HuiEntityCard extends LitElement implements LovelaceCard {
               ? html`
                   <span class="measurement"
                     >${this._config.unit ||
-                      (this._config.attribute
-                        ? ""
-                        : stateObj.attributes.unit_of_measurement)}</span
+                    (this._config.attribute
+                      ? ""
+                      : stateObj.attributes.unit_of_measurement)}</span
                   >
                 `
               : ""}

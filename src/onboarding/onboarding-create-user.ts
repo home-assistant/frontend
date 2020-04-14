@@ -19,13 +19,19 @@ import { fireEvent } from "../common/dom/fire_event";
 @customElement("onboarding-create-user")
 class OnboardingCreateUser extends LitElement {
   @property() public localize!: LocalizeFunc;
+
   @property() public language!: string;
 
   @property() private _name = "";
+
   @property() private _username = "";
+
   @property() private _password = "";
+
   @property() private _passwordConfirm = "";
+
   @property() private _loading = false;
+
   @property() private _errorMsg?: string = undefined;
 
   protected render(): TemplateResult {
@@ -100,9 +106,11 @@ class OnboardingCreateUser extends LitElement {
         @value-changed=${this._handleValueChanged}
         required
         type='password'
-        .invalid=${this._password !== "" &&
+        .invalid=${
+          this._password !== "" &&
           this._passwordConfirm !== "" &&
-          this._passwordConfirm !== this._password}
+          this._passwordConfirm !== this._password
+        }
         .errorMessage="${this.localize(
           "ui.panel.page-onboarding.user.error.password_not_match"
         )}"
@@ -183,7 +191,7 @@ class OnboardingCreateUser extends LitElement {
         result,
       });
     } catch (err) {
-      // tslint:disable-next-line
+      // eslint-disable-next-line
       console.error(err);
       this._loading = false;
       this._errorMsg = err.body.message;

@@ -19,6 +19,7 @@ import { hasConfigOrEntityChanged } from "../common/has-changed";
 @customElement("hui-attribute-row")
 class HuiAttributeRow extends LitElement implements LovelaceRow {
   @property() public hass?: HomeAssistant;
+
   @property() private _config?: AttributeRowConfig;
 
   public setConfig(config: AttributeRowConfig): void {

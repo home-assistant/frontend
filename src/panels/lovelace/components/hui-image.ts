@@ -1,6 +1,3 @@
-import { STATES_OFF } from "../../../common/const";
-
-import parseAspectRatio from "../../../common/util/parse-aspect-ratio";
 import {
   LitElement,
   TemplateResult,
@@ -12,9 +9,12 @@ import {
   query,
   customElement,
 } from "lit-element";
-import { HomeAssistant, CameraEntity } from "../../../types";
 import { styleMap } from "lit-html/directives/style-map";
 import { classMap } from "lit-html/directives/class-map";
+import { STATES_OFF } from "../../../common/const";
+
+import parseAspectRatio from "../../../common/util/parse-aspect-ratio";
+import { HomeAssistant, CameraEntity } from "../../../types";
 import { fetchThumbnailUrlWithCache } from "../../../data/camera";
 
 const UPDATE_INTERVAL = 10000;
@@ -164,7 +164,6 @@ export class HuiImage extends LitElement {
     if (changedProps.has("cameraImage") && this.cameraView !== "live") {
       this._updateCameraImageSrc();
       this._startUpdateCameraInterval();
-      return;
     }
   }
 

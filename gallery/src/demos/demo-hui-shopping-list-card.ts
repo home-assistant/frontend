@@ -1,4 +1,5 @@
 import { html } from "@polymer/polymer/lib/utils/html-tag";
+/* eslint-plugin-disable lit */
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 
 import { provideHass } from "../../../src/fake_data/provide_hass";
@@ -22,9 +23,7 @@ const CONFIGS = [
 
 class DemoShoppingListEntity extends PolymerElement {
   static get template() {
-    return html`
-      <demo-cards id="demos" configs="[[_configs]]"></demo-cards>
-    `;
+    return html` <demo-cards id="demos" configs="[[_configs]]"></demo-cards> `;
   }
 
   static get properties() {

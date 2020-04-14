@@ -24,6 +24,7 @@ import { handleAction } from "../common/handle-action";
 export class HuiStateBadgeElement extends LitElement
   implements LovelaceElement {
   @property() public hass?: HomeAssistant;
+
   @property() private _config?: StateBadgeElementConfig;
 
   public setConfig(config: StateBadgeElementConfig): void {

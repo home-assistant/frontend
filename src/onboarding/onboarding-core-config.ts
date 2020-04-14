@@ -11,18 +11,18 @@ import "@material/mwc-button/mwc-button";
 import "@polymer/paper-input/paper-input";
 import "@polymer/paper-radio-group/paper-radio-group";
 import "@polymer/paper-radio-button/paper-radio-button";
-// tslint:disable-next-line: no-duplicate-imports
-import { PaperInputElement } from "@polymer/paper-input/paper-input";
-import { HomeAssistant } from "../types";
+
+import type { PaperInputElement } from "@polymer/paper-input/paper-input";
+import type { HomeAssistant } from "../types";
 import {
   ConfigUpdateValues,
   detectCoreConfig,
   saveCoreConfig,
 } from "../data/core";
-import { PolymerChangedEvent } from "../polymer-types";
+import type { PolymerChangedEvent } from "../polymer-types";
 import { onboardCoreConfigStep } from "../data/onboarding";
 import { fireEvent } from "../common/dom/fire_event";
-import { LocalizeFunc } from "../common/translations/localize";
+import type { LocalizeFunc } from "../common/translations/localize";
 import { createTimezoneListEl } from "../components/timezone-datalist";
 import "../components/map/ha-location-editor";
 
@@ -31,14 +31,19 @@ const amsterdam = [52.3731339, 4.8903147];
 @customElement("onboarding-core-config")
 class OnboardingCoreConfig extends LitElement {
   @property() public hass!: HomeAssistant;
+
   @property() public onboardingLocalize!: LocalizeFunc;
 
   @property() private _working = false;
 
   @property() private _name!: ConfigUpdateValues["location_name"];
+
   @property() private _location!: [number, number];
+
   @property() private _elevation!: string;
+
   @property() private _unitSystem!: ConfigUpdateValues["unit_system"];
+
   @property() private _timeZone!: string;
 
   protected render(): TemplateResult {

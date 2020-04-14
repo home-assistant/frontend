@@ -12,9 +12,13 @@ import { fireEvent } from "../../common/dom/fire_event";
 @customElement("ha-form-positive_time_period_dict")
 export class HaFormTimePeriod extends LitElement implements HaFormElement {
   @property() public schema!: HaFormTimeSchema;
+
   @property() public data!: HaFormTimeData;
+
   @property() public label!: string;
+
   @property() public suffix!: string;
+
   @query("paper-time-input") private _input?: HTMLElement;
 
   public focus() {
@@ -87,12 +91,12 @@ export class HaFormTimePeriod extends LitElement implements HaFormElement {
     let minutes = this._minutes;
 
     if (unit === "seconds" && value > 59) {
-      minutes = minutes + Math.floor(value / 60);
+      minutes += Math.floor(value / 60);
       value %= 60;
     }
 
     if (unit === "minutes" && value > 59) {
-      hours = hours + Math.floor(value / 60);
+      hours += Math.floor(value / 60);
       value %= 60;
     }
 

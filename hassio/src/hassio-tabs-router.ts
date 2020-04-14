@@ -1,9 +1,9 @@
+import { customElement, property } from "lit-element";
+import { PolymerElement } from "@polymer/polymer";
 import {
   HassRouterPage,
   RouterOptions,
 } from "../../src/layouts/hass-router-page";
-import { customElement, property } from "lit-element";
-import { PolymerElement } from "@polymer/polymer";
 import { HomeAssistant } from "../../src/types";
 // Don't codesplit it, that way the dashboard always loads fast.
 import "./dashboard/hassio-dashboard";
@@ -20,9 +20,13 @@ import {
 @customElement("hassio-tabs-router")
 class HassioTabsRouter extends HassRouterPage {
   @property() public hass!: HomeAssistant;
+
   @property() public supervisorInfo: HassioSupervisorInfo;
+
   @property() public hostInfo: HassioHostInfo;
+
   @property() public hassInfo: HassioHomeAssistantInfo;
+
   @property() public hassOsInfo!: HassioHassOSInfo;
 
   protected routerOptions: RouterOptions = {

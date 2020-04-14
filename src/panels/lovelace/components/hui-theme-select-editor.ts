@@ -15,18 +15,20 @@ import { fireEvent } from "../../../common/dom/fire_event";
 @customElement("hui-theme-select-editor")
 export class HuiThemeSelectEditor extends LitElement {
   @property() public value?: string;
+
   @property() public label?: string;
+
   @property() public hass?: HomeAssistant;
 
   protected render(): TemplateResult {
     return html`
       <paper-dropdown-menu
         .label=${this.label ||
-          `${this.hass!.localize(
-            "ui.panel.lovelace.editor.card.generic.theme"
-          )} (${this.hass!.localize(
-            "ui.panel.lovelace.editor.card.config.optional"
-          )})`}
+        `${this.hass!.localize(
+          "ui.panel.lovelace.editor.card.generic.theme"
+        )} (${this.hass!.localize(
+          "ui.panel.lovelace.editor.card.config.optional"
+        )})`}
         dynamic-align
       >
         <paper-listbox
@@ -43,9 +45,7 @@ export class HuiThemeSelectEditor extends LitElement {
           ${Object.keys(this.hass!.themes.themes)
             .sort()
             .map((theme) => {
-              return html`
-                <paper-item theme=${theme}>${theme}</paper-item>
-              `;
+              return html` <paper-item theme=${theme}>${theme}</paper-item> `;
             })}
         </paper-listbox>
       </paper-dropdown-menu>

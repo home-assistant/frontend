@@ -19,8 +19,7 @@ import "../../../../components/ha-relative-time";
 import "../../../../components/ha-icon";
 
 import "../../../../components/data-table/ha-data-table";
-// tslint:disable-next-line
-import {
+import type {
   SelectionChangedEvent,
   DataTableColumnContainer,
 } from "../../../../components/data-table/ha-data-table";
@@ -31,9 +30,9 @@ import { computeDomain } from "../../../../common/entity/compute_domain";
 import { computeRTL } from "../../../../common/util/compute_rtl";
 import { computeUnusedEntities } from "../../common/compute-unused-entities";
 
-import { HomeAssistant } from "../../../../types";
-import { Lovelace } from "../../types";
-import { LovelaceConfig } from "../../../../data/lovelace";
+import type { HomeAssistant } from "../../../../types";
+import type { Lovelace } from "../../types";
+import type { LovelaceConfig } from "../../../../data/lovelace";
 import { fireEvent, HASSDomEvent } from "../../../../common/dom/fire_event";
 import { addEntitiesToLovelaceView } from "../add-entities-to-view";
 

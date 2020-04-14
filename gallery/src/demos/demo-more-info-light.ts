@@ -1,4 +1,5 @@
 import { html } from "@polymer/polymer/lib/utils/html-tag";
+/* eslint-plugin-disable lit */
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 
 import "../../../src/dialogs/more-info/controls/more-info-content";

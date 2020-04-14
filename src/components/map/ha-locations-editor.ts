@@ -48,13 +48,17 @@ export interface MarkerLocation {
 @customElement("ha-locations-editor")
 export class HaLocationsEditor extends LitElement {
   @property() public locations?: MarkerLocation[];
+
   public fitZoom = 16;
 
-  // tslint:disable-next-line
+  // eslint-disable-next-line
   private Leaflet?: LeafletModuleType;
-  // tslint:disable-next-line
+
+  // eslint-disable-next-line
   private _leafletMap?: Map;
+
   private _locationMarkers?: { [key: string]: Marker | Circle };
+
   private _circles: { [key: string]: Circle } = {};
 
   public fitMap(): void {
@@ -93,9 +97,7 @@ export class HaLocationsEditor extends LitElement {
   }
 
   protected render(): TemplateResult {
-    return html`
-      <div id="map"></div>
-    `;
+    return html` <div id="map"></div> `;
   }
 
   protected firstUpdated(changedProps: PropertyValues): void {

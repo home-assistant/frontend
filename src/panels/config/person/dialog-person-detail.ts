@@ -22,12 +22,18 @@ import { haStyleDialog } from "../../../resources/styles";
 
 class DialogPersonDetail extends LitElement {
   @property() public hass!: HomeAssistant;
+
   @property() private _name!: string;
+
   @property() private _userId?: string;
+
   @property() private _deviceTrackers!: string[];
+
   @property() private _error?: string;
+
   @property() private _params?: PersonDetailDialogParams;
-  @property() private _submitting: boolean = false;
+
+  @property() private _submitting = false;
 
   private _deviceTrackersAvailable = memoizeOne((hass) => {
     return Object.keys(hass.states).some(
@@ -70,11 +76,7 @@ class DialogPersonDetail extends LitElement {
         )}
       >
         <div>
-          ${this._error
-            ? html`
-                <div class="error">${this._error}</div>
-              `
-            : ""}
+          ${this._error ? html` <div class="error">${this._error}</div> ` : ""}
           <div class="form">
             <paper-input
               .value=${this._name}
@@ -106,7 +108,7 @@ class DialogPersonDetail extends LitElement {
                   <ha-entities-picker
                     .hass=${this.hass}
                     .value=${this._deviceTrackers}
-                    include-domains='["device_tracker"]'
+                    .include-domains=${["device_tracker"]}
                     .pickedEntityLabel=${this.hass.localize(
                       "ui.panel.config.person.detail.device_tracker_picked"
                     )}

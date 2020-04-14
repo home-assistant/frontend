@@ -1,4 +1,11 @@
-import { LitElement, html, CSSResult, css, property } from "lit-element";
+import {
+  LitElement,
+  html,
+  CSSResult,
+  css,
+  property,
+  TemplateResult,
+} from "lit-element";
 import { until } from "lit-html/directives/until";
 import "@material/mwc-button";
 import "@polymer/paper-spinner/paper-spinner-lite";
@@ -15,8 +22,11 @@ import {
 
 export class HADemoCard extends LitElement implements LovelaceCard {
   @property() public lovelace?: Lovelace;
+
   @property() public hass!: MockHomeAssistant;
+
   @property() private _switching?: boolean;
+
   private _hidden = localStorage.hide_demo_card;
 
   public getCardSize() {
@@ -25,22 +35,21 @@ export class HADemoCard extends LitElement implements LovelaceCard {
 
   public setConfig(
     // @ts-ignore
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     config: LovelaceCardConfig
-    // tslint:disable-next-line:no-empty
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
   ) {}
 
-  protected render() {
+  protected render(): TemplateResult {
     if (this._hidden) {
-      return;
+      return html``;
     }
     return html`
       <ha-card>
         <div class="picker">
           <div class="label">
             ${this._switching
-              ? html`
-                  <paper-spinner-lite active></paper-spinner-lite>
-                `
+              ? html` <paper-spinner-lite active></paper-spinner-lite> `
               : until(
                   selectedDemoConfig.then(
                     (conf) => html`

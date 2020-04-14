@@ -27,15 +27,24 @@ import { haStyleDialog } from "../../../resources/styles";
 
 class DialogZoneDetail extends LitElement {
   @property() public hass!: HomeAssistant;
+
   @property() private _name!: string;
+
   @property() private _icon!: string;
+
   @property() private _latitude!: number;
+
   @property() private _longitude!: number;
+
   @property() private _passive!: boolean;
+
   @property() private _radius!: number;
+
   @property() private _error?: string;
+
   @property() private _params?: ZoneDetailDialogParams;
-  @property() private _submitting: boolean = false;
+
+  @property() private _submitting = false;
 
   public async showDialog(params: ZoneDetailDialogParams): Promise<void> {
     this._params = params;
@@ -96,11 +105,7 @@ class DialogZoneDetail extends LitElement {
         )}
       >
         <div>
-          ${this._error
-            ? html`
-                <div class="error">${this._error}</div>
-              `
-            : ""}
+          ${this._error ? html` <div class="error">${this._error}</div> ` : ""}
           <div class="form">
             <paper-input
               .value=${this._name}

@@ -1,9 +1,9 @@
 import "@polymer/paper-radio-button/paper-radio-button";
 import "../../../../../components/entity/ha-entity-picker";
 
+import { LitElement, property, html, customElement } from "lit-element";
 import { hasLocation } from "../../../../../common/entity/has_location";
 import { computeStateDomain } from "../../../../../common/entity/compute_state_domain";
-import { LitElement, property, html, customElement } from "lit-element";
 import { HomeAssistant } from "../../../../../types";
 import { PolymerChangedEvent } from "../../../../../polymer-types";
 import { fireEvent } from "../../../../../common/dom/fire_event";
@@ -16,6 +16,7 @@ function zoneAndLocationFilter(stateObj) {
 @customElement("ha-automation-condition-zone")
 export class HaZoneCondition extends LitElement {
   @property() public hass!: HomeAssistant;
+
   @property() public condition!: ZoneCondition;
 
   public static get defaultConfig() {

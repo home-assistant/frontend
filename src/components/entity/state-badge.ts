@@ -9,23 +9,26 @@ import {
   query,
 } from "lit-element";
 import "../ha-icon";
+import type { HassEntity } from "home-assistant-js-websocket";
+import { ifDefined } from "lit-html/directives/if-defined";
 import { computeStateDomain } from "../../common/entity/compute_state_domain";
 import { stateIcon } from "../../common/entity/state_icon";
-import { HassEntity } from "home-assistant-js-websocket";
-// Not duplicate, this is for typing.
-// tslint:disable-next-line
-import { HaIcon } from "../ha-icon";
-import { HomeAssistant } from "../../types";
+import type { HaIcon } from "../ha-icon";
+import type { HomeAssistant } from "../../types";
 import { computeActiveState } from "../../common/entity/compute_active_state";
-import { ifDefined } from "lit-html/directives/if-defined";
 import { iconColorCSS } from "../../common/style/icon_color_css";
 
 export class StateBadge extends LitElement {
   public hass?: HomeAssistant;
+
   @property() public stateObj?: HassEntity;
+
   @property() public overrideIcon?: string;
+
   @property() public overrideImage?: string;
+
   @property({ type: Boolean }) public stateColor?: boolean;
+
   @query("ha-icon") private _icon!: HaIcon;
 
   protected render(): TemplateResult {
@@ -91,7 +94,7 @@ export class StateBadge extends LitElement {
             const errorMessage = `Type error: state-badge expected number, but type of ${
               stateObj.entity_id
             }.attributes.brightness is ${typeof brightness} (${brightness})`;
-            // tslint:disable-next-line
+            // eslint-disable-next-line
             console.warn(errorMessage);
           }
           // lowest brighntess will be around 50% (that's pretty dark)

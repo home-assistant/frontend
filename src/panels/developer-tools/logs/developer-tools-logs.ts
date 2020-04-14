@@ -12,10 +12,9 @@ import {
 import { HomeAssistant } from "../../../types";
 import { haStyle } from "../../../resources/styles";
 
-import "../logs/system-log-card";
-import "../logs/error-log-card";
-// tslint:disable-next-line
-import { SystemLogCard } from "../logs/system-log-card";
+import "./system-log-card";
+import "./error-log-card";
+import type { SystemLogCard } from "./system-log-card";
 
 @customElement("developer-tools-logs")
 export class HaPanelDevLogs extends LitElement {

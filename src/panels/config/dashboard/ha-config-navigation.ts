@@ -22,7 +22,9 @@ import { PageNavigation } from "../../../layouts/hass-tabs-subpage";
 @customElement("ha-config-navigation")
 class HaConfigNavigation extends LitElement {
   @property() public hass!: HomeAssistant;
+
   @property() public showAdvanced!: boolean;
+
   @property() public pages!: PageNavigation[];
 
   protected render(): TemplateResult {

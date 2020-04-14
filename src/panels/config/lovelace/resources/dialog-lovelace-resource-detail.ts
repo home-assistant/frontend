@@ -20,10 +20,15 @@ import { haStyleDialog } from "../../../../resources/styles";
 @customElement("dialog-lovelace-resource-detail")
 export class DialogLovelaceResourceDetail extends LitElement {
   @property() public hass!: HomeAssistant;
+
   @property() private _params?: LovelaceResourceDetailsDialogParams;
+
   @property() private _url!: LovelaceResource["url"];
+
   @property() private _type!: LovelaceResource["type"];
+
   @property() private _error?: string;
+
   @property() private _submitting = false;
 
   public async showDialog(
@@ -62,11 +67,7 @@ export class DialogLovelaceResourceDetail extends LitElement {
         )}
       >
         <div>
-          ${this._error
-            ? html`
-                <div class="error">${this._error}</div>
-              `
-            : ""}
+          ${this._error ? html` <div class="error">${this._error}</div> ` : ""}
           <div class="form">
             <h3 class="warning">
               ${this.hass!.localize(

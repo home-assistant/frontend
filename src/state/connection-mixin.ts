@@ -52,7 +52,7 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
         hassUrl: (path = "") => new URL(path, auth.data.hassUrl).toString(),
         callService: async (domain, service, serviceData = {}) => {
           if (__DEV__) {
-            // tslint:disable-next-line: no-console
+            // eslint-disable-next-line no-console
             console.log("Calling service", domain, service, serviceData);
           }
           try {
@@ -64,7 +64,7 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
             )) as Promise<ServiceCallResponse>;
           } catch (err) {
             if (__DEV__) {
-              // tslint:disable-next-line: no-console
+              // eslint-disable-next-line no-console
               console.error(
                 "Error calling service",
                 domain,
@@ -91,7 +91,7 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
         // For messages that do not get a response
         sendWS: (msg) => {
           if (__DEV__) {
-            // tslint:disable-next-line: no-console
+            // eslint-disable-next-line no-console
             console.log("Sending", msg);
           }
           conn.sendMessage(msg);
@@ -99,7 +99,7 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
         // For messages that expect a response
         callWS: <R>(msg) => {
           if (__DEV__) {
-            // tslint:disable-next-line: no-console
+            // eslint-disable-next-line no-console
             console.log("Sending", msg);
           }
 
@@ -107,9 +107,9 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
 
           if (__DEV__) {
             resp.then(
-              // tslint:disable-next-line: no-console
+              // eslint-disable-next-line no-console
               (result) => console.log("Received", result),
-              // tslint:disable-next-line: no-console
+              // eslint-disable-next-line no-console
               (err) => console.error("Error", err)
             );
           }

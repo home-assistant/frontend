@@ -14,19 +14,21 @@ import "../../../../components/dialog/ha-paper-dialog";
 
 import deepFreeze from "deep-freeze";
 
-// tslint:disable-next-line: no-duplicate-imports
-import { HaPaperDialog } from "../../../../components/dialog/ha-paper-dialog";
-import { HomeAssistant } from "../../../../types";
-import { LovelaceCardConfig } from "../../../../data/lovelace";
+import type { HaPaperDialog } from "../../../../components/dialog/ha-paper-dialog";
+import type { HomeAssistant } from "../../../../types";
+import type { LovelaceCardConfig } from "../../../../data/lovelace";
 import { haStyleDialog } from "../../../../resources/styles";
-import { DeleteCardDialogParams } from "./show-delete-card-dialog";
+import type { DeleteCardDialogParams } from "./show-delete-card-dialog";
 import { fireEvent } from "../../../../common/dom/fire_event";
 
 @customElement("hui-dialog-delete-card")
 export class HuiDialogDeleteCard extends LitElement {
   @property() protected hass!: HomeAssistant;
+
   @property() private _params?: DeleteCardDialogParams;
+
   @property() private _cardConfig?: LovelaceCardConfig;
+
   @query("ha-paper-dialog") private _dialog!: HaPaperDialog;
 
   public async showDialog(params: DeleteCardDialogParams): Promise<void> {

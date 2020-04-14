@@ -10,8 +10,7 @@ export interface DeviceAutomation {
   event?: string;
 }
 
-// tslint:disable-next-line: no-empty-interface
-export interface DeviceAction extends DeviceAutomation {}
+export type DeviceAction = DeviceAutomation;
 
 export interface DeviceCondition extends DeviceAutomation {
   condition: string;

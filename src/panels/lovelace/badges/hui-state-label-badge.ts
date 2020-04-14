@@ -23,6 +23,7 @@ import { handleAction } from "../common/handle-action";
 @customElement("hui-state-label-badge")
 export class HuiStateLabelBadge extends LitElement implements LovelaceBadge {
   @property() public hass?: HomeAssistant;
+
   @property() protected _config?: StateLabelBadgeConfig;
 
   public setConfig(config: StateLabelBadgeConfig): void {

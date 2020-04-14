@@ -18,9 +18,13 @@ import "@polymer/paper-item/paper-item";
 @customElement("ha-form-select")
 export class HaFormSelect extends LitElement implements HaFormElement {
   @property() public schema!: HaFormSelectSchema;
+
   @property() public data!: HaFormSelectData;
+
   @property() public label!: string;
+
   @property() public suffix!: string;
+
   @query("paper-dropdown-menu") private _input?: HTMLElement;
 
   public focus() {

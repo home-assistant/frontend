@@ -1,4 +1,5 @@
 import { html } from "@polymer/polymer/lib/utils/html-tag";
+/* eslint-plugin-disable lit */
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 
 import "../ha-relative-time";
@@ -62,9 +63,7 @@ class StateInfo extends PolymerElement {
   }
 
   static get stateBadgeTemplate() {
-    return html`
-      <state-badge state-obj="[[stateObj]]"></state-badge>
-    `;
+    return html` <state-badge state-obj="[[stateObj]]"></state-badge> `;
   }
 
   static get infoTemplate() {

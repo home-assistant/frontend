@@ -12,8 +12,11 @@ import "../components/ha-icon";
 @customElement("integration-badge")
 class IntegrationBadge extends LitElement {
   @property() public icon!: string;
+
   @property() public title!: string;
+
   @property() public badgeIcon?: string;
+
   @property({ type: Boolean, reflect: true }) public clickable = false;
 
   protected render(): TemplateResult {
@@ -21,9 +24,7 @@ class IntegrationBadge extends LitElement {
       <div class="icon">
         <iron-icon .icon=${this.icon}></iron-icon>
         ${this.badgeIcon
-          ? html`
-              <ha-icon class="badge" .icon=${this.badgeIcon}></ha-icon>
-            `
+          ? html` <ha-icon class="badge" .icon=${this.badgeIcon}></ha-icon> `
           : ""}
       </div>
       <div class="title">${this.title}</div>

@@ -31,12 +31,19 @@ export interface PageNavigation {
 @customElement("hass-tabs-subpage")
 class HassTabsSubpage extends LitElement {
   @property() public hass!: HomeAssistant;
+
   @property({ type: String, attribute: "back-path" }) public backPath?: string;
+
   @property() public backCallback?: () => void;
+
   @property({ type: Boolean }) public hassio = false;
+
   @property() public route!: Route;
+
   @property() public tabs!: PageNavigation[];
+
   @property({ type: Boolean, reflect: true }) public narrow = false;
+
   @property() private _activeTab?: PageNavigation;
 
   private _getTabs = memoizeOne(
@@ -67,9 +74,7 @@ class HassTabsSubpage extends LitElement {
               .path=${page.path}
             >
               ${this.narrow
-                ? html`
-                    <ha-icon .icon=${page.icon}></ha-icon>
-                  `
+                ? html` <ha-icon .icon=${page.icon}></ha-icon> `
                 : ""}
               ${!this.narrow || page === activeTab
                 ? html`
@@ -114,9 +119,7 @@ class HassTabsSubpage extends LitElement {
           @click=${this._backTapped}
         ></ha-paper-icon-button-arrow-prev>
         ${this.narrow
-          ? html`
-              <div class="main-title"><slot name="header"></slot></div>
-            `
+          ? html` <div class="main-title"><slot name="header"></slot></div> `
           : ""}
         ${tabs.length > 1 || !this.narrow
           ? html`

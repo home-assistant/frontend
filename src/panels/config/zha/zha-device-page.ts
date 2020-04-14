@@ -36,12 +36,19 @@ import { ZHAClusterSelectedParams } from "./types";
 @customElement("zha-device-page")
 export class ZHADevicePage extends LitElement {
   @property() public hass?: HomeAssistant;
+
   @property() public isWide?: boolean;
+
   @property() public ieee?: string;
+
   @property() public device?: ZHADevice;
+
   @property() public narrow?: boolean;
+
   @property() private _selectedCluster?: Cluster;
+
   @property() private _bindableDevices: ZHADevice[] = [];
+
   @property() private _groups: ZHAGroup[] = [];
 
   protected updated(changedProperties: PropertyValues): void {
@@ -111,7 +118,7 @@ export class ZHADevicePage extends LitElement {
                 : ""}
             `
           : ""}
-        <div class="spacer" />
+        <div class="spacer"></div>
       </hass-subpage>
     `;
   }

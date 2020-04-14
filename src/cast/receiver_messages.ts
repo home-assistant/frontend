@@ -60,7 +60,7 @@ export const castSendShowDemo = (cast: CastManager) =>
 
 export const ensureConnectedCastSession = (cast: CastManager, auth: Auth) => {
   if (cast.castConnectedToOurHass) {
-    return;
+    return undefined;
   }
 
   return new Promise((resolve) => {

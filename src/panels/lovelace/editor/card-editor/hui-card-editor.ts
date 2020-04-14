@@ -11,19 +11,20 @@ import {
 import { safeDump, safeLoad } from "js-yaml";
 
 import "@material/mwc-button";
-import { HomeAssistant } from "../../../../types";
-import { LovelaceCardConfig, LovelaceConfig } from "../../../../data/lovelace";
-import { LovelaceCardEditor } from "../../types";
+import type { HomeAssistant } from "../../../../types";
+import type {
+  LovelaceCardConfig,
+  LovelaceConfig,
+} from "../../../../data/lovelace";
+import type { LovelaceCardEditor } from "../../types";
 import { computeRTL } from "../../../../common/util/compute_rtl";
 
 import "../../../../components/ha-code-editor";
-// This is not a duplicate import, one is for types, one is for element.
-// tslint:disable-next-line
-import { HaCodeEditor } from "../../../../components/ha-code-editor";
+import type { HaCodeEditor } from "../../../../components/ha-code-editor";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import { EntityConfig } from "../../entity-rows/types";
+import type { EntityConfig } from "../../entity-rows/types";
 import { getCardElementClass } from "../../create-element/create-card-element";
-import { GUIModeChangedEvent } from "../types";
+import type { GUIModeChangedEvent } from "../types";
 
 export interface ConfigChangedEvent {
   config: LovelaceCardConfig;
@@ -50,22 +51,31 @@ export interface UIConfigChangedEvent extends Event {
 @customElement("hui-card-editor")
 export class HuiCardEditor extends LitElement {
   @property() public hass!: HomeAssistant;
+
   @property() public lovelace?: LovelaceConfig;
 
   @property() private _yaml?: string;
+
   @property() private _config?: LovelaceCardConfig;
+
   @property() private _configElement?: LovelaceCardEditor;
+
   @property() private _configElType?: string;
-  @property() private _GUImode: boolean = true;
+
+  @property() private _GUImode = true;
+
   // Error: Configuration broken - do not save
   @property() private _error?: string;
+
   // Warning: GUI editor can't handle configuration - ok to save
   @property() private _warning?: string;
-  @property() private _loading: boolean = false;
+
+  @property() private _loading = false;
 
   public get yaml(): string {
     return this._yaml || "";
   }
+
   public set yaml(_yaml: string) {
     this._yaml = _yaml;
     try {
@@ -85,6 +95,7 @@ export class HuiCardEditor extends LitElement {
   public get value(): LovelaceCardConfig | undefined {
     return this._config;
   }
+
   public set value(config: LovelaceCardConfig | undefined) {
     if (JSON.stringify(config) !== JSON.stringify(this._config || {})) {
       this.yaml = safeDump(config);
@@ -208,6 +219,7 @@ export class HuiCardEditor extends LitElement {
     const config = ev.detail.config;
     this.value = config;
   }
+
   private _handleYAMLChanged(ev) {
     ev.stopPropagation();
     const newYaml = ev.detail.value;

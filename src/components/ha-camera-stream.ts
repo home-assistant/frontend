@@ -24,12 +24,17 @@ type HLSModule = typeof import("hls.js");
 @customElement("ha-camera-stream")
 class HaCameraStream extends LitElement {
   @property() public hass?: HomeAssistant;
+
   @property() public stateObj?: CameraEntity;
+
   @property({ type: Boolean }) public showControls = false;
+
   @property() private _attached = false;
+
   // We keep track if we should force MJPEG with a string
   // that way it automatically resets if we change entity.
   @property() private _forceMJPEG: string | undefined = undefined;
+
   private _hlsPolyfillInstance?: Hls;
 
   public connectedCallback() {
@@ -121,7 +126,7 @@ class HaCameraStream extends LitElement {
   }
 
   private async _startHls(): Promise<void> {
-    // tslint:disable-next-line
+    // eslint-disable-next-line
     const Hls = ((await import(
       /* webpackChunkName: "hls.js" */ "hls.js"
     )) as any).default as HLSModule;
@@ -152,7 +157,7 @@ class HaCameraStream extends LitElement {
       return;
     } catch (err) {
       // Fails if we were unable to get a stream
-      // tslint:disable-next-line
+      // eslint-disable-next-line
       console.error(err);
       this._forceMJPEG = this.stateObj!.entity_id;
     }
@@ -168,7 +173,7 @@ class HaCameraStream extends LitElement {
 
   private async _renderHLSPolyfill(
     videoEl: HTMLVideoElement,
-    // tslint:disable-next-line
+    // eslint-disable-next-line
     Hls: HLSModule,
     url: string
   ) {

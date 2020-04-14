@@ -34,11 +34,17 @@ const HAS_REFRESH_BUTTON = ["store", "snapshots"];
 @customElement("hassio-pages-with-tabs")
 class HassioPagesWithTabs extends LitElement {
   @property() public hass!: HomeAssistant;
+
   @property() public narrow!: boolean;
+
   @property() public route!: Route;
+
   @property() public supervisorInfo!: HassioSupervisorInfo;
+
   @property() public hostInfo!: HassioHostInfo;
+
   @property() public hassInfo!: HassioHomeAssistantInfo;
+
   @property() public hassOsInfo!: HassioHassOSInfo;
 
   protected render(): TemplateResult {

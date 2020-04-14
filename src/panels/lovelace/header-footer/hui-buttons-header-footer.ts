@@ -22,6 +22,7 @@ export class HuiButtonsHeaderFooter extends LitElement
   }
 
   @property() public hass?: HomeAssistant;
+
   private _configEntities?: EntityConfig[];
 
   public setConfig(config: ButtonsHeaderFooterConfig): void {

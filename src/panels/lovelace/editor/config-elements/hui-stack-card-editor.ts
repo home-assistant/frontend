@@ -32,11 +32,17 @@ const cardConfigStruct = struct({
 export class HuiStackCardEditor extends LitElement
   implements LovelaceCardEditor {
   @property() public hass?: HomeAssistant;
+
   @property() public lovelace?: LovelaceConfig;
+
   @property() private _config?: StackCardConfig;
-  @property() private _selectedCard: number = 0;
+
+  @property() private _selectedCard = 0;
+
   @property() private _GUImode = true;
+
   @property() private _guiModeAvailable? = true;
+
   @query("hui-card-editor") private _cardEditorEl?: HuiCardEditor;
 
   public setConfig(config: StackCardConfig): void {

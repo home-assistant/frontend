@@ -23,9 +23,12 @@ import { navigate } from "../../../common/navigate";
 @customElement("zha-node")
 export class ZHANode extends LitElement {
   @property() public hass?: HomeAssistant;
+
   @property() public isWide?: boolean;
+
   @property() public device?: ZHADevice;
-  @property() private _showHelp: boolean = false;
+
+  @property() private _showHelp = false;
 
   protected render(): TemplateResult {
     return html`

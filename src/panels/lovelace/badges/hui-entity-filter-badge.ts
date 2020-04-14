@@ -8,9 +8,13 @@ import { evaluateFilter } from "../common/evaluate-filter";
 
 class EntityFilterBadge extends HTMLElement implements LovelaceBadge {
   private _elements?: LovelaceBadge[];
+
   private _config?: EntityFilterBadgeConfig;
+
   private _configEntities?: EntityFilterEntityConfig[];
+
   private _hass?: HomeAssistant;
+
   private _oldEntities?: EntityFilterEntityConfig[];
 
   public setConfig(config: EntityFilterBadgeConfig): void {

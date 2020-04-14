@@ -2,21 +2,25 @@ import "../../../../../components/device/ha-device-picker";
 import "../../../../../components/device/ha-device-condition-picker";
 import "../../../../../components/ha-form/ha-form";
 
+import { LitElement, customElement, property, html } from "lit-element";
 import {
   fetchDeviceConditionCapabilities,
   deviceAutomationsEqual,
   DeviceCondition,
 } from "../../../../../data/device_automation";
-import { LitElement, customElement, property, html } from "lit-element";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import { HomeAssistant } from "../../../../../types";
 
 @customElement("ha-automation-condition-device")
 export class HaDeviceCondition extends LitElement {
   @property() public hass!: HomeAssistant;
+
   @property() public condition!: DeviceCondition;
+
   @property() private _deviceId?: string;
+
   @property() private _capabilities?;
+
   private _origCondition?: DeviceCondition;
 
   public static get defaultConfig() {

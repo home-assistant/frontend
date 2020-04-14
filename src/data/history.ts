@@ -1,6 +1,6 @@
+import { HassEntity } from "home-assistant-js-websocket";
 import { computeStateName } from "../common/entity/compute_state_name";
 import { computeStateDomain } from "../common/entity/compute_state_domain";
-import { HassEntity } from "home-assistant-js-websocket";
 import { HomeAssistant } from "../types";
 import { LocalizeFunc } from "../common/translations/localize";
 import { computeStateDisplay } from "../common/entity/compute_state_display";

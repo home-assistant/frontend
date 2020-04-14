@@ -15,16 +15,18 @@ import memoizeOne from "memoize-one";
 
 import "../../../src/components/buttons/ha-call-api-button";
 import "../components/hassio-card-content";
+import { repeat } from "lit-html/directives/repeat";
 import { hassioStyle } from "../resources/hassio-style";
 import { HomeAssistant } from "../../../src/types";
 import { HassioAddonRepository } from "../../../src/data/hassio/addon";
 import { PolymerChangedEvent } from "../../../src/polymer-types";
-import { repeat } from "lit-html/directives/repeat";
 
 @customElement("hassio-repositories-editor")
 class HassioRepositoriesEditor extends LitElement {
   @property() public hass!: HomeAssistant;
+
   @property() public repos!: HassioAddonRepository[];
+
   @property() private _repoUrl = "";
 
   private _sortedRepos = memoizeOne((repos: HassioAddonRepository[]) =>

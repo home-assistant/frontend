@@ -32,11 +32,9 @@ function findAvailableLanguage(language: string) {
     return LOCALE_LOOKUP[langLower];
   }
 
-  for (const lang in Object.keys(translationMetadata.translations)) {
-    if (lang.toLowerCase() === langLower) {
-      return lang;
-    }
-  }
+  return Object.keys(translationMetadata.translations).find(
+    (lang) => lang.toLowerCase() === langLower
+  );
 }
 
 /**

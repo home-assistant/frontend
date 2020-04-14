@@ -10,11 +10,10 @@ import "../../../../components/dialog/ha-paper-dialog";
 import { toggleAttribute } from "../../../../common/dom/toggle_attribute";
 import "../../components/hui-views-list";
 
-// tslint:disable-next-line:no-duplicate-imports
-import { HaPaperDialog } from "../../../../components/dialog/ha-paper-dialog";
+import type { HaPaperDialog } from "../../../../components/dialog/ha-paper-dialog";
 
-import { SelectViewDialogParams } from "./show-select-view-dialog";
-import { PolymerChangedEvent } from "../../../../polymer-types";
+import type { SelectViewDialogParams } from "./show-select-view-dialog";
+import type { PolymerChangedEvent } from "../../../../polymer-types";
 
 @customElement("hui-dialog-select-view")
 export class HuiDialogSelectView extends LitElement {

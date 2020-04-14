@@ -2,6 +2,7 @@ import "@polymer/paper-spinner/paper-spinner";
 import { timeOut } from "@polymer/polymer/lib/utils/async";
 import { Debouncer } from "@polymer/polymer/lib/utils/debounce";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
+/* eslint-plugin-disable lit */
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 import LocalizeMixin from "../../../mixins/localize-mixin";
 import "../../../components/ha-code-editor";
@@ -183,11 +184,11 @@ For loop example:
     this.rendering = true;
 
     this.hass.callApi("POST", "template", { template: this.template }).then(
-      function(processed) {
+      function (processed) {
         this.processed = processed;
         this.rendering = false;
       }.bind(this),
-      function(error) {
+      function (error) {
         this.processed =
           (error && error.body && error.body.message) ||
           this.hass.localize(

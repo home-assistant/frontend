@@ -20,7 +20,7 @@ import {
 
 export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
   class extends superClass {
-    // tslint:disable-next-line: variable-name
+    // eslint-disable-next-line: variable-name
     private __coreProgress?: string;
 
     protected firstUpdated(changedProps) {

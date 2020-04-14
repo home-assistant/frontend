@@ -29,27 +29,38 @@ import {
 } from "../../../data/zha";
 import "./zha-clusters-data-table";
 import { haStyle } from "../../../resources/styles";
-import { HomeAssistant } from "../../../types";
+import type { HomeAssistant } from "../../../types";
 import { ItemSelectedEvent } from "./types";
 import "@polymer/paper-item/paper-item";
 import { SelectionChangedEvent } from "../../../components/data-table/ha-data-table";
-import { HASSDomEvent } from "../../../common/dom/fire_event";
-// tslint:disable-next-line: no-duplicate-imports
-import { ZHAClustersDataTable } from "./zha-clusters-data-table";
+import type { HASSDomEvent } from "../../../common/dom/fire_event";
+
+import type { ZHAClustersDataTable } from "./zha-clusters-data-table";
 
 @customElement("zha-group-binding-control")
 export class ZHAGroupBindingControl extends LitElement {
   @property() public hass?: HomeAssistant;
+
   @property() public isWide?: boolean;
+
   @property() public narrow?: boolean;
+
   @property() public selectedDevice?: ZHADevice;
-  @property() private _showHelp: boolean = false;
-  @property() private _bindTargetIndex: number = -1;
+
+  @property() private _showHelp = false;
+
+  @property() private _bindTargetIndex = -1;
+
   @property() private groups: ZHAGroup[] = [];
+
   @property() private _selectedClusters: string[] = [];
+
   @property() private _clusters: Cluster[] = [];
+
   private _groupToBind?: ZHAGroup;
+
   private _clustersToBind?: Cluster[];
+
   @query("zha-clusters-data-table")
   private _zhaClustersDataTable!: ZHAClustersDataTable;
 
@@ -99,9 +110,7 @@ export class ZHAGroupBindingControl extends LitElement {
                 @iron-select="${this._bindTargetIndexChanged}"
               >
                 ${this.groups.map(
-                  (group) => html`
-                    <paper-item>${group.name}</paper-item>
-                  `
+                  (group) => html` <paper-item>${group.name}</paper-item> `
                 )}
               </paper-listbox>
             </paper-dropdown-menu>

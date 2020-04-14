@@ -14,6 +14,7 @@ import "../../../components/ha-attributes";
 @customElement("more-info-default")
 class MoreInfoDefault extends LitElement {
   @property() public hass!: HomeAssistant;
+
   @property() public stateObj?: HassEntity;
 
   protected render(): TemplateResult {
@@ -21,9 +22,7 @@ class MoreInfoDefault extends LitElement {
       return html``;
     }
 
-    return html`
-      <ha-attributes .stateObj=${this.stateObj}></ha-attributes>
-    `;
+    return html` <ha-attributes .stateObj=${this.stateObj}></ha-attributes> `;
   }
 }
 

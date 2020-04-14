@@ -7,6 +7,7 @@ import { TemplateCondition } from "../../../../../data/automation";
 @customElement("ha-automation-condition-template")
 export class HaTemplateCondition extends LitElement {
   @property() public hass!: HomeAssistant;
+
   @property() public condition!: TemplateCondition;
 
   public static get defaultConfig() {

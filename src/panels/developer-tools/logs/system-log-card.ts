@@ -27,7 +27,9 @@ import { domainToName } from "../../../data/integration";
 @customElement("system-log-card")
 export class SystemLogCard extends LitElement {
   @property() public hass!: HomeAssistant;
+
   public loaded = false;
+
   @property() private _items?: LoggedError[];
 
   public async fetchData(): Promise<void> {

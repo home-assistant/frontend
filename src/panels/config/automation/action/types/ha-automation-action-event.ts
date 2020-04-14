@@ -10,18 +10,20 @@ import {
   PropertyValues,
   query,
 } from "lit-element";
-import { ActionElement, handleChangeEvent } from "../ha-automation-action-row";
-import { HomeAssistant } from "../../../../../types";
 import { html } from "lit-html";
-import { EventAction } from "../../../../../data/script";
-// tslint:disable-next-line
-import { HaYamlEditor } from "../../../../../components/ha-yaml-editor";
+import { ActionElement, handleChangeEvent } from "../ha-automation-action-row";
+import type { HomeAssistant } from "../../../../../types";
+import type { EventAction } from "../../../../../data/script";
+import type { HaYamlEditor } from "../../../../../components/ha-yaml-editor";
 
 @customElement("ha-automation-action-event")
 export class HaEventAction extends LitElement implements ActionElement {
   @property() public hass!: HomeAssistant;
+
   @property() public action!: EventAction;
+
   @query("ha-yaml-editor") private _yamlEditor?: HaYamlEditor;
+
   private _actionData?: EventAction["event_data"];
 
   public static get defaultConfig(): EventAction {

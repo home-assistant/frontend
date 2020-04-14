@@ -16,6 +16,7 @@ import "../../../components/ha-paper-dropdown-menu";
 import "../../../components/entity/state-badge";
 import "../components/hui-warning";
 
+import { classMap } from "lit-html/directives/class-map";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 
 import { HomeAssistant, InputSelectEntity } from "../../../types";
@@ -24,7 +25,6 @@ import { setInputSelectOption } from "../../../data/input_select";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
 import { forwardHaptic } from "../../../data/haptics";
 import { stopPropagation } from "../../../common/dom/stop_propagation";
-import { classMap } from "lit-html/directives/class-map";
 import { DOMAINS_HIDE_MORE_INFO } from "../../../common/const";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { EntitiesCardEntityConfig } from "../cards/types";
@@ -104,9 +104,7 @@ class HuiInputSelectEntityRow extends LitElement implements LovelaceRow {
         <paper-listbox slot="dropdown-content">
           ${stateObj.attributes.options
             ? stateObj.attributes.options.map(
-                (option) => html`
-                  <paper-item>${option}</paper-item>
-                `
+                (option) => html` <paper-item>${option}</paper-item> `
               )
             : ""}
         </paper-listbox>

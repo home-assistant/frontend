@@ -63,9 +63,13 @@ const nonPreviewCards: string[] = [
 @customElement("hui-card-picker")
 export class HuiCardPicker extends LitElement {
   @property() public hass?: HomeAssistant;
+
   public lovelace?: LovelaceConfig;
+
   public cardPicked?: (cardConf: LovelaceCardConfig) => void;
+
   private _unusedEntities?: string[];
+
   private _usedEntities?: string[];
 
   protected render(): TemplateResult {
@@ -278,8 +282,8 @@ export class HuiCardPicker extends LitElement {
 
   private async _renderCardElement(
     type: string,
-    noElement: boolean = false,
-    isCustom: boolean = false
+    noElement = false,
+    isCustom = false
   ): Promise<TemplateResult> {
     const customCard = isCustom ? getCustomCardEntry(type) : undefined;
     if (isCustom) {

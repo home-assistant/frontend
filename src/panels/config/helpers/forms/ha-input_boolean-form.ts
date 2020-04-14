@@ -20,9 +20,13 @@ import { haStyle } from "../../../../resources/styles";
 @customElement("ha-input_boolean-form")
 class HaInputBooleanForm extends LitElement {
   @property() public hass!: HomeAssistant;
+
   @property() public new?: boolean;
+
   private _item?: InputBoolean;
+
   @property() private _name!: string;
+
   @property() private _icon!: string;
 
   set item(item: InputBoolean) {

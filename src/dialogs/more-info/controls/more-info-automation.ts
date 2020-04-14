@@ -18,6 +18,7 @@ import { triggerAutomation } from "../../../data/automation";
 @customElement("more-info-automation")
 class MoreInfoAutomation extends LitElement {
   @property() public hass!: HomeAssistant;
+
   @property() public stateObj?: HassEntity;
 
   protected render(): TemplateResult {

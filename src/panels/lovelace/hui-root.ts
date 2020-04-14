@@ -27,22 +27,19 @@ import "../../components/ha-paper-icon-button-arrow-next";
 import "../../components/ha-paper-icon-button-arrow-prev";
 import "../../components/ha-icon";
 import { debounce } from "../../common/util/debounce";
-import { HomeAssistant } from "../../types";
-import { LovelaceConfig, LovelacePanelConfig } from "../../data/lovelace";
+import type { HomeAssistant } from "../../types";
+import type { LovelaceConfig, LovelacePanelConfig } from "../../data/lovelace";
 import { navigate } from "../../common/navigate";
 import { fireEvent } from "../../common/dom/fire_event";
 import { swapView } from "./editor/config-util";
 
-import "./views/hui-view";
-// Not a duplicate import, this one is for type
-// tslint:disable-next-line
 import { HUIView } from "./views/hui-view";
+
 import "./views/hui-panel-view";
-// tslint:disable-next-line
-import { HUIPanelView } from "./views/hui-panel-view";
+import type { HUIPanelView } from "./views/hui-panel-view";
 import { showEditViewDialog } from "./editor/view-editor/show-edit-view-dialog";
 import { showEditLovelaceDialog } from "./editor/lovelace-editor/show-edit-lovelace-dialog";
-import { Lovelace } from "./types";
+import type { Lovelace } from "./types";
 import { afterNextRender } from "../../common/util/render-status";
 import { haStyle } from "../../resources/styles";
 import { computeRTLDirection } from "../../common/util/compute_rtl";
@@ -56,11 +53,17 @@ import memoizeOne from "memoize-one";
 
 class HUIRoot extends LitElement {
   @property() public hass!: HomeAssistant;
+
   @property() public lovelace?: Lovelace;
+
   @property() public columns?: number;
+
   @property() public narrow?: boolean;
+
   @property() public route?: { path: string; prefix: string };
+
   @property() private _curView?: number | "hass-unused-entities";
+
   private _viewCache?: { [viewId: string]: HUIView };
 
   private _debouncedConfigChanged: () => void;
@@ -102,7 +105,7 @@ class HUIRoot extends LitElement {
                   ></paper-icon-button>
                   <div main-title>
                     ${this.config.title ||
-                      this.hass!.localize("ui.panel.lovelace.editor.header")}
+                    this.hass!.localize("ui.panel.lovelace.editor.header")}
                     <paper-icon-button
                       aria-label="${this.hass!.localize(
                         "ui.panel.lovelace.editor.edit_lovelace.edit_title"
@@ -331,7 +334,7 @@ class HUIRoot extends LitElement {
                                   @click="${this._moveViewRight}"
                                   ?disabled="${(this._curView! as number) +
                                     1 ===
-                                    this.lovelace!.config.views.length}"
+                                  this.lovelace!.config.views.length}"
                                 ></ha-paper-icon-button-arrow-next>
                               `
                             : ""}

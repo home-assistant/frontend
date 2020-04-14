@@ -26,9 +26,13 @@ import { haStyleDialog } from "../../../../resources/styles";
 @customElement("dialog-device-automation")
 export class DialogDeviceAutomation extends LitElement {
   @property() public hass!: HomeAssistant;
+
   @property() private _triggers: DeviceTrigger[] = [];
+
   @property() private _conditions: DeviceCondition[] = [];
+
   @property() private _actions: DeviceAction[] = [];
+
   @property() private _params?: DeviceAutomationDialogParams;
 
   public async showDialog(params: DeviceAutomationDialogParams): Promise<void> {
@@ -53,18 +57,18 @@ export class DialogDeviceAutomation extends LitElement {
 
     const { deviceId, script } = this._params;
 
-    fetchDeviceActions(this.hass, deviceId).then(
-      (actions) => (this._actions = actions)
-    );
+    fetchDeviceActions(this.hass, deviceId).then((actions) => {
+      this._actions = actions;
+    });
     if (script) {
       return;
     }
-    fetchDeviceTriggers(this.hass, deviceId).then(
-      (triggers) => (this._triggers = triggers)
-    );
-    fetchDeviceConditions(this.hass, deviceId).then(
-      (conditions) => (this._conditions = conditions)
-    );
+    fetchDeviceTriggers(this.hass, deviceId).then((triggers) => {
+      this._triggers = triggers;
+    });
+    fetchDeviceConditions(this.hass, deviceId).then((conditions) => {
+      this._conditions = conditions;
+    });
   }
 
   protected render(): TemplateResult | void {

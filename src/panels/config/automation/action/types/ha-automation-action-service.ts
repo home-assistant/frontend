@@ -10,23 +10,25 @@ import {
   PropertyValues,
   query,
 } from "lit-element";
-import { ActionElement, handleChangeEvent } from "../ha-automation-action-row";
-import { HomeAssistant } from "../../../../../types";
 import { html } from "lit-html";
 import memoizeOne from "memoize-one";
+import { ActionElement, handleChangeEvent } from "../ha-automation-action-row";
+import type { HomeAssistant } from "../../../../../types";
 import { computeDomain } from "../../../../../common/entity/compute_domain";
 import { computeObjectId } from "../../../../../common/entity/compute_object_id";
-import { PolymerChangedEvent } from "../../../../../polymer-types";
+import type { PolymerChangedEvent } from "../../../../../polymer-types";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import { ServiceAction } from "../../../../../data/script";
-// tslint:disable-next-line
-import { HaYamlEditor } from "../../../../../components/ha-yaml-editor";
+import type { HaYamlEditor } from "../../../../../components/ha-yaml-editor";
 
 @customElement("ha-automation-action-service")
 export class HaServiceAction extends LitElement implements ActionElement {
   @property() public hass!: HomeAssistant;
+
   @property() public action!: ServiceAction;
+
   @query("ha-yaml-editor") private _yamlEditor?: HaYamlEditor;
+
   private _actionData?: ServiceAction["data"];
 
   public static get defaultConfig() {

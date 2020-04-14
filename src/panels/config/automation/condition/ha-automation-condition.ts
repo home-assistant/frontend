@@ -20,6 +20,7 @@ import { Condition } from "../../../../data/automation";
 @customElement("ha-automation-condition")
 export default class HaAutomationCondition extends LitElement {
   @property() public hass!: HomeAssistant;
+
   @property() public conditions!: Condition[];
 
   protected render() {

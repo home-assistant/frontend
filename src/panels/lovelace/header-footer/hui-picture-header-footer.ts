@@ -10,14 +10,14 @@ import {
 
 import "../../../components/ha-card";
 
+import { classMap } from "lit-html/directives/class-map";
+import { ifDefined } from "lit-html/directives/if-defined";
 import { LovelaceHeaderFooter } from "../types";
 import { HomeAssistant } from "../../../types";
-import { classMap } from "lit-html/directives/class-map";
 import { actionHandler } from "../common/directives/action-handler-directive";
 import { hasAction } from "../common/has-action";
 import { ActionHandlerEvent } from "../../../data/lovelace";
 import { handleAction } from "../common/handle-action";
-import { ifDefined } from "lit-html/directives/if-defined";
 import { PictureHeaderFooterConfig } from "./types";
 
 @customElement("hui-picture-header-footer")
@@ -64,7 +64,6 @@ export class HuiPictureHeaderFooter extends LitElement
         class="${classMap({
           clickable,
         })}"
-        <img
         src="${this.hass.hassUrl(this._config.image)}"
       />
     `;

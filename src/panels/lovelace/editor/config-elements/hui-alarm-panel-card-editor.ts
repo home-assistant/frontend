@@ -78,7 +78,7 @@ export class HuiAlarmPanelCardEditor extends LitElement
           .hass=${this.hass}
           .value="${this._entity}"
           .configValue=${"entity"}
-          include-domains='["alarm_control_panel"]'
+          .include-domains=${["alarm_control_panel"]}
           @change="${this._valueChanged}"
           allow-custom-entity
         ></ha-entity-picker>
@@ -113,9 +113,7 @@ export class HuiAlarmPanelCardEditor extends LitElement
         >
           <paper-listbox slot="dropdown-content">
             ${states.map((state) => {
-              return html`
-                <paper-item>${state}</paper-item>
-              `;
+              return html` <paper-item>${state}</paper-item> `;
             })}
           </paper-listbox>
         </paper-dropdown-menu>

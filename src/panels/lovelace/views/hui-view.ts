@@ -9,6 +9,7 @@ import {
 import "../../../components/entity/ha-state-label-badge";
 // This one is for types
 
+import { classMap } from "lit-html/directives/class-map";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 
 import {
@@ -17,7 +18,6 @@ import {
   LovelaceBadgeConfig,
 } from "../../../data/lovelace";
 import { HomeAssistant } from "../../../types";
-import { classMap } from "lit-html/directives/class-map";
 import { Lovelace, LovelaceCard, LovelaceBadge } from "../types";
 import { createCardElement } from "../create-element/create-card-element";
 import { computeCardSize } from "../common/compute-card-size";
@@ -49,10 +49,15 @@ const getColumnIndex = (columnEntityCount: number[], size: number) => {
 
 export class HUIView extends LitElement {
   @property() public hass?: HomeAssistant;
+
   @property() public lovelace?: Lovelace;
+
   @property({ type: Number }) public columns?: number;
+
   @property({ type: Number }) public index?: number;
+
   @property() private _cards: Array<LovelaceCard | HuiErrorCard> = [];
+
   @property() private _badges: LovelaceBadge[] = [];
 
   // Public to make demo happy
@@ -265,12 +270,12 @@ export class HUIView extends LitElement {
 
     const elements: HUIView["_badges"] = [];
     const badges = processConfigEntities(config.badges as any);
-    for (const badge of badges) {
+    badges.forEach((badge) => {
       const element = createBadgeElement(badge);
       element.hass = this.hass;
       elements.push(element);
       root.appendChild(element);
-    }
+    });
     this._badges = elements;
     root.style.display = elements.length > 0 ? "block" : "none";
   }

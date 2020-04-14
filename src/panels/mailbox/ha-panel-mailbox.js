@@ -8,6 +8,7 @@ import "@polymer/paper-item/paper-item";
 import "@polymer/paper-tabs/paper-tab";
 import "@polymer/paper-tabs/paper-tabs";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
+/* eslint-plugin-disable lit */
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 
 import "../../components/ha-menu-button";
@@ -166,12 +167,12 @@ class HaPanelMailbox extends EventsMixin(LocalizeMixin(PolymerElement)) {
     this.hass.connection
       .subscribeEvents(this.hassChanged, "mailbox_updated")
       .then(
-        function(unsub) {
+        function (unsub) {
           this._unsubEvents = unsub;
         }.bind(this)
       );
     this.computePlatforms().then(
-      function(platforms) {
+      function (platforms) {
         this.platforms = platforms;
         this.hassChanged();
       }.bind(this)
@@ -188,7 +189,7 @@ class HaPanelMailbox extends EventsMixin(LocalizeMixin(PolymerElement)) {
       this._messages = [];
     }
     this.getMessages().then(
-      function(items) {
+      function (items) {
         this._messages = items;
       }.bind(this)
     );
@@ -222,7 +223,7 @@ class HaPanelMailbox extends EventsMixin(LocalizeMixin(PolymerElement)) {
             platform: platform,
           });
         }
-        return platformItems.sort(function(a, b) {
+        return platformItems.sort(function (a, b) {
           return new Date(b.timestamp) - new Date(a.timestamp);
         });
       });

@@ -18,9 +18,13 @@ import { showManageCloudhookDialog } from "../dialog-manage-cloudhook/show-dialo
 
 export class CloudWebhooks extends LitElement {
   @property() public hass?: HomeAssistant;
+
   @property() public cloudStatus?: CloudStatusLoggedIn;
+
   @property() private _cloudHooks?: { [webhookId: string]: CloudWebhook };
+
   @property() private _localHooks?: Webhook[];
+
   @property() private _progress: string[];
 
   constructor() {
@@ -128,9 +132,7 @@ export class CloudWebhooks extends LitElement {
                   )}
                 </mwc-button>
               `
-            : html`
-                <ha-switch @click="${this._enableWebhook}"></ha-switch>
-              `}
+            : html` <ha-switch @click="${this._enableWebhook}"></ha-switch> `}
         </div>
       `
     );

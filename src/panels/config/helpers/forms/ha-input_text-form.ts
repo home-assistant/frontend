@@ -20,13 +20,21 @@ import { haStyle } from "../../../../resources/styles";
 @customElement("ha-input_text-form")
 class HaInputTextForm extends LitElement {
   @property() public hass!: HomeAssistant;
+
   @property() public new?: boolean;
+
   private _item?: InputText;
+
   @property() private _name!: string;
+
   @property() private _icon!: string;
+
   @property() private _max?: number;
+
   @property() private _min?: number;
+
   @property() private _mode?: string;
+
   @property() private _pattern?: string;
 
   set item(item: InputText) {

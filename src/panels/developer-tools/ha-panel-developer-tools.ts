@@ -27,7 +27,9 @@ import { isComponentLoaded } from "../../common/config/is_component_loaded";
 @customElement("ha-panel-developer-tools")
 class PanelDeveloperTools extends LitElement {
   @property() public hass!: HomeAssistant;
+
   @property() public route!: Route;
+
   @property() public narrow!: boolean;
 
   protected render(): TemplateResult {

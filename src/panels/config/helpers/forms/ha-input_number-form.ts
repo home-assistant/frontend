@@ -20,15 +20,24 @@ import { InputNumber } from "../../../../data/input_number";
 @customElement("ha-input_number-form")
 class HaInputNumberForm extends LitElement {
   @property() public hass!: HomeAssistant;
+
   @property() public new?: boolean;
+
   private _item?: Partial<InputNumber>;
+
   @property() private _name!: string;
+
   @property() private _icon!: string;
+
   @property() private _max?: number;
+
   @property() private _min?: number;
+
   @property() private _mode?: string;
+
   @property() private _step?: number;
-  // tslint:disable-next-line: variable-name
+
+  // eslint-disable-next-line: variable-name
   @property() private _unit_of_measurement?: string;
 
   set item(item: InputNumber) {

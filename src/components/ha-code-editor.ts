@@ -1,5 +1,3 @@
-import { loadCodeMirror } from "../resources/codemirror.ondemand";
-import { fireEvent } from "../common/dom/fire_event";
 import {
   UpdatingElement,
   property,
@@ -7,6 +5,8 @@ import {
   PropertyValues,
 } from "lit-element";
 import { Editor } from "codemirror";
+import { loadCodeMirror } from "../resources/codemirror.ondemand";
+import { fireEvent } from "../common/dom/fire_event";
 
 declare global {
   interface HASSDomEvents {
@@ -17,10 +17,15 @@ declare global {
 @customElement("ha-code-editor")
 export class HaCodeEditor extends UpdatingElement {
   public codemirror?: Editor;
+
   @property() public mode?: string;
+
   @property() public autofocus = false;
+
   @property() public rtl = false;
+
   @property() public error = false;
+
   @property() private _value = "";
 
   public set value(value: string) {
@@ -32,7 +37,7 @@ export class HaCodeEditor extends UpdatingElement {
   }
 
   public get hasComments(): boolean {
-    return this.shadowRoot!.querySelector("span.cm-comment") ? true : false;
+    return !!this.shadowRoot!.querySelector("span.cm-comment");
   }
 
   public connectedCallback() {

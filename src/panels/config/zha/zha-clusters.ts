@@ -35,10 +35,15 @@ declare global {
 
 export class ZHAClusters extends LitElement {
   @property() public hass?: HomeAssistant;
+
   @property() public isWide?: boolean;
+
   @property() public selectedDevice?: ZHADevice;
+
   @property() public showHelp = false;
+
   @property() private _selectedClusterIndex = -1;
+
   @property() private _clusters: Cluster[] = [];
 
   protected updated(changedProperties: PropertyValues): void {

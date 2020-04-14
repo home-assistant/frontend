@@ -16,7 +16,10 @@ import "@polymer/paper-tooltip/paper-tooltip";
 
 import "../../../components/map/ha-locations-editor";
 
-import { HomeAssistant, Route } from "../../../types";
+import { HassEntity, UnsubscribeFunc } from "home-assistant-js-websocket";
+import memoizeOne from "memoize-one";
+import { ifDefined } from "lit-html/directives/if-defined";
+import type { HomeAssistant, Route } from "../../../types";
 import "../../../components/ha-card";
 import "../../../components/ha-fab";
 import "../../../layouts/hass-tabs-subpage";
@@ -35,33 +38,38 @@ import {
   passiveRadiusColor,
   defaultRadiusColor,
 } from "../../../data/zone";
-// tslint:disable-next-line
-import {
+import type {
   HaLocationsEditor,
   MarkerLocation,
 } from "../../../components/map/ha-locations-editor";
 import { computeStateDomain } from "../../../common/entity/compute_state_domain";
-import { HassEntity, UnsubscribeFunc } from "home-assistant-js-websocket";
-import memoizeOne from "memoize-one";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { subscribeEntityRegistry } from "../../../data/entity_registry";
 import { configSections } from "../ha-panel-config";
 import { navigate } from "../../../common/navigate";
 import { saveCoreConfig } from "../../../data/core";
-import { ifDefined } from "lit-html/directives/if-defined";
 import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
 
 @customElement("ha-config-zone")
 export class HaConfigZone extends SubscribeMixin(LitElement) {
   @property() public hass!: HomeAssistant;
+
   @property() public isWide?: boolean;
+
   @property() public narrow?: boolean;
+
   @property() public route!: Route;
+
   @property() private _storageItems?: Zone[];
+
   @property() private _stateItems?: HassEntity[];
-  @property() private _activeEntry: string = "";
+
+  @property() private _activeEntry = "";
+
   @property() private _canEditCore = false;
+
   @query("ha-locations-editor") private _map?: HaLocationsEditor;
+
   private _regEntities: string[] = [];
 
   private _getZones = memoizeOne(
@@ -114,9 +122,7 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
       this._storageItems === undefined ||
       this._stateItems === undefined
     ) {
-      return html`
-        <hass-loading-screen></hass-loading-screen>
-      `;
+      return html` <hass-loading-screen></hass-loading-screen> `;
     }
     const hass = this.hass;
     const listBox =
@@ -406,7 +412,7 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
   private async _updateEntry(
     entry: Zone,
     values: Partial<ZoneMutableParams>,
-    fitMap: boolean = false
+    fitMap = false
   ) {
     const updated = await updateZone(this.hass!, entry!.id, values);
     this._storageItems = this._storageItems!.map((ent) =>

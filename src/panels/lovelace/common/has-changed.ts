@@ -1,5 +1,5 @@
-import { HomeAssistant } from "../../../types";
 import { PropertyValues } from "lit-element";
+import { HomeAssistant } from "../../../types";
 
 // Check if config or Entity changed
 export function hasConfigOrEntityChanged(

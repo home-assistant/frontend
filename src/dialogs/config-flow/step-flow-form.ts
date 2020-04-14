@@ -15,13 +15,12 @@ import "@polymer/paper-spinner/paper-spinner";
 import "../../components/ha-form/ha-form";
 import "../../components/ha-markdown";
 import "../../resources/ha-style";
-import { HomeAssistant } from "../../types";
+import type { HomeAssistant } from "../../types";
 import { fireEvent } from "../../common/dom/fire_event";
 import { configFlowContentStyles } from "./styles";
-import { DataEntryFlowStepForm } from "../../data/data_entry_flow";
-import { FlowConfig } from "./show-dialog-data-entry-flow";
-// tslint:disable-next-line
-import { HaFormSchema } from "../../components/ha-form/ha-form";
+import type { DataEntryFlowStepForm } from "../../data/data_entry_flow";
+import type { FlowConfig } from "./show-dialog-data-entry-flow";
+import type { HaFormSchema } from "../../components/ha-form/ha-form";
 
 @customElement("step-flow-form")
 class StepFlowForm extends LitElement {
@@ -63,9 +62,7 @@ class StepFlowForm extends LitElement {
       </h2>
       <div class="content">
         ${this._errorMsg
-          ? html`
-              <div class="error">${this._errorMsg}</div>
-            `
+          ? html` <div class="error">${this._errorMsg}</div> `
           : ""}
         ${this.flowConfig.renderShowFormStepDescription(this.hass, this.step)}
         <ha-form

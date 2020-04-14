@@ -1,8 +1,8 @@
+import { property, customElement } from "lit-element";
 import {
   HassRouterPage,
   RouterOptions,
 } from "../../../layouts/hass-router-page";
-import { property, customElement } from "lit-element";
 import { HomeAssistant } from "../../../types";
 
 export const lovelaceTabs = [
@@ -24,7 +24,9 @@ export const lovelaceTabs = [
 @customElement("ha-config-lovelace")
 class HaConfigLovelace extends HassRouterPage {
   @property() public hass!: HomeAssistant;
+
   @property() public narrow!: boolean;
+
   @property() public isWide!: boolean;
 
   protected routerOptions: RouterOptions = {

@@ -28,16 +28,24 @@ import { defaultRadiusColor } from "../../data/zone";
 @customElement("ha-location-editor")
 class LocationEditor extends LitElement {
   @property() public location?: [number, number];
+
   @property() public radius?: number;
+
   @property() public radiusColor?: string;
+
   @property() public icon?: string;
+
   public fitZoom = 16;
+
   private _iconEl?: DivIcon;
+
   private _ignoreFitToMap?: [number, number];
 
-  // tslint:disable-next-line
+  // eslint-disable-next-line
   private Leaflet?: LeafletModuleType;
+
   private _leafletMap?: Map;
+
   private _locationMarker?: Marker | Circle;
 
   public fitMap(): void {
@@ -53,9 +61,7 @@ class LocationEditor extends LitElement {
   }
 
   protected render(): TemplateResult {
-    return html`
-      <div id="map"></div>
-    `;
+    return html` <div id="map"></div> `;
   }
 
   protected firstUpdated(changedProps: PropertyValues): void {

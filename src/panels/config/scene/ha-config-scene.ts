@@ -1,23 +1,27 @@
 import "./ha-scene-editor";
 import "./ha-scene-dashboard";
 
+import { property, customElement, PropertyValues } from "lit-element";
+import memoizeOne from "memoize-one";
+import { HassEntities } from "home-assistant-js-websocket";
 import {
   HassRouterPage,
   RouterOptions,
 } from "../../../layouts/hass-router-page";
-import { property, customElement, PropertyValues } from "lit-element";
 import { HomeAssistant } from "../../../types";
 import { computeStateDomain } from "../../../common/entity/compute_state_domain";
 import { SceneEntity } from "../../../data/scene";
-import memoizeOne from "memoize-one";
-import { HassEntities } from "home-assistant-js-websocket";
 
 @customElement("ha-config-scene")
 class HaConfigScene extends HassRouterPage {
   @property() public hass!: HomeAssistant;
+
   @property() public narrow!: boolean;
+
   @property() public isWide!: boolean;
+
   @property() public showAdvanced!: boolean;
+
   @property() public scenes: SceneEntity[] = [];
 
   protected routerOptions: RouterOptions = {
@@ -61,7 +65,7 @@ class HaConfigScene extends HassRouterPage {
     ) {
       pageEl.creatingNew = undefined;
       const sceneId = this.routeTail.path.substr(1);
-      pageEl.creatingNew = sceneId === "new" ? true : false;
+      pageEl.creatingNew = sceneId === "new";
       pageEl.scene =
         sceneId === "new"
           ? undefined

@@ -1,4 +1,5 @@
 import { html } from "@polymer/polymer/lib/utils/html-tag";
+/* eslint-plugin-disable lit */
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 
 import "../components/entity/state-badge";
@@ -31,9 +32,7 @@ class StateCardWeblink extends PolymerElement {
   }
 
   static get stateBadgeTemplate() {
-    return html`
-      <state-badge state-obj="[[stateObj]]"></state-badge>
-    `;
+    return html` <state-badge state-obj="[[stateObj]]"></state-badge> `;
   }
 
   static get properties() {

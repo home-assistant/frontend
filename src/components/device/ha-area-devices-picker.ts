@@ -87,10 +87,15 @@ const rowRenderer = (
 @customElement("ha-area-devices-picker")
 export class HaAreaDevicesPicker extends SubscribeMixin(LitElement) {
   @property() public hass!: HomeAssistant;
+
   @property() public label?: string;
+
   @property() public value?: string;
+
   @property() public area?: string;
+
   @property() public devices?: string[];
+
   /**
    * Show only devices with entities from specific domains.
    * @type {Array}
@@ -98,6 +103,7 @@ export class HaAreaDevicesPicker extends SubscribeMixin(LitElement) {
    */
   @property({ type: Array, attribute: "include-domains" })
   public includeDomains?: string[];
+
   /**
    * Show no devices with entities of these domains.
    * @type {Array}
@@ -105,6 +111,7 @@ export class HaAreaDevicesPicker extends SubscribeMixin(LitElement) {
    */
   @property({ type: Array, attribute: "exclude-domains" })
   public excludeDomains?: string[];
+
   /**
    * Show only deviced with entities of these device classes.
    * @type {Array}
@@ -112,13 +119,20 @@ export class HaAreaDevicesPicker extends SubscribeMixin(LitElement) {
    */
   @property({ type: Array, attribute: "include-device-classes" })
   public includeDeviceClasses?: string[];
+
   @property({ type: Boolean })
   private _opened?: boolean;
+
   @property() private _areaPicker = true;
+
   @property() private _devices?: DeviceRegistryEntry[];
+
   @property() private _areas?: AreaRegistryEntry[];
+
   @property() private _entities?: EntityRegistryEntry[];
+
   private _selectedDevices: string[] = [];
+
   private _filteredDevices: DeviceRegistryEntry[] = [];
 
   private _getDevices = memoizeOne(

@@ -11,6 +11,7 @@ import { NumericStateTrigger, ForDict } from "../../../../../data/automation";
 @customElement("ha-automation-trigger-numeric_state")
 export default class HaNumericStateTrigger extends LitElement {
   @property() public hass!: HomeAssistant;
+
   @property() public trigger!: NumericStateTrigger;
 
   public static get defaultConfig() {

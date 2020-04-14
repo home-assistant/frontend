@@ -1,5 +1,6 @@
 import { dom } from "@polymer/polymer/lib/legacy/polymer.dom";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
+/* eslint-plugin-disable lit */
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 
 import "../../../state-summary/state-card-content";

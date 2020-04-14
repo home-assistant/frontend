@@ -25,6 +25,7 @@ import { handleAction } from "../common/handle-action";
 @customElement("hui-state-label-element")
 class HuiStateLabelElement extends LitElement implements LovelaceElement {
   @property() public hass?: HomeAssistant;
+
   @property() private _config?: StateLabelElementConfig;
 
   public setConfig(config: StateLabelElementConfig): void {

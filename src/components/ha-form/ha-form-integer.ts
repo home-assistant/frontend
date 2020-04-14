@@ -1,34 +1,36 @@
+import "@polymer/paper-input/paper-input";
+import "@polymer/paper-slider/paper-slider";
+import type { PaperInputElement } from "@polymer/paper-input/paper-input";
+import type { PaperSliderElement } from "@polymer/paper-slider/paper-slider";
 import {
-  customElement,
-  LitElement,
-  html,
-  property,
-  TemplateResult,
-  query,
-  CSSResult,
   css,
+  CSSResult,
+  customElement,
+  html,
+  LitElement,
+  property,
+  query,
+  TemplateResult,
 } from "lit-element";
+import { fireEvent } from "../../common/dom/fire_event";
+import { HaCheckbox } from "../ha-checkbox";
+import "../ha-paper-slider";
 import {
   HaFormElement,
   HaFormIntegerData,
   HaFormIntegerSchema,
 } from "./ha-form";
-import { fireEvent } from "../../common/dom/fire_event";
-
-import "../ha-paper-slider";
-import "@polymer/paper-input/paper-input";
-// Not duplicate, is for typing
-// tslint:disable-next-line
-import { PaperInputElement } from "@polymer/paper-input/paper-input";
-import { PaperSliderElement } from "@polymer/paper-slider/paper-slider";
-import { HaCheckbox } from "../ha-checkbox";
 
 @customElement("ha-form-integer")
 export class HaFormInteger extends LitElement implements HaFormElement {
   @property() public schema!: HaFormIntegerSchema;
+
   @property() public data?: HaFormIntegerData;
+
   @property() public label?: string;
+
   @property() public suffix?: string;
+
   @query("paper-input ha-paper-slider") private _input?: HTMLElement;
 
   public focus() {

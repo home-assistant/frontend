@@ -15,14 +15,15 @@ import "../../../components/ha-icon-next";
 import "../../../layouts/hass-subpage";
 import "../ha-config-section";
 
-import { haStyle } from "../../../resources/styles";
-import { HomeAssistant, Route } from "../../../types";
-import { fetchDevices, ZHADevice } from "../../../data/zha";
-import { sortZHADevices, formatAsPaddedHex } from "./functions";
 import memoizeOne from "memoize-one";
+import { haStyle } from "../../../resources/styles";
+import type { HomeAssistant, Route } from "../../../types";
+import { fetchDevices } from "../../../data/zha";
+import type { ZHADevice } from "../../../data/zha";
+import { sortZHADevices, formatAsPaddedHex } from "./functions";
 import "../../../components/data-table/ha-data-table";
-// tslint:disable-next-line: no-duplicate-imports
-import {
+
+import type {
   DataTableColumnContainer,
   RowClickedEvent,
 } from "../../../components/data-table/ha-data-table";
@@ -35,12 +36,18 @@ export interface DeviceRowData extends ZHADevice {
 @customElement("zha-config-dashboard")
 class ZHAConfigDashboard extends LitElement {
   @property() public hass!: HomeAssistant;
+
   @property() public route!: Route;
+
   @property() public narrow!: boolean;
+
   @property() public isWide!: boolean;
+
   @property() private _devices: ZHADevice[] = [];
+
   private pages: string[] = ["add", "groups"];
-  private _firstUpdatedCalled: boolean = false;
+
+  private _firstUpdatedCalled = false;
 
   private _memoizeDevices = memoizeOne((devices: ZHADevice[]) => {
     let outputDevices: DeviceRowData[] = devices;

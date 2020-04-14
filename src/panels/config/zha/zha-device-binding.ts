@@ -27,11 +27,17 @@ import "@polymer/paper-item/paper-item";
 @customElement("zha-device-binding-control")
 export class ZHADeviceBindingControl extends LitElement {
   @property() public hass?: HomeAssistant;
+
   @property() public isWide?: boolean;
+
   @property() public selectedDevice?: ZHADevice;
-  @property() private _showHelp: boolean = false;
-  @property() private _bindTargetIndex: number = -1;
+
+  @property() private _showHelp = false;
+
+  @property() private _bindTargetIndex = -1;
+
   @property() private bindableDevices: ZHADevice[] = [];
+
   @property() private _deviceToBind?: ZHADevice;
 
   protected updated(changedProperties: PropertyValues): void {

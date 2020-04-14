@@ -5,6 +5,7 @@ import "@polymer/paper-item/paper-item-body";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-ripple/paper-ripple";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
+/* eslint-plugin-disable lit */
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 
 import "../../../../components/ha-card";

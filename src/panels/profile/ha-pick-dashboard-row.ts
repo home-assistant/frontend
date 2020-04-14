@@ -19,7 +19,9 @@ import { setDefaultPanel } from "../../data/panel";
 @customElement("ha-pick-dashboard-row")
 class HaPickDashboardRow extends LitElement {
   @property() public hass!: HomeAssistant;
+
   @property() public narrow!: boolean;
+
   @property() private _dashboards: LovelaceDashboard[] = [];
 
   protected firstUpdated(changedProps: PropertyValues) {

@@ -11,6 +11,7 @@ export class HaDeviceTriggersCard extends HaDeviceAutomationCard<
   DeviceTrigger
 > {
   protected type = "trigger";
+
   protected headerKey = "ui.panel.config.devices.automation.triggers.caption";
 
   constructor() {

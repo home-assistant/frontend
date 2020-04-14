@@ -16,10 +16,11 @@ import {
 } from "lit-element";
 import { styleMap } from "lit-html/directives/style-map";
 import memoize from "memoize-one";
+import { classMap } from "lit-html/directives/class-map";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { domainIcon } from "../../../common/entity/domain_icon";
 import { stateIcon } from "../../../common/entity/state_icon";
-import {
+import type {
   DataTableColumnContainer,
   DataTableColumnData,
   RowClickedEvent,
@@ -38,18 +39,17 @@ import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box
 import "../../../layouts/hass-loading-screen";
 import "../../../layouts/hass-tabs-subpage-data-table";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
-import { HomeAssistant, Route } from "../../../types";
+import type { HomeAssistant, Route } from "../../../types";
 import { DialogEntityEditor } from "./dialog-entity-editor";
 import {
   loadEntityEditorDialog,
   showEntityEditorDialog,
 } from "./show-dialog-entity-editor";
 import { configSections } from "../ha-panel-config";
-import { classMap } from "lit-html/directives/class-map";
 import { computeStateName } from "../../../common/entity/compute_state_name";
-// tslint:disable-next-line: no-duplicate-imports
-import { HaTabsSubpageDataTable } from "../../../layouts/hass-tabs-subpage-data-table";
-import { HASSDomEvent } from "../../../common/dom/fire_event";
+
+import type { HaTabsSubpageDataTable } from "../../../layouts/hass-tabs-subpage-data-table";
+import type { HASSDomEvent } from "../../../common/dom/fire_event";
 
 export interface StateEntity extends EntityRegistryEntry {
   readonly?: boolean;
@@ -66,18 +66,30 @@ export interface EntityRow extends StateEntity {
 @customElement("ha-config-entities")
 export class HaConfigEntities extends SubscribeMixin(LitElement) {
   @property() public hass!: HomeAssistant;
+
   @property() public isWide!: boolean;
+
   @property() public narrow!: boolean;
+
   @property() public route!: Route;
+
   @property() private _entities?: EntityRegistryEntry[];
+
   @property() private _stateEntities: StateEntity[] = [];
+
   @property() private _showDisabled = false;
+
   @property() private _showUnavailable = true;
+
   @property() private _showReadOnly = true;
+
   @property() private _filter = "";
+
   @property() private _selectedEntities: string[] = [];
+
   @query("hass-tabs-subpage-data-table")
   private _dataTable!: HaTabsSubpageDataTable;
+
   private getDialog?: () => DialogEntityEditor | undefined;
 
   private _columns = memoize(
@@ -156,7 +168,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
             ${name}<br />
             ${entity.entity_id} |
             ${this.hass.localize(`component.${entity.platform}.config.title`) ||
-              entity.platform}
+            entity.platform}
           `;
         };
         columns.status = statusColumn;
@@ -196,7 +208,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
       showReadOnly: boolean
     ): EntityRow[] => {
       if (!showDisabled) {
-        entities = entities.filter((entity) => !Boolean(entity.disabled_by));
+        entities = entities.filter((entity) => !entity.disabled_by);
       }
 
       const result: EntityRow[] = [];
@@ -264,9 +276,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
 
   protected render(): TemplateResult {
     if (!this.hass || this._entities === undefined) {
-      return html`
-        <hass-loading-screen></hass-loading-screen>
-      `;
+      return html` <hass-loading-screen></hass-loading-screen> `;
     }
     const headerToolbar = this._selectedEntities.length
       ? html`

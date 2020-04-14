@@ -14,13 +14,12 @@ import { styleMap } from "lit-html/directives/style-map";
 import Vibrant from "node-vibrant";
 import { Swatch } from "node-vibrant/lib/color";
 import "@polymer/paper-icon-button/paper-icon-button";
+import type { PaperIconButtonElement } from "@polymer/paper-icon-button/paper-icon-button";
 import "@polymer/paper-progress/paper-progress";
-// tslint:disable-next-line: no-duplicate-imports
-import { PaperProgressElement } from "@polymer/paper-progress/paper-progress";
-
+import type { PaperProgressElement } from "@polymer/paper-progress/paper-progress";
 import { MediaControlCardConfig } from "./types";
-import { LovelaceCard, LovelaceCardEditor } from "../types";
-import { HomeAssistant, MediaEntity } from "../../../types";
+import type { LovelaceCard, LovelaceCardEditor } from "../types";
+import type { HomeAssistant, MediaEntity } from "../../../types";
 import { debounce } from "../../../common/util/debounce";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
@@ -48,8 +47,6 @@ import {
 import "../../../components/ha-card";
 import "../../../components/ha-icon";
 import "../components/hui-marquee";
-// tslint:disable-next-line: no-duplicate-imports
-import { PaperIconButtonElement } from "@polymer/paper-icon-button/paper-icon-button";
 
 function getContrastRatio(
   rgb1: [number, number, number],
@@ -67,9 +64,9 @@ const DEBUG_COLOR = __DEV__ && false;
 
 const logColor = (
   color: Swatch,
-  label: string = `${color.getHex()} - ${color.getPopulation()}`
+  label = `${color.getHex()} - ${color.getPopulation()}`
 ) =>
-  // tslint:disable-next-line:no-console
+  // eslint-disable-next-line no-console
   console.log(
     `%c${label}`,
     `color: ${color.getBodyTextColor()}; background-color: ${color.getHex()}`
@@ -144,15 +141,15 @@ const customGenerator = (colors: Swatch[]) => {
   }
 
   if (DEBUG_COLOR) {
-    // tslint:disable-next-line:no-console
+    // eslint-disable-next-line no-console
     console.log();
-    // tslint:disable-next-line:no-console
+    // eslint-disable-next-line no-console
     console.log(
       "%cPicked colors",
       `color: ${foregroundColor}; background-color: ${backgroundColor.hex}; font-weight: bold; padding: 16px;`
     );
     colors.forEach((color) => logColor(color));
-    // tslint:disable-next-line:no-console
+    // eslint-disable-next-line no-console
     console.log();
   }
 
@@ -192,15 +189,25 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
   }
 
   @property() public hass?: HomeAssistant;
+
   @property() private _config?: MediaControlCardConfig;
+
   @property() private _foregroundColor?: string;
+
   @property() private _backgroundColor?: string;
-  @property() private _narrow: boolean = false;
-  @property() private _veryNarrow: boolean = false;
-  @property() private _cardHeight: number = 0;
+
+  @property() private _narrow = false;
+
+  @property() private _veryNarrow = false;
+
+  @property() private _cardHeight = 0;
+
   @query("paper-progress") private _progressBar?: PaperProgressElement;
-  @property() private _marqueeActive: boolean = false;
+
+  @property() private _marqueeActive = false;
+
   private _progressInterval?: number;
+
   private _resizeObserver?: ResizeObserver;
 
   public getCardSize(): number {
@@ -341,7 +348,7 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
               <ha-icon class="icon" .icon=${stateIcon(stateObj)}></ha-icon>
               <div>
                 ${this._config!.name ||
-                  computeStateName(this.hass!.states[this._config!.entity])}
+                computeStateName(this.hass!.states[this._config!.entity])}
               </div>
             </div>
             <div>
@@ -369,7 +376,7 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
                         <div class="media-info">
                           <hui-marquee
                             .text=${stateObj.attributes.media_title ||
-                              mediaDescription}
+                            mediaDescription}
                             .active=${this._marqueeActive}
                             @mouseover=${this._marqueeMouseOver}
                             @mouseleave=${this._marqueeMouseLeave}
@@ -700,7 +707,7 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
         this._foregroundColor = foreground;
       })
       .catch((err: any) => {
-        // tslint:disable-next-line:no-console
+        // eslint-disable-next-line no-console
         console.error("Error getting Image Colors", err);
         this._foregroundColor = undefined;
         this._backgroundColor = undefined;

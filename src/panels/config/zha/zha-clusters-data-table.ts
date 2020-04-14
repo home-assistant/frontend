@@ -11,14 +11,12 @@ import {
   customElement,
   query,
 } from "lit-element";
-import { HomeAssistant } from "../../../types";
-// tslint:disable-next-line
-import {
+import type { HomeAssistant } from "../../../types";
+import type {
   DataTableColumnContainer,
   HaDataTable,
 } from "../../../components/data-table/ha-data-table";
-// tslint:disable-next-line
-import { Cluster } from "../../../data/zha";
+import type { Cluster } from "../../../data/zha";
 import { formatAsPaddedHex } from "./functions";
 
 export interface ClusterRowData extends Cluster {
@@ -29,8 +27,11 @@ export interface ClusterRowData extends Cluster {
 @customElement("zha-clusters-data-table")
 export class ZHAClustersDataTable extends LitElement {
   @property() public hass!: HomeAssistant;
+
   @property() public narrow = false;
+
   @property() public clusters: Cluster[] = [];
+
   @query("ha-data-table") private _dataTable!: HaDataTable;
 
   private _clusters = memoizeOne((clusters: Cluster[]) => {
@@ -67,9 +68,7 @@ export class ZHAClustersDataTable extends LitElement {
             id: {
               title: "ID",
               template: (id: number) => {
-                return html`
-                  ${formatAsPaddedHex(id)}
-                `;
+                return html` ${formatAsPaddedHex(id)} `;
               },
               sortable: true,
               width: "15%",

@@ -9,13 +9,11 @@ import {
 
 import "@material/mwc-button";
 import "../../../../components/dialog/ha-paper-dialog";
-// This is not a duplicate import, one is for types, one is for element.
-// tslint:disable-next-line
-import { HaPaperDialog } from "../../../../components/dialog/ha-paper-dialog";
+import type { HaPaperDialog } from "../../../../components/dialog/ha-paper-dialog";
 
-import { HomeAssistant } from "../../../../types";
+import type { HomeAssistant } from "../../../../types";
 import { haStyle } from "../../../../resources/styles";
-import { CloudCertificateParams as CloudCertificateDialogParams } from "./show-dialog-cloud-certificate";
+import type { CloudCertificateParams as CloudCertificateDialogParams } from "./show-dialog-cloud-certificate";
 import { formatDateTime } from "../../../../common/datetime/format_date_time";
 
 @customElement("dialog-cloud-certificate")

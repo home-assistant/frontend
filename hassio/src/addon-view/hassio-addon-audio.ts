@@ -32,22 +32,24 @@ import { haStyle } from "../../../src/resources/styles";
 @customElement("hassio-addon-audio")
 class HassioAddonAudio extends LitElement {
   @property() public hass!: HomeAssistant;
+
   @property() public addon!: HassioAddonDetails;
+
   @property() private _error?: string;
+
   @property() private _inputDevices?: HassioHardwareAudioDevice[];
+
   @property() private _outputDevices?: HassioHardwareAudioDevice[];
+
   @property() private _selectedInput!: null | string;
+
   @property() private _selectedOutput!: null | string;
 
   protected render(): TemplateResult {
     return html`
       <paper-card heading="Audio">
         <div class="card-content">
-          ${this._error
-            ? html`
-                <div class="errors">${this._error}</div>
-              `
-            : ""}
+          ${this._error ? html` <div class="errors">${this._error}</div> ` : ""}
 
           <paper-dropdown-menu
             label="Input"
@@ -59,13 +61,13 @@ class HassioAddonAudio extends LitElement {
               .selected=${this._selectedInput}
             >
               ${this._inputDevices &&
-                this._inputDevices.map((item) => {
-                  return html`
-                    <paper-item device=${item.device || ""}
-                      >${item.name}</paper-item
-                    >
-                  `;
-                })}
+              this._inputDevices.map((item) => {
+                return html`
+                  <paper-item device=${item.device || ""}
+                    >${item.name}</paper-item
+                  >
+                `;
+              })}
             </paper-listbox>
           </paper-dropdown-menu>
           <paper-dropdown-menu
@@ -78,13 +80,13 @@ class HassioAddonAudio extends LitElement {
               .selected=${this._selectedOutput}
             >
               ${this._outputDevices &&
-                this._outputDevices.map((item) => {
-                  return html`
-                    <paper-item device=${item.device || ""}
-                      >${item.name}</paper-item
-                    >
-                  `;
-                })}
+              this._outputDevices.map((item) => {
+                return html`
+                  <paper-item device=${item.device || ""}
+                    >${item.name}</paper-item
+                  >
+                `;
+              })}
             </paper-listbox>
           </paper-dropdown-menu>
         </div>

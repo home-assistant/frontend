@@ -20,6 +20,7 @@ import { atLeastVersion } from "../../../src/common/config/version";
 @customElement("hassio-addons")
 class HassioAddons extends LitElement {
   @property() public hass!: HomeAssistant;
+
   @property() public addons?: HassioAddonInfo[];
 
   protected render(): TemplateResult {

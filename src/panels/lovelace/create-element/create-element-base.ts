@@ -60,8 +60,9 @@ const _createElement = <T extends keyof CreateElementConfigTypes>(
     // @ts-ignore
     element.setConfig(config);
   } catch (err) {
-    // tslint:disable-next-line
+    // eslint-disable-next-line
     console.error(tag, err);
+    // eslint-disable-next-line @typescript-eslint/no-use-before-define
     return _createErrorElement(err.message, config);
   }
   return element;
@@ -173,19 +174,20 @@ export const getLovelaceElementClass = async <
 
   if (customTag) {
     const customCls = customElements.get(customTag);
-    return customCls
-      ? customCls
-      : new Promise((resolve, reject) => {
-          // We will give custom components up to TIMEOUT seconds to get defined
-          setTimeout(
-            () => reject(new Error(`Custom element not found: ${customTag}`)),
-            TIMEOUT
-          );
+    return (
+      customCls ||
+      new Promise((resolve, reject) => {
+        // We will give custom components up to TIMEOUT seconds to get defined
+        setTimeout(
+          () => reject(new Error(`Custom element not found: ${customTag}`)),
+          TIMEOUT
+        );
 
-          customElements
-            .whenDefined(customTag)
-            .then(() => resolve(customElements.get(customTag)));
-        });
+        customElements
+          .whenDefined(customTag)
+          .then(() => resolve(customElements.get(customTag)));
+      })
+    );
   }
 
   const tag = `hui-${type}-${tagSuffix}`;

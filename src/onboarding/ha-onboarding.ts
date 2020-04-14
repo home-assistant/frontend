@@ -48,30 +48,32 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
   public translationFragment = "page-onboarding";
 
   @property() private _loading = false;
+
   @property() private _steps?: OnboardingStep[];
 
   protected render(): TemplateResult {
     const step = this._curStep()!;
 
     if (this._loading || !step) {
-      return html`
-        <onboarding-loading></onboarding-loading>
-      `;
-    } else if (step.step === "user") {
+      return html` <onboarding-loading></onboarding-loading> `;
+    }
+    if (step.step === "user") {
       return html`
         <onboarding-create-user
           .localize=${this.localize}
           .language=${this.language}
         ></onboarding-create-user>
       `;
-    } else if (step.step === "core_config") {
+    }
+    if (step.step === "core_config") {
       return html`
         <onboarding-core-config
           .hass=${this.hass}
           .onboardingLocalize=${this.localize}
         ></onboarding-core-config>
       `;
-    } else if (step.step === "integration") {
+    }
+    if (step.step === "integration") {
       return html`
         <onboarding-integrations
           .hass=${this.hass}

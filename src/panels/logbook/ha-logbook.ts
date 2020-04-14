@@ -1,9 +1,4 @@
 import "../../components/ha-icon";
-import { formatTimeWithSeconds } from "../../common/datetime/format_time";
-import { formatDate } from "../../common/datetime/format_date";
-import { domainIcon } from "../../common/entity/domain_icon";
-import { stateIcon } from "../../common/entity/state_icon";
-import { computeRTL } from "../../common/util/compute_rtl";
 import {
   LitElement,
   html,
@@ -13,14 +8,21 @@ import {
   css,
   PropertyValues,
 } from "lit-element";
+import { scroll } from "lit-virtualizer";
+import { formatTimeWithSeconds } from "../../common/datetime/format_time";
+import { formatDate } from "../../common/datetime/format_date";
+import { domainIcon } from "../../common/entity/domain_icon";
+import { stateIcon } from "../../common/entity/state_icon";
+import { computeRTL } from "../../common/util/compute_rtl";
 import { HomeAssistant } from "../../types";
 import { fireEvent } from "../../common/dom/fire_event";
-import { scroll } from "lit-virtualizer";
 import { LogbookEntry } from "../../data/logbook";
 
 class HaLogbook extends LitElement {
   @property() public hass!: HomeAssistant;
+
   @property() public entries: LogbookEntry[] = [];
+
   @property({ attribute: "rtl", type: Boolean, reflect: true })
   // @ts-ignore
   private _rtl = false;
@@ -88,9 +90,7 @@ class HaLogbook extends LitElement {
           ></ha-icon>
           <div class="message">
             ${!item.entity_id
-              ? html`
-                  <span class="name">${item.name}</span>
-                `
+              ? html` <span class="name">${item.name}</span> `
               : html`
                   <a
                     href="#"

@@ -62,11 +62,16 @@ const rowRenderer = (
 @customElement("ha-area-picker")
 export class HaAreaPicker extends SubscribeMixin(LitElement) {
   @property() public hass!: HomeAssistant;
+
   @property() public label?: string;
+
   @property() public value?: string;
+
   @property() public _areas?: AreaRegistryEntry[];
+
   @property({ type: Boolean, attribute: "no-add" })
   public noAdd?: boolean;
+
   @property() private _opened?: boolean;
 
   public hassSubscribe(): UnsubscribeFunc[] {

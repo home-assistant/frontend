@@ -17,8 +17,11 @@ let editCodeLoaded = false;
 @customElement("hui-panel-view")
 export class HUIPanelView extends UpdatingElement {
   @property() public hass?: HomeAssistant;
+
   @property() public lovelace?: Lovelace;
+
   @property() public config?: LovelaceViewConfig;
+
   @property({ type: Number }) public index!: number;
 
   protected firstUpdated(changedProperties: PropertyValues): void {

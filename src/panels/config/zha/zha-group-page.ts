@@ -36,18 +36,28 @@ import { HASSDomEvent } from "../../../common/dom/fire_event";
 @customElement("zha-group-page")
 export class ZHAGroupPage extends LitElement {
   @property() public hass!: HomeAssistant;
+
   @property() public group?: ZHAGroup;
+
   @property() public groupId!: number;
+
   @property() public narrow!: boolean;
+
   @property() public isWide!: boolean;
+
   @property() public devices: ZHADevice[] = [];
-  @property() private _processingAdd: boolean = false;
-  @property() private _processingRemove: boolean = false;
+
+  @property() private _processingAdd = false;
+
+  @property() private _processingRemove = false;
+
   @property() private _filteredDevices: ZHADevice[] = [];
+
   @property() private _selectedDevicesToAdd: string[] = [];
+
   @property() private _selectedDevicesToRemove: string[] = [];
 
-  private _firstUpdatedCalled: boolean = false;
+  private _firstUpdatedCalled = false;
 
   private _members = memoizeOne(
     (group: ZHAGroup): ZHADevice[] => group.members
@@ -152,7 +162,7 @@ export class ZHAGroupPage extends LitElement {
                 <div class="paper-dialog-buttons">
                   <mwc-button
                     .disabled="${!this._selectedDevicesToRemove.length ||
-                      this._processingRemove}"
+                    this._processingRemove}"
                     @click="${this._removeMembersFromGroup}"
                     class="button"
                   >
@@ -186,7 +196,7 @@ export class ZHAGroupPage extends LitElement {
           <div class="paper-dialog-buttons">
             <mwc-button
               .disabled="${!this._selectedDevicesToAdd.length ||
-                this._processingAdd}"
+              this._processingAdd}"
               @click="${this._addMembersToGroup}"
               class="button"
             >

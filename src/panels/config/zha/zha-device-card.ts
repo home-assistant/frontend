@@ -21,6 +21,7 @@ import {
   TemplateResult,
 } from "lit-element";
 
+import { UnsubscribeFunc, HassEvent } from "home-assistant-js-websocket";
 import { fireEvent } from "../../../common/dom/fire_event";
 import {
   AreaRegistryEntry,
@@ -39,7 +40,6 @@ import { haStyle } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
 import { ItemSelectedEvent, NodeServiceData } from "./types";
 import { navigate } from "../../../common/navigate";
-import { UnsubscribeFunc, HassEvent } from "home-assistant-js-websocket";
 import { formatAsPaddedHex } from "./functions";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import { addEntitiesToLovelaceView } from "../../lovelace/editor/add-entities-to-view";
@@ -56,19 +56,33 @@ declare global {
 @customElement("zha-device-card")
 class ZHADeviceCard extends LitElement {
   @property() public hass!: HomeAssistant;
+
   @property() public device?: ZHADevice;
+
   @property({ type: Boolean }) public narrow?: boolean;
+
   @property({ type: Boolean }) public showHelp?: boolean = false;
+
   @property({ type: Boolean }) public showActions?: boolean = true;
+
   @property({ type: Boolean }) public showName?: boolean = true;
+
   @property({ type: Boolean }) public showEntityDetail?: boolean = true;
+
   @property({ type: Boolean }) public showModelInfo?: boolean = true;
+
   @property({ type: Boolean }) public showEditableInfo?: boolean = true;
+
   @property() private _serviceData?: NodeServiceData;
+
   @property() private _areas: AreaRegistryEntry[] = [];
-  @property() private _selectedAreaIndex: number = -1;
+
+  @property() private _selectedAreaIndex = -1;
+
   @property() private _userGivenName?: string;
+
   private _unsubAreas?: UnsubscribeFunc;
+
   private _unsubEntities?: UnsubscribeFunc;
 
   public disconnectedCallback() {
@@ -102,7 +116,9 @@ class ZHADeviceCard extends LitElement {
           });
         }
       }, "entity_registry_updated")
-      .then((unsub) => (this._unsubEntities = unsub));
+      .then((unsub) => {
+        this._unsubEntities = unsub;
+      });
   }
 
   protected firstUpdated(changedProperties: PropertyValues): void {
@@ -167,21 +183,29 @@ class ZHADeviceCard extends LitElement {
             <dt>Device Type:</dt>
             <dd class="zha-info">${this.device!.device_type}</dd>
             <dt>LQI:</dt>
-            <dd class="zha-info">${this.device!.lqi ||
-              this.hass!.localize("ui.dialogs.zha_device_info.unknown")}</dd>
+            <dd class="zha-info">${
+              this.device!.lqi ||
+              this.hass!.localize("ui.dialogs.zha_device_info.unknown")
+            }</dd>
             <dt>RSSI:</dt>
-            <dd class="zha-info">${this.device!.rssi ||
-              this.hass!.localize("ui.dialogs.zha_device_info.unknown")}</dd>
+            <dd class="zha-info">${
+              this.device!.rssi ||
+              this.hass!.localize("ui.dialogs.zha_device_info.unknown")
+            }</dd>
             <dt>${this.hass!.localize(
               "ui.dialogs.zha_device_info.last_seen"
             )}:</dt>
-            <dd class="zha-info">${this.device!.last_seen ||
-              this.hass!.localize("ui.dialogs.zha_device_info.unknown")}</dd>
+            <dd class="zha-info">${
+              this.device!.last_seen ||
+              this.hass!.localize("ui.dialogs.zha_device_info.unknown")
+            }</dd>
             <dt>${this.hass!.localize(
               "ui.dialogs.zha_device_info.power_source"
             )}:</dt>
-            <dd class="zha-info">${this.device!.power_source ||
-              this.hass!.localize("ui.dialogs.zha_device_info.unknown")}</dd>
+            <dd class="zha-info">${
+              this.device!.power_source ||
+              this.hass!.localize("ui.dialogs.zha_device_info.unknown")
+            }</dd>
             ${
               this.device!.quirk_applied
                 ? html`
@@ -340,7 +364,7 @@ class ZHADeviceCard extends LitElement {
                                 domain="zha"
                                 service="permit"
                                 class="help-text2"
-                              />
+                              ></ha-service-description>
                             `
                           : ""}
                       `

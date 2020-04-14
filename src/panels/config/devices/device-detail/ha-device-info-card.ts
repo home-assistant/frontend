@@ -1,9 +1,4 @@
 import {
-  DeviceRegistryEntry,
-  computeDeviceName,
-} from "../../../../data/device_registry";
-import { loadDeviceRegistryDetailDialog } from "../../../../dialogs/device-registry-detail/show-dialog-device-registry-detail";
-import {
   LitElement,
   html,
   customElement,
@@ -12,15 +7,24 @@ import {
   CSSResult,
   css,
 } from "lit-element";
+import {
+  DeviceRegistryEntry,
+  computeDeviceName,
+} from "../../../../data/device_registry";
+import { loadDeviceRegistryDetailDialog } from "../../../../dialogs/device-registry-detail/show-dialog-device-registry-detail";
 import { HomeAssistant } from "../../../../types";
 import { AreaRegistryEntry } from "../../../../data/area_registry";
 
 @customElement("ha-device-info-card")
 export class HaDeviceCard extends LitElement {
   @property() public hass!: HomeAssistant;
+
   @property() public device!: DeviceRegistryEntry;
+
   @property() public devices!: DeviceRegistryEntry[];
+
   @property() public areas!: AreaRegistryEntry[];
+
   @property() public narrow!: boolean;
 
   protected render(): TemplateResult {
@@ -28,9 +32,7 @@ export class HaDeviceCard extends LitElement {
       <ha-card header="Device info">
         <div class="card-content">
           ${this.device.model
-            ? html`
-                <div class="model">${this.device.model}</div>
-              `
+            ? html` <div class="model">${this.device.model}</div> `
             : ""}
           ${this.device.manufacturer
             ? html`

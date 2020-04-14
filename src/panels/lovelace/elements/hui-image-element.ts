@@ -22,6 +22,7 @@ import { handleAction } from "../common/handle-action";
 @customElement("hui-image-element")
 export class HuiImageElement extends LitElement implements LovelaceElement {
   @property() public hass?: HomeAssistant;
+
   @property() private _config?: ImageElementConfig;
 
   public setConfig(config: ImageElementConfig): void {
@@ -29,6 +30,7 @@ export class HuiImageElement extends LitElement implements LovelaceElement {
       throw Error("Error in element configuration");
     }
 
+    // eslint-disable-next-line wc/no-self-class
     this.classList.toggle(
       "clickable",
       config.tap_action && config.tap_action.action !== "none"

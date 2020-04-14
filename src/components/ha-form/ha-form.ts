@@ -103,10 +103,15 @@ export interface HaFormElement extends LitElement {
 @customElement("ha-form")
 export class HaForm extends LitElement implements HaFormElement {
   @property() public data!: HaFormDataContainer | HaFormData;
+
   @property() public schema!: HaFormSchema;
+
   @property() public error;
+
   @property() public computeError?: (schema: HaFormSchema, error) => string;
+
   @property() public computeLabel?: (schema: HaFormSchema) => string;
+
   @property() public computeSuffix?: (schema: HaFormSchema) => string;
 
   public focus() {

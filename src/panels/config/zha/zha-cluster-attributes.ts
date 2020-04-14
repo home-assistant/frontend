@@ -38,14 +38,23 @@ import {
 
 export class ZHAClusterAttributes extends LitElement {
   @property() public hass?: HomeAssistant;
+
   @property() public isWide?: boolean;
+
   @property() public showHelp = false;
+
   @property() public selectedNode?: ZHADevice;
+
   @property() public selectedCluster?: Cluster;
+
   @property() private _attributes: Attribute[] = [];
+
   @property() private _selectedAttributeIndex = -1;
+
   @property() private _attributeValue?: any = "";
+
   @property() private _manufacturerCodeOverride?: string | number;
+
   @property() private _setAttributeServiceData?: SetAttributeServiceData;
 
   protected updated(changedProperties: PropertyValues): void {
@@ -97,9 +106,9 @@ export class ZHAClusterAttributes extends LitElement {
                   (entry) => html`
                     <paper-item
                       >${entry.name +
-                        " (id: " +
-                        formatAsPaddedHex(entry.id) +
-                        ")"}</paper-item
+                      " (id: " +
+                      formatAsPaddedHex(entry.id) +
+                      ")"}</paper-item
                     >
                   `
                 )}
@@ -207,7 +216,7 @@ export class ZHAClusterAttributes extends LitElement {
     | ReadAttributeServiceData
     | undefined {
     if (!this.selectedCluster || !this.selectedNode) {
-      return;
+      return undefined;
     }
     return {
       ieee: this.selectedNode!.ieee,
@@ -225,7 +234,7 @@ export class ZHAClusterAttributes extends LitElement {
     | SetAttributeServiceData
     | undefined {
     if (!this.selectedCluster || !this.selectedNode) {
-      return;
+      return undefined;
     }
     return {
       ieee: this.selectedNode!.ieee,

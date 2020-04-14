@@ -152,7 +152,7 @@ export class HuiPictureGlanceCardEditor extends LitElement
           .configValue=${"camera_image"}
           @change="${this._valueChanged}"
           allow-custom-entity
-          include-domains='["camera"]'
+          .include-domains=${["camera"]}
         ></ha-entity-picker>
         <div class="side-by-side">
           <paper-dropdown-menu
@@ -169,9 +169,7 @@ export class HuiPictureGlanceCardEditor extends LitElement
               .selected="${views.indexOf(this._camera_view)}"
             >
               ${views.map((view) => {
-                return html`
-                  <paper-item>${view}</paper-item>
-                `;
+                return html` <paper-item>${view}</paper-item> `;
               })}
             </paper-listbox>
           </paper-dropdown-menu>
@@ -267,7 +265,7 @@ export class HuiPictureGlanceCardEditor extends LitElement
       } else {
         this._config = {
           ...this._config,
-          [target.configValue!]: value ? value : target.config,
+          [target.configValue!]: value || target.config,
         };
       }
     }

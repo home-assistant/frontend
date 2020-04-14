@@ -28,8 +28,11 @@ class DialogDeviceRegistryDetail extends LitElement {
   @property() public hass!: HomeAssistant;
 
   @property() private _nameByUser!: string;
+
   @property() private _error?: string;
+
   @property() private _params?: DeviceRegistryDetailDialogParams;
+
   @property() private _areaId?: string;
 
   private _submitting?: boolean;
@@ -60,11 +63,7 @@ class DialogDeviceRegistryDetail extends LitElement {
           ${computeDeviceName(device, this.hass)}
         </h2>
         <paper-dialog-scrollable>
-          ${this._error
-            ? html`
-                <div class="error">${this._error}</div>
-              `
-            : ""}
+          ${this._error ? html` <div class="error">${this._error}</div> ` : ""}
           <div class="form">
             <paper-input
               .value=${this._nameByUser}

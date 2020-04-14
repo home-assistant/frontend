@@ -20,8 +20,11 @@ import { compare } from "../../common/string/compare";
 
 class HaUserPicker extends LitElement {
   public hass?: HomeAssistant;
+
   @property() public label?: string;
+
   @property() public value?: string;
+
   @property() public users?: User[];
 
   private _sortedUsers = memoizeOne((users?: User[]) => {

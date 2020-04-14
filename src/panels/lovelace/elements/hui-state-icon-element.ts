@@ -25,6 +25,7 @@ import { handleAction } from "../common/handle-action";
 @customElement("hui-state-icon-element")
 export class HuiStateIconElement extends LitElement implements LovelaceElement {
   @property() public hass?: HomeAssistant;
+
   @property() private _config?: StateIconElementConfig;
 
   public setConfig(config: StateIconElementConfig): void {

@@ -8,12 +8,10 @@ import {
   CSSResult,
 } from "lit-element";
 import { computeRTL } from "../common/util/compute_rtl";
-import { HomeAssistant } from "../types";
+import type { HomeAssistant } from "../types";
 import "@material/mwc-button";
 import "../components/ha-toast";
-// Typing
-// tslint:disable-next-line: no-duplicate-imports
-import { HaToast } from "../components/ha-toast";
+import type { HaToast } from "../components/ha-toast";
 
 export interface ShowToastParams {
   message: string;
@@ -31,7 +29,8 @@ class NotificationManager extends LitElement {
   @property() public hass!: HomeAssistant;
 
   @property() private _action?: ToastActionParams;
-  @property() private _noCancelOnOutsideClick: boolean = false;
+
+  @property() private _noCancelOnOutsideClick = false;
 
   @query("ha-toast") private _toast!: HaToast;
 

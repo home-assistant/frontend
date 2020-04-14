@@ -24,10 +24,15 @@ import {
 @customElement("ha-form-multi_select")
 export class HaFormMultiSelect extends LitElement implements HaFormElement {
   @property() public schema!: HaFormMultiSelectSchema;
+
   @property() public data!: HaFormMultiSelectData;
+
   @property() public label!: string;
+
   @property() public suffix!: string;
+
   @property() private _init = false;
+
   @query("paper-menu-button") private _input?: HTMLElement;
 
   public focus(): void {

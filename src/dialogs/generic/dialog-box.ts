@@ -13,16 +13,18 @@ import "@polymer/paper-input/paper-input";
 import "../../components/dialog/ha-paper-dialog";
 import "../../components/ha-switch";
 
+import { classMap } from "lit-html/directives/class-map";
 import { HomeAssistant } from "../../types";
 import { DialogParams } from "./show-dialog-box";
 import { PolymerChangedEvent } from "../../polymer-types";
 import { haStyleDialog } from "../../resources/styles";
-import { classMap } from "lit-html/directives/class-map";
 
 @customElement("dialog-box")
 class DialogBox extends LitElement {
   @property() public hass!: HomeAssistant;
+
   @property() private _params?: DialogParams;
+
   @property() private _value?: string;
 
   public async showDialog(params: DialogParams): Promise<void> {
@@ -84,13 +86,13 @@ class DialogBox extends LitElement {
         </paper-dialog-scrollable>
         <div class="paper-dialog-buttons">
           ${confirmPrompt &&
-            html`
-              <mwc-button @click="${this._dismiss}">
-                ${this._params.dismissText
-                  ? this._params.dismissText
-                  : this.hass.localize("ui.dialogs.generic.cancel")}
-              </mwc-button>
-            `}
+          html`
+            <mwc-button @click="${this._dismiss}">
+              ${this._params.dismissText
+                ? this._params.dismissText
+                : this.hass.localize("ui.dialogs.generic.cancel")}
+            </mwc-button>
+          `}
           <mwc-button @click="${this._confirm}">
             ${this._params.confirmText
               ? this._params.confirmText

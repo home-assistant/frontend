@@ -1,6 +1,7 @@
 import "@material/mwc-button";
 import "@polymer/paper-spinner/paper-spinner";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
+/* eslint-plugin-disable lit */
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 
 class HaProgressButton extends PolymerElement {

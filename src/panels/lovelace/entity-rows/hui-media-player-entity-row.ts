@@ -14,9 +14,9 @@ import "../components/hui-generic-entity-row";
 import "../components/hui-warning";
 import "../../../components/ha-slider";
 
+import { HassEntity } from "home-assistant-js-websocket";
 import { LovelaceRow, EntityConfig } from "./types";
 import { HomeAssistant } from "../../../types";
-import { HassEntity } from "home-assistant-js-websocket";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import {
   SUPPORTS_PLAY,
@@ -37,10 +37,15 @@ import { UNAVAILABLE, UNKNOWN } from "../../../data/entity";
 @customElement("hui-media-player-entity-row")
 class HuiMediaPlayerEntityRow extends LitElement implements LovelaceRow {
   @property() public hass?: HomeAssistant;
+
   @property() private _config?: EntityConfig;
+
   @property() private _narrow?: boolean = false;
+
   @property() private _veryNarrow?: boolean = false;
+
   private _resizeObserver?: ResizeObserver;
+
   private _debouncedResizeListener = debounce(
     () => {
       this._narrow = (this.clientWidth || 0) < 300;
@@ -226,7 +231,7 @@ class HuiMediaPlayerEntityRow extends LitElement implements LovelaceRow {
       return "hass:play";
     }
 
-    // tslint:disable-next-line:no-bitwise
+    // eslint-disable-next-line:no-bitwise
     return supportsFeature(stateObj, SUPPORT_PAUSE)
       ? "hass:pause"
       : "hass:stop";

@@ -5,7 +5,6 @@ import {
   CSSResult,
   css,
   property,
-  PropertyValues,
   customElement,
 } from "lit-element";
 import "@material/mwc-button";
@@ -68,13 +67,6 @@ class MoreInfoTimer extends LitElement {
           : ""}
       </div>
     `;
-  }
-
-  protected updated(changedProps: PropertyValues) {
-    super.updated(changedProps);
-    if (!changedProps.has("stateObj") || !this.stateObj) {
-      return;
-    }
   }
 
   private _handleActionClick(e: MouseEvent): void {

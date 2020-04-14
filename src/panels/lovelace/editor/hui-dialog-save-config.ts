@@ -12,14 +12,13 @@ import "@polymer/paper-spinner/paper-spinner";
 import "../../../components/dialog/ha-paper-dialog";
 import "../../../components/ha-switch";
 import "../../../components/ha-yaml-editor";
-// tslint:disable-next-line:no-duplicate-imports
-import { HaPaperDialog } from "../../../components/dialog/ha-paper-dialog";
+import type { HaPaperDialog } from "../../../components/dialog/ha-paper-dialog";
 import "@material/mwc-button";
 
 import { haStyleDialog } from "../../../resources/styles";
-import { HomeAssistant } from "../../../types";
-import { SaveDialogParams } from "./show-save-config-dialog";
-import { PolymerChangedEvent } from "../../../polymer-types";
+import type { HomeAssistant } from "../../../types";
+import type { SaveDialogParams } from "./show-save-config-dialog";
+import type { PolymerChangedEvent } from "../../../polymer-types";
 import { fireEvent } from "../../../common/dom/fire_event";
 
 const EMPTY_CONFIG = { views: [] };
@@ -29,9 +28,11 @@ export class HuiSaveConfig extends LitElement {
   @property() public hass?: HomeAssistant;
 
   @property() private _params?: SaveDialogParams;
+
   @property() private _emptyConfig = false;
 
   @property() private _saving: boolean;
+
   @query("ha-paper-dialog") private _dialog?: HaPaperDialog;
 
   public constructor() {

@@ -25,7 +25,7 @@ class HaPanelDevMqtt extends LitElement {
 
   @property() private payload = "";
 
-  private inited: boolean = false;
+  private inited = false;
 
   protected firstUpdated() {
     if (localStorage && localStorage["panel-dev-mqtt-topic"]) {

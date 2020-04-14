@@ -19,9 +19,13 @@ import { AreaRegistryEntryMutableParams } from "../../../data/area_registry";
 
 class DialogAreaDetail extends LitElement {
   @property() public hass!: HomeAssistant;
+
   @property() private _name!: string;
+
   @property() private _error?: string;
+
   @property() private _params?: AreaRegistryDetailDialogParams;
+
   @property() private _submitting?: boolean;
 
   public async showDialog(
@@ -51,17 +55,9 @@ class DialogAreaDetail extends LitElement {
             : this.hass.localize("ui.panel.config.areas.editor.default_name")}
         </h2>
         <paper-dialog-scrollable>
-          ${this._error
-            ? html`
-                <div class="error">${this._error}</div>
-              `
-            : ""}
+          ${this._error ? html` <div class="error">${this._error}</div> ` : ""}
           <div class="form">
-            ${entry
-              ? html`
-                  <div>Area ID: ${entry.area_id}</div>
-                `
-              : ""}
+            ${entry ? html` <div>Area ID: ${entry.area_id}</div> ` : ""}
 
             <paper-input
               .value=${this._name}

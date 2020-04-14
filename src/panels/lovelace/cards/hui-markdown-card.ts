@@ -38,8 +38,11 @@ export class HuiMarkdownCard extends LitElement implements LovelaceCard {
   }
 
   @property() private _config?: MarkdownCardConfig;
+
   @property() private _content?: string = "";
+
   @property() private _unsubRenderTemplate?: Promise<UnsubscribeFunc>;
+
   @property() private _hass?: HomeAssistant;
 
   public getCardSize(): number {

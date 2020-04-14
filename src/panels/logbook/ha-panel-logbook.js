@@ -5,6 +5,7 @@ import "@polymer/paper-icon-button/paper-icon-button";
 import "@polymer/paper-input/paper-input";
 import "@polymer/paper-spinner/paper-spinner";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
+/* eslint-plugin-disable lit */
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 import "@vaadin/vaadin-date-picker/theme/material/vaadin-date-picker";
 
@@ -192,7 +193,7 @@ class HaPanelLogbook extends LocalizeMixin(PolymerElement) {
       // ISO8601 formatted date string
       _currentDate: {
         type: String,
-        value: function() {
+        value: function () {
           const value = new Date();
           const today = new Date(
             Date.UTC(value.getFullYear(), value.getMonth(), value.getDate())

@@ -33,6 +33,7 @@ const sortKeys = (a: string, b: string) => {
 
 class SystemHealthCard extends LitElement {
   @property() public hass!: HomeAssistant;
+
   @property() private _info?: SystemHealthInfo;
 
   protected render(): TemplateResult {
@@ -64,9 +65,7 @@ class SystemHealthCard extends LitElement {
         }
         if (domain !== "homeassistant") {
           sections.push(
-            html`
-              <h3>${this.hass.localize(`domain.${domain}`) || domain}</h3>
-            `
+            html` <h3>${this.hass.localize(`domain.${domain}`) || domain}</h3> `
           );
         }
         sections.push(html`

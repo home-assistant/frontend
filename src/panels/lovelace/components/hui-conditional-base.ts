@@ -12,8 +12,11 @@ import { ConditionalCardConfig } from "../cards/types";
 @customElement("hui-conditional-base")
 export class HuiConditionalBase extends UpdatingElement {
   @property() public hass?: HomeAssistant;
+
   @property() public editMode?: boolean;
+
   @property() protected _config?: ConditionalCardConfig | ConditionalRowConfig;
+
   protected _element?: LovelaceCard | LovelaceRow;
 
   protected validateConfig(

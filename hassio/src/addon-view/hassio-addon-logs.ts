@@ -22,8 +22,11 @@ import { haStyle } from "../../../src/resources/styles";
 @customElement("hassio-addon-logs")
 class HassioAddonLogs extends LitElement {
   @property() public hass!: HomeAssistant;
+
   @property() public addon!: HassioAddonDetails;
+
   @property() private _error?: string;
+
   @query("#content") private _logContent!: any;
 
   public async connectedCallback(): Promise<void> {
@@ -34,11 +37,7 @@ class HassioAddonLogs extends LitElement {
   protected render(): TemplateResult {
     return html`
       <paper-card heading="Log">
-        ${this._error
-          ? html`
-              <div class="errors">${this._error}</div>
-            `
-          : ""}
+        ${this._error ? html` <div class="errors">${this._error}</div> ` : ""}
         <div class="card-content" id="content"></div>
         <div class="card-actions">
           <mwc-button @click=${this._refresh}>Refresh</mwc-button>

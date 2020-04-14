@@ -17,7 +17,9 @@ import { HomeAssistant } from "../types";
 @customElement("hass-loading-screen")
 class HassLoadingScreen extends LitElement {
   @property({ type: Boolean }) public rootnav? = false;
+
   @property() public hass?: HomeAssistant;
+
   @property() public narrow?: boolean;
 
   protected render(): TemplateResult {

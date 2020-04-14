@@ -25,8 +25,11 @@ import "../../../src/components/buttons/ha-call-api-button";
 @customElement("hassio-host-info")
 class HassioHostInfo extends LitElement {
   @property() public hass!: HomeAssistant;
+
   @property() public hostInfo!: HassioHostInfoType;
+
   @property() public hassOsInfo!: HassioHassOSInfo;
+
   @property() private _errors?: string;
 
   public render(): TemplateResult | void {
@@ -69,9 +72,7 @@ class HassioHostInfo extends LitElement {
               `
             : ""}
           ${this._errors
-            ? html`
-                <div class="errors">Error: ${this._errors}</div>
-              `
+            ? html` <div class="errors">Error: ${this._errors}</div> `
             : ""}
         </div>
         <div class="card-actions">

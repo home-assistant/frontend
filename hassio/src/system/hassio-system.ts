@@ -25,8 +25,11 @@ import "./hassio-supervisor-log";
 @customElement("hassio-system")
 class HassioSystem extends LitElement {
   @property() public hass!: HomeAssistant;
+
   @property() public supervisorInfo!: HassioSupervisorInfo;
+
   @property() public hostInfo!: HassioHostInfo;
+
   @property() public hassOsInfo!: HassioHassOSInfo;
 
   public render(): TemplateResult | void {

@@ -14,9 +14,13 @@ import { fireEvent } from "../common/dom/fire_event";
 @customElement("ha-icon-input")
 export class HaIconInput extends LitElement {
   @property() public value?: string;
+
   @property() public label?: string;
+
   @property() public placeholder?: string;
+
   @property({ attribute: "error-message" }) public errorMessage?: string;
+
   @property({ type: Boolean }) public disabled = false;
 
   protected render(): TemplateResult {

@@ -10,6 +10,7 @@ import {
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-item/paper-item-body";
 
+import memoizeOne from "memoize-one";
 import { HomeAssistant, Route } from "../../../types";
 import {
   AreaRegistryEntry,
@@ -24,7 +25,6 @@ import {
   loadAreaRegistryDetailDialog,
 } from "./show-dialog-area-registry-detail";
 import { configSections } from "../ha-panel-config";
-import memoizeOne from "memoize-one";
 import {
   DataTableColumnContainer,
   RowClickedEvent,
@@ -40,10 +40,15 @@ import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
 @customElement("ha-config-areas-dashboard")
 export class HaConfigAreasDashboard extends LitElement {
   @property() public hass!: HomeAssistant;
+
   @property() public isWide?: boolean;
+
   @property() public narrow!: boolean;
+
   @property() public route!: Route;
+
   @property() public areas!: AreaRegistryEntry[];
+
   @property() public devices!: DeviceRegistryEntry[];
 
   private _areas = memoizeOne(
