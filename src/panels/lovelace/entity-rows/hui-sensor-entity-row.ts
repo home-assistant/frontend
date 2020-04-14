@@ -1,23 +1,21 @@
 import {
+  css,
+  CSSResult,
+  customElement,
   html,
   LitElement,
-  TemplateResult,
   property,
-  CSSResult,
-  css,
-  customElement,
   PropertyValues,
+  TemplateResult,
 } from "lit-element";
-
+import { computeStateDisplay } from "../../../common/entity/compute_state_display";
+import { SENSOR_DEVICE_CLASS_TIMESTAMP } from "../../../data/sensor";
+import { HomeAssistant } from "../../../types";
+import { hasConfigOrEntityChanged } from "../common/has-changed";
 import "../components/hui-generic-entity-row";
 import "../components/hui-timestamp-display";
 import "../components/hui-warning";
-
-import { HomeAssistant } from "../../../types";
-import { LovelaceRow, EntityConfig } from "./types";
-import { hasConfigOrEntityChanged } from "../common/has-changed";
-import { computeStateDisplay } from "../../../common/entity/compute_state_display";
-import { SENSOR_DEVICE_CLASS_TIMESTAMP } from "../../../data/sensor";
+import { EntityConfig, LovelaceRow } from "./types";
 
 interface SensorEntityConfig extends EntityConfig {
   format?: "relative" | "date" | "time" | "datetime";

@@ -72,7 +72,7 @@ function initPushNotifications() {
     );
   }
 
-  self.addEventListener("push", function(event) {
+  self.addEventListener("push", function (event) {
     var data;
     if (event.data) {
       data = event.data.json();
@@ -87,7 +87,7 @@ function initPushNotifications() {
       event.waitUntil(
         self.registration
           .showNotification(data.title, data)
-          .then(function(/* notification */) {
+          .then(function (/* notification */) {
             firePushCallback(
               {
                 type: "received",
@@ -101,7 +101,7 @@ function initPushNotifications() {
     }
   });
 
-  self.addEventListener("notificationclick", function(event) {
+  self.addEventListener("notificationclick", function (event) {
     var url;
 
     notificationEventCallback("clicked", event);
@@ -125,7 +125,7 @@ function initPushNotifications() {
         .matchAll({
           type: "window",
         })
-        .then(function(windowClients) {
+        .then(function (windowClients) {
           var i;
           var client;
           for (i = 0; i < windowClients.length; i++) {
@@ -142,7 +142,7 @@ function initPushNotifications() {
     );
   });
 
-  self.addEventListener("notificationclose", function(event) {
+  self.addEventListener("notificationclose", function (event) {
     notificationEventCallback("closed", event);
   });
 }

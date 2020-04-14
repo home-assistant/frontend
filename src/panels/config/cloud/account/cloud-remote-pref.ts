@@ -1,32 +1,31 @@
-import {
-  html,
-  LitElement,
-  TemplateResult,
-  customElement,
-  CSSResult,
-  css,
-  property,
-} from "lit-element";
 import "@material/mwc-button";
 import "@polymer/paper-item/paper-item-body";
-
+import {
+  css,
+  CSSResult,
+  customElement,
+  html,
+  LitElement,
+  property,
+  TemplateResult,
+} from "lit-element";
+import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-card";
 import "../../../../components/ha-switch";
-
-// tslint:disable-next-line
-import { HaSwitch } from "../../../../components/ha-switch";
-import { fireEvent } from "../../../../common/dom/fire_event";
-import { HomeAssistant } from "../../../../types";
+// eslint-disable-next-line
+import type { HaSwitch } from "../../../../components/ha-switch";
 import {
+  CloudStatusLoggedIn,
   connectCloudRemote,
   disconnectCloudRemote,
-  CloudStatusLoggedIn,
 } from "../../../../data/cloud";
+import type { HomeAssistant } from "../../../../types";
 import { showCloudCertificateDialog } from "../dialog-cloud-certificate/show-dialog-cloud-certificate";
 
 @customElement("cloud-remote-pref")
 export class CloudRemotePref extends LitElement {
   @property() public hass?: HomeAssistant;
+
   @property() public cloudStatus?: CloudStatusLoggedIn;
 
   protected render(): TemplateResult {

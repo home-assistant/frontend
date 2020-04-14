@@ -1,40 +1,47 @@
 import "@material/mwc-button";
 import "@polymer/paper-spinner/paper-spinner";
-import "../../../components/ha-switch";
-import "../../../components/ha-dialog";
 import {
-  LitElement,
-  html,
-  TemplateResult,
+  css,
+  CSSResult,
   customElement,
+  html,
+  LitElement,
   property,
   PropertyValues,
-  CSSResult,
-  css,
+  TemplateResult,
 } from "lit-element";
-import { HomeAssistant } from "../../../types";
-import { PolymerChangedEvent } from "../../../polymer-types";
-import { AddUserDialogParams } from "./show-dialog-add-user";
+import "../../../components/ha-dialog";
+import "../../../components/ha-switch";
+import { createAuthForUser } from "../../../data/auth";
 import {
-  User,
-  SYSTEM_GROUP_ID_USER,
   createUser,
   deleteUser,
   SYSTEM_GROUP_ID_ADMIN,
+  SYSTEM_GROUP_ID_USER,
+  User,
 } from "../../../data/user";
-import { createAuthForUser } from "../../../data/auth";
+import { PolymerChangedEvent } from "../../../polymer-types";
 import { haStyleDialog } from "../../../resources/styles";
+import { HomeAssistant } from "../../../types";
+import { AddUserDialogParams } from "./show-dialog-add-user";
 
 @customElement("dialog-add-user")
 export class DialogAddUser extends LitElement {
   @property() public hass!: HomeAssistant;
+
   @property() private _loading = false;
+
   // Error message when can't talk to server etc
   @property() private _error?: string;
+
   @property() private _params?: AddUserDialogParams;
+
   @property() private _name?: string;
+
   @property() private _username?: string;
+
   @property() private _password?: string;
+
   @property() private _isAdmin?: boolean;
 
   public showDialog(params: AddUserDialogParams) {
@@ -69,11 +76,7 @@ export class DialogAddUser extends LitElement {
         .heading=${this.hass.localize("ui.panel.config.users.add_user.caption")}
       >
         <div>
-          ${this._error
-            ? html`
-                <div class="error">${this._error}</div>
-              `
-            : ""}
+          ${this._error ? html` <div class="error">${this._error}</div> ` : ""}
           <paper-input
             class="name"
             .label=${this.hass.localize("ui.panel.config.users.add_user.name")}

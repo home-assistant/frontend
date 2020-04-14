@@ -1,32 +1,35 @@
-import "./ha-config-devices-dashboard";
-import "./ha-config-device-page";
+import { UnsubscribeFunc } from "home-assistant-js-websocket";
+import { customElement, property, PropertyValues } from "lit-element";
 import { compare } from "../../../common/string/compare";
 import {
-  subscribeAreaRegistry,
   AreaRegistryEntry,
+  subscribeAreaRegistry,
 } from "../../../data/area_registry";
-import {
-  HassRouterPage,
-  RouterOptions,
-} from "../../../layouts/hass-router-page";
-import { property, customElement, PropertyValues } from "lit-element";
-import { HomeAssistant } from "../../../types";
 import { ConfigEntry, getConfigEntries } from "../../../data/config_entries";
+import {
+  DeviceRegistryEntry,
+  subscribeDeviceRegistry,
+} from "../../../data/device_registry";
 import {
   EntityRegistryEntry,
   subscribeEntityRegistry,
 } from "../../../data/entity_registry";
 import {
-  DeviceRegistryEntry,
-  subscribeDeviceRegistry,
-} from "../../../data/device_registry";
-import { UnsubscribeFunc } from "home-assistant-js-websocket";
+  HassRouterPage,
+  RouterOptions,
+} from "../../../layouts/hass-router-page";
+import { HomeAssistant } from "../../../types";
+import "./ha-config-device-page";
+import "./ha-config-devices-dashboard";
 
 @customElement("ha-config-devices")
 class HaConfigDevices extends HassRouterPage {
   @property() public hass!: HomeAssistant;
+
   @property() public narrow!: boolean;
+
   @property() public isWide!: boolean;
+
   @property() public showAdvanced!: boolean;
 
   protected routerOptions: RouterOptions = {
@@ -43,8 +46,11 @@ class HaConfigDevices extends HassRouterPage {
   };
 
   @property() private _configEntries: ConfigEntry[] = [];
+
   @property() private _entityRegistryEntries: EntityRegistryEntry[] = [];
+
   @property() private _deviceRegistryEntries: DeviceRegistryEntry[] = [];
+
   @property() private _areas: AreaRegistryEntry[] = [];
 
   private _unsubs?: UnsubscribeFunc[];

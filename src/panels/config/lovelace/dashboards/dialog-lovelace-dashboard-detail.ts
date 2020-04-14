@@ -7,31 +7,38 @@ import {
   property,
   TemplateResult,
 } from "lit-element";
+import { createCloseHeading } from "../../../../components/ha-dialog";
 import "../../../../components/ha-icon-input";
-import { HomeAssistant } from "../../../../types";
+import { HaSwitch } from "../../../../components/ha-switch";
 import {
   LovelaceDashboard,
-  LovelaceDashboardMutableParams,
   LovelaceDashboardCreateParams,
+  LovelaceDashboardMutableParams,
 } from "../../../../data/lovelace";
-import { LovelaceDashboardDetailsDialogParams } from "./show-dialog-lovelace-dashboard-detail";
+import { DEFAULT_PANEL, setDefaultPanel } from "../../../../data/panel";
 import { PolymerChangedEvent } from "../../../../polymer-types";
-import { HaSwitch } from "../../../../components/ha-switch";
-import { createCloseHeading } from "../../../../components/ha-dialog";
 import { haStyleDialog } from "../../../../resources/styles";
-import { setDefaultPanel, DEFAULT_PANEL } from "../../../../data/panel";
+import { HomeAssistant } from "../../../../types";
+import { LovelaceDashboardDetailsDialogParams } from "./show-dialog-lovelace-dashboard-detail";
 
 @customElement("dialog-lovelace-dashboard-detail")
 export class DialogLovelaceDashboardDetail extends LitElement {
   @property() public hass!: HomeAssistant;
+
   @property() private _params?: LovelaceDashboardDetailsDialogParams;
+
   @property() private _urlPath!: LovelaceDashboard["url_path"];
+
   @property() private _showInSidebar!: boolean;
+
   @property() private _icon!: string;
+
   @property() private _title!: string;
+
   @property() private _requireAdmin!: LovelaceDashboard["require_admin"];
 
   @property() private _error?: string;
+
   @property() private _submitting = false;
 
   public async showDialog(
@@ -92,9 +99,7 @@ export class DialogLovelaceDashboardDetail extends LitElement {
               )
             : html`
                 ${this._error
-                  ? html`
-                      <div class="error">${this._error}</div>
-                    `
+                  ? html` <div class="error">${this._error}</div> `
                   : ""}
                 <div class="form">
                   <paper-input
@@ -171,7 +176,7 @@ export class DialogLovelaceDashboardDetail extends LitElement {
                 slot="secondaryAction"
                 @click=${this._toggleDefault}
                 .disabled=${this._params.urlPath === "lovelace" &&
-                  defaultPanelUrlPath === "lovelace"}
+                defaultPanelUrlPath === "lovelace"}
               >
                 ${this._params.urlPath === defaultPanelUrlPath
                   ? this.hass.localize(

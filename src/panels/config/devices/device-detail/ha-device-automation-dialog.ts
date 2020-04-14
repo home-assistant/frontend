@@ -1,34 +1,37 @@
 import {
-  LitElement,
-  html,
   CSSResult,
-  TemplateResult,
-  property,
   customElement,
+  html,
+  LitElement,
+  property,
+  TemplateResult,
 } from "lit-element";
-
 import "../../../../components/ha-dialog";
-import "./ha-device-triggers-card";
-import "./ha-device-conditions-card";
-import "./ha-device-actions-card";
-import { DeviceAutomationDialogParams } from "./show-dialog-device-automation";
-import { HomeAssistant } from "../../../../types";
 import {
-  DeviceTrigger,
-  DeviceCondition,
   DeviceAction,
-  fetchDeviceTriggers,
-  fetchDeviceConditions,
+  DeviceCondition,
+  DeviceTrigger,
   fetchDeviceActions,
+  fetchDeviceConditions,
+  fetchDeviceTriggers,
 } from "../../../../data/device_automation";
 import { haStyleDialog } from "../../../../resources/styles";
+import { HomeAssistant } from "../../../../types";
+import "./ha-device-actions-card";
+import "./ha-device-conditions-card";
+import "./ha-device-triggers-card";
+import { DeviceAutomationDialogParams } from "./show-dialog-device-automation";
 
 @customElement("dialog-device-automation")
 export class DialogDeviceAutomation extends LitElement {
   @property() public hass!: HomeAssistant;
+
   @property() private _triggers: DeviceTrigger[] = [];
+
   @property() private _conditions: DeviceCondition[] = [];
+
   @property() private _actions: DeviceAction[] = [];
+
   @property() private _params?: DeviceAutomationDialogParams;
 
   public async showDialog(params: DeviceAutomationDialogParams): Promise<void> {
@@ -53,18 +56,18 @@ export class DialogDeviceAutomation extends LitElement {
 
     const { deviceId, script } = this._params;
 
-    fetchDeviceActions(this.hass, deviceId).then(
-      (actions) => (this._actions = actions)
-    );
+    fetchDeviceActions(this.hass, deviceId).then((actions) => {
+      this._actions = actions;
+    });
     if (script) {
       return;
     }
-    fetchDeviceTriggers(this.hass, deviceId).then(
-      (triggers) => (this._triggers = triggers)
-    );
-    fetchDeviceConditions(this.hass, deviceId).then(
-      (conditions) => (this._conditions = conditions)
-    );
+    fetchDeviceTriggers(this.hass, deviceId).then((triggers) => {
+      this._triggers = triggers;
+    });
+    fetchDeviceConditions(this.hass, deviceId).then((conditions) => {
+      this._conditions = conditions;
+    });
   }
 
   protected render(): TemplateResult | void {

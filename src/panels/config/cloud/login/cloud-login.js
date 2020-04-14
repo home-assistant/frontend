@@ -1,22 +1,22 @@
 import "@material/mwc-button";
 import "@polymer/paper-icon-button/paper-icon-button";
 import "@polymer/paper-input/paper-input";
-import "@polymer/paper-item/paper-item-body";
 import "@polymer/paper-item/paper-item";
+import "@polymer/paper-item/paper-item-body";
 import "@polymer/paper-ripple/paper-ripple";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
+/* eslint-plugin-disable lit */
 import { PolymerElement } from "@polymer/polymer/polymer-element";
-
-import "../../../../components/ha-card";
 import "../../../../components/buttons/ha-progress-button";
-import "../../../../layouts/hass-subpage";
-import "../../../../resources/ha-style";
-
-import "../../ha-config-section";
-import { EventsMixin } from "../../../../mixins/events-mixin";
-import NavigateMixin from "../../../../mixins/navigate-mixin";
+import "../../../../components/ha-card";
 import "../../../../components/ha-icon-next";
+import "../../../../layouts/hass-subpage";
+import { EventsMixin } from "../../../../mixins/events-mixin";
 import LocalizeMixin from "../../../../mixins/localize-mixin";
+import NavigateMixin from "../../../../mixins/navigate-mixin";
+import "../../../../resources/ha-style";
+import "../../ha-config-section";
+
 /*
  * @appliesMixin NavigateMixin
  * @appliesMixin EventsMixin

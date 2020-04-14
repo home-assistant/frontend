@@ -1,4 +1,4 @@
-import { LovelaceBadgeConfig, ActionConfig } from "../../../data/lovelace";
+import { ActionConfig, LovelaceBadgeConfig } from "../../../data/lovelace";
 import { EntityFilterEntityConfig } from "../entity-rows/types";
 
 export interface EntityFilterBadgeConfig extends LovelaceBadgeConfig {

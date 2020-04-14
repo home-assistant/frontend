@@ -1,16 +1,20 @@
-import { createBadgeElement } from "../create-element/create-badge-element";
-import { processConfigEntities } from "../common/process-config-entities";
-import { LovelaceBadge } from "../types";
-import { EntityFilterEntityConfig } from "../entity-rows/types";
 import { HomeAssistant } from "../../../types";
-import { EntityFilterBadgeConfig } from "./types";
 import { evaluateFilter } from "../common/evaluate-filter";
+import { processConfigEntities } from "../common/process-config-entities";
+import { createBadgeElement } from "../create-element/create-badge-element";
+import { EntityFilterEntityConfig } from "../entity-rows/types";
+import { LovelaceBadge } from "../types";
+import { EntityFilterBadgeConfig } from "./types";
 
 class EntityFilterBadge extends HTMLElement implements LovelaceBadge {
   private _elements?: LovelaceBadge[];
+
   private _config?: EntityFilterBadgeConfig;
+
   private _configEntities?: EntityFilterEntityConfig[];
+
   private _hass?: HomeAssistant;
+
   private _oldEntities?: EntityFilterEntityConfig[];
 
   public setConfig(config: EntityFilterBadgeConfig): void {

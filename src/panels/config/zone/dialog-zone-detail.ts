@@ -1,41 +1,47 @@
+import "@material/mwc-button";
+import "@polymer/paper-input/paper-input";
 import {
-  LitElement,
-  html,
   css,
   CSSResult,
-  TemplateResult,
+  html,
+  LitElement,
   property,
+  TemplateResult,
 } from "lit-element";
-
-import "@polymer/paper-input/paper-input";
-import "@material/mwc-button";
-
-import "../../../components/map/ha-location-editor";
-import "../../../components/ha-switch";
-
-import { ZoneDetailDialogParams } from "./show-dialog-zone-detail";
-import { HomeAssistant } from "../../../types";
-import {
-  ZoneMutableParams,
-  passiveRadiusColor,
-  defaultRadiusColor,
-  getZoneEditorInitData,
-} from "../../../data/zone";
 import { addDistanceToCoord } from "../../../common/location/add_distance_to_coord";
 import { createCloseHeading } from "../../../components/ha-dialog";
+import "../../../components/ha-switch";
+import "../../../components/map/ha-location-editor";
+import {
+  defaultRadiusColor,
+  getZoneEditorInitData,
+  passiveRadiusColor,
+  ZoneMutableParams,
+} from "../../../data/zone";
 import { haStyleDialog } from "../../../resources/styles";
+import { HomeAssistant } from "../../../types";
+import { ZoneDetailDialogParams } from "./show-dialog-zone-detail";
 
 class DialogZoneDetail extends LitElement {
   @property() public hass!: HomeAssistant;
+
   @property() private _name!: string;
+
   @property() private _icon!: string;
+
   @property() private _latitude!: number;
+
   @property() private _longitude!: number;
+
   @property() private _passive!: boolean;
+
   @property() private _radius!: number;
+
   @property() private _error?: string;
+
   @property() private _params?: ZoneDetailDialogParams;
-  @property() private _submitting: boolean = false;
+
+  @property() private _submitting = false;
 
   public async showDialog(params: ZoneDetailDialogParams): Promise<void> {
     this._params = params;
@@ -96,11 +102,7 @@ class DialogZoneDetail extends LitElement {
         )}
       >
         <div>
-          ${this._error
-            ? html`
-                <div class="error">${this._error}</div>
-              `
-            : ""}
+          ${this._error ? html` <div class="error">${this._error}</div> ` : ""}
           <div class="form">
             <paper-input
               .value=${this._name}

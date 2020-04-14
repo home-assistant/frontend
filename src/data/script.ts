@@ -1,11 +1,11 @@
-import { HomeAssistant } from "../types";
-import { computeObjectId } from "../common/entity/compute_object_id";
-import { Condition } from "./automation";
 import {
-  HassEntityBase,
   HassEntityAttributeBase,
+  HassEntityBase,
 } from "home-assistant-js-websocket";
+import { computeObjectId } from "../common/entity/compute_object_id";
 import { navigate } from "../common/navigate";
+import { HomeAssistant } from "../types";
+import { Condition } from "./automation";
 
 export interface ScriptEntity extends HassEntityBase {
   attributes: HassEntityAttributeBase & {

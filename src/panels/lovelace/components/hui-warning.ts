@@ -1,18 +1,16 @@
 import {
+  css,
+  CSSResult,
+  customElement,
   html,
   LitElement,
   TemplateResult,
-  CSSResult,
-  css,
-  customElement,
 } from "lit-element";
 
 @customElement("hui-warning")
 export class HuiWarning extends LitElement {
   protected render(): TemplateResult {
-    return html`
-      <slot></slot>
-    `;
+    return html` <slot></slot> `;
   }
 
   static get styles(): CSSResult {

@@ -1,20 +1,21 @@
-import { DeviceRegistryEntry } from "../../../../data/device_registry";
-import { removeMQTTDeviceEntry } from "../../../../data/mqtt";
 import {
-  LitElement,
-  html,
+  CSSResult,
   customElement,
+  html,
+  LitElement,
   property,
   TemplateResult,
-  CSSResult,
 } from "lit-element";
+import { DeviceRegistryEntry } from "../../../../data/device_registry";
+import { removeMQTTDeviceEntry } from "../../../../data/mqtt";
 import { showConfirmationDialog } from "../../../../dialogs/generic/show-dialog-box";
-import { HomeAssistant } from "../../../../types";
 import { haStyle } from "../../../../resources/styles";
+import { HomeAssistant } from "../../../../types";
 
 @customElement("ha-device-card-mqtt")
 export class HaDeviceCardMqtt extends LitElement {
   @property() public hass!: HomeAssistant;
+
   @property() public device!: DeviceRegistryEntry;
 
   protected render(): TemplateResult {

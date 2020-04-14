@@ -1,39 +1,36 @@
+import "@material/mwc-ripple";
+import { HassEntity } from "home-assistant-js-websocket";
 import {
+  css,
+  CSSResult,
+  customElement,
   html,
   LitElement,
+  property,
   PropertyValues,
   TemplateResult,
-  CSSResult,
-  css,
-  customElement,
-  property,
 } from "lit-element";
-import { HassEntity } from "home-assistant-js-websocket";
-import { styleMap } from "lit-html/directives/style-map";
 import { ifDefined } from "lit-html/directives/if-defined";
-import "@material/mwc-ripple";
-
-import "../../../components/ha-card";
-import "../components/hui-warning";
-
-import { isValidEntityId } from "../../../common/entity/valid_entity_id";
-import { stateIcon } from "../../../common/entity/state_icon";
+import { styleMap } from "lit-html/directives/style-map";
+import { DOMAINS_TOGGLE } from "../../../common/const";
+import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
+import { computeActiveState } from "../../../common/entity/compute_active_state";
+import { computeDomain } from "../../../common/entity/compute_domain";
 import { computeStateDomain } from "../../../common/entity/compute_state_domain";
 import { computeStateName } from "../../../common/entity/compute_state_name";
-import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
-import { computeDomain } from "../../../common/entity/compute_domain";
-
-import { HomeAssistant, LightEntity } from "../../../types";
-import { LovelaceCard, LovelaceCardEditor } from "../types";
-import { DOMAINS_TOGGLE } from "../../../common/const";
-import { ButtonCardConfig } from "./types";
-import { actionHandler } from "../common/directives/action-handler-directive";
-import { hasAction } from "../common/has-action";
-import { handleAction } from "../common/handle-action";
-import { ActionHandlerEvent } from "../../../data/lovelace";
-import { computeActiveState } from "../../../common/entity/compute_active_state";
+import { stateIcon } from "../../../common/entity/state_icon";
+import { isValidEntityId } from "../../../common/entity/valid_entity_id";
 import { iconColorCSS } from "../../../common/style/icon_color_css";
+import "../../../components/ha-card";
+import { ActionHandlerEvent } from "../../../data/lovelace";
+import { HomeAssistant, LightEntity } from "../../../types";
+import { actionHandler } from "../common/directives/action-handler-directive";
 import { findEntities } from "../common/find-entites";
+import { handleAction } from "../common/handle-action";
+import { hasAction } from "../common/has-action";
+import "../components/hui-warning";
+import { LovelaceCard, LovelaceCardEditor } from "../types";
+import { ButtonCardConfig } from "./types";
 
 @customElement("hui-button-card")
 export class HuiButtonCard extends LitElement implements LovelaceCard {
@@ -173,7 +170,7 @@ export class HuiButtonCard extends LitElement implements LovelaceCard {
                   stateObj ? computeActiveState(stateObj) : undefined
                 )}
                 .icon=${this._config.icon ||
-                  (stateObj ? stateIcon(stateObj) : "")}
+                (stateObj ? stateIcon(stateObj) : "")}
                 style=${styleMap({
                   filter: stateObj ? this._computeBrightness(stateObj) : "",
                   color: stateObj ? this._computeColor(stateObj) : "",
@@ -188,7 +185,7 @@ export class HuiButtonCard extends LitElement implements LovelaceCard {
           ? html`
               <span tabindex="-1">
                 ${this._config.name ||
-                  (stateObj ? computeStateName(stateObj) : "")}
+                (stateObj ? computeStateName(stateObj) : "")}
               </span>
             `
           : ""}

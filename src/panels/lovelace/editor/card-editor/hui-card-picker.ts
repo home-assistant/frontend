@@ -1,33 +1,32 @@
 import {
-  html,
   css,
-  LitElement,
-  TemplateResult,
   CSSResult,
   customElement,
+  html,
+  LitElement,
   property,
   PropertyValues,
+  TemplateResult,
 } from "lit-element";
-import { until } from "lit-html/directives/until";
 import { classMap } from "lit-html/directives/class-map";
-
-import { CardPickTarget } from "../types";
-import { HomeAssistant } from "../../../../types";
-import { LovelaceCard } from "../../types";
-import { LovelaceCardConfig, LovelaceConfig } from "../../../../data/lovelace";
+import { until } from "lit-html/directives/until";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import { createCardElement } from "../../create-element/create-card-element";
-import { getCardStubConfig } from "../get-card-stub-config";
-import {
-  computeUsedEntities,
-  calcUnusedEntities,
-} from "../../common/compute-unused-entities";
 import { UNAVAILABLE_STATES } from "../../../../data/entity";
+import { LovelaceCardConfig, LovelaceConfig } from "../../../../data/lovelace";
 import {
   customCards,
-  getCustomCardEntry,
   CUSTOM_TYPE_PREFIX,
+  getCustomCardEntry,
 } from "../../../../data/lovelace_custom_cards";
+import { HomeAssistant } from "../../../../types";
+import {
+  calcUnusedEntities,
+  computeUsedEntities,
+} from "../../common/compute-unused-entities";
+import { createCardElement } from "../../create-element/create-card-element";
+import { LovelaceCard } from "../../types";
+import { getCardStubConfig } from "../get-card-stub-config";
+import { CardPickTarget } from "../types";
 
 const previewCards: string[] = [
   "alarm-panel",
@@ -63,9 +62,13 @@ const nonPreviewCards: string[] = [
 @customElement("hui-card-picker")
 export class HuiCardPicker extends LitElement {
   @property() public hass?: HomeAssistant;
+
   public lovelace?: LovelaceConfig;
+
   public cardPicked?: (cardConf: LovelaceCardConfig) => void;
+
   private _unusedEntities?: string[];
+
   private _usedEntities?: string[];
 
   protected render(): TemplateResult {
@@ -278,8 +281,8 @@ export class HuiCardPicker extends LitElement {
 
   private async _renderCardElement(
     type: string,
-    noElement: boolean = false,
-    isCustom: boolean = false
+    noElement = false,
+    isCustom = false
   ): Promise<TemplateResult> {
     const customCard = isCustom ? getCustomCardEntry(type) : undefined;
     if (isCustom) {

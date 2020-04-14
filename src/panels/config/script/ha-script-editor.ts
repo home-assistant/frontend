@@ -35,13 +35,21 @@ import { configSections } from "../ha-panel-config";
 
 export class HaScriptEditor extends LitElement {
   @property() public hass!: HomeAssistant;
+
   @property() public script!: ScriptEntity;
+
   @property() public isWide?: boolean;
+
   @property() public narrow!: boolean;
+
   @property() public route!: Route;
+
   @property() public creatingNew?: boolean;
+
   @property() private _config?: ScriptConfig;
+
   @property() private _dirty?: boolean;
+
   @property() private _errors?: string;
 
   protected render(): TemplateResult {
@@ -66,15 +74,11 @@ export class HaScriptEditor extends LitElement {
               ></paper-icon-button>
             `}
         ${this.narrow
-          ? html`
-              <span slot="header">${this._config?.alias}</span>
-            `
+          ? html` <span slot="header">${this._config?.alias}</span> `
           : ""}
         <div class="content">
           ${this._errors
-            ? html`
-                <div class="errors">${this._errors}</div>
-              `
+            ? html` <div class="errors">${this._errors}</div> `
             : ""}
           <div
             class="${classMap({
@@ -85,9 +89,7 @@ export class HaScriptEditor extends LitElement {
               ? html`
                   <ha-config-section .isWide=${this.isWide}>
                     ${!this.narrow
-                      ? html`
-                          <span slot="header">${this._config.alias}</span>
-                        `
+                      ? html` <span slot="header">${this._config.alias}</span> `
                       : ""}
                     <span slot="introduction">
                       ${this.hass.localize(
@@ -202,7 +204,7 @@ export class HaScriptEditor extends LitElement {
 
     if (changedProps.has("creatingNew") && this.creatingNew && this.hass) {
       const initData = getScriptEditorInitData();
-      this._dirty = initData ? true : false;
+      this._dirty = !!initData;
       this._config = {
         alias: this.hass.localize("ui.panel.config.script.editor.default_name"),
         sequence: [{ ...HaDeviceAction.defaultConfig }],

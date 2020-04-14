@@ -1,12 +1,100 @@
 {
-  "extends": "./.eslintrc-hound.json",
-  "plugins": ["react"],
+  "extends": [
+    "plugin:@typescript-eslint/recommended",
+    "airbnb-typescript/base",
+    "plugin:wc/recommended",
+    "plugin:lit/recommended",
+    "prettier",
+    "prettier/@typescript-eslint"
+  ],
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "ecmaVersion": 2020,
+    "ecmaFeatures": {
+      "jsx": true,
+      "modules": true
+    },
+    "sourceType": "module",
+    "project": "./tsconfig.json"
+  },
+  "settings": {
+    "react": {
+      "pragma": "h",
+      "version": "15.0"
+    },
+    "import/resolver": {
+      "webpack": {
+        "config": "./webpack.config.js"
+      }
+    }
+  },
+  "globals": {
+    "__DEV__": false,
+    "__DEMO__": false,
+    "__BUILD__": false,
+    "__VERSION__": false,
+    "__STATIC_PATH__": false,
+    "Polymer": true,
+    "webkitSpeechRecognition": false,
+    "ResizeObserver": false
+  },
   "env": {
-    "browser": true
+    "browser": true,
+    "es6": true
   },
   "rules": {
-    "import/no-unresolved": 2,
-    "linebreak-style": 0,
-    "implicit-arrow-linebreak": 0
-  }
+    "class-methods-use-this": 0,
+    "new-cap": 0,
+    "prefer-template": 0,
+    "object-shorthand": 0,
+    "func-names": 0,
+    "prefer-arrow-callback": 0,
+    "no-underscore-dangle": 0,
+    "no-var": 0,
+    "strict": 0,
+    "prefer-spread": 0,
+    "no-plusplus": 0,
+    "no-bitwise": 0,
+    "comma-dangle": 0,
+    "vars-on-top": 0,
+    "no-continue": 0,
+    "no-param-reassign": 0,
+    "no-multi-assign": 0,
+    "radix": 0,
+    "no-alert": 0,
+    "no-return-await": 0,
+    "no-nested-ternary": 0,
+    "prefer-destructuring": 0,
+    "no-restricted-globals": [2, "event"],
+    "prefer-promise-reject-errors": 0,
+    "import/order": 0,
+    "import/prefer-default-export": 0,
+    "import/no-unresolved": 0,
+    "import/no-cycle": 0,
+    "import/extensions": [
+      2,
+      "ignorePackages",
+      { "ts": "never", "js": "never" }
+    ],
+    "no-restricted-syntax": ["error", "LabeledStatement", "WithStatement"],
+    "object-curly-newline": 0,
+    "default-case": 0,
+    "wc/no-self-class": 0,
+    "@typescript-eslint/camelcase": 0,
+    "@typescript-eslint/ban-ts-ignore": 0,
+    "@typescript-eslint/no-use-before-define": 0,
+    "@typescript-eslint/no-non-null-assertion": 0,
+    "@typescript-eslint/no-explicit-any": 0,
+    "@typescript-eslint/no-unused-vars": 0,
+    "@typescript-eslint/explicit-function-return-type": 0
+  },
+  "plugins": [
+    "disable",
+    "import",
+    "react",
+    "lit",
+    "prettier",
+    "@typescript-eslint"
+  ],
+  "processor": "disable/disable"
 }

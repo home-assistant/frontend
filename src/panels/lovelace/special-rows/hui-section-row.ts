@@ -1,17 +1,15 @@
 import {
-  html,
-  LitElement,
-  TemplateResult,
-  customElement,
-  property,
   css,
   CSSResult,
+  customElement,
+  html,
+  LitElement,
+  property,
+  TemplateResult,
 } from "lit-element";
-
-import { LovelaceRow, SectionConfig } from "../entity-rows/types";
-import { HomeAssistant } from "../../../types";
-
 import "../../../components/ha-icon";
+import { HomeAssistant } from "../../../types";
+import { LovelaceRow, SectionConfig } from "../entity-rows/types";
 
 @customElement("hui-section-row")
 class HuiSectionRow extends LitElement implements LovelaceRow {
@@ -35,9 +33,7 @@ class HuiSectionRow extends LitElement implements LovelaceRow {
     return html`
       <div class="divider"></div>
       ${this._config.label
-        ? html`
-            <div class="label">${this._config.label}</div>
-          `
+        ? html` <div class="label">${this._config.label}</div> `
         : html``}
     `;
   }

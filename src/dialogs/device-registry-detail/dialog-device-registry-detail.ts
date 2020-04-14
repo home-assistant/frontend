@@ -1,35 +1,36 @@
+import "@material/mwc-button/mwc-button";
+import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable";
+import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
+import "@polymer/paper-input/paper-input";
+import "@polymer/paper-item/paper-item";
+import "@polymer/paper-listbox/paper-listbox";
 import {
-  LitElement,
-  html,
   css,
   CSSResult,
-  TemplateResult,
   customElement,
+  html,
+  LitElement,
   property,
+  TemplateResult,
 } from "lit-element";
-import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable";
-import "@polymer/paper-input/paper-input";
-import "@polymer/paper-listbox/paper-listbox";
-import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
-import "@polymer/paper-item/paper-item";
-import "@material/mwc-button/mwc-button";
-
 import "../../components/dialog/ha-paper-dialog";
 import "../../components/ha-area-picker";
-
-import { DeviceRegistryDetailDialogParams } from "./show-dialog-device-registry-detail";
+import { computeDeviceName } from "../../data/device_registry";
 import { PolymerChangedEvent } from "../../polymer-types";
 import { haStyleDialog } from "../../resources/styles";
 import { HomeAssistant } from "../../types";
-import { computeDeviceName } from "../../data/device_registry";
+import { DeviceRegistryDetailDialogParams } from "./show-dialog-device-registry-detail";
 
 @customElement("dialog-device-registry-detail")
 class DialogDeviceRegistryDetail extends LitElement {
   @property() public hass!: HomeAssistant;
 
   @property() private _nameByUser!: string;
+
   @property() private _error?: string;
+
   @property() private _params?: DeviceRegistryDetailDialogParams;
+
   @property() private _areaId?: string;
 
   private _submitting?: boolean;
@@ -60,11 +61,7 @@ class DialogDeviceRegistryDetail extends LitElement {
           ${computeDeviceName(device, this.hass)}
         </h2>
         <paper-dialog-scrollable>
-          ${this._error
-            ? html`
-                <div class="error">${this._error}</div>
-              `
-            : ""}
+          ${this._error ? html` <div class="error">${this._error}</div> ` : ""}
           <div class="form">
             <paper-input
               .value=${this._nameByUser}

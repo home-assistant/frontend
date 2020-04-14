@@ -1,7 +1,6 @@
-import { LitElement, html } from "lit-element";
-
-import "./ha-progress-button";
+import { html, LitElement } from "lit-element";
 import { fireEvent } from "../../common/dom/fire_event";
+import "./ha-progress-button";
 
 class HaCallApiButton extends LitElement {
   render() {

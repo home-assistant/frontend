@@ -1,5 +1,6 @@
 import "@polymer/paper-checkbox/paper-checkbox";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
+/* eslint-plugin-disable lit */
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 
 class HaCustomizeBoolean extends PolymerElement {

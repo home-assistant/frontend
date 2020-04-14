@@ -1,10 +1,14 @@
 import "@polymer/paper-toast/paper-toast";
+import type { PaperToastElement } from "@polymer/paper-toast/paper-toast";
+import type { Constructor } from "../types";
 
-// tslint:disable-next-line
-const PaperToast = customElements.get("paper-toast");
+const PaperToast = customElements.get("paper-toast") as Constructor<
+  PaperToastElement
+>;
 
 export class HaToast extends PaperToast {
   private _resizeListener?: (obj: { matches: boolean }) => unknown;
+
   private _mediaq?: MediaQueryList;
 
   public connectedCallback() {

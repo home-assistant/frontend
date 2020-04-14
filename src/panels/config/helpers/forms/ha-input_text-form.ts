@@ -1,32 +1,38 @@
+import "@polymer/paper-input/paper-input";
 import {
-  LitElement,
-  html,
   css,
   CSSResult,
-  TemplateResult,
-  property,
   customElement,
+  html,
+  LitElement,
+  property,
+  TemplateResult,
 } from "lit-element";
-
-import "@polymer/paper-input/paper-input";
-
-import "../../../../components/ha-switch";
-import "../../../../components/ha-icon-input";
-import { HomeAssistant } from "../../../../types";
-import { InputText } from "../../../../data/input_text";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import "../../../../components/ha-icon-input";
+import "../../../../components/ha-switch";
+import { InputText } from "../../../../data/input_text";
 import { haStyle } from "../../../../resources/styles";
+import { HomeAssistant } from "../../../../types";
 
 @customElement("ha-input_text-form")
 class HaInputTextForm extends LitElement {
   @property() public hass!: HomeAssistant;
+
   @property() public new?: boolean;
+
   private _item?: InputText;
+
   @property() private _name!: string;
+
   @property() private _icon!: string;
+
   @property() private _max?: number;
+
   @property() private _min?: number;
+
   @property() private _mode?: string;
+
   @property() private _pattern?: string;
 
   set item(item: InputText) {

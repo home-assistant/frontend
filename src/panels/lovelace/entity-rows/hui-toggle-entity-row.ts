@@ -1,21 +1,19 @@
 import {
+  customElement,
   html,
   LitElement,
-  TemplateResult,
-  customElement,
   property,
   PropertyValues,
+  TemplateResult,
 } from "lit-element";
-
-import "../components/hui-generic-entity-row";
-import "../../../components/entity/ha-entity-toggle";
-import "../components/hui-warning";
-
 import { computeStateDisplay } from "../../../common/entity/compute_state_display";
-import { HomeAssistant } from "../../../types";
-import { LovelaceRow, EntityConfig } from "./types";
-import { hasConfigOrEntityChanged } from "../common/has-changed";
+import "../../../components/entity/ha-entity-toggle";
 import { UNAVAILABLE_STATES } from "../../../data/entity";
+import { HomeAssistant } from "../../../types";
+import { hasConfigOrEntityChanged } from "../common/has-changed";
+import "../components/hui-generic-entity-row";
+import "../components/hui-warning";
+import { EntityConfig, LovelaceRow } from "./types";
 
 @customElement("hui-toggle-entity-row")
 class HuiToggleEntityRow extends LitElement implements LovelaceRow {

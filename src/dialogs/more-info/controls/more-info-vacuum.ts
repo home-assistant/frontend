@@ -2,7 +2,6 @@ import "@polymer/iron-icon/iron-icon";
 import "@polymer/paper-icon-button/paper-icon-button";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
-
 import {
   css,
   CSSResult,
@@ -12,13 +11,11 @@ import {
   property,
   TemplateResult,
 } from "lit-element";
-
 import { supportsFeature } from "../../../common/entity/supports-feature";
-import { HomeAssistant } from "../../../types";
-
-import "../../../components/ha-paper-dropdown-menu";
 import "../../../components/ha-attributes";
+import "../../../components/ha-paper-dropdown-menu";
 import {
+  VacuumEntity,
   VACUUM_SUPPORT_BATTERY,
   VACUUM_SUPPORT_CLEAN_SPOT,
   VACUUM_SUPPORT_FAN_SPEED,
@@ -28,8 +25,8 @@ import {
   VACUUM_SUPPORT_START,
   VACUUM_SUPPORT_STATUS,
   VACUUM_SUPPORT_STOP,
-  VacuumEntity,
 } from "../../../data/vacuum";
+import { HomeAssistant } from "../../../types";
 
 interface VacuumCommand {
   translationKey: string;

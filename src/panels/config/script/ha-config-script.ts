@@ -13,9 +13,13 @@ import "./ha-script-picker";
 @customElement("ha-config-script")
 class HaConfigScript extends HassRouterPage {
   @property() public hass!: HomeAssistant;
+
   @property() public narrow!: boolean;
+
   @property() public isWide!: boolean;
+
   @property() public showAdvanced!: boolean;
+
   @property() public scripts: HassEntity[] = [];
 
   protected routerOptions: RouterOptions = {
@@ -59,7 +63,7 @@ class HaConfigScript extends HassRouterPage {
     ) {
       pageEl.creatingNew = undefined;
       const scriptEntityId = this.routeTail.path.substr(1);
-      pageEl.creatingNew = scriptEntityId === "new" ? true : false;
+      pageEl.creatingNew = scriptEntityId === "new";
       pageEl.script =
         scriptEntityId === "new"
           ? undefined

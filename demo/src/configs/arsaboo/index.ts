@@ -1,6 +1,6 @@
 import { DemoConfig } from "../types";
-import { demoLovelaceArsaboo } from "./lovelace";
 import { demoEntitiesArsaboo } from "./entities";
+import { demoLovelaceArsaboo } from "./lovelace";
 import { demoThemeArsaboo } from "./theme";
 
 export const demoArsaboo: DemoConfig = {

@@ -1,6 +1,6 @@
 import { DemoConfig } from "../types";
-import { demoLovelaceTeachingbirds } from "./lovelace";
 import { demoEntitiesTeachingbirds } from "./entities";
+import { demoLovelaceTeachingbirds } from "./lovelace";
 import { demoThemeTeachingbirds } from "./theme";
 
 export const demoTeachingbirds: DemoConfig = {

@@ -1,9 +1,9 @@
 import {
-  HassEntityBase,
   HassEntityAttributeBase,
+  HassEntityBase,
 } from "home-assistant-js-websocket";
-import { HomeAssistant } from "../types";
 import { navigate } from "../common/navigate";
+import { HomeAssistant } from "../types";
 import { DeviceCondition, DeviceTrigger } from "./device_automation";
 import { Action } from "./script";
 

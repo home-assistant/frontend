@@ -1,32 +1,30 @@
 import {
-  html,
-  LitElement,
-  TemplateResult,
   css,
   CSSResult,
-  property,
   customElement,
+  html,
+  LitElement,
+  property,
   PropertyValues,
+  TemplateResult,
 } from "lit-element";
-
 import "../../../components/entity/state-badge";
-import "../components/hui-warning";
-
-import { LovelaceRow } from "./types";
+import { UNAVAILABLE_STATES } from "../../../data/entity";
+import {
+  getWeatherUnit,
+  weatherIcons,
+  weatherImages,
+} from "../../../data/weather";
 import { HomeAssistant, WeatherEntity } from "../../../types";
 import { EntitiesCardEntityConfig } from "../cards/types";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
-import {
-  weatherIcons,
-  getWeatherUnit,
-  weatherImages,
-} from "../../../data/weather";
-
-import { UNAVAILABLE_STATES } from "../../../data/entity";
+import "../components/hui-warning";
+import { LovelaceRow } from "./types";
 
 @customElement("hui-weather-entity-row")
 class HuiWeatherEntityRow extends LitElement implements LovelaceRow {
   @property() public hass?: HomeAssistant;
+
   @property() private _config?: EntitiesCardEntityConfig;
 
   public setConfig(config: EntitiesCardEntityConfig): void {

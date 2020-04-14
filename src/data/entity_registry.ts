@@ -1,7 +1,7 @@
-import { createCollection, Connection } from "home-assistant-js-websocket";
-import { HomeAssistant } from "../types";
+import { Connection, createCollection } from "home-assistant-js-websocket";
 import { computeStateName } from "../common/entity/compute_state_name";
 import { debounce } from "../common/util/debounce";
+import { HomeAssistant } from "../types";
 
 export interface EntityRegistryEntry {
   entity_id: string;
