@@ -1,13 +1,13 @@
-import { HomeAssistant, Constructor } from "../../types";
 import {
+  LovelaceBadgeConfig,
   LovelaceCardConfig,
   LovelaceConfig,
-  LovelaceBadgeConfig,
 } from "../../data/lovelace";
+import { Constructor, HomeAssistant } from "../../types";
 import { LovelaceHeaderFooterConfig } from "./header-footer/types";
 
 declare global {
-  // tslint:disable-next-line
+  // eslint-disable-next-line
   interface HASSDomEvents {
     "ll-rebuild": {};
     "ll-badge-rebuild": {};

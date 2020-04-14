@@ -1,33 +1,36 @@
-import {
-  html,
-  css,
-  LitElement,
-  TemplateResult,
-  property,
-  customElement,
-  PropertyValues,
-} from "lit-element";
-
 import "@polymer/paper-input/paper-input";
-import "../../../components/ha-switch";
 import {
-  ExtEntityRegistryEntry,
+  css,
+  customElement,
+  html,
+  LitElement,
+  property,
+  PropertyValues,
+  TemplateResult,
+} from "lit-element";
+import { computeDomain } from "../../../common/entity/compute_domain";
+import "../../../components/ha-switch";
+import type { HaSwitch } from "../../../components/ha-switch";
+import {
   EntityRegistryEntryUpdateParams,
+  ExtEntityRegistryEntry,
   updateEntityRegistryEntry,
 } from "../../../data/entity_registry";
-import { HomeAssistant } from "../../../types";
-import { PolymerChangedEvent } from "../../../polymer-types";
-// tslint:disable-next-line: no-duplicate-imports
-import { HaSwitch } from "../../../components/ha-switch";
-import { computeDomain } from "../../../common/entity/compute_domain";
+import type { PolymerChangedEvent } from "../../../polymer-types";
+import type { HomeAssistant } from "../../../types";
 
 @customElement("ha-registry-basic-editor")
 export class HaEntityRegistryBasicEditor extends LitElement {
   @property() public hass!: HomeAssistant;
+
   @property() public entry!: ExtEntityRegistryEntry;
+
   @property() private _origEntityId!: string;
+
   @property() private _entityId!: string;
+
   @property() private _disabledBy!: string | null;
+
   @property() private _submitting?: boolean;
 
   public async updateEntry(): Promise<void> {
@@ -40,8 +43,6 @@ export class HaEntityRegistryBasicEditor extends LitElement {
     }
     try {
       await updateEntityRegistryEntry(this.hass!, this._origEntityId, params);
-    } catch (err) {
-      throw err;
     } finally {
       this._submitting = false;
     }

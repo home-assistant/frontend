@@ -1,21 +1,20 @@
 import {
-  customElement,
-  LitElement,
-  html,
-  property,
-  CSSResult,
   css,
+  CSSResult,
+  customElement,
+  html,
+  LitElement,
+  property,
 } from "lit-element";
-
-import "./ha-form-string";
-import "./ha-form-integer";
-import "./ha-form-float";
+import { dynamicElement } from "../../common/dom/dynamic-element-directive";
+import { fireEvent } from "../../common/dom/fire_event";
 import "./ha-form-boolean";
-import "./ha-form-select";
+import "./ha-form-float";
+import "./ha-form-integer";
 import "./ha-form-multi_select";
 import "./ha-form-positive_time_period_dict";
-import { fireEvent } from "../../common/dom/fire_event";
-import { dynamicElement } from "../../common/dom/dynamic-element-directive";
+import "./ha-form-select";
+import "./ha-form-string";
 
 export type HaFormSchema =
   | HaFormStringSchema
@@ -103,10 +102,15 @@ export interface HaFormElement extends LitElement {
 @customElement("ha-form")
 export class HaForm extends LitElement implements HaFormElement {
   @property() public data!: HaFormDataContainer | HaFormData;
+
   @property() public schema!: HaFormSchema;
+
   @property() public error;
+
   @property() public computeError?: (schema: HaFormSchema, error) => string;
+
   @property() public computeLabel?: (schema: HaFormSchema) => string;
+
   @property() public computeSuffix?: (schema: HaFormSchema) => string;
 
   public focus() {

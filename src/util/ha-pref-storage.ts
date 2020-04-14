@@ -11,10 +11,10 @@ const STORAGE = window.localStorage || {};
 
 export function storeState(hass: HomeAssistant) {
   try {
-    for (const key of STORED_STATE) {
+    STORED_STATE.forEach((key) => {
       const value = hass[key];
       STORAGE[key] = JSON.stringify(value === undefined ? null : value);
-    }
+    });
   } catch (err) {
     // Safari throws exception in private mode
   }
@@ -23,7 +23,7 @@ export function storeState(hass: HomeAssistant) {
 export function getState() {
   const state = {};
 
-  for (const key of STORED_STATE) {
+  STORED_STATE.forEach((key) => {
     if (key in STORAGE) {
       let value = JSON.parse(STORAGE[key]);
       // dockedSidebar went from boolean to enum on 20190720
@@ -32,7 +32,7 @@ export function getState() {
       }
       state[key] = value;
     }
-  }
+  });
   return state;
 }
 

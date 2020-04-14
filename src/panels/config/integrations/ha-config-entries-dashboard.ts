@@ -1,57 +1,57 @@
-import "@polymer/iron-flex-layout/iron-flex-layout-classes";
-import "@polymer/paper-tooltip/paper-tooltip";
 import "@material/mwc-button";
+import "@polymer/iron-flex-layout/iron-flex-layout-classes";
 import "@polymer/iron-icon/iron-icon";
-import "@polymer/paper-listbox/paper-listbox";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-item/paper-item-body";
-
+import "@polymer/paper-listbox/paper-listbox";
+import "@polymer/paper-tooltip/paper-tooltip";
 import { HassEntity } from "home-assistant-js-websocket";
-
-import "../../../components/ha-card";
-import "../../../components/ha-icon-next";
-import "../../../components/ha-fab";
-import "../../../components/entity/ha-state-icon";
-import "../../../layouts/hass-tabs-subpage";
-import "../../../resources/ha-style";
-import "../../../components/ha-icon";
-
-import { computeRTL } from "../../../common/util/compute_rtl";
-import "../ha-config-section";
-
+import {
+  css,
+  CSSResult,
+  customElement,
+  html,
+  LitElement,
+  property,
+  TemplateResult,
+} from "lit-element";
+import { fireEvent } from "../../../common/dom/fire_event";
 import { computeStateName } from "../../../common/entity/compute_state_name";
+import { computeRTL } from "../../../common/util/compute_rtl";
+import "../../../components/entity/ha-state-icon";
+import "../../../components/ha-card";
+import "../../../components/ha-fab";
+import "../../../components/ha-icon";
+import "../../../components/ha-icon-next";
+import { ConfigEntry, deleteConfigEntry } from "../../../data/config_entries";
+import {
+  DISCOVERY_SOURCES,
+  ignoreConfigFlow,
+  localizeConfigFlowTitle,
+} from "../../../data/config_flow";
+import { DataEntryFlowProgress } from "../../../data/data_entry_flow";
+import { EntityRegistryEntry } from "../../../data/entity_registry";
 import {
   loadConfigFlowDialog,
   showConfigFlowDialog,
 } from "../../../dialogs/config-flow/show-dialog-config-flow";
-import {
-  localizeConfigFlowTitle,
-  ignoreConfigFlow,
-  DISCOVERY_SOURCES,
-} from "../../../data/config_flow";
-import {
-  LitElement,
-  TemplateResult,
-  html,
-  property,
-  customElement,
-  css,
-  CSSResult,
-} from "lit-element";
-import { HomeAssistant, Route } from "../../../types";
-import { ConfigEntry, deleteConfigEntry } from "../../../data/config_entries";
-import { fireEvent } from "../../../common/dom/fire_event";
-import { EntityRegistryEntry } from "../../../data/entity_registry";
-import { DataEntryFlowProgress } from "../../../data/data_entry_flow";
 import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
+import "../../../layouts/hass-tabs-subpage";
+import "../../../resources/ha-style";
+import { HomeAssistant, Route } from "../../../types";
+import "../ha-config-section";
 import { configSections } from "../ha-panel-config";
 
 @customElement("ha-config-entries-dashboard")
 export class HaConfigManagerDashboard extends LitElement {
   @property() public hass!: HomeAssistant;
+
   @property() public showAdvanced!: boolean;
+
   @property() public isWide!: boolean;
+
   @property() public narrow!: boolean;
+
   @property() public route!: Route;
 
   @property() private configEntries!: ConfigEntry[];
@@ -66,6 +66,7 @@ export class HaConfigManagerDashboard extends LitElement {
    * For example, can be discovered devices that require more config.
    */
   @property() private configEntriesInProgress!: DataEntryFlowProgress[];
+
   @property() private _showIgnored = false;
 
   public connectedCallback() {

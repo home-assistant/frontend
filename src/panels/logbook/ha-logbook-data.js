@@ -1,3 +1,4 @@
+/* eslint-plugin-disable lit */
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 
 const DATA_CACHE = {};
@@ -78,8 +79,8 @@ class HaLogbookData extends PolymerElement {
     }
 
     if (entityId !== ALL_ENTITIES && DATA_CACHE[period][date][ALL_ENTITIES]) {
-      return DATA_CACHE[period][date][ALL_ENTITIES].then(function(entities) {
-        return entities.filter(function(entity) {
+      return DATA_CACHE[period][date][ALL_ENTITIES].then(function (entities) {
+        return entities.filter(function (entity) {
           return entity.entity_id === entityId;
         });
       });
@@ -100,11 +101,11 @@ class HaLogbookData extends PolymerElement {
     }
 
     return this.hass.callApi("GET", url).then(
-      function(logbookEntries) {
+      function (logbookEntries) {
         logbookEntries.reverse();
         return logbookEntries;
       },
-      function() {
+      function () {
         return null;
       }
     );

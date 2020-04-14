@@ -1,4 +1,4 @@
-import { ZHADevice, ZHAGroup, Cluster } from "../../../data/zha";
+import { Cluster, ZHADevice, ZHAGroup } from "../../../data/zha";
 
 export const formatAsPaddedHex = (value: string | number): string => {
   let hex = value;

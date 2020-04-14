@@ -1,14 +1,14 @@
 import { TemplateResult } from "lit-html";
 import { fireEvent } from "../../common/dom/fire_event";
-import { HomeAssistant } from "../../types";
+import { HaFormSchema } from "../../components/ha-form/ha-form";
 import {
+  DataEntryFlowStep,
+  DataEntryFlowStepAbort,
   DataEntryFlowStepCreateEntry,
   DataEntryFlowStepExternal,
   DataEntryFlowStepForm,
-  DataEntryFlowStep,
-  DataEntryFlowStepAbort,
 } from "../../data/data_entry_flow";
-import { HaFormSchema } from "../../components/ha-form/ha-form";
+import { HomeAssistant } from "../../types";
 
 export interface FlowConfig {
   loadDevicesAndAreas: boolean;

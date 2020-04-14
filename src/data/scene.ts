@@ -1,10 +1,9 @@
 import {
-  HassEntityBase,
   HassEntityAttributeBase,
+  HassEntityBase,
 } from "home-assistant-js-websocket";
-
-import { HomeAssistant, ServiceCallResponse } from "../types";
 import { navigate } from "../common/navigate";
+import { HomeAssistant, ServiceCallResponse } from "../types";
 
 export const SCENE_IGNORED_DOMAINS = [
   "sensor",

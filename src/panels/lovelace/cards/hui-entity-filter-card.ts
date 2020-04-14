@@ -1,20 +1,27 @@
-import { createCardElement } from "../create-element/create-card-element";
-import { processConfigEntities } from "../common/process-config-entities";
-import { LovelaceCard } from "../types";
 import { LovelaceCardConfig } from "../../../data/lovelace";
-import { EntityFilterEntityConfig } from "../entity-rows/types";
 import { HomeAssistant } from "../../../types";
-import { EntityFilterCardConfig } from "./types";
 import { evaluateFilter } from "../common/evaluate-filter";
+import { processConfigEntities } from "../common/process-config-entities";
+import { createCardElement } from "../create-element/create-card-element";
+import { EntityFilterEntityConfig } from "../entity-rows/types";
+import { LovelaceCard } from "../types";
+import { EntityFilterCardConfig } from "./types";
 
 class EntityFilterCard extends HTMLElement implements LovelaceCard {
   public isPanel?: boolean;
+
   private _editMode = false;
+
   private _element?: LovelaceCard;
+
   private _config?: EntityFilterCardConfig;
+
   private _configEntities?: EntityFilterEntityConfig[];
+
   private _baseCardConfig?: LovelaceCardConfig;
+
   private _hass?: HomeAssistant;
+
   private _oldEntities?: EntityFilterEntityConfig[];
 
   public getCardSize(): number {

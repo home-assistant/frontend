@@ -1,14 +1,14 @@
 import "@polymer/paper-input/paper-input";
-
-import { LitElement, property, customElement } from "lit-element";
-import { ActionElement, handleChangeEvent } from "../ha-automation-action-row";
-import { HomeAssistant } from "../../../../../types";
+import { customElement, LitElement, property } from "lit-element";
 import { html } from "lit-html";
 import { WaitAction } from "../../../../../data/script";
+import { HomeAssistant } from "../../../../../types";
+import { ActionElement, handleChangeEvent } from "../ha-automation-action-row";
 
 @customElement("ha-automation-action-wait_template")
 export class HaWaitAction extends LitElement implements ActionElement {
   @property() public hass!: HomeAssistant;
+
   @property() public action!: WaitAction;
 
   public static get defaultConfig() {

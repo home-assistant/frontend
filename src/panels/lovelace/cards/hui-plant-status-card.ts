@@ -1,28 +1,25 @@
+import { HassEntity } from "home-assistant-js-websocket";
 import {
-  html,
-  LitElement,
-  TemplateResult,
   css,
   CSSResult,
-  property,
   customElement,
+  html,
+  LitElement,
+  property,
   PropertyValues,
+  TemplateResult,
 } from "lit-element";
-import { HassEntity } from "home-assistant-js-websocket";
-
+import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
+import { fireEvent } from "../../../common/dom/fire_event";
+import { computeStateName } from "../../../common/entity/compute_state_name";
 import "../../../components/ha-card";
 import "../../../components/ha-icon";
-
-import { computeStateName } from "../../../common/entity/compute_state_name";
-
-import { LovelaceCardEditor, LovelaceCard } from "../types";
 import { HomeAssistant } from "../../../types";
-import { fireEvent } from "../../../common/dom/fire_event";
-import { hasConfigOrEntityChanged } from "../common/has-changed";
-import { PlantStatusCardConfig, PlantAttributeTarget } from "./types";
-import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { actionHandler } from "../common/directives/action-handler-directive";
 import { findEntities } from "../common/find-entites";
+import { hasConfigOrEntityChanged } from "../common/has-changed";
+import { LovelaceCard, LovelaceCardEditor } from "../types";
+import { PlantAttributeTarget, PlantStatusCardConfig } from "./types";
 
 const SENSORS = {
   moisture: "hass:water",

@@ -1,31 +1,32 @@
+import "@polymer/paper-checkbox/paper-checkbox";
+import type { PaperCheckboxElement } from "@polymer/paper-checkbox/paper-checkbox";
 import {
-  customElement,
-  LitElement,
-  html,
-  property,
-  TemplateResult,
-  CSSResult,
   css,
+  CSSResult,
+  customElement,
+  html,
+  LitElement,
+  property,
   query,
+  TemplateResult,
 } from "lit-element";
-import {
-  HaFormElement,
+import { fireEvent } from "../../common/dom/fire_event";
+import type {
   HaFormBooleanData,
   HaFormBooleanSchema,
+  HaFormElement,
 } from "./ha-form";
-import { fireEvent } from "../../common/dom/fire_event";
-
-import "@polymer/paper-checkbox/paper-checkbox";
-// Not duplicate, is for typing
-// tslint:disable-next-line
-import { PaperCheckboxElement } from "@polymer/paper-checkbox/paper-checkbox";
 
 @customElement("ha-form-boolean")
 export class HaFormBoolean extends LitElement implements HaFormElement {
   @property() public schema!: HaFormBooleanSchema;
+
   @property() public data!: HaFormBooleanData;
+
   @property() public label!: string;
+
   @property() public suffix!: string;
+
   @query("paper-checkbox") private _input?: HTMLElement;
 
   public focus() {

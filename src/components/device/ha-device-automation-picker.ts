@@ -3,20 +3,20 @@ import "@polymer/paper-item/paper-item";
 import "@polymer/paper-item/paper-item-body";
 import "@polymer/paper-listbox/paper-listbox";
 import {
-  LitElement,
-  TemplateResult,
-  html,
   css,
   CSSResult,
+  html,
+  LitElement,
   property,
+  TemplateResult,
 } from "lit-element";
-import { HomeAssistant } from "../../types";
 import { fireEvent } from "../../common/dom/fire_event";
 import {
   DeviceAutomation,
   deviceAutomationsEqual,
 } from "../../data/device_automation";
-import "../../components/ha-paper-dropdown-menu";
+import { HomeAssistant } from "../../types";
+import "../ha-paper-dropdown-menu";
 
 const NO_AUTOMATION_KEY = "NO_AUTOMATION";
 const UNKNOWN_AUTOMATION_KEY = "UNKNOWN_AUTOMATION";
@@ -25,11 +25,17 @@ export abstract class HaDeviceAutomationPicker<
   T extends DeviceAutomation
 > extends LitElement {
   @property() public hass!: HomeAssistant;
+
   @property() public label?: string;
+
   @property() public deviceId?: string;
+
   @property() public value?: T;
+
   protected NO_AUTOMATION_TEXT = "No automations";
+
   protected UNKNOWN_AUTOMATION_TEXT = "Unknown automation";
+
   @property() private _automations: T[] = [];
 
   // Trigger an empty render so we start with a clean DOM.
@@ -40,10 +46,12 @@ export abstract class HaDeviceAutomationPicker<
     hass: HomeAssistant,
     automation: T
   ) => string;
+
   private _fetchDeviceAutomations: (
     hass: HomeAssistant,
     deviceId: string
   ) => Promise<T[]>;
+
   private _createNoAutomation: (deviceId?: string) => T;
 
   constructor(

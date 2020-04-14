@@ -1,11 +1,11 @@
-import "@polymer/iron-flex-layout/iron-flex-layout-classes";
 import "@material/mwc-button";
+import "@polymer/iron-flex-layout/iron-flex-layout-classes";
 import "@polymer/paper-input/paper-input";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
+/* eslint-plugin-disable lit */
 import { PolymerElement } from "@polymer/polymer/polymer-element";
-
-import LocalizeMixin from "../../../mixins/localize-mixin";
 import { fireEvent } from "../../../common/dom/fire_event";
+import LocalizeMixin from "../../../mixins/localize-mixin";
 
 class MoreInfoAlarmControlPanel extends LocalizeMixin(PolymerElement) {
   static get template() {

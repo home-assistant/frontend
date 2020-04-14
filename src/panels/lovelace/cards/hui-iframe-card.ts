@@ -1,19 +1,17 @@
 import {
-  html,
-  LitElement,
-  TemplateResult,
-  customElement,
-  property,
   css,
   CSSResult,
+  customElement,
+  html,
+  LitElement,
+  property,
+  TemplateResult,
 } from "lit-element";
-
-import "../../../components/ha-card";
-
-import { LovelaceCard, LovelaceCardEditor } from "../types";
 import { styleMap } from "lit-html/directives/style-map";
-import { IframeCardConfig } from "./types";
 import parseAspectRatio from "../../../common/util/parse-aspect-ratio";
+import "../../../components/ha-card";
+import { LovelaceCard, LovelaceCardEditor } from "../types";
+import { IframeCardConfig } from "./types";
 
 @customElement("hui-iframe-card")
 export class HuiIframeCard extends LitElement implements LovelaceCard {
@@ -23,6 +21,7 @@ export class HuiIframeCard extends LitElement implements LovelaceCard {
     );
     return document.createElement("hui-iframe-card-editor");
   }
+
   public static getStubConfig(): IframeCardConfig {
     return {
       type: "iframe",
@@ -30,10 +29,13 @@ export class HuiIframeCard extends LitElement implements LovelaceCard {
       aspect_ratio: "50%",
     };
   }
+
   @property({ type: Boolean, reflect: true })
   public isPanel = false;
+
   @property({ type: Boolean, reflect: true })
   public editMode = false;
+
   @property() protected _config?: IframeCardConfig;
 
   public getCardSize(): number {

@@ -1,23 +1,22 @@
-import {
-  LitElement,
-  html,
-  TemplateResult,
-  CSSResult,
-  css,
-  property,
-  customElement,
-} from "lit-element";
-import { HassEntity } from "home-assistant-js-websocket";
 import "@material/mwc-button";
-
+import { HassEntity } from "home-assistant-js-websocket";
+import {
+  css,
+  CSSResult,
+  customElement,
+  html,
+  LitElement,
+  property,
+  TemplateResult,
+} from "lit-element";
 import "../../../components/ha-relative-time";
-
-import { HomeAssistant } from "../../../types";
 import { triggerAutomation } from "../../../data/automation";
+import { HomeAssistant } from "../../../types";
 
 @customElement("more-info-automation")
 class MoreInfoAutomation extends LitElement {
   @property() public hass!: HomeAssistant;
+
   @property() public stateObj?: HassEntity;
 
   protected render(): TemplateResult {

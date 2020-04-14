@@ -1,26 +1,24 @@
-import {
-  html,
-  LitElement,
-  TemplateResult,
-  customElement,
-  property,
-} from "lit-element";
-import "@polymer/paper-input/paper-textarea";
 import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
+import "@polymer/paper-input/paper-textarea";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
-
-import "../../../components/ha-service-picker";
-
-import { HomeAssistant } from "../../../types";
+import {
+  customElement,
+  html,
+  LitElement,
+  property,
+  TemplateResult,
+} from "lit-element";
 import { fireEvent, HASSDomEvent } from "../../../common/dom/fire_event";
-import { EditorTarget } from "../editor/types";
+import "../../../components/ha-service-picker";
 import {
   ActionConfig,
-  NavigateActionConfig,
   CallServiceActionConfig,
+  NavigateActionConfig,
   UrlActionConfig,
 } from "../../../data/lovelace";
+import { HomeAssistant } from "../../../types";
+import { EditorTarget } from "../editor/types";
 
 declare global {
   // for fire event
@@ -77,9 +75,7 @@ export class HuiActionEditor extends LitElement {
           .selected="${this.actions.indexOf(this._action)}"
         >
           ${this.actions.map((action) => {
-            return html`
-              <paper-item>${action}</paper-item>
-            `;
+            return html` <paper-item>${action}</paper-item> `;
           })}
         </paper-listbox>
       </paper-dropdown-menu>

@@ -1,9 +1,6 @@
-import { Constructor } from "../types";
-
 import "@polymer/iron-icon/iron-icon";
-// Not duplicate, this is for typing.
-// tslint:disable-next-line
-import { IronIconElement } from "@polymer/iron-icon/iron-icon";
+import type { IronIconElement } from "@polymer/iron-icon/iron-icon";
+import { Constructor } from "../types";
 
 const ironIconClass = customElements.get("iron-icon") as Constructor<
   IronIconElement

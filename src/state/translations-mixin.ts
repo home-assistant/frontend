@@ -1,18 +1,18 @@
-import { translationMetadata } from "../resources/translations-metadata";
-import {
-  getTranslation,
-  getLocalLanguage,
-  getUserLanguage,
-} from "../util/hass-translation";
-import { HassBaseEl } from "./hass-base-mixin";
 import { computeLocalize } from "../common/translations/localize";
 import { computeRTL } from "../common/util/compute_rtl";
-import { HomeAssistant, Constructor } from "../types";
-import { storeState } from "../util/ha-pref-storage";
 import {
   getHassTranslations,
   saveTranslationPreferences,
 } from "../data/translation";
+import { translationMetadata } from "../resources/translations-metadata";
+import { Constructor, HomeAssistant } from "../types";
+import { storeState } from "../util/ha-pref-storage";
+import {
+  getLocalLanguage,
+  getTranslation,
+  getUserLanguage,
+} from "../util/hass-translation";
+import { HassBaseEl } from "./hass-base-mixin";
 
 /*
  * superClass needs to contain `this.hass` and `this._updateHass`.
@@ -20,7 +20,7 @@ import {
 
 export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
   class extends superClass {
-    // tslint:disable-next-line: variable-name
+    // eslint-disable-next-line: variable-name
     private __coreProgress?: string;
 
     protected firstUpdated(changedProps) {

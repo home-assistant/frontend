@@ -39,7 +39,9 @@ type ExternalMessage = ExternalMessageResult | ExternalMessageResultError;
 
 export class ExternalMessaging {
   public commands: { [msgId: number]: CommandInFlight } = {};
+
   public cache: { [key: string]: any } = {};
+
   public msgId = 0;
 
   public attach() {
@@ -76,14 +78,14 @@ export class ExternalMessaging {
 
   public receiveMessage(msg: ExternalMessage) {
     if (__DEV__) {
-      // tslint:disable-next-line: no-console
+      // eslint-disable-next-line no-console
       console.log("Receiving message from external app", msg);
     }
 
     const pendingCmd = this.commands[msg.id];
 
     if (!pendingCmd) {
-      // tslint:disable-next-line: no-console
+      // eslint-disable-next-line no-console
       console.warn(`Received unknown msg ID`, msg.id);
       return;
     }
@@ -99,7 +101,7 @@ export class ExternalMessaging {
 
   protected _sendExternal(msg: InternalMessage) {
     if (__DEV__) {
-      // tslint:disable-next-line: no-console
+      // eslint-disable-next-line no-console
       console.log("Sending message to external app", msg);
     }
     if (window.externalApp) {

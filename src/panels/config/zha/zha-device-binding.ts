@@ -1,12 +1,8 @@
-import "../../../components/buttons/ha-call-service-button";
-import "../../../components/ha-service-description";
-import "../../../components/ha-card";
-import "../ha-config-section";
 import "@material/mwc-button/mwc-button";
 import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
 import "@polymer/paper-icon-button/paper-icon-button";
+import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
-
 import {
   css,
   CSSResult,
@@ -17,21 +13,29 @@ import {
   PropertyValues,
   TemplateResult,
 } from "lit-element";
-
+import "../../../components/buttons/ha-call-service-button";
+import "../../../components/ha-card";
+import "../../../components/ha-service-description";
 import { bindDevices, unbindDevices, ZHADevice } from "../../../data/zha";
 import { haStyle } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
+import "../ha-config-section";
 import { ItemSelectedEvent } from "./types";
-import "@polymer/paper-item/paper-item";
 
 @customElement("zha-device-binding-control")
 export class ZHADeviceBindingControl extends LitElement {
   @property() public hass?: HomeAssistant;
+
   @property() public isWide?: boolean;
+
   @property() public selectedDevice?: ZHADevice;
-  @property() private _showHelp: boolean = false;
-  @property() private _bindTargetIndex: number = -1;
+
+  @property() private _showHelp = false;
+
+  @property() private _bindTargetIndex = -1;
+
   @property() private bindableDevices: ZHADevice[] = [];
+
   @property() private _deviceToBind?: ZHADevice;
 
   protected updated(changedProperties: PropertyValues): void {

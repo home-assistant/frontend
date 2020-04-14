@@ -1,16 +1,15 @@
+import { safeDump } from "js-yaml";
 import {
-  html,
-  LitElement,
-  TemplateResult,
-  customElement,
-  property,
   css,
   CSSResult,
+  customElement,
+  html,
+  LitElement,
+  property,
+  TemplateResult,
 } from "lit-element";
-import { safeDump } from "js-yaml";
-
-import { LovelaceCard } from "../types";
 import { HomeAssistant } from "../../../types";
+import { LovelaceCard } from "../types";
 import { ErrorCardConfig } from "./types";
 
 export const createErrorCardElement = (config: ErrorCardConfig) => {
@@ -47,9 +46,7 @@ export class HuiErrorCard extends LitElement implements LovelaceCard {
     return html`
       ${this._config.error}
       ${this._config.origConfig
-        ? html`
-            <pre>${safeDump(this._config.origConfig)}</pre>
-          `
+        ? html` <pre>${safeDump(this._config.origConfig)}</pre> `
         : ""}
     `;
   }

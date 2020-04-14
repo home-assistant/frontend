@@ -65,7 +65,7 @@ Polymer({
 
   observers: ["__storageSourceChanged(storage, key)"],
 
-  attached: function() {
+  attached: function () {
     this.listen(window, "storage", "__onStorage");
     this.listen(
       window.top,
@@ -74,7 +74,7 @@ Polymer({
     );
   },
 
-  detached: function() {
+  detached: function () {
     this.unlisten(window, "storage", "__onStorage");
     this.unlisten(
       window.top,
@@ -93,7 +93,7 @@ Polymer({
    * @param {*} key The new key to use.
    * @return {Promise}
    */
-  saveValue: function(key) {
+  saveValue: function (key) {
     try {
       this.__setStorageValue(/*{@type if (key ty){String}}*/ key, this.data);
     } catch (e) {
@@ -105,12 +105,12 @@ Polymer({
     return Promise.resolve();
   },
 
-  reset: function() {
+  reset: function () {
     this.key = null;
     this.data = this.zeroValue;
   },
 
-  destroy: function() {
+  destroy: function () {
     try {
       this.storage.removeItem(this.key);
       this.reset();
@@ -121,7 +121,7 @@ Polymer({
     return Promise.resolve();
   },
 
-  getStoredValue: function(path) {
+  getStoredValue: function (path) {
     var value;
 
     if (this.key != null) {
@@ -141,7 +141,7 @@ Polymer({
     return Promise.resolve(value);
   },
 
-  setStoredValue: function(path, value) {
+  setStoredValue: function (path, value) {
     if (this.key != null) {
       try {
         this.__setStorageValue(this.key, this.data);
@@ -155,25 +155,25 @@ Polymer({
     return Promise.resolve(value);
   },
 
-  __computeStorage: function(sessionOnly) {
+  __computeStorage: function (sessionOnly) {
     return sessionOnly ? window.sessionStorage : window.localStorage;
   },
 
-  __storageSourceChanged: function(storage, key) {
+  __storageSourceChanged: function (storage, key) {
     this._initializeStoredValue();
   },
 
-  __onStorage: function(event) {
+  __onStorage: function (event) {
     if (event.key !== this.key || event.storageArea !== this.storage) {
       return;
     }
 
-    this.syncToMemory(function() {
+    this.syncToMemory(function () {
       this.set("data", this.__parseValueFromStorage());
     });
   },
 
-  __onAppLocalStorageChanged: function(event) {
+  __onAppLocalStorageChanged: function (event) {
     if (
       event.detail === this ||
       event.detail.key !== this.key ||
@@ -181,12 +181,12 @@ Polymer({
     ) {
       return;
     }
-    this.syncToMemory(function() {
+    this.syncToMemory(function () {
       this.set("data", event.detail.data);
     });
   },
 
-  __parseValueFromStorage: function() {
+  __parseValueFromStorage: function () {
     try {
       return JSON.parse(this.storage.getItem(this.key));
     } catch (e) {
@@ -194,7 +194,7 @@ Polymer({
     }
   },
 
-  __setStorageValue: function(key, value) {
+  __setStorageValue: function (key, value) {
     if (typeof value === "undefined") value = null;
     this.storage.setItem(key, JSON.stringify(value));
   },

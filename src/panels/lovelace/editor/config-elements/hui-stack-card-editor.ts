@@ -1,24 +1,23 @@
+import "@polymer/paper-tabs";
 import {
+  css,
+  CSSResult,
+  customElement,
   html,
   LitElement,
-  TemplateResult,
-  customElement,
   property,
-  CSSResult,
-  css,
   query,
+  TemplateResult,
 } from "lit-element";
-import "@polymer/paper-tabs";
-
-import { struct } from "../../common/structs/struct";
-import { HomeAssistant } from "../../../../types";
-import { LovelaceCardEditor } from "../../types";
-import { StackCardConfig } from "../../cards/types";
 import { fireEvent, HASSDomEvent } from "../../../../common/dom/fire_event";
 import { LovelaceConfig } from "../../../../data/lovelace";
+import { HomeAssistant } from "../../../../types";
+import { StackCardConfig } from "../../cards/types";
+import { struct } from "../../common/structs/struct";
+import { LovelaceCardEditor } from "../../types";
 import {
-  HuiCardEditor,
   ConfigChangedEvent,
+  HuiCardEditor,
 } from "../card-editor/hui-card-editor";
 import { GUIModeChangedEvent } from "../types";
 
@@ -32,11 +31,17 @@ const cardConfigStruct = struct({
 export class HuiStackCardEditor extends LitElement
   implements LovelaceCardEditor {
   @property() public hass?: HomeAssistant;
+
   @property() public lovelace?: LovelaceConfig;
+
   @property() private _config?: StackCardConfig;
-  @property() private _selectedCard: number = 0;
+
+  @property() private _selectedCard = 0;
+
   @property() private _GUImode = true;
+
   @property() private _guiModeAvailable? = true;
+
   @query("hui-card-editor") private _cardEditorEl?: HuiCardEditor;
 
   public setConfig(config: StackCardConfig): void {

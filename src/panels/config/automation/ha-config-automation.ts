@@ -14,9 +14,13 @@ import "./ha-automation-picker";
 @customElement("ha-config-automation")
 class HaConfigAutomation extends HassRouterPage {
   @property() public hass!: HomeAssistant;
+
   @property() public narrow!: boolean;
+
   @property() public isWide!: boolean;
+
   @property() public showAdvanced!: boolean;
+
   @property() public automations: AutomationEntity[] = [];
 
   protected routerOptions: RouterOptions = {
@@ -63,7 +67,7 @@ class HaConfigAutomation extends HassRouterPage {
     ) {
       pageEl.creatingNew = undefined;
       const automationId = this.routeTail.path.substr(1);
-      pageEl.creatingNew = automationId === "new" ? true : false;
+      pageEl.creatingNew = automationId === "new";
       pageEl.automation =
         automationId === "new"
           ? undefined

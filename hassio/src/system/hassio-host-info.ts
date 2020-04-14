@@ -9,24 +9,25 @@ import {
   property,
   TemplateResult,
 } from "lit-element";
-
-import { hassioStyle } from "../resources/hassio-style";
-import { haStyle } from "../../../src/resources/styles";
-import {
-  HassioHostInfo as HassioHostInfoType,
-  HassioHassOSInfo,
-} from "../../../src/data/hassio/host";
+import "../../../src/components/buttons/ha-call-api-button";
 import { fetchHassioHardwareInfo } from "../../../src/data/hassio/hardware";
+import {
+  HassioHassOSInfo,
+  HassioHostInfo as HassioHostInfoType,
+} from "../../../src/data/hassio/host";
+import { haStyle } from "../../../src/resources/styles";
 import { HomeAssistant } from "../../../src/types";
 import { showHassioMarkdownDialog } from "../dialogs/markdown/show-dialog-hassio-markdown";
-
-import "../../../src/components/buttons/ha-call-api-button";
+import { hassioStyle } from "../resources/hassio-style";
 
 @customElement("hassio-host-info")
 class HassioHostInfo extends LitElement {
   @property() public hass!: HomeAssistant;
+
   @property() public hostInfo!: HassioHostInfoType;
+
   @property() public hassOsInfo!: HassioHassOSInfo;
+
   @property() private _errors?: string;
 
   public render(): TemplateResult | void {
@@ -69,9 +70,7 @@ class HassioHostInfo extends LitElement {
               `
             : ""}
           ${this._errors
-            ? html`
-                <div class="errors">Error: ${this._errors}</div>
-              `
+            ? html` <div class="errors">Error: ${this._errors}</div> `
             : ""}
         </div>
         <div class="card-actions">

@@ -1,9 +1,9 @@
-import { UpdatingElement, property, PropertyValues } from "lit-element";
+import { property, PropertyValues, UpdatingElement } from "lit-element";
+import memoizeOne from "memoize-one";
+import { navigate } from "../common/navigate";
+import { Route } from "../types";
 import "./hass-error-screen";
 import "./hass-loading-screen";
-import { Route } from "../types";
-import { navigate } from "../common/navigate";
-import memoizeOne from "memoize-one";
 
 const extractPage = (path: string, defaultPage: string) => {
   if (path === "") {
@@ -52,9 +52,13 @@ export class HassRouterPage extends UpdatingElement {
   protected routerOptions!: RouterOptions;
 
   protected _currentPage = "";
+
   private _currentLoadProm?: Promise<void>;
+
   private _cache = {};
+
   private _initialLoadDone = false;
+
   private _computeTail = memoizeOne((route: Route) => {
     const dividerPos = route.path.indexOf("/", 1);
     return dividerPos === -1
@@ -145,7 +149,7 @@ export class HassRouterPage extends UpdatingElement {
 
     // Check when loading the page source failed.
     loadProm.catch((err) => {
-      // tslint:disable-next-line
+      // eslint-disable-next-line
       console.error("Error loading page", newPage, err);
 
       // Verify that we're still trying to show the same page.

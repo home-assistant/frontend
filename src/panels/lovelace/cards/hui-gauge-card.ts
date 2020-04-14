@@ -1,29 +1,26 @@
+import { HassEntity } from "home-assistant-js-websocket/dist/types";
 import {
-  html,
-  LitElement,
-  PropertyValues,
-  TemplateResult,
   css,
   CSSResult,
-  property,
   customElement,
+  html,
+  LitElement,
+  property,
+  PropertyValues,
+  TemplateResult,
 } from "lit-element";
 import { styleMap } from "lit-html/directives/style-map";
-
-import "../../../components/ha-card";
-import "../components/hui-warning";
-
-import { isValidEntityId } from "../../../common/entity/valid_entity_id";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
-import { computeStateName } from "../../../common/entity/compute_state_name";
-
-import { HomeAssistant } from "../../../types";
 import { fireEvent } from "../../../common/dom/fire_event";
+import { computeStateName } from "../../../common/entity/compute_state_name";
+import { isValidEntityId } from "../../../common/entity/valid_entity_id";
+import "../../../components/ha-card";
+import { HomeAssistant } from "../../../types";
+import { findEntities } from "../common/find-entites";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
+import "../components/hui-warning";
 import { LovelaceCard, LovelaceCardEditor } from "../types";
 import { GaugeCardConfig } from "./types";
-import { findEntities } from "../common/find-entites";
-import { HassEntity } from "home-assistant-js-websocket/dist/types";
 
 export const severityMap = {
   red: "var(--label-badge-red)",
@@ -67,6 +64,7 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
   @property() public hass?: HomeAssistant;
 
   @property() private _baseUnit = "50px";
+
   @property() private _config?: GaugeCardConfig;
 
   private _updated?: boolean;
@@ -146,8 +144,8 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
           <div id="percent">
             ${stateObj.state}
             ${this._config.unit ||
-              stateObj.attributes.unit_of_measurement ||
-              ""}
+            stateObj.attributes.unit_of_measurement ||
+            ""}
           </div>
           <div id="name">
             ${this._config.name || computeStateName(stateObj)}
@@ -164,6 +162,7 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
   protected firstUpdated(): void {
     this._updated = true;
     this._setBaseUnit();
+    // eslint-disable-next-line wc/no-self-class
     this.classList.add("init");
   }
 

@@ -1,18 +1,16 @@
+import "@polymer/paper-input/paper-input";
 import {
+  customElement,
   html,
   LitElement,
-  TemplateResult,
-  customElement,
   property,
+  TemplateResult,
 } from "lit-element";
-import "@polymer/paper-input/paper-input";
-
-import { EditorTarget } from "../types";
-import { HomeAssistant } from "../../../../types";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import { configElementStyle } from "../config-elements/config-elements-style";
-
 import { LovelaceConfig } from "../../../../data/lovelace";
+import { HomeAssistant } from "../../../../types";
+import { configElementStyle } from "../config-elements/config-elements-style";
+import { EditorTarget } from "../types";
 
 declare global {
   interface HASSDomEvents {

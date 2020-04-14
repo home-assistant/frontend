@@ -1,27 +1,23 @@
-import {
-  LitElement,
-  html,
-  TemplateResult,
-  CSSResult,
-  css,
-  PropertyValues,
-  property,
-} from "lit-element";
 import "@polymer/app-layout/app-drawer-layout/app-drawer-layout";
+import type { AppDrawerLayoutElement } from "@polymer/app-layout/app-drawer-layout/app-drawer-layout";
 import "@polymer/app-layout/app-drawer/app-drawer";
-// Not a duplicate, it's for typing
-// tslint:disable-next-line
-import { AppDrawerElement } from "@polymer/app-layout/app-drawer/app-drawer";
+import type { AppDrawerElement } from "@polymer/app-layout/app-drawer/app-drawer";
 import "@polymer/iron-media-query/iron-media-query";
-
-import "./partial-panel-resolver";
-import { HomeAssistant, Route } from "../types";
+import {
+  css,
+  CSSResult,
+  html,
+  LitElement,
+  property,
+  PropertyValues,
+  TemplateResult,
+} from "lit-element";
 import { fireEvent } from "../common/dom/fire_event";
-import { PolymerChangedEvent } from "../polymer-types";
-// tslint:disable-next-line: no-duplicate-imports
-import { AppDrawerLayoutElement } from "@polymer/app-layout/app-drawer-layout/app-drawer-layout";
-import { showNotificationDrawer } from "../dialogs/notifications/show-notification-drawer";
 import { toggleAttribute } from "../common/dom/toggle_attribute";
+import { showNotificationDrawer } from "../dialogs/notifications/show-notification-drawer";
+import type { PolymerChangedEvent } from "../polymer-types";
+import type { HomeAssistant, Route } from "../types";
+import "./partial-panel-resolver";
 
 const NON_SWIPABLE_PANELS = ["map"];
 
@@ -35,7 +31,9 @@ declare global {
 
 class HomeAssistantMain extends LitElement {
   @property() public hass!: HomeAssistant;
+
   @property() public route?: Route;
+
   @property({ type: Boolean }) private narrow?: boolean;
 
   protected render(): TemplateResult {
@@ -68,13 +66,13 @@ class HomeAssistantMain extends LitElement {
           .disableSwipe=${disableSwipe}
           .swipeOpen=${!disableSwipe}
           .persistent=${!this.narrow &&
-            this.hass.dockedSidebar !== "always_hidden"}
+          this.hass.dockedSidebar !== "always_hidden"}
         >
           <ha-sidebar
             .hass=${hass}
             .narrow=${sidebarNarrow}
             .alwaysExpand=${sidebarNarrow ||
-              this.hass.dockedSidebar === "docked"}
+            this.hass.dockedSidebar === "docked"}
           ></ha-sidebar>
         </app-drawer>
 

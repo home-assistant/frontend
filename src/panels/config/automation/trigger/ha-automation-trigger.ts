@@ -1,24 +1,23 @@
+import "@material/mwc-button";
 import {
-  LitElement,
+  css,
+  CSSResult,
   customElement,
   html,
+  LitElement,
   property,
-  CSSResult,
-  css,
 } from "lit-element";
-import "@material/mwc-button";
-import "../../../../components/ha-card";
-
 import { fireEvent } from "../../../../common/dom/fire_event";
+import "../../../../components/ha-card";
+import { Trigger } from "../../../../data/automation";
 import { HomeAssistant } from "../../../../types";
-
 import "./ha-automation-trigger-row";
 import { HaDeviceTrigger } from "./types/ha-automation-trigger-device";
-import { Trigger } from "../../../../data/automation";
 
 @customElement("ha-automation-trigger")
 export default class HaAutomationTrigger extends LitElement {
   @property() public hass!: HomeAssistant;
+
   @property() public triggers!: Trigger[];
 
   protected render() {

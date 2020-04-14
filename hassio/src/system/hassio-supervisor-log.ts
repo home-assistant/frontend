@@ -7,20 +7,21 @@ import {
   html,
   LitElement,
   property,
-  TemplateResult,
   query,
+  TemplateResult,
 } from "lit-element";
-
-import { ANSI_HTML_STYLE, parseTextToColoredPre } from "../ansi-to-html";
-import { hassioStyle } from "../resources/hassio-style";
+import { fetchSupervisorLogs } from "../../../src/data/hassio/supervisor";
 import { haStyle } from "../../../src/resources/styles";
 import { HomeAssistant } from "../../../src/types";
-import { fetchSupervisorLogs } from "../../../src/data/hassio/supervisor";
+import { ANSI_HTML_STYLE, parseTextToColoredPre } from "../ansi-to-html";
+import { hassioStyle } from "../resources/hassio-style";
 
 @customElement("hassio-supervisor-log")
 class HassioSupervisorLog extends LitElement {
   @property() public hass!: HomeAssistant;
+
   @property() private _error?: string;
+
   @query("#content") private _logContent!: HTMLDivElement;
 
   public async connectedCallback(): Promise<void> {
@@ -31,11 +32,7 @@ class HassioSupervisorLog extends LitElement {
   public render(): TemplateResult | void {
     return html`
       <paper-card>
-        ${this._error
-          ? html`
-              <div class="errors">${this._error}</div>
-            `
-          : ""}
+        ${this._error ? html` <div class="errors">${this._error}</div> ` : ""}
         <div class="card-content" id="content"></div>
         <div class="card-actions">
           <mwc-button @click=${this._refresh}>Refresh</mwc-button>
@@ -73,8 +70,9 @@ class HassioSupervisorLog extends LitElement {
       }
       this._logContent.appendChild(parseTextToColoredPre(content));
     } catch (err) {
-      this._error = `Failed to get supervisor logs, ${err.body?.message ||
-        err}`;
+      this._error = `Failed to get supervisor logs, ${
+        err.body?.message || err
+      }`;
     }
   }
 
