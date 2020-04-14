@@ -1,14 +1,14 @@
 import "@polymer/paper-input/paper-input";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
+/* eslint-plugin-disable lit */
 import { PolymerElement } from "@polymer/polymer/polymer-element";
-
-import "../../../../components/ha-card";
 import "../../../../components/buttons/ha-progress-button";
+import "../../../../components/ha-card";
 import "../../../../layouts/hass-subpage";
-import "../../../../resources/ha-style";
-import "../../ha-config-section";
 import { EventsMixin } from "../../../../mixins/events-mixin";
 import LocalizeMixin from "../../../../mixins/localize-mixin";
+import "../../../../resources/ha-style";
+import "../../ha-config-section";
 
 /*
  * @appliesMixin EventsMixin

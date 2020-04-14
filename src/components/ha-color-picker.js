@@ -1,6 +1,6 @@
 import { html } from "@polymer/polymer/lib/utils/html-tag";
+/* eslint-plugin-disable lit */
 import { PolymerElement } from "@polymer/polymer/polymer-element";
-
 import { EventsMixin } from "../mixins/events-mixin";
 
 /**
@@ -332,8 +332,9 @@ class HaColorPicker extends EventsMixin(PolymerElement) {
   applyColorToCanvas(hs) {
     // we're not really converting hs to hsl here, but we keep it cheap
     // setting the color on the interactionLayer, the svg elements can inherit
-    this.interactionLayer.style.color = `hsl(${hs.h}, 100%, ${100 -
-      hs.s * 50}%)`;
+    this.interactionLayer.style.color = `hsl(${hs.h}, 100%, ${
+      100 - hs.s * 50
+    }%)`;
   }
 
   applyHsColor(hs) {

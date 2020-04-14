@@ -1,11 +1,11 @@
-import { HomeAssistant } from "../../../types";
 import {
-  LovelaceConfig,
   fetchConfig,
+  LovelaceConfig,
   saveConfig,
 } from "../../../data/lovelace";
-import { showSelectViewDialog } from "./select-view/show-select-view-dialog";
+import { HomeAssistant } from "../../../types";
 import { showSuggestCardDialog } from "./card-editor/show-suggest-card-dialog";
+import { showSelectViewDialog } from "./select-view/show-select-view-dialog";
 
 export const addEntitiesToLovelaceView = async (
   element: HTMLElement,

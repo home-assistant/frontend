@@ -1,8 +1,8 @@
-import { LovelaceCardConfig, ActionConfig } from "../../../data/lovelace";
+import { ActionConfig, LovelaceCardConfig } from "../../../data/lovelace";
 import { Condition } from "../common/validate-condition";
-import { EntityConfig, EntityFilterEntityConfig } from "../entity-rows/types";
-import { LovelaceElementConfig } from "../elements/types";
 import { HuiImage } from "../components/hui-image";
+import { LovelaceElementConfig } from "../elements/types";
+import { EntityConfig, EntityFilterEntityConfig } from "../entity-rows/types";
 import { LovelaceHeaderFooterConfig } from "../header-footer/types";
 
 export interface AlarmPanelCardConfig extends LovelaceCardConfig {

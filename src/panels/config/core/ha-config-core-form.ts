@@ -1,25 +1,24 @@
-import {
-  LitElement,
-  customElement,
-  property,
-  TemplateResult,
-  html,
-  CSSResult,
-  css,
-} from "lit-element";
 import "@material/mwc-button/mwc-button";
 import "@polymer/paper-input/paper-input";
-import "@polymer/paper-radio-group/paper-radio-group";
+import type { PaperInputElement } from "@polymer/paper-input/paper-input";
 import "@polymer/paper-radio-button/paper-radio-button";
-import { HomeAssistant } from "../../../types";
-import "../../../components/ha-card";
-import { PolymerChangedEvent } from "../../../polymer-types";
-// tslint:disable-next-line: no-duplicate-imports
-import { PaperInputElement } from "@polymer/paper-input/paper-input";
+import "@polymer/paper-radio-group/paper-radio-group";
+import {
+  css,
+  CSSResult,
+  customElement,
+  html,
+  LitElement,
+  property,
+  TemplateResult,
+} from "lit-element";
 import { UNIT_C } from "../../../common/const";
-import { ConfigUpdateValues, saveCoreConfig } from "../../../data/core";
-import { createTimezoneListEl } from "../../../components/timezone-datalist";
+import "../../../components/ha-card";
 import "../../../components/map/ha-location-editor";
+import { createTimezoneListEl } from "../../../components/timezone-datalist";
+import { ConfigUpdateValues, saveCoreConfig } from "../../../data/core";
+import type { PolymerChangedEvent } from "../../../polymer-types";
+import type { HomeAssistant } from "../../../types";
 
 @customElement("ha-config-core-form")
 class ConfigCoreForm extends LitElement {
@@ -30,7 +29,9 @@ class ConfigCoreForm extends LitElement {
   @property() private _location!: [number, number];
 
   @property() private _elevation!: string;
+
   @property() private _unitSystem!: ConfigUpdateValues["unit_system"];
+
   @property() private _timeZone!: string;
 
   protected render(): TemplateResult {

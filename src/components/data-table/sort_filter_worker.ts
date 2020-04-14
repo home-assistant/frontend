@@ -1,11 +1,11 @@
+import memoizeOne from "memoize-one";
+// eslint-disable-next-line import/no-cycle
 import {
   DataTableColumnContainer,
   DataTableColumnData,
   DataTableRowData,
   SortingDirection,
 } from "./ha-data-table";
-
-import memoizeOne from "memoize-one";
 
 export const filterSortData = memoizeOne(
   async (

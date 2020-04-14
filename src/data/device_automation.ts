@@ -1,5 +1,5 @@
-import { HomeAssistant } from "../types";
 import { computeStateName } from "../common/entity/compute_state_name";
+import { HomeAssistant } from "../types";
 
 export interface DeviceAutomation {
   device_id: string;
@@ -10,8 +10,7 @@ export interface DeviceAutomation {
   event?: string;
 }
 
-// tslint:disable-next-line: no-empty-interface
-export interface DeviceAction extends DeviceAutomation {}
+export type DeviceAction = DeviceAutomation;
 
 export interface DeviceCondition extends DeviceAutomation {
   condition: string;

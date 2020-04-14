@@ -1,23 +1,21 @@
 import {
+  css,
+  CSSResult,
+  customElement,
   html,
   LitElement,
-  TemplateResult,
-  CSSResult,
-  css,
   property,
-  customElement,
   PropertyValues,
+  TemplateResult,
 } from "lit-element";
-
-import "../components/hui-generic-entity-row";
 import "../../../components/entity/ha-entity-toggle";
-import "../components/hui-warning";
-
-import { HomeAssistant } from "../../../types";
-import { LovelaceRow, ActionRowConfig } from "./types";
-import { hasConfigOrEntityChanged } from "../common/has-changed";
-import { activateScene } from "../../../data/scene";
 import { UNAVAILABLE_STATES } from "../../../data/entity";
+import { activateScene } from "../../../data/scene";
+import { HomeAssistant } from "../../../types";
+import { hasConfigOrEntityChanged } from "../common/has-changed";
+import "../components/hui-generic-entity-row";
+import "../components/hui-warning";
+import { ActionRowConfig, LovelaceRow } from "./types";
 
 @customElement("hui-scene-entity-row")
 class HuiSceneEntityRow extends LitElement implements LovelaceRow {
@@ -63,7 +61,7 @@ class HuiSceneEntityRow extends LitElement implements LovelaceRow {
           class="text-content"
         >
           ${this._config.action_name ||
-            this.hass!.localize("ui.card.scene.activate")}
+          this.hass!.localize("ui.card.scene.activate")}
         </mwc-button>
       </hui-generic-entity-row>
     `;

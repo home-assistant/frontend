@@ -44,13 +44,21 @@ import { HaDeviceTrigger } from "./trigger/types/ha-automation-trigger-device";
 
 export class HaAutomationEditor extends LitElement {
   @property() public hass!: HomeAssistant;
+
   @property() public automation!: AutomationEntity;
+
   @property() public isWide?: boolean;
+
   @property() public narrow!: boolean;
+
   @property() public route!: Route;
+
   @property() public creatingNew?: boolean;
+
   @property() private _config?: AutomationConfig;
+
   @property() private _dirty?: boolean;
+
   @property() private _errors?: string;
 
   protected render(): TemplateResult {
@@ -74,23 +82,15 @@ export class HaAutomationEditor extends LitElement {
                 @click=${this._deleteConfirm}
               ></paper-icon-button>
             `}
-        ${this._errors
-          ? html`
-              <div class="errors">${this._errors}</div>
-            `
-          : ""}
+        ${this._errors ? html` <div class="errors">${this._errors}</div> ` : ""}
         ${this._config
           ? html`
               ${this.narrow
-                ? html`
-                    <span slot="header">${this._config?.alias}</span>
-                  `
+                ? html` <span slot="header">${this._config?.alias}</span> `
                 : ""}
               <ha-config-section .isWide=${this.isWide}>
                 ${!this.narrow
-                  ? html`
-                      <span slot="header">${this._config.alias}</span>
-                    `
+                  ? html` <span slot="header">${this._config.alias}</span> `
                   : ""}
                 <span slot="introduction">
                   ${this.hass.localize(
@@ -298,7 +298,7 @@ export class HaAutomationEditor extends LitElement {
 
     if (changedProps.has("creatingNew") && this.creatingNew && this.hass) {
       const initData = getAutomationEditorInitData();
-      this._dirty = initData ? true : false;
+      this._dirty = !!initData;
       this._config = {
         alias: this.hass.localize(
           "ui.panel.config.automation.editor.default_name"

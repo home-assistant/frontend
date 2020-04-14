@@ -1,4 +1,4 @@
-import { createCollection, Connection } from "home-assistant-js-websocket";
+import { Connection, createCollection } from "home-assistant-js-websocket";
 import { Panels } from "../types";
 
 const fetchPanels = (conn) =>

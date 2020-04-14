@@ -13,24 +13,23 @@ import {
   TemplateResult,
 } from "lit-element";
 import { cache } from "lit-html/directives/cache";
-import { PLATFORMS_WITH_SETTINGS_TAB } from "./const";
 import { dynamicElement } from "../../../common/dom/dynamic-element-directive";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import "../../../components/dialog/ha-paper-dialog";
-// tslint:disable-next-line: no-duplicate-imports
-import { HaPaperDialog } from "../../../components/dialog/ha-paper-dialog";
+import type { HaPaperDialog } from "../../../components/dialog/ha-paper-dialog";
 import "../../../components/ha-related-items";
 import {
   EntityRegistryEntry,
   ExtEntityRegistryEntry,
   getExtendedEntityRegistryEntry,
 } from "../../../data/entity_registry";
-import { PolymerChangedEvent } from "../../../polymer-types";
+import type { PolymerChangedEvent } from "../../../polymer-types";
 import { haStyleDialog } from "../../../resources/styles";
-import { HomeAssistant } from "../../../types";
+import type { HomeAssistant } from "../../../types";
+import { PLATFORMS_WITH_SETTINGS_TAB } from "./const";
 import "./entity-registry-settings";
-import { EntityRegistryDetailDialogParams } from "./show-dialog-entity-editor";
+import type { EntityRegistryDetailDialogParams } from "./show-dialog-entity-editor";
 
 interface Tabs {
   [key: string]: Tab;
@@ -44,15 +43,22 @@ interface Tab {
 @customElement("dialog-entity-editor")
 export class DialogEntityEditor extends LitElement {
   @property() public hass!: HomeAssistant;
+
   @property() private _params?: EntityRegistryDetailDialogParams;
+
   @property() private _entry?:
     | EntityRegistryEntry
     | ExtEntityRegistryEntry
     | null;
+
   @property() private _curTab?: string;
+
   @property() private _extraTabs: Tabs = {};
+
   @property() private _settingsElementTag?: string;
+
   @query("ha-paper-dialog") private _dialog!: HaPaperDialog;
+
   private _curTabIndex = 0;
 
   public async showDialog(

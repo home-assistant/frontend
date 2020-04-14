@@ -1,9 +1,9 @@
 import "@polymer/paper-icon-button/paper-icon-button";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
+/* eslint-plugin-disable lit */
 import { PolymerElement } from "@polymer/polymer/polymer-element";
-
-import CoverEntity from "../util/cover-model";
 import { UNAVAILABLE_STATES } from "../data/entity";
+import CoverEntity from "../util/cover-model";
 
 class HaCoverControls extends PolymerElement {
   static get template() {

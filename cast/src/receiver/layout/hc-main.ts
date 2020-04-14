@@ -1,31 +1,31 @@
 import {
-  getAuth,
   createConnection,
+  getAuth,
   UnsubscribeFunc,
 } from "home-assistant-js-websocket";
-import { customElement, TemplateResult, html, property } from "lit-element";
-import { HassElement } from "../../../../src/state/hass-element";
-import {
-  HassMessage,
-  ConnectMessage,
-  ShowLovelaceViewMessage,
-  GetStatusMessage,
-  ShowDemoMessage,
-} from "../../../../src/cast/receiver_messages";
-import {
-  LovelaceConfig,
-  getLovelaceCollection,
-  fetchResources,
-  LegacyLovelaceConfig,
-  getLegacyLovelaceCollection,
-} from "../../../../src/data/lovelace";
-import "./hc-launch-screen";
-import { castContext } from "../cast_context";
+import { customElement, html, property, TemplateResult } from "lit-element";
 import { CAST_NS } from "../../../../src/cast/const";
+import {
+  ConnectMessage,
+  GetStatusMessage,
+  HassMessage,
+  ShowDemoMessage,
+  ShowLovelaceViewMessage,
+} from "../../../../src/cast/receiver_messages";
 import { ReceiverStatusMessage } from "../../../../src/cast/sender_messages";
-import { loadLovelaceResources } from "../../../../src/panels/lovelace/common/load-resources";
-import { isNavigationClick } from "../../../../src/common/dom/is-navigation-click";
 import { atLeastVersion } from "../../../../src/common/config/version";
+import { isNavigationClick } from "../../../../src/common/dom/is-navigation-click";
+import {
+  fetchResources,
+  getLegacyLovelaceCollection,
+  getLovelaceCollection,
+  LegacyLovelaceConfig,
+  LovelaceConfig,
+} from "../../../../src/data/lovelace";
+import { loadLovelaceResources } from "../../../../src/panels/lovelace/common/load-resources";
+import { HassElement } from "../../../../src/state/hass-element";
+import { castContext } from "../cast_context";
+import "./hc-launch-screen";
 
 let resourcesLoaded = false;
 
@@ -40,6 +40,7 @@ export class HcMain extends HassElement {
   @property() private _error?: string;
 
   private _unsubLovelace?: UnsubscribeFunc;
+
   private _urlPath?: string | null;
 
   public processIncomingMessage(msg: HassMessage) {
@@ -52,16 +53,14 @@ export class HcMain extends HassElement {
     } else if (msg.type === "show_demo") {
       this._handleShowDemo(msg);
     } else {
-      // tslint:disable-next-line: no-console
+      // eslint-disable-next-line no-console
       console.warn("unknown msg type", msg);
     }
   }
 
   protected render(): TemplateResult {
     if (this._showDemo) {
-      return html`
-        <hc-demo .lovelacePath=${this._lovelacePath}></hc-demo>
-      `;
+      return html` <hc-demo .lovelacePath=${this._lovelacePath}></hc-demo> `;
     }
 
     if (

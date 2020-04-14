@@ -1,24 +1,21 @@
 import "@polymer/paper-icon-button/paper-icon-button";
-
-import { STATES_OFF } from "../../common/const";
+import { HassEntity } from "home-assistant-js-websocket";
 import {
-  LitElement,
-  TemplateResult,
-  html,
-  CSSResult,
   css,
+  CSSResult,
+  html,
+  LitElement,
   property,
   PropertyValues,
+  TemplateResult,
 } from "lit-element";
-import { HomeAssistant } from "../../types";
-import { HassEntity } from "home-assistant-js-websocket";
-import { forwardHaptic } from "../../data/haptics";
-
+import { STATES_OFF } from "../../common/const";
 import { computeStateDomain } from "../../common/entity/compute_state_domain";
 import { computeStateName } from "../../common/entity/compute_state_name";
-
-import "../ha-switch";
 import { UNAVAILABLE_STATES } from "../../data/entity";
+import { forwardHaptic } from "../../data/haptics";
+import { HomeAssistant } from "../../types";
+import "../ha-switch";
 
 const isOn = (stateObj?: HassEntity) =>
   stateObj !== undefined &&
@@ -28,14 +25,14 @@ const isOn = (stateObj?: HassEntity) =>
 class HaEntityToggle extends LitElement {
   // hass is not a property so that we only re-render on stateObj changes
   public hass?: HomeAssistant;
+
   @property() public stateObj?: HassEntity;
-  @property() private _isOn: boolean = false;
+
+  @property() private _isOn = false;
 
   protected render(): TemplateResult {
     if (!this.stateObj) {
-      return html`
-        <ha-switch disabled></ha-switch>
-      `;
+      return html` <ha-switch disabled></ha-switch> `;
     }
 
     if (this.stateObj.attributes.assumed_state) {

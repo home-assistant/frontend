@@ -1,21 +1,19 @@
+import { PaperInputElement } from "@polymer/paper-input/paper-input";
 import {
+  customElement,
   html,
   LitElement,
-  TemplateResult,
   property,
-  customElement,
   PropertyValues,
+  TemplateResult,
 } from "lit-element";
-import { PaperInputElement } from "@polymer/paper-input/paper-input";
-
+import { UNAVAILABLE_STATES } from "../../../data/entity";
+import { setValue } from "../../../data/input_text";
+import { HomeAssistant } from "../../../types";
+import { hasConfigOrEntityChanged } from "../common/has-changed";
 import "../components/hui-generic-entity-row";
 import "../components/hui-warning";
-
-import { HomeAssistant } from "../../../types";
-import { LovelaceRow, EntityConfig } from "./types";
-import { setValue } from "../../../data/input_text";
-import { hasConfigOrEntityChanged } from "../common/has-changed";
-import { UNAVAILABLE_STATES } from "../../../data/entity";
+import { EntityConfig, LovelaceRow } from "./types";
 
 @customElement("hui-input-text-entity-row")
 class HuiInputTextEntityRow extends LitElement implements LovelaceRow {

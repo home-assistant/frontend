@@ -1,4 +1,7 @@
-import { TemplateResult, html } from "lit-html";
+import "@material/mwc-button";
+import "@polymer/iron-icon/iron-icon";
+import "@polymer/paper-icon-button/paper-icon-button";
+import "@polymer/paper-input/paper-input";
 import {
   css,
   CSSResult,
@@ -6,11 +9,8 @@ import {
   LitElement,
   property,
 } from "lit-element";
+import { html, TemplateResult } from "lit-html";
 import { fireEvent } from "../../../src/common/dom/fire_event";
-import "@polymer/iron-icon/iron-icon";
-import "@polymer/paper-input/paper-input";
-import "@polymer/paper-icon-button/paper-icon-button";
-import "@material/mwc-button";
 
 @customElement("hassio-search-input")
 class HassioSearchInput extends LitElement {
@@ -30,16 +30,16 @@ class HassioSearchInput extends LitElement {
             class="prefix"
           ></iron-icon>
           ${this.filter &&
-            html`
-              <paper-icon-button
-                slot="suffix"
-                class="suffix"
-                @click=${this._clearSearch}
-                icon="hassio:close"
-                alt="Clear"
-                title="Clear"
-              ></paper-icon-button>
-            `}
+          html`
+            <paper-icon-button
+              slot="suffix"
+              class="suffix"
+              @click=${this._clearSearch}
+              icon="hassio:close"
+              alt="Clear"
+              title="Clear"
+            ></paper-icon-button>
+          `}
         </paper-input>
       </div>
     `;

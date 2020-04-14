@@ -1,23 +1,26 @@
-import "../../../../../components/device/ha-device-picker";
-import "../../../../../components/device/ha-device-action-picker";
-import "../../../../../components/ha-form/ha-form";
-
-import {
-  fetchDeviceActionCapabilities,
-  deviceAutomationsEqual,
-  DeviceAction,
-} from "../../../../../data/device_automation";
-import { LitElement, customElement, property, html } from "lit-element";
-import { fireEvent } from "../../../../../common/dom/fire_event";
-import { HomeAssistant } from "../../../../../types";
+import { customElement, html, LitElement, property } from "lit-element";
 import memoizeOne from "memoize-one";
+import { fireEvent } from "../../../../../common/dom/fire_event";
+import "../../../../../components/device/ha-device-action-picker";
+import "../../../../../components/device/ha-device-picker";
+import "../../../../../components/ha-form/ha-form";
+import {
+  DeviceAction,
+  deviceAutomationsEqual,
+  fetchDeviceActionCapabilities,
+} from "../../../../../data/device_automation";
+import { HomeAssistant } from "../../../../../types";
 
 @customElement("ha-automation-action-device_id")
 export class HaDeviceAction extends LitElement {
   @property() public hass!: HomeAssistant;
+
   @property() public action!: DeviceAction;
+
   @property() private _deviceId?: string;
+
   @property() private _capabilities?;
+
   private _origAction?: DeviceAction;
 
   public static get defaultConfig() {

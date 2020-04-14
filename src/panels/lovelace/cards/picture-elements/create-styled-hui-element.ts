@@ -1,5 +1,5 @@
-import { LovelaceElement, LovelaceElementConfig } from "../../elements/types";
 import { createHuiElement } from "../../create-element/create-hui-element";
+import { LovelaceElement, LovelaceElementConfig } from "../../elements/types";
 
 export function createStyledHuiElement(
   elementConfig: LovelaceElementConfig

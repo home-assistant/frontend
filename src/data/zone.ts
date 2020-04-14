@@ -1,9 +1,9 @@
-import { HomeAssistant } from "../types";
 import { navigate } from "../common/navigate";
+import { HomeAssistant } from "../types";
 
 export const defaultRadiusColor = "#FF9800";
-export const homeRadiusColor: string = "#03a9f4";
-export const passiveRadiusColor: string = "#9b9b9b";
+export const homeRadiusColor = "#03a9f4";
+export const passiveRadiusColor = "#9b9b9b";
 
 export interface Zone {
   id: string;

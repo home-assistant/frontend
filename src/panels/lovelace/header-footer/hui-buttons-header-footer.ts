@@ -1,18 +1,16 @@
 import {
   customElement,
-  LitElement,
   html,
+  LitElement,
   property,
   TemplateResult,
 } from "lit-element";
-
+import { HomeAssistant } from "../../../types";
+import { processConfigEntities } from "../common/process-config-entities";
 import "../components/hui-buttons-base";
-
+import { EntityConfig } from "../entity-rows/types";
 import { LovelaceHeaderFooter } from "../types";
 import { ButtonsHeaderFooterConfig } from "./types";
-import { processConfigEntities } from "../common/process-config-entities";
-import { EntityConfig } from "../entity-rows/types";
-import { HomeAssistant } from "../../../types";
 
 @customElement("hui-buttons-header-footer")
 export class HuiButtonsHeaderFooter extends LitElement
@@ -22,6 +20,7 @@ export class HuiButtonsHeaderFooter extends LitElement
   }
 
   @property() public hass?: HomeAssistant;
+
   private _configEntities?: EntityConfig[];
 
   public setConfig(config: ButtonsHeaderFooterConfig): void {

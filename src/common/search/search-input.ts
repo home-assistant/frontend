@@ -1,4 +1,5 @@
-import { TemplateResult, html } from "lit-html";
+import "@polymer/paper-icon-button/paper-icon-button";
+import "@polymer/paper-input/paper-input";
 import {
   css,
   CSSResult,
@@ -6,17 +7,18 @@ import {
   LitElement,
   property,
 } from "lit-element";
-import { fireEvent } from "../dom/fire_event";
-import "@polymer/paper-input/paper-input";
-import "@polymer/paper-icon-button/paper-icon-button";
-import "../../components/ha-icon";
+import { html, TemplateResult } from "lit-html";
 import { classMap } from "lit-html/directives/class-map";
+import "../../components/ha-icon";
+import { fireEvent } from "../dom/fire_event";
 
 @customElement("search-input")
 class SearchInput extends LitElement {
   @property() public filter?: string;
+
   @property({ type: Boolean, attribute: "no-label-float" })
   public noLabelFloat? = false;
+
   @property({ type: Boolean, attribute: "no-underline" })
   public noUnderline = false;
 
@@ -44,16 +46,16 @@ class SearchInput extends LitElement {
       >
         <ha-icon icon="hass:magnify" slot="prefix" class="prefix"></ha-icon>
         ${this.filter &&
-          html`
-            <paper-icon-button
-              slot="suffix"
-              class="suffix"
-              @click=${this._clearSearch}
-              icon="hass:close"
-              alt="Clear"
-              title="Clear"
-            ></paper-icon-button>
-          `}
+        html`
+          <paper-icon-button
+            slot="suffix"
+            class="suffix"
+            @click=${this._clearSearch}
+            icon="hass:close"
+            alt="Clear"
+            title="Clear"
+          ></paper-icon-button>
+        `}
       </paper-input>
     `;
   }

@@ -1,8 +1,7 @@
 import "@polymer/paper-icon-button/paper-icon-button";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
-// tslint:disable-next-line
-import { PaperListboxElement } from "@polymer/paper-listbox/paper-listbox";
+import type { PaperListboxElement } from "@polymer/paper-listbox/paper-listbox";
 import "@polymer/paper-menu-button/paper-menu-button";
 import {
   css,
@@ -15,24 +14,22 @@ import {
 import { dynamicElement } from "../../../../common/dom/dynamic-element-directive";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-card";
-import { HomeAssistant } from "../../../../types";
+import type { Trigger } from "../../../../data/automation";
 import { showConfirmationDialog } from "../../../../dialogs/generic/show-dialog-box";
-
+import type { HomeAssistant } from "../../../../types";
 import "./types/ha-automation-trigger-device";
 import "./types/ha-automation-trigger-event";
-import "./types/ha-automation-trigger-state";
 import "./types/ha-automation-trigger-geo_location";
 import "./types/ha-automation-trigger-homeassistant";
 import "./types/ha-automation-trigger-mqtt";
 import "./types/ha-automation-trigger-numeric_state";
+import "./types/ha-automation-trigger-state";
 import "./types/ha-automation-trigger-sun";
 import "./types/ha-automation-trigger-template";
 import "./types/ha-automation-trigger-time";
 import "./types/ha-automation-trigger-time_pattern";
 import "./types/ha-automation-trigger-webhook";
 import "./types/ha-automation-trigger-zone";
-
-import { Trigger } from "../../../../data/automation";
 
 const OPTIONS = [
   "device",
@@ -79,7 +76,9 @@ export const handleChangeEvent = (element: TriggerElement, ev: CustomEvent) => {
 @customElement("ha-automation-trigger-row")
 export default class HaAutomationTriggerRow extends LitElement {
   @property() public hass!: HomeAssistant;
+
   @property() public trigger!: Trigger;
+
   @property() private _yamlMode = false;
 
   protected render() {

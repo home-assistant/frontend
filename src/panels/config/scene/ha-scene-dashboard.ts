@@ -28,9 +28,13 @@ import { configSections } from "../ha-panel-config";
 @customElement("ha-scene-dashboard")
 class HaSceneDashboard extends LitElement {
   @property() public hass!: HomeAssistant;
+
   @property() public narrow!: boolean;
+
   @property() public isWide!: boolean;
+
   @property() public route!: Route;
+
   @property() public scenes!: SceneEntity[];
 
   private _scenes = memoizeOne((scenes: SceneEntity[]) => {

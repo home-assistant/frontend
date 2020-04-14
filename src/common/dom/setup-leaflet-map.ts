@@ -12,7 +12,7 @@ export const setupLeafletMap = async (
   if (!mapElement.parentNode) {
     throw new Error("Cannot setup Leaflet map on disconnected element");
   }
-  // tslint:disable-next-line
+  // eslint-disable-next-line
   const Leaflet = (await import(
     /* webpackChunkName: "leaflet" */ "leaflet"
   )) as LeafletModuleType;

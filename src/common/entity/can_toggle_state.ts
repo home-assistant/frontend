@@ -1,7 +1,7 @@
 import { HassEntity } from "home-assistant-js-websocket";
+import { HomeAssistant } from "../../types";
 import { canToggleDomain } from "./can_toggle_domain";
 import { computeStateDomain } from "./compute_state_domain";
-import { HomeAssistant } from "../../types";
 import { supportsFeature } from "./supports-feature";
 
 export const canToggleState = (hass: HomeAssistant, stateObj: HassEntity) => {

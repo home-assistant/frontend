@@ -1,18 +1,17 @@
+import { HassEntities } from "home-assistant-js-websocket";
 import {
   applyThemesOnElement,
   invalidateThemeCache,
 } from "../common/dom/apply_themes_on_element";
-
-import { demoConfig } from "./demo_config";
-import { demoServices } from "./demo_services";
-import { demoPanels } from "./demo_panels";
-import { getEntity, Entity } from "./entity";
-import { HomeAssistant } from "../types";
-import { HassEntities } from "home-assistant-js-websocket";
-import { getLocalLanguage, getTranslation } from "../util/hass-translation";
-import { translationMetadata } from "../resources/translations-metadata";
-import { DEFAULT_PANEL } from "../data/panel";
 import { computeLocalize } from "../common/translations/localize";
+import { DEFAULT_PANEL } from "../data/panel";
+import { translationMetadata } from "../resources/translations-metadata";
+import { HomeAssistant } from "../types";
+import { getLocalLanguage, getTranslation } from "../util/hass-translation";
+import { demoConfig } from "./demo_config";
+import { demoPanels } from "./demo_panels";
+import { demoServices } from "./demo_services";
+import { Entity, getEntity } from "./entity";
 
 const ensureArray = <T>(val: T | T[]): T[] =>
   Array.isArray(val) ? val : [val];
@@ -76,7 +75,7 @@ export const provideHass = (
     });
   }
 
-  function addEntities(newEntities, replace: boolean = false) {
+  function addEntities(newEntities, replace = false) {
     const states = {};
     ensureArray(newEntities).forEach((ent) => {
       ent.hass = hass();
@@ -132,7 +131,7 @@ export const provideHass = (
         if (callback) {
           callback(msg);
         } else {
-          // tslint:disable-next-line
+          // eslint-disable-next-line
           console.error(`Unknown WS command: ${msg.type}`);
         }
       },
@@ -211,7 +210,7 @@ export const provideHass = (
           )
         );
       } else {
-        // tslint:disable-next-line
+        // eslint-disable-next-line
         console.log("unmocked callService", domain, service, data);
       }
     },

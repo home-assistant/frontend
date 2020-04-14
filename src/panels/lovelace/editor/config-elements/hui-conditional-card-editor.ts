@@ -1,27 +1,25 @@
+import "@polymer/paper-tabs";
 import {
+  css,
+  CSSResult,
+  customElement,
   html,
   LitElement,
-  TemplateResult,
-  customElement,
   property,
-  CSSResult,
-  css,
   query,
+  TemplateResult,
 } from "lit-element";
-import "@polymer/paper-tabs";
-
-import { struct } from "../../common/structs/struct";
-import { HomeAssistant } from "../../../../types";
-import { LovelaceCardEditor } from "../../types";
-import { ConditionalCardConfig } from "../../cards/types";
 import { fireEvent, HASSDomEvent } from "../../../../common/dom/fire_event";
-import { LovelaceConfig } from "../../../../data/lovelace";
-
 import "../../../../components/entity/ha-entity-picker";
 import "../../../../components/ha-switch";
+import { LovelaceConfig } from "../../../../data/lovelace";
+import { HomeAssistant } from "../../../../types";
+import { ConditionalCardConfig } from "../../cards/types";
+import { struct } from "../../common/structs/struct";
+import { LovelaceCardEditor } from "../../types";
 import {
-  HuiCardEditor,
   ConfigChangedEvent,
+  HuiCardEditor,
 } from "../card-editor/hui-card-editor";
 import { GUIModeChangedEvent } from "../types";
 
@@ -40,11 +38,17 @@ const cardConfigStruct = struct({
 export class HuiConditionalCardEditor extends LitElement
   implements LovelaceCardEditor {
   @property() public hass?: HomeAssistant;
+
   @property() public lovelace?: LovelaceConfig;
+
   @property() private _config?: ConditionalCardConfig;
+
   @property() private _GUImode = true;
+
   @property() private _guiModeAvailable? = true;
-  @property() private _cardTab: boolean = false;
+
+  @property() private _cardTab = false;
+
   @query("hui-card-editor") private _cardEditorEl?: HuiCardEditor;
 
   public setConfig(config: ConditionalCardConfig): void {
@@ -242,6 +246,7 @@ export class HuiConditionalCardEditor extends LitElement
     target.value = "";
     fireEvent(this, "config-changed", { config: this._config });
   }
+
   private _changeCondition(ev: Event): void {
     const target = ev.target as any;
     if (!this._config || !target) {
@@ -265,11 +270,9 @@ export class HuiConditionalCardEditor extends LitElement
             condition.state_not = condition.state;
             delete condition.state;
           }
-        } else {
-          if (condition.state_not) {
-            condition.state = condition.state_not;
-            delete condition.state_not;
-          }
+        } else if (condition.state_not) {
+          condition.state = condition.state_not;
+          delete condition.state_not;
         }
       }
       this._config.conditions[target.index] = condition;

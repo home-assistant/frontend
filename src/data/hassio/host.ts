@@ -1,5 +1,5 @@
 import { HomeAssistant } from "../../types";
-import { HassioResponse, hassioApiResultExtractor } from "./common";
+import { hassioApiResultExtractor, HassioResponse } from "./common";
 
 export type HassioHostInfo = any;
 

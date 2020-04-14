@@ -1,5 +1,5 @@
-import { MockHomeAssistant } from "../../../src/fake_data/provide_hass";
 import { ShoppingListItem } from "../../../src/data/shopping-list";
+import { MockHomeAssistant } from "../../../src/fake_data/provide_hass";
 
 let items: ShoppingListItem[] = [
   {

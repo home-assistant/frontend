@@ -1,8 +1,8 @@
 import { html } from "@polymer/polymer/lib/utils/html-tag";
+/* eslint-plugin-disable lit */
 import { PolymerElement } from "@polymer/polymer/polymer-element";
-
-import LocalizeMixin from "../mixins/localize-mixin";
 import { CLIMATE_PRESET_NONE } from "../data/climate";
+import LocalizeMixin from "../mixins/localize-mixin";
 
 /*
  * @appliesMixin LocalizeMixin

@@ -64,17 +64,13 @@ export const coordinates = (
   width: number,
   detail: number
 ): number[][] | undefined => {
-  history.forEach((item) => (item.state = Number(item.state)));
+  history.forEach((item) => {
+    item.state = Number(item.state);
+  });
   history = history.filter((item) => !Number.isNaN(item.state));
 
-  const min = Math.min.apply(
-    Math,
-    history.map((item) => item.state)
-  );
-  const max = Math.max.apply(
-    Math,
-    history.map((item) => item.state)
-  );
+  const min = Math.min(...history.map((item) => item.state));
+  const max = Math.max(...history.map((item) => item.state));
   const now = new Date().getTime();
 
   const reduce = (res, item, point) => {

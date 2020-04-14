@@ -1,25 +1,22 @@
+import { HassEntity } from "home-assistant-js-websocket";
 import {
-  LitElement,
-  html,
-  PropertyValues,
-  TemplateResult,
   css,
   CSSResult,
   customElement,
+  html,
+  LitElement,
   property,
+  PropertyValues,
+  TemplateResult,
 } from "lit-element";
-
-import { HassEntity } from "home-assistant-js-websocket";
 import { classMap } from "lit-html/directives/class-map";
-import { HomeAssistant } from "../../types";
-
+import secondsToDuration from "../../common/datetime/seconds_to_duration";
 import { computeStateDomain } from "../../common/entity/compute_state_domain";
 import { computeStateName } from "../../common/entity/compute_state_name";
 import { domainIcon } from "../../common/entity/domain_icon";
 import { stateIcon } from "../../common/entity/state_icon";
 import { timerTimeRemaining } from "../../common/entity/timer_time_remaining";
-import secondsToDuration from "../../common/datetime/seconds_to_duration";
-
+import { HomeAssistant } from "../../types";
 import "../ha-label-badge";
 
 @customElement("ha-state-label-badge")
