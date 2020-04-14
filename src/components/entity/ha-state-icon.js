@@ -1,9 +1,8 @@
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 /* eslint-plugin-disable lit */
 import { PolymerElement } from "@polymer/polymer/polymer-element";
-
-import "../ha-icon";
 import { stateIcon } from "../../common/entity/state_icon";
+import "../ha-icon";
 
 class HaStateIcon extends PolymerElement {
   static get template() {

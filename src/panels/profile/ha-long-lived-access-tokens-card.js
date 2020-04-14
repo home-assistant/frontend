@@ -1,17 +1,14 @@
 import "@material/mwc-button";
-
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 /* eslint-plugin-disable lit */
 import { PolymerElement } from "@polymer/polymer/polymer-element";
-import { EventsMixin } from "../../mixins/events-mixin";
-import LocalizeMixin from "../../mixins/localize-mixin";
 import { formatDateTime } from "../../common/datetime/format_date_time";
 import "../../components/ha-card";
-
-import "../../resources/ha-style";
-
-import "./ha-settings-row";
 import { showAlertDialog } from "../../dialogs/generic/show-dialog-box";
+import { EventsMixin } from "../../mixins/events-mixin";
+import LocalizeMixin from "../../mixins/localize-mixin";
+import "../../resources/ha-style";
+import "./ha-settings-row";
 
 /*
  * @appliesMixin EventsMixin

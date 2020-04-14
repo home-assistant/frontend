@@ -3,15 +3,12 @@ import "@polymer/paper-input/paper-input";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 /* eslint-plugin-disable lit */
 import { PolymerElement } from "@polymer/polymer/polymer-element";
-
-import "../../../components/ha-card";
-import "../../../components/buttons/ha-call-service-button";
-import "../../../resources/ha-style";
-
-import "../ha-config-section";
-
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
+import "../../../components/buttons/ha-call-service-button";
+import "../../../components/ha-card";
 import LocalizeMixin from "../../../mixins/localize-mixin";
+import "../../../resources/ha-style";
+import "../ha-config-section";
 
 /*
  * @appliesMixin LocalizeMixin

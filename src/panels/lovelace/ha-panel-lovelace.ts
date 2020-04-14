@@ -1,31 +1,30 @@
 import "@material/mwc-button";
 import deepFreeze from "deep-freeze";
 import {
-  LitElement,
   html,
+  LitElement,
+  property,
   PropertyValues,
   TemplateResult,
-  property,
 } from "lit-element";
 import {
+  deleteConfig,
   fetchConfig,
+  fetchResources,
   LovelaceConfig,
   saveConfig,
   subscribeLovelaceUpdates,
   WindowWithLovelaceProm,
-  deleteConfig,
-  fetchResources,
 } from "../../data/lovelace";
-import "../../layouts/hass-loading-screen";
 import "../../layouts/hass-error-screen";
-import "./hui-root";
+import "../../layouts/hass-loading-screen";
 import { HomeAssistant, PanelInfo, Route } from "../../types";
-import { Lovelace } from "./types";
-
-import { showSaveDialog } from "./editor/show-save-config-dialog";
-import { generateLovelaceConfigFromHass } from "./common/generate-lovelace-config";
 import { showToast } from "../../util/toast";
+import { generateLovelaceConfigFromHass } from "./common/generate-lovelace-config";
 import { loadLovelaceResources } from "./common/load-resources";
+import { showSaveDialog } from "./editor/show-save-config-dialog";
+import "./hui-root";
+import { Lovelace } from "./types";
 
 (window as any).loadCardHelpers = () => import("./custom-card-helpers");
 

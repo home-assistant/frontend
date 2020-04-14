@@ -1,22 +1,20 @@
+import "@material/mwc-button";
 import {
-  html,
-  LitElement,
-  TemplateResult,
-  customElement,
-  property,
   css,
   CSSResult,
+  customElement,
+  html,
+  LitElement,
+  property,
+  TemplateResult,
 } from "lit-element";
-import "@material/mwc-button";
-
 import "../../../components/ha-icon";
-
-import { LovelaceRow, ButtonRowConfig } from "../entity-rows/types";
+import { ActionHandlerEvent } from "../../../data/lovelace";
 import { HomeAssistant } from "../../../types";
 import { actionHandler } from "../common/directives/action-handler-directive";
-import { hasAction } from "../common/has-action";
-import { ActionHandlerEvent } from "../../../data/lovelace";
 import { handleAction } from "../common/handle-action";
+import { hasAction } from "../common/has-action";
+import { ButtonRowConfig, LovelaceRow } from "../entity-rows/types";
 
 @customElement("hui-button-row")
 export class HuiButtonRow extends LitElement implements LovelaceRow {

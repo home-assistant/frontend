@@ -1,37 +1,35 @@
-import {
-  LitElement,
-  TemplateResult,
-  html,
-  CSSResultArray,
-  css,
-  property,
-  customElement,
-} from "lit-element";
 import "@polymer/paper-icon-button/paper-icon-button";
 import "@polymer/paper-tooltip/paper-tooltip";
-import "../../../layouts/hass-tabs-subpage-data-table";
-
-import "../../../components/ha-fab";
-import "../../../components/entity/ha-entity-toggle";
-
-import memoizeOne from "memoize-one";
-import { ifDefined } from "lit-html/directives/if-defined";
-import { computeStateName } from "../../../common/entity/compute_state_name";
-import { computeRTL } from "../../../common/util/compute_rtl";
-import { haStyle } from "../../../resources/styles";
-import { HomeAssistant, Route } from "../../../types";
 import {
-  AutomationEntity,
-  showAutomationEditor,
-  AutomationConfig,
-  triggerAutomation,
-} from "../../../data/automation";
+  css,
+  CSSResultArray,
+  customElement,
+  html,
+  LitElement,
+  property,
+  TemplateResult,
+} from "lit-element";
+import { ifDefined } from "lit-html/directives/if-defined";
+import memoizeOne from "memoize-one";
+import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { formatDateTime } from "../../../common/datetime/format_date_time";
 import { fireEvent } from "../../../common/dom/fire_event";
-import { showThingtalkDialog } from "./show-dialog-thingtalk";
-import { isComponentLoaded } from "../../../common/config/is_component_loaded";
-import { configSections } from "../ha-panel-config";
+import { computeStateName } from "../../../common/entity/compute_state_name";
+import { computeRTL } from "../../../common/util/compute_rtl";
 import { DataTableColumnContainer } from "../../../components/data-table/ha-data-table";
+import "../../../components/entity/ha-entity-toggle";
+import "../../../components/ha-fab";
+import {
+  AutomationConfig,
+  AutomationEntity,
+  showAutomationEditor,
+  triggerAutomation,
+} from "../../../data/automation";
+import "../../../layouts/hass-tabs-subpage-data-table";
+import { haStyle } from "../../../resources/styles";
+import { HomeAssistant, Route } from "../../../types";
+import { configSections } from "../ha-panel-config";
+import { showThingtalkDialog } from "./show-dialog-thingtalk";
 
 @customElement("ha-automation-picker")
 class HaAutomationPicker extends LitElement {

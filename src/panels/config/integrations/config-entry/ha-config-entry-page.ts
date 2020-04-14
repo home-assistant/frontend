@@ -1,26 +1,25 @@
+import { css, CSSResult, html, LitElement, property } from "lit-element";
 import memoizeOne from "memoize-one";
-import "../../../../layouts/hass-subpage";
-import "../../../../layouts/hass-error-screen";
-
-import "../../devices/ha-devices-data-table";
-import "./ha-ce-entities-card";
-import { property, LitElement, CSSResult, css, html } from "lit-element";
-import { showOptionsFlowDialog } from "../../../../dialogs/config-flow/show-dialog-options-flow";
+import { fireEvent } from "../../../../common/dom/fire_event";
 import { navigate } from "../../../../common/navigate";
-import { HomeAssistant } from "../../../../types";
+import { AreaRegistryEntry } from "../../../../data/area_registry";
 import {
   ConfigEntry,
   deleteConfigEntry,
 } from "../../../../data/config_entries";
-import { EntityRegistryEntry } from "../../../../data/entity_registry";
 import { DeviceRegistryEntry } from "../../../../data/device_registry";
-import { AreaRegistryEntry } from "../../../../data/area_registry";
-import { fireEvent } from "../../../../common/dom/fire_event";
+import { EntityRegistryEntry } from "../../../../data/entity_registry";
 import { showConfigEntrySystemOptionsDialog } from "../../../../dialogs/config-entry-system-options/show-dialog-config-entry-system-options";
+import { showOptionsFlowDialog } from "../../../../dialogs/config-flow/show-dialog-options-flow";
 import {
   showAlertDialog,
   showConfirmationDialog,
 } from "../../../../dialogs/generic/show-dialog-box";
+import "../../../../layouts/hass-error-screen";
+import "../../../../layouts/hass-subpage";
+import { HomeAssistant } from "../../../../types";
+import "../../devices/ha-devices-data-table";
+import "./ha-ce-entities-card";
 
 class HaConfigEntryPage extends LitElement {
   @property() public hass!: HomeAssistant;

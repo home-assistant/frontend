@@ -1,20 +1,20 @@
-import "@polymer/paper-input/paper-input";
 import "@material/mwc-button";
+import "@polymer/paper-input/paper-input";
+import { genClientId } from "home-assistant-js-websocket";
 import {
-  LitElement,
-  CSSResult,
   css,
-  html,
-  PropertyValues,
-  property,
+  CSSResult,
   customElement,
+  html,
+  LitElement,
+  property,
+  PropertyValues,
   TemplateResult,
 } from "lit-element";
-import { genClientId } from "home-assistant-js-websocket";
+import { fireEvent } from "../common/dom/fire_event";
+import { LocalizeFunc } from "../common/translations/localize";
 import { onboardUserStep } from "../data/onboarding";
 import { PolymerChangedEvent } from "../polymer-types";
-import { LocalizeFunc } from "../common/translations/localize";
-import { fireEvent } from "../common/dom/fire_event";
 
 @customElement("onboarding-create-user")
 class OnboardingCreateUser extends LitElement {

@@ -1,16 +1,14 @@
-import {
-  LitElement,
-  TemplateResult,
-  property,
-  html,
-  customElement,
-} from "lit-element";
 import "@polymer/paper-icon-button/paper-icon-button-light";
-
-import { HomeAssistant } from "../../types";
-import { PolymerChangedEvent } from "../../polymer-types";
+import {
+  customElement,
+  html,
+  LitElement,
+  property,
+  TemplateResult,
+} from "lit-element";
 import { fireEvent } from "../../common/dom/fire_event";
-
+import { PolymerChangedEvent } from "../../polymer-types";
+import { HomeAssistant } from "../../types";
 import "./ha-device-picker";
 
 @customElement("ha-devices-picker")

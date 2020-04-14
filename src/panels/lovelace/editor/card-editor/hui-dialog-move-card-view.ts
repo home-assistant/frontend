@@ -1,21 +1,19 @@
+import "@polymer/paper-item/paper-item";
 import {
-  html,
-  LitElement,
-  TemplateResult,
-  customElement,
-  property,
   css,
   CSSResult,
+  customElement,
+  html,
+  LitElement,
+  property,
+  TemplateResult,
 } from "lit-element";
-import "@polymer/paper-item/paper-item";
 import "../../../../components/dialog/ha-paper-dialog";
 import type { HaPaperDialog } from "../../../../components/dialog/ha-paper-dialog";
-
+import type { PolymerChangedEvent } from "../../../../polymer-types";
 import "../../components/hui-views-list";
-
 import { moveCard } from "../config-util";
 import type { MoveCardViewDialogParams } from "./show-move-card-view-dialog";
-import type { PolymerChangedEvent } from "../../../../polymer-types";
 
 @customElement("hui-dialog-move-card-view")
 export class HuiDialogMoveCardView extends LitElement {

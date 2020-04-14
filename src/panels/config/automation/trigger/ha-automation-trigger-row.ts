@@ -14,24 +14,22 @@ import {
 import { dynamicElement } from "../../../../common/dom/dynamic-element-directive";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-card";
-import type { HomeAssistant } from "../../../../types";
+import type { Trigger } from "../../../../data/automation";
 import { showConfirmationDialog } from "../../../../dialogs/generic/show-dialog-box";
-
+import type { HomeAssistant } from "../../../../types";
 import "./types/ha-automation-trigger-device";
 import "./types/ha-automation-trigger-event";
-import "./types/ha-automation-trigger-state";
 import "./types/ha-automation-trigger-geo_location";
 import "./types/ha-automation-trigger-homeassistant";
 import "./types/ha-automation-trigger-mqtt";
 import "./types/ha-automation-trigger-numeric_state";
+import "./types/ha-automation-trigger-state";
 import "./types/ha-automation-trigger-sun";
 import "./types/ha-automation-trigger-template";
 import "./types/ha-automation-trigger-time";
 import "./types/ha-automation-trigger-time_pattern";
 import "./types/ha-automation-trigger-webhook";
 import "./types/ha-automation-trigger-zone";
-
-import type { Trigger } from "../../../../data/automation";
 
 const OPTIONS = [
   "device",

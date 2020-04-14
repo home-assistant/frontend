@@ -1,17 +1,17 @@
+import { ripple } from "@material/mwc-ripple/ripple-directive";
+import "@material/mwc-switch";
+import type { Switch } from "@material/mwc-switch";
+import { style } from "@material/mwc-switch/mwc-switch-css";
 import {
-  customElement,
-  CSSResult,
   css,
-  query,
+  CSSResult,
+  customElement,
   html,
   property,
+  query,
 } from "lit-element";
-import "@material/mwc-switch";
-import { style } from "@material/mwc-switch/mwc-switch-css";
-import type { Switch } from "@material/mwc-switch";
-import { ripple } from "@material/mwc-ripple/ripple-directive";
-import { Constructor } from "../types";
 import { forwardHaptic } from "../data/haptics";
+import { Constructor } from "../types";
 
 const MwcSwitch = customElements.get("mwc-switch") as Constructor<Switch>;
 

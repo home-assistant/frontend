@@ -1,6 +1,6 @@
 import { fetchRecent } from "../../../../data/history";
-import { coordinates } from "./coordinates";
 import { HomeAssistant } from "../../../../types";
+import { coordinates } from "./coordinates";
 
 export const getHistoryCoordinates = async (
   hass: HomeAssistant,

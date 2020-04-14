@@ -1,14 +1,13 @@
+import { customElement, html, LitElement, property } from "lit-element";
+import { fireEvent } from "../../../../../common/dom/fire_event";
 import "../../../../../components/device/ha-device-picker";
 import "../../../../../components/device/ha-device-trigger-picker";
 import "../../../../../components/ha-form/ha-form";
-
-import { LitElement, customElement, property, html } from "lit-element";
 import {
-  fetchDeviceTriggerCapabilities,
   deviceAutomationsEqual,
   DeviceTrigger,
+  fetchDeviceTriggerCapabilities,
 } from "../../../../../data/device_automation";
-import { fireEvent } from "../../../../../common/dom/fire_event";
 import { HomeAssistant } from "../../../../../types";
 
 @customElement("ha-automation-trigger-device")

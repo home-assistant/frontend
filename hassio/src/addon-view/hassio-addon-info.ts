@@ -12,31 +12,29 @@ import {
   TemplateResult,
 } from "lit-element";
 import { classMap } from "lit-html/directives/class-map";
-
+import { atLeastVersion } from "../../../src/common/config/version";
+import { fireEvent } from "../../../src/common/dom/fire_event";
+import { navigate } from "../../../src/common/navigate";
 import "../../../src/components/buttons/ha-call-api-button";
 import "../../../src/components/buttons/ha-progress-button";
 import "../../../src/components/ha-label-badge";
 import "../../../src/components/ha-markdown";
 import "../../../src/components/ha-switch";
-import "../components/hassio-card-content";
-
-import { fireEvent } from "../../../src/common/dom/fire_event";
 import {
+  fetchHassioAddonChangelog,
   HassioAddonDetails,
   HassioAddonSetOptionParams,
   HassioAddonSetSecurityParams,
+  installHassioAddon,
   setHassioAddonOption,
   setHassioAddonSecurity,
   uninstallHassioAddon,
-  installHassioAddon,
-  fetchHassioAddonChangelog,
 } from "../../../src/data/hassio/addon";
-import { hassioStyle } from "../resources/hassio-style";
 import { haStyle } from "../../../src/resources/styles";
 import { HomeAssistant } from "../../../src/types";
-import { navigate } from "../../../src/common/navigate";
+import "../components/hassio-card-content";
 import { showHassioMarkdownDialog } from "../dialogs/markdown/show-dialog-hassio-markdown";
-import { atLeastVersion } from "../../../src/common/config/version";
+import { hassioStyle } from "../resources/hassio-style";
 
 const PERMIS_DESC = {
   rating: {

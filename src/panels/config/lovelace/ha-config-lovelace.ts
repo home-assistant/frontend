@@ -1,4 +1,4 @@
-import { property, customElement } from "lit-element";
+import { customElement, property } from "lit-element";
 import {
   HassRouterPage,
   RouterOptions,

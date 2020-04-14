@@ -1,23 +1,23 @@
-import {
-  LovelaceCardConfig,
-  LovelaceBadgeConfig,
-} from "../../../data/lovelace";
-import {
-  HuiErrorCard,
-  createErrorCardElement,
-  createErrorCardConfig,
-} from "../cards/hui-error-card";
-import {
-  LovelaceCard,
-  LovelaceBadge,
-  LovelaceHeaderFooter,
-  LovelaceCardConstructor,
-} from "../types";
 import { fireEvent } from "../../../common/dom/fire_event";
-import { LovelaceElementConfig, LovelaceElement } from "../elements/types";
+import {
+  LovelaceBadgeConfig,
+  LovelaceCardConfig,
+} from "../../../data/lovelace";
+import { CUSTOM_TYPE_PREFIX } from "../../../data/lovelace_custom_cards";
+import {
+  createErrorCardConfig,
+  createErrorCardElement,
+  HuiErrorCard,
+} from "../cards/hui-error-card";
+import { LovelaceElement, LovelaceElementConfig } from "../elements/types";
 import { LovelaceRow, LovelaceRowConfig } from "../entity-rows/types";
 import { LovelaceHeaderFooterConfig } from "../header-footer/types";
-import { CUSTOM_TYPE_PREFIX } from "../../../data/lovelace_custom_cards";
+import {
+  LovelaceBadge,
+  LovelaceCard,
+  LovelaceCardConstructor,
+  LovelaceHeaderFooter,
+} from "../types";
 
 const TIMEOUT = 2000;
 

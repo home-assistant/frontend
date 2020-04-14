@@ -1,23 +1,21 @@
+import "@material/mwc-button";
 import "@polymer/app-layout/app-header-layout/app-header-layout";
 import "@polymer/app-layout/app-header/app-header";
 import "@polymer/app-layout/app-toolbar/app-toolbar";
-import "@material/mwc-button";
 import "@polymer/paper-input/paper-textarea";
-import "@polymer/paper-item/paper-item-body";
 import "@polymer/paper-item/paper-item";
+import "@polymer/paper-item/paper-item-body";
 import "@polymer/paper-tabs/paper-tab";
 import "@polymer/paper-tabs/paper-tabs";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 /* eslint-plugin-disable lit */
 import { PolymerElement } from "@polymer/polymer/polymer-element";
-
-import "../../components/ha-menu-button";
-import "../../components/ha-card";
-import "../../resources/ha-style";
-
 import { formatDateTime } from "../../common/datetime/format_date_time";
-import LocalizeMixin from "../../mixins/localize-mixin";
+import "../../components/ha-card";
+import "../../components/ha-menu-button";
 import { EventsMixin } from "../../mixins/events-mixin";
+import LocalizeMixin from "../../mixins/localize-mixin";
+import "../../resources/ha-style";
 
 let registeredDialog = false;
 

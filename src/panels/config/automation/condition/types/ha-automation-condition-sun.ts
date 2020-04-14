@@ -2,14 +2,14 @@ import "@polymer/paper-input/paper-input";
 import "@polymer/paper-radio-button/paper-radio-button";
 import "@polymer/paper-radio-group/paper-radio-group";
 import type { PaperRadioGroupElement } from "@polymer/paper-radio-group/paper-radio-group";
-import { LitElement, customElement, property, html } from "lit-element";
-import type { HomeAssistant } from "../../../../../types";
-import {
-  handleChangeEvent,
-  ConditionElement,
-} from "../ha-automation-condition-row";
+import { customElement, html, LitElement, property } from "lit-element";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import type { SunCondition } from "../../../../../data/automation";
+import type { HomeAssistant } from "../../../../../types";
+import {
+  ConditionElement,
+  handleChangeEvent,
+} from "../ha-automation-condition-row";
 
 @customElement("ha-automation-condition-sun")
 export class HaSunCondition extends LitElement implements ConditionElement {

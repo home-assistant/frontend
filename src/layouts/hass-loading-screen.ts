@@ -1,13 +1,13 @@
 import "@polymer/app-layout/app-toolbar/app-toolbar";
 import "@polymer/paper-spinner/paper-spinner-lite";
 import {
-  LitElement,
-  TemplateResult,
-  html,
-  CSSResultArray,
   css,
+  CSSResultArray,
   customElement,
+  html,
+  LitElement,
   property,
+  TemplateResult,
 } from "lit-element";
 import "../components/ha-menu-button";
 import "../components/ha-paper-icon-button-arrow-prev";

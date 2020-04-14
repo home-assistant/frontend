@@ -1,17 +1,17 @@
+import "@material/mwc-button";
 import {
-  LitElement,
-  query,
-  property,
-  TemplateResult,
-  html,
   css,
   CSSResult,
+  html,
+  LitElement,
+  property,
+  query,
+  TemplateResult,
 } from "lit-element";
 import { computeRTL } from "../common/util/compute_rtl";
-import type { HomeAssistant } from "../types";
-import "@material/mwc-button";
 import "../components/ha-toast";
 import type { HaToast } from "../components/ha-toast";
+import type { HomeAssistant } from "../types";
 
 export interface ShowToastParams {
   message: string;

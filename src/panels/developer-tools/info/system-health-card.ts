@@ -1,19 +1,18 @@
-import {
-  LitElement,
-  html,
-  CSSResult,
-  css,
-  TemplateResult,
-  property,
-} from "lit-element";
 import "@polymer/paper-spinner/paper-spinner";
-import "../../../components/ha-card";
-
-import { HomeAssistant } from "../../../types";
 import {
-  SystemHealthInfo,
+  css,
+  CSSResult,
+  html,
+  LitElement,
+  property,
+  TemplateResult,
+} from "lit-element";
+import "../../../components/ha-card";
+import {
   fetchSystemHealthInfo,
+  SystemHealthInfo,
 } from "../../../data/system_health";
+import { HomeAssistant } from "../../../types";
 
 const sortKeys = (a: string, b: string) => {
   if (a === "homeassistant") {

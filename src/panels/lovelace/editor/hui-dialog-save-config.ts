@@ -1,25 +1,24 @@
+import "@material/mwc-button";
+import "@polymer/paper-spinner/paper-spinner";
 import {
-  html,
   css,
-  LitElement,
-  TemplateResult,
   CSSResult,
   customElement,
+  html,
+  LitElement,
   property,
   query,
+  TemplateResult,
 } from "lit-element";
-import "@polymer/paper-spinner/paper-spinner";
+import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/dialog/ha-paper-dialog";
+import type { HaPaperDialog } from "../../../components/dialog/ha-paper-dialog";
 import "../../../components/ha-switch";
 import "../../../components/ha-yaml-editor";
-import type { HaPaperDialog } from "../../../components/dialog/ha-paper-dialog";
-import "@material/mwc-button";
-
+import type { PolymerChangedEvent } from "../../../polymer-types";
 import { haStyleDialog } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import type { SaveDialogParams } from "./show-save-config-dialog";
-import type { PolymerChangedEvent } from "../../../polymer-types";
-import { fireEvent } from "../../../common/dom/fire_event";
 
 const EMPTY_CONFIG = { views: [] };
 

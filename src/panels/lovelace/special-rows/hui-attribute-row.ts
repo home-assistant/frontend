@@ -1,20 +1,18 @@
 import {
+  css,
+  CSSResult,
+  customElement,
   html,
   LitElement,
-  TemplateResult,
   property,
-  CSSResult,
-  css,
-  customElement,
   PropertyValues,
+  TemplateResult,
 } from "lit-element";
-
+import { HomeAssistant } from "../../../types";
+import { hasConfigOrEntityChanged } from "../common/has-changed";
 import "../components/hui-generic-entity-row";
 import "../components/hui-warning";
-
-import { HomeAssistant } from "../../../types";
-import { LovelaceRow, AttributeRowConfig } from "../entity-rows/types";
-import { hasConfigOrEntityChanged } from "../common/has-changed";
+import { AttributeRowConfig, LovelaceRow } from "../entity-rows/types";
 
 @customElement("hui-attribute-row")
 class HuiAttributeRow extends LitElement implements LovelaceRow {

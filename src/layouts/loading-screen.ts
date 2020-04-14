@@ -1,11 +1,11 @@
 import "@polymer/paper-spinner/paper-spinner-lite";
 import {
+  css,
+  CSSResult,
+  customElement,
+  html,
   LitElement,
   TemplateResult,
-  html,
-  css,
-  customElement,
-  CSSResult,
 } from "lit-element";
 
 @customElement("loading-screen")

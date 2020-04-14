@@ -1,30 +1,27 @@
+import deepFreeze from "deep-freeze";
 import {
   css,
-  html,
-  LitElement,
-  TemplateResult,
   CSSResultArray,
   customElement,
+  html,
+  LitElement,
   property,
   query,
+  TemplateResult,
 } from "lit-element";
-
-import deepFreeze from "deep-freeze";
-
-import { HomeAssistant } from "../../../../types";
-import { LovelaceCardConfig } from "../../../../data/lovelace";
-import "./hui-card-preview";
-import { addCards } from "../config-util";
-
-import "../../../../components/ha-yaml-editor";
 import "../../../../components/dialog/ha-paper-dialog";
-import { haStyleDialog } from "../../../../resources/styles";
-import { showEditCardDialog } from "./show-edit-card-dialog";
-import { computeCards } from "../../common/generate-lovelace-config";
-import { SuggestCardDialogParams } from "./show-suggest-card-dialog";
-import { showSaveSuccessToast } from "../../../../util/toast-saved-success";
 import type { HaPaperDialog } from "../../../../components/dialog/ha-paper-dialog";
+import "../../../../components/ha-yaml-editor";
 import type { HaYamlEditor } from "../../../../components/ha-yaml-editor";
+import { LovelaceCardConfig } from "../../../../data/lovelace";
+import { haStyleDialog } from "../../../../resources/styles";
+import { HomeAssistant } from "../../../../types";
+import { showSaveSuccessToast } from "../../../../util/toast-saved-success";
+import { computeCards } from "../../common/generate-lovelace-config";
+import { addCards } from "../config-util";
+import "./hui-card-preview";
+import { showEditCardDialog } from "./show-edit-card-dialog";
+import { SuggestCardDialogParams } from "./show-suggest-card-dialog";
 
 @customElement("hui-dialog-suggest-card")
 export class HuiDialogSuggestCard extends LitElement {

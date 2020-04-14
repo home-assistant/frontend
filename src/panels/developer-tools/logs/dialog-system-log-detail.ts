@@ -1,26 +1,24 @@
+import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable";
 import {
-  LitElement,
-  html,
   css,
   CSSResult,
-  TemplateResult,
+  html,
+  LitElement,
   property,
+  TemplateResult,
 } from "lit-element";
-import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable";
-
 import "../../../components/dialog/ha-paper-dialog";
-
-import { SystemLogDetailDialogParams } from "./show-dialog-system-log-detail";
+import {
+  domainToName,
+  integrationDocsUrl,
+  integrationIssuesUrl,
+} from "../../../data/integration";
+import { getLoggedErrorIntegration } from "../../../data/system_log";
 import { PolymerChangedEvent } from "../../../polymer-types";
 import { haStyleDialog } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
-import {
-  integrationDocsUrl,
-  integrationIssuesUrl,
-  domainToName,
-} from "../../../data/integration";
+import { SystemLogDetailDialogParams } from "./show-dialog-system-log-detail";
 import { formatSystemLogTime } from "./util";
-import { getLoggedErrorIntegration } from "../../../data/system_log";
 
 class DialogSystemLogDetail extends LitElement {
   @property() public hass!: HomeAssistant;

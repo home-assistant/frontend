@@ -1,12 +1,12 @@
-import {
-  UpdatingElement,
-  property,
-  customElement,
-  PropertyValues,
-} from "lit-element";
 import { Editor } from "codemirror";
-import { loadCodeMirror } from "../resources/codemirror.ondemand";
+import {
+  customElement,
+  property,
+  PropertyValues,
+  UpdatingElement,
+} from "lit-element";
 import { fireEvent } from "../common/dom/fire_event";
+import { loadCodeMirror } from "../resources/codemirror.ondemand";
 
 declare global {
   interface HASSDomEvents {

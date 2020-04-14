@@ -3,22 +3,19 @@ import "@polymer/paper-item/paper-item-body";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 /* eslint-plugin-disable lit */
 import { PolymerElement } from "@polymer/polymer/polymer-element";
-
-import "../../../../components/ha-card";
+import { formatDateTime } from "../../../../common/datetime/format_date_time";
 import "../../../../components/buttons/ha-call-api-button";
+import "../../../../components/ha-card";
+import { fetchCloudSubscriptionInfo } from "../../../../data/cloud";
 import "../../../../layouts/hass-subpage";
+import { EventsMixin } from "../../../../mixins/events-mixin";
+import LocalizeMixin from "../../../../mixins/localize-mixin";
 import "../../../../resources/ha-style";
 import "../../ha-config-section";
-import "./cloud-webhooks";
 import "./cloud-alexa-pref";
 import "./cloud-google-pref";
 import "./cloud-remote-pref";
-
-import { EventsMixin } from "../../../../mixins/events-mixin";
-import { fetchCloudSubscriptionInfo } from "../../../../data/cloud";
-
-import { formatDateTime } from "../../../../common/datetime/format_date_time";
-import LocalizeMixin from "../../../../mixins/localize-mixin";
+import "./cloud-webhooks";
 
 /*
  * @appliesMixin EventsMixin

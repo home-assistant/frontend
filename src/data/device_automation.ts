@@ -1,5 +1,5 @@
-import { HomeAssistant } from "../types";
 import { computeStateName } from "../common/entity/compute_state_name";
+import { HomeAssistant } from "../types";
 
 export interface DeviceAutomation {
   device_id: string;

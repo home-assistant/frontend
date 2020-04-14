@@ -1,21 +1,21 @@
 import {
-  LitElement,
-  TemplateResult,
-  html,
-  CSSResult,
   css,
-  property,
+  CSSResult,
   customElement,
+  html,
+  LitElement,
+  property,
+  TemplateResult,
 } from "lit-element";
-import "./hassio-addons";
-import "./hassio-update";
-import { haStyle } from "../../../src/resources/styles";
-import { HomeAssistant } from "../../../src/types";
 import { HassioHassOSInfo } from "../../../src/data/hassio/host";
 import {
-  HassioSupervisorInfo,
   HassioHomeAssistantInfo,
+  HassioSupervisorInfo,
 } from "../../../src/data/hassio/supervisor";
+import { haStyle } from "../../../src/resources/styles";
+import { HomeAssistant } from "../../../src/types";
+import "./hassio-addons";
+import "./hassio-update";
 
 @customElement("hassio-dashboard")
 class HassioDashboard extends LitElement {

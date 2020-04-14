@@ -1,19 +1,17 @@
 import "@polymer/app-route/app-location";
-import { html, PropertyValues, property } from "lit-element";
-
-import "./home-assistant-main";
-import "./ha-init-page";
-import "../resources/ha-style";
+import { html, property, PropertyValues } from "lit-element";
+import { navigate } from "../common/navigate";
+import { getStorageDefaultPanelUrlPath } from "../data/panel";
 import "../resources/custom-card-support";
+import "../resources/ha-style";
+import { HassElement } from "../state/hass-element";
+import { HomeAssistant, Route } from "../types";
 import {
   registerServiceWorker,
   supportsServiceWorker,
 } from "../util/register-service-worker";
-
-import { Route, HomeAssistant } from "../types";
-import { navigate } from "../common/navigate";
-import { HassElement } from "../state/hass-element";
-import { getStorageDefaultPanelUrlPath } from "../data/panel";
+import "./ha-init-page";
+import "./home-assistant-main";
 
 export class HomeAssistantAppEl extends HassElement {
   @property() private _route?: Route;

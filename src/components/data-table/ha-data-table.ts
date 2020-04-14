@@ -1,37 +1,29 @@
 import deepClone from "deep-clone-simple";
-
-import { classMap } from "lit-html/directives/class-map";
-
-import { scroll } from "lit-virtualizer";
-
 import {
-  html,
-  query,
-  CSSResult,
   css,
+  CSSResult,
   customElement,
-  property,
-  TemplateResult,
-  PropertyValues,
+  html,
   LitElement,
+  property,
+  PropertyValues,
+  query,
+  TemplateResult,
 } from "lit-element";
-
+import { classMap } from "lit-html/directives/class-map";
+import { ifDefined } from "lit-html/directives/if-defined";
+import { styleMap } from "lit-html/directives/style-map";
+import { scroll } from "lit-virtualizer";
 // @ts-ignore
 // eslint-disable-next-line import/no-webpack-loader-syntax
 import sortFilterWorker from "workerize-loader!./sort_filter_worker";
-
-import "../ha-icon";
-import "../../common/search/search-input";
-import { styleMap } from "lit-html/directives/style-map";
-import { ifDefined } from "lit-html/directives/if-defined";
-
-import "../ha-checkbox";
-
-import type { HaCheckbox } from "../ha-checkbox";
-
 import { fireEvent } from "../../common/dom/fire_event";
-import { nextRender } from "../../common/util/render-status";
+import "../../common/search/search-input";
 import { debounce } from "../../common/util/debounce";
+import { nextRender } from "../../common/util/render-status";
+import "../ha-checkbox";
+import type { HaCheckbox } from "../ha-checkbox";
+import "../ha-icon";
 
 declare global {
   // for fire event

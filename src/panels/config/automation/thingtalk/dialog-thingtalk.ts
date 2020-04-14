@@ -1,29 +1,27 @@
-import {
-  LitElement,
-  html,
-  css,
-  CSSResult,
-  TemplateResult,
-  property,
-  customElement,
-  query,
-} from "lit-element";
+import "@material/mwc-button";
 import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable";
 import "@polymer/paper-input/paper-input";
 import type { PaperInputElement } from "@polymer/paper-input/paper-input";
 import "@polymer/paper-spinner/paper-spinner";
-import "@material/mwc-button";
-
+import {
+  css,
+  CSSResult,
+  customElement,
+  html,
+  LitElement,
+  property,
+  query,
+  TemplateResult,
+} from "lit-element";
 import "../../../../components/dialog/ha-paper-dialog";
-import "./ha-thingtalk-placeholders";
-
-import type { ThingtalkDialogParams } from "../show-dialog-thingtalk";
-import type { PolymerChangedEvent } from "../../../../polymer-types";
-import { haStyleDialog, haStyle } from "../../../../resources/styles";
-import type { HomeAssistant } from "../../../../types";
 import type { AutomationConfig } from "../../../../data/automation";
-import type { PlaceholderValues } from "./ha-thingtalk-placeholders";
 import { convertThingTalk } from "../../../../data/cloud";
+import type { PolymerChangedEvent } from "../../../../polymer-types";
+import { haStyle, haStyleDialog } from "../../../../resources/styles";
+import type { HomeAssistant } from "../../../../types";
+import type { ThingtalkDialogParams } from "../show-dialog-thingtalk";
+import "./ha-thingtalk-placeholders";
+import type { PlaceholderValues } from "./ha-thingtalk-placeholders";
 
 export interface Placeholder {
   name: string;

@@ -1,23 +1,21 @@
 import {
-  html,
-  LitElement,
-  TemplateResult,
-  customElement,
-  property,
   css,
   CSSResult,
+  customElement,
+  html,
+  LitElement,
+  property,
+  TemplateResult,
 } from "lit-element";
 import { classMap } from "lit-html/directives/class-map";
-
-import { LovelaceRow, CastConfig } from "../entity-rows/types";
-import { HomeAssistant } from "../../../types";
-
-import "../../../components/ha-icon";
 import { CastManager } from "../../../cast/cast_manager";
 import {
-  ensureConnectedCastSession,
   castSendShowLovelaceView,
+  ensureConnectedCastSession,
 } from "../../../cast/receiver_messages";
+import "../../../components/ha-icon";
+import { HomeAssistant } from "../../../types";
+import { CastConfig, LovelaceRow } from "../entity-rows/types";
 
 @customElement("hui-cast-row")
 class HuiCastRow extends LitElement implements LovelaceRow {

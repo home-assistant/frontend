@@ -1,19 +1,17 @@
-import "@polymer/app-layout/app-drawer/app-drawer";
 import "@material/mwc-button";
-import "@polymer/paper-icon-button/paper-icon-button";
+import "@polymer/app-layout/app-drawer/app-drawer";
 import "@polymer/app-layout/app-toolbar/app-toolbar";
-
+import "@polymer/paper-icon-button/paper-icon-button";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 /* eslint-plugin-disable lit */
 import { PolymerElement } from "@polymer/polymer/polymer-element";
-
-import "./notification-item";
+import { computeDomain } from "../../common/entity/compute_domain";
 import "../../components/ha-paper-icon-button-prev";
-
+import { subscribeNotifications } from "../../data/persistent_notification";
 import { EventsMixin } from "../../mixins/events-mixin";
 import LocalizeMixin from "../../mixins/localize-mixin";
-import { subscribeNotifications } from "../../data/persistent_notification";
-import { computeDomain } from "../../common/entity/compute_domain";
+import "./notification-item";
+
 /*
  * @appliesMixin EventsMixin
  * @appliesMixin LocalizeMixin

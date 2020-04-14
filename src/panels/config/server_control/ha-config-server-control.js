@@ -4,14 +4,11 @@ import "@polymer/paper-icon-button/paper-icon-button";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 /* eslint-plugin-disable lit */
 import { PolymerElement } from "@polymer/polymer/polymer-element";
-
 import "../../../layouts/hass-tabs-subpage";
-import "../../../resources/ha-style";
-
-import "./ha-config-section-server-control";
-
 import LocalizeMixin from "../../../mixins/localize-mixin";
+import "../../../resources/ha-style";
 import { configSections } from "../ha-panel-config";
+import "./ha-config-section-server-control";
 
 /*
  * @appliesMixin LocalizeMixin

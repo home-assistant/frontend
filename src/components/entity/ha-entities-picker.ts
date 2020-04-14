@@ -1,20 +1,18 @@
-import {
-  LitElement,
-  TemplateResult,
-  property,
-  html,
-  customElement,
-} from "lit-element";
 import "@polymer/paper-icon-button/paper-icon-button-light";
-
-import type { HomeAssistant } from "../../types";
-import type { PolymerChangedEvent } from "../../polymer-types";
+import type { HassEntity } from "home-assistant-js-websocket";
+import {
+  customElement,
+  html,
+  LitElement,
+  property,
+  TemplateResult,
+} from "lit-element";
 import { fireEvent } from "../../common/dom/fire_event";
 import { isValidEntityId } from "../../common/entity/valid_entity_id";
-
+import type { PolymerChangedEvent } from "../../polymer-types";
+import type { HomeAssistant } from "../../types";
 import "./ha-entity-picker";
 import type { HaEntityPickerEntityFilterFunc } from "./ha-entity-picker";
-import type { HassEntity } from "home-assistant-js-websocket";
 
 @customElement("ha-entities-picker")
 class HaEntitiesPickerLight extends LitElement {

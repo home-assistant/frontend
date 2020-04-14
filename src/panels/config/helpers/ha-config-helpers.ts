@@ -5,17 +5,18 @@ import "@polymer/paper-listbox/paper-listbox";
 import "@polymer/paper-tooltip/paper-tooltip";
 import { HassEntity } from "home-assistant-js-websocket";
 import {
+  css,
+  CSSResult,
   customElement,
   html,
   LitElement,
   property,
   PropertyValues,
   TemplateResult,
-  CSSResult,
-  css,
 } from "lit-element";
 import memoize from "memoize-one";
 import { computeStateDomain } from "../../../common/entity/compute_state_domain";
+import { domainIcon } from "../../../common/entity/domain_icon";
 import "../../../common/search/search-input";
 import {
   DataTableColumnContainer,
@@ -26,11 +27,10 @@ import "../../../components/ha-icon";
 import "../../../layouts/hass-loading-screen";
 import "../../../layouts/hass-tabs-subpage-data-table";
 import { HomeAssistant, Route } from "../../../types";
-import { configSections } from "../ha-panel-config";
 import { showEntityEditorDialog } from "../entities/show-dialog-entity-editor";
-import { showHelperDetailDialog } from "./show-dialog-helper-detail";
+import { configSections } from "../ha-panel-config";
 import { HELPER_DOMAINS } from "./const";
-import { domainIcon } from "../../../common/entity/domain_icon";
+import { showHelperDetailDialog } from "./show-dialog-helper-detail";
 
 @customElement("ha-config-helpers")
 export class HaConfigHelpers extends LitElement {

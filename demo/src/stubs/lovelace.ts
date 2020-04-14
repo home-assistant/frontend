@@ -1,9 +1,9 @@
-import "../custom-cards/ha-demo-card";
-import "../custom-cards/cast-demo-row";
-import type { HADemoCard } from "../custom-cards/ha-demo-card";
+import type { LocalizeFunc } from "../../../src/common/translations/localize";
 import type { MockHomeAssistant } from "../../../src/fake_data/provide_hass";
 import { selectedDemoConfig } from "../configs/demo-configs";
-import type { LocalizeFunc } from "../../../src/common/translations/localize";
+import "../custom-cards/cast-demo-row";
+import "../custom-cards/ha-demo-card";
+import type { HADemoCard } from "../custom-cards/ha-demo-card";
 
 export const mockLovelace = (
   hass: MockHomeAssistant,

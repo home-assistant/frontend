@@ -1,27 +1,26 @@
-import "../../../layouts/hass-tabs-subpage-data-table";
-import "../../../components/ha-fab";
-
 import {
+  css,
+  customElement,
   LitElement,
   property,
-  css,
   PropertyValues,
-  customElement,
 } from "lit-element";
 import { html } from "lit-html";
 import memoizeOne from "memoize-one";
-import { computeRTL } from "../../../common/util/compute_rtl";
-import { configSections } from "../ha-panel-config";
-import { HomeAssistant, Route } from "../../../types";
 import { HASSDomEvent } from "../../../common/dom/fire_event";
-import { User, fetchUsers, updateUser, deleteUser } from "../../../data/user";
+import { computeRTL } from "../../../common/util/compute_rtl";
 import {
   DataTableColumnContainer,
   RowClickedEvent,
 } from "../../../components/data-table/ha-data-table";
-import { showUserDetailDialog } from "./show-dialog-user-detail";
-import { showAddUserDialog } from "./show-dialog-add-user";
+import "../../../components/ha-fab";
+import { deleteUser, fetchUsers, updateUser, User } from "../../../data/user";
 import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
+import "../../../layouts/hass-tabs-subpage-data-table";
+import { HomeAssistant, Route } from "../../../types";
+import { configSections } from "../ha-panel-config";
+import { showAddUserDialog } from "./show-dialog-add-user";
+import { showUserDetailDialog } from "./show-dialog-user-detail";
 
 @customElement("ha-config-users")
 export class HaConfigUsers extends LitElement {

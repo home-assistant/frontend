@@ -1,35 +1,33 @@
 import "@polymer/iron-icon/iron-icon";
-import "@polymer/paper-icon-button/paper-icon-button";
-import "../../components/dialog/ha-paper-dialog";
 import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable";
 import type { PaperDialogScrollableElement } from "@polymer/paper-dialog-scrollable/paper-dialog-scrollable";
-
+import "@polymer/paper-icon-button/paper-icon-button";
+import "@polymer/paper-input/paper-input";
+import type { PaperInputElement } from "@polymer/paper-input/paper-input";
 import {
-  LitElement,
-  html,
-  property,
-  CSSResult,
   css,
+  CSSResult,
   customElement,
-  query,
+  html,
+  LitElement,
+  property,
   PropertyValues,
+  query,
   TemplateResult,
 } from "lit-element";
 import { classMap } from "lit-html/directives/class-map";
-import "@polymer/paper-input/paper-input";
-import type { PaperInputElement } from "@polymer/paper-input/paper-input";
-
-import type { HomeAssistant } from "../../types";
 import { fireEvent } from "../../common/dom/fire_event";
 import { SpeechRecognition } from "../../common/dom/speech-recognition";
+import { uid } from "../../common/util/uid";
+import "../../components/dialog/ha-paper-dialog";
 import {
-  processText,
-  getAgentInfo,
-  setConversationOnboarding,
   AgentInfo,
+  getAgentInfo,
+  processText,
+  setConversationOnboarding,
 } from "../../data/conversation";
 import { haStyleDialog } from "../../resources/styles";
-import { uid } from "../../common/util/uid";
+import type { HomeAssistant } from "../../types";
 
 interface Message {
   who: string;

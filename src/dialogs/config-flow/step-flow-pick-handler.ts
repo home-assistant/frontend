@@ -1,3 +1,7 @@
+import "@polymer/paper-item/paper-icon-item";
+import "@polymer/paper-item/paper-item-body";
+import "@polymer/paper-spinner/paper-spinner-lite";
+import * as Fuse from "fuse.js";
 import {
   css,
   CSSResult,
@@ -7,18 +11,13 @@ import {
   property,
   TemplateResult,
 } from "lit-element";
-import "@polymer/paper-spinner/paper-spinner-lite";
-import "@polymer/paper-item/paper-icon-item";
-import "@polymer/paper-item/paper-item-body";
-import memoizeOne from "memoize-one";
-import * as Fuse from "fuse.js";
-import { styleMap } from "lit-html/directives/style-map";
 import { classMap } from "lit-html/directives/class-map";
-import { HomeAssistant } from "../../types";
+import { styleMap } from "lit-html/directives/style-map";
+import memoizeOne from "memoize-one";
 import { fireEvent } from "../../common/dom/fire_event";
-
-import "../../components/ha-icon-next";
 import "../../common/search/search-input";
+import "../../components/ha-icon-next";
+import { HomeAssistant } from "../../types";
 import { FlowConfig } from "./show-dialog-data-entry-flow";
 import { configFlowContentStyles } from "./styles";
 

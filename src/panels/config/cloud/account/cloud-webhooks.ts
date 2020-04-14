@@ -1,19 +1,17 @@
-import { html, LitElement, PropertyValues, property } from "lit-element";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-item/paper-item-body";
 import "@polymer/paper-spinner/paper-spinner";
-
+import { html, LitElement, property, PropertyValues } from "lit-element";
 import "../../../../components/ha-card";
 import "../../../../components/ha-switch";
-
-import { HomeAssistant, WebhookError } from "../../../../types";
-import { Webhook, fetchWebhooks } from "../../../../data/webhook";
 import {
+  CloudStatusLoggedIn,
+  CloudWebhook,
   createCloudhook,
   deleteCloudhook,
-  CloudWebhook,
-  CloudStatusLoggedIn,
 } from "../../../../data/cloud";
+import { fetchWebhooks, Webhook } from "../../../../data/webhook";
+import { HomeAssistant, WebhookError } from "../../../../types";
 import { showManageCloudhookDialog } from "../dialog-manage-cloudhook/show-dialog-manage-cloudhook";
 
 export class CloudWebhooks extends LitElement {

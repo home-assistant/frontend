@@ -1,37 +1,37 @@
+import "@polymer/iron-icon";
+import "@polymer/paper-item/paper-icon-item";
+import "@polymer/paper-listbox/paper-listbox";
+import { Auth, Connection } from "home-assistant-js-websocket";
 import {
+  css,
+  CSSResult,
   customElement,
+  html,
   LitElement,
   property,
   TemplateResult,
-  html,
-  CSSResult,
-  css,
 } from "lit-element";
-import { Connection, Auth } from "home-assistant-js-websocket";
-import "@polymer/iron-icon";
-import "@polymer/paper-listbox/paper-listbox";
-import "@polymer/paper-item/paper-icon-item";
-import "../../../../src/components/ha-icon";
-import {
-  enableWrite,
-  askWrite,
-  saveTokens,
-} from "../../../../src/common/auth/token_storage";
-import {
-  ensureConnectedCastSession,
-  castSendShowLovelaceView,
-} from "../../../../src/cast/receiver_messages";
-import "../../../../src/layouts/loading-screen";
 import { CastManager } from "../../../../src/cast/cast_manager";
 import {
-  LovelaceConfig,
-  getLovelaceCollection,
-  getLegacyLovelaceCollection,
-} from "../../../../src/data/lovelace";
-import "./hc-layout";
-import { generateDefaultViewConfig } from "../../../../src/panels/lovelace/common/generate-lovelace-config";
-import { toggleAttribute } from "../../../../src/common/dom/toggle_attribute";
+  castSendShowLovelaceView,
+  ensureConnectedCastSession,
+} from "../../../../src/cast/receiver_messages";
+import {
+  askWrite,
+  enableWrite,
+  saveTokens,
+} from "../../../../src/common/auth/token_storage";
 import { atLeastVersion } from "../../../../src/common/config/version";
+import { toggleAttribute } from "../../../../src/common/dom/toggle_attribute";
+import "../../../../src/components/ha-icon";
+import {
+  getLegacyLovelaceCollection,
+  getLovelaceCollection,
+  LovelaceConfig,
+} from "../../../../src/data/lovelace";
+import "../../../../src/layouts/loading-screen";
+import { generateDefaultViewConfig } from "../../../../src/panels/lovelace/common/generate-lovelace-config";
+import "./hc-layout";
 
 @customElement("hc-cast")
 class HcCast extends LitElement {

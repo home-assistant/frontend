@@ -2,24 +2,24 @@ import "@material/mwc-button";
 import "@polymer/paper-input/paper-input";
 import "@polymer/paper-tooltip/paper-tooltip";
 import {
+  css,
   CSSResult,
   customElement,
   html,
   LitElement,
   property,
   TemplateResult,
-  css,
 } from "lit-element";
-import { PolymerChangedEvent } from "../../../polymer-types";
-import { haStyleDialog } from "../../../resources/styles";
-import { HomeAssistant } from "../../../types";
-import { UserDetailDialogParams } from "./show-dialog-user-detail";
-import "../../../components/ha-switch";
 import { createCloseHeading } from "../../../components/ha-dialog";
+import "../../../components/ha-switch";
 import {
   SYSTEM_GROUP_ID_ADMIN,
   SYSTEM_GROUP_ID_USER,
 } from "../../../data/user";
+import { PolymerChangedEvent } from "../../../polymer-types";
+import { haStyleDialog } from "../../../resources/styles";
+import { HomeAssistant } from "../../../types";
+import { UserDetailDialogParams } from "./show-dialog-user-detail";
 
 @customElement("dialog-user-detail")
 class DialogUserDetail extends LitElement {

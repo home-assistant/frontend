@@ -1,37 +1,34 @@
 import {
-  html,
-  LitElement,
-  PropertyValues,
-  TemplateResult,
-  customElement,
-  property,
   css,
   CSSResult,
+  customElement,
+  html,
+  LitElement,
+  property,
+  PropertyValues,
+  TemplateResult,
 } from "lit-element";
-
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
+import { fireEvent } from "../../../common/dom/fire_event";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import { stateIcon } from "../../../common/entity/state_icon";
-
+import { isValidEntityId } from "../../../common/entity/valid_entity_id";
 import "../../../components/ha-card";
 import "../../../components/ha-icon";
+import { UNAVAILABLE_STATES } from "../../../data/entity";
+import { HomeAssistant } from "../../../types";
+import { actionHandler } from "../common/directives/action-handler-directive";
+import { findEntities } from "../common/find-entites";
+import { hasConfigOrEntityChanged } from "../common/has-changed";
 import "../components/hui-warning";
-
+import { createHeaderFooterElement } from "../create-element/create-header-footer-element";
 import {
   LovelaceCard,
   LovelaceCardEditor,
   LovelaceHeaderFooter,
 } from "../types";
-import { HomeAssistant } from "../../../types";
-import { fireEvent } from "../../../common/dom/fire_event";
-import { EntityCardConfig } from "./types";
-import { hasConfigOrEntityChanged } from "../common/has-changed";
-import { actionHandler } from "../common/directives/action-handler-directive";
-import { isValidEntityId } from "../../../common/entity/valid_entity_id";
-import { findEntities } from "../common/find-entites";
-import { createHeaderFooterElement } from "../create-element/create-header-footer-element";
-import { UNAVAILABLE_STATES } from "../../../data/entity";
 import { HuiErrorCard } from "./hui-error-card";
+import { EntityCardConfig } from "./types";
 
 @customElement("hui-entity-card")
 export class HuiEntityCard extends LitElement implements LovelaceCard {

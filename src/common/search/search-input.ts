@@ -1,4 +1,5 @@
-import { TemplateResult, html } from "lit-html";
+import "@polymer/paper-icon-button/paper-icon-button";
+import "@polymer/paper-input/paper-input";
 import {
   css,
   CSSResult,
@@ -6,11 +7,10 @@ import {
   LitElement,
   property,
 } from "lit-element";
-import { fireEvent } from "../dom/fire_event";
-import "@polymer/paper-input/paper-input";
-import "@polymer/paper-icon-button/paper-icon-button";
-import "../../components/ha-icon";
+import { html, TemplateResult } from "lit-html";
 import { classMap } from "lit-html/directives/class-map";
+import "../../components/ha-icon";
+import { fireEvent } from "../dom/fire_event";
 
 @customElement("search-input")
 class SearchInput extends LitElement {

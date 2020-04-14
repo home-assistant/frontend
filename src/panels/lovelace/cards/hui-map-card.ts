@@ -1,46 +1,43 @@
 import "@polymer/paper-icon-button/paper-icon-button";
-import {
-  Layer,
-  Marker,
-  Circle,
-  Map,
-  CircleMarker,
-  Polyline,
-  LatLngTuple,
-} from "leaflet";
-import {
-  LitElement,
-  TemplateResult,
-  css,
-  html,
-  property,
-  PropertyValues,
-  CSSResult,
-  customElement,
-} from "lit-element";
-import "../../map/ha-entity-marker";
-
-import { classMap } from "lit-html/directives/class-map";
 import { HassEntity } from "home-assistant-js-websocket";
 import {
-  setupLeafletMap,
+  Circle,
+  CircleMarker,
+  LatLngTuple,
+  Layer,
+  Map,
+  Marker,
+  Polyline,
+} from "leaflet";
+import {
+  css,
+  CSSResult,
+  customElement,
+  html,
+  LitElement,
+  property,
+  PropertyValues,
+  TemplateResult,
+} from "lit-element";
+import { classMap } from "lit-html/directives/class-map";
+import {
   createTileLayer,
   LeafletModuleType,
+  setupLeafletMap,
 } from "../../../common/dom/setup-leaflet-map";
+import { computeDomain } from "../../../common/entity/compute_domain";
 import { computeStateDomain } from "../../../common/entity/compute_state_domain";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import { debounce } from "../../../common/util/debounce";
 import parseAspectRatio from "../../../common/util/parse-aspect-ratio";
-import { computeDomain } from "../../../common/entity/compute_domain";
-
-import { HomeAssistant } from "../../../types";
-import { LovelaceCard } from "../types";
-import { EntityConfig } from "../entity-rows/types";
-import { processConfigEntities } from "../common/process-config-entities";
-import { MapCardConfig } from "./types";
-import { findEntities } from "../common/find-entites";
-
 import { fetchRecent } from "../../../data/history";
+import { HomeAssistant } from "../../../types";
+import "../../map/ha-entity-marker";
+import { findEntities } from "../common/find-entites";
+import { processConfigEntities } from "../common/process-config-entities";
+import { EntityConfig } from "../entity-rows/types";
+import { LovelaceCard } from "../types";
+import { MapCardConfig } from "./types";
 
 @customElement("hui-map-card")
 class HuiMapCard extends LitElement implements LovelaceCard {

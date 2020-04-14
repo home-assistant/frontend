@@ -1,28 +1,27 @@
 import {
-  getAuth,
+  Auth,
+  Connection,
   createConnection,
+  ERR_INVALID_AUTH,
+  getAuth,
   subscribeConfig,
   subscribeEntities,
   subscribeServices,
-  ERR_INVALID_AUTH,
-  Auth,
-  Connection,
 } from "home-assistant-js-websocket";
-
 import { loadTokens, saveTokens } from "../common/auth/token_storage";
-import { isExternal } from "../data/external";
-import { subscribePanels } from "../data/ws-panels";
-import { subscribeThemes } from "../data/ws-themes";
-import { subscribeUser } from "../data/ws-user";
-import { HomeAssistant } from "../types";
 import { hassUrl } from "../data/auth";
+import { isExternal } from "../data/external";
 import { subscribeFrontendUserData } from "../data/frontend";
 import {
   fetchConfig,
   fetchResources,
   WindowWithLovelaceProm,
 } from "../data/lovelace";
+import { subscribePanels } from "../data/ws-panels";
+import { subscribeThemes } from "../data/ws-themes";
+import { subscribeUser } from "../data/ws-user";
 import type { ExternalAuth } from "../external_app/external_auth";
+import { HomeAssistant } from "../types";
 
 declare global {
   interface Window {

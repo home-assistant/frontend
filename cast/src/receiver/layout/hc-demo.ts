@@ -1,15 +1,15 @@
-import { HassElement } from "../../../../src/state/hass-element";
-import "./hc-lovelace";
-import { customElement, TemplateResult, html, property } from "lit-element";
+import { customElement, html, property, TemplateResult } from "lit-element";
+import { mockHistory } from "../../../../demo/src/stubs/history";
+import { LovelaceConfig } from "../../../../src/data/lovelace";
 import {
   MockHomeAssistant,
   provideHass,
 } from "../../../../src/fake_data/provide_hass";
+import { HassElement } from "../../../../src/state/hass-element";
 import { HomeAssistant } from "../../../../src/types";
-import { LovelaceConfig } from "../../../../src/data/lovelace";
 import { castDemoEntities } from "../demo/cast-demo-entities";
 import { castDemoLovelace } from "../demo/cast-demo-lovelace";
-import { mockHistory } from "../../../../demo/src/stubs/history";
+import "./hc-lovelace";
 
 @customElement("hc-demo")
 class HcDemo extends HassElement {

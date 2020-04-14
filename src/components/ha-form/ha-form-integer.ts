@@ -1,6 +1,6 @@
 import "@polymer/paper-input/paper-input";
-import "@polymer/paper-slider/paper-slider";
 import type { PaperInputElement } from "@polymer/paper-input/paper-input";
+import "@polymer/paper-slider/paper-slider";
 import type { PaperSliderElement } from "@polymer/paper-slider/paper-slider";
 import {
   css,

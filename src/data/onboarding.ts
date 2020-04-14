@@ -1,5 +1,5 @@
-import { handleFetchPromise } from "../util/hass-call-api";
 import { HomeAssistant } from "../types";
+import { handleFetchPromise } from "../util/hass-call-api";
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface OnboardingCoreConfigStepResponse {}

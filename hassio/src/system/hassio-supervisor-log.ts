@@ -7,15 +7,14 @@ import {
   html,
   LitElement,
   property,
-  TemplateResult,
   query,
+  TemplateResult,
 } from "lit-element";
-
-import { ANSI_HTML_STYLE, parseTextToColoredPre } from "../ansi-to-html";
-import { hassioStyle } from "../resources/hassio-style";
+import { fetchSupervisorLogs } from "../../../src/data/hassio/supervisor";
 import { haStyle } from "../../../src/resources/styles";
 import { HomeAssistant } from "../../../src/types";
-import { fetchSupervisorLogs } from "../../../src/data/hassio/supervisor";
+import { ANSI_HTML_STYLE, parseTextToColoredPre } from "../ansi-to-html";
+import { hassioStyle } from "../resources/hassio-style";
 
 @customElement("hassio-supervisor-log")
 class HassioSupervisorLog extends LitElement {

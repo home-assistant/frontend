@@ -1,27 +1,25 @@
 import {
-  ERR_INVALID_AUTH,
-  subscribeEntities,
-  subscribeConfig,
-  subscribeServices,
-  callService,
   Auth,
+  callService,
   Connection,
+  ERR_INVALID_AUTH,
+  subscribeConfig,
+  subscribeEntities,
+  subscribeServices,
 } from "home-assistant-js-websocket";
-
-import { translationMetadata } from "../resources/translations-metadata";
-
-import { getState } from "../util/ha-pref-storage";
-import { getLocalLanguage } from "../util/hass-translation";
-import { fetchWithAuth } from "../util/fetch-with-auth";
-import hassCallApi from "../util/hass-call-api";
-import { subscribePanels } from "../data/ws-panels";
-import { forwardHaptic } from "../data/haptics";
 import { fireEvent } from "../common/dom/fire_event";
-import { Constructor, ServiceCallResponse } from "../types";
-import { HassBaseEl } from "./hass-base-mixin";
 import { broadcastConnectionStatus } from "../data/connection-status";
 import { subscribeFrontendUserData } from "../data/frontend";
+import { forwardHaptic } from "../data/haptics";
 import { DEFAULT_PANEL } from "../data/panel";
+import { subscribePanels } from "../data/ws-panels";
+import { translationMetadata } from "../resources/translations-metadata";
+import { Constructor, ServiceCallResponse } from "../types";
+import { fetchWithAuth } from "../util/fetch-with-auth";
+import { getState } from "../util/ha-pref-storage";
+import hassCallApi from "../util/hass-call-api";
+import { getLocalLanguage } from "../util/hass-translation";
+import { HassBaseEl } from "./hass-base-mixin";
 
 export const connectionMixin = <T extends Constructor<HassBaseEl>>(
   superClass: T

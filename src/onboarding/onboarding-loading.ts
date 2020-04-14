@@ -1,10 +1,10 @@
 import {
+  css,
+  CSSResult,
+  customElement,
+  html,
   LitElement,
   TemplateResult,
-  html,
-  customElement,
-  CSSResult,
-  css,
 } from "lit-element";
 
 @customElement("onboarding-loading")

@@ -1,9 +1,9 @@
-import { UpdatingElement, property, PropertyValues } from "lit-element";
+import { property, PropertyValues, UpdatingElement } from "lit-element";
+import memoizeOne from "memoize-one";
+import { navigate } from "../common/navigate";
+import { Route } from "../types";
 import "./hass-error-screen";
 import "./hass-loading-screen";
-import memoizeOne from "memoize-one";
-import { Route } from "../types";
-import { navigate } from "../common/navigate";
 
 const extractPage = (path: string, defaultPage: string) => {
   if (path === "") {

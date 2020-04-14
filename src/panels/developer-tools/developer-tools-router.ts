@@ -1,5 +1,5 @@
-import { customElement, property } from "lit-element";
 import { PolymerElement } from "@polymer/polymer";
+import { customElement, property } from "lit-element";
 import { HassRouterPage, RouterOptions } from "../../layouts/hass-router-page";
 import { HomeAssistant } from "../../types";
 

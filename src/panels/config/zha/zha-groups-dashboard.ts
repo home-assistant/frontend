@@ -1,25 +1,24 @@
-import "./zha-groups-data-table";
-
-import {
-  LitElement,
-  html,
-  TemplateResult,
-  property,
-  customElement,
-  CSSResult,
-  css,
-  PropertyValues,
-} from "lit-element";
-import { HomeAssistant } from "../../../types";
-import { ZHAGroup, fetchGroups, removeGroups } from "../../../data/zha";
-import { sortZHAGroups } from "./functions";
-import { SelectionChangedEvent } from "../../../components/data-table/ha-data-table";
 import "@material/mwc-button";
-import "@polymer/paper-spinner/paper-spinner";
 import "@polymer/paper-icon-button/paper-icon-button";
-import { navigate } from "../../../common/navigate";
-import "../../../layouts/hass-subpage";
+import "@polymer/paper-spinner/paper-spinner";
+import {
+  css,
+  CSSResult,
+  customElement,
+  html,
+  LitElement,
+  property,
+  PropertyValues,
+  TemplateResult,
+} from "lit-element";
 import { HASSDomEvent } from "../../../common/dom/fire_event";
+import { navigate } from "../../../common/navigate";
+import { SelectionChangedEvent } from "../../../components/data-table/ha-data-table";
+import { fetchGroups, removeGroups, ZHAGroup } from "../../../data/zha";
+import "../../../layouts/hass-subpage";
+import { HomeAssistant } from "../../../types";
+import { sortZHAGroups } from "./functions";
+import "./zha-groups-data-table";
 
 @customElement("zha-groups-dashboard")
 export class ZHAGroupsDashboard extends LitElement {

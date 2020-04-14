@@ -3,25 +3,23 @@ import "@polymer/paper-input/paper-input";
 import "@polymer/paper-item/paper-icon-item";
 import "@polymer/paper-item/paper-item-body";
 import "@vaadin/vaadin-combo-box/theme/material/vaadin-combo-box-light";
-import memoizeOne from "memoize-one";
-
-import "./state-badge";
-
+import { HassEntity } from "home-assistant-js-websocket";
 import {
-  LitElement,
-  TemplateResult,
-  html,
   css,
   CSSResult,
+  html,
+  LitElement,
   property,
   PropertyValues,
+  TemplateResult,
 } from "lit-element";
-import { HassEntity } from "home-assistant-js-websocket";
-import { computeStateName } from "../../common/entity/compute_state_name";
-import { HomeAssistant } from "../../types";
-import { PolymerChangedEvent } from "../../polymer-types";
+import memoizeOne from "memoize-one";
 import { fireEvent } from "../../common/dom/fire_event";
 import { computeDomain } from "../../common/entity/compute_domain";
+import { computeStateName } from "../../common/entity/compute_state_name";
+import { PolymerChangedEvent } from "../../polymer-types";
+import { HomeAssistant } from "../../types";
+import "./state-badge";
 
 export type HaEntityPickerEntityFilterFunc = (entityId: HassEntity) => boolean;
 

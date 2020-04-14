@@ -1,39 +1,32 @@
 import {
-  html,
-  LitElement,
-  TemplateResult,
-  PropertyValues,
-  property,
-  customElement,
   css,
   CSSResult,
+  customElement,
+  html,
+  LitElement,
+  property,
+  PropertyValues,
+  TemplateResult,
 } from "lit-element";
-
 import { classMap } from "lit-html/directives/class-map";
-
 import memoizeOne from "memoize-one";
-
-import "../../../../components/ha-fab";
-import "../../../../components/entity/state-badge";
-import "../../../../components/ha-relative-time";
-import "../../../../components/ha-icon";
-
+import { fireEvent, HASSDomEvent } from "../../../../common/dom/fire_event";
+import { computeDomain } from "../../../../common/entity/compute_domain";
+import { computeStateName } from "../../../../common/entity/compute_state_name";
+import { computeRTL } from "../../../../common/util/compute_rtl";
 import "../../../../components/data-table/ha-data-table";
 import type {
-  SelectionChangedEvent,
   DataTableColumnContainer,
+  SelectionChangedEvent,
 } from "../../../../components/data-table/ha-data-table";
-
-import { computeStateName } from "../../../../common/entity/compute_state_name";
-import { computeDomain } from "../../../../common/entity/compute_domain";
-
-import { computeRTL } from "../../../../common/util/compute_rtl";
-import { computeUnusedEntities } from "../../common/compute-unused-entities";
-
-import type { HomeAssistant } from "../../../../types";
-import type { Lovelace } from "../../types";
+import "../../../../components/entity/state-badge";
+import "../../../../components/ha-fab";
+import "../../../../components/ha-icon";
+import "../../../../components/ha-relative-time";
 import type { LovelaceConfig } from "../../../../data/lovelace";
-import { fireEvent, HASSDomEvent } from "../../../../common/dom/fire_event";
+import type { HomeAssistant } from "../../../../types";
+import { computeUnusedEntities } from "../../common/compute-unused-entities";
+import type { Lovelace } from "../../types";
 import { addEntitiesToLovelaceView } from "../add-entities-to-view";
 
 @customElement("hui-unused-entities")

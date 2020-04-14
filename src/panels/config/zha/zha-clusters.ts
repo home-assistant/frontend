@@ -1,26 +1,24 @@
-import "../../../components/buttons/ha-call-service-button";
-import "../../../components/ha-service-description";
-import "../../../components/ha-card";
-import "../ha-config-section";
 import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
 import "@polymer/paper-icon-button/paper-icon-button";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
-
 import {
   css,
   CSSResult,
   html,
   LitElement,
+  property,
   PropertyValues,
   TemplateResult,
-  property,
 } from "lit-element";
-
 import { fireEvent } from "../../../common/dom/fire_event";
+import "../../../components/buttons/ha-call-service-button";
+import "../../../components/ha-card";
+import "../../../components/ha-service-description";
 import { Cluster, fetchClustersForZhaNode, ZHADevice } from "../../../data/zha";
 import { haStyle } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
+import "../ha-config-section";
 import { computeClusterKey } from "./functions";
 import { ItemSelectedEvent } from "./types";
 

@@ -2,11 +2,9 @@ import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 /* eslint-plugin-disable lit */
 import { PolymerElement } from "@polymer/polymer/polymer-element";
-
 import "../../../components/dialog/ha-paper-dialog";
-import "../../../resources/ha-style";
-
 import { EventsMixin } from "../../../mixins/events-mixin";
+import "../../../resources/ha-style";
 
 class ZwaveLogDialog extends EventsMixin(PolymerElement) {
   static get template() {

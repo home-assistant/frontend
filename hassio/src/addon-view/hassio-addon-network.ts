@@ -1,4 +1,5 @@
 import "@polymer/paper-card/paper-card";
+import { PaperInputElement } from "@polymer/paper-input/paper-input";
 import {
   css,
   CSSResult,
@@ -9,18 +10,15 @@ import {
   PropertyValues,
   TemplateResult,
 } from "lit-element";
-
-import { PaperInputElement } from "@polymer/paper-input/paper-input";
-
-import { HomeAssistant } from "../../../src/types";
+import { fireEvent } from "../../../src/common/dom/fire_event";
 import {
   HassioAddonDetails,
   HassioAddonSetOptionParams,
   setHassioAddonOption,
 } from "../../../src/data/hassio/addon";
-import { hassioStyle } from "../resources/hassio-style";
 import { haStyle } from "../../../src/resources/styles";
-import { fireEvent } from "../../../src/common/dom/fire_event";
+import { HomeAssistant } from "../../../src/types";
+import { hassioStyle } from "../resources/hassio-style";
 
 interface NetworkItem {
   description: string;

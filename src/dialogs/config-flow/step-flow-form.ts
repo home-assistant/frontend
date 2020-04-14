@@ -1,26 +1,25 @@
+import "@material/mwc-button";
+import "@polymer/paper-spinner/paper-spinner";
+import "@polymer/paper-tooltip/paper-tooltip";
 import {
-  LitElement,
-  TemplateResult,
-  html,
-  CSSResultArray,
   css,
+  CSSResultArray,
   customElement,
+  html,
+  LitElement,
   property,
   PropertyValues,
+  TemplateResult,
 } from "lit-element";
-import "@material/mwc-button";
-import "@polymer/paper-tooltip/paper-tooltip";
-import "@polymer/paper-spinner/paper-spinner";
-
+import { fireEvent } from "../../common/dom/fire_event";
 import "../../components/ha-form/ha-form";
+import type { HaFormSchema } from "../../components/ha-form/ha-form";
 import "../../components/ha-markdown";
+import type { DataEntryFlowStepForm } from "../../data/data_entry_flow";
 import "../../resources/ha-style";
 import type { HomeAssistant } from "../../types";
-import { fireEvent } from "../../common/dom/fire_event";
-import { configFlowContentStyles } from "./styles";
-import type { DataEntryFlowStepForm } from "../../data/data_entry_flow";
 import type { FlowConfig } from "./show-dialog-data-entry-flow";
-import type { HaFormSchema } from "../../components/ha-form/ha-form";
+import { configFlowContentStyles } from "./styles";
 
 @customElement("step-flow-form")
 class StepFlowForm extends LitElement {

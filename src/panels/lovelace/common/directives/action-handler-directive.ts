@@ -1,11 +1,11 @@
-import { directive, PropertyPart } from "lit-html";
 import "@material/mwc-ripple";
 import type { Ripple } from "@material/mwc-ripple";
-import {
-  ActionHandlerOptions,
-  ActionHandlerDetail,
-} from "../../../../data/lovelace";
+import { directive, PropertyPart } from "lit-html";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import {
+  ActionHandlerDetail,
+  ActionHandlerOptions,
+} from "../../../../data/lovelace";
 
 const isTouch =
   "ontouchstart" in window ||

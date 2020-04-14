@@ -1,18 +1,17 @@
+import "@material/mwc-button";
 import {
-  html,
-  LitElement,
-  TemplateResult,
-  customElement,
   css,
   CSSResult,
+  customElement,
+  html,
+  LitElement,
   property,
+  TemplateResult,
 } from "lit-element";
-import "@material/mwc-button";
-
 import "../../../components/ha-card";
+import { HomeAssistant } from "../../../types";
 import "../../developer-tools/logs/error-log-card";
 import { LovelaceCard } from "../types";
-import { HomeAssistant } from "../../../types";
 
 @customElement("hui-safe-mode-card")
 export class HuiSafeModeCard extends LitElement implements LovelaceCard {

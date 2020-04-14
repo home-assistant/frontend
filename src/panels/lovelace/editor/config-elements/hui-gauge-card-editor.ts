@@ -1,25 +1,23 @@
+import "@polymer/paper-input/paper-input";
 import {
-  html,
-  LitElement,
-  TemplateResult,
-  customElement,
-  property,
   css,
   CSSResult,
+  customElement,
+  html,
+  LitElement,
+  property,
+  TemplateResult,
 } from "lit-element";
-import "@polymer/paper-input/paper-input";
-
-import "../../components/hui-theme-select-editor";
-import "../../components/hui-entity-editor";
-import "../../../../components/ha-switch";
-
-import { struct } from "../../common/structs/struct";
-import { EntitiesEditorEvent, EditorTarget } from "../types";
-import { HomeAssistant } from "../../../../types";
-import { LovelaceCardEditor } from "../../types";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import { configElementStyle } from "./config-elements-style";
+import "../../../../components/ha-switch";
+import { HomeAssistant } from "../../../../types";
 import { GaugeCardConfig, SeverityConfig } from "../../cards/types";
+import { struct } from "../../common/structs/struct";
+import "../../components/hui-entity-editor";
+import "../../components/hui-theme-select-editor";
+import { LovelaceCardEditor } from "../../types";
+import { EditorTarget, EntitiesEditorEvent } from "../types";
+import { configElementStyle } from "./config-elements-style";
 
 const cardConfigStruct = struct({
   type: "string",

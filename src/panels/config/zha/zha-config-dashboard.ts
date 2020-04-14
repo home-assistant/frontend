@@ -1,33 +1,31 @@
+import "@polymer/paper-item/paper-item";
+import "@polymer/paper-item/paper-item-body";
 import {
-  LitElement,
-  TemplateResult,
-  html,
-  CSSResultArray,
   css,
+  CSSResultArray,
   customElement,
+  html,
+  LitElement,
   property,
   PropertyValues,
+  TemplateResult,
 } from "lit-element";
-import "@polymer/paper-item/paper-item-body";
-import "@polymer/paper-item/paper-item";
-import "../../../components/ha-card";
-import "../../../components/ha-icon-next";
-import "../../../layouts/hass-subpage";
-import "../ha-config-section";
-
 import memoizeOne from "memoize-one";
-import { haStyle } from "../../../resources/styles";
-import type { HomeAssistant, Route } from "../../../types";
-import { fetchDevices } from "../../../data/zha";
-import type { ZHADevice } from "../../../data/zha";
-import { sortZHADevices, formatAsPaddedHex } from "./functions";
+import { navigate } from "../../../common/navigate";
 import "../../../components/data-table/ha-data-table";
-
 import type {
   DataTableColumnContainer,
   RowClickedEvent,
 } from "../../../components/data-table/ha-data-table";
-import { navigate } from "../../../common/navigate";
+import "../../../components/ha-card";
+import "../../../components/ha-icon-next";
+import { fetchDevices } from "../../../data/zha";
+import type { ZHADevice } from "../../../data/zha";
+import "../../../layouts/hass-subpage";
+import { haStyle } from "../../../resources/styles";
+import type { HomeAssistant, Route } from "../../../types";
+import "../ha-config-section";
+import { formatAsPaddedHex, sortZHADevices } from "./functions";
 
 export interface DeviceRowData extends ZHADevice {
   device?: DeviceRowData;

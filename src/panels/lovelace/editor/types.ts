@@ -1,11 +1,11 @@
 import {
+  ActionConfig,
   LovelaceCardConfig,
   LovelaceViewConfig,
-  ActionConfig,
   ShowViewConfig,
 } from "../../../data/lovelace";
-import { EntityConfig } from "../entity-rows/types";
 import { struct } from "../common/structs/struct";
+import { EntityConfig } from "../entity-rows/types";
 
 export interface YamlChangedEvent extends Event {
   detail: {

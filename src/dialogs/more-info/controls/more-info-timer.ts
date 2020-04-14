@@ -1,16 +1,15 @@
-import {
-  LitElement,
-  html,
-  TemplateResult,
-  CSSResult,
-  css,
-  property,
-  customElement,
-} from "lit-element";
 import "@material/mwc-button";
-
-import { HomeAssistant } from "../../../types";
+import {
+  css,
+  CSSResult,
+  customElement,
+  html,
+  LitElement,
+  property,
+  TemplateResult,
+} from "lit-element";
 import { TimerEntity } from "../../../data/timer";
+import { HomeAssistant } from "../../../types";
 
 @customElement("more-info-timer")
 class MoreInfoTimer extends LitElement {

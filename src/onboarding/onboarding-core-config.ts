@@ -1,30 +1,29 @@
-import {
-  LitElement,
-  customElement,
-  property,
-  TemplateResult,
-  html,
-  CSSResult,
-  css,
-} from "lit-element";
 import "@material/mwc-button/mwc-button";
 import "@polymer/paper-input/paper-input";
-import "@polymer/paper-radio-group/paper-radio-group";
-import "@polymer/paper-radio-button/paper-radio-button";
-
 import type { PaperInputElement } from "@polymer/paper-input/paper-input";
-import type { HomeAssistant } from "../types";
+import "@polymer/paper-radio-button/paper-radio-button";
+import "@polymer/paper-radio-group/paper-radio-group";
+import {
+  css,
+  CSSResult,
+  customElement,
+  html,
+  LitElement,
+  property,
+  TemplateResult,
+} from "lit-element";
+import { fireEvent } from "../common/dom/fire_event";
+import type { LocalizeFunc } from "../common/translations/localize";
+import "../components/map/ha-location-editor";
+import { createTimezoneListEl } from "../components/timezone-datalist";
 import {
   ConfigUpdateValues,
   detectCoreConfig,
   saveCoreConfig,
 } from "../data/core";
-import type { PolymerChangedEvent } from "../polymer-types";
 import { onboardCoreConfigStep } from "../data/onboarding";
-import { fireEvent } from "../common/dom/fire_event";
-import type { LocalizeFunc } from "../common/translations/localize";
-import { createTimezoneListEl } from "../components/timezone-datalist";
-import "../components/map/ha-location-editor";
+import type { PolymerChangedEvent } from "../polymer-types";
+import type { HomeAssistant } from "../types";
 
 const amsterdam = [52.3731339, 4.8903147];
 

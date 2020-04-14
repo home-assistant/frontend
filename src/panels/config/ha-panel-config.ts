@@ -1,14 +1,14 @@
-import { property, PropertyValues, customElement } from "lit-element";
-import "@polymer/paper-item/paper-item-body";
 import "@polymer/paper-item/paper-item";
-import "../../layouts/hass-loading-screen";
+import "@polymer/paper-item/paper-item-body";
 import { PolymerElement } from "@polymer/polymer";
+import { customElement, property, PropertyValues } from "lit-element";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
-import { HomeAssistant, Route } from "../../types";
-import { CloudStatus, fetchCloudStatus } from "../../data/cloud";
 import { listenMediaQuery } from "../../common/dom/media_query";
+import { CloudStatus, fetchCloudStatus } from "../../data/cloud";
+import "../../layouts/hass-loading-screen";
 import { HassRouterPage, RouterOptions } from "../../layouts/hass-router-page";
 import { PageNavigation } from "../../layouts/hass-tabs-subpage";
+import { HomeAssistant, Route } from "../../types";
 
 declare global {
   // for fire event

@@ -1,17 +1,15 @@
 import {
+  css,
+  CSSResult,
+  customElement,
   html,
   LitElement,
-  TemplateResult,
   property,
-  customElement,
-  CSSResult,
-  css,
+  TemplateResult,
 } from "lit-element";
-
 import "../../../components/buttons/ha-call-service-button";
-
-import { LovelaceElement, ServiceButtonElementConfig } from "./types";
 import { HomeAssistant } from "../../../types";
+import { LovelaceElement, ServiceButtonElementConfig } from "./types";
 
 @customElement("hui-service-button-element")
 export class HuiServiceButtonElement extends LitElement

@@ -1,11 +1,11 @@
 import {
   css,
   CSSResult,
+  customElement,
   html,
   LitElement,
   property,
   TemplateResult,
-  customElement,
 } from "lit-element";
 
 @customElement("ha-card")

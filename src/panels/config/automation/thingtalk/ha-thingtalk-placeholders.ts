@@ -1,34 +1,32 @@
+import { HassEntity } from "home-assistant-js-websocket";
 import {
-  LitElement,
-  html,
-  TemplateResult,
-  property,
-  customElement,
   css,
   CSSResult,
+  customElement,
+  html,
+  LitElement,
+  property,
   PropertyValues,
+  TemplateResult,
 } from "lit-element";
-
-import "../../../../components/device/ha-area-devices-picker";
-
-import { HassEntity } from "home-assistant-js-websocket";
-import { HomeAssistant } from "../../../../types";
-import { PolymerChangedEvent } from "../../../../polymer-types";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import { haStyleDialog } from "../../../../resources/styles";
-import { PlaceholderContainer, Placeholder } from "./dialog-thingtalk";
-import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
-import { subscribeEntityRegistry } from "../../../../data/entity_registry";
 import { computeDomain } from "../../../../common/entity/compute_domain";
-import { getPath, applyPatch } from "../../../../common/util/patch";
+import { applyPatch, getPath } from "../../../../common/util/patch";
+import "../../../../components/device/ha-area-devices-picker";
 import {
-  subscribeAreaRegistry,
   AreaRegistryEntry,
+  subscribeAreaRegistry,
 } from "../../../../data/area_registry";
 import {
-  subscribeDeviceRegistry,
   DeviceRegistryEntry,
+  subscribeDeviceRegistry,
 } from "../../../../data/device_registry";
+import { subscribeEntityRegistry } from "../../../../data/entity_registry";
+import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
+import { PolymerChangedEvent } from "../../../../polymer-types";
+import { haStyleDialog } from "../../../../resources/styles";
+import { HomeAssistant } from "../../../../types";
+import { Placeholder, PlaceholderContainer } from "./dialog-thingtalk";
 
 declare global {
   // for fire event

@@ -1,54 +1,52 @@
-import {
-  LitElement,
-  TemplateResult,
-  html,
-  css,
-  CSSResult,
-  property,
-  customElement,
-  query,
-  PropertyValues,
-} from "lit-element";
-import "@polymer/paper-listbox/paper-listbox";
 import "@polymer/paper-item/paper-icon-item";
 import "@polymer/paper-item/paper-item-body";
+import "@polymer/paper-listbox/paper-listbox";
 import "@polymer/paper-tooltip/paper-tooltip";
-
-import "../../../components/map/ha-locations-editor";
-
 import { HassEntity, UnsubscribeFunc } from "home-assistant-js-websocket";
-import memoizeOne from "memoize-one";
+import {
+  css,
+  CSSResult,
+  customElement,
+  html,
+  LitElement,
+  property,
+  PropertyValues,
+  query,
+  TemplateResult,
+} from "lit-element";
 import { ifDefined } from "lit-html/directives/if-defined";
-import type { HomeAssistant, Route } from "../../../types";
+import memoizeOne from "memoize-one";
+import { computeStateDomain } from "../../../common/entity/compute_state_domain";
+import { navigate } from "../../../common/navigate";
+import { compare } from "../../../common/string/compare";
 import "../../../components/ha-card";
 import "../../../components/ha-fab";
-import "../../../layouts/hass-tabs-subpage";
-import "../../../layouts/hass-loading-screen";
-import { compare } from "../../../common/string/compare";
-import "../ha-config-section";
-import { showZoneDetailDialog } from "./show-dialog-zone-detail";
-import {
-  Zone,
-  fetchZones,
-  createZone,
-  updateZone,
-  deleteZone,
-  ZoneMutableParams,
-  homeRadiusColor,
-  passiveRadiusColor,
-  defaultRadiusColor,
-} from "../../../data/zone";
+import "../../../components/map/ha-locations-editor";
 import type {
   HaLocationsEditor,
   MarkerLocation,
 } from "../../../components/map/ha-locations-editor";
-import { computeStateDomain } from "../../../common/entity/compute_state_domain";
-import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
-import { subscribeEntityRegistry } from "../../../data/entity_registry";
-import { configSections } from "../ha-panel-config";
-import { navigate } from "../../../common/navigate";
 import { saveCoreConfig } from "../../../data/core";
+import { subscribeEntityRegistry } from "../../../data/entity_registry";
+import {
+  createZone,
+  defaultRadiusColor,
+  deleteZone,
+  fetchZones,
+  homeRadiusColor,
+  passiveRadiusColor,
+  updateZone,
+  Zone,
+  ZoneMutableParams,
+} from "../../../data/zone";
 import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
+import "../../../layouts/hass-loading-screen";
+import "../../../layouts/hass-tabs-subpage";
+import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
+import type { HomeAssistant, Route } from "../../../types";
+import "../ha-config-section";
+import { configSections } from "../ha-panel-config";
+import { showZoneDetailDialog } from "./show-dialog-zone-detail";
 
 @customElement("ha-config-zone")
 export class HaConfigZone extends SubscribeMixin(LitElement) {

@@ -1,10 +1,9 @@
+import "@polymer/app-layout/app-toolbar/app-toolbar";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 /* eslint-plugin-disable lit */
 import { PolymerElement } from "@polymer/polymer/polymer-element";
-import "@polymer/app-layout/app-toolbar/app-toolbar";
-
-import "./demo-more-info";
 import "../../../src/components/ha-switch";
+import "./demo-more-info";
 
 class DemoMoreInfos extends PolymerElement {
   static get template() {

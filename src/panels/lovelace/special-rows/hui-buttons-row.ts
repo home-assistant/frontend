@@ -1,20 +1,18 @@
 import {
   customElement,
-  LitElement,
   html,
+  LitElement,
   property,
   TemplateResult,
 } from "lit-element";
-
+import { HomeAssistant } from "../../../types";
+import { processConfigEntities } from "../common/process-config-entities";
 import "../components/hui-buttons-base";
-
 import {
   ButtonsRowConfig,
   EntityConfig,
   LovelaceRow,
 } from "../entity-rows/types";
-import { processConfigEntities } from "../common/process-config-entities";
-import { HomeAssistant } from "../../../types";
 
 @customElement("hui-buttons-row")
 export class HuiButtonsRow extends LitElement implements LovelaceRow {

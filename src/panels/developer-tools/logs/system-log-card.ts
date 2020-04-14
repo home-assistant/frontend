@@ -1,28 +1,28 @@
-import {
-  LitElement,
-  html,
-  CSSResult,
-  css,
-  TemplateResult,
-  customElement,
-  property,
-} from "lit-element";
 import "@polymer/paper-icon-button/paper-icon-button";
-import "@polymer/paper-item/paper-item-body";
 import "@polymer/paper-item/paper-item";
+import "@polymer/paper-item/paper-item-body";
 import "@polymer/paper-spinner/paper-spinner";
-import "../../../components/ha-card";
+import {
+  css,
+  CSSResult,
+  customElement,
+  html,
+  LitElement,
+  property,
+  TemplateResult,
+} from "lit-element";
 import "../../../components/buttons/ha-call-service-button";
 import "../../../components/buttons/ha-progress-button";
-import { HomeAssistant } from "../../../types";
+import "../../../components/ha-card";
+import { domainToName } from "../../../data/integration";
 import {
-  LoggedError,
   fetchSystemLog,
   getLoggedErrorIntegration,
+  LoggedError,
 } from "../../../data/system_log";
+import { HomeAssistant } from "../../../types";
 import { showSystemLogDetailDialog } from "./show-dialog-system-log-detail";
 import { formatSystemLogTime } from "./util";
-import { domainToName } from "../../../data/integration";
 
 @customElement("system-log-card")
 export class SystemLogCard extends LitElement {

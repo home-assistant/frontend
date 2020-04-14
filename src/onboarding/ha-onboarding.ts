@@ -1,32 +1,32 @@
 import {
-  html,
-  PropertyValues,
-  customElement,
-  TemplateResult,
-  property,
-} from "lit-element";
-import {
-  getAuth,
+  Auth,
   createConnection,
   genClientId,
-  Auth,
+  getAuth,
   subscribeConfig,
 } from "home-assistant-js-websocket";
-import { litLocalizeLiteMixin } from "../mixins/lit-localize-lite-mixin";
 import {
+  customElement,
+  html,
+  property,
+  PropertyValues,
+  TemplateResult,
+} from "lit-element";
+import { HASSDomEvent } from "../common/dom/fire_event";
+import { subscribeOne } from "../common/util/subscribe-one";
+import { hassUrl } from "../data/auth";
+import {
+  fetchOnboardingOverview,
+  OnboardingResponses,
   OnboardingStep,
   ValidOnboardingStep,
-  OnboardingResponses,
-  fetchOnboardingOverview,
 } from "../data/onboarding";
+import { subscribeUser } from "../data/ws-user";
+import { litLocalizeLiteMixin } from "../mixins/lit-localize-lite-mixin";
+import { HassElement } from "../state/hass-element";
 import { registerServiceWorker } from "../util/register-service-worker";
-import { HASSDomEvent } from "../common/dom/fire_event";
 import "./onboarding-create-user";
 import "./onboarding-loading";
-import { hassUrl } from "../data/auth";
-import { HassElement } from "../state/hass-element";
-import { subscribeOne } from "../common/util/subscribe-one";
-import { subscribeUser } from "../data/ws-user";
 
 interface OnboardingEvent<T extends ValidOnboardingStep> {
   type: T;

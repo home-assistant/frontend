@@ -1,18 +1,18 @@
 import {
+  css,
+  CSSResult,
+  customElement,
+  html,
   LitElement,
   property,
   TemplateResult,
-  html,
-  customElement,
-  CSSResult,
-  css,
 } from "lit-element";
 import memoizeOne from "memoize-one";
-import { HomeAssistant } from "../../../types";
 import {
   integrationDocsUrl,
   integrationIssuesUrl,
 } from "../../../data/integration";
+import { HomeAssistant } from "../../../types";
 
 @customElement("integrations-card")
 class IntegrationsCard extends LitElement {

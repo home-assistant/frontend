@@ -1,19 +1,17 @@
 import {
+  customElement,
   html,
   LitElement,
-  TemplateResult,
-  customElement,
   property,
+  TemplateResult,
 } from "lit-element";
-
-import { struct } from "../../common/structs/struct";
-import { EntitiesEditorEvent, EditorTarget } from "../types";
-import { HomeAssistant } from "../../../../types";
-import { LovelaceCardEditor } from "../../types";
 import { fireEvent } from "../../../../common/dom/fire_event";
-
 import "../../../../components/entity/ha-entity-picker";
+import { HomeAssistant } from "../../../../types";
 import { MediaControlCardConfig } from "../../cards/types";
+import { struct } from "../../common/structs/struct";
+import { LovelaceCardEditor } from "../../types";
+import { EditorTarget, EntitiesEditorEvent } from "../types";
 
 const cardConfigStruct = struct({
   type: "string",

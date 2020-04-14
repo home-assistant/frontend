@@ -1,24 +1,21 @@
 import "@polymer/paper-icon-button/paper-icon-button";
-
+import { HassEntity } from "home-assistant-js-websocket";
 import {
-  LitElement,
-  TemplateResult,
-  html,
-  CSSResult,
   css,
+  CSSResult,
+  html,
+  LitElement,
   property,
   PropertyValues,
+  TemplateResult,
 } from "lit-element";
-import { HassEntity } from "home-assistant-js-websocket";
 import { STATES_OFF } from "../../common/const";
-import { HomeAssistant } from "../../types";
-import { forwardHaptic } from "../../data/haptics";
-
 import { computeStateDomain } from "../../common/entity/compute_state_domain";
 import { computeStateName } from "../../common/entity/compute_state_name";
-
-import "../ha-switch";
 import { UNAVAILABLE_STATES } from "../../data/entity";
+import { forwardHaptic } from "../../data/haptics";
+import { HomeAssistant } from "../../types";
+import "../ha-switch";
 
 const isOn = (stateObj?: HassEntity) =>
   stateObj !== undefined &&

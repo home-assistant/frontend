@@ -1,13 +1,13 @@
 import {
   customElement,
-  LitElement,
   html,
+  LitElement,
   property,
-  TemplateResult,
   query,
+  TemplateResult,
 } from "lit-element";
-import { HaFormElement, HaFormTimeData, HaFormTimeSchema } from "./ha-form";
 import { fireEvent } from "../../common/dom/fire_event";
+import { HaFormElement, HaFormTimeData, HaFormTimeSchema } from "./ha-form";
 
 @customElement("ha-form-positive_time_period_dict")
 export class HaFormTimePeriod extends LitElement implements HaFormElement {

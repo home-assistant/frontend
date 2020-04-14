@@ -1,22 +1,19 @@
+import { HassEntity } from "home-assistant-js-websocket";
 import {
+  customElement,
   html,
   LitElement,
-  TemplateResult,
   property,
   PropertyValues,
-  customElement,
+  TemplateResult,
 } from "lit-element";
-
+import secondsToDuration from "../../../common/datetime/seconds_to_duration";
+import { timerTimeRemaining } from "../../../common/entity/timer_time_remaining";
+import { HomeAssistant } from "../../../types";
+import { hasConfigOrEntityChanged } from "../common/has-changed";
 import "../components/hui-generic-entity-row";
 import "../components/hui-warning";
-
-import { HassEntity } from "home-assistant-js-websocket";
-import { timerTimeRemaining } from "../../../common/entity/timer_time_remaining";
-import secondsToDuration from "../../../common/datetime/seconds_to_duration";
-
-import { HomeAssistant } from "../../../types";
 import { EntityConfig } from "./types";
-import { hasConfigOrEntityChanged } from "../common/has-changed";
 
 @customElement("hui-timer-entity-row")
 class HuiTimerEntityRow extends LitElement {

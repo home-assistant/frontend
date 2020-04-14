@@ -1,14 +1,13 @@
-import {
-  LitElement,
-  TemplateResult,
-  html,
-  CSSResult,
-  css,
-  property,
-  customElement,
-} from "lit-element";
 import "@polymer/iron-icon/iron-icon";
-
+import {
+  css,
+  CSSResult,
+  customElement,
+  html,
+  LitElement,
+  property,
+  TemplateResult,
+} from "lit-element";
 import "../../../src/components/ha-relative-time";
 import { HomeAssistant } from "../../../src/types";
 

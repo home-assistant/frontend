@@ -5,18 +5,17 @@ import { customElement, html, LitElement, property } from "lit-element";
 import { dynamicElement } from "../../../../common/dom/dynamic-element-directive";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-card";
+import type { Condition } from "../../../../data/automation";
 import type { HomeAssistant } from "../../../../types";
-
+import "./types/ha-automation-condition-and";
 import "./types/ha-automation-condition-device";
-import "./types/ha-automation-condition-state";
 import "./types/ha-automation-condition-numeric_state";
+import "./types/ha-automation-condition-or";
+import "./types/ha-automation-condition-state";
 import "./types/ha-automation-condition-sun";
 import "./types/ha-automation-condition-template";
 import "./types/ha-automation-condition-time";
 import "./types/ha-automation-condition-zone";
-import "./types/ha-automation-condition-and";
-import "./types/ha-automation-condition-or";
-import type { Condition } from "../../../../data/automation";
 
 const OPTIONS = [
   "device",

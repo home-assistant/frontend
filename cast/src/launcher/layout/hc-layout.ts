@@ -1,18 +1,18 @@
 import {
-  customElement,
-  LitElement,
-  TemplateResult,
-  html,
-  CSSResult,
-  css,
-  property,
-} from "lit-element";
-import {
   Auth,
   Connection,
-  HassUser,
   getUser,
+  HassUser,
 } from "home-assistant-js-websocket";
+import {
+  css,
+  CSSResult,
+  customElement,
+  html,
+  LitElement,
+  property,
+  TemplateResult,
+} from "lit-element";
 import "../../../../src/components/ha-card";
 
 @customElement("hc-layout")

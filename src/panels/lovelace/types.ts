@@ -1,9 +1,9 @@
-import { HomeAssistant, Constructor } from "../../types";
 import {
+  LovelaceBadgeConfig,
   LovelaceCardConfig,
   LovelaceConfig,
-  LovelaceBadgeConfig,
 } from "../../data/lovelace";
+import { Constructor, HomeAssistant } from "../../types";
 import { LovelaceHeaderFooterConfig } from "./header-footer/types";
 
 declare global {

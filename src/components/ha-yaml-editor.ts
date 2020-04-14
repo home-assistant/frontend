@@ -1,15 +1,15 @@
 import { safeDump, safeLoad } from "js-yaml";
-import "./ha-code-editor";
 import {
-  LitElement,
-  property,
   customElement,
   html,
+  LitElement,
+  property,
   query,
   TemplateResult,
 } from "lit-element";
 import { fireEvent } from "../common/dom/fire_event";
 import { afterNextRender } from "../common/util/render-status";
+import "./ha-code-editor";
 import type { HaCodeEditor } from "./ha-code-editor";
 
 declare global {

@@ -17,12 +17,12 @@ import { computeRTL } from "../../../common/util/compute_rtl";
 import { DataTableColumnContainer } from "../../../components/data-table/ha-data-table";
 import "../../../components/ha-fab";
 import { triggerScript } from "../../../data/script";
+import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
 import "../../../layouts/hass-tabs-subpage-data-table";
 import { haStyle } from "../../../resources/styles";
 import { HomeAssistant, Route } from "../../../types";
 import { showToast } from "../../../util/toast";
 import { configSections } from "../ha-panel-config";
-import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
 
 @customElement("ha-script-picker")
 class HaScriptPicker extends LitElement {

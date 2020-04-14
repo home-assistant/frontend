@@ -1,5 +1,4 @@
 import "@polymer/paper-icon-button/paper-icon-button";
-
 import type { PaperIconButtonElement } from "@polymer/paper-icon-button/paper-icon-button";
 import type { Constructor } from "../types";
 

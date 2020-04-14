@@ -1,7 +1,7 @@
 import { HASSDomEvent } from "../common/dom/fire_event";
-import { HassBaseEl } from "./hass-base-mixin";
 import { makeDialogManager, showDialog } from "../dialogs/make-dialog-manager";
 import { Constructor } from "../types";
+import { HassBaseEl } from "./hass-base-mixin";
 
 interface RegisterDialogParams {
   dialogShowEvent: keyof HASSDomEvents;

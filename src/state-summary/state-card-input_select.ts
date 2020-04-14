@@ -1,27 +1,23 @@
-import {
-  LitElement,
-  customElement,
-  TemplateResult,
-  html,
-  CSSResult,
-  css,
-  property,
-  PropertyValues,
-} from "lit-element";
 import "@polymer/paper-dropdown-menu/paper-dropdown-menu-light";
-
 import "@polymer/paper-item/paper-item";
-
 import type { PaperItemElement } from "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
-
-import "../components/entity/state-badge";
-
+import {
+  css,
+  CSSResult,
+  customElement,
+  html,
+  LitElement,
+  property,
+  PropertyValues,
+  TemplateResult,
+} from "lit-element";
+import { stopPropagation } from "../common/dom/stop_propagation";
 import { computeStateName } from "../common/entity/compute_state_name";
-import type { HomeAssistant, InputSelectEntity } from "../types";
+import "../components/entity/state-badge";
 import { setInputSelectOption } from "../data/input_select";
 import type { PolymerIronSelectEvent } from "../polymer-types";
-import { stopPropagation } from "../common/dom/stop_propagation";
+import type { HomeAssistant, InputSelectEntity } from "../types";
 
 @customElement("state-card-input_select")
 class StateCardInputSelect extends LitElement {

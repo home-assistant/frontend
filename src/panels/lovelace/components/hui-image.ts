@@ -1,21 +1,20 @@
 import {
-  LitElement,
-  TemplateResult,
-  html,
-  property,
-  CSSResult,
   css,
+  CSSResult,
+  customElement,
+  html,
+  LitElement,
+  property,
   PropertyValues,
   query,
-  customElement,
+  TemplateResult,
 } from "lit-element";
-import { styleMap } from "lit-html/directives/style-map";
 import { classMap } from "lit-html/directives/class-map";
+import { styleMap } from "lit-html/directives/style-map";
 import { STATES_OFF } from "../../../common/const";
-
 import parseAspectRatio from "../../../common/util/parse-aspect-ratio";
-import { HomeAssistant, CameraEntity } from "../../../types";
 import { fetchThumbnailUrlWithCache } from "../../../data/camera";
+import { CameraEntity, HomeAssistant } from "../../../types";
 
 const UPDATE_INTERVAL = 10000;
 const DEFAULT_FILTER = "grayscale(100%)";

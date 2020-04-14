@@ -1,21 +1,20 @@
 import {
-  customElement,
-  LitElement,
-  html,
-  property,
-  CSSResult,
   css,
+  CSSResult,
+  customElement,
+  html,
+  LitElement,
+  property,
 } from "lit-element";
-
-import "./ha-form-string";
-import "./ha-form-integer";
-import "./ha-form-float";
+import { dynamicElement } from "../../common/dom/dynamic-element-directive";
+import { fireEvent } from "../../common/dom/fire_event";
 import "./ha-form-boolean";
-import "./ha-form-select";
+import "./ha-form-float";
+import "./ha-form-integer";
 import "./ha-form-multi_select";
 import "./ha-form-positive_time_period_dict";
-import { fireEvent } from "../../common/dom/fire_event";
-import { dynamicElement } from "../../common/dom/dynamic-element-directive";
+import "./ha-form-select";
+import "./ha-form-string";
 
 export type HaFormSchema =
   | HaFormStringSchema

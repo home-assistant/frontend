@@ -12,7 +12,6 @@ import "../../../../components/ha-card";
 import { Action } from "../../../../data/script";
 import { HomeAssistant } from "../../../../types";
 import "./ha-automation-action-row";
-
 import { HaDeviceAction } from "./types/ha-automation-action-device_id";
 
 @customElement("ha-automation-action")

@@ -1,22 +1,22 @@
-import "./ha-config-areas-dashboard";
-import "./ha-config-area-page";
-import { property, customElement, PropertyValues } from "lit-element";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
+import { customElement, property, PropertyValues } from "lit-element";
 import { compare } from "../../../common/string/compare";
 import {
-  subscribeAreaRegistry,
   AreaRegistryEntry,
+  subscribeAreaRegistry,
 } from "../../../data/area_registry";
-import {
-  HassRouterPage,
-  RouterOptions,
-} from "../../../layouts/hass-router-page";
-import { HomeAssistant } from "../../../types";
 import { ConfigEntry, getConfigEntries } from "../../../data/config_entries";
 import {
   DeviceRegistryEntry,
   subscribeDeviceRegistry,
 } from "../../../data/device_registry";
+import {
+  HassRouterPage,
+  RouterOptions,
+} from "../../../layouts/hass-router-page";
+import { HomeAssistant } from "../../../types";
+import "./ha-config-area-page";
+import "./ha-config-areas-dashboard";
 
 @customElement("ha-config-areas")
 class HaConfigAreas extends HassRouterPage {

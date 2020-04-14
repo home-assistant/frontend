@@ -1,14 +1,13 @@
-import {
-  property,
-  LitElement,
-  TemplateResult,
-  html,
-  CSSResult,
-  css,
-  customElement,
-} from "lit-element";
 import { HassEntity } from "home-assistant-js-websocket";
-
+import {
+  css,
+  CSSResult,
+  customElement,
+  html,
+  LitElement,
+  property,
+  TemplateResult,
+} from "lit-element";
 import { until } from "lit-html/directives/until";
 import hassAttributeUtil from "../util/hass-attributes-util";
 

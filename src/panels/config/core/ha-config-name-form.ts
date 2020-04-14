@@ -1,19 +1,19 @@
-import {
-  LitElement,
-  customElement,
-  property,
-  TemplateResult,
-  html,
-} from "lit-element";
 import "@material/mwc-button/mwc-button";
 import "@polymer/paper-input/paper-input";
-import "@polymer/paper-radio-group/paper-radio-group";
-import "@polymer/paper-radio-button/paper-radio-button";
-import type { HomeAssistant } from "../../../types";
-import "../../../components/ha-card";
-import type { PolymerChangedEvent } from "../../../polymer-types";
 import type { PaperInputElement } from "@polymer/paper-input/paper-input";
+import "@polymer/paper-radio-button/paper-radio-button";
+import "@polymer/paper-radio-group/paper-radio-group";
+import {
+  customElement,
+  html,
+  LitElement,
+  property,
+  TemplateResult,
+} from "lit-element";
+import "../../../components/ha-card";
 import { ConfigUpdateValues, saveCoreConfig } from "../../../data/core";
+import type { PolymerChangedEvent } from "../../../polymer-types";
+import type { HomeAssistant } from "../../../types";
 
 @customElement("ha-config-name-form")
 class ConfigNameForm extends LitElement {

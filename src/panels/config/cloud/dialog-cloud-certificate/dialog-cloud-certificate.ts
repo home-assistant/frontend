@@ -1,20 +1,18 @@
+import "@material/mwc-button";
 import {
-  html,
-  LitElement,
   css,
   CSSResult,
   customElement,
+  html,
+  LitElement,
   property,
 } from "lit-element";
-
-import "@material/mwc-button";
+import { formatDateTime } from "../../../../common/datetime/format_date_time";
 import "../../../../components/dialog/ha-paper-dialog";
 import type { HaPaperDialog } from "../../../../components/dialog/ha-paper-dialog";
-
-import type { HomeAssistant } from "../../../../types";
 import { haStyle } from "../../../../resources/styles";
+import type { HomeAssistant } from "../../../../types";
 import type { CloudCertificateParams as CloudCertificateDialogParams } from "./show-dialog-cloud-certificate";
-import { formatDateTime } from "../../../../common/datetime/format_date_time";
 
 @customElement("dialog-cloud-certificate")
 class DialogCloudCertificate extends LitElement {

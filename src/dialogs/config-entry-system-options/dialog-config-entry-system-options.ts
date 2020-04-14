@@ -1,28 +1,25 @@
-import {
-  LitElement,
-  html,
-  css,
-  CSSResult,
-  TemplateResult,
-  customElement,
-  property,
-} from "lit-element";
 import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable";
 import "@polymer/paper-input/paper-input";
-
+import {
+  css,
+  CSSResult,
+  customElement,
+  html,
+  LitElement,
+  property,
+  TemplateResult,
+} from "lit-element";
 import "../../components/dialog/ha-paper-dialog";
 import "../../components/ha-switch";
-
-import type { HomeAssistant } from "../../types";
-import { ConfigEntrySystemOptionsDialogParams } from "./show-dialog-config-entry-system-options";
+import type { HaSwitch } from "../../components/ha-switch";
 import {
   getConfigEntrySystemOptions,
   updateConfigEntrySystemOptions,
 } from "../../data/config_entries";
 import type { PolymerChangedEvent } from "../../polymer-types";
 import { haStyleDialog } from "../../resources/styles";
-
-import type { HaSwitch } from "../../components/ha-switch";
+import type { HomeAssistant } from "../../types";
+import { ConfigEntrySystemOptionsDialogParams } from "./show-dialog-config-entry-system-options";
 
 @customElement("dialog-config-entry-system-options")
 class DialogConfigEntrySystemOptions extends LitElement {

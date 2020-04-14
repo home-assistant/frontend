@@ -1,6 +1,6 @@
+import { fetchTranslationPreferences } from "../data/translation";
 import { translationMetadata } from "../resources/translations-metadata";
 import { HomeAssistant } from "../types";
-import { fetchTranslationPreferences } from "../data/translation";
 
 const STORAGE = window.localStorage || {};
 

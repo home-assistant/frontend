@@ -1,11 +1,10 @@
-import "../../../../../components/entity/ha-entity-picker";
-
-import { LitElement, property, customElement, html } from "lit-element";
-import { ActionElement } from "../ha-automation-action-row";
-import { HomeAssistant } from "../../../../../types";
-import { PolymerChangedEvent } from "../../../../../polymer-types";
+import { customElement, html, LitElement, property } from "lit-element";
 import { fireEvent } from "../../../../../common/dom/fire_event";
+import "../../../../../components/entity/ha-entity-picker";
 import { SceneAction } from "../../../../../data/script";
+import { PolymerChangedEvent } from "../../../../../polymer-types";
+import { HomeAssistant } from "../../../../../types";
+import { ActionElement } from "../ha-automation-action-row";
 
 @customElement("ha-automation-action-scene")
 export class HaSceneAction extends LitElement implements ActionElement {

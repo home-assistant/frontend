@@ -1,15 +1,14 @@
-import "../../../../../components/device/ha-device-picker";
-import "../../../../../components/device/ha-device-action-picker";
-import "../../../../../components/ha-form/ha-form";
-
-import { LitElement, customElement, property, html } from "lit-element";
+import { customElement, html, LitElement, property } from "lit-element";
 import memoizeOne from "memoize-one";
-import {
-  fetchDeviceActionCapabilities,
-  deviceAutomationsEqual,
-  DeviceAction,
-} from "../../../../../data/device_automation";
 import { fireEvent } from "../../../../../common/dom/fire_event";
+import "../../../../../components/device/ha-device-action-picker";
+import "../../../../../components/device/ha-device-picker";
+import "../../../../../components/ha-form/ha-form";
+import {
+  DeviceAction,
+  deviceAutomationsEqual,
+  fetchDeviceActionCapabilities,
+} from "../../../../../data/device_automation";
 import { HomeAssistant } from "../../../../../types";
 
 @customElement("ha-automation-action-device_id")

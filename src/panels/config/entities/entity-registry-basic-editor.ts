@@ -1,25 +1,23 @@
-import {
-  html,
-  css,
-  LitElement,
-  TemplateResult,
-  property,
-  customElement,
-  PropertyValues,
-} from "lit-element";
-
 import "@polymer/paper-input/paper-input";
-import "../../../components/ha-switch";
 import {
-  ExtEntityRegistryEntry,
+  css,
+  customElement,
+  html,
+  LitElement,
+  property,
+  PropertyValues,
+  TemplateResult,
+} from "lit-element";
+import { computeDomain } from "../../../common/entity/compute_domain";
+import "../../../components/ha-switch";
+import type { HaSwitch } from "../../../components/ha-switch";
+import {
   EntityRegistryEntryUpdateParams,
+  ExtEntityRegistryEntry,
   updateEntityRegistryEntry,
 } from "../../../data/entity_registry";
-import type { HomeAssistant } from "../../../types";
 import type { PolymerChangedEvent } from "../../../polymer-types";
-
-import type { HaSwitch } from "../../../components/ha-switch";
-import { computeDomain } from "../../../common/entity/compute_domain";
+import type { HomeAssistant } from "../../../types";
 
 @customElement("ha-registry-basic-editor")
 export class HaEntityRegistryBasicEditor extends LitElement {

@@ -1,5 +1,4 @@
 import { formatDateTimeWithSeconds } from "../../../common/datetime/format_date_time";
-
 import { formatTimeWithSeconds } from "../../../common/datetime/format_time";
 
 export const formatSystemLogTime = (date, language: string) => {

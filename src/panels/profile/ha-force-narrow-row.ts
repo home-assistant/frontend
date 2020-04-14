@@ -1,19 +1,15 @@
 import {
-  LitElement,
-  TemplateResult,
-  html,
-  property,
   customElement,
+  html,
+  LitElement,
+  property,
+  TemplateResult,
 } from "lit-element";
-
-import "./ha-settings-row";
-
-import type { HomeAssistant } from "../../types";
 import { fireEvent } from "../../common/dom/fire_event";
-
 import "../../components/ha-switch";
-
 import type { HaSwitch } from "../../components/ha-switch";
+import type { HomeAssistant } from "../../types";
+import "./ha-settings-row";
 
 @customElement("ha-force-narrow-row")
 class HaForcedNarrowRow extends LitElement {

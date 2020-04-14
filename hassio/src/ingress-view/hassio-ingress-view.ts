@@ -1,21 +1,21 @@
 import {
-  LitElement,
-  customElement,
-  property,
-  TemplateResult,
-  html,
-  PropertyValues,
-  CSSResult,
   css,
+  CSSResult,
+  customElement,
+  html,
+  LitElement,
+  property,
+  PropertyValues,
+  TemplateResult,
 } from "lit-element";
-import { HomeAssistant, Route } from "../../../src/types";
-import { createHassioSession } from "../../../src/data/hassio/supervisor";
 import {
-  HassioAddonDetails,
   fetchHassioAddonInfo,
+  HassioAddonDetails,
 } from "../../../src/data/hassio/addon";
+import { createHassioSession } from "../../../src/data/hassio/supervisor";
 import "../../../src/layouts/hass-loading-screen";
 import "../../../src/layouts/hass-subpage";
+import { HomeAssistant, Route } from "../../../src/types";
 
 @customElement("hassio-ingress-view")
 class HassioIngressView extends LitElement {

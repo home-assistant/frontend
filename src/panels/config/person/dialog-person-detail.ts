@@ -1,24 +1,22 @@
+import "@material/mwc-button";
+import "@polymer/paper-input/paper-input";
 import {
-  LitElement,
-  html,
   css,
   CSSResult,
-  TemplateResult,
+  html,
+  LitElement,
   property,
+  TemplateResult,
 } from "lit-element";
 import memoizeOne from "memoize-one";
-
-import "@polymer/paper-input/paper-input";
-import "@material/mwc-button";
-
 import "../../../components/entity/ha-entities-picker";
-import "../../../components/user/ha-user-picker";
-import { PersonDetailDialogParams } from "./show-dialog-person-detail";
-import { PolymerChangedEvent } from "../../../polymer-types";
-import { HomeAssistant } from "../../../types";
-import { PersonMutableParams } from "../../../data/person";
 import { createCloseHeading } from "../../../components/ha-dialog";
+import "../../../components/user/ha-user-picker";
+import { PersonMutableParams } from "../../../data/person";
+import { PolymerChangedEvent } from "../../../polymer-types";
 import { haStyleDialog } from "../../../resources/styles";
+import { HomeAssistant } from "../../../types";
+import { PersonDetailDialogParams } from "./show-dialog-person-detail";
 
 class DialogPersonDetail extends LitElement {
   @property() public hass!: HomeAssistant;

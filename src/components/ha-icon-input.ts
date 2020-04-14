@@ -1,15 +1,14 @@
-import {
-  html,
-  css,
-  LitElement,
-  TemplateResult,
-  property,
-  customElement,
-} from "lit-element";
-
 import "@polymer/paper-input/paper-input";
-import "./ha-icon";
+import {
+  css,
+  customElement,
+  html,
+  LitElement,
+  property,
+  TemplateResult,
+} from "lit-element";
 import { fireEvent } from "../common/dom/fire_event";
+import "./ha-icon";
 
 @customElement("ha-icon-input")
 export class HaIconInput extends LitElement {

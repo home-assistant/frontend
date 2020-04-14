@@ -1,35 +1,34 @@
-import {
-  LitElement,
-  TemplateResult,
-  html,
-  css,
-  CSSResult,
-  property,
-} from "lit-element";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-item/paper-item-body";
-
-import { HomeAssistant, Route } from "../../../types";
 import {
-  Person,
-  fetchPersons,
-  updatePerson,
-  deletePerson,
-  createPerson,
-} from "../../../data/person";
+  css,
+  CSSResult,
+  html,
+  LitElement,
+  property,
+  TemplateResult,
+} from "lit-element";
+import { compare } from "../../../common/string/compare";
 import "../../../components/ha-card";
 import "../../../components/ha-fab";
-import "../../../layouts/hass-tabs-subpage";
-import "../../../layouts/hass-loading-screen";
-import { compare } from "../../../common/string/compare";
-import "../ha-config-section";
 import {
-  showPersonDetailDialog,
-  loadPersonDetailDialog,
-} from "./show-dialog-person-detail";
-import { User, fetchUsers } from "../../../data/user";
-import { configSections } from "../ha-panel-config";
+  createPerson,
+  deletePerson,
+  fetchPersons,
+  Person,
+  updatePerson,
+} from "../../../data/person";
+import { fetchUsers, User } from "../../../data/user";
 import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
+import "../../../layouts/hass-loading-screen";
+import "../../../layouts/hass-tabs-subpage";
+import { HomeAssistant, Route } from "../../../types";
+import "../ha-config-section";
+import { configSections } from "../ha-panel-config";
+import {
+  loadPersonDetailDialog,
+  showPersonDetailDialog,
+} from "./show-dialog-person-detail";
 
 class HaConfigPerson extends LitElement {
   @property() public hass?: HomeAssistant;

@@ -1,22 +1,22 @@
-import "../../components/ha-icon";
 import {
-  LitElement,
-  html,
-  property,
-  TemplateResult,
-  CSSResult,
   css,
+  CSSResult,
+  html,
+  LitElement,
+  property,
   PropertyValues,
+  TemplateResult,
 } from "lit-element";
 import { scroll } from "lit-virtualizer";
-import { formatTimeWithSeconds } from "../../common/datetime/format_time";
 import { formatDate } from "../../common/datetime/format_date";
+import { formatTimeWithSeconds } from "../../common/datetime/format_time";
+import { fireEvent } from "../../common/dom/fire_event";
 import { domainIcon } from "../../common/entity/domain_icon";
 import { stateIcon } from "../../common/entity/state_icon";
 import { computeRTL } from "../../common/util/compute_rtl";
-import { HomeAssistant } from "../../types";
-import { fireEvent } from "../../common/dom/fire_event";
+import "../../components/ha-icon";
 import { LogbookEntry } from "../../data/logbook";
+import { HomeAssistant } from "../../types";
 
 class HaLogbook extends LitElement {
   @property() public hass!: HomeAssistant;

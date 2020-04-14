@@ -1,17 +1,17 @@
 import {
+  css,
+  CSSResultArray,
   customElement,
+  html,
   LitElement,
   property,
-  CSSResultArray,
-  css,
   TemplateResult,
-  html,
 } from "lit-element";
 import "../../components/dialog/ha-paper-dialog";
-import { HomeAssistant } from "../../types";
-import { HaDomainTogglerDialogParams } from "./show-dialog-domain-toggler";
 import { PolymerChangedEvent } from "../../polymer-types";
 import { haStyleDialog } from "../../resources/styles";
+import { HomeAssistant } from "../../types";
+import { HaDomainTogglerDialogParams } from "./show-dialog-domain-toggler";
 
 @customElement("dialog-domain-toggler")
 class DomainTogglerDialog extends LitElement {

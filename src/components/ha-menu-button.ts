@@ -1,19 +1,18 @@
 import "@polymer/paper-icon-button/paper-icon-button";
+import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import {
+  css,
+  CSSResult,
+  customElement,
+  html,
+  LitElement,
   property,
   TemplateResult,
-  LitElement,
-  html,
-  customElement,
-  CSSResult,
-  css,
 } from "lit-element";
-
-import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { fireEvent } from "../common/dom/fire_event";
-import { HomeAssistant } from "../types";
-import { subscribeNotifications } from "../data/persistent_notification";
 import { computeDomain } from "../common/entity/compute_domain";
+import { subscribeNotifications } from "../data/persistent_notification";
+import { HomeAssistant } from "../types";
 
 @customElement("ha-menu-button")
 class HaMenuButton extends LitElement {

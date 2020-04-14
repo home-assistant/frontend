@@ -1,5 +1,5 @@
-import { UpdatingElement, PropertyValues } from "lit-element";
-import { HomeAssistant, Constructor } from "../types";
+import { PropertyValues, UpdatingElement } from "lit-element";
+import { Constructor, HomeAssistant } from "../types";
 
 export interface ProvideHassElement {
   provideHass(element: HTMLElement);

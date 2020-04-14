@@ -1,23 +1,23 @@
+import "@material/mwc-button";
+import "@polymer/paper-spinner/paper-spinner-lite";
 import {
-  LitElement,
-  html,
-  CSSResult,
   css,
+  CSSResult,
+  html,
+  LitElement,
   property,
   TemplateResult,
 } from "lit-element";
 import { until } from "lit-html/directives/until";
-import "@material/mwc-button";
-import "@polymer/paper-spinner/paper-spinner-lite";
 import "../../../src/components/ha-card";
-import { LovelaceCard, Lovelace } from "../../../src/panels/lovelace/types";
 import { LovelaceCardConfig } from "../../../src/data/lovelace";
 import { MockHomeAssistant } from "../../../src/fake_data/provide_hass";
+import { Lovelace, LovelaceCard } from "../../../src/panels/lovelace/types";
 import {
   demoConfigs,
   selectedDemoConfig,
-  setDemoConfig,
   selectedDemoConfigIndex,
+  setDemoConfig,
 } from "../configs/demo-configs";
 
 export class HADemoCard extends LitElement implements LovelaceCard {

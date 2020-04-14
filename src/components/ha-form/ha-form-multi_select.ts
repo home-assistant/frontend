@@ -1,18 +1,18 @@
 import "@polymer/paper-checkbox/paper-checkbox";
-import "@polymer/paper-menu-button/paper-menu-button";
 import "@polymer/paper-input/paper-input";
 import "@polymer/paper-item/paper-icon-item";
 import "@polymer/paper-listbox/paper-listbox";
+import "@polymer/paper-menu-button/paper-menu-button";
 import "@polymer/paper-ripple/paper-ripple";
 import {
+  css,
+  CSSResult,
   customElement,
   html,
   LitElement,
   property,
   query,
   TemplateResult,
-  CSSResult,
-  css,
 } from "lit-element";
 import { fireEvent } from "../../common/dom/fire_event";
 import {

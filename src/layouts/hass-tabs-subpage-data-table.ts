@@ -10,12 +10,12 @@ import {
 } from "lit-element";
 import "../components/data-table/ha-data-table";
 import type {
-  HaDataTable,
   DataTableColumnContainer,
   DataTableRowData,
+  HaDataTable,
 } from "../components/data-table/ha-data-table";
-import "./hass-tabs-subpage";
 import type { HomeAssistant, Route } from "../types";
+import "./hass-tabs-subpage";
 import type { PageNavigation } from "./hass-tabs-subpage";
 
 @customElement("hass-tabs-subpage-data-table")

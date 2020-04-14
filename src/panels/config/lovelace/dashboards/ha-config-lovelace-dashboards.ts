@@ -1,38 +1,38 @@
+import "@polymer/paper-tooltip/paper-tooltip";
 import {
+  css,
+  CSSResult,
   customElement,
   html,
   LitElement,
   property,
   PropertyValues,
   TemplateResult,
-  CSSResult,
-  css,
 } from "lit-element";
 import memoize from "memoize-one";
-import "@polymer/paper-tooltip/paper-tooltip";
+import { navigate } from "../../../../common/navigate";
+import { compare } from "../../../../common/string/compare";
 import {
   DataTableColumnContainer,
   RowClickedEvent,
 } from "../../../../components/data-table/ha-data-table";
-import "../../../../components/ha-icon";
 import "../../../../components/ha-fab";
+import "../../../../components/ha-icon";
+import {
+  createDashboard,
+  deleteDashboard,
+  fetchDashboards,
+  LovelaceDashboard,
+  LovelaceDashboardCreateParams,
+  LovelacePanelConfig,
+  updateDashboard,
+} from "../../../../data/lovelace";
+import { showConfirmationDialog } from "../../../../dialogs/generic/show-dialog-box";
 import "../../../../layouts/hass-loading-screen";
 import "../../../../layouts/hass-tabs-subpage-data-table";
 import { HomeAssistant, Route } from "../../../../types";
-import {
-  LovelaceDashboard,
-  fetchDashboards,
-  createDashboard,
-  updateDashboard,
-  deleteDashboard,
-  LovelaceDashboardCreateParams,
-  LovelacePanelConfig,
-} from "../../../../data/lovelace";
-import { showDashboardDetailDialog } from "./show-dialog-lovelace-dashboard-detail";
-import { compare } from "../../../../common/string/compare";
-import { showConfirmationDialog } from "../../../../dialogs/generic/show-dialog-box";
 import { lovelaceTabs } from "../ha-config-lovelace";
-import { navigate } from "../../../../common/navigate";
+import { showDashboardDetailDialog } from "./show-dialog-lovelace-dashboard-detail";
 
 @customElement("ha-config-lovelace-dashboards")
 export class HaConfigLovelaceDashboards extends LitElement {

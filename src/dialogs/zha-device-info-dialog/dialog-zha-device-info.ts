@@ -1,22 +1,21 @@
+import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable";
 import {
-  LitElement,
-  html,
   css,
   CSSResult,
-  TemplateResult,
   customElement,
+  html,
+  LitElement,
   property,
+  TemplateResult,
 } from "lit-element";
-import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable";
 import "../../components/dialog/ha-paper-dialog";
 import type { HaPaperDialog } from "../../components/dialog/ha-paper-dialog";
+import { fetchZHADevice, ZHADevice } from "../../data/zha";
 import "../../panels/config/zha/zha-device-card";
-
 import type { PolymerChangedEvent } from "../../polymer-types";
 import { haStyleDialog } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
 import type { ZHADeviceInfoDialogParams } from "./show-dialog-zha-device-info";
-import { ZHADevice, fetchZHADevice } from "../../data/zha";
 
 @customElement("dialog-zha-device-info")
 class DialogZHADeviceInfo extends LitElement {

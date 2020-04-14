@@ -1,10 +1,8 @@
-import { classMap } from "lit-html/directives/class-map";
-import { html, customElement, TemplateResult } from "lit-element";
-import { ripple } from "@material/mwc-ripple/ripple-directive";
-
 import "@material/mwc-fab";
-
 import type { Fab } from "@material/mwc-fab";
+import { ripple } from "@material/mwc-ripple/ripple-directive";
+import { customElement, html, TemplateResult } from "lit-element";
+import { classMap } from "lit-html/directives/class-map";
 import type { Constructor } from "../types";
 
 const MwcFab = customElements.get("mwc-fab") as Constructor<Fab>;

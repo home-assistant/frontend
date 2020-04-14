@@ -3,19 +3,19 @@ import "@polymer/paper-item/paper-item";
 import "@polymer/paper-item/paper-item-body";
 import "@polymer/paper-listbox/paper-listbox";
 import {
-  LitElement,
-  TemplateResult,
-  html,
   css,
   CSSResult,
+  html,
+  LitElement,
   property,
+  TemplateResult,
 } from "lit-element";
-import { HomeAssistant } from "../../types";
 import { fireEvent } from "../../common/dom/fire_event";
 import {
   DeviceAutomation,
   deviceAutomationsEqual,
 } from "../../data/device_automation";
+import { HomeAssistant } from "../../types";
 import "../ha-paper-dropdown-menu";
 
 const NO_AUTOMATION_KEY = "NO_AUTOMATION";

@@ -1,28 +1,25 @@
-import {
-  LitElement,
-  TemplateResult,
-  html,
-  CSSResult,
-  css,
-  property,
-  customElement,
-} from "lit-element";
+import "@material/mwc-button";
 import "@polymer/iron-icon/iron-icon";
-
-import { HomeAssistant } from "../../../src/types";
+import "@polymer/paper-card/paper-card";
+import {
+  css,
+  CSSResult,
+  customElement,
+  html,
+  LitElement,
+  property,
+  TemplateResult,
+} from "lit-element";
+import "../../../src/components/buttons/ha-call-api-button";
 import { HassioHassOSInfo } from "../../../src/data/hassio/host";
 import {
   HassioHomeAssistantInfo,
   HassioSupervisorInfo,
 } from "../../../src/data/hassio/supervisor";
-
-import { hassioStyle } from "../resources/hassio-style";
 import { haStyle } from "../../../src/resources/styles";
-
-import "@material/mwc-button";
-import "@polymer/paper-card/paper-card";
-import "../../../src/components/buttons/ha-call-api-button";
+import { HomeAssistant } from "../../../src/types";
 import "../components/hassio-card-content";
+import { hassioStyle } from "../resources/hassio-style";
 
 @customElement("hassio-update")
 export class HassioUpdate extends LitElement {

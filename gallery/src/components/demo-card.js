@@ -2,7 +2,6 @@ import { html } from "@polymer/polymer/lib/utils/html-tag";
 /* eslint-plugin-disable lit */
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 import { safeLoad } from "js-yaml";
-
 import { createCardElement } from "../../../src/panels/lovelace/create-element/create-card-element";
 
 class DemoCard extends PolymerElement {

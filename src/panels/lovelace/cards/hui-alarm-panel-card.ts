@@ -1,32 +1,30 @@
-import {
-  html,
-  LitElement,
-  PropertyValues,
-  TemplateResult,
-  CSSResult,
-  css,
-  property,
-  customElement,
-  query,
-} from "lit-element";
-import { classMap } from "lit-html/directives/class-map";
-
-import "../../../components/ha-card";
-import "../../../components/ha-label-badge";
-import "../components/hui-warning";
-
 import "@polymer/paper-input/paper-input";
 import type { PaperInputElement } from "@polymer/paper-input/paper-input";
-import type { LovelaceCard } from "../types";
-import type { HomeAssistant } from "../../../types";
+import {
+  css,
+  CSSResult,
+  customElement,
+  html,
+  LitElement,
+  property,
+  PropertyValues,
+  query,
+  TemplateResult,
+} from "lit-element";
+import { classMap } from "lit-html/directives/class-map";
+import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
+import { fireEvent } from "../../../common/dom/fire_event";
+import "../../../components/ha-card";
+import "../../../components/ha-label-badge";
 import {
   callAlarmAction,
   FORMAT_NUMBER,
 } from "../../../data/alarm_control_panel";
-import { AlarmPanelCardConfig } from "./types";
-import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
+import type { HomeAssistant } from "../../../types";
 import { findEntities } from "../common/find-entites";
-import { fireEvent } from "../../../common/dom/fire_event";
+import "../components/hui-warning";
+import type { LovelaceCard } from "../types";
+import { AlarmPanelCardConfig } from "./types";
 
 const ICONS = {
   armed_away: "hass:shield-lock",

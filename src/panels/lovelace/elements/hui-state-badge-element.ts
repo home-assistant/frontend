@@ -1,24 +1,22 @@
 import {
+  customElement,
   html,
   LitElement,
-  TemplateResult,
-  customElement,
   property,
   PropertyValues,
+  TemplateResult,
 } from "lit-element";
 import { ifDefined } from "lit-html/directives/if-defined";
-
-import "../../../components/entity/ha-state-label-badge";
-import "../components/hui-warning-element";
-
 import { computeStateName } from "../../../common/entity/compute_state_name";
-import { LovelaceElement, StateBadgeElementConfig } from "./types";
-import { HomeAssistant } from "../../../types";
-import { hasConfigOrEntityChanged } from "../common/has-changed";
-import { actionHandler } from "../common/directives/action-handler-directive";
-import { hasAction } from "../common/has-action";
+import "../../../components/entity/ha-state-label-badge";
 import { ActionHandlerEvent } from "../../../data/lovelace";
+import { HomeAssistant } from "../../../types";
+import { actionHandler } from "../common/directives/action-handler-directive";
 import { handleAction } from "../common/handle-action";
+import { hasAction } from "../common/has-action";
+import { hasConfigOrEntityChanged } from "../common/has-changed";
+import "../components/hui-warning-element";
+import { LovelaceElement, StateBadgeElementConfig } from "./types";
 
 @customElement("hui-state-badge-element")
 export class HuiStateBadgeElement extends LitElement

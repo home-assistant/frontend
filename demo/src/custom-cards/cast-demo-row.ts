@@ -1,21 +1,20 @@
 import {
-  html,
-  LitElement,
-  TemplateResult,
-  customElement,
-  property,
   css,
   CSSResult,
+  customElement,
+  html,
+  LitElement,
+  property,
+  TemplateResult,
 } from "lit-element";
-
-import "../../../src/components/ha-icon";
-import {
-  LovelaceRow,
-  CastConfig,
-} from "../../../src/panels/lovelace/entity-rows/types";
-import { HomeAssistant } from "../../../src/types";
 import { CastManager } from "../../../src/cast/cast_manager";
 import { castSendShowDemo } from "../../../src/cast/receiver_messages";
+import "../../../src/components/ha-icon";
+import {
+  CastConfig,
+  LovelaceRow,
+} from "../../../src/panels/lovelace/entity-rows/types";
+import { HomeAssistant } from "../../../src/types";
 
 @customElement("cast-demo-row")
 class CastDemoRow extends LitElement implements LovelaceRow {

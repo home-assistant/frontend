@@ -1,18 +1,17 @@
 /* eslint-disable no-undef, no-console */
 import {
-  SessionStateEventData,
   CastStateEventData,
-  // eslint-disable-next-line: no-implicit-dependencies
+  SessionStateEventData,
 } from "chromecast-caf-receiver/cast.framework";
 import { Auth } from "home-assistant-js-websocket";
 import { castApiAvailable } from "./cast_framework";
-import { CAST_APP_ID, CAST_NS, CAST_DEV } from "./const";
+import { CAST_APP_ID, CAST_DEV, CAST_NS } from "./const";
 import { CAST_DEV_HASS_URL } from "./dev_const";
 import {
   castSendAuth,
   HassMessage as ReceiverMessage,
 } from "./receiver_messages";
-import { SenderMessage, ReceiverStatusMessage } from "./sender_messages";
+import { ReceiverStatusMessage, SenderMessage } from "./sender_messages";
 
 let managerProm: Promise<CastManager> | undefined;
 

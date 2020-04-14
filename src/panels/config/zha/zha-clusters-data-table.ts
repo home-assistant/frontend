@@ -1,22 +1,20 @@
-import "../../../components/data-table/ha-data-table";
-import "../../../components/entity/ha-state-icon";
-
-import memoizeOne from "memoize-one";
-
 import {
-  LitElement,
-  html,
-  TemplateResult,
-  property,
   customElement,
+  html,
+  LitElement,
+  property,
   query,
+  TemplateResult,
 } from "lit-element";
-import type { HomeAssistant } from "../../../types";
+import memoizeOne from "memoize-one";
+import "../../../components/data-table/ha-data-table";
 import type {
   DataTableColumnContainer,
   HaDataTable,
 } from "../../../components/data-table/ha-data-table";
+import "../../../components/entity/ha-state-icon";
 import type { Cluster } from "../../../data/zha";
+import type { HomeAssistant } from "../../../types";
 import { formatAsPaddedHex } from "./functions";
 
 export interface ClusterRowData extends Cluster {

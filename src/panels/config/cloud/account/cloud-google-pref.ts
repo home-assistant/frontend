@@ -1,22 +1,20 @@
-import {
-  html,
-  LitElement,
-  TemplateResult,
-  CSSResult,
-  css,
-  property,
-} from "lit-element";
 import "@material/mwc-button";
-import "../../../../components/buttons/ha-call-api-button";
-
-import "../../../../components/ha-card";
 import "@polymer/paper-input/paper-input";
 import type { PaperInputElement } from "@polymer/paper-input/paper-input";
-import type { HaSwitch } from "../../../../components/ha-switch";
-
+import {
+  css,
+  CSSResult,
+  html,
+  LitElement,
+  property,
+  TemplateResult,
+} from "lit-element";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import type { HomeAssistant } from "../../../../types";
+import "../../../../components/buttons/ha-call-api-button";
+import "../../../../components/ha-card";
+import type { HaSwitch } from "../../../../components/ha-switch";
 import { CloudStatusLoggedIn, updateCloudPref } from "../../../../data/cloud";
+import type { HomeAssistant } from "../../../../types";
 import { showSaveSuccessToast } from "../../../../util/toast-saved-success";
 
 export class CloudGooglePref extends LitElement {

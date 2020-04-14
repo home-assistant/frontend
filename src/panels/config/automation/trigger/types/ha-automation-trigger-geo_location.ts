@@ -1,12 +1,12 @@
 import "@polymer/paper-radio-button/paper-radio-button";
 import "@polymer/paper-radio-group/paper-radio-group";
 import type { PaperRadioGroupElement } from "@polymer/paper-radio-group/paper-radio-group";
+import { customElement, html, LitElement, property } from "lit-element";
+import { fireEvent } from "../../../../../common/dom/fire_event";
 import "../../../../../components/entity/ha-entity-picker";
-import { LitElement, customElement, property, html } from "lit-element";
+import type { GeoLocationTrigger } from "../../../../../data/automation";
 import type { HomeAssistant } from "../../../../../types";
 import { handleChangeEvent } from "../ha-automation-trigger-row";
-import { fireEvent } from "../../../../../common/dom/fire_event";
-import type { GeoLocationTrigger } from "../../../../../data/automation";
 
 @customElement("ha-automation-trigger-geo_location")
 export default class HaGeolocationTrigger extends LitElement {

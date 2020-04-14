@@ -1,8 +1,8 @@
-import { customElement, CSSResult, css, html } from "lit-element";
-import "@polymer/paper-icon-button/paper-icon-button";
 import "@material/mwc-dialog";
-import { style } from "@material/mwc-dialog/mwc-dialog-css";
 import type { Dialog } from "@material/mwc-dialog";
+import { style } from "@material/mwc-dialog/mwc-dialog-css";
+import "@polymer/paper-icon-button/paper-icon-button";
+import { css, CSSResult, customElement, html } from "lit-element";
 import type { Constructor, HomeAssistant } from "../types";
 
 const MwcDialog = customElements.get("mwc-dialog") as Constructor<Dialog>;

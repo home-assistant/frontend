@@ -1,37 +1,35 @@
+import "@material/mwc-button";
+import "@polymer/paper-icon-button/paper-icon-button";
+import "@polymer/paper-spinner/paper-spinner";
 import {
-  property,
-  LitElement,
-  html,
-  customElement,
   css,
   CSSResult,
+  customElement,
+  html,
+  LitElement,
+  property,
   PropertyValues,
 } from "lit-element";
-
 import memoizeOne from "memoize-one";
-
-import "../../../layouts/hass-subpage";
-import "../../../layouts/hass-error-screen";
-import "../ha-config-section";
-import { HomeAssistant } from "../../../types";
+import { HASSDomEvent } from "../../../common/dom/fire_event";
+import { navigate } from "../../../common/navigate";
+import { SelectionChangedEvent } from "../../../components/data-table/ha-data-table";
 import {
+  addMembersToGroup,
+  fetchGroup,
+  fetchGroupableDevices,
+  removeGroups,
+  removeMembersFromGroup,
   ZHADevice,
   ZHAGroup,
-  fetchGroup,
-  removeGroups,
-  fetchGroupableDevices,
-  addMembersToGroup,
-  removeMembersFromGroup,
 } from "../../../data/zha";
+import "../../../layouts/hass-error-screen";
+import "../../../layouts/hass-subpage";
+import { HomeAssistant } from "../../../types";
+import "../ha-config-section";
 import { formatAsPaddedHex } from "./functions";
 import "./zha-device-card";
 import "./zha-devices-data-table";
-import { navigate } from "../../../common/navigate";
-import "@polymer/paper-icon-button/paper-icon-button";
-import "@polymer/paper-spinner/paper-spinner";
-import "@material/mwc-button";
-import { SelectionChangedEvent } from "../../../components/data-table/ha-data-table";
-import { HASSDomEvent } from "../../../common/dom/fire_event";
 
 @customElement("zha-group-page")
 export class ZHAGroupPage extends LitElement {

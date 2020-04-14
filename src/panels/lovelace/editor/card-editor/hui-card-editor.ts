@@ -1,29 +1,26 @@
+import "@material/mwc-button";
+import { safeDump, safeLoad } from "js-yaml";
 import {
-  html,
   css,
-  LitElement,
-  TemplateResult,
   CSSResult,
   customElement,
+  html,
+  LitElement,
   property,
+  TemplateResult,
 } from "lit-element";
-
-import { safeDump, safeLoad } from "js-yaml";
-
-import "@material/mwc-button";
-import type { HomeAssistant } from "../../../../types";
+import { fireEvent } from "../../../../common/dom/fire_event";
+import { computeRTL } from "../../../../common/util/compute_rtl";
+import "../../../../components/ha-code-editor";
+import type { HaCodeEditor } from "../../../../components/ha-code-editor";
 import type {
   LovelaceCardConfig,
   LovelaceConfig,
 } from "../../../../data/lovelace";
-import type { LovelaceCardEditor } from "../../types";
-import { computeRTL } from "../../../../common/util/compute_rtl";
-
-import "../../../../components/ha-code-editor";
-import type { HaCodeEditor } from "../../../../components/ha-code-editor";
-import { fireEvent } from "../../../../common/dom/fire_event";
-import type { EntityConfig } from "../../entity-rows/types";
+import type { HomeAssistant } from "../../../../types";
 import { getCardElementClass } from "../../create-element/create-card-element";
+import type { EntityConfig } from "../../entity-rows/types";
+import type { LovelaceCardEditor } from "../../types";
 import type { GUIModeChangedEvent } from "../types";
 
 export interface ConfigChangedEvent {

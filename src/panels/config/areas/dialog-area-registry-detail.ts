@@ -1,21 +1,20 @@
-import {
-  LitElement,
-  html,
-  css,
-  CSSResult,
-  TemplateResult,
-  property,
-} from "lit-element";
 import "@material/mwc-button";
 import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable";
 import "@polymer/paper-input/paper-input";
-
+import {
+  css,
+  CSSResult,
+  html,
+  LitElement,
+  property,
+  TemplateResult,
+} from "lit-element";
 import "../../../components/dialog/ha-paper-dialog";
-import { AreaRegistryDetailDialogParams } from "./show-dialog-area-registry-detail";
+import { AreaRegistryEntryMutableParams } from "../../../data/area_registry";
 import { PolymerChangedEvent } from "../../../polymer-types";
 import { haStyleDialog } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
-import { AreaRegistryEntryMutableParams } from "../../../data/area_registry";
+import { AreaRegistryDetailDialogParams } from "./show-dialog-area-registry-detail";
 
 class DialogAreaDetail extends LitElement {
   @property() public hass!: HomeAssistant;

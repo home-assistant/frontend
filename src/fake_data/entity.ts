@@ -1,7 +1,7 @@
 /* eslint-disable max-classes-per-file */
 import {
-  HassEntityAttributeBase,
   HassEntity,
+  HassEntityAttributeBase,
 } from "home-assistant-js-websocket";
 
 const now = () => new Date().toISOString();

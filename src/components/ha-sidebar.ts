@@ -1,39 +1,36 @@
-import {
-  LitElement,
-  html,
-  CSSResult,
-  css,
-  PropertyValues,
-  property,
-  eventOptions,
-} from "lit-element";
 import "@polymer/app-layout/app-toolbar/app-toolbar";
 import "@polymer/paper-icon-button/paper-icon-button";
-
 import "@polymer/paper-item/paper-icon-item";
 import type { PaperIconItemElement } from "@polymer/paper-item/paper-icon-item";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
-import "./ha-icon";
-
-import "./user/ha-user-badge";
-import "./ha-menu-button";
-import { classMap } from "lit-html/directives/class-map";
-
-import type { HomeAssistant, PanelInfo } from "../types";
-import { fireEvent } from "../common/dom/fire_event";
 import {
-  getExternalConfig,
-  ExternalConfig,
-} from "../external_app/external_config";
+  css,
+  CSSResult,
+  eventOptions,
+  html,
+  LitElement,
+  property,
+  PropertyValues,
+} from "lit-element";
+import { classMap } from "lit-html/directives/class-map";
+import { fireEvent } from "../common/dom/fire_event";
+import { computeDomain } from "../common/entity/compute_domain";
+import { compare } from "../common/string/compare";
+import { computeRTL } from "../common/util/compute_rtl";
+import { getDefaultPanel } from "../data/panel";
 import {
   PersistentNotification,
   subscribeNotifications,
 } from "../data/persistent_notification";
-import { computeDomain } from "../common/entity/compute_domain";
-import { computeRTL } from "../common/util/compute_rtl";
-import { compare } from "../common/string/compare";
-import { getDefaultPanel } from "../data/panel";
+import {
+  ExternalConfig,
+  getExternalConfig,
+} from "../external_app/external_config";
+import type { HomeAssistant, PanelInfo } from "../types";
+import "./ha-icon";
+import "./ha-menu-button";
+import "./user/ha-user-badge";
 
 const SHOW_AFTER_SPACER = ["config", "developer-tools", "hassio"];
 

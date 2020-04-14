@@ -1,20 +1,18 @@
-import {
-  LitElement,
-  TemplateResult,
-  html,
-  property,
-  customElement,
-  PropertyValues,
-} from "lit-element";
-
-import "./ha-settings-row";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
+import {
+  customElement,
+  html,
+  LitElement,
+  property,
+  PropertyValues,
+  TemplateResult,
+} from "lit-element";
 import "../../components/ha-paper-dropdown-menu";
-
-import { HomeAssistant } from "../../types";
-import { LovelaceDashboard, fetchDashboards } from "../../data/lovelace";
+import { fetchDashboards, LovelaceDashboard } from "../../data/lovelace";
 import { setDefaultPanel } from "../../data/panel";
+import { HomeAssistant } from "../../types";
+import "./ha-settings-row";
 
 @customElement("ha-pick-dashboard-row")
 class HaPickDashboardRow extends LitElement {

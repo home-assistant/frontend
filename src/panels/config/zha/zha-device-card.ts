@@ -1,7 +1,3 @@
-import "../../../components/buttons/ha-call-service-button";
-import "../../../components/ha-service-description";
-import "../../../components/entity/state-badge";
-import "../../../components/ha-card";
 import "@material/mwc-button";
 import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
 import "@polymer/paper-input/paper-input";
@@ -9,7 +5,7 @@ import "@polymer/paper-item/paper-icon-item";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-item/paper-item-body";
 import "@polymer/paper-listbox/paper-listbox";
-
+import { HassEvent, UnsubscribeFunc } from "home-assistant-js-websocket";
 import {
   css,
   CSSResult,
@@ -20,9 +16,13 @@ import {
   PropertyValues,
   TemplateResult,
 } from "lit-element";
-
-import { UnsubscribeFunc, HassEvent } from "home-assistant-js-websocket";
 import { fireEvent } from "../../../common/dom/fire_event";
+import { computeStateName } from "../../../common/entity/compute_state_name";
+import { navigate } from "../../../common/navigate";
+import "../../../components/buttons/ha-call-service-button";
+import "../../../components/entity/state-badge";
+import "../../../components/ha-card";
+import "../../../components/ha-service-description";
 import {
   AreaRegistryEntry,
   subscribeAreaRegistry,
@@ -38,11 +38,9 @@ import {
 } from "../../../data/zha";
 import { haStyle } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
-import { ItemSelectedEvent, NodeServiceData } from "./types";
-import { navigate } from "../../../common/navigate";
-import { formatAsPaddedHex } from "./functions";
-import { computeStateName } from "../../../common/entity/compute_state_name";
 import { addEntitiesToLovelaceView } from "../../lovelace/editor/add-entities-to-view";
+import { formatAsPaddedHex } from "./functions";
+import { ItemSelectedEvent, NodeServiceData } from "./types";
 
 declare global {
   // for fire event

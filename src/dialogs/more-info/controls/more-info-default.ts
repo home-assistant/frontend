@@ -1,15 +1,13 @@
-import {
-  LitElement,
-  html,
-  TemplateResult,
-  property,
-  customElement,
-} from "lit-element";
 import { HassEntity } from "home-assistant-js-websocket";
-
-import { HomeAssistant } from "../../../types";
-
+import {
+  customElement,
+  html,
+  LitElement,
+  property,
+  TemplateResult,
+} from "lit-element";
 import "../../../components/ha-attributes";
+import { HomeAssistant } from "../../../types";
 
 @customElement("more-info-default")
 class MoreInfoDefault extends LitElement {

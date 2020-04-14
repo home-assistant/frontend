@@ -1,35 +1,34 @@
-import "../../../layouts/hass-tabs-subpage-data-table";
-
 import {
-  LitElement,
-  html,
-  TemplateResult,
-  property,
   customElement,
+  html,
+  LitElement,
+  property,
+  TemplateResult,
 } from "lit-element";
 import memoizeOne from "memoize-one";
-import { HomeAssistant, Route } from "../../../types";
-import {
-  DeviceRegistryEntry,
-  computeDeviceName,
-  DeviceEntityLookup,
-} from "../../../data/device_registry";
-import {
-  EntityRegistryEntry,
-  findBatteryEntity,
-} from "../../../data/entity_registry";
-import { ConfigEntry } from "../../../data/config_entries";
-import { AreaRegistryEntry } from "../../../data/area_registry";
-import { configSections } from "../ha-panel-config";
+import { HASSDomEvent } from "../../../common/dom/fire_event";
+import { navigate } from "../../../common/navigate";
 import { LocalizeFunc } from "../../../common/translations/localize";
-import { DeviceRowData } from "./ha-devices-data-table";
 import {
   DataTableColumnContainer,
   DataTableRowData,
   RowClickedEvent,
 } from "../../../components/data-table/ha-data-table";
-import { navigate } from "../../../common/navigate";
-import { HASSDomEvent } from "../../../common/dom/fire_event";
+import { AreaRegistryEntry } from "../../../data/area_registry";
+import { ConfigEntry } from "../../../data/config_entries";
+import {
+  computeDeviceName,
+  DeviceEntityLookup,
+  DeviceRegistryEntry,
+} from "../../../data/device_registry";
+import {
+  EntityRegistryEntry,
+  findBatteryEntity,
+} from "../../../data/entity_registry";
+import "../../../layouts/hass-tabs-subpage-data-table";
+import { HomeAssistant, Route } from "../../../types";
+import { configSections } from "../ha-panel-config";
+import { DeviceRowData } from "./ha-devices-data-table";
 
 @customElement("ha-config-devices-dashboard")
 export class HaConfigDeviceDashboard extends LitElement {

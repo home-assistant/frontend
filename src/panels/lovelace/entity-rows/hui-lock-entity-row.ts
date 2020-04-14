@@ -1,21 +1,19 @@
 import {
-  html,
-  LitElement,
-  TemplateResult,
-  property,
   css,
   CSSResult,
   customElement,
+  html,
+  LitElement,
+  property,
   PropertyValues,
+  TemplateResult,
 } from "lit-element";
-
+import { UNAVAILABLE_STATES } from "../../../data/entity";
+import { HomeAssistant } from "../../../types";
+import { hasConfigOrEntityChanged } from "../common/has-changed";
 import "../components/hui-generic-entity-row";
 import "../components/hui-warning";
-
-import { HomeAssistant } from "../../../types";
-import { LovelaceRow, EntityConfig } from "./types";
-import { hasConfigOrEntityChanged } from "../common/has-changed";
-import { UNAVAILABLE_STATES } from "../../../data/entity";
+import { EntityConfig, LovelaceRow } from "./types";
 
 @customElement("hui-lock-entity-row")
 class HuiLockEntityRow extends LitElement implements LovelaceRow {

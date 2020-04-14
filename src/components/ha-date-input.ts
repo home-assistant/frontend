@@ -1,15 +1,13 @@
-import {
-  html,
-  css,
-  LitElement,
-  TemplateResult,
-  property,
-  customElement,
-} from "lit-element";
-
 import "@polymer/paper-input/paper-input";
-
 import type { PaperInputElement } from "@polymer/paper-input/paper-input";
+import {
+  css,
+  customElement,
+  html,
+  LitElement,
+  property,
+  TemplateResult,
+} from "lit-element";
 
 @customElement("ha-date-input")
 export class HaDateInput extends LitElement {

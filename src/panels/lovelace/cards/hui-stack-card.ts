@@ -1,17 +1,16 @@
 import {
+  css,
+  CSSResult,
   html,
   LitElement,
-  TemplateResult,
-  CSSResult,
-  css,
   property,
   PropertyValues,
+  TemplateResult,
 } from "lit-element";
-
-import { createCardElement } from "../create-element/create-card-element";
-import { LovelaceCard, LovelaceCardEditor } from "../types";
 import { LovelaceCardConfig } from "../../../data/lovelace";
 import { HomeAssistant } from "../../../types";
+import { createCardElement } from "../create-element/create-card-element";
+import { LovelaceCard, LovelaceCardEditor } from "../types";
 import { StackCardConfig } from "./types";
 
 export abstract class HuiStackCard extends LitElement implements LovelaceCard {

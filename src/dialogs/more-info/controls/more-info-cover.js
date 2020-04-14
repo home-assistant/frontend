@@ -3,15 +3,12 @@ import "@polymer/paper-icon-button/paper-icon-button";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 /* eslint-plugin-disable lit */
 import { PolymerElement } from "@polymer/polymer/polymer-element";
-
+import { attributeClassNames } from "../../../common/entity/attribute_class_names";
+import { featureClassNames } from "../../../common/entity/feature_class_names";
 import "../../../components/ha-cover-tilt-controls";
 import "../../../components/ha-labeled-slider";
-
-import CoverEntity from "../../../util/cover-model";
-import { featureClassNames } from "../../../common/entity/feature_class_names";
 import LocalizeMixin from "../../../mixins/localize-mixin";
-
-import { attributeClassNames } from "../../../common/entity/attribute_class_names";
+import CoverEntity from "../../../util/cover-model";
 
 const FEATURE_CLASS_NAMES = {
   128: "has-set_tilt_position",

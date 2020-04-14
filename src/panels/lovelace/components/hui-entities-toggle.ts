@@ -1,21 +1,19 @@
 import {
-  html,
-  LitElement,
-  PropertyValues,
-  TemplateResult,
-  customElement,
-  property,
   css,
   CSSResult,
+  customElement,
+  html,
+  LitElement,
+  property,
+  PropertyValues,
+  TemplateResult,
 } from "lit-element";
-
-import "../../../components/ha-switch";
-
-import type { HaSwitch } from "../../../components/ha-switch";
 import { DOMAINS_TOGGLE } from "../../../common/const";
-import { turnOnOffEntities } from "../common/entity/turn-on-off-entities";
-import type { HomeAssistant } from "../../../types";
+import "../../../components/ha-switch";
+import type { HaSwitch } from "../../../components/ha-switch";
 import { forwardHaptic } from "../../../data/haptics";
+import type { HomeAssistant } from "../../../types";
+import { turnOnOffEntities } from "../common/entity/turn-on-off-entities";
 
 @customElement("hui-entities-toggle")
 class HuiEntitiesToggle extends LitElement {

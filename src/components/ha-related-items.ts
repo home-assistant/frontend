@@ -1,13 +1,13 @@
 import { HassEntity, UnsubscribeFunc } from "home-assistant-js-websocket";
 import {
+  css,
+  CSSResult,
   customElement,
   html,
   LitElement,
   property,
   PropertyValues,
   TemplateResult,
-  CSSResult,
-  css,
 } from "lit-element";
 import { fireEvent } from "../common/dom/fire_event";
 import {

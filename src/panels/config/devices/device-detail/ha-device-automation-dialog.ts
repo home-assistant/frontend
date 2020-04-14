@@ -1,27 +1,26 @@
 import {
-  LitElement,
-  html,
   CSSResult,
-  TemplateResult,
-  property,
   customElement,
+  html,
+  LitElement,
+  property,
+  TemplateResult,
 } from "lit-element";
-
 import "../../../../components/ha-dialog";
-import "./ha-device-triggers-card";
-import "./ha-device-conditions-card";
-import "./ha-device-actions-card";
-import { DeviceAutomationDialogParams } from "./show-dialog-device-automation";
-import { HomeAssistant } from "../../../../types";
 import {
-  DeviceTrigger,
-  DeviceCondition,
   DeviceAction,
-  fetchDeviceTriggers,
-  fetchDeviceConditions,
+  DeviceCondition,
+  DeviceTrigger,
   fetchDeviceActions,
+  fetchDeviceConditions,
+  fetchDeviceTriggers,
 } from "../../../../data/device_automation";
 import { haStyleDialog } from "../../../../resources/styles";
+import { HomeAssistant } from "../../../../types";
+import "./ha-device-actions-card";
+import "./ha-device-conditions-card";
+import "./ha-device-triggers-card";
+import { DeviceAutomationDialogParams } from "./show-dialog-device-automation";
 
 @customElement("dialog-device-automation")
 export class DialogDeviceAutomation extends LitElement {

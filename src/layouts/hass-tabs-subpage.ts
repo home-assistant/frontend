@@ -1,21 +1,21 @@
+import "@material/mwc-ripple";
 import {
-  LitElement,
-  property,
-  TemplateResult,
-  html,
-  customElement,
   css,
   CSSResult,
+  customElement,
+  html,
+  LitElement,
+  property,
   PropertyValues,
+  TemplateResult,
 } from "lit-element";
+import { classMap } from "lit-html/directives/class-map";
+import memoizeOne from "memoize-one";
+import { isComponentLoaded } from "../common/config/is_component_loaded";
+import { navigate } from "../common/navigate";
 import "../components/ha-menu-button";
 import "../components/ha-paper-icon-button-arrow-prev";
-import { classMap } from "lit-html/directives/class-map";
-import { Route, HomeAssistant } from "../types";
-import { navigate } from "../common/navigate";
-import "@material/mwc-ripple";
-import { isComponentLoaded } from "../common/config/is_component_loaded";
-import memoizeOne from "memoize-one";
+import { HomeAssistant, Route } from "../types";
 
 export interface PageNavigation {
   path: string;

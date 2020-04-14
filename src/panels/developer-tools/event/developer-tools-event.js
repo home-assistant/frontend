@@ -1,19 +1,17 @@
-import "@polymer/iron-flex-layout/iron-flex-layout-classes";
 import "@material/mwc-button";
+import "@polymer/iron-flex-layout/iron-flex-layout-classes";
 import "@polymer/paper-input/paper-input";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 /* eslint-plugin-disable lit */
 import { PolymerElement } from "@polymer/polymer/polymer-element";
-
 import { safeLoad } from "js-yaml";
-
 import "../../../components/ha-code-editor";
-import "../../../resources/ha-style";
-import "./events-list";
-import "./event-subscribe-card";
+import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
 import { EventsMixin } from "../../../mixins/events-mixin";
 import LocalizeMixin from "../../../mixins/localize-mixin";
-import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
+import "../../../resources/ha-style";
+import "./event-subscribe-card";
+import "./events-list";
 
 const ERROR_SENTINEL = {};
 /*

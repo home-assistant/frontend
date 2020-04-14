@@ -1,22 +1,22 @@
+import type { HassEntity } from "home-assistant-js-websocket";
 import {
-  LitElement,
-  TemplateResult,
   css,
   CSSResult,
   html,
+  LitElement,
   property,
   PropertyValues,
   query,
+  TemplateResult,
 } from "lit-element";
-import "../ha-icon";
-import type { HassEntity } from "home-assistant-js-websocket";
 import { ifDefined } from "lit-html/directives/if-defined";
+import { computeActiveState } from "../../common/entity/compute_active_state";
 import { computeStateDomain } from "../../common/entity/compute_state_domain";
 import { stateIcon } from "../../common/entity/state_icon";
-import type { HaIcon } from "../ha-icon";
-import type { HomeAssistant } from "../../types";
-import { computeActiveState } from "../../common/entity/compute_active_state";
 import { iconColorCSS } from "../../common/style/icon_color_css";
+import type { HomeAssistant } from "../../types";
+import "../ha-icon";
+import type { HaIcon } from "../ha-icon";
 
 export class StateBadge extends LitElement {
   public hass?: HomeAssistant;

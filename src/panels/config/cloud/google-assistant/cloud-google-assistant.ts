@@ -1,47 +1,43 @@
+import "@polymer/paper-icon-button";
 import {
-  LitElement,
-  TemplateResult,
-  html,
-  CSSResult,
   css,
+  CSSResult,
   customElement,
+  html,
+  LitElement,
   property,
+  TemplateResult,
 } from "lit-element";
 import memoizeOne from "memoize-one";
-import "@polymer/paper-icon-button";
-
-import "../../../../layouts/hass-subpage";
-import "../../../../layouts/hass-loading-screen";
-import "../../../../components/ha-card";
-import "../../../../components/entity/state-info";
-import "../../../../components/ha-switch";
-
-import type { HomeAssistant } from "../../../../types";
+import { fireEvent } from "../../../../common/dom/fire_event";
+import { computeDomain } from "../../../../common/entity/compute_domain";
+import { computeStateName } from "../../../../common/entity/compute_state_name";
 import {
-  CloudStatusLoggedIn,
-  CloudPreferences,
-  updateCloudGoogleEntityConfig,
-  cloudSyncGoogleAssistant,
-  GoogleEntityConfig,
-} from "../../../../data/cloud";
-import {
+  EntityFilter,
   generateFilter,
   isEmptyFilter,
-  EntityFilter,
 } from "../../../../common/entity/entity_filter";
 import { compare } from "../../../../common/string/compare";
-import { fireEvent } from "../../../../common/dom/fire_event";
-import { showToast } from "../../../../util/toast";
-import { showDomainTogglerDialog } from "../../../../dialogs/domain-toggler/show-dialog-domain-toggler";
-import {
-  GoogleEntity,
-  fetchCloudGoogleEntities,
-} from "../../../../data/google_assistant";
-
+import "../../../../components/entity/state-info";
+import "../../../../components/ha-card";
+import "../../../../components/ha-switch";
 import type { HaSwitch } from "../../../../components/ha-switch";
-
-import { computeStateName } from "../../../../common/entity/compute_state_name";
-import { computeDomain } from "../../../../common/entity/compute_domain";
+import {
+  CloudPreferences,
+  CloudStatusLoggedIn,
+  cloudSyncGoogleAssistant,
+  GoogleEntityConfig,
+  updateCloudGoogleEntityConfig,
+} from "../../../../data/cloud";
+import {
+  fetchCloudGoogleEntities,
+  GoogleEntity,
+} from "../../../../data/google_assistant";
+import { showDomainTogglerDialog } from "../../../../dialogs/domain-toggler/show-dialog-domain-toggler";
+import "../../../../layouts/hass-loading-screen";
+import "../../../../layouts/hass-subpage";
+import type { HomeAssistant } from "../../../../types";
+import { showToast } from "../../../../util/toast";
 
 const DEFAULT_CONFIG_EXPOSE = true;
 

@@ -1,33 +1,31 @@
 import {
-  html,
-  LitElement,
-  PropertyValues,
-  TemplateResult,
-  customElement,
-  property,
   css,
   CSSResult,
+  customElement,
+  html,
+  LitElement,
+  property,
+  PropertyValues,
+  TemplateResult,
 } from "lit-element";
-
+import { DOMAINS_TOGGLE } from "../../../common/const";
+import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
+import { computeDomain } from "../../../common/entity/compute_domain";
 import "../../../components/ha-card";
-import "../components/hui-entities-toggle";
-
 import { HomeAssistant } from "../../../types";
+import { findEntities } from "../common/find-entites";
+import { processConfigEntities } from "../common/process-config-entities";
+import "../components/hui-entities-toggle";
+import { createHeaderFooterElement } from "../create-element/create-header-footer-element";
+import { createRowElement } from "../create-element/create-row-element";
 import { LovelaceRow } from "../entity-rows/types";
+import { LovelaceHeaderFooterConfig } from "../header-footer/types";
 import {
   LovelaceCard,
   LovelaceCardEditor,
   LovelaceHeaderFooter,
 } from "../types";
-import { processConfigEntities } from "../common/process-config-entities";
-import { createRowElement } from "../create-element/create-row-element";
 import { EntitiesCardConfig, EntitiesCardEntityConfig } from "./types";
-import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
-import { createHeaderFooterElement } from "../create-element/create-header-footer-element";
-import { LovelaceHeaderFooterConfig } from "../header-footer/types";
-import { DOMAINS_TOGGLE } from "../../../common/const";
-import { computeDomain } from "../../../common/entity/compute_domain";
-import { findEntities } from "../common/find-entites";
 
 @customElement("hui-entities-card")
 class HuiEntitiesCard extends LitElement implements LovelaceCard {

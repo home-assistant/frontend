@@ -1,45 +1,43 @@
-import {
-  LitElement,
-  TemplateResult,
-  html,
-  CSSResultArray,
-  css,
-  customElement,
-  property,
-  PropertyValues,
-} from "lit-element";
 import "@material/mwc-button";
 import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable";
-import "@polymer/paper-tooltip/paper-tooltip";
 import "@polymer/paper-icon-button/paper-icon-button";
 import "@polymer/paper-spinner/paper-spinner";
+import "@polymer/paper-tooltip/paper-tooltip";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
-
-import "../../components/ha-form/ha-form";
-import "../../components/ha-markdown";
-import "../../resources/ha-style";
+import {
+  css,
+  CSSResultArray,
+  customElement,
+  html,
+  LitElement,
+  property,
+  PropertyValues,
+  TemplateResult,
+} from "lit-element";
 import "../../components/dialog/ha-paper-dialog";
 import type { HaPaperDialog } from "../../components/dialog/ha-paper-dialog";
-import { haStyleDialog } from "../../resources/styles";
-import { PolymerChangedEvent } from "../../polymer-types";
-import { DataEntryFlowDialogParams } from "./show-dialog-data-entry-flow";
-
-import "./step-flow-pick-handler";
-import "./step-flow-loading";
-import "./step-flow-form";
-import "./step-flow-external";
-import "./step-flow-abort";
-import "./step-flow-create-entry";
-import {
-  DeviceRegistryEntry,
-  subscribeDeviceRegistry,
-} from "../../data/device_registry";
+import "../../components/ha-form/ha-form";
+import "../../components/ha-markdown";
 import {
   AreaRegistryEntry,
   subscribeAreaRegistry,
 } from "../../data/area_registry";
-import type { HomeAssistant } from "../../types";
 import type { DataEntryFlowStep } from "../../data/data_entry_flow";
+import {
+  DeviceRegistryEntry,
+  subscribeDeviceRegistry,
+} from "../../data/device_registry";
+import { PolymerChangedEvent } from "../../polymer-types";
+import "../../resources/ha-style";
+import { haStyleDialog } from "../../resources/styles";
+import type { HomeAssistant } from "../../types";
+import { DataEntryFlowDialogParams } from "./show-dialog-data-entry-flow";
+import "./step-flow-abort";
+import "./step-flow-create-entry";
+import "./step-flow-external";
+import "./step-flow-form";
+import "./step-flow-loading";
+import "./step-flow-pick-handler";
 
 let instance = 0;
 

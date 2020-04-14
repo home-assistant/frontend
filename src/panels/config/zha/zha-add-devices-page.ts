@@ -1,11 +1,6 @@
-import "../../../components/ha-service-description";
-import "../../../components/ha-textarea";
-import "../../../layouts/hass-subpage";
-import "./zha-device-card";
 import "@material/mwc-button";
 import "@polymer/paper-icon-button/paper-icon-button";
 import "@polymer/paper-spinner/paper-spinner";
-
 import {
   css,
   CSSResult,
@@ -15,10 +10,13 @@ import {
   property,
   TemplateResult,
 } from "lit-element";
-
+import "../../../components/ha-service-description";
+import "../../../components/ha-textarea";
 import { ZHADevice } from "../../../data/zha";
+import "../../../layouts/hass-subpage";
 import { haStyle } from "../../../resources/styles";
 import { HomeAssistant, Route } from "../../../types";
+import "./zha-device-card";
 
 @customElement("zha-add-devices-page")
 class ZHAAddDevicesPage extends LitElement {

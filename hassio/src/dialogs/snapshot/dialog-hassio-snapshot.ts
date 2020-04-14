@@ -1,11 +1,11 @@
 import "@material/mwc-button";
 import "@polymer/app-layout/app-toolbar/app-toolbar";
 import "@polymer/iron-icon/iron-icon";
+import { PaperCheckboxElement } from "@polymer/paper-checkbox/paper-checkbox";
+import { PaperDialogElement } from "@polymer/paper-dialog";
 import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable";
 import "@polymer/paper-icon-button/paper-icon-button";
 import "@polymer/paper-input/paper-input";
-import { PaperDialogElement } from "@polymer/paper-dialog";
-import { PaperCheckboxElement } from "@polymer/paper-checkbox/paper-checkbox";
 import {
   css,
   CSSResult,
@@ -13,21 +13,19 @@ import {
   html,
   LitElement,
   property,
-  TemplateResult,
   query,
+  TemplateResult,
 } from "lit-element";
-
+import "../../../../src/components/dialog/ha-paper-dialog";
+import { getSignedPath } from "../../../../src/data/auth";
 import {
   fetchHassioSnapshotInfo,
   HassioSnapshotDetail,
 } from "../../../../src/data/hassio/snapshot";
-import { getSignedPath } from "../../../../src/data/auth";
-import { HassioSnapshotDialogParams } from "./show-dialog-hassio-snapshot";
+import { PolymerChangedEvent } from "../../../../src/polymer-types";
 import { haStyleDialog } from "../../../../src/resources/styles";
 import { HomeAssistant } from "../../../../src/types";
-import { PolymerChangedEvent } from "../../../../src/polymer-types";
-
-import "../../../../src/components/dialog/ha-paper-dialog";
+import { HassioSnapshotDialogParams } from "./show-dialog-hassio-snapshot";
 
 const _computeFolders = (folders) => {
   const list: Array<{ slug: string; name: string; checked: boolean }> = [];

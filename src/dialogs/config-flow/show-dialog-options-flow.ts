@@ -1,16 +1,16 @@
 import { html } from "lit-element";
+import { localizeKey } from "../../common/translations/localize";
+import { ConfigEntry } from "../../data/config_entries";
 import {
+  createOptionsFlow,
+  deleteOptionsFlow,
   fetchOptionsFlow,
   handleOptionsFlowStep,
-  deleteOptionsFlow,
-  createOptionsFlow,
 } from "../../data/options_flow";
-import { localizeKey } from "../../common/translations/localize";
 import {
-  showFlowDialog,
   loadDataEntryFlowDialog,
+  showFlowDialog,
 } from "./show-dialog-data-entry-flow";
-import { ConfigEntry } from "../../data/config_entries";
 
 export const loadOptionsFlowDialog = loadDataEntryFlowDialog;
 

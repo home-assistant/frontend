@@ -7,15 +7,15 @@ import {
   property,
   TemplateResult,
 } from "lit-element";
-import { HomeAssistant } from "../../../../types";
+import { createCloseHeading } from "../../../../components/ha-dialog";
 import {
   LovelaceResource,
   LovelaceResourcesMutableParams,
 } from "../../../../data/lovelace";
-import { LovelaceResourceDetailsDialogParams } from "./show-dialog-lovelace-resource-detail";
 import { PolymerChangedEvent } from "../../../../polymer-types";
-import { createCloseHeading } from "../../../../components/ha-dialog";
 import { haStyleDialog } from "../../../../resources/styles";
+import { HomeAssistant } from "../../../../types";
+import { LovelaceResourceDetailsDialogParams } from "./show-dialog-lovelace-resource-detail";
 
 @customElement("dialog-lovelace-resource-detail")
 export class DialogLovelaceResourceDetail extends LitElement {

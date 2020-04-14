@@ -1,30 +1,28 @@
+import "@polymer/paper-input/paper-input";
 import {
+  customElement,
   html,
   LitElement,
-  TemplateResult,
-  customElement,
   property,
+  TemplateResult,
 } from "lit-element";
-import "@polymer/paper-input/paper-input";
-
-import "../../components/hui-theme-select-editor";
-import "../../components/hui-action-editor";
-import "../../../../components/ha-icon-input";
-import "../../components/hui-entity-editor";
-
-import { struct } from "../../common/structs/struct";
-import {
-  EntitiesEditorEvent,
-  EditorTarget,
-  actionConfigStruct,
-} from "../types";
-import { HomeAssistant } from "../../../../types";
-import { LovelaceCardEditor } from "../../types";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import { configElementStyle } from "./config-elements-style";
-import { LightCardConfig } from "../../cards/types";
 import { stateIcon } from "../../../../common/entity/state_icon";
+import "../../../../components/ha-icon-input";
 import { ActionConfig } from "../../../../data/lovelace";
+import { HomeAssistant } from "../../../../types";
+import { LightCardConfig } from "../../cards/types";
+import { struct } from "../../common/structs/struct";
+import "../../components/hui-action-editor";
+import "../../components/hui-entity-editor";
+import "../../components/hui-theme-select-editor";
+import { LovelaceCardEditor } from "../../types";
+import {
+  actionConfigStruct,
+  EditorTarget,
+  EntitiesEditorEvent,
+} from "../types";
+import { configElementStyle } from "./config-elements-style";
 
 const cardConfigStruct = struct({
   type: "string",

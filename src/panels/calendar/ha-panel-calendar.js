@@ -1,21 +1,19 @@
 import "@polymer/app-layout/app-header-layout/app-header-layout";
 import "@polymer/app-layout/app-header/app-header";
 import "@polymer/app-layout/app-toolbar/app-toolbar";
-import "@polymer/paper-listbox/paper-listbox";
 import "@polymer/paper-checkbox/paper-checkbox";
 import "@polymer/paper-item/paper-item";
+import "@polymer/paper-listbox/paper-listbox";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 /* eslint-plugin-disable lit */
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 import moment from "moment";
 import dates from "react-big-calendar/lib/utils/dates";
-
-import "../../components/ha-menu-button";
 import "../../components/ha-card";
+import "../../components/ha-menu-button";
+import LocalizeMixin from "../../mixins/localize-mixin";
 import "../../resources/ha-style";
 import "./ha-big-calendar";
-
-import LocalizeMixin from "../../mixins/localize-mixin";
 
 const DEFAULT_VIEW = "month";
 

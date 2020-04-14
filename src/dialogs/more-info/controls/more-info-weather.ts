@@ -1,15 +1,14 @@
 import "@polymer/iron-icon/iron-icon";
+import { HassEntity } from "home-assistant-js-websocket";
 import {
+  css,
+  CSSResult,
+  customElement,
   LitElement,
   property,
-  CSSResult,
-  css,
-  customElement,
   PropertyValues,
 } from "lit-element";
-import { HassEntity } from "home-assistant-js-websocket";
-import { TemplateResult, html } from "lit-html";
-
+import { html, TemplateResult } from "lit-html";
 import { HomeAssistant } from "../../../types";
 
 const cardinalDirections = [

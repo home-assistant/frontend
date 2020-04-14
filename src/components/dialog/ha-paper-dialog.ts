@@ -1,9 +1,8 @@
 import "@polymer/paper-dialog/paper-dialog";
 import type { PaperDialogElement } from "@polymer/paper-dialog/paper-dialog";
 import { mixinBehaviors } from "@polymer/polymer/lib/legacy/class";
-
-import { HaIronFocusablesHelper } from "./ha-iron-focusables-helper";
 import type { Constructor } from "../../types";
+import { HaIronFocusablesHelper } from "./ha-iron-focusables-helper";
 
 const paperDialogClass = customElements.get("paper-dialog") as Constructor<
   PaperDialogElement

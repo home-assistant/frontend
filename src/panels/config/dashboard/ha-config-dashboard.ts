@@ -1,29 +1,25 @@
-import {
-  LitElement,
-  TemplateResult,
-  html,
-  CSSResultArray,
-  css,
-  customElement,
-  property,
-} from "lit-element";
 import "@polymer/app-layout/app-header-layout/app-header-layout";
 import "@polymer/app-layout/app-header/app-header";
 import "@polymer/app-layout/app-toolbar/app-toolbar";
-
-import "../../../components/ha-menu-button";
-
-import { haStyle } from "../../../resources/styles";
-import { HomeAssistant } from "../../../types";
-import { CloudStatus } from "../../../data/cloud";
+import {
+  css,
+  CSSResultArray,
+  customElement,
+  html,
+  LitElement,
+  property,
+  TemplateResult,
+} from "lit-element";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
-
 import "../../../components/ha-card";
 import "../../../components/ha-icon-next";
-
+import "../../../components/ha-menu-button";
+import { CloudStatus } from "../../../data/cloud";
+import { haStyle } from "../../../resources/styles";
+import { HomeAssistant } from "../../../types";
 import "../ha-config-section";
-import "./ha-config-navigation";
 import { configSections } from "../ha-panel-config";
+import "./ha-config-navigation";
 
 @customElement("ha-config-dashboard")
 class HaConfigDashboard extends LitElement {

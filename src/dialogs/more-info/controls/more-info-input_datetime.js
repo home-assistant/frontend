@@ -4,11 +4,9 @@ import { html } from "@polymer/polymer/lib/utils/html-tag";
 /* eslint-plugin-disable lit */
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 import "@vaadin/vaadin-date-picker/theme/material/vaadin-date-picker";
-
+import { attributeClassNames } from "../../../common/entity/attribute_class_names";
 import "../../../components/ha-relative-time";
 import "../../../components/paper-time-input";
-
-import { attributeClassNames } from "../../../common/entity/attribute_class_names";
 
 class DatetimeInput extends PolymerElement {
   static get template() {

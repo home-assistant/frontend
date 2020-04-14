@@ -14,17 +14,15 @@ import {
 import { dynamicElement } from "../../../../common/dom/dynamic-element-directive";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-card";
-import type { HomeAssistant } from "../../../../types";
-import { showConfirmationDialog } from "../../../../dialogs/generic/show-dialog-box";
-
 import type { Action } from "../../../../data/script";
-
-import "./types/ha-automation-action-service";
-import "./types/ha-automation-action-device_id";
-import "./types/ha-automation-action-delay";
-import "./types/ha-automation-action-event";
+import { showConfirmationDialog } from "../../../../dialogs/generic/show-dialog-box";
+import type { HomeAssistant } from "../../../../types";
 import "./types/ha-automation-action-condition";
+import "./types/ha-automation-action-delay";
+import "./types/ha-automation-action-device_id";
+import "./types/ha-automation-action-event";
 import "./types/ha-automation-action-scene";
+import "./types/ha-automation-action-service";
 import "./types/ha-automation-action-wait_template";
 
 const OPTIONS = [

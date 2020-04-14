@@ -1,4 +1,4 @@
-import { UpdatingElement, property, customElement } from "lit-element";
+import { customElement, property, UpdatingElement } from "lit-element";
 // @ts-ignore
 // eslint-disable-next-line import/no-webpack-loader-syntax
 import markdownWorker from "workerize-loader!../resources/markdown_worker";

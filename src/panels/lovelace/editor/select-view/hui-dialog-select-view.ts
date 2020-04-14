@@ -1,19 +1,16 @@
 import {
+  customElement,
   html,
   LitElement,
-  TemplateResult,
-  customElement,
   property,
+  TemplateResult,
 } from "lit-element";
-
-import "../../../../components/dialog/ha-paper-dialog";
 import { toggleAttribute } from "../../../../common/dom/toggle_attribute";
-import "../../components/hui-views-list";
-
+import "../../../../components/dialog/ha-paper-dialog";
 import type { HaPaperDialog } from "../../../../components/dialog/ha-paper-dialog";
-
-import type { SelectViewDialogParams } from "./show-select-view-dialog";
 import type { PolymerChangedEvent } from "../../../../polymer-types";
+import "../../components/hui-views-list";
+import type { SelectViewDialogParams } from "./show-select-view-dialog";
 
 @customElement("hui-dialog-select-view")
 export class HuiDialogSelectView extends LitElement {

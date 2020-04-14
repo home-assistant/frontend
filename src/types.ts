@@ -1,16 +1,16 @@
 import {
-  HassEntities,
-  HassConfig,
   Auth,
   Connection,
-  MessageBase,
-  HassEntityBase,
+  HassConfig,
+  HassEntities,
   HassEntityAttributeBase,
+  HassEntityBase,
   HassServices,
+  MessageBase,
 } from "home-assistant-js-websocket";
 import { LocalizeFunc } from "./common/translations/localize";
-import { ExternalMessaging } from "./external_app/external_messaging";
 import { CoreFrontendUserData } from "./data/frontend";
+import { ExternalMessaging } from "./external_app/external_messaging";
 
 declare global {
   /* eslint-disable no-var, no-redeclare */

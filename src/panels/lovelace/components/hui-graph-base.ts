@@ -1,15 +1,14 @@
 import {
-  html,
-  LitElement,
-  TemplateResult,
-  customElement,
-  property,
   css,
   CSSResult,
-  svg,
+  customElement,
+  html,
+  LitElement,
+  property,
   PropertyValues,
+  svg,
+  TemplateResult,
 } from "lit-element";
-
 import { strokeWidth } from "../../../data/graph";
 import { getPath } from "../common/graph/get-path";
 

@@ -1,28 +1,25 @@
-import {
-  LitElement,
-  TemplateResult,
-  html,
-  CSSResultArray,
-  css,
-  customElement,
-  property,
-} from "lit-element";
 import "@polymer/app-layout/app-header-layout/app-header-layout";
 import "@polymer/app-layout/app-header/app-header";
 import "@polymer/app-layout/app-toolbar/app-toolbar";
 import "@polymer/paper-icon-button/paper-icon-button";
 import "@polymer/paper-tabs/paper-tab";
 import "@polymer/paper-tabs/paper-tabs";
-
-import "../../components/ha-menu-button";
-import "./developer-tools-router";
-
+import {
+  css,
+  CSSResultArray,
+  customElement,
+  html,
+  LitElement,
+  property,
+  TemplateResult,
+} from "lit-element";
+import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import scrollToTarget from "../../common/dom/scroll-to-target";
-
+import { navigate } from "../../common/navigate";
+import "../../components/ha-menu-button";
 import { haStyle } from "../../resources/styles";
 import { HomeAssistant, Route } from "../../types";
-import { navigate } from "../../common/navigate";
-import { isComponentLoaded } from "../../common/config/is_component_loaded";
+import "./developer-tools-router";
 
 @customElement("ha-panel-developer-tools")
 class PanelDeveloperTools extends LitElement {

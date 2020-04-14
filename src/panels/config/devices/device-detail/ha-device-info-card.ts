@@ -1,19 +1,19 @@
 import {
-  LitElement,
-  html,
+  css,
+  CSSResult,
   customElement,
+  html,
+  LitElement,
   property,
   TemplateResult,
-  CSSResult,
-  css,
 } from "lit-element";
+import { AreaRegistryEntry } from "../../../../data/area_registry";
 import {
-  DeviceRegistryEntry,
   computeDeviceName,
+  DeviceRegistryEntry,
 } from "../../../../data/device_registry";
 import { loadDeviceRegistryDetailDialog } from "../../../../dialogs/device-registry-detail/show-dialog-device-registry-detail";
 import { HomeAssistant } from "../../../../types";
-import { AreaRegistryEntry } from "../../../../data/area_registry";
 
 @customElement("ha-device-info-card")
 export class HaDeviceCard extends LitElement {

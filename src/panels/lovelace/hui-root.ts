@@ -1,55 +1,51 @@
-import {
-  html,
-  LitElement,
-  PropertyValues,
-  TemplateResult,
-  CSSResult,
-  css,
-  property,
-} from "lit-element";
-import { classMap } from "lit-html/directives/class-map";
+import "@material/mwc-button";
 import "@polymer/app-layout/app-header-layout/app-header-layout";
 import "@polymer/app-layout/app-header/app-header";
 import "@polymer/app-layout/app-scroll-effects/effects/waterfall";
 import "@polymer/app-layout/app-toolbar/app-toolbar";
 import "@polymer/paper-icon-button/paper-icon-button";
-import "@material/mwc-button";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
 import "@polymer/paper-menu-button/paper-menu-button";
 import "@polymer/paper-tabs/paper-tab";
 import "@polymer/paper-tabs/paper-tabs";
-
+import {
+  css,
+  CSSResult,
+  html,
+  LitElement,
+  property,
+  PropertyValues,
+  TemplateResult,
+} from "lit-element";
+import { classMap } from "lit-html/directives/class-map";
+import memoizeOne from "memoize-one";
+import { isComponentLoaded } from "../../common/config/is_component_loaded";
+import { fireEvent } from "../../common/dom/fire_event";
 import scrollToTarget from "../../common/dom/scroll-to-target";
-
-import "../../layouts/ha-app-layout";
+import { navigate } from "../../common/navigate";
+import { computeRTLDirection } from "../../common/util/compute_rtl";
+import { debounce } from "../../common/util/debounce";
+import { afterNextRender } from "../../common/util/render-status";
+import "../../components/ha-icon";
 import "../../components/ha-paper-icon-button-arrow-next";
 import "../../components/ha-paper-icon-button-arrow-prev";
-import "../../components/ha-icon";
-import { debounce } from "../../common/util/debounce";
-import type { HomeAssistant } from "../../types";
 import type { LovelaceConfig, LovelacePanelConfig } from "../../data/lovelace";
-import { navigate } from "../../common/navigate";
-import { fireEvent } from "../../common/dom/fire_event";
-import { swapView } from "./editor/config-util";
-
-import { HUIView } from "./views/hui-view";
-
-import "./views/hui-panel-view";
-import type { HUIPanelView } from "./views/hui-panel-view";
-import { showEditViewDialog } from "./editor/view-editor/show-edit-view-dialog";
-import { showEditLovelaceDialog } from "./editor/lovelace-editor/show-edit-lovelace-dialog";
-import type { Lovelace } from "./types";
-import { afterNextRender } from "../../common/util/render-status";
-import { haStyle } from "../../resources/styles";
-import { computeRTLDirection } from "../../common/util/compute_rtl";
-import { showVoiceCommandDialog } from "../../dialogs/voice-command-dialog/show-ha-voice-command-dialog";
-import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import {
   showAlertDialog,
   showConfirmationDialog,
 } from "../../dialogs/generic/show-dialog-box";
-import memoizeOne from "memoize-one";
+import { showVoiceCommandDialog } from "../../dialogs/voice-command-dialog/show-ha-voice-command-dialog";
+import "../../layouts/ha-app-layout";
+import { haStyle } from "../../resources/styles";
+import type { HomeAssistant } from "../../types";
+import { swapView } from "./editor/config-util";
+import { showEditLovelaceDialog } from "./editor/lovelace-editor/show-edit-lovelace-dialog";
+import { showEditViewDialog } from "./editor/view-editor/show-edit-view-dialog";
+import type { Lovelace } from "./types";
+import "./views/hui-panel-view";
+import type { HUIPanelView } from "./views/hui-panel-view";
+import { HUIView } from "./views/hui-view";
 
 class HUIRoot extends LitElement {
   @property() public hass!: HomeAssistant;

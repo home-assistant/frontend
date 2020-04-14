@@ -44,14 +44,13 @@ import {
 } from "../../../../../data/input_text";
 import { showConfirmationDialog } from "../../../../../dialogs/generic/show-dialog-box";
 import type { HomeAssistant } from "../../../../../types";
-import "../../../helpers/forms/ha-input_boolean-form";
-import "../../../helpers/forms/ha-input_text-form";
-import "../../../helpers/forms/ha-input_datetime-form";
-import "../../../helpers/forms/ha-input_select-form";
-import "../../../helpers/forms/ha-input_number-form";
 import type { Helper } from "../../../helpers/const";
+import "../../../helpers/forms/ha-input_boolean-form";
+import "../../../helpers/forms/ha-input_datetime-form";
+import "../../../helpers/forms/ha-input_number-form";
+import "../../../helpers/forms/ha-input_select-form";
+import "../../../helpers/forms/ha-input_text-form";
 import "../../entity-registry-basic-editor";
-
 import type { HaEntityRegistryBasicEditor } from "../../entity-registry-basic-editor";
 
 const HELPERS = {

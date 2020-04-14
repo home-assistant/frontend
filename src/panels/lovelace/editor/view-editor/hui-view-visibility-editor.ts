@@ -1,24 +1,22 @@
-import {
-  html,
-  LitElement,
-  TemplateResult,
-  customElement,
-  property,
-  PropertyValues,
-  CSSResult,
-  css,
-} from "lit-element";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-item/paper-item-body";
-
+import {
+  css,
+  CSSResult,
+  customElement,
+  html,
+  LitElement,
+  property,
+  PropertyValues,
+  TemplateResult,
+} from "lit-element";
 import memoizeOne from "memoize-one";
-import { HomeAssistant } from "../../../../types";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import { LovelaceViewConfig, ShowViewConfig } from "../../../../data/lovelace";
-
-import { fetchUsers, User } from "../../../../data/user";
 import { compare } from "../../../../common/string/compare";
 import { HaSwitch } from "../../../../components/ha-switch";
+import { LovelaceViewConfig, ShowViewConfig } from "../../../../data/lovelace";
+import { fetchUsers, User } from "../../../../data/user";
+import { HomeAssistant } from "../../../../types";
 
 declare global {
   interface HASSDomEvents {

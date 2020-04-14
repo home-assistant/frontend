@@ -5,19 +5,18 @@ import "@polymer/paper-checkbox/paper-checkbox";
 import "@polymer/paper-icon-button/paper-icon-button";
 import "@polymer/paper-input/paper-input";
 import "@polymer/paper-item/paper-icon-item";
-import "@polymer/paper-item/paper-item-body";
 import "@polymer/paper-item/paper-item";
+import "@polymer/paper-item/paper-item-body";
 import "@polymer/paper-listbox/paper-listbox";
 import "@polymer/paper-menu-button/paper-menu-button";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 /* eslint-plugin-disable lit */
 import { PolymerElement } from "@polymer/polymer/polymer-element";
-
-import "../../components/ha-menu-button";
-import "../../components/ha-card";
-import LocalizeMixin from "../../mixins/localize-mixin";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
+import "../../components/ha-card";
+import "../../components/ha-menu-button";
 import { showVoiceCommandDialog } from "../../dialogs/voice-command-dialog/show-ha-voice-command-dialog";
+import LocalizeMixin from "../../mixins/localize-mixin";
 
 /*
  * @appliesMixin LocalizeMixin

@@ -4,15 +4,13 @@ import "@polymer/paper-input/paper-input";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 /* eslint-plugin-disable lit */
 import { PolymerElement } from "@polymer/polymer/polymer-element";
-
 import { safeDump, safeLoad } from "js-yaml";
-
 import "../../../components/entity/ha-entity-picker";
 import "../../../components/ha-code-editor";
-import "../../../resources/ha-style";
+import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
 import { EventsMixin } from "../../../mixins/events-mixin";
 import LocalizeMixin from "../../../mixins/localize-mixin";
-import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
+import "../../../resources/ha-style";
 
 const ERROR_SENTINEL = {};
 /*

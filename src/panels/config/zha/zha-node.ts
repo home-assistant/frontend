@@ -1,10 +1,4 @@
-import "../../../components/buttons/ha-call-service-button";
-import "../../../components/ha-service-description";
-import "../../../components/ha-card";
-import "../ha-config-section";
-import "./zha-device-card";
 import "@polymer/paper-icon-button/paper-icon-button";
-
 import {
   css,
   CSSResult,
@@ -14,11 +8,15 @@ import {
   property,
   TemplateResult,
 } from "lit-element";
-
+import { navigate } from "../../../common/navigate";
+import "../../../components/buttons/ha-call-service-button";
+import "../../../components/ha-card";
+import "../../../components/ha-service-description";
 import { ZHADevice } from "../../../data/zha";
 import { haStyle } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
-import { navigate } from "../../../common/navigate";
+import "../ha-config-section";
+import "./zha-device-card";
 
 @customElement("zha-node")
 export class ZHANode extends LitElement {

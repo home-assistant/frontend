@@ -1,7 +1,7 @@
 /* eslint-disable no-console */
-import { HassBaseEl } from "./hass-base-mixin";
 import { fireEvent } from "../common/dom/fire_event";
 import { Constructor } from "../types";
+import { HassBaseEl } from "./hass-base-mixin";
 
 const DEBUG = false;
 

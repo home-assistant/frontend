@@ -1,11 +1,11 @@
 import {
-  LitElement,
-  TemplateResult,
-  html,
-  customElement,
-  property,
-  CSSResult,
   css,
+  CSSResult,
+  customElement,
+  html,
+  LitElement,
+  property,
+  TemplateResult,
 } from "lit-element";
 import "../components/ha-icon";
 

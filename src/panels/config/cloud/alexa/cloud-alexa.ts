@@ -1,42 +1,38 @@
-import {
-  LitElement,
-  TemplateResult,
-  html,
-  CSSResult,
-  css,
-  customElement,
-  property,
-} from "lit-element";
 import "@polymer/paper-icon-button";
+import {
+  css,
+  CSSResult,
+  customElement,
+  html,
+  LitElement,
+  property,
+  TemplateResult,
+} from "lit-element";
 import memoizeOne from "memoize-one";
-
-import "../../../../layouts/hass-subpage";
-import "../../../../layouts/hass-loading-screen";
-import "../../../../components/ha-card";
-import "../../../../components/ha-switch";
-import "../../../../components/entity/state-info";
-
-import type { HomeAssistant } from "../../../../types";
+import { fireEvent } from "../../../../common/dom/fire_event";
+import { computeDomain } from "../../../../common/entity/compute_domain";
+import { computeStateName } from "../../../../common/entity/compute_state_name";
 import {
-  CloudStatusLoggedIn,
-  CloudPreferences,
-  updateCloudAlexaEntityConfig,
-  AlexaEntityConfig,
-} from "../../../../data/cloud";
-import {
+  EntityFilter,
   generateFilter,
   isEmptyFilter,
-  EntityFilter,
 } from "../../../../common/entity/entity_filter";
 import { compare } from "../../../../common/string/compare";
-import { fireEvent } from "../../../../common/dom/fire_event";
-import { showDomainTogglerDialog } from "../../../../dialogs/domain-toggler/show-dialog-domain-toggler";
-import { AlexaEntity, fetchCloudAlexaEntities } from "../../../../data/alexa";
-
+import "../../../../components/entity/state-info";
+import "../../../../components/ha-card";
+import "../../../../components/ha-switch";
 import type { HaSwitch } from "../../../../components/ha-switch";
-
-import { computeStateName } from "../../../../common/entity/compute_state_name";
-import { computeDomain } from "../../../../common/entity/compute_domain";
+import { AlexaEntity, fetchCloudAlexaEntities } from "../../../../data/alexa";
+import {
+  AlexaEntityConfig,
+  CloudPreferences,
+  CloudStatusLoggedIn,
+  updateCloudAlexaEntityConfig,
+} from "../../../../data/cloud";
+import { showDomainTogglerDialog } from "../../../../dialogs/domain-toggler/show-dialog-domain-toggler";
+import "../../../../layouts/hass-loading-screen";
+import "../../../../layouts/hass-subpage";
+import type { HomeAssistant } from "../../../../types";
 
 const DEFAULT_CONFIG_EXPOSE = true;
 const IGNORE_INTERFACES = ["Alexa.EndpointHealth"];

@@ -17,8 +17,8 @@ import {
 import { computeStateDomain } from "../../common/entity/compute_state_domain";
 import { computeStateName } from "../../common/entity/compute_state_name";
 import { debounce } from "../../common/util/debounce";
-import { HomeAssistant } from "../../types";
 import "../../panels/map/ha-entity-marker";
+import { HomeAssistant } from "../../types";
 
 @customElement("ha-map")
 class HaMap extends LitElement {

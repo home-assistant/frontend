@@ -1,10 +1,8 @@
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 /* eslint-plugin-disable lit */
 import { PolymerElement } from "@polymer/polymer/polymer-element";
-
-import "../components/entity/state-badge";
-
 import { computeStateName } from "../common/entity/compute_state_name";
+import "../components/entity/state-badge";
 
 class StateCardWeblink extends PolymerElement {
   static get template() {

@@ -13,12 +13,10 @@ import {
   TemplateResult,
 } from "lit-element";
 import { cache } from "lit-html/directives/cache";
-import { PLATFORMS_WITH_SETTINGS_TAB } from "./const";
 import { dynamicElement } from "../../../common/dom/dynamic-element-directive";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import "../../../components/dialog/ha-paper-dialog";
-
 import type { HaPaperDialog } from "../../../components/dialog/ha-paper-dialog";
 import "../../../components/ha-related-items";
 import {
@@ -29,6 +27,7 @@ import {
 import type { PolymerChangedEvent } from "../../../polymer-types";
 import { haStyleDialog } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
+import { PLATFORMS_WITH_SETTINGS_TAB } from "./const";
 import "./entity-registry-settings";
 import type { EntityRegistryDetailDialogParams } from "./show-dialog-entity-editor";
 

@@ -6,16 +6,13 @@ import { Debouncer } from "@polymer/polymer/lib/utils/debounce";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 /* eslint-plugin-disable lit */
 import { PolymerElement } from "@polymer/polymer/polymer-element";
-
-import "../../../components/ha-water_heater-control";
-import "../../../components/ha-paper-slider";
-import "../../../components/ha-paper-dropdown-menu";
-import "../../../components/ha-switch";
-
-import { supportsFeature } from "../../../common/entity/supports-feature";
-import { EventsMixin } from "../../../mixins/events-mixin";
-
 import { featureClassNames } from "../../../common/entity/feature_class_names";
+import { supportsFeature } from "../../../common/entity/supports-feature";
+import "../../../components/ha-paper-dropdown-menu";
+import "../../../components/ha-paper-slider";
+import "../../../components/ha-switch";
+import "../../../components/ha-water_heater-control";
+import { EventsMixin } from "../../../mixins/events-mixin";
 import LocalizeMixin from "../../../mixins/localize-mixin";
 
 /*

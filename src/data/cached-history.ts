@@ -1,13 +1,13 @@
 import { HassEntity } from "home-assistant-js-websocket";
+import { LocalizeFunc } from "../common/translations/localize";
+import { HomeAssistant } from "../types";
 import {
   computeHistory,
   fetchRecent,
   HistoryResult,
-  TimelineEntity,
   LineChartUnit,
+  TimelineEntity,
 } from "./history";
-import { HomeAssistant } from "../types";
-import { LocalizeFunc } from "../common/translations/localize";
 
 export interface CacheConfig {
   refresh: number;

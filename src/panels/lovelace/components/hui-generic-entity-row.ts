@@ -1,31 +1,29 @@
 import {
-  LitElement,
-  html,
   css,
   CSSResult,
-  PropertyValues,
+  html,
+  LitElement,
   property,
+  PropertyValues,
   TemplateResult,
 } from "lit-element";
-import { ifDefined } from "lit-html/directives/if-defined";
 import { classMap } from "lit-html/directives/class-map";
-import { computeStateName } from "../../../common/entity/compute_state_name";
-
-import "../../../components/entity/state-badge";
-import "../../../components/ha-relative-time";
-import "../../../components/ha-icon";
-import "./hui-warning";
-
-import { HomeAssistant } from "../../../types";
-import { computeRTL } from "../../../common/util/compute_rtl";
-import { toggleAttribute } from "../../../common/dom/toggle_attribute";
+import { ifDefined } from "lit-html/directives/if-defined";
 import { DOMAINS_HIDE_MORE_INFO } from "../../../common/const";
+import { toggleAttribute } from "../../../common/dom/toggle_attribute";
 import { computeDomain } from "../../../common/entity/compute_domain";
+import { computeStateName } from "../../../common/entity/compute_state_name";
+import { computeRTL } from "../../../common/util/compute_rtl";
+import "../../../components/entity/state-badge";
+import "../../../components/ha-icon";
+import "../../../components/ha-relative-time";
+import { ActionHandlerEvent } from "../../../data/lovelace";
+import { HomeAssistant } from "../../../types";
 import { EntitiesCardEntityConfig } from "../cards/types";
 import { actionHandler } from "../common/directives/action-handler-directive";
-import { hasAction } from "../common/has-action";
-import { ActionHandlerEvent } from "../../../data/lovelace";
 import { handleAction } from "../common/handle-action";
+import { hasAction } from "../common/has-action";
+import "./hui-warning";
 
 class HuiGenericEntityRow extends LitElement {
   @property() public hass?: HomeAssistant;

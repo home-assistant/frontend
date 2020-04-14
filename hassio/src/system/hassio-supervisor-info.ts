@@ -9,18 +9,16 @@ import {
   property,
   TemplateResult,
 } from "lit-element";
-
 import { fireEvent } from "../../../src/common/dom/fire_event";
+import "../../../src/components/buttons/ha-call-api-button";
 import {
   HassioSupervisorInfo as HassioSupervisorInfoType,
   setSupervisorOption,
   SupervisorOptions,
 } from "../../../src/data/hassio/supervisor";
+import { haStyle } from "../../../src/resources/styles";
 import { HomeAssistant } from "../../../src/types";
 import { hassioStyle } from "../resources/hassio-style";
-import { haStyle } from "../../../src/resources/styles";
-
-import "../../../src/components/buttons/ha-call-api-button";
 
 @customElement("hassio-supervisor-info")
 class HassioSupervisorInfo extends LitElement {

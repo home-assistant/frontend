@@ -1,9 +1,9 @@
-import { HomeAssistant } from "../../../types";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { navigate } from "../../../common/navigate";
-import { toggleEntity } from "./entity/toggle-entity";
-import { ActionConfig } from "../../../data/lovelace";
 import { forwardHaptic } from "../../../data/haptics";
+import { ActionConfig } from "../../../data/lovelace";
+import { HomeAssistant } from "../../../types";
+import { toggleEntity } from "./entity/toggle-entity";
 
 declare global {
   interface HASSDomEvents {

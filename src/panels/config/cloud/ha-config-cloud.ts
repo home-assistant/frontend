@@ -1,15 +1,15 @@
-import "./account/cloud-account";
-import "./login/cloud-login";
-import { property, customElement } from "lit-element";
 import { PolymerElement } from "@polymer/polymer";
+import { customElement, property } from "lit-element";
+import { navigate } from "../../../common/navigate";
+import { CloudStatus } from "../../../data/cloud";
 import {
   HassRouterPage,
   RouterOptions,
 } from "../../../layouts/hass-router-page";
-import { HomeAssistant, Route } from "../../../types";
-import { navigate } from "../../../common/navigate";
-import { CloudStatus } from "../../../data/cloud";
 import { PolymerChangedEvent } from "../../../polymer-types";
+import { HomeAssistant, Route } from "../../../types";
+import "./account/cloud-account";
+import "./login/cloud-login";
 
 const LOGGED_IN_URLS = ["account", "google-assistant", "alexa"];
 const NOT_LOGGED_IN_URLS = ["login", "register", "forgot-password"];

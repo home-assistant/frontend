@@ -1,5 +1,5 @@
-import { HomeAssistant } from "../types";
 import { navigate } from "../common/navigate";
+import { HomeAssistant } from "../types";
 
 export const defaultRadiusColor = "#FF9800";
 export const homeRadiusColor = "#03a9f4";

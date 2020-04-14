@@ -1,20 +1,18 @@
 import {
+  css,
+  CSSResult,
+  customElement,
   html,
   LitElement,
-  TemplateResult,
-  customElement,
   property,
   PropertyValues,
-  CSSResult,
-  css,
+  TemplateResult,
 } from "lit-element";
-
-import "../components/hui-graph-base";
-
-import { LovelaceHeaderFooter } from "../types";
 import { HomeAssistant } from "../../../types";
-import { GraphHeaderFooterConfig } from "./types";
 import { getHistoryCoordinates } from "../common/graph/get-history-coordinates";
+import "../components/hui-graph-base";
+import { LovelaceHeaderFooter } from "../types";
+import { GraphHeaderFooterConfig } from "./types";
 
 const MINUTE = 60000;
 

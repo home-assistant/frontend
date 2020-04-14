@@ -1,15 +1,15 @@
 import {
-  LitElement,
-  TemplateResult,
   css,
   CSSResult,
-  html,
-  property,
   customElement,
+  html,
+  LitElement,
+  property,
+  TemplateResult,
 } from "lit-element";
+import { toggleAttribute } from "../../common/dom/toggle_attribute";
 import { User } from "../../data/user";
 import { CurrentUser } from "../../types";
-import { toggleAttribute } from "../../common/dom/toggle_attribute";
 
 const computeInitials = (name: string) => {
   if (!name) {
@@ -34,9 +34,7 @@ class StateBadge extends LitElement {
   protected render(): TemplateResult {
     const user = this.user;
     const initials = user ? computeInitials(user.name) : "?";
-    return html`
-      ${initials}
-    `;
+    return html` ${initials} `;
   }
 
   protected updated(changedProps) {

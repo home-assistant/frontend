@@ -1,17 +1,15 @@
-import {
-  property,
-  LitElement,
-  TemplateResult,
-  html,
-  customElement,
-  CSSResult,
-  css,
-} from "lit-element";
 import { HassEntity } from "home-assistant-js-websocket";
-
-import "../../../components/ha-relative-time";
-
+import {
+  css,
+  CSSResult,
+  customElement,
+  html,
+  LitElement,
+  property,
+  TemplateResult,
+} from "lit-element";
 import { formatTime } from "../../../common/datetime/format_time";
+import "../../../components/ha-relative-time";
 import { HomeAssistant } from "../../../types";
 
 @customElement("more-info-sun")

@@ -1,13 +1,13 @@
 /* eslint-plugin-disable lit */
-import { PolymerElement } from "@polymer/polymer/polymer-element";
 import { IronResizableBehavior } from "@polymer/iron-resizable-behavior/iron-resizable-behavior";
 import "@polymer/paper-icon-button/paper-icon-button";
-import { html } from "@polymer/polymer/lib/utils/html-tag";
-import { Debouncer } from "@polymer/polymer/lib/utils/debounce";
-import { timeOut } from "@polymer/polymer/lib/utils/async";
 import { mixinBehaviors } from "@polymer/polymer/lib/legacy/class";
-
+import { timeOut } from "@polymer/polymer/lib/utils/async";
+import { Debouncer } from "@polymer/polymer/lib/utils/debounce";
+import { html } from "@polymer/polymer/lib/utils/html-tag";
+import { PolymerElement } from "@polymer/polymer/polymer-element";
 import { formatTime } from "../../common/datetime/format_time";
+
 // eslint-disable-next-line no-unused-vars
 /* global Chart moment Color */
 

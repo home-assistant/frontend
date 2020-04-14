@@ -3,7 +3,6 @@ import {
   DeviceTrigger,
   localizeDeviceAutomationTrigger,
 } from "../../../../data/device_automation";
-
 import { HaDeviceAutomationCard } from "./ha-device-automation-card";
 
 @customElement("ha-device-triggers-card")

@@ -8,18 +8,15 @@ import { html } from "@polymer/polymer/lib/utils/html-tag";
 /* eslint-plugin-disable lit */
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 import "@vaadin/vaadin-date-picker/theme/material/vaadin-date-picker";
-
-import "../../components/ha-menu-button";
+import { formatDate } from "../../common/datetime/format_date";
+import { computeRTL } from "../../common/util/compute_rtl";
 import "../../components/entity/ha-entity-picker";
+import "../../components/ha-menu-button";
+import LocalizeMixin from "../../mixins/localize-mixin";
 import "../../resources/ha-date-picker-style";
 import "../../resources/ha-style";
-
-import "./ha-logbook-data";
 import "./ha-logbook";
-
-import { formatDate } from "../../common/datetime/format_date";
-import LocalizeMixin from "../../mixins/localize-mixin";
-import { computeRTL } from "../../common/util/compute_rtl";
+import "./ha-logbook-data";
 
 /*
  * @appliesMixin LocalizeMixin

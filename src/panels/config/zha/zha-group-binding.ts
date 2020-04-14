@@ -1,12 +1,8 @@
-import "../../../components/buttons/ha-call-service-button";
-import "../../../components/ha-service-description";
-import "../../../components/ha-card";
-import "../ha-config-section";
 import "@material/mwc-button/mwc-button";
 import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
 import "@polymer/paper-icon-button/paper-icon-button";
+import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
-
 import {
   css,
   CSSResult,
@@ -15,26 +11,27 @@ import {
   LitElement,
   property,
   PropertyValues,
-  TemplateResult,
   query,
+  TemplateResult,
 } from "lit-element";
-
+import type { HASSDomEvent } from "../../../common/dom/fire_event";
+import "../../../components/buttons/ha-call-service-button";
+import { SelectionChangedEvent } from "../../../components/data-table/ha-data-table";
+import "../../../components/ha-card";
+import "../../../components/ha-service-description";
 import {
   bindDeviceToGroup,
+  Cluster,
+  fetchClustersForZhaNode,
   unbindDeviceFromGroup,
   ZHADevice,
   ZHAGroup,
-  Cluster,
-  fetchClustersForZhaNode,
 } from "../../../data/zha";
-import "./zha-clusters-data-table";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
+import "../ha-config-section";
 import { ItemSelectedEvent } from "./types";
-import "@polymer/paper-item/paper-item";
-import { SelectionChangedEvent } from "../../../components/data-table/ha-data-table";
-import type { HASSDomEvent } from "../../../common/dom/fire_event";
-
+import "./zha-clusters-data-table";
 import type { ZHAClustersDataTable } from "./zha-clusters-data-table";
 
 @customElement("zha-group-binding-control")

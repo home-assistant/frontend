@@ -1,7 +1,6 @@
 import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
-
 import {
   css,
   CSSResult,
@@ -11,14 +10,11 @@ import {
   property,
   TemplateResult,
 } from "lit-element";
-
-import { haStyle } from "../../../resources/styles";
-import { HomeAssistant } from "../../../types";
-
 import "../../../components/buttons/ha-call-service-button";
 import "../../../components/ha-card";
-
 import { ZWaveValue } from "../../../data/zwave";
+import { haStyle } from "../../../resources/styles";
+import { HomeAssistant } from "../../../types";
 
 @customElement("zwave-values")
 export class ZwaveValues extends LitElement {

@@ -1,12 +1,11 @@
 import "@polymer/paper-input/paper-input";
-import "../../../../../components/ha-textarea";
-
-import "../../../../../components/entity/ha-entity-picker";
-import { LitElement, html, customElement, property } from "lit-element";
-import { HomeAssistant } from "../../../../../types";
+import { customElement, html, LitElement, property } from "lit-element";
 import { fireEvent } from "../../../../../common/dom/fire_event";
-import { handleChangeEvent } from "../ha-automation-condition-row";
+import "../../../../../components/entity/ha-entity-picker";
+import "../../../../../components/ha-textarea";
 import { NumericStateCondition } from "../../../../../data/automation";
+import { HomeAssistant } from "../../../../../types";
+import { handleChangeEvent } from "../ha-automation-condition-row";
 
 @customElement("ha-automation-condition-numeric_state")
 export default class HaNumericStateCondition extends LitElement {

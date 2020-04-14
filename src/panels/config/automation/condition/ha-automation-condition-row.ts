@@ -11,11 +11,10 @@ import {
 } from "lit-element";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-card";
-import { HomeAssistant } from "../../../../types";
-import { showConfirmationDialog } from "../../../../dialogs/generic/show-dialog-box";
-
-import "./ha-automation-condition-editor";
 import { Condition } from "../../../../data/automation";
+import { showConfirmationDialog } from "../../../../dialogs/generic/show-dialog-box";
+import { HomeAssistant } from "../../../../types";
+import "./ha-automation-condition-editor";
 
 export interface ConditionElement extends LitElement {
   condition: Condition;

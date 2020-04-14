@@ -1,12 +1,12 @@
 import {
-  html,
-  LitElement,
-  PropertyValues,
-  TemplateResult,
-  customElement,
   css,
   CSSResult,
+  customElement,
+  html,
+  LitElement,
   property,
+  PropertyValues,
+  TemplateResult,
 } from "lit-element";
 
 @customElement("hui-marquee")

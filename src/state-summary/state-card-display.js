@@ -2,14 +2,11 @@ import "@polymer/iron-flex-layout/iron-flex-layout-classes";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 /* eslint-plugin-disable lit */
 import { PolymerElement } from "@polymer/polymer/polymer-element";
-
-import "../components/entity/state-info";
-
-import LocalizeMixin from "../mixins/localize-mixin";
-
 import { attributeClassNames } from "../common/entity/attribute_class_names";
 import { computeStateDisplay } from "../common/entity/compute_state_display";
 import { computeRTL } from "../common/util/compute_rtl";
+import "../components/entity/state-info";
+import LocalizeMixin from "../mixins/localize-mixin";
 
 /*
  * @appliesMixin LocalizeMixin

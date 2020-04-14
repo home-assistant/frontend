@@ -1,22 +1,22 @@
+import "@polymer/paper-dropdown-menu/paper-dropdown-menu-light";
 import "@polymer/paper-icon-button/paper-icon-button";
 import "@polymer/paper-input/paper-input";
 import "@polymer/paper-item/paper-icon-item";
 import "@polymer/paper-item/paper-item-body";
-import "@polymer/paper-dropdown-menu/paper-dropdown-menu-light";
 import "@polymer/paper-listbox/paper-listbox";
-import memoizeOne from "memoize-one";
 import {
-  LitElement,
-  TemplateResult,
-  html,
   css,
   CSSResult,
+  html,
+  LitElement,
   property,
+  TemplateResult,
 } from "lit-element";
-import { HomeAssistant } from "../../types";
+import memoizeOne from "memoize-one";
 import { fireEvent } from "../../common/dom/fire_event";
-import { User, fetchUsers } from "../../data/user";
 import { compare } from "../../common/string/compare";
+import { fetchUsers, User } from "../../data/user";
+import { HomeAssistant } from "../../types";
 
 class HaUserPicker extends LitElement {
   public hass?: HomeAssistant;

@@ -7,19 +7,19 @@ import {
   property,
   TemplateResult,
 } from "lit-element";
+import { createCloseHeading } from "../../../../components/ha-dialog";
 import "../../../../components/ha-icon-input";
-import { HomeAssistant } from "../../../../types";
+import { HaSwitch } from "../../../../components/ha-switch";
 import {
   LovelaceDashboard,
-  LovelaceDashboardMutableParams,
   LovelaceDashboardCreateParams,
+  LovelaceDashboardMutableParams,
 } from "../../../../data/lovelace";
-import { LovelaceDashboardDetailsDialogParams } from "./show-dialog-lovelace-dashboard-detail";
+import { DEFAULT_PANEL, setDefaultPanel } from "../../../../data/panel";
 import { PolymerChangedEvent } from "../../../../polymer-types";
-import { HaSwitch } from "../../../../components/ha-switch";
-import { createCloseHeading } from "../../../../components/ha-dialog";
 import { haStyleDialog } from "../../../../resources/styles";
-import { setDefaultPanel, DEFAULT_PANEL } from "../../../../data/panel";
+import { HomeAssistant } from "../../../../types";
+import { LovelaceDashboardDetailsDialogParams } from "./show-dialog-lovelace-dashboard-detail";
 
 @customElement("dialog-lovelace-dashboard-detail")
 export class DialogLovelaceDashboardDetail extends LitElement {

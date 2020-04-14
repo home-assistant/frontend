@@ -1,11 +1,11 @@
 import "@polymer/paper-input/paper-input";
-import { LitElement, property, html, customElement } from "lit-element";
-import {
-  TriggerElement,
-  handleChangeEvent,
-} from "../ha-automation-trigger-row";
-import { HomeAssistant } from "../../../../../types";
+import { customElement, html, LitElement, property } from "lit-element";
 import { TimePatternTrigger } from "../../../../../data/automation";
+import { HomeAssistant } from "../../../../../types";
+import {
+  handleChangeEvent,
+  TriggerElement,
+} from "../ha-automation-trigger-row";
 
 @customElement("ha-automation-trigger-time_pattern")
 export class HaTimePatternTrigger extends LitElement implements TriggerElement {

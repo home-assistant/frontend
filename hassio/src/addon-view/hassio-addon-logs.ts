@@ -7,17 +7,17 @@ import {
   html,
   LitElement,
   property,
-  TemplateResult,
   query,
+  TemplateResult,
 } from "lit-element";
-import { HomeAssistant } from "../../../src/types";
 import {
-  HassioAddonDetails,
   fetchHassioAddonLogs,
+  HassioAddonDetails,
 } from "../../../src/data/hassio/addon";
+import { haStyle } from "../../../src/resources/styles";
+import { HomeAssistant } from "../../../src/types";
 import { ANSI_HTML_STYLE, parseTextToColoredPre } from "../ansi-to-html";
 import { hassioStyle } from "../resources/hassio-style";
-import { haStyle } from "../../../src/resources/styles";
 
 @customElement("hassio-addon-logs")
 class HassioAddonLogs extends LitElement {

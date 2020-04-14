@@ -1,25 +1,24 @@
 import "@polymer/paper-input/paper-input";
-import "../../../../../components/ha-service-picker";
-import "../../../../../components/entity/ha-entity-picker";
-import "../../../../../components/ha-yaml-editor";
-
 import {
+  customElement,
   LitElement,
   property,
-  customElement,
   PropertyValues,
   query,
 } from "lit-element";
 import { html } from "lit-html";
 import memoizeOne from "memoize-one";
-import { ActionElement, handleChangeEvent } from "../ha-automation-action-row";
-import type { HomeAssistant } from "../../../../../types";
+import { fireEvent } from "../../../../../common/dom/fire_event";
 import { computeDomain } from "../../../../../common/entity/compute_domain";
 import { computeObjectId } from "../../../../../common/entity/compute_object_id";
-import type { PolymerChangedEvent } from "../../../../../polymer-types";
-import { fireEvent } from "../../../../../common/dom/fire_event";
-import { ServiceAction } from "../../../../../data/script";
+import "../../../../../components/entity/ha-entity-picker";
+import "../../../../../components/ha-service-picker";
+import "../../../../../components/ha-yaml-editor";
 import type { HaYamlEditor } from "../../../../../components/ha-yaml-editor";
+import { ServiceAction } from "../../../../../data/script";
+import type { PolymerChangedEvent } from "../../../../../polymer-types";
+import type { HomeAssistant } from "../../../../../types";
+import { ActionElement, handleChangeEvent } from "../ha-automation-action-row";
 
 @customElement("ha-automation-action-service")
 export class HaServiceAction extends LitElement implements ActionElement {

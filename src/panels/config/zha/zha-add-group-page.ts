@@ -1,35 +1,32 @@
+import "@material/mwc-button";
+import "@polymer/paper-input/paper-input";
+import type { PaperInputElement } from "@polymer/paper-input/paper-input";
+import "@polymer/paper-spinner/paper-spinner";
 import {
-  property,
-  LitElement,
-  html,
-  customElement,
   css,
   CSSResult,
+  customElement,
+  html,
+  LitElement,
+  property,
   PropertyValues,
   query,
 } from "lit-element";
-
-import "../../../layouts/hass-subpage";
-import "../../../layouts/hass-error-screen";
-import "../ha-config-section";
-import "@polymer/paper-input/paper-input";
-
-import type { PaperInputElement } from "@polymer/paper-input/paper-input";
-import type { HomeAssistant } from "../../../types";
+import type { HASSDomEvent } from "../../../common/dom/fire_event";
+import { navigate } from "../../../common/navigate";
+import type { SelectionChangedEvent } from "../../../components/data-table/ha-data-table";
 import {
-  ZHADevice,
-  fetchGroupableDevices,
   addGroup,
+  fetchGroupableDevices,
+  ZHADevice,
   ZHAGroup,
 } from "../../../data/zha";
-import "./zha-devices-data-table";
-import type { SelectionChangedEvent } from "../../../components/data-table/ha-data-table";
-import { navigate } from "../../../common/navigate";
+import "../../../layouts/hass-error-screen";
+import "../../../layouts/hass-subpage";
 import type { PolymerChangedEvent } from "../../../polymer-types";
-import "@polymer/paper-spinner/paper-spinner";
-import "@material/mwc-button";
-import type { HASSDomEvent } from "../../../common/dom/fire_event";
-
+import type { HomeAssistant } from "../../../types";
+import "../ha-config-section";
+import "./zha-devices-data-table";
 import type { ZHADevicesDataTable } from "./zha-devices-data-table";
 
 @customElement("zha-add-group-page")

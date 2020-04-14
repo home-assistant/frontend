@@ -14,12 +14,15 @@ import {
   query,
   TemplateResult,
 } from "lit-element";
+import { classMap } from "lit-html/directives/class-map";
 import { styleMap } from "lit-html/directives/style-map";
 import memoize from "memoize-one";
-import { classMap } from "lit-html/directives/class-map";
+import type { HASSDomEvent } from "../../../common/dom/fire_event";
 import { computeDomain } from "../../../common/entity/compute_domain";
+import { computeStateName } from "../../../common/entity/compute_state_name";
 import { domainIcon } from "../../../common/entity/domain_icon";
 import { stateIcon } from "../../../common/entity/state_icon";
+import "../../../common/search/search-input";
 import type {
   DataTableColumnContainer,
   DataTableColumnData,
@@ -27,7 +30,6 @@ import type {
   SelectionChangedEvent,
 } from "../../../components/data-table/ha-data-table";
 import "../../../components/ha-icon";
-import "../../../common/search/search-input";
 import {
   computeEntityRegistryName,
   EntityRegistryEntry,
@@ -38,18 +40,15 @@ import {
 import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
 import "../../../layouts/hass-loading-screen";
 import "../../../layouts/hass-tabs-subpage-data-table";
+import type { HaTabsSubpageDataTable } from "../../../layouts/hass-tabs-subpage-data-table";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import type { HomeAssistant, Route } from "../../../types";
+import { configSections } from "../ha-panel-config";
 import { DialogEntityEditor } from "./dialog-entity-editor";
 import {
   loadEntityEditorDialog,
   showEntityEditorDialog,
 } from "./show-dialog-entity-editor";
-import { configSections } from "../ha-panel-config";
-import { computeStateName } from "../../../common/entity/compute_state_name";
-
-import type { HaTabsSubpageDataTable } from "../../../layouts/hass-tabs-subpage-data-table";
-import type { HASSDomEvent } from "../../../common/dom/fire_event";
 
 export interface StateEntity extends EntityRegistryEntry {
   readonly?: boolean;

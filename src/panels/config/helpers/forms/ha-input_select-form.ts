@@ -1,26 +1,22 @@
+import "@polymer/paper-input/paper-input";
+import type { PaperInputElement } from "@polymer/paper-input/paper-input";
 import {
-  LitElement,
-  html,
   css,
   CSSResult,
-  TemplateResult,
-  property,
   customElement,
+  html,
+  LitElement,
+  property,
   query,
+  TemplateResult,
 } from "lit-element";
-
-import "@polymer/paper-input/paper-input";
-
-import type { PaperInputElement } from "@polymer/paper-input/paper-input";
-
-import "../../../../components/ha-switch";
-import "../../../../components/ha-icon-input";
-
-import type { HomeAssistant } from "../../../../types";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import { haStyle } from "../../../../resources/styles";
+import "../../../../components/ha-icon-input";
+import "../../../../components/ha-switch";
 import type { InputSelect } from "../../../../data/input_select";
 import { showConfirmationDialog } from "../../../../dialogs/generic/show-dialog-box";
+import { haStyle } from "../../../../resources/styles";
+import type { HomeAssistant } from "../../../../types";
 
 @customElement("ha-input_select-form")
 class HaInputSelectForm extends LitElement {

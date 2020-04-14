@@ -1,6 +1,6 @@
-import { PropertyValues, property, UpdatingElement } from "lit-element";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
-import { HomeAssistant, Constructor } from "../types";
+import { property, PropertyValues, UpdatingElement } from "lit-element";
+import { Constructor, HomeAssistant } from "../types";
 
 export interface HassSubscribeElement {
   hassSubscribe(): UnsubscribeFunc[];

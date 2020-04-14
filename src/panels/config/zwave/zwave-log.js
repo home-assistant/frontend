@@ -4,12 +4,11 @@ import "@polymer/paper-input/paper-input";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 /* eslint-plugin-disable lit */
 import { PolymerElement } from "@polymer/polymer/polymer-element";
-import LocalizeMixin from "../../../mixins/localize-mixin";
-import { EventsMixin } from "../../../mixins/events-mixin";
 import isPwa from "../../../common/config/is_pwa";
-
-import "../ha-config-section";
 import "../../../components/ha-card";
+import { EventsMixin } from "../../../mixins/events-mixin";
+import LocalizeMixin from "../../../mixins/localize-mixin";
+import "../ha-config-section";
 
 let registeredDialog = false;
 

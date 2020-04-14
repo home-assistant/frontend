@@ -1,11 +1,11 @@
 import {
+  css,
+  CSSResult,
   html,
   LitElement,
+  property,
   PropertyValues,
   TemplateResult,
-  CSSResult,
-  css,
-  property,
 } from "lit-element";
 import { classMap } from "lit-html/directives/class-map";
 import "./ha-icon";

@@ -4,12 +4,10 @@ import "@polymer/paper-listbox/paper-listbox";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 /* eslint-plugin-disable lit */
 import { PolymerElement } from "@polymer/polymer/polymer-element";
+import { computeStateDomain } from "../../../common/entity/compute_state_domain";
 import LocalizeMixin from "../../../mixins/localize-mixin";
-
 import hassAttributeUtil from "../../../util/hass-attributes-util";
 import "./ha-form-customize-attributes";
-
-import { computeStateDomain } from "../../../common/entity/compute_state_domain";
 
 class HaFormCustomize extends LocalizeMixin(PolymerElement) {
   static get template() {

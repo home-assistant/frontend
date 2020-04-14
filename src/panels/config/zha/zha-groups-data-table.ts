@@ -1,24 +1,22 @@
-import "../../../components/data-table/ha-data-table";
-import "../../../components/entity/ha-state-icon";
-
-import memoizeOne from "memoize-one";
-
 import {
-  LitElement,
-  html,
-  TemplateResult,
-  property,
   customElement,
+  html,
+  LitElement,
+  property,
   query,
+  TemplateResult,
 } from "lit-element";
-import type { HomeAssistant } from "../../../types";
+import memoizeOne from "memoize-one";
+import { navigate } from "../../../common/navigate";
+import "../../../components/data-table/ha-data-table";
 import type {
   DataTableColumnContainer,
   HaDataTable,
 } from "../../../components/data-table/ha-data-table";
-import type { ZHAGroup, ZHADevice } from "../../../data/zha";
+import "../../../components/entity/ha-state-icon";
+import type { ZHADevice, ZHAGroup } from "../../../data/zha";
+import type { HomeAssistant } from "../../../types";
 import { formatAsPaddedHex } from "./functions";
-import { navigate } from "../../../common/navigate";
 
 export interface GroupRowData extends ZHAGroup {
   group?: GroupRowData;

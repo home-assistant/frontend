@@ -1,16 +1,15 @@
+import "@material/mwc-button";
 import {
-  html,
-  LitElement,
-  TemplateResult,
-  customElement,
-  property,
   css,
   CSSResult,
+  customElement,
+  html,
+  LitElement,
+  property,
+  TemplateResult,
 } from "lit-element";
-import "@material/mwc-button";
-
-import { HomeAssistant } from "../../../types";
 import { fireEvent } from "../../../common/dom/fire_event";
+import { HomeAssistant } from "../../../types";
 
 @customElement("hui-theme-select-editor")
 export class HuiThemeSelectEditor extends LitElement {

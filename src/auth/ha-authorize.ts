@@ -1,15 +1,15 @@
 import {
-  LitElement,
-  html,
-  PropertyValues,
-  CSSResult,
   css,
+  CSSResult,
+  html,
+  LitElement,
   property,
+  PropertyValues,
 } from "lit-element";
-import { litLocalizeLiteMixin } from "../mixins/lit-localize-lite-mixin";
-import "./ha-auth-flow";
 import { AuthProvider, fetchAuthProviders } from "../data/auth";
+import { litLocalizeLiteMixin } from "../mixins/lit-localize-lite-mixin";
 import { registerServiceWorker } from "../util/register-service-worker";
+import "./ha-auth-flow";
 
 import(/* webpackChunkName: "pick-auth-provider" */ "./ha-pick-auth-provider");
 

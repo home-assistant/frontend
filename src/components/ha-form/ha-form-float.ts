@@ -1,16 +1,15 @@
-import {
-  customElement,
-  LitElement,
-  html,
-  property,
-  TemplateResult,
-  query,
-} from "lit-element";
-import { HaFormElement, HaFormFloatData, HaFormFloatSchema } from "./ha-form";
-import { fireEvent } from "../../common/dom/fire_event";
-
 import "@polymer/paper-input/paper-input";
 import type { PaperInputElement } from "@polymer/paper-input/paper-input";
+import {
+  customElement,
+  html,
+  LitElement,
+  property,
+  query,
+  TemplateResult,
+} from "lit-element";
+import { fireEvent } from "../../common/dom/fire_event";
+import { HaFormElement, HaFormFloatData, HaFormFloatSchema } from "./ha-form";
 
 @customElement("ha-form-float")
 export class HaFormFloat extends LitElement implements HaFormElement {

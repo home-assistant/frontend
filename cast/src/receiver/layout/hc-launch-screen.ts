@@ -1,11 +1,11 @@
 import {
-  LitElement,
-  TemplateResult,
-  html,
-  customElement,
-  CSSResult,
   css,
+  CSSResult,
+  customElement,
+  html,
+  LitElement,
   property,
+  TemplateResult,
 } from "lit-element";
 import { HomeAssistant } from "../../../../src/types";
 

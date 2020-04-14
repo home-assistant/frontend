@@ -1,33 +1,32 @@
 import "@polymer/app-route/app-route";
-import { property, customElement, PropertyValues } from "lit-element";
-
-import "./ha-config-entries-dashboard";
-import "./config-entry/ha-config-entry-page";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
+import { customElement, property, PropertyValues } from "lit-element";
 import { compare } from "../../../common/string/compare";
 import {
-  subscribeAreaRegistry,
   AreaRegistryEntry,
+  subscribeAreaRegistry,
 } from "../../../data/area_registry";
-import {
-  HassRouterPage,
-  RouterOptions,
-} from "../../../layouts/hass-router-page";
-import { HomeAssistant } from "../../../types";
 import { ConfigEntry, getConfigEntries } from "../../../data/config_entries";
+import {
+  getConfigFlowInProgressCollection,
+  subscribeConfigFlowInProgress,
+} from "../../../data/config_flow";
+import { DataEntryFlowProgress } from "../../../data/data_entry_flow";
+import {
+  DeviceRegistryEntry,
+  subscribeDeviceRegistry,
+} from "../../../data/device_registry";
 import {
   EntityRegistryEntry,
   subscribeEntityRegistry,
 } from "../../../data/entity_registry";
 import {
-  DeviceRegistryEntry,
-  subscribeDeviceRegistry,
-} from "../../../data/device_registry";
-import { DataEntryFlowProgress } from "../../../data/data_entry_flow";
-import {
-  subscribeConfigFlowInProgress,
-  getConfigFlowInProgressCollection,
-} from "../../../data/config_flow";
+  HassRouterPage,
+  RouterOptions,
+} from "../../../layouts/hass-router-page";
+import { HomeAssistant } from "../../../types";
+import "./config-entry/ha-config-entry-page";
+import "./ha-config-entries-dashboard";
 
 declare global {
   interface HASSDomEvents {

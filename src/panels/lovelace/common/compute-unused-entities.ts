@@ -1,4 +1,4 @@
-import { LovelaceConfig, ActionConfig } from "../../../data/lovelace";
+import { ActionConfig, LovelaceConfig } from "../../../data/lovelace";
 import { HomeAssistant } from "../../../types";
 
 export const EXCLUDED_DOMAINS = ["zone", "persistent_notification"];

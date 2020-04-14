@@ -8,30 +8,27 @@ import "@polymer/paper-listbox/paper-listbox";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 /* eslint-plugin-disable lit */
 import { PolymerElement } from "@polymer/polymer/polymer-element";
-
+import { computeStateDomain } from "../../../common/entity/compute_state_domain";
+import { computeStateName } from "../../../common/entity/compute_state_name";
+import { sortStatesByName } from "../../../common/entity/states_sort_by_name";
 import "../../../components/buttons/ha-call-service-button";
-import "../../../components/ha-menu-button";
-import "../../../components/ha-service-description";
-import "../../../components/ha-paper-icon-button-arrow-prev";
-import "../../../layouts/ha-app-layout";
-import "../../../resources/ha-style";
 import "../../../components/ha-card";
-
+import "../../../components/ha-menu-button";
+import "../../../components/ha-paper-icon-button-arrow-prev";
+import "../../../components/ha-service-description";
+import "../../../layouts/ha-app-layout";
+import { EventsMixin } from "../../../mixins/events-mixin";
+import LocalizeMixin from "../../../mixins/localize-mixin";
+import "../../../resources/ha-style";
 import "../ha-config-section";
 import "../ha-form-style";
 import "./zwave-groups";
 import "./zwave-log";
 import "./zwave-network";
 import "./zwave-node-config";
+import "./zwave-node-protection";
 import "./zwave-usercodes";
 import "./zwave-values";
-import "./zwave-node-protection";
-
-import { sortStatesByName } from "../../../common/entity/states_sort_by_name";
-import { computeStateName } from "../../../common/entity/compute_state_name";
-import { computeStateDomain } from "../../../common/entity/compute_state_domain";
-import { EventsMixin } from "../../../mixins/events-mixin";
-import LocalizeMixin from "../../../mixins/localize-mixin";
 
 /*
  * @appliesMixin LocalizeMixin

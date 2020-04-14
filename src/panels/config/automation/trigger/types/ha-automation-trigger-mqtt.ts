@@ -1,11 +1,11 @@
 import "@polymer/paper-input/paper-input";
-import { LitElement, customElement, property, html } from "lit-element";
+import { customElement, html, LitElement, property } from "lit-element";
+import { MqttTrigger } from "../../../../../data/automation";
 import { HomeAssistant } from "../../../../../types";
 import {
   handleChangeEvent,
   TriggerElement,
 } from "../ha-automation-trigger-row";
-import { MqttTrigger } from "../../../../../data/automation";
 
 @customElement("ha-automation-trigger-mqtt")
 export class HaMQTTTrigger extends LitElement implements TriggerElement {

@@ -2,11 +2,9 @@ import "@polymer/paper-card/paper-card";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 /* eslint-plugin-disable lit */
 import { PolymerElement } from "@polymer/polymer/polymer-element";
-
+import { computeStateName } from "../common/entity/compute_state_name";
 import "../components/state-history-charts";
 import "../data/ha-state-history-data";
-
-import { computeStateName } from "../common/entity/compute_state_name";
 import { EventsMixin } from "../mixins/events-mixin";
 
 /*

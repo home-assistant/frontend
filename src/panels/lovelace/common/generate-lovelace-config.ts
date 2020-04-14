@@ -1,48 +1,46 @@
 import {
-  HassEntity,
-  HassEntities,
   HassConfig,
+  HassEntities,
+  HassEntity,
 } from "home-assistant-js-websocket";
-import { HomeAssistant, GroupEntity } from "../../../types";
-import {
-  LovelaceConfig,
-  LovelaceCardConfig,
-  LovelaceViewConfig,
-} from "../../../data/lovelace";
-
-import { extractViews } from "../../../common/entity/extract_views";
-import { getViewEntities } from "../../../common/entity/get_view_entities";
-import { computeStateName } from "../../../common/entity/compute_state_name";
-import { splitByGroups } from "../../../common/entity/split_by_groups";
+import { computeDomain } from "../../../common/entity/compute_domain";
 import { computeObjectId } from "../../../common/entity/compute_object_id";
 import { computeStateDomain } from "../../../common/entity/compute_state_domain";
-import { computeDomain } from "../../../common/entity/compute_domain";
-
-import { LovelaceRowConfig, WeblinkConfig } from "../entity-rows/types";
+import { computeStateName } from "../../../common/entity/compute_state_name";
+import { extractViews } from "../../../common/entity/extract_views";
+import { getViewEntities } from "../../../common/entity/get_view_entities";
+import { splitByGroups } from "../../../common/entity/split_by_groups";
+import { compare } from "../../../common/string/compare";
 import { LocalizeFunc } from "../../../common/translations/localize";
-import {
-  EntitiesCardConfig,
-  AlarmPanelCardConfig,
-  PictureEntityCardConfig,
-  ThermostatCardConfig,
-  LightCardConfig,
-} from "../cards/types";
-import {
-  subscribeAreaRegistry,
-  AreaRegistryEntry,
-} from "../../../data/area_registry";
 import { subscribeOne } from "../../../common/util/subscribe-one";
 import {
-  subscribeDeviceRegistry,
+  AreaRegistryEntry,
+  subscribeAreaRegistry,
+} from "../../../data/area_registry";
+import {
   DeviceRegistryEntry,
+  subscribeDeviceRegistry,
 } from "../../../data/device_registry";
 import {
-  subscribeEntityRegistry,
   EntityRegistryEntry,
+  subscribeEntityRegistry,
 } from "../../../data/entity_registry";
-import { processEditorEntities } from "../editor/process-editor-entities";
+import {
+  LovelaceCardConfig,
+  LovelaceConfig,
+  LovelaceViewConfig,
+} from "../../../data/lovelace";
 import { SENSOR_DEVICE_CLASS_BATTERY } from "../../../data/sensor";
-import { compare } from "../../../common/string/compare";
+import { GroupEntity, HomeAssistant } from "../../../types";
+import {
+  AlarmPanelCardConfig,
+  EntitiesCardConfig,
+  LightCardConfig,
+  PictureEntityCardConfig,
+  ThermostatCardConfig,
+} from "../cards/types";
+import { processEditorEntities } from "../editor/process-editor-entities";
+import { LovelaceRowConfig, WeblinkConfig } from "../entity-rows/types";
 
 const DEFAULT_VIEW_ENTITY_ID = "group.default_view";
 const DOMAINS_BADGES = [

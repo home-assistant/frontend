@@ -1,33 +1,30 @@
-import {
-  LitElement,
-  TemplateResult,
-  html,
-  CSSResultArray,
-  css,
-  customElement,
-  property,
-} from "lit-element";
 import "@polymer/app-layout/app-header-layout/app-header-layout";
 import "@polymer/app-layout/app-header/app-header";
 import "@polymer/app-layout/app-toolbar/app-toolbar";
 import "@polymer/paper-icon-button/paper-icon-button";
 import "@polymer/paper-tabs/paper-tab";
 import "@polymer/paper-tabs/paper-tabs";
-
-import "../../src/components/ha-menu-button";
-import "../../src/resources/ha-style";
-import "./hassio-tabs-router";
-
+import {
+  css,
+  CSSResultArray,
+  customElement,
+  html,
+  LitElement,
+  property,
+  TemplateResult,
+} from "lit-element";
 import scrollToTarget from "../../src/common/dom/scroll-to-target";
-
+import { navigate } from "../../src/common/navigate";
+import "../../src/components/ha-menu-button";
+import { HassioHassOSInfo, HassioHostInfo } from "../../src/data/hassio/host";
+import {
+  HassioHomeAssistantInfo,
+  HassioSupervisorInfo,
+} from "../../src/data/hassio/supervisor";
+import "../../src/resources/ha-style";
 import { haStyle } from "../../src/resources/styles";
 import { HomeAssistant, Route } from "../../src/types";
-import { navigate } from "../../src/common/navigate";
-import { HassioHostInfo, HassioHassOSInfo } from "../../src/data/hassio/host";
-import {
-  HassioSupervisorInfo,
-  HassioHomeAssistantInfo,
-} from "../../src/data/hassio/supervisor";
+import "./hassio-tabs-router";
 
 const HAS_REFRESH_BUTTON = ["store", "snapshots"];
 

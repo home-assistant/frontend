@@ -1,23 +1,21 @@
-import "../../../components/data-table/ha-data-table";
-import "../../../components/entity/ha-state-icon";
-
-import memoizeOne from "memoize-one";
-
 import {
-  LitElement,
-  html,
-  TemplateResult,
-  property,
   customElement,
+  html,
+  LitElement,
+  property,
   query,
+  TemplateResult,
 } from "lit-element";
-import type { HomeAssistant } from "../../../types";
+import memoizeOne from "memoize-one";
+import "../../../components/data-table/ha-data-table";
 import type {
   DataTableColumnContainer,
   HaDataTable,
 } from "../../../components/data-table/ha-data-table";
+import "../../../components/entity/ha-state-icon";
 import type { ZHADevice } from "../../../data/zha";
 import { showZHADeviceInfoDialog } from "../../../dialogs/zha-device-info-dialog/show-dialog-zha-device-info";
+import type { HomeAssistant } from "../../../types";
 
 export interface DeviceRowData extends ZHADevice {
   device?: DeviceRowData;

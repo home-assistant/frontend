@@ -1,26 +1,24 @@
 import {
-  html,
-  LitElement,
-  TemplateResult,
-  customElement,
-  property,
   css,
   CSSResult,
+  customElement,
+  html,
+  LitElement,
+  property,
   PropertyValues,
+  TemplateResult,
 } from "lit-element";
 import { classMap } from "lit-html/directives/class-map";
-
 import "../../../components/ha-card";
 import "../../../components/state-history-charts";
+import { CacheConfig, getRecentWithCache } from "../../../data/cached-history";
 import "../../../data/ha-state-history-data";
-
-import { getRecentWithCache, CacheConfig } from "../../../data/cached-history";
-import { processConfigEntities } from "../common/process-config-entities";
 import { HomeAssistant } from "../../../types";
-import { HistoryGraphCardConfig } from "./types";
-import { LovelaceCard } from "../types";
-import { EntityConfig } from "../entity-rows/types";
 import { findEntities } from "../common/find-entites";
+import { processConfigEntities } from "../common/process-config-entities";
+import { EntityConfig } from "../entity-rows/types";
+import { LovelaceCard } from "../types";
+import { HistoryGraphCardConfig } from "./types";
 
 @customElement("hui-history-graph-card")
 export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {

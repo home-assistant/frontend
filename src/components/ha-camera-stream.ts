@@ -1,23 +1,22 @@
 import {
+  css,
+  CSSResult,
+  customElement,
+  html,
+  LitElement,
   property,
   PropertyValues,
-  LitElement,
   TemplateResult,
-  html,
-  CSSResult,
-  css,
-  customElement,
 } from "lit-element";
-
-import { computeStateName } from "../common/entity/compute_state_name";
-import { HomeAssistant, CameraEntity } from "../types";
 import { fireEvent } from "../common/dom/fire_event";
+import { computeStateName } from "../common/entity/compute_state_name";
+import { supportsFeature } from "../common/entity/supports-feature";
 import {
   CAMERA_SUPPORT_STREAM,
-  fetchStreamUrl,
   computeMJPEGStreamUrl,
+  fetchStreamUrl,
 } from "../data/camera";
-import { supportsFeature } from "../common/entity/supports-feature";
+import { CameraEntity, HomeAssistant } from "../types";
 
 type HLSModule = typeof import("hls.js");
 

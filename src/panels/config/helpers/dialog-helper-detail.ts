@@ -1,3 +1,5 @@
+import "@polymer/paper-item/paper-icon-item";
+import "@polymer/paper-tooltip/paper-tooltip";
 import {
   css,
   CSSResult,
@@ -5,29 +7,27 @@ import {
   html,
   LitElement,
   property,
-  TemplateResult,
   query,
+  TemplateResult,
 } from "lit-element";
-import "../../../components/ha-dialog";
 import { classMap } from "lit-html/directives/class-map";
-import { HomeAssistant } from "../../../types";
-import { dynamicElement } from "../../../common/dom/dynamic-element-directive";
-import { createInputBoolean } from "../../../data/input_boolean";
-import { createInputText } from "../../../data/input_text";
-import { createInputNumber } from "../../../data/input_number";
-import { createInputDateTime } from "../../../data/input_datetime";
-import { createInputSelect } from "../../../data/input_select";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
-import { Helper } from "./const";
-import "@polymer/paper-item/paper-icon-item";
-import "@polymer/paper-tooltip/paper-tooltip";
-import "./forms/ha-input_boolean-form";
-import "./forms/ha-input_text-form";
-import "./forms/ha-input_datetime-form";
-import "./forms/ha-input_select-form";
-import "./forms/ha-input_number-form";
+import { dynamicElement } from "../../../common/dom/dynamic-element-directive";
 import { domainIcon } from "../../../common/entity/domain_icon";
+import "../../../components/ha-dialog";
+import { createInputBoolean } from "../../../data/input_boolean";
+import { createInputDateTime } from "../../../data/input_datetime";
+import { createInputNumber } from "../../../data/input_number";
+import { createInputSelect } from "../../../data/input_select";
+import { createInputText } from "../../../data/input_text";
 import { haStyleDialog } from "../../../resources/styles";
+import { HomeAssistant } from "../../../types";
+import { Helper } from "./const";
+import "./forms/ha-input_boolean-form";
+import "./forms/ha-input_datetime-form";
+import "./forms/ha-input_number-form";
+import "./forms/ha-input_select-form";
+import "./forms/ha-input_text-form";
 
 const HELPERS = {
   input_boolean: createInputBoolean,

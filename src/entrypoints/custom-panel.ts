@@ -1,11 +1,11 @@
 import { PolymerElement } from "@polymer/polymer";
-import { loadJS } from "../common/dom/load_resource";
-import { loadCustomPanel } from "../util/custom-panel/load-custom-panel";
-import { createCustomPanelElement } from "../util/custom-panel/create-custom-panel-element";
-import { setCustomPanelProperties } from "../util/custom-panel/set-custom-panel-properties";
 import { fireEvent } from "../common/dom/fire_event";
-import { CustomPanelInfo } from "../data/panel_custom";
+import { loadJS } from "../common/dom/load_resource";
 import { webComponentsSupported } from "../common/feature-detect/support-web-components";
+import { CustomPanelInfo } from "../data/panel_custom";
+import { createCustomPanelElement } from "../util/custom-panel/create-custom-panel-element";
+import { loadCustomPanel } from "../util/custom-panel/load-custom-panel";
+import { setCustomPanelProperties } from "../util/custom-panel/set-custom-panel-properties";
 
 declare global {
   interface Window {

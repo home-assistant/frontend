@@ -1,16 +1,15 @@
-import "./ha-scene-editor";
-import "./ha-scene-dashboard";
-
-import { property, customElement, PropertyValues } from "lit-element";
-import memoizeOne from "memoize-one";
 import { HassEntities } from "home-assistant-js-websocket";
+import { customElement, property, PropertyValues } from "lit-element";
+import memoizeOne from "memoize-one";
+import { computeStateDomain } from "../../../common/entity/compute_state_domain";
+import { SceneEntity } from "../../../data/scene";
 import {
   HassRouterPage,
   RouterOptions,
 } from "../../../layouts/hass-router-page";
 import { HomeAssistant } from "../../../types";
-import { computeStateDomain } from "../../../common/entity/compute_state_domain";
-import { SceneEntity } from "../../../data/scene";
+import "./ha-scene-dashboard";
+import "./ha-scene-editor";
 
 @customElement("ha-config-scene")
 class HaConfigScene extends HassRouterPage {

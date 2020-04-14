@@ -1,6 +1,6 @@
 import { HassEntities } from "home-assistant-js-websocket";
-import { computeDomain } from "./compute_domain";
 import { GroupEntity } from "../../types";
+import { computeDomain } from "./compute_domain";
 
 // Split a collection into a list of groups and a 'rest' list of ungrouped
 // entities.

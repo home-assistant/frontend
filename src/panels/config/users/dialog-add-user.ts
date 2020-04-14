@@ -1,29 +1,29 @@
 import "@material/mwc-button";
 import "@polymer/paper-spinner/paper-spinner";
-import "../../../components/ha-switch";
-import "../../../components/ha-dialog";
 import {
-  LitElement,
-  html,
-  TemplateResult,
+  css,
+  CSSResult,
   customElement,
+  html,
+  LitElement,
   property,
   PropertyValues,
-  CSSResult,
-  css,
+  TemplateResult,
 } from "lit-element";
-import { HomeAssistant } from "../../../types";
-import { PolymerChangedEvent } from "../../../polymer-types";
-import { AddUserDialogParams } from "./show-dialog-add-user";
+import "../../../components/ha-dialog";
+import "../../../components/ha-switch";
+import { createAuthForUser } from "../../../data/auth";
 import {
-  User,
-  SYSTEM_GROUP_ID_USER,
   createUser,
   deleteUser,
   SYSTEM_GROUP_ID_ADMIN,
+  SYSTEM_GROUP_ID_USER,
+  User,
 } from "../../../data/user";
-import { createAuthForUser } from "../../../data/auth";
+import { PolymerChangedEvent } from "../../../polymer-types";
 import { haStyleDialog } from "../../../resources/styles";
+import { HomeAssistant } from "../../../types";
+import { AddUserDialogParams } from "./show-dialog-add-user";
 
 @customElement("dialog-add-user")
 export class DialogAddUser extends LitElement {

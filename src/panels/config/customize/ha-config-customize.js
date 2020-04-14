@@ -2,21 +2,17 @@ import "@polymer/paper-icon-button/paper-icon-button";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 /* eslint-plugin-disable lit */
 import { PolymerElement } from "@polymer/polymer/polymer-element";
-
-import "../../../layouts/hass-tabs-subpage";
-import "../../../resources/ha-style";
+import { computeStateDomain } from "../../../common/entity/compute_state_domain";
+import { computeStateName } from "../../../common/entity/compute_state_name";
+import { sortStatesByName } from "../../../common/entity/states_sort_by_name";
 import "../../../components/ha-paper-icon-button-arrow-prev";
-
+import "../../../layouts/hass-tabs-subpage";
+import LocalizeMixin from "../../../mixins/localize-mixin";
+import "../../../resources/ha-style";
 import "../ha-config-section";
 import "../ha-entity-config";
-import "./ha-form-customize";
-
-import { computeStateName } from "../../../common/entity/compute_state_name";
-import { computeStateDomain } from "../../../common/entity/compute_state_domain";
-import { sortStatesByName } from "../../../common/entity/states_sort_by_name";
-import LocalizeMixin from "../../../mixins/localize-mixin";
-
 import { configSections } from "../ha-panel-config";
+import "./ha-form-customize";
 
 /*
  * @appliesMixin LocalizeMixin

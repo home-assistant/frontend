@@ -1,15 +1,13 @@
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 /* eslint-plugin-disable lit */
 import { PolymerElement } from "@polymer/polymer/polymer-element";
-
-/* eslint-disable */
-import { render } from "react-dom";
+import moment from "moment";
 import React from "react";
 /* eslint-enable */
 import BigCalendar from "react-big-calendar";
-import moment from "moment";
+/* eslint-disable */
+import { render } from "react-dom";
 import { EventsMixin } from "../../mixins/events-mixin";
-
 import "../../resources/ha-style";
 
 BigCalendar.setLocalizer(BigCalendar.momentLocalizer(moment));

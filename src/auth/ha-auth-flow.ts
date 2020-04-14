@@ -1,21 +1,21 @@
+import "@material/mwc-button";
 import {
-  LitElement,
+  css,
+  CSSResult,
   html,
+  LitElement,
   property,
   PropertyValues,
-  CSSResult,
-  css,
   TemplateResult,
 } from "lit-element";
-import "@material/mwc-button";
 import "../components/ha-form/ha-form";
 import "../components/ha-markdown";
-import { litLocalizeLiteMixin } from "../mixins/lit-localize-lite-mixin";
 import { AuthProvider } from "../data/auth";
 import {
   DataEntryFlowStep,
   DataEntryFlowStepForm,
 } from "../data/data_entry_flow";
+import { litLocalizeLiteMixin } from "../mixins/lit-localize-lite-mixin";
 
 type State = "loading" | "error" | "step";
 

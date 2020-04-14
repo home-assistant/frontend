@@ -1,21 +1,19 @@
+import "@polymer/paper-input/paper-input";
 import {
-  LitElement,
-  html,
   css,
   CSSResult,
-  TemplateResult,
-  property,
   customElement,
+  html,
+  LitElement,
+  property,
+  TemplateResult,
 } from "lit-element";
-
-import "@polymer/paper-input/paper-input";
-
-import "../../../../components/ha-switch";
-import "../../../../components/ha-icon-input";
-import { HomeAssistant } from "../../../../types";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import { haStyle } from "../../../../resources/styles";
+import "../../../../components/ha-icon-input";
+import "../../../../components/ha-switch";
 import { InputDateTime } from "../../../../data/input_datetime";
+import { haStyle } from "../../../../resources/styles";
+import { HomeAssistant } from "../../../../types";
 
 @customElement("ha-input_datetime-form")
 class HaInputDateTimeForm extends LitElement {

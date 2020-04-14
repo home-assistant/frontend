@@ -1,25 +1,22 @@
+import deepFreeze from "deep-freeze";
 import {
   css,
-  html,
-  LitElement,
-  TemplateResult,
   CSSResultArray,
   customElement,
+  html,
+  LitElement,
   property,
   query,
+  TemplateResult,
 } from "lit-element";
-
-import "./hui-card-preview";
+import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/dialog/ha-paper-dialog";
-
-import deepFreeze from "deep-freeze";
-
 import type { HaPaperDialog } from "../../../../components/dialog/ha-paper-dialog";
-import type { HomeAssistant } from "../../../../types";
 import type { LovelaceCardConfig } from "../../../../data/lovelace";
 import { haStyleDialog } from "../../../../resources/styles";
+import type { HomeAssistant } from "../../../../types";
+import "./hui-card-preview";
 import type { DeleteCardDialogParams } from "./show-delete-card-dialog";
-import { fireEvent } from "../../../../common/dom/fire_event";
 
 @customElement("hui-dialog-delete-card")
 export class HuiDialogDeleteCard extends LitElement {

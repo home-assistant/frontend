@@ -1,37 +1,33 @@
-import {
-  customElement,
-  LitElement,
-  html,
-  TemplateResult,
-  CSSResult,
-  css,
-  property,
-} from "lit-element";
-import { classMap } from "lit-html/directives/class-map";
-import { safeDump, safeLoad } from "js-yaml";
-
+import "@material/mwc-button";
 import "@polymer/app-layout/app-header-layout/app-header-layout";
 import "@polymer/app-layout/app-header/app-header";
 import "@polymer/app-layout/app-toolbar/app-toolbar";
-import "@material/mwc-button";
 import "@polymer/paper-icon-button/paper-icon-button";
 import "@polymer/paper-spinner/paper-spinner";
-
-import { struct } from "./common/structs/struct";
-import type { Lovelace } from "./types";
-
-import "../../components/ha-icon";
-import { haStyle } from "../../resources/styles";
-
+import { safeDump, safeLoad } from "js-yaml";
+import {
+  css,
+  CSSResult,
+  customElement,
+  html,
+  LitElement,
+  property,
+  TemplateResult,
+} from "lit-element";
+import { classMap } from "lit-html/directives/class-map";
+import { computeRTL } from "../../common/util/compute_rtl";
 import "../../components/ha-code-editor";
 import type { HaCodeEditor } from "../../components/ha-code-editor";
-import type { HomeAssistant } from "../../types";
-import { computeRTL } from "../../common/util/compute_rtl";
+import "../../components/ha-icon";
 import type { LovelaceConfig } from "../../data/lovelace";
 import {
   showAlertDialog,
   showConfirmationDialog,
 } from "../../dialogs/generic/show-dialog-box";
+import { haStyle } from "../../resources/styles";
+import type { HomeAssistant } from "../../types";
+import { struct } from "./common/structs/struct";
+import type { Lovelace } from "./types";
 
 const lovelaceStruct = struct.interface({
   title: "string?",

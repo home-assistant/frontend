@@ -1,23 +1,21 @@
-import {
-  LitElement,
-  html,
-  css,
-  CSSResult,
-  TemplateResult,
-  customElement,
-  property,
-} from "lit-element";
 import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable";
 import "@polymer/paper-input/paper-input";
-
+import {
+  css,
+  CSSResult,
+  customElement,
+  html,
+  LitElement,
+  property,
+  TemplateResult,
+} from "lit-element";
+import { classMap } from "lit-html/directives/class-map";
 import "../../components/dialog/ha-paper-dialog";
 import "../../components/ha-switch";
-
-import { classMap } from "lit-html/directives/class-map";
-import { HomeAssistant } from "../../types";
-import { DialogParams } from "./show-dialog-box";
 import { PolymerChangedEvent } from "../../polymer-types";
 import { haStyleDialog } from "../../resources/styles";
+import { HomeAssistant } from "../../types";
+import { DialogParams } from "./show-dialog-box";
 
 @customElement("dialog-box")
 class DialogBox extends LitElement {

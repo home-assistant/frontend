@@ -12,20 +12,19 @@ import {
 } from "lit-element";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { computeDomain } from "../../../common/entity/compute_domain";
-import "../../../components/ha-switch";
 import "../../../components/ha-icon-input";
-
+import "../../../components/ha-switch";
 import type { HaSwitch } from "../../../components/ha-switch";
 import {
-  removeEntityRegistryEntry,
-  updateEntityRegistryEntry,
   EntityRegistryEntryUpdateParams,
   ExtEntityRegistryEntry,
+  removeEntityRegistryEntry,
+  updateEntityRegistryEntry,
 } from "../../../data/entity_registry";
 import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
 import type { PolymerChangedEvent } from "../../../polymer-types";
-import type { HomeAssistant } from "../../../types";
 import { haStyle } from "../../../resources/styles";
+import type { HomeAssistant } from "../../../types";
 
 @customElement("entity-registry-settings")
 export class EntityRegistrySettings extends LitElement {

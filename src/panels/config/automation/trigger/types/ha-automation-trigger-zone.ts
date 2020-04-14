@@ -1,15 +1,14 @@
 import "@polymer/paper-radio-button/paper-radio-button";
 import "@polymer/paper-radio-group/paper-radio-group";
 import type { PaperRadioGroupElement } from "@polymer/paper-radio-group/paper-radio-group";
-import "../../../../../components/entity/ha-entity-picker";
-
-import { LitElement, property, html, customElement } from "lit-element";
-import { hasLocation } from "../../../../../common/entity/has_location";
-import { computeStateDomain } from "../../../../../common/entity/compute_state_domain";
-import type { HomeAssistant } from "../../../../../types";
-import type { PolymerChangedEvent } from "../../../../../polymer-types";
+import { customElement, html, LitElement, property } from "lit-element";
 import { fireEvent } from "../../../../../common/dom/fire_event";
+import { computeStateDomain } from "../../../../../common/entity/compute_state_domain";
+import { hasLocation } from "../../../../../common/entity/has_location";
+import "../../../../../components/entity/ha-entity-picker";
 import type { ZoneTrigger } from "../../../../../data/automation";
+import type { PolymerChangedEvent } from "../../../../../polymer-types";
+import type { HomeAssistant } from "../../../../../types";
 
 function zoneAndLocationFilter(stateObj) {
   return hasLocation(stateObj) && computeStateDomain(stateObj) !== "zone";

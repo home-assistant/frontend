@@ -1,40 +1,39 @@
 import "@polymer/paper-input/paper-input";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-item/paper-item-body";
-import "@vaadin/vaadin-combo-box/theme/material/vaadin-combo-box-light";
 import "@polymer/paper-listbox/paper-listbox";
-import memoizeOne from "memoize-one";
+import "@vaadin/vaadin-combo-box/theme/material/vaadin-combo-box-light";
+import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import {
-  LitElement,
-  TemplateResult,
-  html,
   css,
   CSSResult,
   customElement,
+  html,
+  LitElement,
   property,
+  TemplateResult,
 } from "lit-element";
-import { UnsubscribeFunc } from "home-assistant-js-websocket";
-import { SubscribeMixin } from "../../mixins/subscribe-mixin";
-
-import { HomeAssistant } from "../../types";
+import memoizeOne from "memoize-one";
 import { fireEvent } from "../../common/dom/fire_event";
-import {
-  DeviceRegistryEntry,
-  subscribeDeviceRegistry,
-  computeDeviceName,
-  DeviceEntityLookup,
-} from "../../data/device_registry";
+import { computeDomain } from "../../common/entity/compute_domain";
 import { compare } from "../../common/string/compare";
-import { PolymerChangedEvent } from "../../polymer-types";
 import {
   AreaRegistryEntry,
   subscribeAreaRegistry,
 } from "../../data/area_registry";
 import {
+  computeDeviceName,
+  DeviceEntityLookup,
+  DeviceRegistryEntry,
+  subscribeDeviceRegistry,
+} from "../../data/device_registry";
+import {
   EntityRegistryEntry,
   subscribeEntityRegistry,
 } from "../../data/entity_registry";
-import { computeDomain } from "../../common/entity/compute_domain";
+import { SubscribeMixin } from "../../mixins/subscribe-mixin";
+import { PolymerChangedEvent } from "../../polymer-types";
+import { HomeAssistant } from "../../types";
 
 interface Device {
   name: string;

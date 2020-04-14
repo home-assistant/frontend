@@ -1,5 +1,3 @@
-import "web-animations-js/web-animations-next-lite.min";
-
 import "@material/mwc-button";
 import "@polymer/paper-card/paper-card";
 import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
@@ -15,19 +13,19 @@ import {
   PropertyValues,
   TemplateResult,
 } from "lit-element";
-
-import { HomeAssistant } from "../../../src/types";
+import "web-animations-js/web-animations-next-lite.min";
 import {
   HassioAddonDetails,
-  setHassioAddonOption,
   HassioAddonSetOptionParams,
+  setHassioAddonOption,
 } from "../../../src/data/hassio/addon";
 import {
-  HassioHardwareAudioDevice,
   fetchHassioHardwareAudio,
+  HassioHardwareAudioDevice,
 } from "../../../src/data/hassio/hardware";
-import { hassioStyle } from "../resources/hassio-style";
 import { haStyle } from "../../../src/resources/styles";
+import { HomeAssistant } from "../../../src/types";
+import { hassioStyle } from "../resources/hassio-style";
 
 @customElement("hassio-addon-audio")
 class HassioAddonAudio extends LitElement {

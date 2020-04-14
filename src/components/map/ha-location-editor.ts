@@ -1,27 +1,27 @@
 import {
-  LitElement,
-  property,
-  TemplateResult,
-  html,
-  CSSResult,
-  css,
-  customElement,
-  PropertyValues,
-} from "lit-element";
-import {
-  Marker,
-  Map,
-  LeafletMouseEvent,
-  DragEndEvent,
-  LatLng,
   Circle,
   DivIcon,
+  DragEndEvent,
+  LatLng,
+  LeafletMouseEvent,
+  Map,
+  Marker,
 } from "leaflet";
 import {
-  setupLeafletMap,
-  LeafletModuleType,
-} from "../../common/dom/setup-leaflet-map";
+  css,
+  CSSResult,
+  customElement,
+  html,
+  LitElement,
+  property,
+  PropertyValues,
+  TemplateResult,
+} from "lit-element";
 import { fireEvent } from "../../common/dom/fire_event";
+import {
+  LeafletModuleType,
+  setupLeafletMap,
+} from "../../common/dom/setup-leaflet-map";
 import { nextRender } from "../../common/util/render-status";
 import { defaultRadiusColor } from "../../data/zone";
 

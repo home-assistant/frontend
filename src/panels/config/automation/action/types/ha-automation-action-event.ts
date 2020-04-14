@@ -1,20 +1,19 @@
 import "@polymer/paper-input/paper-input";
-import "../../../../../components/ha-service-picker";
-import "../../../../../components/entity/ha-entity-picker";
-import "../../../../../components/ha-yaml-editor";
-
 import {
+  customElement,
   LitElement,
   property,
-  customElement,
   PropertyValues,
   query,
 } from "lit-element";
 import { html } from "lit-html";
-import { ActionElement, handleChangeEvent } from "../ha-automation-action-row";
-import type { HomeAssistant } from "../../../../../types";
-import type { EventAction } from "../../../../../data/script";
+import "../../../../../components/entity/ha-entity-picker";
+import "../../../../../components/ha-service-picker";
+import "../../../../../components/ha-yaml-editor";
 import type { HaYamlEditor } from "../../../../../components/ha-yaml-editor";
+import type { EventAction } from "../../../../../data/script";
+import type { HomeAssistant } from "../../../../../types";
+import { ActionElement, handleChangeEvent } from "../ha-automation-action-row";
 
 @customElement("ha-automation-action-event")
 export class HaEventAction extends LitElement implements ActionElement {

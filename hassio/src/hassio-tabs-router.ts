@@ -1,21 +1,21 @@
-import { customElement, property } from "lit-element";
 import { PolymerElement } from "@polymer/polymer";
+import { customElement, property } from "lit-element";
+import { HassioHassOSInfo, HassioHostInfo } from "../../src/data/hassio/host";
+import {
+  HassioHomeAssistantInfo,
+  HassioSupervisorInfo,
+} from "../../src/data/hassio/supervisor";
 import {
   HassRouterPage,
   RouterOptions,
 } from "../../src/layouts/hass-router-page";
 import { HomeAssistant } from "../../src/types";
+import "./addon-store/hassio-addon-store";
 // Don't codesplit it, that way the dashboard always loads fast.
 import "./dashboard/hassio-dashboard";
 // Don't codesplit the others, because it breaks the UI when pushed to a Pi
 import "./snapshots/hassio-snapshots";
-import "./addon-store/hassio-addon-store";
 import "./system/hassio-system";
-import { HassioHostInfo, HassioHassOSInfo } from "../../src/data/hassio/host";
-import {
-  HassioSupervisorInfo,
-  HassioHomeAssistantInfo,
-} from "../../src/data/hassio/supervisor";
 
 @customElement("hassio-tabs-router")
 class HassioTabsRouter extends HassRouterPage {

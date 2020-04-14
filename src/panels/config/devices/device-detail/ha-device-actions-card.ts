@@ -1,11 +1,9 @@
 import { customElement } from "lit-element";
+import "../../../../components/ha-card";
 import {
   DeviceAction,
   localizeDeviceAutomationAction,
 } from "../../../../data/device_automation";
-
-import "../../../../components/ha-card";
-
 import { HaDeviceAutomationCard } from "./ha-device-automation-card";
 
 @customElement("ha-device-actions-card")

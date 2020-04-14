@@ -1,22 +1,22 @@
-import "./hassio-addon-repository";
-import "./hassio-repositories-editor";
-import { TemplateResult, html } from "lit-html";
 import {
-  LitElement,
-  CSSResult,
   css,
+  CSSResult,
+  LitElement,
   property,
   PropertyValues,
 } from "lit-element";
-import { HomeAssistant } from "../../../src/types";
+import { html, TemplateResult } from "lit-html";
 import {
-  HassioAddonRepository,
-  HassioAddonInfo,
   fetchHassioAddonsInfo,
+  HassioAddonInfo,
+  HassioAddonRepository,
   reloadHassioAddons,
 } from "../../../src/data/hassio/addon";
 import "../../../src/layouts/loading-screen";
+import { HomeAssistant } from "../../../src/types";
 import "../components/hassio-search-input";
+import "./hassio-addon-repository";
+import "./hassio-repositories-editor";
 
 const sortRepos = (a: HassioAddonRepository, b: HassioAddonRepository) => {
   if (a.slug === "local") {

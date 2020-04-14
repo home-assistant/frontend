@@ -1,52 +1,51 @@
+import "@polymer/paper-icon-button/paper-icon-button";
+import type { PaperIconButtonElement } from "@polymer/paper-icon-button/paper-icon-button";
+import "@polymer/paper-progress/paper-progress";
+import type { PaperProgressElement } from "@polymer/paper-progress/paper-progress";
 import {
-  html,
-  LitElement,
-  PropertyValues,
-  TemplateResult,
-  customElement,
-  property,
   css,
   CSSResult,
+  customElement,
+  html,
+  LitElement,
+  property,
+  PropertyValues,
   query,
+  TemplateResult,
 } from "lit-element";
 import { classMap } from "lit-html/directives/class-map";
 import { styleMap } from "lit-html/directives/style-map";
 import Vibrant from "node-vibrant";
 import { Swatch } from "node-vibrant/lib/color";
-import "@polymer/paper-icon-button/paper-icon-button";
-import type { PaperIconButtonElement } from "@polymer/paper-icon-button/paper-icon-button";
-import "@polymer/paper-progress/paper-progress";
-import type { PaperProgressElement } from "@polymer/paper-progress/paper-progress";
-import { MediaControlCardConfig } from "./types";
-import type { LovelaceCard, LovelaceCardEditor } from "../types";
-import type { HomeAssistant, MediaEntity } from "../../../types";
-import { debounce } from "../../../common/util/debounce";
-import { fireEvent } from "../../../common/dom/fire_event";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
+import { fireEvent } from "../../../common/dom/fire_event";
 import { computeStateName } from "../../../common/entity/compute_state_name";
-import { supportsFeature } from "../../../common/entity/supports-feature";
 import { stateIcon } from "../../../common/entity/state_icon";
-import { hasConfigOrEntityChanged } from "../common/has-changed";
-import { contrast } from "../common/color/contrast";
-import { findEntities } from "../common/find-entites";
-import { UNAVAILABLE_STATES } from "../../../data/entity";
-import {
-  SUPPORT_PAUSE,
-  SUPPORT_TURN_ON,
-  SUPPORT_PREVIOUS_TRACK,
-  SUPPORT_NEXT_TRACK,
-  SUPPORTS_PLAY,
-  SUPPORT_STOP,
-  SUPPORT_SEEK,
-  CONTRAST_RATIO,
-  getCurrentProgress,
-  computeMediaDescription,
-  SUPPORT_TURN_OFF,
-} from "../../../data/media-player";
-
+import { supportsFeature } from "../../../common/entity/supports-feature";
+import { debounce } from "../../../common/util/debounce";
 import "../../../components/ha-card";
 import "../../../components/ha-icon";
+import { UNAVAILABLE_STATES } from "../../../data/entity";
+import {
+  computeMediaDescription,
+  CONTRAST_RATIO,
+  getCurrentProgress,
+  SUPPORTS_PLAY,
+  SUPPORT_NEXT_TRACK,
+  SUPPORT_PAUSE,
+  SUPPORT_PREVIOUS_TRACK,
+  SUPPORT_SEEK,
+  SUPPORT_STOP,
+  SUPPORT_TURN_OFF,
+  SUPPORT_TURN_ON,
+} from "../../../data/media-player";
+import type { HomeAssistant, MediaEntity } from "../../../types";
+import { contrast } from "../common/color/contrast";
+import { findEntities } from "../common/find-entites";
+import { hasConfigOrEntityChanged } from "../common/has-changed";
 import "../components/hui-marquee";
+import type { LovelaceCard, LovelaceCardEditor } from "../types";
+import { MediaControlCardConfig } from "./types";
 
 function getContrastRatio(
   rgb1: [number, number, number],

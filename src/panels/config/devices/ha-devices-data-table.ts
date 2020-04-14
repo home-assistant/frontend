@@ -1,34 +1,32 @@
-import "../../../components/data-table/ha-data-table";
-import "../../../components/entity/ha-state-icon";
-
-import memoizeOne from "memoize-one";
-
 import {
-  LitElement,
-  html,
-  TemplateResult,
-  property,
   customElement,
+  html,
+  LitElement,
+  property,
+  TemplateResult,
 } from "lit-element";
-import type { HomeAssistant } from "../../../types";
+import memoizeOne from "memoize-one";
+import { navigate } from "../../../common/navigate";
+import { LocalizeFunc } from "../../../common/translations/localize";
+import "../../../components/data-table/ha-data-table";
 import type {
   DataTableColumnContainer,
-  RowClickedEvent,
   DataTableRowData,
+  RowClickedEvent,
 } from "../../../components/data-table/ha-data-table";
+import "../../../components/entity/ha-state-icon";
+import type { AreaRegistryEntry } from "../../../data/area_registry";
+import type { ConfigEntry } from "../../../data/config_entries";
 import {
-  DeviceRegistryEntry,
   computeDeviceName,
   DeviceEntityLookup,
+  DeviceRegistryEntry,
 } from "../../../data/device_registry";
 import {
   EntityRegistryEntry,
   findBatteryEntity,
 } from "../../../data/entity_registry";
-import type { ConfigEntry } from "../../../data/config_entries";
-import type { AreaRegistryEntry } from "../../../data/area_registry";
-import { navigate } from "../../../common/navigate";
-import { LocalizeFunc } from "../../../common/translations/localize";
+import type { HomeAssistant } from "../../../types";
 
 export interface DeviceRowData extends DeviceRegistryEntry {
   device?: DeviceRowData;

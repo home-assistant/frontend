@@ -1,6 +1,8 @@
-import { PropertyValues, UpdatingElement, property } from "lit-element";
 import { HassEntity } from "home-assistant-js-websocket";
-
+import { property, PropertyValues, UpdatingElement } from "lit-element";
+import dynamicContentUpdater from "../../../common/dom/dynamic_content_updater";
+import { stateMoreInfoType } from "../../../common/entity/state_more_info_type";
+import { HomeAssistant } from "../../../types";
 import "./more-info-alarm_control_panel";
 import "./more-info-automation";
 import "./more-info-camera";
@@ -23,10 +25,6 @@ import "./more-info-timer";
 import "./more-info-vacuum";
 import "./more-info-water_heater";
 import "./more-info-weather";
-
-import { stateMoreInfoType } from "../../../common/entity/state_more_info_type";
-import dynamicContentUpdater from "../../../common/dom/dynamic_content_updater";
-import { HomeAssistant } from "../../../types";
 
 class MoreInfoContent extends UpdatingElement {
   @property() public hass?: HomeAssistant;

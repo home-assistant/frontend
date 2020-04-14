@@ -1,27 +1,21 @@
 import {
+  customElement,
   html,
   LitElement,
-  TemplateResult,
   property,
   PropertyValues,
-  customElement,
+  TemplateResult,
 } from "lit-element";
-
-import "../components/hui-generic-entity-row";
-
-import "../../../components/paper-time-input";
-
-import type { PaperTimeInput } from "../../../components/paper-time-input";
-
 import "../../../components/ha-date-input";
-
 import type { HaDateInput } from "../../../components/ha-date-input";
-
-import type { HomeAssistant } from "../../../types";
-import type { LovelaceRow, EntityConfig } from "./types";
-import { setInputDateTimeValue } from "../../../data/input_datetime";
-import { hasConfigOrEntityChanged } from "../common/has-changed";
+import "../../../components/paper-time-input";
+import type { PaperTimeInput } from "../../../components/paper-time-input";
 import { UNAVAILABLE_STATES } from "../../../data/entity";
+import { setInputDateTimeValue } from "../../../data/input_datetime";
+import type { HomeAssistant } from "../../../types";
+import { hasConfigOrEntityChanged } from "../common/has-changed";
+import "../components/hui-generic-entity-row";
+import type { EntityConfig, LovelaceRow } from "./types";
 
 @customElement("hui-input-datetime-entity-row")
 class HuiInputDatetimeEntityRow extends LitElement implements LovelaceRow {

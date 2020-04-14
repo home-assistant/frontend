@@ -1,18 +1,18 @@
 import { html } from "lit-element";
-import {
-  getConfigFlowHandlers,
-  fetchConfigFlow,
-  handleConfigFlowStep,
-  deleteConfigFlow,
-  createConfigFlow,
-} from "../../data/config_flow";
+import { caseInsensitiveCompare } from "../../common/string/compare";
 import { localizeKey } from "../../common/translations/localize";
 import {
-  showFlowDialog,
+  createConfigFlow,
+  deleteConfigFlow,
+  fetchConfigFlow,
+  getConfigFlowHandlers,
+  handleConfigFlowStep,
+} from "../../data/config_flow";
+import {
   DataEntryFlowDialogParams,
   loadDataEntryFlowDialog,
+  showFlowDialog,
 } from "./show-dialog-data-entry-flow";
-import { caseInsensitiveCompare } from "../../common/string/compare";
 
 export const loadConfigFlowDialog = loadDataEntryFlowDialog;
 

@@ -1,11 +1,11 @@
-import { createCardElement } from "../create-element/create-card-element";
-import { processConfigEntities } from "../common/process-config-entities";
-import { LovelaceCard } from "../types";
 import { LovelaceCardConfig } from "../../../data/lovelace";
-import { EntityFilterEntityConfig } from "../entity-rows/types";
 import { HomeAssistant } from "../../../types";
-import { EntityFilterCardConfig } from "./types";
 import { evaluateFilter } from "../common/evaluate-filter";
+import { processConfigEntities } from "../common/process-config-entities";
+import { createCardElement } from "../create-element/create-card-element";
+import { EntityFilterEntityConfig } from "../entity-rows/types";
+import { LovelaceCard } from "../types";
+import { EntityFilterCardConfig } from "./types";
 
 class EntityFilterCard extends HTMLElement implements LovelaceCard {
   public isPanel?: boolean;

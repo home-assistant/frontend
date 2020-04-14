@@ -1,10 +1,10 @@
 import { property, PropertyValues, UpdatingElement } from "lit-element";
-import { loadCustomPanel } from "../../util/custom-panel/load-custom-panel";
-import { createCustomPanelElement } from "../../util/custom-panel/create-custom-panel-element";
-import { setCustomPanelProperties } from "../../util/custom-panel/set-custom-panel-properties";
-import { HomeAssistant, Route } from "../../types";
-import { CustomPanelInfo } from "../../data/panel_custom";
 import { navigate } from "../../common/navigate";
+import { CustomPanelInfo } from "../../data/panel_custom";
+import { HomeAssistant, Route } from "../../types";
+import { createCustomPanelElement } from "../../util/custom-panel/create-custom-panel-element";
+import { loadCustomPanel } from "../../util/custom-panel/load-custom-panel";
+import { setCustomPanelProperties } from "../../util/custom-panel/set-custom-panel-properties";
 
 declare global {
   interface Window {

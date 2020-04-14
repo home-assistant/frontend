@@ -4,14 +4,12 @@ import "@polymer/paper-spinner/paper-spinner";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 /* eslint-plugin-disable lit */
 import { PolymerElement } from "@polymer/polymer/polymer-element";
-
 import "../../components/dialog/ha-paper-dialog";
 import "../../components/ha-form/ha-form";
 import "../../components/ha-markdown";
-import "../../resources/ha-style";
-
 import { EventsMixin } from "../../mixins/events-mixin";
 import LocalizeMixin from "../../mixins/localize-mixin";
+import "../../resources/ha-style";
 
 let instance = 0;
 
