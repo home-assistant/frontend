@@ -1,14 +1,13 @@
-import { property, customElement, PropertyValues } from "lit-element";
 import { PolymerElement } from "@polymer/polymer";
-
+import { customElement, property, PropertyValues } from "lit-element";
+import { deepEqual } from "../common/util/deep-equal";
 import { HomeAssistant, Panels } from "../types";
+import { removeInitSkeleton } from "../util/init-skeleton";
 import {
   HassRouterPage,
-  RouterOptions,
   RouteOptions,
+  RouterOptions,
 } from "./hass-router-page";
-import { removeInitSkeleton } from "../util/init-skeleton";
-import { deepEqual } from "../common/util/deep-equal";
 
 const CACHE_URL_PATHS = ["lovelace", "developer-tools"];
 const COMPONENTS = {
@@ -82,6 +81,7 @@ const getRoutes = (panels: Panels): RouterOptions => {
 @customElement("partial-panel-resolver")
 class PartialPanelResolver extends HassRouterPage {
   @property() public hass!: HomeAssistant;
+
   @property() public narrow?: boolean;
 
   protected updated(changedProps: PropertyValues) {

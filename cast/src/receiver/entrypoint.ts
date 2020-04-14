@@ -1,9 +1,10 @@
+/* eslint-disable no-undef */
+import { CAST_NS } from "../../../src/cast/const";
+import { HassMessage } from "../../../src/cast/receiver_messages";
 import "../../../src/resources/custom-card-support";
 import { castContext } from "./cast_context";
-import { ReceivedMessage } from "./types";
-import { HassMessage } from "../../../src/cast/receiver_messages";
 import { HcMain } from "./layout/hc-main";
-import { CAST_NS } from "../../../src/cast/const";
+import { ReceivedMessage } from "./types";
 
 const controller = new HcMain();
 document.body.append(controller);

@@ -1,34 +1,30 @@
+import deepFreeze from "deep-freeze";
 import {
   css,
-  html,
-  LitElement,
-  TemplateResult,
   CSSResultArray,
   customElement,
+  html,
+  LitElement,
   property,
   query,
+  TemplateResult,
 } from "lit-element";
-
-import deepFreeze from "deep-freeze";
-
-import { HomeAssistant } from "../../../../types";
-import { HASSDomEvent } from "../../../../common/dom/fire_event";
-import {
+import type { HASSDomEvent } from "../../../../common/dom/fire_event";
+import "../../../../components/dialog/ha-paper-dialog";
+import type {
   LovelaceCardConfig,
   LovelaceViewConfig,
 } from "../../../../data/lovelace";
-import "./hui-card-editor";
-// tslint:disable-next-line
-import { HuiCardEditor, ConfigChangedEvent } from "./hui-card-editor";
-import "./hui-card-preview";
-import "./hui-card-picker";
-import { EditCardDialogParams } from "./show-edit-card-dialog";
-import { addCard, replaceCard } from "../config-util";
-
-import "../../../../components/dialog/ha-paper-dialog";
 import { haStyleDialog } from "../../../../resources/styles";
+import type { HomeAssistant } from "../../../../types";
 import { showSaveSuccessToast } from "../../../../util/toast-saved-success";
-import { GUIModeChangedEvent } from "../types";
+import { addCard, replaceCard } from "../config-util";
+import type { GUIModeChangedEvent } from "../types";
+import "./hui-card-editor";
+import type { ConfigChangedEvent, HuiCardEditor } from "./hui-card-editor";
+import "./hui-card-picker";
+import "./hui-card-preview";
+import type { EditCardDialogParams } from "./show-edit-card-dialog";
 
 declare global {
   // for fire event
@@ -48,13 +44,17 @@ export class HuiDialogEditCard extends LitElement {
   @property() private _params?: EditCardDialogParams;
 
   @property() private _cardConfig?: LovelaceCardConfig;
+
   @property() private _viewConfig!: LovelaceViewConfig;
 
-  @property() private _saving: boolean = false;
+  @property() private _saving = false;
+
   @property() private _error?: string;
+
   @property() private _guiModeAvailable? = true;
 
   @query("hui-card-editor") private _cardEditorEl?: HuiCardEditor;
+
   @property() private _GUImode = true;
 
   public async showDialog(params: EditCardDialogParams): Promise<void> {

@@ -1,4 +1,4 @@
-import { HASSDomEvent, fireEvent } from "../../../../common/dom/fire_event";
+import { fireEvent, HASSDomEvent } from "../../../../common/dom/fire_event";
 import { Lovelace } from "../../types";
 
 declare global {

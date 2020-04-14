@@ -49,7 +49,7 @@ if (!window.externalApp && !window.webkit) {
   );
 }
 
-class ExternalAuth extends Auth {
+export class ExternalAuth extends Auth {
   public external?: ExternalMessaging;
 
   constructor(hassUrl: string) {

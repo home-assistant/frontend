@@ -2,17 +2,18 @@ import "@polymer/paper-input/paper-input";
 import { customElement, html, LitElement, property } from "lit-element";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import "../../../../../components/entity/ha-entity-picker";
+import { StateCondition } from "../../../../../data/automation";
+import { PolymerChangedEvent } from "../../../../../polymer-types";
 import { HomeAssistant } from "../../../../../types";
 import {
-  handleChangeEvent,
   ConditionElement,
+  handleChangeEvent,
 } from "../ha-automation-condition-row";
-import { PolymerChangedEvent } from "../../../../../polymer-types";
-import { StateCondition } from "../../../../../data/automation";
 
 @customElement("ha-automation-condition-state")
 export class HaStateCondition extends LitElement implements ConditionElement {
   @property() public hass!: HomeAssistant;
+
   @property() public condition!: StateCondition;
 
   public static get defaultConfig() {

@@ -1,30 +1,29 @@
 import {
-  html,
-  LitElement,
-  TemplateResult,
-  customElement,
-  property,
   css,
   CSSResult,
+  customElement,
+  html,
+  LitElement,
+  property,
   PropertyValues,
+  TemplateResult,
 } from "lit-element";
 import { ifDefined } from "lit-html/directives/if-defined";
-
-import "../components/hui-warning-element";
-
 import { computeStateDisplay } from "../../../common/entity/compute_state_display";
-import { computeTooltip } from "../common/compute-tooltip";
-import { LovelaceElement, StateLabelElementConfig } from "./types";
-import { HomeAssistant } from "../../../types";
-import { hasConfigOrEntityChanged } from "../common/has-changed";
-import { actionHandler } from "../common/directives/action-handler-directive";
-import { hasAction } from "../common/has-action";
 import { ActionHandlerEvent } from "../../../data/lovelace";
+import { HomeAssistant } from "../../../types";
+import { computeTooltip } from "../common/compute-tooltip";
+import { actionHandler } from "../common/directives/action-handler-directive";
 import { handleAction } from "../common/handle-action";
+import { hasAction } from "../common/has-action";
+import { hasConfigOrEntityChanged } from "../common/has-changed";
+import "../components/hui-warning-element";
+import { LovelaceElement, StateLabelElementConfig } from "./types";
 
 @customElement("hui-state-label-element")
 class HuiStateLabelElement extends LitElement implements LovelaceElement {
   @property() public hass?: HomeAssistant;
+
   @property() private _config?: StateLabelElementConfig;
 
   public setConfig(config: StateLabelElementConfig): void {

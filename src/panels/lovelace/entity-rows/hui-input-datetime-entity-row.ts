@@ -1,28 +1,26 @@
 import {
+  customElement,
   html,
   LitElement,
-  TemplateResult,
   property,
   PropertyValues,
-  customElement,
+  TemplateResult,
 } from "lit-element";
-
-import "../components/hui-generic-entity-row";
-import "../../../components/paper-time-input.js";
-// tslint:disable-next-line:no-duplicate-imports
-import { PaperTimeInput } from "../../../components/paper-time-input.js";
 import "../../../components/ha-date-input";
-// tslint:disable-next-line:no-duplicate-imports
-import { HaDateInput } from "../../../components/ha-date-input";
-
-import { HomeAssistant } from "../../../types";
-import { LovelaceRow, EntityConfig } from "./types";
+import type { HaDateInput } from "../../../components/ha-date-input";
+import "../../../components/paper-time-input";
+import type { PaperTimeInput } from "../../../components/paper-time-input";
+import { UNAVAILABLE_STATES } from "../../../data/entity";
 import { setInputDateTimeValue } from "../../../data/input_datetime";
+import type { HomeAssistant } from "../../../types";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
+import "../components/hui-generic-entity-row";
+import type { EntityConfig, LovelaceRow } from "./types";
 
 @customElement("hui-input-datetime-entity-row")
 class HuiInputDatetimeEntityRow extends LitElement implements LovelaceRow {
   @property() public hass?: HomeAssistant;
+
   @property() private _config?: EntityConfig;
 
   public setConfig(config: EntityConfig): void {
@@ -60,6 +58,7 @@ class HuiInputDatetimeEntityRow extends LitElement implements LovelaceRow {
         ${stateObj.attributes.has_date
           ? html`
               <ha-date-input
+                .disabled=${UNAVAILABLE_STATES.includes(stateObj.state)}
                 .year=${stateObj.attributes.year}
                 .month=${("0" + stateObj.attributes.month).slice(-2)}
                 .day=${("0" + stateObj.attributes.day).slice(-2)}
@@ -72,6 +71,7 @@ class HuiInputDatetimeEntityRow extends LitElement implements LovelaceRow {
         ${stateObj.attributes.has_time
           ? html`
               <paper-time-input
+                .disabled=${UNAVAILABLE_STATES.includes(stateObj.state)}
                 .hour=${stateObj.state === "unknown"
                   ? ""
                   : ("0" + stateObj.attributes.hour).slice(-2)}

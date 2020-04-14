@@ -1,31 +1,29 @@
-import {
-  html,
-  css,
-  LitElement,
-  TemplateResult,
-  customElement,
-  property,
-  CSSResult,
-} from "lit-element";
 import "@polymer/paper-input/paper-input";
-
+import {
+  css,
+  CSSResult,
+  customElement,
+  html,
+  LitElement,
+  property,
+  TemplateResult,
+} from "lit-element";
+import { fireEvent } from "../../../../common/dom/fire_event";
+import { PolymerChangedEvent } from "../../../../polymer-types";
+import { HomeAssistant } from "../../../../types";
+import { MapCardConfig } from "../../cards/types";
+import { struct } from "../../common/structs/struct";
 import "../../components/hui-entity-editor";
 import "../../components/hui-input-list-editor";
-
-import { struct } from "../../common/structs/struct";
+import { EntityConfig } from "../../entity-rows/types";
+import { LovelaceCardEditor } from "../../types";
+import { processEditorEntities } from "../process-editor-entities";
 import {
-  EntitiesEditorEvent,
   EditorTarget,
   entitiesConfigStruct,
+  EntitiesEditorEvent,
 } from "../types";
-import { HomeAssistant } from "../../../../types";
-import { LovelaceCardEditor } from "../../types";
-import { fireEvent } from "../../../../common/dom/fire_event";
 import { configElementStyle } from "./config-elements-style";
-import { processEditorEntities } from "../process-editor-entities";
-import { EntityConfig } from "../../entity-rows/types";
-import { PolymerChangedEvent } from "../../../../polymer-types";
-import { MapCardConfig } from "../../cards/types";
 
 const cardConfigStruct = struct({
   type: "string",

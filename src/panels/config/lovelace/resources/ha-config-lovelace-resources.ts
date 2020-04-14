@@ -4,48 +4,51 @@ import "@polymer/paper-item/paper-icon-item";
 import "@polymer/paper-listbox/paper-listbox";
 import "@polymer/paper-tooltip/paper-tooltip";
 import {
+  css,
+  CSSResult,
   customElement,
   html,
   LitElement,
   property,
   PropertyValues,
   TemplateResult,
-  CSSResult,
-  css,
 } from "lit-element";
 import memoize from "memoize-one";
-import "../../../../common/search/search-input";
+import { compare } from "../../../../common/string/compare";
 import {
   DataTableColumnContainer,
   RowClickedEvent,
 } from "../../../../components/data-table/ha-data-table";
-import "../../../../components/ha-icon";
 import "../../../../components/ha-fab";
+import "../../../../components/ha-icon";
+import {
+  createResource,
+  deleteResource,
+  fetchResources,
+  LovelaceResource,
+  updateResource,
+} from "../../../../data/lovelace";
+import {
+  showAlertDialog,
+  showConfirmationDialog,
+} from "../../../../dialogs/generic/show-dialog-box";
 import "../../../../layouts/hass-loading-screen";
 import "../../../../layouts/hass-tabs-subpage-data-table";
 import { HomeAssistant, Route } from "../../../../types";
-import {
-  LovelaceResource,
-  fetchResources,
-  createResource,
-  updateResource,
-  deleteResource,
-} from "../../../../data/lovelace";
-import { showResourceDetailDialog } from "./show-dialog-lovelace-resource-detail";
-import { compare } from "../../../../common/string/compare";
-import {
-  showConfirmationDialog,
-  showAlertDialog,
-} from "../../../../dialogs/generic/show-dialog-box";
-import { lovelaceTabs } from "../ha-config-lovelace";
 import { loadLovelaceResources } from "../../../lovelace/common/load-resources";
+import { lovelaceTabs } from "../ha-config-lovelace";
+import { showResourceDetailDialog } from "./show-dialog-lovelace-resource-detail";
 
 @customElement("ha-config-lovelace-resources")
 export class HaConfigLovelaceRescources extends LitElement {
   @property() public hass!: HomeAssistant;
+
   @property() public isWide!: boolean;
+
   @property() public narrow!: boolean;
+
   @property() public route!: Route;
+
   @property() private _resources: LovelaceResource[] = [];
 
   private _columns = memoize(
@@ -80,9 +83,7 @@ export class HaConfigLovelaceRescources extends LitElement {
 
   protected render(): TemplateResult {
     if (!this.hass || this._resources === undefined) {
-      return html`
-        <hass-loading-screen></hass-loading-screen>
-      `;
+      return html` <hass-loading-screen></hass-loading-screen> `;
     }
 
     return html`

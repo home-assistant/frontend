@@ -1,22 +1,24 @@
 import {
+  css,
+  CSSResult,
+  customElement,
+  html,
   LitElement,
   property,
   TemplateResult,
-  html,
-  customElement,
-  css,
-  CSSResult,
 } from "lit-element";
+import { classMap } from "lit-html/directives/class-map";
 import "../components/ha-menu-button";
 import "../components/ha-paper-icon-button-arrow-prev";
-import { classMap } from "lit-html/directives/class-map";
 
 @customElement("hass-subpage")
 class HassSubpage extends LitElement {
   @property()
   public header?: string;
+
   @property({ type: Boolean })
   public showBackButton = true;
+
   @property({ type: Boolean })
   public hassio = false;
 

@@ -1,5 +1,5 @@
 import { fireEvent } from "../../../common/dom/fire_event";
-import { User, UpdateUserParams } from "../../../data/user";
+import { UpdateUserParams, User } from "../../../data/user";
 
 export interface UserDetailDialogParams {
   entry: User;

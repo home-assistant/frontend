@@ -1,21 +1,21 @@
 import {
-  html,
-  LitElement,
-  TemplateResult,
-  customElement,
-  property,
   css,
   CSSResult,
-  svg,
+  customElement,
+  html,
+  LitElement,
+  property,
   PropertyValues,
+  svg,
+  TemplateResult,
 } from "lit-element";
-
 import { strokeWidth } from "../../../data/graph";
 import { getPath } from "../common/graph/get-path";
 
 @customElement("hui-graph-base")
 export class HuiGraphBase extends LitElement {
   @property() public coordinates?: any;
+
   @property() private _path?: string;
 
   protected render(): TemplateResult {

@@ -1,6 +1,6 @@
+import { ActionConfig } from "../../../data/lovelace";
 import { HomeAssistant } from "../../../types";
 import { Condition } from "../common/validate-condition";
-import { ActionConfig } from "../../../data/lovelace";
 
 export interface EntityConfig {
   entity: string;

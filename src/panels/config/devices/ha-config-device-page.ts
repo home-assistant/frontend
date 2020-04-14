@@ -13,8 +13,8 @@ import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import { createValidEntityId } from "../../../common/entity/valid_entity_id";
 import { compare } from "../../../common/string/compare";
-import "../../../components/ha-icon-next";
 import "../../../components/entity/ha-state-icon";
+import "../../../components/ha-icon-next";
 import { AreaRegistryEntry } from "../../../data/area_registry";
 import { ConfigEntry } from "../../../data/config_entries";
 import {
@@ -50,15 +50,25 @@ export interface EntityRegistryStateEntry extends EntityRegistryEntry {
 @customElement("ha-config-device-page")
 export class HaConfigDevicePage extends LitElement {
   @property() public hass!: HomeAssistant;
+
   @property() public devices!: DeviceRegistryEntry[];
+
   @property() public entries!: ConfigEntry[];
+
   @property() public entities!: EntityRegistryEntry[];
+
   @property() public areas!: AreaRegistryEntry[];
+
   @property() public deviceId!: string;
+
   @property({ type: Boolean, reflect: true }) public narrow!: boolean;
+
   @property() public isWide!: boolean;
+
   @property() public showAdvanced!: boolean;
+
   @property() public route!: Route;
+
   @property() private _related?: RelatedResult;
 
   private _device = memoizeOne(

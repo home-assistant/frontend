@@ -7,7 +7,7 @@ export const isNavigationClick = (e: MouseEvent) => {
     e.ctrlKey ||
     e.shiftKey
   ) {
-    return;
+    return undefined;
   }
 
   const anchor = e
@@ -21,23 +21,23 @@ export const isNavigationClick = (e: MouseEvent) => {
     anchor.hasAttribute("download") ||
     anchor.getAttribute("rel") === "external"
   ) {
-    return;
+    return undefined;
   }
 
   let href = anchor.href;
   if (!href || href.indexOf("mailto:") !== -1) {
-    return;
+    return undefined;
   }
 
   const location = window.location;
   const origin = location.origin || location.protocol + "//" + location.host;
   if (href.indexOf(origin) !== 0) {
-    return;
+    return undefined;
   }
   href = href.substr(origin.length);
 
   if (href === "#") {
-    return;
+    return undefined;
   }
 
   e.preventDefault();

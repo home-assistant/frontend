@@ -1,6 +1,7 @@
 import "@polymer/iron-icon/iron-icon";
 import "@polymer/paper-input/paper-input";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
+/* eslint-plugin-disable lit */
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 
 class HaCustomizeIcon extends PolymerElement {

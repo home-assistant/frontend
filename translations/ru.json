@@ -1746,7 +1746,8 @@
                         "owner": "Владелец",
                         "rename_user": "Изменить имя",
                         "system_generated": "Системный",
-                        "system_generated_users_not_removable": "Системные пользователи защищены от удаления.",
+                        "system_generated_users_not_editable": "Системные пользователи защищены от редактирования",
+                        "system_generated_users_not_removable": "Системные пользователи защищены от удаления",
                         "unnamed_user": "Безымянный пользователь",
                         "update_user": "Обновить",
                         "user_rename_failed": "Не удалось переименовать пользователя"
@@ -2160,6 +2161,7 @@
                             "name": "Фильтр объектов"
                         },
                         "entity": {
+                            "description": "Быстрый обзор состояния выбранного объекта.",
                             "name": "Объект"
                         },
                         "gauge": {
@@ -2604,9 +2606,9 @@
                 },
                 "current_user": "Добро пожаловать, {fullName}! Вы вошли в систему.",
                 "dashboard": {
-                    "description": "Выберите панель по умолчанию для этого устройства.",
+                    "description": "Панель, используемая по умолчанию для этого устройства",
                     "dropdown_label": "Панель",
-                    "header": "Панель"
+                    "header": "Панель Lovelace UI"
                 },
                 "force_narrow": {
                     "description": "Боковая панель будет скрыта, аналогично мобильному интерфейсу",

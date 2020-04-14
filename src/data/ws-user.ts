@@ -1,7 +1,7 @@
 import {
-  getUser,
   Connection,
   getCollection,
+  getUser,
 } from "home-assistant-js-websocket";
 import { CurrentUser } from "../types";
 

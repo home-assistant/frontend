@@ -2164,6 +2164,7 @@
                             "name": "Filtr encji"
                         },
                         "entity": {
+                            "description": "Karta encja zapewnia szybki przegląd stanu encji.",
                             "name": "Encja"
                         },
                         "gauge": {
@@ -2266,7 +2267,7 @@
                             "name": "Stan rośliny"
                         },
                         "sensor": {
-                            "description": "Karta sensor zapewnia szybki przegląd stanu czujników z opcjonalnym wykresem, aby wizualizować zmiany w czasie.",
+                            "description": "Karta sensor zapewnia szybki przegląd stanu sensorów z opcjonalnym wykresem, aby wizualizować zmiany w czasie.",
                             "graph_detail": "Szczegół wykresu",
                             "graph_type": "Rodzaj wykresu",
                             "name": "Sensor"

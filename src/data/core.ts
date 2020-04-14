@@ -1,5 +1,5 @@
-import { HomeAssistant } from "../types";
 import { HassConfig } from "home-assistant-js-websocket";
+import { HomeAssistant } from "../types";
 
 export interface ConfigUpdateValues {
   location_name: string;

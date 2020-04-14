@@ -1,8 +1,8 @@
-import { clearState } from "../util/ha-pref-storage";
 import { askWrite } from "../common/auth/token_storage";
 import { subscribeUser, userCollection } from "../data/ws-user";
-import { HassBaseEl } from "./hass-base-mixin";
 import { Constructor } from "../types";
+import { clearState } from "../util/ha-pref-storage";
+import { HassBaseEl } from "./hass-base-mixin";
 
 declare global {
   // for fire event
@@ -49,7 +49,7 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
         clearState();
         document.location.href = "/";
       } catch (err) {
-        // tslint:disable-next-line
+        // eslint-disable-next-line
         console.error(err);
         alert("Log out failed");
       }
