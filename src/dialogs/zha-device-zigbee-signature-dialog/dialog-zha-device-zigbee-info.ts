@@ -15,6 +15,7 @@ import { ZHADeviceZigbeeInfoDialogParams } from "./show-dialog-zha-device-zigbee
 @customElement("dialog-zha-device-zigbee-info")
 class DialogZHADeviceZigbeeInfo extends LitElement {
   @property() public hass!: HomeAssistant;
+
   @property() private _signature: any;
 
   public async showDialog(

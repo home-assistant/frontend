@@ -19,8 +19,11 @@ export class HaCodeEditor extends UpdatingElement {
   public codemirror?: Editor;
 
   @property() public mode?: string;
+
   @property({ type: Boolean }) public autofocus = false;
+
   @property({ type: Boolean }) public readOnly = false;
+
   @property() public rtl = false;
 
   @property() public error = false;
