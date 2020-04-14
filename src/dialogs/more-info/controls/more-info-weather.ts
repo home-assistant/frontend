@@ -1,15 +1,14 @@
 import "@polymer/iron-icon/iron-icon";
+import { HassEntity } from "home-assistant-js-websocket";
 import {
+  css,
+  CSSResult,
+  customElement,
   LitElement,
   property,
-  CSSResult,
-  css,
-  customElement,
   PropertyValues,
 } from "lit-element";
-import { HassEntity } from "home-assistant-js-websocket";
-import { TemplateResult, html } from "lit-html";
-
+import { html, TemplateResult } from "lit-html";
 import { HomeAssistant } from "../../../types";
 
 const cardinalDirections = [
@@ -53,6 +52,7 @@ const weatherIcons = {
 @customElement("more-info-weather")
 class MoreInfoWeather extends LitElement {
   @property() public hass!: HomeAssistant;
+
   @property() public stateObj?: HassEntity;
 
   protected shouldUpdate(changedProps: PropertyValues): boolean {
@@ -264,7 +264,7 @@ class MoreInfoWeather extends LitElement {
   private windBearingToText(degree: string): string {
     const degreenum = parseInt(degree, 10);
     if (isFinite(degreenum)) {
-      // tslint:disable-next-line: no-bitwise
+      // eslint-disable-next-line no-bitwise
       return cardinalDirections[(((degreenum + 11.25) / 22.5) | 0) % 16];
     }
     return degree;
@@ -273,9 +273,11 @@ class MoreInfoWeather extends LitElement {
   private getWind(speed: string, bearing: string) {
     if (bearing != null) {
       const cardinalDirection = this.windBearingToText(bearing);
-      return `${speed} ${this.getUnit("length")}/h (${this.hass.localize(
-        `ui.card.weather.cardinal_direction.${cardinalDirection.toLowerCase()}`
-      ) || cardinalDirection})`;
+      return `${speed} ${this.getUnit("length")}/h (${
+        this.hass.localize(
+          `ui.card.weather.cardinal_direction.${cardinalDirection.toLowerCase()}`
+        ) || cardinalDirection
+      })`;
     }
     return `${speed} ${this.getUnit("length")}/h`;
   }

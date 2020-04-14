@@ -1,7 +1,3 @@
-import "../../../components/buttons/ha-call-service-button";
-import "../../../components/ha-service-description";
-import "../../../components/entity/state-badge";
-import "../../../components/ha-card";
 import "@material/mwc-button";
 import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
 import "@polymer/paper-input/paper-input";
@@ -9,7 +5,7 @@ import "@polymer/paper-item/paper-icon-item";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-item/paper-item-body";
 import "@polymer/paper-listbox/paper-listbox";
-
+import { HassEvent, UnsubscribeFunc } from "home-assistant-js-websocket";
 import {
   css,
   CSSResult,
@@ -20,8 +16,13 @@ import {
   PropertyValues,
   TemplateResult,
 } from "lit-element";
-
 import { fireEvent } from "../../../common/dom/fire_event";
+import { computeStateName } from "../../../common/entity/compute_state_name";
+import { navigate } from "../../../common/navigate";
+import "../../../components/buttons/ha-call-service-button";
+import "../../../components/entity/state-badge";
+import "../../../components/ha-card";
+import "../../../components/ha-service-description";
 import {
   AreaRegistryEntry,
   subscribeAreaRegistry,
@@ -37,12 +38,9 @@ import {
 } from "../../../data/zha";
 import { haStyle } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
-import { ItemSelectedEvent, NodeServiceData } from "./types";
-import { navigate } from "../../../common/navigate";
-import { UnsubscribeFunc, HassEvent } from "home-assistant-js-websocket";
-import { formatAsPaddedHex } from "./functions";
-import { computeStateName } from "../../../common/entity/compute_state_name";
 import { addEntitiesToLovelaceView } from "../../lovelace/editor/add-entities-to-view";
+import { formatAsPaddedHex } from "./functions";
+import { ItemSelectedEvent, NodeServiceData } from "./types";
 
 declare global {
   // for fire event
@@ -56,19 +54,33 @@ declare global {
 @customElement("zha-device-card")
 class ZHADeviceCard extends LitElement {
   @property() public hass!: HomeAssistant;
+
   @property() public device?: ZHADevice;
+
   @property({ type: Boolean }) public narrow?: boolean;
+
   @property({ type: Boolean }) public showHelp?: boolean = false;
+
   @property({ type: Boolean }) public showActions?: boolean = true;
+
   @property({ type: Boolean }) public showName?: boolean = true;
+
   @property({ type: Boolean }) public showEntityDetail?: boolean = true;
+
   @property({ type: Boolean }) public showModelInfo?: boolean = true;
+
   @property({ type: Boolean }) public showEditableInfo?: boolean = true;
+
   @property() private _serviceData?: NodeServiceData;
+
   @property() private _areas: AreaRegistryEntry[] = [];
-  @property() private _selectedAreaIndex: number = -1;
+
+  @property() private _selectedAreaIndex = -1;
+
   @property() private _userGivenName?: string;
+
   private _unsubAreas?: UnsubscribeFunc;
+
   private _unsubEntities?: UnsubscribeFunc;
 
   public disconnectedCallback() {
@@ -102,7 +114,9 @@ class ZHADeviceCard extends LitElement {
           });
         }
       }, "entity_registry_updated")
-      .then((unsub) => (this._unsubEntities = unsub));
+      .then((unsub) => {
+        this._unsubEntities = unsub;
+      });
   }
 
   protected firstUpdated(changedProperties: PropertyValues): void {
@@ -167,21 +181,29 @@ class ZHADeviceCard extends LitElement {
             <dt>Device Type:</dt>
             <dd class="zha-info">${this.device!.device_type}</dd>
             <dt>LQI:</dt>
-            <dd class="zha-info">${this.device!.lqi ||
-              this.hass!.localize("ui.dialogs.zha_device_info.unknown")}</dd>
+            <dd class="zha-info">${
+              this.device!.lqi ||
+              this.hass!.localize("ui.dialogs.zha_device_info.unknown")
+            }</dd>
             <dt>RSSI:</dt>
-            <dd class="zha-info">${this.device!.rssi ||
-              this.hass!.localize("ui.dialogs.zha_device_info.unknown")}</dd>
+            <dd class="zha-info">${
+              this.device!.rssi ||
+              this.hass!.localize("ui.dialogs.zha_device_info.unknown")
+            }</dd>
             <dt>${this.hass!.localize(
               "ui.dialogs.zha_device_info.last_seen"
             )}:</dt>
-            <dd class="zha-info">${this.device!.last_seen ||
-              this.hass!.localize("ui.dialogs.zha_device_info.unknown")}</dd>
+            <dd class="zha-info">${
+              this.device!.last_seen ||
+              this.hass!.localize("ui.dialogs.zha_device_info.unknown")
+            }</dd>
             <dt>${this.hass!.localize(
               "ui.dialogs.zha_device_info.power_source"
             )}:</dt>
-            <dd class="zha-info">${this.device!.power_source ||
-              this.hass!.localize("ui.dialogs.zha_device_info.unknown")}</dd>
+            <dd class="zha-info">${
+              this.device!.power_source ||
+              this.hass!.localize("ui.dialogs.zha_device_info.unknown")
+            }</dd>
             ${
               this.device!.quirk_applied
                 ? html`
@@ -283,45 +305,50 @@ class ZHADeviceCard extends LitElement {
           this.showActions
             ? html`
                 <div class="card-actions">
-                  <mwc-button @click="${this._onReconfigureNodeClick}">
-                    ${this.hass!.localize(
-                      "ui.dialogs.zha_device_info.buttons.reconfigure"
-                    )}
-                  </mwc-button>
-                  ${this.showHelp
+                  ${this.device!.device_type !== "Coordinator"
                     ? html`
-                        <div class="help-text">
+                        <mwc-button @click=${this._onReconfigureNodeClick}>
                           ${this.hass!.localize(
-                            "ui.dialogs.zha_device_info.services.reconfigure"
+                            "ui.dialogs.zha_device_info.buttons.reconfigure"
                           )}
-                        </div>
-                      `
-                    : ""}
+                        </mwc-button>
+                        ${this.showHelp
+                          ? html`
+                              <div class="help-text">
+                                ${this.hass!.localize(
+                                  "ui.dialogs.zha_device_info.services.reconfigure"
+                                )}
+                              </div>
+                            `
+                          : ""}
 
-                  <ha-call-service-button
-                    .hass=${this.hass}
-                    domain="zha"
-                    service="remove"
-                    .confirmation=${this.hass!.localize(
-                      "ui.dialogs.zha_device_info.confirmations.remove"
-                    )}
-                    .serviceData="${this._serviceData}"
-                  >
-                    ${this.hass!.localize(
-                      "ui.dialogs.zha_device_info.buttons.remove"
-                    )}
-                  </ha-call-service-button>
-                  ${this.showHelp
-                    ? html`
-                        <div class="help-text">
-                          ${this.hass!.localize(
-                            "ui.dialogs.zha_device_info.services.remove"
+                        <ha-call-service-button
+                          .hass=${this.hass}
+                          domain="zha"
+                          service="remove"
+                          .confirmation=${this.hass!.localize(
+                            "ui.dialogs.zha_device_info.confirmations.remove"
                           )}
-                        </div>
+                          .serviceData=${this._serviceData}
+                        >
+                          ${this.hass!.localize(
+                            "ui.dialogs.zha_device_info.buttons.remove"
+                          )}
+                        </ha-call-service-button>
+                        ${this.showHelp
+                          ? html`
+                              <div class="help-text">
+                                ${this.hass!.localize(
+                                  "ui.dialogs.zha_device_info.services.remove"
+                                )}
+                              </div>
+                            `
+                          : ""}
                       `
                     : ""}
                   ${this.device!.power_source === "Mains" &&
-                  this.device!.device_type === "Router"
+                  (this.device!.device_type === "Router" ||
+                    this.device!.device_type === "Coordinator")
                     ? html`
                         <mwc-button @click=${this._onAddDevicesClick}>
                           ${this.hass!.localize(
@@ -335,7 +362,7 @@ class ZHADeviceCard extends LitElement {
                                 domain="zha"
                                 service="permit"
                                 class="help-text2"
-                              />
+                              ></ha-service-description>
                             `
                           : ""}
                       `

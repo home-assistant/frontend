@@ -1,23 +1,20 @@
-import "../../../components/buttons/ha-call-service-button";
-import "../../../components/ha-service-description";
-import "../../../components/ha-card";
-import "../ha-config-section";
 import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
 import "@polymer/paper-icon-button/paper-icon-button";
 import "@polymer/paper-input/paper-input";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
-
 import {
   css,
   CSSResult,
   html,
   LitElement,
+  property,
   PropertyValues,
   TemplateResult,
-  property,
 } from "lit-element";
-
+import "../../../components/buttons/ha-call-service-button";
+import "../../../components/ha-card";
+import "../../../components/ha-service-description";
 import {
   Cluster,
   Command,
@@ -26,6 +23,7 @@ import {
 } from "../../../data/zha";
 import { haStyle } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
+import "../ha-config-section";
 import { formatAsPaddedHex } from "./functions";
 import {
   ChangeEvent,
@@ -35,13 +33,21 @@ import {
 
 export class ZHAClusterCommands extends LitElement {
   @property() public hass?: HomeAssistant;
+
   @property() public isWide?: boolean;
+
   @property() public selectedNode?: ZHADevice;
+
   @property() public selectedCluster?: Cluster;
+
   @property() private _showHelp = false;
+
   @property() private _commands: Command[] = [];
+
   @property() private _selectedCommandIndex = -1;
+
   @property() private _manufacturerCodeOverride?: number;
+
   @property() private _issueClusterCommandServiceData?: IssueCommandServiceData;
 
   protected updated(changedProperties: PropertyValues): void {
@@ -92,9 +98,9 @@ export class ZHAClusterCommands extends LitElement {
                   (entry) => html`
                     <paper-item
                       >${entry.name +
-                        " (id: " +
-                        formatAsPaddedHex(entry.id) +
-                        ")"}</paper-item
+                      " (id: " +
+                      formatAsPaddedHex(entry.id) +
+                      ")"}</paper-item
                     >
                   `
                 )}
@@ -173,7 +179,7 @@ export class ZHAClusterCommands extends LitElement {
     | IssueCommandServiceData
     | undefined {
     if (!this.selectedNode || !this.selectedCluster) {
-      return;
+      return undefined;
     }
     return {
       ieee: this.selectedNode!.ieee,

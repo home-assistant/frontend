@@ -1,39 +1,43 @@
-import {
-  LitElement,
-  TemplateResult,
-  html,
-  customElement,
-  PropertyValues,
-  property,
-  CSSResult,
-  css,
-} from "lit-element";
 import "@material/mwc-button/mwc-button";
+import { genClientId } from "home-assistant-js-websocket";
+import {
+  css,
+  CSSResult,
+  customElement,
+  html,
+  LitElement,
+  property,
+  PropertyValues,
+  TemplateResult,
+} from "lit-element";
+import { fireEvent } from "../common/dom/fire_event";
+import { compare } from "../common/string/compare";
+import { LocalizeFunc } from "../common/translations/localize";
+import { ConfigEntry, getConfigEntries } from "../data/config_entries";
+import {
+  getConfigFlowInProgressCollection,
+  localizeConfigFlowTitle,
+  subscribeConfigFlowInProgress,
+} from "../data/config_flow";
+import { DataEntryFlowProgress } from "../data/data_entry_flow";
+import { onboardIntegrationStep } from "../data/onboarding";
 import {
   loadConfigFlowDialog,
   showConfigFlowDialog,
 } from "../dialogs/config-flow/show-dialog-config-flow";
 import { HomeAssistant } from "../types";
-import { getConfigEntries, ConfigEntry } from "../data/config_entries";
-import { compare } from "../common/string/compare";
 import "./integration-badge";
-import { LocalizeFunc } from "../common/translations/localize";
-import { fireEvent } from "../common/dom/fire_event";
-import { onboardIntegrationStep } from "../data/onboarding";
-import { genClientId } from "home-assistant-js-websocket";
-import { DataEntryFlowProgress } from "../data/data_entry_flow";
-import {
-  localizeConfigFlowTitle,
-  subscribeConfigFlowInProgress,
-  getConfigFlowInProgressCollection,
-} from "../data/config_flow";
 
 @customElement("onboarding-integrations")
 class OnboardingIntegrations extends LitElement {
   @property() public hass!: HomeAssistant;
+
   @property() public onboardingLocalize!: LocalizeFunc;
+
   @property() private _entries?: ConfigEntry[];
+
   @property() private _discovered?: DataEntryFlowProgress[];
+
   private _unsubEvents?: () => void;
 
   public connectedCallback() {

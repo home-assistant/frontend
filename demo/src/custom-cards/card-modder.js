@@ -1,3 +1,4 @@
+/* eslint-disable */
 import { LitElement } from "lit-element";
 import "./card-tools";
 

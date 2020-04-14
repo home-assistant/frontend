@@ -1,30 +1,31 @@
-import {
-  LitElement,
-  html,
-  CSSResultArray,
-  css,
-  property,
-  TemplateResult,
-  customElement,
-  PropertyValues,
-} from "lit-element";
 import "@polymer/iron-icon/iron-icon";
 import "@polymer/paper-card/paper-card";
 import "@polymer/paper-input/paper-input";
+import {
+  css,
+  CSSResultArray,
+  customElement,
+  html,
+  LitElement,
+  property,
+  PropertyValues,
+  TemplateResult,
+} from "lit-element";
+import { repeat } from "lit-html/directives/repeat";
 import memoizeOne from "memoize-one";
-
 import "../../../src/components/buttons/ha-call-api-button";
-import "../components/hassio-card-content";
-import { hassioStyle } from "../resources/hassio-style";
-import { HomeAssistant } from "../../../src/types";
 import { HassioAddonRepository } from "../../../src/data/hassio/addon";
 import { PolymerChangedEvent } from "../../../src/polymer-types";
-import { repeat } from "lit-html/directives/repeat";
+import { HomeAssistant } from "../../../src/types";
+import "../components/hassio-card-content";
+import { hassioStyle } from "../resources/hassio-style";
 
 @customElement("hassio-repositories-editor")
 class HassioRepositoriesEditor extends LitElement {
   @property() public hass!: HomeAssistant;
+
   @property() public repos!: HassioAddonRepository[];
+
   @property() private _repoUrl = "";
 
   private _sortedRepos = memoizeOne((repos: HassioAddonRepository[]) =>

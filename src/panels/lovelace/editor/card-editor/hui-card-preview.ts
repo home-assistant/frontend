@@ -1,16 +1,17 @@
 import "@polymer/paper-input/paper-textarea";
-
-import { createCardElement } from "../../create-element/create-card-element";
-import { HomeAssistant } from "../../../../types";
+import { computeRTL } from "../../../../common/util/compute_rtl";
 import { LovelaceCardConfig } from "../../../../data/lovelace";
+import { HomeAssistant } from "../../../../types";
+import { createErrorCardConfig } from "../../cards/hui-error-card";
+import { createCardElement } from "../../create-element/create-card-element";
 import { LovelaceCard } from "../../types";
 import { ConfigError } from "../types";
-import { createErrorCardConfig } from "../../cards/hui-error-card";
-import { computeRTL } from "../../../../common/util/compute_rtl";
 
 export class HuiCardPreview extends HTMLElement {
   private _hass?: HomeAssistant;
+
   private _element?: LovelaceCard;
+
   private _config?: LovelaceCardConfig;
 
   private get _error() {

@@ -2,10 +2,9 @@
 
 import { Auth } from "home-assistant-js-websocket";
 import { CastManager } from "./cast_manager";
-
-import { BaseCastMessage } from "./types";
 import { CAST_DEV } from "./const";
 import { CAST_DEV_HASS_URL } from "./dev_const";
+import { BaseCastMessage } from "./types";
 
 export interface GetStatusMessage extends BaseCastMessage {
   type: "get_status";
@@ -60,7 +59,7 @@ export const castSendShowDemo = (cast: CastManager) =>
 
 export const ensureConnectedCastSession = (cast: CastManager, auth: Auth) => {
   if (cast.castConnectedToOurHass) {
-    return;
+    return undefined;
   }
 
   return new Promise((resolve) => {

@@ -4,10 +4,10 @@ import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
 import "@polymer/paper-spinner/paper-spinner";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
+/* eslint-plugin-disable lit */
 import { PolymerElement } from "@polymer/polymer/polymer-element";
-import "../../components/ha-card";
-
 import { computeStateName } from "../../common/entity/compute_state_name";
+import "../../components/ha-card";
 
 class HaEntityConfig extends PolymerElement {
   static get template() {
@@ -180,7 +180,7 @@ class HaEntityConfig extends PolymerElement {
 
     var oldEntityId = oldEntities[this.selectedEntity].entity_id;
 
-    var newIndex = entities.findIndex(function(ent) {
+    var newIndex = entities.findIndex(function (ent) {
       return ent.entity_id === oldEntityId;
     });
 
@@ -198,16 +198,18 @@ class HaEntityConfig extends PolymerElement {
     if (!entity) return;
 
     this.formState = "loading";
+    // eslint-disable-next-line @typescript-eslint/no-this-alias
     var el = this;
-    this.formEl.loadEntity(entity).then(function() {
+    this.formEl.loadEntity(entity).then(function () {
       el.formState = "editing";
     });
   }
 
   saveEntity() {
     this.formState = "saving";
+    // eslint-disable-next-line @typescript-eslint/no-this-alias
     var el = this;
-    this.formEl.saveEntity().then(function() {
+    this.formEl.saveEntity().then(function () {
       el.formState = "editing";
     });
   }

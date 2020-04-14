@@ -1,7 +1,7 @@
 import "@polymer/iron-flex-layout/iron-flex-layout-classes";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
+/* eslint-plugin-disable lit */
 import { PolymerElement } from "@polymer/polymer/polymer-element";
-
 import "../components/entity/ha-entity-toggle";
 import "../components/entity/state-info";
 

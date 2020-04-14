@@ -1,5 +1,7 @@
+/* eslint-plugin-disable lit */
 import { PolymerElement } from "@polymer/polymer/polymer-element";
-
+import dynamicContentUpdater from "../common/dom/dynamic_content_updater";
+import { stateCardType } from "../common/entity/state_card_type";
 import "./state-card-climate";
 import "./state-card-configurator";
 import "./state-card-cover";
@@ -16,9 +18,6 @@ import "./state-card-toggle";
 import "./state-card-vacuum";
 import "./state-card-water_heater";
 import "./state-card-weblink";
-
-import { stateCardType } from "../common/entity/state_card_type";
-import dynamicContentUpdater from "../common/dom/dynamic_content_updater";
 
 class StateCardContent extends PolymerElement {
   static get properties() {

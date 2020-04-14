@@ -1,6 +1,6 @@
 import "@polymer/paper-icon-button/paper-icon-button";
 import "@polymer/paper-spinner/paper-spinner";
-
+import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import {
   css,
   CSSResult,
@@ -10,32 +10,33 @@ import {
   property,
   TemplateResult,
 } from "lit-element";
-import { UnsubscribeFunc } from "home-assistant-js-websocket";
-
-import { haStyle } from "../../../resources/styles";
-import { HomeAssistant } from "../../../types";
+import "../../../components/buttons/ha-call-api-button";
+import "../../../components/buttons/ha-call-service-button";
+import "../../../components/ha-card";
+import "../../../components/ha-icon";
+import "../../../components/ha-service-description";
 import {
   fetchNetworkStatus,
   ZWaveNetworkStatus,
-  ZWAVE_NETWORK_STATE_STOPPED,
-  ZWAVE_NETWORK_STATE_STARTED,
   ZWAVE_NETWORK_STATE_AWAKED,
   ZWAVE_NETWORK_STATE_READY,
+  ZWAVE_NETWORK_STATE_STARTED,
+  ZWAVE_NETWORK_STATE_STOPPED,
 } from "../../../data/zwave";
-
-import "../../../components/buttons/ha-call-api-button";
-import "../../../components/buttons/ha-call-service-button";
-import "../../../components/ha-service-description";
-import "../../../components/ha-card";
-import "../../../components/ha-icon";
+import { haStyle } from "../../../resources/styles";
+import { HomeAssistant } from "../../../types";
 import "../ha-config-section";
 
 @customElement("zwave-network")
 export class ZwaveNetwork extends LitElement {
   @property() public hass!: HomeAssistant;
+
   @property() public isWide!: boolean;
+
   @property() private _showHelp = false;
+
   @property() private _networkStatus?: ZWaveNetworkStatus;
+
   @property() private _unsubs: Array<Promise<UnsubscribeFunc>> = [];
 
   public disconnectedCallback(): void {
@@ -133,9 +134,7 @@ export class ZwaveNetwork extends LitElement {
                         ${this._generateServiceButton("heal_network")}
                         ${this._generateServiceButton("test_network")}
                       `
-                    : html`
-                        ${this._generateServiceButton("start_network")}
-                      `}
+                    : html` ${this._generateServiceButton("start_network")} `}
                 </div>
                 ${this._networkStatus.state >= ZWAVE_NETWORK_STATE_AWAKED
                   ? html`

@@ -11,6 +11,7 @@ WebKit issue: https://bugs.webkit.org/show_bug.cgi?id=174629
 
 import "@polymer/paper-input/paper-textarea";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
+/* eslint-plugin-disable lit */
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 
 class HaTextarea extends PolymerElement {

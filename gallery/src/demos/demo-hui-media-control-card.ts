@@ -1,6 +1,6 @@
 import { html } from "@polymer/polymer/lib/utils/html-tag";
+/* eslint-plugin-disable lit */
 import { PolymerElement } from "@polymer/polymer/polymer-element";
-
 import { provideHass } from "../../../src/fake_data/provide_hass";
 import "../components/demo-cards";
 import { createMediaPlayerEntities } from "../data/media_players";
@@ -109,6 +109,7 @@ class DemoHuiMediControlCard extends PolymerElement {
   public ready() {
     super.ready();
     const hass = provideHass(this.$.demos);
+    hass.updateTranslations(null, "en");
     hass.addEntities(createMediaPlayerEntities());
   }
 }

@@ -1,34 +1,37 @@
-import "../../../layouts/hass-tabs-subpage-data-table";
-import "../../../components/ha-fab";
-
-import { computeRTL } from "../../../common/util/compute_rtl";
-import { configSections } from "../ha-panel-config";
 import {
+  css,
+  customElement,
   LitElement,
   property,
-  css,
   PropertyValues,
-  customElement,
 } from "lit-element";
-import { HomeAssistant, Route } from "../../../types";
 import { html } from "lit-html";
-import { HASSDomEvent } from "../../../common/dom/fire_event";
-import { User, fetchUsers, updateUser, deleteUser } from "../../../data/user";
 import memoizeOne from "memoize-one";
+import { HASSDomEvent } from "../../../common/dom/fire_event";
+import { computeRTL } from "../../../common/util/compute_rtl";
 import {
   DataTableColumnContainer,
   RowClickedEvent,
 } from "../../../components/data-table/ha-data-table";
-import { showUserDetailDialog } from "./show-dialog-user-detail";
-import { showAddUserDialog } from "./show-dialog-add-user";
+import "../../../components/ha-fab";
+import { deleteUser, fetchUsers, updateUser, User } from "../../../data/user";
 import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
+import "../../../layouts/hass-tabs-subpage-data-table";
+import { HomeAssistant, Route } from "../../../types";
+import { configSections } from "../ha-panel-config";
+import { showAddUserDialog } from "./show-dialog-add-user";
+import { showUserDetailDialog } from "./show-dialog-user-detail";
 
 @customElement("ha-config-users")
 export class HaConfigUsers extends LitElement {
   @property() public hass!: HomeAssistant;
+
   @property() public _users: User[] = [];
+
   @property() public isWide!: boolean;
+
   @property() public narrow!: boolean;
+
   @property() public route!: Route;
 
   private _columns = memoizeOne(
@@ -44,7 +47,7 @@ export class HaConfigUsers extends LitElement {
           grows: true,
           template: (name) => html`
             ${name ||
-              this.hass!.localize("ui.panel.config.users.editor.unnamed_user")}
+            this.hass!.localize("ui.panel.config.users.editor.unnamed_user")}
           `,
         },
         group_ids: {
@@ -67,9 +70,7 @@ export class HaConfigUsers extends LitElement {
           filterable: true,
           template: (generated) => html`
             ${generated
-              ? html`
-                  <ha-icon icon="hass:check-circle-outline"></ha-icon>
-                `
+              ? html` <ha-icon icon="hass:check-circle-outline"></ha-icon> `
               : ""}
           `,
         },

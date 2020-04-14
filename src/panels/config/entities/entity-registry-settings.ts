@@ -12,32 +12,40 @@ import {
 } from "lit-element";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { computeDomain } from "../../../common/entity/compute_domain";
-import "../../../components/ha-switch";
 import "../../../components/ha-icon-input";
-// tslint:disable-next-line: no-duplicate-imports
-import { HaSwitch } from "../../../components/ha-switch";
+import "../../../components/ha-switch";
+import type { HaSwitch } from "../../../components/ha-switch";
 import {
-  removeEntityRegistryEntry,
-  updateEntityRegistryEntry,
   EntityRegistryEntryUpdateParams,
   ExtEntityRegistryEntry,
+  removeEntityRegistryEntry,
+  updateEntityRegistryEntry,
 } from "../../../data/entity_registry";
 import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
-import { PolymerChangedEvent } from "../../../polymer-types";
-import { HomeAssistant } from "../../../types";
+import type { PolymerChangedEvent } from "../../../polymer-types";
 import { haStyle } from "../../../resources/styles";
+import type { HomeAssistant } from "../../../types";
 
 @customElement("entity-registry-settings")
 export class EntityRegistrySettings extends LitElement {
   @property() public hass!: HomeAssistant;
+
   @property() public entry!: ExtEntityRegistryEntry;
+
   @property() public dialogElement!: HTMLElement;
+
   @property() private _name!: string;
+
   @property() private _icon!: string;
+
   @property() private _entityId!: string;
+
   @property() private _disabledBy!: string | null;
+
   @property() private _error?: string;
+
   @property() private _submitting?: boolean;
+
   private _origEntityId!: string;
 
   protected updated(changedProperties: PropertyValues) {
@@ -73,11 +81,7 @@ export class EntityRegistrySettings extends LitElement {
               </div>
             `
           : ""}
-        ${this._error
-          ? html`
-              <div class="error">${this._error}</div>
-            `
-          : ""}
+        ${this._error ? html` <div class="error">${this._error}</div> ` : ""}
         <div class="form">
           <paper-input
             .value=${this._name}
@@ -148,7 +152,7 @@ export class EntityRegistrySettings extends LitElement {
           class="warning"
           @click="${this._confirmDeleteEntry}"
           .disabled=${this._submitting ||
-            !(stateObj && stateObj.attributes.restored)}
+          !(stateObj && stateObj.attributes.restored)}
         >
           ${this.hass.localize("ui.dialogs.entity_registry.editor.delete")}
         </mwc-button>

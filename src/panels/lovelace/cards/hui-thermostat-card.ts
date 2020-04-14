@@ -1,41 +1,37 @@
-import {
-  html,
-  LitElement,
-  PropertyValues,
-  TemplateResult,
-  customElement,
-  property,
-  css,
-  CSSResult,
-  svg,
-} from "lit-element";
-import { classMap } from "lit-html/directives/class-map";
 import "@polymer/paper-icon-button/paper-icon-button";
 import "@thomasloven/round-slider";
-
-import "../../../components/ha-card";
-import "../components/hui-warning";
-import "../components/hui-unavailable";
-
-import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
-import { computeStateName } from "../../../common/entity/compute_state_name";
-
-import { hasConfigOrEntityChanged } from "../common/has-changed";
-import { HomeAssistant } from "../../../types";
-import { LovelaceCard, LovelaceCardEditor } from "../types";
+import { HassEntity } from "home-assistant-js-websocket";
+import {
+  css,
+  CSSResult,
+  customElement,
+  html,
+  LitElement,
+  property,
+  PropertyValues,
+  svg,
+  TemplateResult,
+} from "lit-element";
+import { classMap } from "lit-html/directives/class-map";
 import { UNIT_F } from "../../../common/const";
+import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { fireEvent } from "../../../common/dom/fire_event";
-import { ThermostatCardConfig } from "./types";
+import { computeStateName } from "../../../common/entity/compute_state_name";
+import "../../../components/ha-card";
 import {
   ClimateEntity,
-  HvacMode,
-  compareClimateHvacModes,
   CLIMATE_PRESET_NONE,
+  compareClimateHvacModes,
+  HvacMode,
 } from "../../../data/climate";
-import { HassEntity } from "home-assistant-js-websocket";
+import { UNAVAILABLE_STATES } from "../../../data/entity";
+import { HomeAssistant } from "../../../types";
 import { actionHandler } from "../common/directives/action-handler-directive";
 import { findEntities } from "../common/find-entites";
-import { UNAVAILABLE } from "../../../data/entity";
+import { hasConfigOrEntityChanged } from "../common/has-changed";
+import "../components/hui-warning";
+import { LovelaceCard, LovelaceCardEditor } from "../types";
+import { ThermostatCardConfig } from "./types";
 
 const modeIcons: { [mode in HvacMode]: string } = {
   auto: "hass:calendar-repeat",
@@ -75,7 +71,9 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
   }
 
   @property() public hass?: HomeAssistant;
+
   @property() private _config?: ThermostatCardConfig;
+
   @property() private _setTemp?: number | number[];
 
   public getCardSize(): number {
@@ -127,23 +125,20 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
         ? stateObj.attributes.temperature
         : stateObj.attributes.min_temp;
 
-    const slider =
-      stateObj.state === "unavailable"
-        ? html`
-            <round-slider disabled="true"></round-slider>
-          `
-        : html`
-            <round-slider
-              .value=${targetTemp}
-              .low=${stateObj.attributes.target_temp_low}
-              .high=${stateObj.attributes.target_temp_high}
-              .min=${stateObj.attributes.min_temp}
-              .max=${stateObj.attributes.max_temp}
-              .step=${this._stepSize}
-              @value-changing=${this._dragEvent}
-              @value-changed=${this._setTemperature}
-            ></round-slider>
-          `;
+    const slider = UNAVAILABLE_STATES.includes(stateObj.state)
+      ? html` <round-slider disabled="true"></round-slider> `
+      : html`
+          <round-slider
+            .value=${targetTemp}
+            .low=${stateObj.attributes.target_temp_low}
+            .high=${stateObj.attributes.target_temp_high}
+            .min=${stateObj.attributes.min_temp}
+            .max=${stateObj.attributes.max_temp}
+            .step=${this._stepSize}
+            @value-changing=${this._dragEvent}
+            @value-changed=${this._setTemperature}
+          ></round-slider>
+        `;
 
     const currentTemperature = !isNaN(stateObj.attributes.current_temperature)
       ? svg`
@@ -224,14 +219,6 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
           [mode]: true,
         })}
       >
-        ${stateObj.state === UNAVAILABLE
-          ? html`
-              <hui-unavailable
-                .text="${this.hass.localize("state.default.unavailable")}"
-                @click=${this._handleMoreInfo}
-              ></hui-unavailable>
-            `
-          : ""}
         <paper-icon-button
           icon="hass:dots-vertical"
           class="more-info"
@@ -333,7 +320,7 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
   }
 
   private _getSetTemp(stateObj: HassEntity) {
-    if (stateObj.state === "unavailable") {
+    if (UNAVAILABLE_STATES.includes(stateObj.state)) {
       return this.hass!.localize("state.default.unavailable");
     }
 
@@ -418,10 +405,6 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
     return css`
       :host {
         display: block;
-      }
-
-      hui-unavailable {
-        cursor: pointer;
       }
 
       ha-card {

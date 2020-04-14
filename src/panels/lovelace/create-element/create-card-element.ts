@@ -1,7 +1,8 @@
-import "../cards/hui-entities-card";
-import "../cards/hui-entity-card";
+import { LovelaceCardConfig } from "../../../data/lovelace";
 import "../cards/hui-button-card";
+import "../cards/hui-entities-card";
 import "../cards/hui-entity-button-card";
+import "../cards/hui-entity-card";
 import "../cards/hui-glance-card";
 import "../cards/hui-history-graph-card";
 import "../cards/hui-horizontal-stack-card";
@@ -10,7 +11,6 @@ import "../cards/hui-sensor-card";
 import "../cards/hui-thermostat-card";
 import "../cards/hui-vertical-stack-card";
 import "../cards/hui-weather-forecast-card";
-import { LovelaceCardConfig } from "../../../data/lovelace";
 import {
   createLovelaceElement,
   getLovelaceElementClass,

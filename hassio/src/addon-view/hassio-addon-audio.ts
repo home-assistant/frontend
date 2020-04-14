@@ -1,5 +1,3 @@
-import "web-animations-js/web-animations-next-lite.min";
-
 import "@material/mwc-button";
 import "@polymer/paper-card/paper-card";
 import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
@@ -15,39 +13,41 @@ import {
   PropertyValues,
   TemplateResult,
 } from "lit-element";
-
-import { HomeAssistant } from "../../../src/types";
+import "web-animations-js/web-animations-next-lite.min";
 import {
   HassioAddonDetails,
-  setHassioAddonOption,
   HassioAddonSetOptionParams,
+  setHassioAddonOption,
 } from "../../../src/data/hassio/addon";
 import {
-  HassioHardwareAudioDevice,
   fetchHassioHardwareAudio,
+  HassioHardwareAudioDevice,
 } from "../../../src/data/hassio/hardware";
-import { hassioStyle } from "../resources/hassio-style";
 import { haStyle } from "../../../src/resources/styles";
+import { HomeAssistant } from "../../../src/types";
+import { hassioStyle } from "../resources/hassio-style";
 
 @customElement("hassio-addon-audio")
 class HassioAddonAudio extends LitElement {
   @property() public hass!: HomeAssistant;
+
   @property() public addon!: HassioAddonDetails;
+
   @property() private _error?: string;
+
   @property() private _inputDevices?: HassioHardwareAudioDevice[];
+
   @property() private _outputDevices?: HassioHardwareAudioDevice[];
+
   @property() private _selectedInput!: null | string;
+
   @property() private _selectedOutput!: null | string;
 
   protected render(): TemplateResult {
     return html`
       <paper-card heading="Audio">
         <div class="card-content">
-          ${this._error
-            ? html`
-                <div class="errors">${this._error}</div>
-              `
-            : ""}
+          ${this._error ? html` <div class="errors">${this._error}</div> ` : ""}
 
           <paper-dropdown-menu
             label="Input"
@@ -59,13 +59,13 @@ class HassioAddonAudio extends LitElement {
               .selected=${this._selectedInput}
             >
               ${this._inputDevices &&
-                this._inputDevices.map((item) => {
-                  return html`
-                    <paper-item device=${item.device || ""}
-                      >${item.name}</paper-item
-                    >
-                  `;
-                })}
+              this._inputDevices.map((item) => {
+                return html`
+                  <paper-item device=${item.device || ""}
+                    >${item.name}</paper-item
+                  >
+                `;
+              })}
             </paper-listbox>
           </paper-dropdown-menu>
           <paper-dropdown-menu
@@ -78,13 +78,13 @@ class HassioAddonAudio extends LitElement {
               .selected=${this._selectedOutput}
             >
               ${this._outputDevices &&
-                this._outputDevices.map((item) => {
-                  return html`
-                    <paper-item device=${item.device || ""}
-                      >${item.name}</paper-item
-                    >
-                  `;
-                })}
+              this._outputDevices.map((item) => {
+                return html`
+                  <paper-item device=${item.device || ""}
+                    >${item.name}</paper-item
+                  >
+                `;
+              })}
             </paper-listbox>
           </paper-dropdown-menu>
         </div>

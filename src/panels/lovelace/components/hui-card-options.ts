@@ -1,24 +1,23 @@
-import {
-  html,
-  LitElement,
-  customElement,
-  property,
-  css,
-  CSSResult,
-  TemplateResult,
-} from "lit-element";
 import "@material/mwc-button";
-import "@polymer/paper-menu-button/paper-menu-button";
 import "@polymer/paper-icon-button/paper-icon-button";
 import "@polymer/paper-listbox/paper-listbox";
-
-import { showEditCardDialog } from "../editor/card-editor/show-edit-card-dialog";
-import { confDeleteCard } from "../editor/delete-card";
-import { HomeAssistant } from "../../../types";
+import "@polymer/paper-menu-button/paper-menu-button";
+import {
+  css,
+  CSSResult,
+  customElement,
+  html,
+  LitElement,
+  property,
+  TemplateResult,
+} from "lit-element";
 import { LovelaceCardConfig } from "../../../data/lovelace";
-import { Lovelace } from "../types";
-import { swapCard } from "../editor/config-util";
+import { HomeAssistant } from "../../../types";
+import { showEditCardDialog } from "../editor/card-editor/show-edit-card-dialog";
 import { showMoveCardViewDialog } from "../editor/card-editor/show-move-card-view-dialog";
+import { swapCard } from "../editor/config-util";
+import { confDeleteCard } from "../editor/delete-card";
+import { Lovelace } from "../types";
 
 @customElement("hui-card-options")
 export class HuiCardOptions extends LitElement {
@@ -50,7 +49,7 @@ export class HuiCardOptions extends LitElement {
               @click=${this._cardDown}
               ?disabled=${this.lovelace!.config.views[this.path![0]].cards!
                 .length ===
-                this.path![1] + 1}
+              this.path![1] + 1}
             ></paper-icon-button>
             <paper-icon-button
               title="Move card up"

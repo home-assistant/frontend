@@ -1,30 +1,27 @@
-import {
-  LitElement,
-  html,
-  css,
-  CSSResult,
-  TemplateResult,
-  property,
-  customElement,
-  query,
-} from "lit-element";
+import "@material/mwc-button";
 import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable";
 import "@polymer/paper-input/paper-input";
+import type { PaperInputElement } from "@polymer/paper-input/paper-input";
 import "@polymer/paper-spinner/paper-spinner";
-import "@material/mwc-button";
-
+import {
+  css,
+  CSSResult,
+  customElement,
+  html,
+  LitElement,
+  property,
+  query,
+  TemplateResult,
+} from "lit-element";
 import "../../../../components/dialog/ha-paper-dialog";
-import "./ha-thingtalk-placeholders";
-import { ThingtalkDialogParams } from "../show-dialog-thingtalk";
-import { PolymerChangedEvent } from "../../../../polymer-types";
-import { haStyleDialog, haStyle } from "../../../../resources/styles";
-import { HomeAssistant } from "../../../../types";
-// tslint:disable-next-line
-import { PaperInputElement } from "@polymer/paper-input/paper-input";
-import { AutomationConfig } from "../../../../data/automation";
-// tslint:disable-next-line
-import { PlaceholderValues } from "./ha-thingtalk-placeholders";
+import type { AutomationConfig } from "../../../../data/automation";
 import { convertThingTalk } from "../../../../data/cloud";
+import type { PolymerChangedEvent } from "../../../../polymer-types";
+import { haStyle, haStyleDialog } from "../../../../resources/styles";
+import type { HomeAssistant } from "../../../../types";
+import type { ThingtalkDialogParams } from "../show-dialog-thingtalk";
+import "./ha-thingtalk-placeholders";
+import type { PlaceholderValues } from "./ha-thingtalk-placeholders";
 
 export interface Placeholder {
   name: string;
@@ -41,15 +38,21 @@ export interface PlaceholderContainer {
 @customElement("ha-dialog-thinktalk")
 class DialogThingtalk extends LitElement {
   @property() public hass!: HomeAssistant;
+
   @property() private _error?: string;
+
   @property() private _params?: ThingtalkDialogParams;
-  @property() private _submitting: boolean = false;
+
+  @property() private _submitting = false;
+
   @property() private _opened = false;
+
   @property() private _placeholders?: PlaceholderContainer;
 
   @query("#input") private _input?: PaperInputElement;
 
   private _value!: string;
+
   private _config!: Partial<AutomationConfig>;
 
   public showDialog(params: ThingtalkDialogParams): void {
@@ -83,11 +86,7 @@ class DialogThingtalk extends LitElement {
       >
         <h2>Create a new automation</h2>
         <paper-dialog-scrollable>
-          ${this._error
-            ? html`
-                <div class="error">${this._error}</div>
-              `
-            : ""}
+          ${this._error ? html` <div class="error">${this._error}</div> ` : ""}
           Type below what this automation should do, and we will try to convert
           it into a Home Assistant automation. (only English is supported for
           now)<br /><br />

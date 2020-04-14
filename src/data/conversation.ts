@@ -15,7 +15,7 @@ export interface AgentInfo {
 export const processText = (
   hass: HomeAssistant,
   text: string,
-  // tslint:disable-next-line: variable-name
+  // eslint-disable-next-line: variable-name
   conversation_id: string
 ): Promise<ProcessResults> =>
   hass.callWS({

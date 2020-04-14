@@ -1,9 +1,9 @@
 import { html } from "@polymer/polymer/lib/utils/html-tag";
+/* eslint-plugin-disable lit */
 import { PolymerElement } from "@polymer/polymer/polymer-element";
-
-import "./ha-progress-button";
-import { EventsMixin } from "../../mixins/events-mixin";
 import { showConfirmationDialog } from "../../dialogs/generic/show-dialog-box";
+import { EventsMixin } from "../../mixins/events-mixin";
+import "./ha-progress-button";
 
 /*
  * @appliesMixin EventsMixin
@@ -53,6 +53,7 @@ class HaCallServiceButton extends EventsMixin(PolymerElement) {
 
   callService() {
     this.progress = true;
+    // eslint-disable-next-line @typescript-eslint/no-this-alias
     var el = this;
     var eventData = {
       domain: this.domain,
@@ -63,18 +64,18 @@ class HaCallServiceButton extends EventsMixin(PolymerElement) {
     this.hass
       .callService(this.domain, this.service, this.serviceData)
       .then(
-        function() {
+        function () {
           el.progress = false;
           el.$.progress.actionSuccess();
           eventData.success = true;
         },
-        function() {
+        function () {
           el.progress = false;
           el.$.progress.actionError();
           eventData.success = false;
         }
       )
-      .then(function() {
+      .then(function () {
         el.fire("hass-service-called", eventData);
       });
   }

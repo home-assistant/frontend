@@ -1,35 +1,36 @@
-import {
-  LitElement,
-  TemplateResult,
-  html,
-  CSSResult,
-  css,
-  property,
-  customElement,
-} from "lit-element";
+import "@material/mwc-button";
 import "@polymer/iron-icon/iron-icon";
-
-import { HomeAssistant } from "../../../src/types";
+import "@polymer/paper-card/paper-card";
+import {
+  css,
+  CSSResult,
+  customElement,
+  html,
+  LitElement,
+  property,
+  TemplateResult,
+} from "lit-element";
+import "../../../src/components/buttons/ha-call-api-button";
 import { HassioHassOSInfo } from "../../../src/data/hassio/host";
 import {
   HassioHomeAssistantInfo,
   HassioSupervisorInfo,
 } from "../../../src/data/hassio/supervisor";
-
-import { hassioStyle } from "../resources/hassio-style";
 import { haStyle } from "../../../src/resources/styles";
-
-import "@material/mwc-button";
-import "@polymer/paper-card/paper-card";
-import "../../../src/components/buttons/ha-call-api-button";
+import { HomeAssistant } from "../../../src/types";
 import "../components/hassio-card-content";
+import { hassioStyle } from "../resources/hassio-style";
 
 @customElement("hassio-update")
 export class HassioUpdate extends LitElement {
   @property() public hass!: HomeAssistant;
+
   @property() public hassInfo: HassioHomeAssistantInfo;
+
   @property() public hassOsInfo?: HassioHassOSInfo;
+
   @property() public supervisorInfo: HassioSupervisorInfo;
+
   @property() private _error?: string;
 
   protected render(): TemplateResult {
@@ -55,9 +56,7 @@ export class HassioUpdate extends LitElement {
     return html`
       <div class="content">
         ${this._error
-          ? html`
-              <div class="error">Error: ${this._error}</div>
-            `
+          ? html` <div class="error">Error: ${this._error}</div> `
           : ""}
         <h1>
           ${updatesAvailable > 1
@@ -113,7 +112,7 @@ export class HassioUpdate extends LitElement {
           ${icon
             ? html`
                 <div class="icon">
-                  <iron-icon .icon="${icon}" />
+                  <iron-icon .icon=${icon}></iron-icon>
                 </div>
               `
             : ""}
@@ -138,7 +137,7 @@ export class HassioUpdate extends LitElement {
     `;
   }
 
-  private _apiCalled(ev) {
+  private _apiCalled(ev): void {
     if (ev.detail.success) {
       this._error = "";
       return;
@@ -146,9 +145,11 @@ export class HassioUpdate extends LitElement {
 
     const response = ev.detail.response;
 
-    typeof response.body === "object"
-      ? (this._error = response.body.message || "Unknown error")
-      : (this._error = response.body);
+    if (typeof response.body === "object") {
+      this._error = response.body.message || "Unknown error";
+    } else {
+      this._error = response.body;
+    }
   }
 
   static get styles(): CSSResult[] {

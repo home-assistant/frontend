@@ -1,21 +1,19 @@
 import {
-  html,
-  LitElement,
-  TemplateResult,
-  property,
   css,
   CSSResult,
   customElement,
+  html,
+  LitElement,
+  property,
   PropertyValues,
+  TemplateResult,
 } from "lit-element";
-
 import "../../../components/ha-climate-state";
+import { HomeAssistant } from "../../../types";
+import { hasConfigOrEntityChanged } from "../common/has-changed";
 import "../components/hui-generic-entity-row";
 import "../components/hui-warning";
-
-import { HomeAssistant } from "../../../types";
-import { LovelaceRow, EntityConfig } from "./types";
-import { hasConfigOrEntityChanged } from "../common/has-changed";
+import { EntityConfig, LovelaceRow } from "./types";
 
 @customElement("hui-climate-entity-row")
 class HuiClimateEntityRow extends LitElement implements LovelaceRow {

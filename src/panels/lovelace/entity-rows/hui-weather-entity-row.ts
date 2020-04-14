@@ -1,30 +1,30 @@
 import {
-  html,
-  LitElement,
-  TemplateResult,
   css,
   CSSResult,
-  property,
   customElement,
+  html,
+  LitElement,
+  property,
   PropertyValues,
+  TemplateResult,
 } from "lit-element";
-
 import "../../../components/entity/state-badge";
-import "../components/hui-warning";
-
-import { LovelaceRow } from "./types";
+import { UNAVAILABLE_STATES } from "../../../data/entity";
+import {
+  getWeatherUnit,
+  weatherIcons,
+  weatherImages,
+} from "../../../data/weather";
 import { HomeAssistant, WeatherEntity } from "../../../types";
 import { EntitiesCardEntityConfig } from "../cards/types";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
-import {
-  weatherIcons,
-  getWeatherUnit,
-  weatherImages,
-} from "../../../data/weather";
+import "../components/hui-warning";
+import { LovelaceRow } from "./types";
 
 @customElement("hui-weather-entity-row")
 class HuiWeatherEntityRow extends LitElement implements LovelaceRow {
   @property() public hass?: HomeAssistant;
+
   @property() private _config?: EntitiesCardEntityConfig;
 
   public setConfig(config: EntitiesCardEntityConfig): void {
@@ -68,11 +68,18 @@ class HuiWeatherEntityRow extends LitElement implements LovelaceRow {
       <hui-generic-entity-row .hass=${this.hass} .config=${weatherRowConfig}>
         <div class="attributes">
           <div>
-            ${stateObj.attributes.temperature}
-            ${getWeatherUnit(this.hass, "temperature")}
+            ${UNAVAILABLE_STATES.includes(stateObj.state)
+              ? this.hass.localize(`state.default.${stateObj.state}`) ||
+                stateObj.state
+              : html`
+                  ${stateObj.attributes.temperature}
+                  ${getWeatherUnit(this.hass, "temperature")}
+                `}
           </div>
           <div class="secondary">
-            ${this._getSecondaryAttribute(stateObj)}
+            ${!UNAVAILABLE_STATES.includes(stateObj.state)
+              ? this._getSecondaryAttribute(stateObj)
+              : ""}
           </div>
         </div>
       </hui-generic-entity-row>

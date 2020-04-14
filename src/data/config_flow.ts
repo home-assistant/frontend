@@ -1,8 +1,8 @@
-import { HomeAssistant } from "../types";
-import { DataEntryFlowStep, DataEntryFlowProgress } from "./data_entry_flow";
-import { debounce } from "../common/util/debounce";
-import { getCollection, Connection } from "home-assistant-js-websocket";
+import { Connection, getCollection } from "home-assistant-js-websocket";
 import { LocalizeFunc } from "../common/translations/localize";
+import { debounce } from "../common/util/debounce";
+import { HomeAssistant } from "../types";
+import { DataEntryFlowProgress, DataEntryFlowStep } from "./data_entry_flow";
 
 export const DISCOVERY_SOURCES = ["unignore", "homekit", "ssdp", "zeroconf"];
 

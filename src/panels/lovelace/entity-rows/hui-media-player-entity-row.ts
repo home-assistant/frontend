@@ -1,46 +1,49 @@
+import "@polymer/paper-icon-button/paper-icon-button";
+import { HassEntity } from "home-assistant-js-websocket";
 import {
-  html,
-  LitElement,
-  TemplateResult,
   css,
   CSSResult,
-  property,
   customElement,
+  html,
+  LitElement,
+  property,
   PropertyValues,
+  TemplateResult,
 } from "lit-element";
-import "@polymer/paper-icon-button/paper-icon-button";
-
-import "../components/hui-generic-entity-row";
-import "../components/hui-warning";
-import "../../../components/ha-slider";
-
-import { LovelaceRow, EntityConfig } from "./types";
-import { HomeAssistant } from "../../../types";
-import { HassEntity } from "home-assistant-js-websocket";
 import { supportsFeature } from "../../../common/entity/supports-feature";
+import { computeRTLDirection } from "../../../common/util/compute_rtl";
+import { debounce } from "../../../common/util/debounce";
+import "../../../components/ha-slider";
+import { UNAVAILABLE, UNKNOWN } from "../../../data/entity";
 import {
   SUPPORTS_PLAY,
   SUPPORT_NEXT_TRACK,
   SUPPORT_PAUSE,
-  SUPPORT_TURN_ON,
-  SUPPORT_TURN_OFF,
   SUPPORT_PREVIOUS_TRACK,
-  SUPPORT_VOLUME_SET,
-  SUPPORT_VOLUME_MUTE,
+  SUPPORT_TURN_OFF,
+  SUPPORT_TURN_ON,
   SUPPORT_VOLUME_BUTTONS,
+  SUPPORT_VOLUME_MUTE,
+  SUPPORT_VOLUME_SET,
 } from "../../../data/media-player";
+import { HomeAssistant } from "../../../types";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
-import { computeRTLDirection } from "../../../common/util/compute_rtl";
-import { debounce } from "../../../common/util/debounce";
-import { UNAVAILABLE, UNKNOWN } from "../../../data/entity";
+import "../components/hui-generic-entity-row";
+import "../components/hui-warning";
+import { EntityConfig, LovelaceRow } from "./types";
 
 @customElement("hui-media-player-entity-row")
 class HuiMediaPlayerEntityRow extends LitElement implements LovelaceRow {
   @property() public hass?: HomeAssistant;
+
   @property() private _config?: EntityConfig;
+
   @property() private _narrow?: boolean = false;
+
   @property() private _veryNarrow?: boolean = false;
+
   private _resizeObserver?: ResizeObserver;
+
   private _debouncedResizeListener = debounce(
     () => {
       this._narrow = (this.clientWidth || 0) < 300;
@@ -226,7 +229,7 @@ class HuiMediaPlayerEntityRow extends LitElement implements LovelaceRow {
       return "hass:play";
     }
 
-    // tslint:disable-next-line:no-bitwise
+    // eslint-disable-next-line:no-bitwise
     return supportsFeature(stateObj, SUPPORT_PAUSE)
       ? "hass:pause"
       : "hass:stop";

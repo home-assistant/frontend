@@ -1,17 +1,16 @@
-import { UpdatingElement, PropertyValues } from "lit-element";
-import { HomeAssistant, Constructor } from "../types";
+import { PropertyValues, UpdatingElement } from "lit-element";
+import { Constructor, HomeAssistant } from "../types";
 
 export interface ProvideHassElement {
   provideHass(element: HTMLElement);
 }
 
-/* tslint:disable-next-line:variable-name */
 export const ProvideHassLitMixin = <T extends Constructor<UpdatingElement>>(
   superClass: T
 ) =>
   class extends superClass {
     protected hass!: HomeAssistant;
-    /* tslint:disable-next-line:variable-name */
+
     private __provideHass: HTMLElement[] = [];
 
     public provideHass(el) {

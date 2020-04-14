@@ -10,41 +10,49 @@ import {
   property,
   TemplateResult,
 } from "lit-element";
-import "../../../components/dialog/ha-paper-dialog";
-import { haStyle } from "../../../resources/styles";
-import { HomeAssistant, Route } from "../../../types";
+import { ifDefined } from "lit-html/directives/if-defined";
 import memoizeOne from "memoize-one";
-import {
-  AreaRegistryEntry,
-  updateAreaRegistryEntry,
-  deleteAreaRegistryEntry,
-} from "../../../data/area_registry";
-import {
-  DeviceRegistryEntry,
-  devicesInArea,
-  computeDeviceName,
-} from "../../../data/device_registry";
-import { configSections } from "../ha-panel-config";
-import {
-  showAreaRegistryDetailDialog,
-  loadAreaRegistryDetailDialog,
-} from "./show-dialog-area-registry-detail";
-import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
-import { RelatedResult, findRelated } from "../../../data/search";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { computeStateName } from "../../../common/entity/compute_state_name";
-import { ifDefined } from "lit-html/directives/if-defined";
+import "../../../components/dialog/ha-paper-dialog";
+import {
+  AreaRegistryEntry,
+  deleteAreaRegistryEntry,
+  updateAreaRegistryEntry,
+} from "../../../data/area_registry";
+import {
+  computeDeviceName,
+  DeviceRegistryEntry,
+  devicesInArea,
+} from "../../../data/device_registry";
+import { findRelated, RelatedResult } from "../../../data/search";
+import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
+import { haStyle } from "../../../resources/styles";
+import { HomeAssistant, Route } from "../../../types";
+import { configSections } from "../ha-panel-config";
+import {
+  loadAreaRegistryDetailDialog,
+  showAreaRegistryDetailDialog,
+} from "./show-dialog-area-registry-detail";
 
 @customElement("ha-config-area-page")
 class HaConfigAreaPage extends LitElement {
   @property() public hass!: HomeAssistant;
+
   @property() public areaId!: string;
+
   @property() public areas!: AreaRegistryEntry[];
+
   @property() public devices!: DeviceRegistryEntry[];
+
   @property({ type: Boolean, reflect: true }) public narrow!: boolean;
+
   @property() public isWide!: boolean;
+
   @property() public showAdvanced!: boolean;
+
   @property() public route!: Route;
+
   @property() private _related?: RelatedResult;
 
   private _area = memoizeOne((areaId: string, areas: AreaRegistryEntry[]):

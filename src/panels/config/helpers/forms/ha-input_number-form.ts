@@ -1,34 +1,41 @@
+import "@polymer/paper-input/paper-input";
 import {
-  LitElement,
-  html,
   css,
   CSSResult,
-  TemplateResult,
-  property,
   customElement,
+  html,
+  LitElement,
+  property,
+  TemplateResult,
 } from "lit-element";
-
-import "@polymer/paper-input/paper-input";
-
-import "../../../../components/ha-switch";
-import "../../../../components/ha-icon-input";
-import { HomeAssistant } from "../../../../types";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import { haStyle } from "../../../../resources/styles";
+import "../../../../components/ha-icon-input";
+import "../../../../components/ha-switch";
 import { InputNumber } from "../../../../data/input_number";
+import { haStyle } from "../../../../resources/styles";
+import { HomeAssistant } from "../../../../types";
 
 @customElement("ha-input_number-form")
 class HaInputNumberForm extends LitElement {
   @property() public hass!: HomeAssistant;
+
   @property() public new?: boolean;
+
   private _item?: Partial<InputNumber>;
+
   @property() private _name!: string;
+
   @property() private _icon!: string;
+
   @property() private _max?: number;
+
   @property() private _min?: number;
+
   @property() private _mode?: string;
+
   @property() private _step?: number;
-  // tslint:disable-next-line: variable-name
+
+  // eslint-disable-next-line: variable-name
   @property() private _unit_of_measurement?: string;
 
   set item(item: InputNumber) {

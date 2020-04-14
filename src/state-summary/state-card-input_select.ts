@@ -1,30 +1,28 @@
-import {
-  LitElement,
-  customElement,
-  TemplateResult,
-  html,
-  CSSResult,
-  css,
-  property,
-  PropertyValues,
-} from "lit-element";
 import "@polymer/paper-dropdown-menu/paper-dropdown-menu-light";
 import "@polymer/paper-item/paper-item";
-// tslint:disable-next-line: no-duplicate-imports
-import { PaperItemElement } from "@polymer/paper-item/paper-item";
+import type { PaperItemElement } from "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
-
-import "../components/entity/state-badge";
-
-import { computeStateName } from "../common/entity/compute_state_name";
-import { HomeAssistant, InputSelectEntity } from "../types";
-import { setInputSelectOption } from "../data/input_select";
-import { PolymerIronSelectEvent } from "../polymer-types";
+import {
+  css,
+  CSSResult,
+  customElement,
+  html,
+  LitElement,
+  property,
+  PropertyValues,
+  TemplateResult,
+} from "lit-element";
 import { stopPropagation } from "../common/dom/stop_propagation";
+import { computeStateName } from "../common/entity/compute_state_name";
+import "../components/entity/state-badge";
+import { setInputSelectOption } from "../data/input_select";
+import type { PolymerIronSelectEvent } from "../polymer-types";
+import type { HomeAssistant, InputSelectEntity } from "../types";
 
 @customElement("state-card-input_select")
 class StateCardInputSelect extends LitElement {
   @property() public hass!: HomeAssistant;
+
   @property() public stateObj!: InputSelectEntity;
 
   protected render(): TemplateResult {
@@ -38,9 +36,7 @@ class StateCardInputSelect extends LitElement {
       >
         <paper-listbox slot="dropdown-content">
           ${this.stateObj.attributes.options.map(
-            (option) => html`
-              <paper-item>${option}</paper-item>
-            `
+            (option) => html` <paper-item>${option}</paper-item> `
           )}
         </paper-listbox>
       </paper-dropdown-menu-light>

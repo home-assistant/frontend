@@ -1,36 +1,29 @@
 import deepClone from "deep-clone-simple";
-
-import { classMap } from "lit-html/directives/class-map";
-
-import { scroll } from "lit-virtualizer";
-
 import {
-  html,
-  query,
-  CSSResult,
   css,
+  CSSResult,
   customElement,
-  property,
-  TemplateResult,
-  PropertyValues,
+  html,
   LitElement,
+  property,
+  PropertyValues,
+  query,
+  TemplateResult,
 } from "lit-element";
-
-// eslint-disable-next-line import/no-webpack-loader-syntax
-// @ts-ignore
-// tslint:disable-next-line: no-implicit-dependencies
-import sortFilterWorker from "workerize-loader!./sort_filter_worker";
-
-import "../ha-icon";
-import "../../common/search/search-input";
-import "../ha-checkbox";
-// tslint:disable-next-line
-import { HaCheckbox } from "../ha-checkbox";
-import { fireEvent } from "../../common/dom/fire_event";
-import { nextRender } from "../../common/util/render-status";
-import { debounce } from "../../common/util/debounce";
-import { styleMap } from "lit-html/directives/style-map";
+import { classMap } from "lit-html/directives/class-map";
 import { ifDefined } from "lit-html/directives/if-defined";
+import { styleMap } from "lit-html/directives/style-map";
+import { scroll } from "lit-virtualizer";
+// @ts-ignore
+// eslint-disable-next-line import/no-webpack-loader-syntax
+import sortFilterWorker from "workerize-loader!./sort_filter_worker";
+import { fireEvent } from "../../common/dom/fire_event";
+import "../../common/search/search-input";
+import { debounce } from "../../common/util/debounce";
+import { nextRender } from "../../common/util/render-status";
+import "../ha-checkbox";
+import type { HaCheckbox } from "../ha-checkbox";
+import "../ha-icon";
 
 declare global {
   // for fire event
@@ -84,28 +77,46 @@ export interface DataTableRowData {
 @customElement("ha-data-table")
 export class HaDataTable extends LitElement {
   @property({ type: Object }) public columns: DataTableColumnContainer = {};
+
   @property({ type: Array }) public data: DataTableRowData[] = [];
+
   @property({ type: Boolean }) public selectable = false;
+
   @property({ type: Boolean }) public hasFab = false;
+
   @property({ type: Boolean, attribute: "auto-height" })
   public autoHeight = false;
+
   @property({ type: String }) public id = "id";
+
   @property({ type: String }) public noDataText?: string;
+
   @property({ type: String }) public filter = "";
+
   @property({ type: Boolean }) private _filterable = false;
+
   @property({ type: String }) private _filter = "";
+
   @property({ type: String }) private _sortColumn?: string;
+
   @property({ type: String }) private _sortDirection: SortingDirection = null;
+
   @property({ type: Array }) private _filteredData: DataTableRowData[] = [];
+
   @query("slot[name='header']") private _header!: HTMLSlotElement;
+
   @query(".mdc-data-table__table") private _table!: HTMLDivElement;
 
   private _checkableRowsCount?: number;
+
   private _checkedRows: string[] = [];
+
   private _sortColumns: {
     [key: string]: DataTableSortColumnData;
   } = {};
+
   private curRequest = 0;
+
   private _worker: any | undefined;
 
   private _debounceSearch = debounce(
@@ -217,9 +228,9 @@ export class HaDataTable extends LitElement {
                       class="mdc-data-table__row-checkbox"
                       @change=${this._handleHeaderRowCheckboxClick}
                       .indeterminate=${this._checkedRows.length &&
-                        this._checkedRows.length !== this._checkableRowsCount}
+                      this._checkedRows.length !== this._checkableRowsCount}
                       .checked=${this._checkedRows.length ===
-                        this._checkableRowsCount}
+                      this._checkableRowsCount}
                     >
                     </ha-checkbox>
                   </div>
@@ -288,9 +299,7 @@ export class HaDataTable extends LitElement {
                       : [...this._filteredData, ...[{ empty: true }]],
                     renderItem: (row: DataTableRowData) => {
                       if (row.empty) {
-                        return html`
-                          <div class="mdc-data-table__row"></div>
-                        `;
+                        return html` <div class="mdc-data-table__row"></div> `;
                       }
                       return html`
                         <div
@@ -727,6 +736,7 @@ export class HaDataTable extends LitElement {
       }
       .table-header {
         border-bottom: 1px solid rgba(var(--rgb-primary-text-color), 0.12);
+        padding: 0 16px;
       }
       search-input {
         position: relative;

@@ -1,35 +1,33 @@
-import {
-  html,
-  LitElement,
-  TemplateResult,
-  customElement,
-  property,
-} from "lit-element";
-import "@polymer/paper-input/paper-input";
 import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
+import "@polymer/paper-input/paper-input";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
-
+import {
+  customElement,
+  html,
+  LitElement,
+  property,
+  TemplateResult,
+} from "lit-element";
+import { fireEvent } from "../../../../common/dom/fire_event";
+import "../../../../components/entity/ha-entity-picker";
+import { ActionConfig } from "../../../../data/lovelace";
+import { HomeAssistant } from "../../../../types";
+import { PictureGlanceCardConfig } from "../../cards/types";
+import { struct } from "../../common/structs/struct";
 import "../../components/hui-action-editor";
 import "../../components/hui-entity-editor";
-import "../../../../components/entity/ha-entity-picker";
 import "../../components/hui-theme-select-editor";
-
-import { struct } from "../../common/structs/struct";
-import {
-  EntitiesEditorEvent,
-  EditorTarget,
-  actionConfigStruct,
-  entitiesConfigStruct,
-} from "../types";
-import { HomeAssistant } from "../../../../types";
-import { LovelaceCardEditor } from "../../types";
-import { fireEvent } from "../../../../common/dom/fire_event";
-import { configElementStyle } from "./config-elements-style";
-import { ActionConfig } from "../../../../data/lovelace";
-import { PictureGlanceCardConfig } from "../../cards/types";
 import { EntityConfig } from "../../entity-rows/types";
+import { LovelaceCardEditor } from "../../types";
 import { processEditorEntities } from "../process-editor-entities";
+import {
+  actionConfigStruct,
+  EditorTarget,
+  entitiesConfigStruct,
+  EntitiesEditorEvent,
+} from "../types";
+import { configElementStyle } from "./config-elements-style";
 
 const cardConfigStruct = struct({
   type: "string",
@@ -152,7 +150,7 @@ export class HuiPictureGlanceCardEditor extends LitElement
           .configValue=${"camera_image"}
           @change="${this._valueChanged}"
           allow-custom-entity
-          include-domains='["camera"]'
+          .include-domains=${["camera"]}
         ></ha-entity-picker>
         <div class="side-by-side">
           <paper-dropdown-menu
@@ -169,9 +167,7 @@ export class HuiPictureGlanceCardEditor extends LitElement
               .selected="${views.indexOf(this._camera_view)}"
             >
               ${views.map((view) => {
-                return html`
-                  <paper-item>${view}</paper-item>
-                `;
+                return html` <paper-item>${view}</paper-item> `;
               })}
             </paper-listbox>
           </paper-dropdown-menu>
@@ -267,7 +263,7 @@ export class HuiPictureGlanceCardEditor extends LitElement
       } else {
         this._config = {
           ...this._config,
-          [target.configValue!]: value ? value : target.config,
+          [target.configValue!]: value || target.config,
         };
       }
     }

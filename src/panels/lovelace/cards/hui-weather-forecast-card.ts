@@ -1,30 +1,27 @@
 import {
-  html,
-  LitElement,
-  PropertyValues,
-  TemplateResult,
   css,
   CSSResult,
-  property,
   customElement,
+  html,
+  LitElement,
+  property,
+  PropertyValues,
+  TemplateResult,
 } from "lit-element";
-
-import "../../../components/ha-card";
-import "../components/hui-warning";
-
-import { isValidEntityId } from "../../../common/entity/valid_entity_id";
-import { computeStateName } from "../../../common/entity/compute_state_name";
-
-import { HomeAssistant } from "../../../types";
-import { hasConfigOrEntityChanged } from "../common/has-changed";
-import { LovelaceCard, LovelaceCardEditor } from "../types";
-import { WeatherForecastCardConfig } from "./types";
-import { computeRTL } from "../../../common/util/compute_rtl";
+import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { toggleAttribute } from "../../../common/dom/toggle_attribute";
-import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
+import { computeStateName } from "../../../common/entity/compute_state_name";
+import { isValidEntityId } from "../../../common/entity/valid_entity_id";
+import { computeRTL } from "../../../common/util/compute_rtl";
+import "../../../components/ha-card";
+import { HomeAssistant } from "../../../types";
 import { actionHandler } from "../common/directives/action-handler-directive";
 import { findEntities } from "../common/find-entites";
+import { hasConfigOrEntityChanged } from "../common/has-changed";
+import "../components/hui-warning";
+import { LovelaceCard, LovelaceCardEditor } from "../types";
+import { WeatherForecastCardConfig } from "./types";
 
 const cardinalDirections = [
   "N",
@@ -165,7 +162,7 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
       >
         <div class="header">
           ${this.hass.localize(`state.weather.${stateObj.state}`) ||
-            stateObj.state}
+          stateObj.state}
           <div class="name">
             ${(this._config && this._config.name) || computeStateName(stateObj)}
           </div>
@@ -316,7 +313,7 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
   private windBearingToText(degree: string): string {
     const degreenum = parseInt(degree, 10);
     if (isFinite(degreenum)) {
-      // tslint:disable-next-line: no-bitwise
+      // eslint-disable-next-line no-bitwise
       return cardinalDirections[(((degreenum + 11.25) / 22.5) | 0) % 16];
     }
     return degree;
@@ -325,9 +322,11 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
   private getWindBearing(bearing: string): string {
     if (bearing != null) {
       const cardinalDirection = this.windBearingToText(bearing);
-      return `(${this.hass!.localize(
-        `ui.card.weather.cardinal_direction.${cardinalDirection.toLowerCase()}`
-      ) || cardinalDirection})`;
+      return `(${
+        this.hass!.localize(
+          `ui.card.weather.cardinal_direction.${cardinalDirection.toLowerCase()}`
+        ) || cardinalDirection
+      })`;
     }
     return ``;
   }

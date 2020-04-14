@@ -1,11 +1,12 @@
-import { HassRouterPage, RouterOptions } from "../../layouts/hass-router-page";
-import { customElement, property } from "lit-element";
 import { PolymerElement } from "@polymer/polymer";
+import { customElement, property } from "lit-element";
+import { HassRouterPage, RouterOptions } from "../../layouts/hass-router-page";
 import { HomeAssistant } from "../../types";
 
 @customElement("developer-tools-router")
 class DeveloperToolsRouter extends HassRouterPage {
   @property() public hass!: HomeAssistant;
+
   @property() public narrow!: boolean;
 
   protected routerOptions: RouterOptions = {
