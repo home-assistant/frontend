@@ -1,8 +1,4 @@
 /* eslint-disable no-undef, no-console */
-import {
-  CastStateEventData,
-  SessionStateEventData,
-} from "chromecast-caf-receiver/cast.framework";
 import { Auth } from "home-assistant-js-websocket";
 import { castApiAvailable } from "./cast_framework";
 import { CAST_APP_ID, CAST_DEV, CAST_NS } from "./const";
@@ -48,10 +44,12 @@ export class CastManager {
       autoJoinPolicy: chrome.cast.AutoJoinPolicy.ORIGIN_SCOPED,
     });
     context.addEventListener(
+      // @ts-ignore
       cast.framework.CastContextEventType.SESSION_STATE_CHANGED,
       (ev) => this._sessionStateChanged(ev)
     );
     context.addEventListener(
+      // @ts-ignore
       cast.framework.CastContextEventType.CAST_STATE_CHANGED,
       (ev) => this._castStateChanged(ev)
     );
@@ -92,6 +90,7 @@ export class CastManager {
   }
 
   public get castContext() {
+    // @ts-ignore
     return cast.framework.CastContext.getInstance();
   }
 
@@ -119,7 +118,7 @@ export class CastManager {
     }
   }
 
-  private _sessionStateChanged(ev: SessionStateEventData) {
+  private _sessionStateChanged(ev) {
     if (__DEV__) {
       console.log("Cast session state changed", ev.sessionState);
     }
@@ -142,7 +141,7 @@ export class CastManager {
     }
   }
 
-  private _castStateChanged(ev: CastStateEventData) {
+  private _castStateChanged(ev) {
     if (__DEV__) {
       console.log("Cast state changed", ev.castState);
     }
