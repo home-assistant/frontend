@@ -2,10 +2,10 @@ import { html } from "@polymer/polymer/lib/utils/html-tag";
 /* eslint-plugin-disable lit */
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 import moment from "moment";
+// eslint-disable-next-line import/no-duplicates,import/no-extraneous-dependencies
 import React from "react";
-/* eslint-enable */
 import BigCalendar from "react-big-calendar";
-/* eslint-disable */
+// eslint-disable-next-line import/no-duplicates,import/no-extraneous-dependencies
 import { render } from "react-dom";
 import { EventsMixin } from "../../mixins/events-mixin";
 import "../../resources/ha-style";
