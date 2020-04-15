@@ -213,7 +213,7 @@ export class HuiCardPicker extends LitElement {
   }
 
   private _loadCards() {
-    const cards: Card[] = previewCards
+    let cards: Card[] = previewCards
       .map((type: string) => ({
         type,
         name: this.hass!.localize(`ui.panel.lovelace.editor.card.${type}.name`),
@@ -234,7 +234,7 @@ export class HuiCardPicker extends LitElement {
         }))
       );
     if (customCards.length > 0) {
-      cards.concat(
+      cards = cards.concat(
         customCards.map((ccard: CustomCardEntry) => ({
           type: ccard.type,
           name: ccard.name,
