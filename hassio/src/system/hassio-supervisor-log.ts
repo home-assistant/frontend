@@ -30,7 +30,7 @@ import "../../../src/layouts/loading-screen";
 
 @customElement("hassio-supervisor-log")
 class HassioSupervisorLog extends LitElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() private _error?: string;
 
@@ -52,26 +52,32 @@ class HassioSupervisorLog extends LitElement {
     return html`
       <paper-card>
         ${this._error ? html` <div class="errors">${this._error}</div> ` : ""}
-        <paper-dropdown-menu
-          label="Log source"
-          @iron-select=${this._setLogSource}
-        >
-          <paper-listbox
-            slot="dropdown-content"
-            attr-for-selected="source"
-            .selected=${this._logSource}
-          >
-            ${["Supervisor", "Host", "DNS", "Audio", "Multicast"].map(
-              (source) => {
-                return html`
-                  <paper-item source=${source}>${source}</paper-item>
-                `;
-              }
-            )}
-          </paper-listbox>
-        </paper-dropdown-menu>
+        ${this.hass.userData?.showAdvanced
+          ? html`
+              <paper-dropdown-menu
+                label="Log source"
+                @iron-select=${this._setLogSource}
+              >
+                <paper-listbox
+                  slot="dropdown-content"
+                  attr-for-selected="source"
+                  .selected=${this._logSource}
+                >
+                  ${["Supervisor", "Host", "DNS", "Audio", "Multicast"].map(
+                    (source) => {
+                      return html`
+                        <paper-item source=${source}>${source}</paper-item>
+                      `;
+                    }
+                  )}
+                </paper-listbox>
+              </paper-dropdown-menu>
+            `
+          : ""}
 
-        <div class="card-content" id="content"></div>
+        <div class="card-content" id="content">
+          <loading-screen></loading-screen>
+        </div>
         <div class="card-actions">
           <mwc-button @click=${this._refresh}>Refresh</mwc-button>
         </div>
@@ -115,11 +121,13 @@ class HassioSupervisorLog extends LitElement {
   private async _loadData(): Promise<void> {
     this._error = undefined;
     let content!: string;
-    while (this._logContent.lastChild) {
-      this._logContent.removeChild(this._logContent.lastChild as Node);
+    if (this._logContent) {
+      while (this._logContent?.lastChild) {
+        this._logContent.removeChild(this._logContent.lastChild as Node);
+      }
+      const loading = document.createElement("loading-screen");
+      this._logContent.appendChild(loading);
     }
-    const loading = document.createElement("loading-screen");
-    this._logContent.appendChild(loading);
     try {
       if (this._logSource === "Supervisor") {
         content = await fetchSupervisorLogs(this.hass);
