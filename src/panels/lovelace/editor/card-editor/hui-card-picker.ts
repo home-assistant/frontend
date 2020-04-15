@@ -109,7 +109,7 @@ export class HuiCardPicker extends LitElement {
         const fuse = new Fuse(cards, options);
         cards = fuse.search(filter);
         cardElements = cardElements.filter((cardElement: CardElement) =>
-          cards.includes(cardElements.card)
+          cards.includes(cardElement.card)
         );
       }
       return cardElements;
