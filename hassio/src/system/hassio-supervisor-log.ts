@@ -26,6 +26,7 @@ import {
 
 import { ANSI_HTML_STYLE, parseTextToColoredPre } from "../ansi-to-html";
 import { hassioStyle } from "../resources/hassio-style";
+import "../../../src/layouts/loading-screen";
 
 @customElement("hassio-supervisor-log")
 class HassioSupervisorLog extends LitElement {
@@ -114,6 +115,11 @@ class HassioSupervisorLog extends LitElement {
   private async _loadData(): Promise<void> {
     this._error = undefined;
     let content!: string;
+    while (this._logContent.lastChild) {
+      this._logContent.removeChild(this._logContent.lastChild as Node);
+    }
+    const loading = document.createElement("loading-screen");
+    this._logContent.appendChild(loading);
     try {
       if (this._logSource === "Supervisor") {
         content = await fetchSupervisorLogs(this.hass);
