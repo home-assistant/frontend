@@ -98,7 +98,7 @@ export class HaRelatedItems extends SubscribeMixin(LitElement) {
                 href="/config/integrations/config_entry/${relatedConfigEntryId}"
                 @click=${this._close}
               >
-                ${this.hass.localize(`component.${entry.domain}.config.title`)}:
+                ${this.hass.localize(`component.${entry.domain}.title`)}:
                 ${entry.title}
               </a>
             `;
