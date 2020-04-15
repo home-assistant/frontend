@@ -36,44 +36,50 @@ class IntegrationsCard extends LitElement {
         <table class="card-content">
           <tbody>
             ${this._sortedIntegrations(this.hass!.config.components).map(
-              (domain) => html`
-                <tr>
-                  <td>
-                    <img
-                      loading="lazy"
-                      src="https://brands.home-assistant.io/_/${domain}/icon.png"
-                      referrerpolicy="no-referrer"
-                    />
-                  </td>
-                  <td>${domain}</td>
-                  ${!this._manifests
-                    ? ""
-                    : html`
-                        <td>
-                          <a
-                            href=${this._manifests[domain].documentation}
-                            target="_blank"
-                            rel="noreferrer"
-                          >
-                            Documentation
-                          </a>
-                        </td>
-                        ${!this._manifests[domain].is_built_in
-                          ? ""
-                          : html`
-                              <td>
-                                <a
-                                  href=${integrationIssuesUrl(domain)}
-                                  target="_blank"
-                                  rel="noreferrer"
-                                >
-                                  Issues
-                                </a>
-                              </td>
-                            `}
-                      `}
-                </tr>
-              `
+              (domain) => {
+                const manifest = this._manifests && this._manifests[domain];
+                return html`
+                  <tr>
+                    <td>
+                      <img
+                        loading="lazy"
+                        src="https://brands.home-assistant.io/_/${domain}/icon.png"
+                        referrerpolicy="no-referrer"
+                      />
+                    </td>
+                    <td class="name">
+                      ${manifest?.name}<br />
+                      <span class="domain">${domain}</span>
+                    </td>
+                    ${!manifest
+                      ? ""
+                      : html`
+                          <td>
+                            <a
+                              href=${manifest.documentation}
+                              target="_blank"
+                              rel="noreferrer"
+                            >
+                              Documentation
+                            </a>
+                          </td>
+                          ${!manifest.is_built_in
+                            ? ""
+                            : html`
+                                <td>
+                                  <a
+                                    href=${integrationIssuesUrl(domain)}
+                                    target="_blank"
+                                    rel="noreferrer"
+                                  >
+                                    Issues
+                                  </a>
+                                </td>
+                              `}
+                        `}
+                  </tr>
+                `;
+              }
             )}
           </tbody>
         </table>
@@ -92,16 +98,21 @@ class IntegrationsCard extends LitElement {
   static get styles(): CSSResult {
     return css`
       td {
-        line-height: 2em;
         padding: 0 8px;
       }
       td:first-child {
         padding-left: 0;
       }
+      td.name {
+        padding: 8px;
+      }
+      .domain {
+        color: var(--secondary-text-color);
+      }
       img {
         display: block;
-        max-height: 24px;
-        max-width: 24px;
+        max-height: 40px;
+        max-width: 40px;
       }
       a {
         color: var(--primary-color);
