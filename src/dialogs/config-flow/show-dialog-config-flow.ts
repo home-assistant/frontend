@@ -26,8 +26,8 @@ export const showConfigFlowDialog = (
       getConfigFlowHandlers(hass).then((handlers) =>
         handlers.sort((handlerA, handlerB) =>
           caseInsensitiveCompare(
-            hass.localize(`component.${handlerA}.config.title`),
-            hass.localize(`component.${handlerB}.config.title`)
+            hass.localize(`component.${handlerA}.title`),
+            hass.localize(`component.${handlerB}.title`)
           )
         )
       ),
