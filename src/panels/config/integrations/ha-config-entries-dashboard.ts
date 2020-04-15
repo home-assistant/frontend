@@ -203,9 +203,6 @@ export class HaConfigManagerDashboard extends LitElement {
                           <paper-item data-index=${idx}>
                             <img
                               src="https://brands.home-assistant.io/${item.domain}/icon.png"
-                              srcset="
-                                https://brands.home-assistant.io/${item.domain}/icon@2x.png 2x
-                              "
                               referrerpolicy="no-referrer"
                               @error=${this._onImageError}
                               @load=${this._onImageLoad}

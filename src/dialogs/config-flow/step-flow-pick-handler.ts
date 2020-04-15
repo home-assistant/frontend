@@ -88,9 +88,6 @@ class StepFlowPickHandler extends LitElement {
                   slot="item-icon"
                   loading="lazy"
                   src="https://brands.home-assistant.io/_/${handler.slug}/icon.png"
-                  srcset="
-                    https://brands.home-assistant.io/_/${handler.slug}/icon@2x.png 2x
-                  "
                   referrerpolicy="no-referrer"
                 />
 
