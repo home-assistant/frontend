@@ -20,7 +20,9 @@ export class HaCodeEditor extends UpdatingElement {
 
   @property() public mode?: string;
 
-  @property() public autofocus = false;
+  @property({ type: Boolean }) public autofocus = false;
+
+  @property({ type: Boolean }) public readOnly = false;
 
   @property() public rtl = false;
 
@@ -128,6 +130,7 @@ export class HaCodeEditor extends UpdatingElement {
       mode: this.mode,
       autofocus: this.autofocus !== false,
       viewportMargin: Infinity,
+      readOnly: this.readOnly,
       extraKeys: {
         Tab: "indentMore",
         "Shift-Tab": "indentLess",
