@@ -118,6 +118,8 @@ export class HuiGraphHeaderFooter extends LitElement
         left: calc(50% - 14px);
       }
       .container {
+        display: flex;
+        justify-content: center;
         position: relative;
         padding-bottom: 20%;
       }
