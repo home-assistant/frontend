@@ -405,9 +405,6 @@ export class HaConfigManagerDashboard extends LitElement {
       .discovered .config-entry-row {
         margin: 2px 0;
       }
-      .discovered img {
-        width: 36px;
-      }
       .overflow {
         width: 56px;
       }
