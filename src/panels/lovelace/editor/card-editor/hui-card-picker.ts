@@ -256,6 +256,7 @@ export class HuiCardPicker extends LitElement {
 
         .card {
           height: 100%;
+          max-width: 500px;
           display: flex;
           flex-direction: column;
           border-radius: 4px;
