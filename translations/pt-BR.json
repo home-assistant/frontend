@@ -643,6 +643,15 @@
                 "default_confirmation_title": "Você tem certeza?",
                 "ok": "OK"
             },
+            "helper_settings": {
+                "input_number": {
+                    "step": "Tamanho da etapa"
+                },
+                "input_text": {
+                    "max": "Comprimento máximo",
+                    "min": "Comprimento mínimo"
+                }
+            },
             "more_info_control": {
                 "dismiss": "Dispensar diálogo",
                 "edit": "Editar entidade",
@@ -1424,7 +1433,16 @@
                 "introduction": "Aqui é possível configurar seus componentes e Home Assistant. Nem tudo é possível configurar via UI, mas estamos trabalhando nisso.",
                 "lovelace": {
                     "dashboards": {
-                        "default_dashboard": "Este é o painel de instrumentos padrão"
+                        "cant_edit_default": "O painel padrão do Lovelace não pode ser editado a partir da UI. Você pode ocultá-lo definindo outro painel como padrão.",
+                        "cant_edit_yaml": "Os painéis definidos no YAML não podem ser editados a partir da UI. Altere-os em configuration.yaml.",
+                        "default_dashboard": "Este é o painel de instrumentos padrão",
+                        "detail": {
+                            "icon": "Ícone",
+                            "title": "Título"
+                        },
+                        "picker": {
+                            "open": "Aberto"
+                        }
                     }
                 },
                 "person": {
@@ -1663,9 +1681,11 @@
                     },
                     "groups": {
                         "caption": "Grupos",
+                        "create_group": "Zigbee Automação Residencial - Criar Grupo",
                         "description": "Criar e modificar grupos Zigbee",
                         "group-header": "Zigbee Home Automation - Detalhes do Grupo",
                         "groups-header": "Zigbee Home Automation - Gerenciamento de grupos",
+                        "header": "Zigbee Automação Residencial - Gestão de Grupo",
                         "zha_zigbee_groups": "Grupos ZHA Zigbee"
                     },
                     "network_management": {
@@ -1891,6 +1911,11 @@
                 "showing_entries": "Exibindo registros de"
             },
             "lovelace": {
+                "add_entities": {
+                    "generated_unsupported": "Você só pode usar esta função quando tiver assumido o controle da UI do Lovelace.",
+                    "saving_failed": "Falha ao salvar a configuração da UI do Lovelace.",
+                    "yaml_unsupported": "Você não pode usar esta função ao usar a UI do Lovelace no modo YAML."
+                },
                 "cards": {
                     "confirm_delete": "Tem certeza de que deseja excluir este cartão?",
                     "empty_state": {
@@ -2120,6 +2145,10 @@
                         "para": "Por padrão, o Home Assistant manterá sua interface de usuário, atualizando-a quando novas entidades ou componentes do Lovelace estiverem disponíveis. Se você assumir o controle, não faremos mais alterações automaticamente para você.",
                         "para_sure": "Tem certeza de que deseja assumir o controle da sua interface de usuário?",
                         "save": "Assuma o controle"
+                    },
+                    "suggest_card": {
+                        "add": "Adicionar a UI do Lovelace",
+                        "create_own": "Escolha cartão diferente"
                     },
                     "view": {
                         "panel_mode": {
