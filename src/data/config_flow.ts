@@ -75,7 +75,7 @@ export const localizeConfigFlowTitle = (
   const placeholders = flow.context.title_placeholders || {};
   const placeholderKeys = Object.keys(placeholders);
   if (placeholderKeys.length === 0) {
-    return localize(`component.${flow.handler}.config.title`);
+    return localize(`component.${flow.handler}.title`);
   }
   const args: string[] = [];
   placeholderKeys.forEach((key) => {

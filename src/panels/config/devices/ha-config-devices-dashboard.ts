@@ -115,9 +115,8 @@ export class HaConfigDeviceDashboard extends LitElement {
                 .filter((entId) => entId in entryLookup)
                 .map(
                   (entId) =>
-                    localize(
-                      `component.${entryLookup[entId].domain}.config.title`
-                    ) || entryLookup[entId].domain
+                    localize(`component.${entryLookup[entId].domain}.title`) ||
+                    entryLookup[entId].domain
                 )
                 .join(", ")
             : "No integration",

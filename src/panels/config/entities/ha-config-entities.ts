@@ -166,7 +166,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
           return html`
             ${name}<br />
             ${entity.entity_id} |
-            ${this.hass.localize(`component.${entity.platform}.config.title`) ||
+            ${this.hass.localize(`component.${entity.platform}.title`) ||
             entity.platform}
           `;
         };
@@ -190,7 +190,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
         filterable: true,
         width: "20%",
         template: (platform) =>
-          this.hass.localize(`component.${platform}.config.title`) || platform,
+          this.hass.localize(`component.${platform}.title`) || platform,
       };
       columns.status = statusColumn;
 
