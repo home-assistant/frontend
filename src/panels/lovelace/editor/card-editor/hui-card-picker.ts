@@ -82,11 +82,11 @@ const nonPreviewCards: string[] = [
 export class HuiCardPicker extends LitElement {
   @property() public hass?: HomeAssistant;
 
+  @property() private _cards: Card[] = [];
+
   public lovelace?: LovelaceConfig;
 
   public cardPicked?: (cardConf: LovelaceCardConfig) => void;
-
-  private _cards: Card[] = [];
 
   private _filter?: string;
 
@@ -210,8 +210,6 @@ export class HuiCardPicker extends LitElement {
     );
 
     this._loadCards();
-
-    this.requestUpdate();
   }
 
   private _loadCards() {
