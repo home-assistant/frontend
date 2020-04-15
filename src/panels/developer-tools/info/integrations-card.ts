@@ -9,8 +9,9 @@ import {
 } from "lit-element";
 import memoizeOne from "memoize-one";
 import {
-  integrationDocsUrl,
   integrationIssuesUrl,
+  IntegrationManifest,
+  fetchIntegrationManifests,
 } from "../../../data/integration";
 import { HomeAssistant } from "../../../types";
 
@@ -18,9 +19,16 @@ import { HomeAssistant } from "../../../types";
 class IntegrationsCard extends LitElement {
   @property() public hass!: HomeAssistant;
 
+  @property() private _manifests?: { [domain: string]: IntegrationManifest };
+
   private _sortedIntegrations = memoizeOne((components: string[]) => {
     return components.filter((comp) => !comp.includes(".")).sort();
   });
+
+  firstUpdated(changedProps) {
+    super.firstUpdated(changedProps);
+    this._fetchManifests();
+  }
 
   protected render(): TemplateResult {
     return html`
@@ -38,24 +46,32 @@ class IntegrationsCard extends LitElement {
                     />
                   </td>
                   <td>${domain}</td>
-                  <td>
-                    <a
-                      href=${integrationDocsUrl(domain)}
-                      target="_blank"
-                      rel="noreferrer"
-                    >
-                      Documentation
-                    </a>
-                  </td>
-                  <td>
-                    <a
-                      href=${integrationIssuesUrl(domain)}
-                      target="_blank"
-                      rel="noreferrer"
-                    >
-                      Issues
-                    </a>
-                  </td>
+                  ${!this._manifests
+                    ? ""
+                    : html`
+                        <td>
+                          <a
+                            href=${this._manifests[domain].documentation}
+                            target="_blank"
+                            rel="noreferrer"
+                          >
+                            Documentation
+                          </a>
+                        </td>
+                        ${!this._manifests[domain].is_built_in
+                          ? ""
+                          : html`
+                              <td>
+                                <a
+                                  href=${integrationIssuesUrl(domain)}
+                                  target="_blank"
+                                  rel="noreferrer"
+                                >
+                                  Issues
+                                </a>
+                              </td>
+                            `}
+                      `}
                 </tr>
               `
             )}
@@ -63,6 +79,14 @@ class IntegrationsCard extends LitElement {
         </table>
       </ha-card>
     `;
+  }
+
+  private async _fetchManifests() {
+    const manifests = {};
+    for (const manifest of await fetchIntegrationManifests(this.hass)) {
+      manifests[manifest.domain] = manifest;
+    }
+    this._manifests = manifests;
   }
 
   static get styles(): CSSResult {
