@@ -41,7 +41,7 @@ class SearchInput extends LitElement {
       </style>
       <paper-input
         class=${classMap({ "no-underline": this.noUnderline })}
-        autofocus=${this.noAutofocus === false}
+        .autofocus=${this.noAutofocus === false}
         label="Search"
         .value=${this.filter}
         @value-changed=${this._filterInputChanged}
