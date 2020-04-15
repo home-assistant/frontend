@@ -129,7 +129,6 @@ export class HuiCardPicker extends LitElement {
     return html`
       <search-input
         .filter=${this._filter}
-        autofocus=${false}
         no-label-float
         @value-changed=${this._handleSearchChange}
       ></search-input>
