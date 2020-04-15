@@ -82,7 +82,7 @@ const nonPreviewCards: string[] = [
 export class HuiCardPicker extends LitElement {
   @property() public hass?: HomeAssistant;
 
-  @property() private _cards: Card[] = [];
+  @property() private _cards: CardElement[] = [];
 
   public lovelace?: LovelaceConfig;
 
@@ -93,22 +93,6 @@ export class HuiCardPicker extends LitElement {
   private _unusedEntities?: string[];
 
   private _usedEntities?: string[];
-
-  private _renderCards = memoizeOne((cards: Card[]): CardElement[] => {
-    return cards.map((card: Card) => {
-      return {
-        card: card,
-        element: html` ${until(
-          this._renderCardElement(card),
-          html`
-            <div class="card spinner">
-              <paper-spinner active alt="Loading"></paper-spinner>
-            </div>
-          `
-        )}`,
-      };
-    });
-  });
 
   private _filterCards = memoizeOne(
     (cardElements: CardElement[], filter?: string): CardElement[] => {
@@ -142,8 +126,6 @@ export class HuiCardPicker extends LitElement {
       return html``;
     }
 
-    const cards = this._renderCards(this._cards);
-
     return html`
       <search-input
         .filter=${this._filter}
@@ -152,7 +134,7 @@ export class HuiCardPicker extends LitElement {
         @value-changed=${this._handleSearchChange}
       ></search-input>
       <div class="cards-container">
-        ${this._filterCards(cards, this._filter).map(
+        ${this._filterCards(this._cards, this._filter).map(
           (cardElement: CardElement) => cardElement.element
         )}
       </div>
@@ -244,7 +226,17 @@ export class HuiCardPicker extends LitElement {
         }))
       );
     }
-    this._cards = cards;
+    this._cards = cards.map((card: Card) => ({
+      card: card,
+      element: html`${until(
+        this._renderCardElement(card),
+        html`
+          <div class="card spinner">
+            <paper-spinner active alt="Loading"></paper-spinner>
+          </div>
+        `
+      )}`,
+    }));
   }
 
   private _handleSearchChange(ev: CustomEvent) {
