@@ -13,6 +13,7 @@ import {
 import { classMap } from "lit-html/directives/class-map";
 import { navigate } from "../../../common/navigate";
 import { computeRTL } from "../../../common/util/compute_rtl";
+import "../../../components/ha-card";
 import "../../../components/ha-fab";
 import "../../../components/ha-paper-icon-button-arrow-prev";
 import {
@@ -30,25 +31,34 @@ import {
   showConfirmationDialog,
 } from "../../../dialogs/generic/show-dialog-box";
 import "../../../layouts/ha-app-layout";
+import "../../../layouts/hass-tabs-subpage";
 import { haStyle } from "../../../resources/styles";
 import { HomeAssistant, Route } from "../../../types";
+import "../ha-config-section";
+import { configSections } from "../ha-panel-config";
 import "./action/ha-automation-action";
+import { HaDeviceAction } from "./action/types/ha-automation-action-device_id";
 import "./condition/ha-automation-condition";
 import "./trigger/ha-automation-trigger";
-import "../../../layouts/hass-tabs-subpage";
-import { configSections } from "../ha-panel-config";
-import { HaDeviceAction } from "./action/types/ha-automation-action-device_id";
 import { HaDeviceTrigger } from "./trigger/types/ha-automation-trigger-device";
 
 export class HaAutomationEditor extends LitElement {
   @property() public hass!: HomeAssistant;
+
   @property() public automation!: AutomationEntity;
+
   @property() public isWide?: boolean;
+
   @property() public narrow!: boolean;
+
   @property() public route!: Route;
+
   @property() public creatingNew?: boolean;
+
   @property() private _config?: AutomationConfig;
+
   @property() private _dirty?: boolean;
+
   @property() private _errors?: string;
 
   protected render(): TemplateResult {
@@ -72,23 +82,15 @@ export class HaAutomationEditor extends LitElement {
                 @click=${this._deleteConfirm}
               ></paper-icon-button>
             `}
-        ${this._errors
-          ? html`
-              <div class="errors">${this._errors}</div>
-            `
-          : ""}
+        ${this._errors ? html` <div class="errors">${this._errors}</div> ` : ""}
         ${this._config
           ? html`
               ${this.narrow
-                ? html`
-                    <span slot="header">${this._config?.alias}</span>
-                  `
+                ? html` <span slot="header">${this._config?.alias}</span> `
                 : ""}
               <ha-config-section .isWide=${this.isWide}>
                 ${!this.narrow
-                  ? html`
-                      <span slot="header">${this._config.alias}</span>
-                    `
+                  ? html` <span slot="header">${this._config.alias}</span> `
                   : ""}
                 <span slot="introduction">
                   ${this.hass.localize(
@@ -296,7 +298,7 @@ export class HaAutomationEditor extends LitElement {
 
     if (changedProps.has("creatingNew") && this.creatingNew && this.hass) {
       const initData = getAutomationEditorInitData();
-      this._dirty = initData ? true : false;
+      this._dirty = !!initData;
       this._config = {
         alias: this.hass.localize(
           "ui.panel.config.automation.editor.default_name"

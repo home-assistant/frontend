@@ -4,10 +4,10 @@ import "../entity-rows/hui-script-entity-row";
 import "../entity-rows/hui-sensor-entity-row";
 import "../entity-rows/hui-text-entity-row";
 import "../entity-rows/hui-toggle-entity-row";
-import "../special-rows/hui-button-row";
-import "../special-rows/hui-attribute-row";
-import "../special-rows/hui-call-service-row";
 import { EntityConfig } from "../entity-rows/types";
+import "../special-rows/hui-attribute-row";
+import "../special-rows/hui-button-row";
+import "../special-rows/hui-call-service-row";
 import { createLovelaceElement } from "./create-element-base";
 
 const ALWAYS_LOADED_TYPES = new Set([
@@ -41,6 +41,7 @@ const LAZY_LOAD_TYPES = {
   cast: () => import("../special-rows/hui-cast-row"),
   buttons: () => import("../special-rows/hui-buttons-row"),
   attribute: () => import("../special-rows/hui-attribute-row"),
+  text: () => import("../special-rows/hui-text-row"),
 };
 const DOMAIN_TO_ELEMENT_TYPE = {
   _domain_not_found: "text",

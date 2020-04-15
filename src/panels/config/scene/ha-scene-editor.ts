@@ -1,61 +1,59 @@
-import {
-  LitElement,
-  TemplateResult,
-  html,
-  CSSResult,
-  css,
-  PropertyValues,
-  property,
-  customElement,
-} from "lit-element";
 import "@polymer/app-layout/app-header/app-header";
 import "@polymer/app-layout/app-toolbar/app-toolbar";
 import "@polymer/paper-icon-button/paper-icon-button";
-import "@polymer/paper-item/paper-item";
 import "@polymer/paper-item/paper-icon-item";
+import "@polymer/paper-item/paper-item";
 import "@polymer/paper-item/paper-item-body";
-
+import { HassEvent } from "home-assistant-js-websocket";
+import {
+  css,
+  CSSResult,
+  customElement,
+  html,
+  LitElement,
+  property,
+  PropertyValues,
+  TemplateResult,
+} from "lit-element";
 import { classMap } from "lit-html/directives/class-map";
-
-import "../../../components/ha-fab";
-import "../../../components/device/ha-device-picker";
-import "../../../components/entity/ha-entities-picker";
-import "../../../components/ha-paper-icon-button-arrow-prev";
-import "../../../layouts/ha-app-layout";
-
+import memoizeOne from "memoize-one";
+import { fireEvent } from "../../../common/dom/fire_event";
+import { computeDomain } from "../../../common/entity/compute_domain";
 import { computeStateName } from "../../../common/entity/compute_state_name";
-
-import { haStyle } from "../../../resources/styles";
-import { HomeAssistant, Route } from "../../../types";
 import { navigate } from "../../../common/navigate";
 import { computeRTL } from "../../../common/util/compute_rtl";
+import "../../../components/device/ha-device-picker";
+import "../../../components/entity/ha-entities-picker";
+import "../../../components/ha-card";
+import "../../../components/ha-fab";
+import "../../../components/ha-paper-icon-button-arrow-prev";
 import {
-  SceneEntity,
-  SceneConfig,
-  getSceneConfig,
-  deleteScene,
-  saveScene,
-  SCENE_IGNORED_DOMAINS,
-  SceneEntities,
-  applyScene,
-  activateScene,
-  getSceneEditorInitData,
-} from "../../../data/scene";
-import { fireEvent } from "../../../common/dom/fire_event";
-import {
+  computeDeviceName,
   DeviceRegistryEntry,
   subscribeDeviceRegistry,
-  computeDeviceName,
 } from "../../../data/device_registry";
 import {
   EntityRegistryEntry,
   subscribeEntityRegistry,
 } from "../../../data/entity_registry";
-import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
-import memoizeOne from "memoize-one";
-import { computeDomain } from "../../../common/entity/compute_domain";
-import { HassEvent } from "home-assistant-js-websocket";
+import {
+  activateScene,
+  applyScene,
+  deleteScene,
+  getSceneConfig,
+  getSceneEditorInitData,
+  saveScene,
+  SceneConfig,
+  SceneEntities,
+  SceneEntity,
+  SCENE_IGNORED_DOMAINS,
+} from "../../../data/scene";
 import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
+import "../../../layouts/ha-app-layout";
+import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
+import { haStyle } from "../../../resources/styles";
+import { HomeAssistant, Route } from "../../../types";
+import "../ha-config-section";
 import { configSections } from "../ha-panel-config";
 
 interface DeviceEntities {
@@ -71,22 +69,39 @@ interface DeviceEntitiesLookup {
 @customElement("ha-scene-editor")
 export class HaSceneEditor extends SubscribeMixin(LitElement) {
   @property() public hass!: HomeAssistant;
+
   @property() public narrow!: boolean;
+
   @property() public isWide!: boolean;
+
   @property() public route!: Route;
+
   @property() public scene?: SceneEntity;
+
   @property() public creatingNew?: boolean;
+
   @property() public showAdvanced!: boolean;
+
   @property() private _dirty?: boolean;
+
   @property() private _errors?: string;
+
   @property() private _config!: SceneConfig;
+
   @property() private _entities: string[] = [];
+
   @property() private _devices: string[] = [];
+
   @property() private _deviceRegistryEntries: DeviceRegistryEntry[] = [];
+
   @property() private _entityRegistryEntries: EntityRegistryEntry[] = [];
+
   private _storedStates: SceneEntities = {};
+
   private _unsubscribeEvents?: () => void;
+
   @property() private _deviceEntityLookup: DeviceEntitiesLookup = {};
+
   private _activateContextId?: string;
 
   private _getEntitiesDevices = memoizeOne(
@@ -190,18 +205,10 @@ export class HaSceneEditor extends SubscribeMixin(LitElement) {
 
           ${
             this._errors
-              ? html`
-                  <div class="errors">${this._errors}</div>
-                `
+              ? html` <div class="errors">${this._errors}</div> `
               : ""
           }
-          ${
-            this.narrow
-              ? html`
-                  <span slot="header">${name}</span>
-                `
-              : ""
-          }
+          ${this.narrow ? html` <span slot="header">${name}</span> ` : ""}
           <div
             id="root"
             class="${classMap({
@@ -209,13 +216,7 @@ export class HaSceneEditor extends SubscribeMixin(LitElement) {
             })}"
           >
             <ha-config-section .isWide=${this.isWide}>
-              ${
-                !this.narrow
-                  ? html`
-                      <span slot="header">${name}</span>
-                    `
-                  : ""
-              }
+              ${!this.narrow ? html` <span slot="header">${name}</span> ` : ""}
               <div slot="introduction">
                 ${this.hass.localize(
                   "ui.panel.config.scene.editor.introduction"
@@ -298,7 +299,7 @@ export class HaSceneEditor extends SubscribeMixin(LitElement) {
                     .label=${this.hass.localize(
                       "ui.panel.config.scene.editor.devices.add"
                     )}
-                  />
+                  ></ha-device-picker>
                 </div>
               </ha-card>
             </ha-config-section>
@@ -374,7 +375,7 @@ export class HaSceneEditor extends SubscribeMixin(LitElement) {
                             label=${this.hass.localize(
                               "ui.panel.config.scene.editor.entities.add"
                             )}
-                          />
+                          ></ha-entity-picker>
                         </div>
                       </ha-card>
                     </ha-config-section>
@@ -642,7 +643,7 @@ export class HaSceneEditor extends SubscribeMixin(LitElement) {
   private _getCurrentState(entityId: string) {
     const stateObj = this.hass.states[entityId];
     if (!stateObj) {
-      return;
+      return undefined;
     }
     return { ...stateObj.attributes, state: stateObj.state };
   }

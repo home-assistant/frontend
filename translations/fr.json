@@ -2164,6 +2164,7 @@
                             "name": "Filtre d'entité"
                         },
                         "entity": {
+                            "description": "La carte Entité vous donne un aperçu rapide de l'état de votre entité.",
                             "name": "Entité"
                         },
                         "gauge": {

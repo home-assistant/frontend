@@ -1,5 +1,4 @@
-import { CSSResult, css } from "lit-element";
-
+import { css, CSSResult } from "lit-element";
 import { computeCardSize } from "../common/compute-card-size";
 import { HuiStackCard } from "./hui-stack-card";
 

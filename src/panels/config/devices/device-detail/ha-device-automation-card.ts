@@ -1,28 +1,31 @@
 import {
-  LitElement,
-  TemplateResult,
-  html,
-  property,
-  CSSResult,
   css,
+  CSSResult,
+  html,
+  LitElement,
+  property,
+  TemplateResult,
 } from "lit-element";
-import { HomeAssistant } from "../../../../types";
-import { DeviceAutomation } from "../../../../data/device_automation";
-
 import "../../../../components/ha-card";
 import "../../../../components/ha-chips";
 import { showAutomationEditor } from "../../../../data/automation";
+import { DeviceAutomation } from "../../../../data/device_automation";
 import { showScriptEditor } from "../../../../data/script";
+import { HomeAssistant } from "../../../../types";
 
 export abstract class HaDeviceAutomationCard<
   T extends DeviceAutomation
 > extends LitElement {
   @property() public hass!: HomeAssistant;
+
   @property() public deviceId?: string;
+
   @property() public script = false;
+
   @property() public automations: T[] = [];
 
   protected headerKey = "";
+
   protected type = "";
 
   private _localizeDeviceAutomation: (

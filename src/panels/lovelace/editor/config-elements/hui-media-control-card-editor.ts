@@ -1,19 +1,17 @@
 import {
+  customElement,
   html,
   LitElement,
-  TemplateResult,
-  customElement,
   property,
+  TemplateResult,
 } from "lit-element";
-
-import { struct } from "../../common/structs/struct";
-import { EntitiesEditorEvent, EditorTarget } from "../types";
-import { HomeAssistant } from "../../../../types";
-import { LovelaceCardEditor } from "../../types";
 import { fireEvent } from "../../../../common/dom/fire_event";
-
 import "../../../../components/entity/ha-entity-picker";
+import { HomeAssistant } from "../../../../types";
 import { MediaControlCardConfig } from "../../cards/types";
+import { struct } from "../../common/structs/struct";
+import { LovelaceCardEditor } from "../../types";
+import { EditorTarget, EntitiesEditorEvent } from "../types";
 
 const cardConfigStruct = struct({
   type: "string",
@@ -52,7 +50,7 @@ export class HuiMediaControlCardEditor extends LitElement
           .hass=${this.hass}
           .value="${this._entity}"
           .configValue=${"entity"}
-          include-domains='["media_player"]'
+          .include-domains=${["media_player"]}
           @change="${this._valueChanged}"
           allow-custom-entity
         ></ha-entity-picker>

@@ -193,7 +193,7 @@
                 "on": "Detektéiert"
             },
             "occupancy": {
-                "off": "Kloer",
+                "off": "Roueg",
                 "on": "Detektéiert"
             },
             "opening": {
@@ -217,7 +217,7 @@
                 "on": "Detektéiert"
             },
             "sound": {
-                "off": "Kloer",
+                "off": "Roueg",
                 "on": "Detektéiert"
             },
             "vibration": {
@@ -1411,7 +1411,7 @@
                             "button": "Ausgewielte läschen",
                             "confirm_partly_text": "Nëmmen {removable} vun den ausgewielten {selected} Entitéite kënne geläscht ginn. Entitéiten kënne nëmmen geläscht ginn wann eng Integratioun déi Entitéiten net méi zur Verfügung stellt. Heiansdo muss Home Assistant frësch gestart ginn fir Entitéiten vun enger geläschten Integratioun ze läschen. Sécher fir déi läschbar Entitéiten ze läschen?",
                             "confirm_partly_title": "Nëmmen {number} ausgewielten Entitéiten kënne geläscht ginn.",
-                            "confirm_text": "Entitéiten kënne nëmmen geläscht gin wann d'Integratioun d'Entitéiten net méi zur Verfügung stellt.",
+                            "confirm_text": "Du solls déi vun der Lovelace Konfiguratioun an Automatisme läschen falls se dës Entitéiten enthalen.",
                             "confirm_title": "Wëllt dir {number} Entitéite läschen?"
                         },
                         "selected": "{number} ausgewielt",
@@ -1499,7 +1499,7 @@
                     "ignore": {
                         "confirm_delete_ignore": "Dëst wäert d'Integratioun an Ären entdeckten Integratiounen erëm siichtbar maache wann se entdeckt gëtt. Dëst kann e Restart erfuerderen oder e bëssi Zäit brauchen.",
                         "confirm_delete_ignore_title": "Ophale mam ignoréieren vun {name}?",
-                        "confirm_ignore": "Sidd Dir sécher, datt Dir dës Integratioun net wëll ariichten? Dir kënnt dëst annuléieren andeems Dir op 'Ignoréiert Integratiounen uweisen' am Menü uewe riets klickt.",
+                        "confirm_ignore": "Bass du sécher, dass Du dës Integratioun net wëlls ariichten? Du kanns dëst annuléieren andeems Du op 'Ignoréiert Integratiounen uweisen' am Menü uewe riets klicks.",
                         "confirm_ignore_title": "Entdeckung vun {name} ignoréieren?",
                         "hide_ignored": "Ignoréiert Integratiounen verstoppen",
                         "ignore": "Ignoréieren",
@@ -1698,8 +1698,8 @@
                             "automation": "Automatisme nei lueden",
                             "core": "Standuert and Personnalisatioun néi lueden",
                             "group": "Gruppe nei lueden",
-                            "heading": "Konfiguratioun gëtt frësch gelueden",
-                            "introduction": "E puer Deeler vum Home Assistant kënne frësch geluede ginn ouni datt een Neistart néideg ass. Klick op nei luede fir di aktuell Konfiguratioun z'entlueden an di nei Konfiguratioun ze lueden.",
+                            "heading": "YAML Konfiguratioun gëtt frësch gelueden",
+                            "introduction": "E puer Deeler vum Home Assistant kënne frësch geluede ginn ouni datt een Neistart néideg ass. Klick op nei luede fir di aktuell Konfiguratioun z'entlueden an di nei Konfiguratioun ze lueden.",
                             "person": "Persoune frësch lueden",
                             "scene": "Szeene néi lueden",
                             "script": "Skripte nei lueden",
@@ -2118,7 +2118,7 @@
                     }
                 },
                 "changed_toast": {
-                    "message": "Lovelace Konfiguratioun gouf geännert, soll frësch geluede ginn?",
+                    "message": "Lovelace Konfiguratioun gouf geännert, soll frësch geluede ginn fir d'Ânnerunge siichtbar ze machen?",
                     "refresh": "Frësch lueden"
                 },
                 "editor": {
@@ -2344,7 +2344,7 @@
                         "confirm_remove_config_text": "Mir erstellen automatesch är Lovelace Usiichte mat äre Beräicher an Apparaten wann dir är Lovelace Konfiguratioun läscht.",
                         "confirm_remove_config_title": "Sécher fir är Lovelace Konfiguratioun ze läschen? Mir erstellen automatesch är Lovelace Usiichte mat äre Beräicher an Apparaten.",
                         "confirm_unsaved_changes": "Dir hutt net gespäichert Ännerungen, sécher fir eraus ze goen?",
-                        "confirm_unsaved_comments": "Är Konfiguratioun enthält Kommentaren, dës ginn net gespäichert. Wëllt dir weiderfueren?",
+                        "confirm_unsaved_comments": "Deng Konfiguratioun enthält Kommentaren, dës ginn net gespäichert. Wëlls Du weiderfueren?",
                         "error_invalid_config": "Är Konfiguratioun ass ongëlteg: {error}",
                         "error_parse_yaml": "Kann de YAML net analyséieren: {error}",
                         "error_remove": "Kann Konfiguratioun net läschen: {error}",

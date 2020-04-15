@@ -1,10 +1,10 @@
-import { LitElement, html, property } from "lit-element";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-item/paper-item-body";
-import { litLocalizeLiteMixin } from "../mixins/lit-localize-lite-mixin";
+import { html, LitElement, property } from "lit-element";
 import { fireEvent } from "../common/dom/fire_event";
 import "../components/ha-icon-next";
 import { AuthProvider } from "../data/auth";
+import { litLocalizeLiteMixin } from "../mixins/lit-localize-lite-mixin";
 
 declare global {
   interface HASSDomEvents {

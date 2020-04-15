@@ -1,24 +1,20 @@
-import { html, LitElement, css, CSSResult, property } from "lit-element";
-
 import "@material/mwc-button";
-import "@polymer/paper-input/paper-input";
 import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable";
+import "@polymer/paper-input/paper-input";
+import type { PaperInputElement } from "@polymer/paper-input/paper-input";
+import { css, CSSResult, html, LitElement, property } from "lit-element";
 import "../../../../components/dialog/ha-paper-dialog";
-// This is not a duplicate import, one is for types, one is for element.
-// tslint:disable-next-line
-import { HaPaperDialog } from "../../../../components/dialog/ha-paper-dialog";
-// tslint:disable-next-line
-import { PaperInputElement } from "@polymer/paper-input/paper-input";
-
-import { HomeAssistant } from "../../../../types";
-import { haStyle } from "../../../../resources/styles";
-import { WebhookDialogParams } from "./show-dialog-manage-cloudhook";
+import type { HaPaperDialog } from "../../../../components/dialog/ha-paper-dialog";
 import { showConfirmationDialog } from "../../../../dialogs/generic/show-dialog-box";
+import { haStyle } from "../../../../resources/styles";
+import { HomeAssistant } from "../../../../types";
+import { WebhookDialogParams } from "./show-dialog-manage-cloudhook";
 
 const inputLabel = "Public URL – Click to copy to clipboard";
 
 export class DialogManageCloudhook extends LitElement {
   protected hass?: HomeAssistant;
+
   @property() private _params?: WebhookDialogParams;
 
   public async showDialog(params: WebhookDialogParams) {

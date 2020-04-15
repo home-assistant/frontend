@@ -112,7 +112,7 @@ export function parseTextToColoredPre(text) {
 
   /* eslint-disable no-cond-assign */
   let match;
-  // tslint:disable-next-line
+  // eslint-disable-next-line
   while ((match = re.exec(text)) !== null) {
     const j = match!.index;
     addSpan(text.substring(i, j));

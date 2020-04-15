@@ -43,16 +43,15 @@ import {
   updateInputText,
 } from "../../../../../data/input_text";
 import { showConfirmationDialog } from "../../../../../dialogs/generic/show-dialog-box";
-import { HomeAssistant } from "../../../../../types";
+import type { HomeAssistant } from "../../../../../types";
+import type { Helper } from "../../../helpers/const";
 import "../../../helpers/forms/ha-input_boolean-form";
-import "../../../helpers/forms/ha-input_text-form";
 import "../../../helpers/forms/ha-input_datetime-form";
-import "../../../helpers/forms/ha-input_select-form";
 import "../../../helpers/forms/ha-input_number-form";
-import { Helper } from "../../../helpers/const";
+import "../../../helpers/forms/ha-input_select-form";
+import "../../../helpers/forms/ha-input_text-form";
 import "../../entity-registry-basic-editor";
-// tslint:disable-next-line: no-duplicate-imports
-import { HaEntityRegistryBasicEditor } from "../../entity-registry-basic-editor";
+import type { HaEntityRegistryBasicEditor } from "../../entity-registry-basic-editor";
 
 const HELPERS = {
   input_boolean: {
@@ -85,12 +84,19 @@ const HELPERS = {
 @customElement("entity-settings-helper-tab")
 export class EntityRegistrySettingsHelper extends LitElement {
   @property() public hass!: HomeAssistant;
+
   @property() public entry!: ExtEntityRegistryEntry;
+
   @property() public dialogElement!: HaPaperDialog;
+
   @property() private _error?: string;
+
   @property() private _item?: Helper | null;
+
   @property() private _submitting?: boolean;
+
   @property() private _componentLoaded?: boolean;
+
   @query("ha-registry-basic-editor")
   private _registryEditor?: HaEntityRegistryBasicEditor;
 
@@ -115,11 +121,7 @@ export class EntityRegistrySettingsHelper extends LitElement {
     const stateObj = this.hass.states[this.entry.entity_id];
     return html`
       <paper-dialog-scrollable .dialogElement=${this.dialogElement}>
-        ${this._error
-          ? html`
-              <div class="error">${this._error}</div>
-            `
-          : ""}
+        ${this._error ? html` <div class="error">${this._error}</div> ` : ""}
         <div class="form">
           ${!this._componentLoaded
             ? this.hass.localize(
@@ -149,7 +151,7 @@ export class EntityRegistrySettingsHelper extends LitElement {
           class="warning"
           @click=${this._confirmDeleteItem}
           .disabled=${this._submitting ||
-            (!this._item && !stateObj?.attributes.restored)}
+          (!this._item && !stateObj?.attributes.restored)}
         >
           ${this.hass.localize("ui.dialogs.entity_registry.editor.delete")}
         </mwc-button>

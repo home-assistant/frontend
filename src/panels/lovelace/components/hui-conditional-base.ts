@@ -1,19 +1,21 @@
 import { customElement, property, UpdatingElement } from "lit-element";
-
+import { HomeAssistant } from "../../../types";
+import { ConditionalCardConfig } from "../cards/types";
 import {
   checkConditionsMet,
   validateConditionalConfig,
 } from "../common/validate-condition";
-import { HomeAssistant } from "../../../types";
+import { ConditionalRowConfig, LovelaceRow } from "../entity-rows/types";
 import { LovelaceCard } from "../types";
-import { LovelaceRow, ConditionalRowConfig } from "../entity-rows/types";
-import { ConditionalCardConfig } from "../cards/types";
 
 @customElement("hui-conditional-base")
 export class HuiConditionalBase extends UpdatingElement {
   @property() public hass?: HomeAssistant;
+
   @property() public editMode?: boolean;
+
   @property() protected _config?: ConditionalCardConfig | ConditionalRowConfig;
+
   protected _element?: LovelaceCard | LovelaceRow;
 
   protected validateConfig(

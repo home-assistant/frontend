@@ -1,20 +1,18 @@
-import {
-  LitElement,
-  customElement,
-  TemplateResult,
-  html,
-  property,
-  CSSResultArray,
-  css,
-} from "lit-element";
 import "@material/mwc-button";
 import "@polymer/paper-input/paper-input";
-
-import { HomeAssistant } from "../../../types";
-
-import { haStyle } from "../../../resources/styles";
+import {
+  css,
+  CSSResultArray,
+  customElement,
+  html,
+  LitElement,
+  property,
+  TemplateResult,
+} from "lit-element";
 import "../../../components/ha-card";
 import "../../../components/ha-code-editor";
+import { haStyle } from "../../../resources/styles";
+import { HomeAssistant } from "../../../types";
 import "./mqtt-subscribe-card";
 
 @customElement("developer-tools-mqtt")
@@ -25,7 +23,7 @@ class HaPanelDevMqtt extends LitElement {
 
   @property() private payload = "";
 
-  private inited: boolean = false;
+  private inited = false;
 
   protected firstUpdated() {
     if (localStorage && localStorage["panel-dev-mqtt-topic"]) {

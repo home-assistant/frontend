@@ -1,13 +1,12 @@
 import {
+  customElement,
   html,
   LitElement,
-  TemplateResult,
-  customElement,
   property,
+  TemplateResult,
 } from "lit-element";
-
-import { LovelaceRow, DividerConfig } from "../entity-rows/types";
 import { HomeAssistant } from "../../../types";
+import { DividerConfig, LovelaceRow } from "../entity-rows/types";
 
 @customElement("hui-divider-row")
 class HuiDividerRow extends LitElement implements LovelaceRow {
@@ -40,9 +39,7 @@ class HuiDividerRow extends LitElement implements LovelaceRow {
       el.style.setProperty(prop, this._config!.style[prop]);
     });
 
-    return html`
-      ${el}
-    `;
+    return html` ${el} `;
   }
 }
 

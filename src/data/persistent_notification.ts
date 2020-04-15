@@ -1,6 +1,6 @@
 import {
-  createCollection,
   Connection,
+  createCollection,
   HassEntity,
 } from "home-assistant-js-websocket";
 

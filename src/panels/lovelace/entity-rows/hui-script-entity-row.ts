@@ -1,22 +1,20 @@
 import {
+  css,
+  CSSResult,
+  customElement,
   html,
   LitElement,
-  TemplateResult,
   property,
-  CSSResult,
-  css,
-  customElement,
   PropertyValues,
+  TemplateResult,
 } from "lit-element";
-
-import "../components/hui-generic-entity-row";
 import "../../../components/entity/ha-entity-toggle";
-import "../components/hui-warning";
-
-import { HomeAssistant } from "../../../types";
-import { LovelaceRow, ActionRowConfig } from "./types";
-import { hasConfigOrEntityChanged } from "../common/has-changed";
 import { UNAVAILABLE_STATES } from "../../../data/entity";
+import { HomeAssistant } from "../../../types";
+import { hasConfigOrEntityChanged } from "../common/has-changed";
+import "../components/hui-generic-entity-row";
+import "../components/hui-warning";
+import { ActionRowConfig, LovelaceRow } from "./types";
 
 @customElement("hui-script-entity-row")
 class HuiScriptEntityRow extends LitElement implements LovelaceRow {
@@ -71,7 +69,7 @@ class HuiScriptEntityRow extends LitElement implements LovelaceRow {
                 class="text-content"
               >
                 ${this._config.action_name ||
-                  this.hass!.localize("ui.card.script.execute")}
+                this.hass!.localize("ui.card.script.execute")}
               </mwc-button>
             `}
       </hui-generic-entity-row>

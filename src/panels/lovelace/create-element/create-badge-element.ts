@@ -1,6 +1,5 @@
-import "../badges/hui-state-label-badge";
-
 import { LovelaceBadgeConfig } from "../../../data/lovelace";
+import "../badges/hui-state-label-badge";
 import { createLovelaceElement } from "./create-element-base";
 
 const ALWAYS_LOADED_TYPES = new Set(["error", "state-label"]);

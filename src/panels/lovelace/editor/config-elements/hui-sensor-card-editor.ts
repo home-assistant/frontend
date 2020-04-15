@@ -1,27 +1,25 @@
-import {
-  html,
-  LitElement,
-  TemplateResult,
-  customElement,
-  property,
-} from "lit-element";
-import "@polymer/paper-input/paper-input";
 import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
+import "@polymer/paper-input/paper-input";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
-
-import "../../components/hui-theme-select-editor";
+import {
+  customElement,
+  html,
+  LitElement,
+  property,
+  TemplateResult,
+} from "lit-element";
+import { fireEvent } from "../../../../common/dom/fire_event";
+import { stateIcon } from "../../../../common/entity/state_icon";
 import "../../../../components/entity/ha-entity-picker";
 import "../../../../components/ha-icon-input";
-
-import { struct } from "../../common/structs/struct";
-import { EntitiesEditorEvent, EditorTarget } from "../types";
 import { HomeAssistant } from "../../../../types";
-import { LovelaceCardEditor } from "../../types";
-import { fireEvent } from "../../../../common/dom/fire_event";
-import { configElementStyle } from "./config-elements-style";
 import { SensorCardConfig } from "../../cards/types";
-import { stateIcon } from "../../../../common/entity/state_icon";
+import { struct } from "../../common/structs/struct";
+import "../../components/hui-theme-select-editor";
+import { LovelaceCardEditor } from "../../types";
+import { EditorTarget, EntitiesEditorEvent } from "../types";
+import { configElementStyle } from "./config-elements-style";
 
 const cardConfigStruct = struct({
   type: "string",
@@ -98,7 +96,7 @@ export class HuiSensorCardEditor extends LitElement
           .hass=${this.hass}
           .value="${this._entity}"
           .configValue=${"entity"}
-          include-domains='["sensor"]'
+          .include-domains=${["sensor"]}
           @change="${this._valueChanged}"
           allow-custom-entity
         ></ha-entity-picker>
@@ -121,7 +119,7 @@ export class HuiSensorCardEditor extends LitElement
             )})"
             .value=${this._icon}
             .placeholder=${this._icon ||
-              stateIcon(this.hass.states[this._entity])}
+            stateIcon(this.hass.states[this._entity])}
             .configValue=${"icon"}
             @value-changed=${this._valueChanged}
           ></ha-icon-input>
@@ -139,9 +137,7 @@ export class HuiSensorCardEditor extends LitElement
               .selected="${graphs.indexOf(this._graph)}"
             >
               ${graphs.map((graph) => {
-                return html`
-                  <paper-item>${graph}</paper-item>
-                `;
+                return html` <paper-item>${graph}</paper-item> `;
               })}
             </paper-listbox>
           </paper-dropdown-menu>

@@ -1,11 +1,11 @@
 import {
   css,
   CSSResult,
+  customElement,
   html,
   LitElement,
   property,
   TemplateResult,
-  customElement,
 } from "lit-element";
 
 @customElement("ha-card")
@@ -63,9 +63,7 @@ class HaCard extends LitElement {
   protected render(): TemplateResult {
     return html`
       ${this.header
-        ? html`
-            <div class="card-header">${this.header}</div>
-          `
+        ? html` <div class="card-header">${this.header}</div> `
         : html``}
       <slot></slot>
     `;

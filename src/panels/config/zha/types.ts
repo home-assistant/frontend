@@ -1,4 +1,4 @@
-import { ZHADevice, Cluster } from "../../../data/zha";
+import { Cluster, ZHADevice } from "../../../data/zha";
 
 export interface PickerTarget extends EventTarget {
   selected: number;

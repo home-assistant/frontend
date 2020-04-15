@@ -1,6 +1,6 @@
 import {
-  LovelaceConfig,
   LovelaceCardConfig,
+  LovelaceConfig,
   LovelaceViewConfig,
 } from "../../../data/lovelace";
 

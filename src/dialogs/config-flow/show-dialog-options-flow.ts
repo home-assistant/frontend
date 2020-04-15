@@ -1,16 +1,16 @@
-import {
-  fetchOptionsFlow,
-  handleOptionsFlowStep,
-  deleteOptionsFlow,
-  createOptionsFlow,
-} from "../../data/options_flow";
 import { html } from "lit-element";
 import { localizeKey } from "../../common/translations/localize";
-import {
-  showFlowDialog,
-  loadDataEntryFlowDialog,
-} from "./show-dialog-data-entry-flow";
 import { ConfigEntry } from "../../data/config_entries";
+import {
+  createOptionsFlow,
+  deleteOptionsFlow,
+  fetchOptionsFlow,
+  handleOptionsFlowStep,
+} from "../../data/options_flow";
+import {
+  loadDataEntryFlowDialog,
+  showFlowDialog,
+} from "./show-dialog-data-entry-flow";
 
 export const loadOptionsFlowDialog = loadDataEntryFlowDialog;
 
@@ -38,9 +38,7 @@ export const showOptionsFlowDialog = (
         );
 
         return description
-          ? html`
-              <ha-markdown allowsvg .content=${description}></ha-markdown>
-            `
+          ? html` <ha-markdown allowsvg .content=${description}></ha-markdown> `
           : "";
       },
 
@@ -59,9 +57,7 @@ export const showOptionsFlowDialog = (
           step.description_placeholders
         );
         return description
-          ? html`
-              <ha-markdown allowsvg .content=${description}></ha-markdown>
-            `
+          ? html` <ha-markdown allowsvg .content=${description}></ha-markdown> `
           : "";
       },
 

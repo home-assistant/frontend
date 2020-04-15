@@ -1121,55 +1121,81 @@
                             "available_states": "Cyflerau posib",
                             "name": "Panel Larwm"
                         },
+                        "button": {
+                            "description": "Mae'r cerdyn Botwm yn caniatáu ichi ychwanegu botymau i gyflawni tasgau."
+                        },
                         "conditional": {
-                            "name": "Amodol"
+                            "card": "Cerdyn",
+                            "change_type": "Newid math",
+                            "condition_explanation": "Bydd y cerdyn yn cael ei ddangos pan fydd POB amod isod yn cael eu cyflawni.",
+                            "conditions": "Amodau",
+                            "current_state": "cyfredol",
+                            "name": "Amodol",
+                            "state_equal": "Cyflwr yn hafal i",
+                            "state_not_equal": "Cyflwr ddim yn hafal i"
                         },
                         "entities": {
+                            "description": "Y cerdyn Endidau yw'r math mwyaf cyffredin o gerdyn. Mae'n grwpio eitemau gyda'i gilydd fewn i restrau.",
                             "name": "Endidau"
                         },
                         "entity-button": {
                             "name": "Botwm Endid"
                         },
                         "entity-filter": {
+                            "description": "Mae'r cerdyn Hidlo Endid yn caniatáu ichi ddiffinio rhestr o endidau ydych eisiau diilyn pan fyddant mewn cyflwr penodol.",
                             "name": "Hidlo Endid"
                         },
                         "entity": {
+                            "description": "Mae'r cerdyn Endid yn rhoi trosolwg cyflym i chi o gyflwr eich endid.",
                             "name": "Endid"
                         },
                         "gauge": {
+                            "description": "Mae'r cerdyn Gauge yn gerdyn sylfaenol sy'n caniatáu gweld data synhwyrydd yn weledol.",
                             "name": "Medrydd"
                         },
                         "generic": {
                             "attribute": "Priodoledd",
                             "double_tap_action": "Gweithred tab dwbl",
-                            "no_theme": "Dim thema"
+                            "manual": "Llawlyfr",
+                            "manual_description": "Angen ychwanegu cerdyn 'custom' neu ddim ond eisiau ysgrifennu'r yaml?",
+                            "no_theme": "Dim thema",
+                            "state": "Stad"
                         },
                         "glance": {
+                            "description": "Mae'r cerdyn Cipolwg yn ddefnyddiol i grwpio synwyryddion lluosog mewn trosolwg cryno.",
                             "name": "Cipolwg"
                         },
                         "history-graph": {
+                            "description": "Mae'r cerdyn Graff Hanes yn caniatáu ichi arddangos graff ar gyfer pob un o'r endidau a restrir.",
                             "name": "Graff Hanes"
                         },
                         "horizontal-stack": {
+                            "description": "Mae'r cerdyn Stack Llorweddol yn caniatáu ichi bentyrru cardiau lluosog, felly maen nhw bob amser yn eistedd wrth ymyl ei gilydd yng ngofod un golofn.",
                             "name": "Stac Fertigol"
                         },
                         "iframe": {
+                            "description": "Mae'r cerdyn Tudalen we yn eich galluogi i blannu eich hoff dudalen we i Home Assistant.",
                             "name": "iFrame"
                         },
                         "light": {
+                            "description": "Mae'r cerdyn Golau yn caniatáu ichi newid disgleirdeb y golau.",
                             "name": "Golau"
                         },
                         "map": {
+                            "description": "Y cerdyn Map sy'n caniatáu ichi arddangos endidau ar fap.",
                             "hours_to_show": "Oriau i'w Dangos",
                             "name": "Map"
                         },
                         "markdown": {
+                            "description": "Defnyddir y cerdyn marcio i rendro Markdown.",
                             "name": "Marclawr"
                         },
                         "media-control": {
+                            "description": "Defnyddir y cerdyn Rheoli Cyfryngau i arddangos endidau chwaraewr cyfryngau ar ryngwyneb â rheolyddion hawdd eu defnyddio.",
                             "name": "Rheoli cyfryngau"
                         },
                         "picture-elements": {
+                            "description": "Mae'r cerdyn Elfennau Lluniau yn un o'r mathau mwyaf amlbwrpas o gardiau. Mae'r cardiau'n caniatáu ichi osod eiconau neu destun a hyd yn oed gwasanaethau! Ar ddelwedd yn seiliedig ar gyfesurynnau.",
                             "name": "Elfennau'r Llun"
                         },
                         "picture-entity": {
@@ -1181,6 +1207,7 @@
                             "name": "Cipolwg ar lun"
                         },
                         "picture": {
+                            "description": "Mae'r cerdyn Lluniau yn caniatáu ichi osod delwedd i'w defnyddio ar gyfer llywio i amrywiol lwybrau yn eich rhyngwyneb neu i alw gwasanaeth.",
                             "name": "Llun"
                         },
                         "plant-status": {

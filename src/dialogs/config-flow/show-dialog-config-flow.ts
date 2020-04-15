@@ -1,18 +1,18 @@
-import {
-  getConfigFlowHandlers,
-  fetchConfigFlow,
-  handleConfigFlowStep,
-  deleteConfigFlow,
-  createConfigFlow,
-} from "../../data/config_flow";
 import { html } from "lit-element";
+import { caseInsensitiveCompare } from "../../common/string/compare";
 import { localizeKey } from "../../common/translations/localize";
 import {
-  showFlowDialog,
+  createConfigFlow,
+  deleteConfigFlow,
+  fetchConfigFlow,
+  getConfigFlowHandlers,
+  handleConfigFlowStep,
+} from "../../data/config_flow";
+import {
   DataEntryFlowDialogParams,
   loadDataEntryFlowDialog,
+  showFlowDialog,
 } from "./show-dialog-data-entry-flow";
-import { caseInsensitiveCompare } from "../../common/string/compare";
 
 export const loadConfigFlowDialog = loadDataEntryFlowDialog;
 
@@ -44,9 +44,7 @@ export const showConfigFlowDialog = (
       );
 
       return description
-        ? html`
-            <ha-markdown allowsvg .content=${description}></ha-markdown>
-          `
+        ? html` <ha-markdown allowsvg .content=${description}></ha-markdown> `
         : "";
     },
 
@@ -63,9 +61,7 @@ export const showConfigFlowDialog = (
         step.description_placeholders
       );
       return description
-        ? html`
-            <ha-markdown allowsvg .content=${description}></ha-markdown>
-          `
+        ? html` <ha-markdown allowsvg .content=${description}></ha-markdown> `
         : "";
     },
 
@@ -99,9 +95,7 @@ export const showConfigFlowDialog = (
           )}
         </p>
         ${description
-          ? html`
-              <ha-markdown allowsvg .content=${description}></ha-markdown>
-            `
+          ? html` <ha-markdown allowsvg .content=${description}></ha-markdown> `
           : ""}
       `;
     },
@@ -109,16 +103,15 @@ export const showConfigFlowDialog = (
     renderCreateEntryDescription(hass, step) {
       const description = localizeKey(
         hass.localize,
-        `component.${step.handler}.config.create_entry.${step.description ||
-          "default"}`,
+        `component.${step.handler}.config.create_entry.${
+          step.description || "default"
+        }`,
         step.description_placeholders
       );
 
       return html`
         ${description
-          ? html`
-              <ha-markdown allowsvg .content=${description}></ha-markdown>
-            `
+          ? html` <ha-markdown allowsvg .content=${description}></ha-markdown> `
           : ""}
         <p>
           ${hass.localize(

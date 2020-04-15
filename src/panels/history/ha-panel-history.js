@@ -7,18 +7,17 @@ import "@polymer/paper-input/paper-input";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
+/* eslint-plugin-disable lit */
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 import "@vaadin/vaadin-date-picker/theme/material/vaadin-date-picker";
-
+import { formatDate } from "../../common/datetime/format_date";
+import { computeRTL } from "../../common/util/compute_rtl";
 import "../../components/ha-menu-button";
 import "../../components/state-history-charts";
 import "../../data/ha-state-history-data";
+import LocalizeMixin from "../../mixins/localize-mixin";
 import "../../resources/ha-date-picker-style";
 import "../../resources/ha-style";
-
-import { formatDate } from "../../common/datetime/format_date";
-import LocalizeMixin from "../../mixins/localize-mixin";
-import { computeRTL } from "../../common/util/compute_rtl";
 
 /*
  * @appliesMixin LocalizeMixin
@@ -149,7 +148,7 @@ class HaPanelHistory extends LocalizeMixin(PolymerElement) {
       // ISO8601 formatted date string
       _currentDate: {
         type: String,
-        value: function() {
+        value: function () {
           var value = new Date();
           var today = new Date(
             Date.UTC(value.getFullYear(), value.getMonth(), value.getDate())

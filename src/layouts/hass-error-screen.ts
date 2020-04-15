@@ -1,13 +1,13 @@
-import {
-  LitElement,
-  CSSResultArray,
-  css,
-  TemplateResult,
-  html,
-  property,
-  customElement,
-} from "lit-element";
 import "@material/mwc-button";
+import {
+  css,
+  CSSResultArray,
+  customElement,
+  html,
+  LitElement,
+  property,
+  TemplateResult,
+} from "lit-element";
 import "./hass-subpage";
 
 @customElement("hass-error-screen")

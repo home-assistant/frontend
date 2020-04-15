@@ -1,6 +1,6 @@
 import "@polymer/paper-styles/paper-styles";
 import "@polymer/polymer/lib/elements/custom-style";
-import { haStyle, haStyleDialog, derivedStyles } from "./styles";
+import { derivedStyles, haStyle, haStyleDialog } from "./styles";
 
 const documentContainer = document.createElement("template");
 documentContainer.setAttribute("style", "display: none;");

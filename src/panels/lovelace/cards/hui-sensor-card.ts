@@ -1,12 +1,11 @@
-import { customElement } from "lit-element";
 import { HassEntity } from "home-assistant-js-websocket/dist/types";
-
-import { LovelaceCardEditor } from "../types";
+import { customElement } from "lit-element";
 import { HomeAssistant } from "../../../types";
-import { SensorCardConfig, EntityCardConfig } from "./types";
-import { GraphHeaderFooterConfig } from "../header-footer/types";
 import { findEntities } from "../common/find-entites";
+import { GraphHeaderFooterConfig } from "../header-footer/types";
+import { LovelaceCardEditor } from "../types";
 import { HuiEntityCard } from "./hui-entity-card";
+import { EntityCardConfig, SensorCardConfig } from "./types";
 
 @customElement("hui-sensor-card")
 class HuiSensorCard extends HuiEntityCard {

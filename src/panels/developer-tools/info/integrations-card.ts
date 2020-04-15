@@ -1,18 +1,18 @@
 import {
+  css,
+  CSSResult,
+  customElement,
+  html,
   LitElement,
   property,
   TemplateResult,
-  html,
-  customElement,
-  CSSResult,
-  css,
 } from "lit-element";
-import { HomeAssistant } from "../../../types";
 import memoizeOne from "memoize-one";
 import {
   integrationDocsUrl,
   integrationIssuesUrl,
 } from "../../../data/integration";
+import { HomeAssistant } from "../../../types";
 
 @customElement("integrations-card")
 class IntegrationsCard extends LitElement {
@@ -30,6 +30,13 @@ class IntegrationsCard extends LitElement {
             ${this._sortedIntegrations(this.hass!.config.components).map(
               (domain) => html`
                 <tr>
+                  <td>
+                    <img
+                      loading="lazy"
+                      src="https://brands.home-assistant.io/_/${domain}/icon.png"
+                      referrerpolicy="no-referrer"
+                    />
+                  </td>
                   <td>${domain}</td>
                   <td>
                     <a
@@ -66,6 +73,11 @@ class IntegrationsCard extends LitElement {
       }
       td:first-child {
         padding-left: 0;
+      }
+      img {
+        display: block;
+        max-height: 24px;
+        max-width: 24px;
       }
       a {
         color: var(--primary-color);

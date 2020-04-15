@@ -1,10 +1,9 @@
 import "@polymer/paper-card/paper-card";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
+/* eslint-plugin-disable lit */
 import { PolymerElement } from "@polymer/polymer/polymer-element";
-
 import { enableWrite } from "../common/auth/token_storage";
 import LocalizeMixin from "../mixins/localize-mixin";
-
 import "../resources/ha-style";
 
 class HaStoreAuth extends LocalizeMixin(PolymerElement) {

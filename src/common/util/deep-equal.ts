@@ -79,8 +79,7 @@ export const deepEqual = (a: any, b: any): boolean => {
       return a.toString() === b.toString();
     }
 
-    let keys: string[];
-    keys = Object.keys(a);
+    const keys = Object.keys(a);
     length = keys.length;
     if (length !== Object.keys(b).length) {
       return false;
@@ -103,5 +102,6 @@ export const deepEqual = (a: any, b: any): boolean => {
   }
 
   // true if both NaN, false otherwise
+  // eslint-disable-next-line no-self-compare
   return a !== a && b !== b;
 };

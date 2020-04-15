@@ -2,16 +2,13 @@ import "@polymer/app-layout/app-header/app-header";
 import "@polymer/app-layout/app-toolbar/app-toolbar";
 import "@polymer/paper-icon-button/paper-icon-button";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
+/* eslint-plugin-disable lit */
 import { PolymerElement } from "@polymer/polymer/polymer-element";
-
 import "../../../layouts/hass-tabs-subpage";
-import "../../../resources/ha-style";
-
-import "./ha-config-section-core";
-
-import { configSections } from "../ha-panel-config";
-
 import LocalizeMixin from "../../../mixins/localize-mixin";
+import "../../../resources/ha-style";
+import { configSections } from "../ha-panel-config";
+import "./ha-config-section-core";
 
 /*
  * @appliesMixin LocalizeMixin

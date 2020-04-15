@@ -1,6 +1,6 @@
 import {
-  LovelaceConfig,
   LovelaceCardConfig,
+  LovelaceConfig,
 } from "../../../../src/data/lovelace";
 import { castContext } from "../cast_context";
 

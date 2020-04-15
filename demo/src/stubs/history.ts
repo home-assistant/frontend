@@ -1,5 +1,5 @@
-import { MockHomeAssistant } from "../../../src/fake_data/provide_hass";
 import { HassEntity } from "home-assistant-js-websocket";
+import { MockHomeAssistant } from "../../../src/fake_data/provide_hass";
 
 interface HistoryQueryParams {
   filter_entity_id: string;
@@ -95,7 +95,7 @@ export const mockHistory = (mockHass: MockHomeAssistant) => {
         const numberState = Number(state.state);
 
         if (isNaN(numberState)) {
-          // tslint:disable-next-line
+          // eslint-disable-next-line
           console.log(
             "Ignoring state with unparsable state but with a unit",
             entityId,
