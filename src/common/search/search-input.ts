@@ -22,7 +22,7 @@ class SearchInput extends LitElement {
   @property({ type: Boolean, attribute: "no-underline" })
   public noUnderline = false;
 
-  @property({ type: Boolean, attribute: "autofocus" })
+  @property({ type: Boolean })
   public autofocus = false;
 
   public focus() {
