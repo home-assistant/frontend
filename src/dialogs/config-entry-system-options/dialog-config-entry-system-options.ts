@@ -66,7 +66,7 @@ class DialogConfigEntrySystemOptions extends LitElement {
             "ui.dialogs.config_entry_system_options.title",
             "integration",
             this.hass.localize(
-              `component.${this._params.entry.domain}.config.title`
+              `component.${this._params.entry.domain}.title`
             ) || this._params.entry.domain
           )}
         </h2>
@@ -98,7 +98,7 @@ class DialogConfigEntrySystemOptions extends LitElement {
                           "ui.dialogs.config_entry_system_options.enable_new_entities_description",
                           "integration",
                           this.hass.localize(
-                            `component.${this._params.entry.domain}.config.title`
+                            `component.${this._params.entry.domain}.title`
                           ) || this._params.entry.domain
                         )}
                       </p>

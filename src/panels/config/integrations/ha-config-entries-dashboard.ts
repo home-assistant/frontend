@@ -126,7 +126,7 @@ export class HaConfigManagerDashboard extends LitElement {
                         <paper-item>
                           <paper-item-body>
                             ${this.hass.localize(
-                              `component.${item.domain}.config.title`
+                              `component.${item.domain}.title`
                             )}
                           </paper-item-body>
                           <paper-icon-button
@@ -210,7 +210,7 @@ export class HaConfigManagerDashboard extends LitElement {
                             <paper-item-body two-line>
                               <div>
                                 ${this.hass.localize(
-                                  `component.${item.domain}.config.title`
+                                  `component.${item.domain}.title`
                                 )}:
                                 ${item.title}
                               </div>
@@ -311,7 +311,7 @@ export class HaConfigManagerDashboard extends LitElement {
       title: this.hass!.localize(
         "ui.panel.config.integrations.ignore.confirm_delete_ignore_title",
         "name",
-        this.hass.localize(`component.${entry.domain}.config.title`)
+        this.hass.localize(`component.${entry.domain}.title`)
       ),
       text: this.hass!.localize(
         "ui.panel.config.integrations.ignore.confirm_delete_ignore"
