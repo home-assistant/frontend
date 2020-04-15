@@ -19,4 +19,6 @@ export const fetchSystemLog = (hass: HomeAssistant) =>
 export const getLoggedErrorIntegration = (item: LoggedError) =>
   item.name.startsWith("homeassistant.components.")
     ? item.name.split(".")[2]
+    : item.name.startsWith("custom_components.")
+    ? item.name.split(".")[1]
     : undefined;

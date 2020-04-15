@@ -10,8 +10,9 @@ import {
 import "../../../components/dialog/ha-paper-dialog";
 import {
   domainToName,
-  integrationDocsUrl,
   integrationIssuesUrl,
+  IntegrationManifest,
+  fetchIntegrationManifest,
 } from "../../../data/integration";
 import { getLoggedErrorIntegration } from "../../../data/system_log";
 import { PolymerChangedEvent } from "../../../polymer-types";
@@ -25,9 +26,23 @@ class DialogSystemLogDetail extends LitElement {
 
   @property() private _params?: SystemLogDetailDialogParams;
 
+  @property() private _manifest?: IntegrationManifest;
+
   public async showDialog(params: SystemLogDetailDialogParams): Promise<void> {
     this._params = params;
+    this._manifest = undefined;
     await this.updateComplete;
+  }
+
+  protected updated(changedProps) {
+    super.updated(changedProps);
+    if (!changedProps.has("_params") || !this._params) {
+      return;
+    }
+    const integration = getLoggedErrorIntegration(this._params.item);
+    if (integration) {
+      this._fetchManifest(integration);
+    }
   }
 
   protected render(): TemplateResult {
@@ -58,19 +73,30 @@ class DialogSystemLogDetail extends LitElement {
             ${integration
               ? html`
                   <br />
-                  Integration: ${domainToName(this.hass.localize, integration)}
-                  (<a
-                    href=${integrationDocsUrl(integration)}
-                    target="_blank"
-                    rel="noreferrer"
-                    >documentation</a
-                  >,
-                  <a
-                    href=${integrationIssuesUrl(integration)}
-                    target="_blank"
-                    rel="noreferrer"
-                    >issues</a
-                  >)
+                  Integration:
+                  ${this._manifest
+                    ? this._manifest.name
+                    : domainToName(this.hass.localize, integration)}
+                  ${!this._manifest ||
+                  // Can happen with custom integrations
+                  !this._manifest.documentation
+                    ? ""
+                    : html`
+                        (<a
+                          href=${this._manifest.documentation}
+                          target="_blank"
+                          rel="noreferrer"
+                          >documentation</a
+                        >${!this._manifest.is_built_in
+                          ? ""
+                          : html`,
+                              <a
+                                href=${integrationIssuesUrl(integration)}
+                                target="_blank"
+                                rel="noreferrer"
+                                >issues</a
+                              >`})
+                      `}
                 `
               : ""}
             <br />
@@ -98,6 +124,14 @@ class DialogSystemLogDetail extends LitElement {
         </paper-dialog-scrollable>
       </ha-paper-dialog>
     `;
+  }
+
+  private async _fetchManifest(integration: string) {
+    try {
+      this._manifest = await fetchIntegrationManifest(this.hass, integration);
+    } catch (err) {
+      // Ignore if loading manifest fails. Probably bad JSON in manifest
+    }
   }
 
   private _openedChanged(ev: PolymerChangedEvent<boolean>): void {
