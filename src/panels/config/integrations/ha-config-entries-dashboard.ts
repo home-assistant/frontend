@@ -158,9 +158,6 @@ export class HaConfigManagerDashboard extends LitElement {
                       <div class="config-entry-row">
                         <img
                           src="https://brands.home-assistant.io/${flow.handler}/icon.png"
-                          srcset="
-                            https://brands.home-assistant.io/${flow.handler}/icon@2x.png 2x
-                          "
                           referrerpolicy="no-referrer"
                           @error=${this._onImageError}
                           @load=${this._onImageLoad}
