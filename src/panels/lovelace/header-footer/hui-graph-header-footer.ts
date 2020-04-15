@@ -115,7 +115,6 @@ export class HuiGraphHeaderFooter extends LitElement
       paper-spinner {
         position: absolute;
         top: calc(50% - 28px);
-        left: calc(50% - 14px);
       }
       .container {
         display: flex;
@@ -125,10 +124,8 @@ export class HuiGraphHeaderFooter extends LitElement
       }
       .info {
         position: absolute;
-        width: 100%;
         top: calc(50% - 16px);
         color: var(--secondary-text-color);
-        text-align: center;
       }
     `;
   }
