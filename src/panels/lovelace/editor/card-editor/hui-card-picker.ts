@@ -42,6 +42,11 @@ interface Card {
   isCustom?: boolean;
 }
 
+interface CardElement {
+  card: Card;
+  element: TemplateResult;
+}
+
 const previewCards: string[] = [
   "alarm-panel",
   "button",
@@ -89,19 +94,43 @@ export class HuiCardPicker extends LitElement {
 
   private _usedEntities?: string[];
 
-  private _filterCards = memoizeOne((cards: Card[], filter?: string) => {
-    if (filter) {
-      const options: Fuse.FuseOptions<Card> = {
-        keys: ["type", "name", "description"],
-        caseSensitive: false,
-        minMatchCharLength: 2,
-        threshold: 0.2,
+  private _renderCards = memoizeOne((cards: Card[]): CardElement[] => {
+    return cards.map((card: Card) => {
+      return {
+        card: card,
+        element: html` ${until(
+          this._renderCardElement(card),
+          html`
+            <div class="card spinner">
+              <paper-spinner active alt="Loading"></paper-spinner>
+            </div>
+          `
+        )}`,
       };
-      const fuse = new Fuse(cards, options);
-      cards = fuse.search(filter);
-    }
-    return cards;
+    });
   });
+
+  private _filterCards = memoizeOne(
+    (cardElements: CardElement[], filter?: string): CardElement[] => {
+      if (filter) {
+        let cards = cardElements.map(
+          (cardElement: CardElement) => cardElement.card
+        );
+        const options: Fuse.FuseOptions<Card> = {
+          keys: ["type", "name", "description"],
+          caseSensitive: false,
+          minMatchCharLength: 2,
+          threshold: 0.2,
+        };
+        const fuse = new Fuse(cards, options);
+        cards = fuse.search(filter);
+        cardElements = cardElements.filter((cardElement: CardElement) =>
+          cards.find((card: Card) => card === cardElement.card)
+        );
+      }
+      return cardElements;
+    }
+  );
 
   protected render(): TemplateResult {
     if (
@@ -113,6 +142,8 @@ export class HuiCardPicker extends LitElement {
       return html``;
     }
 
+    const cards = this._renderCards(this._cards);
+
     return html`
       <search-input
         .filter=${this._filter}
@@ -121,18 +152,9 @@ export class HuiCardPicker extends LitElement {
         @value-changed=${this._handleSearchChange}
       ></search-input>
       <div class="cards-container">
-        ${this._filterCards(this._cards, this._filter).map((card: Card) => {
-          return html`
-            ${until(
-              this._renderCardElement(card),
-              html`
-                <div class="card spinner">
-                  <paper-spinner active alt="Loading"></paper-spinner>
-                </div>
-              `
-            )}
-          `;
-        })}
+        ${this._filterCards(cards, this._filter).map(
+          (cardElement: CardElement) => cardElement.element
+        )}
       </div>
       <div class="cards-container">
         <div
