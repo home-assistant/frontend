@@ -109,7 +109,7 @@ export class HuiCardPicker extends LitElement {
         const fuse = new Fuse(cards, options);
         cards = fuse.search(filter);
         cardElements = cardElements.filter((cardElement: CardElement) =>
-          cards.find((card: Card) => card === cardElement.card)
+          cards.includes(cardElements.card)
         );
       }
       return cardElements;
@@ -129,7 +129,6 @@ export class HuiCardPicker extends LitElement {
     return html`
       <search-input
         .filter=${this._filter}
-        autofocus=${false}
         no-label-float
         @value-changed=${this._handleSearchChange}
       ></search-input>
