@@ -17,69 +17,6 @@ interface State {
   backgroundColor: null | string;
 }
 
-export const ANSI_HTML_STYLE = css`
-  .bold {
-    font-weight: bold;
-  }
-  .italic {
-    font-style: italic;
-  }
-  .underline {
-    text-decoration: underline;
-  }
-  .strikethrough {
-    text-decoration: line-through;
-  }
-  .underline.strikethrough {
-    text-decoration: underline line-through;
-  }
-  .fg-red {
-    color: rgb(222, 56, 43);
-  }
-  .fg-green {
-    color: rgb(57, 181, 74);
-  }
-  .fg-yellow {
-    color: rgb(255, 199, 6);
-  }
-  .fg-blue {
-    color: rgb(0, 111, 184);
-  }
-  .fg-magenta {
-    color: rgb(118, 38, 113);
-  }
-  .fg-cyan {
-    color: rgb(44, 181, 233);
-  }
-  .fg-white {
-    color: rgb(204, 204, 204);
-  }
-  .bg-black {
-    background-color: rgb(0, 0, 0);
-  }
-  .bg-red {
-    background-color: rgb(222, 56, 43);
-  }
-  .bg-green {
-    background-color: rgb(57, 181, 74);
-  }
-  .bg-yellow {
-    background-color: rgb(255, 199, 6);
-  }
-  .bg-blue {
-    background-color: rgb(0, 111, 184);
-  }
-  .bg-magenta {
-    background-color: rgb(118, 38, 113);
-  }
-  .bg-cyan {
-    background-color: rgb(44, 181, 233);
-  }
-  .bg-white {
-    background-color: rgb(204, 204, 204);
-  }
-`;
-
 @customElement("hassio-ansi-to-html")
 class HassioAnsiToHtml extends LitElement {
   @property() public content!: string;
@@ -88,17 +25,74 @@ class HassioAnsiToHtml extends LitElement {
     return html`${this._parseTextToColoredPre(this.content)}`;
   }
 
-  static get styles(): CSSResult[] {
-    return [
-      ANSI_HTML_STYLE,
-      css`
-        pre {
-          overflow-x: auto;
-          white-space: pre-wrap;
-          overflow-wrap: break-word;
-        }
-      `,
-    ];
+  static get styles(): CSSResult {
+    return css`
+      pre {
+        overflow-x: auto;
+        white-space: pre-wrap;
+        overflow-wrap: break-word;
+      }
+      .bold {
+        font-weight: bold;
+      }
+      .italic {
+        font-style: italic;
+      }
+      .underline {
+        text-decoration: underline;
+      }
+      .strikethrough {
+        text-decoration: line-through;
+      }
+      .underline.strikethrough {
+        text-decoration: underline line-through;
+      }
+      .fg-red {
+        color: rgb(222, 56, 43);
+      }
+      .fg-green {
+        color: rgb(57, 181, 74);
+      }
+      .fg-yellow {
+        color: rgb(255, 199, 6);
+      }
+      .fg-blue {
+        color: rgb(0, 111, 184);
+      }
+      .fg-magenta {
+        color: rgb(118, 38, 113);
+      }
+      .fg-cyan {
+        color: rgb(44, 181, 233);
+      }
+      .fg-white {
+        color: rgb(204, 204, 204);
+      }
+      .bg-black {
+        background-color: rgb(0, 0, 0);
+      }
+      .bg-red {
+        background-color: rgb(222, 56, 43);
+      }
+      .bg-green {
+        background-color: rgb(57, 181, 74);
+      }
+      .bg-yellow {
+        background-color: rgb(255, 199, 6);
+      }
+      .bg-blue {
+        background-color: rgb(0, 111, 184);
+      }
+      .bg-magenta {
+        background-color: rgb(118, 38, 113);
+      }
+      .bg-cyan {
+        background-color: rgb(44, 181, 233);
+      }
+      .bg-white {
+        background-color: rgb(204, 204, 204);
+      }
+    `;
   }
 
   private _parseTextToColoredPre(text) {
