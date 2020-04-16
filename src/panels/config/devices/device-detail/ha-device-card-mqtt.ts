@@ -16,6 +16,7 @@ import { haStyle } from "../../../../resources/styles";
 @customElement("ha-device-card-mqtt")
 export class HaDeviceCardMqtt extends LitElement {
   @property() public hass!: HomeAssistant;
+
   @property() public device!: DeviceRegistryEntry;
 
   protected render(): TemplateResult {

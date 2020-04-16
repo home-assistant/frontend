@@ -11,17 +11,24 @@ import { MQTTMessage } from "../../data/mqtt";
 @customElement("mqtt-messages")
 class MQTTMessages extends LitElement {
   @property() public messages!: MQTTMessage[];
-  @property() public showAsYaml: boolean = false;
-  @property() public showDeserialized: boolean = false;
+
+  @property() public showAsYaml = false;
+
+  @property() public showDeserialized = false;
+
   @property() public subscribedTopic!: string;
+
   @property() public summary!: string;
-  @property() private _open: boolean = false;
+
+  @property() private _open = false;
+
   @property() private _payloadsJson!: Array<object | undefined>;
-  @property() private _showTopic: boolean = false;
+
+  @property() private _showTopic = false;
 
   protected firstUpdated(): void {
     this._payloadsJson = new Array(this.messages.length);
-    this.messages.forEach(function(message) {
+    this.messages.forEach(function (message) {
       // If any message's topic differs from the subscribed topic, show topics + payload
       if (this.subscribedTopic !== message.topic) {
         this._showTopic = true;
@@ -76,16 +83,12 @@ class MQTTMessages extends LitElement {
     return this._payloadsJson && this._payloadsJson[i] && this.showDeserialized
       ? html`
           ${this.showAsYaml
-            ? html`
-                <pre>${safeDump(this._payloadsJson[i])}</pre>
-              `
+            ? html` <pre>${safeDump(this._payloadsJson[i])}</pre> `
             : html`
                 <pre>${JSON.stringify(this._payloadsJson[i], null, 2)}</pre>
               `}
         `
-      : html`
-          <code>${this.messages[i].payload}</code>
-        `;
+      : html` <code>${this.messages[i].payload}</code> `;
   }
 
   private _tryParseJson(payload) {

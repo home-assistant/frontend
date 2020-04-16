@@ -12,8 +12,7 @@ import "../../components/ha-switch";
 import { computeDeviceName } from "../../data/device_registry";
 import { computeStateName } from "../../common/entity/compute_state_name";
 import { haStyleDialog } from "../../resources/styles";
-// tslint:disable-next-line: no-duplicate-imports
-import { HaSwitch } from "../../components/ha-switch";
+import type { HaSwitch } from "../../components/ha-switch";
 import { HomeAssistant } from "../../types";
 import { MQTTDeviceDebugInfoDialogParams } from "./show-dialog-mqtt-device-debug-info";
 import { MQTTDeviceDebugInfo, fetchMQTTDebugInfo } from "../../data/mqtt";
@@ -23,10 +22,14 @@ import "./mqtt-discovery-payload";
 @customElement("dialog-mqtt-device-debug-info")
 class DialogMQTTDeviceDebugInfo extends LitElement {
   public hass!: HomeAssistant;
+
   @property() private _params?: MQTTDeviceDebugInfoDialogParams;
+
   @property() private _debugInfo?: MQTTDeviceDebugInfo;
-  @property() private _showAsYaml: boolean = true;
-  @property() private _showDeserialized: boolean = true;
+
+  @property() private _showAsYaml = true;
+
+  @property() private _showDeserialized = true;
 
   public async showDialog(
     params: MQTTDeviceDebugInfoDialogParams

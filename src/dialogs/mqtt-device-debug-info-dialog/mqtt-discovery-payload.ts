@@ -10,9 +10,12 @@ import { safeDump } from "js-yaml";
 @customElement("mqtt-discovery-payload")
 class MQTTDiscoveryPayload extends LitElement {
   @property() public payload!: object;
-  @property() public showAsYaml: boolean = false;
+
+  @property() public showAsYaml = false;
+
   @property() public summary!: string;
-  @property() private _open: boolean = false;
+
+  @property() private _open = false;
 
   protected render(): TemplateResult {
     return html`
@@ -29,12 +32,8 @@ class MQTTDiscoveryPayload extends LitElement {
     const payload = this.payload;
     return html`
       ${this.showAsYaml
-        ? html`
-            <pre>${safeDump(payload)}</pre>
-          `
-        : html`
-            <pre>${JSON.stringify(payload, null, 2)}</pre>
-          `}
+        ? html` <pre>${safeDump(payload)}</pre> `
+        : html` <pre>${JSON.stringify(payload, null, 2)}</pre> `}
     `;
   }
 
