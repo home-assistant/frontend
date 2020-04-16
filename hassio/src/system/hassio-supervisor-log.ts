@@ -10,23 +10,44 @@ import {
   html,
   LitElement,
   property,
-  query,
   TemplateResult,
 } from "lit-element";
 import { haStyle } from "../../../src/resources/styles";
 import { HomeAssistant } from "../../../src/types";
 
-import {
-  fetchAudioLogs,
-  fetchDNSLogs,
-  fetchHostLogs,
-  fetchMulticastLogs,
-  fetchSupervisorLogs,
-} from "../../../src/data/hassio/supervisor";
+import { fetchHassioLogs } from "../../../src/data/hassio/supervisor";
 
-import { ANSI_HTML_STYLE, parseTextToColoredPre } from "../ansi-to-html";
+import "../components/hassio-ansi-to-html";
 import { hassioStyle } from "../resources/hassio-style";
 import "../../../src/layouts/loading-screen";
+
+interface LogProvider {
+  key: string;
+  name: string;
+}
+
+const logProviders: LogProvider[] = [
+  {
+    key: "supervisor",
+    name: "Supervisor",
+  },
+  {
+    key: "host",
+    name: "Host",
+  },
+  {
+    key: "dns",
+    name: "DNS",
+  },
+  {
+    key: "audio",
+    name: "Audio",
+  },
+  {
+    key: "multicast",
+    name: "Multicast",
+  },
+];
 
 @customElement("hassio-supervisor-log")
 class HassioSupervisorLog extends LitElement {
@@ -34,14 +55,14 @@ class HassioSupervisorLog extends LitElement {
 
   @property() private _error?: string;
 
-  @property() private _logSource:
-    | "Supervisor"
-    | "Host"
-    | "DNS"
-    | "Audio"
-    | "Multicast" = "Supervisor";
+  @property() private _selectedLogProvider:
+    | "supervisor"
+    | "host"
+    | "dns"
+    | "audio"
+    | "multicast" = "supervisor";
 
-  @query("#content") private _logContent!: HTMLDivElement;
+  @property() private _content?: string;
 
   public async connectedCallback(): Promise<void> {
     super.connectedCallback();
@@ -55,28 +76,32 @@ class HassioSupervisorLog extends LitElement {
         ${this.hass.userData?.showAdvanced
           ? html`
               <paper-dropdown-menu
-                label="Log source"
-                @iron-select=${this._setLogSource}
+                label="Log provider"
+                @iron-select=${this._setLogProvider}
               >
                 <paper-listbox
                   slot="dropdown-content"
-                  attr-for-selected="source"
-                  .selected=${this._logSource}
+                  attr-for-selected="provider"
+                  .selected=${this._selectedLogProvider}
                 >
-                  ${["Supervisor", "Host", "DNS", "Audio", "Multicast"].map(
-                    (source) => {
-                      return html`
-                        <paper-item source=${source}>${source}</paper-item>
-                      `;
-                    }
-                  )}
+                  ${logProviders.map((provider) => {
+                    return html`
+                      <paper-item provider=${provider.key}
+                        >${provider.name}</paper-item
+                      >
+                    `;
+                  })}
                 </paper-listbox>
               </paper-dropdown-menu>
             `
           : ""}
 
         <div class="card-content" id="content">
-          ${until(this._content, html`<loading-screen></loading-screen>`)}
+          ${this._content
+            ? html`<hassio-ansi-to-html
+                .content=${this._content}
+              ></hassio-ansi-to-html>`
+            : html`<loading-screen></loading-screen>`}
         </div>
         <div class="card-actions">
           <mwc-button @click=${this._refresh}>Refresh</mwc-button>
@@ -89,7 +114,6 @@ class HassioSupervisorLog extends LitElement {
     return [
       haStyle,
       hassioStyle,
-      ANSI_HTML_STYLE,
       css`
         paper-card {
           width: 100%;
@@ -112,38 +136,21 @@ class HassioSupervisorLog extends LitElement {
     ];
   }
 
-  private async _setLogSource(ev): Promise<void> {
-    const source = ev.detail.item.getAttribute("source");
-    this._logSource = source;
+  private async _setLogProvider(ev): Promise<void> {
+    const provider = ev.detail.item.getAttribute("provider");
+    this._selectedLogProvider = provider;
     await this._loadData();
   }
 
   private async _loadData(): Promise<void> {
     this._error = undefined;
-    let content!: string;
-    if (this._logContent) {
-      while (this._logContent?.lastChild) {
-        this._logContent.removeChild(this._logContent.lastChild as Node);
-      }
-      const loading = document.createElement("loading-screen");
-      this._logContent.appendChild(loading);
-    }
+    this._content = undefined;
+
     try {
-      if (this._logSource === "Supervisor") {
-        content = await fetchSupervisorLogs(this.hass);
-      } else if (this._logSource === "Host") {
-        content = await fetchHostLogs(this.hass);
-      } else if (this._logSource === "DNS") {
-        content = await fetchDNSLogs(this.hass);
-      } else if (this._logSource === "Audio") {
-        content = await fetchAudioLogs(this.hass);
-      } else if (this._logSource === "Multicast") {
-        content = await fetchMulticastLogs(this.hass);
-      }
-      while (this._logContent.lastChild) {
-        this._logContent.removeChild(this._logContent.lastChild as Node);
-      }
-      this._logContent.appendChild(parseTextToColoredPre(content));
+      this._content = await fetchHassioLogs(
+        this.hass,
+        this._selectedLogProvider
+      );
     } catch (err) {
       this._error = `Failed to get supervisor logs, ${
         err.body?.message || err
