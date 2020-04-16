@@ -59,12 +59,7 @@ class HassioSupervisorLog extends LitElement {
 
   @property() private _error?: string;
 
-  @property() private _selectedLogProvider:
-    | "supervisor"
-    | "host"
-    | "dns"
-    | "audio"
-    | "multicast" = "supervisor";
+  @property() private _selectedLogProvider = "supervisor";
 
   @property() private _content?: string;
 
