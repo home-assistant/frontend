@@ -52,15 +52,17 @@ class DialogMQTTDeviceDebugInfo extends LitElement {
           computeDeviceName(this._params.device, this.hass)
         )}"
       >
-        <h4>Payload display</h4>
+        <h4>
+          ${this.hass!.localize(
+            "ui.dialogs.mqtt_device_debug_info.payload_display"
+          )}
+        </h4>
         <ha-switch
           .checked=${this._showDeserialized}
           @change=${this._showDeserializedChanged}
         >
           ${this.hass!.localize(
-            "ui.dialogs.mqtt_device_debug_info.deserialize",
-            "format",
-            "YAML"
+            "ui.dialogs.mqtt_device_debug_info.deserialize"
           )}
         </ha-switch>
         <ha-switch
@@ -68,12 +70,12 @@ class DialogMQTTDeviceDebugInfo extends LitElement {
           @change=${this._showAsYamlChanged}
         >
           ${this.hass!.localize(
-            "ui.dialogs.mqtt_device_debug_info.show_as",
-            "format",
-            "YAML"
+            "ui.dialogs.mqtt_device_debug_info.show_as_yaml"
           )}
         </ha-switch>
-        <h4>Entities</h4>
+        <h4>
+          ${this.hass!.localize("ui.dialogs.mqtt_device_debug_info.entities")}
+        </h4>
         <ul>
           ${this._debugInfo.entities.length
             ? this._renderEntities()
@@ -83,7 +85,9 @@ class DialogMQTTDeviceDebugInfo extends LitElement {
                 )}
               `}
         </ul>
-        <h4>Triggers</h4>
+        <h4>
+          ${this.hass!.localize("ui.dialogs.mqtt_device_debug_info.triggers")}
+        </h4>
         <ul>
           ${this._debugInfo.triggers.length
             ? this._renderTriggers()
@@ -94,7 +98,7 @@ class DialogMQTTDeviceDebugInfo extends LitElement {
               `}
         </ul>
         <mwc-button slot="primaryAction" @click=${this._close}>
-          Close
+          ${this.hass!.localize("ui.dialogs.generic.close")}
         </mwc-button>
       </ha-dialog>
     `;
@@ -176,7 +180,7 @@ class DialogMQTTDeviceDebugInfo extends LitElement {
               .hass=${this.hass}
               .payload=${trigger.discovery_data.payload}
               .showAsYaml=${this._showAsYaml}
-              .summary=${"Discovery payload"}
+              .summary="Discovery payload"
             >
             </mqtt-discovery-payload>
           </li>

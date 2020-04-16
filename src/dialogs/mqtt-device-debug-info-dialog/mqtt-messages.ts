@@ -20,38 +20,13 @@ class MQTTMessages extends LitElement {
   @property() private _showTopic: boolean = false;
 
   protected firstUpdated(): void {
-    const nPayloads = this.messages.length;
-    this._payloadsJson = new Array(nPayloads);
-    for (let i = 0; i < nPayloads; i++) {
-      const payload = this.messages[i].payload;
-      const topic = this.messages[i].topic;
-
+    this._payloadsJson = new Array(this.messages.length);
+    this.messages.forEach(function(message) {
       // If any message's topic differs from the subscribed topic, show topics + payload
-      if (this.subscribedTopic !== topic) {
+      if (this.subscribedTopic !== message.topic) {
         this._showTopic = true;
       }
-
-      let o = payload;
-
-      // If the payload is a string, determine if the payload is valid JSON and if it
-      // is, assign the object representation to this._payloadJson.
-      if (typeof payload === "string") {
-        try {
-          o = JSON.parse(payload);
-        } catch (e) {
-          continue;
-        }
-      } else {
-        //  this.showDeserialized = true;
-      }
-      // Handle non-exception-throwing cases:
-      // Neither JSON.parse(false) or JSON.parse(1234) throw errors, hence the type-checking,
-      // but... JSON.parse(null) returns null, and typeof null === "object",
-      // so we must check for that, too. Thankfully, null is falsey, so this suffices:
-      if (o && typeof o === "object") {
-        this._payloadsJson[i] = o;
-      }
-    }
+    });
   }
 
   protected render(): TemplateResult {
@@ -94,6 +69,10 @@ class MQTTMessages extends LitElement {
   }
 
   private _renderSinglePayload(i: number): TemplateResult {
+    if (this._payloadsJson && this._payloadsJson[i] === undefined) {
+      this._payloadsJson[i] = this._tryParseJson(this.messages[i].payload);
+    }
+
     return this._payloadsJson && this._payloadsJson[i] && this.showDeserialized
       ? html`
           ${this.showAsYaml
@@ -107,6 +86,29 @@ class MQTTMessages extends LitElement {
       : html`
           <code>${this.messages[i].payload}</code>
         `;
+  }
+
+  private _tryParseJson(payload) {
+    let jsonPayload = null;
+    let o = payload;
+
+    // If the payload is a string, determine if the payload is valid JSON and if it
+    // is, assign the object representation to this._payloadJson.
+    if (typeof payload === "string") {
+      try {
+        o = JSON.parse(payload);
+      } catch (e) {
+        o = null;
+      }
+    }
+    // Handle non-exception-throwing cases:
+    // Neither JSON.parse(false) or JSON.parse(1234) throw errors, hence the type-checking,
+    // but... JSON.parse(null) returns null, and typeof null === "object",
+    // so we must check for that, too. Thankfully, null is falsey, so this suffices:
+    if (o && typeof o === "object") {
+      jsonPayload = o;
+    }
+    return jsonPayload;
   }
 
   private _handleToggle(ev) {
