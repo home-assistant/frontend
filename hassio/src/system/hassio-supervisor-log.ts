@@ -32,6 +32,10 @@ const logProviders: LogProvider[] = [
     name: "Supervisor",
   },
   {
+    key: "core",
+    name: "Core",
+  },
+  {
     key: "host",
     name: "Host",
   },
