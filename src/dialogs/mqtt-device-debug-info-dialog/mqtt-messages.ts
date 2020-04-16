@@ -22,13 +22,13 @@ class MQTTMessages extends LitElement {
 
   @property() private _open = false;
 
-  @property() private _payloadsJson!: Array<object | undefined>;
+  @property() private _payloadsJson!: Array<object | null | undefined>;
 
   @property() private _showTopic = false;
 
   protected firstUpdated(): void {
     this._payloadsJson = new Array(this.messages.length);
-    this.messages.forEach(function (message) {
+    this.messages.forEach((message) => {
       // If any message's topic differs from the subscribed topic, show topics + payload
       if (this.subscribedTopic !== message.topic) {
         this._showTopic = true;
