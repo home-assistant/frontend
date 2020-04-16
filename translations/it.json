@@ -509,6 +509,7 @@
                 "attributes": {
                     "air_pressure": "Pressione atmosferica",
                     "humidity": "Umidità",
+                    "precipitation": "Precipitazioni",
                     "temperature": "Temperatura",
                     "visibility": "Visibilità",
                     "wind_speed": "Velocità del vento"
@@ -531,7 +532,9 @@
                     "wnw": "ONO",
                     "wsw": "OSO"
                 },
-                "forecast": "Previsioni"
+                "forecast": "Previsioni",
+                "high": "Alto",
+                "low": "Basso"
             }
         },
         "common": {
@@ -543,6 +546,7 @@
             "save": "Salva",
             "successfully_deleted": "Cancellato con successo",
             "successfully_saved": "Salvataggio riuscito",
+            "undo": "Annulla",
             "yes": "Sì"
         },
         "components": {
@@ -812,6 +816,10 @@
                 "areas": {
                     "caption": "Aree",
                     "create_area": "CREA AREA",
+                    "data_table": {
+                        "area": "Area",
+                        "devices": "Dispositivi"
+                    },
                     "delete": {
                         "confirmation_text": "Tutti i dispositivi in quest'area non saranno assegnati.",
                         "confirmation_title": "Sei sicuro di voler cancellare quest'area?"
@@ -1054,6 +1062,9 @@
                         "delete_confirm": "Sei sicuro di voler eliminare questa automazione?",
                         "edit_automation": "Modifica automazione",
                         "header": "Editor di Automazione",
+                        "headers": {
+                            "name": "Nome"
+                        },
                         "introduction": "L'Editor di Automazione consente di creare e modificare Automazioni. Seguire il collegamento seguente per leggere le istruzioni e assicurarsi di aver configurato correttamente Home Assistant.",
                         "learn_more": "Per saperne di più sulle Automazioni",
                         "no_automations": "Nessuna Automazione modificabile trovata",
@@ -1334,6 +1345,7 @@
                     },
                     "info": "Informazioni sul dispositivo",
                     "name": "Nome",
+                    "no_devices": "Nessun dispositivo",
                     "scene": {
                         "create": "Crea una Scena con il dispositivo",
                         "no_scenes": "Nessuna Scena",
@@ -1638,6 +1650,9 @@
                         "delete_scene": "Cancella scena",
                         "edit_scene": "Modifica scena",
                         "header": "Editor di scene",
+                        "headers": {
+                            "name": "Nome"
+                        },
                         "introduction": "L'Editor di Scene ti consente di creare e modificare Scene. Seguire il collegamento seguente per leggere le istruzioni e assicurarsi di aver configurato correttamente Home Assistant.",
                         "learn_more": "Ulteriori informazioni sulle scene",
                         "no_scenes": "Impossibile trovare scene modificabili",
@@ -1665,9 +1680,13 @@
                         "add_script": "Aggiungi script",
                         "edit_script": "Modifica script",
                         "header": "Editor script",
+                        "headers": {
+                            "name": "Nome"
+                        },
                         "introduction": "L'Editor di Script consente di creare e modificare Script. Seguire il collegamento seguente per leggere le istruzioni e assicurarsi di aver configurato correttamente Home Assistant.",
                         "learn_more": "Ulteriori informazioni sugli script",
                         "no_scripts": "Non è stato possibile trovare alcuno script modificabile",
+                        "show_info": "Mostra informazioni sullo script",
                         "trigger_script": "Attiva script"
                     }
                 },
@@ -1716,6 +1735,7 @@
                     "editor": {
                         "activate_user": "Attiva utente",
                         "active": "Attivo",
+                        "admin": "Amministratore",
                         "caption": "Visualizza utente",
                         "change_password": "Cambia password",
                         "confirm_user_deletion": "Sei sicuro di voler eliminare {name} ?",
@@ -1725,14 +1745,22 @@
                         "group": "Gruppo",
                         "group_update_failed": "L'aggiornamento del gruppo non è riuscito:",
                         "id": "ID",
+                        "name": "Nome",
                         "owner": "Proprietario",
                         "rename_user": "Rinomina utente",
                         "system_generated": "Generato dal sistema",
+                        "system_generated_users_not_editable": "Impossibile aggiornare gli utenti generati dal sistema.",
                         "system_generated_users_not_removable": "Impossibile rimuovere gli utenti generati dal sistema.",
                         "unnamed_user": "Utente senza nome",
+                        "update_user": "Aggiorna",
                         "user_rename_failed": "Rinominazione dell'utente fallita:"
                     },
                     "picker": {
+                        "headers": {
+                            "group": "Gruppo",
+                            "name": "Nome",
+                            "system": "Sistema"
+                        },
                         "system_generated": "Generato dal sistema",
                         "title": "Utenti"
                     }
@@ -2135,6 +2163,10 @@
                             "description": "La scheda Filtro Entità consente di definire un elenco di entità che si desidera monitorare solo in un determinato stato.",
                             "name": "Filtro Entità"
                         },
+                        "entity": {
+                            "description": "La scheda Entità offre una rapida panoramica dello stato dell'entità.",
+                            "name": "Entità"
+                        },
                         "gauge": {
                             "description": "La scheda Indicatore è una scheda di base che consente di visualizzare visivamente i dati del sensore.",
                             "name": "Indicatore",
@@ -2147,8 +2179,10 @@
                         },
                         "generic": {
                             "aspect_ratio": "Proporzioni",
+                            "attribute": "Attributo",
                             "camera_image": "Entità Fotocamera",
                             "camera_view": "Vista fotocamera",
+                            "double_tap_action": "Azione doppio tocco",
                             "entities": "Entità",
                             "entity": "Entità",
                             "hold_action": "Azione di attesa",
@@ -2199,6 +2233,7 @@
                             "default_zoom": "Ingrandimento predefinito",
                             "description": "La scheda Mappa che permette di visualizzare le entità su una mappa.",
                             "geo_location_sources": "Fonti di geolocalizzazione",
+                            "hours_to_show": "Ore da mostrare",
                             "name": "Mappa",
                             "source": "Fonte"
                         },
@@ -2254,6 +2289,10 @@
                             "description": "La scheda Previsioni Meteo mostra le condizioni meteorologiche. Molto utili da includere nelle interfacce che le persone visualizzano sulla parete.",
                             "name": "Previsioni del tempo"
                         }
+                    },
+                    "cardpicker": {
+                        "custom_card": "Personalizzato",
+                        "no_description": "Nessuna descrizione disponibile."
                     },
                     "edit_card": {
                         "add": "Aggiungi scheda",
@@ -2319,6 +2358,7 @@
                     "save_config": {
                         "cancel": "Rinuncia",
                         "close": "Chiudi",
+                        "empty_config": "Iniziare con un cruscotto vuoto",
                         "header": "Prendi il controllo della tua interfaccia utente di Lovelace",
                         "para": "Per impostazione predefinita, Home Assistant gestirà l'Interfaccia Utente, aggiornandola quando nuove entità o componenti dell'IU Lovelace diventano disponibili. Se prendi il controllo non effettueremo più automaticamente le modifiche per te.",
                         "para_sure": "Sei sicuro di voler prendere il controllo della tua interfaccia utente?",
@@ -2568,6 +2608,11 @@
                     "submit": "Invia"
                 },
                 "current_user": "Sei attualmente connesso come {fullName}.",
+                "dashboard": {
+                    "description": "Scegliere un cruscotto di default per questo dispositivo.",
+                    "dropdown_label": "Cruscotto",
+                    "header": "Cruscotto"
+                },
                 "force_narrow": {
                     "description": "Questo nasconderà la barra laterale per impostazione predefinita, in modo simile all'esperienza mobile",
                     "header": "Nascondi sempre la barra laterale"
