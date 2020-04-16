@@ -21,7 +21,7 @@ export const integrationIssuesUrl = (domain: string) =>
   `https://github.com/home-assistant/home-assistant/issues?q=is%3Aissue+is%3Aopen+label%3A%22integration%3A+${domain}%22`;
 
 export const domainToName = (localize: LocalizeFunc, domain: string) =>
-  localize(`domain.${domain}`) || domain;
+  localize(`component.${domain}.title`) || domain;
 
 export const fetchIntegrationManifests = (hass: HomeAssistant) =>
   hass.callWS<IntegrationManifest[]>({ type: "manifest/list" });
