@@ -75,10 +75,6 @@ class HaInputBooleanForm extends LitElement {
             "ui.dialogs.helper_settings.generic.icon"
           )}
         ></ha-icon-input>
-        <br />
-        ${this.hass!.localize(
-          "ui.dialogs.helper_settings.generic.initial_value_explain"
-        )}
       </div>
     `;
   }
