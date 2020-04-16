@@ -30,8 +30,8 @@
         "history_graph": "Wykres historii",
         "homeassistant": "Home Assistant",
         "image_processing": "Przetwarzanie obrazu",
-        "input_boolean": "Pole logiczne",
-        "input_datetime": "Pole daty czasu",
+        "input_boolean": "Pole wartości logicznej",
+        "input_datetime": "Pole daty i czasu",
         "input_number": "Pole numeryczne",
         "input_select": "Pole wyboru",
         "input_text": "Pole tekstowe",
@@ -665,11 +665,11 @@
                     "time": "Czas"
                 },
                 "input_number": {
-                    "box": "Pole wprowadzania danych",
+                    "box": "pole",
                     "max": "Maksymalna wartość",
                     "min": "Minimalna wartość",
                     "mode": "Tryb wyświetlania",
-                    "slider": "Suwak",
+                    "slider": "suwak",
                     "step": "Wielkość kroku suwaka",
                     "unit_of_measurement": "Jednostka miary"
                 },
@@ -1447,9 +1447,9 @@
                     "types": {
                         "input_boolean": "Przełącznik",
                         "input_datetime": "Data i/lub godzina",
-                        "input_number": "Pole numeryczne",
-                        "input_select": "Rozwijane pole wyboru",
-                        "input_text": "Pole tekstowe"
+                        "input_number": "Numer",
+                        "input_select": "Pole wyboru",
+                        "input_text": "Tekst"
                     }
                 },
                 "integrations": {

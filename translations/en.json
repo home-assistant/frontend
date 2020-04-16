@@ -758,11 +758,13 @@
                 "buttons": {
                     "add": "Add Devices",
                     "reconfigure": "Reconfigure Device",
-                    "remove": "Remove Device"
+                    "remove": "Remove Device",
+                    "zigbee_information": "Zigbee Information"
                 },
                 "confirmations": {
                     "remove": "Are you sure that you want to remove the device?"
                 },
+                "device_signature": "Zigbee device signature",
                 "last_seen": "Last Seen",
                 "manuf": "by {manufacturer}",
                 "no_area": "No Area",
@@ -771,7 +773,8 @@
                 "services": {
                     "reconfigure": "Reconfigure ZHA device (heal device). Use this if you are having issues with the device. If the device in question is a battery powered device please ensure it is awake and accepting commands when you use this service.",
                     "remove": "Remove a device from the Zigbee network.",
-                    "updateDeviceName": "Set a custom name for this device in the device registry."
+                    "updateDeviceName": "Set a custom name for this device in the device registry.",
+                    "zigbee_information": "View the Zigbee information for the device."
                 },
                 "unknown": "Unknown",
                 "zha_device_card": {

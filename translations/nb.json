@@ -546,6 +546,7 @@
             "save": "Lagre",
             "successfully_deleted": "Slettet",
             "successfully_saved": "Vellykket lagring",
+            "undo": "Angre",
             "yes": "Ja"
         },
         "components": {
@@ -1734,6 +1735,7 @@
                     "editor": {
                         "activate_user": "Aktiver bruker",
                         "active": "Aktiv",
+                        "admin": "Administrator",
                         "caption": "Vis bruker",
                         "change_password": "Endre passord",
                         "confirm_user_deletion": "Er du sikker på at du vil slette {name} ?",
@@ -1747,6 +1749,7 @@
                         "owner": "Eier",
                         "rename_user": "Gi nytt navn til bruker",
                         "system_generated": "System generert",
+                        "system_generated_users_not_editable": "Kan ikke oppdatere systemgenererte brukere.",
                         "system_generated_users_not_removable": "Kan ikke fjerne systemgenererte brukere.",
                         "unnamed_user": "Bruker uten navn",
                         "update_user": "Oppdater",
@@ -2161,6 +2164,7 @@
                             "name": "Entitetsfilter"
                         },
                         "entity": {
+                            "description": "Enhetskortet gir deg en rask oversikt over enhetens tilstand.",
                             "name": "Entitet"
                         },
                         "gauge": {
