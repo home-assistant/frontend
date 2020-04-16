@@ -76,7 +76,7 @@ class HassioSupervisorLog extends LitElement {
           : ""}
 
         <div class="card-content" id="content">
-          <loading-screen></loading-screen>
+          ${until(this._content, html`<loading-screen></loading-screen>`)}
         </div>
         <div class="card-actions">
           <mwc-button @click=${this._refresh}>Refresh</mwc-button>
