@@ -25,17 +25,19 @@ export const showOptionsFlowDialog = (
     },
     {
       loadDevicesAndAreas: false,
-      createFlow: (hass, handler) => {
-        hass.loadBackendTranslation("options", handler);
-        return createOptionsFlow(hass, handler);
+      createFlow: async (hass, handler) => {
+        const [step] = await Promise.all([
+          createOptionsFlow(hass, handler),
+          hass.loadBackendTranslation("options", configEntry.domain),
+        ]);
+        return step;
       },
-      fetchFlow: (hass, flowId) => {
-        const stepProm = fetchOptionsFlow(hass, flowId);
-        // Load the translations as soon as we know the integration
-        stepProm.then((step) =>
-          hass.loadBackendTranslation("options", step.handler)
-        );
-        return stepProm;
+      fetchFlow: async (hass, flowId) => {
+        const [step] = await Promise.all([
+          fetchOptionsFlow(hass, flowId),
+          hass.loadBackendTranslation("options", configEntry.domain),
+        ]);
+        return step;
       },
       handleFlowStep: handleOptionsFlowStep,
       deleteFlow: deleteOptionsFlow,

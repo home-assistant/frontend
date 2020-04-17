@@ -36,17 +36,17 @@ export const showConfigFlowDialog = (
         )
       );
     },
-    createFlow: (hass, handler) => {
-      hass.loadBackendTranslation("config", handler);
-      return createConfigFlow(hass, handler);
+    createFlow: async (hass, handler) => {
+      const [step] = await Promise.all([
+        createConfigFlow(hass, handler),
+        hass.loadBackendTranslation("config", handler),
+      ]);
+      return step;
     },
-    fetchFlow: (hass, flowId) => {
-      const stepProm = fetchConfigFlow(hass, flowId);
-      // Load the translations as soon as we know the integration
-      stepProm.then((step) =>
-        hass.loadBackendTranslation("config", step.handler)
-      );
-      return stepProm;
+    fetchFlow: async (hass, flowId) => {
+      const step = await fetchConfigFlow(hass, flowId);
+      await hass.loadBackendTranslation("config", step.handler);
+      return step;
     },
     handleFlowStep: handleConfigFlowStep,
     deleteFlow: deleteConfigFlow,

@@ -27,11 +27,6 @@ export class HaPanelDevLogs extends LitElement {
     }
   }
 
-  protected firstUpdated(changedProps) {
-    super.firstUpdated(changedProps);
-    this.hass.loadBackendTranslation("title");
-  }
-
   protected render(): TemplateResult {
     return html`
       <div class="content">

@@ -20,6 +20,7 @@ declare global {
   var __BUILD__: "latest" | "es5";
   var __VERSION__: string;
   var __STATIC_PATH__: string;
+  var __BACKWARDS_COMPAT__: boolean;
   /* eslint-enable no-var, no-redeclare */
 
   interface Window {

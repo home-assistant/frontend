@@ -42,3 +42,14 @@ export const getHassTranslations = async (
   });
   return result.resources;
 };
+
+export const getHassTranslationsPre109 = async (
+  hass: HomeAssistant,
+  language: string
+): Promise<{}> => {
+  const result = await hass.callWS<{ resources: {} }>({
+    type: "frontend/get_translations",
+    language,
+  });
+  return result.resources;
+};

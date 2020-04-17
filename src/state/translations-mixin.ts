@@ -4,6 +4,7 @@ import {
   getHassTranslations,
   saveTranslationPreferences,
   TranslationCategory,
+  getHassTranslationsPre109,
 } from "../data/translation";
 import { translationMetadata } from "../resources/translations-metadata";
 import { Constructor, HomeAssistant } from "../types";
@@ -14,6 +15,7 @@ import {
   getUserLanguage,
 } from "../util/hass-translation";
 import { HassBaseEl } from "./hass-base-mixin";
+import { atLeastVersion } from "../common/config/version";
 
 interface LoadedTranslationCategory {
   // individual integrations loaded for this category
@@ -88,13 +90,13 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
         saveTranslationPreferences(this.hass, { language });
       }
       this._applyTranslations(this.hass);
+      this._refetchCachedHassTranslations(true);
     }
 
     private _applyTranslations(hass: HomeAssistant) {
       document.querySelector("html")!.setAttribute("lang", hass.language);
       this.style.direction = computeRTL(hass) ? "rtl" : "ltr";
       this._loadCoreTranslations(hass.language);
-      this._loadHassTranslations(hass.language, "state");
       this._loadFragmentTranslations(hass.language, hass.panelUrl);
     }
 
@@ -105,6 +107,24 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
       configFlow?: Parameters<typeof getHassTranslations>[4],
       force = false
     ) {
+      if (
+        __BACKWARDS_COMPAT__ &&
+        !atLeastVersion(this.hass!.connection.haVersion, 0, 109)
+      ) {
+        if (category !== "state") {
+          return;
+        }
+        const resources = await getHassTranslationsPre109(this.hass!, language);
+
+        // Ignore the repsonse if user switched languages before we got response
+        if (this.hass!.language !== language) {
+          return;
+        }
+
+        this._updateResources(language, resources);
+        return;
+      }
+
       let alreadyLoaded: LoadedTranslationCategory;
 
       if (category in this.__loadedTranslations) {
