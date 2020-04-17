@@ -758,11 +758,13 @@
                 "buttons": {
                     "add": "Legg til enheter",
                     "reconfigure": "Rekonfigurer enhet",
-                    "remove": "Fjern enhet"
+                    "remove": "Fjern enhet",
+                    "zigbee_information": "Zigbee informasjon"
                 },
                 "confirmations": {
                     "remove": "Er du sikker på at du vil fjerne enheten?"
                 },
+                "device_signature": "Zigbee-enhetssignatur",
                 "last_seen": "Sist sett",
                 "manuf": "av {manufacturer}",
                 "no_area": "Intet område",
@@ -771,7 +773,8 @@
                 "services": {
                     "reconfigure": "Rekonfigurer ZHA-enhet (heal enhet). Bruk dette hvis du har problemer med enheten. Hvis den aktuelle enheten er en batteridrevet enhet, sørg for at den er våken og aksepterer kommandoer når du bruker denne tjenesten.",
                     "remove": "Fjern en enhet fra Zigbee-nettverket.",
-                    "updateDeviceName": "Angi et egendefinert navn for denne enheten i enhetsregisteret."
+                    "updateDeviceName": "Angi et egendefinert navn for denne enheten i enhetsregisteret.",
+                    "zigbee_information": "Vis Zigbee-informasjonen for enheten."
                 },
                 "unknown": "Ukjent",
                 "zha_device_card": {

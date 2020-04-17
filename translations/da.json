@@ -758,11 +758,13 @@
                 "buttons": {
                     "add": "Tilføj enheder",
                     "reconfigure": "Genkonfigurer enhed",
-                    "remove": "Fjern enhed"
+                    "remove": "Fjern enhed",
+                    "zigbee_information": "Zigbee-oplysninger"
                 },
                 "confirmations": {
                     "remove": "Er du sikker på, at du vil fjerne enheden?"
                 },
+                "device_signature": "Zigbee-enhedssignatur",
                 "last_seen": "Sidst set",
                 "manuf": "af {manufacturer}",
                 "no_area": "Intet område",
@@ -771,7 +773,8 @@
                 "services": {
                     "reconfigure": "Rekonfigurer ZHA-enhed (helbred enheden). Brug dette, hvis du har problemer med enheden. Hvis den pågældende enhed er en batteridrevet enhed, skal du sørge for at den er vågen og accepterer kommandoer, når du bruger denne tjeneste.",
                     "remove": "Fjern en enhed fra Zigbee-netværket.",
-                    "updateDeviceName": "Angiv et brugerdefineret navn til denne enhed i enhedsregistret"
+                    "updateDeviceName": "Angiv et brugerdefineret navn til denne enhed i enhedsregistret",
+                    "zigbee_information": "Vis Zigbee-oplysningerne for enheden."
                 },
                 "unknown": "Ukendt",
                 "zha_device_card": {
@@ -2140,7 +2143,7 @@
                             "change_type": "Skift type",
                             "condition_explanation": "Kortet vises, når ALLE nedenstående betingelser er opfyldt.",
                             "conditions": "Betingelser",
-                            "current_state": "aktuelt",
+                            "current_state": "aktuelle",
                             "description": "Betinget-kortet viser et andet kort baseret på entitetstilstande.",
                             "name": "Betinget",
                             "state_equal": "Tilstand er lig med",

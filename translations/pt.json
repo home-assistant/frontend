@@ -506,6 +506,7 @@
                 "attributes": {
                     "air_pressure": "Press. Atmosférica",
                     "humidity": "Humidade",
+                    "precipitation": "Precipitação",
                     "temperature": "Temperatura",
                     "visibility": "Visibilidade",
                     "wind_speed": "Vel. do vento"
@@ -537,6 +538,7 @@
             "no": "Não",
             "save": "Guardar",
             "successfully_saved": "Salva com sucesso",
+            "undo": "Desfazer",
             "yes": "Sim"
         },
         "components": {
@@ -589,6 +591,12 @@
                 "default_confirmation_title": "Tem a certeza?",
                 "ok": "OK"
             },
+            "helper_settings": {
+                "input_datetime": {
+                    "date": "Data",
+                    "time": "Hora"
+                }
+            },
             "more_info_control": {
                 "script": {
                     "last_action": "Última ocorrência"
@@ -631,8 +639,10 @@
                 "buttons": {
                     "add": "Adicionar Dispositivos",
                     "reconfigure": "Reconfigurar Dispositivo",
-                    "remove": "Remover Dispositivo"
+                    "remove": "Remover Dispositivo",
+                    "zigbee_information": "Informação Zigbee"
                 },
+                "device_signature": "Assinatura do dispositivo Zigbee",
                 "last_seen": "Visto pela última vez",
                 "manuf": "por {manufacturer}",
                 "no_area": "Nenhuma Área",
@@ -641,7 +651,8 @@
                 "services": {
                     "reconfigure": "Reconfigure o dispositivo ZHA (curar dispositivo). Utilize isto se estiver a ter problemas com o dispositivo. Se o dispositivo em questão for um dispositivo alimentado por uma bateria, ao utilizar este serviço certifique-se de que o equipamento está ativo e a aceitar comandos.",
                     "remove": "Remover um dispositivo da rede Zigbee.",
-                    "updateDeviceName": "Definir um nome personalizado para este dispositivo no registo do dispositivo."
+                    "updateDeviceName": "Definir um nome personalizado para este dispositivo no registo do dispositivo.",
+                    "zigbee_information": "Veja as informações do Zigbee para o dispositivo."
                 },
                 "unknown": "Desconhecido",
                 "zha_device_card": {
@@ -685,6 +696,10 @@
                 "areas": {
                     "caption": "Áreas",
                     "create_area": "CRIAR ÁREA",
+                    "delete": {
+                        "confirmation_text": "Todos os dispositivos nesta área ficarão por atribuir.",
+                        "confirmation_title": "Tem certeza de que deseja apagar esta área?"
+                    },
                     "description": "Visão geral de todas as áreas da sua casa.",
                     "editor": {
                         "create": "CRIAR",
@@ -920,6 +935,9 @@
                         "delete_confirm": "Tem a certeza que quer apagar esta automação?",
                         "edit_automation": "Editar automação",
                         "header": "Editor de automação",
+                        "headers": {
+                            "name": "Nome"
+                        },
                         "introduction": "O editor de automação permite criar e editar automações. Leia [as instruções] (https://home-assistant.io/docs/automation/editor/) para se certificar de que configurou o Home Assistant corretamente.",
                         "learn_more": "Saber mais sobre automações",
                         "no_automations": "Não foi possível encontrar nenhuma automação editável",
@@ -1131,12 +1149,14 @@
                         "device": "Dispositivo",
                         "integration": "Integração",
                         "manufacturer": "Fabricante",
-                        "model": "Modelo"
+                        "model": "Modelo",
+                        "no_devices": "Sem dispositivos"
                     },
                     "description": "Gerir dispositivos ligados",
                     "details": "Aqui estão todos os detalhes do seu dispositivo.",
                     "device_not_found": "Dispositivo não encontrado.",
                     "info": "Informação do dispositivo",
+                    "no_devices": "Sem dispositivos",
                     "unknown_error": "Erro desconhecido",
                     "unnamed_device": "Dispositivo sem nome"
                 },
@@ -1201,6 +1221,7 @@
                         },
                         "failed_create_area": "Falha ao criar a área.",
                         "finish": "Terminar",
+                        "loading_first_time": "Por favor, aguarde enquanto a integração está a ser instalada",
                         "name_new_area": "Nome da nova área?",
                         "not_all_required_fields": "Nem todos os campos obrigatórios estão preenchidos.",
                         "submit": "Enviar"
@@ -1217,6 +1238,11 @@
                     "note_about_website_reference": "Existem mais disponíveis no"
                 },
                 "introduction": "Aqui é possível configurar os seus componentes e o Home Assistant. Nem tudo é possível de ser configurado a partir da Interface Gráfica, mas estamos a trabalhar para isso.",
+                "lovelace": {
+                    "dashboards": {
+                        "default_dashboard": "Este é o painel de instrumentos padrão"
+                    }
+                },
                 "person": {
                     "add_person": "Adicionar Pessoa",
                     "caption": "Pessoas",
@@ -1263,6 +1289,9 @@
                     "picker": {
                         "add_scene": "Adicionar cena",
                         "edit_scene": "Editar cena",
+                        "headers": {
+                            "name": "Nome"
+                        },
                         "no_scenes": "Não conseguimos encontrar nenhuma cena editável",
                         "only_editable": "Apenas as cenas definidas em scenes.yaml são editáveis.",
                         "pick_scene": "Escolha uma cena para editar",
@@ -1279,7 +1308,11 @@
                     },
                     "picker": {
                         "edit_script": "Editar script",
-                        "header": "Editor de Script"
+                        "header": "Editor de Script",
+                        "headers": {
+                            "name": "Nome"
+                        },
+                        "show_info": "Mostrar informações sobre o script"
                     }
                 },
                 "server_control": {
@@ -1325,6 +1358,7 @@
                     "editor": {
                         "activate_user": "Ativar utilizador",
                         "active": "Ativo",
+                        "admin": "Administrador",
                         "caption": "Ver utilizador",
                         "change_password": "Alterar palavra-passe",
                         "confirm_user_deletion": "Tem certeza de que deseja apagar {name} ?",
@@ -1334,14 +1368,22 @@
                         "group": "Grupo",
                         "group_update_failed": "Falha na atualização do grupo:",
                         "id": "ID",
+                        "name": "Nome",
                         "owner": "Proprietário",
                         "rename_user": "Alterar nome do utilizador",
                         "system_generated": "Gerado pelo sistema",
+                        "system_generated_users_not_editable": "Não foi possível atualizar os utilizadores gerados pelo sistema.",
                         "system_generated_users_not_removable": "Não é possível remover usuários gerados pelo sistema.",
                         "unnamed_user": "Utilizador sem nome",
+                        "update_user": "Atualizar",
                         "user_rename_failed": "Falha na renomeação do utilizador:"
                     },
                     "picker": {
+                        "headers": {
+                            "group": "Grupo",
+                            "name": "Nome",
+                            "system": "Sistema"
+                        },
                         "system_generated": "Gerado pelo sistema",
                         "title": "Utilizadores"
                     }
@@ -1580,6 +1622,10 @@
                         "entity-filter": {
                             "name": "Filtro de entidade"
                         },
+                        "entity": {
+                            "description": "O cartão de entidade fornece uma visão geral rápida do estado da sua entidade.",
+                            "name": "Entidade"
+                        },
                         "gauge": {
                             "name": "Manómetro",
                             "severity": {
@@ -1590,8 +1636,10 @@
                             }
                         },
                         "generic": {
+                            "attribute": "Atributo",
                             "camera_image": "Entidade de Câmera",
                             "camera_view": "Vista da Câmera",
+                            "double_tap_action": "Ação de toque duplo",
                             "entities": "Entidades",
                             "entity": "Entidade",
                             "hours_to_show": "Horas a mostrar",
@@ -1630,6 +1678,7 @@
                             "dark_mode": "Modo escuro?",
                             "default_zoom": "Zoom padrão",
                             "geo_location_sources": "Fontes de Geolocalização",
+                            "hours_to_show": "Horas a mostrar",
                             "name": "Mapa",
                             "source": "Fonte"
                         },
@@ -1667,6 +1716,9 @@
                             "name": "Previsão do tempo"
                         }
                     },
+                    "cardpicker": {
+                        "no_description": "Não há descrição disponível."
+                    },
                     "edit_card": {
                         "add": "Adicionar Cartão",
                         "delete": "Apagar Cartão",
@@ -1690,7 +1742,10 @@
                         "edit": "Editar vista",
                         "header": "Ver configuração",
                         "move_left": "Mover vista para a esquerda",
-                        "move_right": "Mover vista para a direita"
+                        "move_right": "Mover vista para a direita",
+                        "visibility": {
+                            "select_users": "Selecione quais os utilizadores que devem ver esta visualização na navegação"
+                        }
                     },
                     "header": "Editar UI",
                     "menu": {
@@ -1715,6 +1770,7 @@
                     },
                     "save_config": {
                         "cancel": "Cancelar",
+                        "empty_config": "Começar com um painel de instrumentos vazio",
                         "header": "Assumir controle sobre a interface do Lovelace",
                         "para": "Por omissão o Home Assistant irá manter a sua interface de utilizador, atualizando-a sempre que uma nova entidade ou novos componentes Lovelace fiquem disponíveis. Se assumir o controlo, não faremos mais alterações automáticas por si.",
                         "para_sure": "Tem certeza que deseja assumir o controlo sobre a interface de utilizador?",
@@ -1726,6 +1782,7 @@
                     "configure_ui": "Configurar UI",
                     "help": "Ajuda",
                     "refresh": "Atualizar",
+                    "reload_resources": "Recarregar recursos",
                     "unused_entities": "Entidades não utilizadas"
                 },
                 "reload_lovelace": "Recarregar Lovelace",
@@ -1739,6 +1796,7 @@
                     "title": "Entidades não expostas"
                 },
                 "warning": {
+                    "attribute_not_found": "Atributo {attribute} não disponível em: {entity}",
                     "entity_non_numeric": "A entidade é não numérica: {entity}",
                     "entity_not_found": "Entidade não disponível: {entity}"
                 }
@@ -1932,6 +1990,11 @@
                     "submit": "Enviar"
                 },
                 "current_user": "Esta atualmente ligado como {fullName}",
+                "dashboard": {
+                    "description": "Escolha um painel de instrumentos padrão para este dispositivo.",
+                    "dropdown_label": "Painel de instrumentos",
+                    "header": "Painel de instrumentos"
+                },
                 "force_narrow": {
                     "description": "Isto esconderá por defeito a barra lateral, semelhante à experiência no telemóvel.",
                     "header": "Esconder sempre a barra lateral."
