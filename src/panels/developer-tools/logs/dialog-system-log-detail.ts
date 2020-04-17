@@ -73,10 +73,7 @@ class DialogSystemLogDetail extends LitElement {
             ${integration
               ? html`
                   <br />
-                  Integration:
-                  ${this._manifest
-                    ? this._manifest.name
-                    : domainToName(this.hass.localize, integration)}
+                  Integration: ${domainToName(this.hass.localize, integration)}
                   ${!this._manifest ||
                   // Can happen with custom integrations
                   !this._manifest.documentation
