@@ -509,6 +509,7 @@
                 "attributes": {
                     "air_pressure": "Zračni tlak",
                     "humidity": "Vlažnost",
+                    "precipitation": "Padavine",
                     "temperature": "Temperatura",
                     "visibility": "Vidljivost",
                     "wind_speed": "Hitrost vetra"
@@ -531,7 +532,9 @@
                     "wnw": "Zahod-severozahod",
                     "wsw": "Zahod-jugozahod"
                 },
-                "forecast": "Napoved"
+                "forecast": "Napoved",
+                "high": "Visoko",
+                "low": "Nizko"
             }
         },
         "common": {
@@ -543,6 +546,7 @@
             "save": "Shrani",
             "successfully_deleted": "Uspešno odstranjeno",
             "successfully_saved": "Shranjeno",
+            "undo": "Razveljavi",
             "yes": "Da"
         },
         "components": {
@@ -623,7 +627,7 @@
                 "dismiss": "Opusti",
                 "editor": {
                     "confirm_delete": "Ali ste prepričani, da želite izbrisati ta vnos?",
-                    "delete": "BRISANJE",
+                    "delete": "Izbriši",
                     "enabled_cause": "Onemogočeno zaradi {cause}.",
                     "enabled_description": "Onemogočeni subjekti ne bodo dodani v Home Assistant-a.",
                     "enabled_label": "Omogoči entiteto",
@@ -633,7 +637,7 @@
                     "name": "Preglasitev imena",
                     "note": "Opomba: to morda še ne deluje z vsemi integracijami.",
                     "unavailable": "Ta entiteta trenutno ni na voljo.",
-                    "update": "POSODOBITEV"
+                    "update": "Posodobi"
                 },
                 "no_unique_id": "Ta entiteta nima edinstvenega ID-ja, zato njenih nastavitev ni mogoče upravljati iz uporabniškega vmesnika.",
                 "related": "Povezano",
@@ -666,7 +670,7 @@
                     "min": "Najmanjša vrednost",
                     "mode": "Način prikaza",
                     "slider": "Drsnik",
-                    "step": "Velikost koraka drsnika",
+                    "step": "Velikost koraka",
                     "unit_of_measurement": "Merska enota"
                 },
                 "input_select": {
@@ -754,11 +758,13 @@
                 "buttons": {
                     "add": "Dodajte naprave",
                     "reconfigure": "Ponovno konfigurirajte napravo",
-                    "remove": "Odstranite napravo"
+                    "remove": "Odstranite napravo",
+                    "zigbee_information": "Zigbee Informacije"
                 },
                 "confirmations": {
                     "remove": "Ali ste prepričani, da želite odstraniti napravo?"
                 },
+                "device_signature": "Podpis naprave Zigbee",
                 "last_seen": "Nazadnje viden",
                 "manuf": "naredil: {manufacturer}",
                 "no_area": "Brez območja",
@@ -767,7 +773,8 @@
                 "services": {
                     "reconfigure": "Ponovno konfigurirajte napravo ZHA (\"pozdravite\" napravo). To uporabite, če imate z njo težave. Če ta naprava deluje na baterije, se prepričajte, da je budna in sprejema ukaze pri uporabi te storitve.",
                     "remove": "Odstranite napravo iz omrežja Zigbee.",
-                    "updateDeviceName": "Nastavite ime po meri za to napravo v registru naprav."
+                    "updateDeviceName": "Nastavite ime po meri za to napravo v registru naprav.",
+                    "zigbee_information": "Oglejte si informacije Zigbee za to napravo."
                 },
                 "unknown": "Neznano",
                 "zha_device_card": {
@@ -812,20 +819,24 @@
                 "areas": {
                     "caption": "Območja",
                     "create_area": "USTVARITE OBMOČJE",
+                    "data_table": {
+                        "area": "Območje",
+                        "devices": "Naprave"
+                    },
                     "delete": {
                         "confirmation_text": "Vse naprave na tem območju ne bodo dodeljene.",
                         "confirmation_title": "Ali ste prepričani, da želite izbrisati to območje?"
                     },
                     "description": "Pregled vseh območij v vašem domu.",
                     "editor": {
-                        "create": "USTVARITE",
+                        "create": "Ustvari",
                         "default_name": "Novo območje",
-                        "delete": "BRISANJE",
-                        "update": "POSODOBITEV"
+                        "delete": "Izbriši",
+                        "update": "Posodobi"
                     },
                     "no_areas": "Izgleda, da še nimate območij!",
                     "picker": {
-                        "create_area": "USTVARITE OBMOČJE",
+                        "create_area": "Ustvari območje",
                         "header": "Območja",
                         "integrations_page": "Stran za integracije",
                         "introduction": "Področja se uporabljajo za organizacijo področja naprav. Te informacije bodo uporabljene v celotnem Home Assistant-u in vam bodo pomagale pri organizaciji vašega vmesnika, dovoljenj in integracij z drugimi sistemi.",
@@ -1054,6 +1065,9 @@
                         "delete_confirm": "Ali ste prepričani, da želite izbrisati to avtomatizacijo?",
                         "edit_automation": "Urejanje avtomatizacije",
                         "header": "Urejevalnik avtomatizacije",
+                        "headers": {
+                            "name": "Ime"
+                        },
                         "introduction": "Urejevalnik za avtomatizacijo vam omogoča ustvarjanje in urejanje avtomatizacij. Prosimo, da preberete [navodila] (https://home-assistant.io/docs/automation/editor/), da preverite, ali ste pravilno nastavili Home Assistant-a.",
                         "learn_more": "Več o avtomatizacijah",
                         "no_automations": "Ne moremo najti nobene avtomatizacije za urejanje",
@@ -1334,6 +1348,7 @@
                     },
                     "info": "Informacije o napravi",
                     "name": "Ime",
+                    "no_devices": "Brez naprav",
                     "scene": {
                         "create": "Ustvarjanje scen z napravo",
                         "no_scenes": "Ni scen",
@@ -1638,6 +1653,9 @@
                         "delete_scene": "Brisanje scene",
                         "edit_scene": "Urejanje scene",
                         "header": "Urejevalnik scen",
+                        "headers": {
+                            "name": "Ime"
+                        },
                         "introduction": "Urejevalnik scen vam omogoča njihovo ustvarjanje in urejanje. Upoštevajte spodnjo povezavo in si preberite navodila, da se prepričate, da ste pravilno konfigurirali Home Assistant.",
                         "learn_more": "Preberite več o scenah",
                         "no_scenes": "Nismo našli nobene scene za urejanje",
@@ -1665,9 +1683,13 @@
                         "add_script": "Dodaj skripto",
                         "edit_script": "Uredi skripto",
                         "header": "Urejevalnik skript",
+                        "headers": {
+                            "name": "Ime"
+                        },
                         "introduction": "Urejevalnik skript vam omogoča njihovo ustvarjanje in urejanje. Upoštevajte spodnjo povezavo in si preberite navodila, da se prepričate, da ste pravilno konfigurirali Home Assistant-a.",
                         "learn_more": "Preberite več o skriptah",
                         "no_scripts": "Nismo našli nobene skripte za urejanje",
+                        "show_info": "Pokaži informacije o skripti",
                         "trigger_script": "Sproži skripto"
                     }
                 },
@@ -1716,6 +1738,7 @@
                     "editor": {
                         "activate_user": "Aktiviraj uporabnika",
                         "active": "aktiven",
+                        "admin": "Skrbnik",
                         "caption": "Prikaži uporabnika",
                         "change_password": "Spremeni geslo",
                         "confirm_user_deletion": "Ali ste prepričani, da želite izbrisati {name}?",
@@ -1725,14 +1748,22 @@
                         "group": "Skupina",
                         "group_update_failed": "Posodobitev skupine ni uspela:",
                         "id": "ID",
+                        "name": "Ime",
                         "owner": "Lastnik",
                         "rename_user": "Preimenuj uporabnika",
                         "system_generated": "Sistemsko generirano",
+                        "system_generated_users_not_editable": "Sistemskih uporabnikov ni mogoče posodobiti.",
                         "system_generated_users_not_removable": "Sistemskih uporabnikov ni mogoče odstraniti.",
                         "unnamed_user": "Neimenovani uporabnik",
+                        "update_user": "Posodobi",
                         "user_rename_failed": "Preimenovanje uporabnika ni uspelo:"
                     },
                     "picker": {
+                        "headers": {
+                            "group": "Skupina",
+                            "name": "Ime",
+                            "system": "Sistem"
+                        },
                         "system_generated": "Sistemsko generirano",
                         "title": "Uporabniki"
                     }
@@ -2135,6 +2166,10 @@
                             "description": "Kartica filter entitet vam omogoča, da določite seznam entitet, ki jih želite slediti samo, če so v določenem stanju.",
                             "name": "Filter entitet"
                         },
+                        "entity": {
+                            "description": "Entity kartica vam omogoča hiter pregled stanja vašega subjekta.",
+                            "name": "Subjekt"
+                        },
                         "gauge": {
                             "description": "Gauge kartica je osnovna kartica, ki omogoča vizualno videnje podatkov senzorjev.",
                             "name": "Merilnik",
@@ -2147,8 +2182,10 @@
                         },
                         "generic": {
                             "aspect_ratio": "Razmerje Med Širino In Višino",
+                            "attribute": "Atribut",
                             "camera_image": "Subjekt kamere",
                             "camera_view": "Pogled kamere",
+                            "double_tap_action": "Dejanje dvojnega dotika",
                             "entities": "Subjekti",
                             "entity": "Subjekt",
                             "hold_action": "dejanje pridržanja",
@@ -2199,6 +2236,7 @@
                             "default_zoom": "Privzeta povečava",
                             "description": "Kartica Map omogoča prikazovanje entitet na zemljevidu.",
                             "geo_location_sources": "Geolokacijski viri",
+                            "hours_to_show": "število ur za prikaz",
                             "name": "Zemljevid",
                             "source": "Vir"
                         },
@@ -2254,6 +2292,10 @@
                             "description": "Kartica Weather Forecast prikazuje vreme. Zelo koristno za vključiti na vmesnike, ki jih ljudje prikažejo na steni.",
                             "name": "Vremenska napoved"
                         }
+                    },
+                    "cardpicker": {
+                        "custom_card": "Po meri",
+                        "no_description": "Opis ni na voljo."
                     },
                     "edit_card": {
                         "add": "Dodaj kartico",
@@ -2319,6 +2361,7 @@
                     "save_config": {
                         "cancel": "Pozabi",
                         "close": "Zapri",
+                        "empty_config": "Začnite s prazno nadzorno ploščo",
                         "header": "Prevzemite nadzor nad lovelace vmesnikom",
                         "para": "Home Assistant bo privzeto vzdrževal vaš uporabniški vmesnik in ga posodabljal, ko bodo na voljo novi subjekti ali komponente Lovelace UI. Če prevzamete nadzor, ne bomo več samodejno spreminjali sprememb za vas.",
                         "para_sure": "Ali ste prepričani, da želite prevzeti nadzor nad vašim vmesnikom?",
@@ -2568,6 +2611,11 @@
                     "submit": "Pošlji"
                 },
                 "current_user": "Trenutno ste prijavljeni kot {fullName}.",
+                "dashboard": {
+                    "description": "Izberite privzeto nadzorno ploščo za to napravo.",
+                    "dropdown_label": "Nadzorna plošča",
+                    "header": "Nadzorna plošča"
+                },
                 "force_narrow": {
                     "description": "To bo privzeto skrilo stransko vrstico, podobno kot pri mobilnih napravah.",
                     "header": "Vedno skrij stransko vrstico"
