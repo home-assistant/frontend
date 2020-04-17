@@ -758,11 +758,13 @@
                 "buttons": {
                     "add": "Afegir dispositius",
                     "reconfigure": "Reconfigurar dispositiu",
-                    "remove": "Eliminar dispositiu"
+                    "remove": "Eliminar dispositiu",
+                    "zigbee_information": "Informació Zigbee"
                 },
                 "confirmations": {
                     "remove": "Estàs segur que vols eliminar el dispositiu?"
                 },
+                "device_signature": "Signatura Zigbee del dispositiu",
                 "last_seen": "Vist per últim cop",
                 "manuf": "per {manufacturer}",
                 "no_area": "Sense Àrea",
@@ -771,7 +773,8 @@
                 "services": {
                     "reconfigure": "Reconfigura el dispositiu ZHA (dispositiu curatiu). Utilitza-ho si tens problemes amb el dispositiu. Si el dispositiu en qüestió està alimentat per bateria, assegura't que estigui despert i accepti ordres quan utilitzis aquest servei.",
                     "remove": "Elimina un dispositiu de la xarxa Zigbee.",
-                    "updateDeviceName": "Estableix un nom personalitzat pel dispositiu al registre de dispositius."
+                    "updateDeviceName": "Estableix un nom personalitzat pel dispositiu al registre de dispositius.",
+                    "zigbee_information": "Consulta la informació Zigbee del dispositiu."
                 },
                 "unknown": "Desconeguda",
                 "zha_device_card": {

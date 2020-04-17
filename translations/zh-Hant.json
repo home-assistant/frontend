@@ -758,11 +758,13 @@
                 "buttons": {
                     "add": "新增設備",
                     "reconfigure": "重新設定設備",
-                    "remove": "移除設備"
+                    "remove": "移除設備",
+                    "zigbee_information": "Zigbee 資訊"
                 },
                 "confirmations": {
                     "remove": "確定要移除此設備？"
                 },
+                "device_signature": "Zigbee 設備簽章",
                 "last_seen": "上次出現",
                 "manuf": "由 {manufacturer}",
                 "no_area": "無分區",
@@ -771,7 +773,8 @@
                 "services": {
                     "reconfigure": "重新設定 ZHA Zibgee 設備（健康設備）。假如遇到設備問題，請使用此選項。假如有問題的設備為使用電池的設備，請先確定設備已喚醒並處於接受命令狀態。",
                     "remove": "從 Zigbee 網路移除設備。",
-                    "updateDeviceName": "於物件 ID 中自訂此設備名稱。"
+                    "updateDeviceName": "於物件 ID 中自訂此設備名稱。",
+                    "zigbee_information": "檢視設備 Zigbee 資訊。"
                 },
                 "unknown": "未知",
                 "zha_device_card": {
