@@ -3,6 +3,7 @@ import { HomeAssistant } from "../types";
 
 export interface ZHAEntityReference extends HassEntity {
   name: string;
+  original_name?: string;
 }
 
 export interface ZHADevice {
@@ -24,6 +25,16 @@ export interface ZHADevice {
   area_id?: string;
   device_type: string;
   signature: any;
+}
+
+export interface ZHADeviceEndpoint {
+  endpoint: number;
+  entities: ZHAEntityReference[];
+}
+
+export interface ZHADeviceEndpoints {
+  device: ZHADevice;
+  endpoints: ZHADeviceEndpoint[];
 }
 
 export interface Attribute {
@@ -213,9 +224,9 @@ export const fetchGroup = (
 
 export const fetchGroupableDevices = (
   hass: HomeAssistant
-): Promise<ZHADevice[]> =>
+): Promise<ZHADeviceEndpoints[]> =>
   hass.callWS({
-    type: "zha/devices/groupable",
+    type: "zha/devices/groupable2",
   });
 
 export const addMembersToGroup = (
