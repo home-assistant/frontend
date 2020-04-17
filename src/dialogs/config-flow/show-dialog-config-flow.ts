@@ -13,6 +13,7 @@ import {
   loadDataEntryFlowDialog,
   showFlowDialog,
 } from "./show-dialog-data-entry-flow";
+import { domainToName } from "../../data/integration";
 
 export const loadConfigFlowDialog = loadDataEntryFlowDialog;
 
@@ -22,17 +23,31 @@ export const showConfigFlowDialog = (
 ): void =>
   showFlowDialog(element, dialogParams, {
     loadDevicesAndAreas: true,
-    getFlowHandlers: (hass) =>
-      getConfigFlowHandlers(hass).then((handlers) =>
-        handlers.sort((handlerA, handlerB) =>
-          caseInsensitiveCompare(
-            hass.localize(`component.${handlerA}.title`),
-            hass.localize(`component.${handlerB}.title`)
-          )
+    getFlowHandlers: async (hass) => {
+      const [handlers] = await Promise.all([
+        getConfigFlowHandlers(hass),
+        hass.loadBackendTranslation("title", undefined, true),
+      ]);
+
+      return handlers.sort((handlerA, handlerB) =>
+        caseInsensitiveCompare(
+          domainToName(hass.localize, handlerA),
+          domainToName(hass.localize, handlerB)
         )
-      ),
-    createFlow: createConfigFlow,
-    fetchFlow: fetchConfigFlow,
+      );
+    },
+    createFlow: (hass, handler) => {
+      hass.loadBackendTranslation("config", handler);
+      return createConfigFlow(hass, handler);
+    },
+    fetchFlow: (hass, flowId) => {
+      const stepProm = fetchConfigFlow(hass, flowId);
+      // Load the translations as soon as we know the integration
+      stepProm.then((step) =>
+        hass.loadBackendTranslation("config", step.handler)
+      );
+      return stepProm;
+    },
     handleFlowStep: handleConfigFlowStep,
     deleteFlow: deleteConfigFlow,
 

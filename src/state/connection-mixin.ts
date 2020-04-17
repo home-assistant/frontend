@@ -20,6 +20,7 @@ import { getState } from "../util/ha-pref-storage";
 import hassCallApi from "../util/hass-call-api";
 import { getLocalLanguage } from "../util/hass-translation";
 import { HassBaseEl } from "./hass-base-mixin";
+import { getHassTranslations } from "../data/translation";
 
 export const connectionMixin = <T extends Constructor<HassBaseEl>>(
   superClass: T
@@ -113,6 +114,14 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
           }
           return resp;
         },
+        loadBackendTranslation: (category, integration?, configFlow?) =>
+          // @ts-ignore
+          this._loadHassTranslations(
+            this.hass?.language,
+            category,
+            integration,
+            configFlow
+          ),
         ...getState(),
         ...this._pendingHass,
       };

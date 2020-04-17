@@ -93,6 +93,10 @@ class HaConfigIntegrations extends HassRouterPage {
       this._loadData();
       getConfigFlowInProgressCollection(this.hass.connection).refresh();
     });
+    // For config entries. Also loading config flow ones for add integration
+    this.hass.loadBackendTranslation("title", undefined, true);
+    // To render discovered flows and config flows
+    // this.hass.loadBackendTranslation("config", undefined, true);
   }
 
   protected updated(changedProps: PropertyValues) {

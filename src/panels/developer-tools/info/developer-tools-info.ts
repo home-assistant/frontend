@@ -128,6 +128,8 @@ class HaPanelDevInfo extends LitElement {
   protected firstUpdated(changedProps): void {
     super.firstUpdated(changedProps);
 
+    this.hass.loadBackendTranslation("title");
+
     // Legacy custom UI can be slow to register, give them time.
     const customUI = ((window as any).CUSTOM_UI_LIST || []).length;
     setTimeout(() => {

@@ -23,6 +23,12 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
     // eslint-disable-next-line: variable-name
     private __coreProgress?: string;
 
+    private __loadedTranslations: {
+      // If key exists, category has been loaded
+      // boolean indicates if loaded with config flow or not.
+      [category: string]: boolean;
+    } = {};
+
     protected firstUpdated(changedProps) {
       super.firstUpdated(changedProps);
       this.addEventListener("hass-language-select", (e) =>
@@ -44,6 +50,8 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
 
     protected hassReconnected() {
       super.hassReconnected();
+      // Reset checks if we have loaded things
+      this.__loadedTranslations = {};
       this._applyTranslations(this.hass!);
     }
 
@@ -75,12 +83,41 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
       document.querySelector("html")!.setAttribute("lang", hass.language);
       this.style.direction = computeRTL(hass) ? "rtl" : "ltr";
       this._loadCoreTranslations(hass.language);
-      this._loadHassTranslations(hass.language);
+      this._loadHassTranslations(hass.language, "state");
       this._loadFragmentTranslations(hass.language, hass.panelUrl);
     }
 
-    private async _loadHassTranslations(language: string) {
-      const resources = await getHassTranslations(this.hass!, language);
+    private async _loadHassTranslations(
+      language: string,
+      category: Parameters<typeof getHassTranslations>[2],
+      integration?: Parameters<typeof getHassTranslations>[3],
+      configFlow?: Parameters<typeof getHassTranslations>[4],
+      force = false
+    ) {
+      // We don't cache individual integrations
+      // Our cache stores
+      if (
+        !force &&
+        !integration &&
+        // indicates if category is loaded
+        category in this.__loadedTranslations &&
+        // if this.__loadedTranslations[category] is true, it was loaded with config flow
+        (!configFlow || this.__loadedTranslations[category])
+      ) {
+        return;
+      }
+
+      if (!integration) {
+        this.__loadedTranslations[category] = configFlow === true;
+      }
+
+      const resources = await getHassTranslations(
+        this.hass!,
+        language,
+        category,
+        integration,
+        configFlow
+      );
 
       // Ignore the repsonse if user switched languages before we got response
       if (this.hass!.language !== language) {
