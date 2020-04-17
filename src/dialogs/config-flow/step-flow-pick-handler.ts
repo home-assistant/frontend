@@ -69,6 +69,7 @@ class StepFlowPickHandler extends LitElement {
     return html`
       <h2>${this.hass.localize("ui.panel.config.integrations.new")}</h2>
       <search-input
+        autofocus
         .filter=${this.filter}
         @value-changed=${this._filterChanged}
       ></search-input>
