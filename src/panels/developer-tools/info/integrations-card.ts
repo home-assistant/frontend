@@ -12,6 +12,7 @@ import {
   integrationIssuesUrl,
   IntegrationManifest,
   fetchIntegrationManifests,
+  domainToName,
 } from "../../../data/integration";
 import { HomeAssistant } from "../../../types";
 
@@ -48,7 +49,7 @@ class IntegrationsCard extends LitElement {
                       />
                     </td>
                     <td class="name">
-                      ${manifest?.name}<br />
+                      ${domainToName(this.hass.localize, domain)}<br />
                       <span class="domain">${domain}</span>
                     </td>
                     ${!manifest

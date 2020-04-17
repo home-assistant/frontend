@@ -25,6 +25,7 @@ import { loadLovelaceResources } from "./common/load-resources";
 import { showSaveDialog } from "./editor/show-save-config-dialog";
 import "./hui-root";
 import { Lovelace } from "./types";
+import { domainToName } from "../../data/integration";
 
 (window as any).loadCardHelpers = () => import("./custom-card-helpers");
 
@@ -113,7 +114,7 @@ class LovelacePanel extends LitElement {
     if (state === "error") {
       return html`
         <hass-error-screen
-          title="${this.hass!.localize("domain.lovelace")}"
+          title="${domainToName(this.hass!.localize, "lovelace")}"
           .error="${this._errorMsg}"
         >
           <mwc-button raised @click=${this._forceFetchConfig}>
