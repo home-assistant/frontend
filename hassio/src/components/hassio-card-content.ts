@@ -43,7 +43,7 @@ class HassioCardContent extends LitElement {
       ${this.iconImage
         ? html`
             <div class="icon_image ${this.iconClass}">
-              <img src="${this.iconImage}" title="${this.iconTitle}" />
+              <img src="${this.iconImage}" title="${this.iconTitle == null ? "" : this.iconTitle}" />
               <div></div>
             </div>
           `
@@ -51,7 +51,7 @@ class HassioCardContent extends LitElement {
             <iron-icon
               class=${this.iconClass}
               .icon=${this.icon}
-              .title=${this.iconTitle}
+              .title=${this.iconTitle == null ? "" : this.iconTitle}
             ></iron-icon>
           `}
       <div>
