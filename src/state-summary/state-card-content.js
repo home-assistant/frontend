@@ -2,6 +2,7 @@
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 import dynamicContentUpdater from "../common/dom/dynamic_content_updater";
 import { stateCardType } from "../common/entity/state_card_type";
+import "./state-card-analog_output";
 import "./state-card-climate";
 import "./state-card-configurator";
 import "./state-card-cover";
