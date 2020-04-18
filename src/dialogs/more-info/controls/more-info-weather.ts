@@ -156,14 +156,25 @@ class MoreInfoWeather extends LitElement {
                         ></iron-icon>
                       `
                     : ""}
-                  ${!this._showValue(item.templow)
+                  ${this._isHourly(item.templow, item.daytime)
                     ? html`
                         <div class="main">
                           ${this.computeDateTime(item.datetime)}
                         </div>
                       `
                     : ""}
-                  ${this._showValue(item.templow)
+                  ${this._isDaynight(item.daytime)
+                    ? html`
+                        <div class="main">
+                          ${this.computeDateDaynight(
+                            item.datetime,
+                            item.daytime
+                          )}
+                        </div>
+                      `
+                    : ""}
+                  ${!this._isHourly(item.templow, item.daytime) &&
+                  !this._isDaynight(item.daytime)
                     ? html`
                         <div class="main">
                           ${this.computeDate(item.datetime)}
@@ -239,6 +250,18 @@ class MoreInfoWeather extends LitElement {
     });
   }
 
+  private computeDateDaynight(data, daytime) {
+    const date = new Date(data);
+    const dateString = date.toLocaleDateString(this.hass.language, {
+      weekday: "long",
+    });
+    if (daytime) {
+      return dateString;
+    } else {
+      return `${dateString} Night`;
+    }
+  }
+
   private computeDateTime(data) {
     const date = new Date(data);
     return date.toLocaleDateString(this.hass.language, {
@@ -280,6 +303,17 @@ class MoreInfoWeather extends LitElement {
       })`;
     }
     return `${speed} ${this.getUnit("length")}/h`;
+  }
+
+  private _isHourly(templow: string, daytime: boolean): boolean {
+    return (
+      (typeof templow == "undefined" || templow == null) &&
+      (typeof daytime == "undefined" || daytime == null)
+    );
+  }
+
+  private _isDaynight(daytime: boolean): boolean {
+    return typeof daytime !== "undefined" && daytime !== null;
   }
 
   private _showValue(item: string): boolean {

@@ -234,7 +234,7 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
                             this.hass!.language,
                             { weekday: "short" }
                           )}<br />
-                          ${!this._showValue(item.templow)
+                          ${this._isHourly(item.templow, item.daytime)
                             ? html`
                                 ${new Date(item.datetime).toLocaleTimeString(
                                   this.hass!.language,
@@ -243,6 +243,11 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
                                   }
                                 )}
                               `
+                            : ""}
+                          ${this._isDaynight(item.daytime) && item.daytime
+                            ? html`<br />`
+                            : this._isDaynight(item.daytime) && !item.daytime
+                            ? "Night"
                             : ""}
                         </div>
                         ${this._showValue(item.condition)
@@ -329,6 +334,17 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
       })`;
     }
     return ``;
+  }
+
+  private _isHourly(templow: string, daytime: boolean): boolean {
+    return (
+      (typeof templow == "undefined" || templow == null) &&
+      (typeof daytime == "undefined" || daytime == null)
+    );
+  }
+
+  private _isDaynight(daytime: boolean): boolean {
+    return typeof daytime !== "undefined" && daytime !== null;
   }
 
   private _showValue(item: string): boolean {
