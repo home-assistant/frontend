@@ -1,49 +1,4 @@
 {
-  "domain": {
-    "alarm_control_panel": "Alarm control panel",
-    "analog_output": "Analog output",
-    "automation": "Automation",
-    "binary_sensor": "Binary sensor",
-    "calendar": "Calendar",
-    "camera": "Camera",
-    "climate": "Climate",
-    "configurator": "Configurator",
-    "conversation": "Conversation",
-    "cover": "Cover",
-    "device_tracker": "Device tracker",
-    "fan": "Fan",
-    "group": "Group",
-    "hassio": "Hass.io",
-    "history_graph": "History graph",
-    "homeassistant": "Home Assistant",
-    "image_processing": "Image processing",
-    "input_boolean": "Input boolean",
-    "input_datetime": "Input datetime",
-    "input_number": "Input number",
-    "input_select": "Input select",
-    "input_text": "Input text",
-    "light": "Light",
-    "lock": "Lock",
-    "lovelace": "Lovelace",
-    "mailbox": "Mailbox",
-    "media_player": "Media player",
-    "notify": "Notify",
-    "person": "Person",
-    "plant": "Plant",
-    "proximity": "Proximity",
-    "remote": "Remote",
-    "scene": "Scene",
-    "script": "Script",
-    "sensor": "Sensor",
-    "sun": "Sun",
-    "switch": "Switch",
-    "system_health": "System Health",
-    "updater": "Updater",
-    "vacuum": "Vacuum",
-    "weblink": "Weblink",
-    "zha": "ZHA",
-    "zwave": "Z-Wave"
-  },
   "panel": {
     "calendar": "Calendar",
     "config": "Configuration",
@@ -494,7 +449,8 @@
           "humidity": "Humidity",
           "temperature": "Temperature",
           "visibility": "Visibility",
-          "wind_speed": "Wind speed"
+          "wind_speed": "Wind speed",
+          "precipitation": "Precipitation"
         },
         "cardinal_direction": {
           "e": "E",
@@ -514,7 +470,9 @@
           "wnw": "WNW",
           "wsw": "WSW"
         },
-        "forecast": "Forecast"
+        "forecast": "Forecast",
+        "high": "High",
+        "low": "Low"
       }
     },
     "common": {
@@ -522,6 +480,7 @@
       "cancel": "Cancel",
       "delete": "Delete",
       "close": "Close",
+      "undo": "Undo",
       "save": "Save",
       "yes": "Yes",
       "no": "No",
@@ -716,15 +675,18 @@
       "zha_device_info": {
         "manuf": "by {manufacturer}",
         "no_area": "No Area",
+        "device_signature": "Zigbee device signature",
         "buttons": {
           "add": "Add Devices",
           "remove": "Remove Device",
-          "reconfigure": "Reconfigure Device"
+          "reconfigure": "Reconfigure Device",
+          "zigbee_information": "Zigbee Information"
         },
         "services": {
           "reconfigure": "Reconfigure ZHA device (heal device). Use this if you are having issues with the device. If the device in question is a battery powered device please ensure it is awake and accepting commands when you use this service.",
           "updateDeviceName": "Set a custom name for this device in the device registry.",
-          "remove": "Remove a device from the Zigbee network."
+          "remove": "Remove a device from the Zigbee network.",
+          "zigbee_information": "View the Zigbee information for the device."
         },
         "confirmations": {
           "remove": "Are you sure that you want to remove the device?"
@@ -848,7 +810,6 @@
                 "longitude": "Longitude",
                 "elevation": "Elevation",
                 "elevation_meters": "meters",
-                "elevation_feet": "feet",
                 "time_zone": "Time Zone",
                 "unit_system": "Unit System",
                 "unit_system_imperial": "Imperial",
@@ -1230,8 +1191,12 @@
             "learn_more": "Learn more about scripts",
             "no_scripts": "We couldn’t find any editable scripts",
             "add_script": "Add script",
+            "show_info": "Show info about script",
             "trigger_script": "Trigger script",
-            "edit_script": "Edit script"
+            "edit_script": "Edit script",
+            "headers": {
+              "name": "Name"
+            }
           },
           "editor": {
             "alias": "Name",
@@ -1261,7 +1226,10 @@
             "edit_scene": "Edit scene",
             "show_info_scene": "Show info about scene",
             "delete_scene": "Delete scene",
-            "delete_confirm": "Are you sure you want to delete this scene?"
+            "delete_confirm": "Are you sure you want to delete this scene?",
+            "headers": {
+              "name": "Name"
+            }
           },
           "editor": {
             "introduction": "Use scenes to bring your home alive.",
@@ -1659,26 +1627,25 @@
           "caption": "Users",
           "description": "Manage users",
           "picker": {
-            "title": "Users",
-            "system_generated": "System generated"
+            "headers": { "name": "Name", "group": "Group", "system": "System" }
           },
           "editor": {
             "caption": "View user",
-            "rename_user": "Rename user",
+            "name": "Name",
             "change_password": "Change password",
             "activate_user": "Activate user",
             "deactivate_user": "Deactivate user",
             "delete_user": "Delete user",
+            "update_user": "Update",
             "id": "ID",
             "owner": "Owner",
+            "admin": "Administrator",
             "group": "Group",
             "active": "Active",
             "system_generated": "System generated",
             "system_generated_users_not_removable": "Unable to remove system generated users.",
+            "system_generated_users_not_editable": "Unable to update system generated users.",
             "unnamed_user": "Unnamed User",
-            "enter_new_name": "Enter new name",
-            "user_rename_failed": "User rename failed:",
-            "group_update_failed": "Group update failed:",
             "confirm_user_deletion": "Are you sure you want to delete {name}?"
           },
           "add_user": {
@@ -1877,8 +1844,7 @@
           },
           "safe-mode": {
             "header": "Safe Mode Activated",
-            "description": "Home Assistant ran into trouble while loading your configuration and is now running in safe mode. Take a look at the error log to see what went wrong.",
-            "show_errors": "Show errors"
+            "description": "Home Assistant ran into trouble while loading your configuration and is now running in safe mode. Take a look at the error log to see what went wrong."
           }
         },
         "unused_entities": {
@@ -1980,6 +1946,7 @@
             "yaml_mode": "You are using YAML mode, which means you cannot change your Lovelace config from the UI. If you want to change Lovelace from the UI, remove 'mode: yaml' from your Lovelace configuration in 'configuration.yaml.'",
             "yaml_control": "To take control in YAML mode, create a YAML file with the name you specified in your config for this dashboard, or the default 'ui-lovelace.yaml'.",
             "yaml_config": "To help you start here is the current config of this dashboard:",
+            "empty_config": "Start with an empty dashboard",
             "cancel": "Never mind",
             "close": "Close",
             "save": "Take control"
@@ -2016,6 +1983,10 @@
               "show_header_toggle": "Show Header Toggle?",
               "toggle": "Toggle entities.",
               "description": "The Entities card is the most common type of card. It groups items together into lists."
+            },
+            "entity": {
+              "name": "Entity",
+              "description": "The Entity card gives you a quick overview of your entity’s state."
             },
             "button": {
               "name": "Button",
@@ -2058,8 +2029,10 @@
             },
             "generic": {
               "aspect_ratio": "Aspect Ratio",
+              "attribute": "Attribute",
               "camera_image": "Camera Entity",
               "camera_view": "Camera View",
+              "double_tap_action": "Double Tap Action",
               "entities": "Entities",
               "entity": "Entity",
               "hold_action": "Hold Action",
@@ -2089,6 +2062,7 @@
               "geo_location_sources": "Geolocation Sources",
               "dark_mode": "Dark Mode?",
               "default_zoom": "Default Zoom",
+              "hours_to_show": "Hours to Show",
               "source": "Source",
               "description": "The Map card that allows you to display entities on a map."
             },
@@ -2151,6 +2125,10 @@
               "description": "This renders the first card at full width; other cards in this view will not be rendered.",
               "warning_multiple_cards": "This view contains more than one card, but a panel view can only show 1 card."
             }
+          },
+          "cardpicker": {
+            "no_description": "No description available.",
+            "custom_card": "Custom"
           }
         },
         "warning": {
@@ -2202,6 +2180,11 @@
           "error_no_theme": "No themes available.",
           "link_promo": "Learn about themes",
           "dropdown_label": "Theme"
+        },
+        "dashboard": {
+          "header": "Dashboard",
+          "description": "Pick a default dashboard for this device.",
+          "dropdown_label": "Dashboard"
         },
         "change_password": {
           "header": "Change Password",
