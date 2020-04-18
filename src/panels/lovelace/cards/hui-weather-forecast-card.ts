@@ -68,6 +68,7 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
 
   @property({ type: Boolean, reflect: true, attribute: "narrow" })
   private _narrow = false;
+
   private _resizeObserver?: ResizeObserver;
 
   public connectedCallback(): void {
