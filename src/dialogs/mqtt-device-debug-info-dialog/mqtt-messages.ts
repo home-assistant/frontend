@@ -22,12 +22,11 @@ class MQTTMessages extends LitElement {
 
   @property() private _open = false;
 
-  @property() private _payloadsJson!: Array<object | null | undefined>;
+  @property() private _payloadsJson = new WeakMap();
 
   @property() private _showTopic = false;
 
   protected firstUpdated(): void {
-    this._payloadsJson = new Array(this.messages.length);
     this.messages.forEach((message) => {
       // If any message's topic differs from the subscribed topic, show topics + payload
       if (this.subscribedTopic !== message.topic) {
@@ -46,21 +45,21 @@ class MQTTMessages extends LitElement {
           ? html`
               <ul>
                 ${this.messages.map(
-                  (_, i) => html`
+                  (message) => html`
                     <li>
-                      ${this._renderSingleMessage(i)}
+                      ${this._renderSingleMessage(message)}
                     </li>
                   `
                 )}
               </ul>
             `
-          : html``}
+          : ""}
       </details>
     `;
   }
 
-  private _renderSingleMessage(i: number): TemplateResult {
-    const topic = this.messages[i].topic;
+  private _renderSingleMessage(message): TemplateResult {
+    const topic = message.topic;
     return this._showTopic
       ? html`
           <ul>
@@ -68,27 +67,32 @@ class MQTTMessages extends LitElement {
               Topic: ${topic}
             </li>
             <li>
-              Payload: ${this._renderSinglePayload(i)}
+              Payload: ${this._renderSinglePayload(message)}
             </li>
           </ul>
         `
-      : this._renderSinglePayload(i);
+      : this._renderSinglePayload(message);
   }
 
-  private _renderSinglePayload(i: number): TemplateResult {
-    if (this._payloadsJson && this._payloadsJson[i] === undefined) {
-      this._payloadsJson[i] = this._tryParseJson(this.messages[i].payload);
+  private _renderSinglePayload(message): TemplateResult {
+    let json;
+
+    if (this.showDeserialized) {
+      if (!this._payloadsJson.has(message)) {
+        json = this._tryParseJson(message.payload);
+        this._payloadsJson.set(message, json);
+      } else {
+        json = this._payloadsJson.get(message);
+      }
     }
 
-    return this._payloadsJson && this._payloadsJson[i] && this.showDeserialized
+    return json
       ? html`
           ${this.showAsYaml
-            ? html` <pre>${safeDump(this._payloadsJson[i])}</pre> `
-            : html`
-                <pre>${JSON.stringify(this._payloadsJson[i], null, 2)}</pre>
-              `}
+            ? html` <pre>${safeDump(json)}</pre> `
+            : html` <pre>${JSON.stringify(json, null, 2)}</pre> `}
         `
-      : html` <code>${this.messages[i].payload}</code> `;
+      : html` <code>${message.payload}</code> `;
   }
 
   private _tryParseJson(payload) {
