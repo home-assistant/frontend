@@ -16,6 +16,7 @@ import {
 } from "../util/hass-translation";
 import { HassBaseEl } from "./hass-base-mixin";
 import { atLeastVersion } from "../common/config/version";
+import { debounce } from "../common/util/debounce";
 
 interface LoadedTranslationCategory {
   // individual integrations loaded for this category
@@ -56,9 +57,12 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
           this._selectLanguage(language, false);
         }
       });
-      this.hass!.connection.subscribeEvents(() => {
-        this._refetchCachedHassTranslations(false);
-      }, "component_loaded");
+      this.hass!.connection.subscribeEvents(
+        debounce(() => {
+          this._refetchCachedHassTranslations(false);
+        }, 500),
+        "component_loaded"
+      );
       this._applyTranslations(this.hass!);
     }
 
