@@ -7,7 +7,6 @@ import {
 } from "lit-element";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/entity/ha-entity-picker";
-import "../../components/hui-theme-select-editor";
 import "../../../../components/ha-switch";
 
 import { EntitiesEditorEvent, EditorTarget } from "../types";

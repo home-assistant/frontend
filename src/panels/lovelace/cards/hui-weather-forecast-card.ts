@@ -63,9 +63,11 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
   }
 
   @property() public hass?: HomeAssistant;
+
   @property() private _config?: WeatherForecastCardConfig;
+
   @property({ type: Boolean, reflect: true, attribute: "narrow" })
-  private _narrow: boolean = false;
+  private _narrow = false;
   private _resizeObserver?: ResizeObserver;
 
   public connectedCallback(): void {
@@ -181,7 +183,7 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
               </div>
               <div class="state">
                 ${this.hass.localize(`state.weather.${stateObj.state}`) ||
-                  stateObj.state}
+                stateObj.state}
               </div>
             </div>
           </div>
