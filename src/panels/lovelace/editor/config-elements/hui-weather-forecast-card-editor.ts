@@ -10,14 +10,12 @@ import "../../../../components/entity/ha-entity-picker";
 import "../../components/hui-theme-select-editor";
 import "../../../../components/ha-switch";
 
-import { struct } from "../../common/structs/struct";
 import { EntitiesEditorEvent, EditorTarget } from "../types";
 import { HomeAssistant } from "../../../../types";
 import { WeatherForecastCardConfig } from "../../cards/types";
 import { struct } from "../../common/structs/struct";
 import "../../components/hui-theme-select-editor";
 import { LovelaceCardEditor } from "../../types";
-import { EditorTarget, EntitiesEditorEvent } from "../types";
 import { configElementStyle } from "./config-elements-style";
 
 const cardConfigStruct = struct({
@@ -73,7 +71,7 @@ export class HuiWeatherForecastCardEditor extends LitElement
           .hass=${this.hass}
           .value=${this._entity}
           .configValue=${"entity"}
-          include-domains='["weather"]'
+          include-domains=${["weather"]}
           @change=${this._valueChanged}
           allow-custom-entity
         ></ha-entity-picker>

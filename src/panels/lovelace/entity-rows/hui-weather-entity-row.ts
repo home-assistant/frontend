@@ -14,24 +14,12 @@ import {
   getWeatherUnit,
   weatherIcons,
   weatherImages,
+  getSecondaryWeatherAttribute,
 } from "../../../data/weather";
 import { HomeAssistant, WeatherEntity } from "../../../types";
 import { EntitiesCardEntityConfig } from "../cards/types";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
-import { UNAVAILABLE } from "../../../data/entity";
-import {
-  weatherIcons,
-  getWeatherUnit,
-  weatherImages,
-  getSecondaryWeatherAttribute,
-} from "../../../data/weather";
-import { DOMAINS_HIDE_MORE_INFO } from "../../../common/const";
-import { computeDomain } from "../../../common/entity/compute_domain";
-import { actionHandler } from "../common/directives/action-handler-directive";
-import { hasAction } from "../common/has-action";
-import { computeStateName } from "../../../common/entity/compute_state_name";
-import { ActionHandlerEvent } from "../../../data/lovelace";
-import { handleAction } from "../common/handle-action";
+import { LovelaceRow } from "./types";
 
 @customElement("hui-weather-entity-row")
 class HuiWeatherEntityRow extends LitElement implements LovelaceRow {
