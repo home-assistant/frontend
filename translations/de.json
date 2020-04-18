@@ -758,11 +758,13 @@
                 "buttons": {
                     "add": "Geräte hinzufügen",
                     "reconfigure": "Gerät neu konfigurieren",
-                    "remove": "Gerät entfernen"
+                    "remove": "Gerät entfernen",
+                    "zigbee_information": "ZigBee-Informationen"
                 },
                 "confirmations": {
                     "remove": "Möchtest du das Gerät wirklich entfernen?"
                 },
+                "device_signature": "ZigBee-Gerätesignatur",
                 "last_seen": "Zuletzt gesehen",
                 "manuf": "von {manufacturer}",
                 "no_area": "Kein Bereich",
@@ -771,7 +773,8 @@
                 "services": {
                     "reconfigure": "Konfigurieren Sie das ZHA-Gerät neu (Gerät heilen). Verwenden Sie diese Option, wenn Sie Probleme mit dem Gerät haben. Wenn es sich bei dem fraglichen Gerät um ein batteriebetriebenes Gerät handelt, vergewissern Sie sich, dass es wach ist und Befehle akzeptiert, wenn Sie diesen Dienst nutzen.",
                     "remove": "Ein Gerät aus dem ZigBee-Netzwerk entfernen.",
-                    "updateDeviceName": "Lege einen benutzerdefinierten Namen für dieses Gerät in der Geräteregistrierung fest."
+                    "updateDeviceName": "Lege einen benutzerdefinierten Namen für dieses Gerät in der Geräteregistrierung fest.",
+                    "zigbee_information": "Zeigen Sie die ZigBee-Informationen für das Gerät an."
                 },
                 "unknown": "Unbekannt",
                 "zha_device_card": {
