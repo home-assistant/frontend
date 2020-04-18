@@ -18,6 +18,7 @@ import { setValue } from "../data/input_text";
 @customElement("state-card-analog_output")
 class StateCardAnalogOutput extends LitElement {
   @property() public hass!: HomeAssistant;
+
   @property() public stateObj!: AnalogOutputEntity;
 
   protected render(): TemplateResult {
