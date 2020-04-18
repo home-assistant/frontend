@@ -1,17 +1,15 @@
 import {
-  LitElement,
-  html,
-  CSSResult,
   css,
-  TemplateResult,
+  CSSResult,
+  html,
+  LitElement,
   property,
+  TemplateResult,
 } from "lit-element";
-
-import { HomeAssistant } from "../../../types";
 import { haStyle } from "../../../resources/styles";
-
-import "./system-health-card";
+import { HomeAssistant } from "../../../types";
 import "./integrations-card";
+import "./system-health-card";
 
 const JS_TYPE = __BUILD__;
 const JS_VERSION = __VERSION__;

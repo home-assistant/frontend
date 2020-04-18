@@ -1,19 +1,19 @@
-import {
-  LitElement,
-  html,
-  CSSResult,
-  css,
-  TemplateResult,
-  property,
-} from "lit-element";
 import "@polymer/paper-spinner/paper-spinner";
-import "../../../components/ha-card";
-
-import { HomeAssistant } from "../../../types";
 import {
-  SystemHealthInfo,
+  css,
+  CSSResult,
+  html,
+  LitElement,
+  property,
+  TemplateResult,
+} from "lit-element";
+import "../../../components/ha-card";
+import {
   fetchSystemHealthInfo,
+  SystemHealthInfo,
 } from "../../../data/system_health";
+import { HomeAssistant } from "../../../types";
+import { domainToName } from "../../../data/integration";
 
 const sortKeys = (a: string, b: string) => {
   if (a === "homeassistant") {
@@ -33,6 +33,7 @@ const sortKeys = (a: string, b: string) => {
 
 class SystemHealthCard extends LitElement {
   @property() public hass!: HomeAssistant;
+
   @property() private _info?: SystemHealthInfo;
 
   protected render(): TemplateResult {
@@ -64,9 +65,7 @@ class SystemHealthCard extends LitElement {
         }
         if (domain !== "homeassistant") {
           sections.push(
-            html`
-              <h3>${this.hass.localize(`domain.${domain}`) || domain}</h3>
-            `
+            html` <h3>${domainToName(this.hass.localize, domain)}</h3> `
           );
         }
         sections.push(html`
@@ -78,7 +77,7 @@ class SystemHealthCard extends LitElement {
     }
 
     return html`
-      <ha-card .header=${this.hass.localize("domain.system_health")}>
+      <ha-card .header=${domainToName(this.hass.localize, "system_health")}>
         <div class="card-content">${sections}</div>
       </ha-card>
     `;

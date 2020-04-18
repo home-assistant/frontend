@@ -1,24 +1,23 @@
-import {
-  html,
-  LitElement,
-  customElement,
-  property,
-  css,
-  CSSResult,
-  TemplateResult,
-} from "lit-element";
 import "@material/mwc-button";
-import "@polymer/paper-menu-button/paper-menu-button";
 import "@polymer/paper-icon-button/paper-icon-button";
 import "@polymer/paper-listbox/paper-listbox";
-
-import { showEditCardDialog } from "../editor/card-editor/show-edit-card-dialog";
-import { confDeleteCard } from "../editor/delete-card";
-import { HomeAssistant } from "../../../types";
+import "@polymer/paper-menu-button/paper-menu-button";
+import {
+  css,
+  CSSResult,
+  customElement,
+  html,
+  LitElement,
+  property,
+  TemplateResult,
+} from "lit-element";
 import { LovelaceCardConfig } from "../../../data/lovelace";
-import { Lovelace } from "../types";
-import { swapCard } from "../editor/config-util";
+import { HomeAssistant } from "../../../types";
+import { showEditCardDialog } from "../editor/card-editor/show-edit-card-dialog";
 import { showMoveCardViewDialog } from "../editor/card-editor/show-move-card-view-dialog";
+import { swapCard } from "../editor/config-util";
+import { confDeleteCard } from "../editor/delete-card";
+import { Lovelace } from "../types";
 
 @customElement("hui-card-options")
 export class HuiCardOptions extends LitElement {
@@ -36,7 +35,7 @@ export class HuiCardOptions extends LitElement {
       <ha-card>
         <div class="options">
           <div class="primary-actions">
-            <mwc-button @click="${this._editCard}"
+            <mwc-button @click=${this._editCard}
               >${this.hass!.localize(
                 "ui.panel.lovelace.editor.edit_card.edit"
               )}</mwc-button
@@ -47,17 +46,17 @@ export class HuiCardOptions extends LitElement {
               title="Move card down"
               class="move-arrow"
               icon="hass:arrow-down"
-              @click="${this._cardDown}"
-              ?disabled="${this.lovelace!.config.views[this.path![0]].cards!
+              @click=${this._cardDown}
+              ?disabled=${this.lovelace!.config.views[this.path![0]].cards!
                 .length ===
-                this.path![1] + 1}"
+              this.path![1] + 1}
             ></paper-icon-button>
             <paper-icon-button
               title="Move card up"
               class="move-arrow"
               icon="hass:arrow-up"
-              @click="${this._cardUp}"
-              ?disabled="${this.path![1] === 0}"
+              @click=${this._cardUp}
+              ?disabled=${this.path![1] === 0}
             ></paper-icon-button>
             <paper-menu-button
               horizontal-align="right"
@@ -73,7 +72,7 @@ export class HuiCardOptions extends LitElement {
                 )}
               ></paper-icon-button>
               <paper-listbox slot="dropdown-content">
-                <paper-item @tap="${this._moveCard}">
+                <paper-item @tap=${this._moveCard}>
                   ${this.hass!.localize(
                     "ui.panel.lovelace.editor.edit_card.move"
                   )}</paper-item
@@ -83,7 +82,7 @@ export class HuiCardOptions extends LitElement {
                     "ui.panel.lovelace.editor.edit_card.duplicate"
                   )}</paper-item
                 >
-                <paper-item .class="delete-item" @tap="${this._deleteCard}">
+                <paper-item class="delete-item" @tap=${this._deleteCard}>
                   ${this.hass!.localize(
                     "ui.panel.lovelace.editor.edit_card.delete"
                   )}</paper-item
@@ -99,6 +98,7 @@ export class HuiCardOptions extends LitElement {
   static get styles(): CSSResult {
     return css`
       :host(:hover) {
+        overflow: hidden;
         outline: 2px solid var(--primary-color);
       }
 
@@ -140,6 +140,10 @@ export class HuiCardOptions extends LitElement {
         padding: 0;
       }
 
+      paper-listbox {
+        padding: 0;
+      }
+
       paper-item.header {
         color: var(--primary-text-color);
         text-transform: uppercase;
@@ -149,6 +153,7 @@ export class HuiCardOptions extends LitElement {
 
       paper-item {
         cursor: pointer;
+        white-space: nowrap;
       }
 
       paper-item.delete-item {

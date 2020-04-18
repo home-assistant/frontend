@@ -1,33 +1,31 @@
-import {
-  html,
-  LitElement,
-  TemplateResult,
-  customElement,
-  property,
-} from "lit-element";
 import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
-
+import {
+  customElement,
+  html,
+  LitElement,
+  property,
+  TemplateResult,
+} from "lit-element";
+import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/entity/state-badge";
-import "../../components/hui-theme-select-editor";
-import "../../components/hui-entity-editor";
 import "../../../../components/ha-card";
 import "../../../../components/ha-icon";
 import "../../../../components/ha-switch";
-
+import { HomeAssistant } from "../../../../types";
+import { ConfigEntity, GlanceCardConfig } from "../../cards/types";
 import { struct } from "../../common/structs/struct";
+import "../../components/hui-entity-editor";
+import "../../components/hui-theme-select-editor";
+import { LovelaceCardEditor } from "../../types";
 import { processEditorEntities } from "../process-editor-entities";
 import {
-  EntitiesEditorEvent,
   EditorTarget,
   entitiesConfigStruct,
+  EntitiesEditorEvent,
 } from "../types";
-import { HomeAssistant } from "../../../../types";
-import { LovelaceCardEditor } from "../../types";
-import { fireEvent } from "../../../../common/dom/fire_event";
 import { configElementStyle } from "./config-elements-style";
-import { GlanceCardConfig, ConfigEntity } from "../../cards/types";
 
 const cardConfigStruct = struct({
   type: "string",
@@ -60,7 +58,7 @@ export class HuiGlanceCardEditor extends LitElement
   }
 
   get _theme(): string {
-    return this._config!.theme || "Backend-selected";
+    return this._config!.theme || "";
   }
 
   get _columns(): number {
@@ -80,7 +78,7 @@ export class HuiGlanceCardEditor extends LitElement
   }
 
   protected render(): TemplateResult {
-    if (!this.hass) {
+    if (!this.hass || !this._config) {
       return html``;
     }
 

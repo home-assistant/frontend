@@ -1,31 +1,29 @@
-import {
-  html,
-  css,
-  LitElement,
-  TemplateResult,
-  customElement,
-  property,
-  CSSResult,
-} from "lit-element";
 import "@polymer/paper-input/paper-input";
-
+import {
+  css,
+  CSSResult,
+  customElement,
+  html,
+  LitElement,
+  property,
+  TemplateResult,
+} from "lit-element";
+import { fireEvent } from "../../../../common/dom/fire_event";
+import { PolymerChangedEvent } from "../../../../polymer-types";
+import { HomeAssistant } from "../../../../types";
+import { MapCardConfig } from "../../cards/types";
+import { struct } from "../../common/structs/struct";
 import "../../components/hui-entity-editor";
 import "../../components/hui-input-list-editor";
-
-import { struct } from "../../common/structs/struct";
+import { EntityConfig } from "../../entity-rows/types";
+import { LovelaceCardEditor } from "../../types";
+import { processEditorEntities } from "../process-editor-entities";
 import {
-  EntitiesEditorEvent,
   EditorTarget,
   entitiesConfigStruct,
+  EntitiesEditorEvent,
 } from "../types";
-import { HomeAssistant } from "../../../../types";
-import { LovelaceCardEditor } from "../../types";
-import { fireEvent } from "../../../../common/dom/fire_event";
 import { configElementStyle } from "./config-elements-style";
-import { processEditorEntities } from "../process-editor-entities";
-import { EntityConfig } from "../../entity-rows/types";
-import { PolymerChangedEvent } from "../../../../polymer-types";
-import { MapCardConfig } from "../../cards/types";
 
 const cardConfigStruct = struct({
   type: "string",
@@ -34,6 +32,7 @@ const cardConfigStruct = struct({
   default_zoom: "number?",
   dark_mode: "boolean?",
   entities: [entitiesConfigStruct],
+  hours_to_show: "number?",
   geo_location_sources: "array?",
 });
 
@@ -48,7 +47,9 @@ export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
   public setConfig(config: MapCardConfig): void {
     config = cardConfigStruct(config);
     this._config = config;
-    this._configEntities = processEditorEntities(config.entities);
+    this._configEntities = config.entities
+      ? processEditorEntities(config.entities)
+      : [];
   }
 
   get _title(): string {
@@ -67,12 +68,16 @@ export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
     return this._config!.geo_location_sources || [];
   }
 
+  get _hours_to_show(): number {
+    return this._config!.hours_to_show || 0;
+  }
+
   get _dark_mode(): boolean {
     return this._config!.dark_mode || false;
   }
 
   protected render(): TemplateResult {
-    if (!this.hass) {
+    if (!this.hass || !this._config) {
       return html``;
     }
 
@@ -112,14 +117,27 @@ export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
             @value-changed="${this._valueChanged}"
           ></paper-input>
         </div>
-        <ha-switch
-          .checked="${this._dark_mode}"
-          .configValue="${"dark_mode"}"
-          @change="${this._valueChanged}"
-          >${this.hass.localize(
-            "ui.panel.lovelace.editor.card.map.dark_mode"
-          )}</ha-switch
-        >
+        <div class="side-by-side">
+          <ha-switch
+            .checked="${this._dark_mode}"
+            .configValue="${"dark_mode"}"
+            @change="${this._valueChanged}"
+            >${this.hass.localize(
+              "ui.panel.lovelace.editor.card.map.dark_mode"
+            )}</ha-switch
+          >
+          <paper-input
+            .label="${this.hass.localize(
+              "ui.panel.lovelace.editor.card.map.hours_to_show"
+            )} (${this.hass.localize(
+              "ui.panel.lovelace.editor.card.config.optional"
+            )})"
+            type="number"
+            .value="${this._hours_to_show}"
+            .configValue="${"hours_to_show"}"
+            @value-changed="${this._valueChanged}"
+          ></paper-input>
+        </div>
         <hui-entity-editor
           .hass=${this.hass}
           .entities="${this._configEntities}"

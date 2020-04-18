@@ -1,6 +1,6 @@
 import { computeStateName } from "../../../common/entity/compute_state_name";
-import { HomeAssistant } from "../../../types";
 import { ActionConfig } from "../../../data/lovelace";
+import { HomeAssistant } from "../../../types";
 
 interface Config {
   entity?: string;
@@ -9,43 +9,6 @@ interface Config {
   hold_action?: ActionConfig;
   double_tap_action?: ActionConfig;
 }
-
-export const computeTooltip = (hass: HomeAssistant, config: Config): string => {
-  if (config.title === null) {
-    return "";
-  }
-
-  if (config.title) {
-    return config.title;
-  }
-
-  let stateName = "";
-  let tooltip = "";
-
-  if (config.entity) {
-    stateName =
-      config.entity in hass.states
-        ? computeStateName(hass.states[config.entity])
-        : config.entity;
-  }
-
-  if (!config.tap_action && !config.hold_action) {
-    return stateName;
-  }
-
-  const tapTooltip = config.tap_action
-    ? computeActionTooltip(hass, stateName, config.tap_action, false)
-    : "";
-  const holdTooltip = config.hold_action
-    ? computeActionTooltip(hass, stateName, config.hold_action, true)
-    : "";
-
-  const newline = tapTooltip && holdTooltip ? "\n" : "";
-
-  tooltip = tapTooltip + newline + holdTooltip;
-
-  return tooltip;
-};
 
 function computeActionTooltip(
   hass: HomeAssistant,
@@ -102,3 +65,40 @@ function computeActionTooltip(
 
   return tooltip;
 }
+
+export const computeTooltip = (hass: HomeAssistant, config: Config): string => {
+  if (config.title === null) {
+    return "";
+  }
+
+  if (config.title) {
+    return config.title;
+  }
+
+  let stateName = "";
+  let tooltip = "";
+
+  if (config.entity) {
+    stateName =
+      config.entity in hass.states
+        ? computeStateName(hass.states[config.entity])
+        : config.entity;
+  }
+
+  if (!config.tap_action && !config.hold_action) {
+    return stateName;
+  }
+
+  const tapTooltip = config.tap_action
+    ? computeActionTooltip(hass, stateName, config.tap_action, false)
+    : "";
+  const holdTooltip = config.hold_action
+    ? computeActionTooltip(hass, stateName, config.hold_action, true)
+    : "";
+
+  const newline = tapTooltip && holdTooltip ? "\n" : "";
+
+  tooltip = tapTooltip + newline + holdTooltip;
+
+  return tooltip;
+};

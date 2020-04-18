@@ -1,6 +1,6 @@
 import { DemoConfig } from "../types";
-import { demoLovelaceJimpower } from "./lovelace";
 import { demoEntitiesJimpower } from "./entities";
+import { demoLovelaceJimpower } from "./lovelace";
 import { demoThemeJimpower } from "./theme";
 
 export const demoJimpower: DemoConfig = {

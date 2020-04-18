@@ -1,48 +1,51 @@
-import {
-  LitElement,
-  TemplateResult,
-  html,
-  CSSResultArray,
-  css,
-  property,
-} from "lit-element";
+import "@material/mwc-button";
 import "@polymer/app-layout/app-header-layout/app-header-layout";
 import "@polymer/app-layout/app-header/app-header";
-import "@polymer/paper-item/paper-item-body";
-import "@polymer/paper-item/paper-item";
-import "@material/mwc-button";
 import "@polymer/app-layout/app-toolbar/app-toolbar";
-
-import "./ha-change-password-card";
-import "./ha-mfa-modules-card";
-import "./ha-refresh-tokens-card";
-import "./ha-long-lived-access-tokens-card";
+import "@polymer/paper-item/paper-item";
+import "@polymer/paper-item/paper-item-body";
+import { UnsubscribeFunc } from "home-assistant-js-websocket";
+import {
+  css,
+  CSSResultArray,
+  html,
+  LitElement,
+  property,
+  TemplateResult,
+} from "lit-element";
+import { fireEvent } from "../../common/dom/fire_event";
+import "../../components/ha-card";
+import "../../components/ha-menu-button";
+import { isExternal } from "../../data/external";
+import {
+  CoreFrontendUserData,
+  getOptimisticFrontendUserDataCollection,
+} from "../../data/frontend";
+import { showConfirmationDialog } from "../../dialogs/generic/show-dialog-box";
+import "../../resources/ha-style";
+import { haStyle } from "../../resources/styles";
+import { HomeAssistant } from "../../types";
 import "./ha-advanced-mode-row";
+import "./ha-change-password-card";
+import "./ha-force-narrow-row";
+import "./ha-long-lived-access-tokens-card";
+import "./ha-mfa-modules-card";
+import "./ha-pick-dashboard-row";
 import "./ha-pick-language-row";
 import "./ha-pick-theme-row";
 import "./ha-push-notifications-row";
-import "./ha-force-narrow-row";
+import "./ha-refresh-tokens-card";
 import "./ha-set-vibrate-row";
-import "../../components/ha-card";
-import "../../components/ha-menu-button";
-import "../../resources/ha-style";
-
-import {
-  getOptimisticFrontendUserDataCollection,
-  CoreFrontendUserData,
-} from "../../data/frontend";
-import { isExternal } from "../../data/external";
-import { haStyle } from "../../resources/styles";
-import { HomeAssistant } from "../../types";
-import { fireEvent } from "../../common/dom/fire_event";
-import { UnsubscribeFunc } from "home-assistant-js-websocket";
-import { showConfirmationDialog } from "../../dialogs/generic/show-dialog-box";
 
 class HaPanelProfile extends LitElement {
   @property() public hass!: HomeAssistant;
+
   @property() public narrow!: boolean;
+
   @property() private _refreshTokens?: unknown[];
+
   @property() private _coreUserData?: CoreFrontendUserData | null;
+
   private _unsubCoreData?: UnsubscribeFunc;
 
   public connectedCallback() {
@@ -98,6 +101,10 @@ class HaPanelProfile extends LitElement {
               .narrow=${this.narrow}
               .hass=${this.hass}
             ></ha-pick-theme-row>
+            <ha-pick-dashboard-row
+              .narrow=${this.narrow}
+              .hass=${this.hass}
+            ></ha-pick-dashboard-row>
             ${this.hass.dockedSidebar !== "auto" || !this.narrow
               ? html`
                   <ha-force-narrow-row

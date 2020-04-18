@@ -1,31 +1,34 @@
+import type { HassEntity } from "home-assistant-js-websocket";
 import {
-  LitElement,
-  TemplateResult,
   css,
   CSSResult,
   html,
+  LitElement,
   property,
   PropertyValues,
   query,
+  TemplateResult,
 } from "lit-element";
-import "../ha-icon";
+import { ifDefined } from "lit-html/directives/if-defined";
+import { computeActiveState } from "../../common/entity/compute_active_state";
 import { computeStateDomain } from "../../common/entity/compute_state_domain";
 import { stateIcon } from "../../common/entity/state_icon";
-import { HassEntity } from "home-assistant-js-websocket";
-// Not duplicate, this is for typing.
-// tslint:disable-next-line
-import { HaIcon } from "../ha-icon";
-import { HomeAssistant } from "../../types";
-import { computeActiveState } from "../../common/entity/compute_active_state";
-import { ifDefined } from "lit-html/directives/if-defined";
 import { iconColorCSS } from "../../common/style/icon_color_css";
+import type { HomeAssistant } from "../../types";
+import "../ha-icon";
+import type { HaIcon } from "../ha-icon";
 
 export class StateBadge extends LitElement {
   public hass?: HomeAssistant;
+
   @property() public stateObj?: HassEntity;
+
   @property() public overrideIcon?: string;
+
   @property() public overrideImage?: string;
+
   @property({ type: Boolean }) public stateColor?: boolean;
+
   @query("ha-icon") private _icon!: HaIcon;
 
   protected render(): TemplateResult {
@@ -60,6 +63,7 @@ export class StateBadge extends LitElement {
     const iconStyle: Partial<CSSStyleDeclaration> = {
       color: "",
       filter: "",
+      display: "",
     };
     const hostStyle: Partial<CSSStyleDeclaration> = {
       backgroundImage: "",
@@ -76,7 +80,7 @@ export class StateBadge extends LitElement {
         }
         hostStyle.backgroundImage = `url(${imageUrl})`;
         iconStyle.display = "none";
-      } else {
+      } else if (stateObj.state === "on") {
         if (stateObj.attributes.hs_color && this.stateColor !== false) {
           const hue = stateObj.attributes.hs_color[0];
           const sat = stateObj.attributes.hs_color[1];
@@ -90,7 +94,7 @@ export class StateBadge extends LitElement {
             const errorMessage = `Type error: state-badge expected number, but type of ${
               stateObj.entity_id
             }.attributes.brightness is ${typeof brightness} (${brightness})`;
-            // tslint:disable-next-line
+            // eslint-disable-next-line
             console.warn(errorMessage);
           }
           // lowest brighntess will be around 50% (that's pretty dark)

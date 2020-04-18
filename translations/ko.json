@@ -509,6 +509,7 @@
                 "attributes": {
                     "air_pressure": "기압",
                     "humidity": "습도",
+                    "precipitation": "강수량",
                     "temperature": "기온",
                     "visibility": "시정",
                     "wind_speed": "풍속"
@@ -531,7 +532,9 @@
                     "wnw": "서북서",
                     "wsw": "서남서"
                 },
-                "forecast": "일기 예보"
+                "forecast": "일기 예보",
+                "high": "높음",
+                "low": "낮음"
             }
         },
         "common": {
@@ -543,6 +546,7 @@
             "save": "저장",
             "successfully_deleted": "성공적으로 삭제되었습니다",
             "successfully_saved": "성공적으로 저장되었습니다",
+            "undo": "되돌리기",
             "yes": "예"
         },
         "components": {
@@ -630,7 +634,7 @@
                     "entity_id": "구성요소 ID",
                     "icon": "아이콘 재정의",
                     "icon_error": "아이콘은 접두사:아이콘이름 형식이어야 합니다. 예: mdi:home",
-                    "name": "대체 이름",
+                    "name": "이름 재정의",
                     "note": "참고: 아직 모든 통합 구성요소에 적용되지 않을 수 있습니다.",
                     "unavailable": "이 구성요소는 현재 사용할 수 없습니다.",
                     "update": "업데이트"
@@ -731,7 +735,7 @@
             "more_info_settings": {
                 "back": "뒤로가기",
                 "entity_id": "구성요소 ID",
-                "name": "대체 이름",
+                "name": "이름 재정의",
                 "save": "저장"
             },
             "options_flow": {
@@ -754,11 +758,13 @@
                 "buttons": {
                     "add": "기기 추가",
                     "reconfigure": "기기 재설정",
-                    "remove": "기기 제거"
+                    "remove": "기기 제거",
+                    "zigbee_information": "Zigbee 정보"
                 },
                 "confirmations": {
                     "remove": "이 기기를 제거하시겠습니까?"
                 },
+                "device_signature": "Zigbee 기기서명",
                 "last_seen": "마지막 확인",
                 "manuf": "{manufacturer} 제조",
                 "no_area": "영역 없음",
@@ -767,7 +773,8 @@
                 "services": {
                     "reconfigure": "ZHA 기기를 다시 구성 합니다. (기기 복구). 기기에 문제가 있는 경우 사용해주세요. 기기가 배터리로 작동하는 경우, 이 서비스를 사용할 때 기기가 켜져있고 통신이 가능한 상태인지 확인해주세요.",
                     "remove": "Zigbee 네트워크에서 기기를 제거해주세요.",
-                    "updateDeviceName": "이 기기의 사용자 정의 이름을 기기 레지스트리에 설정합니다."
+                    "updateDeviceName": "이 기기의 사용자 정의 이름을 기기 레지스트리에 설정합니다.",
+                    "zigbee_information": "기기에 대한 Zigbee 정보 보기."
                 },
                 "unknown": "알 수 없슴",
                 "zha_device_card": {
@@ -812,6 +819,10 @@
                 "areas": {
                     "caption": "영역",
                     "create_area": "영역 만들기",
+                    "data_table": {
+                        "area": "영역",
+                        "devices": "기기"
+                    },
                     "delete": {
                         "confirmation_text": "이 영역에 속한 모든 장치가 할당 해제됩니다.",
                         "confirmation_title": "이 영역을 삭제하시겠습니까?"
@@ -1054,6 +1065,9 @@
                         "delete_confirm": "이 자동화를 삭제하시겠습니까?",
                         "edit_automation": "자동화 편집",
                         "header": "자동화 편집",
+                        "headers": {
+                            "name": "이름"
+                        },
                         "introduction": "자동화 편집기를 사용하여 자동화를 작성하고 편집할 수 있습니다. 아래 링크를 따라 안내사항을 읽고 Home Assistant 를 올바르게 구성했는지 확인해보세요.",
                         "learn_more": "자동화에 대해 더 알아보기",
                         "no_automations": "편집 가능한 자동화를 찾을 수 없습니다",
@@ -1334,6 +1348,7 @@
                     },
                     "info": "기기 정보",
                     "name": "이름",
+                    "no_devices": "기기 없음",
                     "scene": {
                         "create": "기기로 씬 구성하기",
                         "no_scenes": "씬 없음",
@@ -1362,7 +1377,7 @@
                         "enabled_description": "비활성화 된 구성요소는 Home Assistant 에 추가되지 않습니다.",
                         "enabled_label": "구성요소 활성화",
                         "entity_id": "구성요소 ID",
-                        "name": "대체 이름",
+                        "name": "이름 재정의",
                         "note": "참고 : 아직 모든 통합 구성요소에 적용되지 않을 수 있습니다.",
                         "unavailable": "이 구성요소는 현재 사용할 수 없습니다.",
                         "update": "업데이트"
@@ -1638,6 +1653,9 @@
                         "delete_scene": "씬 삭제",
                         "edit_scene": "씬 편집",
                         "header": "씬 편집기",
+                        "headers": {
+                            "name": "이름"
+                        },
                         "introduction": "씬 편집기를 사용하여 씬을 작성하고 편집 할 수 있습니다. 아래 링크를 따라 안내사항을 읽고 Home Assistant 를 올바르게 구성했는지 확인해보세요.",
                         "learn_more": "씬에 대해 더 알아보기",
                         "no_scenes": "편집 가능한 씬을 찾을 수 없습니다",
@@ -1665,9 +1683,13 @@
                         "add_script": "스크립트 추가",
                         "edit_script": "스크립트 편집",
                         "header": "스크립트 편집기",
+                        "headers": {
+                            "name": "이름"
+                        },
                         "introduction": "스크립트 편집기를 사용하여 스크립트를 작성하고 편집할 수 있습니다. 아래 링크를 따라 안내사항을 읽고 Home Assistant 를 올바르게 구성했는지 확인해보세요.",
                         "learn_more": "스크립트에 대해 더 알아보기",
                         "no_scripts": "편집 가능한 스크립트를 찾을 수 없습니다",
+                        "show_info": "스크립트에 대한 정보 표시",
                         "trigger_script": "스크립트 트리거"
                     }
                 },
@@ -1716,6 +1738,7 @@
                     "editor": {
                         "activate_user": "사용자 활성화",
                         "active": "활성화",
+                        "admin": "관리자",
                         "caption": "사용자 보기",
                         "change_password": "비밀번호 변경",
                         "confirm_user_deletion": "{name} 을(를) 삭제하시겠습니까?",
@@ -1725,14 +1748,22 @@
                         "group": "그룹",
                         "group_update_failed": "그룹 업데이트가 실패했습니다:",
                         "id": "ID",
+                        "name": "이름",
                         "owner": "소유자",
                         "rename_user": "사용자 이름 변경",
                         "system_generated": "시스템 자동 생성",
+                        "system_generated_users_not_editable": "시스템 자동 생성 사용자는 업데이트할 수 없습니다.",
                         "system_generated_users_not_removable": "시스템 자동 생성 사용자는 제거할 수 없습니다.",
                         "unnamed_user": "이름이 없는 사용자",
+                        "update_user": "업데이트",
                         "user_rename_failed": "사용자 이름 변경이 실패했습니다:"
                     },
                     "picker": {
+                        "headers": {
+                            "group": "그룹",
+                            "name": "이름",
+                            "system": "시스템"
+                        },
                         "system_generated": "시스템 자동 생성",
                         "title": "사용자"
                     }
@@ -2135,6 +2166,10 @@
                             "description": "구성요소 필터 카드를 사용하면 특정 상태에 있을 때만 추적할 구성요소의 목록을 정의할 수 있습니다.",
                             "name": "구성요소 필터"
                         },
+                        "entity": {
+                            "description": "구성요소 카드는 구성요소의 상태에 대한 빠른 개요를 제공합니다.",
+                            "name": "구성요소"
+                        },
                         "gauge": {
                             "description": "게이지 카드는 센서 데이터를 시각적으로 볼 수 있는 기본 카드입니다.",
                             "name": "게이지",
@@ -2147,8 +2182,10 @@
                         },
                         "generic": {
                             "aspect_ratio": "종횡비",
+                            "attribute": "속성",
                             "camera_image": "카메라 구성요소",
                             "camera_view": "카메라 뷰",
+                            "double_tap_action": "더블 탭 동작",
                             "entities": "구성요소",
                             "entity": "구성요소",
                             "hold_action": "길게 누르기 동작",
@@ -2199,6 +2236,7 @@
                             "default_zoom": "기본 확대",
                             "description": "지도 카드는 지도에 구성요소를 표시할 수 있습니다.",
                             "geo_location_sources": "위치정보 소스",
+                            "hours_to_show": "표시 시간",
                             "name": "지도",
                             "source": "소스"
                         },
@@ -2254,6 +2292,10 @@
                             "description": "날씨 예보 카드는 날씨를 표시합니다. 화면에 날씨를 포함하는 인터페이스를 표시하는데 유용합니다.",
                             "name": "날씨 예보"
                         }
+                    },
+                    "cardpicker": {
+                        "custom_card": "사용자 정의",
+                        "no_description": "상세정보가 없습니다"
                     },
                     "edit_card": {
                         "add": "카드 추가하기",
@@ -2319,6 +2361,7 @@
                     "save_config": {
                         "cancel": "아닙니다",
                         "close": "닫기",
+                        "empty_config": "비어있는 대시보드로 시작",
                         "header": "Lovelace UI 직접 관리하기",
                         "para": "기본적으로 Home Assistant 는 사용자 인터페이스를 유지 관리하고, 사용할 수 있는 새로운 구성요소 또는 Lovelace 구성요소가 있을 때 업데이트를 합니다. 사용자가 직접 관리하는 경우 Home Assistant 는 더 이상 자동으로 변경하지 않습니다.",
                         "para_sure": "사용자 인터페이스를 직접 관리하시겠습니까?",
@@ -2568,6 +2611,11 @@
                     "submit": "변경하기"
                 },
                 "current_user": "현재 {fullName} 로(으로) 로그인 한 상태 입니다.",
+                "dashboard": {
+                    "description": "이 기기에서 사용할 기본 대시보드를 선택합니다.",
+                    "dropdown_label": "대시보드",
+                    "header": "대시보드"
+                },
                 "force_narrow": {
                     "description": "모바일 환경과 마찬가지로 기본적으로 사이드바가 숨겨집니다.",
                     "header": "항상 사이드바 숨기기"

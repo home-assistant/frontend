@@ -509,6 +509,7 @@
                 "attributes": {
                     "air_pressure": "Pressió atmosfèrica",
                     "humidity": "Humitat",
+                    "precipitation": "Precipitació",
                     "temperature": "Temperatura",
                     "visibility": "Visibilitat",
                     "wind_speed": "Velocitat del vent"
@@ -531,18 +532,21 @@
                     "wnw": "ONO",
                     "wsw": "OSO"
                 },
-                "forecast": "Previsió"
+                "forecast": "Previsió",
+                "high": "Alt",
+                "low": "Baix"
             }
         },
         "common": {
             "cancel": "Cancel·la",
             "close": "Tanca",
-            "delete": "Suprimeix",
+            "delete": "Elimina",
             "loading": "Carregant",
             "no": "No",
             "save": "Desa",
-            "successfully_deleted": "S'ha suprimit correctament",
+            "successfully_deleted": "S'ha eliminat correctament",
             "successfully_saved": "S'ha desat correctament",
+            "undo": "Desfés",
             "yes": "Sí"
         },
         "components": {
@@ -623,7 +627,7 @@
                 "dismiss": "Desestimar",
                 "editor": {
                     "confirm_delete": "Estàs segur que vols eliminar aquesta entrada?",
-                    "delete": "Suprimeix",
+                    "delete": "Elimina",
                     "enabled_cause": "Desactivada per {cause}.",
                     "enabled_description": "Les entitats desactivades no s’afegiran a Home Assistant.",
                     "enabled_label": "Activa l’entitat",
@@ -754,11 +758,13 @@
                 "buttons": {
                     "add": "Afegir dispositius",
                     "reconfigure": "Reconfigurar dispositiu",
-                    "remove": "Eliminar dispositiu"
+                    "remove": "Eliminar dispositiu",
+                    "zigbee_information": "Informació Zigbee"
                 },
                 "confirmations": {
                     "remove": "Estàs segur que vols eliminar el dispositiu?"
                 },
+                "device_signature": "Signatura Zigbee del dispositiu",
                 "last_seen": "Vist per últim cop",
                 "manuf": "per {manufacturer}",
                 "no_area": "Sense Àrea",
@@ -767,7 +773,8 @@
                 "services": {
                     "reconfigure": "Reconfigura el dispositiu ZHA (dispositiu curatiu). Utilitza-ho si tens problemes amb el dispositiu. Si el dispositiu en qüestió està alimentat per bateria, assegura't que estigui despert i accepti ordres quan utilitzis aquest servei.",
                     "remove": "Elimina un dispositiu de la xarxa Zigbee.",
-                    "updateDeviceName": "Estableix un nom personalitzat pel dispositiu al registre de dispositius."
+                    "updateDeviceName": "Estableix un nom personalitzat pel dispositiu al registre de dispositius.",
+                    "zigbee_information": "Consulta la informació Zigbee del dispositiu."
                 },
                 "unknown": "Desconeguda",
                 "zha_device_card": {
@@ -812,6 +819,10 @@
                 "areas": {
                     "caption": "Registre d'àrees",
                     "create_area": "CREA ÀREA",
+                    "data_table": {
+                        "area": "Àrea",
+                        "devices": "Dispositius"
+                    },
                     "delete": {
                         "confirmation_text": "Tots els dispositius d'aquesta àrea quedaran sense assignar.",
                         "confirmation_title": "Estàs segur que vols eliminar aquesta àrea?"
@@ -820,7 +831,7 @@
                     "editor": {
                         "create": "Crea",
                         "default_name": "Nova àrea",
-                        "delete": "Suprimeix",
+                        "delete": "Elimina",
                         "update": "Actualitza"
                     },
                     "no_areas": "Sembla que encara no tens cap àrea!.",
@@ -1050,10 +1061,13 @@
                     },
                     "picker": {
                         "add_automation": "Afegeix automatització",
-                        "delete_automation": "Suprimeix l'automatització",
+                        "delete_automation": "Elimina l'automatització",
                         "delete_confirm": "Estàs segur que vols eliminar aquesta automatització?",
                         "edit_automation": "Edita automatització",
                         "header": "Editor d'automatitzacions",
+                        "headers": {
+                            "name": "Nom"
+                        },
                         "introduction": "L'editor d'automatitzacions et permet crear i editar automatitzacions. Vés a l'enllaç de sota per veure'n les instruccions i assegurar-te que has configurat el Home Assistant correctament.",
                         "learn_more": "Més informació sobre les automatitzacions",
                         "no_automations": "No s'ha pogut trobar cap automatització editable",
@@ -1323,7 +1337,7 @@
                         "model": "Model",
                         "no_devices": "Sense dispositius"
                     },
-                    "delete": "Suprimeix",
+                    "delete": "Elimina",
                     "description": "Gestiona els dispositius connectats",
                     "details": "Aquí tens tots els detalls del dispositiu.",
                     "device_not_found": "Dispositiu no trobat.",
@@ -1334,6 +1348,7 @@
                     },
                     "info": "Informació del dispositiu",
                     "name": "Nom",
+                    "no_devices": "No hi ha dispositius",
                     "scene": {
                         "create": "Crea una escena amb el dispositiu",
                         "no_scenes": "No hi ha escenes",
@@ -1355,7 +1370,7 @@
                     "description": "Visió general de totes les entitats conegudes.",
                     "editor": {
                         "confirm_delete": "Estàs segur que vols eliminar aquesta entrada?",
-                        "confirm_delete2": "Si suprimeixes una entrada, no suprimiras l'entitat de Home Assistant. Per fer-ho, has de suprimir la integració '{plataform}' de Home Assistant.",
+                        "confirm_delete2": "Si elimines una entrada, no eliminaràs l'entitat de Home Assistant. Per fer-ho, has d'eliminar la integració '{plataform}' de Home Assistant.",
                         "default_name": "Àrea nova",
                         "delete": "ELIMINA",
                         "enabled_cause": "Desactivada per {cause}.",
@@ -1397,7 +1412,7 @@
                         "introduction2": "Utilitza el registre d'entitats per canviar el nom, canviar l'ID o eliminar l'entrada de Home Assistant.",
                         "remove_selected": {
                             "button": "Elimina seleccionada/es",
-                            "confirm_partly_text": "Només pots eliminar {removable} de les {selected} entitats seleccionades. Les entitats només es poden eliminar quan la integració ja no les està proporcionant.\nA vegades pot ser que hagis de reiniciar Home Assistant per poder eliminar les entitats d'una antiga integració eliminada. Segur que vols eliminar les entitats suprimibles?",
+                            "confirm_partly_text": "Només pots eliminar {removable} de les {selected} entitats seleccionades. Les entitats només es poden eliminar quan la integració ja no les està proporcionant.\nA vegades pot ser que hagis de reiniciar Home Assistant per poder eliminar les entitats d'una antiga integració eliminada. Segur que vols eliminar les entitats?",
                             "confirm_partly_title": "Només es poden eliminar {number} entitats seleccionades.",
                             "confirm_text": "Les entitats només poden eliminar-se quan la seva integració ja no les està proporcionant.",
                             "confirm_title": "Vols eliminar {number} entitat/s?"
@@ -1444,7 +1459,7 @@
                     "caption": "Integracions",
                     "config_entry": {
                         "area": "A {area}",
-                        "delete_button": "Suprimeix {integration}",
+                        "delete_button": "Elimina {integration}",
                         "delete_confirm": "Estàs segur que vols eliminar aquesta integració?",
                         "device_unavailable": "dispositiu no disponible",
                         "entity_unavailable": "entitat no disponible",
@@ -1516,7 +1531,7 @@
                         "default_dashboard": "Aquest és el panell per defecte",
                         "detail": {
                             "create": "Crea",
-                            "delete": "Suprimeix",
+                            "delete": "Elimina",
                             "dismiss": "Tanca",
                             "edit_dashboard": "Edita el panell",
                             "icon": "Icona",
@@ -1551,7 +1566,7 @@
                         "confirm_delete": "Estàs segur que vols eliminar aquest recurs?",
                         "detail": {
                             "create": "Crea",
-                            "delete": "Suprimeix",
+                            "delete": "Elimina",
                             "dismiss": "Tanca",
                             "new_resource": "Afegeix nou recurs",
                             "type": "Tipus de recurs",
@@ -1588,7 +1603,7 @@
                     "description": "Gestiona a quines persones fa seguiment Home Assistant.",
                     "detail": {
                         "create": "Crea",
-                        "delete": "Suprimeix",
+                        "delete": "Elimina",
                         "device_tracker_intro": "Selecciona els dispositius que pertanyen a aquesta persona.",
                         "device_tracker_pick": "Tria un dispositiu per fer-li el seguiment",
                         "device_tracker_picked": "Seguint dispositiu",
@@ -1613,13 +1628,13 @@
                         "default_name": "Nova escena",
                         "devices": {
                             "add": "Afegeix un dispositiu",
-                            "delete": "Suprimeix el dispositiu",
+                            "delete": "Elimina el dispositiu",
                             "header": "Dispositius",
                             "introduction": "Afegeix els dispositius que vols incloure a l'escena. Configura tots els dispositius en els estats que es corresponguin amb aquesta escena."
                         },
                         "entities": {
                             "add": "Afegeix una entitat",
-                            "delete": "Suprimeix l'entitat",
+                            "delete": "Elimina l'entitat",
                             "device_entities": "Si afegeixes una entitat que pertany a un dispositiu, s'afegirà el dispositiu.",
                             "header": "Entitats",
                             "introduction": "Les entitats que no pertanyen a cap dispositiu es poden configurar aquí.",
@@ -1635,9 +1650,12 @@
                     "picker": {
                         "add_scene": "Afegeix escena",
                         "delete_confirm": "Estàs segur que vols eliminar aquesta escena?",
-                        "delete_scene": "Suprimeix l'escena",
+                        "delete_scene": "Elimina l'escena",
                         "edit_scene": "Edita escena",
                         "header": "Editor d’escenes",
+                        "headers": {
+                            "name": "Nom"
+                        },
                         "introduction": "L'editor d'escenes et permet crear i editar escenes. Vés a l'enllaç de sota per veure'n les instruccions i assegurar-te que has configurat el Home Assistant correctament.",
                         "learn_more": "Més informació sobre les escenes",
                         "no_scenes": "No s'ha pogut trobar cap escena editable",
@@ -1653,7 +1671,7 @@
                         "alias": "Nom",
                         "default_name": "Nou script",
                         "delete_confirm": "Estàs segur que vols eliminar aquest script?",
-                        "delete_script": "Suprimeix l'script",
+                        "delete_script": "Elimina l'script",
                         "header": "Script: {name}",
                         "introduction": "Utilitza els scripts per executar seqüències d’accions.",
                         "link_available_actions": "Més informació sobre les accions disponibles.",
@@ -1665,9 +1683,13 @@
                         "add_script": "Afegeix script",
                         "edit_script": "Edita l'script",
                         "header": "Editor de scripts",
+                        "headers": {
+                            "name": "Nom"
+                        },
                         "introduction": "L'editor de scripts et permet crear i editar scripts. Vés a l'enllaç de sota per veure'n les instruccions i assegurar-te que has configurat el Home Assistant correctament.",
                         "learn_more": "Més informació sobre els scripts",
                         "no_scripts": "No hem trobat cap script editable",
+                        "show_info": "Mostra informació sobre l'script",
                         "trigger_script": "Dispara l'script"
                     }
                 },
@@ -1716,6 +1738,7 @@
                     "editor": {
                         "activate_user": "Activar usuari",
                         "active": "Actiu",
+                        "admin": "Administrador",
                         "caption": "Mostra usuari",
                         "change_password": "Canviar contrasenya",
                         "confirm_user_deletion": "Estàs segur que vols eliminar {name}?",
@@ -1725,14 +1748,22 @@
                         "group": "Grup",
                         "group_update_failed": "L'actualització del grup ha fallat:",
                         "id": "ID",
+                        "name": "Nom",
                         "owner": "Propietari",
                         "rename_user": "Canviar el nom d'usuari",
                         "system_generated": "Generat pel sistema",
+                        "system_generated_users_not_editable": "No es poden actualitzar usuaris generats pel sistema.",
                         "system_generated_users_not_removable": "No es poden eliminar usuaris generats pel sistema.",
                         "unnamed_user": "Usuari sense nom",
+                        "update_user": "Actualitza",
                         "user_rename_failed": "El canvi de nom d'usuari ha fallat:"
                     },
                     "picker": {
+                        "headers": {
+                            "group": "Grup",
+                            "name": "Nom",
+                            "system": "Sistema"
+                        },
                         "system_generated": "Generat pel sistema",
                         "title": "Usuaris"
                     }
@@ -1854,7 +1885,7 @@
                     "description": "Gestiona les zones en les quals es fa seguiment de persones.",
                     "detail": {
                         "create": "Crea",
-                        "delete": "Suprimeix",
+                        "delete": "Elimina",
                         "icon": "Icona",
                         "icon_error_msg": "El nom de la icona ha de tenir el format prefix:nom_icona, per exemple: mdi: home",
                         "latitude": "Latitud",
@@ -2135,6 +2166,10 @@
                             "description": "La targeta filtre d'entitats et permet definir una llista d'entitats les quals vols seguir/visualitzar només quan es trobin en un cert estat.",
                             "name": "Filtre d'entitats"
                         },
+                        "entity": {
+                            "description": "La targeta entitat mostra una visualització ràpida dels estats d'una o més entitats.",
+                            "name": "Entitat"
+                        },
                         "gauge": {
                             "description": "La galga és una targeta bàsica que et permet mostrar les dades d'un sensor de manera visual.",
                             "name": "Galga",
@@ -2147,8 +2182,10 @@
                         },
                         "generic": {
                             "aspect_ratio": "Relació d'aspecte",
+                            "attribute": "Atribut",
                             "camera_image": "Entitat de càmera",
                             "camera_view": "Visualització de càmera",
+                            "double_tap_action": "Acció en tocar dues vegades",
                             "entities": "Entitats",
                             "entity": "Entitat",
                             "hold_action": "Acció en mantenir",
@@ -2199,6 +2236,7 @@
                             "default_zoom": "Zoom predeterminat",
                             "description": "La targeta mapa et permet mostrar diferents entitats sobre un mapa.",
                             "geo_location_sources": "Fonts de geolocalització",
+                            "hours_to_show": "Hores a mostrar",
                             "name": "Mapa",
                             "source": "Font"
                         },
@@ -2254,6 +2292,10 @@
                             "description": "La targeta de previsió meteorològica, és molt útil per incloure en interfícies integrades en parets.",
                             "name": "Previsió meteorològica"
                         }
+                    },
+                    "cardpicker": {
+                        "custom_card": "Personalitzada",
+                        "no_description": "No hi ha cap descripció disponible."
                     },
                     "edit_card": {
                         "add": "Afegir targeta",
@@ -2319,6 +2361,7 @@
                     "save_config": {
                         "cancel": "M'ho he repensat",
                         "close": "Tanca",
+                        "empty_config": "Comença amb un panell buit",
                         "header": "Pren el control de la interfície d'usuari Lovelace",
                         "para": "De manera predeterminada, Home Assistant mantindrà al dia la teva interfície d'usuari, actualitzant-la quan hi hagi noves entitats o nous components de Lovelace disponibles. Si prens el control, ja no es faran aquests canvis automàticament.",
                         "para_sure": "Estàs segur que vols prendre el control de la interfície d'usuari?",
@@ -2368,7 +2411,7 @@
                     "confirm_delete_existing_cards": "Si elimines aquesta vista, també s'eliminaran les targetes que conté",
                     "confirm_delete_existing_cards_text": "Estàs segur que vols eliminar la vista '{name}'? La vista conté {number} targetes que també s'eliminaran. Aquesta acció no és reversible.",
                     "confirm_delete_text": "Estàs segur que vols eliminar la vista '{name}'?",
-                    "existing_cards": "No pots suprimir una visualització si conté targetes, elimina-les primer."
+                    "existing_cards": "No pots eliminar una visualització si conté targetes, elimina-les primer."
                 },
                 "warning": {
                     "attribute_not_found": "L'atribut {attribute} de {entity} no és disponible.",
@@ -2568,6 +2611,11 @@
                     "submit": "Envia"
                 },
                 "current_user": "Has iniciat la sessió com a {fullName}.",
+                "dashboard": {
+                    "description": "Tria un panell per defecte per a aquest dispositiu.",
+                    "dropdown_label": "Panell",
+                    "header": "Panell"
+                },
                 "force_narrow": {
                     "description": "Això ocultarà la barra lateral de manera similar als mòbils i tablets.",
                     "header": "Amaga sempre la barra lateral"

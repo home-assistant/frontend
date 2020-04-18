@@ -1,48 +1,45 @@
-import {
-  html,
-  css,
-  LitElement,
-  TemplateResult,
-  CSSResult,
-  customElement,
-  property,
-} from "lit-element";
-
+import "@material/mwc-button";
+import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable";
+import "@polymer/paper-icon-button/paper-icon-button";
 import "@polymer/paper-spinner/paper-spinner";
 import "@polymer/paper-tabs/paper-tab";
 import "@polymer/paper-tabs/paper-tabs";
-import "@polymer/paper-icon-button/paper-icon-button.js";
-import "../../../../components/dialog/ha-paper-dialog";
-// tslint:disable-next-line:no-duplicate-imports
-import { HaPaperDialog } from "../../../../components/dialog/ha-paper-dialog";
-import "@material/mwc-button";
-import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable";
-
-import { haStyleDialog } from "../../../../resources/styles";
-
-import "../../components/hui-entity-editor";
-import "./hui-view-editor";
-import "./hui-view-visibility-editor";
-import { HomeAssistant } from "../../../../types";
 import {
-  LovelaceViewConfig,
-  LovelaceCardConfig,
-  LovelaceBadgeConfig,
-} from "../../../../data/lovelace";
+  css,
+  CSSResult,
+  customElement,
+  html,
+  LitElement,
+  property,
+  TemplateResult,
+} from "lit-element";
 import { fireEvent, HASSDomEvent } from "../../../../common/dom/fire_event";
+import { navigate } from "../../../../common/navigate";
+import "../../../../components/dialog/ha-paper-dialog";
+import type { HaPaperDialog } from "../../../../components/dialog/ha-paper-dialog";
+import type {
+  LovelaceBadgeConfig,
+  LovelaceCardConfig,
+  LovelaceViewConfig,
+} from "../../../../data/lovelace";
+import {
+  showAlertDialog,
+  showConfirmationDialog,
+} from "../../../../dialogs/generic/show-dialog-box";
+import { haStyleDialog } from "../../../../resources/styles";
+import type { HomeAssistant } from "../../../../types";
+import "../../components/hui-entity-editor";
+import type { Lovelace } from "../../types";
+import { addView, deleteView, replaceView } from "../config-util";
+import "../hui-badge-preview";
+import { processEditorEntities } from "../process-editor-entities";
 import {
   EntitiesEditorEvent,
   ViewEditEvent,
   ViewVisibilityChangeEvent,
 } from "../types";
-import { processEditorEntities } from "../process-editor-entities";
-import { navigate } from "../../../../common/navigate";
-import { Lovelace } from "../../types";
-import { deleteView, addView, replaceView } from "../config-util";
-import {
-  showAlertDialog,
-  showConfirmationDialog,
-} from "../../../../dialogs/generic/show-dialog-box";
+import "./hui-view-editor";
+import "./hui-view-visibility-editor";
 
 @customElement("hui-edit-view")
 export class HuiEditView extends LitElement {
@@ -123,6 +120,20 @@ export class HuiEditView extends LitElement {
         break;
       case "tab-badges":
         content = html`
+          ${this._badges?.length
+            ? html`
+                <div class="preview-badges">
+                  ${this._badges.map((badgeConfig) => {
+                    return html`
+                      <hui-badge-preview
+                        .hass=${this.hass}
+                        .config=${badgeConfig}
+                      ></hui-badge-preview>
+                    `;
+                  })}
+                </div>
+              `
+            : ""}
           <hui-entity-editor
             .hass=${this.hass}
             .entities="${this._badges}"
@@ -140,9 +151,7 @@ export class HuiEditView extends LitElement {
         `;
         break;
       case "tab-cards":
-        content = html`
-          Cards
-        `;
+        content = html` Cards `;
         break;
     }
     return html`
@@ -310,6 +319,7 @@ export class HuiEditView extends LitElement {
       return;
     }
     this._badges = processEditorEntities(ev.detail.entities);
+    this._resizeDialog();
   }
 
   private _isConfigChanged(): boolean {
@@ -372,8 +382,13 @@ export class HuiEditView extends LitElement {
           color: var(--error-color);
           border-bottom: 1px solid var(--error-color);
         }
-      </style>
-    `,
+        .preview-badges {
+          display: flex;
+          justify-content: center;
+          margin: 12px 16px;
+          flex-wrap: wrap;
+        }
+      `,
     ];
   }
 }

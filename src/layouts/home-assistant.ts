@@ -1,21 +1,26 @@
 import "@polymer/app-route/app-location";
-import { html, PropertyValues, property } from "lit-element";
-
-import "./home-assistant-main";
-import "./ha-init-page";
-import "../resources/ha-style";
-import "../resources/custom-card-support";
-import { registerServiceWorker } from "../util/register-service-worker";
-
-import { Route, HomeAssistant } from "../types";
+import { html, property, PropertyValues } from "lit-element";
 import { navigate } from "../common/navigate";
+import { getStorageDefaultPanelUrlPath } from "../data/panel";
+import "../resources/custom-card-support";
+import "../resources/ha-style";
 import { HassElement } from "../state/hass-element";
-import { getDefaultPanelUrlPath } from "../data/panel";
+import { HomeAssistant, Route } from "../types";
+import {
+  registerServiceWorker,
+  supportsServiceWorker,
+} from "../util/register-service-worker";
+import "./ha-init-page";
+import "./home-assistant-main";
 
 export class HomeAssistantAppEl extends HassElement {
   @property() private _route?: Route;
+
   @property() private _error = false;
+
   @property() private _panelUrl?: string;
+
+  private _haVersion?: string;
 
   protected render() {
     const hass = this.hass;
@@ -34,9 +39,7 @@ export class HomeAssistantAppEl extends HassElement {
               .route=${this._route}
             ></home-assistant-main>
           `
-        : html`
-            <ha-init-page .error=${this._error}></ha-init-page>
-          `}
+        : html` <ha-init-page .error=${this._error}></ha-init-page> `}
     `;
   }
 
@@ -64,13 +67,32 @@ export class HomeAssistantAppEl extends HassElement {
     }
   }
 
+  protected hassReconnected() {
+    super.hassReconnected();
+
+    // If backend has been upgraded, make sure we update frontend
+    if (this.hass!.connection.haVersion !== this._haVersion) {
+      if (supportsServiceWorker()) {
+        navigator.serviceWorker.getRegistration().then((registration) => {
+          if (registration) {
+            registration.update();
+          } else {
+            location.reload(true);
+          }
+        });
+      } else {
+        location.reload(true);
+      }
+    }
+  }
+
   protected async _initialize() {
     try {
       const { auth, conn } = await window.hassConnection;
+      this._haVersion = conn.haVersion;
       this.initializeHass(auth, conn);
     } catch (err) {
       this._error = true;
-      return;
     }
   }
 
@@ -86,7 +108,7 @@ export class HomeAssistantAppEl extends HassElement {
       this._route === undefined &&
       (route.path === "" || route.path === "/")
     ) {
-      navigate(window, `/${getDefaultPanelUrlPath()}`, true);
+      navigate(window, `/${getStorageDefaultPanelUrlPath()}`, true);
       return;
     }
 

@@ -2,7 +2,6 @@ import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
 import "@polymer/paper-input/paper-input";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
-
 import {
   css,
   CSSResult,
@@ -10,31 +9,36 @@ import {
   html,
   LitElement,
   property,
-  TemplateResult,
   PropertyValues,
+  TemplateResult,
 } from "lit-element";
-
-import { haStyle } from "../../../resources/styles";
-import { HomeAssistant } from "../../../types";
-
 import "../../../components/buttons/ha-call-service-button";
 import "../../../components/ha-card";
 import {
-  ZWaveConfigItem,
-  ZWaveNode,
-  ZWaveConfigServiceData,
   fetchNodeConfig,
+  ZWaveConfigItem,
+  ZWaveConfigServiceData,
+  ZWaveNode,
 } from "../../../data/zwave";
+import { haStyle } from "../../../resources/styles";
+import { HomeAssistant } from "../../../types";
 
 @customElement("zwave-node-config")
 export class ZwaveNodeConfig extends LitElement {
   @property() public hass!: HomeAssistant;
+
   @property() public nodes: ZWaveNode[] = [];
+
   @property() public config: ZWaveConfigItem[] = [];
-  @property() public selectedNode: number = -1;
+
+  @property() public selectedNode = -1;
+
   @property() private _configItem?: ZWaveConfigItem;
-  @property() private _wakeupInput: number = -1;
-  @property() private _selectedConfigParameter: number = -1;
+
+  @property() private _wakeupInput = -1;
+
+  @property() private _selectedConfigParameter = -1;
+
   @property() private _selectedConfigValue: number | string = -1;
 
   protected render(): TemplateResult {
@@ -286,11 +290,8 @@ export class ZwaveNodeConfig extends LitElement {
       return;
     }
     this._configItem = undefined;
-    this._wakeupInput = this.nodes[this.selectedNode].attributes.hasOwnProperty(
-      "wake_up_interval"
-    )
-      ? this.nodes[this.selectedNode].attributes.wake_up_interval!
-      : -1;
+    this._wakeupInput =
+      this.nodes[this.selectedNode].attributes.wake_up_interval || -1;
   }
 
   private _onWakeupIntervalChanged(value: ChangeEvent): void {

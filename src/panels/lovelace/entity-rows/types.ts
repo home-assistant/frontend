@@ -1,3 +1,4 @@
+import { ActionConfig } from "../../../data/lovelace";
 import { HomeAssistant } from "../../../types";
 import { Condition } from "../common/validate-condition";
 
@@ -28,11 +29,24 @@ export interface WeblinkConfig {
   icon?: string;
   url: string;
 }
+export interface TextConfig {
+  type: "text";
+  name: string;
+  icon?: string;
+  text: string;
+}
 export interface CallServiceConfig extends EntityConfig {
   type: "call-service";
-  action_name?: string;
   service: string;
   service_data?: { [key: string]: any };
+  action_name?: string;
+}
+export interface ButtonRowConfig extends EntityConfig {
+  type: "button";
+  action_name?: string;
+  tap_action?: ActionConfig;
+  hold_action?: ActionConfig;
+  double_tap_action?: ActionConfig;
 }
 export interface CastConfig {
   type: "cast";
@@ -54,15 +68,24 @@ export type LovelaceRowConfig =
   | WeblinkConfig
   | CallServiceConfig
   | CastConfig
+  | ButtonRowConfig
   | ButtonsRowConfig
-  | ConditionalRowConfig;
+  | ConditionalRowConfig
+  | AttributeRowConfig
+  | TextConfig;
 
 export interface LovelaceRow extends HTMLElement {
   hass?: HomeAssistant;
+  editMode?: boolean;
   setConfig(config: LovelaceRowConfig);
 }
 
 export interface ConditionalRowConfig extends EntityConfig {
   row: EntityConfig;
   conditions: Condition[];
+}
+export interface AttributeRowConfig extends EntityConfig {
+  attribute: string;
+  prefix?: string;
+  suffix?: string;
 }

@@ -40,7 +40,7 @@
         "lovelace": "Lovelace",
         "mailbox": "Postkasse",
         "media_player": "Medieafspiller",
-        "notify": "Meddelelser",
+        "notify": "Notifikationer",
         "person": "Person",
         "plant": "Plante",
         "proximity": "Nærhed",
@@ -509,6 +509,7 @@
                 "attributes": {
                     "air_pressure": "Lufttryk",
                     "humidity": "Luftfugtighed",
+                    "precipitation": "Nedbør",
                     "temperature": "Temperatur",
                     "visibility": "Sigtbarhed",
                     "wind_speed": "Vindhastighed"
@@ -531,7 +532,9 @@
                     "wnw": "VNV",
                     "wsw": "VSV"
                 },
-                "forecast": "Vejrudsigt"
+                "forecast": "Vejrudsigt",
+                "high": "Maks.",
+                "low": "Min."
             }
         },
         "common": {
@@ -543,6 +546,7 @@
             "save": "Gem",
             "successfully_deleted": "Slettet",
             "successfully_saved": "Gemt",
+            "undo": "Fortryd",
             "yes": "Ja"
         },
         "components": {
@@ -687,7 +691,7 @@
                 "not_editable_text": "Denne entitet kan ikke ændres fra brugerfladen, fordi det er defineret i configuration.yaml.",
                 "platform_not_loaded": "{platform}-integrationen er ikke indlæst. Tilføj den til din konfiguration. Enten ved at tilføje 'default_config:' eller '{platform}:'.",
                 "required_error_msg": "Dette felt er påkrævet",
-                "yaml_not_editable": "Indstillingerne for denne entitet kan ikke redigeres fra brugerfladen. Det er kun entiteter, der er konfigureret fra brugergrænsefladen, der kan konfigureres herfra."
+                "yaml_not_editable": "Indstillingerne for denne entitet kan ikke redigeres fra brugerfladen. Det er kun entiteter, der er konfigureret fra brugerfladen, der kan konfigureres herfra."
             },
             "more_info_control": {
                 "dismiss": "Afvis dialog",
@@ -754,11 +758,13 @@
                 "buttons": {
                     "add": "Tilføj enheder",
                     "reconfigure": "Genkonfigurer enhed",
-                    "remove": "Fjern enhed"
+                    "remove": "Fjern enhed",
+                    "zigbee_information": "Zigbee-oplysninger"
                 },
                 "confirmations": {
                     "remove": "Er du sikker på, at du vil fjerne enheden?"
                 },
+                "device_signature": "Zigbee-enhedssignatur",
                 "last_seen": "Sidst set",
                 "manuf": "af {manufacturer}",
                 "no_area": "Intet område",
@@ -767,7 +773,8 @@
                 "services": {
                     "reconfigure": "Rekonfigurer ZHA-enhed (helbred enheden). Brug dette, hvis du har problemer med enheden. Hvis den pågældende enhed er en batteridrevet enhed, skal du sørge for at den er vågen og accepterer kommandoer, når du bruger denne tjeneste.",
                     "remove": "Fjern en enhed fra Zigbee-netværket.",
-                    "updateDeviceName": "Angiv et brugerdefineret navn til denne enhed i enhedsregistret"
+                    "updateDeviceName": "Angiv et brugerdefineret navn til denne enhed i enhedsregistret",
+                    "zigbee_information": "Vis Zigbee-oplysningerne for enheden."
                 },
                 "unknown": "Ukendt",
                 "zha_device_card": {
@@ -792,8 +799,8 @@
         "notification_drawer": {
             "click_to_configure": "Klik på knappen for at konfigurere {entity}",
             "close": "Luk",
-            "empty": "Ingen meddelelser",
-            "title": "Meddelelser"
+            "empty": "Ingen notifikationer",
+            "title": "Notifikationer"
         },
         "notification_toast": {
             "connection_lost": "Forbindelse afbrudt. Opretter forbindelse igen...",
@@ -812,6 +819,10 @@
                 "areas": {
                     "caption": "Områder",
                     "create_area": "OPRET OMRÅDE",
+                    "data_table": {
+                        "area": "Område",
+                        "devices": "Enheder"
+                    },
                     "delete": {
                         "confirmation_text": "Alle enheder i dette område vil blive utildelte.",
                         "confirmation_title": "Er du sikker på, at du vil slette dette område?"
@@ -1054,6 +1065,9 @@
                         "delete_confirm": "Er du sikker på, at du vil slette denne automatisering?",
                         "edit_automation": "Rediger automatisering",
                         "header": "Automatiserings-editor",
+                        "headers": {
+                            "name": "Navn"
+                        },
                         "introduction": "Automationseditoren giver dig mulighed for at oprette og redigere automatiseringer. Følg nedenstående link for at læse instruktionerne for at sikre dig, at du har konfigureret Home Assistant korrekt.",
                         "learn_more": "Lær om automatiseringer",
                         "no_automations": "Vi kunne ikke finde nogen redigerbare automatiseringer",
@@ -1334,6 +1348,7 @@
                     },
                     "info": "Oplysninger om enhed",
                     "name": "Navn",
+                    "no_devices": "Ingen enheder",
                     "scene": {
                         "create": "Opret scene med enhed",
                         "no_scenes": "Ingen scener",
@@ -1480,7 +1495,7 @@
                     },
                     "configure": "Konfigurer",
                     "configured": "Konfigureret",
-                    "description": "Administrer tilsluttede enheder og tjenester",
+                    "description": "Administrer og opsæt integrationer",
                     "details": "Integrationsdetaljer",
                     "discovered": "Fundet",
                     "home_assistant_website": "Home Assistants hjemmeside",
@@ -1638,6 +1653,9 @@
                         "delete_scene": "Slet scene",
                         "edit_scene": "Rediger scene",
                         "header": "Sceneredigering",
+                        "headers": {
+                            "name": "Navn"
+                        },
                         "introduction": "Sceneredigering giver dig mulighed for at oprette og redigere scener. Følg nedenstående link for at læse instruktionerne for at sikre dig, at du har konfigureret Home Assistant korrekt.",
                         "learn_more": "Lær mere om scener",
                         "no_scenes": "Vi kunne ikke finde nogen redigerbare scener",
@@ -1665,9 +1683,13 @@
                         "add_script": "Tilføj script",
                         "edit_script": "Rediger script",
                         "header": "Script-redigering",
+                        "headers": {
+                            "name": "Navn"
+                        },
                         "introduction": "Script-redigering giver dig mulighed for at oprette og redigere scripts. Følg nedenstående link for at læse instruktionerne for at sikre, at du har konfigureret Home Assistant korrekt.",
                         "learn_more": "Lær mere om scripts",
                         "no_scripts": "Vi kunne ikke finde nogen redigerbare scripts",
+                        "show_info": "Vis info om script",
                         "trigger_script": "Udløs script"
                     }
                 },
@@ -1716,6 +1738,7 @@
                     "editor": {
                         "activate_user": "Aktivér bruger",
                         "active": "Aktiv",
+                        "admin": "Administrator",
                         "caption": "Vis bruger",
                         "change_password": "Skift adgangskode",
                         "confirm_user_deletion": "Er du sikker på, at du vil slette {name}?",
@@ -1725,14 +1748,22 @@
                         "group": "Gruppe",
                         "group_update_failed": "Gruppeopdatering mislykkedes:",
                         "id": "Id",
+                        "name": "Navn",
                         "owner": "Ejer",
                         "rename_user": "Omdøb bruger",
                         "system_generated": "Systemgenereret",
+                        "system_generated_users_not_editable": "Systemoprettede brugere kan ikke opdateres.",
                         "system_generated_users_not_removable": "Kan ikke fjerne systemgenererede brugere.",
                         "unnamed_user": "Unavngiven bruger",
+                        "update_user": "Opdater",
                         "user_rename_failed": "Omdøbning af bruger mislykkedes:"
                     },
                     "picker": {
+                        "headers": {
+                            "group": "Gruppe",
+                            "name": "Navn",
+                            "system": "System"
+                        },
                         "system_generated": "Systemgenereret",
                         "title": "Brugere"
                     }
@@ -2112,7 +2143,7 @@
                             "change_type": "Skift type",
                             "condition_explanation": "Kortet vises, når ALLE nedenstående betingelser er opfyldt.",
                             "conditions": "Betingelser",
-                            "current_state": "aktuelt",
+                            "current_state": "aktuelle",
                             "description": "Betinget-kortet viser et andet kort baseret på entitetstilstande.",
                             "name": "Betinget",
                             "state_equal": "Tilstand er lig med",
@@ -2135,6 +2166,10 @@
                             "description": "Entitetsfilterkortet giver dig mulighed for at definere en liste af entiteter, du kun vil vise, når en bestemt tilstand er tilstede.",
                             "name": "Entitetsfilter"
                         },
+                        "entity": {
+                            "description": "Entitetskortet giver dig et hurtigt overblik over din entitets tilstand.",
+                            "name": "Entitet"
+                        },
                         "gauge": {
                             "description": "Målerkortet er et basalt kort, der gør det muligt visuelt at se sensordata.",
                             "name": "Måler",
@@ -2147,8 +2182,10 @@
                         },
                         "generic": {
                             "aspect_ratio": "Størrelsesforhold",
+                            "attribute": "Egenskab",
                             "camera_image": "Kameraentitet",
                             "camera_view": "Kameravisning",
+                            "double_tap_action": "Handling ved dobbelttryk",
                             "entities": "Entiteter",
                             "entity": "Entitet",
                             "hold_action": "Handling ved hold",
@@ -2199,6 +2236,7 @@
                             "default_zoom": "Standard-zoom",
                             "description": "Kort-kortet giver dig mulighed for at vise entiteter på et kort.",
                             "geo_location_sources": "Lokalitetskilder",
+                            "hours_to_show": "Vis i antal timer",
                             "name": "Kort",
                             "source": "Kilde"
                         },
@@ -2254,6 +2292,10 @@
                             "description": "Vejrudsigtskortet viser vejret - meget nyttigt at medtage på brugerflader, som folk viser på væggen.",
                             "name": "Vejrudsigt"
                         }
+                    },
+                    "cardpicker": {
+                        "custom_card": "Brugerdefineret",
+                        "no_description": "Ingen beskrivelse tilgængelig."
                     },
                     "edit_card": {
                         "add": "Tilføj kort",
@@ -2319,6 +2361,7 @@
                     "save_config": {
                         "cancel": "Glem det",
                         "close": "Luk",
+                        "empty_config": "Start med et tomt betjeningspanel",
                         "header": "Tag kontrol over din 'Lovelace'-brugerflade",
                         "para": "Som standard vil Home Assistant vedligeholde din brugerflade ved at opdatere den, når nye entiteter eller Lovelace-brugerfladekomponenter bliver tilgængelige. Hvis du overtager kontrollen, vil vi ikke længere foretage ændringer automatisk for dig.",
                         "para_sure": "Er du sikker på du ønsker at tage kontrol over din brugerflade?",
@@ -2568,6 +2611,11 @@
                     "submit": "Indsend"
                 },
                 "current_user": "Du er logget ind som {fullName}.",
+                "dashboard": {
+                    "description": "Vælg et standardbetjeningspanel for denne enhed.",
+                    "dropdown_label": "Betjeningspanel",
+                    "header": "Betjeningspanel"
+                },
                 "force_narrow": {
                     "description": "Dette vil skjule sidebjælken som standard, svarende til den mobile oplevelse.",
                     "header": "Skjul altid sidebjælken"
@@ -2610,12 +2658,12 @@
                     "header": "Multifaktor-godkendelsesmoduler"
                 },
                 "push_notifications": {
-                    "description": "Send meddelelser til denne enhed.",
+                    "description": "Send notifikationer til denne enhed.",
                     "error_load_platform": "Konfigurer notify.html5",
                     "error_use_https": "Kræver SSL aktiveret til brugerflade.",
-                    "header": "Push-meddelelser",
+                    "header": "Push-notifikationer",
                     "link_promo": "Lær mere",
-                    "push_notifications": "Push-meddelelser"
+                    "push_notifications": "Push-notifikationer"
                 },
                 "refresh_tokens": {
                     "confirm_delete": "Er du sikker på, at du vil slette opdateringsstoken til {name}?",

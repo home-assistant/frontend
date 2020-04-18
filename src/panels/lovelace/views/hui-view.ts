@@ -1,31 +1,28 @@
 import {
   html,
   LitElement,
+  property,
   PropertyValues,
   TemplateResult,
-  property,
 } from "lit-element";
-
-import "../../../components/entity/ha-state-label-badge";
 // This one is for types
-
+import { classMap } from "lit-html/directives/class-map";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
-
+import { computeRTL } from "../../../common/util/compute_rtl";
+import "../../../components/entity/ha-state-label-badge";
 import {
-  LovelaceViewConfig,
-  LovelaceCardConfig,
   LovelaceBadgeConfig,
+  LovelaceCardConfig,
+  LovelaceViewConfig,
 } from "../../../data/lovelace";
 import { HomeAssistant } from "../../../types";
-import { classMap } from "lit-html/directives/class-map";
-import { Lovelace, LovelaceCard, LovelaceBadge } from "../types";
-import { createCardElement } from "../create-element/create-card-element";
-import { computeCardSize } from "../common/compute-card-size";
-import { showEditCardDialog } from "../editor/card-editor/show-edit-card-dialog";
 import { HuiErrorCard } from "../cards/hui-error-card";
-import { computeRTL } from "../../../common/util/compute_rtl";
-import { createBadgeElement } from "../create-element/create-badge-element";
+import { computeCardSize } from "../common/compute-card-size";
 import { processConfigEntities } from "../common/process-config-entities";
+import { createBadgeElement } from "../create-element/create-badge-element";
+import { createCardElement } from "../create-element/create-card-element";
+import { showEditCardDialog } from "../editor/card-editor/show-edit-card-dialog";
+import { Lovelace, LovelaceBadge, LovelaceCard } from "../types";
 
 let editCodeLoaded = false;
 
@@ -49,10 +46,15 @@ const getColumnIndex = (columnEntityCount: number[], size: number) => {
 
 export class HUIView extends LitElement {
   @property() public hass?: HomeAssistant;
+
   @property() public lovelace?: Lovelace;
+
   @property({ type: Number }) public columns?: number;
+
   @property({ type: Number }) public index?: number;
+
   @property() private _cards: Array<LovelaceCard | HuiErrorCard> = [];
+
   @property() private _badges: LovelaceBadge[] = [];
 
   // Public to make demo happy
@@ -117,7 +119,11 @@ export class HUIView extends LitElement {
           padding: 4px 4px 0;
           transform: translateZ(0);
           position: relative;
-          background: var(--lovelace-background);
+          color: var(--primary-text-color);
+          background: var(
+            --lovelace-background,
+            var(--primary-background-color)
+          );
         }
 
         #badges {
@@ -261,12 +267,12 @@ export class HUIView extends LitElement {
 
     const elements: HUIView["_badges"] = [];
     const badges = processConfigEntities(config.badges as any);
-    for (const badge of badges) {
+    badges.forEach((badge) => {
       const element = createBadgeElement(badge);
       element.hass = this.hass;
       elements.push(element);
       root.appendChild(element);
-    }
+    });
     this._badges = elements;
     root.style.display = elements.length > 0 ? "block" : "none";
   }

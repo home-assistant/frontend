@@ -1,34 +1,33 @@
+import { HassEntity } from "home-assistant-js-websocket";
 import {
-  LitElement,
-  html,
-  TemplateResult,
-  property,
-  customElement,
   css,
   CSSResult,
+  customElement,
+  html,
+  LitElement,
+  property,
   PropertyValues,
+  TemplateResult,
 } from "lit-element";
-
-import "../../../../components/device/ha-area-devices-picker";
-
-import { HomeAssistant } from "../../../../types";
-import { PolymerChangedEvent } from "../../../../polymer-types";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import { haStyleDialog } from "../../../../resources/styles";
-import { PlaceholderContainer, Placeholder } from "./dialog-thingtalk";
-import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
-import { subscribeEntityRegistry } from "../../../../data/entity_registry";
 import { computeDomain } from "../../../../common/entity/compute_domain";
-import { HassEntity } from "home-assistant-js-websocket";
-import { getPath, applyPatch } from "../../../../common/util/patch";
+import { applyPatch, getPath } from "../../../../common/util/patch";
+import "../../../../components/device/ha-area-devices-picker";
 import {
-  subscribeAreaRegistry,
   AreaRegistryEntry,
+  subscribeAreaRegistry,
 } from "../../../../data/area_registry";
 import {
-  subscribeDeviceRegistry,
   DeviceRegistryEntry,
+  subscribeDeviceRegistry,
 } from "../../../../data/device_registry";
+import { subscribeEntityRegistry } from "../../../../data/entity_registry";
+import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
+import { PolymerChangedEvent } from "../../../../polymer-types";
+import { haStyleDialog } from "../../../../resources/styles";
+import { HomeAssistant } from "../../../../types";
+import { Placeholder, PlaceholderContainer } from "./dialog-thingtalk";
+import { domainToName } from "../../../../data/integration";
 
 declare global {
   // for fire event
@@ -64,15 +63,25 @@ interface DeviceEntitiesLookup {
 @customElement("ha-thingtalk-placeholders")
 export class ThingTalkPlaceholders extends SubscribeMixin(LitElement) {
   @property() public hass!: HomeAssistant;
+
   @property() public opened!: boolean;
+
   public skip!: () => void;
+
   @property() public placeholders!: PlaceholderContainer;
+
   @property() private _error?: string;
+
   private _deviceEntityLookup: DeviceEntitiesLookup = {};
+
   @property() private _extraInfo: ExtraInfo = {};
+
   @property() private _placeholderValues: PlaceholderValues = {};
+
   private _devices?: DeviceRegistryEntry[];
+
   private _areas?: AreaRegistryEntry[];
+
   private _search = false;
 
   public hassSubscribe() {
@@ -122,11 +131,7 @@ export class ThingTalkPlaceholders extends SubscribeMixin(LitElement) {
       >
         <h2>Great! Now we need to link some devices.</h2>
         <paper-dialog-scrollable>
-          ${this._error
-            ? html`
-                <div class="error">${this._error}</div>
-              `
-            : ""}
+          ${this._error ? html` <div class="error">${this._error}</div> ` : ""}
           ${Object.entries(this.placeholders).map(
             ([type, placeholders]) =>
               html`
@@ -200,7 +205,8 @@ export class ThingTalkPlaceholders extends SubscribeMixin(LitElement) {
                           `
                         : ""}
                     `;
-                  } else if (placeholder.fields.includes("entity_id")) {
+                  }
+                  if (placeholder.fields.includes("entity_id")) {
                     return html`
                       <ha-entity-picker
                         .type=${type}
@@ -221,10 +227,7 @@ export class ThingTalkPlaceholders extends SubscribeMixin(LitElement) {
                       Unknown placeholder<br />
                       ${placeholder.domains}<br />
                       ${placeholder.fields.map(
-                        (field) =>
-                          html`
-                            ${field}<br />
-                          `
+                        (field) => html` ${field}<br /> `
                       )}
                     </div>
                   `;
@@ -318,7 +321,7 @@ export class ThingTalkPlaceholders extends SubscribeMixin(LitElement) {
 
   private _getLabel(domains: string[], deviceClasses?: string[]) {
     return `${domains
-      .map((domain) => this.hass.localize(`domain.${domain}`))
+      .map((domain) => domainToName(this.hass.localize, domain))
       .join(", ")}${
       deviceClasses ? ` of type ${deviceClasses.join(", ")}` : ""
     }`;
@@ -408,7 +411,7 @@ export class ThingTalkPlaceholders extends SubscribeMixin(LitElement) {
       if (entities.length === 0) {
         // Should not happen because we filter the device picker on domain
         this._error = `No ${placeholder.domains
-          .map((domain) => this.hass.localize(`domain.${domain}`))
+          .map((domain) => domainToName(this.hass.localize, domain))
           .join(", ")} entities found in this device.`;
       } else if (entities.length === 1) {
         applyPatch(

@@ -1,5 +1,5 @@
-import { MockHomeAssistant } from "../../../src/fake_data/provide_hass";
 import { PersistentNotification } from "../../../src/data/persistent_notification";
+import { MockHomeAssistant } from "../../../src/fake_data/provide_hass";
 
 export const mockPersistentNotification = (hass: MockHomeAssistant) => {
   hass.mockWS("persistent_notification/get", () =>

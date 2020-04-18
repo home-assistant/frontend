@@ -1,25 +1,28 @@
+import "@polymer/paper-input/paper-input";
 import {
+  customElement,
   html,
   LitElement,
-  TemplateResult,
-  customElement,
   property,
+  TemplateResult,
 } from "lit-element";
-import "@polymer/paper-input/paper-input";
-
-import "../../components/hui-theme-select-editor";
-
-import "../../../../components/ha-icon-input";
-import "../../components/hui-entity-editor";
-
-import { struct } from "../../common/structs/struct";
-import { EntitiesEditorEvent, EditorTarget } from "../types";
-import { HomeAssistant } from "../../../../types";
-import { LovelaceCardEditor } from "../../types";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import { configElementStyle } from "./config-elements-style";
-import { LightCardConfig } from "../../cards/types";
 import { stateIcon } from "../../../../common/entity/state_icon";
+import "../../../../components/ha-icon-input";
+import { ActionConfig } from "../../../../data/lovelace";
+import { HomeAssistant } from "../../../../types";
+import { LightCardConfig } from "../../cards/types";
+import { struct } from "../../common/structs/struct";
+import "../../components/hui-action-editor";
+import "../../components/hui-entity-editor";
+import "../../components/hui-theme-select-editor";
+import { LovelaceCardEditor } from "../../types";
+import {
+  actionConfigStruct,
+  EditorTarget,
+  EntitiesEditorEvent,
+} from "../types";
+import { configElementStyle } from "./config-elements-style";
 
 const cardConfigStruct = struct({
   type: "string",
@@ -27,6 +30,8 @@ const cardConfigStruct = struct({
   entity: "string?",
   theme: "string?",
   icon: "string?",
+  hold_action: struct.optional(actionConfigStruct),
+  double_tap_action: struct.optional(actionConfigStruct),
 });
 
 @customElement("hui-light-card-editor")
@@ -45,7 +50,7 @@ export class HuiLightCardEditor extends LitElement
   }
 
   get _theme(): string {
-    return this._config!.theme || "default";
+    return this._config!.theme || "";
   }
 
   get _entity(): string {
@@ -56,10 +61,27 @@ export class HuiLightCardEditor extends LitElement
     return this._config!.icon || "";
   }
 
+  get _hold_action(): ActionConfig {
+    return this._config!.hold_action || { action: "none" };
+  }
+
+  get _double_tap_action(): ActionConfig {
+    return this._config!.double_tap_action || { action: "none" };
+  }
+
   protected render(): TemplateResult {
-    if (!this.hass) {
+    if (!this.hass || !this._config) {
       return html``;
     }
+
+    const actions = [
+      "more-info",
+      "toggle",
+      "navigate",
+      "url",
+      "call-service",
+      "none",
+    ];
 
     return html`
       ${configElementStyle}
@@ -71,10 +93,10 @@ export class HuiLightCardEditor extends LitElement
             "ui.panel.lovelace.editor.card.config.required"
           )})"
           .hass=${this.hass}
-          .value="${this._entity}"
+          .value=${this._entity}
           .configValue=${"entity"}
-          include-domains='["light"]'
-          @change="${this._valueChanged}"
+          .include-domains=${["light"]}
+          @change=${this._valueChanged}
           allow-custom-entity
         ></ha-entity-picker>
         <div class="side-by-side">
@@ -84,9 +106,9 @@ export class HuiLightCardEditor extends LitElement
             )} (${this.hass.localize(
               "ui.panel.lovelace.editor.card.config.optional"
             )})"
-            .value="${this._name}"
-            .configValue="${"name"}"
-            @value-changed="${this._valueChanged}"
+            .value=${this._name}
+            .configValue=${"name"}
+            @value-changed=${this._valueChanged}
           ></paper-input>
           <ha-icon-input
             .label="${this.hass.localize(
@@ -94,20 +116,46 @@ export class HuiLightCardEditor extends LitElement
             )} (${this.hass.localize(
               "ui.panel.lovelace.editor.card.config.optional"
             )})"
-            .value="${this._icon}"
+            .value=${this._icon}
             .placeholder=${this._icon ||
-              stateIcon(this.hass.states[this._entity])}
-            .configValue="${"icon"}"
-            @value-changed="${this._valueChanged}"
+            stateIcon(this.hass.states[this._entity])}
+            .configValue=${"icon"}
+            @value-changed=${this._valueChanged}
           ></ha-icon-input>
         </div>
 
         <hui-theme-select-editor
           .hass=${this.hass}
-          .value="${this._theme}"
-          .configValue="${"theme"}"
-          @value-changed="${this._valueChanged}"
+          .value=${this._theme}
+          .configValue=${"theme"}
+          @value-changed=${this._valueChanged}
         ></hui-theme-select-editor>
+
+        <hui-action-editor
+          .label="${this.hass.localize(
+            "ui.panel.lovelace.editor.card.generic.hold_action"
+          )} (${this.hass.localize(
+            "ui.panel.lovelace.editor.card.config.optional"
+          )})"
+          .hass=${this.hass}
+          .config=${this._hold_action}
+          .actions=${actions}
+          .configValue=${"hold_action"}
+          @action-changed=${this._valueChanged}
+        ></hui-action-editor>
+
+        <hui-action-editor
+          .label="${this.hass.localize(
+            "ui.panel.lovelace.editor.card.generic.double_tap_action"
+          )} (${this.hass.localize(
+            "ui.panel.lovelace.editor.card.config.optional"
+          )})"
+          .hass=${this.hass}
+          .config=${this._double_tap_action}
+          .actions=${actions}
+          .configValue=${"double_tap_action"}
+          @action-changed=${this._valueChanged}
+        ></hui-action-editor>
       </div>
     `;
   }
@@ -118,7 +166,10 @@ export class HuiLightCardEditor extends LitElement
     }
     const target = ev.target! as EditorTarget;
 
-    if (this[`_${target.configValue}`] === target.value) {
+    if (
+      this[`_${target.configValue}`] === target.value ||
+      this[`_${target.configValue}`] === target.config
+    ) {
       return;
     }
     if (target.configValue) {
@@ -127,7 +178,7 @@ export class HuiLightCardEditor extends LitElement
       } else {
         this._config = {
           ...this._config,
-          [target.configValue!]: target.value,
+          [target.configValue!]: target.value ? target.value : target.config,
         };
       }
     }

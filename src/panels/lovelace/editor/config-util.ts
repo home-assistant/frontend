@@ -1,6 +1,6 @@
 import {
-  LovelaceConfig,
   LovelaceCardConfig,
+  LovelaceConfig,
   LovelaceViewConfig,
 } from "../../../data/lovelace";
 
@@ -110,6 +110,40 @@ export const deleteCard = (
       cards: (viewConf.cards || []).filter(
         (_origConf, ind) => ind !== cardIndex
       ),
+    });
+  });
+
+  return {
+    ...config,
+    views,
+  };
+};
+
+export const insertCard = (
+  config: LovelaceConfig,
+  path: [number, number],
+  cardConfig: LovelaceCardConfig
+) => {
+  const [viewIndex, cardIndex] = path;
+  const views: LovelaceViewConfig[] = [];
+
+  config.views.forEach((viewConf, index) => {
+    if (index !== viewIndex) {
+      views.push(config.views[index]);
+      return;
+    }
+
+    const cards = viewConf.cards
+      ? [
+          ...viewConf.cards.slice(0, cardIndex),
+          cardConfig,
+          ...viewConf.cards.slice(cardIndex),
+        ]
+      : [cardConfig];
+
+    views.push({
+      ...viewConf,
+      cards,
     });
   });
 

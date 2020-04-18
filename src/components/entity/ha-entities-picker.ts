@@ -1,27 +1,25 @@
-import {
-  LitElement,
-  TemplateResult,
-  property,
-  html,
-  customElement,
-} from "lit-element";
 import "@polymer/paper-icon-button/paper-icon-button-light";
-
-import { HomeAssistant } from "../../types";
-import { PolymerChangedEvent } from "../../polymer-types";
+import type { HassEntity } from "home-assistant-js-websocket";
+import {
+  customElement,
+  html,
+  LitElement,
+  property,
+  TemplateResult,
+} from "lit-element";
 import { fireEvent } from "../../common/dom/fire_event";
 import { isValidEntityId } from "../../common/entity/valid_entity_id";
-
+import type { PolymerChangedEvent } from "../../polymer-types";
+import type { HomeAssistant } from "../../types";
 import "./ha-entity-picker";
-// Not a duplicate, type import
-// tslint:disable-next-line
-import { HaEntityPickerEntityFilterFunc } from "./ha-entity-picker";
-import { HassEntity } from "home-assistant-js-websocket";
+import type { HaEntityPickerEntityFilterFunc } from "./ha-entity-picker";
 
 @customElement("ha-entities-picker")
 class HaEntitiesPickerLight extends LitElement {
   @property() public hass?: HomeAssistant;
+
   @property() public value?: string[];
+
   /**
    * Show entities from specific domains.
    * @type {string}
@@ -29,6 +27,7 @@ class HaEntitiesPickerLight extends LitElement {
    */
   @property({ type: Array, attribute: "include-domains" })
   public includeDomains?: string[];
+
   /**
    * Show no entities of these domains.
    * @type {Array}
@@ -36,8 +35,10 @@ class HaEntitiesPickerLight extends LitElement {
    */
   @property({ type: Array, attribute: "exclude-domains" })
   public excludeDomains?: string[];
+
   @property({ attribute: "picked-entity-label" })
   public pickedEntityLabel?: string;
+
   @property({ attribute: "pick-entity-label" }) public pickEntityLabel?: string;
 
   protected render(): TemplateResult {

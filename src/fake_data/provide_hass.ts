@@ -1,16 +1,17 @@
+import { HassEntities } from "home-assistant-js-websocket";
 import {
   applyThemesOnElement,
   invalidateThemeCache,
 } from "../common/dom/apply_themes_on_element";
-
-import { demoConfig } from "./demo_config";
-import { demoServices } from "./demo_services";
-import { demoPanels } from "./demo_panels";
-import { getEntity, Entity } from "./entity";
-import { HomeAssistant } from "../types";
-import { HassEntities } from "home-assistant-js-websocket";
-import { getLocalLanguage } from "../util/hass-translation";
+import { computeLocalize } from "../common/translations/localize";
+import { DEFAULT_PANEL } from "../data/panel";
 import { translationMetadata } from "../resources/translations-metadata";
+import { HomeAssistant } from "../types";
+import { getLocalLanguage, getTranslation } from "../util/hass-translation";
+import { demoConfig } from "./demo_config";
+import { demoPanels } from "./demo_panels";
+import { demoServices } from "./demo_services";
+import { Entity, getEntity } from "./entity";
 
 const ensureArray = <T>(val: T | T[]): T[] =>
   Array.isArray(val) ? val : [val];
@@ -27,6 +28,7 @@ export interface MockHomeAssistant extends HomeAssistant {
   updateHass(obj: Partial<MockHomeAssistant>);
   updateStates(newStates: HassEntities);
   addEntities(entites: Entity | Entity[], replace?: boolean);
+  updateTranslations(fragment: null | string, language?: string);
   mockWS(
     type: string,
     callback: (msg: any, onChange?: (response: any) => void) => any
@@ -51,13 +53,29 @@ export const provideHass = (
   } = {};
   const entities = {};
 
+  function updateTranslations(fragment: null | string, language?: string) {
+    const lang = language || getLocalLanguage();
+    getTranslation(fragment, lang).then((translation) => {
+      const resources = {
+        [lang]: {
+          ...(hass().resources && hass().resources[lang]),
+          ...translation.data,
+        },
+      };
+      hass().updateHass({
+        resources,
+        localize: computeLocalize(elements[0], lang, resources),
+      });
+    });
+  }
+
   function updateStates(newStates: HassEntities) {
     hass().updateHass({
       states: { ...hass().states, ...newStates },
     });
   }
 
-  function addEntities(newEntities, replace: boolean = false) {
+  function addEntities(newEntities, replace = false) {
     const states = {};
     ensureArray(newEntities).forEach((ent) => {
       ent.hass = hass();
@@ -113,7 +131,7 @@ export const provideHass = (
         if (callback) {
           callback(msg);
         } else {
-          // tslint:disable-next-line
+          // eslint-disable-next-line
           console.error(`Unknown WS command: ${msg.type}`);
         }
       },
@@ -172,6 +190,7 @@ export const provideHass = (
       name: "Demo User",
     },
     panelUrl: "lovelace",
+    defaultPanel: DEFAULT_PANEL,
 
     language: localLanguage,
     selectedLanguage: localLanguage,
@@ -191,7 +210,7 @@ export const provideHass = (
           )
         );
       } else {
-        // tslint:disable-next-line
+        // eslint-disable-next-line
         console.log("unmocked callService", domain, service, data);
       }
     },
@@ -218,6 +237,7 @@ export const provideHass = (
       });
     },
     updateStates,
+    updateTranslations,
     addEntities,
     mockWS(type, callback) {
       wsCommands[type] = callback;

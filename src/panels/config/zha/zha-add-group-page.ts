@@ -1,41 +1,51 @@
+import "@material/mwc-button";
+import "@polymer/paper-input/paper-input";
+import type { PaperInputElement } from "@polymer/paper-input/paper-input";
+import "@polymer/paper-spinner/paper-spinner";
 import {
-  property,
-  LitElement,
-  html,
-  customElement,
   css,
   CSSResult,
+  customElement,
+  html,
+  LitElement,
+  property,
   PropertyValues,
+  query,
 } from "lit-element";
-
-import "../../../layouts/hass-subpage";
-import "../../../layouts/hass-error-screen";
-import "../ha-config-section";
-import { HomeAssistant } from "../../../types";
+import type { HASSDomEvent } from "../../../common/dom/fire_event";
+import { navigate } from "../../../common/navigate";
+import type { SelectionChangedEvent } from "../../../components/data-table/ha-data-table";
 import {
-  ZHADevice,
-  fetchGroupableDevices,
   addGroup,
+  fetchGroupableDevices,
+  ZHADevice,
   ZHAGroup,
 } from "../../../data/zha";
+import "../../../layouts/hass-error-screen";
+import "../../../layouts/hass-subpage";
+import type { PolymerChangedEvent } from "../../../polymer-types";
+import type { HomeAssistant } from "../../../types";
+import "../ha-config-section";
 import "./zha-devices-data-table";
-import { SelectionChangedEvent } from "../../../components/data-table/ha-data-table";
-import { navigate } from "../../../common/navigate";
-import { PolymerChangedEvent } from "../../../polymer-types";
-import "@polymer/paper-spinner/paper-spinner";
-import "@material/mwc-button";
-import { PaperInputElement } from "@polymer/paper-input/paper-input";
-import { HASSDomEvent } from "../../../common/dom/fire_event";
+import type { ZHADevicesDataTable } from "./zha-devices-data-table";
 
 @customElement("zha-add-group-page")
 export class ZHAAddGroupPage extends LitElement {
   @property() public hass!: HomeAssistant;
-  @property() public narrow!: boolean;
-  @property() public devices: ZHADevice[] = [];
-  @property() private _processingAdd: boolean = false;
-  @property() private _groupName: string = "";
 
-  private _firstUpdatedCalled: boolean = false;
+  @property() public narrow!: boolean;
+
+  @property() public devices: ZHADevice[] = [];
+
+  @property() private _processingAdd = false;
+
+  @property() private _groupName = "";
+
+  @query("zha-devices-data-table")
+  private _zhaDevicesDataTable!: ZHADevicesDataTable;
+
+  private _firstUpdatedCalled = false;
+
   private _selectedDevicesToAdd: string[] = [];
 
   public connectedCallback(): void {
@@ -89,8 +99,8 @@ export class ZHAAddGroupPage extends LitElement {
           <div class="paper-dialog-buttons">
             <mwc-button
               .disabled="${!this._groupName ||
-                this._groupName === "" ||
-                this._processingAdd}"
+              this._groupName === "" ||
+              this._processingAdd}"
               @click="${this._createGroup}"
               class="button"
             >
@@ -130,6 +140,7 @@ export class ZHAAddGroupPage extends LitElement {
     this._selectedDevicesToAdd = [];
     this._processingAdd = false;
     this._groupName = "";
+    this._zhaDevicesDataTable.clearSelection();
     navigate(this, `/config/zha/group/${group.group_id}`, true);
   }
 

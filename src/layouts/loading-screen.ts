@@ -1,19 +1,17 @@
 import "@polymer/paper-spinner/paper-spinner-lite";
 import {
+  css,
+  CSSResult,
+  customElement,
+  html,
   LitElement,
   TemplateResult,
-  html,
-  css,
-  customElement,
-  CSSResult,
 } from "lit-element";
 
 @customElement("loading-screen")
 class LoadingScreen extends LitElement {
   protected render(): TemplateResult {
-    return html`
-      <paper-spinner-lite active></paper-spinner-lite>
-    `;
+    return html` <paper-spinner-lite active></paper-spinner-lite> `;
   }
 
   static get styles(): CSSResult {

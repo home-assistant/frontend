@@ -509,6 +509,7 @@
                 "attributes": {
                     "air_pressure": "Presión del aire",
                     "humidity": "Humedad",
+                    "precipitation": "Precipitación",
                     "temperature": "Temperatura",
                     "visibility": "Visibilidad",
                     "wind_speed": "Velocidad del viento"
@@ -531,7 +532,9 @@
                     "wnw": "ONO",
                     "wsw": "OSO"
                 },
-                "forecast": "Pronóstico"
+                "forecast": "Pronóstico",
+                "high": "Máxima",
+                "low": "Mínima"
             }
         },
         "common": {
@@ -543,6 +546,7 @@
             "save": "Guardar",
             "successfully_deleted": "Eliminado correctamente",
             "successfully_saved": "Guardado correctamente",
+            "undo": "Deshacer",
             "yes": "Sí"
         },
         "components": {
@@ -754,11 +758,13 @@
                 "buttons": {
                     "add": "Añadir dispositivos",
                     "reconfigure": "Reconfigurar dispositivo",
-                    "remove": "Eliminar dispositivos"
+                    "remove": "Eliminar dispositivos",
+                    "zigbee_information": "Información Zigbee"
                 },
                 "confirmations": {
                     "remove": "¿Estás seguro de que quieres eliminar este dispositivo?"
                 },
+                "device_signature": "Firma del dispositivo Zigbee",
                 "last_seen": "Ultima vez visto",
                 "manuf": "por {manufacturer}",
                 "no_area": "Ningún área",
@@ -767,7 +773,8 @@
                 "services": {
                     "reconfigure": "Reconfigura el dispositivo ZHA (curar dispositivo). Usa esto si tienes problemas con el dispositivo. Si el dispositivo en cuestión es un dispositivo alimentado por batería, asegúrate de que está activo y aceptando comandos cuando uses este servicio.",
                     "remove": "Eliminar un dispositivo de la red Zigbee.",
-                    "updateDeviceName": "Establece un nombre personalizado para este dispositivo en el registro de dispositivos."
+                    "updateDeviceName": "Establece un nombre personalizado para este dispositivo en el registro de dispositivos.",
+                    "zigbee_information": "Ver la información Zigbee para el dispositivo."
                 },
                 "unknown": "Desconocido",
                 "zha_device_card": {
@@ -812,6 +819,10 @@
                 "areas": {
                     "caption": "Áreas",
                     "create_area": "CREAR ÁREA",
+                    "data_table": {
+                        "area": "Área",
+                        "devices": "Dispositivos"
+                    },
                     "delete": {
                         "confirmation_text": "Todos los dispositivos en esta área quedarán sin asignar.",
                         "confirmation_title": "¿Estás seguro de que deseas eliminar esta área?"
@@ -1054,6 +1065,9 @@
                         "delete_confirm": "¿Estás seguro de que quieres eliminar esta automatización?",
                         "edit_automation": "Editar automatización",
                         "header": "Editor de automatización",
+                        "headers": {
+                            "name": "Nombre"
+                        },
                         "introduction": "El editor de automatización te permite crear y editar automatizaciones. En el enlace siguiente puedes leer las instrucciones para asegurarte de que has configurado correctamente Home Assistant.",
                         "learn_more": "Saber más sobre las automatizaciones",
                         "no_automations": "No pudimos encontrar ninguna automatización editable",
@@ -1110,7 +1124,7 @@
                             "info": "Home Assistant Cloud proporciona una conexión remota segura a tu instancia mientras estás fuera de casa.",
                             "instance_is_available": "Tu instancia está disponible en",
                             "instance_will_be_available": "Tu instancia estará disponible en",
-                            "link_learn_how_it_works": "Aprender cómo funciona",
+                            "link_learn_how_it_works": "Aprende cómo funciona",
                             "title": "Control remoto"
                         },
                         "sign_out": "Cerrar sesión",
@@ -1288,7 +1302,7 @@
                     },
                     "warning": {
                         "include_link": "incluir customize.yaml",
-                        "include_sentence": "Parece que tu configuration.yaml no funciona correctamente",
+                        "include_sentence": "Parece que tu configuration.yaml no es correcto, debe",
                         "not_applied": "Los cambios realizados aquí se escriben en él, pero no se aplicarán después de una recarga de configuración a menos que la inclusión esté en su lugar."
                     }
                 },
@@ -1334,6 +1348,7 @@
                     },
                     "info": "Información del dispositivo",
                     "name": "Nombre",
+                    "no_devices": "Sin dispositivos",
                     "scene": {
                         "create": "Crear escena con el dispositivo",
                         "no_scenes": "Sin escenas",
@@ -1509,11 +1524,11 @@
                         "cant_edit_yaml": "Los paneles de control definidos en YAML no se pueden editar desde la IU. Cámbialos en configuration.yaml.",
                         "caption": "Paneles de control",
                         "conf_mode": {
-                            "storage": "Controlado por la interfaz de usuario",
+                            "storage": "Controlado por la IU",
                             "yaml": "Archivo YAML"
                         },
                         "confirm_delete": "¿Estás seguro de que quieres eliminar este panel de control?",
-                        "default_dashboard": "Este es el panel predeterminado",
+                        "default_dashboard": "Este es el panel de control predeterminado",
                         "detail": {
                             "create": "Crear",
                             "delete": "Eliminar",
@@ -1638,7 +1653,10 @@
                         "delete_scene": "Eliminar escena",
                         "edit_scene": "Editar escena",
                         "header": "Editor de escenas",
-                        "introduction": "El editor de escenas te permite crear y editar escenas. En el enlace siguiente puedes leer las instrucciones para asegurarte de que has configurado Home Assistant correctamente.",
+                        "headers": {
+                            "name": "Nombre"
+                        },
+                        "introduction": "El editor de escenas te permite crear y editar escenas. Por favor, sigue el siguiente enlace para leer las instrucciones para asegurarte de que has configurado Home Assistant correctamente.",
                         "learn_more": "Saber más sobre las escenas",
                         "no_scenes": "No pudimos encontrar ninguna escena editable",
                         "only_editable": "Solo las escenas definidas en scenes.yaml son editables.",
@@ -1665,9 +1683,13 @@
                         "add_script": "Añadir script",
                         "edit_script": "Editar script",
                         "header": "Editor de scripts",
-                        "introduction": "El editor de scripts te permite crear y editar scripts. En el enlace siguiente puedes leer las instrucciones para asegurarte de que has configurado Home Assistant correctamente.",
+                        "headers": {
+                            "name": "Nombre"
+                        },
+                        "introduction": "El editor de scripts te permite crear y editar scripts. Por favor, sigue el siguiente enlace para leer las instrucciones para asegurarte de que has configurado Home Assistant correctamente.",
                         "learn_more": "Saber más sobre los scripts",
                         "no_scripts": "No hemos encontrado ningún script editable",
+                        "show_info": "Mostrar información sobre el script",
                         "trigger_script": "Script de desencadenante"
                     }
                 },
@@ -1716,6 +1738,7 @@
                     "editor": {
                         "activate_user": "Activar usuario",
                         "active": "Activo",
+                        "admin": "Administrador",
                         "caption": "Ver usuario",
                         "change_password": "Cambiar la contraseña",
                         "confirm_user_deletion": "¿Seguro que quieres eliminar {name}?",
@@ -1725,14 +1748,22 @@
                         "group": "Grupo",
                         "group_update_failed": "La actualización del grupo falló:",
                         "id": "ID",
+                        "name": "Nombre",
                         "owner": "Propietario",
                         "rename_user": "Renombrar usuario",
                         "system_generated": "Generado por el sistema",
+                        "system_generated_users_not_editable": "No se pueden actualizar los usuarios generados por el sistema.",
                         "system_generated_users_not_removable": "No se pueden eliminar los usuarios generados por el sistema.",
                         "unnamed_user": "Usuario sin nombre",
+                        "update_user": "Actualizar",
                         "user_rename_failed": "El cambio de nombre del usuario falló:"
                     },
                     "picker": {
+                        "headers": {
+                            "group": "Grupo",
+                            "name": "Nombre",
+                            "system": "Sistema"
+                        },
                         "system_generated": "Generado por el sistema",
                         "title": "Usuarios"
                     }
@@ -2135,6 +2166,10 @@
                             "description": "La tarjeta Filtro de Entidades te permite definir una lista de entidades de las que deseas realizar un seguimiento solo cuando se encuentra en un estado determinado.",
                             "name": "Filtro de entidad"
                         },
+                        "entity": {
+                            "description": "La tarjeta Entidad te ofrece una visión rápida del estado de tu entidad.",
+                            "name": "Entidad"
+                        },
                         "gauge": {
                             "description": "La tarjeta Indicador es una tarjeta básica que permite ver visualmente los datos de los sensores.",
                             "name": "Indicador",
@@ -2147,8 +2182,10 @@
                         },
                         "generic": {
                             "aspect_ratio": "Relación de aspecto",
+                            "attribute": "Atributo",
                             "camera_image": "Entidad de cámara",
                             "camera_view": "Vista de cámara",
+                            "double_tap_action": "Acción de doble toque",
                             "entities": "Entidades",
                             "entity": "Entidad",
                             "hold_action": "Acción de mantener",
@@ -2199,6 +2236,7 @@
                             "default_zoom": "Zoom predeterminado",
                             "description": "La tarjeta Mapa que te permite mostrar entidades en un mapa.",
                             "geo_location_sources": "Fuentes de geolocalización",
+                            "hours_to_show": "Horas para mostrar",
                             "name": "Mapa",
                             "source": "Fuente"
                         },
@@ -2228,7 +2266,7 @@
                             "name": "Imagen"
                         },
                         "plant-status": {
-                            "description": "La tarjeta Estado de la Planta es para todos los botánicos encantadores que hay.",
+                            "description": "La tarjeta Estado de la Planta es para todos los encantadores botánicos que hay por ahí.",
                             "name": "Estado de la planta"
                         },
                         "sensor": {
@@ -2254,6 +2292,10 @@
                             "description": "La tarjeta de Pronóstico del tiempo muestra el clima. Muy útil para incluir en las interfaces que las personas muestran en la pared.",
                             "name": "Pronóstico del tiempo"
                         }
+                    },
+                    "cardpicker": {
+                        "custom_card": "Personalizado",
+                        "no_description": "No hay descripción disponible."
                     },
                     "edit_card": {
                         "add": "Añadir tarjeta",
@@ -2319,6 +2361,7 @@
                     "save_config": {
                         "cancel": "No importa",
                         "close": "Cerrar",
+                        "empty_config": "Empezar con un panel de control vacío",
                         "header": "Tomar el control de la interfaz de usuario Lovelace",
                         "para": "Por defecto Home Assistant se encargará de tu interfaz de usuario, actualizándola cuando haya nuevas entidades o componentes Lovelace disponibles. Si asumes el control, ya no haremos más cambios automáticamente por ti.",
                         "para_sure": "¿Estás seguro de que quieres tomar el control de tu interfaz de usuario?",
@@ -2568,6 +2611,11 @@
                     "submit": "Enviar"
                 },
                 "current_user": "Has iniciado sesión como {fullName}.",
+                "dashboard": {
+                    "description": "Selecciona un panel de control predeterminado para este dispositivo.",
+                    "dropdown_label": "Panel de control",
+                    "header": "Panel de control"
+                },
                 "force_narrow": {
                     "description": "Esto ocultará la barra lateral de forma predeterminada, similar a la experiencia móvil.",
                     "header": "Ocultar siempre la barra lateral"
@@ -2576,7 +2624,7 @@
                 "language": {
                     "dropdown_label": "Idioma",
                     "header": "Idioma",
-                    "link_promo": "Ayudar traduciendo"
+                    "link_promo": "Ayuda a traducir"
                 },
                 "logout": "Cerrar sesión",
                 "logout_text": "¿Estás seguro de que quieres cerrar la sesión?",
@@ -2591,7 +2639,7 @@
                     "empty_state": "Aún no tienes tokens de acceso de larga duración.",
                     "header": "Tokens de acceso de larga duración",
                     "last_used": "Último uso el {date} desde {location}",
-                    "learn_auth_requests": "Aprender cómo realizar solicitudes autenticadas.",
+                    "learn_auth_requests": "Aprende cómo realizar solicitudes autenticadas.",
                     "not_used": "Nunca ha sido usado",
                     "prompt_copy_token": "Copia tu token de acceso. No se mostrará de nuevo.",
                     "prompt_name": "¿Nombre?"
@@ -2632,7 +2680,7 @@
                     "dropdown_label": "Tema",
                     "error_no_theme": "No hay temas disponibles",
                     "header": "Tema",
-                    "link_promo": "Saber más sobre los temas"
+                    "link_promo": "Aprende sobre los temas"
                 },
                 "vibrate": {
                     "description": "Activar o deshabilitar la vibración en este dispositivo al controlar dispositivos.",

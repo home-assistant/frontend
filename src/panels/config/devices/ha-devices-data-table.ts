@@ -1,36 +1,32 @@
-import "../../../components/data-table/ha-data-table";
-import "../../../components/entity/ha-state-icon";
-
-import memoizeOne from "memoize-one";
-
 import {
-  LitElement,
-  html,
-  TemplateResult,
-  property,
   customElement,
+  html,
+  LitElement,
+  property,
+  TemplateResult,
 } from "lit-element";
-import { HomeAssistant } from "../../../types";
-// tslint:disable-next-line
-import {
+import memoizeOne from "memoize-one";
+import { navigate } from "../../../common/navigate";
+import { LocalizeFunc } from "../../../common/translations/localize";
+import "../../../components/data-table/ha-data-table";
+import type {
   DataTableColumnContainer,
-  RowClickedEvent,
   DataTableRowData,
+  RowClickedEvent,
 } from "../../../components/data-table/ha-data-table";
-// tslint:disable-next-line
+import "../../../components/entity/ha-state-icon";
+import type { AreaRegistryEntry } from "../../../data/area_registry";
+import type { ConfigEntry } from "../../../data/config_entries";
 import {
-  DeviceRegistryEntry,
   computeDeviceName,
   DeviceEntityLookup,
+  DeviceRegistryEntry,
 } from "../../../data/device_registry";
 import {
   EntityRegistryEntry,
   findBatteryEntity,
 } from "../../../data/entity_registry";
-import { ConfigEntry } from "../../../data/config_entries";
-import { AreaRegistryEntry } from "../../../data/area_registry";
-import { navigate } from "../../../common/navigate";
-import { LocalizeFunc } from "../../../common/translations/localize";
+import type { HomeAssistant } from "../../../types";
 
 export interface DeviceRowData extends DeviceRegistryEntry {
   device?: DeviceRowData;
@@ -42,11 +38,17 @@ export interface DeviceRowData extends DeviceRegistryEntry {
 @customElement("ha-devices-data-table")
 export class HaDevicesDataTable extends LitElement {
   @property() public hass!: HomeAssistant;
+
   @property() public narrow = false;
+
   @property() public devices!: DeviceRegistryEntry[];
+
   @property() public entries!: ConfigEntry[];
+
   @property() public entities!: EntityRegistryEntry[];
+
   @property() public areas!: AreaRegistryEntry[];
+
   @property() public domain!: string;
 
   private _devices = memoizeOne(
@@ -114,9 +116,8 @@ export class HaDevicesDataTable extends LitElement {
                 .filter((entId) => entId in entryLookup)
                 .map(
                   (entId) =>
-                    localize(
-                      `component.${entryLookup[entId].domain}.config.title`
-                    ) || entryLookup[entId].domain
+                    localize(`component.${entryLookup[entId].domain}.title`) ||
+                    entryLookup[entId].domain
                 )
                 .join(", ")
             : "No integration",
@@ -221,9 +222,7 @@ export class HaDevicesDataTable extends LitElement {
                         .stateObj=${battery}
                       ></ha-state-icon>
                     `
-                  : html`
-                      -
-                    `;
+                  : html` - `;
               },
             },
           }

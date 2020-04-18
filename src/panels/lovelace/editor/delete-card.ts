@@ -1,9 +1,9 @@
-import { Lovelace } from "../types";
-import { deleteCard } from "./config-util";
 import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
 import { HomeAssistant } from "../../../types";
-import { showDeleteCardDialog } from "./card-editor/show-delete-card-dialog";
 import { showDeleteSuccessToast } from "../../../util/toast-deleted-success";
+import { Lovelace } from "../types";
+import { showDeleteCardDialog } from "./card-editor/show-delete-card-dialog";
+import { deleteCard, insertCard } from "./config-util";
 
 export async function confDeleteCard(
   element: HTMLElement,
@@ -16,8 +16,12 @@ export async function confDeleteCard(
     cardConfig,
     deleteCard: async () => {
       try {
-        await lovelace.saveConfig(deleteCard(lovelace.config, path));
-        showDeleteSuccessToast(element, hass!);
+        const newLovelace = deleteCard(lovelace.config, path);
+        await lovelace.saveConfig(newLovelace);
+        const action = async () => {
+          await lovelace.saveConfig(insertCard(newLovelace, path, cardConfig));
+        };
+        showDeleteSuccessToast(element, hass!, action);
       } catch (err) {
         showAlertDialog(element, {
           text: `Deleting failed: ${err.message}`,

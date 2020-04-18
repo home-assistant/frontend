@@ -5,38 +5,43 @@ import "@polymer/paper-listbox/paper-listbox";
 import "@polymer/paper-tooltip/paper-tooltip";
 import { HassEntity } from "home-assistant-js-websocket";
 import {
+  css,
+  CSSResult,
   customElement,
   html,
   LitElement,
   property,
   PropertyValues,
   TemplateResult,
-  CSSResult,
-  css,
 } from "lit-element";
 import memoize from "memoize-one";
 import { computeStateDomain } from "../../../common/entity/compute_state_domain";
+import { domainIcon } from "../../../common/entity/domain_icon";
 import "../../../common/search/search-input";
 import {
   DataTableColumnContainer,
   RowClickedEvent,
 } from "../../../components/data-table/ha-data-table";
+import "../../../components/ha-fab";
 import "../../../components/ha-icon";
 import "../../../layouts/hass-loading-screen";
 import "../../../layouts/hass-tabs-subpage-data-table";
 import { HomeAssistant, Route } from "../../../types";
-import { configSections } from "../ha-panel-config";
 import { showEntityEditorDialog } from "../entities/show-dialog-entity-editor";
-import { showHelperDetailDialog } from "./show-dialog-helper-detail";
+import { configSections } from "../ha-panel-config";
 import { HELPER_DOMAINS } from "./const";
-import { domainIcon } from "../../../common/entity/domain_icon";
+import { showHelperDetailDialog } from "./show-dialog-helper-detail";
 
 @customElement("ha-config-helpers")
 export class HaConfigHelpers extends LitElement {
   @property() public hass!: HomeAssistant;
+
   @property() public isWide!: boolean;
+
   @property() public narrow!: boolean;
+
   @property() public route!: Route;
+
   @property() private _stateItems: HassEntity[] = [];
 
   private _columns = memoize(
@@ -90,7 +95,7 @@ export class HaConfigHelpers extends LitElement {
         template: (type) =>
           html`
             ${this.hass.localize(`ui.panel.config.helpers.types.${type}`) ||
-              type}
+            type}
           `,
       };
       columns.editable = {
@@ -133,9 +138,7 @@ export class HaConfigHelpers extends LitElement {
 
   protected render(): TemplateResult {
     if (!this.hass || this._stateItems === undefined) {
-      return html`
-        <hass-loading-screen></hass-loading-screen>
-      `;
+      return html` <hass-loading-screen></hass-loading-screen> `;
     }
 
     return html`
@@ -148,6 +151,7 @@ export class HaConfigHelpers extends LitElement {
         .columns=${this._columns(this.narrow, this.hass.language)}
         .data=${this._getItems(this._stateItems)}
         @row-click=${this._openEditDialog}
+        hasFab
       >
       </hass-tabs-subpage-data-table>
       <ha-fab

@@ -1,23 +1,21 @@
-import {
-  html,
-  CSSResult,
-  css,
-  LitElement,
-  TemplateResult,
-  customElement,
-  property,
-} from "lit-element";
 import "@polymer/paper-input/paper-input";
-
-import { struct } from "../../common/structs/struct";
-import { EntitiesEditorEvent, EditorTarget } from "../types";
-import { HomeAssistant } from "../../../../types";
-import { LovelaceCardEditor } from "../../types";
-import { fireEvent } from "../../../../common/dom/fire_event";
-import { ShoppingListCardConfig } from "../../cards/types";
-
+import {
+  css,
+  CSSResult,
+  customElement,
+  html,
+  LitElement,
+  property,
+  TemplateResult,
+} from "lit-element";
 import { isComponentLoaded } from "../../../../common/config/is_component_loaded";
+import { fireEvent } from "../../../../common/dom/fire_event";
+import { HomeAssistant } from "../../../../types";
+import { ShoppingListCardConfig } from "../../cards/types";
+import { struct } from "../../common/structs/struct";
 import "../../components/hui-theme-select-editor";
+import { LovelaceCardEditor } from "../../types";
+import { EditorTarget, EntitiesEditorEvent } from "../types";
 
 const cardConfigStruct = struct({
   type: "string",
@@ -42,11 +40,11 @@ export class HuiShoppingListEditor extends LitElement
   }
 
   get _theme(): string {
-    return this._config!.theme || "Backend-selected";
+    return this._config!.theme || "";
   }
 
   protected render(): TemplateResult {
-    if (!this.hass) {
+    if (!this.hass || !this._config) {
       return html``;
     }
 

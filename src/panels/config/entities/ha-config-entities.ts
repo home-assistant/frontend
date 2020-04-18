@@ -14,19 +14,22 @@ import {
   query,
   TemplateResult,
 } from "lit-element";
+import { classMap } from "lit-html/directives/class-map";
 import { styleMap } from "lit-html/directives/style-map";
 import memoize from "memoize-one";
+import type { HASSDomEvent } from "../../../common/dom/fire_event";
 import { computeDomain } from "../../../common/entity/compute_domain";
+import { computeStateName } from "../../../common/entity/compute_state_name";
 import { domainIcon } from "../../../common/entity/domain_icon";
 import { stateIcon } from "../../../common/entity/state_icon";
-import {
+import "../../../common/search/search-input";
+import type {
   DataTableColumnContainer,
   DataTableColumnData,
   RowClickedEvent,
   SelectionChangedEvent,
 } from "../../../components/data-table/ha-data-table";
 import "../../../components/ha-icon";
-import "../../../common/search/search-input";
 import {
   computeEntityRegistryName,
   EntityRegistryEntry,
@@ -37,19 +40,15 @@ import {
 import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
 import "../../../layouts/hass-loading-screen";
 import "../../../layouts/hass-tabs-subpage-data-table";
+import type { HaTabsSubpageDataTable } from "../../../layouts/hass-tabs-subpage-data-table";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
-import { HomeAssistant, Route } from "../../../types";
+import type { HomeAssistant, Route } from "../../../types";
+import { configSections } from "../ha-panel-config";
 import { DialogEntityEditor } from "./dialog-entity-editor";
 import {
   loadEntityEditorDialog,
   showEntityEditorDialog,
 } from "./show-dialog-entity-editor";
-import { configSections } from "../ha-panel-config";
-import { classMap } from "lit-html/directives/class-map";
-import { computeStateName } from "../../../common/entity/compute_state_name";
-// tslint:disable-next-line: no-duplicate-imports
-import { HaTabsSubpageDataTable } from "../../../layouts/hass-tabs-subpage-data-table";
-import { HASSDomEvent } from "../../../common/dom/fire_event";
 
 export interface StateEntity extends EntityRegistryEntry {
   readonly?: boolean;
@@ -66,18 +65,30 @@ export interface EntityRow extends StateEntity {
 @customElement("ha-config-entities")
 export class HaConfigEntities extends SubscribeMixin(LitElement) {
   @property() public hass!: HomeAssistant;
+
   @property() public isWide!: boolean;
+
   @property() public narrow!: boolean;
+
   @property() public route!: Route;
+
   @property() private _entities?: EntityRegistryEntry[];
+
   @property() private _stateEntities: StateEntity[] = [];
+
   @property() private _showDisabled = false;
+
   @property() private _showUnavailable = true;
+
   @property() private _showReadOnly = true;
+
   @property() private _filter = "";
+
   @property() private _selectedEntities: string[] = [];
+
   @query("hass-tabs-subpage-data-table")
   private _dataTable!: HaTabsSubpageDataTable;
+
   private getDialog?: () => DialogEntityEditor | undefined;
 
   private _columns = memoize(
@@ -108,7 +119,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
         type: "icon",
         sortable: true,
         filterable: true,
-        width: "55px",
+        width: "68px",
         template: (_status, entity: any) =>
           entity.unavailable || entity.disabled_by || entity.readonly
             ? html`
@@ -155,8 +166,8 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
           return html`
             ${name}<br />
             ${entity.entity_id} |
-            ${this.hass.localize(`component.${entity.platform}.config.title`) ||
-              entity.platform}
+            ${this.hass.localize(`component.${entity.platform}.title`) ||
+            entity.platform}
           `;
         };
         columns.status = statusColumn;
@@ -169,7 +180,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
         ),
         sortable: true,
         filterable: true,
-        width: "20%",
+        width: "25%",
       };
       columns.platform = {
         title: this.hass.localize(
@@ -179,7 +190,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
         filterable: true,
         width: "20%",
         template: (platform) =>
-          this.hass.localize(`component.${platform}.config.title`) || platform,
+          this.hass.localize(`component.${platform}.title`) || platform,
       };
       columns.status = statusColumn;
 
@@ -196,7 +207,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
       showReadOnly: boolean
     ): EntityRow[] => {
       if (!showDisabled) {
-        entities = entities.filter((entity) => !Boolean(entity.disabled_by));
+        entities = entities.filter((entity) => !entity.disabled_by);
       }
 
       const result: EntityRow[] = [];
@@ -264,9 +275,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
 
   protected render(): TemplateResult {
     if (!this.hass || this._entities === undefined) {
-      return html`
-        <hass-loading-screen></hass-loading-screen>
-      `;
+      return html` <hass-loading-screen></hass-loading-screen> `;
     }
     const headerToolbar = this._selectedEntities.length
       ? html`
@@ -624,6 +633,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
         border-bottom: 1px solid rgba(var(--rgb-primary-text-color), 0.12);
       }
       search-input {
+        margin-left: 16px;
         flex-grow: 1;
         position: relative;
         top: 2px;

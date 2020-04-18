@@ -1,21 +1,20 @@
 import {
-  html,
-  LitElement,
-  TemplateResult,
-  property,
-  customElement,
   css,
   CSSResult,
+  customElement,
+  html,
+  LitElement,
+  property,
   PropertyValues,
+  TemplateResult,
 } from "lit-element";
-
-import { createStyledHuiElement } from "./picture-elements/create-styled-hui-element";
-import { LovelaceCard } from "../types";
-import { HomeAssistant } from "../../../types";
-import { LovelaceElementConfig, LovelaceElement } from "../elements/types";
-import { PictureElementsCardConfig } from "./types";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
+import { HomeAssistant } from "../../../types";
 import { findEntities } from "../common/find-entites";
+import { LovelaceElement, LovelaceElementConfig } from "../elements/types";
+import { LovelaceCard } from "../types";
+import { createStyledHuiElement } from "./picture-elements/create-styled-hui-element";
+import { PictureElementsCardConfig } from "./types";
 
 @customElement("hui-picture-elements-card")
 class HuiPictureElementsCard extends LitElement implements LovelaceCard {

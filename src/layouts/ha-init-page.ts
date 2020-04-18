@@ -1,7 +1,6 @@
-import "@polymer/paper-spinner/paper-spinner-lite";
 import "@material/mwc-button";
-
-import { LitElement, html, CSSResult, css, property } from "lit-element";
+import "@polymer/paper-spinner/paper-spinner-lite";
+import { css, CSSResult, html, LitElement, property } from "lit-element";
 import { removeInitSkeleton } from "../util/init-skeleton";
 
 class HaInitPage extends LitElement {

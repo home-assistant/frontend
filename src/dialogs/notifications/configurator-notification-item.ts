@@ -1,17 +1,16 @@
+import "@material/mwc-button";
 import {
+  customElement,
   html,
   LitElement,
-  TemplateResult,
   property,
-  customElement,
+  TemplateResult,
 } from "lit-element";
-import "@material/mwc-button";
-
-import "./notification-item-template";
-
-import { HomeAssistant } from "../../types";
 import { fireEvent } from "../../common/dom/fire_event";
 import { PersitentNotificationEntity } from "../../data/persistent_notification";
+import { HomeAssistant } from "../../types";
+import "./notification-item-template";
+import { domainToName } from "../../data/integration";
 
 @customElement("configurator-notification-item")
 export class HuiConfiguratorNotificationItem extends LitElement {
@@ -26,7 +25,9 @@ export class HuiConfiguratorNotificationItem extends LitElement {
 
     return html`
       <notification-item-template>
-        <span slot="header">${this.hass.localize("domain.configurator")}</span>
+        <span slot="header">
+          ${domainToName(this.hass.localize, "configurator")}
+        </span>
 
         <div>
           ${this.hass.localize(

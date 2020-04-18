@@ -1,18 +1,17 @@
+import "@material/mwc-button";
 import {
-  html,
-  LitElement,
-  TemplateResult,
-  customElement,
   css,
   CSSResult,
+  customElement,
+  html,
+  LitElement,
   property,
+  TemplateResult,
 } from "lit-element";
-import "@material/mwc-button";
-
 import "../../../components/ha-card";
-
-import { LovelaceCard } from "../types";
 import { HomeAssistant } from "../../../types";
+import "../../developer-tools/logs/error-log-card";
+import { LovelaceCard } from "../types";
 
 @customElement("hui-safe-mode-card")
 export class HuiSafeModeCard extends LitElement implements LovelaceCard {
@@ -38,15 +37,7 @@ export class HuiSafeModeCard extends LitElement implements LovelaceCard {
             "ui.panel.lovelace.cards.safe-mode.description"
           )}
         </div>
-        <div class="card-actions">
-          <a href="/developer-tools/logs">
-            <mwc-button>
-              ${this.hass!.localize(
-                "ui.panel.lovelace.cards.safe-mode.show_errors"
-              )}
-            </mwc-button>
-          </a>
-        </div>
+        <error-log-card .hass=${this.hass}></error-log-card>
       </ha-card>
     `;
   }
@@ -56,8 +47,9 @@ export class HuiSafeModeCard extends LitElement implements LovelaceCard {
       ha-card {
         --ha-card-header-color: var(--primary-color);
       }
-      .card-actions a {
-        text-decoration: none;
+      error-log-card {
+        display: block;
+        padding-bottom: 16px;
       }
     `;
   }

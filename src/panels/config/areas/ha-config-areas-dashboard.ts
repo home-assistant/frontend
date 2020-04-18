@@ -1,49 +1,53 @@
-import {
-  LitElement,
-  TemplateResult,
-  html,
-  css,
-  CSSResult,
-  property,
-  customElement,
-} from "lit-element";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-item/paper-item-body";
-
-import { HomeAssistant, Route } from "../../../types";
 import {
-  AreaRegistryEntry,
-  createAreaRegistryEntry,
-} from "../../../data/area_registry";
-import "../../../components/ha-fab";
-import "../../../layouts/hass-loading-screen";
-import "../../../layouts/hass-tabs-subpage-data-table";
-import "../ha-config-section";
-import {
-  showAreaRegistryDetailDialog,
-  loadAreaRegistryDetailDialog,
-} from "./show-dialog-area-registry-detail";
-import { configSections } from "../ha-panel-config";
+  css,
+  CSSResult,
+  customElement,
+  html,
+  LitElement,
+  property,
+  TemplateResult,
+} from "lit-element";
 import memoizeOne from "memoize-one";
+import { HASSDomEvent } from "../../../common/dom/fire_event";
+import { navigate } from "../../../common/navigate";
 import {
   DataTableColumnContainer,
   RowClickedEvent,
 } from "../../../components/data-table/ha-data-table";
+import "../../../components/ha-fab";
 import {
-  devicesInArea,
+  AreaRegistryEntry,
+  createAreaRegistryEntry,
+} from "../../../data/area_registry";
+import {
   DeviceRegistryEntry,
+  devicesInArea,
 } from "../../../data/device_registry";
-import { navigate } from "../../../common/navigate";
-import { HASSDomEvent } from "../../../common/dom/fire_event";
 import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
+import "../../../layouts/hass-loading-screen";
+import "../../../layouts/hass-tabs-subpage-data-table";
+import { HomeAssistant, Route } from "../../../types";
+import "../ha-config-section";
+import { configSections } from "../ha-panel-config";
+import {
+  loadAreaRegistryDetailDialog,
+  showAreaRegistryDetailDialog,
+} from "./show-dialog-area-registry-detail";
 
 @customElement("ha-config-areas-dashboard")
 export class HaConfigAreasDashboard extends LitElement {
   @property() public hass!: HomeAssistant;
+
   @property() public isWide?: boolean;
+
   @property() public narrow!: boolean;
+
   @property() public route!: Route;
+
   @property() public areas!: AreaRegistryEntry[];
+
   @property() public devices!: DeviceRegistryEntry[];
 
   private _areas = memoizeOne(
@@ -108,6 +112,7 @@ export class HaConfigAreasDashboard extends LitElement {
           "ui.panel.config.areas.picker.no_areas"
         )}
         id="area_id"
+        hasFab
       >
         <paper-icon-button
           slot="toolbar-icon"
@@ -172,29 +177,12 @@ export class HaConfigAreasDashboard extends LitElement {
         --app-header-background-color: var(--sidebar-background-color);
         --app-header-text-color: var(--sidebar-text-color);
       }
-      a {
-        color: var(--primary-color);
-      }
-      ha-card {
-        max-width: 600px;
-        margin: 16px auto;
-        overflow: hidden;
-      }
-      .empty {
-        text-align: center;
-      }
-      paper-item {
-        cursor: pointer;
-        padding-top: 4px;
-        padding-bottom: 4px;
-      }
       ha-fab {
         position: fixed;
         bottom: 16px;
         right: 16px;
         z-index: 1;
       }
-
       ha-fab[is-wide] {
         bottom: 24px;
         right: 24px;

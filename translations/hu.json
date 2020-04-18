@@ -509,6 +509,7 @@
                 "attributes": {
                     "air_pressure": "Légnyomás",
                     "humidity": "Páratartalom",
+                    "precipitation": "Csapadék",
                     "temperature": "Hőmérséklet",
                     "visibility": "Látótávolság",
                     "wind_speed": "Szélsebesség"
@@ -531,7 +532,9 @@
                     "wnw": "Ny-ÉNy",
                     "wsw": "Ny-DNy"
                 },
-                "forecast": "Előrejelzés"
+                "forecast": "Előrejelzés",
+                "high": "Magas",
+                "low": "Alacsony"
             }
         },
         "common": {
@@ -543,6 +546,7 @@
             "save": "Mentés",
             "successfully_deleted": "Sikeresen törölve",
             "successfully_saved": "Sikeresen elmentve",
+            "undo": "Visszavonás",
             "yes": "Igen"
         },
         "components": {
@@ -812,6 +816,10 @@
                 "areas": {
                     "caption": "Területek",
                     "create_area": "TERÜLET LÉTREHOZÁSA",
+                    "data_table": {
+                        "area": "Terület",
+                        "devices": "Eszközök"
+                    },
                     "delete": {
                         "confirmation_text": "Minden ebben a területben lévő eszköz hozzárendelés nélküli lesz.",
                         "confirmation_title": "Biztosan törölni szeretnéd ezt a területet?"
@@ -1054,6 +1062,9 @@
                         "delete_confirm": "Biztosan törölni szeretnéd ezt az automatizálást?",
                         "edit_automation": "Automatizálás szerkesztése",
                         "header": "Automatizálás szerkesztő",
+                        "headers": {
+                            "name": "Név"
+                        },
                         "introduction": "Az automatizálás szerkesztő lehetővé teszi automatizálási szabályok létrehozását és szerkesztését. Kérlek, olvasd el az útmutatót az alábbi linken, hogy megbizonyosodj róla, hogy a Home Assistant helyesen van konfigurálva.",
                         "learn_more": "Tudj meg többet az automatizálásról",
                         "no_automations": "Nem találtunk szerkeszthető automatizálást",
@@ -1334,6 +1345,7 @@
                     },
                     "info": "Eszköz infó",
                     "name": "Név",
+                    "no_devices": "Nincsenek eszközök",
                     "scene": {
                         "create": "Jelenet létrehozása eszközzel",
                         "no_scenes": "Nincsenek jelenetek",
@@ -1397,6 +1409,7 @@
                         "introduction2": "Az entitás nyilvántartás használatával felülbírálhatod a nevet, módosíthatod az entitás ID-t vagy eltávolíthatod a bejegyzést a Home Assistant-ból.",
                         "remove_selected": {
                             "button": "Kiválasztottak eltávolítása",
+                            "confirm_partly_text": "A kiválasztott {selected} entitás közül csak {removable} távolítható el. Az entitások csak akkor távolíthatók el, ha az integráció már nem biztosítja azokat. Néha újra kell indítani a Home Assistant-et, mielőtt el tudnád távolítani egy már eltávolított integráció entitásait. Biztosan el szeretnéd távolítani az eltávolítható entitásokat?",
                             "confirm_partly_title": "Csak {number} kiválasztott entitás távolítható el.",
                             "confirm_text": "El kell távolítanod őket a Lovelace konfigurációból és az automatizálásokból, ha tartalmazzák ezeket az entitásokat.",
                             "confirm_title": "El szeretnél távolítani {number} entitást?"
@@ -1637,6 +1650,9 @@
                         "delete_scene": "Jelenet törlése",
                         "edit_scene": "Jelenet szerkesztése",
                         "header": "Jelenet szerkesztő",
+                        "headers": {
+                            "name": "Név"
+                        },
                         "introduction": "A jelenet szerkesztő lehetővé teszi jelenetek létrehozását és szerkesztését. Kérlek, olvasd el az útmutatót az alábbi linken, hogy megbizonyosodj róla, hogy a Home Assistant helyesen van konfigurálva.",
                         "learn_more": "Tudj meg többet a jelenetekről",
                         "no_scenes": "Nem találtunk szerkeszthető jeleneteket",
@@ -1664,9 +1680,13 @@
                         "add_script": "Szkript hozzáadása",
                         "edit_script": "Szkript szerkesztése",
                         "header": "Szkript szerkesztő",
+                        "headers": {
+                            "name": "Név"
+                        },
                         "introduction": "A szkript szerkesztő lehetővé teszi szkriptek létrehozását és szerkesztését. Kérlek, olvasd el az útmutatót az alábbi linken, hogy megbizonyosodj róla, hogy a Home Assistant helyesen van konfigurálva.",
                         "learn_more": "Tudj meg többet a szkriptekről",
                         "no_scripts": "Nem találtunk szerkeszthető szkripteket",
+                        "show_info": "Információ megjelenítése a szkriptről",
                         "trigger_script": "Sckript triggerelése"
                     }
                 },
@@ -1715,6 +1735,7 @@
                     "editor": {
                         "activate_user": "Felhasználó aktiválása",
                         "active": "Aktív",
+                        "admin": "Adminisztrátor",
                         "caption": "Felhasználó megtekintése",
                         "change_password": "Jelszó módosítása",
                         "confirm_user_deletion": "Biztosan törölni szeretnéd {name}-t?",
@@ -1724,14 +1745,22 @@
                         "group": "Csoport",
                         "group_update_failed": "A csoport frissítése sikertelen:",
                         "id": "ID",
+                        "name": "Név",
                         "owner": "Tulajdonos",
                         "rename_user": "Felhasználó átnevezése",
                         "system_generated": "Rendszer által létrehozott",
+                        "system_generated_users_not_editable": "Nem lehet frissíteni a rendszer által létrehozott felhasználókat.",
                         "system_generated_users_not_removable": "Nem lehet eltávolítani a rendszer által létrehozott felhasználókat.",
                         "unnamed_user": "Névtelen felhasználó",
+                        "update_user": "Frissítés",
                         "user_rename_failed": "A felhasználó átnevezése sikertelen:"
                     },
                     "picker": {
+                        "headers": {
+                            "group": "Csoport",
+                            "name": "Név",
+                            "system": "Rendszer"
+                        },
                         "system_generated": "Rendszer által létrehozott",
                         "title": "Felhasználók"
                     }
@@ -2134,6 +2163,10 @@
                             "description": "Az Entitásszűrő kártya lehetővé teszi azon entitások kilistázását, amelyek éppen egy bizonyos állapotban vannak.",
                             "name": "Entitás szűrő"
                         },
+                        "entity": {
+                            "description": "Az Entitás kártya gyors áttekintést nyújt az entitás állapotáról.",
+                            "name": "Entitás"
+                        },
                         "gauge": {
                             "description": "A Mérőműszer kártya egy alapkártya, amely lehetővé teszi az érzékelők adatainak vizuális megtekintését.",
                             "name": "Műszer",
@@ -2146,8 +2179,10 @@
                         },
                         "generic": {
                             "aspect_ratio": "Oldalarány",
+                            "attribute": "Attribútum",
                             "camera_image": "Kamera entitás",
                             "camera_view": "Kamera nézet",
+                            "double_tap_action": "Dupla koppintási művelet",
                             "entities": "Entitások",
                             "entity": "Entitás",
                             "hold_action": "Tartási művelet",
@@ -2156,6 +2191,7 @@
                             "icon_height": "Ikon magassága",
                             "image": "Kép elérési útja",
                             "manual": "Manuális",
+                            "manual_description": "Egyéni kártyát akarsz hozzáadni, vagy csak manuálisan szeretnéd megírni a yaml-t?",
                             "maximum": "Maximum",
                             "minimum": "Minimum",
                             "name": "Név",
@@ -2197,6 +2233,7 @@
                             "default_zoom": "Alapértelmezett nagyítás",
                             "description": "A Térkép kártya entitások térképen való megjelenítését teszi lehetővé.",
                             "geo_location_sources": "Helylokáció forrásai",
+                            "hours_to_show": "Megjelenítendő órák",
                             "name": "Térkép",
                             "source": "Forrás"
                         },
@@ -2206,18 +2243,23 @@
                             "name": "Markdown"
                         },
                         "media-control": {
+                            "description": "A Média Vezérlő kártya a médialejátszó entitások megjelenítésére szolgál egy könnyen használható vezérlővel rendelkező felületen.",
                             "name": "Médiavezérlés"
                         },
                         "picture-elements": {
+                            "description": "A Képelemek kártya az egyik legsokoldalúbb kártya. Lehetővé teszi, hogy ikonokat, szöveget vagy akár szolgáltatásokat helyezz el egy koordinátákon alapuló képen!",
                             "name": "Kép elemek"
                         },
                         "picture-entity": {
+                            "description": "A Képentitás kártya kép formájában jelenít meg egy entitást. Az URL-ből származó képek helyett, akár a kameraentitások képét is meg tudja jeleníteni.",
                             "name": "Kép entitás"
                         },
                         "picture-glance": {
+                            "description": "A Kép Pillantás kártya egy képet és a meghatározott entitások állapotát ikonként jeleníti meg. A jobb oldali entitások lehetővé teszik a műveletek váltását, a többi pedig a további infók párbeszédpanelt nyitja meg.",
                             "name": "Kép pillantás"
                         },
                         "picture": {
+                            "description": "A Képkártya lehetővé teszi, hogy beállíts egy képet hivatkozásként a felületen való navigáláshoz, vagy hogy meghívj egy szolgáltatást.",
                             "name": "Kép"
                         },
                         "plant-status": {
@@ -2225,6 +2267,7 @@
                             "name": "Növény állapota"
                         },
                         "sensor": {
+                            "description": "Az Érzékelő kártya gyors áttekintést nyújt az érzékelők állapotáról egy opcionális grafikon segítségével, amely az időbeli változásokat szemlélteti.",
                             "graph_detail": "Grafikon részletei",
                             "graph_type": "Grafikon típusa",
                             "name": "Érzékelő"
@@ -2235,6 +2278,7 @@
                             "name": "Bevásárló lista"
                         },
                         "thermostat": {
+                            "description": "A Termosztát kártyával a hűtő/fűtő berendezés entitások vezérelhetők. Lehetővé teszi a hőmérséklet, illetve a mód megváltoztatását.",
                             "name": "Termosztát"
                         },
                         "vertical-stack": {
@@ -2242,8 +2286,13 @@
                             "name": "Függőleges Készlet"
                         },
                         "weather-forecast": {
+                            "description": "Az Időjárás Előrejelzés kártya az időjárást jeleníti meg. Nagyon hasznos hozzáadni a falra felszerelt kezelő interfészek felületéhez.",
                             "name": "Időjárás előrejelzés"
                         }
+                    },
+                    "cardpicker": {
+                        "custom_card": "Egyéni",
+                        "no_description": "Nincs leírás."
                     },
                     "edit_card": {
                         "add": "Kártya hozzáadása",
@@ -2309,11 +2358,13 @@
                     "save_config": {
                         "cancel": "Mégsem",
                         "close": "Bezárás",
+                        "empty_config": "Kezdj egy üres irányítópulttal",
                         "header": "Vedd át az irányítást a Lovelace UI felett",
                         "para": "Alapértelmezés szerint a Home Assistant kezeli a felhasználói felületet, és frissíti azt, amikor új entitások vagy Lovelace komponensek válnak elérhetővé. Ha átveszed az irányítást, többé nem fogunk automatikusan módosításokat végezni számodra.",
                         "para_sure": "Biztosan át szeretnéd venni az irányítást a felhasználói felületed felett?",
                         "save": "Irányítás átvétele",
                         "yaml_config": "A kezdéshez itt a jelenlegi konfigurációja ennek az irányítópultnak:",
+                        "yaml_control": "Ahhoz, hogy átvedd az irányítást YAML módban, hozz létre egy YAML fájlt az irányítópult konfigurációjában megadott  vagy az alapértelmezett 'ui-lovelace.yaml' névvel.",
                         "yaml_mode": "YAML módot használsz, ezért nem módosíthatod a Lovelace konfigurációt a felhasználói felületről. Ha mégis onnan szeretnéd, akkor távolítsd el a 'mode: yaml' bejegyzést a Lovelace konfigurációból a 'configuration.yaml' fájlban."
                     },
                     "suggest_card": {
@@ -2348,7 +2399,7 @@
                     "domain": "Domain",
                     "entity": "Entitás",
                     "entity_id": "Entitás ID",
-                    "last_changed": "Utoljára módosítva",
+                    "last_changed": "Utoljára változott",
                     "select_to_add": "Válaszd ki azokat az entitásokat, amelyeket hozzá akarsz adni egy kártyához, majd kattints a kártya hozzáadása gombra.",
                     "title": "Nem használt entitások"
                 },
@@ -2557,6 +2608,11 @@
                     "submit": "Küldés"
                 },
                 "current_user": "Jelenleg {fullName} felhasználóként vagy bejelentkezve.",
+                "dashboard": {
+                    "description": "Válassz egy alapértelmezett irányítópultot ehhez az eszközhöz.",
+                    "dropdown_label": "Irányítópult",
+                    "header": "Irányítópult"
+                },
                 "force_narrow": {
                     "description": "Ez alapértelmezés szerint elrejti az oldalsávot, hasonlóan a mobil verzióhoz.",
                     "header": "Mindig rejtse el az oldalsávot"

@@ -1,9 +1,9 @@
-import { computeStateName } from "../common/entity/compute_state_name";
-import { computeStateDomain } from "../common/entity/compute_state_domain";
 import { HassEntity } from "home-assistant-js-websocket";
-import { HomeAssistant } from "../types";
-import { LocalizeFunc } from "../common/translations/localize";
 import { computeStateDisplay } from "../common/entity/compute_state_display";
+import { computeStateDomain } from "../common/entity/compute_state_domain";
+import { computeStateName } from "../common/entity/compute_state_name";
+import { LocalizeFunc } from "../common/translations/localize";
+import { HomeAssistant } from "../types";
 
 const DOMAINS_USE_LAST_UPDATED = ["climate", "water_heater"];
 const LINE_ATTRIBUTES_TO_KEEP = [
@@ -55,7 +55,8 @@ export const fetchRecent = (
   entityId,
   startTime,
   endTime,
-  skipInitialState = false
+  skipInitialState = false,
+  significantChangesOnly?: boolean
 ): Promise<HassEntity[][]> => {
   let url = "history/period";
   if (startTime) {
@@ -67,6 +68,9 @@ export const fetchRecent = (
   }
   if (skipInitialState) {
     url += "&skip_initial_state";
+  }
+  if (significantChangesOnly !== undefined) {
+    url += `&significant_changes_only=${Number(significantChangesOnly)}`;
   }
 
   return hass.callApi("GET", url);

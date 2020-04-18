@@ -509,6 +509,7 @@
                 "attributes": {
                     "air_pressure": "Air pressure",
                     "humidity": "Humidity",
+                    "precipitation": "Precipitation",
                     "temperature": "Temperature",
                     "visibility": "Visibility",
                     "wind_speed": "Wind speed"
@@ -531,7 +532,9 @@
                     "wnw": "WNW",
                     "wsw": "WSW"
                 },
-                "forecast": "Forecast"
+                "forecast": "Forecast",
+                "high": "High",
+                "low": "Low"
             }
         },
         "common": {
@@ -543,6 +546,7 @@
             "save": "Save",
             "successfully_deleted": "Successfully deleted",
             "successfully_saved": "Successfully saved",
+            "undo": "Undo",
             "yes": "Yes"
         },
         "components": {
@@ -754,11 +758,13 @@
                 "buttons": {
                     "add": "Add Devices",
                     "reconfigure": "Reconfigure Device",
-                    "remove": "Remove Device"
+                    "remove": "Remove Device",
+                    "zigbee_information": "Zigbee Information"
                 },
                 "confirmations": {
                     "remove": "Are you sure that you want to remove the device?"
                 },
+                "device_signature": "Zigbee device signature",
                 "last_seen": "Last Seen",
                 "manuf": "by {manufacturer}",
                 "no_area": "No Area",
@@ -767,7 +773,8 @@
                 "services": {
                     "reconfigure": "Reconfigure ZHA device (heal device). Use this if you are having issues with the device. If the device in question is a battery powered device please ensure it is awake and accepting commands when you use this service.",
                     "remove": "Remove a device from the Zigbee network.",
-                    "updateDeviceName": "Set a custom name for this device in the device registry."
+                    "updateDeviceName": "Set a custom name for this device in the device registry.",
+                    "zigbee_information": "View the Zigbee information for the device."
                 },
                 "unknown": "Unknown",
                 "zha_device_card": {
@@ -812,6 +819,10 @@
                 "areas": {
                     "caption": "Areas",
                     "create_area": "CREATE AREA",
+                    "data_table": {
+                        "area": "Area",
+                        "devices": "Devices"
+                    },
                     "delete": {
                         "confirmation_text": "All devices in this area will become unassigned.",
                         "confirmation_title": "Are you sure you want to delete this area?"
@@ -1054,6 +1065,9 @@
                         "delete_confirm": "Are you sure you want to delete this automation?",
                         "edit_automation": "Edit automation",
                         "header": "Automation Editor",
+                        "headers": {
+                            "name": "Name"
+                        },
                         "introduction": "The automation editor allows you to create and edit automations. Please follow the link below to read the instructions to make sure that you have configured Home Assistant correctly.",
                         "learn_more": "Learn more about automations",
                         "no_automations": "We couldn’t find any editable automations",
@@ -1334,6 +1348,7 @@
                     },
                     "info": "Device info",
                     "name": "Name",
+                    "no_devices": "No devices",
                     "scene": {
                         "create": "Create scene with device",
                         "no_scenes": "No scenes",
@@ -1638,6 +1653,9 @@
                         "delete_scene": "Delete scene",
                         "edit_scene": "Edit scene",
                         "header": "Scene Editor",
+                        "headers": {
+                            "name": "Name"
+                        },
                         "introduction": "The scene editor allows you to create and edit scenes. Please follow the link below to read the instructions to make sure that you have configured Home Assistant correctly.",
                         "learn_more": "Learn more about scenes",
                         "no_scenes": "We couldn’t find any editable scenes",
@@ -1665,9 +1683,13 @@
                         "add_script": "Add script",
                         "edit_script": "Edit script",
                         "header": "Script Editor",
+                        "headers": {
+                            "name": "Name"
+                        },
                         "introduction": "The script editor allows you to create and edit scripts. Please follow the link below to read the instructions to make sure that you have configured Home Assistant correctly.",
                         "learn_more": "Learn more about scripts",
                         "no_scripts": "We couldn’t find any editable scripts",
+                        "show_info": "Show info about script",
                         "trigger_script": "Trigger script"
                     }
                 },
@@ -1716,6 +1738,7 @@
                     "editor": {
                         "activate_user": "Activate user",
                         "active": "Active",
+                        "admin": "Administrator",
                         "caption": "View user",
                         "change_password": "Change password",
                         "confirm_user_deletion": "Are you sure you want to delete {name}?",
@@ -1725,14 +1748,22 @@
                         "group": "Group",
                         "group_update_failed": "Group update failed:",
                         "id": "ID",
+                        "name": "Name",
                         "owner": "Owner",
                         "rename_user": "Rename user",
                         "system_generated": "System generated",
+                        "system_generated_users_not_editable": "Unable to update system generated users.",
                         "system_generated_users_not_removable": "Unable to remove system generated users.",
                         "unnamed_user": "Unnamed User",
+                        "update_user": "Update",
                         "user_rename_failed": "User rename failed:"
                     },
                     "picker": {
+                        "headers": {
+                            "group": "Group",
+                            "name": "Name",
+                            "system": "System"
+                        },
                         "system_generated": "System generated",
                         "title": "Users"
                     }
@@ -2135,6 +2166,10 @@
                             "description": "The Entity Filter card allows you to define a list of entities that you want to track only when in a certain state.",
                             "name": "Entity Filter"
                         },
+                        "entity": {
+                            "description": "The Entity card gives you a quick overview of your entity’s state.",
+                            "name": "Entity"
+                        },
                         "gauge": {
                             "description": "The Gauge card is a basic card that allows visually seeing sensor data.",
                             "name": "Gauge",
@@ -2147,8 +2182,10 @@
                         },
                         "generic": {
                             "aspect_ratio": "Aspect Ratio",
+                            "attribute": "Attribute",
                             "camera_image": "Camera Entity",
                             "camera_view": "Camera View",
+                            "double_tap_action": "Double Tap Action",
                             "entities": "Entities",
                             "entity": "Entity",
                             "hold_action": "Hold Action",
@@ -2199,6 +2236,7 @@
                             "default_zoom": "Default Zoom",
                             "description": "The Map card that allows you to display entities on a map.",
                             "geo_location_sources": "Geolocation Sources",
+                            "hours_to_show": "Hours to Show",
                             "name": "Map",
                             "source": "Source"
                         },
@@ -2254,6 +2292,10 @@
                             "description": "The Weather Forecast card displays the weather. Very useful to include on interfaces that people display on the wall.",
                             "name": "Weather Forecast"
                         }
+                    },
+                    "cardpicker": {
+                        "custom_card": "Custom",
+                        "no_description": "No description available."
                     },
                     "edit_card": {
                         "add": "Add Card",
@@ -2319,6 +2361,7 @@
                     "save_config": {
                         "cancel": "Never mind",
                         "close": "Close",
+                        "empty_config": "Start with an empty dashboard",
                         "header": "Take control of your Lovelace UI",
                         "para": "By default Home Assistant will maintain your user interface, updating it when new entities or Lovelace UI components become available. If you take control we will no longer make changes automatically for you.",
                         "para_sure": "Are you sure you want to take control of your user interface?",
@@ -2568,6 +2611,11 @@
                     "submit": "Submit"
                 },
                 "current_user": "You are currently logged in as {fullName}.",
+                "dashboard": {
+                    "description": "Pick a default dashboard for this device.",
+                    "dropdown_label": "Dashboard",
+                    "header": "Dashboard"
+                },
                 "force_narrow": {
                     "description": "This will hide the sidebar by default, similar to the mobile experience.",
                     "header": "Always hide the sidebar"

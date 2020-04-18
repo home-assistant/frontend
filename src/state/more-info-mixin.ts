@@ -1,5 +1,5 @@
-import { HassBaseEl } from "./hass-base-mixin";
 import { Constructor } from "../types";
+import { HassBaseEl } from "./hass-base-mixin";
 
 declare global {
   // for fire event

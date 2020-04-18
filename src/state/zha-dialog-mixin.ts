@@ -1,11 +1,11 @@
 import { UpdatingElement } from "lit-element";
-import { HassBaseEl } from "./hass-base-mixin";
+import { HASSDomEvent } from "../common/dom/fire_event";
 import {
   showZHADeviceInfoDialog,
   ZHADeviceInfoDialogParams,
 } from "../dialogs/zha-device-info-dialog/show-dialog-zha-device-info";
-import { HASSDomEvent } from "../common/dom/fire_event";
 import { Constructor } from "../types";
+import { HassBaseEl } from "./hass-base-mixin";
 
 declare global {
   // for fire event

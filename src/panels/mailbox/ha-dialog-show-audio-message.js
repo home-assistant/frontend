@@ -1,12 +1,11 @@
 import "@material/mwc-button";
 import "@polymer/paper-spinner/paper-spinner";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
+/* eslint-plugin-disable lit */
 import { PolymerElement } from "@polymer/polymer/polymer-element";
-
-import "../../resources/ha-style";
 import "../../components/dialog/ha-paper-dialog";
-
 import LocalizeMixin from "../../mixins/localize-mixin";
+import "../../resources/ha-style";
 
 /*
  * @appliesMixin LocalizeMixin

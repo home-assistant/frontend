@@ -1,17 +1,15 @@
 import {
-  html,
-  LitElement,
-  TemplateResult,
-  customElement,
-  property,
   css,
   CSSResult,
+  customElement,
+  html,
+  LitElement,
+  property,
+  TemplateResult,
 } from "lit-element";
-
-import { LovelaceRow, WeblinkConfig } from "../entity-rows/types";
-import { HomeAssistant } from "../../../types";
-
 import "../../../components/ha-icon";
+import { HomeAssistant } from "../../../types";
+import { LovelaceRow, WeblinkConfig } from "../entity-rows/types";
 
 @customElement("hui-weblink-row")
 class HuiWeblinkRow extends LitElement implements LovelaceRow {

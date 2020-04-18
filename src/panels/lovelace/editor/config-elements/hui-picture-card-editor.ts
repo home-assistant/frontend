@@ -1,27 +1,25 @@
+import "@polymer/paper-input/paper-input";
 import {
+  customElement,
   html,
   LitElement,
-  TemplateResult,
-  customElement,
   property,
+  TemplateResult,
 } from "lit-element";
-import "@polymer/paper-input/paper-input";
-
+import { fireEvent } from "../../../../common/dom/fire_event";
+import { ActionConfig } from "../../../../data/lovelace";
+import { HomeAssistant } from "../../../../types";
+import { PictureCardConfig } from "../../cards/types";
+import { struct } from "../../common/structs/struct";
 import "../../components/hui-action-editor";
 import "../../components/hui-theme-select-editor";
-
-import { struct } from "../../common/structs/struct";
-import {
-  EntitiesEditorEvent,
-  EditorTarget,
-  actionConfigStruct,
-} from "../types";
-import { HomeAssistant } from "../../../../types";
 import { LovelaceCardEditor } from "../../types";
-import { fireEvent } from "../../../../common/dom/fire_event";
+import {
+  actionConfigStruct,
+  EditorTarget,
+  EntitiesEditorEvent,
+} from "../types";
 import { configElementStyle } from "./config-elements-style";
-import { ActionConfig } from "../../../../data/lovelace";
-import { PictureCardConfig } from "../../cards/types";
 
 const cardConfigStruct = struct({
   type: "string",
@@ -56,11 +54,11 @@ export class HuiPictureCardEditor extends LitElement
   }
 
   get _theme(): string {
-    return this._config!.theme || "Backend-selected";
+    return this._config!.theme || "";
   }
 
   protected render(): TemplateResult {
-    if (!this.hass) {
+    if (!this.hass || !this._config) {
       return html``;
     }
 

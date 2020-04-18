@@ -1,38 +1,41 @@
+import "@material/mwc-button";
+import { safeDump, safeLoad } from "js-yaml";
 import {
-  html,
   css,
-  LitElement,
-  TemplateResult,
   CSSResult,
   customElement,
+  html,
+  LitElement,
   property,
+  TemplateResult,
 } from "lit-element";
-
-import { safeDump, safeLoad } from "js-yaml";
-
-import "@material/mwc-button";
-import { HomeAssistant } from "../../../../types";
-import { LovelaceCardConfig, LovelaceConfig } from "../../../../data/lovelace";
-import { LovelaceCardEditor } from "../../types";
-import { computeRTL } from "../../../../common/util/compute_rtl";
-
-import "../../../../components/ha-code-editor";
-// This is not a duplicate import, one is for types, one is for element.
-// tslint:disable-next-line
-import { HaCodeEditor } from "../../../../components/ha-code-editor";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import { EntityConfig } from "../../entity-rows/types";
+import { computeRTL } from "../../../../common/util/compute_rtl";
+import "../../../../components/ha-code-editor";
+import type { HaCodeEditor } from "../../../../components/ha-code-editor";
+import type {
+  LovelaceCardConfig,
+  LovelaceConfig,
+} from "../../../../data/lovelace";
+import type { HomeAssistant } from "../../../../types";
 import { getCardElementClass } from "../../create-element/create-card-element";
+import type { EntityConfig } from "../../entity-rows/types";
+import type { LovelaceCardEditor } from "../../types";
+import type { GUIModeChangedEvent } from "../types";
+
+export interface ConfigChangedEvent {
+  config: LovelaceCardConfig;
+  error?: string;
+  guiModeAvailable?: boolean;
+}
 
 declare global {
   interface HASSDomEvents {
     "entities-changed": {
       entities: EntityConfig[];
     };
-    "config-changed": {
-      config: LovelaceCardConfig;
-      error?: string;
-    };
+    "config-changed": ConfigChangedEvent;
+    "GUImode-changed": GUIModeChangedEvent;
   }
 }
 
@@ -45,22 +48,31 @@ export interface UIConfigChangedEvent extends Event {
 @customElement("hui-card-editor")
 export class HuiCardEditor extends LitElement {
   @property() public hass!: HomeAssistant;
+
   @property() public lovelace?: LovelaceConfig;
 
   @property() private _yaml?: string;
+
   @property() private _config?: LovelaceCardConfig;
+
   @property() private _configElement?: LovelaceCardEditor;
+
   @property() private _configElType?: string;
-  @property() private _GUImode: boolean = true;
+
+  @property() private _GUImode = true;
+
   // Error: Configuration broken - do not save
   @property() private _error?: string;
+
   // Warning: GUI editor can't handle configuration - ok to save
   @property() private _warning?: string;
-  @property() private _loading: boolean = false;
+
+  @property() private _loading = false;
 
   public get yaml(): string {
     return this._yaml || "";
   }
+
   public set yaml(_yaml: string) {
     this._yaml = _yaml;
     try {
@@ -73,20 +85,38 @@ export class HuiCardEditor extends LitElement {
     fireEvent(this, "config-changed", {
       config: this.value!,
       error: this._error,
+      guiModeAvailable: !(this.hasWarning || this.hasError),
     });
   }
 
   public get value(): LovelaceCardConfig | undefined {
     return this._config;
   }
+
   public set value(config: LovelaceCardConfig | undefined) {
     if (JSON.stringify(config) !== JSON.stringify(this._config || {})) {
       this.yaml = safeDump(config);
     }
   }
 
+  public get hasWarning(): boolean {
+    return this._warning !== undefined;
+  }
+
   public get hasError(): boolean {
     return this._error !== undefined;
+  }
+
+  public get GUImode(): boolean {
+    return this._GUImode;
+  }
+
+  public set GUImode(guiMode: boolean) {
+    this._GUImode = guiMode;
+    fireEvent(this as HTMLElement, "GUImode-changed", {
+      guiMode,
+      guiModeAvailable: !(this.hasWarning || this.hasError),
+    });
   }
 
   private get _yamlEditor(): HaCodeEditor {
@@ -94,7 +124,7 @@ export class HuiCardEditor extends LitElement {
   }
 
   public toggleMode() {
-    this._GUImode = !this._GUImode;
+    this.GUImode = !this.GUImode;
   }
 
   public connectedCallback() {
@@ -105,7 +135,7 @@ export class HuiCardEditor extends LitElement {
   protected render(): TemplateResult {
     return html`
       <div class="wrapper">
-        ${this._GUImode
+        ${this.GUImode
           ? html`
               <div class="gui-editor">
                 ${this._loading
@@ -145,18 +175,6 @@ export class HuiCardEditor extends LitElement {
               </div>
             `
           : ""}
-        <div class="buttons">
-          <mwc-button
-            @click=${this.toggleMode}
-            ?disabled=${this._warning || this._error}
-          >
-            ${this.hass!.localize(
-              this._GUImode
-                ? "ui.panel.lovelace.editor.edit_card.show_code_editor"
-                : "ui.panel.lovelace.editor.edit_card.show_visual_editor"
-            )}
-          </mwc-button>
-        </div>
       </div>
     `;
   }
@@ -165,11 +183,18 @@ export class HuiCardEditor extends LitElement {
     super.updated(changedProperties);
 
     if (changedProperties.has("_GUImode")) {
-      if (this._GUImode === false) {
+      if (this.GUImode === false) {
         // Refresh code editor when switching to yaml mode
         this._refreshYamlEditor(true);
       }
       fireEvent(this as HTMLElement, "iron-resize");
+    }
+
+    if (this._configElement && changedProperties.has("hass")) {
+      this._configElement.hass = this.hass;
+    }
+    if (this._configElement && changedProperties.has("lovelace")) {
+      this._configElement.lovelace = this.lovelace;
     }
   }
 
@@ -191,6 +216,7 @@ export class HuiCardEditor extends LitElement {
     const config = ev.detail.config;
     this.value = config;
   }
+
   private _handleYAMLChanged(ev) {
     ev.stopPropagation();
     const newYaml = ev.detail.value;
@@ -229,6 +255,13 @@ export class HuiCardEditor extends LitElement {
 
         this._configElement = configElement;
         this._configElType = cardType;
+
+        // Perform final setup
+        this._configElement.hass = this.hass;
+        this._configElement.lovelace = this.lovelace;
+        this._configElement.addEventListener("config-changed", (ev) =>
+          this._handleUIConfigChanged(ev as UIConfigChangedEvent)
+        );
       }
 
       // Setup GUI editor and check that it can handle the current config
@@ -237,22 +270,13 @@ export class HuiCardEditor extends LitElement {
       } catch (err) {
         throw Error(`WARNING: ${err.message}`);
       }
-
-      // Perform final setup
-      this._configElement!.hass = this.hass;
-      this._configElement!.lovelace = this.lovelace;
-      this._configElement!.addEventListener("config-changed", (ev) =>
-        this._handleUIConfigChanged(ev as UIConfigChangedEvent)
-      );
-
-      return;
     } catch (err) {
       if (err.message.startsWith("WARNING:")) {
         this._warning = err.message.substr(8);
       } else {
         this._error = err;
       }
-      this._GUImode = false;
+      this.GUImode = false;
     } finally {
       this._loading = false;
       fireEvent(this, "iron-resize");
@@ -276,10 +300,6 @@ export class HuiCardEditor extends LitElement {
       }
       .warning {
         color: #ffa726;
-      }
-      .buttons {
-        text-align: right;
-        padding: 8px 0px;
       }
       paper-spinner {
         display: block;

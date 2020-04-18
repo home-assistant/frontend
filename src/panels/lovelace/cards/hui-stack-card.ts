@@ -1,16 +1,16 @@
 import {
+  css,
+  CSSResult,
   html,
   LitElement,
-  TemplateResult,
-  CSSResult,
-  css,
   property,
+  PropertyValues,
+  TemplateResult,
 } from "lit-element";
-
-import { createCardElement } from "../create-element/create-card-element";
-import { LovelaceCard, LovelaceCardEditor } from "../types";
 import { LovelaceCardConfig } from "../../../data/lovelace";
 import { HomeAssistant } from "../../../types";
+import { createCardElement } from "../create-element/create-card-element";
+import { LovelaceCard, LovelaceCardEditor } from "../types";
 import { StackCardConfig } from "./types";
 
 export abstract class HuiStackCard extends LitElement implements LovelaceCard {
@@ -25,21 +25,13 @@ export abstract class HuiStackCard extends LitElement implements LovelaceCard {
     return { cards: [] };
   }
 
+  @property() public hass?: HomeAssistant;
+
+  @property() public editMode?: boolean;
+
   @property() protected _cards?: LovelaceCard[];
+
   @property() private _config?: StackCardConfig;
-  private _hass?: HomeAssistant;
-
-  set hass(hass: HomeAssistant) {
-    this._hass = hass;
-
-    if (!this._cards) {
-      return;
-    }
-
-    for (const element of this._cards) {
-      element.hass = this._hass;
-    }
-  }
 
   public getCardSize(): number {
     return 1;
@@ -56,6 +48,21 @@ export abstract class HuiStackCard extends LitElement implements LovelaceCard {
     });
   }
 
+  protected updated(changedProps: PropertyValues) {
+    super.updated(changedProps);
+    if (
+      !this._cards ||
+      (!changedProps.has("hass") && !changedProps.has("editMode"))
+    ) {
+      return;
+    }
+
+    for (const element of this._cards) {
+      element.hass = this.hass;
+      element.editMode = this.editMode;
+    }
+  }
+
   protected render(): TemplateResult {
     if (!this._config || !this._cards) {
       return html``;
@@ -63,9 +70,7 @@ export abstract class HuiStackCard extends LitElement implements LovelaceCard {
 
     return html`
       ${this._config.title
-        ? html`
-            <div class="card-header">${this._config.title}</div>
-          `
+        ? html` <div class="card-header">${this._config.title}</div> `
         : ""}
       <div id="root">${this._cards}</div>
     `;
@@ -87,8 +92,8 @@ export abstract class HuiStackCard extends LitElement implements LovelaceCard {
 
   private _createCardElement(cardConfig: LovelaceCardConfig) {
     const element = createCardElement(cardConfig) as LovelaceCard;
-    if (this._hass) {
-      element.hass = this._hass;
+    if (this.hass) {
+      element.hass = this.hass;
     }
     element.addEventListener(
       "ll-rebuild",

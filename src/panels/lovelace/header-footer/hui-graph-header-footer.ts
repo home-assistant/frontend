@@ -1,20 +1,20 @@
 import {
+  css,
+  CSSResult,
+  customElement,
   html,
   LitElement,
-  TemplateResult,
-  customElement,
   property,
   PropertyValues,
-  CSSResult,
-  css,
+  TemplateResult,
 } from "lit-element";
-
-import "../components/hui-graph-base";
-
-import { LovelaceHeaderFooter } from "../types";
 import { HomeAssistant } from "../../../types";
-import { GraphHeaderFooterConfig } from "./types";
 import { getHistoryCoordinates } from "../common/graph/get-history-coordinates";
+
+import "@polymer/paper-spinner/paper-spinner";
+import "../components/hui-graph-base";
+import { LovelaceHeaderFooter } from "../types";
+import { GraphHeaderFooterConfig } from "./types";
 
 const MINUTE = 60000;
 
@@ -26,8 +26,11 @@ export class HuiGraphHeaderFooter extends LitElement
   }
 
   @property() public hass?: HomeAssistant;
+
   @property() protected _config?: GraphHeaderFooterConfig;
-  @property() private _coordinates?: any;
+
+  @property() private _coordinates?: number[][];
+
   private _date?: Date;
 
   public setConfig(config: GraphHeaderFooterConfig): void {
@@ -59,8 +62,18 @@ export class HuiGraphHeaderFooter extends LitElement
 
     if (!this._coordinates) {
       return html`
-        <div class="info">
-          No state history found.
+        <div class="container">
+          <paper-spinner active></paper-spinner>
+        </div>
+      `;
+    }
+
+    if (this._coordinates.length < 1) {
+      return html`
+        <div class="container">
+          <div class="info">
+            No state history found.
+          </div>
         </div>
       `;
     }
@@ -99,9 +112,19 @@ export class HuiGraphHeaderFooter extends LitElement
 
   static get styles(): CSSResult {
     return css`
+      paper-spinner {
+        position: absolute;
+        top: calc(50% - 28px);
+      }
+      .container {
+        display: flex;
+        justify-content: center;
+        position: relative;
+        padding-bottom: 20%;
+      }
       .info {
-        text-align: center;
-        line-height: 58px;
+        position: absolute;
+        top: calc(50% - 16px);
         color: var(--secondary-text-color);
       }
     `;

@@ -1,8 +1,8 @@
-import { LovelaceCardConfig, ActionConfig } from "../../../data/lovelace";
+import { ActionConfig, LovelaceCardConfig } from "../../../data/lovelace";
 import { Condition } from "../common/validate-condition";
-import { EntityConfig, EntityFilterEntityConfig } from "../entity-rows/types";
-import { LovelaceElementConfig } from "../elements/types";
 import { HuiImage } from "../components/hui-image";
+import { LovelaceElementConfig } from "../elements/types";
+import { EntityConfig, EntityFilterEntityConfig } from "../entity-rows/types";
 import { LovelaceHeaderFooterConfig } from "../header-footer/types";
 
 export interface AlarmPanelCardConfig extends LovelaceCardConfig {
@@ -20,6 +20,11 @@ export interface ConditionalCardConfig extends LovelaceCardConfig {
 export interface EmptyStateCardConfig extends LovelaceCardConfig {
   content: string;
   title?: string;
+}
+
+export interface EntityCardConfig extends LovelaceCardConfig {
+  attribute?: string;
+  unit?: string;
 }
 
 export interface EntitiesCardEntityConfig extends EntityConfig {
@@ -133,6 +138,9 @@ export interface LightCardConfig extends LovelaceCardConfig {
   name?: string;
   theme?: string;
   icon?: string;
+  tap_action?: ActionConfig;
+  hold_action?: ActionConfig;
+  double_tap_action?: ActionConfig;
 }
 
 export interface MapCardConfig extends LovelaceCardConfig {
@@ -141,6 +149,7 @@ export interface MapCardConfig extends LovelaceCardConfig {
   aspect_ratio?: string;
   default_zoom?: number;
   entities?: Array<EntityConfig | string>;
+  hours_to_show?: number;
   geo_location_sources?: string[];
   dark_mode?: boolean;
 }

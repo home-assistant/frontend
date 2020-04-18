@@ -1,21 +1,21 @@
-import "../../../components/data-table/ha-data-table";
-import "../../../components/entity/ha-state-icon";
-
-import memoizeOne from "memoize-one";
-
 import {
-  LitElement,
-  html,
-  TemplateResult,
-  property,
   customElement,
+  html,
+  LitElement,
+  property,
+  query,
+  TemplateResult,
 } from "lit-element";
-import { HomeAssistant } from "../../../types";
-// tslint:disable-next-line
-import { DataTableColumnContainer } from "../../../components/data-table/ha-data-table";
-// tslint:disable-next-line
-import { ZHADevice } from "../../../data/zha";
+import memoizeOne from "memoize-one";
+import "../../../components/data-table/ha-data-table";
+import type {
+  DataTableColumnContainer,
+  HaDataTable,
+} from "../../../components/data-table/ha-data-table";
+import "../../../components/entity/ha-state-icon";
+import type { ZHADevice } from "../../../data/zha";
 import { showZHADeviceInfoDialog } from "../../../dialogs/zha-device-info-dialog/show-dialog-zha-device-info";
+import type { HomeAssistant } from "../../../types";
 
 export interface DeviceRowData extends ZHADevice {
   device?: DeviceRowData;
@@ -24,9 +24,14 @@ export interface DeviceRowData extends ZHADevice {
 @customElement("zha-devices-data-table")
 export class ZHADevicesDataTable extends LitElement {
   @property() public hass!: HomeAssistant;
+
   @property() public narrow = false;
+
   @property({ type: Boolean }) public selectable = false;
+
   @property() public devices: ZHADevice[] = [];
+
+  @query("ha-data-table") private _dataTable!: HaDataTable;
 
   private _devices = memoizeOne((devices: ZHADevice[]) => {
     let outputDevices: DeviceRowData[] = devices;
@@ -88,6 +93,10 @@ export class ZHADevicesDataTable extends LitElement {
             },
           }
   );
+
+  public clearSelection() {
+    this._dataTable.clearSelection();
+  }
 
   protected render(): TemplateResult {
     return html`

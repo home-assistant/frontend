@@ -1,25 +1,22 @@
-import {
-  html,
-  css,
-  LitElement,
-  TemplateResult,
-  CSSResult,
-  customElement,
-  property,
-} from "lit-element";
-import "@polymer/paper-spinner/paper-spinner";
-import "../../../../components/dialog/ha-paper-dialog";
-// tslint:disable-next-line:no-duplicate-imports
-import { HaPaperDialog } from "../../../../components/dialog/ha-paper-dialog";
 import "@material/mwc-button";
 import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable";
-
+import "@polymer/paper-spinner/paper-spinner";
+import {
+  css,
+  CSSResult,
+  customElement,
+  html,
+  LitElement,
+  property,
+  TemplateResult,
+} from "lit-element";
+import "../../../../components/dialog/ha-paper-dialog";
+import type { HaPaperDialog } from "../../../../components/dialog/ha-paper-dialog";
+import type { LovelaceConfig } from "../../../../data/lovelace";
 import { haStyleDialog } from "../../../../resources/styles";
-
+import type { HomeAssistant } from "../../../../types";
+import type { Lovelace } from "../../types";
 import "./hui-lovelace-editor";
-import { HomeAssistant } from "../../../../types";
-import { LovelaceConfig } from "../../../../data/lovelace";
-import { Lovelace } from "../../types";
 
 @customElement("hui-dialog-edit-lovelace")
 export class HuiDialogEditLovelace extends LitElement {

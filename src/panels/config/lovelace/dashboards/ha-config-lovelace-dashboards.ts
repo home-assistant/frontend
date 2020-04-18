@@ -1,44 +1,49 @@
+import "@polymer/paper-tooltip/paper-tooltip";
 import {
+  css,
+  CSSResult,
   customElement,
   html,
   LitElement,
   property,
   PropertyValues,
   TemplateResult,
-  CSSResult,
-  css,
 } from "lit-element";
 import memoize from "memoize-one";
-import "@polymer/paper-tooltip/paper-tooltip";
+import { navigate } from "../../../../common/navigate";
+import { compare } from "../../../../common/string/compare";
 import {
   DataTableColumnContainer,
   RowClickedEvent,
 } from "../../../../components/data-table/ha-data-table";
+import "../../../../components/ha-fab";
 import "../../../../components/ha-icon";
+import {
+  createDashboard,
+  deleteDashboard,
+  fetchDashboards,
+  LovelaceDashboard,
+  LovelaceDashboardCreateParams,
+  LovelacePanelConfig,
+  updateDashboard,
+} from "../../../../data/lovelace";
+import { showConfirmationDialog } from "../../../../dialogs/generic/show-dialog-box";
 import "../../../../layouts/hass-loading-screen";
 import "../../../../layouts/hass-tabs-subpage-data-table";
 import { HomeAssistant, Route } from "../../../../types";
-import {
-  LovelaceDashboard,
-  fetchDashboards,
-  createDashboard,
-  updateDashboard,
-  deleteDashboard,
-  LovelaceDashboardCreateParams,
-  LovelacePanelConfig,
-} from "../../../../data/lovelace";
-import { showDashboardDetailDialog } from "./show-dialog-lovelace-dashboard-detail";
-import { compare } from "../../../../common/string/compare";
-import { showConfirmationDialog } from "../../../../dialogs/generic/show-dialog-box";
 import { lovelaceTabs } from "../ha-config-lovelace";
-import { navigate } from "../../../../common/navigate";
+import { showDashboardDetailDialog } from "./show-dialog-lovelace-dashboard-detail";
 
 @customElement("ha-config-lovelace-dashboards")
 export class HaConfigLovelaceDashboards extends LitElement {
   @property() public hass!: HomeAssistant;
+
   @property() public isWide!: boolean;
+
   @property() public narrow!: boolean;
+
   @property() public route!: Route;
+
   @property() private _dashboards: LovelaceDashboard[] = [];
 
   private _columns = memoize(
@@ -49,9 +54,7 @@ export class HaConfigLovelaceDashboards extends LitElement {
           type: "icon",
           template: (icon) =>
             icon
-              ? html`
-                  <ha-icon slot="item-icon" .icon=${icon}></ha-icon>
-                `
+              ? html` <ha-icon slot="item-icon" .icon=${icon}></ha-icon> `
               : html``,
         },
         title: {
@@ -86,9 +89,7 @@ export class HaConfigLovelaceDashboards extends LitElement {
                     ${this.hass.localize(
                       `ui.panel.config.lovelace.dashboards.conf_mode.${dashboard.mode}`
                     )}${dashboard.filename
-                      ? html`
-                          - ${dashboard.filename}
-                        `
+                      ? html` - ${dashboard.filename} `
                       : ""}
                   </div>
                 `
@@ -104,7 +105,7 @@ export class HaConfigLovelaceDashboards extends LitElement {
           ),
           sortable: true,
           filterable: true,
-          width: "15%",
+          width: "20%",
           template: (mode) =>
             html`
               ${this.hass.localize(
@@ -131,27 +132,17 @@ export class HaConfigLovelaceDashboards extends LitElement {
           width: "100px",
           template: (requireAdmin: boolean) =>
             requireAdmin
-              ? html`
-                  <ha-icon icon="hass:check"></ha-icon>
-                `
-              : html`
-                  -
-                `,
+              ? html` <ha-icon icon="hass:check"></ha-icon> `
+              : html` - `,
         };
         columns.show_in_sidebar = {
           title: this.hass.localize(
             "ui.panel.config.lovelace.dashboards.picker.headers.sidebar"
           ),
           type: "icon",
-          width: "100px",
+          width: "121px",
           template: (sidebar) =>
-            sidebar
-              ? html`
-                  <ha-icon icon="hass:check"></ha-icon>
-                `
-              : html`
-                  -
-                `,
+            sidebar ? html` <ha-icon icon="hass:check"></ha-icon> ` : html` - `,
         };
       }
 
@@ -184,8 +175,8 @@ export class HaConfigLovelaceDashboards extends LitElement {
   private _getItems = memoize((dashboards: LovelaceDashboard[]) => {
     const defaultMode = (this.hass.panels?.lovelace
       ?.config as LovelacePanelConfig).mode;
-    const isDefault =
-      !localStorage.defaultPage || localStorage.defaultPage === "lovelace";
+    const defaultUrlPath = this.hass.defaultPanel;
+    const isDefault = defaultUrlPath === "lovelace";
     return [
       {
         icon: "hass:view-dashboard",
@@ -201,7 +192,7 @@ export class HaConfigLovelaceDashboards extends LitElement {
         return {
           filename: "",
           ...dashboard,
-          default: localStorage.defaultPage === dashboard.url_path,
+          default: defaultUrlPath === dashboard.url_path,
         };
       }),
     ];
@@ -209,9 +200,7 @@ export class HaConfigLovelaceDashboards extends LitElement {
 
   protected render(): TemplateResult {
     if (!this.hass || this._dashboards === undefined) {
-      return html`
-        <hass-loading-screen></hass-loading-screen>
-      `;
+      return html` <hass-loading-screen></hass-loading-screen> `;
     }
 
     return html`
@@ -229,6 +218,7 @@ export class HaConfigLovelaceDashboards extends LitElement {
         .data=${this._getItems(this._dashboards)}
         @row-click=${this._editDashboard}
         id="url_path"
+        hasFab
       >
       </hass-tabs-subpage-data-table>
       <ha-fab

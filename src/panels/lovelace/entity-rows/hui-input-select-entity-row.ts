@@ -1,39 +1,35 @@
+import "@polymer/paper-item/paper-item";
+import "@polymer/paper-listbox/paper-listbox";
 import {
-  html,
-  LitElement,
-  TemplateResult,
-  property,
   css,
   CSSResult,
   customElement,
+  html,
+  LitElement,
+  property,
   PropertyValues,
+  TemplateResult,
 } from "lit-element";
-import { ifDefined } from "lit-html/directives/if-defined";
-import "@polymer/paper-item/paper-item";
-import "@polymer/paper-listbox/paper-listbox";
-
-import "../../../components/ha-paper-dropdown-menu";
-import "../../../components/entity/state-badge";
-import "../components/hui-warning";
-
-import { computeStateName } from "../../../common/entity/compute_state_name";
-
-import { HomeAssistant, InputSelectEntity } from "../../../types";
-import { LovelaceRow } from "./types";
-import { setInputSelectOption } from "../../../data/input_select";
-import { hasConfigOrEntityChanged } from "../common/has-changed";
-import { forwardHaptic } from "../../../data/haptics";
-import { stopPropagation } from "../../../common/dom/stop_propagation";
 import { classMap } from "lit-html/directives/class-map";
+import { ifDefined } from "lit-html/directives/if-defined";
 import { DOMAINS_HIDE_MORE_INFO } from "../../../common/const";
+import { stopPropagation } from "../../../common/dom/stop_propagation";
 import { computeDomain } from "../../../common/entity/compute_domain";
+import { computeStateName } from "../../../common/entity/compute_state_name";
+import "../../../components/entity/state-badge";
+import "../../../components/ha-paper-dropdown-menu";
+import { UNAVAILABLE_STATES } from "../../../data/entity";
+import { forwardHaptic } from "../../../data/haptics";
+import { setInputSelectOption } from "../../../data/input_select";
+import { ActionHandlerEvent } from "../../../data/lovelace";
+import { HomeAssistant, InputSelectEntity } from "../../../types";
 import { EntitiesCardEntityConfig } from "../cards/types";
 import { actionHandler } from "../common/directives/action-handler-directive";
-import { hasAction } from "../common/has-action";
-import { ActionHandlerEvent } from "../../../data/lovelace";
 import { handleAction } from "../common/handle-action";
-import { UNAVAILABLE } from "../../../data/entity";
-import { fireEvent } from "../../../common/dom/fire_event";
+import { hasAction } from "../common/has-action";
+import { hasConfigOrEntityChanged } from "../common/has-changed";
+import "../components/hui-warning";
+import { LovelaceRow } from "./types";
 
 @customElement("hui-input-select-entity-row")
 class HuiInputSelectEntityRow extends LitElement implements LovelaceRow {
@@ -80,14 +76,6 @@ class HuiInputSelectEntityRow extends LitElement implements LovelaceRow {
         !DOMAINS_HIDE_MORE_INFO.includes(computeDomain(this._config.entity)));
 
     return html`
-      ${stateObj.state === UNAVAILABLE
-        ? html`
-            <hui-unavailable
-              .text=${this.hass.localize("state.default.unavailable")}
-              @click=${this._showMoreInfo}
-            ></hui-unavailable>
-          `
-        : ""}
       <state-badge
         .stateObj=${stateObj}
         .stateColor=${this._config.state_color}
@@ -106,15 +94,14 @@ class HuiInputSelectEntityRow extends LitElement implements LovelaceRow {
       <ha-paper-dropdown-menu
         .label=${this._config.name || computeStateName(stateObj)}
         .value=${stateObj.state}
+        .disabled=${UNAVAILABLE_STATES.includes(stateObj.state)}
         @iron-select=${this._selectedChanged}
         @click=${stopPropagation}
       >
         <paper-listbox slot="dropdown-content">
           ${stateObj.attributes.options
             ? stateObj.attributes.options.map(
-                (option) => html`
-                  <paper-item>${option}</paper-item>
-                `
+                (option) => html` <paper-item>${option}</paper-item> `
               )
             : ""}
         </paper-listbox>
@@ -149,10 +136,6 @@ class HuiInputSelectEntityRow extends LitElement implements LovelaceRow {
     handleAction(this, this.hass!, this._config!, ev.detail.action!);
   }
 
-  private _showMoreInfo() {
-    fireEvent(this, "hass-more-info", { entityId: this._config!.entity });
-  }
-
   static get styles(): CSSResult {
     return css`
       :host {
@@ -174,9 +157,6 @@ class HuiInputSelectEntityRow extends LitElement implements LovelaceRow {
         outline: none;
         background: var(--divider-color);
         border-radius: 100%;
-      }
-      hui-unavailable {
-        cursor: pointer;
       }
     `;
   }

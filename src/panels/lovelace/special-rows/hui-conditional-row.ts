@@ -1,8 +1,7 @@
 import { customElement } from "lit-element";
-
 import { HuiConditionalBase } from "../components/hui-conditional-base";
 import { createRowElement } from "../create-element/create-row-element";
-import { LovelaceRow, ConditionalRowConfig } from "../entity-rows/types";
+import { ConditionalRowConfig, LovelaceRow } from "../entity-rows/types";
 
 @customElement("hui-conditional-row")
 class HuiConditionalRow extends HuiConditionalBase implements LovelaceRow {

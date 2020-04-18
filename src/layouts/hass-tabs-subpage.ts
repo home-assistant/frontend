@@ -1,21 +1,21 @@
+import "@material/mwc-ripple";
 import {
-  LitElement,
-  property,
-  TemplateResult,
-  html,
-  customElement,
   css,
   CSSResult,
+  customElement,
+  html,
+  LitElement,
+  property,
   PropertyValues,
+  TemplateResult,
 } from "lit-element";
+import { classMap } from "lit-html/directives/class-map";
+import memoizeOne from "memoize-one";
+import { isComponentLoaded } from "../common/config/is_component_loaded";
+import { navigate } from "../common/navigate";
 import "../components/ha-menu-button";
 import "../components/ha-paper-icon-button-arrow-prev";
-import { classMap } from "lit-html/directives/class-map";
-import { Route, HomeAssistant } from "../types";
-import { navigate } from "../common/navigate";
-import "@material/mwc-ripple";
-import { isComponentLoaded } from "../common/config/is_component_loaded";
-import memoizeOne from "memoize-one";
+import { HomeAssistant, Route } from "../types";
 
 export interface PageNavigation {
   path: string;
@@ -31,12 +31,19 @@ export interface PageNavigation {
 @customElement("hass-tabs-subpage")
 class HassTabsSubpage extends LitElement {
   @property() public hass!: HomeAssistant;
+
   @property({ type: String, attribute: "back-path" }) public backPath?: string;
+
   @property() public backCallback?: () => void;
+
   @property({ type: Boolean }) public hassio = false;
+
   @property() public route!: Route;
+
   @property() public tabs!: PageNavigation[];
+
   @property({ type: Boolean, reflect: true }) public narrow = false;
+
   @property() private _activeTab?: PageNavigation;
 
   private _getTabs = memoizeOne(
@@ -45,7 +52,8 @@ class HassTabsSubpage extends LitElement {
       activeTab: PageNavigation | undefined,
       showAdvanced: boolean | undefined,
       _components,
-      _language
+      _language,
+      _narrow
     ) => {
       const shownTabs = tabs.filter(
         (page) =>
@@ -66,9 +74,7 @@ class HassTabsSubpage extends LitElement {
               .path=${page.path}
             >
               ${this.narrow
-                ? html`
-                    <ha-icon .icon=${page.icon}></ha-icon>
-                  `
+                ? html` <ha-icon .icon=${page.icon}></ha-icon> `
                 : ""}
               ${!this.narrow || page === activeTab
                 ? html`
@@ -101,7 +107,8 @@ class HassTabsSubpage extends LitElement {
       this._activeTab,
       this.hass.userData?.showAdvanced,
       this.hass.config.components,
-      this.hass.language
+      this.hass.language,
+      this.narrow
     );
 
     return html`
@@ -112,9 +119,7 @@ class HassTabsSubpage extends LitElement {
           @click=${this._backTapped}
         ></ha-paper-icon-button-arrow-prev>
         ${this.narrow
-          ? html`
-              <div main-title><slot name="header"></slot></div>
-            `
+          ? html` <div class="main-title"><slot name="header"></slot></div> `
           : ""}
         ${tabs.length > 1 || !this.narrow
           ? html`
@@ -190,10 +195,8 @@ class HassTabsSubpage extends LitElement {
       }
 
       #tabbar:not(.bottom-bar) {
-        margin: auto;
-        left: 50%;
-        position: absolute;
-        transform: translate(-50%, 0);
+        flex: 1;
+        justify-content: center;
       }
 
       .tab {
@@ -228,14 +231,17 @@ class HassTabsSubpage extends LitElement {
       ha-menu-button,
       ha-paper-icon-button-arrow-prev,
       ::slotted([slot="toolbar-icon"]) {
+        flex-shrink: 0;
         pointer-events: auto;
         color: var(--sidebar-icon-color);
       }
 
-      [main-title] {
-        margin: 0 0 0 24px;
+      .main-title {
+        flex: 1;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-height: 40px;
         line-height: 20px;
-        flex-grow: 1;
       }
 
       .content {
@@ -245,11 +251,6 @@ class HassTabsSubpage extends LitElement {
         overflow-y: auto;
         overflow: auto;
         -webkit-overflow-scrolling: touch;
-      }
-
-      #toolbar-icon {
-        position: absolute;
-        right: 16px;
       }
 
       :host([narrow]) .content {

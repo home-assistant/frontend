@@ -1,18 +1,21 @@
 import { customElement, property, UpdatingElement } from "lit-element";
-
+import { HomeAssistant } from "../../../types";
+import { ConditionalCardConfig } from "../cards/types";
 import {
   checkConditionsMet,
   validateConditionalConfig,
 } from "../common/validate-condition";
-import { HomeAssistant } from "../../../types";
+import { ConditionalRowConfig, LovelaceRow } from "../entity-rows/types";
 import { LovelaceCard } from "../types";
-import { LovelaceRow, ConditionalRowConfig } from "../entity-rows/types";
-import { ConditionalCardConfig } from "../cards/types";
 
 @customElement("hui-conditional-base")
 export class HuiConditionalBase extends UpdatingElement {
   @property() public hass?: HomeAssistant;
+
+  @property() public editMode?: boolean;
+
   @property() protected _config?: ConditionalCardConfig | ConditionalRowConfig;
+
   protected _element?: LovelaceCard | LovelaceRow;
 
   protected validateConfig(
@@ -30,20 +33,24 @@ export class HuiConditionalBase extends UpdatingElement {
       throw new Error("Conditions are invalid.");
     }
 
-    if (this._element && this._element.parentElement) {
-      this.removeChild(this._element);
+    if (this.lastChild) {
+      this.removeChild(this.lastChild);
     }
 
     this._config = config;
   }
 
   protected update(): void {
-    if (!this._element || !this.hass) {
+    if (!this._element || !this.hass || !this._config) {
       return;
     }
 
+    this._element.editMode = this.editMode;
+
     const visible =
-      this._config && checkConditionsMet(this._config.conditions, this.hass);
+      this.editMode || checkConditionsMet(this._config.conditions, this.hass);
+
+    this.style.setProperty("display", visible ? "" : "none");
 
     if (visible) {
       this._element.hass = this.hass;
@@ -51,8 +58,6 @@ export class HuiConditionalBase extends UpdatingElement {
         this.appendChild(this._element);
       }
     }
-
-    this.style.setProperty("display", visible ? "" : "none");
   }
 }
 

@@ -509,6 +509,7 @@
                 "attributes": {
                     "air_pressure": "Pression atmosphérique",
                     "humidity": "Humidité",
+                    "precipitation": "Précipitation",
                     "temperature": "Température",
                     "visibility": "Visibilité",
                     "wind_speed": "Vitesse du vent"
@@ -531,7 +532,9 @@
                     "wnw": "O-NO",
                     "wsw": "O-SO"
                 },
-                "forecast": "Prévisions"
+                "forecast": "Prévisions",
+                "high": "Haute",
+                "low": "Faible"
             }
         },
         "common": {
@@ -543,6 +546,7 @@
             "save": "Enregistrer",
             "successfully_deleted": "Supprimé avec succès",
             "successfully_saved": "Enregistré avec succès",
+            "undo": "Annuler",
             "yes": "Oui"
         },
         "components": {
@@ -578,7 +582,7 @@
             },
             "related-items": {
                 "area": "Zone",
-                "automation": "Partie des automatisations suivantes",
+                "automation": "Partie des automations suivantes",
                 "device": "Appareil",
                 "entity": "Entités liées",
                 "group": "Partie des groupes suivants",
@@ -812,6 +816,10 @@
                 "areas": {
                     "caption": "Pièces",
                     "create_area": "CRÉER UNE PIÈCE",
+                    "data_table": {
+                        "area": "Zone",
+                        "devices": "Appareils"
+                    },
                     "delete": {
                         "confirmation_text": "Tous les appareils de cette zone ne seront plus attribués.",
                         "confirmation_title": "Etes-vous sûr de vouloir supprimer cette zone ?"
@@ -950,8 +958,8 @@
                         },
                         "edit_ui": "Modifier avec l'interface utilisateur",
                         "edit_yaml": "Modifier en tant que YAML",
-                        "enable_disable": "Activer/Désactiver l'automatisation",
-                        "introduction": "Utilisez les automatisations pour donner vie à votre maison",
+                        "enable_disable": "Activer/Désactiver l'automation",
+                        "introduction": "Utilisez les automations pour donner vie à votre maison",
                         "load_error_not_editable": "Seules les automations dans automations.yaml sont modifiables.",
                         "load_error_unknown": "Erreur lors du chargement de l'automation ( {err_no} ).",
                         "save": "Sauvegarder",
@@ -961,7 +969,7 @@
                             "delete_confirm": "Voulez-vous effacer ?",
                             "duplicate": "Dupliquer",
                             "header": "Déclencheurs",
-                            "introduction": "Les déclencheurs sont ce qui lance le traitement d'une règle d'automatisation. Il est possible de spécifier plusieurs déclencheurs pour une même règle. Dès qu'un déclencheur est activé, Home Assistant validera les conditions, s'il y en a, et appellera l'action.\n\n[En apprendre plus sur les déclencheurs.](https://home-assistant.io/docs/automation/trigger/)",
+                            "introduction": "Les déclencheurs sont ce qui lance le traitement d'une règle d'automation. Il est possible de spécifier plusieurs déclencheurs pour une même règle. Dès qu'un déclencheur est activé, Home Assistant validera les conditions, s'il y en a, et appellera l'action.\n\n[En apprendre plus sur les déclencheurs.](https://home-assistant.io/docs/automation/trigger/)",
                             "learn_more": "En savoir plus sur les déclencheurs",
                             "name": "Déclencheur",
                             "type_select": "Type de déclencheur",
@@ -1050,16 +1058,19 @@
                     },
                     "picker": {
                         "add_automation": "Ajouter une automation",
-                        "delete_automation": "Supprimer l'automatisation",
-                        "delete_confirm": "Voulez-vous vraiment supprimer cette automatisation ?",
-                        "edit_automation": "Modifier l'automatisation",
+                        "delete_automation": "Supprimer l'automation",
+                        "delete_confirm": "Voulez-vous vraiment supprimer cette automation ?",
+                        "edit_automation": "Modifier l'automation",
                         "header": "Éditeur d'automation",
+                        "headers": {
+                            "name": "Nom"
+                        },
                         "introduction": "L'éditeur d'automations vous permet de créer et modifier des automations. Veuillez lire les instructions ci-dessous pour vous assurer d'avoir configuré Home Assistant correctement.",
-                        "learn_more": "En savoir plus sur les automatisations",
+                        "learn_more": "En savoir plus sur les automations",
                         "no_automations": "Il n'y a aucune automation modifiable.",
-                        "only_editable": "Seules les automatisations définies dans automations.yaml sont modifiables.",
+                        "only_editable": "Seules les automations définies dans automations.yaml sont modifiables.",
                         "pick_automation": "Choisissez l'automation à modifier",
-                        "show_info_automation": "Afficher des informations sur l'automatisation"
+                        "show_info_automation": "Afficher des informations sur l'automation"
                     }
                 },
                 "cloud": {
@@ -1122,7 +1133,7 @@
                             "loading": "Chargement ...",
                             "manage": "Gérer",
                             "no_hooks_yet": "Il semble que vous n'ayez pas encore de Webhooks. Commencez en configurer un ",
-                            "no_hooks_yet_link_automation": "automatisation webhook",
+                            "no_hooks_yet_link_automation": "automation webhook",
                             "no_hooks_yet_link_integration": "intégration basée sur un Webhook",
                             "no_hooks_yet2": "ou en créant un",
                             "title": "Webhooks"
@@ -1298,13 +1309,13 @@
                         "actions": {
                             "caption": "Quand quelque chose est déclenché ..."
                         },
-                        "automations": "Automatisations",
+                        "automations": "Automations",
                         "conditions": {
                             "caption": "Ne faire quelque chose que si ..."
                         },
-                        "create": "Créer une automatisation avec l'appareil",
-                        "no_automations": "Aucune automatisation",
-                        "no_device_automations": "Aucune automatisation n'est disponible pour cet appareil.",
+                        "create": "Créer une automation avec l'appareil",
+                        "no_automations": "Aucune automation",
+                        "no_device_automations": "Aucune automation n'est disponible pour cet appareil.",
                         "triggers": {
                             "caption": "Faire quelque chose quand ..."
                         }
@@ -1334,6 +1345,7 @@
                     },
                     "info": "Infos sur l'appareil",
                     "name": "Nom",
+                    "no_devices": "Aucun appareil",
                     "scene": {
                         "create": "Créer une scène avec l'appareil",
                         "no_scenes": "Pas de scènes",
@@ -1416,8 +1428,8 @@
                 },
                 "header": "Configurer Home Assistant",
                 "helpers": {
-                    "caption": "Aides",
-                    "description": "Éléments pouvant aider à construire des automatisations.",
+                    "caption": "Entrées",
+                    "description": "Éléments pouvant aider à construire des automations.",
                     "dialog": {
                         "add_helper": "Ajouter une aide",
                         "add_platform": "Ajouter {platform}",
@@ -1433,7 +1445,7 @@
                         }
                     },
                     "types": {
-                        "input_boolean": "Permuter",
+                        "input_boolean": "Interrupteur",
                         "input_datetime": "Date et/ou heure",
                         "input_number": "Nombre",
                         "input_select": "Liste déroulante",
@@ -1638,6 +1650,9 @@
                         "delete_scene": "Supprimer la scène",
                         "edit_scene": "Éditer la scène",
                         "header": "Éditeur de scène",
+                        "headers": {
+                            "name": "Nom"
+                        },
                         "introduction": "L'éditeur de scène vous permet de créer et d'éditer des scènes. Suivez le lien ci-dessous pour lire les instructions afin de vous assurer que vous avez correctement configuré Home Assistant.",
                         "learn_more": "En savoir plus sur les scènes",
                         "no_scenes": "Nous n'avons pas pu trouver de scènes modifiables",
@@ -1665,9 +1680,13 @@
                         "add_script": "Ajouter un script",
                         "edit_script": "Éditer le script",
                         "header": "Éditeur de script",
+                        "headers": {
+                            "name": "Nom"
+                        },
                         "introduction": "L'éditeur de script vous permet de créer et d'éditer des scripts. Suivez le lien ci-dessous pour lire les instructions afin de vous assurer que vous avez correctement configuré Home Assistant.",
                         "learn_more": "En savoir plus sur les scripts",
                         "no_scripts": "Nous n'avons pas trouvé de scripts modifiables",
+                        "show_info": "Afficher des informations sur le script",
                         "trigger_script": "Script de déclenchement"
                     }
                 },
@@ -1676,7 +1695,7 @@
                     "description": "Redémarrer et arrêter le serveur Home Assistant",
                     "section": {
                         "reloading": {
-                            "automation": "Recharger les automatisations",
+                            "automation": "Recharger les automations",
                             "core": "Recharger l'emplacement et les personnalisations",
                             "group": "Recharger les groupes",
                             "heading": "Rechargement de la configuration",
@@ -1716,6 +1735,7 @@
                     "editor": {
                         "activate_user": "Activer l'utilisateur",
                         "active": "Actif",
+                        "admin": "Administrateur",
                         "caption": "Voir l'utilisateur",
                         "change_password": "Changer le mot de passe",
                         "confirm_user_deletion": "Êtes-vous sûr de vouloir supprimer {name} ?",
@@ -1725,14 +1745,22 @@
                         "group": "Groupe",
                         "group_update_failed": "La mise à jour du groupe a échoué:",
                         "id": "ID",
+                        "name": "Nom",
                         "owner": "Propriétaire",
                         "rename_user": "Renommer l'utilisateur",
                         "system_generated": "Généré par le système",
+                        "system_generated_users_not_editable": "Impossible de mettre à jour les utilisateurs générés par le système.",
                         "system_generated_users_not_removable": "Impossible de supprimer les utilisateurs générés par le système.",
                         "unnamed_user": "Utilisateur sans nom",
+                        "update_user": "Mise à jour",
                         "user_rename_failed": "Le changement de nom d'utilisateur a échoué:"
                     },
                     "picker": {
+                        "headers": {
+                            "group": "Groupe",
+                            "name": "Nom",
+                            "system": "Système"
+                        },
                         "system_generated": "Généré par le système",
                         "title": "Utilisateurs"
                     }
@@ -1862,7 +1890,7 @@
                         "name": "Nom",
                         "new_zone": "Nouvelle zone",
                         "passive": "Passif",
-                        "passive_note": "Les zones passives sont cachées dans l'interface utilisateur et ne sont pas utilisées comme emplacement pour les appareils suivis. Elles sont utiles si vous voulez les utiliser pour des automatisations.",
+                        "passive_note": "Les zones passives sont cachées dans l'interface utilisateur et ne sont pas utilisées comme emplacement pour les appareils suivis. Elles sont utiles si vous voulez les utiliser pour des automations.",
                         "radius": "Rayon",
                         "required_error_msg": "Ce champ est requis",
                         "update": "Mettre à jour"
@@ -1871,7 +1899,7 @@
                     "edit_home_zone_narrow": "Le rayon de la zone d'habitation ne peut pas encore être modifié depuis le frontend. L'emplacement peut être modifié par rapport à la configuration générale.",
                     "go_to_core_config": "Configuration générale",
                     "home_zone_core_config": "L'emplacement de votre zone d'habitation est modifiable à partir de la page de configuration générale. Le rayon de la zone d'habitation ne peut pas encore être modifié depuis le frontend. Voulez-vous passer à la configuration générale ?",
-                    "introduction": "Les zones vous permettent de spécifier certaines régions sur la terre. Lorsqu'une personne se trouve dans une zone, l'état prend le nom de la zone. Les zones peuvent également être utilisées comme déclencheur ou condition dans les configurations d'automatisation.",
+                    "introduction": "Les zones vous permettent de spécifier certaines régions sur la terre. Lorsqu'une personne se trouve dans une zone, l'état prend le nom de la zone. Les zones peuvent également être utilisées comme déclencheur ou condition dans les configurations d'automation.",
                     "no_zones_created_yet": "Il semble que vous n'ayez pas encore créé de zones."
                 },
                 "zwave": {
@@ -2135,6 +2163,10 @@
                             "description": "La carte Filtre d'entité vous permet de définir une liste d'entités que vous souhaitez suivre uniquement dans un certain état.",
                             "name": "Filtre d'entité"
                         },
+                        "entity": {
+                            "description": "La carte Entité vous donne un aperçu rapide de l'état de votre entité.",
+                            "name": "Entité"
+                        },
                         "gauge": {
                             "description": "La carte Jauge est une carte de base qui permet de voir visuellement les données des capteurs.",
                             "name": "Jauge",
@@ -2147,8 +2179,10 @@
                         },
                         "generic": {
                             "aspect_ratio": "Ratio d'aspect",
+                            "attribute": "Attribut",
                             "camera_image": "Caméra entité",
                             "camera_view": "Vue de la caméra",
+                            "double_tap_action": "Double appui court",
                             "entities": "Entités",
                             "entity": "Entité",
                             "hold_action": "Appui long",
@@ -2199,6 +2233,7 @@
                             "default_zoom": "Zoom par défaut",
                             "description": "La carte Carte vous permet d'afficher des entités sur une carte.",
                             "geo_location_sources": "Sources de géolocalisation",
+                            "hours_to_show": "Heures à montrer",
                             "name": "Carte",
                             "source": "Source"
                         },
@@ -2255,10 +2290,14 @@
                             "name": "Prévisions Météo"
                         }
                     },
+                    "cardpicker": {
+                        "custom_card": "Personnalisé",
+                        "no_description": "Aucune description disponible."
+                    },
                     "edit_card": {
                         "add": "Ajouter une action",
                         "delete": "Supprimer",
-                        "duplicate": "Carte en double",
+                        "duplicate": "Dupliquer la carte",
                         "edit": "Modifier",
                         "header": "Configuration de la carte",
                         "move": "Déplacer",
@@ -2319,6 +2358,7 @@
                     "save_config": {
                         "cancel": "Oublie ce que j'ai dit, c'est pas grave.",
                         "close": "Fermer",
+                        "empty_config": "Commencez avec un tableau de bord vide",
                         "header": "Prenez le contrôle de votre Interface Lovelace",
                         "para": "Par défaut, Home Assistant maintient votre interface utilisateur, la met à jour lorsque de nouvelles entités ou de nouveaux composants Lovelace UI sont disponibles. Si vous prenez le contrôle, nous ne ferons plus les changements automatiquement pour vous.",
                         "para_sure": "Êtes-vous sûr de vouloir prendre le contrôle de l'interface utilisateur?",
@@ -2568,6 +2608,11 @@
                     "submit": "Envoyer"
                 },
                 "current_user": "Vous êtes actuellement connecté en tant que {fullName}.",
+                "dashboard": {
+                    "description": "Choisissez un tableau de bord par défaut pour cet appareil.",
+                    "dropdown_label": "Tableau de bord",
+                    "header": "Tableau de bord"
+                },
                 "force_narrow": {
                     "description": "Cela masquera la barre latérale par défaut, semblable à l'expérience mobile.",
                     "header": "Toujours cacher la barre latérale"

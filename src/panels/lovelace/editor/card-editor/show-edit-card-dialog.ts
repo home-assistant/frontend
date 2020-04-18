@@ -1,5 +1,5 @@
 import { fireEvent } from "../../../../common/dom/fire_event";
-import { LovelaceConfig, LovelaceCardConfig } from "../../../../data/lovelace";
+import { LovelaceCardConfig, LovelaceConfig } from "../../../../data/lovelace";
 
 export interface EditCardDialogParams {
   lovelaceConfig: LovelaceConfig;

@@ -1,46 +1,53 @@
-import "../../../layouts/hass-tabs-subpage-data-table";
-
 import {
-  LitElement,
-  html,
-  TemplateResult,
-  property,
   customElement,
+  html,
+  LitElement,
+  property,
+  TemplateResult,
 } from "lit-element";
-import { HomeAssistant, Route } from "../../../types";
-import {
-  DeviceRegistryEntry,
-  computeDeviceName,
-  DeviceEntityLookup,
-} from "../../../data/device_registry";
-import {
-  EntityRegistryEntry,
-  findBatteryEntity,
-} from "../../../data/entity_registry";
-import { ConfigEntry } from "../../../data/config_entries";
-import { AreaRegistryEntry } from "../../../data/area_registry";
-import { configSections } from "../ha-panel-config";
 import memoizeOne from "memoize-one";
+import { HASSDomEvent } from "../../../common/dom/fire_event";
+import { navigate } from "../../../common/navigate";
 import { LocalizeFunc } from "../../../common/translations/localize";
-import { DeviceRowData } from "./ha-devices-data-table";
 import {
   DataTableColumnContainer,
   DataTableRowData,
   RowClickedEvent,
 } from "../../../components/data-table/ha-data-table";
-import { navigate } from "../../../common/navigate";
-import { HASSDomEvent } from "../../../common/dom/fire_event";
+import { AreaRegistryEntry } from "../../../data/area_registry";
+import { ConfigEntry } from "../../../data/config_entries";
+import {
+  computeDeviceName,
+  DeviceEntityLookup,
+  DeviceRegistryEntry,
+} from "../../../data/device_registry";
+import {
+  EntityRegistryEntry,
+  findBatteryEntity,
+} from "../../../data/entity_registry";
+import "../../../layouts/hass-tabs-subpage-data-table";
+import { HomeAssistant, Route } from "../../../types";
+import { configSections } from "../ha-panel-config";
+import { DeviceRowData } from "./ha-devices-data-table";
 
 @customElement("ha-config-devices-dashboard")
 export class HaConfigDeviceDashboard extends LitElement {
   @property() public hass!: HomeAssistant;
+
   @property() public narrow = false;
+
   @property() public isWide = false;
+
   @property() public devices!: DeviceRegistryEntry[];
+
   @property() public entries!: ConfigEntry[];
+
   @property() public entities!: EntityRegistryEntry[];
+
   @property() public areas!: AreaRegistryEntry[];
+
   @property() public domain!: string;
+
   @property() public route!: Route;
 
   private _devices = memoizeOne(
@@ -108,9 +115,8 @@ export class HaConfigDeviceDashboard extends LitElement {
                 .filter((entId) => entId in entryLookup)
                 .map(
                   (entId) =>
-                    localize(
-                      `component.${entryLookup[entId].domain}.config.title`
-                    ) || entryLookup[entId].domain
+                    localize(`component.${entryLookup[entId].domain}.title`) ||
+                    entryLookup[entId].domain
                 )
                 .join(", ")
             : "No integration",
@@ -160,9 +166,7 @@ export class HaConfigDeviceDashboard extends LitElement {
                         .stateObj=${battery}
                       ></ha-state-icon>
                     `
-                  : html`
-                      -
-                    `;
+                  : html` - `;
               },
             },
           }
@@ -228,9 +232,7 @@ export class HaConfigDeviceDashboard extends LitElement {
                         .stateObj=${battery}
                       ></ha-state-icon>
                     `
-                  : html`
-                      -
-                    `;
+                  : html` - `;
               },
             },
           }

@@ -1,44 +1,48 @@
-import {
-  LitElement,
-  customElement,
-  property,
-  TemplateResult,
-  html,
-  CSSResult,
-  css,
-} from "lit-element";
 import "@material/mwc-button/mwc-button";
 import "@polymer/paper-input/paper-input";
-import "@polymer/paper-radio-group/paper-radio-group";
+import type { PaperInputElement } from "@polymer/paper-input/paper-input";
 import "@polymer/paper-radio-button/paper-radio-button";
-// tslint:disable-next-line: no-duplicate-imports
-import { PaperInputElement } from "@polymer/paper-input/paper-input";
-import { HomeAssistant } from "../types";
+import "@polymer/paper-radio-group/paper-radio-group";
+import {
+  css,
+  CSSResult,
+  customElement,
+  html,
+  LitElement,
+  property,
+  TemplateResult,
+} from "lit-element";
+import { fireEvent } from "../common/dom/fire_event";
+import type { LocalizeFunc } from "../common/translations/localize";
+import "../components/map/ha-location-editor";
+import { createTimezoneListEl } from "../components/timezone-datalist";
 import {
   ConfigUpdateValues,
   detectCoreConfig,
   saveCoreConfig,
 } from "../data/core";
-import { PolymerChangedEvent } from "../polymer-types";
 import { onboardCoreConfigStep } from "../data/onboarding";
-import { fireEvent } from "../common/dom/fire_event";
-import { LocalizeFunc } from "../common/translations/localize";
-import { createTimezoneListEl } from "../components/timezone-datalist";
-import "../components/map/ha-location-editor";
+import type { PolymerChangedEvent } from "../polymer-types";
+import type { HomeAssistant } from "../types";
 
 const amsterdam = [52.3731339, 4.8903147];
 
 @customElement("onboarding-core-config")
 class OnboardingCoreConfig extends LitElement {
   @property() public hass!: HomeAssistant;
+
   @property() public onboardingLocalize!: LocalizeFunc;
 
   @property() private _working = false;
 
   @property() private _name!: ConfigUpdateValues["location_name"];
+
   @property() private _location!: [number, number];
+
   @property() private _elevation!: string;
+
   @property() private _unitSystem!: ConfigUpdateValues["unit_system"];
+
   @property() private _timeZone!: string;
 
   protected render(): TemplateResult {
@@ -116,13 +120,9 @@ class OnboardingCoreConfig extends LitElement {
           @value-changed=${this._handleChange}
         >
           <span slot="suffix">
-            ${this._unitSystem === "metric"
-              ? this.hass.localize(
-                  "ui.panel.config.core.section.core.core_config.elevation_meters"
-                )
-              : this.hass.localize(
-                  "ui.panel.config.core.section.core.core_config.elevation_feet"
-                )}
+            ${this.hass.localize(
+              "ui.panel.config.core.section.core.core_config.elevation_meters"
+            )}
           </span>
         </paper-input>
       </div>

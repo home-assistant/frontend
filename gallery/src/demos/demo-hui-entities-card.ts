@@ -1,6 +1,6 @@
 import { html } from "@polymer/polymer/lib/utils/html-tag";
+/* eslint-plugin-disable lit */
 import { PolymerElement } from "@polymer/polymer/polymer-element";
-
 import { getEntity } from "../../../src/fake_data/entity";
 import { provideHass } from "../../../src/fake_data/provide_hass";
 import "../components/demo-cards";
@@ -59,6 +59,36 @@ const ENTITIES = [
     unit_of_measurement: "dB",
     friendly_name: "Allowed Noise",
     icon: "mdi:bell-ring",
+  }),
+  getEntity("light", "unavailable", "unavailable", {
+    friendly_name: "Bed Light",
+  }),
+  getEntity("lock", "unavailable", "unavailable", {
+    friendly_name: "Kitchen Door",
+  }),
+  getEntity("cover", "unavailable", "unavailable", {
+    friendly_name: "Kitchen Window",
+    supported_features: 11,
+  }),
+  getEntity("scene", "unavailable", "unavailable", {
+    friendly_name: "Romantic lights",
+  }),
+  getEntity("device_tracker", "unavailable", "unavailable", {
+    friendly_name: "Paulus",
+  }),
+  getEntity("climate", "unavailable", "unavailable", {
+    unit_of_measurement: "°F",
+    friendly_name: "Ecobee",
+    supported_features: 1014,
+  }),
+  getEntity("input_number", "unavailable", "unavailable", {
+    friendly_name: "Allowed Noise",
+    icon: "mdi:bell-ring",
+  }),
+  getEntity("input_select", "unavailable", "unavailable", {
+    unit_of_measurement: "dB",
+    friendly_name: "Who cooks",
+    icon: "mdi:cheff",
   }),
 ];
 
@@ -122,6 +152,21 @@ const CONFIGS = [
     `,
   },
   {
+    heading: "Unavailable",
+    config: `
+- type: entities
+  entities:
+    - scene.unavailable
+    - device_tracker.unavailable
+    - cover.unavailable
+    - lock.unavailable
+    - light.unavailable
+    - climate.unavailable
+    - input_number.unavailable
+    - input_select.unavailable
+    `,
+  },
+  {
     heading: "Custom name, secondary info, custom icon",
     config: `
 - type: entities
@@ -174,9 +219,7 @@ const CONFIGS = [
 
 class DemoEntities extends PolymerElement {
   static get template() {
-    return html`
-      <demo-cards id="demos" configs="[[_configs]]"></demo-cards>
-    `;
+    return html` <demo-cards id="demos" configs="[[_configs]]"></demo-cards> `;
   }
 
   static get properties() {
@@ -191,6 +234,7 @@ class DemoEntities extends PolymerElement {
   public ready() {
     super.ready();
     const hass = provideHass(this.$.demos);
+    hass.updateTranslations(null, "en");
     hass.addEntities(ENTITIES);
   }
 }

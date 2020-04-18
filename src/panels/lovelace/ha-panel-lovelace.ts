@@ -1,31 +1,31 @@
 import "@material/mwc-button";
 import deepFreeze from "deep-freeze";
-
 import {
+  html,
+  LitElement,
+  property,
+  PropertyValues,
+  TemplateResult,
+} from "lit-element";
+import {
+  deleteConfig,
   fetchConfig,
+  fetchResources,
   LovelaceConfig,
   saveConfig,
   subscribeLovelaceUpdates,
   WindowWithLovelaceProm,
-  deleteConfig,
-  fetchResources,
 } from "../../data/lovelace";
-import "../../layouts/hass-loading-screen";
 import "../../layouts/hass-error-screen";
-import "./hui-root";
+import "../../layouts/hass-loading-screen";
 import { HomeAssistant, PanelInfo, Route } from "../../types";
-import { Lovelace } from "./types";
-import {
-  LitElement,
-  html,
-  PropertyValues,
-  TemplateResult,
-  property,
-} from "lit-element";
-import { showSaveDialog } from "./editor/show-save-config-dialog";
-import { generateLovelaceConfigFromHass } from "./common/generate-lovelace-config";
 import { showToast } from "../../util/toast";
+import { generateLovelaceConfigFromHass } from "./common/generate-lovelace-config";
 import { loadLovelaceResources } from "./common/load-resources";
+import { showSaveDialog } from "./editor/show-save-config-dialog";
+import "./hui-root";
+import { Lovelace } from "./types";
+import { domainToName } from "../../data/integration";
 
 (window as any).loadCardHelpers = () => import("./custom-card-helpers");
 
@@ -57,7 +57,9 @@ class LovelacePanel extends LitElement {
   private mqls?: MediaQueryList[];
 
   private _ignoreNextUpdateEvent = false;
+
   private _fetchConfigOnConnect = false;
+
   private _unsubUpdates?;
 
   constructor() {
@@ -112,7 +114,7 @@ class LovelacePanel extends LitElement {
     if (state === "error") {
       return html`
         <hass-error-screen
-          title="${this.hass!.localize("domain.lovelace")}"
+          title="${domainToName(this.hass!.localize, "lovelace")}"
           .error="${this._errorMsg}"
         >
           <mwc-button raised @click=${this._forceFetchConfig}>
@@ -280,7 +282,7 @@ class LovelacePanel extends LitElement {
       conf = await confProm!;
     } catch (err) {
       if (err.code !== "config_not_found") {
-        // tslint:disable-next-line
+        // eslint-disable-next-line
         console.log(err);
         this._state = "error";
         this._errorMsg = err.message;
@@ -354,7 +356,7 @@ class LovelacePanel extends LitElement {
           this._ignoreNextUpdateEvent = true;
           await saveConfig(this.hass!, urlPath, newConfig);
         } catch (err) {
-          // tslint:disable-next-line
+          // eslint-disable-next-line
           console.error(err);
           // Rollback the optimistic update
           this._updateLovelace({
@@ -376,7 +378,7 @@ class LovelacePanel extends LitElement {
           this._ignoreNextUpdateEvent = true;
           await deleteConfig(this.hass!, urlPath);
         } catch (err) {
-          // tslint:disable-next-line
+          // eslint-disable-next-line
           console.error(err);
           // Rollback the optimistic update
           this._updateLovelace({

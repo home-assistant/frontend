@@ -1,21 +1,19 @@
-import {
-  html,
-  LitElement,
-  TemplateResult,
-  property,
-  customElement,
-  css,
-  CSSResult,
-} from "lit-element";
 import "@material/mwc-button";
 import "@polymer/paper-tooltip/paper-tooltip";
-
-import "../../components/ha-relative-time";
+import {
+  css,
+  CSSResult,
+  customElement,
+  html,
+  LitElement,
+  property,
+  TemplateResult,
+} from "lit-element";
 import "../../components/ha-markdown";
-import "./notification-item-template";
-
-import { HomeAssistant } from "../../types";
+import "../../components/ha-relative-time";
 import { PersistentNotification } from "../../data/persistent_notification";
+import { HomeAssistant } from "../../types";
+import "./notification-item-template";
 
 @customElement("persistent-notification-item")
 export class HuiPersistentNotificationItem extends LitElement {
@@ -31,7 +29,7 @@ export class HuiPersistentNotificationItem extends LitElement {
     return html`
       <notification-item-template>
         <span slot="header">
-          ${this.notification.title || this.notification.notification_id}
+          ${this.notification.title}
         </span>
 
         <ha-markdown content="${this.notification.message}"></ha-markdown>

@@ -1,25 +1,25 @@
 import {
+  css,
+  CSSResult,
+  customElement,
+  html,
   LitElement,
   property,
   TemplateResult,
-  html,
-  customElement,
-  CSSResult,
-  css,
 } from "lit-element";
-
 import "../../components/ha-card";
-
-import { HomeAssistant } from "../../types";
 import {
   CoreFrontendUserData,
   getOptimisticFrontendUserDataCollection,
 } from "../../data/frontend";
+import { HomeAssistant } from "../../types";
 
 @customElement("ha-advanced-mode-row")
 class AdvancedModeRow extends LitElement {
   @property() public hass!: HomeAssistant;
+
   @property() public narrow!: boolean;
+
   @property() public coreUserData?: CoreFrontendUserData;
 
   protected render(): TemplateResult {

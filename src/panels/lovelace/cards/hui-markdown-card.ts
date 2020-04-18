@@ -1,24 +1,22 @@
+import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import {
-  html,
-  LitElement,
-  TemplateResult,
-  customElement,
-  property,
   css,
   CSSResult,
+  customElement,
+  html,
+  LitElement,
+  property,
   PropertyValues,
+  TemplateResult,
 } from "lit-element";
 import { classMap } from "lit-html/directives/class-map";
-import { UnsubscribeFunc } from "home-assistant-js-websocket";
-
+import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import "../../../components/ha-card";
 import "../../../components/ha-markdown";
-
+import { subscribeRenderTemplate } from "../../../data/ws-templates";
 import { HomeAssistant } from "../../../types";
 import { LovelaceCard, LovelaceCardEditor } from "../types";
 import { MarkdownCardConfig } from "./types";
-import { subscribeRenderTemplate } from "../../../data/ws-templates";
-import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 
 @customElement("hui-markdown-card")
 export class HuiMarkdownCard extends LitElement implements LovelaceCard {
@@ -38,8 +36,11 @@ export class HuiMarkdownCard extends LitElement implements LovelaceCard {
   }
 
   @property() private _config?: MarkdownCardConfig;
+
   @property() private _content?: string = "";
+
   @property() private _unsubRenderTemplate?: Promise<UnsubscribeFunc>;
+
   @property() private _hass?: HomeAssistant;
 
   public getCardSize(): number {
@@ -119,7 +120,10 @@ export class HuiMarkdownCard extends LitElement implements LovelaceCard {
         {
           template: this._config.content,
           entity_ids: this._config.entity_id,
-          variables: { config: this._config },
+          variables: {
+            config: this._config,
+            user: this._hass.user!.name,
+          },
         }
       );
       this._unsubRenderTemplate.catch(() => {
