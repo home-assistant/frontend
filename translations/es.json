@@ -758,11 +758,13 @@
                 "buttons": {
                     "add": "Añadir dispositivos",
                     "reconfigure": "Reconfigurar dispositivo",
-                    "remove": "Eliminar dispositivos"
+                    "remove": "Eliminar dispositivos",
+                    "zigbee_information": "Información Zigbee"
                 },
                 "confirmations": {
                     "remove": "¿Estás seguro de que quieres eliminar este dispositivo?"
                 },
+                "device_signature": "Firma del dispositivo Zigbee",
                 "last_seen": "Ultima vez visto",
                 "manuf": "por {manufacturer}",
                 "no_area": "Ningún área",
@@ -771,7 +773,8 @@
                 "services": {
                     "reconfigure": "Reconfigura el dispositivo ZHA (curar dispositivo). Usa esto si tienes problemas con el dispositivo. Si el dispositivo en cuestión es un dispositivo alimentado por batería, asegúrate de que está activo y aceptando comandos cuando uses este servicio.",
                     "remove": "Eliminar un dispositivo de la red Zigbee.",
-                    "updateDeviceName": "Establece un nombre personalizado para este dispositivo en el registro de dispositivos."
+                    "updateDeviceName": "Establece un nombre personalizado para este dispositivo en el registro de dispositivos.",
+                    "zigbee_information": "Ver la información Zigbee para el dispositivo."
                 },
                 "unknown": "Desconocido",
                 "zha_device_card": {

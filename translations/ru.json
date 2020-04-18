@@ -1337,7 +1337,7 @@
                     "delete": "Удалить",
                     "description": "Управляйте подключенными устройствами",
                     "details": "Здесь приведена вся доступная информация об этом устройстве.",
-                    "device_not_found": "Устройство не найдено.",
+                    "device_not_found": "Устройство не найдено",
                     "entities": {
                         "add_entities_lovelace": "Добавить объекты в Lovelace UI",
                         "entities": "Объекты",
@@ -1776,7 +1776,7 @@
                         "caption": "Добавить устройства",
                         "description": "Добавить устройства в сеть Zigbee"
                     },
-                    "caption": "ZHA",
+                    "caption": "Zigbee Home Automation",
                     "cluster_attributes": {
                         "attributes_of_cluster": "Атрибуты выбранного кластера",
                         "get_zigbee_attribute": "Получить атрибут Zigbee",

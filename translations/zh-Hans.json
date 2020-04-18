@@ -758,11 +758,13 @@
                 "buttons": {
                     "add": "添加设备",
                     "reconfigure": "重新配置设备",
-                    "remove": "删除设备"
+                    "remove": "删除设备",
+                    "zigbee_information": "Zigbee 信息"
                 },
                 "confirmations": {
                     "remove": "您确定要删除此设备吗？"
                 },
+                "device_signature": "Zigbee 设备签名",
                 "last_seen": "上次看到",
                 "manuf": "制造商：{manufacturer}",
                 "no_area": "没有区域",
@@ -771,7 +773,8 @@
                 "services": {
                     "reconfigure": "这将重新配置 ZHA 设备（复原设备）。如果您的设备遇到问题，请使用此项。如果有问题的设备是由电池供电的，请确保在使用此服务时它处于唤醒状态并可以接受指令。",
                     "remove": "从 Zigbee 网络中删除设备。",
-                    "updateDeviceName": "在设备注册表中为此设备设置自定义名称。"
+                    "updateDeviceName": "在设备注册表中为此设备设置自定义名称。",
+                    "zigbee_information": "查看设备的 Zigbee 信息。"
                 },
                 "unknown": "未知",
                 "zha_device_card": {
