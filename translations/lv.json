@@ -1,60 +1,10 @@
 {
-    "attribute": {
-        "weather": {
-            "humidity": "Gaisa mitrums",
-            "visibility": "Redzamība",
-            "wind_speed": "Vēja ātrums"
-        }
-    },
     "config_entry": {
         "disabled_by": {
             "config_entry": "Konfigurēt Ierakstu",
             "integration": "Integrācija",
             "user": "Lietotājs"
         }
-    },
-    "domain": {
-        "alarm_control_panel": "Signalizācijas vadības panelis",
-        "automation": "Automatizācija",
-        "binary_sensor": "Binārais sensors",
-        "calendar": "Kalendārs",
-        "camera": "Kamera",
-        "climate": "Klimats",
-        "configurator": "Konfigurētājs",
-        "conversation": "Saruna",
-        "cover": "Nosegi",
-        "device_tracker": "Ierīču izsekotājs",
-        "fan": "Ventilators",
-        "group": "Grupa",
-        "hassio": "Hass.io",
-        "history_graph": "Vēstures grafiks",
-        "homeassistant": "Home Assistant",
-        "image_processing": "Attēlu apstrāde",
-        "input_boolean": "Ieejas boolean",
-        "input_datetime": "Ievades datuma laiks",
-        "input_number": "Ievades numurs",
-        "input_select": "Ievades izvēle",
-        "input_text": "Ievades teksts",
-        "light": "Gaisma",
-        "lock": "Slēdzene",
-        "lovelace": "Lovelace",
-        "mailbox": "Pastkastīte",
-        "media_player": "Multivides atskaņotājs",
-        "notify": "Paziņot",
-        "person": "Persona",
-        "plant": "Augs",
-        "proximity": "Tuvums",
-        "remote": "Tālvadība",
-        "scene": "Sižets",
-        "script": "Skripts",
-        "sensor": "Sensors",
-        "sun": "Saule",
-        "switch": "Slēdzis",
-        "updater": "Atjauninātājs",
-        "vacuum": "Putekļsūcējs",
-        "weblink": "Weblink",
-        "zha": "ZHA",
-        "zwave": "Z-Wave"
     },
     "groups": {
         "system-admin": "Administratori",
@@ -64,7 +14,6 @@
     "panel": {
         "calendar": "Kalendārs",
         "config": "Konfigurācija",
-        "dev-info": "Info",
         "developer_tools": "Izstrādātāju rīki",
         "history": "Vēsture",
         "logbook": "Žurnāls",
@@ -241,19 +190,10 @@
             "auto": "Auto",
             "cool": "Dzesēšana",
             "dry": "Sauss",
-            "eco": "Eko",
-            "electric": "Elektriska",
             "fan_only": "Tikai ventilators",
-            "gas": "Gāze",
             "heat": "Sildīšana",
             "heat_cool": "Sildīt / Atdzesēt",
-            "heat_pump": "Siltumsūknis",
-            "high_demand": "Augsts pieprasījums",
-            "idle": "Dīkstāve",
-            "manual": "Rokasgrāmata",
-            "off": "Izslēgts",
-            "on": "Ieslēgts",
-            "performance": "Veiktspēja"
+            "off": "Izslēgts"
         },
         "configurator": {
             "configure": "Konfigurēt",
@@ -403,7 +343,6 @@
                 "arm_custom_bypass": "Pielāgots apvedceļš",
                 "arm_home": "Mājās režīms",
                 "arm_night": "Pieslēgta uz nakti",
-                "armed_custom_bypass": "Pielāgots apvedceļš",
                 "clear_code": "Notīrīt",
                 "code": "Kods",
                 "disarm": "Atslēgt"
@@ -579,10 +518,6 @@
                 "title": "Sistēmas opcijas {integration} integrācijai",
                 "update": "Atjaunināt"
             },
-            "confirmation": {
-                "cancel": "Atcelt",
-                "ok": "Labi"
-            },
             "entity_registry": {
                 "editor": {
                     "delete": "DZĒST",
@@ -600,9 +535,6 @@
                 "generic": {
                     "icon": "Ikona"
                 },
-                "input_datetime": {
-                    "has_time": "Laiks"
-                },
                 "input_select": {
                     "add": "Pievienot",
                     "add_option": "Pievienot iespēju",
@@ -612,7 +544,6 @@
                     "password": "Parole",
                     "text": "Teksts"
                 },
-                "not_editable": "Nav rediģējams",
                 "required_error_msg": "Šis lauks ir obligāts"
             },
             "more_info_control": {
@@ -637,12 +568,6 @@
                     "fan_speed": "Ventilatora ātrums",
                     "status": "Statuss"
                 }
-            },
-            "more_info_settings": {
-                "back": "Atgriezties",
-                "entity_id": "Vienības ID",
-                "name": "Nosaukuma pārlabošana",
-                "save": "Saglabāt"
             },
             "options_flow": {
                 "form": {
@@ -697,10 +622,7 @@
         },
         "notification_toast": {
             "connection_lost": "Savienojums zaudēts. Atkārtota savienošanās ...",
-            "entity_turned_off": "{entity} izslēgta.",
-            "entity_turned_on": "{entity} ieslēgta.",
-            "service_call_failed": "Neizdevās izsaukt servisu {service}.",
-            "service_called": "Serviss {service} izsaukts."
+            "service_call_failed": "Neizdevās izsaukt servisu {service}."
         },
         "panel": {
             "config": {
@@ -710,22 +632,20 @@
                 },
                 "areas": {
                     "caption": "Apgabali",
-                    "create_area": "IZVEIDOT APGABALU",
                     "description": "Pārskats par visiem jūsu mājās apgabaliem.",
                     "editor": {
                         "create": "IZVEIDOT",
-                        "default_name": "Jauns apgabals",
+                        "default_name": "[%key:ui::panel::config::entities::editor::default_name%]",
                         "delete": "DZĒST",
                         "update": "ATJAUNINĀT"
                     },
-                    "no_areas": "Izskatās, ka vēl neesat izveidojis nevienu apgabalu.",
                     "picker": {
-                        "create_area": "IZVEIDOT APGABALU",
+                        "create_area": "[%key:ui::panel::config::areas::create_area%]",
                         "header": "Apgabali",
                         "integrations_page": "Integrāciju lapa",
                         "introduction": "Apgabali tiek izmantoti, lai organizētu ierīces atrašanās vietu. Šī informācija tiks izmantota daudzviet Home Assistant, lai palīdzētu organizēt lietotāja saskarni, atļaujas un integrācijas ar citām sistēmām.",
                         "introduction2": "Lai piesaistītu ierīces noteiktam apgabalam, izmantojiet zemāk esošo saiti, lai pārietu uz integrāciju lapu un tad noklikšķiniet uz konfigurētas integrācijas, lai nonāktu pie ierīču kartīšu saraksta.",
-                        "no_areas": "Izskatās, ka vēl neesat izveidojis nevienu apgabalu."
+                        "no_areas": "[%key:ui::panel::config::areas::no_areas%]"
                     }
                 },
                 "automation": {
@@ -998,7 +918,6 @@
                             "core_config": {
                                 "edit_requires_storage": "Redaktors ir atspējots, jo konfigurācija ir definēta configuration.yaml.",
                                 "elevation": "Augstums",
-                                "elevation_feet": "pēdas",
                                 "elevation_meters": "metri",
                                 "imperial_example": "Fārenheita, mārciņas",
                                 "latitude": "Platums",
@@ -1013,29 +932,6 @@
                             },
                             "header": "Vispārējā konfigurācija",
                             "introduction": "Izmaiņas konfigurācijā var būt nogurdinošs process. Mēs zinām. Šai sadaļai vajadzētu padarīt dzīvi mazliet vieglāku."
-                        },
-                        "server_control": {
-                            "reloading": {
-                                "automation": "Pārlādēt automatizācijas",
-                                "core": "Pārlādēt kodolu",
-                                "group": "Pārlādēt grupas",
-                                "heading": "Konfigurācijas pārlādēšana",
-                                "introduction": "Atsevišķas Home Assistant daļas var pārlādēt bez nepieciešamības restartēt. Veicot pārlādēšanu iepriekšējā konfigurācija tiks atiestatīta un tiks ielādēta jaunā.",
-                                "script": "Pārlādēt skriptus"
-                            },
-                            "server_management": {
-                                "heading": "Servera pārvaldība",
-                                "introduction": "Pārvaldiet Home Assistant serveri no Home Assistant saskarnes.",
-                                "restart": "Restartēt",
-                                "stop": "Apturēt"
-                            },
-                            "validation": {
-                                "check_config": "Pārbaudīt",
-                                "heading": "Konfigurācijas pārbaude",
-                                "introduction": "Veiciet konfigurācijas pārbaudi, ja nesen esat veicis izmaiņas konfigurācijā un vēlaties pārliecināties, ka tā ir korekta.",
-                                "invalid": "Konfigurācija kļūdaina",
-                                "valid": "Konfigurācija korekta!"
-                            }
                         }
                     }
                 },
@@ -1054,8 +950,6 @@
                     }
                 },
                 "devices": {
-                    "area_picker_label": "Apgabals",
-                    "automations": "Automatizācijas",
                     "caption": "Ierīces",
                     "confirm_rename_entity_ids": "Vai vēlaties pārdēvēt arī vienības ID no Jūsu vinībām?",
                     "data_table": {
@@ -1067,9 +961,7 @@
                         "model": "Modelis"
                     },
                     "description": "Pievienoto ierīču pārvaldība",
-                    "details": "Šeit ir visas Jūsu ierīces detaļas.",
                     "device_not_found": "Ierīce nav atrasta.",
-                    "info": "Informācija par ierīci",
                     "unknown_error": "Nezināma kļūda",
                     "unnamed_device": "Nenosaukta ierīce",
                     "update": "Atjaunināt"
@@ -1077,20 +969,6 @@
                 "entities": {
                     "caption": "Vienības",
                     "description": "Pārskats par visām zināmajām vienībām.",
-                    "editor": {
-                        "confirm_delete": "Vai tiešām vēlaties dzēst šo ierakstu?",
-                        "confirm_delete2": "Dzēšot ierakstu, Home Assistant vienība netiks noņemta. Lai to izdarītu, no Home Assistant jānoņem '{platform}' integrācija.",
-                        "default_name": "Jauns apgabals",
-                        "delete": "DZĒST",
-                        "enabled_cause": "Atspējots dēļ {cause}.",
-                        "enabled_description": "Atspējotās vienības netiks pievienotas Home Assistant.",
-                        "enabled_label": "Iespējot vienību",
-                        "entity_id": "Vienības ID",
-                        "name": "Nosaukuma pārlabošana",
-                        "note": "Ievērībai: pašlaik tas var nedarboties ar visām integrācijām.",
-                        "unavailable": "Šī vienība pašlaik nav pieejama.",
-                        "update": "ATJAUNINĀT"
-                    },
                     "picker": {
                         "disable_selected": {
                             "button": "Atspējot atlasītās",
@@ -1110,13 +988,11 @@
                         },
                         "header": "Vienības",
                         "headers": {
-                            "enabled": "Iespējota",
                             "entity_id": "Vienības ID",
                             "integration": "Integrācija",
                             "name": "Nosaukums",
                             "status": "Statuss"
                         },
-                        "integrations_page": "Integrāciju lapa",
                         "introduction": "Home Assistant uztur visu vienību reģistru, kuras jebkad parādījušās un kuras var unikāli identificēt. Katrai no šīm vienībām piešķirts vienības ID, kas tiks rezervēts tikai šai vienībai.",
                         "introduction2": "Izmantojiet vienību reģistru, lai pārlabotu nosaukumu, mainītu vienības ID vai noņemtu ierakstu no Home Assistant.",
                         "remove_selected": {
@@ -1125,14 +1001,12 @@
                             "confirm_title": "Vai vēlaties noņemt {number} vienības?"
                         },
                         "selected": "{numurs} atlasītas",
-                        "show_disabled": "Rādīt atspējotās vienības",
                         "status": {
                             "disabled": "Atspējota",
                             "ok": "Labi",
                             "readonly": "Tikai lasāma",
                             "unavailable": "Nepieejama"
-                        },
-                        "unavailable": "(nav pieejama)"
+                        }
                     }
                 },
                 "header": "Home Assistant konfigurēšana",
@@ -1165,13 +1039,10 @@
                         "no_devices": "Šai integrācijai nav ierīču.",
                         "restart_confirm": "Restartēt Home Assistant, lai pabeigtu šīs integrācijas noņemšanu",
                         "settings_button": "Rediģēt {integration} integrācijas iestatījumus",
-                        "system_options_button": "Sistēmas opcijas {integration} integrācijai",
-                        "via": "Savienots ar"
+                        "system_options_button": "Sistēmas opcijas {integration} integrācijai"
                     },
                     "config_flow": {
                         "aborted": "Pārtraukts",
-                        "add_area": "Pievienot apgabalu",
-                        "area_picker_label": "Apgabals",
                         "close": "Aizvērt",
                         "created_config": "Tika izveidota {name} integrācijas konfigurācija.",
                         "dismiss": "Aizvērt dialogu",
@@ -1180,9 +1051,7 @@
                             "description": "Šī soļa pabeigšanai ir nepieciešams apmeklēt ārēju tīmekļa vietni.",
                             "open_site": "Atvērt tīmekļa vietni"
                         },
-                        "failed_create_area": "Neizdevās izveidot apgabalu.",
                         "finish": "Pabeigt",
-                        "name_new_area": "Jaunā apgabala nosaukums?",
                         "not_all_required_fields": "Ne visi obligātie lauki ir aizpildīti.",
                         "submit": "Iesniegt"
                     },
@@ -1352,20 +1221,12 @@
                         "confirm_user_deletion": "Vai tiešām vēlaties dzēst {name}?",
                         "deactivate_user": "Deaktivizēt lietotāju",
                         "delete_user": "Dzēst lietotāju",
-                        "enter_new_name": "Ievadiet jauno vārdu",
                         "group": "Grupa",
-                        "group_update_failed": "Grupas atjaunināšana neizdevās:",
                         "id": "ID",
                         "owner": "Īpašnieks",
-                        "rename_user": "Pārdēvēt lietotāju",
                         "system_generated": "Sistēmas ģenerēts",
                         "system_generated_users_not_removable": "Nevar noņemt sistēmas ģenerētos lietotājus.",
-                        "unnamed_user": "Lietotājs bez vārda",
-                        "user_rename_failed": "Lietotāja pārdēvēšana neizdevās:"
-                    },
-                    "picker": {
-                        "system_generated": "Sistēmas ģenerēts",
-                        "title": "Lietotāji"
+                        "unnamed_user": "Lietotājs bez vārda"
                     }
                 },
                 "zha": {
@@ -1389,11 +1250,6 @@
                         "value": "Vērtība"
                     },
                     "description": "Zigbee Home Automation tīkla pārvaldība",
-                    "device_card": {
-                        "area_picker_label": "Apgabals",
-                        "device_name_placeholder": "Lietotāja dots nosaukums",
-                        "update_name_button": "Atjaunināt nosaukumu"
-                    },
                     "groups": {
                         "caption": "Grupas",
                         "group_id": "Grupas ID",
@@ -1404,11 +1260,6 @@
                     },
                     "node_management": {
                         "header": "Ierīču pārvaldība"
-                    },
-                    "services": {
-                        "reconfigure": "Pārkonfigurējiet ZHA ierīci (heal device). Izmantojiet to, ja rodas problēmas ar ierīci. Ja attiecīgā ierīce ir ar akumulatoru darbināma ierīce, lūdzu, pārliecinieties, ka tā ir nomodā un pieņem komandas, kad izmantojat šo pakalpojumu.",
-                        "remove": "Noņemt ierīci no Zigbee tīkla.",
-                        "updateDeviceName": "Ierīču reģistrā iestatiet šai ierīcei pielāgotu nosaukumu."
                     }
                 },
                 "zone": {
@@ -1502,7 +1353,6 @@
                         "title": "Notikumi"
                     },
                     "info": {
-                        "lovelace_ui": "Doties uz Lovelace UI",
                         "server": "serveris",
                         "source": "Avots:",
                         "title": "Informācija"
@@ -1523,10 +1373,6 @@
                     },
                     "states": {
                         "attributes": "Atribūti",
-                        "copied": "Kopēts starpliktuvē",
-                        "copy_entity_attribute": "Kopēt atribūtus",
-                        "copy_entity_id": "Kopēt ID",
-                        "copy_entity_state": "Kopēt stāvokli",
                         "title": "Stāvokļi"
                     }
                 }
@@ -1554,9 +1400,6 @@
                         "navigate_to": "Dodieties uz {location}",
                         "tap": "Pieskarties:",
                         "toggle": "Pārslēgt {name}"
-                    },
-                    "safe-mode": {
-                        "show_errors": "Rādīt kļūdas"
                     },
                     "shopping-list": {
                         "add_item": "Pievienot vienumu",
@@ -1608,7 +1451,6 @@
                         "header": "Kartītes konfigurācija",
                         "move": "Pārvietot uz skatu",
                         "pick_card": "Kuru kartīti vēlaties pievienot?",
-                        "save": "Saglabāt",
                         "toggle_editor": "Pārslēgt redaktoru"
                     },
                     "edit_lovelace": {
@@ -1661,8 +1503,7 @@
                     "configure_ui": "Konfigurēt lietotāja saskarni",
                     "exit_edit_mode": "Iziet no UI rediģēšanas režīma",
                     "help": "Palīdzība",
-                    "refresh": "Atsvaidzināt",
-                    "unused_entities": "Neizmantotās vienības"
+                    "refresh": "Atsvaidzināt"
                 },
                 "reload_lovelace": "Pārlādēt lietotāja saskarni",
                 "unused_entities": {
@@ -1946,8 +1787,7 @@
             }
         },
         "sidebar": {
-            "external_app_configuration": "Lietotņu konfigurēšana",
-            "log_out": "Iziet"
+            "external_app_configuration": "Lietotņu konfigurēšana"
         }
     }
 }

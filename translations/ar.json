@@ -1,50 +1,4 @@
 {
-    "attribute": {
-        "weather": {
-            "humidity": "الرطوبة",
-            "visibility": "الرؤية",
-            "wind_speed": "سرعة الرياح"
-        }
-    },
-    "domain": {
-        "alarm_control_panel": "لوحة تحكم الإنذار",
-        "automation": "التشغيل التلقائي",
-        "binary_sensor": "جهاز استشعار ثنائي",
-        "calendar": "التقويم",
-        "camera": "كاميرا",
-        "climate": "الطقس",
-        "configurator": "الإعدادات",
-        "conversation": "محادثة",
-        "cover": "ستار",
-        "device_tracker": "تعقب الجهاز",
-        "fan": "مروحة",
-        "group": "مجموعة",
-        "history_graph": "رسم بياني",
-        "image_processing": "معالجة الصور",
-        "input_boolean": "مدخل بوليني",
-        "input_datetime": "خانة التاريخ والوقت",
-        "input_number": "خانة الأرقام",
-        "input_select": "لائحة إختيار",
-        "input_text": "خانة بيانات",
-        "light": "الضوء",
-        "lock": "قفل",
-        "mailbox": "البريد",
-        "media_player": "مشغل الموسيقى",
-        "notify": "إشعار",
-        "person": "شخص",
-        "plant": "نبتة",
-        "proximity": "قرب",
-        "remote": "تحكم عن بعد",
-        "scene": "مشهد",
-        "script": "نص آلي",
-        "sensor": "أجهزة الاستشعار",
-        "sun": "الشمس",
-        "switch": "مفتاح",
-        "updater": "تحديث",
-        "vacuum": "مكنسة كهرباء",
-        "weblink": "Weblink",
-        "zwave": "Z-Wave"
-    },
     "groups": {
         "system-admin": "مسؤولين",
         "system-read-only": "مستخدمين للعرض فقط",
@@ -53,7 +7,6 @@
     "panel": {
         "calendar": "التقويم",
         "config": "الإعدادات",
-        "dev-info": "معلومات",
         "developer_tools": "ادوات المطورين",
         "history": "التاريخ",
         "logbook": "سجل",
@@ -210,17 +163,9 @@
             "auto": "تلقائي",
             "cool": "تبريد",
             "dry": "جاف",
-            "eco": "اقتصادي",
-            "electric": "كهربائي",
             "fan_only": "المروحة فقط",
-            "gas": "غاز",
             "heat": "تدفئة",
-            "heat_pump": "مضخة سخان",
-            "high_demand": "تحت ضغط عالي",
-            "idle": "خامل",
-            "off": "إيقاف",
-            "on": "تشغيل",
-            "performance": "الأداء"
+            "off": "إيقاف"
         },
         "configurator": {
             "configure": "إعداد",
@@ -425,11 +370,6 @@
                 "sun": {
                     "setting": "ضبط"
                 }
-            },
-            "more_info_settings": {
-                "entity_id": "الكيان ID",
-                "name": "الاسم",
-                "save": "حفظ"
             }
         },
         "duration": {
@@ -444,6 +384,15 @@
         },
         "panel": {
             "config": {
+                "areas": {
+                    "editor": {
+                        "default_name": "[%key:ui::panel::config::entities::editor::default_name%]"
+                    },
+                    "picker": {
+                        "create_area": "[%key:ui::panel::config::areas::create_area%]",
+                        "no_areas": "[%key:ui::panel::config::areas::no_areas%]"
+                    }
+                },
                 "automation": {
                     "caption": "التشغيل التلقائي",
                     "description": "إنشاء وتحرير التشغيل الألي",
@@ -624,29 +573,6 @@
                         "core": {
                             "header": "التحكم بالإعدادات و الخادم",
                             "introduction": "تغيير الإعدادات يعتبر عملية مزرية. نحن نعلم ذلك . لذا، سيحاول هذا القسم جعل حياتك أكثر سهولة."
-                        },
-                        "server_control": {
-                            "reloading": {
-                                "automation": "إعادة تحديث التشغيل الألي",
-                                "core": "إعادة تحديث النظام الأساسي",
-                                "group": "إعادة تحديث المجموعات",
-                                "heading": "إعادة تحديث الإعدادات",
-                                "introduction": "يمكن تفعيل بعض الأجزاء الرئيسية لمساعد البيت دون الحاجة إلى إعادة تشغيل. الظغط على تحديث سيتم إزالة الإعدادات الحالية الخاصة وتحميل الإعدادات الجديدة.",
-                                "script": "إعادة تحديث السكريبتات"
-                            },
-                            "server_management": {
-                                "heading": "إدارة الخادم",
-                                "introduction": "تحكم بسيرفر Home Assistant ... من Home Assistant.",
-                                "restart": "إعادة تشغيل",
-                                "stop": "إيقاف"
-                            },
-                            "validation": {
-                                "check_config": "تحقق من الإعدادات",
-                                "heading": "تآكيد صلاحية الإعدادات",
-                                "introduction": "التحقق من صحة الإعدادات الخاصة بك إذا قمت مؤخرا بإجراء بعض التغييرات وتريد التأكد من أن كل شيء على ما يرام",
-                                "invalid": "الإعدادات غير صالحة",
-                                "valid": "الإعدادات صالحة"
-                            }
                         }
                     }
                 },
@@ -666,8 +592,7 @@
                         "no_area": "لا توجد منطقة",
                         "no_device": "عناصر بدون أجهزة",
                         "no_devices": "هذا التكامل لا يوجد لديه الأجهزة.",
-                        "restart_confirm": "اعادة تشغيل هوم اسيستينت لإنهاء حذف هذه التكامل",
-                        "via": "متصل من خلال"
+                        "restart_confirm": "اعادة تشغيل هوم اسيستينت لإنهاء حذف هذه التكامل"
                     },
                     "configure": "إعداد",
                     "configured": "تم الإعداد",
@@ -728,16 +653,7 @@
                         "caption": "عرض المستخدم",
                         "change_password": "تغيير كلمة السر",
                         "deactivate_user": "إلغاء تنشيط المستخدم",
-                        "delete_user": "حذف المستخدم",
-                        "rename_user": "إعادة تسمية المستخدم"
-                    },
-                    "picker": {
-                        "title": "المستخدمين"
-                    }
-                },
-                "zha": {
-                    "services": {
-                        "updateDeviceName": "تعيين اسم مخصص لهذا الجهاز في سجل الأجهزة."
+                        "delete_user": "حذف المستخدم"
                     }
                 },
                 "zwave": {
@@ -760,9 +676,6 @@
                         "title": "الخدمات"
                     },
                     "states": {
-                        "copied": "نسخ إلى الحافظة",
-                        "copy_entity_attribute": "نسخ السمات",
-                        "copy_entity_state": "نسخ الحالة",
                         "title": "الحالات"
                     },
                     "templates": {
@@ -896,9 +809,6 @@
                 "clear_completed": "تم المسح",
                 "microphone_tip": "اضغط على الميكروفون في أعلى اليمين وقل \"Add candy to my shopping list\""
             }
-        },
-        "sidebar": {
-            "log_out": "تسجيل الخروج"
         }
     }
 }

@@ -1,30 +1,4 @@
 {
-    "attribute": {
-        "weather": {
-            "humidity": "湿度",
-            "wind_speed": "風速"
-        }
-    },
-    "domain": {
-        "automation": "オートメーション",
-        "binary_sensor": "バイナリセンサー",
-        "calendar": "カレンダー",
-        "camera": "カメラ",
-        "group": "グループ",
-        "hassio": "Hass.io",
-        "image_processing": "画像処理",
-        "light": "照明",
-        "mailbox": "メールボックス",
-        "media_player": "メディアプレーヤー",
-        "notify": "通知",
-        "script": "スクリプト",
-        "sensor": "センサー",
-        "sun": "太陽",
-        "switch": "スイッチ",
-        "system_health": "システムの正常性",
-        "updater": "アップデーター",
-        "zwave": "Z-Wave"
-    },
     "panel": {
         "calendar": "カレンダー",
         "config": "設定",
@@ -165,15 +139,9 @@
             "auto": "オート",
             "cool": "冷房",
             "dry": "ドライ",
-            "eco": "エコ",
             "fan_only": "ファンのみ",
-            "gas": "ガス",
             "heat": "暖房",
-            "idle": "アイドル",
-            "manual": "マニュアル",
-            "off": "オフ",
-            "on": "オン",
-            "performance": "パフォーマンス"
+            "off": "オフ"
         },
         "configurator": {
             "configure": "設定",
@@ -420,11 +388,6 @@
                 "title": "{integration} のシステムオプション",
                 "update": "更新"
             },
-            "confirmation": {
-                "cancel": "キャンセル",
-                "ok": "OK",
-                "title": "本当ですか？"
-            },
             "domain_toggler": {
                 "title": "ドメインを切り替え"
             },
@@ -466,12 +429,6 @@
                     "stop": "停止"
                 }
             },
-            "more_info_settings": {
-                "back": "戻る",
-                "entity_id": "エンティティ ID",
-                "name": "名前の上書き",
-                "save": "保存"
-            },
             "voice_command": {
                 "did_not_hear": "Home Assistant は何も聞きませんでした",
                 "error": "エラーが発生しました",
@@ -503,10 +460,7 @@
         },
         "notification_toast": {
             "connection_lost": "切断されました。再接続中...",
-            "entity_turned_off": "{entity}をオフにしました。",
-            "entity_turned_on": "{entity}をオンにしました。",
             "service_call_failed": "サービス{service}の呼び出しに失敗しました。",
-            "service_called": "サービス{service}を呼び出しました。",
             "triggered": "トリガーしました {name}"
         },
         "panel": {
@@ -518,8 +472,13 @@
                 "areas": {
                     "caption": "エリア",
                     "description": "すべて自宅のエリアの一覧",
+                    "editor": {
+                        "default_name": "[%key:ui::panel::config::entities::editor::default_name%]"
+                    },
                     "picker": {
-                        "header": "エリア"
+                        "create_area": "[%key:ui::panel::config::areas::create_area%]",
+                        "header": "エリア",
+                        "no_areas": "[%key:ui::panel::config::areas::no_areas%]"
                     }
                 },
                 "automation": {
@@ -716,32 +675,9 @@
                     "section": {
                         "core": {
                             "core_config": {
-                                "elevation_feet": "フィート",
                                 "time_zone": "タイムゾーン"
                             },
                             "header": "一般的な設定"
-                        },
-                        "server_control": {
-                            "reloading": {
-                                "automation": "オートメーションの再読込",
-                                "core": "コアの再読込",
-                                "group": "グループの再読込",
-                                "heading": "設定の再読込",
-                                "introduction": "Home Assistant の一部は、再起動を必要とせずに再読込できます。再読込を押すと、現在の設定をアンロードし、新しい設定を読み込みます。",
-                                "script": "スクリプトの再読込"
-                            },
-                            "server_management": {
-                                "heading": "サーバー管理",
-                                "introduction": "Home Assistant から Home Assistant サーバーを操作します。",
-                                "restart": "再起動",
-                                "stop": "停止"
-                            },
-                            "validation": {
-                                "check_config": "設定を確認",
-                                "heading": "設定の検証",
-                                "invalid": "設定は無効です",
-                                "valid": "設定は有効です！"
-                            }
                         }
                     }
                 },
@@ -760,13 +696,11 @@
                     }
                 },
                 "devices": {
-                    "area_picker_label": "エリア",
                     "automation": {
                         "automations": "オートメーション",
                         "no_automations": "オートメーションなし",
                         "no_device_automations": "このデバイスで利用可能なオートメーションはありません。"
                     },
-                    "automations": "オートメーション",
                     "confirm_rename_entity_ids": "エンティティの ID も変更しますか？",
                     "data_table": {
                         "area": "エリア",
@@ -777,9 +711,7 @@
                         "model": "型番"
                     },
                     "description": "接続されたデバイスの管理",
-                    "details": "これらはデバイスの詳細な情報です。",
                     "device_not_found": "デバイスが見つかりません。",
-                    "info": "デバイス情報",
                     "name": "名前",
                     "scene": {
                         "no_scenes": "シーンなし",
@@ -820,14 +752,10 @@
                     },
                     "config_flow": {
                         "aborted": "中止",
-                        "add_area": "エリアを追加",
-                        "area_picker_label": "エリア",
                         "close": "閉じる",
                         "created_config": "{name} の構成が作成しました。",
                         "error_saving_area": "エリアを保存できません: {error}",
-                        "failed_create_area": "エリアを作成できませんでした。",
                         "finish": "完了",
-                        "name_new_area": "新しいエリアの名前は？",
                         "submit": "送信"
                     },
                     "description": "インテグレーションの管理とセットアップ",
@@ -934,17 +862,10 @@
                         "change_password": "パスワードの変更",
                         "deactivate_user": "ユーザーを無効化",
                         "delete_user": "ユーザーを削除",
-                        "enter_new_name": "新しい名前を入力してください",
                         "group": "グループ",
                         "id": "ID",
                         "owner": "所有者",
-                        "rename_user": "ユーザー名を変更",
-                        "system_generated": "システムジェネレート",
-                        "user_rename_failed": "ユーザー名の変更は失敗しました："
-                    },
-                    "picker": {
-                        "system_generated": "システムジェネレート",
-                        "title": "ユーザー"
+                        "system_generated": "システムジェネレート"
                     }
                 },
                 "zha": {
@@ -1007,12 +928,8 @@
                     },
                     "info": {
                         "frontend_version": "フロントエンドバージョン: {version} - {type}",
-                        "lovelace_ui": "Lovelace UI に移動",
                         "path_configuration": "ディスク上に configuration.yaml へのパス: {path}",
-                        "remove": "削除",
                         "server": "サーバー",
-                        "set": "設定",
-                        "states_ui": "States UI に移動",
                         "system_health_error": "「システムの正常性」コンポーネントが有効されていません、configuration.yaml に 'system_health:' を追加してください。",
                         "title": "情報"
                     },
@@ -1048,10 +965,6 @@
                     "states": {
                         "alert_entity_field": "エンティティは必須フィールドです",
                         "attributes": "属性",
-                        "copied": "クリップボードにコピーしました",
-                        "copy_entity_attribute": "属性をコピー",
-                        "copy_entity_id": "ID をコピー",
-                        "copy_entity_state": "状態をコピー",
                         "current_entities": "現在のエンティティ",
                         "description2": "実際のデバイスと通信しません。",
                         "entity": "エンティティ",
@@ -1095,9 +1008,6 @@
                         "entities": {
                             "name": "エンティティ",
                             "toggle": "エンティテを切り替え"
-                        },
-                        "entity-button": {
-                            "name": "エンティティボタン"
                         },
                         "entity-filter": {
                             "name": "エンティティフィルター"
@@ -1338,7 +1248,6 @@
         },
         "sidebar": {
             "external_app_configuration": "アプリの構成",
-            "log_out": "ログアウト",
             "sidebar_toggle": "サイドバーの切り替え"
         }
     }

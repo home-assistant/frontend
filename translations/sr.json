@@ -1,8 +1,4 @@
 {
-    "domain": {
-        "person": "Особа",
-        "zwave": "Z-Wave"
-    },
     "panel": {
         "calendar": "Kalendar",
         "config": "Конфигурација",
@@ -37,9 +33,6 @@
         }
     },
     "state": {
-        "climate": {
-            "manual": "Упутство"
-        },
         "sun": {
             "above_horizon": "Iznad horizonta",
             "below_horizon": "Ispod horizonta"
@@ -73,14 +66,17 @@
                 "source": "Izvor"
             }
         },
-        "dialogs": {
-            "more_info_settings": {
-                "name": "Naziv",
-                "save": "Sačuvaj"
-            }
-        },
         "panel": {
             "config": {
+                "areas": {
+                    "editor": {
+                        "default_name": "[%key:ui::panel::config::entities::editor::default_name%]"
+                    },
+                    "picker": {
+                        "create_area": "[%key:ui::panel::config::areas::create_area%]",
+                        "no_areas": "[%key:ui::panel::config::areas::no_areas%]"
+                    }
+                },
                 "automation": {
                     "editor": {
                         "triggers": {
@@ -125,9 +121,6 @@
                 "tabs": {
                     "mqtt": {
                         "title": "MQTT"
-                    },
-                    "states": {
-                        "copied": "копирано у међуспремник"
                     }
                 }
             },
@@ -155,9 +148,6 @@
                     }
                 }
             }
-        },
-        "sidebar": {
-            "log_out": "Одјавити се"
         }
     }
 }

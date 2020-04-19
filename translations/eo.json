@@ -36,20 +36,12 @@
             }
         },
         "dialogs": {
-            "confirmation": {
-                "cancel": "Nuligi",
-                "ok": "Bone",
-                "title": "Ĉu vi certas?"
-            },
             "domain_toggler": {
                 "title": "Baskuligi Domajnojn"
             },
             "more_info_control": {
                 "dismiss": "Malakcepti dialogon",
                 "settings": "Agordoj pri entoj"
-            },
-            "more_info_settings": {
-                "back": "Reiri"
             },
             "voice_command": {
                 "did_not_hear": "Home Assistant nenion aŭdis",
@@ -68,6 +60,15 @@
                 "advanced_mode": {
                     "hint_enable": "Mankas agordaj opcioj? Ebligu altnivelan reĝimon",
                     "link_profile_page": "via profilpaĝo"
+                },
+                "areas": {
+                    "editor": {
+                        "default_name": "[%key:ui::panel::config::entities::editor::default_name%]"
+                    },
+                    "picker": {
+                        "create_area": "[%key:ui::panel::config::areas::create_area%]",
+                        "no_areas": "[%key:ui::panel::config::areas::no_areas%]"
+                    }
                 },
                 "automation": {
                     "editor": {
@@ -113,8 +114,6 @@
                     }
                 },
                 "devices": {
-                    "area_picker_label": "Areo",
-                    "automations": "Aŭtomatigoj",
                     "confirm_rename_entity_ids": "Ĉu vi ankaŭ volas alinomi la identigilon de viaj entoj?",
                     "data_table": {
                         "area": "Areo",
@@ -124,16 +123,9 @@
                         "manufacturer": "Fabrikisto",
                         "model": "Modelo"
                     },
-                    "details": "Jen ĉiuj detaloj de via aparato.",
                     "device_not_found": "Aparato ne trovita.",
-                    "info": "Aparato informoj",
                     "unknown_error": "Nekonata eraro",
                     "unnamed_device": "Nenomita aparato"
-                },
-                "entities": {
-                    "editor": {
-                        "note": "Noto: ĉi tio ankoraŭ ne funkcias kun ĉiuj integriĝoj."
-                    }
                 },
                 "integrations": {
                     "config_entry": {
@@ -144,14 +136,10 @@
                     },
                     "config_flow": {
                         "aborted": "Abortigita",
-                        "add_area": "Aldoni Areon",
-                        "area_picker_label": "Areo",
                         "close": "Fermi",
                         "created_config": "Kreita agordo por {name}.",
                         "error_saving_area": "Eraro pri konservado de eraro: {error}",
-                        "failed_create_area": "Malsukcesis krei areon.",
                         "finish": "Fini",
-                        "name_new_area": "Nomo de la nova areo?",
                         "not_all_required_fields": "Ne ĉiuj bezonataj kampoj estas plenigitaj",
                         "submit": "Sendu"
                     },
@@ -228,18 +216,12 @@
                     "editor": {
                         "active": "Aktiva",
                         "confirm_user_deletion": "Ĉu vi certas, ke vi volas forigi {name} ?",
-                        "enter_new_name": "Eniri novan nomon",
                         "group": "Grupo",
-                        "group_update_failed": "Ĝisdatigo de grupo malsukcesis:",
                         "id": "ID",
                         "owner": "Mastro",
                         "system_generated": "Sistemo generita",
                         "system_generated_users_not_removable": "Ne eblis forigi la sistemo generita uzantoj.",
-                        "unnamed_user": "Nenomita Uzanto",
-                        "user_rename_failed": "Renomita uzanto malsukcesis:"
-                    },
-                    "picker": {
-                        "system_generated": "Sistemo generita"
+                        "unnamed_user": "Nenomita Uzanto"
                     }
                 },
                 "zha": {
@@ -322,20 +304,15 @@
                     "info": {
                         "built_using": "Konstruita uzante",
                         "custom_uis": "Propraj UIoj:",
-                        "default_ui": "{action} {name} kiel defaŭlta paĝo en ĉi tiu aparato",
                         "developed_by": "Disvolvita de amaso da mojosaj homoj.",
                         "frontend": "frontend-ui",
                         "frontend_version": "Frontendversio: {version} - {type}",
                         "home_assistant_logo": "Logo de Home Assistant",
                         "icons_by": "Ikonoj de",
                         "license": "Publikigita sub la permesilo Apache 2.0",
-                        "lovelace_ui": "Iri al la Lovelace-UI",
                         "path_configuration": "Pado al configuration.yaml: {path}",
-                        "remove": "Forigi",
                         "server": "servilo",
-                        "set": "Fiksi",
                         "source": "Fonto:",
-                        "states_ui": "Iri al la ŝtatoj UI",
                         "system_health_error": "Komponento pri Sistema Sano ne estas ŝarĝita. Aldonu 'system_health:' al configuration.yaml"
                     },
                     "logs": {
@@ -376,10 +353,6 @@
                     "states": {
                         "alert_entity_field": "Ento estas deviga kampo",
                         "attributes": "Atributoj",
-                        "copied": "Kopiis al tondujo",
-                        "copy_entity_attribute": "Kopii atributojn",
-                        "copy_entity_id": "Kopii ID",
-                        "copy_entity_state": "Kopii stato",
                         "current_entities": "Aktualaj entoj",
                         "description1": "Fiksita la reprezentado de aparato ene de Home Assistant.",
                         "description2": "Ĉi tio ne komunikos kun la efektiva aparato.",
@@ -421,9 +394,6 @@
                         "entities": {
                             "name": "Entoj",
                             "toggle": "Baskuligi entojn."
-                        },
-                        "entity-button": {
-                            "name": "Ento Prembutonon"
                         },
                         "entity-filter": {
                             "name": "Ento-Filtrilo"
@@ -531,8 +501,7 @@
                     "title": "Neuzataj entoj"
                 },
                 "views": {
-                    "confirm_delete": "Ĉu vi certas, ke vi volas forigi ĉi tiun vidon?",
-                    "existing_cards": "Vi ne povas forigi vidon, kiu havas kartojn. Forigu la kartojn unue."
+                    "confirm_delete": "Ĉu vi certas, ke vi volas forigi ĉi tiun vidon?"
                 }
             },
             "page-demo": {
