@@ -700,17 +700,14 @@
                     "description": "Visão geral de todas as áreas da sua casa.",
                     "editor": {
                         "create": "CRIAR",
-                        "default_name": "[%key:ui::panel::config::entities::editor::default_name%]",
                         "delete": "APAGAR",
                         "update": "ATUALIZAR"
                     },
                     "picker": {
-                        "create_area": "[%key:ui::panel::config::areas::create_area%]",
                         "header": "Registro de Áreas",
                         "integrations_page": "Página de integrações",
                         "introduction": "Áreas são usadas para organizar os dispositivos. Essas informações serão usadas no Home Assistant para ajudá-lo a organizar sua interface, permissões e integrações com outros sistemas.",
-                        "introduction2": "Para colocar dispositivos em uma área, use o link abaixo para navegar até a página de integrações e, em seguida, clique em uma integração configurada para acessar os cartões de dispositivos.",
-                        "no_areas": "[%key:ui::panel::config::areas::no_areas%]"
+                        "introduction2": "Para colocar dispositivos em uma área, use o link abaixo para navegar até a página de integrações e, em seguida, clique em uma integração configurada para acessar os cartões de dispositivos."
                     }
                 },
                 "automation": {

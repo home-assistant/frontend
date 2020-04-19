@@ -458,7 +458,6 @@
                     "description": "Trosolwg o bob ardal yn eich cartref.",
                     "editor": {
                         "create": "Creu",
-                        "default_name": "[%key:ui::panel::config::entities::editor::default_name%]",
                         "delete": "Dileu",
                         "update": "Diweddaru"
                     },
@@ -467,8 +466,7 @@
                         "header": "Gofrestrfa ardal",
                         "integrations_page": "Tudalen rhyngwynebu",
                         "introduction": "Defnyddir ardaloedd i drefnu lle mae dyfeisiau. Defnyddir y wybodaeth hon drwy gydol Home Assistant i helpu chi i drefnu eich rhyngwyneb, caniatadau ac integreiddio â systemau eraill.",
-                        "introduction2": "I osod dyfeisiau mewn ardal, defnyddiwch y ddolen isod i fynd i'r dudalen integreiddio ac yna cliciwch ar integreiddiau wedi'i ffurfweddu i gyrraedd y cardiau dyfais.",
-                        "no_areas": "[%key:ui::panel::config::areas::no_areas%]"
+                        "introduction2": "I osod dyfeisiau mewn ardal, defnyddiwch y ddolen isod i fynd i'r dudalen integreiddio ac yna cliciwch ar integreiddiau wedi'i ffurfweddu i gyrraedd y cardiau dyfais."
                     }
                 },
                 "automation": {

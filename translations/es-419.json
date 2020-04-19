@@ -749,7 +749,6 @@
                         "update": "Actualizar"
                     },
                     "picker": {
-                        "create_area": "[%key:ui::panel::config::areas::create_area%]",
                         "header": "Áreas",
                         "integrations_page": "Página de integraciones",
                         "introduction": "Las áreas se utilizan para organizar donde están los dispositivos. Esta información se utilizará en todo Home Assistant para ayudarlo a organizar su interfaz, permisos e integraciones con otros sistemas.",

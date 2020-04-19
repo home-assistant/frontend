@@ -528,17 +528,14 @@
                     "description": "ภาพรวมของห้องทั้งหมดในบ้านของคุณ",
                     "editor": {
                         "create": "สร้าง",
-                        "default_name": "[%key:ui::panel::config::entities::editor::default_name%]",
                         "delete": "ลบ",
                         "update": "แก้ไข"
                     },
                     "picker": {
-                        "create_area": "[%key:ui::panel::config::areas::create_area%]",
                         "header": "ค่าของห้อง",
                         "integrations_page": "หน้าการทำงานร่วมกัน",
                         "introduction": "Areas are used to organize where devices are. This information will be used throughout Home Assistant to help you in organizing your interface, permissions and integrations with other systems.",
-                        "introduction2": "สำหรับการวางอุปกรณ์นี้ลงในห้องนี้ ใช้ลิงค์ด้านล่างเพื่อไปยังหน้า 'การทำงานร่วมกัน' และคลิ๊กทีุ่่ม 'ตั้งค่าให้ทำงานร่วมกัน' เพื่อที่จะให้แสดงการ์ดสำหรับอุปกรณ์นั้น",
-                        "no_areas": "[%key:ui::panel::config::areas::no_areas%]"
+                        "introduction2": "สำหรับการวางอุปกรณ์นี้ลงในห้องนี้ ใช้ลิงค์ด้านล่างเพื่อไปยังหน้า 'การทำงานร่วมกัน' และคลิ๊กทีุ่่ม 'ตั้งค่าให้ทำงานร่วมกัน' เพื่อที่จะให้แสดงการ์ดสำหรับอุปกรณ์นั้น"
                     }
                 },
                 "automation": {

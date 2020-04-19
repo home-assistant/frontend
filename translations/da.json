@@ -747,7 +747,6 @@
                     "description": "Oversigt over alle områder i dit hjem.",
                     "editor": {
                         "create": "Opret",
-                        "default_name": "[%key:ui::panel::config::entities::editor::default_name%]",
                         "delete": "Slet",
                         "update": "Opdater"
                     },
@@ -756,8 +755,7 @@
                         "header": "Områder",
                         "integrations_page": "Integrationsside",
                         "introduction": "Områder bruges til at organisere hvor enheder befinder sig. Disse oplysninger vil blive brugt i Home Assistant til at hjælpe dig med at organisere din brugerflade, tilladelser og integrationer med andre systemer.",
-                        "introduction2": "Hvis du vil placere enheder i et område, skal du bruge linket herunder til at navigere til integrationssiden og derefter klikke på en konfigureret integration for at komme til enhedskortene.",
-                        "no_areas": "[%key:ui::panel::config::areas::no_areas%]"
+                        "introduction2": "Hvis du vil placere enheder i et område, skal du bruge linket herunder til at navigere til integrationssiden og derefter klikke på en konfigureret integration for at komme til enhedskortene."
                     }
                 },
                 "automation": {

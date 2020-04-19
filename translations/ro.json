@@ -656,17 +656,14 @@
                     "description": "Privire de ansamblu asupra tuturor zonelor din casa ta.",
                     "editor": {
                         "create": "CREAȚI",
-                        "default_name": "[%key:ui::panel::config::entities::editor::default_name%]",
                         "delete": "ȘTERGEȚI",
                         "update": "ACTUALIZAȚI"
                     },
                     "picker": {
-                        "create_area": "[%key:ui::panel::config::areas::create_area%]",
                         "header": "Zone",
                         "integrations_page": "Pagina de integrari",
                         "introduction": "Zonele sunt folosite pentru a organiza unde sunt dispozitivele. Aceste informații vor fi utilizate de către Home Assistant pentru a vă ajuta să vă organizați interfața, permisiunile și integrarea cu alte sisteme.",
-                        "introduction2": "Pentru a plasa dispozitive într-o zonă, utilizați link-ul de mai jos pentru a naviga la pagina de integrare și apoi faceți clic pe o integrare configurată pentru a ajunge la cardurile dispozitivului.",
-                        "no_areas": "[%key:ui::panel::config::areas::no_areas%]"
+                        "introduction2": "Pentru a plasa dispozitive într-o zonă, utilizați link-ul de mai jos pentru a naviga la pagina de integrare și apoi faceți clic pe o integrare configurată pentru a ajunge la cardurile dispozitivului."
                     }
                 },
                 "automation": {

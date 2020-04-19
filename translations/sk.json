@@ -698,17 +698,14 @@
                     "description": "Prehľad všetkých oblastí vo vašej domácnosti.",
                     "editor": {
                         "create": "VYTVORIŤ",
-                        "default_name": "[%key:ui::panel::config::entities::editor::default_name%]",
                         "delete": "VYMAZAŤ",
                         "update": "AKTUALIZOVAŤ"
                     },
                     "picker": {
-                        "create_area": "[%key:ui::panel::config::areas::create_area%]",
                         "header": "Register oblastí",
                         "integrations_page": "Stránka Integrácie",
                         "introduction": "Oblasti sa používajú na usporiadanie zariadení. Tieto informácie sa použijú v službe Home Assistant, aby vám pomohli pri organizovaní rozhrania, povolení a integrácií s inými systémami.",
-                        "introduction2": "Ak chcete umiestniť zariadenia do oblasti, pomocou odkazu nižšie prejdite na stránku integrácií a potom kliknite na nakonfigurovanú integráciu a prejdite na karty zariadení.",
-                        "no_areas": "[%key:ui::panel::config::areas::no_areas%]"
+                        "introduction2": "Ak chcete umiestniť zariadenia do oblasti, pomocou odkazu nižšie prejdite na stránku integrácií a potom kliknite na nakonfigurovanú integráciu a prejdite na karty zariadení."
                     }
                 },
                 "automation": {

@@ -472,13 +472,8 @@
                 "areas": {
                     "caption": "エリア",
                     "description": "すべて自宅のエリアの一覧",
-                    "editor": {
-                        "default_name": "[%key:ui::panel::config::entities::editor::default_name%]"
-                    },
                     "picker": {
-                        "create_area": "[%key:ui::panel::config::areas::create_area%]",
-                        "header": "エリア",
-                        "no_areas": "[%key:ui::panel::config::areas::no_areas%]"
+                        "header": "エリア"
                     }
                 },
                 "automation": {
