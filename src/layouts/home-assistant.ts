@@ -67,6 +67,12 @@ export class HomeAssistantAppEl extends HassElement {
     }
   }
 
+  protected hassConnected() {
+    super.hassConnected();
+    // @ts-ignore
+    this._loadHassTranslations(this.hass!.language, "state");
+  }
+
   protected hassReconnected() {
     super.hassReconnected();
 
