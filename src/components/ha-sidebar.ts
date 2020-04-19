@@ -101,6 +101,8 @@ const computePanels = (hass: HomeAssistant): [PanelInfo[], PanelInfo[]] => {
   return [beforeSpacer, afterSpacer];
 };
 
+let pressTimeout;
+
 /*
  * @appliesMixin LocalizeMixin
  */
@@ -441,6 +443,23 @@ class HaSidebar extends LitElement {
     fireEvent(this, "hass-toggle-menu");
   }
 
+  private _onPressed = (urlPath: string) => (_ev) => {
+    pressTimeout = setTimeout(() => {
+      this._handleExternalAppPanelLongPress(this.hass.panels[urlPath]);
+    }, 1000);
+  };
+
+  private _onReleased() {
+    clearTimeout(pressTimeout);
+  }
+
+  private _handleExternalAppPanelLongPress(panel: PanelInfo) {
+    this.hass.auth.external!.fireMessage({
+      type: "panel/actions",
+      payload: panel,
+    });
+  }
+
   private _renderPanel(urlPath, icon, title) {
     return html`
       <a
@@ -450,6 +469,10 @@ class HaSidebar extends LitElement {
         tabindex="-1"
         @mouseenter=${this._itemMouseEnter}
         @mouseleave=${this._itemMouseLeave}
+        @mousedown=${this._onPressed(urlPath)}
+        @touchstart=${this._onPressed(urlPath)}
+        @touchend=${this._onReleased}
+        @mouseup=${this._onReleased}
       >
         <paper-icon-item>
           <ha-icon slot="item-icon" .icon="${icon}"></ha-icon>
