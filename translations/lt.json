@@ -235,15 +235,12 @@
                     "description": "Visų jūsų namų sričių apžvalga.",
                     "editor": {
                         "create": "SUKURTI",
-                        "default_name": "[%key:ui::panel::config::entities::editor::default_name%]",
                         "delete": "IŠTRINTI",
                         "update": "ATNAUJINTI"
                     },
                     "picker": {
-                        "create_area": "[%key:ui::panel::config::areas::create_area%]",
                         "header": "Sričių registras",
-                        "integrations_page": "Integracijų puslapis",
-                        "no_areas": "[%key:ui::panel::config::areas::no_areas%]"
+                        "integrations_page": "Integracijų puslapis"
                     }
                 },
                 "automation": {

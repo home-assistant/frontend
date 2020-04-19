@@ -747,7 +747,6 @@
                     "description": "Überblick über alle Bereiche in Deinem Haus.",
                     "editor": {
                         "create": "Erstellen",
-                        "default_name": "[%key:ui::panel::config::entities::editor::default_name%]",
                         "delete": "Löschen",
                         "update": "Aktualisieren"
                     },
@@ -756,8 +755,7 @@
                         "header": "Bereiche",
                         "integrations_page": "Integrationsseite",
                         "introduction": "In Bereichen wird festgelegt, wo sich Geräte befinden. Diese Informationen werden in Home Assistant verwendet, um Sie bei der Organisation Ihrer Benutzeroberfläche, Berechtigungen und Integrationen mit anderen Systemen zu unterstützen.",
-                        "introduction2": "Um Geräte in einem Bereich zu platzieren, navigieren Sie mit dem Link unten zur Integrationsseite und klicken Sie dann auf eine konfigurierte Integration, um zu den Gerätekarten zu gelangen.",
-                        "no_areas": "[%key:ui::panel::config::areas::no_areas%]"
+                        "introduction2": "Um Geräte in einem Bereich zu platzieren, navigieren Sie mit dem Link unten zur Integrationsseite und klicken Sie dann auf eine konfigurierte Integration, um zu den Gerätekarten zu gelangen."
                     }
                 },
                 "automation": {

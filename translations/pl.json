@@ -744,17 +744,14 @@
                     "description": "Przegląd wszystkich obszarów w twoim domu",
                     "editor": {
                         "create": "UTWÓRZ",
-                        "default_name": "[%key:ui::panel::config::entities::editor::default_name%]",
                         "delete": "USUŃ",
                         "update": "AKTUALIZUJ"
                     },
                     "picker": {
-                        "create_area": "[%key:ui::panel::config::areas::create_area%]",
                         "header": "Rejestr obszarów",
                         "integrations_page": "Strona integracji",
                         "introduction": "Obszary służą do organizacji urządzeń. Informacje te będą używane w Home Assistant, aby pomóc w organizacji interfejsu, uprawnień i integracji z innymi systemami.",
-                        "introduction2": "Aby umieścić urządzenia w danym obszarze, użyj poniższego linku, aby przejść do strony integracji, a następnie kliknij skonfigurowaną integrację, aby dostać się do kart urządzeń.",
-                        "no_areas": "[%key:ui::panel::config::areas::no_areas%]"
+                        "introduction2": "Aby umieścić urządzenia w danym obszarze, użyj poniższego linku, aby przejść do strony integracji, a następnie kliknij skonfigurowaną integrację, aby dostać się do kart urządzeń."
                     }
                 },
                 "automation": {

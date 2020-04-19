@@ -747,17 +747,14 @@
                     "description": "您家中所有区域的概览。",
                     "editor": {
                         "create": "创建",
-                        "default_name": "[%key:ui::panel::config::entities::editor::default_name%]",
                         "delete": "删除",
                         "update": "更新"
                     },
                     "picker": {
-                        "create_area": "[%key:ui::panel::config::areas::create_area%]",
                         "header": "区域注册表",
                         "integrations_page": "集成页面",
                         "introduction": "区域用于组织设备所在的位置。此信息将用于 Home Assistant 的各个地方，以帮助您组织界面、权限和与其他系统的集成。",
-                        "introduction2": "要将设备置入某个区域，请使用下面的链接导航到集成页面，然后点击一个已配置的集成以进入设备卡片。",
-                        "no_areas": "[%key:ui::panel::config::areas::no_areas%]"
+                        "introduction2": "要将设备置入某个区域，请使用下面的链接导航到集成页面，然后点击一个已配置的集成以进入设备卡片。"
                     }
                 },
                 "automation": {

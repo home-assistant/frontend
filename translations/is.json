@@ -608,17 +608,14 @@
                     "description": "Yfirlit yfir öll svæði á heimilinu þínu.",
                     "editor": {
                         "create": "STOFNA",
-                        "default_name": "[%key:ui::panel::config::entities::editor::default_name%]",
                         "delete": "EYÐA",
                         "update": "UPPFÆRA"
                     },
                     "picker": {
-                        "create_area": "[%key:ui::panel::config::areas::create_area%]",
                         "header": "Svæðaskrá",
                         "integrations_page": "Samþættingar síða",
                         "introduction": "Svæði eru notuð til að skipuleggja hvar tæki eru staðsett. Þessar upplýsingar verða notaðar innan Home Assistant til að hjálpa þér að skipuleggja viðmótið, réttindi og samþættingar við önnur kerfi.",
-                        "introduction2": "Til að staðsetja tæki inn á tilteknu svæði þá skal notast við hlekkinn hér fyrir neðan til að vafra yfir á samþættingarsíðu og þar smella á stillta samþættingu til að fá upp spjaldið fyrir tækið.",
-                        "no_areas": "[%key:ui::panel::config::areas::no_areas%]"
+                        "introduction2": "Til að staðsetja tæki inn á tilteknu svæði þá skal notast við hlekkinn hér fyrir neðan til að vafra yfir á samþættingarsíðu og þar smella á stillta samþættingu til að fá upp spjaldið fyrir tækið."
                     }
                 },
                 "automation": {

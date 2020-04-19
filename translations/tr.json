@@ -726,15 +726,12 @@
                     "description": "Evinizdeki tüm alanlara genel bakış.",
                     "editor": {
                         "create": "OLUŞTUR",
-                        "default_name": "[%key:ui::panel::config::entities::editor::default_name%]",
                         "delete": "SİL",
                         "update": "GÜNCELLE"
                     },
                     "picker": {
-                        "create_area": "[%key:ui::panel::config::areas::create_area%]",
                         "header": "Alanlar",
-                        "integrations_page": "Entegrasyon sayfası",
-                        "no_areas": "[%key:ui::panel::config::areas::no_areas%]"
+                        "integrations_page": "Entegrasyon sayfası"
                     }
                 },
                 "automation": {

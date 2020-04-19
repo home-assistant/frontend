@@ -5,7 +5,7 @@
         "system-users": "Gebruikers"
     },
     "panel": {
-        "calendar": "[%key:domain::calendar%]",
+        "calendar": "Kalender",
         "config": "Opstellings",
         "developer_tools": "Ontwikkelaar Hulpmiddels",
         "history": "Geskiedenis",
@@ -175,7 +175,7 @@
             "on": "Aan"
         },
         "camera": {
-            "idle": "[%key:state::climate::idle%]",
+            "idle": "Onaktief",
             "recording": "Opname",
             "streaming": "Stroming"
         },
@@ -241,7 +241,7 @@
             "unlocked": "Oopgesluit"
         },
         "media_player": {
-            "idle": "[%key:state::climate::idle%]",
+            "idle": "Onaktief",
             "off": "Af",
             "on": "Aan",
             "paused": "Onderbreek",
@@ -288,7 +288,7 @@
             "cleaning": "Skoonmaak",
             "docked": "Vasgemeer by hawe",
             "error": "Fout",
-            "idle": "[%key:state::climate::idle%]",
+            "idle": "Onaktief",
             "off": "Af",
             "on": "Aan",
             "paused": "Onderbreek",
@@ -647,21 +647,21 @@
                     "description": "Oorsig van alle gebiede in u huis.",
                     "editor": {
                         "create": "SKEP",
-                        "default_name": "[%key:ui::panel::config::entities::editor::default_name%]",
+                        "default_name": "Nuwe Gebied",
                         "delete": "SKRAP",
                         "update": "OPDATEER"
                     },
                     "picker": {
-                        "create_area": "[%key:ui::panel::config::areas::create_area%]",
+                        "create_area": "SKEP GEBIED",
                         "header": "Gebiedsregister",
                         "integrations_page": "Integrasies bladsy",
                         "introduction": "Gebiede word gebruik om toestelle te organiseer gebaseer op waar hulle is. Hierdie inligting sal regdeur Home Assistant gebruik word om u te help om u koppelvlak, toestemmings en integrasies met ander stelsels te organiseer.",
                         "introduction2": "Om toestelle in 'n gebied te plaas, gebruik die skakel hieronder om na die integrasies bladsy toe te gaan en klik dan op 'n opgestelde integrasie om na die toestelkaarte toe te gaan.",
-                        "no_areas": "[%key:ui::panel::config::areas::no_areas%]"
+                        "no_areas": "Dit lyk asof jy nog geen gebiede het nie!"
                     }
                 },
                 "automation": {
-                    "caption": "[%key:domain::automation%]",
+                    "caption": "Outomatisering",
                     "description": "Skep en wysig outomatisasies",
                     "editor": {
                         "actions": {
@@ -726,7 +726,7 @@
                                     "after_offset": "Na verreken (opsioneel)",
                                     "before": "Voor:",
                                     "before_offset": "Voor verreken (opsioneel)",
-                                    "label": "[%key:domain::sun%]",
+                                    "label": "Son",
                                     "sunrise": "Sonsopkoms",
                                     "sunset": "Sonsondergang"
                                 },
@@ -781,8 +781,8 @@
                                 },
                                 "homeassistant": {
                                     "event": "Gebeurtenis:",
-                                    "label": "[%key:domain::homeassistant%]",
-                                    "shutdown": "[%key:ui::panel::config::core::section::server_control::server_management::stop%]",
+                                    "label": "Home Assistant",
+                                    "shutdown": "Staak",
                                     "start": "Begin"
                                 },
                                 "mqtt": {
@@ -804,7 +804,7 @@
                                 },
                                 "sun": {
                                     "event": "Gebeurtenis:",
-                                    "label": "[%key:domain::sun%]",
+                                    "label": "Son",
                                     "offset": "Verreken (opsioneel)",
                                     "sunrise": "Sonsopkoms",
                                     "sunset": "Sonsondergang"
@@ -1184,7 +1184,7 @@
                     }
                 },
                 "script": {
-                    "caption": "[%key:domain::script%]",
+                    "caption": "Skripte",
                     "description": "Skep en wysig skripte",
                     "editor": {
                         "alias": "Naam",

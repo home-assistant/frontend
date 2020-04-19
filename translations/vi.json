@@ -511,17 +511,14 @@
                     "description": "Tổng quan tất cả các khu vực trong nhà bạn.",
                     "editor": {
                         "create": "TẠO",
-                        "default_name": "[%key:ui::panel::config::entities::editor::default_name%]",
                         "delete": "XÓA",
                         "update": "CẬP NHẬT"
                     },
                     "picker": {
-                        "create_area": "[%key:ui::panel::config::areas::create_area%]",
                         "header": "Đăng ký Khu vực",
                         "integrations_page": "Trang tích hợp",
                         "introduction": "Các khu vực được sử dụng để phân loại các thiết bị. Thông tin này sẽ được sử dụng trong toàn bộ Home Assistant để giúp bạn tổ chức giao diện, quyền và tích hợp với các hệ thống khác.",
-                        "introduction2": "Để đặt các thiết bị trong một khu vực, hãy sử dụng liên kết bên dưới để điều hướng đến trang tích hợp và sau đó nhấp vào tích hợp được định cấu hình để truy cập vào thẻ thiết bị.",
-                        "no_areas": "[%key:ui::panel::config::areas::no_areas%]"
+                        "introduction2": "Để đặt các thiết bị trong một khu vực, hãy sử dụng liên kết bên dưới để điều hướng đến trang tích hợp và sau đó nhấp vào tích hợp được định cấu hình để truy cập vào thẻ thiết bị."
                     }
                 },
                 "automation": {

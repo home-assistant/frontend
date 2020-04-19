@@ -635,17 +635,14 @@
                     "description": "Pārskats par visiem jūsu mājās apgabaliem.",
                     "editor": {
                         "create": "IZVEIDOT",
-                        "default_name": "[%key:ui::panel::config::entities::editor::default_name%]",
                         "delete": "DZĒST",
                         "update": "ATJAUNINĀT"
                     },
                     "picker": {
-                        "create_area": "[%key:ui::panel::config::areas::create_area%]",
                         "header": "Apgabali",
                         "integrations_page": "Integrāciju lapa",
                         "introduction": "Apgabali tiek izmantoti, lai organizētu ierīces atrašanās vietu. Šī informācija tiks izmantota daudzviet Home Assistant, lai palīdzētu organizēt lietotāja saskarni, atļaujas un integrācijas ar citām sistēmām.",
-                        "introduction2": "Lai piesaistītu ierīces noteiktam apgabalam, izmantojiet zemāk esošo saiti, lai pārietu uz integrāciju lapu un tad noklikšķiniet uz konfigurētas integrācijas, lai nonāktu pie ierīču kartīšu saraksta.",
-                        "no_areas": "[%key:ui::panel::config::areas::no_areas%]"
+                        "introduction2": "Lai piesaistītu ierīces noteiktam apgabalam, izmantojiet zemāk esošo saiti, lai pārietu uz integrāciju lapu un tad noklikšķiniet uz konfigurētas integrācijas, lai nonāktu pie ierīču kartīšu saraksta."
                     }
                 },
                 "automation": {
