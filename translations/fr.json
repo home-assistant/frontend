@@ -744,7 +744,6 @@
                     "description": "Vue d'ensemble de toutes les pièces de votre maison.",
                     "editor": {
                         "create": "Créer",
-                        "default_name": "[%key:ui::panel::config::entities::editor::default_name%]",
                         "delete": "Supprimer",
                         "update": "Mise à jour"
                     },
@@ -753,8 +752,7 @@
                         "header": "Pièces",
                         "integrations_page": "Page des intégrations",
                         "introduction": "Les pièces sont utilisées pour organiser l'emplacement des périphériques. Ces informations seront utilisées partout dans Home Assistant pour vous aider à organiser votre interface, vos autorisations et vos intégrations avec d'autres systèmes.",
-                        "introduction2": "Pour placer des périphériques dans une pièce, utilisez le lien ci-dessous pour accéder à la page des intégrations, puis cliquez sur une intégration configurée pour accéder aux cartes de périphérique.",
-                        "no_areas": "[%key:ui::panel::config::areas::no_areas%]"
+                        "introduction2": "Pour placer des périphériques dans une pièce, utilisez le lien ci-dessous pour accéder à la page des intégrations, puis cliquez sur une intégration configurée pour accéder aux cartes de périphérique."
                     }
                 },
                 "automation": {

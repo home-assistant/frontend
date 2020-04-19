@@ -747,7 +747,6 @@
                     "description": "Az összes otthoni terület áttekintése",
                     "editor": {
                         "create": "Létrehozás",
-                        "default_name": "[%key:ui::panel::config::entities::editor::default_name%]",
                         "delete": "Törlés",
                         "update": "Frissítés"
                     },
@@ -756,8 +755,7 @@
                         "header": "Területek",
                         "integrations_page": "Integrációk oldal",
                         "introduction": "A területekkel az eszközök elhelyezkedés szerint rendszerezhetők. Ezen információk felhasználásával a Home Assistant segíteni tud előkészíteni a felületet, a jogosultságokat és az integrációt más rendszerekkel.",
-                        "introduction2": "Az eszközök területekbe történő elhelyezéséhez használd az alábbi linket az integrációs oldalra való navigáláshoz, majd kattints egy konfigurált integrációra az eszközkártyák eléréséhez.",
-                        "no_areas": "[%key:ui::panel::config::areas::no_areas%]"
+                        "introduction2": "Az eszközök területekbe történő elhelyezéséhez használd az alábbi linket az integrációs oldalra való navigáláshoz, majd kattints egy konfigurált integrációra az eszközkártyák eléréséhez."
                     }
                 },
                 "automation": {
@@ -1755,7 +1753,7 @@
                     "no_zones_created_yet": "Úgy tűnik, még nem hoztál létre zónákat."
                 },
                 "zwave": {
-                    "caption": "[%key:domain::zwave%]",
+                    "caption": "Z-Wave",
                     "common": {
                         "index": "Index",
                         "instance": "Példány",

@@ -558,7 +558,7 @@
                 "editor": {
                     "confirm_delete": "Вы уверены, что хотите удалить эту запись?",
                     "delete": "Удалить",
-                    "enabled_cause": "Отключено из-за {cause}.",
+                    "enabled_cause": "Инициатор отключения: {cause}.",
                     "enabled_description": "Отключенные объекты не будут доступны в Home Assistant.",
                     "enabled_label": "Включить объект",
                     "entity_id": "ID объекта",

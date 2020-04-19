@@ -736,17 +736,14 @@
                     "description": "Přehled všech oblastí ve vaší domácnosti.",
                     "editor": {
                         "create": "VYTVOŘIT",
-                        "default_name": "[%key:ui::panel::config::entities::editor::default_name%]",
                         "delete": "Odstranit",
                         "update": "UPRAVIT"
                     },
                     "picker": {
-                        "create_area": "[%key:ui::panel::config::areas::create_area%]",
                         "header": "Registr oblastí",
                         "integrations_page": "Stránka integrací",
                         "introduction": "Oblasti se používají k uspořádání zařízení podle místa kde jsou. Tato informace bude použita k organizaci rozhraní, k nastavení oprávnění a v integraci s ostatnímy systémy.",
-                        "introduction2": "Pro přídání zařízení do oblasti přejděte na stránku integrací pomocí odkazu níže tam klikněte na nakonfigurovanou integraci abyste se dostali na kartu zažízení.",
-                        "no_areas": "[%key:ui::panel::config::areas::no_areas%]"
+                        "introduction2": "Pro přídání zařízení do oblasti přejděte na stránku integrací pomocí odkazu níže tam klikněte na nakonfigurovanou integraci abyste se dostali na kartu zažízení."
                     }
                 },
                 "automation": {

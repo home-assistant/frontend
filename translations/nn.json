@@ -621,17 +621,14 @@
                     "description": "Oversikt over områda i heimen din.",
                     "editor": {
                         "create": "LAG",
-                        "default_name": "[%key:ui::panel::config::entities::editor::default_name%]",
                         "delete": "SLETT",
                         "update": "OPPDATER"
                     },
                     "picker": {
-                        "create_area": "[%key:ui::panel::config::areas::create_area%]",
                         "header": "Områderegister",
                         "integrations_page": "Integrasjonsside",
                         "introduction": "Områda vert brukt til å organisere kvar einingar er. Denne informasjonen vil bli brukt av Home Assistant for å hjelpe deg å organisere brukargrensesnittet, løyver og integrasjoner med andre system.",
-                        "introduction2": "For å plassere ei eining i eit område, bruk linken under for å navigere til integrasjonssida og trykk deretter på konfigurer integrasjon for å opne einingskortet.",
-                        "no_areas": "[%key:ui::panel::config::areas::no_areas%]"
+                        "introduction2": "For å plassere ei eining i eit område, bruk linken under for å navigere til integrasjonssida og trykk deretter på konfigurer integrasjon for å opne einingskortet."
                     }
                 },
                 "automation": {

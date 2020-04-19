@@ -24,15 +24,6 @@
         },
         "panel": {
             "config": {
-                "areas": {
-                    "editor": {
-                        "default_name": "[%key:ui::panel::config::entities::editor::default_name%]"
-                    },
-                    "picker": {
-                        "create_area": "[%key:ui::panel::config::areas::create_area%]",
-                        "no_areas": "[%key:ui::panel::config::areas::no_areas%]"
-                    }
-                },
                 "automation": {
                     "editor": {
                         "actions": {
