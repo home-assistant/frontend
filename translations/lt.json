@@ -1,12 +1,4 @@
 {
-    "domain": {
-        "hassio": "Hass.io",
-        "homeassistant": "Home Assistant",
-        "lovelace": "Lovelace",
-        "person": "Asmuo",
-        "system_health": "Sistemos sveikata",
-        "zwave": "Z-Wave"
-    },
     "groups": {
         "system-admin": "Administratoriai",
         "system-read-only": "Tik skaitymo privilegija",
@@ -139,9 +131,7 @@
             "streaming": "Transliuojama"
         },
         "climate": {
-            "manual": "Rankinis",
-            "off": "Išjungta",
-            "on": "Įjungta"
+            "off": "Išjungta"
         },
         "default": {
             "off": "Išjungta",
@@ -224,9 +214,6 @@
                 "updater": {
                     "title": "Atnaujinimo instrukcijos"
                 }
-            },
-            "more_info_settings": {
-                "back": "Atgal"
             }
         },
         "duration": {
@@ -245,20 +232,18 @@
                 },
                 "areas": {
                     "caption": "Sričių registras",
-                    "create_area": "SUKURTI SRITĮ",
                     "description": "Visų jūsų namų sričių apžvalga.",
                     "editor": {
                         "create": "SUKURTI",
-                        "default_name": "Nauja sritis",
+                        "default_name": "[%key:ui::panel::config::entities::editor::default_name%]",
                         "delete": "IŠTRINTI",
                         "update": "ATNAUJINTI"
                     },
-                    "no_areas": "Atrodo, kad dar neturite registruotų sričių!",
                     "picker": {
-                        "create_area": "SUKURTI SRITĮ",
+                        "create_area": "[%key:ui::panel::config::areas::create_area%]",
                         "header": "Sričių registras",
                         "integrations_page": "Integracijų puslapis",
-                        "no_areas": "Atrodo, kad dar neturite registruotų sričių!"
+                        "no_areas": "[%key:ui::panel::config::areas::no_areas%]"
                     }
                 },
                 "automation": {
@@ -366,8 +351,6 @@
                     }
                 },
                 "devices": {
-                    "area_picker_label": "Sritis",
-                    "automations": "Automatizavimai",
                     "data_table": {
                         "area": "Sritis",
                         "device": "Įrenginys",
@@ -378,29 +361,18 @@
                 "entities": {
                     "caption": "Subjektų registras",
                     "description": "Visų žinomų subjektų apžvalga.",
-                    "editor": {
-                        "default_name": "Nauja sritis",
-                        "delete": "IŠTRINTI",
-                        "unavailable": "Šiuo metu šis subjektas nepasiekiamas.",
-                        "update": "ATNAUJINTI"
-                    },
                     "picker": {
                         "header": "Subjektų registras",
-                        "integrations_page": "Integracijų puslapis",
-                        "introduction2": "Naudokite subjekto registrą, kad perrašytumėte pavadinimą, pakeiskite subjekto ID arba pašalintumėte įrašą iš namų asistento. Atminkite, kad pašalindami registro įrašą tai nepanaikins pačio subjekto. Norėdami tai padaryti, sekite toliau pateiktą nuorodą ir pašalinkite ją iš integracijos puslapio.",
-                        "unavailable": "(nepasiekiamas)"
+                        "introduction2": "Naudokite subjekto registrą, kad perrašytumėte pavadinimą, pakeiskite subjekto ID arba pašalintumėte įrašą iš namų asistento. Atminkite, kad pašalindami registro įrašą tai nepanaikins pačio subjekto. Norėdami tai padaryti, sekite toliau pateiktą nuorodą ir pašalinkite ją iš integracijos puslapio."
                     }
                 },
                 "integrations": {
                     "config_entry": {
                         "hub": "Prijungtas per",
-                        "no_area": "Nėra srities",
-                        "via": "Prijungtas per"
+                        "no_area": "Nėra srities"
                     },
                     "config_flow": {
                         "aborted": "Nutraukta",
-                        "add_area": "Pridėti sritį",
-                        "area_picker_label": "Sritis",
                         "close": "Uždaryti",
                         "finish": "Baigti",
                         "submit": "Pateikti"
@@ -434,16 +406,7 @@
                         "header": "„Zigbee“ namų automatika - pridėti įrenginių",
                         "spinner": "Ieškoma ZHA Zigbee įrenginių..."
                     },
-                    "description": "„Zigbee Home Automation“ tinklo valdymas",
-                    "device_card": {
-                        "area_picker_label": "Sritis",
-                        "device_name_placeholder": "Vartotojo suteiktas vardas",
-                        "update_name_button": "Atnaujinti pavadinimą"
-                    },
-                    "services": {
-                        "remove": "Pašalinkite įrenginį iš „Zigbee“ tinklo.",
-                        "updateDeviceName": "Nustatyti pasirinktinį pavadinimą šiam įrenginiu, prietaisų registre."
-                    }
+                    "description": "„Zigbee Home Automation“ tinklo valdymas"
                 },
                 "zwave": {
                     "caption": "Z-Wave",
@@ -463,12 +426,6 @@
                 "tabs": {
                     "mqtt": {
                         "title": "MQTT"
-                    },
-                    "states": {
-                        "copied": "Nukopijuota į iškarpinę",
-                        "copy_entity_attribute": "Kopijuoti atributus",
-                        "copy_entity_id": "Kopijuoti ID",
-                        "copy_entity_state": "Kopijuoti būseną"
                     }
                 }
             },
@@ -488,8 +445,7 @@
                         "delete": "Ištrinti",
                         "edit": "Redaguoti",
                         "move": "Perkelti",
-                        "pick_card": "Pasirinkite kortelę, kurią norite pridėti.",
-                        "save": "Išsaugoti"
+                        "pick_card": "Pasirinkite kortelę, kurią norite pridėti."
                     },
                     "edit_lovelace": {
                         "edit_title": "Redaguoti pavadinimą"
@@ -532,8 +488,7 @@
                     "configure_ui": "Konfigūruoti UI",
                     "exit_edit_mode": "Išeiti iš vartotojo sąsajos redagavimo režimo",
                     "help": "Pagalba",
-                    "refresh": "Atnaujinti",
-                    "unused_entities": "Nepanaudoti elementai"
+                    "refresh": "Atnaujinti"
                 },
                 "unused_entities": {
                     "domain": "Domenas",
@@ -595,9 +550,6 @@
                     "description": "Siųsti pranešimus į šį įrenginį."
                 }
             }
-        },
-        "sidebar": {
-            "log_out": "Atsijungti"
         }
     }
 }

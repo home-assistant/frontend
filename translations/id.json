@@ -1,50 +1,4 @@
 {
-    "attribute": {
-        "weather": {
-            "humidity": "Kelembaban",
-            "visibility": "Jarak pandang",
-            "wind_speed": "Kecepatan angin"
-        }
-    },
-    "domain": {
-        "alarm_control_panel": "Kontrol panel alarm",
-        "automation": "Otomasi",
-        "binary_sensor": "Sensor biner",
-        "calendar": "Kalender",
-        "camera": "Kamera",
-        "climate": "Cuaca",
-        "configurator": "Konfigurator",
-        "conversation": "Percakapan",
-        "cover": "Penutup",
-        "device_tracker": "Pelacak perangkat",
-        "fan": "Kipas angin",
-        "group": "Grup",
-        "history_graph": "Riwayat grafik",
-        "image_processing": "Pengolahan gambar",
-        "input_boolean": "Input boolean",
-        "input_datetime": "Input tanggal waktu",
-        "input_number": "Input bilangan",
-        "input_select": "Input pilihan",
-        "input_text": "Input teks",
-        "light": "Lampu",
-        "lock": "Kunci",
-        "mailbox": "Kotak pesan",
-        "media_player": "Pemutar media",
-        "notify": "Pemberitahuan",
-        "person": "Orang",
-        "plant": "Tanaman",
-        "proximity": "Kedekatan",
-        "remote": "Daring",
-        "scene": "Adegan",
-        "script": "Skrip",
-        "sensor": "Sensor",
-        "sun": "Matahari",
-        "switch": "Sakelar",
-        "updater": "Pembaru",
-        "vacuum": "Vakum",
-        "weblink": "Tautan web",
-        "zwave": "Z-Wave"
-    },
     "groups": {
         "system-admin": "Administrator",
         "system-read-only": "Pengguna Hanya-Baca",
@@ -53,7 +7,6 @@
     "panel": {
         "calendar": "Kalender",
         "config": "Konfigurasi",
-        "dev-info": "Info",
         "developer_tools": "Alat Pengembang",
         "history": "Riwayat",
         "logbook": "Catatan Log",
@@ -211,19 +164,10 @@
             "auto": "Auto",
             "cool": "Sejuk",
             "dry": "Kering",
-            "eco": "Eco",
-            "electric": "Petir",
             "fan_only": "Hanya kipas",
-            "gas": "Gas",
             "heat": "Panas",
             "heat_cool": "Panas/Dingin",
-            "heat_pump": "Pompa pemanas",
-            "high_demand": "Permintaan yang tinggi",
-            "idle": "Siaga",
-            "manual": "Manual",
-            "off": "Off",
-            "on": "On",
-            "performance": "Kinerja"
+            "off": "Off"
         },
         "configurator": {
             "configure": "Konfigurasi",
@@ -554,11 +498,6 @@
                 "enable_new_entities_label": "Aktifkan entiti yang baru ditambahkan.",
                 "update": "Memperbarui"
             },
-            "confirmation": {
-                "cancel": "Batal",
-                "ok": "OK",
-                "title": "Apakah anda yakin?"
-            },
             "entity_registry": {
                 "control": "Kontrol",
                 "dismiss": "Tutup",
@@ -580,11 +519,6 @@
                 "updater": {
                     "title": "Petunjuk Pembaruan"
                 }
-            },
-            "more_info_settings": {
-                "entity_id": "ID Entitas",
-                "name": "Nama",
-                "save": "Simpan"
             }
         },
         "duration": {
@@ -606,16 +540,12 @@
         },
         "notification_toast": {
             "connection_lost": "Koneksi terputus. Menghubungkan kembali...",
-            "entity_turned_off": "{entity} sudah dimatikan.",
-            "entity_turned_on": "{entity} sudah dinyalakan.",
-            "service_call_failed": "Gagal memanggil layanan {service}.",
-            "service_called": "Layanan {service} dipanggil."
+            "service_call_failed": "Gagal memanggil layanan {service}."
         },
         "panel": {
             "config": {
                 "areas": {
                     "caption": "Area",
-                    "create_area": "BUAT AREA",
                     "description": "Gambaran umum semua area di rumah Anda.",
                     "editor": {
                         "create": "BUAT",
@@ -623,7 +553,6 @@
                         "delete": "HAPUS",
                         "update": "PERBARUI"
                     },
-                    "no_areas": "Sepertinya Anda belum memiliki area.",
                     "picker": {
                         "create_area": "BUAT AREA",
                         "header": "Area",
@@ -827,29 +756,6 @@
                             },
                             "header": "Konfigurasi Umum",
                             "introduction": "Merubah konfigurasi bisa menjadi proses yang melelahkan. Kami tahu. Bagian ini akan mencoba membuatnya menjadi sedikit lebih mudah."
-                        },
-                        "server_control": {
-                            "reloading": {
-                                "automation": "Muat ulang otomasi",
-                                "core": "Muat ulang inti",
-                                "group": "Muat ulang grup",
-                                "heading": "Memuat ulang konfigurasi",
-                                "introduction": "Beberapa bagian Home Assistant dapat memuat ulang tanpa memerlukan memulai ulang. Menekan tombol memuat ulang akan membatalkan konfigurasi sekarang dan memuat konfigurasi yang baru.",
-                                "script": "Muat ulang skrip"
-                            },
-                            "server_management": {
-                                "heading": "Pengelolaan server",
-                                "introduction": "Kendalikan server Home Assistant Anda, dari Home Assistant.",
-                                "restart": "Mulai ulang",
-                                "stop": "Hentikan"
-                            },
-                            "validation": {
-                                "check_config": "Periksa konfigurasi",
-                                "heading": "Validasi konfigurasi",
-                                "introduction": "Validasikan konfigurasi jika Anda baru saja membuat perubahan pada konfigurasi Anda dan ingin memastikan semuanya valid",
-                                "invalid": "Konfigurasi tidak valid",
-                                "valid": "Konfigurasi valid!"
-                            }
                         }
                     }
                 },
@@ -858,14 +764,7 @@
                     "description": "Sesuaikan entitas anda"
                 },
                 "entities": {
-                    "description": "Ikhtisar semua entitas yang dikenal.",
-                    "editor": {
-                        "delete": "HAPUS",
-                        "update": "PERBARUI"
-                    },
-                    "picker": {
-                        "integrations_page": "Halaman integrasi"
-                    }
+                    "description": "Ikhtisar semua entitas yang dikenal."
                 },
                 "header": "Mengonfigurasi Home Assistant",
                 "integrations": {
@@ -911,16 +810,7 @@
                         "caption": "Lihat pengguna",
                         "change_password": "Ganti kata sandi",
                         "deactivate_user": "Nonaktifkan pengguna",
-                        "delete_user": "Hapus pengguna",
-                        "rename_user": "Ubah nama pengguna"
-                    },
-                    "picker": {
-                        "title": "Pengguna"
-                    }
-                },
-                "zha": {
-                    "device_card": {
-                        "update_name_button": "Perbarui Nama"
+                        "delete_user": "Hapus pengguna"
                     }
                 },
                 "zwave": {
@@ -1167,8 +1057,7 @@
             }
         },
         "sidebar": {
-            "external_app_configuration": "Konfigurasi Aplikasi",
-            "log_out": "Keluar"
+            "external_app_configuration": "Konfigurasi Aplikasi"
         }
     }
 }

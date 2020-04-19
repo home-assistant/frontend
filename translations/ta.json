@@ -1,21 +1,4 @@
 {
-    "domain": {
-        "input_text": "உரை உள்ளிடு",
-        "light": "மின் விளக்கு",
-        "lock": "பூட்டு",
-        "mailbox": "அஞ்சல் பெட்டி",
-        "media_player": "மீடியா பிளேயர்",
-        "notify": "தெரிவி",
-        "remote": "ரிமோட்",
-        "scene": "காட்சி",
-        "script": "ஸ்கிரிப்ட்",
-        "sensor": "சென்சார்",
-        "sun": "சூரியன்",
-        "switch": "ஸ்விட்ச்",
-        "updater": "அப்டேட்டர்",
-        "weblink": "இணையதள இணைப்பு",
-        "zwave": "Z-Wave"
-    },
     "panel": {
         "config": "அமைப்புகள்",
         "history": "வரலாறு",
@@ -144,18 +127,9 @@
             "auto": "தானாக இயங்குதல்",
             "cool": "குளிர்",
             "dry": "உலர்ந்த",
-            "eco": "சுற்றுச்சூழல்",
-            "electric": "மின்சார",
             "fan_only": "விசிறி மட்டும்",
-            "gas": "வாயு",
             "heat": "வெப்பம்",
-            "heat_pump": "வெப்ப பம்ப்",
-            "high_demand": "அதிக தேவை",
-            "idle": "பணியின்றி",
-            "manual": "கையேடு",
-            "off": "ஆஃப்",
-            "on": "ஆன் ",
-            "performance": "செயல்திறன்"
+            "off": "ஆஃப்"
         },
         "configurator": {
             "configure": "உள்ளமை",
@@ -265,6 +239,15 @@
         },
         "panel": {
             "config": {
+                "areas": {
+                    "editor": {
+                        "default_name": "[%key:ui::panel::config::entities::editor::default_name%]"
+                    },
+                    "picker": {
+                        "create_area": "[%key:ui::panel::config::areas::create_area%]",
+                        "no_areas": "[%key:ui::panel::config::areas::no_areas%]"
+                    }
+                },
                 "zwave": {
                     "caption": "Z-Wave",
                     "node_config": {
@@ -279,9 +262,6 @@
                     }
                 }
             }
-        },
-        "sidebar": {
-            "log_out": "வெளியேறு"
         }
     }
 }

@@ -1,61 +1,10 @@
 {
-    "attribute": {
-        "weather": {
-            "humidity": "Luftfuktighet",
-            "visibility": "Sikt",
-            "wind_speed": "Vindhastighet"
-        }
-    },
     "config_entry": {
         "disabled_by": {
             "config_entry": "Konfigurer oppføring",
             "integration": "Integrasjon",
             "user": "Bruker"
         }
-    },
-    "domain": {
-        "alarm_control_panel": "Alarm kontrollpanel",
-        "automation": "Automasjon",
-        "binary_sensor": "Binær sensor",
-        "calendar": "Kalender",
-        "camera": "Kamera",
-        "climate": "Klima",
-        "configurator": "Konfigurator",
-        "conversation": "Samtale",
-        "cover": "Cover",
-        "device_tracker": "Enhetssporing",
-        "fan": "Vifte",
-        "group": "Gruppe",
-        "hassio": "",
-        "history_graph": "Historie graf",
-        "homeassistant": "",
-        "image_processing": "Bildebehandling",
-        "input_boolean": "Angi boolsk",
-        "input_datetime": "Angi datotid",
-        "input_number": "Angi nummer",
-        "input_select": "Angi valg",
-        "input_text": "Angi tekst",
-        "light": "Lys",
-        "lock": "Lås",
-        "lovelace": "",
-        "mailbox": "Postkasse",
-        "media_player": "Mediaspiller",
-        "notify": "Varsle",
-        "person": "",
-        "plant": "Plante",
-        "proximity": "Nærhet",
-        "remote": "Fjernkontroll",
-        "scene": "Scene",
-        "script": "Skript",
-        "sensor": "",
-        "sun": "Sol",
-        "switch": "Bryter",
-        "system_health": "Systemhelse",
-        "updater": "Oppdater",
-        "vacuum": "Støvsuger",
-        "weblink": "Nettlink",
-        "zha": "",
-        "zwave": "Z-Wave"
     },
     "groups": {
         "system-admin": "Administratorer",
@@ -65,7 +14,6 @@
     "panel": {
         "calendar": "Kalender",
         "config": "Konfigurasjon",
-        "dev-info": "Informasjon",
         "developer_tools": "Utviklerverktøy",
         "history": "Historie",
         "logbook": "Loggbok",
@@ -242,19 +190,10 @@
             "auto": "Auto",
             "cool": "Kjøling",
             "dry": "Tørr",
-            "eco": "Øko",
-            "electric": "Elektrisk",
             "fan_only": "Kun vifte",
-            "gas": "Gass",
             "heat": "Varme",
             "heat_cool": "Varme/kjøling",
-            "heat_pump": "Varmepumpe",
-            "high_demand": "Høy etterspørsel",
-            "idle": "Inaktiv",
-            "manual": "Manuell",
-            "off": "Av",
-            "on": "På",
-            "performance": "Ytelse"
+            "off": "Av"
         },
         "configurator": {
             "configure": "Konfigurer",
@@ -404,7 +343,6 @@
                 "arm_custom_bypass": "Tilpasset bypass",
                 "arm_home": "Armer hjemme",
                 "arm_night": "Aktiver natt",
-                "armed_custom_bypass": "Tilpasset bypass",
                 "clear_code": "Tøm",
                 "code": "Kode",
                 "disarm": "Deaktiver"
@@ -614,11 +552,6 @@
                 "title": "Systemalternativer for {integration}",
                 "update": "Oppdater"
             },
-            "confirmation": {
-                "cancel": "Avbryt",
-                "ok": "",
-                "title": "Er du sikker?"
-            },
             "domain_toggler": {
                 "title": "Veksle domener"
             },
@@ -652,15 +585,11 @@
             "helper_settings": {
                 "generic": {
                     "icon": "Ikon",
-                    "initial_value": "Startverdi ved start",
-                    "initial_value_explain": "Verdien elementet vil ha når Home Assistant starter. Når den er tom, gjenopprettes verdien til den forrige verdien.",
                     "name": "Navn"
                 },
                 "input_datetime": {
                     "date": "Dato",
                     "datetime": "Dato og tid",
-                    "has_date": "Dato",
-                    "has_time": "Tid",
                     "mode": "Hva vil du legge inn",
                     "time": "Tid"
                 },
@@ -687,8 +616,6 @@
                     "pattern": "Regex-mønster for validering på klientsiden",
                     "text": "Tekst"
                 },
-                "not_editable": "Kan ikke redigeres",
-                "not_editable_text": "Denne entiteten kan ikke endres fra brukergrensesnittet fordi den er definert i configuration.yaml.",
                 "platform_not_loaded": "{platform}-integrasjonen er ikke lastet inn. Legg til konfigurasjonen ved å legge til 'default_config:' eller '{platform}:'.",
                 "required_error_msg": "Dette feltet er påkrevd",
                 "yaml_not_editable": "Innstillingene for denne entiteten kan ikke redigeres fra brukergrensesnittet. Bare entiteter som er konfigurert fra brukergrensesnittet, kan konfigureres fra brukergrensesnittet."
@@ -731,12 +658,6 @@
                     "status": "",
                     "stop": "Stopp"
                 }
-            },
-            "more_info_settings": {
-                "back": "Gå tilbake",
-                "entity_id": "Entitets-ID",
-                "name": "Navn",
-                "save": "Lagre"
             },
             "options_flow": {
                 "form": {
@@ -804,10 +725,7 @@
         },
         "notification_toast": {
             "connection_lost": "Forbindelsen ble brutt. Kobler til på nytt...",
-            "entity_turned_off": "Slått av: {entity}",
-            "entity_turned_on": "Slått på: {entity}",
             "service_call_failed": "Kunne ikke tilkalle tjenesten: {service}",
-            "service_called": "Tilkalte tjenesten: {service}",
             "triggered": "Utløst {name}"
         },
         "panel": {
@@ -818,7 +736,6 @@
                 },
                 "areas": {
                     "caption": "Områder",
-                    "create_area": "OPPRETT OMRÅDE",
                     "data_table": {
                         "area": "Område",
                         "devices": "Enheter"
@@ -830,18 +747,17 @@
                     "description": "Oversikt over alle områder i ditt hjem",
                     "editor": {
                         "create": "Opprett",
-                        "default_name": "Nytt område",
+                        "default_name": "[%key:ui::panel::config::entities::editor::default_name%]",
                         "delete": "Slett",
                         "update": "Oppdater"
                     },
-                    "no_areas": "Det ser ikke ut som om du har noen områder ennå!",
                     "picker": {
                         "create_area": "Opprett område",
                         "header": "Områder",
                         "integrations_page": "Integrasjonsside",
                         "introduction": "Områder brukes til å organisere hvor enheter er. Denne informasjonen vil bli brukt gjennomgående i Home Assistant for å hjelpe deg med å organisere grensesnittet, tillatelser og integrasjoner med andre systemer.",
                         "introduction2": "For å plassere enheter i et område, bruk linken under for å navigere til integrasjonssiden og klikk deretter på en konfigurert integrasjon for å komme til enhetskortene.",
-                        "no_areas": "Det ser ikke ut som om du har noen områder ennå!"
+                        "no_areas": "[%key:ui::panel::config::areas::no_areas%]"
                     }
                 },
                 "automation": {
@@ -1245,7 +1161,6 @@
                             "core_config": {
                                 "edit_requires_storage": "Redigering deaktivert da konfigurasjonen er lagret i configuration.yaml.",
                                 "elevation": "Høyde",
-                                "elevation_feet": "fot",
                                 "elevation_meters": "meter",
                                 "imperial_example": "Fahrenheit, pund",
                                 "latitude": "Breddegrad",
@@ -1260,29 +1175,6 @@
                             },
                             "header": "Generell konfigurasjon",
                             "introduction": "Endring av konfigurasjonen kan være en slitsom prosess, det vet vi. Denne delen vil forsøke å gjøre livet ditt litt lettere."
-                        },
-                        "server_control": {
-                            "reloading": {
-                                "automation": "Oppdater automasjoner",
-                                "core": "Oppdater kjerne",
-                                "group": "Oppdater grupper",
-                                "heading": "Laster konfigurasjon på nytt",
-                                "introduction": "Enkelte deler av Home Assistant kan lastes inn på nytt uten å kreve en omstart. Trykk på oppdater for å laste inn den nye konfigurasjonen.",
-                                "script": "Oppdater skript"
-                            },
-                            "server_management": {
-                                "heading": "Serveradministrasjon",
-                                "introduction": "Kontroller din Home Assistant server... fra Home Assistant.",
-                                "restart": "Start på nytt",
-                                "stop": "Stopp"
-                            },
-                            "validation": {
-                                "check_config": "Sjekk konfigurasjonen",
-                                "heading": "Konfigurasjonsvalidering",
-                                "introduction": "Sjekk konfigurasjon din hvis du nylig har gjort noen endringer og ønsker å være sikker på at den er gyldig ved å kjøre en valideringstest",
-                                "invalid": "Ugyldig konfigurasjon",
-                                "valid": "Konfigurasjonen er gyldig!"
-                            }
                         }
                     }
                 },
@@ -1307,7 +1199,6 @@
                     }
                 },
                 "devices": {
-                    "area_picker_label": "Område",
                     "automation": {
                         "actions": {
                             "caption": "Når noe er utløst..."
@@ -1323,7 +1214,6 @@
                             "caption": "Gjør noe når ..."
                         }
                     },
-                    "automations": "Automasjoner",
                     "cant_edit": "Du kan bare redigere elementer som er opprettet i UI.",
                     "caption": "Enheter",
                     "confirm_delete": "Er du sikker på at du vil slette denne enheten?",
@@ -1339,14 +1229,12 @@
                     },
                     "delete": "Slett",
                     "description": "Administrer tilkoblede enheter",
-                    "details": "Her er alle detaljer for enheten.",
                     "device_not_found": "Enhet ikke funnet",
                     "entities": {
                         "add_entities_lovelace": "Legg til i Lovelace",
                         "entities": "Enheter",
                         "none": "Denne enheten har ingen enheter"
                     },
-                    "info": "Enhetsinformasjon",
                     "name": "Navn",
                     "no_devices": "Ingen enheter",
                     "scene": {
@@ -1368,20 +1256,6 @@
                 "entities": {
                     "caption": "Entiteter",
                     "description": "Oversikt over alle kjente entiteter",
-                    "editor": {
-                        "confirm_delete": "Er du sikker på at du vil slette denne oppføringen?",
-                        "confirm_delete2": "Hvis du sletter en oppføring, fjernes ikke entiteten fra Home Assistant. Hvis du vil gjøre dette, må du fjerne integrasjonen {platform} fra Home Assistant.",
-                        "default_name": "Nytt område",
-                        "delete": "SLETT",
-                        "enabled_cause": "Deaktivert av {cause}.",
-                        "enabled_description": "Deaktiverte entiteter vil ikke bli lagt til i Home Assistant.",
-                        "enabled_label": "Aktivér entitet",
-                        "entity_id": "Entitets-ID",
-                        "name": "Overstyr Navn",
-                        "note": "Merk: dette fungerer kanskje ikke ennå med alle integrasjoner.",
-                        "unavailable": "Denne entiteten er ikke tilgjengelig for øyeblikket.",
-                        "update": "OPPDATER"
-                    },
                     "picker": {
                         "disable_selected": {
                             "button": "Deaktiver valgte",
@@ -1401,13 +1275,11 @@
                         },
                         "header": "Entiteter",
                         "headers": {
-                            "enabled": "Aktivert",
                             "entity_id": "Entitets-ID",
                             "integration": "Integrasjon",
                             "name": "Navn",
                             "status": ""
                         },
-                        "integrations_page": "Integrasjonsside",
                         "introduction": "Home Assistant bygger opp et register over hver entitet den har sett som kan identifiseres unikt. Hver av disse entitetene vil ha en ID som er reservert kun til denne.",
                         "introduction2": "Bruk entitetsregistret til å overstyre navnet, endre id-en eller fjerne den fra Home Assistant.",
                         "remove_selected": {
@@ -1418,15 +1290,13 @@
                             "confirm_title": "Vil du fjerne {number} enheter?"
                         },
                         "selected": "{number} valgte",
-                        "show_disabled": "Vis deaktiverte entiteter",
                         "status": {
                             "disabled": "Deaktivert",
                             "ok": "",
                             "readonly": "Skrivebeskyttet",
                             "restored": "Gjennopprettet",
                             "unavailable": "Utilgjengelig"
-                        },
-                        "unavailable": "(utilgjengelig)"
+                        }
                     }
                 },
                 "header": "Konfigurer Home Assistant",
@@ -1471,13 +1341,10 @@
                         "no_devices": "Denne integrasjonen har ingen enheter.",
                         "restart_confirm": "Start Home Assistant på nytt for å fullføre fjerningen av denne integrasjonen",
                         "settings_button": "Rediger innstillinger for {integration}",
-                        "system_options_button": "Systemalternativer for {integration}",
-                        "via": "Tilkoblet via"
+                        "system_options_button": "Systemalternativer for {integration}"
                     },
                     "config_flow": {
                         "aborted": "Avbrutt",
-                        "add_area": "Legg til område",
-                        "area_picker_label": "Område",
                         "close": "Lukk",
                         "created_config": "Opprettet konfigurasjon for {name} .",
                         "dismiss": "Avvis dialog",
@@ -1486,10 +1353,8 @@
                             "description": "Dette trinnet krever at du besøker et eksternt nettsted som skal fylles ut.",
                             "open_site": "Åpne nettsted"
                         },
-                        "failed_create_area": "Kunne ikke opprette område.",
                         "finish": "Fullfør",
                         "loading_first_time": "Vent mens integrasjonen installeres",
-                        "name_new_area": "Navn på det nye området?",
                         "not_all_required_fields": "Ikke alle obligatoriske felt er fylt ut.",
                         "submit": "Send inn"
                     },
@@ -1744,28 +1609,22 @@
                         "confirm_user_deletion": "Er du sikker på at du vil slette {name} ?",
                         "deactivate_user": "Deaktiver bruker",
                         "delete_user": "Slett bruker",
-                        "enter_new_name": "Skriv inn nytt navn",
                         "group": "Gruppe",
-                        "group_update_failed": "Gruppeoppdatering mislyktes:",
                         "id": "Id",
                         "name": "Navn",
                         "owner": "Eier",
-                        "rename_user": "Gi nytt navn til bruker",
                         "system_generated": "System generert",
                         "system_generated_users_not_editable": "Kan ikke oppdatere systemgenererte brukere.",
                         "system_generated_users_not_removable": "Kan ikke fjerne systemgenererte brukere.",
                         "unnamed_user": "Bruker uten navn",
-                        "update_user": "Oppdater",
-                        "user_rename_failed": "Brukernavn mislyktes:"
+                        "update_user": "Oppdater"
                     },
                     "picker": {
                         "headers": {
                             "group": "Gruppe",
                             "name": "Navn",
                             "system": "System"
-                        },
-                        "system_generated": "System generert",
-                        "title": "Brukere"
+                        }
                     }
                 },
                 "zha": {
@@ -1810,11 +1669,6 @@
                         "value": "Verdi"
                     },
                     "description": "Zigbee Home Automation nettverksadministrasjon",
-                    "device_card": {
-                        "area_picker_label": "Område",
-                        "device_name_placeholder": "Brukers navn",
-                        "update_name_button": "Oppdatér navn"
-                    },
                     "devices": {
                         "header": "Zigbee Hjemme Automasjon - Enhet"
                     },
@@ -1868,11 +1722,6 @@
                         "hint_battery_devices": "Merk: Søvnige (batteridrevne) enheter må være våkne når du utfører kommandoer mot dem. Du kan vanligvis vekke en søvnig enhet ved å utløse den.",
                         "hint_wakeup": "Noen enheter, for eksempel Xiaomi-sensorer, har en vekkingsknapp som du kan trykke på med intervaller på ~ 5 sekunder for å holde enheter våkne mens du samhandler med dem.",
                         "introduction": "Kjør ZHA-kommandoer som påvirker en enkelt enhet. Velg en enhet for å se en liste over tilgjengelige kommandoer."
-                    },
-                    "services": {
-                        "reconfigure": "Rekonfigurer ZHA-enhet (heal enhet). Bruk dette hvis du har problemer med enheten. Hvis den aktuelle enheten er en batteridrevet enhet, sørg for at den er våken og aksepterer kommandoer når du bruker denne tjenesten.",
-                        "remove": "Fjern en enhet fra Zigbee-nettverket.",
-                        "updateDeviceName": "Angi et egendefinert navn for denne enheten i enhetsregisteret."
                     },
                     "title": "ZigBee Hjemme Automasjon"
                 },
@@ -1989,20 +1838,15 @@
                     "info": {
                         "built_using": "Bygget med",
                         "custom_uis": "Tilpasset UIs:",
-                        "default_ui": "{action} {name} som standard side på denne enheten",
                         "developed_by": "Utviklet av en gjeng med fantastiske mennesker.",
                         "frontend": "frontend-ui",
                         "frontend_version": "Frontend-versjon: {version} - {type}",
                         "home_assistant_logo": "Logo for Home Assistant",
                         "icons_by": "Ikoner av",
                         "license": "Publisert under Apache 2.0-lisensen",
-                        "lovelace_ui": "Gå til Lovelace UI",
                         "path_configuration": "Sti til configurasjon.yaml: {path}",
-                        "remove": "Fjerne",
                         "server": "Server",
-                        "set": "Angi",
                         "source": "Kilde:",
-                        "states_ui": "Gå til states UI",
                         "system_health_error": "System Health-komponenten er ikke lastet. Legg til 'system_health:' til configurasjon.yaml",
                         "title": "Informasjon"
                     },
@@ -2047,10 +1891,6 @@
                     "states": {
                         "alert_entity_field": "Entitet er et obligatorisk felt",
                         "attributes": "Attributter",
-                        "copied": "Kopiert til utklippstavle",
-                        "copy_entity_attribute": "Kopier attributter",
-                        "copy_entity_id": "Kopier ID",
-                        "copy_entity_state": "Kopier tilstand",
                         "current_entities": "Gjeldende entiteter",
                         "description1": "Angi representasjonen av en enhet i Home Assistant.",
                         "description2": "Dette vil ikke kommunisere med den faktiske enheten.",
@@ -2111,8 +1951,7 @@
                     },
                     "safe-mode": {
                         "description": "Home Assistant fikk problemer under lasting av konfigurasjonen og kjører nå i sikkermodus. Ta en titt på feilloggen for å se hva som gikk galt.",
-                        "header": "Sikkermodus aktivert",
-                        "show_errors": "Vis feil"
+                        "header": "Sikkermodus aktivert"
                     },
                     "shopping-list": {
                         "add_item": "Legg til",
@@ -2126,9 +1965,6 @@
                 },
                 "editor": {
                     "card": {
-                        "alarm_panel": {
-                            "available_states": "Tilgjengelige tilstander"
-                        },
                         "alarm-panel": {
                             "available_states": "Tilgjengelige tilstander",
                             "description": "Alarmpanelkortet lar deg armere og deaktivere alarmkontrollpanelets integrasjoner.",
@@ -2158,9 +1994,6 @@
                             "name": "Entiteter",
                             "show_header_toggle": "Vis kortbryter?",
                             "toggle": "Aktivér/deaktivér entiteter."
-                        },
-                        "entity-button": {
-                            "name": "Entitetsknapp"
                         },
                         "entity-filter": {
                             "description": "Entity Filter-kortet lar deg definere en liste over entiteter du bare vil spore når de er i en viss tilstand.",
@@ -2307,7 +2140,6 @@
                         "options": "Flere alternativer",
                         "pick_card": "Hvilket kort vil du legge til?",
                         "pick_card_view_title": "Hvilket kort vil du legge til i {name} visningen?",
-                        "save": "Lagre",
                         "show_code_editor": "Vis koderedigering",
                         "show_visual_editor": "Vis visuell redigering",
                         "toggle_editor": "Bytt redigering"
@@ -2389,8 +2221,7 @@
                     "exit_edit_mode": "Avslutt redigeringsmodus for brukergrensesnitt",
                     "help": "Hjelp",
                     "refresh": "Oppdater",
-                    "reload_resources": "Last inn ressurser på nytt",
-                    "unused_entities": "Ubrukte entiteter"
+                    "reload_resources": "Last inn ressurser på nytt"
                 },
                 "reload_lovelace": "Last inn UI",
                 "reload_resources": {
@@ -2410,8 +2241,7 @@
                     "confirm_delete": "Slette visning?",
                     "confirm_delete_existing_cards": "Hvis du sletter denne visningen, fjernes også kortene",
                     "confirm_delete_existing_cards_text": "Er du sikker på at du vil slette visningen '{name}'? Visningen inneholder {number} kort som blir slettet. Denne handlingen kan ikke angre.",
-                    "confirm_delete_text": "Er du sikker på at du vil slette visningen '{name}'?",
-                    "existing_cards": "Du kan ikke slette en visning som har kort i den. Fjern kortene først."
+                    "confirm_delete_text": "Er du sikker på at du vil slette visningen '{name}'?"
                 },
                 "warning": {
                     "attribute_not_found": "Attributtet {attribute} er ikke tilgjengelig i: {entity}",
@@ -2695,7 +2525,6 @@
         },
         "sidebar": {
             "external_app_configuration": "Appkonfigurasjon",
-            "log_out": "Logg ut",
             "sidebar_toggle": "Vis/Skjul sidepanel"
         }
     }

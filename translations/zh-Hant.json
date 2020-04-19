@@ -1,61 +1,10 @@
 {
-    "attribute": {
-        "weather": {
-            "humidity": "濕度",
-            "visibility": "能見度",
-            "wind_speed": "風速"
-        }
-    },
     "config_entry": {
         "disabled_by": {
             "config_entry": "設定物件",
             "integration": "整合",
             "user": "使用者"
         }
-    },
-    "domain": {
-        "alarm_control_panel": "警戒模式控制面板",
-        "automation": "自動化",
-        "binary_sensor": "二進位傳感器",
-        "calendar": "行事曆",
-        "camera": "攝影機",
-        "climate": "溫控",
-        "configurator": "設定檔編輯器",
-        "conversation": "語音互動",
-        "cover": "捲簾/門",
-        "device_tracker": "設備追蹤器",
-        "fan": "風扇",
-        "group": "群組",
-        "hassio": "Hass.io",
-        "history_graph": "歷史圖",
-        "homeassistant": "Home Assistant",
-        "image_processing": "圖像處理",
-        "input_boolean": "開關框",
-        "input_datetime": "輸入日期",
-        "input_number": "數字框",
-        "input_select": "選擇框",
-        "input_text": "輸入框",
-        "light": "燈光",
-        "lock": "已上鎖",
-        "lovelace": "Lovelace",
-        "mailbox": "郵箱",
-        "media_player": "媒體播放器",
-        "notify": "通知",
-        "person": "個人",
-        "plant": "植物",
-        "proximity": "距離",
-        "remote": "遙控",
-        "scene": "場景",
-        "script": "腳本",
-        "sensor": "傳感器",
-        "sun": "太陽",
-        "switch": "開關",
-        "system_health": "系統健康狀態",
-        "updater": "更新版本",
-        "vacuum": "吸塵器",
-        "weblink": "網站鏈接",
-        "zha": "ZHA",
-        "zwave": "Z-Wave"
     },
     "groups": {
         "system-admin": "管理員",
@@ -65,7 +14,6 @@
     "panel": {
         "calendar": "行事曆",
         "config": "設定",
-        "dev-info": "資訊",
         "developer_tools": "開發工具",
         "history": "歷史",
         "logbook": "日誌",
@@ -242,19 +190,10 @@
             "auto": "自動",
             "cool": "冷氣",
             "dry": "除濕模式",
-            "eco": "節能模式",
-            "electric": "電動模式",
             "fan_only": "僅送風",
-            "gas": "瓦斯模式",
             "heat": "暖氣",
             "heat_cool": "暖氣/冷氣",
-            "heat_pump": "暖氣",
-            "high_demand": "高用量",
-            "idle": "待命",
-            "manual": "手動",
-            "off": "關閉",
-            "on": "開啟",
-            "performance": "效能"
+            "off": "關閉"
         },
         "configurator": {
             "configure": "設定",
@@ -404,7 +343,6 @@
                 "arm_custom_bypass": "警戒模式狀態",
                 "arm_home": "在家警戒",
                 "arm_night": "夜間警戒",
-                "armed_custom_bypass": "警戒模式狀態",
                 "clear_code": "清除",
                 "code": "密碼",
                 "disarm": "解除警戒"
@@ -614,11 +552,6 @@
                 "title": "{integration} 系統選項",
                 "update": "更新"
             },
-            "confirmation": {
-                "cancel": "取消",
-                "ok": "好",
-                "title": "確認？"
-            },
             "domain_toggler": {
                 "title": "切換區域"
             },
@@ -652,15 +585,11 @@
             "helper_settings": {
                 "generic": {
                     "icon": "圖示",
-                    "initial_value": "初始值",
-                    "initial_value_explain": "Home Assistant 啟動初始值。空白時、將會回覆至之前的數值。",
                     "name": "名稱"
                 },
                 "input_datetime": {
                     "date": "日期",
                     "datetime": "日期與時間",
-                    "has_date": "日期",
-                    "has_time": "時間",
                     "mode": "所要輸入的內容",
                     "time": "時間"
                 },
@@ -687,8 +616,6 @@
                     "pattern": "客戶端驗證模式",
                     "text": "文字"
                 },
-                "not_editable": "不可編輯",
-                "not_editable_text": "由於 configuration.yaml 內已定義，物件編輯功能已關閉。",
                 "platform_not_loaded": "{platform} 元件未載入。請於設定檔進行添加、新增 'default_config:' 或 '{platform}:'。",
                 "required_error_msg": "必填欄位",
                 "yaml_not_editable": "此物件的設定無法藉由 UI 編輯、僅有透過 UI 設定的物件可於 UI 進行設定。"
@@ -731,12 +658,6 @@
                     "status": "狀態",
                     "stop": "停止清掃"
                 }
-            },
-            "more_info_settings": {
-                "back": "上一步",
-                "entity_id": "物件 ID",
-                "name": "名稱覆寫",
-                "save": "儲存"
             },
             "options_flow": {
                 "form": {
@@ -804,10 +725,7 @@
         },
         "notification_toast": {
             "connection_lost": "連線中斷。重新連線中...",
-            "entity_turned_off": "{entity}已關閉。",
-            "entity_turned_on": "{entity}已開啟。",
             "service_call_failed": "服務 {service} 執行失敗。",
-            "service_called": "服務 {service} 已執行。",
             "triggered": "觸發 {name}"
         },
         "panel": {
@@ -818,7 +736,6 @@
                 },
                 "areas": {
                     "caption": "分區",
-                    "create_area": "建立分區",
                     "data_table": {
                         "area": "分區",
                         "devices": "設備"
@@ -830,18 +747,17 @@
                     "description": "家中所有分區概觀",
                     "editor": {
                         "create": "建立",
-                        "default_name": "新分區",
+                        "default_name": "[%key:ui::panel::config::entities::editor::default_name%]",
                         "delete": "刪除",
                         "update": "更新"
                     },
-                    "no_areas": "看起來你還沒有建立分區！",
                     "picker": {
-                        "create_area": "建立分區",
+                        "create_area": "[%key:ui::panel::config::areas::create_area%]",
                         "header": "分區",
                         "integrations_page": "整合頁面",
                         "introduction": "分區主要用以管理設備所在位置。此資訊將會於 Home Assistant 中使用以協助您管理介面、權限，並與其他系統進行整合。",
                         "introduction2": "欲於分區中放置設備，請使用下方連結至整合頁面，並點選設定整合以設定設備面板。",
-                        "no_areas": "看起來你還沒有建立分區！"
+                        "no_areas": "[%key:ui::panel::config::areas::no_areas%]"
                     }
                 },
                 "automation": {
@@ -1245,7 +1161,6 @@
                             "core_config": {
                                 "edit_requires_storage": "由於 configuration.yaml 內已儲存設定，編輯功能已關閉。",
                                 "elevation": "海拔",
-                                "elevation_feet": "呎",
                                 "elevation_meters": "公尺",
                                 "imperial_example": "華氏、磅",
                                 "latitude": "緯度",
@@ -1260,29 +1175,6 @@
                             },
                             "header": "一般設定",
                             "introduction": "更改設定常是個惱人過程。此區域將盡可能協助您，讓事情變得更輕鬆一些。"
-                        },
-                        "server_control": {
-                            "reloading": {
-                                "automation": "重新載入自動化（automation）",
-                                "core": "重新載入核心設定（core）",
-                                "group": "重新載入群組（group）",
-                                "heading": "重新載入設定檔（configuration）",
-                                "introduction": "Home Assistant 中部分設定無須重啟即可重新載入生效。\n點選重新載入按鈕，即可重新載入最新設定。",
-                                "script": "重新載入腳本（script）"
-                            },
-                            "server_management": {
-                                "heading": "服務器管理",
-                                "introduction": "控制 Home Assistant 伺服器。",
-                                "restart": "重啟",
-                                "stop": "停止"
-                            },
-                            "validation": {
-                                "check_config": "檢查設定內容",
-                                "heading": "設定驗證",
-                                "introduction": "如果您對設定進行了一些更改，並且想要確保這些設定有無錯誤\n可以選擇先驗證您的設定內容。",
-                                "invalid": "設定檔內容檢查錯誤",
-                                "valid": "設定檔內容檢查正確"
-                            }
                         }
                     }
                 },
@@ -1307,7 +1199,6 @@
                     }
                 },
                 "devices": {
-                    "area_picker_label": "分區",
                     "automation": {
                         "actions": {
                             "caption": "當某物件被觸發時..."
@@ -1323,7 +1214,6 @@
                             "caption": "執行動作、當..."
                         }
                     },
-                    "automations": "自動化",
                     "cant_edit": "只能編輯於 UI 中新增的物件。",
                     "caption": "設備",
                     "confirm_delete": "確定要刪除此設備？",
@@ -1339,14 +1229,12 @@
                     },
                     "delete": "刪除",
                     "description": "管理已連線設備",
-                    "details": "此處顯示設備所有詳細資訊。",
                     "device_not_found": "未找到設備。",
                     "entities": {
                         "add_entities_lovelace": "新增至 Lovelace UI",
                         "entities": "物件列表面板",
                         "none": "此設備沒有物件。"
                     },
-                    "info": "設備資訊",
                     "name": "名稱",
                     "no_devices": "沒有設備",
                     "scene": {
@@ -1368,20 +1256,6 @@
                 "entities": {
                     "caption": "物件",
                     "description": "所有已知物件概觀",
-                    "editor": {
-                        "confirm_delete": "確定要刪除此物件？",
-                        "confirm_delete2": "刪除物件將不會由 Home Assistant 移除物件。欲移除、你必須由 Home Assistant 移除整合  '{platform}'。",
-                        "default_name": "新分區",
-                        "delete": "刪除",
-                        "enabled_cause": "由 {cause} 關閉。",
-                        "enabled_description": "關閉的物件將不會新增至 Home Assistant。",
-                        "enabled_label": "啟用物件",
-                        "entity_id": "物件 ID",
-                        "name": "名稱覆寫",
-                        "note": "注意：可能無法適用所有整合。",
-                        "unavailable": "該物件目前不可用。",
-                        "update": "更新"
-                    },
                     "picker": {
                         "disable_selected": {
                             "button": "關閉已選擇",
@@ -1401,13 +1275,11 @@
                         },
                         "header": "物件",
                         "headers": {
-                            "enabled": "已啟用",
                             "entity_id": "物件 ID",
                             "integration": "整合",
                             "name": "名稱",
                             "status": "狀態"
                         },
-                        "integrations_page": "整合頁面",
                         "introduction": "Home Assistant 保持每個物件 ID 的獨特辨識性，此些物件將會指定一組專用的 物件 ID。",
                         "introduction2": "使用物件 ID 以覆寫名稱、變更物件 ID 或由 Home Assistant 移除物件。",
                         "remove_selected": {
@@ -1418,15 +1290,13 @@
                             "confirm_title": "是否要移除 {number} 個物件？"
                         },
                         "selected": "已選擇 {number} 個",
-                        "show_disabled": "顯示關閉物件",
                         "status": {
                             "disabled": "已關閉",
                             "ok": "確定",
                             "readonly": "唯讀",
                             "restored": "已回復",
                             "unavailable": "不可用"
-                        },
-                        "unavailable": "（不可用）"
+                        }
                     }
                 },
                 "header": "設定 Home Assistant",
@@ -1471,13 +1341,10 @@
                         "no_devices": "此整合沒有任何設備。",
                         "restart_confirm": "重啟 Home Assistant 以完成此整合移動",
                         "settings_button": "編輯 {integration} 設定",
-                        "system_options_button": "{integration} 系統選項",
-                        "via": "連線："
+                        "system_options_button": "{integration} 系統選項"
                     },
                     "config_flow": {
                         "aborted": "已中止",
-                        "add_area": "新增分區",
-                        "area_picker_label": "分區",
                         "close": "關閉",
                         "created_config": "新增 {name} 設定。",
                         "dismiss": "忽略對話",
@@ -1486,10 +1353,8 @@
                             "description": "此步驟將需要開啟外部網站方能完成。",
                             "open_site": "開啟網站"
                         },
-                        "failed_create_area": "新增分區失敗。",
                         "finish": "完成",
                         "loading_first_time": "請稍候、正在安裝整合",
-                        "name_new_area": "新分區名稱？",
                         "not_all_required_fields": "所有所需欄位都需要填寫。",
                         "submit": "傳送"
                     },
@@ -1744,28 +1609,22 @@
                         "confirm_user_deletion": "確定要刪除 {name}？",
                         "deactivate_user": "停用用戶",
                         "delete_user": "刪除用戶",
-                        "enter_new_name": "輸入新名稱",
                         "group": "群組",
-                        "group_update_failed": "群組更新失敗：",
                         "id": "ID",
                         "name": "名稱",
                         "owner": "擁有者",
-                        "rename_user": "重命名用戶",
                         "system_generated": "系統產生",
                         "system_generated_users_not_editable": "無法更新系統產生用戶",
                         "system_generated_users_not_removable": "無法移除系統產生用戶",
                         "unnamed_user": "未命名用戶",
-                        "update_user": "更新",
-                        "user_rename_failed": "用戶重新命名失敗："
+                        "update_user": "更新"
                     },
                     "picker": {
                         "headers": {
                             "group": "群組",
                             "name": "名稱",
                             "system": "系統"
-                        },
-                        "system_generated": "系統產生",
-                        "title": "用戶"
+                        }
                     }
                 },
                 "zha": {
@@ -1810,11 +1669,6 @@
                         "value": "數值"
                     },
                     "description": "Zigbee 家庭自動化網路管理",
-                    "device_card": {
-                        "area_picker_label": "分區",
-                        "device_name_placeholder": "使用者自訂名稱",
-                        "update_name_button": "更新名稱"
-                    },
                     "devices": {
                         "header": "Zigbee 家庭自動化 - 設備"
                     },
@@ -1868,11 +1722,6 @@
                         "hint_battery_devices": "請注意：對設備執行命令時，需喚醒處於睡眠狀態的設備（使用電池供電），通常可以藉由觸發以喚醒設備。",
                         "hint_wakeup": "某些設備（例如小米傳感器）擁有喚醒按鈕、可藉由每隔約 5 秒按一下、以保持設備處於喚醒狀態以進行互動。",
                         "introduction": "執行 ZHA 命命將影響單一設備。選擇設備以檢視該設備可使用之命令。"
-                    },
-                    "services": {
-                        "reconfigure": "重新設定 ZHA Zibgee 設備（健康設備）。假如遇到設備問題，請使用此選項。假如有問題的設備為使用電池的設備，請先確定設備已喚醒並處於接受命令狀態。",
-                        "remove": "自 Zigbee 網路移除設備。",
-                        "updateDeviceName": "於物件 ID 中自訂此設備名稱。"
                     },
                     "title": "Zigbee 家庭自動化"
                 },
@@ -1989,20 +1838,15 @@
                     "info": {
                         "built_using": "建置使用",
                         "custom_uis": "自定介面：",
-                        "default_ui": "{action} {name} 為此設備預設頁面",
                         "developed_by": "由一群充滿熱情的人們所開發。",
                         "frontend": "frontend-ui",
                         "frontend_version": "Frontend 版本：{version} - {type}",
                         "home_assistant_logo": "Home Assistant logo",
                         "icons_by": "圖示使用",
                         "license": "依據 Apache 2.0 授權許可發行",
-                        "lovelace_ui": "至狀態介面",
                         "path_configuration": "configuration.yaml 路徑：{path}",
-                        "remove": "移除",
                         "server": "伺服器",
-                        "set": "設定",
                         "source": "來源：",
-                        "states_ui": "至 Lovelace 介面",
                         "system_health_error": "系統健康元件未載入。請於 configuration.yaml 內加入「system_health:」",
                         "title": "資訊"
                     },
@@ -2047,10 +1891,6 @@
                     "states": {
                         "alert_entity_field": "物件為必填欄位",
                         "attributes": "屬性",
-                        "copied": "複製至剪貼簿",
-                        "copy_entity_attribute": "複製屬性",
-                        "copy_entity_id": "複製 ID",
-                        "copy_entity_state": "複製狀態",
                         "current_entities": "目前物件",
                         "description1": "設定 Home Assistant 裝置代表。",
                         "description2": "將不會與實際設備進行通訊。",
@@ -2111,8 +1951,7 @@
                     },
                     "safe-mode": {
                         "description": "Home Assistant 於載入設定時發生問題、正以安全模式執行中。請參閱錯誤紀錄、以找出問題。",
-                        "header": "安全模式已開啟",
-                        "show_errors": "顯示錯誤"
+                        "header": "安全模式已開啟"
                     },
                     "shopping-list": {
                         "add_item": "新增項目",
@@ -2126,9 +1965,6 @@
                 },
                 "editor": {
                     "card": {
-                        "alarm_panel": {
-                            "available_states": "可用狀態"
-                        },
                         "alarm-panel": {
                             "available_states": "可用狀態",
                             "description": "警報器面板可供進行警戒或解除警戒。",
@@ -2158,9 +1994,6 @@
                             "name": "物件",
                             "show_header_toggle": "於頁首顯示開關？",
                             "toggle": "切換物件。"
-                        },
-                        "entity-button": {
-                            "name": "物件按鈕式面板"
                         },
                         "entity-filter": {
                             "description": "物件過濾式面板可供定義於特定狀態下、所要進行追蹤的物件列表。",
@@ -2307,7 +2140,6 @@
                         "options": "更多選項",
                         "pick_card": "選擇所要新增的面板？",
                         "pick_card_view_title": "要加入 {name} 視圖的面板？",
-                        "save": "儲存",
                         "show_code_editor": "顯示編碼編輯器",
                         "show_visual_editor": "顯示視覺編輯器",
                         "toggle_editor": "切換編輯器"
@@ -2389,8 +2221,7 @@
                     "exit_edit_mode": "退出 UI 編輯模式",
                     "help": "說明",
                     "refresh": "更新",
-                    "reload_resources": "重新載入資源",
-                    "unused_entities": "未顯示物件"
+                    "reload_resources": "重新載入資源"
                 },
                 "reload_lovelace": "重新載入 UI",
                 "reload_resources": {
@@ -2410,8 +2241,7 @@
                     "confirm_delete": "刪除視圖？",
                     "confirm_delete_existing_cards": "刪除此視圖同時將移除面板。",
                     "confirm_delete_existing_cards_text": "確定要刪除「{name}」視圖？視圖內包含 {number} 張面板也同時將被刪除。此動作將無法回復。",
-                    "confirm_delete_text": "確定要刪除「{name}」視圖？",
-                    "existing_cards": "無法刪除內含面板的視圖，請先移除面板。"
+                    "confirm_delete_text": "確定要刪除「{name}」視圖？"
                 },
                 "warning": {
                     "attribute_not_found": "無法使用屬性 {attribute} 之物件：{entity}",
@@ -2695,7 +2525,6 @@
         },
         "sidebar": {
             "external_app_configuration": "App 設定",
-            "log_out": "登出",
             "sidebar_toggle": "側邊欄開關"
         }
     }
