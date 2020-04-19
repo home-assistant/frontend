@@ -93,6 +93,8 @@ class HaConfigIntegrations extends HassRouterPage {
       this._loadData();
       getConfigFlowInProgressCollection(this.hass.connection).refresh();
     });
+    // For config entries. Also loading config flow ones for add integration
+    this.hass.loadBackendTranslation("title", undefined, true);
   }
 
   protected updated(changedProps: PropertyValues) {
@@ -142,6 +144,12 @@ class HaConfigIntegrations extends HassRouterPage {
       }),
       subscribeConfigFlowInProgress(this.hass, (flowsInProgress) => {
         this._configEntriesInProgress = flowsInProgress;
+        for (const flow of flowsInProgress) {
+          // To render title placeholders
+          if (flow.context.title_placeholders) {
+            this.hass.loadBackendTranslation("config", flow.handler);
+          }
+        }
       }),
     ];
   }
