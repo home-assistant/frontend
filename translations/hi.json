@@ -1,43 +1,6 @@
 {
-    "attribute": {
-        "weather": {
-            "humidity": "नमी",
-            "visibility": "दृश्यता",
-            "wind_speed": "हवा की गति"
-        }
-    },
-    "domain": {
-        "automation": "स्वचालन",
-        "binary_sensor": "बाइनरी सेंसर",
-        "climate": "जलवायु",
-        "device_tracker": "डिवाइस ट्रैकर",
-        "fan": "पंखा",
-        "group": "समूह",
-        "history_graph": "इतिहास ग्राफ",
-        "image_processing": "इमेज प्रोसेसिंग",
-        "input_boolean": "इनपुट बूलियन",
-        "input_datetime": "इनपुट दिनांक समय",
-        "input_number": "इनपुट संख्या",
-        "input_select": "इनपुट का चयन करें",
-        "input_text": "इनपुट टेक्स्ट",
-        "light": "रोशनी",
-        "lock": "ताला",
-        "mailbox": "मेलबॉक्स",
-        "media_player": "मीडिया प्लेयर",
-        "notify": "सूचित",
-        "proximity": "निकटता",
-        "remote": "रिमोट",
-        "scene": "दृश्य",
-        "script": "स्क्रिप्ट",
-        "sensor": "सेंसर",
-        "sun": "सूरज",
-        "switch": "स्विच",
-        "weblink": "वेब लिंक",
-        "zwave": "Z-Wave"
-    },
     "panel": {
         "config": "कॉंफ़िगरेशन",
-        "dev-info": "जानकारी",
         "developer_tools": "डेवलपर उपकरण",
         "history": "इतिहास",
         "logbook": "रिपोर्ट",
@@ -123,7 +86,6 @@
             "cool": "ठंडा",
             "dry": "सूखा",
             "heat": "गर्मी",
-            "manual": "गाइड",
             "off": "बंद"
         },
         "default": {
@@ -209,6 +171,15 @@
         },
         "panel": {
             "config": {
+                "areas": {
+                    "editor": {
+                        "default_name": "[%key:ui::panel::config::entities::editor::default_name%]"
+                    },
+                    "picker": {
+                        "create_area": "[%key:ui::panel::config::areas::create_area%]",
+                        "no_areas": "[%key:ui::panel::config::areas::no_areas%]"
+                    }
+                },
                 "automation": {
                     "editor": {
                         "conditions": {
@@ -259,14 +230,6 @@
                         "discovery_text": "I dispositivi rilevati verranno visualizzati qui. Seguire le istruzioni per il / i dispositivo / i e posizionare il / i dispositivo / i in modalità accoppiamento.",
                         "header": "Zigbee Home Automation - Aggiungi dispositivi",
                         "spinner": "Ricerca di dispositivi ZHA Zigbee ..."
-                    },
-                    "device_card": {
-                        "area_picker_label": "Area",
-                        "device_name_placeholder": "Nome assegnato dall'utente",
-                        "update_name_button": "Aggiorna Nome"
-                    },
-                    "services": {
-                        "updateDeviceName": "Imposta un nome personalizzato per questo dispositivo nel registro del dispositivo."
                     }
                 },
                 "zwave": {
@@ -343,9 +306,6 @@
                 "add_item": "आइटम जोड़ें",
                 "microphone_tip": "ऊपर दाईं ओर माइक्रोफ़ोन टैप करें और \"मेरी खरीदारी सूची में कैंडी जोड़ें\" कहें"
             }
-        },
-        "sidebar": {
-            "log_out": "लॉग आउट"
         }
     }
 }

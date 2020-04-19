@@ -1,61 +1,10 @@
 {
-    "attribute": {
-        "weather": {
-            "humidity": "Humidité",
-            "visibility": "Visibilité",
-            "wind_speed": "Vitesse du vent"
-        }
-    },
     "config_entry": {
         "disabled_by": {
             "config_entry": "Paramètre de configuration",
             "integration": "Intégration",
             "user": "Utilisateur"
         }
-    },
-    "domain": {
-        "alarm_control_panel": "Panneau de contrôle d'alarme",
-        "automation": "Automation",
-        "binary_sensor": "Capteur binaire",
-        "calendar": "Calendrier",
-        "camera": "Caméra",
-        "climate": "Thermostat",
-        "configurator": "Configurateur",
-        "conversation": "Conversation",
-        "cover": "Volets",
-        "device_tracker": "Dispositif de suivi",
-        "fan": "Ventilateur",
-        "group": "Groupe",
-        "hassio": "Hass.io",
-        "history_graph": "Graphique historique",
-        "homeassistant": "Home Assistant",
-        "image_processing": "Traitement d’image",
-        "input_boolean": "Entrée logique",
-        "input_datetime": "Entrée calendrier",
-        "input_number": "Entrée numérique",
-        "input_select": "Sélection",
-        "input_text": "Saisie de texte",
-        "light": "Lumière",
-        "lock": "Verrou",
-        "lovelace": "Lovelace",
-        "mailbox": "Boites aux lettres",
-        "media_player": "Lecteur multimédia",
-        "notify": "Notifier",
-        "person": "Personne",
-        "plant": "Plante",
-        "proximity": "Proximité",
-        "remote": "Télécommande",
-        "scene": "Scène",
-        "script": "Script",
-        "sensor": "Capteur",
-        "sun": "Soleil",
-        "switch": "Interrupteur",
-        "system_health": "Santé du système",
-        "updater": "Mise à jour",
-        "vacuum": "Aspirateur",
-        "weblink": "Lien",
-        "zha": "ZHA",
-        "zwave": "Z-Wave"
     },
     "groups": {
         "system-admin": "Administrateurs",
@@ -65,7 +14,6 @@
     "panel": {
         "calendar": "Calendrier",
         "config": "Configuration",
-        "dev-info": "Info",
         "developer_tools": "Outils de développement",
         "history": "Historique",
         "logbook": "Journal",
@@ -242,19 +190,10 @@
             "auto": "Auto",
             "cool": "Frais",
             "dry": "Sec",
-            "eco": "Éco",
-            "electric": "Électrique",
             "fan_only": "Ventilateur seul",
-            "gas": "Gaz",
             "heat": "Chauffe",
             "heat_cool": "Chaud/Froid",
-            "heat_pump": "Pompe à chaleur",
-            "high_demand": "Forte demande",
-            "idle": "Inactif",
-            "manual": "Manuel",
-            "off": "Inactif",
-            "on": "Marche",
-            "performance": "Performance"
+            "off": "Inactif"
         },
         "configurator": {
             "configure": "Configurer",
@@ -404,7 +343,6 @@
                 "arm_custom_bypass": "Bypass personnalisé",
                 "arm_home": "Armer (domicile)",
                 "arm_night": "Armer nuit",
-                "armed_custom_bypass": "Bypass personnalisé",
                 "clear_code": "Effacer",
                 "code": "Code",
                 "disarm": "Désarmer"
@@ -614,11 +552,6 @@
                 "title": "Options système pour {integration}",
                 "update": "Mise à jour"
             },
-            "confirmation": {
-                "cancel": "Annuler",
-                "ok": "OK",
-                "title": "Êtes-vous sûr?"
-            },
             "domain_toggler": {
                 "title": "Changer de domaine"
             },
@@ -652,15 +585,11 @@
             "helper_settings": {
                 "generic": {
                     "icon": "Icône",
-                    "initial_value": "Valeur initiale au démarrage",
-                    "initial_value_explain": "La valeur que l'élément aura au démarrage de Home Assistant. Lorsqu'elle est laissée vide, la valeur sera restaurée à sa valeur précédente.",
                     "name": "Nom"
                 },
                 "input_datetime": {
                     "date": "Date",
                     "datetime": "Date et heure",
-                    "has_date": "Date",
-                    "has_time": "Temps",
                     "mode": "Que voulez-vous saisir",
                     "time": "Heure"
                 },
@@ -687,8 +616,6 @@
                     "pattern": "Modèle d'expression régulière pour la validation côté client",
                     "text": "Texte"
                 },
-                "not_editable": "Non modifiable",
-                "not_editable_text": "Cette entité ne peut pas être modifiée à partir de l'interface utilisateur car elle est définie dans configuration.yaml.",
                 "platform_not_loaded": "L'intégration {platform} n'est pas chargée. Veuillez l'ajouter à votre configuration en ajoutant 'default_config:' ou '{platform}:'.",
                 "required_error_msg": "Ce champ est requis",
                 "yaml_not_editable": "Les paramètres de cette entité ne peuvent pas être modifiés à partir de l'interface utilisateur. Seules les entités configurées à partir de l'interface utilisateur sont configurables à partir de l'interface utilisateur."
@@ -731,12 +658,6 @@
                     "status": "Statut",
                     "stop": "Arrêter"
                 }
-            },
-            "more_info_settings": {
-                "back": "Retour",
-                "entity_id": "ID de l'entité",
-                "name": "Outrepasser le nom",
-                "save": "Sauvegarder"
             },
             "options_flow": {
                 "form": {
@@ -801,10 +722,7 @@
         },
         "notification_toast": {
             "connection_lost": "Connexion perdue. Reconnexion en cours ...",
-            "entity_turned_off": "Extinction de \"{entity}\".",
-            "entity_turned_on": "Allumage de \"{entity}\".",
             "service_call_failed": "Échec d'appel du service \"{service}\".",
-            "service_called": "Service \"{service}\" appelé.",
             "triggered": "{name} déclenché"
         },
         "panel": {
@@ -815,7 +733,6 @@
                 },
                 "areas": {
                     "caption": "Pièces",
-                    "create_area": "CRÉER UNE PIÈCE",
                     "data_table": {
                         "area": "Zone",
                         "devices": "Appareils"
@@ -827,18 +744,17 @@
                     "description": "Vue d'ensemble de toutes les pièces de votre maison.",
                     "editor": {
                         "create": "Créer",
-                        "default_name": "Nouvelle pièce",
+                        "default_name": "[%key:ui::panel::config::entities::editor::default_name%]",
                         "delete": "Supprimer",
                         "update": "Mise à jour"
                     },
-                    "no_areas": "Vous n'avez pas encore configuré de pièce !",
                     "picker": {
                         "create_area": "Créer une zone",
                         "header": "Pièces",
                         "integrations_page": "Page des intégrations",
                         "introduction": "Les pièces sont utilisées pour organiser l'emplacement des périphériques. Ces informations seront utilisées partout dans Home Assistant pour vous aider à organiser votre interface, vos autorisations et vos intégrations avec d'autres systèmes.",
                         "introduction2": "Pour placer des périphériques dans une pièce, utilisez le lien ci-dessous pour accéder à la page des intégrations, puis cliquez sur une intégration configurée pour accéder aux cartes de périphérique.",
-                        "no_areas": "Vous n'avez pas encore configuré de pièce !"
+                        "no_areas": "[%key:ui::panel::config::areas::no_areas%]"
                     }
                 },
                 "automation": {
@@ -1242,7 +1158,6 @@
                             "core_config": {
                                 "edit_requires_storage": "L'éditeur est désactivé car la configuration est stockée dans configuration.yaml.",
                                 "elevation": "Élévation",
-                                "elevation_feet": "pieds",
                                 "elevation_meters": "mètres",
                                 "imperial_example": "Fahrenheit, livres",
                                 "latitude": "Latitude",
@@ -1257,29 +1172,6 @@
                             },
                             "header": "Configuration générale",
                             "introduction": "Changer votre configuration peut être un processus fastidieux. Nous le savons. Cette section va essayer de vous rendre la vie un peu plus facile."
-                        },
-                        "server_control": {
-                            "reloading": {
-                                "automation": "Recharger les automations",
-                                "core": "Recharger le noyau",
-                                "group": "Recharger les groupes",
-                                "heading": "Rechargement de la configuration",
-                                "introduction": "Certaines parties de Home Assistant peuvent être rechargées sans nécessiter de redémarrage. Le fait de cliquer sur recharger déchargera leur configuration actuelle et chargera la nouvelle.",
-                                "script": "Recharger les scripts"
-                            },
-                            "server_management": {
-                                "heading": "Gestion du serveur",
-                                "introduction": "Contrôler votre serveur Home Assistant… à partir de Home Assistant.",
-                                "restart": "Redémarrer",
-                                "stop": "Arrêter"
-                            },
-                            "validation": {
-                                "check_config": "Vérifier la configuration",
-                                "heading": "Validation de la configuration",
-                                "introduction": "Valider votre configuration si vous avez récemment apporté quelques modifications à votre configuration et que vous souhaitez vous assurer qu'elle est valide",
-                                "invalid": "Configuration invalide",
-                                "valid": "Configuration valide !"
-                            }
                         }
                     }
                 },
@@ -1304,7 +1196,6 @@
                     }
                 },
                 "devices": {
-                    "area_picker_label": "Zone",
                     "automation": {
                         "actions": {
                             "caption": "Quand quelque chose est déclenché ..."
@@ -1320,7 +1211,6 @@
                             "caption": "Faire quelque chose quand ..."
                         }
                     },
-                    "automations": "Automations",
                     "cant_edit": "Vous ne pouvez modifier que les éléments créés dans l'interface utilisateur.",
                     "caption": "Appareils",
                     "confirm_delete": "Voulez-vous vraiment supprimer cet appareil ?",
@@ -1336,14 +1226,12 @@
                     },
                     "delete": "Supprimer",
                     "description": "Gérer les appareils connectés",
-                    "details": "Voici tous les détails de votre appareil.",
                     "device_not_found": "Appareil non trouvé.",
                     "entities": {
                         "add_entities_lovelace": "Ajouter à Lovelace",
                         "entities": "Entités",
                         "none": "Cet appareil n'a pas d'entités"
                     },
-                    "info": "Infos sur l'appareil",
                     "name": "Nom",
                     "no_devices": "Aucun appareil",
                     "scene": {
@@ -1365,20 +1253,6 @@
                 "entities": {
                     "caption": "Entités",
                     "description": "Vue d'ensemble de toutes les entités connues.",
-                    "editor": {
-                        "confirm_delete": "Êtes-vous sûr de vouloir supprimer cette entrée?",
-                        "confirm_delete2": "La suppression d'une entrée ne supprimera pas l'entité de Home Assistant. Pour ce faire, vous devez supprimer l'intégration '{plateform}' de Home Assistant.",
-                        "default_name": "Nouvelle pièce",
-                        "delete": "SUPPRIMER",
-                        "enabled_cause": "Désactivé par {cause}.",
-                        "enabled_description": "Les entités désactivées ne seront pas ajoutées à Home Assistant.",
-                        "enabled_label": "Activer l'entité",
-                        "entity_id": "ID de l'entité",
-                        "name": "Outrepasser le nom",
-                        "note": "Note: cela pourrait ne pas encore fonctionner avec toutes les intégrations.",
-                        "unavailable": "Cette entité n'est pas disponible actuellement.",
-                        "update": "METTRE À JOUR"
-                    },
                     "picker": {
                         "disable_selected": {
                             "button": "Désactiver la sélection",
@@ -1398,13 +1272,11 @@
                         },
                         "header": "Entités",
                         "headers": {
-                            "enabled": "Activé",
                             "entity_id": "ID de l'entité",
                             "integration": "Intégration",
                             "name": "Nom",
                             "status": "Statut"
                         },
-                        "integrations_page": "Page des intégrations",
                         "introduction": "Home Assistant tient un registre de chaque entité qu'il a déjà vu au moins une fois et qui peut être identifié de manière unique. Chacune de ces entités se verra attribuer un identifiant qui sera réservé à cette seule entité.",
                         "introduction2": "Utilisé le registre des entités pour remplacer le nom, modifier l'ID de l'entité ou supprimer l'entrée de Home Assistant.",
                         "remove_selected": {
@@ -1415,15 +1287,13 @@
                             "confirm_title": "Voulez-vous supprimer {number} entités ?"
                         },
                         "selected": "{number} sélectionné",
-                        "show_disabled": "Afficher les entités désactivées",
                         "status": {
                             "disabled": "Désactivé",
                             "ok": "Ok",
                             "readonly": "Lecture seule",
                             "restored": "Restauré",
                             "unavailable": "Indisponible"
-                        },
-                        "unavailable": "(indisponible)"
+                        }
                     }
                 },
                 "header": "Configurer Home Assistant",
@@ -1468,13 +1338,10 @@
                         "no_devices": "Cette intégration n'a pas d'appareils.",
                         "restart_confirm": "Redémarrer Home Assistant pour terminer la suppression de cette intégration",
                         "settings_button": "Modifier les paramètres pour {integration}",
-                        "system_options_button": "Options système pour {integration}",
-                        "via": "Connecté via"
+                        "system_options_button": "Options système pour {integration}"
                     },
                     "config_flow": {
                         "aborted": "Abandonné",
-                        "add_area": "Ajouter une zone",
-                        "area_picker_label": "Zone",
                         "close": "Fermer",
                         "created_config": "Configuration créée pour {name}.",
                         "dismiss": "Fermer la boîte de dialogue",
@@ -1483,10 +1350,8 @@
                             "description": "Cette étape nécessite la visite d'un site Web externe pour être complétée.",
                             "open_site": "Ouvrir le site"
                         },
-                        "failed_create_area": "Échec de la création de la zone.",
                         "finish": "Terminer",
                         "loading_first_time": "Veuillez patienter pendant que l'intégration est en cours d'installation",
-                        "name_new_area": "Nom de la nouvelle zone ?",
                         "not_all_required_fields": "Tous les champs obligatoires ne sont pas renseignés.",
                         "submit": "Soumettre"
                     },
@@ -1741,28 +1606,22 @@
                         "confirm_user_deletion": "Êtes-vous sûr de vouloir supprimer {name} ?",
                         "deactivate_user": "Désactiver l'utilisateur",
                         "delete_user": "Supprimer l'utilisateur",
-                        "enter_new_name": "Entrer un nouveau nom",
                         "group": "Groupe",
-                        "group_update_failed": "La mise à jour du groupe a échoué:",
                         "id": "ID",
                         "name": "Nom",
                         "owner": "Propriétaire",
-                        "rename_user": "Renommer l'utilisateur",
                         "system_generated": "Généré par le système",
                         "system_generated_users_not_editable": "Impossible de mettre à jour les utilisateurs générés par le système.",
                         "system_generated_users_not_removable": "Impossible de supprimer les utilisateurs générés par le système.",
                         "unnamed_user": "Utilisateur sans nom",
-                        "update_user": "Mise à jour",
-                        "user_rename_failed": "Le changement de nom d'utilisateur a échoué:"
+                        "update_user": "Mise à jour"
                     },
                     "picker": {
                         "headers": {
                             "group": "Groupe",
                             "name": "Nom",
                             "system": "Système"
-                        },
-                        "system_generated": "Généré par le système",
-                        "title": "Utilisateurs"
+                        }
                     }
                 },
                 "zha": {
@@ -1807,11 +1666,6 @@
                         "value": "Valeur"
                     },
                     "description": "Gestion de réseau domotique Zigbee",
-                    "device_card": {
-                        "area_picker_label": "Pièce",
-                        "device_name_placeholder": "Nom d'utilisateur",
-                        "update_name_button": "Mettre à jour le nom"
-                    },
                     "devices": {
                         "header": "Zigbee Home Automation - Appareil"
                     },
@@ -1865,11 +1719,6 @@
                         "hint_battery_devices": "Remarque: les appareils en veille (alimentés par batterie) doivent être réveillés lorsqu'ils exécutent des commandes. Vous pouvez généralement réveiller un appareil endormi en le déclenchant.",
                         "hint_wakeup": "Certains appareils, tels que les capteurs Xiaomi, disposent d'un bouton de réveil sur lequel vous pouvez appuyer à environ 5 secondes d'intervalle pour que les appareils restent éveillés lorsque vous interagissez avec eux.",
                         "introduction": "Exécutez les commandes ZHA qui affectent un seul périphérique. Choisissez un appareil pour voir une liste des commandes disponibles."
-                    },
-                    "services": {
-                        "reconfigure": "Reconfigurer le périphérique ZHA. Utilisez cette option si vous rencontrez des problèmes avec le périphérique. Si l'appareil en question est un appareil alimenté par batterie, assurez-vous qu'il soit allumé et qu'il accepte les commandes lorsque vous utilisez ce service.",
-                        "remove": "Supprimer un appareil du réseau Zigbee.",
-                        "updateDeviceName": "Définissez un nom personnalisé pour ce périphérique dans le registre de périphériques."
                     },
                     "title": "Zigbee Home Automation"
                 },
@@ -1986,20 +1835,15 @@
                     "info": {
                         "built_using": "Construit en utilisant",
                         "custom_uis": "Interfaces utilisateur personnalisées :",
-                        "default_ui": "{action} {name} comme page par défaut sur ce périphérique",
                         "developed_by": "Développé par un groupe de personnes formidables.",
                         "frontend": "interface utilisateur",
                         "frontend_version": "Version interface utilisateur : {version} - {type}",
                         "home_assistant_logo": "Logo de Home Assistant",
                         "icons_by": "Icônes par",
                         "license": "Publié sous la licence Apache 2.0",
-                        "lovelace_ui": "Accéder à l'interface utilisateur de Lovelace",
                         "path_configuration": "Chemin vers configuration.yaml : {path}",
-                        "remove": "Supprimer",
                         "server": "serveur",
-                        "set": "Définir",
                         "source": "Source:",
-                        "states_ui": "Aller à l'interface utilisateur des états",
                         "system_health_error": "Le composant System Health n'est pas chargé. Ajouter 'system_health:' à configuration.yaml",
                         "title": "Info"
                     },
@@ -2044,10 +1888,6 @@
                     "states": {
                         "alert_entity_field": "L'entité est un champ obligatoire",
                         "attributes": "Attributs",
-                        "copied": "Copié dans le presse-papiers",
-                        "copy_entity_attribute": "Copier les attributs",
-                        "copy_entity_id": "Copier l'identifiant",
-                        "copy_entity_state": "Copier l'état",
                         "current_entities": "Entités actuelles",
                         "description1": "Définir la représentation d'un périphérique dans Home Assistant.",
                         "description2": "Cela ne communiquera pas avec le périphérique réel.",
@@ -2108,8 +1948,7 @@
                     },
                     "safe-mode": {
                         "description": "Home Assistant a rencontré des problèmes lors du chargement de votre configuration et fonctionne désormais en mode sans échec. Jetez un œil au journal des erreurs pour voir ce qui ne va pas.",
-                        "header": "Mode sans échec activé",
-                        "show_errors": "Afficher les erreurs"
+                        "header": "Mode sans échec activé"
                     },
                     "shopping-list": {
                         "add_item": "Ajouter un élément",
@@ -2123,9 +1962,6 @@
                 },
                 "editor": {
                     "card": {
-                        "alarm_panel": {
-                            "available_states": "États disponibles"
-                        },
                         "alarm-panel": {
                             "available_states": "États disponibles",
                             "description": "La carte du panneau d'alarme vous permet d'armer et de désarmer les intégrations de votre panneau de commande d'alarme.",
@@ -2155,9 +1991,6 @@
                             "name": "Entités",
                             "show_header_toggle": "Afficher le bouton d'en-tête ?",
                             "toggle": "Basculer les entités."
-                        },
-                        "entity-button": {
-                            "name": "Entité Bouton"
                         },
                         "entity-filter": {
                             "description": "La carte Filtre d'entité vous permet de définir une liste d'entités que vous souhaitez suivre uniquement dans un certain état.",
@@ -2304,7 +2137,6 @@
                         "options": "Plus d'options",
                         "pick_card": "Quelle carte aimeriez-vous ajouter ?",
                         "pick_card_view_title": "Quelle carte souhaitez-vous ajouter à votre vue {name} ?",
-                        "save": "Enregistrer",
                         "show_code_editor": "Afficher l'éditeur de code",
                         "show_visual_editor": "Afficher l'éditeur visuel",
                         "toggle_editor": "Permuter l’éditeur"
@@ -2386,8 +2218,7 @@
                     "exit_edit_mode": "Quitter le mode d'édition de l'interface utilisateur",
                     "help": "Aide",
                     "refresh": "Actualiser",
-                    "reload_resources": "Recharger les ressources",
-                    "unused_entities": "Entités inutilisées"
+                    "reload_resources": "Recharger les ressources"
                 },
                 "reload_lovelace": "Recharger Lovelace UI",
                 "reload_resources": {
@@ -2407,8 +2238,7 @@
                     "confirm_delete": "Êtes-vous sûr de vouloir supprimer cette vue?",
                     "confirm_delete_existing_cards": "La suppression de cette vue supprimera également les cartes",
                     "confirm_delete_existing_cards_text": "Voulez-vous vraiment supprimer votre vue '{name}'? La vue contient {number} cartes qui seront supprimées. Cette action ne peut pas être annulée.",
-                    "confirm_delete_text": "Voulez-vous vraiment supprimer votre vue '{name}'?",
-                    "existing_cards": "Vous ne pouvez pas supprimer une vue contenant des cartes. Retirez d'abord les cartes."
+                    "confirm_delete_text": "Voulez-vous vraiment supprimer votre vue '{name}'?"
                 },
                 "warning": {
                     "attribute_not_found": "Attribut {attribute} non disponible dans: {entity}",
@@ -2692,7 +2522,6 @@
         },
         "sidebar": {
             "external_app_configuration": "Configuration de l'application",
-            "log_out": "Déconnexion",
             "sidebar_toggle": "Activer la barre latérale"
         }
     }

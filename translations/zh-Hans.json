@@ -1,61 +1,10 @@
 {
-    "attribute": {
-        "weather": {
-            "humidity": "湿度",
-            "visibility": "能见度",
-            "wind_speed": "风速"
-        }
-    },
     "config_entry": {
         "disabled_by": {
             "config_entry": "配置条目",
             "integration": "集成",
             "user": "用户"
         }
-    },
-    "domain": {
-        "alarm_control_panel": "警报控制器",
-        "automation": "自动化",
-        "binary_sensor": "二元传感器",
-        "calendar": "日历",
-        "camera": "摄像头",
-        "climate": "空调",
-        "configurator": "配置器",
-        "conversation": "语音对话",
-        "cover": "卷帘",
-        "device_tracker": "设备跟踪器",
-        "fan": "风扇",
-        "group": "群组",
-        "hassio": "Hass.io",
-        "history_graph": "历史图表",
-        "homeassistant": "Home Assistant",
-        "image_processing": "图像处理",
-        "input_boolean": "二元选择器",
-        "input_datetime": "日期选择器",
-        "input_number": "数值选择器",
-        "input_select": "多项选择器",
-        "input_text": "文字输入",
-        "light": "灯光",
-        "lock": "锁",
-        "lovelace": "Lovelace",
-        "mailbox": "邮箱",
-        "media_player": "播放器",
-        "notify": "通知",
-        "person": "个人",
-        "plant": "植物",
-        "proximity": "距离",
-        "remote": "遥控",
-        "scene": "场景",
-        "script": "脚本",
-        "sensor": "传感器",
-        "sun": "太阳",
-        "switch": "开关",
-        "system_health": "系统状态",
-        "updater": "更新提示",
-        "vacuum": "扫地机",
-        "weblink": "网址",
-        "zha": "ZHA",
-        "zwave": "Z-Wave"
     },
     "groups": {
         "system-admin": "管理员",
@@ -65,7 +14,6 @@
     "panel": {
         "calendar": "日历",
         "config": "配置",
-        "dev-info": "信息",
         "developer_tools": "开发者工具",
         "history": "历史",
         "logbook": "日志",
@@ -242,19 +190,10 @@
             "auto": "自动",
             "cool": "制冷",
             "dry": "除湿",
-            "eco": "节能",
-            "electric": "电驱模式",
             "fan_only": "仅送风",
-            "gas": "燃气",
             "heat": "制热",
             "heat_cool": "制热/制冷",
-            "heat_pump": "热泵",
-            "high_demand": "高需求",
-            "idle": "待机",
-            "manual": "手动",
-            "off": "关",
-            "on": "开",
-            "performance": "性能"
+            "off": "关"
         },
         "configurator": {
             "configure": "设置",
@@ -404,7 +343,6 @@
                 "arm_custom_bypass": "自定义略过条件",
                 "arm_home": "在家警戒",
                 "arm_night": "夜间警戒",
-                "armed_custom_bypass": "自定义略过",
                 "clear_code": "清除",
                 "code": "密码",
                 "disarm": "解除警戒"
@@ -614,11 +552,6 @@
                 "title": "{integration} 系统选项",
                 "update": "更新"
             },
-            "confirmation": {
-                "cancel": "取消",
-                "ok": "确定",
-                "title": "您确定吗？"
-            },
             "domain_toggler": {
                 "title": "切换域"
             },
@@ -652,15 +585,11 @@
             "helper_settings": {
                 "generic": {
                     "icon": "图标",
-                    "initial_value": "初始值",
-                    "initial_value_explain": "该元素在 Home Assistant 启动时具有的值。如果留空，则保留之前的值。",
                     "name": "名称"
                 },
                 "input_datetime": {
                     "date": "日期",
                     "datetime": "日期和时间",
-                    "has_date": "日期",
-                    "has_time": "时间",
                     "mode": "要输入哪种形式",
                     "time": "时间"
                 },
@@ -687,8 +616,6 @@
                     "pattern": "用于客户端验证的正则表达式模式",
                     "text": "文本"
                 },
-                "not_editable": "不可编辑",
-                "not_editable_text": "该实体无法在 UI 中修改，因为它被定义于 configuration.yaml。",
                 "platform_not_loaded": "{platform} 组件尚未加载。请在 'default_config:' 或 '{platform}:' 中选择一种方式，将其写入配置中。",
                 "required_error_msg": "此字段为必填字段",
                 "yaml_not_editable": "无法从 UI 编辑此实体的设置。只有通过 UI 设置的实体可以从 UI 配置。"
@@ -731,12 +658,6 @@
                     "status": "状态",
                     "stop": "停止"
                 }
-            },
-            "more_info_settings": {
-                "back": "后退",
-                "entity_id": "实体 ID",
-                "name": "名称",
-                "save": "保存"
             },
             "options_flow": {
                 "form": {
@@ -804,10 +725,7 @@
         },
         "notification_toast": {
             "connection_lost": "连接中断。正在重新连接...",
-            "entity_turned_off": "已关闭 {entity}。",
-            "entity_turned_on": "已打开 {entity}。",
             "service_call_failed": "调用服务 {service} 失败。",
-            "service_called": "服务 {service} 已调用。",
             "triggered": "已触发 {name}"
         },
         "panel": {
@@ -818,7 +736,6 @@
                 },
                 "areas": {
                     "caption": "区域注册表",
-                    "create_area": "创建区域",
                     "data_table": {
                         "area": "区域",
                         "devices": "设备"
@@ -830,18 +747,17 @@
                     "description": "您家中所有区域的概览。",
                     "editor": {
                         "create": "创建",
-                        "default_name": "新建区域",
+                        "default_name": "[%key:ui::panel::config::entities::editor::default_name%]",
                         "delete": "删除",
                         "update": "更新"
                     },
-                    "no_areas": "看来您还没有建立区域！",
                     "picker": {
-                        "create_area": "创建区域",
+                        "create_area": "[%key:ui::panel::config::areas::create_area%]",
                         "header": "区域注册表",
                         "integrations_page": "集成页面",
                         "introduction": "区域用于组织设备所在的位置。此信息将用于 Home Assistant 的各个地方，以帮助您组织界面、权限和与其他系统的集成。",
                         "introduction2": "要将设备置入某个区域，请使用下面的链接导航到集成页面，然后点击一个已配置的集成以进入设备卡片。",
-                        "no_areas": "看来您还没有建立区域！"
+                        "no_areas": "[%key:ui::panel::config::areas::no_areas%]"
                     }
                 },
                 "automation": {
@@ -1245,7 +1161,6 @@
                             "core_config": {
                                 "edit_requires_storage": "编辑器已禁用，因为配置存储于 configuration.yaml。",
                                 "elevation": "海拔",
-                                "elevation_feet": "英尺",
                                 "elevation_meters": "米",
                                 "imperial_example": "华氏、磅",
                                 "latitude": "纬度",
@@ -1260,29 +1175,6 @@
                             },
                             "header": "通用配置",
                             "introduction": "更改配置的过程可能有些抓狂，我们懂的。这部分将帮助你减轻一些工作。"
-                        },
-                        "server_control": {
-                            "reloading": {
-                                "automation": "重载自动化",
-                                "core": "重载核心配置",
-                                "group": "重载分组",
-                                "heading": "配置重载",
-                                "introduction": "Home Assistant 中的部分配置可以直接重载，而无需重启服务。点击重载按钮将重新载入新的配置。",
-                                "script": "重载脚本"
-                            },
-                            "server_management": {
-                                "heading": "服务管理",
-                                "introduction": "在这里即可控制 Home Assistant 服务。",
-                                "restart": "重启服务",
-                                "stop": "停止服务"
-                            },
-                            "validation": {
-                                "check_config": "检查配置",
-                                "heading": "配置检查",
-                                "introduction": "此处可以帮助您检验最新修改的配置文件有效性",
-                                "invalid": "配置无效",
-                                "valid": "配置有效！"
-                            }
                         }
                     }
                 },
@@ -1307,7 +1199,6 @@
                     }
                 },
                 "devices": {
-                    "area_picker_label": "区域",
                     "automation": {
                         "actions": {
                             "caption": "满足条件时执行："
@@ -1323,7 +1214,6 @@
                             "caption": "当以下事件发生时："
                         }
                     },
-                    "automations": "自动化",
                     "cant_edit": "您只能编辑在 UI 中创建的项目。",
                     "caption": "设备",
                     "confirm_delete": "您确定要删除此设备吗？",
@@ -1339,14 +1229,12 @@
                     },
                     "delete": "删除",
                     "description": "管理已连接的设备",
-                    "details": "这是设备的所有详细信息。",
                     "device_not_found": "未找到设备。",
                     "entities": {
                         "add_entities_lovelace": "添加设备的所有实体到 Lovelace UI",
                         "entities": "实体",
                         "none": "这个设备没有实体"
                     },
-                    "info": "设备信息",
                     "name": "名称",
                     "no_devices": "没有设备",
                     "scene": {
@@ -1368,20 +1256,6 @@
                 "entities": {
                     "caption": "实体注册表",
                     "description": "所有已知实体的概览。",
-                    "editor": {
-                        "confirm_delete": "您确定要删除此条目吗？",
-                        "confirm_delete2": "删除条目并不会将实体从 Home Assistant 中删除。要删除实体，您需要从 Home Assistant 中删除集成 '{platform}'。",
-                        "default_name": "新建区域",
-                        "delete": "删除",
-                        "enabled_cause": "被{cause}禁用。",
-                        "enabled_description": "已禁用的实体不再添加到 Home Assistant。",
-                        "enabled_label": "启用实体",
-                        "entity_id": "实体 ID",
-                        "name": "覆盖名称",
-                        "note": "注意：这可能不适用于所有集成。",
-                        "unavailable": "该实体暂不可用。",
-                        "update": "更新"
-                    },
                     "picker": {
                         "disable_selected": {
                             "button": "禁用所选实体",
@@ -1401,13 +1275,11 @@
                         },
                         "header": "实体",
                         "headers": {
-                            "enabled": "已启用",
                             "entity_id": "实体 ID",
                             "integration": "集成",
                             "name": "名称",
                             "status": "状态"
                         },
-                        "integrations_page": "集成页面",
                         "introduction": "Home Assistant 将会以唯一标识的形式记录发现的每个实体。这些实体被各自分配一个实体 ID，仅保留给对应实体。",
                         "introduction2": "使用本实体注册工具重写名称，修改实体 ID 或者从 Home Assistant 删除实体。注意，删除实体注册信息并不会删除实体本身。如果要删除实体，请点击下面的链接进入集成页面进行操作。",
                         "remove_selected": {
@@ -1418,15 +1290,13 @@
                             "confirm_title": "您要删除这 {number} 个实体吗？"
                         },
                         "selected": "选择了 {number} 项",
-                        "show_disabled": "显示已禁用的实体",
                         "status": {
                             "disabled": "已禁用",
                             "ok": "确定",
                             "readonly": "只读",
                             "restored": "已还原",
                             "unavailable": "不可用"
-                        },
-                        "unavailable": "(不可用)"
+                        }
                     }
                 },
                 "header": "配置 Home Assistant",
@@ -1471,13 +1341,10 @@
                         "no_devices": "此集成没有设备。",
                         "restart_confirm": "重启 Home Assistant 以完成此集成的删除",
                         "settings_button": "编辑{integration}设置",
-                        "system_options_button": "{integration}系统选项",
-                        "via": "链接于"
+                        "system_options_button": "{integration}系统选项"
                     },
                     "config_flow": {
                         "aborted": "中止",
-                        "add_area": "新建区域",
-                        "area_picker_label": "区域",
                         "close": "关闭",
                         "created_config": "为 {name} 创建了配置。",
                         "dismiss": "关闭对话框",
@@ -1486,10 +1353,8 @@
                             "description": "此步骤需要访问外部网站才能完成。",
                             "open_site": "打开网站"
                         },
-                        "failed_create_area": "创建区域失败。",
                         "finish": "完成",
                         "loading_first_time": "正在安装集成，请稍候",
-                        "name_new_area": "新区域的名称？",
                         "not_all_required_fields": "请填写所有必填字段",
                         "submit": "提交"
                     },
@@ -1744,28 +1609,22 @@
                         "confirm_user_deletion": "您确定要删除{name}吗？",
                         "deactivate_user": "停用用户",
                         "delete_user": "删除用户",
-                        "enter_new_name": "输入新名字",
                         "group": "群组",
-                        "group_update_failed": "组更新失败：",
                         "id": "ID",
                         "name": "名称",
                         "owner": "所有者",
-                        "rename_user": "重命名用户",
                         "system_generated": "系统生成",
                         "system_generated_users_not_editable": "无法更新系统生成的用户。",
                         "system_generated_users_not_removable": "无法删除系统生成的用户。",
                         "unnamed_user": "未命名的用户",
-                        "update_user": "更新",
-                        "user_rename_failed": "用户重命名失败："
+                        "update_user": "更新"
                     },
                     "picker": {
                         "headers": {
                             "group": "群组",
                             "name": "名称",
                             "system": "系统"
-                        },
-                        "system_generated": "系统生成",
-                        "title": "用户"
+                        }
                     }
                 },
                 "zha": {
@@ -1810,11 +1669,6 @@
                         "value": "值"
                     },
                     "description": "Zigbee 智能家居(ZHA) 网络管理",
-                    "device_card": {
-                        "area_picker_label": "区域",
-                        "device_name_placeholder": "用户指定的名称",
-                        "update_name_button": "更新名称"
-                    },
                     "devices": {
                         "header": "Zigbee 家庭自动化 - 设备"
                     },
@@ -1868,11 +1722,6 @@
                         "hint_battery_devices": "注意：在睡眠（电池供电）设备执行命令时，它们必须处于唤醒状态。通常，您可以通过触发睡眠设备来唤醒它。",
                         "hint_wakeup": "小米传感器等某些设备具有唤醒按钮，您可以每隔约5秒按一下此按钮，以在与设备交互时保持设备处于唤醒状态。",
                         "introduction": "运行影响单个设备的ZHA命令。选择设备以查看可用命令列表。"
-                    },
-                    "services": {
-                        "reconfigure": "重新配置ZHA设备（唤醒设备）。如果您的设备遇到问题，请使用此项。如果有问题的设备是电池供电的，请确保在使用此服务时它处于唤醒状态并可以接受指令。",
-                        "remove": "从 Zigbee 网络中删除设备。",
-                        "updateDeviceName": "在设备注册表中为此设备设置自定义名称。"
                     },
                     "title": "Zigbee 家庭自动化"
                 },
@@ -1989,20 +1838,15 @@
                     "info": {
                         "built_using": "建于",
                         "custom_uis": "自定义用户界面：",
-                        "default_ui": "{action} {name} 为此设备上的默认页面",
                         "developed_by": "由一帮很 Awesome~~~ 的人开发。",
                         "frontend": "前端用户界面",
                         "frontend_version": "前端版本： {version} - {type}",
                         "home_assistant_logo": "Home Assistant logo",
                         "icons_by": "图标来自",
                         "license": "根据 Apache 2.0 许可发布",
-                        "lovelace_ui": "前往使用 Lovelace UI 的默认页面",
                         "path_configuration": "configuration.yaml 路径：{path}",
-                        "remove": "移除",
                         "server": "服务器",
-                        "set": "设置",
                         "source": "源：",
-                        "states_ui": "前往使用 states UI 的默认页面",
                         "system_health_error": "未加载系统健康组件。请将 'system_health:' 添加到 configuration.yaml",
                         "title": "信息"
                     },
@@ -2047,10 +1891,6 @@
                     "states": {
                         "alert_entity_field": "实体是必填字段",
                         "attributes": "属性",
-                        "copied": "复制到剪贴板",
-                        "copy_entity_attribute": "复制属性",
-                        "copy_entity_id": "复制 ID",
-                        "copy_entity_state": "复制状态",
                         "current_entities": "现有实体",
                         "description1": "设置设备在 Home Assistant 中的呈现方式。",
                         "description2": "这将不影响实际设备。",
@@ -2111,8 +1951,7 @@
                     },
                     "safe-mode": {
                         "description": "Home Assistant 在加载配置时遇到问题，现正以安全模式运行。请查看错误日志以排查问题。",
-                        "header": "安全模式已开启",
-                        "show_errors": "显示错误"
+                        "header": "安全模式已开启"
                     },
                     "shopping-list": {
                         "add_item": "新增项目",
@@ -2126,9 +1965,6 @@
                 },
                 "editor": {
                     "card": {
-                        "alarm_panel": {
-                            "available_states": "可用的状态"
-                        },
                         "alarm-panel": {
                             "available_states": "可用状态",
                             "description": "“警报面板”卡片用于对警报控制集成进行“警戒”和“解除警戒”操作。",
@@ -2158,9 +1994,6 @@
                             "name": "实体",
                             "show_header_toggle": "显示标题旁的开关？",
                             "toggle": "切换实体。"
-                        },
-                        "entity-button": {
-                            "name": "实体按钮"
                         },
                         "entity-filter": {
                             "description": "“实体筛选”卡片用于定义一个实体的列表，只显示处于指定状态的实体。",
@@ -2307,7 +2140,6 @@
                         "options": "更多选项",
                         "pick_card": "请选择要添加的卡片。",
                         "pick_card_view_title": "您想将哪张卡片添加到 {name} 视图？",
-                        "save": "保存",
                         "show_code_editor": "显示代码编辑器",
                         "show_visual_editor": "显示可视化编辑器",
                         "toggle_editor": "切换编辑器"
@@ -2389,8 +2221,7 @@
                     "exit_edit_mode": "退出 UI 编辑模式",
                     "help": "帮助",
                     "refresh": "刷新",
-                    "reload_resources": "重载资源",
-                    "unused_entities": "未使用的实体"
+                    "reload_resources": "重载资源"
                 },
                 "reload_lovelace": "重新加载 Lovelace",
                 "reload_resources": {
@@ -2410,8 +2241,7 @@
                     "confirm_delete": "删除此视图？",
                     "confirm_delete_existing_cards": "删除此视图将同时删除卡片。",
                     "confirm_delete_existing_cards_text": "您确定要删除“{name}”视图吗？该视图包含的 {number} 张卡片也将被删除。该操作不能撤消。",
-                    "confirm_delete_text": "您确定要删除“{name}”视图吗？",
-                    "existing_cards": "无法删除包含卡片的视图。请先移除卡片。"
+                    "confirm_delete_text": "您确定要删除“{name}”视图吗？"
                 },
                 "warning": {
                     "attribute_not_found": "属性 {attribute} 对 {entity} 不可用",
@@ -2695,7 +2525,6 @@
         },
         "sidebar": {
             "external_app_configuration": "应用配置",
-            "log_out": "退出",
             "sidebar_toggle": "侧边栏切换"
         }
     }
