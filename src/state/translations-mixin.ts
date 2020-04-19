@@ -7,7 +7,7 @@ import {
   getHassTranslationsPre109,
 } from "../data/translation";
 import { translationMetadata } from "../resources/translations-metadata";
-import { Constructor, HomeAssistant } from "../types";
+import { Constructor, HomeAssistant, Resources } from "../types";
 import { storeState } from "../util/ha-pref-storage";
 import {
   getLocalLanguage,
