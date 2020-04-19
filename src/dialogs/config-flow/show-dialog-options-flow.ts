@@ -25,8 +25,20 @@ export const showOptionsFlowDialog = (
     },
     {
       loadDevicesAndAreas: false,
-      createFlow: createOptionsFlow,
-      fetchFlow: fetchOptionsFlow,
+      createFlow: async (hass, handler) => {
+        const [step] = await Promise.all([
+          createOptionsFlow(hass, handler),
+          hass.loadBackendTranslation("options", configEntry.domain),
+        ]);
+        return step;
+      },
+      fetchFlow: async (hass, flowId) => {
+        const [step] = await Promise.all([
+          fetchOptionsFlow(hass, flowId),
+          hass.loadBackendTranslation("options", configEntry.domain),
+        ]);
+        return step;
+      },
       handleFlowStep: handleOptionsFlowStep,
       deleteFlow: deleteOptionsFlow,
 
