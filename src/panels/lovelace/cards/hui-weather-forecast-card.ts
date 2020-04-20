@@ -224,7 +224,7 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
                       </div>
                       ${item.condition !== undefined && item.condition !== null
                         ? html`
-                            <div>
+                            <div class="forecast-image-icon">
                               ${item.condition in weatherImages
                                 ? html`
                                     <img
@@ -403,6 +403,11 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
 
       .forecast .temp {
         font-size: 16px;
+      }
+
+      .forecast-image-icon {
+        padding-top: 4px;
+        padding-bottom: 4px;
       }
 
       .forecast-image {
