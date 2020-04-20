@@ -747,14 +747,17 @@
                     "description": "您家中所有区域的概览。",
                     "editor": {
                         "create": "创建",
+                        "default_name": "新建区域",
                         "delete": "删除",
                         "update": "更新"
                     },
                     "picker": {
+                        "create_area": "创建区域",
                         "header": "区域注册表",
                         "integrations_page": "集成页面",
                         "introduction": "区域用于组织设备所在的位置。此信息将用于 Home Assistant 的各个地方，以帮助您组织界面、权限和与其他系统的集成。",
-                        "introduction2": "要将设备置入某个区域，请使用下面的链接导航到集成页面，然后点击一个已配置的集成以进入设备卡片。"
+                        "introduction2": "要将设备置入某个区域，请使用下面的链接导航到集成页面，然后点击一个已配置的集成以进入设备卡片。",
+                        "no_areas": "您还没有建立区域。"
                     }
                 },
                 "automation": {
@@ -1048,7 +1051,7 @@
                             "link_learn_more": "了解有关创建基于Webhook的自动化的更多信息。",
                             "loading": "载入中...",
                             "manage": "管理",
-                            "no_hooks_yet": "看来你还没有 webhooks。您可以配置一个",
+                            "no_hooks_yet": "您还没有 webhook。您可以配置一个",
                             "no_hooks_yet_link_automation": "Webhook 自动化",
                             "no_hooks_yet_link_integration": "基于 Webhook 的集成",
                             "no_hooks_yet2": "或创建一个",
@@ -1749,7 +1752,7 @@
                     "go_to_core_config": "前往通用配置？",
                     "home_zone_core_config": "家的位置可以在通用配置中进行编辑，但半径尚无法在前端设定。是否前往通用配置？",
                     "introduction": "地点用于定义世界的某个地方。若某人位于一个地点，则其状态的名称就取自该地点。地点也可用作自动化配置中的触发条件和环境条件。",
-                    "no_zones_created_yet": "看来您还没有建立地点。"
+                    "no_zones_created_yet": "您还没有建立地点。"
                 },
                 "zwave": {
                     "caption": "Z-Wave",

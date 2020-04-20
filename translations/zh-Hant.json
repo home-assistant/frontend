@@ -747,14 +747,17 @@
                     "description": "家中所有分區概觀",
                     "editor": {
                         "create": "建立",
+                        "default_name": "新分區",
                         "delete": "刪除",
                         "update": "更新"
                     },
                     "picker": {
+                        "create_area": "新增分區",
                         "header": "分區",
                         "integrations_page": "整合頁面",
                         "introduction": "分區主要用以管理設備所在位置。此資訊將會於 Home Assistant 中使用以協助您管理介面、權限，並與其他系統進行整合。",
-                        "introduction2": "欲於分區中放置設備，請使用下方連結至整合頁面，並點選設定整合以設定設備面板。"
+                        "introduction2": "欲於分區中放置設備，請使用下方連結至整合頁面，並點選設定整合以設定設備面板。",
+                        "no_areas": "看起來你還沒有建立分區！"
                     }
                 },
                 "automation": {

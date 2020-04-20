@@ -81,9 +81,9 @@
     "state": {
         "alarm_control_panel": {
             "armed": "Armado",
-            "armed_away": "Armado fuera de casa",
+            "armed_away": "Armado fuera",
             "armed_custom_bypass": "Armada Zona Específica",
-            "armed_home": "Armado en casa",
+            "armed_home": "Armado casa",
             "armed_night": "Armado noche",
             "arming": "Armando",
             "disarmed": "Desarmado",
@@ -339,10 +339,10 @@
         },
         "card": {
             "alarm_control_panel": {
-                "arm_away": "Armado fuera de casa",
+                "arm_away": "Armar fuera",
                 "arm_custom_bypass": "Bypass personalizada",
-                "arm_home": "Armado en casa",
-                "arm_night": "Armado nocturno",
+                "arm_home": "Armar casa",
+                "arm_night": "Armar noche",
                 "clear_code": "Limpiar",
                 "code": "Código",
                 "disarm": "Desarmar"
@@ -1336,7 +1336,7 @@
                         "firmware": "Firmware: {version}",
                         "hub": "Conectado a través de",
                         "manuf": "por {manufacturer}",
-                        "no_area": "Ningún área",
+                        "no_area": "Ninguna área",
                         "no_device": "Entidades sin dispositivos",
                         "no_devices": "Esta integración no tiene dispositivos.",
                         "restart_confirm": "Reinicia Home Assistant para terminar de eliminar esta integración.",
