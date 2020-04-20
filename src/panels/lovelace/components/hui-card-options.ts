@@ -157,7 +157,7 @@ export class HuiCardOptions extends LitElement {
       }
 
       paper-item.delete-item {
-        color: var(--google-red-500);
+        color: var(--error-color);
       }
     `;
   }

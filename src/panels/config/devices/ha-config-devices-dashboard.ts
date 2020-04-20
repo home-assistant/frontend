@@ -46,9 +46,11 @@ export class HaConfigDeviceDashboard extends LitElement {
 
   @property() public areas!: AreaRegistryEntry[];
 
-  @property() public domain!: string;
-
   @property() public route!: Route;
+
+  @property() private _searchParms = new URLSearchParams(
+    window.location.search
+  );
 
   private _devices = memoizeOne(
     (
@@ -56,7 +58,7 @@ export class HaConfigDeviceDashboard extends LitElement {
       entries: ConfigEntry[],
       entities: EntityRegistryEntry[],
       areas: AreaRegistryEntry[],
-      domain: string,
+      filters: URLSearchParams,
       localize: LocalizeFunc
     ) => {
       // Some older installations might have devices pointing at invalid entryIDs
@@ -90,14 +92,15 @@ export class HaConfigDeviceDashboard extends LitElement {
         areaLookup[area.area_id] = area;
       }
 
-      if (domain) {
-        outputDevices = outputDevices.filter((device) =>
-          device.config_entries.find(
-            (entryId) =>
-              entryId in entryLookup && entryLookup[entryId].domain === domain
-          )
-        );
-      }
+      filters.forEach((value, key) => {
+        switch (key) {
+          case "config_entry":
+            outputDevices = outputDevices.filter((device) =>
+              device.config_entries.includes(value)
+            );
+            break;
+        }
+      });
 
       outputDevices = outputDevices.map((device) => {
         return {
@@ -243,7 +246,9 @@ export class HaConfigDeviceDashboard extends LitElement {
       <hass-tabs-subpage-data-table
         .hass=${this.hass}
         .narrow=${this.narrow}
-        back-path="/config"
+        .backPath=${this._searchParms.has("historyBack")
+          ? undefined
+          : "/config"}
         .tabs=${configSections.integrations}
         .route=${this.route}
         .columns=${this._columns(this.narrow)}
@@ -252,7 +257,7 @@ export class HaConfigDeviceDashboard extends LitElement {
           this.entries,
           this.entities,
           this.areas,
-          this.domain,
+          this._searchParms,
           this.hass.localize
         )}
         @row-click=${this._handleRowClicked}

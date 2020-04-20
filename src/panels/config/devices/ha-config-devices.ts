@@ -91,9 +91,7 @@ class HaConfigDevices extends HassRouterPage {
   protected updatePageEl(pageEl) {
     pageEl.hass = this.hass;
 
-    if (this._currentPage === "dashboard") {
-      pageEl.domain = this.routeTail.path.substr(1);
-    } else if (this._currentPage === "device") {
+    if (this._currentPage === "device") {
       pageEl.deviceId = this.routeTail.path.substr(1);
     }
 

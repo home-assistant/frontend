@@ -84,6 +84,10 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
 
   @property() private _filter = "";
 
+  @property() private _searchParms = new URLSearchParams(
+    window.location.search
+  );
+
   @property() private _selectedEntities: string[] = [];
 
   @query("hass-tabs-subpage-data-table")
@@ -202,6 +206,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
     (
       entities: EntityRegistryEntry[],
       stateEntities: StateEntity[],
+      filters: URLSearchParams,
       showDisabled: boolean,
       showUnavailable: boolean,
       showReadOnly: boolean
@@ -212,9 +217,19 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
 
       const result: EntityRow[] = [];
 
-      for (const entry of showReadOnly
-        ? entities.concat(stateEntities)
-        : entities) {
+      entities = showReadOnly ? entities.concat(stateEntities) : entities;
+
+      filters.forEach((value, key) => {
+        switch (key) {
+          case "config_entry":
+            entities = entities.filter(
+              (entity) => entity.config_entry_id === value
+            );
+            break;
+        }
+      });
+
+      for (const entry of entities) {
         const entity = this.hass.states[entry.entity_id];
         const unavailable = entity?.state === "unavailable";
         const restored = entity?.attributes.restored;
@@ -393,13 +408,16 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
       <hass-tabs-subpage-data-table
         .hass=${this.hass}
         .narrow=${this.narrow}
-        back-path="/config"
+        .backPath=${this._searchParms.has("historyBack")
+          ? undefined
+          : "/config"}
         .route=${this.route}
         .tabs=${configSections.integrations}
         .columns=${this._columns(this.narrow, this.hass.language)}
         .data=${this._filteredEntities(
           this._entities,
           this._stateEntities,
+          this._searchParms,
           this._showDisabled,
           this._showUnavailable,
           this._showReadOnly

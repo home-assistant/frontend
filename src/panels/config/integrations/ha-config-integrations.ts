@@ -1,14 +1,31 @@
 import "@polymer/app-route/app-route";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
-import { customElement, property, PropertyValues } from "lit-element";
+import {
+  customElement,
+  property,
+  PropertyValues,
+  LitElement,
+  TemplateResult,
+  html,
+  CSSResult,
+  css,
+} from "lit-element";
 import { compare } from "../../../common/string/compare";
+import { computeRTL } from "../../../common/util/compute_rtl";
+import "../../../components/entity/ha-state-icon";
+import "../../../components/ha-card";
+import "../../../components/ha-fab";
 import {
-  AreaRegistryEntry,
-  subscribeAreaRegistry,
-} from "../../../data/area_registry";
-import { ConfigEntry, getConfigEntries } from "../../../data/config_entries";
+  ConfigEntry,
+  deleteConfigEntry,
+  getConfigEntries,
+  updateConfigEntry,
+} from "../../../data/config_entries";
 import {
+  DISCOVERY_SOURCES,
   getConfigFlowInProgressCollection,
+  ignoreConfigFlow,
+  localizeConfigFlowTitle,
   subscribeConfigFlowInProgress,
 } from "../../../data/config_flow";
 import { DataEntryFlowProgress } from "../../../data/data_entry_flow";
@@ -20,22 +37,23 @@ import {
   EntityRegistryEntry,
   subscribeEntityRegistry,
 } from "../../../data/entity_registry";
+import { showConfigEntrySystemOptionsDialog } from "../../../dialogs/config-entry-system-options/show-dialog-config-entry-system-options";
+import { showConfigFlowDialog } from "../../../dialogs/config-flow/show-dialog-config-flow";
+import { showOptionsFlowDialog } from "../../../dialogs/config-flow/show-dialog-options-flow";
 import {
-  HassRouterPage,
-  RouterOptions,
-} from "../../../layouts/hass-router-page";
-import { HomeAssistant } from "../../../types";
-import "./config-entry/ha-config-entry-page";
-import "./ha-config-entries-dashboard";
-
-declare global {
-  interface HASSDomEvents {
-    "hass-reload-entries": undefined;
-  }
-}
+  showAlertDialog,
+  showConfirmationDialog,
+  showPromptDialog,
+} from "../../../dialogs/generic/show-dialog-box";
+import "../../../layouts/hass-tabs-subpage";
+import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
+import { HomeAssistant, Route } from "../../../types";
+import { configSections } from "../ha-panel-config";
+import { domainToName } from "../../../data/integration";
+import { haStyle } from "../../../resources/styles";
 
 @customElement("ha-config-integrations")
-class HaConfigIntegrations extends HassRouterPage {
+class HaConfigIntegrations extends SubscribeMixin(LitElement) {
   @property() public hass!: HomeAssistant;
 
   @property() public narrow!: boolean;
@@ -44,17 +62,7 @@ class HaConfigIntegrations extends HassRouterPage {
 
   @property() public showAdvanced!: boolean;
 
-  protected routerOptions: RouterOptions = {
-    defaultPage: "dashboard",
-    routes: {
-      dashboard: {
-        tag: "ha-config-entries-dashboard",
-      },
-      config_entry: {
-        tag: "ha-config-entry-page",
-      },
-    },
-  };
+  @property() public route!: Route;
 
   @property() private _configEntries: ConfigEntry[] = [];
 
@@ -64,78 +72,10 @@ class HaConfigIntegrations extends HassRouterPage {
 
   @property() private _deviceRegistryEntries: DeviceRegistryEntry[] = [];
 
-  @property() private _areas: AreaRegistryEntry[] = [];
+  @property() private _showIgnored = false;
 
-  private _unsubs?: UnsubscribeFunc[];
-
-  public connectedCallback() {
-    super.connectedCallback();
-
-    if (!this.hass) {
-      return;
-    }
-    this._loadData();
-  }
-
-  public disconnectedCallback() {
-    super.disconnectedCallback();
-    if (this._unsubs) {
-      while (this._unsubs.length) {
-        this._unsubs.pop()!();
-      }
-      this._unsubs = undefined;
-    }
-  }
-
-  protected firstUpdated(changedProps) {
-    super.firstUpdated(changedProps);
-    this.addEventListener("hass-reload-entries", () => {
-      this._loadData();
-      getConfigFlowInProgressCollection(this.hass.connection).refresh();
-    });
-    // For config entries. Also loading config flow ones for add integration
-    this.hass.loadBackendTranslation("title", undefined, true);
-  }
-
-  protected updated(changedProps: PropertyValues) {
-    super.updated(changedProps);
-    if (!this._unsubs && changedProps.has("hass")) {
-      this._loadData();
-    }
-  }
-
-  protected updatePageEl(pageEl) {
-    pageEl.hass = this.hass;
-
-    pageEl.entityRegistryEntries = this._entityRegistryEntries;
-    pageEl.configEntries = this._configEntries;
-    pageEl.narrow = this.narrow;
-    pageEl.isWide = this.isWide;
-    pageEl.showAdvanced = this.showAdvanced;
-    pageEl.route = this.routeTail;
-    if (this._currentPage === "dashboard") {
-      pageEl.configEntriesInProgress = this._configEntriesInProgress;
-      return;
-    }
-
-    pageEl.configEntryId = this.routeTail.path.substr(1);
-    pageEl.deviceRegistryEntries = this._deviceRegistryEntries;
-    pageEl.areas = this._areas;
-  }
-
-  private _loadData() {
-    getConfigEntries(this.hass).then((configEntries) => {
-      this._configEntries = configEntries.sort((conf1, conf2) =>
-        compare(conf1.domain + conf1.title, conf2.domain + conf2.title)
-      );
-    });
-    if (this._unsubs) {
-      return;
-    }
-    this._unsubs = [
-      subscribeAreaRegistry(this.hass.connection, (areas) => {
-        this._areas = areas;
-      }),
+  public hassSubscribe(): UnsubscribeFunc[] {
+    return [
       subscribeEntityRegistry(this.hass.connection, (entries) => {
         this._entityRegistryEntries = entries;
       }),
@@ -151,6 +91,526 @@ class HaConfigIntegrations extends HassRouterPage {
           }
         }
       }),
+    ];
+  }
+
+  protected firstUpdated(changed: PropertyValues) {
+    super.firstUpdated(changed);
+    this._loadConfigEntries();
+    this.hass.loadBackendTranslation("title", undefined, true);
+  }
+
+  protected render(): TemplateResult {
+    return html`
+      <hass-tabs-subpage
+        .hass=${this.hass}
+        .narrow=${this.narrow}
+        back-path="/config"
+        .route=${this.route}
+        .tabs=${configSections.integrations}
+      >
+        <paper-menu-button
+          close-on-activate
+          no-animations
+          horizontal-align="right"
+          horizontal-offset="-5"
+          slot="toolbar-icon"
+        >
+          <paper-icon-button
+            icon="hass:dots-vertical"
+            slot="dropdown-trigger"
+            alt="menu"
+          ></paper-icon-button>
+          <paper-listbox
+            slot="dropdown-content"
+            role="listbox"
+            selected="{{selectedItem}}"
+          >
+            <paper-item @tap=${this._toggleShowIgnored}>
+              ${this.hass.localize(
+                this._showIgnored
+                  ? "ui.panel.config.integrations.ignore.hide_ignored"
+                  : "ui.panel.config.integrations.ignore.show_ignored"
+              )}
+            </paper-item>
+          </paper-listbox>
+        </paper-menu-button>
+
+        <div class="container">
+          ${this._showIgnored
+            ? this._configEntries
+                .filter((item) => item.source === "ignore")
+                .map(
+                  (item: ConfigEntry) => html`
+                    <ha-card class="ignored">
+                      <div class="header">
+                        ${this.hass.localize(
+                          "ui.panel.config.integrations.ignore.ignored"
+                        )}
+                      </div>
+                      <div class="card-content">
+                        <div class="image">
+                          <img
+                            src="https://brands.home-assistant.io/${item.domain}/logo.png"
+                            referrerpolicy="no-referrer"
+                            @error=${this._onImageError}
+                            @load=${this._onImageLoad}
+                          />
+                        </div>
+                        <h2>
+                          ${domainToName(this.hass.localize, item.domain)}
+                        </h2>
+                        <mwc-button
+                          @click=${this._removeIgnoredIntegration}
+                          .entry=${item}
+                          aria-label=${this.hass.localize(
+                            "ui.panel.config.integrations.details"
+                          )}
+                          >Stop ignoring</mwc-button
+                        >
+                      </div>
+                    </ha-card>
+                  `
+                )
+            : ""}
+          ${this._configEntriesInProgress.length
+            ? this._configEntriesInProgress.map(
+                (flow) => html`
+                  <ha-card class="discovered">
+                    <div class="header">
+                      ${this.hass.localize(
+                        "ui.panel.config.integrations.discovered"
+                      )}
+                    </div>
+                    <div class="card-content">
+                      <div class="image">
+                        <img
+                          src="https://brands.home-assistant.io/${flow.handler}/logo.png"
+                          referrerpolicy="no-referrer"
+                          @error=${this._onImageError}
+                          @load=${this._onImageLoad}
+                        />
+                      </div>
+                      <h2>
+                        ${localizeConfigFlowTitle(this.hass.localize, flow)}
+                      </h2>
+                      <mwc-button
+                        unelevated
+                        @click=${this._continueFlow}
+                        .flowId=${flow.flow_id}
+                      >
+                        ${this.hass.localize(
+                          "ui.panel.config.integrations.configure"
+                        )}
+                      </mwc-button>
+                      ${DISCOVERY_SOURCES.includes(flow.context.source) &&
+                      flow.context.unique_id
+                        ? html`
+                            <mwc-button
+                              @click=${this._ignoreFlow}
+                              .flow=${flow}
+                            >
+                              ${this.hass.localize(
+                                "ui.panel.config.integrations.ignore.ignore"
+                              )}
+                            </mwc-button>
+                          `
+                        : ""}
+                    </div>
+                  </ha-card>
+                `
+              )
+            : ""}
+          ${this._entityRegistryEntries.length
+            ? this._configEntries.map((item: any) => {
+                const devices = this._getDevices(item);
+                const entities = this._getEntities(item);
+                return item.source === "ignore"
+                  ? ""
+                  : html`
+                      <ha-card
+                        class="integration"
+                        .configEntry=${item}
+                        .id=${item.entry_id}
+                      >
+                        <div class="card-content">
+                          <div class="image">
+                            <img
+                              src="https://brands.home-assistant.io/${item.domain}/logo.png"
+                              referrerpolicy="no-referrer"
+                              @error=${this._onImageError}
+                              @load=${this._onImageLoad}
+                            />
+                          </div>
+                          <h1>
+                            ${domainToName(this.hass.localize, item.domain)}
+                          </h1>
+                          <h2>
+                            ${item.title}
+                          </h2>
+                          ${devices.length || entities.length
+                            ? html`
+                                <div>
+                                  ${devices.length
+                                    ? html`
+                                        <a
+                                          href="/config/devices/dashboard?historyBack=1&config_entry=${item.entry_id}"
+                                          >${this.hass.localize(
+                                            "ui.panel.config.integrations.config_entry.devices",
+                                            "count",
+                                            devices.length
+                                          )}</a
+                                        >
+                                      `
+                                    : ""}
+                                  ${devices.length && entities.length
+                                    ? "and"
+                                    : ""}
+                                  ${entities.length
+                                    ? html`
+                                        <a
+                                          href="/config/entities?historyBack=1&config_entry=${item.entry_id}"
+                                          >${this.hass.localize(
+                                            "ui.panel.config.integrations.config_entry.entities",
+                                            "count",
+                                            entities.length
+                                          )}</a
+                                        >
+                                      `
+                                    : ""}
+                                </div>
+                              `
+                            : ""}
+                        </div>
+                        <div class="card-actions">
+                          <div>
+                            <mwc-button @click=${this._editEntryName}
+                              >Rename</mwc-button
+                            >
+                            ${item.supports_options
+                              ? html`
+                                  <mwc-button @click=${this._showOptions}
+                                    >Options</mwc-button
+                                  >
+                                `
+                              : ""}
+                          </div>
+                          <paper-menu-button
+                            horizontal-align="right"
+                            vertical-align="top"
+                            vertical-offset="40"
+                            close-on-activate
+                          >
+                            <paper-icon-button
+                              icon="hass:dots-vertical"
+                              slot="dropdown-trigger"
+                              aria-label=${this.hass!.localize(
+                                "ui.panel.lovelace.editor.edit_card.options"
+                              )}
+                            ></paper-icon-button>
+                            <paper-listbox slot="dropdown-content">
+                              <paper-item @tap=${this._showSystemOptions}>
+                                ${this.hass!.localize("ui.panel.") ||
+                                "System options"}</paper-item
+                              >
+                              <paper-item
+                                class="warning"
+                                @tap=${this._removeIntegration}
+                              >
+                                ${this.hass!.localize("ui.panel.") ||
+                                "Delete"}</paper-item
+                              >
+                            </paper-listbox>
+                          </paper-menu-button>
+                        </div>
+                      </ha-card>
+                    `;
+              })
+            : html`
+                <ha-card>
+                  <div class="card-content">
+                    <h1>
+                      ${this.hass.localize("ui.panel.config.integrations.none")}
+                    </h1>
+                    <p>
+                      Seems like you don't have any integation configured yet.
+                      Click on the button below to add a new integration.
+                    </p>
+                    <mwc-button @click=${this._createFlow} unelevated
+                      >Add integration</mwc-button
+                    >
+                  </div>
+                </ha-card>
+              `}
+        </div>
+        <ha-fab
+          icon="hass:plus"
+          aria-label=${this.hass.localize("ui.panel.config.integrations.new")}
+          title=${this.hass.localize("ui.panel.config.integrations.new")}
+          @click=${this._createFlow}
+          ?rtl=${computeRTL(this.hass!)}
+          ?narrow=${this.narrow}
+        ></ha-fab>
+      </hass-tabs-subpage>
+    `;
+  }
+
+  private _loadConfigEntries() {
+    getConfigEntries(this.hass).then((configEntries) => {
+      this._configEntries = configEntries.sort((conf1, conf2) =>
+        compare(conf1.domain + conf1.title, conf2.domain + conf2.title)
+      );
+    });
+  }
+
+  private _createFlow() {
+    showConfigFlowDialog(this, {
+      dialogClosedCallback: () => {
+        this._loadConfigEntries();
+        getConfigFlowInProgressCollection(this.hass.connection).refresh();
+      },
+      showAdvanced: this.showAdvanced,
+    });
+    // For config entries. Also loading config flow ones for add integration
+    this.hass.loadBackendTranslation("title", undefined, true);
+  }
+
+  private _continueFlow(ev: Event) {
+    showConfigFlowDialog(this, {
+      continueFlowId: (ev.target! as any).flowId,
+      dialogClosedCallback: () => {
+        this._loadConfigEntries();
+        getConfigFlowInProgressCollection(this.hass.connection).refresh();
+      },
+    });
+  }
+
+  private _ignoreFlow(ev: Event) {
+    const flow = (ev.target! as any).flow;
+    showConfirmationDialog(this, {
+      title: this.hass!.localize(
+        "ui.panel.config.integrations.ignore.confirm_ignore_title",
+        "name",
+        localizeConfigFlowTitle(this.hass.localize, flow)
+      ),
+      text: this.hass!.localize(
+        "ui.panel.config.integrations.ignore.confirm_ignore"
+      ),
+      confirmText: this.hass!.localize(
+        "ui.panel.config.integrations.ignore.ignore"
+      ),
+      confirm: () => {
+        ignoreConfigFlow(this.hass, flow.flow_id);
+        getConfigFlowInProgressCollection(this.hass.connection).refresh();
+      },
+    });
+  }
+
+  private _toggleShowIgnored() {
+    this._showIgnored = !this._showIgnored;
+  }
+
+  private async _removeIgnoredIntegration(ev: Event) {
+    const entry = (ev.target! as any).entry;
+    showConfirmationDialog(this, {
+      title: this.hass!.localize(
+        "ui.panel.config.integrations.ignore.confirm_delete_ignore_title",
+        "name",
+        this.hass.localize(`component.${entry.domain}.config.title`)
+      ),
+      text: this.hass!.localize(
+        "ui.panel.config.integrations.ignore.confirm_delete_ignore"
+      ),
+      confirmText: this.hass!.localize(
+        "ui.panel.config.integrations.ignore.stop_ignore"
+      ),
+      confirm: async () => {
+        const result = await deleteConfigEntry(this.hass, entry.entry_id);
+        if (result.require_restart) {
+          alert(
+            this.hass.localize(
+              "ui.panel.config.integrations.config_entry.restart_confirm"
+            )
+          );
+        }
+        this._loadConfigEntries();
+      },
+    });
+  }
+
+  private _getEntities(configEntry: ConfigEntry): EntityRegistryEntry[] {
+    if (!this._entityRegistryEntries) {
+      return [];
+    }
+    return this._entityRegistryEntries.filter(
+      (entity) => entity.config_entry_id === configEntry.entry_id
+    );
+  }
+
+  private _getDevices(configEntry: ConfigEntry): DeviceRegistryEntry[] {
+    if (!this._deviceRegistryEntries) {
+      return [];
+    }
+    return this._deviceRegistryEntries.filter((device) =>
+      device.config_entries.includes(configEntry.entry_id)
+    );
+  }
+
+  private _onImageLoad(ev) {
+    ev.target.style.visibility = "initial";
+  }
+
+  private _onImageError(ev) {
+    ev.target.style.visibility = "hidden";
+  }
+
+  private _showOptions(ev) {
+    showOptionsFlowDialog(this, ev.target.closest("ha-card").configEntry);
+  }
+
+  private _showSystemOptions(ev) {
+    showConfigEntrySystemOptionsDialog(this, {
+      entry: ev.target.closest("ha-card").configEntry,
+    });
+  }
+
+  private async _editEntryName(ev) {
+    const configEntry = ev.target.closest("ha-card").configEntry;
+    const newName = await showPromptDialog(this, {
+      title: "Edit the name of this config entry",
+      inputLabel: configEntry.title,
+    });
+    if (!newName) {
+      return;
+    }
+    const newEntry = await updateConfigEntry(this.hass, configEntry.entry_id, {
+      title: newName,
+    });
+    this._configEntries = this._configEntries!.map((entry) =>
+      entry.entry_id === newEntry.entry_id ? newEntry : entry
+    );
+  }
+
+  private async _removeIntegration(ev) {
+    const entryId = ev.target.closest("ha-card").configEntry.entry_id;
+
+    const confirmed = await showConfirmationDialog(this, {
+      text: this.hass.localize(
+        "ui.panel.config.integrations.config_entry.delete_confirm"
+      ),
+    });
+
+    if (!confirmed) {
+      return;
+    }
+
+    deleteConfigEntry(this.hass, entryId).then((result) => {
+      this._configEntries = this._configEntries.filter(
+        (entry) => entry.entry_id !== entryId
+      );
+
+      if (result.require_restart) {
+        showAlertDialog(this, {
+          text: this.hass.localize(
+            "ui.panel.config.integrations.config_entry.restart_confirm"
+          ),
+        });
+      }
+    });
+  }
+
+  static get styles(): CSSResult[] {
+    return [
+      haStyle,
+      css`
+        .container {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+          grid-gap: 16px 16px;
+          padding: 16px;
+          margin-bottom: 64px;
+        }
+        ha-card {
+          display: flex;
+          flex-direction: column;
+          justify-content: space-between;
+        }
+        .discovered {
+          border: 1px solid var(--primary-color);
+        }
+        .discovered .header {
+          background: var(--primary-color);
+          color: var(--text-primary-color);
+          padding: 8px;
+          text-align: center;
+        }
+        .ignored {
+          border: 1px solid var(--light-theme-disabled-color);
+        }
+        .ignored .header {
+          background: var(--light-theme-disabled-color);
+          color: var(--text-primary-color);
+          padding: 8px;
+          text-align: center;
+        }
+        .card-content {
+          padding: 16px;
+          text-align: center;
+        }
+        ha-card.integration .card-content {
+          padding-bottom: 3px;
+        }
+        .card-actions {
+          border-top: none;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding-right: 5px;
+        }
+        .helper {
+          display: inline-block;
+          height: 100%;
+          vertical-align: middle;
+        }
+        .image {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          height: 60px;
+          margin-bottom: 16px;
+          vertical-align: middle;
+        }
+        img {
+          max-height: 60px;
+          max-width: 90%;
+        }
+        a {
+          color: var(--primary-color);
+        }
+        h1 {
+          margin-bottom: 0;
+        }
+        h2 {
+          margin-top: 0;
+        }
+        ha-fab {
+          position: fixed;
+          bottom: 16px;
+          right: 16px;
+          z-index: 1;
+        }
+        ha-fab[narrow] {
+          bottom: 84px;
+        }
+        ha-fab[rtl] {
+          right: auto;
+          left: 16px;
+        }
+        paper-menu-button {
+          color: var(--secondary-text-color);
+          padding: 0;
+        }
+      `,
     ];
   }
 }
