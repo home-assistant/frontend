@@ -1587,6 +1587,8 @@
           "none": "Nothing configured yet",
           "integration_not_found": "Integration not found.",
           "details": "Integration details",
+          "rename_dialog": "Edit the name of this config entry",
+          "rename_input_label": "Entry name",
           "ignore": {
             "ignore": "Ignore",
             "confirm_ignore_title": "Ignore discovery of {name}?",

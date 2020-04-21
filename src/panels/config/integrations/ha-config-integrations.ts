@@ -514,9 +514,11 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
   private async _editEntryName(ev) {
     const configEntry = ev.target.closest("ha-card").configEntry;
     const newName = await showPromptDialog(this, {
-      title: "Edit the name of this config entry",
+      title: this.hass.localize("ui.panel.config.integrations.rename_dialog"),
       defaultValue: configEntry.title,
-      inputLabel: "Config entry name",
+      inputLabel: this.hass.localize(
+        "ui.panel.config.integrations.rename_input_label"
+      ),
     });
     if (!newName) {
       return;
