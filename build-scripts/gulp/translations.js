@@ -263,7 +263,8 @@ gulp.task(taskName, function () {
             const legacyStrings = JSON.parse(
               fs.readFileSync(legacyTranslationsPath, "utf-8")
             );
-            if ("default" in legacyStrings && "default" in data.state) {
+            // These 2 translations still exist today.
+            if (legacyStrings.state && "default" in legacyStrings.state) {
               legacyStrings.default.unknown = data.state.default.unknown;
               legacyStrings.default.unavailable =
                 data.state.default.unavailable;
