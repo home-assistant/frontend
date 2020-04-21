@@ -12,6 +12,7 @@ import {
 } from "../util/register-service-worker";
 import "./ha-init-page";
 import "./home-assistant-main";
+import { setHAVersion } from "../common/config/version";
 
 export class HomeAssistantAppEl extends HassElement {
   @property() private _route?: Route;
@@ -69,6 +70,9 @@ export class HomeAssistantAppEl extends HassElement {
 
   protected hassConnected() {
     super.hassConnected();
+    if (__BACKWARDS_COMPAT__) {
+      setHAVersion(this.hass!.connection.haVersion);
+    }
     // @ts-ignore
     this._loadHassTranslations(this.hass!.language, "state");
   }
