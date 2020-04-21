@@ -66,6 +66,11 @@ export interface ZHAGroup {
   members: ZHADeviceEndpoint[];
 }
 
+export interface ZHAGroupMember {
+  ieee: string;
+  endpoint_id: string;
+}
+
 export const reconfigureNode = (
   hass: HomeAssistant,
   ieeeAddress: string
@@ -228,7 +233,7 @@ export const fetchGroupableDevices = (
 export const addMembersToGroup = (
   hass: HomeAssistant,
   groupId: number,
-  membersToAdd: string[]
+  membersToAdd: ZHAGroupMember[]
 ): Promise<ZHAGroup> =>
   hass.callWS({
     type: "zha/group/members/add",
@@ -239,7 +244,7 @@ export const addMembersToGroup = (
 export const removeMembersFromGroup = (
   hass: HomeAssistant,
   groupId: number,
-  membersToRemove: string[]
+  membersToRemove: ZHAGroupMember[]
 ): Promise<ZHAGroup> =>
   hass.callWS({
     type: "zha/group/members/remove",

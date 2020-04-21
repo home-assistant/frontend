@@ -243,11 +243,11 @@ export class ZHAGroupPage extends LitElement {
 
   private async _addMembersToGroup(): Promise<void> {
     this._processingAdd = true;
-    this.group = await addMembersToGroup(
-      this.hass,
-      this.groupId,
-      this._selectedDevicesToAdd
-    );
+    const members = this._selectedDevicesToAdd.map((member) => {
+      const memberParts = member.split("_");
+      return { ieee: memberParts[0], endpoint_id: memberParts[1] };
+    });
+    this.group = await addMembersToGroup(this.hass, this.groupId, members);
     this._filterDevices();
     this._selectedDevicesToAdd = [];
     this._processingAdd = false;
@@ -255,11 +255,11 @@ export class ZHAGroupPage extends LitElement {
 
   private async _removeMembersFromGroup(): Promise<void> {
     this._processingRemove = true;
-    this.group = await removeMembersFromGroup(
-      this.hass,
-      this.groupId,
-      this._selectedDevicesToRemove
-    );
+    const members = this._selectedDevicesToRemove.map((member) => {
+      const memberParts = member.split("_");
+      return { ieee: memberParts[0], endpoint_id: memberParts[1] };
+    });
+    this.group = await removeMembersFromGroup(this.hass, this.groupId, members);
     this._filterDevices();
     this._selectedDevicesToRemove = [];
     this._processingRemove = false;
