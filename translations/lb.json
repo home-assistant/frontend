@@ -679,11 +679,13 @@
                 "buttons": {
                     "add": "Apparater dobäisetzen",
                     "reconfigure": "Apparat frësch konfiguréieren",
-                    "remove": "Apparat läschen"
+                    "remove": "Apparat läschen",
+                    "zigbee_information": "Zigbee Informatiounen"
                 },
                 "confirmations": {
                     "remove": "Sécher fir den Apparat ze läsche?"
                 },
+                "device_signature": "Zigbee Apparat Signatur",
                 "last_seen": "Fir d'läscht gesinn",
                 "manuf": "vun {manufacturer}",
                 "no_area": "Kee Beräich",
@@ -692,7 +694,8 @@
                 "services": {
                     "reconfigure": "ZHA Apparat rekonfiguréieren (Apparat heelen). Benotzt dëst am Fall vu Problemer mam Apparat. Falls den Apparat duerch eng Batterie gespeist gëtt stellt sécher dass en un ass a Befeeler entgéint kann huelen",
                     "remove": "Een Apparat vum Zigbee Reseau läschen.",
-                    "updateDeviceName": "Personaliséiert den Numm fir dësen Apparat an der Iwwersiicht vun den Apparaten."
+                    "updateDeviceName": "Personaliséiert den Numm fir dësen Apparat an der Iwwersiicht vun den Apparaten.",
+                    "zigbee_information": "Zigbee Informatioune vum Apparat uweisen."
                 },
                 "unknown": "Onbekannt",
                 "zha_device_card": {
@@ -744,14 +747,17 @@
                     "description": "Iwwersiicht vun de Beräicher am Haus",
                     "editor": {
                         "create": "Erstellen",
+                        "default_name": "Neie Beräich",
                         "delete": "Läschen",
                         "update": "Aktualiséieren"
                     },
                     "picker": {
+                        "create_area": "Beräich erstellen",
                         "header": "Beräicher",
                         "integrations_page": "Integratiouns Säit",
                         "introduction": "Beräicher gi benotzt fir d'Organisatioun vum Standuert vun den Apparater. Dës Informatioun gëtt vum Home Assistant benotzt fir iech ze hëllefe fir den Interface, Berechtegungen an Integratioune mat aner Systemer ze geréieren.",
-                        "introduction2": "Fir Apparater an e Beräich ze setzen, benotzt de Link ënne fir op d'Integratiouns Säit ze kommen a klickt do op eng konfiguréiert Integratioun fir d'Kaart vum Apparat unzeweisen."
+                        "introduction2": "Fir Apparater an e Beräich ze setzen, benotzt de Link ënne fir op d'Integratiouns Säit ze kommen a klickt do op eng konfiguréiert Integratioun fir d'Kaart vum Apparat unzeweisen.",
+                        "no_areas": "Et sinn nach keng Beräicher do!"
                     }
                 },
                 "automation": {

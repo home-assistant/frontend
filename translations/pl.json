@@ -679,11 +679,13 @@
                 "buttons": {
                     "add": "Dodaj urządzenia",
                     "reconfigure": "Rekonfiguracja urządzenia",
-                    "remove": "Usuń urządzenie"
+                    "remove": "Usuń urządzenie",
+                    "zigbee_information": "Informacje Zigbee"
                 },
                 "confirmations": {
                     "remove": "Czy na pewno chcesz usunąć urządzenie?"
                 },
+                "device_signature": "Sygnatura urządzenia Zigbee",
                 "last_seen": "Ostatnio widziane",
                 "manuf": "Producent: {manufacturer}",
                 "no_area": "brak",
@@ -692,7 +694,8 @@
                 "services": {
                     "reconfigure": "Ponowna konfiguracja urządzenia ZHA (uzdrawianie urządzenia). Użyj tego polecenia, jeśli masz problemy z urządzeniem. Jeśli urządzenie jest zasilane bateryjnie, upewnij się, że nie jest uśpione i przyjmie polecenie rekonfiguracji.",
                     "remove": "Usuń urządzenie z sieci Zigbee.",
-                    "updateDeviceName": "Wprowadź niestandardową nazwę tego urządzenia w rejestrze urządzeń."
+                    "updateDeviceName": "Wprowadź niestandardową nazwę tego urządzenia w rejestrze urządzeń.",
+                    "zigbee_information": "Wyświetl informacje o urządzeniu Zigbee."
                 },
                 "unknown": "Nieznany",
                 "zha_device_card": {
@@ -744,14 +747,17 @@
                     "description": "Przegląd wszystkich obszarów w twoim domu",
                     "editor": {
                         "create": "UTWÓRZ",
+                        "default_name": "Nowy obszar",
                         "delete": "USUŃ",
                         "update": "AKTUALIZUJ"
                     },
                     "picker": {
+                        "create_area": "Utwórz obszar",
                         "header": "Rejestr obszarów",
                         "integrations_page": "Strona integracji",
                         "introduction": "Obszary służą do organizacji urządzeń. Informacje te będą używane w Home Assistant, aby pomóc w organizacji interfejsu, uprawnień i integracji z innymi systemami.",
-                        "introduction2": "Aby umieścić urządzenia w danym obszarze, użyj poniższego linku, aby przejść do strony integracji, a następnie kliknij skonfigurowaną integrację, aby dostać się do kart urządzeń."
+                        "introduction2": "Aby umieścić urządzenia w danym obszarze, użyj poniższego linku, aby przejść do strony integracji, a następnie kliknij skonfigurowaną integrację, aby dostać się do kart urządzeń.",
+                        "no_areas": "Wygląda na to, że jeszcze nie masz zdefiniowanych obszarów!"
                     }
                 },
                 "automation": {
@@ -1045,7 +1051,7 @@
                             "link_learn_more": "Dowiedz się więcej o tworzeniu automatyzacji opartych na webhook'ach.",
                             "loading": "Wczytywanie...",
                             "manage": "Zarządzanie",
-                            "no_hooks_yet": "Wygląda na to, że nie masz jeszcze żadnych webhook'ów. Rozpocznij od skonfigurowania ",
+                            "no_hooks_yet": "Wygląda na to, że nie ma jeszcze żadnych webhook'ów. Rozpocznij od skonfigurowania ",
                             "no_hooks_yet_link_automation": "Automatyzacja webhook",
                             "no_hooks_yet_link_integration": "Integracja oparta na webhook'ach",
                             "no_hooks_yet2": " lub tworząc ",
