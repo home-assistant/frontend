@@ -1755,7 +1755,6 @@
           }
         },
         "zwave": {
-          "caption": "Z-Wave",
           "description": "Manage your Z-Wave network",
           "learn_more": "Learn more about Z-Wave",
           "common": {
