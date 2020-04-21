@@ -49,10 +49,6 @@ export class HuiWeatherForecastCardEditor extends LitElement
     return this._config!.theme || "";
   }
 
-  get _show_forecast(): boolean {
-    return this._config!.show_forecast || true;
-  }
-
   protected render(): TemplateResult {
     if (!this.hass || !this._config) {
       return html``;
@@ -93,7 +89,7 @@ export class HuiWeatherForecastCardEditor extends LitElement
           ></hui-theme-select-editor>
         </div>
         <ha-switch
-          .checked=${this._show_forecast}
+          .checked=${this._config!.show_forecast !== false}
           .configValue=${"show_forecast"}
           @change=${this._valueChanged}
           >Show forecast</ha-switch
