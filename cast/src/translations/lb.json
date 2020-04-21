@@ -1,0 +1,255 @@
+{
+  "state": {
+    "alarm_control_panel": {
+      "armed": "Aktiv\u00e9iert",
+      "armed_away": "Aktiv\u00e9iert \u00cbnnerwee",
+      "armed_custom_bypass": "Aktiv, Benotzerdefin\u00e9iert",
+      "armed_home": "Aktiv\u00e9iert Doheem",
+      "armed_night": "Aktiv\u00e9iert Nuecht",
+      "arming": "Aktiv\u00e9ieren",
+      "disarmed": "Desaktiv\u00e9iert",
+      "disarming": "Desaktiv\u00e9ieren",
+      "pending": "Ustoend",
+      "triggered": "Ausgel\u00e9ist"
+    },
+    "automation": {
+      "off": "Aus",
+      "on": "Un"
+    },
+    "binary_sensor": {
+      "battery": {
+        "off": "Normal",
+        "on": "Niddreg"
+      },
+      "cold": {
+        "off": "Normal",
+        "on": "Kal"
+      },
+      "connectivity": {
+        "off": "Net Verbonnen",
+        "on": "Verbonnen"
+      },
+      "default": {
+        "off": "Aus",
+        "on": "Un"
+      },
+      "door": {
+        "off": "Zou",
+        "on": "Op"
+      },
+      "garage_door": {
+        "off": "Zou",
+        "on": "Op"
+      },
+      "gas": {
+        "off": "Kloer",
+        "on": "Detekt\u00e9iert"
+      },
+      "heat": {
+        "off": "Normal",
+        "on": "Waarm"
+      },
+      "lock": {
+        "off": "Gespaart",
+        "on": "Net gespaart"
+      },
+      "moisture": {
+        "off": "Dr\u00e9chen",
+        "on": "Naass"
+      },
+      "motion": {
+        "off": "Roueg",
+        "on": "Detekt\u00e9iert"
+      },
+      "occupancy": {
+        "off": "Roueg",
+        "on": "Detekt\u00e9iert"
+      },
+      "opening": {
+        "off": "Zou",
+        "on": "Op"
+      },
+      "presence": {
+        "off": "\u00cbnnerwee",
+        "on": "Doheem"
+      },
+      "problem": {
+        "off": "OK",
+        "on": "Problem"
+      },
+      "safety": {
+        "off": "S\u00e9cher",
+        "on": "Ons\u00e9cher"
+      },
+      "smoke": {
+        "off": "Kloer",
+        "on": "Detekt\u00e9iert"
+      },
+      "sound": {
+        "off": "Roueg",
+        "on": "Detekt\u00e9iert"
+      },
+      "vibration": {
+        "off": "Kloer",
+        "on": "Detekt\u00e9iert"
+      },
+      "window": {
+        "off": "Zou",
+        "on": "Op"
+      }
+    },
+    "calendar": {
+      "off": "Aus",
+      "on": "Un"
+    },
+    "camera": {
+      "idle": "Roueg",
+      "recording": "H\u00eblt Op",
+      "streaming": "Streamt"
+    },
+    "climate": {
+      "auto": "Auto",
+      "cool": "Kill",
+      "dry": "Dr\u00e9chen",
+      "fan_only": "N\u00ebmme Ventilator",
+      "heat": "Heizen",
+      "heat_cool": "H\u00ebtzen/Ofkillen",
+      "off": "Aus"
+    },
+    "configurator": {
+      "configure": "Astellen",
+      "configured": "Agestallt"
+    },
+    "cover": {
+      "closed": "Zou",
+      "closing": "G\u00ebtt zougemaach",
+      "open": "Op",
+      "opening": "G\u00ebtt opgemaach",
+      "stopped": "Gestoppt"
+    },
+    "default": {
+      "off": "Aus",
+      "on": "Un",
+      "unavailable": "Net erreechbar",
+      "unknown": "Onbekannt"
+    },
+    "device_tracker": {
+      "home": "Doheem",
+      "not_home": "\u00cbnnerwee"
+    },
+    "fan": {
+      "off": "Aus",
+      "on": "Un"
+    },
+    "group": {
+      "closed": "Zou",
+      "closing": "G\u00ebtt zougemaach",
+      "home": "Doheem",
+      "locked": "Gespaart",
+      "not_home": "\u00cbnnerwee",
+      "off": "Aus",
+      "ok": "OK",
+      "on": "Un",
+      "open": "Op",
+      "opening": "G\u00ebtt opgemaach",
+      "problem": "Problem",
+      "stopped": "Gestoppt",
+      "unlocked": "Net gespaart"
+    },
+    "input_boolean": {
+      "off": "Aus",
+      "on": "Un"
+    },
+    "light": {
+      "off": "Aus",
+      "on": "Un"
+    },
+    "lock": {
+      "locked": "Gespaart",
+      "unlocked": "Net gespaart"
+    },
+    "media_player": {
+      "idle": "Waart",
+      "off": "Aus",
+      "on": "Un",
+      "paused": "Pauseiert",
+      "playing": "Spillt",
+      "standby": "Standby"
+    },
+    "person": {
+      "home": "Doheem",
+      "not_home": "\u00cbnnerwee"
+    },
+    "plant": {
+      "ok": "OK",
+      "problem": "Problem"
+    },
+    "remote": {
+      "off": "Aus",
+      "on": "Un"
+    },
+    "scene": {
+      "scening": "Zeen"
+    },
+    "script": {
+      "off": "Aus",
+      "on": "Un"
+    },
+    "sensor": {
+      "off": "Aus",
+      "on": "Un"
+    },
+    "sun": {
+      "above_horizon": "Iwwert dem Horizont",
+      "below_horizon": "\u00cbnnert dem Horizont"
+    },
+    "switch": {
+      "off": "Aus",
+      "on": "Un"
+    },
+    "timer": {
+      "active": "Aktiv",
+      "idle": "Waart",
+      "paused": "Pauseiert"
+    },
+    "vacuum": {
+      "cleaning": "Botzt",
+      "docked": "Agedockt",
+      "error": "Feeler",
+      "idle": "Waart",
+      "off": "Aus",
+      "on": "Un",
+      "paused": "Pauseiert",
+      "returning": "K\u00ebnnt zur Statioun zer\u00e9ck"
+    },
+    "weather": {
+      "clear-night": "Kloer, Nuecht",
+      "cloudy": "Wollekeg",
+      "exceptional": "Aussergew\u00e9inlech",
+      "fog": "Niwwel",
+      "hail": "Kn\u00ebppelsteng",
+      "lightning": "Bl\u00ebtz",
+      "lightning-rainy": "Bl\u00ebtz, Reen",
+      "partlycloudy": "Liicht wollekeg",
+      "pouring": "Schloreen",
+      "rainy": "Reen",
+      "snowy": "Schn\u00e9i",
+      "snowy-rainy": "Schn\u00e9i, Reen",
+      "sunny": "Sonneg",
+      "windy": "L\u00ebfteg",
+      "windy-variant": "L\u00ebfteg"
+    },
+    "zwave": {
+      "default": {
+        "dead": "Net Ereechbar",
+        "initializing": "Initialis\u00e9iert",
+        "ready": "Bereet",
+        "sleeping": "Schl\u00e9ift"
+      },
+      "query_stage": {
+        "dead": "Net Ereechbar ({query_stage})",
+        "initializing": "Initialis\u00e9iert ( {query_stage} )"
+      }
+    }
+  }
+}

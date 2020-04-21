@@ -1,0 +1,255 @@
+{
+  "state": {
+    "alarm_control_panel": {
+      "armed": "Armat",
+      "armed_away": "Armat plecat",
+      "armed_custom_bypass": "Armare personalizat\u0103",
+      "armed_home": "Armat acas\u0103",
+      "armed_night": "Armat noaptea",
+      "arming": "Armare",
+      "disarmed": "Dezarmat",
+      "disarming": "Dezarmare",
+      "pending": "\u00cen a\u0219teptare",
+      "triggered": "Declan\u0219at"
+    },
+    "automation": {
+      "off": "Oprit",
+      "on": "Pornit"
+    },
+    "binary_sensor": {
+      "battery": {
+        "off": "Normal",
+        "on": "Sc\u0103zuta"
+      },
+      "cold": {
+        "off": "Normal",
+        "on": "Rece"
+      },
+      "connectivity": {
+        "off": "Deconectat",
+        "on": "Conectat"
+      },
+      "default": {
+        "off": "Oprit",
+        "on": "Pornit"
+      },
+      "door": {
+        "off": "\u00cenchis",
+        "on": "Deschis"
+      },
+      "garage_door": {
+        "off": "\u00cenchis",
+        "on": "Deschis"
+      },
+      "gas": {
+        "off": "Liber",
+        "on": "Detec\u021bie"
+      },
+      "heat": {
+        "off": "Normal",
+        "on": "Fierbinte"
+      },
+      "lock": {
+        "off": "Blocat",
+        "on": "Deblocat"
+      },
+      "moisture": {
+        "off": "Uscat",
+        "on": "Umed"
+      },
+      "motion": {
+        "off": "Liber",
+        "on": "Detec\u021bie"
+      },
+      "occupancy": {
+        "off": "Liber",
+        "on": "Detec\u021bie"
+      },
+      "opening": {
+        "off": "\u00cenchis",
+        "on": "Deschis"
+      },
+      "presence": {
+        "off": "Plecat",
+        "on": "Acas\u0103"
+      },
+      "problem": {
+        "off": "OK",
+        "on": "Problem\u0103"
+      },
+      "safety": {
+        "off": "Sigur",
+        "on": "Nesigur"
+      },
+      "smoke": {
+        "off": "Liber",
+        "on": "Detec\u021bie"
+      },
+      "sound": {
+        "off": "Liber",
+        "on": "Detec\u021bie"
+      },
+      "vibration": {
+        "off": "Liber",
+        "on": "Detec\u021bie"
+      },
+      "window": {
+        "off": "\u00cenchis",
+        "on": "Deschis"
+      }
+    },
+    "calendar": {
+      "off": "Oprit",
+      "on": "Pornit"
+    },
+    "camera": {
+      "idle": "Inactiv",
+      "recording": "\u00cenregistrare",
+      "streaming": "Streaming"
+    },
+    "climate": {
+      "auto": "Auto",
+      "cool": "Rece",
+      "dry": "Uscat",
+      "fan_only": "Numai ventilator",
+      "heat": "C\u0103ldur\u0103",
+      "heat_cool": "\u00cenc\u0103lzire / R\u0103cire",
+      "off": "Oprit"
+    },
+    "configurator": {
+      "configure": "Configureaz\u0103",
+      "configured": "Configurat"
+    },
+    "cover": {
+      "closed": "\u00cenchis",
+      "closing": "\u00cenchidere",
+      "open": "Deschis",
+      "opening": "Deschidere",
+      "stopped": "Oprit"
+    },
+    "default": {
+      "off": "Oprit",
+      "on": "Pornit",
+      "unavailable": "Indisponibil",
+      "unknown": "Necunoscut"
+    },
+    "device_tracker": {
+      "home": "Acas\u0103",
+      "not_home": "Plecat"
+    },
+    "fan": {
+      "off": "Oprit",
+      "on": "Pornit"
+    },
+    "group": {
+      "closed": "\u00cenchis",
+      "closing": "\u00cenchidere",
+      "home": "Acas\u0103",
+      "locked": "Blocat",
+      "not_home": "Plecat",
+      "off": "Oprit",
+      "ok": "OK",
+      "on": "Pornit",
+      "open": "Deschis",
+      "opening": "Deschidere",
+      "problem": "Problem\u0103",
+      "stopped": "Oprit",
+      "unlocked": "Deblocat"
+    },
+    "input_boolean": {
+      "off": "Oprit",
+      "on": "Pornit"
+    },
+    "light": {
+      "off": "Oprit",
+      "on": "Pornit"
+    },
+    "lock": {
+      "locked": "Blocat",
+      "unlocked": "Deblocat"
+    },
+    "media_player": {
+      "idle": "Inactiv",
+      "off": "Oprit",
+      "on": "Pornit",
+      "paused": "\u00cen pauz\u0103",
+      "playing": "Ruleaz\u0103",
+      "standby": "\u00cen a\u0219teptare"
+    },
+    "person": {
+      "home": "Acas\u0103",
+      "not_home": "Plecat"
+    },
+    "plant": {
+      "ok": "OK",
+      "problem": "Problem\u0103"
+    },
+    "remote": {
+      "off": "Oprit",
+      "on": "Pornit"
+    },
+    "scene": {
+      "scening": "Scen\u0103"
+    },
+    "script": {
+      "off": "Oprit",
+      "on": "Pornit"
+    },
+    "sensor": {
+      "off": "Oprit",
+      "on": "Pornit"
+    },
+    "sun": {
+      "above_horizon": "Deasupra orizontului",
+      "below_horizon": "Sub orizont"
+    },
+    "switch": {
+      "off": "Oprit",
+      "on": "Pornit"
+    },
+    "timer": {
+      "active": "activ",
+      "idle": "inactiv",
+      "paused": "\u00cen pauz\u0103"
+    },
+    "vacuum": {
+      "cleaning": "Cur\u0103\u021bare",
+      "docked": "Andocat",
+      "error": "Eroare",
+      "idle": "Inactiv",
+      "off": "Oprit",
+      "on": "Pornit",
+      "paused": "\u00centrerupt",
+      "returning": "\u00cen curs de \u00eentoarcere la doc"
+    },
+    "weather": {
+      "clear-night": "Noapte senin\u0103",
+      "cloudy": "Noros",
+      "exceptional": "Excep\u0163ional",
+      "fog": "Cea\u0163\u0103",
+      "hail": "Grindin\u0103",
+      "lightning": "Des\u0103rc\u0103ri electrice",
+      "lightning-rainy": "Ploaie cu desc\u0103rc\u0103ri electrice",
+      "partlycloudy": "Par\u021bial noros",
+      "pouring": "Avers\u0103",
+      "rainy": "Ploios",
+      "snowy": "Z\u0103pad\u0103",
+      "snowy-rainy": "Lapovi\u021b\u0103 \u0219i ninsoare",
+      "sunny": "\u00eensorit",
+      "windy": "Vant",
+      "windy-variant": "Vant"
+    },
+    "zwave": {
+      "default": {
+        "dead": "Inactiv",
+        "initializing": "Se ini\u021bializeaz\u0103",
+        "ready": "Disponibil",
+        "sleeping": "Adormit"
+      },
+      "query_stage": {
+        "dead": "Inactiv ({query_stage})",
+        "initializing": "Se ini\u021bializeaz\u0103 ({query_stage})"
+      }
+    }
+  }
+}
