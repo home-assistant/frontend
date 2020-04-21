@@ -491,15 +491,15 @@
             "area-picker": {
                 "add_dialog": {
                     "add": "Ajouter",
-                    "failed_create_area": "Échec de la création de la zone.",
+                    "failed_create_area": "Échec de la création de la pièce.",
                     "name": "Nom",
-                    "text": "Entrez le nom de la nouvelle zone.",
-                    "title": "Ajouter une zone"
+                    "text": "Entrez le nom de la nouvelle pièce.",
+                    "title": "Ajouter une pièce"
                 },
-                "add_new": "Ajouter une zone...",
-                "area": "Zone",
+                "add_new": "Ajouter une pièce...",
+                "area": "Pièce",
                 "clear": "Effacer",
-                "show_areas": "Afficher les zones"
+                "show_areas": "Afficher les pièces"
             },
             "device-picker": {
                 "clear": "Effacer",
@@ -519,7 +519,7 @@
                 "no_history_found": "Aucun historique des valeurs trouvé."
             },
             "related-items": {
-                "area": "Zone",
+                "area": "Pièce",
                 "automation": "Partie des automations suivantes",
                 "device": "Appareil",
                 "entity": "Entités liées",
@@ -737,27 +737,27 @@
                 "areas": {
                     "caption": "Pièces",
                     "data_table": {
-                        "area": "Zone",
+                        "area": "Pièce",
                         "devices": "Appareils"
                     },
                     "delete": {
-                        "confirmation_text": "Tous les appareils de cette zone ne seront plus attribués.",
-                        "confirmation_title": "Etes-vous sûr de vouloir supprimer cette zone ?"
+                        "confirmation_text": "Tous les appareils de cette pièce ne seront plus attribués.",
+                        "confirmation_title": "Êtes-vous sûr de vouloir supprimer cette pièce ?"
                     },
                     "description": "Vue d'ensemble de toutes les pièces de votre maison.",
                     "editor": {
                         "create": "Créer",
-                        "default_name": "Nouvelle zone",
+                        "default_name": "Nouvelle Pièce",
                         "delete": "Supprimer",
                         "update": "Mise à jour"
                     },
                     "picker": {
-                        "create_area": "Créer une zone",
+                        "create_area": "Créer une pièce",
                         "header": "Pièces",
                         "integrations_page": "Page des intégrations",
                         "introduction": "Les pièces sont utilisées pour organiser l'emplacement des périphériques. Ces informations seront utilisées partout dans Home Assistant pour vous aider à organiser votre interface, vos autorisations et vos intégrations avec d'autres systèmes.",
                         "introduction2": "Pour placer des périphériques dans une pièce, utilisez le lien ci-dessous pour accéder à la page des intégrations, puis cliquez sur une intégration configurée pour accéder aux cartes de périphérique.",
-                        "no_areas": "On dirait que vous n'avez pas encore de zones !"
+                        "no_areas": "On dirait que vous n'avez pas encore de pièces !"
                     }
                 },
                 "automation": {
@@ -1304,12 +1304,12 @@
                     "caption": "Entrées",
                     "description": "Éléments pouvant aider à construire des automations.",
                     "dialog": {
-                        "add_helper": "Ajouter une aide",
+                        "add_helper": "Ajouter une entrée",
                         "add_platform": "Ajouter {platform}",
                         "create": "Créer"
                     },
                     "picker": {
-                        "add_helper": "Ajouter une aide",
+                        "add_helper": "Ajouter une entrée",
                         "headers": {
                             "editable": "Modifiable",
                             "entity_id": "ID de l'entité",
@@ -1729,7 +1729,7 @@
                     "add_zone": "Ajouter une zone",
                     "caption": "Zones",
                     "configured_in_yaml": "Les zones configurées via configuration.yaml ne peuvent pas être modifiées via l'interface utilisateur.",
-                    "confirm_delete": "Etes-vous sûr de vouloir supprimer cette zone ?",
+                    "confirm_delete": "Êtes-vous sûr de vouloir supprimer cette zone ?",
                     "create_zone": "Créer une zone",
                     "description": "Gérez les zones dans lesquelles vous voulez suivre les personnes.",
                     "detail": {
@@ -1747,9 +1747,9 @@
                         "required_error_msg": "Ce champ est requis",
                         "update": "Mettre à jour"
                     },
-                    "edit_home_zone": "L'emplacement de votre maison peut être modifié dans la configuration générale.",
+                    "edit_home_zone": "Le rayon de la zone d'habitation ne peut pas encore être modifié depuis le frontend. Faites glisser le marqueur sur la carte pour déplacer la zone d'habitation.",
                     "edit_home_zone_narrow": "Le rayon de la zone d'habitation ne peut pas encore être modifié depuis le frontend. L'emplacement peut être modifié par rapport à la configuration générale.",
-                    "go_to_core_config": "Configuration générale",
+                    "go_to_core_config": "Aller à la configuration générale ?",
                     "home_zone_core_config": "L'emplacement de votre zone d'habitation est modifiable à partir de la page de configuration générale. Le rayon de la zone d'habitation ne peut pas encore être modifié depuis le frontend. Voulez-vous passer à la configuration générale ?",
                     "introduction": "Les zones vous permettent de spécifier certaines régions sur la terre. Lorsqu'une personne se trouve dans une zone, l'état prend le nom de la zone. Les zones peuvent également être utilisées comme déclencheur ou condition dans les configurations d'automation.",
                     "no_zones_created_yet": "Il semble que vous n'ayez pas encore créé de zones."

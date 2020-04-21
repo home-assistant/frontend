@@ -581,6 +581,11 @@
                     "icon": "Ikon",
                     "name": "Namn"
                 },
+                "input_datetime": {
+                    "date": "Datum",
+                    "datetime": "Datum och tid",
+                    "time": "Tid"
+                },
                 "input_number": {
                     "box": "Inmatningsfält",
                     "max": "Maximalt värde",
@@ -1186,6 +1191,7 @@
                     },
                     "cant_edit": "Du kan bara redigera objekt som skapas i användargränssnittet.",
                     "caption": "Enheter",
+                    "confirm_delete": "Är du säker på att du vill ta bort den här enheten?",
                     "confirm_rename_entity_ids": "Vill du också byta namn på entitetens ID för dina enheter?",
                     "data_table": {
                         "area": "Område",
@@ -1195,6 +1201,7 @@
                         "manufacturer": "Tillverkare",
                         "model": "Modell"
                     },
+                    "delete": "Ta bort",
                     "description": "Hantera anslutna enheter",
                     "device_not_found": "Enheten hittades inte.",
                     "entities": {
@@ -1933,6 +1940,7 @@
                         },
                         "generic": {
                             "aspect_ratio": "Bildförhållande",
+                            "attribute": "Attribut",
                             "camera_image": "Kameraentitet",
                             "camera_view": "Kamerauppdatering",
                             "entities": "Entiteter",
@@ -2022,6 +2030,7 @@
                     "edit_card": {
                         "add": "Lägg till kort",
                         "delete": "Ta bort kort",
+                        "duplicate": "Duplicera kort",
                         "edit": "Redigera",
                         "header": "Kortkonfiguration",
                         "move": "Flytta till vy",

@@ -1142,8 +1142,20 @@
                     "caption": "Entidades",
                     "description": "Visão geral de todas as entidades conhecidas.",
                     "picker": {
+                        "disable_selected": {
+                            "button": "Desativar seleção",
+                            "confirm_text": "Entidades desativadas não serão adicionadas ao Home Assistant.",
+                            "confirm_title": "Deseja desativar {number} entidades?"
+                        },
+                        "enable_selected": {
+                            "button": "Ativar seleção ",
+                            "confirm_text": "Assim ficarão disponíveis no Home Assistant caso actualmente estejam desactivados.",
+                            "confirm_title": "Deseja ativar {number} entidades?"
+                        },
                         "filter": {
-                            "filter": "Filtro"
+                            "filter": "Filtro",
+                            "show_disabled": "Mostrar entidades desativadas",
+                            "show_unavailable": "Mostrar entidades indisponíveis"
                         },
                         "header": "Entidades",
                         "headers": {
@@ -1154,6 +1166,7 @@
                         },
                         "introduction": "O Home Assistant mantém um registo de todas as entidades que foram alguma vez detetadas e que podem ser identificadas de uma forma única. Cada uma dessas entidades terá um ID de entidade atribuído, que será reservado apenas para essa entidade.",
                         "introduction2": "Use o registo da entidade para substituir o nome, alterar o ID da entidade ou remover a entrada do Home Assistant. Note que a remoção da entrada do registo de entidade não removerá a entidade. Para fazer isso, siga o link abaixo e remova-o da página de integrações.",
+                        "selected": "Selecionou {number}",
                         "status": {
                             "disabled": "Desativado",
                             "ok": "Ok",
@@ -1269,6 +1282,8 @@
                 },
                 "scene": {
                     "activated": "Ativar cena {name}.",
+                    "caption": "Cenas",
+                    "description": "Criar e editar cenas",
                     "editor": {
                         "default_name": "Nova Cena",
                         "devices": {
