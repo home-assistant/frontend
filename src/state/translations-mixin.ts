@@ -59,7 +59,7 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
       });
       this.hass!.connection.subscribeEvents(
         debounce(() => {
-          this._refetchCachedHassTranslations(false);
+          this._refetchCachedHassTranslations(false, false);
         }, 500),
         "component_loaded"
       );
@@ -68,7 +68,7 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
 
     protected hassReconnected() {
       super.hassReconnected();
-      this._refetchCachedHassTranslations(true);
+      this._refetchCachedHassTranslations(true, false);
       this._applyTranslations(this.hass!);
     }
 
@@ -94,7 +94,7 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
         saveTranslationPreferences(this.hass, { language });
       }
       this._applyTranslations(this.hass);
-      this._refetchCachedHassTranslations(true);
+      this._refetchCachedHassTranslations(true, true);
     }
 
     private _applyTranslations(hass: HomeAssistant) {
@@ -227,10 +227,16 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
       this._updateHass(changes);
     }
 
-    private _refetchCachedHassTranslations(includeConfigFlow: boolean) {
+    private _refetchCachedHassTranslations(
+      includeConfigFlow: boolean,
+      clearIntegrations: boolean
+    ) {
       for (const [category, cache] of Object.entries(
         this.__loadedTranslations
       )) {
+        if (clearIntegrations) {
+          cache.integrations = [];
+        }
         if (cache.setup) {
           this._loadHassTranslations(
             this.hass!.language,
