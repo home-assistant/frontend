@@ -32,7 +32,16 @@ export const coverIcon = (state: HassEntity): string => {
     case "damper":
       return open ? "hass:circle" : "hass:circle-slice-8";
     case "shutter":
-      return open ? "hass:window-shutter-open" : "hass:window-shutter";
+      switch (state.state) {
+        case "opening":
+          return "hass:arrow-up-box";
+        case "closing":
+          return "hass:arrow-down-box";
+        case "closed":
+          return "hass:window-shutter";
+        default:
+          return "hass:window-shutter-open";
+      }
     case "blind":
     case "curtain":
       switch (state.state) {
