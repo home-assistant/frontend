@@ -1,0 +1,207 @@
+{
+  "state": {
+    "alarm_control_panel": {
+      "triggered": "\u30c8\u30ea\u30ac\u30fc"
+    },
+    "automation": {
+      "off": "\u30aa\u30d5",
+      "on": "\u30aa\u30f3"
+    },
+    "binary_sensor": {
+      "battery": {
+        "off": "\u901a\u5e38",
+        "on": "\u4f4e"
+      },
+      "cold": {
+        "off": "\u901a\u5e38",
+        "on": "\u4f4e\u6e29"
+      },
+      "connectivity": {
+        "off": "\u5207\u65ad",
+        "on": "\u63a5\u7d9a\u6e08"
+      },
+      "default": {
+        "off": "\u30aa\u30d5",
+        "on": "\u30aa\u30f3"
+      },
+      "door": {
+        "off": "\u9589\u9396",
+        "on": "\u958b\u653e"
+      },
+      "garage_door": {
+        "off": "\u9589\u9396",
+        "on": "\u958b\u653e"
+      },
+      "gas": {
+        "off": "\u672a\u691c\u51fa",
+        "on": "\u691c\u51fa"
+      },
+      "heat": {
+        "off": "\u6b63\u5e38",
+        "on": "\u9ad8\u6e29"
+      },
+      "lock": {
+        "off": "\u30ed\u30c3\u30af\u3055\u308c\u307e\u3057\u305f",
+        "on": "\u30ed\u30c3\u30af\u3055\u308c\u3066\u3044\u307e\u305b\u3093"
+      },
+      "moisture": {
+        "off": "\u30c9\u30e9\u30a4",
+        "on": "\u30a6\u30a7\u30c3\u30c8"
+      },
+      "motion": {
+        "off": "\u672a\u691c\u51fa",
+        "on": "\u691c\u51fa"
+      },
+      "occupancy": {
+        "off": "\u672a\u691c\u51fa",
+        "on": "\u691c\u51fa"
+      },
+      "opening": {
+        "off": "\u9589\u9396",
+        "on": "\u958b\u653e"
+      },
+      "presence": {
+        "off": "\u5916\u51fa",
+        "on": "\u5728\u5b85"
+      },
+      "problem": {
+        "off": "OK"
+      },
+      "safety": {
+        "off": "\u5b89\u5168",
+        "on": "\u5371\u967a"
+      },
+      "smoke": {
+        "off": "\u672a\u691c\u51fa",
+        "on": "\u691c\u51fa"
+      },
+      "sound": {
+        "off": "\u672a\u691c\u51fa",
+        "on": "\u691c\u51fa"
+      },
+      "vibration": {
+        "off": "\u672a\u691c\u51fa",
+        "on": "\u691c\u51fa"
+      },
+      "window": {
+        "off": "\u9589\u9396",
+        "on": "\u958b\u653e"
+      }
+    },
+    "calendar": {
+      "off": "\u30aa\u30d5",
+      "on": "\u30aa\u30f3"
+    },
+    "camera": {
+      "idle": "\u30a2\u30a4\u30c9\u30eb"
+    },
+    "climate": {
+      "auto": "\u30aa\u30fc\u30c8",
+      "cool": "\u51b7\u623f",
+      "dry": "\u30c9\u30e9\u30a4",
+      "fan_only": "\u30d5\u30a1\u30f3\u306e\u307f",
+      "heat": "\u6696\u623f",
+      "off": "\u30aa\u30d5"
+    },
+    "configurator": {
+      "configure": "\u8a2d\u5b9a",
+      "configured": "\u8a2d\u5b9a\u6e08\u307f"
+    },
+    "cover": {
+      "closed": "\u9589\u9396",
+      "opening": "\u6249"
+    },
+    "default": {
+      "off": "\u30aa\u30d5",
+      "on": "\u30aa\u30f3",
+      "unavailable": "\u5229\u7528\u4e0d\u53ef",
+      "unknown": "\u4e0d\u660e"
+    },
+    "device_tracker": {
+      "home": "\u5728\u5b85",
+      "not_home": "\u5916\u51fa"
+    },
+    "fan": {
+      "off": "\u30aa\u30d5",
+      "on": "\u30aa\u30f3"
+    },
+    "group": {
+      "closed": "\u9589\u9396",
+      "home": "\u5728\u5b85",
+      "locked": "\u30ed\u30c3\u30af\u3055\u308c\u307e\u3057\u305f",
+      "not_home": "\u5916\u51fa",
+      "off": "\u30aa\u30d5",
+      "ok": "OK",
+      "on": "\u30aa\u30f3",
+      "opening": "\u6249"
+    },
+    "input_boolean": {
+      "off": "\u30aa\u30d5",
+      "on": "\u30aa\u30f3"
+    },
+    "light": {
+      "off": "\u30aa\u30d5",
+      "on": "\u30aa\u30f3"
+    },
+    "media_player": {
+      "idle": "\u30a2\u30a4\u30c9\u30eb",
+      "off": "\u30aa\u30d5",
+      "on": "\u30aa\u30f3",
+      "paused": "\u4e00\u6642\u505c\u6b62",
+      "playing": "\u518d\u751f\u4e2d"
+    },
+    "person": {
+      "home": "\u5728\u5b85",
+      "not_home": "\u5916\u51fa"
+    },
+    "plant": {
+      "ok": "OK"
+    },
+    "remote": {
+      "off": "\u30aa\u30d5",
+      "on": "\u30aa\u30f3"
+    },
+    "script": {
+      "off": "\u30aa\u30d5",
+      "on": "\u30aa\u30f3"
+    },
+    "sensor": {
+      "off": "\u30aa\u30d5",
+      "on": "\u30aa\u30f3"
+    },
+    "sun": {
+      "above_horizon": "\u5730\u5e73\u7dda\u306e\u4e0a",
+      "below_horizon": "\u5730\u5e73\u7dda\u3088\u308a\u4e0b"
+    },
+    "switch": {
+      "off": "\u30aa\u30d5",
+      "on": "\u30aa\u30f3"
+    },
+    "weather": {
+      "clear-night": "\u6674\u308c\u305f\u591c",
+      "cloudy": "\u66c7\u308a",
+      "fog": "\u9727",
+      "hail": "\u96f9",
+      "lightning": "\u96f7",
+      "lightning-rainy": "\u96f7\u96e8",
+      "partlycloudy": "\u6674\u308c\u6642\u3005\u66c7\u308a",
+      "pouring": "\u5927\u96e8",
+      "rainy": "\u96e8",
+      "snowy": "\u96ea",
+      "snowy-rainy": "\u307f\u305e\u308c",
+      "sunny": "\u6674\u308c",
+      "windy": "\u5f37\u98a8"
+    },
+    "zwave": {
+      "default": {
+        "initializing": "\u521d\u671f\u5316\u4e2d",
+        "ready": "\u6e96\u5099\u5b8c\u4e86",
+        "sleeping": "\u30b9\u30ea\u30fc\u30d7"
+      },
+      "query_stage": {
+        "dead": " ({query_stage})",
+        "initializing": "\u521d\u671f\u5316\u4e2d ( {query_stage} )"
+      }
+    }
+  }
+}

@@ -1,0 +1,246 @@
+{
+  "state": {
+    "alarm_control_panel": {
+      "armed": "\u00c1 ver\u00f0i",
+      "armed_away": "\u00c1 ver\u00f0i \u00fati",
+      "armed_home": "\u00c1 ver\u00f0i heima",
+      "armed_night": "\u00c1 ver\u00f0i n\u00f3tt",
+      "arming": "Set \u00e1 v\u00f6r\u00f0",
+      "disarmed": "ekki \u00e1 ver\u00f0i",
+      "disarming": "tek af ver\u00f0i",
+      "pending": "B\u00ed\u00f0ur",
+      "triggered": "R\u00e6st"
+    },
+    "automation": {
+      "off": "\u00d3virk",
+      "on": "Virk"
+    },
+    "binary_sensor": {
+      "battery": {
+        "off": "Venjulegt",
+        "on": "L\u00e1gt"
+      },
+      "cold": {
+        "off": "Venjulegt",
+        "on": "Kalt"
+      },
+      "connectivity": {
+        "off": "Aftengdur",
+        "on": "Tengdur"
+      },
+      "default": {
+        "off": "Sl\u00f6kkt",
+        "on": "Kveikt"
+      },
+      "door": {
+        "off": "Loku\u00f0",
+        "on": "Opin"
+      },
+      "garage_door": {
+        "off": "Loku\u00f0",
+        "on": "Opin"
+      },
+      "gas": {
+        "off": "Hreinsa",
+        "on": "Uppg\u00f6tva\u00f0"
+      },
+      "heat": {
+        "off": "Venjulegt",
+        "on": "Heitt"
+      },
+      "lock": {
+        "off": "L\u00e6st",
+        "on": "Afl\u00e6st"
+      },
+      "moisture": {
+        "off": "\u00deurrt",
+        "on": "Blautt"
+      },
+      "motion": {
+        "off": "Engin hreyfing",
+        "on": "Hreyfing"
+      },
+      "occupancy": {
+        "off": "Hreinsa",
+        "on": "Uppg\u00f6tva\u00f0"
+      },
+      "presence": {
+        "off": "Fjarverandi",
+        "on": "Heima"
+      },
+      "problem": {
+        "off": "\u00cd lagi",
+        "on": "Vandam\u00e1l"
+      },
+      "safety": {
+        "off": "\u00d6ruggt",
+        "on": "\u00d3\u00f6ruggt"
+      },
+      "smoke": {
+        "off": "Hreinsa",
+        "on": "Uppg\u00f6tva\u00f0"
+      },
+      "sound": {
+        "off": "Hreinsa",
+        "on": "Uppg\u00f6tva\u00f0"
+      },
+      "vibration": {
+        "on": "Uppg\u00f6tva\u00f0"
+      },
+      "window": {
+        "off": "Loka",
+        "on": "Opna"
+      }
+    },
+    "calendar": {
+      "off": "\u00d3virkt",
+      "on": "Virkt"
+    },
+    "camera": {
+      "idle": "A\u00f0ger\u00f0alaus",
+      "recording": "\u00cd uppt\u00f6ku",
+      "streaming": "Streymi"
+    },
+    "climate": {
+      "auto": "Sj\u00e1lfvirkt",
+      "cool": "K\u00e6ling",
+      "dry": "\u00deurrt",
+      "fan_only": "Vifta eing\u00f6ngu",
+      "heat": "Hitun",
+      "heat_cool": "Hita/K\u00e6la",
+      "off": "Sl\u00f6kkt"
+    },
+    "configurator": {
+      "configure": "Stilli",
+      "configured": "Stillt"
+    },
+    "cover": {
+      "closed": "Loka\u00f0",
+      "closing": "Loka",
+      "open": "Opin",
+      "opening": "Opna",
+      "stopped": "St\u00f6\u00f0vu\u00f0"
+    },
+    "default": {
+      "off": "Af",
+      "on": "\u00c1",
+      "unavailable": "Ekki tilt\u00e6kt",
+      "unknown": "\u00d3\u00feekkt"
+    },
+    "device_tracker": {
+      "home": "Heima",
+      "not_home": "Fjarverandi"
+    },
+    "fan": {
+      "off": "Sl\u00f6kkt",
+      "on": "\u00cd gangi"
+    },
+    "group": {
+      "closed": "Loku\u00f0",
+      "closing": "Loka",
+      "home": "Heima",
+      "locked": "L\u00e6st",
+      "not_home": "Fjarverandi",
+      "off": "\u00d3virkur",
+      "ok": "\u00cd lagi",
+      "on": "Virkur",
+      "open": "Opin",
+      "opening": "Opna",
+      "problem": "Vandam\u00e1l",
+      "stopped": "St\u00f6\u00f0va\u00f0",
+      "unlocked": "Afl\u00e6st"
+    },
+    "input_boolean": {
+      "off": "Af",
+      "on": "\u00c1"
+    },
+    "light": {
+      "off": "Sl\u00f6kkt",
+      "on": "Kveikt"
+    },
+    "lock": {
+      "locked": "L\u00e6st",
+      "unlocked": "Afl\u00e6st"
+    },
+    "media_player": {
+      "idle": "A\u00f0ger\u00f0alaus",
+      "off": "Sl\u00f6kkt",
+      "on": "\u00ed gangi",
+      "paused": "\u00cd bi\u00f0",
+      "playing": "Spila",
+      "standby": "Bi\u00f0sta\u00f0a"
+    },
+    "person": {
+      "home": "Heima",
+      "not_home": "Fjarverandi"
+    },
+    "plant": {
+      "ok": "\u00cd lagi",
+      "problem": "Vandam\u00e1l"
+    },
+    "remote": {
+      "off": "\u00d3virk",
+      "on": "Virk"
+    },
+    "script": {
+      "off": "\u00d3virkt",
+      "on": "Virkt"
+    },
+    "sensor": {
+      "off": "Af",
+      "on": "\u00c1"
+    },
+    "sun": {
+      "above_horizon": "Yfir sj\u00f3ndeildarhring",
+      "below_horizon": "Undir sj\u00f3ndeildarhring"
+    },
+    "switch": {
+      "off": "Sl\u00f6kkt",
+      "on": "Kveikt"
+    },
+    "timer": {
+      "active": "virkur",
+      "idle": "a\u00f0ger\u00f0alaus",
+      "paused": "\u00ed bi\u00f0"
+    },
+    "vacuum": {
+      "cleaning": "A\u00f0 ryksuga",
+      "docked": "\u00ed tengikv\u00ed",
+      "error": "Villa",
+      "idle": "A\u00f0ger\u00f0alaus",
+      "off": "Sl\u00f6kkt",
+      "on": "\u00cd gangi",
+      "paused": "\u00cd bi\u00f0",
+      "returning": "\u00c1 lei\u00f0 tilbaka \u00ed tengikv\u00ed"
+    },
+    "weather": {
+      "clear-night": "Hei\u00f0sk\u00fdrt, n\u00f3tt",
+      "cloudy": "Sk\u00fdja\u00f0",
+      "exceptional": "Mj\u00f6g gott",
+      "fog": "\u00deoka",
+      "hail": "Hagl\u00e9l",
+      "lightning": "Eldingar",
+      "lightning-rainy": "Eldingar, rigning",
+      "partlycloudy": "A\u00f0 hluta til sk\u00fdja\u00f0",
+      "pouring": "\u00darhelli",
+      "rainy": "Rigning",
+      "snowy": "Snj\u00f3koma",
+      "snowy-rainy": "Slydda",
+      "sunny": "S\u00f3lskin",
+      "windy": "Vindasamt",
+      "windy-variant": "Vindasamt"
+    },
+    "zwave": {
+      "default": {
+        "dead": "Dau\u00f0ur",
+        "initializing": "Frumstilli",
+        "ready": "Tilb\u00fainn",
+        "sleeping": "\u00cd dvala"
+      },
+      "query_stage": {
+        "dead": "Dau\u00f0ur ({query_stage})",
+        "initializing": "Frumstilli ({query_stage})"
+      }
+    }
+  }
+}

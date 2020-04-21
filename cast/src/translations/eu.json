@@ -1,0 +1,198 @@
+{
+  "state": {
+    "alarm_control_panel": {
+      "pending": "Zain",
+      "triggered": "Abiarazita"
+    },
+    "automation": {
+      "off": "Itzalita",
+      "on": "Piztuta"
+    },
+    "binary_sensor": {
+      "battery": {
+        "off": "Normala",
+        "on": "Baxua"
+      },
+      "cold": {
+        "off": "Normala",
+        "on": "Hotza"
+      },
+      "connectivity": {
+        "off": "Deskonektatuta",
+        "on": "Konektatuta"
+      },
+      "default": {
+        "off": "Itzalita",
+        "on": "Piztuta"
+      },
+      "door": {
+        "off": "Itxita",
+        "on": "Ireki"
+      },
+      "garage_door": {
+        "off": "Itxita",
+        "on": "Ireki"
+      },
+      "heat": {
+        "off": "Normala",
+        "on": "Beroa"
+      },
+      "lock": {
+        "off": "Itxita",
+        "on": "Irekita"
+      },
+      "moisture": {
+        "off": "Lehorra",
+        "on": "Buztita"
+      },
+      "opening": {
+        "off": "Itxita",
+        "on": "Ireki"
+      },
+      "presence": {
+        "off": "Kanpoan",
+        "on": "Etxean"
+      },
+      "problem": {
+        "off": "Ondo",
+        "on": "Arazoa"
+      },
+      "safety": {
+        "off": "Babestuta"
+      },
+      "window": {
+        "off": "Itxita",
+        "on": "Ireki"
+      }
+    },
+    "calendar": {
+      "off": "Itzalita",
+      "on": "Piztuta"
+    },
+    "camera": {
+      "recording": "Grabatzen"
+    },
+    "climate": {
+      "auto": "Automatikoa",
+      "cool": "Hotza",
+      "dry": "Lehorra",
+      "fan_only": "Haizagailua bakarrik",
+      "heat": "Beroa",
+      "off": "Itzalita"
+    },
+    "configurator": {
+      "configure": "Konfiguratu",
+      "configured": "Konfiguratuta"
+    },
+    "cover": {
+      "closed": "Itxita",
+      "closing": "Ixten",
+      "open": "Irekita",
+      "opening": "Irekitzen",
+      "stopped": "Geldituta"
+    },
+    "default": {
+      "off": "Itzalita",
+      "on": "Piztuta",
+      "unavailable": "Ez dago erabilgarri",
+      "unknown": "Ezezaguna"
+    },
+    "device_tracker": {
+      "home": "Etxean",
+      "not_home": "Kanpoan"
+    },
+    "fan": {
+      "off": "Itzalita",
+      "on": "Piztuta"
+    },
+    "group": {
+      "closed": "Itxita",
+      "closing": "Ixten",
+      "home": "Etxean",
+      "not_home": "Kanpoan",
+      "off": "Itzalita",
+      "ok": "Itzalita",
+      "on": "Piztuta",
+      "open": "Ireki",
+      "opening": "Irekitzen",
+      "problem": "Arazoa",
+      "stopped": "Geldirik"
+    },
+    "input_boolean": {
+      "off": "Itzalita",
+      "on": "Piztuta"
+    },
+    "light": {
+      "off": "Itzalita",
+      "on": "Piztuta"
+    },
+    "media_player": {
+      "off": "Itzalita",
+      "on": "Piztuta"
+    },
+    "person": {
+      "home": "Etxean",
+      "not_home": "Kanpoan"
+    },
+    "plant": {
+      "ok": "Itzalita",
+      "problem": "Arazoa"
+    },
+    "remote": {
+      "off": "Itzalita",
+      "on": "Piztuta"
+    },
+    "script": {
+      "off": "Itzalita",
+      "on": "Piztuta"
+    },
+    "sensor": {
+      "off": "Itzalita",
+      "on": "Piztuta"
+    },
+    "sun": {
+      "above_horizon": "Horizonte gainetik",
+      "below_horizon": "Horizonte azpitik"
+    },
+    "switch": {
+      "off": "Itzalita",
+      "on": "Piztuta"
+    },
+    "vacuum": {
+      "cleaning": "Garbitzen",
+      "docked": "Basean",
+      "error": "Errorea",
+      "off": "Itzalita",
+      "on": "Piztuta",
+      "returning": "Basera itzultzen"
+    },
+    "weather": {
+      "clear-night": "Garbia, gaua",
+      "cloudy": "Hodeitsua",
+      "fog": "Lainoa",
+      "hail": "Txingorra",
+      "lightning": "Tximistak",
+      "lightning-rainy": "Tximistak, euritsua",
+      "partlycloudy": "Ostarteak",
+      "pouring": "Botatzen",
+      "rainy": "Euritsua",
+      "snowy": "Elurtsua",
+      "snowy-rainy": "Elurtsua, euritsua",
+      "sunny": "Eguzkitsua",
+      "windy": "Haizetsua",
+      "windy-variant": "Haizetsua"
+    },
+    "zwave": {
+      "default": {
+        "dead": "Hilda",
+        "initializing": "Hasieratzen",
+        "ready": "Prest",
+        "sleeping": "Lotan"
+      },
+      "query_stage": {
+        "dead": "Ez du erantzuten ({query_stage})",
+        "initializing": "Hasieratzen ({query_stage})"
+      }
+    }
+  }
+}

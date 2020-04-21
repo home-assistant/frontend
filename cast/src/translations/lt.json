@@ -1,0 +1,138 @@
+{
+  "state": {
+    "alarm_control_panel": {
+      "armed": "U\u017erakinta",
+      "armed_home": "Nam\u0173 apsauga \u012fjungta",
+      "arming": "Saugojimo re\u017eimo \u012fjungimas",
+      "disarmed": "Atrakinta",
+      "disarming": "Saugojimo re\u017eimo i\u0161jungimas",
+      "pending": "Laukiama",
+      "triggered": "Aktyvinta"
+    },
+    "automation": {
+      "off": "I\u0161jungta",
+      "on": "\u012ejungta"
+    },
+    "binary_sensor": {
+      "connectivity": {
+        "off": "Atsijung\u0119s",
+        "on": "Prisijung\u0119s"
+      },
+      "default": {
+        "off": "I\u0161jungta",
+        "on": "\u012ejungta"
+      },
+      "door": {
+        "off": "U\u017edaryta",
+        "on": "Atidaryta"
+      },
+      "garage_door": {
+        "off": "U\u017edaryta",
+        "on": "Atidaryta"
+      },
+      "gas": {
+        "off": "Neaptikta",
+        "on": "Aptikta"
+      },
+      "moisture": {
+        "off": "Sausa",
+        "on": "\u0160lapia"
+      },
+      "motion": {
+        "off": "Nejuda",
+        "on": "Aptiktas judesys"
+      },
+      "occupancy": {
+        "off": "Laisva",
+        "on": "U\u017eimta"
+      },
+      "opening": {
+        "off": "U\u017edaryta",
+        "on": "Atidaryta"
+      },
+      "safety": {
+        "off": "Saugu",
+        "on": "Nesaugu"
+      },
+      "smoke": {
+        "off": "Neaptikta",
+        "on": "Aptikta"
+      },
+      "sound": {
+        "off": "Tylu",
+        "on": "Aptikta"
+      },
+      "vibration": {
+        "off": "Neaptikta",
+        "on": "Aptikta"
+      },
+      "window": {
+        "off": "U\u017edaryta",
+        "on": "Atidaryta"
+      }
+    },
+    "calendar": {
+      "off": "I\u0161jungta",
+      "on": "\u012ejungta"
+    },
+    "camera": {
+      "idle": "Laukimo re\u017eimas",
+      "recording": "\u012era\u0161ymas",
+      "streaming": "Transliuojama"
+    },
+    "climate": {
+      "off": "I\u0161jungta"
+    },
+    "default": {
+      "off": "I\u0161jungta",
+      "on": "\u012ejungta",
+      "unavailable": "(nepasiekiamas)",
+      "unknown": "Ne\u017einoma"
+    },
+    "fan": {
+      "off": "I\u0161jungta",
+      "on": "\u012ejungta"
+    },
+    "group": {
+      "off": "I\u0161jungta",
+      "ok": "Ok",
+      "on": "\u012ejungta"
+    },
+    "input_boolean": {
+      "on": "\u012ejungta"
+    },
+    "media_player": {
+      "on": "\u012ejungta"
+    },
+    "person": {
+      "home": "Namuose",
+      "not_home": "I\u0161vyk\u0119s"
+    },
+    "remote": {
+      "off": "I\u0161jungta",
+      "on": "\u012ejungta"
+    },
+    "script": {
+      "off": "I\u0161jungta",
+      "on": "\u012ejungta"
+    },
+    "sensor": {
+      "off": "I\u0161jungta",
+      "on": "\u012ejungta"
+    },
+    "switch": {
+      "off": "I\u0161jungta",
+      "on": "\u012ejungta"
+    },
+    "timer": {
+      "active": "aktyvus",
+      "paused": "pristabdytas"
+    },
+    "zwave": {
+      "query_stage": {
+        "dead": " ({query_stage})",
+        "initializing": " ( {query_stage} )"
+      }
+    }
+  }
+}
