@@ -123,7 +123,9 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
             }
             const integrationName = domainToName(localize, configEntry.domain);
             filterTexts.push(
-              `integration ${integrationName}${
+              `${this.hass.localize(
+                "ui.panel.config.integrations.integration"
+              )} ${integrationName}${
                 integrationName !== configEntry.title
                   ? `: ${configEntry.title}`
                   : ""
@@ -424,11 +426,20 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
                   ? html` <div>
                       <ha-icon icon="hass:filter-variant"></ha-icon>
                       <paper-tooltip position="left">
-                        Filtering by ${activeFilters.join(", ")}
+                        ${this.hass.localize(
+                          "ui.panel.config.filtering.filtering_by"
+                        )}
+                        ${activeFilters.join(", ")}
                       </paper-tooltip>
                     </div>`
-                  : `Filtering by ${activeFilters.join(", ")}`}
-                <mwc-button @click=${this._clearFilter}>Clear</mwc-button>
+                  : `${this.hass.localize(
+                      "ui.panel.config.filtering.filtering_by"
+                    )} ${activeFilters.join(", ")}`}
+                <mwc-button @click=${this._clearFilter}
+                  >${this.hass.localize(
+                    "ui.panel.config.filtering.clear"
+                  )}</mwc-button
+                >
               </div>`
             : ""}
           <paper-menu-button no-animations horizontal-align="right">

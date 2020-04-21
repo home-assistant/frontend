@@ -132,11 +132,16 @@ export class HaTabsSubpageDataTable extends LitElement {
                           <div>
                             <ha-icon icon="hass:filter-variant"></ha-icon>
                             <paper-tooltip position="left">
-                              Filtering by ${this.activeFilters.join(", ")}
+                              ${this.hass.localize(
+                                "ui.panel.config.filtering.filtering_by"
+                              )}
+                              ${this.activeFilters.join(", ")}
                             </paper-tooltip>
                           </div>
                           <mwc-button @click=${this._clearFilter}
-                            >Clear</mwc-button
+                            >${this.hass.localize(
+                              "ui.panel.config.filtering.clear"
+                            )}</mwc-button
                           >
                         </div>`
                       : ""}
@@ -169,9 +174,14 @@ export class HaTabsSubpageDataTable extends LitElement {
                         </search-input>
                         ${this.activeFilters
                           ? html`<div class="active-filters">
-                              Filtering by ${this.activeFilters.join(", ")}
+                              ${this.hass.localize(
+                                "ui.panel.config.filtering.filtering_by"
+                              )}
+                              ${this.activeFilters.join(", ")}
                               <mwc-button @click=${this._clearFilter}
-                                >Clear</mwc-button
+                                >${this.hass.localize(
+                                  "ui.panel.config.filtering.clear"
+                                )}</mwc-button
                               >
                             </div>`
                           : ""}

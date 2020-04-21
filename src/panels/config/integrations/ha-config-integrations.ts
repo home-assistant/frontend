@@ -190,9 +190,11 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
                           @click=${this._removeIgnoredIntegration}
                           .entry=${item}
                           aria-label=${this.hass.localize(
-                            "ui.panel.config.integrations.details"
+                            "ui.panel.config.integrations.ignore.stop_ignore"
                           )}
-                          >Stop ignoring</mwc-button
+                          >${this.hass.localize(
+                            "ui.panel.config.integrations.ignore.stop_ignore"
+                          )}</mwc-button
                         >
                       </div>
                     </ha-card>
@@ -311,12 +313,16 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
                         <div class="card-actions">
                           <div>
                             <mwc-button @click=${this._editEntryName}
-                              >Rename</mwc-button
+                              >${this.hass.localize(
+                                "ui.panel.config.integrations.config_entry.rename"
+                              )}</mwc-button
                             >
                             ${item.supports_options
                               ? html`
                                   <mwc-button @click=${this._showOptions}
-                                    >Options</mwc-button
+                                    >${this.hass.localize(
+                                      "ui.panel.config.integrations.config_entry.options"
+                                    )}</mwc-button
                                   >
                                 `
                               : ""}
@@ -336,15 +342,17 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
                             ></paper-icon-button>
                             <paper-listbox slot="dropdown-content">
                               <paper-item @tap=${this._showSystemOptions}>
-                                ${this.hass!.localize("ui.panel.") ||
-                                "System options"}</paper-item
+                                ${this.hass.localize(
+                                  "ui.panel.config.integrations.config_entry.system_options"
+                                )}</paper-item
                               >
                               <paper-item
                                 class="warning"
                                 @tap=${this._removeIntegration}
                               >
-                                ${this.hass!.localize("ui.panel.") ||
-                                "Delete"}</paper-item
+                                ${this.hass.localize(
+                                  "ui.panel.config.integrations.config_entry.delete"
+                                )}</paper-item
                               >
                             </paper-listbox>
                           </paper-menu-button>
@@ -359,11 +367,14 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
                       ${this.hass.localize("ui.panel.config.integrations.none")}
                     </h1>
                     <p>
-                      Seems like you don't have any integation configured yet.
-                      Click on the button below to add a new integration.
+                      ${this.hass.localize(
+                        "ui.panel.config.integrations.no_integrations"
+                      )}
                     </p>
                     <mwc-button @click=${this._createFlow} unelevated
-                      >Add integration</mwc-button
+                      >${this.hass.localize(
+                        "ui.panel.config.integrations.add"
+                      )}</mwc-button
                     >
                   </div>
                 </ha-card>
@@ -504,7 +515,8 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
     const configEntry = ev.target.closest("ha-card").configEntry;
     const newName = await showPromptDialog(this, {
       title: "Edit the name of this config entry",
-      inputLabel: configEntry.title,
+      defaultValue: configEntry.title,
+      inputLabel: "Config entry name",
     });
     if (!newName) {
       return;

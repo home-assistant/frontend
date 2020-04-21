@@ -26,6 +26,7 @@ import {
   findBatteryEntity,
 } from "../../../data/entity_registry";
 import "../../../layouts/hass-tabs-subpage-data-table";
+import "../../../components/entity/ha-state-icon";
 import { HomeAssistant, Route } from "../../../types";
 import { configSections } from "../ha-panel-config";
 import { domainToName } from "../../../data/integration";
@@ -77,7 +78,9 @@ export class HaConfigDeviceDashboard extends LitElement {
             }
             const integrationName = domainToName(localize, configEntry.domain);
             filterTexts.push(
-              `integration ${integrationName}${
+              `${this.hass.localize(
+                "ui.panel.config.integrations.integration"
+              )} ${integrationName}${
                 integrationName !== configEntry.title
                   ? `: ${configEntry.title}`
                   : ""
