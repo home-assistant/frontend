@@ -1,0 +1,255 @@
+{
+  "state": {
+    "alarm_control_panel": {
+      "armed": "Aktivn\u00ed",
+      "armed_away": "Aktivn\u00ed re\u017eim mimo domov",
+      "armed_custom_bypass": "Aktivn\u00ed u\u017eivatelsk\u00fdm obejit\u00edm",
+      "armed_home": "Aktivn\u00ed re\u017eim doma",
+      "armed_night": "Aktivn\u00ed no\u010dn\u00ed re\u017eim",
+      "arming": "Aktivov\u00e1n\u00ed",
+      "disarmed": "Neaktivn\u00ed",
+      "disarming": "Deaktivov\u00e1n\u00ed",
+      "pending": "Nadch\u00e1zej\u00edc\u00ed",
+      "triggered": "Spu\u0161t\u011bno"
+    },
+    "automation": {
+      "off": "Neaktivn\u00ed",
+      "on": "Aktivn\u00ed"
+    },
+    "binary_sensor": {
+      "battery": {
+        "off": "Norm\u00e1ln\u00ed",
+        "on": "N\u00edzk\u00fd stav"
+      },
+      "cold": {
+        "off": "Norm\u00e1ln\u00ed",
+        "on": "Chladn\u00e9"
+      },
+      "connectivity": {
+        "off": "Odpojeno",
+        "on": "P\u0159ipojeno"
+      },
+      "default": {
+        "off": "Neaktivn\u00ed",
+        "on": "Aktivn\u00ed"
+      },
+      "door": {
+        "off": "Zav\u0159eno",
+        "on": "Otev\u0159eno"
+      },
+      "garage_door": {
+        "off": "Zav\u0159eno",
+        "on": "Otev\u0159eno"
+      },
+      "gas": {
+        "off": "\u017d\u00e1dn\u00fd plyn",
+        "on": "Zji\u0161t\u011bn plyn"
+      },
+      "heat": {
+        "off": "Norm\u00e1ln\u00ed",
+        "on": "Hork\u00e9"
+      },
+      "lock": {
+        "off": "Zam\u010deno",
+        "on": "Odem\u010deno"
+      },
+      "moisture": {
+        "off": "Sucho",
+        "on": "Vlhko"
+      },
+      "motion": {
+        "off": "Bez pohybu",
+        "on": "Zaznamen\u00e1n pohyb"
+      },
+      "occupancy": {
+        "off": "Volno",
+        "on": "Obsazeno"
+      },
+      "opening": {
+        "off": "Zav\u0159eno",
+        "on": "Otev\u0159eno"
+      },
+      "presence": {
+        "off": "Pry\u010d",
+        "on": "Doma"
+      },
+      "problem": {
+        "off": "V po\u0159\u00e1dku",
+        "on": "Probl\u00e9m"
+      },
+      "safety": {
+        "off": "Zaji\u0161t\u011bno",
+        "on": "Nezaji\u0161t\u011bno"
+      },
+      "smoke": {
+        "off": "\u017d\u00e1dn\u00fd d\u00fdm",
+        "on": "Zji\u0161t\u011bn d\u00fdm"
+      },
+      "sound": {
+        "off": "Ticho",
+        "on": "Zachycen zvuk"
+      },
+      "vibration": {
+        "off": "Klid",
+        "on": "Zji\u0161t\u011bny vibrace"
+      },
+      "window": {
+        "off": "Zav\u0159eno",
+        "on": "Otev\u0159eno"
+      }
+    },
+    "calendar": {
+      "off": "Neaktivn\u00ed",
+      "on": "Aktivn\u00ed"
+    },
+    "camera": {
+      "idle": "Ne\u010dinn\u00fd",
+      "recording": "Z\u00e1znam",
+      "streaming": "Streamov\u00e1n\u00ed"
+    },
+    "climate": {
+      "auto": "Automatika",
+      "cool": "Chlazen\u00ed",
+      "dry": "Vysou\u0161en\u00ed",
+      "fan_only": "Pouze ventil\u00e1tor",
+      "heat": "Topen\u00ed",
+      "heat_cool": "Vyt\u00e1p\u011bn\u00ed/Chlazen\u00ed",
+      "off": "Neaktivn\u00ed"
+    },
+    "configurator": {
+      "configure": "Nakonfigurovat",
+      "configured": "Nakonfigurov\u00e1no"
+    },
+    "cover": {
+      "closed": "Zav\u0159eno",
+      "closing": "Zav\u00edr\u00e1n\u00ed",
+      "open": "Otev\u0159eno",
+      "opening": "Otev\u00edr\u00e1n\u00ed",
+      "stopped": "Zastaveno"
+    },
+    "default": {
+      "off": "Neaktivn\u00ed",
+      "on": "Aktivn\u00ed",
+      "unavailable": "Nen\u00ed k dispozici",
+      "unknown": "Nezji\u0161t\u011bno"
+    },
+    "device_tracker": {
+      "home": "Doma",
+      "not_home": "Pry\u010d"
+    },
+    "fan": {
+      "off": "Neaktivn\u00ed",
+      "on": "Aktivn\u00ed"
+    },
+    "group": {
+      "closed": "Zav\u0159eno",
+      "closing": "Zav\u00edr\u00e1n\u00ed",
+      "home": "Doma",
+      "locked": "Zam\u010deno",
+      "not_home": "Pry\u010d",
+      "off": "Neaktivn\u00ed",
+      "ok": "V po\u0159\u00e1dku",
+      "on": "Aktivn\u00ed",
+      "open": "Otev\u0159eno",
+      "opening": "Otev\u00edr\u00e1n\u00ed",
+      "problem": "Probl\u00e9m",
+      "stopped": "Zastaveno",
+      "unlocked": "Odem\u010deno"
+    },
+    "input_boolean": {
+      "off": "Neaktivn\u00ed",
+      "on": "Aktivn\u00ed"
+    },
+    "light": {
+      "off": "Nesv\u00edt\u00ed",
+      "on": "Sv\u00edt\u00ed"
+    },
+    "lock": {
+      "locked": "Zam\u010deno",
+      "unlocked": "Odem\u010deno"
+    },
+    "media_player": {
+      "idle": "Ne\u010dinn\u00fd",
+      "off": "Neaktivn\u00ed",
+      "on": "Aktivn\u00ed",
+      "paused": "Pozastaveno",
+      "playing": "P\u0159ehr\u00e1v\u00e1n\u00ed",
+      "standby": "Pohotovostn\u00ed re\u017eim"
+    },
+    "person": {
+      "home": "Doma",
+      "not_home": "Pry\u010d"
+    },
+    "plant": {
+      "ok": "V po\u0159\u00e1dku",
+      "problem": "Probl\u00e9m"
+    },
+    "remote": {
+      "off": "Neaktivn\u00ed",
+      "on": "Aktivn\u00ed"
+    },
+    "scene": {
+      "scening": "Scen\u00e9rie"
+    },
+    "script": {
+      "off": "Neaktivn\u00ed",
+      "on": "Aktivn\u00ed"
+    },
+    "sensor": {
+      "off": "Neaktivn\u00ed",
+      "on": "Aktivn\u00ed"
+    },
+    "sun": {
+      "above_horizon": "Nad horizontem",
+      "below_horizon": "Za horizontem"
+    },
+    "switch": {
+      "off": "Neaktivn\u00ed",
+      "on": "Aktivn\u00ed"
+    },
+    "timer": {
+      "active": "aktivn\u00ed",
+      "idle": "ne\u010dinn\u00e9",
+      "paused": "pozastaveno"
+    },
+    "vacuum": {
+      "cleaning": "\u010cist\u00ed",
+      "docked": "V stanici",
+      "error": "Chyba",
+      "idle": "Ne\u010dinn\u00fd",
+      "off": "Off",
+      "on": "On",
+      "paused": "Pozastaveno",
+      "returning": "N\u00e1vrat do stanice"
+    },
+    "weather": {
+      "clear-night": "Jasn\u00e1 noc",
+      "cloudy": "Zata\u017eeno",
+      "exceptional": "Vyj\u00edme\u010dn\u00e9",
+      "fog": "Mlha",
+      "hail": "Krupobit\u00ed",
+      "lightning": "Bou\u0159e",
+      "lightning-rainy": "Bou\u0159e a d\u00e9\u0161\u0165",
+      "partlycloudy": "Polojasno",
+      "pouring": "Lij\u00e1k",
+      "rainy": "D\u00e9\u0161\u0165",
+      "snowy": "Sn\u00edh",
+      "snowy-rainy": "D\u00e9\u0161\u0165 se sn\u011bhem",
+      "sunny": "Slune\u010dno",
+      "windy": "V\u011btrno",
+      "windy-variant": "V\u011btrno"
+    },
+    "zwave": {
+      "default": {
+        "dead": "Nereaguje",
+        "initializing": "Inicializace",
+        "ready": "P\u0159ipraveno",
+        "sleeping": "\u00dasporn\u00fd re\u017eim"
+      },
+      "query_stage": {
+        "dead": "Nereaguje ({query_stage})",
+        "initializing": "Inicializace ( {query_stage} )"
+      }
+    }
+  }
+}

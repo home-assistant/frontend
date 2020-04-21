@@ -1,0 +1,255 @@
+{
+  "state": {
+    "alarm_control_panel": {
+      "armed": "uzbrojony",
+      "armed_away": "uzbrojony (poza domem)",
+      "armed_custom_bypass": "uzbrojony (cz\u0119\u015bciowo)",
+      "armed_home": "uzbrojony (w domu)",
+      "armed_night": "uzbrojony (noc)",
+      "arming": "uzbrajanie",
+      "disarmed": "rozbrojony",
+      "disarming": "rozbrajanie",
+      "pending": "oczekuje",
+      "triggered": "wyzwolony"
+    },
+    "automation": {
+      "off": "wy\u0142\u0105czony",
+      "on": "w\u0142\u0105czony"
+    },
+    "binary_sensor": {
+      "battery": {
+        "off": "na\u0142adowana",
+        "on": "roz\u0142adowana"
+      },
+      "cold": {
+        "off": "normalnie",
+        "on": "zimno"
+      },
+      "connectivity": {
+        "off": "offline",
+        "on": "online"
+      },
+      "default": {
+        "off": "wy\u0142\u0105czony",
+        "on": "w\u0142\u0105czony"
+      },
+      "door": {
+        "off": "zamkni\u0119te",
+        "on": "otwarte"
+      },
+      "garage_door": {
+        "off": "zamkni\u0119ta",
+        "on": "otwarta"
+      },
+      "gas": {
+        "off": "brak",
+        "on": "wykryto"
+      },
+      "heat": {
+        "off": "normalnie",
+        "on": "gor\u0105co"
+      },
+      "lock": {
+        "off": "zamkni\u0119ty",
+        "on": "otwarty"
+      },
+      "moisture": {
+        "off": "brak wilgoci",
+        "on": "wilgo\u0107"
+      },
+      "motion": {
+        "off": "brak",
+        "on": "wykryto"
+      },
+      "occupancy": {
+        "off": "brak",
+        "on": "wykryto"
+      },
+      "opening": {
+        "off": "zamkni\u0119te",
+        "on": "otwarte"
+      },
+      "presence": {
+        "off": "poza domem",
+        "on": "w domu"
+      },
+      "problem": {
+        "off": "ok",
+        "on": "problem"
+      },
+      "safety": {
+        "off": "brak zagro\u017cenia",
+        "on": "zagro\u017cenie"
+      },
+      "smoke": {
+        "off": "brak",
+        "on": "wykryto"
+      },
+      "sound": {
+        "off": "brak",
+        "on": "wykryto"
+      },
+      "vibration": {
+        "off": "brak",
+        "on": "wykryto"
+      },
+      "window": {
+        "off": "zamkni\u0119te",
+        "on": "otwarte"
+      }
+    },
+    "calendar": {
+      "off": "wy\u0142\u0105czony",
+      "on": "w\u0142\u0105czony"
+    },
+    "camera": {
+      "idle": "nieaktywna",
+      "recording": "nagrywanie",
+      "streaming": "strumieniowanie"
+    },
+    "climate": {
+      "auto": "automatyczny",
+      "cool": "ch\u0142odzenie",
+      "dry": "osuszanie",
+      "fan_only": "tylko wentylator",
+      "heat": "grzanie",
+      "heat_cool": "grzanie/ch\u0142odzenie",
+      "off": "wy\u0142\u0105czony"
+    },
+    "configurator": {
+      "configure": "Skonfiguruj",
+      "configured": "skonfigurowany"
+    },
+    "cover": {
+      "closed": "zamkni\u0119ta",
+      "closing": "zamykanie",
+      "open": "otwarta",
+      "opening": "otwieranie",
+      "stopped": "zatrzymany"
+    },
+    "default": {
+      "off": "wy\u0142\u0105czony",
+      "on": "w\u0142\u0105czony",
+      "unavailable": "niedost\u0119pny",
+      "unknown": "nieznany"
+    },
+    "device_tracker": {
+      "home": "w domu",
+      "not_home": "poza domem"
+    },
+    "fan": {
+      "off": "wy\u0142\u0105czony",
+      "on": "w\u0142\u0105czony"
+    },
+    "group": {
+      "closed": "zamkni\u0119te",
+      "closing": "zamykanie",
+      "home": "w domu",
+      "locked": "zamkni\u0119ty",
+      "not_home": "poza domem",
+      "off": "wy\u0142\u0105czony",
+      "ok": "ok",
+      "on": "w\u0142\u0105czony",
+      "open": "otwarte",
+      "opening": "otwieranie",
+      "problem": "problem",
+      "stopped": "zatrzymany",
+      "unlocked": "otwarty"
+    },
+    "input_boolean": {
+      "off": "wy\u0142\u0105czony",
+      "on": "w\u0142\u0105czony"
+    },
+    "light": {
+      "off": "wy\u0142\u0105czony",
+      "on": "w\u0142\u0105czony"
+    },
+    "lock": {
+      "locked": "zamkni\u0119ty",
+      "unlocked": "otwarty"
+    },
+    "media_player": {
+      "idle": "nieaktywny",
+      "off": "wy\u0142\u0105czony",
+      "on": "w\u0142\u0105czony",
+      "paused": "wstrzymany",
+      "playing": "odtwarzanie",
+      "standby": "tryb czuwania"
+    },
+    "person": {
+      "home": "w domu",
+      "not_home": "poza domem"
+    },
+    "plant": {
+      "ok": "ok",
+      "problem": "problem"
+    },
+    "remote": {
+      "off": "wy\u0142\u0105czony",
+      "on": "w\u0142\u0105czony"
+    },
+    "scene": {
+      "scening": "sceny"
+    },
+    "script": {
+      "off": "wy\u0142\u0105czony",
+      "on": "w\u0142\u0105czony"
+    },
+    "sensor": {
+      "off": "wy\u0142\u0105czony",
+      "on": "w\u0142\u0105czony"
+    },
+    "sun": {
+      "above_horizon": "powy\u017cej horyzontu",
+      "below_horizon": "poni\u017cej horyzontu"
+    },
+    "switch": {
+      "off": "wy\u0142\u0105czony",
+      "on": "w\u0142\u0105czony"
+    },
+    "timer": {
+      "active": "aktywny",
+      "idle": "nieaktywny",
+      "paused": "wstrzymany"
+    },
+    "vacuum": {
+      "cleaning": "sprz\u0105tanie",
+      "docked": "w stacji dokuj\u0105cej",
+      "error": "b\u0142\u0105d",
+      "idle": "nieaktywny",
+      "off": "wy\u0142\u0105czony",
+      "on": "w\u0142\u0105czony",
+      "paused": "wstrzymany",
+      "returning": "powr\u00f3t do stacji dokuj\u0105cej"
+    },
+    "weather": {
+      "clear-night": "pogodnie, noc",
+      "cloudy": "pochmurno",
+      "exceptional": "wyj\u0105tkowy",
+      "fog": "mg\u0142a",
+      "hail": "grad",
+      "lightning": "b\u0142yskawice",
+      "lightning-rainy": "burza",
+      "partlycloudy": "cz\u0119\u015bciowe zachmurzenie",
+      "pouring": "ulewa",
+      "rainy": "deszczowo",
+      "snowy": "\u015bnie\u017cnie",
+      "snowy-rainy": "\u015bnie\u017cnie, deszczowo",
+      "sunny": "s\u0142onecznie",
+      "windy": "wietrznie",
+      "windy-variant": "wietrznie"
+    },
+    "zwave": {
+      "default": {
+        "dead": "martwy",
+        "initializing": "inicjalizacja",
+        "ready": "gotowy",
+        "sleeping": "u\u015bpiony"
+      },
+      "query_stage": {
+        "dead": "martwy ({query_stage})",
+        "initializing": "inicjalizacja ({query_stage})"
+      }
+    }
+  }
+}
