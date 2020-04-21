@@ -19,7 +19,7 @@ import {
   addGroup,
   fetchGroupableDevices,
   ZHAGroup,
-  ZHADeviceEndpoints,
+  ZHADeviceEndpoint,
 } from "../../../data/zha";
 import "../../../layouts/hass-error-screen";
 import "../../../layouts/hass-subpage";
@@ -35,7 +35,7 @@ export class ZHAAddGroupPage extends LitElement {
 
   @property({ type: Boolean }) public narrow!: boolean;
 
-  @property({ type: Array }) public deviceEndpoints: ZHADeviceEndpoints[] = [];
+  @property({ type: Array }) public deviceEndpoints: ZHADeviceEndpoint[] = [];
 
   @property() private _processingAdd = false;
 

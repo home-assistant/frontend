@@ -28,13 +28,9 @@ export interface ZHADevice {
 }
 
 export interface ZHADeviceEndpoint {
-  endpoint: number;
-  entities: ZHAEntityReference[];
-}
-
-export interface ZHADeviceEndpoints {
   device: ZHADevice;
-  endpoints: ZHADeviceEndpoint[];
+  endpoint_id: number;
+  entities: ZHAEntityReference[];
 }
 
 export interface Attribute {
@@ -67,7 +63,7 @@ export interface ReadAttributeServiceData {
 export interface ZHAGroup {
   name: string;
   group_id: number;
-  members: ZHADevice[];
+  members: ZHADeviceEndpoint[];
 }
 
 export const reconfigureNode = (
@@ -224,7 +220,7 @@ export const fetchGroup = (
 
 export const fetchGroupableDevices = (
   hass: HomeAssistant
-): Promise<ZHADeviceEndpoints[]> =>
+): Promise<ZHADeviceEndpoint[]> =>
   hass.callWS({
     type: "zha/devices/groupable2",
   });

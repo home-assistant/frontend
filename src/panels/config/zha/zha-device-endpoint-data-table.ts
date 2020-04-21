@@ -5,6 +5,8 @@ import {
   property,
   query,
   TemplateResult,
+  css,
+  CSSResult,
 } from "lit-element";
 import memoizeOne from "memoize-one";
 import "../../../components/data-table/ha-data-table";
@@ -14,7 +16,7 @@ import type {
   DataTableRowData,
 } from "../../../components/data-table/ha-data-table";
 import "../../../components/entity/ha-state-icon";
-import type { ZHADeviceEndpoints, ZHAEntityReference } from "../../../data/zha";
+import type { ZHADeviceEndpoint, ZHAEntityReference } from "../../../data/zha";
 import { showZHADeviceInfoDialog } from "../../../dialogs/zha-device-info-dialog/show-dialog-zha-device-info";
 import type { HomeAssistant } from "../../../types";
 
@@ -23,7 +25,7 @@ export interface DeviceEndpointRowData extends DataTableRowData {
   name: string;
   model: string;
   manufacturer: string;
-  endpoint: number;
+  endpoint_id: number;
   entities: ZHAEntityReference[];
 }
 
@@ -35,26 +37,24 @@ export class ZHADeviceEndpointDataTable extends LitElement {
 
   @property({ type: Boolean }) public selectable = false;
 
-  @property({ type: Array }) public deviceEndpoints: ZHADeviceEndpoints[] = [];
+  @property({ type: Array }) public deviceEndpoints: ZHADeviceEndpoint[] = [];
 
   @query("ha-data-table") private _dataTable!: HaDataTable;
 
   private _deviceEndpoints = memoizeOne(
-    (deviceEndpoints: ZHADeviceEndpoints[]) => {
+    (deviceEndpoints: ZHADeviceEndpoint[]) => {
       const outputDevices: DeviceEndpointRowData[] = [];
 
       deviceEndpoints.forEach((deviceEndpoint) => {
-        deviceEndpoint.endpoints.forEach((endpoint) => {
-          outputDevices.push({
-            name:
-              deviceEndpoint.device.user_given_name ||
-              deviceEndpoint.device.name,
-            model: deviceEndpoint.device.model,
-            manufacturer: deviceEndpoint.device.manufacturer,
-            id: deviceEndpoint.device.ieee,
-            endpoint: endpoint.endpoint,
-            entities: endpoint.entities,
-          });
+        outputDevices.push({
+          name:
+            deviceEndpoint.device.user_given_name || deviceEndpoint.device.name,
+          model: deviceEndpoint.device.model,
+          manufacturer: deviceEndpoint.device.manufacturer,
+          id: deviceEndpoint.device.ieee + "_" + deviceEndpoint.endpoint_id,
+          ieee: deviceEndpoint.device.ieee,
+          endpoint_id: deviceEndpoint.endpoint_id,
+          entities: deviceEndpoint.entities,
         });
       });
 
@@ -73,12 +73,16 @@ export class ZHADeviceEndpointDataTable extends LitElement {
               direction: "asc",
               grows: true,
               template: (name) => html`
-                <div @click=${this._handleClicked} style="cursor: pointer;">
+                <div
+                  class="mdc-data-table__cell table-cell-text"
+                  @click=${this._handleClicked}
+                  style="cursor: pointer;"
+                >
                   ${name}
                 </div>
               `,
             },
-            endpoint: {
+            endpoint_id: {
               title: "Endpoint",
               sortable: true,
               filterable: true,
@@ -92,12 +96,16 @@ export class ZHADeviceEndpointDataTable extends LitElement {
               direction: "asc",
               grows: true,
               template: (name) => html`
-                <div @click=${this._handleClicked} style="cursor: pointer;">
+                <div
+                  class="mdc-data-table__cell table-cell-text"
+                  @click=${this._handleClicked}
+                  style="cursor: pointer;"
+                >
                   ${name}
                 </div>
               `,
             },
-            endpoint: {
+            endpoint_id: {
               title: "Endpoint",
               sortable: true,
               filterable: true,
@@ -112,7 +120,11 @@ export class ZHADeviceEndpointDataTable extends LitElement {
                   ${entities.length
                     ? entities.map(
                         (entity) =>
-                          html` ${entity.name || entity.original_name} <br />`
+                          html`<div
+                            class="mdc-data-table__cell table-cell-text"
+                          >
+                            ${entity.name || entity.original_name}
+                          </div>`
                       )
                     : html`
                         <p>
@@ -141,10 +153,21 @@ export class ZHADeviceEndpointDataTable extends LitElement {
   }
 
   private async _handleClicked(ev: CustomEvent) {
-    const ieee = ((ev.target as HTMLElement).closest(
+    const rowId = ((ev.target as HTMLElement).closest(
       ".mdc-data-table__row"
     ) as any).rowId;
+    const ieee = rowId.substring(0, rowId.indexOf("_"));
     showZHADeviceInfoDialog(this, { ieee });
+  }
+
+  static get styles(): CSSResult[] {
+    return [
+      css`
+        .table-cell-text {
+          word-break: break-word;
+        }
+      `,
+    ];
   }
 }
 
