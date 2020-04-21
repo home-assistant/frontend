@@ -9,7 +9,6 @@ import {
   TemplateResult,
 } from "lit-element";
 import { HomeAssistant } from "../../../types";
-import { getHistoryCoordinates } from "../common/graph/get-history-coordinates";
 import { HassEntity } from "home-assistant-js-websocket";
 
 import "@polymer/paper-spinner/paper-spinner";
@@ -37,8 +36,10 @@ export class HuiGraphHeaderFooter extends LitElement
   @property() private _coordinates?: number[][];
 
   private _date?: Date;
+
   private _stateHistory?: HassEntity[];
-  private _fetching: boolean = false;
+
+  private _fetching = false;
 
   public setConfig(config: GraphHeaderFooterConfig): void {
     if (!config?.entity || config.entity.split(".")[0] !== "sensor") {
