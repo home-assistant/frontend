@@ -20,9 +20,9 @@
   "state_attributes": {
     "climate": {
       "fan_mode": {
-        "off": "[%key:state::default::off%]",
-        "on": "[%key:state::default::on%]",
-        "auto": "[%key:state::climate::auto%]"
+        "off": "Off",
+        "on": "On",
+        "auto": "Auto"
       },
       "preset_mode": {
         "none": "None",
@@ -64,12 +64,12 @@
       "triggered": "Trig"
     },
     "device_tracker": {
-      "home": "[%key:state::device_tracker::home%]",
-      "not_home": "[%key:state::device_tracker::not_home%]"
+      "home": "[%key:state_badge::person::home%]",
+      "not_home": "[%key:state_badge::person::not_home%]"
     },
     "person": {
-      "home": "[%key:state::person::home%]",
-      "not_home": "[%key:state::person::not_home%]"
+      "home": "Home",
+      "not_home": "Away"
     }
   },
   "groups": {
