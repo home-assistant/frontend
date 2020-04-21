@@ -18,6 +18,7 @@ import { stateIcon } from "../../common/entity/state_icon";
 import { timerTimeRemaining } from "../../common/entity/timer_time_remaining";
 import { HomeAssistant } from "../../types";
 import "../ha-label-badge";
+import { computeStateDisplay } from "../../common/entity/compute_state_display";
 
 @customElement("ha-state-label-badge")
 export class HaStateLabelBadge extends LitElement {
@@ -108,8 +109,13 @@ export class HaStateLabelBadge extends LitElement {
       default:
         return state.state === "unknown"
           ? "-"
-          : this.hass!.localize(`component.${domain}.state.${state.state}`) ||
-              state.state;
+          : state.attributes.unit_of_measurement
+          ? state.state
+          : computeStateDisplay(
+              this.hass!.localize,
+              state,
+              this.hass!.language
+            );
     }
   }
 
