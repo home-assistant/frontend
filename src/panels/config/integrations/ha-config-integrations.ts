@@ -1,3 +1,4 @@
+/* eslint-disable lit/no-invalid-html */
 import "@polymer/app-route/app-route";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import {
@@ -51,6 +52,7 @@ import { HomeAssistant, Route } from "../../../types";
 import { configSections } from "../ha-panel-config";
 import { domainToName } from "../../../data/integration";
 import { haStyle } from "../../../resources/styles";
+import { afterNextRender } from "../../../common/util/render-status";
 
 @customElement("ha-config-integrations")
 class HaConfigIntegrations extends SubscribeMixin(LitElement) {
@@ -73,6 +75,10 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
   @property() private _deviceRegistryEntries: DeviceRegistryEntry[] = [];
 
   @property() private _showIgnored = false;
+
+  @property() private _searchParms = new URLSearchParams(
+    window.location.search
+  );
 
   public hassSubscribe(): UnsubscribeFunc[] {
     return [
@@ -98,6 +104,26 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
     super.firstUpdated(changed);
     this._loadConfigEntries();
     this.hass.loadBackendTranslation("title", undefined, true);
+  }
+
+  protected updated(changed: PropertyValues) {
+    super.updated(changed);
+    if (
+      this._searchParms.has("config_entry") &&
+      changed.has("_configEntries") &&
+      !(changed.get("_configEntries") as ConfigEntry[]).length &&
+      this._configEntries.length
+    ) {
+      afterNextRender(() => {
+        const card = this.shadowRoot!.getElementById(
+          this._searchParms.get("config_entry")!
+        );
+        if (card) {
+          card.scrollIntoView();
+          card.classList.add("highlight");
+        }
+      });
+    }
   }
 
   protected render(): TemplateResult {
@@ -221,7 +247,7 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
                 `
               )
             : ""}
-          ${this._entityRegistryEntries.length
+          ${this._configEntries.length
             ? this._configEntries.map((item: any) => {
                 const devices = this._getDevices(item);
                 const entities = this._getEntities(item);
@@ -534,6 +560,9 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
           display: flex;
           flex-direction: column;
           justify-content: space-between;
+        }
+        ha-card.highlight {
+          border: 1px solid var(--accent-color);
         }
         .discovered {
           border: 1px solid var(--primary-color);

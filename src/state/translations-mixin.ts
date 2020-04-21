@@ -231,6 +231,7 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
       for (const [category, cache] of Object.entries(
         this.__loadedTranslations
       )) {
+        cache.integrations = [];
         if (cache.setup) {
           this._loadHassTranslations(
             this.hass!.language,
