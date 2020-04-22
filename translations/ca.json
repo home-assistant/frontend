@@ -93,7 +93,7 @@
         },
         "automation": {
             "off": "Desactivat",
-            "on": "[%key:state::default::on%]"
+            "on": "Activat"
         },
         "binary_sensor": {
             "battery": {
@@ -109,7 +109,7 @@
                 "on": "Connectat"
             },
             "default": {
-                "off": "[%key:state::default::off%]",
+                "off": "Desactivat",
                 "on": "Activat"
             },
             "door": {
@@ -178,7 +178,7 @@
             }
         },
         "calendar": {
-            "off": "[%key:state::default::off%]",
+            "off": "Desactivat",
             "on": "Activat"
         },
         "camera": {
@@ -232,7 +232,7 @@
             "unlocked": "Desbloquejat"
         },
         "input_boolean": {
-            "off": "[%key:state::default::off%]",
+            "off": "Desactivat",
             "on": "Activat"
         },
         "light": {
@@ -267,11 +267,11 @@
         },
         "script": {
             "off": "Desactivat",
-            "on": "[%key:state::default::on%]"
+            "on": "Activat"
         },
         "sensor": {
             "off": "Desactivat",
-            "on": "[%key:state::default::on%]"
+            "on": "Activat"
         },
         "sun": {
             "above_horizon": "Sobre l'horitzó",

@@ -185,7 +185,7 @@
             "not_home": "خارج المنزل"
         },
         "fan": {
-            "off": "[%key:state::default::off%]",
+            "off": "إيقاف",
             "on": "قيد التشغيل"
         },
         "group": {

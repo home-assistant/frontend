@@ -213,7 +213,7 @@
             "not_home": "Preč"
         },
         "fan": {
-            "off": "[%key:state::default::off%]",
+            "off": "Neaktívny",
             "on": "Zapnutý"
         },
         "group": {

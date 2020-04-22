@@ -93,7 +93,7 @@
         },
         "automation": {
             "off": "Oprit",
-            "on": "[%key:state::default::on%]"
+            "on": "Pornit"
         },
         "binary_sensor": {
             "battery": {
@@ -109,7 +109,7 @@
                 "on": "Conectat"
             },
             "default": {
-                "off": "[%key:state::default::off%]",
+                "off": "Oprit",
                 "on": "Pornit"
             },
             "door": {
@@ -178,7 +178,7 @@
             }
         },
         "calendar": {
-            "off": "[%key:state::default::off%]",
+            "off": "Oprit",
             "on": "Pornit"
         },
         "camera": {
@@ -192,7 +192,7 @@
             "fan_only": "Numai ventilator",
             "heat": "Căldură",
             "heat_cool": "Încălzire / Răcire",
-            "off": "[%key:state::default::off%]"
+            "off": "Oprit"
         },
         "configurator": {
             "configure": "Configurează",
@@ -213,8 +213,8 @@
             "not_home": "Plecat"
         },
         "fan": {
-            "off": "[%key:state::default::off%]",
-            "on": "[%key:state::default::on%]"
+            "off": "Oprit",
+            "on": "Pornit"
         },
         "group": {
             "closed": "Închis",
@@ -232,7 +232,7 @@
             "unlocked": "Deblocat"
         },
         "input_boolean": {
-            "off": "[%key:state::default::off%]",
+            "off": "Oprit",
             "on": "Pornit"
         },
         "light": {
@@ -246,7 +246,7 @@
         "media_player": {
             "idle": "Inactiv",
             "off": "Oprit",
-            "on": "[%key:state::default::on%]",
+            "on": "Pornit",
             "paused": "În pauză",
             "playing": "Rulează",
             "standby": "În așteptare"
@@ -259,26 +259,26 @@
             "problem": "Problemă"
         },
         "remote": {
-            "off": "[%key:state::default::off%]",
-            "on": "[%key:state::default::on%]"
+            "off": "Oprit",
+            "on": "Pornit"
         },
         "scene": {
             "scening": "Scenă"
         },
         "script": {
             "off": "Oprit",
-            "on": "[%key:state::default::on%]"
+            "on": "Pornit"
         },
         "sensor": {
             "off": "Oprit",
-            "on": "[%key:state::default::on%]"
+            "on": "Pornit"
         },
         "sun": {
             "above_horizon": "Deasupra orizontului",
             "below_horizon": "Sub orizont"
         },
         "switch": {
-            "off": "[%key:state::default::off%]",
+            "off": "Oprit",
             "on": "Pornit"
         },
         "timer": {

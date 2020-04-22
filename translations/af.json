@@ -64,11 +64,11 @@
         },
         "device_tracker": {
             "home": "Tuis",
-            "not_home": "Elders"
+            "not_home": "[%key:state_badge::person::not_home%]"
         },
         "person": {
             "home": "Tuis",
-            "not_home": "Elders"
+            "not_home": "[%key:state_badge::person::not_home%]"
         }
     },
     "state": {
@@ -86,7 +86,7 @@
         },
         "automation": {
             "off": "Af",
-            "on": "[%key:state::default::on%]"
+            "on": "Aan"
         },
         "binary_sensor": {
             "battery": {
@@ -102,7 +102,7 @@
                 "on": "Gekoppel"
             },
             "default": {
-                "off": "[%key:state::default::off%]",
+                "off": "Af",
                 "on": "Aan"
             },
             "door": {
@@ -142,7 +142,7 @@
                 "on": "Oop"
             },
             "presence": {
-                "off": "Elders",
+                "off": "[%key:state_badge::person::not_home%]",
                 "on": "Tuis"
             },
             "problem": {
@@ -171,7 +171,7 @@
             }
         },
         "calendar": {
-            "off": "[%key:state::default::off%]",
+            "off": "Af",
             "on": "Aan"
         },
         "camera": {
@@ -185,7 +185,7 @@
             "fan_only": "Slegs waaier",
             "heat": "Hitte",
             "heat_cool": "Verhit/Verkoel",
-            "off": "[%key:state::default::off%]"
+            "off": "Af"
         },
         "configurator": {
             "configure": "Stel op",
@@ -206,15 +206,15 @@
             "not_home": "Elders"
         },
         "fan": {
-            "off": "[%key:state::default::off%]",
-            "on": "[%key:state::default::on%]"
+            "off": "Af",
+            "on": "Aan"
         },
         "group": {
             "closed": "Toe",
             "closing": "Sluiting",
             "home": "Tuis",
             "locked": "Gesluit",
-            "not_home": "Elders",
+            "not_home": "[%key:state_badge::person::not_home%]",
             "off": "Af",
             "ok": "OK",
             "on": "Aan",
@@ -225,7 +225,7 @@
             "unlocked": "Oopgesluit"
         },
         "input_boolean": {
-            "off": "[%key:state::default::off%]",
+            "off": "Af",
             "on": "Aan"
         },
         "light": {
@@ -239,39 +239,39 @@
         "media_player": {
             "idle": "Onaktief",
             "off": "Af",
-            "on": "[%key:state::default::on%]",
+            "on": "Aan",
             "paused": "Onderbreek",
             "playing": "Speel Tans",
             "standby": "Gereed"
         },
         "person": {
-            "home": "[%key:state::device_tracker::home%]"
+            "home": "Tuis"
         },
         "plant": {
             "ok": "OK",
             "problem": "Probleem"
         },
         "remote": {
-            "off": "[%key:state::default::off%]",
-            "on": "[%key:state::default::on%]"
+            "off": "Af",
+            "on": "Aan"
         },
         "scene": {
             "scening": "Toneeling"
         },
         "script": {
             "off": "Af",
-            "on": "[%key:state::default::on%]"
+            "on": "Aan"
         },
         "sensor": {
             "off": "Af",
-            "on": "[%key:state::default::on%]"
+            "on": "Aan"
         },
         "sun": {
             "above_horizon": "Bo horison",
             "below_horizon": "Onder horison"
         },
         "switch": {
-            "off": "[%key:state::default::off%]",
+            "off": "Af",
             "on": "Aan"
         },
         "timer": {
@@ -284,8 +284,8 @@
             "docked": "Vasgemeer by hawe",
             "error": "Fout",
             "idle": "Onaktief",
-            "off": "[%key:state::default::off%]",
-            "on": "[%key:state::default::on%]",
+            "off": "Af",
+            "on": "Aan",
             "paused": "Onderbreek",
             "returning": "Oppad terug hawe toe"
         },

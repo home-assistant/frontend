@@ -213,7 +213,7 @@
             "not_home": "Borta"
         },
         "fan": {
-            "off": "[%key:state::default::off%]",
+            "off": "Av",
             "on": "På"
         },
         "group": {

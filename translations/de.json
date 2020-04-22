@@ -93,7 +93,7 @@
         },
         "automation": {
             "off": "Aus",
-            "on": "[%key:state::default::on%]"
+            "on": "An"
         },
         "binary_sensor": {
             "battery": {
@@ -109,7 +109,7 @@
                 "on": "Verbunden"
             },
             "default": {
-                "off": "[%key:state::default::off%]",
+                "off": "Aus",
                 "on": "An"
             },
             "door": {
@@ -178,7 +178,7 @@
             }
         },
         "calendar": {
-            "off": "[%key:state::default::off%]",
+            "off": "Aus",
             "on": "An"
         },
         "camera": {
@@ -192,7 +192,7 @@
             "fan_only": "Nur Ventilator",
             "heat": "Heizen",
             "heat_cool": "Heizen/Kühlen",
-            "off": "[%key:state::default::off%]"
+            "off": "Aus"
         },
         "configurator": {
             "configure": "Konfigurieren",
@@ -213,8 +213,8 @@
             "not_home": "Abwesend"
         },
         "fan": {
-            "off": "[%key:state::default::off%]",
-            "on": "[%key:state::default::on%]"
+            "off": "Aus",
+            "on": "An"
         },
         "group": {
             "closed": "Geschlossen",
@@ -232,7 +232,7 @@
             "unlocked": "Entriegelt"
         },
         "input_boolean": {
-            "off": "[%key:state::default::off%]",
+            "off": "Aus",
             "on": "An"
         },
         "light": {
@@ -246,7 +246,7 @@
         "media_player": {
             "idle": "Untätig",
             "off": "Aus",
-            "on": "[%key:state::default::on%]",
+            "on": "An",
             "paused": "Pausiert",
             "playing": "Spielt",
             "standby": "Standby"
@@ -259,26 +259,26 @@
             "problem": "Problem"
         },
         "remote": {
-            "off": "[%key:state::default::off%]",
-            "on": "[%key:state::default::on%]"
+            "off": "Aus",
+            "on": "An"
         },
         "scene": {
             "scening": "Szene"
         },
         "script": {
             "off": "Aus",
-            "on": "[%key:state::default::on%]"
+            "on": "An"
         },
         "sensor": {
             "off": "Aus",
-            "on": "[%key:state::default::on%]"
+            "on": "An"
         },
         "sun": {
             "above_horizon": "Über dem Horizont",
             "below_horizon": "Unter dem Horizont"
         },
         "switch": {
-            "off": "[%key:state::default::off%]",
+            "off": "Aus",
             "on": "An"
         },
         "timer": {
@@ -291,8 +291,8 @@
             "docked": "Angedockt",
             "error": "Fehler",
             "idle": "Standby",
-            "off": "[%key:state::default::off%]",
-            "on": "[%key:state::default::on%]",
+            "off": "Aus",
+            "on": "An",
             "paused": "Pausiert",
             "returning": "Rückkehr zur Dockingstation"
         },

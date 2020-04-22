@@ -20,33 +20,6 @@
         }
     },
     "state": {
-        "automation": {
-            "on": "[%key:state::default::on%]"
-        },
-        "binary_sensor": {
-            "default": {
-                "off": "[%key:state::default::off%]"
-            }
-        },
-        "calendar": {
-            "off": "[%key:state::default::off%]"
-        },
-        "fan": {
-            "off": "[%key:state::default::off%]",
-            "on": "[%key:state::default::on%]"
-        },
-        "media_player": {
-            "on": "[%key:state::default::on%]"
-        },
-        "remote": {
-            "on": "[%key:state::default::on%]"
-        },
-        "script": {
-            "on": "[%key:state::default::on%]"
-        },
-        "sensor": {
-            "on": "[%key:state::default::on%]"
-        },
         "sun": {
             "above_horizon": "Iznad horizonta",
             "below_horizon": "Ispod horizonta"

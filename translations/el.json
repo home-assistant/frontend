@@ -71,7 +71,7 @@
         },
         "device_tracker": {
             "home": "Σπίτι",
-            "not_home": "Εκτός Σπιτιού"
+            "not_home": "Εκτός"
         },
         "person": {
             "home": "Σπίτι",
@@ -213,7 +213,7 @@
             "not_home": "Εκτός Σπιτιού"
         },
         "fan": {
-            "off": "[%key:state::default::off%]",
+            "off": "Κλειστό",
             "on": "Ανοιχτό"
         },
         "group": {

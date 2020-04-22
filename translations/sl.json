@@ -93,7 +93,7 @@
         },
         "automation": {
             "off": "Izključen",
-            "on": "[%key:state::default::on%]"
+            "on": "Vklopljen"
         },
         "binary_sensor": {
             "battery": {
@@ -109,7 +109,7 @@
                 "on": "Povezan"
             },
             "default": {
-                "off": "[%key:state::default::off%]",
+                "off": "Izključen",
                 "on": "Vklopljen"
             },
             "door": {
@@ -178,7 +178,7 @@
             }
         },
         "calendar": {
-            "off": "[%key:state::default::off%]",
+            "off": "Izključen",
             "on": "Vklopljen"
         },
         "camera": {
@@ -192,7 +192,7 @@
             "fan_only": "Samo ventilator",
             "heat": "Toplo",
             "heat_cool": "Gretje/Hlajenje",
-            "off": "[%key:state::default::off%]"
+            "off": "Izključen"
         },
         "configurator": {
             "configure": "Konfiguriraj",
@@ -213,8 +213,8 @@
             "not_home": "Odsoten"
         },
         "fan": {
-            "off": "[%key:state::default::off%]",
-            "on": "[%key:state::default::on%]"
+            "off": "Izključen",
+            "on": "Vklopljen"
         },
         "group": {
             "closed": "Zaprto",
@@ -232,7 +232,7 @@
             "unlocked": "Odklenjeno"
         },
         "input_boolean": {
-            "off": "[%key:state::default::off%]",
+            "off": "Izključen",
             "on": "Vklopljen"
         },
         "light": {
@@ -246,7 +246,7 @@
         "media_player": {
             "idle": "V pripravljenosti",
             "off": "Izključen",
-            "on": "[%key:state::default::on%]",
+            "on": "Vklopljen",
             "paused": "Na pavzi",
             "playing": "Predvaja",
             "standby": "V pripravljenosti"
@@ -259,26 +259,26 @@
             "problem": "Težava"
         },
         "remote": {
-            "off": "[%key:state::default::off%]",
-            "on": "[%key:state::default::on%]"
+            "off": "Izključen",
+            "on": "Vklopljen"
         },
         "scene": {
             "scening": "Nastavitev scene"
         },
         "script": {
             "off": "Izključen",
-            "on": "[%key:state::default::on%]"
+            "on": "Vklopljen"
         },
         "sensor": {
             "off": "Izključen",
-            "on": "[%key:state::default::on%]"
+            "on": "Vklopljen"
         },
         "sun": {
             "above_horizon": "Nad obzorjem",
             "below_horizon": "Pod obzorjem"
         },
         "switch": {
-            "off": "[%key:state::default::off%]",
+            "off": "Izključen",
             "on": "Vklopljen"
         },
         "timer": {
