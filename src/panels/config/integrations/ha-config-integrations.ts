@@ -77,7 +77,7 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
   @property() private _showIgnored = false;
 
   @property() private _searchParms = new URLSearchParams(
-    window.location.search
+    window.location.hash.substring(1)
   );
 
   public hassSubscribe(): UnsubscribeFunc[] {
