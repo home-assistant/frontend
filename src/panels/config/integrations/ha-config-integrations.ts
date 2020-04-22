@@ -253,6 +253,10 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
             ? this._configEntries.map((item: any) => {
                 const devices = this._getDevices(item);
                 const entities = this._getEntities(item);
+                const integrationName = domainToName(
+                  this.hass.localize,
+                  item.domain
+                );
                 return item.source === "ignore"
                   ? ""
                   : html`
@@ -271,10 +275,12 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
                             />
                           </div>
                           <h1>
-                            ${domainToName(this.hass.localize, item.domain)}
+                            ${integrationName}
                           </h1>
                           <h2>
-                            ${item.title}
+                            ${integrationName === item.title
+                              ? html`&nbsp;`
+                              : item.title}
                           </h2>
                           ${devices.length || entities.length
                             ? html`
