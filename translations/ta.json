@@ -35,8 +35,7 @@
             "unknown": "தெரியாத"
         },
         "device_tracker": {
-            "home": "முகப்பு",
-            "not_home": "தொலைவில்"
+            "home": "முகப்பு"
         },
         "person": {
             "home": "முகப்பு"
@@ -152,7 +151,7 @@
             "not_home": "தொலைவில்"
         },
         "fan": {
-            "off": "[%key:state::default::off%]",
+            "off": "ஆஃப்",
             "on": "விசிறி ஆன்"
         },
         "group": {

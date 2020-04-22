@@ -109,7 +109,7 @@
                 "on": "online"
             },
             "default": {
-                "off": "[%key:state::default::off%]",
+                "off": "wyłączony",
                 "on": "włączony"
             },
             "door": {
@@ -178,7 +178,7 @@
             }
         },
         "calendar": {
-            "off": "[%key:state::default::off%]",
+            "off": "wyłączony",
             "on": "włączony"
         },
         "camera": {
@@ -192,7 +192,7 @@
             "fan_only": "tylko wentylator",
             "heat": "grzanie",
             "heat_cool": "grzanie/chłodzenie",
-            "off": "[%key:state::default::off%]"
+            "off": "wyłączony"
         },
         "configurator": {
             "configure": "Skonfiguruj",
@@ -213,8 +213,8 @@
             "not_home": "poza domem"
         },
         "fan": {
-            "off": "[%key:state::default::off%]",
-            "on": "[%key:state::default::on%]"
+            "off": "wyłączony",
+            "on": "włączony"
         },
         "group": {
             "closed": "zamknięte",
@@ -232,7 +232,7 @@
             "unlocked": "otwarty"
         },
         "input_boolean": {
-            "off": "[%key:state::default::off%]",
+            "off": "wyłączony",
             "on": "włączony"
         },
         "light": {
@@ -246,7 +246,7 @@
         "media_player": {
             "idle": "nieaktywny",
             "off": "wyłączony",
-            "on": "[%key:state::default::on%]",
+            "on": "włączony",
             "paused": "wstrzymany",
             "playing": "odtwarzanie",
             "standby": "tryb czuwania"
@@ -259,15 +259,15 @@
             "problem": "problem"
         },
         "remote": {
-            "off": "[%key:state::default::off%]",
-            "on": "[%key:state::default::on%]"
+            "off": "wyłączony",
+            "on": "włączony"
         },
         "scene": {
             "scening": "sceny"
         },
         "script": {
             "off": "wyłączony",
-            "on": "[%key:state::default::on%]"
+            "on": "włączony"
         },
         "sensor": {
             "off": "wyłączony",

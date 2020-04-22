@@ -64,7 +64,7 @@
         },
         "device_tracker": {
             "home": "อยู่บ้าน",
-            "not_home": "ไม่อยู่"
+            "not_home": "ไม่อยู่บ้าน"
         },
         "person": {
             "home": "อยู่บ้าน",

@@ -86,14 +86,14 @@
             "armed_home": "Aktivní režim doma",
             "armed_night": "Aktivní noční režim",
             "arming": "Aktivování",
-            "disarmed": "[%key:state::default::off%]",
+            "disarmed": "Neaktivní",
             "disarming": "Deaktivování",
             "pending": "Nadcházející",
             "triggered": "Spuštěno"
         },
         "automation": {
             "off": "Neaktivní",
-            "on": "[%key:state::default::on%]"
+            "on": "Aktivní"
         },
         "binary_sensor": {
             "battery": {
@@ -109,7 +109,7 @@
                 "on": "Připojeno"
             },
             "default": {
-                "off": "[%key:state::default::off%]",
+                "off": "Neaktivní",
                 "on": "Aktivní"
             },
             "door": {
@@ -178,7 +178,7 @@
             }
         },
         "calendar": {
-            "off": "[%key:state::default::off%]",
+            "off": "Neaktivní",
             "on": "Aktivní"
         },
         "camera": {
@@ -192,7 +192,7 @@
             "fan_only": "Pouze ventilátor",
             "heat": "Topení",
             "heat_cool": "Vytápění/Chlazení",
-            "off": "[%key:state::default::off%]"
+            "off": "Neaktivní"
         },
         "configurator": {
             "configure": "Nakonfigurovat",
@@ -213,8 +213,8 @@
             "not_home": "Pryč"
         },
         "fan": {
-            "off": "[%key:state::default::off%]",
-            "on": "[%key:state::default::on%]"
+            "off": "Neaktivní",
+            "on": "Aktivní"
         },
         "group": {
             "closed": "Zavřeno",
@@ -232,7 +232,7 @@
             "unlocked": "Odemčeno"
         },
         "input_boolean": {
-            "off": "[%key:state::default::off%]",
+            "off": "Neaktivní",
             "on": "Aktivní"
         },
         "light": {
@@ -246,7 +246,7 @@
         "media_player": {
             "idle": "Nečinný",
             "off": "Neaktivní",
-            "on": "[%key:state::default::on%]",
+            "on": "Aktivní",
             "paused": "Pozastaveno",
             "playing": "Přehrávání",
             "standby": "Pohotovostní režim"
@@ -259,26 +259,26 @@
             "problem": "Problém"
         },
         "remote": {
-            "off": "[%key:state::default::off%]",
-            "on": "[%key:state::default::on%]"
+            "off": "Neaktivní",
+            "on": "Aktivní"
         },
         "scene": {
             "scening": "Scenérie"
         },
         "script": {
             "off": "Neaktivní",
-            "on": "[%key:state::default::on%]"
+            "on": "Aktivní"
         },
         "sensor": {
             "off": "Neaktivní",
-            "on": "[%key:state::default::on%]"
+            "on": "Aktivní"
         },
         "sun": {
             "above_horizon": "Nad horizontem",
             "below_horizon": "Za horizontem"
         },
         "switch": {
-            "off": "[%key:state::default::off%]",
+            "off": "Neaktivní",
             "on": "Aktivní"
         },
         "timer": {

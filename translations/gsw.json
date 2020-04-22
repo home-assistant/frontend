@@ -37,8 +37,7 @@
             "unknown": "Unbekannt"
         },
         "device_tracker": {
-            "home": "Dahei",
-            "not_home": "Nid Dahei"
+            "home": "Dahei"
         },
         "person": {
             "home": "Dahei"
@@ -97,7 +96,6 @@
                 "on": "Offä"
             },
             "presence": {
-                "off": "Nid Dahei",
                 "on": "Dahei"
             },
             "problem": {
@@ -156,7 +154,7 @@
             "not_home": "Nid Dahei"
         },
         "fan": {
-            "off": "[%key:state::default::off%]",
+            "off": "Us",
             "on": "Ah"
         },
         "group": {

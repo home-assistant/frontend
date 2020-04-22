@@ -109,7 +109,7 @@
                 "on": "Ühendatud"
             },
             "default": {
-                "off": "[%key:state::default::off%]",
+                "off": "Väljas",
                 "on": "Sees"
             },
             "door": {

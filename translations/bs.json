@@ -36,8 +36,7 @@
             "unknown": "Nepoznat"
         },
         "device_tracker": {
-            "home": "Kod kuće",
-            "not_home": "Odsutan"
+            "home": "Kod kuće"
         },
         "person": {
             "home": "Kod kuće"
@@ -58,7 +57,7 @@
         },
         "automation": {
             "off": "Isključen",
-            "on": "[%key:state::default::on%]"
+            "on": "Uključen"
         },
         "binary_sensor": {
             "battery": {
@@ -70,7 +69,7 @@
                 "on": "Povezan"
             },
             "default": {
-                "off": "[%key:state::default::off%]",
+                "off": "Isključen",
                 "on": "Uključen"
             },
             "gas": {
@@ -94,7 +93,6 @@
                 "on": "Otvoren"
             },
             "presence": {
-                "off": "Odsutan",
                 "on": "Kod kuće"
             },
             "problem": {
@@ -119,7 +117,7 @@
             }
         },
         "calendar": {
-            "off": "[%key:state::default::off%]",
+            "off": "Isključen",
             "on": "Uključen"
         },
         "camera": {
@@ -132,7 +130,7 @@
             "dry": "Suh",
             "fan_only": "Samo ventilator",
             "heat": "Toplota",
-            "off": "[%key:state::default::off%]"
+            "off": "Isključen"
         },
         "configurator": {
             "configure": "Podesite",
@@ -153,15 +151,14 @@
             "not_home": "Odsutan"
         },
         "fan": {
-            "off": "[%key:state::default::off%]",
-            "on": "[%key:state::default::on%]"
+            "off": "Isključen",
+            "on": "Uključen"
         },
         "group": {
             "closed": "Zatvoren",
             "closing": "Zatvoreno",
             "home": "Kod kuće",
             "locked": "Zaključan",
-            "not_home": "Odsutan",
             "off": "Isključen",
             "ok": "OK",
             "on": "Uključen",
@@ -172,7 +169,7 @@
             "unlocked": "Otključan"
         },
         "input_boolean": {
-            "off": "[%key:state::default::off%]",
+            "off": "Isključen",
             "on": "Uključen"
         },
         "light": {
@@ -186,7 +183,7 @@
         "media_player": {
             "idle": "Besposlen",
             "off": "Isključen",
-            "on": "[%key:state::default::on%]",
+            "on": "Uključen",
             "paused": "Pauziran",
             "playing": "Prikazuje",
             "standby": "U stanju čekanja"
@@ -204,18 +201,18 @@
         },
         "script": {
             "off": "Isključen",
-            "on": "[%key:state::default::on%]"
+            "on": "Uključen"
         },
         "sensor": {
             "off": "Isključen",
-            "on": "[%key:state::default::on%]"
+            "on": "Uključen"
         },
         "sun": {
             "above_horizon": "Iznad horizonta",
             "below_horizon": "Ispod horizonta"
         },
         "switch": {
-            "off": "[%key:state::default::off%]",
+            "off": "Isključen",
             "on": "Uključen"
         },
         "zwave": {

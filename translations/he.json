@@ -71,7 +71,7 @@
         },
         "device_tracker": {
             "home": "בבית",
-            "not_home": "לא בבית"
+            "not_home": "לא נמצא"
         },
         "person": {
             "home": "בבית",
@@ -221,7 +221,7 @@
             "closing": "סוגר",
             "home": "בבית",
             "locked": "נעול",
-            "not_home": "לא בבית",
+            "not_home": "לא נמצא",
             "off": "כבוי",
             "ok": "תקין",
             "on": "מופעל",

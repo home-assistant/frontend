@@ -213,7 +213,7 @@
             "not_home": "Ënnerwee"
         },
         "fan": {
-            "off": "[%key:state::default::off%]",
+            "off": "Aus",
             "on": "Un"
         },
         "group": {

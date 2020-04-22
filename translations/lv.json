@@ -71,7 +71,7 @@
         },
         "device_tracker": {
             "home": "Mājās",
-            "not_home": "Prom"
+            "not_home": "Prombūtne"
         },
         "person": {
             "home": "Mājās",
@@ -213,7 +213,7 @@
             "not_home": "Prom"
         },
         "fan": {
-            "off": "[%key:state::default::off%]",
+            "off": "Izslēgts",
             "on": "Ieslēgts"
         },
         "group": {

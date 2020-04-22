@@ -45,7 +45,7 @@
         },
         "automation": {
             "off": "オフ",
-            "on": "[%key:state::default::on%]"
+            "on": "オン"
         },
         "binary_sensor": {
             "battery": {
@@ -61,7 +61,7 @@
                 "on": "接続済"
             },
             "default": {
-                "off": "[%key:state::default::off%]",
+                "off": "オフ",
                 "on": "オン"
             },
             "door": {
@@ -129,7 +129,7 @@
             }
         },
         "calendar": {
-            "off": "[%key:state::default::off%]",
+            "off": "オフ",
             "on": "オン"
         },
         "camera": {
@@ -140,7 +140,7 @@
             "dry": "ドライ",
             "fan_only": "ファンのみ",
             "heat": "暖房",
-            "off": "[%key:state::default::off%]"
+            "off": "オフ"
         },
         "configurator": {
             "configure": "設定",
@@ -158,8 +158,8 @@
             "not_home": "外出"
         },
         "fan": {
-            "off": "[%key:state::default::off%]",
-            "on": "[%key:state::default::on%]"
+            "off": "オフ",
+            "on": "オン"
         },
         "group": {
             "closed": "閉鎖",
@@ -172,7 +172,7 @@
             "opening": "扉"
         },
         "input_boolean": {
-            "off": "[%key:state::default::off%]",
+            "off": "オフ",
             "on": "オン"
         },
         "light": {
@@ -182,7 +182,7 @@
         "media_player": {
             "idle": "アイドル",
             "off": "オフ",
-            "on": "[%key:state::default::on%]",
+            "on": "オン",
             "paused": "一時停止",
             "playing": "再生中"
         },
@@ -193,23 +193,23 @@
             "ok": "OK"
         },
         "remote": {
-            "off": "[%key:state::default::off%]",
-            "on": "[%key:state::default::on%]"
+            "off": "オフ",
+            "on": "オン"
         },
         "script": {
             "off": "オフ",
-            "on": "[%key:state::default::on%]"
+            "on": "オン"
         },
         "sensor": {
             "off": "オフ",
-            "on": "[%key:state::default::on%]"
+            "on": "オン"
         },
         "sun": {
             "above_horizon": "地平線の上",
             "below_horizon": "地平線より下"
         },
         "switch": {
-            "off": "[%key:state::default::off%]",
+            "off": "オフ",
             "on": "オン"
         },
         "weather": {

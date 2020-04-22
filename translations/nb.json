@@ -93,7 +93,7 @@
         },
         "automation": {
             "off": "Av",
-            "on": "[%key:state::default::on%]"
+            "on": "På"
         },
         "binary_sensor": {
             "battery": {
@@ -109,7 +109,7 @@
                 "on": "Tilkoblet"
             },
             "default": {
-                "off": "[%key:state::default::off%]",
+                "off": "Av",
                 "on": "På"
             },
             "door": {
@@ -178,7 +178,7 @@
             }
         },
         "calendar": {
-            "off": "[%key:state::default::off%]",
+            "off": "Av",
             "on": "På"
         },
         "camera": {
@@ -192,7 +192,7 @@
             "fan_only": "Kun vifte",
             "heat": "Varme",
             "heat_cool": "Varme/kjøling",
-            "off": "[%key:state::default::off%]"
+            "off": "Av"
         },
         "configurator": {
             "configure": "Konfigurer",
@@ -213,8 +213,8 @@
             "not_home": "Borte"
         },
         "fan": {
-            "off": "[%key:state::default::off%]",
-            "on": "[%key:state::default::on%]"
+            "off": "Av",
+            "on": "På"
         },
         "group": {
             "closed": "Lukket",
@@ -232,7 +232,7 @@
             "unlocked": "Ulåst"
         },
         "input_boolean": {
-            "off": "[%key:state::default::off%]",
+            "off": "Av",
             "on": "På"
         },
         "light": {
@@ -246,7 +246,7 @@
         "media_player": {
             "idle": "Inaktiv",
             "off": "Av",
-            "on": "[%key:state::default::on%]",
+            "on": "På",
             "paused": "Pauset",
             "playing": "Spiller",
             "standby": "Avventer"
@@ -259,26 +259,26 @@
             "problem": "Problem"
         },
         "remote": {
-            "off": "[%key:state::default::off%]",
-            "on": "[%key:state::default::on%]"
+            "off": "Av",
+            "on": "På"
         },
         "scene": {
             "scening": "Scenende"
         },
         "script": {
             "off": "Av",
-            "on": "[%key:state::default::on%]"
+            "on": "På"
         },
         "sensor": {
             "off": "Av",
-            "on": "[%key:state::default::on%]"
+            "on": "På"
         },
         "sun": {
             "above_horizon": "Over horisonten",
             "below_horizon": "Under horisonten"
         },
         "switch": {
-            "off": "[%key:state::default::off%]",
+            "off": "Av",
             "on": "På"
         },
         "timer": {

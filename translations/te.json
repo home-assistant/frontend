@@ -37,8 +37,7 @@
             "unknown": "తెలియదు"
         },
         "device_tracker": {
-            "home": "ఇంట",
-            "not_home": "బయట"
+            "home": "ఇంట"
         },
         "person": {
             "home": "ఇంట"

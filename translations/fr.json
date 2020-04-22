@@ -93,7 +93,7 @@
         },
         "automation": {
             "off": "Inactif",
-            "on": "[%key:state::default::on%]"
+            "on": "Actif"
         },
         "binary_sensor": {
             "battery": {
@@ -109,7 +109,7 @@
                 "on": "Connecté"
             },
             "default": {
-                "off": "[%key:state::default::off%]",
+                "off": "Inactif",
                 "on": "Actif"
             },
             "door": {
@@ -178,7 +178,7 @@
             }
         },
         "calendar": {
-            "off": "[%key:state::default::off%]",
+            "off": "Inactif",
             "on": "Actif"
         },
         "camera": {
@@ -192,7 +192,7 @@
             "fan_only": "Ventilateur seul",
             "heat": "Chauffe",
             "heat_cool": "Chaud/Froid",
-            "off": "[%key:state::default::off%]"
+            "off": "Inactif"
         },
         "configurator": {
             "configure": "Configurer",
@@ -260,25 +260,25 @@
         },
         "remote": {
             "off": "Arrêt",
-            "on": "[%key:state::default::on%]"
+            "on": "Actif"
         },
         "scene": {
             "scening": "Scénario"
         },
         "script": {
             "off": "Inactif",
-            "on": "[%key:state::default::on%]"
+            "on": "Actif"
         },
         "sensor": {
             "off": "Inactif",
-            "on": "[%key:state::default::on%]"
+            "on": "Actif"
         },
         "sun": {
             "above_horizon": "Au-dessus de l'horizon",
             "below_horizon": "Sous l’horizon"
         },
         "switch": {
-            "off": "[%key:state::default::off%]",
+            "off": "Inactif",
             "on": "Actif"
         },
         "timer": {

@@ -97,6 +97,9 @@
                 "off": "Uždaryta",
                 "on": "Atidaryta"
             },
+            "presence": {
+                "off": "Išvykęs"
+            },
             "safety": {
                 "off": "Saugu",
                 "on": "Nesaugu"
@@ -128,17 +131,18 @@
             "streaming": "Transliuojama"
         },
         "climate": {
-            "off": "[%key:state::default::off%]"
+            "off": "Išjungta"
         },
         "default": {
             "unavailable": "(nepasiekiamas)",
             "unknown": "Nežinoma"
         },
         "fan": {
-            "off": "[%key:state::default::off%]",
-            "on": "[%key:state::default::on%]"
+            "off": "Išjungta",
+            "on": "Įjungta"
         },
         "group": {
+            "not_home": "Išvykęs",
             "off": "Išjungta",
             "ok": "Ok",
             "on": "Įjungta"
@@ -152,7 +156,7 @@
         },
         "media_player": {
             "off": "Išjungta",
-            "on": "[%key:state::default::on%]"
+            "on": "Įjungta"
         },
         "person": {
             "home": "Namuose"

@@ -93,7 +93,7 @@
         },
         "automation": {
             "off": "Isključen",
-            "on": "[%key:state::default::on%]"
+            "on": "Uključen"
         },
         "binary_sensor": {
             "battery": {
@@ -109,7 +109,7 @@
                 "on": "Spojen"
             },
             "default": {
-                "off": "[%key:state::default::off%]",
+                "off": "Isključen",
                 "on": "Uključen"
             },
             "door": {
@@ -178,7 +178,7 @@
             }
         },
         "calendar": {
-            "off": "[%key:state::default::off%]",
+            "off": "Isključen",
             "on": "Uključen"
         },
         "camera": {
@@ -192,7 +192,7 @@
             "fan_only": "Samo ventilator",
             "heat": "Grijanje",
             "heat_cool": "Grijanje/Hlađenje",
-            "off": "[%key:state::default::off%]"
+            "off": "Isključen"
         },
         "configurator": {
             "configure": "Konfiguriranje",
@@ -213,7 +213,7 @@
             "not_home": "Odsutan"
         },
         "fan": {
-            "off": "[%key:state::default::off%]",
+            "off": "Isključen",
             "on": "Uključen"
         },
         "group": {

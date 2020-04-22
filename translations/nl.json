@@ -109,7 +109,7 @@
                 "on": "Verbonden"
             },
             "default": {
-                "off": "[%key:state::default::off%]",
+                "off": "Uit",
                 "on": "Aan"
             },
             "door": {

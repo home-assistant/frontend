@@ -93,7 +93,7 @@
         },
         "automation": {
             "off": "Выкл",
-            "on": "[%key:state::default::on%]"
+            "on": "Вкл"
         },
         "binary_sensor": {
             "battery": {
@@ -109,7 +109,7 @@
                 "on": "Подключено"
             },
             "default": {
-                "off": "[%key:state::default::off%]",
+                "off": "Выкл",
                 "on": "Вкл"
             },
             "door": {
@@ -178,7 +178,7 @@
             }
         },
         "calendar": {
-            "off": "[%key:state::default::off%]",
+            "off": "Выкл",
             "on": "Вкл"
         },
         "camera": {
@@ -192,7 +192,7 @@
             "fan_only": "Вентиляция",
             "heat": "Обогрев",
             "heat_cool": "Обогрев / Охлаждение",
-            "off": "[%key:state::default::off%]"
+            "off": "Выкл"
         },
         "configurator": {
             "configure": "Настроить",
@@ -213,8 +213,8 @@
             "not_home": "Не дома"
         },
         "fan": {
-            "off": "[%key:state::default::off%]",
-            "on": "[%key:state::default::on%]"
+            "off": "Выкл",
+            "on": "Вкл"
         },
         "group": {
             "closed": "Закрыто",
@@ -232,7 +232,7 @@
             "unlocked": "Разблокирована"
         },
         "input_boolean": {
-            "off": "[%key:state::default::off%]",
+            "off": "Выкл",
             "on": "Вкл"
         },
         "light": {
@@ -246,7 +246,7 @@
         "media_player": {
             "idle": "Ожидание",
             "off": "Выкл",
-            "on": "[%key:state::default::on%]",
+            "on": "Вкл",
             "paused": "Пауза",
             "playing": "Воспроизведение",
             "standby": "Ожидание"
@@ -259,26 +259,26 @@
             "problem": "Проблема"
         },
         "remote": {
-            "off": "[%key:state::default::off%]",
-            "on": "[%key:state::default::on%]"
+            "off": "Выкл",
+            "on": "Вкл"
         },
         "scene": {
             "scening": "Переход к сцене"
         },
         "script": {
             "off": "Выкл",
-            "on": "[%key:state::default::on%]"
+            "on": "Вкл"
         },
         "sensor": {
             "off": "Выкл",
-            "on": "[%key:state::default::on%]"
+            "on": "Вкл"
         },
         "sun": {
             "above_horizon": "Над горизонтом",
             "below_horizon": "За горизонтом"
         },
         "switch": {
-            "off": "[%key:state::default::off%]",
+            "off": "Выкл",
             "on": "Вкл"
         },
         "timer": {

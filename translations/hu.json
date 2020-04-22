@@ -93,7 +93,7 @@
         },
         "automation": {
             "off": "Ki",
-            "on": "[%key:state::default::on%]"
+            "on": "Be"
         },
         "binary_sensor": {
             "battery": {
@@ -109,7 +109,7 @@
                 "on": "Kapcsolódva"
             },
             "default": {
-                "off": "[%key:state::default::off%]",
+                "off": "Ki",
                 "on": "Be"
             },
             "door": {
@@ -178,7 +178,7 @@
             }
         },
         "calendar": {
-            "off": "[%key:state::default::off%]",
+            "off": "Ki",
             "on": "Be"
         },
         "camera": {
@@ -192,7 +192,7 @@
             "fan_only": "Csak ventilátor",
             "heat": "Fűtés",
             "heat_cool": "Fűtés/Hűtés",
-            "off": "[%key:state::default::off%]"
+            "off": "Ki"
         },
         "configurator": {
             "configure": "Beállítás",
@@ -213,8 +213,8 @@
             "not_home": "Távol"
         },
         "fan": {
-            "off": "[%key:state::default::off%]",
-            "on": "[%key:state::default::on%]"
+            "off": "Ki",
+            "on": "Be"
         },
         "group": {
             "closed": "Zárva",
@@ -232,7 +232,7 @@
             "unlocked": "Kinyitva"
         },
         "input_boolean": {
-            "off": "[%key:state::default::off%]",
+            "off": "Ki",
             "on": "Be"
         },
         "light": {
@@ -246,7 +246,7 @@
         "media_player": {
             "idle": "Tétlen",
             "off": "Ki",
-            "on": "[%key:state::default::on%]",
+            "on": "Be",
             "paused": "Szünetel",
             "playing": "Lejátszás",
             "standby": "Készenlét"
@@ -259,26 +259,26 @@
             "problem": "Probléma"
         },
         "remote": {
-            "off": "[%key:state::default::off%]",
-            "on": "[%key:state::default::on%]"
+            "off": "Ki",
+            "on": "Be"
         },
         "scene": {
             "scening": "Jelenet beállítása"
         },
         "script": {
             "off": "Ki",
-            "on": "[%key:state::default::on%]"
+            "on": "Be"
         },
         "sensor": {
             "off": "Ki",
-            "on": "[%key:state::default::on%]"
+            "on": "Be"
         },
         "sun": {
             "above_horizon": "Látóhatár felett",
             "below_horizon": "Látóhatár alatt"
         },
         "switch": {
-            "off": "[%key:state::default::off%]",
+            "off": "Ki",
             "on": "Be"
         },
         "timer": {
@@ -291,8 +291,8 @@
             "docked": "Dokkolva",
             "error": "Hiba",
             "idle": "Tétlen",
-            "off": "[%key:state::default::off%]",
-            "on": "[%key:state::default::on%]",
+            "off": "Ki",
+            "on": "Be",
             "paused": "Szüneteltetve",
             "returning": "Dokkolás folyamatban"
         },
