@@ -1,37 +1,7 @@
 {
-    "attribute": {
-        "weather": {
-            "wind_speed": "Windgschwindigkeit"
-        }
-    },
-    "domain": {
-        "automation": "Automation",
-        "binary_sensor": "Binäre Sensor",
-        "calendar": "Kaländer",
-        "camera": "Kamera",
-        "climate": "Klima",
-        "configurator": "Configurator",
-        "conversation": "Gspräch",
-        "cover": "Roulade",
-        "group": "Gruppe",
-        "light": "Liächt",
-        "lock": "Schloss",
-        "plant": "Pflanze",
-        "remote": "Entfernt",
-        "scene": "Szene",
-        "script": "Skript",
-        "sensor": "Sensor",
-        "sun": "Sunne",
-        "switch": "Schauter",
-        "updater": "Updater",
-        "vacuum": "Stoubsuger",
-        "weblink": "Weblink",
-        "zwave": "Z-Wave"
-    },
     "panel": {
         "calendar": "Kaländer",
         "config": "Istellige",
-        "dev-info": "Info",
         "history": "Vrlouf",
         "logbook": "Logbuech",
         "mailbox": "Postigang",
@@ -67,8 +37,10 @@
             "unknown": "Unbekannt"
         },
         "device_tracker": {
-            "home": "Dahei",
-            "not_home": "Nid Dahei"
+            "home": "Dahei"
+        },
+        "person": {
+            "home": "Dahei"
         }
     },
     "state": {
@@ -124,7 +96,6 @@
                 "on": "Offä"
             },
             "presence": {
-                "off": "Nid Dahei",
                 "on": "Dahei"
             },
             "problem": {
@@ -158,20 +129,11 @@
             "streaming": "Streamt"
         },
         "climate": {
-            "auto": "Automatik",
             "cool": "Chüälä",
             "dry": "Trochä",
-            "eco": "Öko",
-            "electric": "Strom",
             "fan_only": "Nur Lüfter",
-            "gas": "Gas",
             "heat": "Heizä",
-            "heat_pump": "Heizigspumpi",
-            "high_demand": "Grossi Nachfrag",
-            "idle": "Läärlauf",
-            "off": "Us",
-            "on": "Ah",
-            "performance": "Leistig"
+            "off": "Us"
         },
         "configurator": {
             "configure": "Konfiguriärä",
@@ -185,13 +147,10 @@
             "stopped": "Gstoppt"
         },
         "default": {
-            "off": "Us",
-            "on": "Ah",
             "unavailable": "Nid verfüägbar",
             "unknown": "Unbekannt"
         },
         "device_tracker": {
-            "home": "Dahei",
             "not_home": "Nid Dahei"
         },
         "fan": {
@@ -404,13 +363,6 @@
                 "service": "Service"
             }
         },
-        "dialogs": {
-            "more_info_settings": {
-                "entity_id": "Entity ID",
-                "name": "Name",
-                "save": "Spichere"
-            }
-        },
         "login-form": {
             "password": "Passwort"
         },
@@ -509,16 +461,6 @@
                 "cloud": {
                     "caption": "Home Assistant Cloud"
                 },
-                "core": {
-                    "section": {
-                        "server_control": {
-                            "server_management": {
-                                "restart": "Neustart",
-                                "stop": "Stop"
-                            }
-                        }
-                    }
-                },
                 "devices": {
                     "scripts": "Scripts"
                 },
@@ -528,8 +470,7 @@
                         "device_unavailable": "Grät verfüägbar",
                         "entity_unavailable": "Entitiy verfüägbar",
                         "firmware": "Firmware: {version}",
-                        "manuf": "vo {manufacturer}",
-                        "via": "Verbunge über"
+                        "manuf": "vo {manufacturer}"
                     },
                     "configure": "Konfiguriärä",
                     "configured": "Konfiguriärt",
@@ -538,11 +479,7 @@
                 "users": {
                     "caption": "Benutzer",
                     "editor": {
-                        "delete_user": "Benutzer lösche",
-                        "rename_user": "Benutzer umbenenne"
-                    },
-                    "picker": {
-                        "title": "Benutzer"
+                        "delete_user": "Benutzer lösche"
                     }
                 },
                 "zwave": {
@@ -558,13 +495,6 @@
             },
             "history": {
                 "period": "Periode"
-            },
-            "lovelace": {
-                "editor": {
-                    "edit_card": {
-                        "save": "Speichern"
-                    }
-                }
             },
             "mailbox": {
                 "delete_button": "Lösche"
@@ -587,9 +517,6 @@
                     "disable": "Deaktiviert"
                 }
             }
-        },
-        "sidebar": {
-            "log_out": "Uslogge"
         }
     }
 }

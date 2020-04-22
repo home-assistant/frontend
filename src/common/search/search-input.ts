@@ -22,6 +22,9 @@ class SearchInput extends LitElement {
   @property({ type: Boolean, attribute: "no-underline" })
   public noUnderline = false;
 
+  @property({ type: Boolean })
+  public autofocus = false;
+
   public focus() {
     this.shadowRoot!.querySelector("paper-input")!.focus();
   }
@@ -38,7 +41,7 @@ class SearchInput extends LitElement {
       </style>
       <paper-input
         class=${classMap({ "no-underline": this.noUnderline })}
-        autofocus
+        .autofocus=${this.autofocus}
         label="Search"
         .value=${this.filter}
         @value-changed=${this._filterInputChanged}

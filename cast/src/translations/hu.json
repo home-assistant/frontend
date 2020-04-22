@@ -1,0 +1,255 @@
+{
+  "state": {
+    "alarm_control_panel": {
+      "armed": "\u00c9les\u00edtve",
+      "armed_away": "\u00c9les\u00edtve t\u00e1vol",
+      "armed_custom_bypass": "\u00c9les\u00edtve \u00e1thidal\u00e1ssal",
+      "armed_home": "\u00c9les\u00edtve otthon",
+      "armed_night": "\u00c9les\u00edtve \u00e9jszaka",
+      "arming": "\u00c9les\u00edt\u00e9s",
+      "disarmed": "Hat\u00e1stalan\u00edtva",
+      "disarming": "Hat\u00e1stalan\u00edt\u00e1s",
+      "pending": "F\u00fcgg\u0151ben",
+      "triggered": "Riaszt\u00e1s"
+    },
+    "automation": {
+      "off": "Ki",
+      "on": "Be"
+    },
+    "binary_sensor": {
+      "battery": {
+        "off": "Norm\u00e1l",
+        "on": "Alacsony"
+      },
+      "cold": {
+        "off": "Norm\u00e1l",
+        "on": "Hideg"
+      },
+      "connectivity": {
+        "off": "Lekapcsol\u00f3dva",
+        "on": "Kapcsol\u00f3dva"
+      },
+      "default": {
+        "off": "Ki",
+        "on": "Be"
+      },
+      "door": {
+        "off": "Z\u00e1rva",
+        "on": "Nyitva"
+      },
+      "garage_door": {
+        "off": "Z\u00e1rva",
+        "on": "Nyitva"
+      },
+      "gas": {
+        "off": "Norm\u00e1l",
+        "on": "\u00c9szlelve"
+      },
+      "heat": {
+        "off": "Norm\u00e1l",
+        "on": "Meleg"
+      },
+      "lock": {
+        "off": "Bez\u00e1rva",
+        "on": "Kinyitva"
+      },
+      "moisture": {
+        "off": "Sz\u00e1raz",
+        "on": "Nedves"
+      },
+      "motion": {
+        "off": "Norm\u00e1l",
+        "on": "\u00c9szlelve"
+      },
+      "occupancy": {
+        "off": "Norm\u00e1l",
+        "on": "\u00c9szlelve"
+      },
+      "opening": {
+        "off": "Z\u00e1rva",
+        "on": "Nyitva"
+      },
+      "presence": {
+        "off": "T\u00e1vol",
+        "on": "Otthon"
+      },
+      "problem": {
+        "off": "OK",
+        "on": "Probl\u00e9ma"
+      },
+      "safety": {
+        "off": "Biztons\u00e1gos",
+        "on": "Nem biztons\u00e1gos"
+      },
+      "smoke": {
+        "off": "Norm\u00e1l",
+        "on": "\u00c9szlelve"
+      },
+      "sound": {
+        "off": "Norm\u00e1l",
+        "on": "\u00c9szlelve"
+      },
+      "vibration": {
+        "off": "Norm\u00e1l",
+        "on": "\u00c9szlelve"
+      },
+      "window": {
+        "off": "Z\u00e1rva",
+        "on": "Nyitva"
+      }
+    },
+    "calendar": {
+      "off": "Ki",
+      "on": "Be"
+    },
+    "camera": {
+      "idle": "T\u00e9tlen",
+      "recording": "Felv\u00e9tel",
+      "streaming": "Streamel\u00e9s"
+    },
+    "climate": {
+      "auto": "Automatikus",
+      "cool": "H\u0171t\u00e9s",
+      "dry": "Sz\u00e1raz",
+      "fan_only": "Csak ventil\u00e1tor",
+      "heat": "F\u0171t\u00e9s",
+      "heat_cool": "F\u0171t\u00e9s/H\u0171t\u00e9s",
+      "off": "Ki"
+    },
+    "configurator": {
+      "configure": "Be\u00e1ll\u00edt\u00e1s",
+      "configured": "Be\u00e1ll\u00edtva"
+    },
+    "cover": {
+      "closed": "Z\u00e1rva",
+      "closing": "Z\u00e1r\u00e1s",
+      "open": "Nyitva",
+      "opening": "Nyit\u00e1s",
+      "stopped": "Meg\u00e1ll\u00edtva"
+    },
+    "default": {
+      "off": "Ki",
+      "on": "Be",
+      "unavailable": "Nem el\u00e9rhet\u0151",
+      "unknown": "Ismeretlen"
+    },
+    "device_tracker": {
+      "home": "Otthon",
+      "not_home": "T\u00e1vol"
+    },
+    "fan": {
+      "off": "Ki",
+      "on": "Be"
+    },
+    "group": {
+      "closed": "Z\u00e1rva",
+      "closing": "Z\u00e1r\u00e1s",
+      "home": "Otthon",
+      "locked": "Bez\u00e1rva",
+      "not_home": "T\u00e1vol",
+      "off": "Ki",
+      "ok": "OK",
+      "on": "Be",
+      "open": "Nyitva",
+      "opening": "Nyit\u00e1s",
+      "problem": "Probl\u00e9ma",
+      "stopped": "Meg\u00e1ll\u00edtva",
+      "unlocked": "Kinyitva"
+    },
+    "input_boolean": {
+      "off": "Ki",
+      "on": "Be"
+    },
+    "light": {
+      "off": "Ki",
+      "on": "Be"
+    },
+    "lock": {
+      "locked": "Bez\u00e1rva",
+      "unlocked": "Kinyitva"
+    },
+    "media_player": {
+      "idle": "T\u00e9tlen",
+      "off": "Ki",
+      "on": "Be",
+      "paused": "Sz\u00fcnetel",
+      "playing": "Lej\u00e1tsz\u00e1s",
+      "standby": "K\u00e9szenl\u00e9t"
+    },
+    "person": {
+      "home": "Otthon",
+      "not_home": "T\u00e1vol"
+    },
+    "plant": {
+      "ok": "OK",
+      "problem": "Probl\u00e9ma"
+    },
+    "remote": {
+      "off": "Ki",
+      "on": "Be"
+    },
+    "scene": {
+      "scening": "Jelenet be\u00e1ll\u00edt\u00e1sa"
+    },
+    "script": {
+      "off": "Ki",
+      "on": "Be"
+    },
+    "sensor": {
+      "off": "Ki",
+      "on": "Be"
+    },
+    "sun": {
+      "above_horizon": "L\u00e1t\u00f3hat\u00e1r felett",
+      "below_horizon": "L\u00e1t\u00f3hat\u00e1r alatt"
+    },
+    "switch": {
+      "off": "Ki",
+      "on": "Be"
+    },
+    "timer": {
+      "active": "akt\u00edv",
+      "idle": "t\u00e9tlen",
+      "paused": "sz\u00fcneteltetve"
+    },
+    "vacuum": {
+      "cleaning": "Takar\u00edt\u00e1s",
+      "docked": "Dokkolva",
+      "error": "Hiba",
+      "idle": "T\u00e9tlen",
+      "off": "Ki",
+      "on": "Be",
+      "paused": "Sz\u00fcneteltetve",
+      "returning": "Dokkol\u00e1s folyamatban"
+    },
+    "weather": {
+      "clear-night": "Tiszta, \u00e9jszaka",
+      "cloudy": "Felh\u0151s",
+      "exceptional": "Kiv\u00e9teles",
+      "fog": "K\u00f6d",
+      "hail": "J\u00e9ges\u0151",
+      "lightning": "Vihar",
+      "lightning-rainy": "Viharos, es\u0151s",
+      "partlycloudy": "R\u00e9szben felh\u0151s",
+      "pouring": "Szakad",
+      "rainy": "Es\u0151s",
+      "snowy": "Havaz\u00e1s",
+      "snowy-rainy": "Havas, es\u0151s",
+      "sunny": "Napos",
+      "windy": "Szeles",
+      "windy-variant": "Szeles"
+    },
+    "zwave": {
+      "default": {
+        "dead": "Halott",
+        "initializing": "Inicializ\u00e1l\u00e1s",
+        "ready": "K\u00e9sz",
+        "sleeping": "Alv\u00e1s"
+      },
+      "query_stage": {
+        "dead": "Halott ({query_stage})",
+        "initializing": "Inicializ\u00e1l\u00e1s ({query_stage})"
+      }
+    }
+  }
+}

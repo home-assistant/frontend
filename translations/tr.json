@@ -1,61 +1,10 @@
 {
-    "attribute": {
-        "weather": {
-            "humidity": "Nem",
-            "visibility": "Görünürlük",
-            "wind_speed": "Rüzgar hızı"
-        }
-    },
     "config_entry": {
         "disabled_by": {
             "config_entry": "Config Girişi",
             "integration": "Entegrasyon",
             "user": "Kullanıcı"
         }
-    },
-    "domain": {
-        "alarm_control_panel": "Alarm kontrol paneli",
-        "automation": "Otomasyon",
-        "binary_sensor": "İkili sensör",
-        "calendar": "Takvim",
-        "camera": "Kamera",
-        "climate": "İklim",
-        "configurator": "Yapılandırıcı",
-        "conversation": "Konuşma",
-        "cover": "Panjur",
-        "device_tracker": "Cihaz izleyici",
-        "fan": "Fan",
-        "group": "Grup",
-        "hassio": "Hass.io",
-        "history_graph": "Geçmiş grafiği",
-        "homeassistant": "Home Assistant",
-        "image_processing": "Görüntü işleme",
-        "input_boolean": "Doğru/Yanlış giriniz",
-        "input_datetime": "Giriş Tarih/Saat",
-        "input_number": "Numara giriniz",
-        "input_select": "Girdi seçiniz",
-        "input_text": "Metin giriniz",
-        "light": "Işık",
-        "lock": "Kilit",
-        "lovelace": "Lovelace",
-        "mailbox": "Posta kutusu",
-        "media_player": "Medya oynatıcı",
-        "notify": "Bildir",
-        "person": "Kişi",
-        "plant": "Bitki",
-        "proximity": "Yakınlık",
-        "remote": "Uzaktan Kumanda",
-        "scene": "Senaryo",
-        "script": "Senaryo",
-        "sensor": "Sensör",
-        "sun": "Güneş",
-        "switch": "Anahtar",
-        "system_health": "Sistem Sağlığı",
-        "updater": "Güncelleyici",
-        "vacuum": "Elektrikli süpürge",
-        "weblink": "Web bağlantısı",
-        "zha": "ZHA",
-        "zwave": "Z-Wave"
     },
     "groups": {
         "system-admin": "Yöneticiler",
@@ -65,7 +14,6 @@
     "panel": {
         "calendar": "Takvim",
         "config": "Ayarlar",
-        "dev-info": "Bilgi",
         "developer_tools": "Geliştirici araçları",
         "history": "Geçmiş",
         "logbook": "Kayıt defteri",
@@ -239,22 +187,12 @@
             "streaming": "Yayın akışı"
         },
         "climate": {
-            "auto": "Otomatik",
             "cool": "Serin",
             "dry": "Kuru",
-            "eco": "Eko",
-            "electric": "Elektrikli",
             "fan_only": "Sadece fan",
-            "gas": "Gaz",
             "heat": "Sıcak",
             "heat_cool": "Isıtma / Soğutma",
-            "heat_pump": "Isı pompası",
-            "high_demand": "Yüksek talep",
-            "idle": "Boşta",
-            "manual": "Kılavuz",
-            "off": "Kapalı",
-            "on": "Açık",
-            "performance": "Performans"
+            "off": "Kapalı"
         },
         "configurator": {
             "configure": "Ayarla",
@@ -268,13 +206,10 @@
             "stopped": "Durduruldu"
         },
         "default": {
-            "off": "Kapalı",
-            "on": "Açık",
             "unavailable": "Mevcut değil",
             "unknown": "Bilinmeyen"
         },
         "device_tracker": {
-            "home": "Evde",
             "not_home": "Dışarıda"
         },
         "fan": {
@@ -317,8 +252,7 @@
             "standby": "Bekleme modu"
         },
         "person": {
-            "home": "Evde",
-            "not_home": "Dışarıda"
+            "home": "Evde"
         },
         "plant": {
             "ok": "Tamam",
@@ -402,7 +336,6 @@
             "alarm_control_panel": {
                 "arm_custom_bypass": "Özel atlatma",
                 "arm_night": "Geceyi etkinleştir",
-                "armed_custom_bypass": "Özel atlatma",
                 "clear_code": "Temizle",
                 "code": "kod",
                 "disarm": "Etkisiz hale getir"
@@ -607,11 +540,6 @@
                 "title": "{integration} için Sistem Seçenekleri",
                 "update": "Güncelle"
             },
-            "confirmation": {
-                "cancel": "İptal",
-                "ok": "Tamam",
-                "title": "Emin misin?"
-            },
             "domain_toggler": {
                 "title": "Etki Alanlarını Geçiş"
             },
@@ -643,14 +571,11 @@
             "helper_settings": {
                 "generic": {
                     "icon": "Simge",
-                    "initial_value": "Başlangıçtaki değer",
                     "name": "Ad"
                 },
                 "input_datetime": {
                     "date": "Tarih",
                     "datetime": "Tarih ve zaman",
-                    "has_date": "Tarih",
-                    "has_time": "Zaman",
                     "mode": "Ne girmek istiyorsunuz",
                     "time": "Zaman"
                 },
@@ -676,7 +601,6 @@
                     "password": "Şifre",
                     "text": "Metin"
                 },
-                "not_editable": "Düzenlenebilir değil",
                 "required_error_msg": "Bu alan gereklidir"
             },
             "more_info_control": {
@@ -716,12 +640,6 @@
                     "status": "Durum",
                     "stop": "Durdur"
                 }
-            },
-            "more_info_settings": {
-                "back": "Geri dön",
-                "entity_id": "Varlık kimliği",
-                "name": "Ad",
-                "save": "Kaydet"
             },
             "options_flow": {
                 "form": {
@@ -785,10 +703,7 @@
         },
         "notification_toast": {
             "connection_lost": "Bağlantı koptu. Yeniden bağlanıyor ...",
-            "entity_turned_off": "{entity} kapatıldı.",
-            "entity_turned_on": "{entity} açıldı.",
             "service_call_failed": "{service} çağrı yapılamadı.",
-            "service_called": "Servis {service} çağrıldı.",
             "triggered": "Tetiklendi {name}"
         },
         "panel": {
@@ -799,7 +714,6 @@
                 },
                 "areas": {
                     "caption": "Alanları",
-                    "create_area": "ALAN OLUŞTUR",
                     "delete": {
                         "confirmation_text": "Bu alana ait tüm cihazlar atanmamış olur.",
                         "confirmation_title": "Bu alanı silmek istediğinizden emin misiniz?"
@@ -807,16 +721,12 @@
                     "description": "Evinizdeki tüm alanlara genel bakış.",
                     "editor": {
                         "create": "OLUŞTUR",
-                        "default_name": "Alan Ekle ",
                         "delete": "SİL",
                         "update": "GÜNCELLE"
                     },
-                    "no_areas": "Henüz hiçbir alan yok gibi görünüyor.",
                     "picker": {
-                        "create_area": "ALAN OLUŞTUR",
                         "header": "Alanlar",
-                        "integrations_page": "Entegrasyon sayfası",
-                        "no_areas": "Henüz hiçbir alan yok gibi görünüyor."
+                        "integrations_page": "Entegrasyon sayfası"
                     }
                 },
                 "automation": {
@@ -1197,7 +1107,6 @@
                         "core": {
                             "core_config": {
                                 "elevation": "Yükseklik",
-                                "elevation_feet": "Ayak",
                                 "elevation_meters": "metre",
                                 "imperial_example": "Fahrenheit, pound",
                                 "latitude": "Enlem",
@@ -1212,29 +1121,6 @@
                             },
                             "header": "Yapılandırma ve sunucu kontrolü",
                             "introduction": "Yapılandırmanızı değiştirmek, yorucu bir işlem olabilir. Biliyoruz. Bu bölüm hayatınızı biraz daha kolay hale getirmeye çalışacaktır."
-                        },
-                        "server_control": {
-                            "reloading": {
-                                "automation": "Otomasyonları yeniden yükle",
-                                "core": "Çekirdeği yeniden yükle",
-                                "group": "Grupları yeniden yükle",
-                                "heading": "Yapılandırma yeniden yükleniyor",
-                                "introduction": "Bazı Home Assistant bileşenleri yeniden başlatmadan yenilenebilinir. Yeniden yükle tuşuna basarak güncel yapılandırmayı bırakarak yenisinin yüklenmesini sağlayabilirsiniz.",
-                                "script": "Senaryoları yeniden yükle"
-                            },
-                            "server_management": {
-                                "heading": "Sunucu yönetimi",
-                                "introduction": "Home Assistant sunucunuzu kontrol edin.. Home Assistant üzerinden",
-                                "restart": "Yeniden başlat",
-                                "stop": "Durdur"
-                            },
-                            "validation": {
-                                "check_config": "Yapılandırmayı kontrol et",
-                                "heading": "Yapılandırma doğrulaması",
-                                "introduction": "Yapılandırmanızda yakın bir zamanda değişiklikler yaptıysanız ve tümünün geçerli olduğundan emin olmak istiyorsanız yapılandırmanızı doğrulayın",
-                                "invalid": "Yapılandırma geçersiz",
-                                "valid": "Yapılandırma geçerli!"
-                            }
                         }
                     }
                 },
@@ -1253,7 +1139,6 @@
                     }
                 },
                 "devices": {
-                    "area_picker_label": "Alan",
                     "automation": {
                         "actions": {
                             "caption": "Bir şey tetiklendiğinde..."
@@ -1269,7 +1154,6 @@
                             "caption": "Aşağıdaki durumlarda bir şeyler yap..."
                         }
                     },
-                    "automations": "Otomasyonlar",
                     "cant_edit": "Yalnızca kullanıcı arayüzünde oluşturulan öğeleri düzenleyebilirsiniz.",
                     "caption": "Cihazlar",
                     "confirm_delete": "Bu cihazı silmek istediğinizden emin misiniz?",
@@ -1284,14 +1168,12 @@
                     },
                     "delete": "Sil",
                     "description": "Bağlı cihazları yönet",
-                    "details": "Cihazınızın tüm detayları.",
                     "device_not_found": "Cihaz bulunamadı.",
                     "entities": {
                         "add_entities_lovelace": "Tüm cihaz varlıklarını Lovelace kullanıcı arayüzüne ekle",
                         "entities": "Varlıkları",
                         "none": "Bu cihazın varlığı yok"
                     },
-                    "info": "Cihaz bilgileri",
                     "name": "Ad",
                     "scene": {
                         "create": "Aygıtla sahne oluşturma",
@@ -1312,19 +1194,6 @@
                 "entities": {
                     "caption": "Varlıklar",
                     "description": "Bilinen tüm varlıklara genel bakış.",
-                    "editor": {
-                        "confirm_delete": "Bu girişi silmek istediğinizden emin misiniz?",
-                        "default_name": "Alan Ekle ",
-                        "delete": "SİL",
-                        "enabled_cause": "{Neden} tarafından devre dışı bırakılmış.",
-                        "enabled_description": "Devre dışı bırakılan varlıklar Home Assistant'a eklenmeyecek.",
-                        "enabled_label": "Varlığı etkinleştir",
-                        "entity_id": "Varlık kimliği",
-                        "name": "Ad Geçersiz Kılma",
-                        "note": "Not: bu henüz tüm entegrasyonlarla çalışmayabilir.",
-                        "unavailable": "Bu varlık şu anda kullanılamıyor.",
-                        "update": "GÜNCELLEme"
-                    },
                     "picker": {
                         "disable_selected": {
                             "button": "Seçilenleri devre dışı bırak",
@@ -1343,27 +1212,23 @@
                         },
                         "header": "Varlıklar",
                         "headers": {
-                            "enabled": "Etkin",
                             "entity_id": "Varlık kimliği",
                             "integration": "Entegrasyon",
                             "name": "Ad",
                             "status": "durum"
                         },
-                        "integrations_page": "Entegrasyon sayfası",
                         "remove_selected": {
                             "button": "Seçilenleri kaldır",
                             "confirm_title": "{number} varlığı kaldırmak istiyor musunuz?"
                         },
                         "selected": "{number} seçildi",
-                        "show_disabled": "Devre dışı bırakılan varlıkları göster",
                         "status": {
                             "disabled": "Devre dışı",
                             "ok": "Tamam",
                             "readonly": "Salt okunur",
                             "restored": "Eski haline getirildi",
                             "unavailable": "Kullanım dışı"
-                        },
-                        "unavailable": "(kullanım dışı)"
+                        }
                     }
                 },
                 "header": "Home Assistant'ı yapılandır",
@@ -1407,13 +1272,10 @@
                         "no_device": "Aygıtsız varlıklar",
                         "no_devices": "Bu entegrasyona ait hiçbir aygıt yok",
                         "restart_confirm": "Bu entegrasyonu kaldırmaya devam etmek için Home Assistant'ı yeniden başlatın",
-                        "system_options_button": "{integration} için sistem seçenekleri",
-                        "via": "Şununla bağlı:"
+                        "system_options_button": "{integration} için sistem seçenekleri"
                     },
                     "config_flow": {
                         "aborted": "İptal edildi",
-                        "add_area": "Alan Ekle",
-                        "area_picker_label": "Alan",
                         "close": "Kapat",
                         "created_config": "{name} için ayar oluşturuldu.",
                         "dismiss": "İletişim kutusunu kapat",
@@ -1421,10 +1283,8 @@
                         "external_step": {
                             "open_site": "Web sitesini aç"
                         },
-                        "failed_create_area": "Alan oluşturulamadı.",
                         "finish": "Bitir",
                         "loading_first_time": "Lütfen entegrasyonun yüklenmesini bekleyin",
-                        "name_new_area": "Yeni alanın adı?",
                         "not_all_required_fields": "Gerekli alanların tümü doldurulmamış.",
                         "submit": "Gönder"
                     },
@@ -1657,20 +1517,12 @@
                         "confirm_user_deletion": "{name} silmek istediğinizden emin misiniz?",
                         "deactivate_user": "Kullanıcıyı devre dışı bırak",
                         "delete_user": "Kullanıcıyı sil",
-                        "enter_new_name": "Yeni ad gir",
                         "group": "grup",
-                        "group_update_failed": "Grup güncelleme başarısız oldu:",
                         "id": "İD",
                         "owner": "Sahibi",
-                        "rename_user": "Kullanıcıyı yeniden adlandır",
                         "system_generated": "Sistem tarafından oluşturuldu",
                         "system_generated_users_not_removable": "Sistem tarafından oluşturulan kullanıcılar kaldırılamıyor.",
-                        "unnamed_user": "Adsız Kullanıcı",
-                        "user_rename_failed": "Kullanıcı yeniden adlandırma başarısız oldu:"
-                    },
-                    "picker": {
-                        "system_generated": "Sistem tarafından oluşturuldu",
-                        "title": "Kullanıcılar"
+                        "unnamed_user": "Adsız Kullanıcı"
                     }
                 },
                 "zha": {
@@ -1701,11 +1553,6 @@
                         "value": "Değer"
                     },
                     "description": "Zigbee Ev Otomasyonu ağ yönetimi",
-                    "device_card": {
-                        "area_picker_label": "Alan",
-                        "device_name_placeholder": "Kullanıcıya verilen ad",
-                        "update_name_button": "Adı Güncelle"
-                    },
                     "devices": {
                         "header": "Zigbee Ev Otomasyonu - Cihaz"
                     },
@@ -1754,10 +1601,6 @@
                     "node_management": {
                         "header": "Cihaz yönetimi",
                         "hint_wakeup": "Xiaomi sensörleri gibi bazı cihazlarda, onlarla etkileşime girerken cihazları uyanık tutan ~ 5 saniyelik aralıklarla basabileceğiniz bir uyanma düğmesi bulunur."
-                    },
-                    "services": {
-                        "remove": "Bir cihazı ZigBee ağından kaldırın.",
-                        "updateDeviceName": "Aygıt kayıt defterinde bu aygıt için özel bir ad ayarlayın."
                     },
                     "title": "Zigbee Ev Otomasyonu"
                 },
@@ -1865,13 +1708,9 @@
                         "home_assistant_logo": "Home Assistant Logosu",
                         "icons_by": "Simgelerin orijni",
                         "license": "Apache 2.0 lisansı altında yayınlandı",
-                        "lovelace_ui": "Lovelace kullanıcı arayüzüne git",
                         "path_configuration": "configuration.yaml lokasyonu: {path}",
-                        "remove": "Kaldır",
                         "server": "sunucu",
-                        "set": "Ayarlamak",
                         "source": "Kaynak:",
-                        "states_ui": "Kullanıcı arayüzüne git",
                         "system_health_error": "Sistem Sağlığı bileşeni yüklü değil. configuration.yaml içine 'system_health:' ekleyin",
                         "title": "Bilgi"
                     },
@@ -1914,10 +1753,6 @@
                     "states": {
                         "alert_entity_field": "Varlık zorunlu bir alandır",
                         "attributes": "Nitelikler",
-                        "copied": "Panoya kopyalandı",
-                        "copy_entity_attribute": "Özellikleri kopyala",
-                        "copy_entity_id": "Kimliği kopyala",
-                        "copy_entity_state": "Durumu kopyala",
                         "current_entities": "Mevcut varlıklar",
                         "description1": "Home Assistant içersindeki bir cihazın görünümü ayarlayın.",
                         "description2": "Bu, gerçek cihaz ile iletişim kurmayacaktır.",
@@ -1974,8 +1809,7 @@
                         "toggle": "{name} ayarını aç / kapat"
                     },
                     "safe-mode": {
-                        "header": "Güvenli Mod Etkin",
-                        "show_errors": "Hataları göster"
+                        "header": "Güvenli Mod Etkin"
                     },
                     "shopping-list": {
                         "add_item": "Öge Ekle",
@@ -1989,9 +1823,6 @@
                 },
                 "editor": {
                     "card": {
-                        "alarm_panel": {
-                            "available_states": "Mevcut Durumlar"
-                        },
                         "alarm-panel": {
                             "available_states": "Mevcut Durumlar",
                             "description": "Alarm Paneli kartı alarm kontrol paneli entegrasyonlarınızı kurmanıza veya devre dışı bırakmanıza olanak tanır.",
@@ -2019,9 +1850,6 @@
                             "description": "Varlıklar kartı en yaygın kart türüdür. Öğeleri listeler halinde gruplandırır.",
                             "name": "Varlıklar",
                             "toggle": "Varlıklarageçiş."
-                        },
-                        "entity-button": {
-                            "name": "Varlık Düğmesi"
                         },
                         "entity-filter": {
                             "name": "Varlık Filtresi"
@@ -2130,7 +1958,6 @@
                         "move": "Görünüme Taşı",
                         "options": "Daha fazla seçenek",
                         "pick_card": "Eklemek istediğiniz kartı seçin.",
-                        "save": "Kaydet",
                         "show_code_editor": "Kod düzenleyiciyi göster",
                         "toggle_editor": "Düzenleyiciye Geçiş"
                     },
@@ -2200,8 +2027,7 @@
                     "exit_edit_mode": "UI düzenleme modundan çık",
                     "help": "Yardım",
                     "refresh": "Yenile",
-                    "reload_resources": "Kaynakları yeniden yükle",
-                    "unused_entities": "Kullanılmayan varlıklar"
+                    "reload_resources": "Kaynakları yeniden yükle"
                 },
                 "reload_lovelace": "Arayüzü yeniden yükle",
                 "reload_resources": {
@@ -2489,8 +2315,7 @@
             }
         },
         "sidebar": {
-            "external_app_configuration": "Uygulama ayarları",
-            "log_out": "Çıkış yap"
+            "external_app_configuration": "Uygulama ayarları"
         }
     }
 }
