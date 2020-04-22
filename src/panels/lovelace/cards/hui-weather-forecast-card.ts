@@ -77,7 +77,7 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
   }
 
   public getCardSize(): number {
-    return 4;
+    return this._config?.show_forecast !== false ? 4 : 2;
   }
 
   public setConfig(config: WeatherForecastCardConfig): void {
@@ -143,9 +143,11 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
       `;
     }
 
-    const forecast = stateObj.attributes.forecast?.length
-      ? stateObj.attributes.forecast.slice(0, this._narrow ? 3 : 5)
-      : undefined;
+    const forecast =
+      this._config?.show_forecast !== false &&
+      stateObj.attributes.forecast?.length
+        ? stateObj.attributes.forecast.slice(0, this._narrow ? 3 : 5)
+        : undefined;
 
     let hourly: boolean | undefined;
 
@@ -199,7 +201,7 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
             </div>
           </div>
         </div>
-        ${this._config.show_forecast !== false && forecast
+        ${forecast
           ? html`
               <div class="forecast">
                 ${forecast.map(
@@ -317,6 +319,10 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
 
   static get styles(): CSSResult {
     return css`
+      :host {
+        display: block;
+      }
+
       ha-card {
         cursor: pointer;
         padding: 16px;
