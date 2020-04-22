@@ -112,6 +112,16 @@ class HuiGenericEntityRow extends LitElement {
                     : this.hass.localize(
                         "ui.panel.lovelace.cards.entities.never_triggered"
                       )
+                  : this.config.secondary_info === "position" &&
+                    stateObj.attributes.current_position !== undefined
+                  ? `${this.hass.localize("ui.card.cover.position")}: ${
+                      stateObj.attributes.current_position
+                    }`
+                  : this.config.secondary_info === "tilt-position" &&
+                    stateObj.attributes.current_tilt_position !== undefined
+                  ? `${this.hass.localize("ui.card.cover.tilt_position")}: ${
+                      stateObj.attributes.current_tilt_position
+                    }`
                   : "")}
               </div>
             `
