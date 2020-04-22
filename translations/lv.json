@@ -74,7 +74,7 @@
             "not_home": "Prom"
         },
         "person": {
-            "home": "Mājas",
+            "home": "Mājās",
             "not_home": "Prombūtne"
         }
     },
@@ -187,7 +187,6 @@
             "streaming": "Straumē"
         },
         "climate": {
-            "auto": "Auto",
             "cool": "Dzesēšana",
             "dry": "Sauss",
             "fan_only": "Tikai ventilators",
@@ -207,17 +206,14 @@
             "stopped": "Apturēts"
         },
         "default": {
-            "off": "Izslēgts",
-            "on": "Ieslēgts",
             "unavailable": "Nepieejams",
             "unknown": "Nezināms"
         },
         "device_tracker": {
-            "home": "Mājās",
             "not_home": "Prom"
         },
         "fan": {
-            "off": "Izslēgts",
+            "off": "[%key:state::default::off%]",
             "on": "Ieslēgts"
         },
         "group": {
@@ -226,9 +222,9 @@
             "home": "Mājās",
             "locked": "Bloķēta",
             "not_home": "Prombūtnē",
-            "off": "Izslēgta",
+            "off": "Izslēgts",
             "ok": "OK",
-            "on": "Ieslēgta",
+            "on": "Ieslēgts",
             "open": "Atvērta",
             "opening": "Atveras",
             "problem": "Problēma",
@@ -237,11 +233,11 @@
         },
         "input_boolean": {
             "off": "Izslēgta",
-            "on": "Ieslēgta"
+            "on": "Ieslēgts"
         },
         "light": {
-            "off": "Izslēgta",
-            "on": "Ieslēgta"
+            "off": "Izslēgts",
+            "on": "Ieslēgts"
         },
         "lock": {
             "locked": "Aizslēgts",
@@ -256,8 +252,7 @@
             "standby": "Gaidīšanas režīmā"
         },
         "person": {
-            "home": "Mājās",
-            "not_home": "Prombūtne"
+            "home": "Mājās"
         },
         "plant": {
             "ok": "Labi",

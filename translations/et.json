@@ -109,7 +109,7 @@
                 "on": "Ühendatud"
             },
             "default": {
-                "off": "Väljas",
+                "off": "[%key:state::default::off%]",
                 "on": "Sees"
             },
             "door": {
@@ -187,7 +187,6 @@
             "streaming": "Voogedastab"
         },
         "climate": {
-            "auto": "Automaatne",
             "cool": "Jahuta",
             "dry": "Kuiv",
             "fan_only": "Ainult ventilaator",
@@ -207,13 +206,10 @@
             "stopped": "Peatatud"
         },
         "default": {
-            "off": "Väljas",
-            "on": "Sees",
             "unavailable": "Kadunud",
             "unknown": "Teadmata"
         },
         "device_tracker": {
-            "home": "Kodus",
             "not_home": "Eemal"
         },
         "fan": {
@@ -256,8 +252,7 @@
             "standby": "Unerežiimil"
         },
         "person": {
-            "home": "Kodus",
-            "not_home": "Eemal"
+            "home": "Kodus"
         },
         "plant": {
             "ok": "OK",

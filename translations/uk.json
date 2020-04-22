@@ -26,9 +26,9 @@
     "state_attributes": {
         "climate": {
             "fan_mode": {
-                "auto": "Авто",
-                "off": "Вимкнений",
-                "on": "Увімкнений"
+                "auto": "Автоматичний",
+                "off": "Вимкнено",
+                "on": "Увімкнено"
             },
             "hvac_action": {
                 "cooling": "Охолодження",
@@ -75,7 +75,7 @@
         },
         "person": {
             "home": "Вдома",
-            "not_home": "Не вдома"
+            "not_home": "Відсутній"
         }
     },
     "state": {
@@ -93,7 +93,7 @@
         },
         "automation": {
             "off": "Вимкнено",
-            "on": "Увімкнено"
+            "on": "[%key:state::default::on%]"
         },
         "binary_sensor": {
             "battery": {
@@ -109,7 +109,7 @@
                 "on": "Підключено"
             },
             "default": {
-                "off": "Вимкнено",
+                "off": "[%key:state::default::off%]",
                 "on": "Увімкнено"
             },
             "door": {
@@ -178,7 +178,7 @@
             }
         },
         "calendar": {
-            "off": "Вимкнено",
+            "off": "[%key:state::default::off%]",
             "on": "Увімкнено"
         },
         "camera": {
@@ -187,13 +187,12 @@
             "streaming": "Трансляція"
         },
         "climate": {
-            "auto": "Автоматичний",
             "cool": "Охолодження",
             "dry": "Осушення",
             "fan_only": "Лише вентилятор",
             "heat": "Обігрівання",
             "heat_cool": "Опалення/Охолодження",
-            "off": "Вимкнено"
+            "off": "[%key:state::default::off%]"
         },
         "configurator": {
             "configure": "Налаштувати",
@@ -207,13 +206,10 @@
             "stopped": "Призупинено"
         },
         "default": {
-            "off": "Вимкнено",
-            "on": "Увімкнено",
             "unavailable": "Недоступний",
             "unknown": "Невідомо"
         },
         "device_tracker": {
-            "home": "Вдома",
             "not_home": "Відсутній"
         },
         "fan": {
@@ -256,8 +252,7 @@
             "standby": "Очікування"
         },
         "person": {
-            "home": "Вдома",
-            "not_home": "Відсутній"
+            "home": "Вдома"
         },
         "plant": {
             "ok": "ТАК",

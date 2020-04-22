@@ -27,8 +27,8 @@
         "climate": {
             "fan_mode": {
                 "auto": "Auto",
-                "off": "Slukket",
-                "on": "Tændt"
+                "off": "Fra",
+                "on": "Til"
             },
             "hvac_action": {
                 "cooling": "Køling",
@@ -93,7 +93,7 @@
         },
         "automation": {
             "off": "Fra",
-            "on": "Til"
+            "on": "[%key:state::default::on%]"
         },
         "binary_sensor": {
             "battery": {
@@ -109,7 +109,7 @@
                 "on": "Forbundet"
             },
             "default": {
-                "off": "Fra",
+                "off": "[%key:state::default::off%]",
                 "on": "Til"
             },
             "door": {
@@ -178,7 +178,7 @@
             }
         },
         "calendar": {
-            "off": "Fra",
+            "off": "[%key:state::default::off%]",
             "on": "Til"
         },
         "camera": {
@@ -187,13 +187,12 @@
             "streaming": "Streamer"
         },
         "climate": {
-            "auto": "Auto",
             "cool": "Køl",
             "dry": "Tør",
             "fan_only": "Kun blæser",
             "heat": "Varme",
             "heat_cool": "Opvarm/køl",
-            "off": "Fra"
+            "off": "[%key:state::default::off%]"
         },
         "configurator": {
             "configure": "Konfigurer",
@@ -207,18 +206,15 @@
             "stopped": "Stoppet"
         },
         "default": {
-            "off": "Fra",
-            "on": "Til",
             "unavailable": "Utilgængelig",
             "unknown": "Ukendt"
         },
         "device_tracker": {
-            "home": "Hjemme",
             "not_home": "Ude"
         },
         "fan": {
-            "off": "Fra",
-            "on": "Til"
+            "off": "[%key:state::default::off%]",
+            "on": "[%key:state::default::on%]"
         },
         "group": {
             "closed": "Lukket",
@@ -236,12 +232,12 @@
             "unlocked": "Ulåst"
         },
         "input_boolean": {
-            "off": "Fra",
+            "off": "[%key:state::default::off%]",
             "on": "Til"
         },
         "light": {
-            "off": "Slukket",
-            "on": "Tændt"
+            "off": "Fra",
+            "on": "Til"
         },
         "lock": {
             "locked": "Låst",
@@ -249,15 +245,14 @@
         },
         "media_player": {
             "idle": "Inaktiv",
-            "off": "Slukket",
+            "off": "Fra",
             "on": "Tændt",
             "paused": "Sat på pause",
             "playing": "Afspiller",
             "standby": "Standby"
         },
         "person": {
-            "home": "Hjemme",
-            "not_home": "Ude"
+            "home": "Hjemme"
         },
         "plant": {
             "ok": "OK",
@@ -272,18 +267,18 @@
         },
         "script": {
             "off": "Fra",
-            "on": "Til"
+            "on": "[%key:state::default::on%]"
         },
         "sensor": {
             "off": "Fra",
-            "on": "Til"
+            "on": "[%key:state::default::on%]"
         },
         "sun": {
             "above_horizon": "Over horisonten",
             "below_horizon": "Under horisonten"
         },
         "switch": {
-            "off": "Fra",
+            "off": "[%key:state::default::off%]",
             "on": "Til"
         },
         "timer": {

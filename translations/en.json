@@ -93,7 +93,7 @@
         },
         "automation": {
             "off": "Off",
-            "on": "On"
+            "on": "[%key:state::default::on%]"
         },
         "binary_sensor": {
             "battery": {
@@ -109,7 +109,7 @@
                 "on": "Connected"
             },
             "default": {
-                "off": "Off",
+                "off": "[%key:state::default::off%]",
                 "on": "On"
             },
             "door": {
@@ -178,7 +178,7 @@
             }
         },
         "calendar": {
-            "off": "Off",
+            "off": "[%key:state::default::off%]",
             "on": "On"
         },
         "camera": {
@@ -187,13 +187,12 @@
             "streaming": "Streaming"
         },
         "climate": {
-            "auto": "Auto",
             "cool": "Cool",
             "dry": "Dry",
             "fan_only": "Fan only",
             "heat": "Heat",
             "heat_cool": "Heat/Cool",
-            "off": "Off"
+            "off": "[%key:state::default::off%]"
         },
         "configurator": {
             "configure": "Configure",
@@ -207,18 +206,15 @@
             "stopped": "Stopped"
         },
         "default": {
-            "off": "Off",
-            "on": "On",
             "unavailable": "Unavailable",
             "unknown": "Unknown"
         },
         "device_tracker": {
-            "home": "Home",
             "not_home": "Away"
         },
         "fan": {
-            "off": "Off",
-            "on": "On"
+            "off": "[%key:state::default::off%]",
+            "on": "[%key:state::default::on%]"
         },
         "group": {
             "closed": "Closed",
@@ -236,7 +232,7 @@
             "unlocked": "Unlocked"
         },
         "input_boolean": {
-            "off": "Off",
+            "off": "[%key:state::default::off%]",
             "on": "On"
         },
         "light": {
@@ -250,40 +246,39 @@
         "media_player": {
             "idle": "Idle",
             "off": "Off",
-            "on": "On",
+            "on": "[%key:state::default::on%]",
             "paused": "Paused",
             "playing": "Playing",
             "standby": "Standby"
         },
         "person": {
-            "home": "Home",
-            "not_home": "Away"
+            "home": "Home"
         },
         "plant": {
             "ok": "OK",
             "problem": "Problem"
         },
         "remote": {
-            "off": "Off",
-            "on": "On"
+            "off": "[%key:state::default::off%]",
+            "on": "[%key:state::default::on%]"
         },
         "scene": {
             "scening": "Scening"
         },
         "script": {
             "off": "Off",
-            "on": "On"
+            "on": "[%key:state::default::on%]"
         },
         "sensor": {
             "off": "Off",
-            "on": "On"
+            "on": "[%key:state::default::on%]"
         },
         "sun": {
             "above_horizon": "Above horizon",
             "below_horizon": "Below horizon"
         },
         "switch": {
-            "off": "Off",
+            "off": "[%key:state::default::off%]",
             "on": "On"
         },
         "timer": {
@@ -296,8 +291,8 @@
             "docked": "Docked",
             "error": "Error",
             "idle": "Idle",
-            "off": "Off",
-            "on": "On",
+            "off": "[%key:state::default::off%]",
+            "on": "[%key:state::default::on%]",
             "paused": "Paused",
             "returning": "Returning to dock"
         },

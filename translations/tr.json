@@ -187,7 +187,6 @@
             "streaming": "Yayın akışı"
         },
         "climate": {
-            "auto": "Otomatik",
             "cool": "Serin",
             "dry": "Kuru",
             "fan_only": "Sadece fan",
@@ -207,13 +206,10 @@
             "stopped": "Durduruldu"
         },
         "default": {
-            "off": "Kapalı",
-            "on": "Açık",
             "unavailable": "Mevcut değil",
             "unknown": "Bilinmeyen"
         },
         "device_tracker": {
-            "home": "Evde",
             "not_home": "Dışarıda"
         },
         "fan": {
@@ -256,8 +252,7 @@
             "standby": "Bekleme modu"
         },
         "person": {
-            "home": "Evde",
-            "not_home": "Dışarıda"
+            "home": "Evde"
         },
         "plant": {
             "ok": "Tamam",

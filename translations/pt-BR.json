@@ -26,7 +26,7 @@
     "state_attributes": {
         "climate": {
             "fan_mode": {
-                "auto": "Auto",
+                "auto": "Automático",
                 "off": "Desligado",
                 "on": "Ligado"
             },
@@ -70,7 +70,7 @@
             "unknown": "Desc"
         },
         "device_tracker": {
-            "home": "Casa",
+            "home": "Em casa",
             "not_home": "Ausente"
         },
         "person": {
@@ -179,7 +179,7 @@
         },
         "calendar": {
             "off": "Inativo",
-            "on": "Ativo"
+            "on": "Ligado"
         },
         "camera": {
             "idle": "Ocioso",
@@ -187,7 +187,6 @@
             "streaming": "Transmitindo"
         },
         "climate": {
-            "auto": "Automático",
             "cool": "Frio",
             "dry": "Seco",
             "fan_only": "Apenas ventilador",
@@ -207,17 +206,14 @@
             "stopped": "Parado"
         },
         "default": {
-            "off": "Desligado",
-            "on": "Ligado",
             "unavailable": "Indisponível",
             "unknown": "Desconhecido"
         },
         "device_tracker": {
-            "home": "Em casa",
             "not_home": "Ausente"
         },
         "fan": {
-            "off": "Desligado",
+            "off": "[%key:state::default::off%]",
             "on": "Ligado"
         },
         "group": {
@@ -240,8 +236,8 @@
             "on": "Ligado"
         },
         "light": {
-            "off": "Desligada",
-            "on": "Ligada"
+            "off": "Desligado",
+            "on": "Ligado"
         },
         "lock": {
             "locked": "Trancado",
@@ -256,8 +252,7 @@
             "standby": "Em espera"
         },
         "person": {
-            "home": "Em casa",
-            "not_home": "Ausente"
+            "home": "Em casa"
         },
         "plant": {
             "ok": "Ok",

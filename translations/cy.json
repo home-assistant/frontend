@@ -18,7 +18,7 @@
         "climate": {
             "fan_mode": {
                 "auto": "Awto",
-                "off": "Off",
+                "off": "I ffwrdd",
                 "on": "Ar"
             },
             "preset_mode": {
@@ -53,7 +53,7 @@
             "unknown": "?"
         },
         "device_tracker": {
-            "home": "Adra",
+            "home": "Gartref",
             "not_home": "Diim gartref"
         },
         "person": {
@@ -170,7 +170,6 @@
             "streaming": "Ffrydio"
         },
         "climate": {
-            "auto": "Awto",
             "cool": "Sefydlog",
             "dry": "Sych",
             "fan_only": "Fan yn unig",
@@ -189,13 +188,10 @@
             "stopped": "Stopio"
         },
         "default": {
-            "off": "I ffwrdd",
-            "on": "Ar",
             "unavailable": "Ddim ar gael",
             "unknown": "Anhysbys"
         },
         "device_tracker": {
-            "home": "Gartref",
             "not_home": "Diim gartref"
         },
         "fan": {
@@ -208,7 +204,7 @@
             "home": "Gartref",
             "locked": " Cloi",
             "not_home": "Dim gartref",
-            "off": "i ffwrdd",
+            "off": "I ffwrdd",
             "ok": "Iawn",
             "on": "Ar",
             "open": "Agored",
@@ -222,7 +218,7 @@
             "on": "Ar"
         },
         "light": {
-            "off": "i ffwrdd",
+            "off": "I ffwrdd",
             "on": "Ar"
         },
         "lock": {
@@ -231,15 +227,14 @@
         },
         "media_player": {
             "idle": "Segur",
-            "off": "i ffwrdd",
+            "off": "I ffwrdd",
             "on": "Ar",
             "paused": "Wedi rhewi",
             "playing": "Chwarae",
             "standby": "Gorffwys"
         },
         "person": {
-            "home": "Gartref",
-            "not_home": "I ffwrdd"
+            "home": "Gartref"
         },
         "plant": {
             "ok": "Iawn",
@@ -253,11 +248,11 @@
             "scening": "Sefyllfa"
         },
         "script": {
-            "off": "i ffwrdd",
+            "off": "I ffwrdd",
             "on": "Ar"
         },
         "sensor": {
-            "off": "i ffwrdd",
+            "off": "I ffwrdd",
             "on": "Ar"
         },
         "sun": {

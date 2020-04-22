@@ -19,7 +19,7 @@
     "state_attributes": {
         "climate": {
             "fan_mode": {
-                "auto": "Outomatiese",
+                "auto": "Outo",
                 "off": "Af",
                 "on": "Aan"
             },
@@ -86,7 +86,7 @@
         },
         "automation": {
             "off": "Af",
-            "on": "Aan"
+            "on": "[%key:state::default::on%]"
         },
         "binary_sensor": {
             "battery": {
@@ -102,7 +102,7 @@
                 "on": "Gekoppel"
             },
             "default": {
-                "off": "Af",
+                "off": "[%key:state::default::off%]",
                 "on": "Aan"
             },
             "door": {
@@ -171,7 +171,7 @@
             }
         },
         "calendar": {
-            "off": "Af",
+            "off": "[%key:state::default::off%]",
             "on": "Aan"
         },
         "camera": {
@@ -180,13 +180,12 @@
             "streaming": "Stroming"
         },
         "climate": {
-            "auto": "Outo",
             "cool": "Koel",
             "dry": "Droog",
             "fan_only": "Slegs waaier",
             "heat": "Hitte",
             "heat_cool": "Verhit/Verkoel",
-            "off": "Af"
+            "off": "[%key:state::default::off%]"
         },
         "configurator": {
             "configure": "Stel op",
@@ -200,18 +199,15 @@
             "stopped": "Gestop"
         },
         "default": {
-            "off": "Af",
-            "on": "Aan",
             "unavailable": "Nie beskikbaar nie",
             "unknown": "Onbekend"
         },
         "device_tracker": {
-            "home": "Tuis",
             "not_home": "Elders"
         },
         "fan": {
-            "off": "Af",
-            "on": "Aan"
+            "off": "[%key:state::default::off%]",
+            "on": "[%key:state::default::on%]"
         },
         "group": {
             "closed": "Toe",
@@ -229,7 +225,7 @@
             "unlocked": "Oopgesluit"
         },
         "input_boolean": {
-            "off": "Af",
+            "off": "[%key:state::default::off%]",
             "on": "Aan"
         },
         "light": {
@@ -243,40 +239,39 @@
         "media_player": {
             "idle": "Onaktief",
             "off": "Af",
-            "on": "Aan",
+            "on": "[%key:state::default::on%]",
             "paused": "Onderbreek",
             "playing": "Speel Tans",
             "standby": "Gereed"
         },
         "person": {
-            "home": "Tuis",
-            "not_home": "Elders"
+            "home": "[%key:state::device_tracker::home%]"
         },
         "plant": {
             "ok": "OK",
             "problem": "Probleem"
         },
         "remote": {
-            "off": "Af",
-            "on": "Aan"
+            "off": "[%key:state::default::off%]",
+            "on": "[%key:state::default::on%]"
         },
         "scene": {
             "scening": "Toneeling"
         },
         "script": {
             "off": "Af",
-            "on": "Aan"
+            "on": "[%key:state::default::on%]"
         },
         "sensor": {
             "off": "Af",
-            "on": "Aan"
+            "on": "[%key:state::default::on%]"
         },
         "sun": {
             "above_horizon": "Bo horison",
             "below_horizon": "Onder horison"
         },
         "switch": {
-            "off": "Af",
+            "off": "[%key:state::default::off%]",
             "on": "Aan"
         },
         "timer": {
@@ -289,8 +284,8 @@
             "docked": "Vasgemeer by hawe",
             "error": "Fout",
             "idle": "Onaktief",
-            "off": "Af",
-            "on": "Aan",
+            "off": "[%key:state::default::off%]",
+            "on": "[%key:state::default::on%]",
             "paused": "Onderbreek",
             "returning": "Oppad terug hawe toe"
         },

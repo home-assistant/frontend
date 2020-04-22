@@ -93,7 +93,7 @@
         },
         "automation": {
             "off": "Ki",
-            "on": "Be"
+            "on": "[%key:state::default::on%]"
         },
         "binary_sensor": {
             "battery": {
@@ -109,7 +109,7 @@
                 "on": "Kapcsolódva"
             },
             "default": {
-                "off": "Ki",
+                "off": "[%key:state::default::off%]",
                 "on": "Be"
             },
             "door": {
@@ -178,7 +178,7 @@
             }
         },
         "calendar": {
-            "off": "Ki",
+            "off": "[%key:state::default::off%]",
             "on": "Be"
         },
         "camera": {
@@ -187,13 +187,12 @@
             "streaming": "Streamelés"
         },
         "climate": {
-            "auto": "Automatikus",
             "cool": "Hűtés",
             "dry": "Száraz",
             "fan_only": "Csak ventilátor",
             "heat": "Fűtés",
             "heat_cool": "Fűtés/Hűtés",
-            "off": "Ki"
+            "off": "[%key:state::default::off%]"
         },
         "configurator": {
             "configure": "Beállítás",
@@ -207,18 +206,15 @@
             "stopped": "Megállítva"
         },
         "default": {
-            "off": "Ki",
-            "on": "Be",
             "unavailable": "Nem elérhető",
             "unknown": "Ismeretlen"
         },
         "device_tracker": {
-            "home": "Otthon",
             "not_home": "Távol"
         },
         "fan": {
-            "off": "Ki",
-            "on": "Be"
+            "off": "[%key:state::default::off%]",
+            "on": "[%key:state::default::on%]"
         },
         "group": {
             "closed": "Zárva",
@@ -236,7 +232,7 @@
             "unlocked": "Kinyitva"
         },
         "input_boolean": {
-            "off": "Ki",
+            "off": "[%key:state::default::off%]",
             "on": "Be"
         },
         "light": {
@@ -250,40 +246,39 @@
         "media_player": {
             "idle": "Tétlen",
             "off": "Ki",
-            "on": "Be",
+            "on": "[%key:state::default::on%]",
             "paused": "Szünetel",
             "playing": "Lejátszás",
             "standby": "Készenlét"
         },
         "person": {
-            "home": "Otthon",
-            "not_home": "Távol"
+            "home": "Otthon"
         },
         "plant": {
             "ok": "OK",
             "problem": "Probléma"
         },
         "remote": {
-            "off": "Ki",
-            "on": "Be"
+            "off": "[%key:state::default::off%]",
+            "on": "[%key:state::default::on%]"
         },
         "scene": {
             "scening": "Jelenet beállítása"
         },
         "script": {
             "off": "Ki",
-            "on": "Be"
+            "on": "[%key:state::default::on%]"
         },
         "sensor": {
             "off": "Ki",
-            "on": "Be"
+            "on": "[%key:state::default::on%]"
         },
         "sun": {
             "above_horizon": "Látóhatár felett",
             "below_horizon": "Látóhatár alatt"
         },
         "switch": {
-            "off": "Ki",
+            "off": "[%key:state::default::off%]",
             "on": "Be"
         },
         "timer": {
@@ -296,8 +291,8 @@
             "docked": "Dokkolva",
             "error": "Hiba",
             "idle": "Tétlen",
-            "off": "Ki",
-            "on": "Be",
+            "off": "[%key:state::default::off%]",
+            "on": "[%key:state::default::on%]",
             "paused": "Szüneteltetve",
             "returning": "Dokkolás folyamatban"
         },

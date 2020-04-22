@@ -17,7 +17,6 @@
     "state_attributes": {
         "climate": {
             "fan_mode": {
-                "auto": "Automatinis",
                 "off": "Išjungta",
                 "on": "Įjungta"
             }
@@ -41,11 +40,9 @@
             "unknown": "Nžn"
         },
         "device_tracker": {
-            "home": "Namie",
             "not_home": "Išvykęs"
         },
         "person": {
-            "home": "Namuose",
             "not_home": "Išvykęs"
         }
     },
@@ -131,17 +128,15 @@
             "streaming": "Transliuojama"
         },
         "climate": {
-            "off": "Išjungta"
+            "off": "[%key:state::default::off%]"
         },
         "default": {
-            "off": "Išjungta",
-            "on": "Įjungta",
             "unavailable": "(nepasiekiamas)",
             "unknown": "Nežinoma"
         },
         "fan": {
-            "off": "Išjungta",
-            "on": "Įjungta"
+            "off": "[%key:state::default::off%]",
+            "on": "[%key:state::default::on%]"
         },
         "group": {
             "off": "Išjungta",
@@ -151,12 +146,16 @@
         "input_boolean": {
             "on": "Įjungta"
         },
-        "media_player": {
+        "light": {
+            "off": "Išjungta",
             "on": "Įjungta"
         },
+        "media_player": {
+            "off": "Išjungta",
+            "on": "[%key:state::default::on%]"
+        },
         "person": {
-            "home": "Namuose",
-            "not_home": "Išvykęs"
+            "home": "Namuose"
         },
         "remote": {
             "off": "Išjungta",

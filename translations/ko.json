@@ -93,7 +93,7 @@
         },
         "automation": {
             "off": "꺼짐",
-            "on": "켜짐"
+            "on": "[%key:state::default::on%]"
         },
         "binary_sensor": {
             "battery": {
@@ -109,7 +109,7 @@
                 "on": "연결됨"
             },
             "default": {
-                "off": "꺼짐",
+                "off": "[%key:state::default::off%]",
                 "on": "켜짐"
             },
             "door": {
@@ -178,7 +178,7 @@
             }
         },
         "calendar": {
-            "off": "꺼짐",
+            "off": "[%key:state::default::off%]",
             "on": "켜짐"
         },
         "camera": {
@@ -187,13 +187,12 @@
             "streaming": "스트리밍"
         },
         "climate": {
-            "auto": "자동",
             "cool": "냉방",
             "dry": "제습",
             "fan_only": "송풍",
             "heat": "난방",
             "heat_cool": "냉난방",
-            "off": "꺼짐"
+            "off": "[%key:state::default::off%]"
         },
         "configurator": {
             "configure": "설정",
@@ -207,18 +206,15 @@
             "stopped": "멈춤"
         },
         "default": {
-            "off": "꺼짐",
-            "on": "켜짐",
             "unavailable": "사용불가",
             "unknown": "알수없음"
         },
         "device_tracker": {
-            "home": "재실",
             "not_home": "외출"
         },
         "fan": {
-            "off": "꺼짐",
-            "on": "켜짐"
+            "off": "[%key:state::default::off%]",
+            "on": "[%key:state::default::on%]"
         },
         "group": {
             "closed": "닫힘",
@@ -236,7 +232,7 @@
             "unlocked": "해제"
         },
         "input_boolean": {
-            "off": "꺼짐",
+            "off": "[%key:state::default::off%]",
             "on": "켜짐"
         },
         "light": {
@@ -250,40 +246,39 @@
         "media_player": {
             "idle": "대기중",
             "off": "꺼짐",
-            "on": "켜짐",
+            "on": "[%key:state::default::on%]",
             "paused": "일시중지",
             "playing": "재생중",
             "standby": "준비중"
         },
         "person": {
-            "home": "재실",
-            "not_home": "외출"
+            "home": "재실"
         },
         "plant": {
             "ok": "문제없음",
             "problem": "문제있음"
         },
         "remote": {
-            "off": "꺼짐",
-            "on": "켜짐"
+            "off": "[%key:state::default::off%]",
+            "on": "[%key:state::default::on%]"
         },
         "scene": {
             "scening": "씬 구성중"
         },
         "script": {
             "off": "꺼짐",
-            "on": "켜짐"
+            "on": "[%key:state::default::on%]"
         },
         "sensor": {
             "off": "꺼짐",
-            "on": "켜짐"
+            "on": "[%key:state::default::on%]"
         },
         "sun": {
             "above_horizon": "주간",
             "below_horizon": "야간"
         },
         "switch": {
-            "off": "꺼짐",
+            "off": "[%key:state::default::off%]",
             "on": "켜짐"
         },
         "timer": {
@@ -296,8 +291,8 @@
             "docked": "충전중",
             "error": "작동 오류",
             "idle": "대기중",
-            "off": "꺼짐",
-            "on": "켜짐",
+            "off": "[%key:state::default::off%]",
+            "on": "[%key:state::default::on%]",
             "paused": "일시중지됨",
             "returning": "충전 복귀 중"
         },

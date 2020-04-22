@@ -19,7 +19,7 @@
     "state_attributes": {
         "climate": {
             "fan_mode": {
-                "auto": "Tự động",
+                "auto": "Tự động",
                 "off": "Tắt",
                 "on": "Bật"
             },
@@ -68,7 +68,7 @@
         },
         "person": {
             "home": "Ở nhà",
-            "not_home": "Ra ngoài"
+            "not_home": "Đi vắng"
         }
     },
     "state": {
@@ -180,7 +180,6 @@
             "streaming": "Phát trực tuyến"
         },
         "climate": {
-            "auto": "Tự động",
             "cool": "Mát mẻ",
             "dry": "Khô",
             "fan_only": "Chỉ có quạt",
@@ -200,13 +199,10 @@
             "stopped": "Đã dừng"
         },
         "default": {
-            "off": "Tắt",
-            "on": "Bật",
             "unavailable": "Không có sẵn",
             "unknown": "Chưa biết"
         },
         "device_tracker": {
-            "home": "Ở nhà",
             "not_home": "Đi vắng"
         },
         "fan": {
@@ -249,8 +245,7 @@
             "standby": "Chế độ chờ"
         },
         "person": {
-            "home": "Ở nhà",
-            "not_home": "Đi vắng"
+            "home": "Ở nhà"
         },
         "plant": {
             "ok": "OK",
