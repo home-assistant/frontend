@@ -39,6 +39,11 @@ export class DialogDeviceAutomation extends LitElement {
     await this.updateComplete;
   }
 
+  protected firstUpdated(changedProps) {
+    super.firstUpdated(changedProps);
+    this.hass.loadBackendTranslation("device_automation");
+  }
+
   protected updated(changedProps): void {
     super.updated(changedProps);
 
