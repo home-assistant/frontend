@@ -9,6 +9,7 @@ import {
   LitElement,
   property,
   PropertyValues,
+  query,
 } from "lit-element";
 import { HASSDomEvent } from "../../../common/dom/fire_event";
 import { navigate } from "../../../common/navigate";
@@ -28,7 +29,10 @@ import { HomeAssistant } from "../../../types";
 import "../ha-config-section";
 import { formatAsPaddedHex } from "./functions";
 import "./zha-device-card";
+// eslint-disable-next-line import/no-duplicates
 import "./zha-device-endpoint-data-table";
+// eslint-disable-next-line import/no-duplicates
+import { ZHADeviceEndpointDataTable } from "./zha-device-endpoint-data-table";
 
 @customElement("zha-group-page")
 export class ZHAGroupPage extends LitElement {
@@ -53,6 +57,12 @@ export class ZHAGroupPage extends LitElement {
   @property() private _selectedDevicesToAdd: string[] = [];
 
   @property() private _selectedDevicesToRemove: string[] = [];
+
+  @query("#addMembers")
+  private _zhaAddMembersDataTable!: ZHADeviceEndpointDataTable;
+
+  @query("#removeMembers")
+  private _zhaRemoveMembersDataTable!: ZHADeviceEndpointDataTable;
 
   private _firstUpdatedCalled = false;
 
@@ -142,6 +152,7 @@ export class ZHAGroupPage extends LitElement {
                 </div>
 
                 <zha-device-endpoint-data-table
+                  id="removeMembers"
                   .hass=${this.hass}
                   .deviceEndpoints=${this.group.members}
                   .narrow=${this.narrow}
@@ -176,6 +187,7 @@ export class ZHAGroupPage extends LitElement {
           </div>
 
           <zha-device-endpoint-data-table
+            id="addMembers"
             .hass=${this.hass}
             .deviceEndpoints=${this._filteredDeviceEndpoints}
             .narrow=${this.narrow}
@@ -250,6 +262,7 @@ export class ZHAGroupPage extends LitElement {
     this.group = await addMembersToGroup(this.hass, this.groupId, members);
     this._filterDevices();
     this._selectedDevicesToAdd = [];
+    this._zhaAddMembersDataTable.clearSelection();
     this._processingAdd = false;
   }
 
@@ -262,6 +275,7 @@ export class ZHAGroupPage extends LitElement {
     this.group = await removeMembersFromGroup(this.hass, this.groupId, members);
     this._filterDevices();
     this._selectedDevicesToRemove = [];
+    this._zhaRemoveMembersDataTable.clearSelection();
     this._processingRemove = false;
   }
 
