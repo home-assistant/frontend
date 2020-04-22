@@ -93,7 +93,7 @@
         },
         "automation": {
             "off": "꺼짐",
-            "on": "[%key:state::default::on%]"
+            "on": "켜짐"
         },
         "binary_sensor": {
             "battery": {
@@ -109,7 +109,7 @@
                 "on": "연결됨"
             },
             "default": {
-                "off": "[%key:state::default::off%]",
+                "off": "꺼짐",
                 "on": "켜짐"
             },
             "door": {
@@ -178,7 +178,7 @@
             }
         },
         "calendar": {
-            "off": "[%key:state::default::off%]",
+            "off": "꺼짐",
             "on": "켜짐"
         },
         "camera": {
@@ -192,7 +192,7 @@
             "fan_only": "송풍",
             "heat": "난방",
             "heat_cool": "냉난방",
-            "off": "[%key:state::default::off%]"
+            "off": "꺼짐"
         },
         "configurator": {
             "configure": "설정",
@@ -213,8 +213,8 @@
             "not_home": "외출"
         },
         "fan": {
-            "off": "[%key:state::default::off%]",
-            "on": "[%key:state::default::on%]"
+            "off": "꺼짐",
+            "on": "켜짐"
         },
         "group": {
             "closed": "닫힘",
@@ -232,7 +232,7 @@
             "unlocked": "해제"
         },
         "input_boolean": {
-            "off": "[%key:state::default::off%]",
+            "off": "꺼짐",
             "on": "켜짐"
         },
         "light": {
@@ -246,7 +246,7 @@
         "media_player": {
             "idle": "대기중",
             "off": "꺼짐",
-            "on": "[%key:state::default::on%]",
+            "on": "켜짐",
             "paused": "일시중지",
             "playing": "재생중",
             "standby": "준비중"
@@ -259,26 +259,26 @@
             "problem": "문제있음"
         },
         "remote": {
-            "off": "[%key:state::default::off%]",
-            "on": "[%key:state::default::on%]"
+            "off": "꺼짐",
+            "on": "켜짐"
         },
         "scene": {
             "scening": "씬 구성중"
         },
         "script": {
             "off": "꺼짐",
-            "on": "[%key:state::default::on%]"
+            "on": "켜짐"
         },
         "sensor": {
             "off": "꺼짐",
-            "on": "[%key:state::default::on%]"
+            "on": "켜짐"
         },
         "sun": {
             "above_horizon": "주간",
             "below_horizon": "야간"
         },
         "switch": {
-            "off": "[%key:state::default::off%]",
+            "off": "꺼짐",
             "on": "켜짐"
         },
         "timer": {
@@ -291,8 +291,8 @@
             "docked": "충전중",
             "error": "작동 오류",
             "idle": "대기중",
-            "off": "[%key:state::default::off%]",
-            "on": "[%key:state::default::on%]",
+            "off": "꺼짐",
+            "on": "켜짐",
             "paused": "일시중지됨",
             "returning": "충전 복귀 중"
         },

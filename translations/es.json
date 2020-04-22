@@ -109,7 +109,7 @@
                 "on": "Conectado"
             },
             "default": {
-                "off": "[%key:state::default::off%]",
+                "off": "Apagado",
                 "on": "Encendido"
             },
             "door": {
@@ -178,7 +178,7 @@
             }
         },
         "calendar": {
-            "off": "[%key:state::default::off%]",
+            "off": "Apagado",
             "on": "Encendido"
         },
         "camera": {
@@ -192,7 +192,7 @@
             "fan_only": "Sólo ventilador",
             "heat": "Calor",
             "heat_cool": "Calor/Frío",
-            "off": "[%key:state::default::off%]"
+            "off": "Apagado"
         },
         "configurator": {
             "configure": "Configurar",
@@ -213,8 +213,8 @@
             "not_home": "Fuera de casa"
         },
         "fan": {
-            "off": "[%key:state::default::off%]",
-            "on": "[%key:state::default::on%]"
+            "off": "Apagado",
+            "on": "Encendido"
         },
         "group": {
             "closed": "Cerrado",
@@ -232,7 +232,7 @@
             "unlocked": "Desbloqueado"
         },
         "input_boolean": {
-            "off": "[%key:state::default::off%]",
+            "off": "Apagado",
             "on": "Encendido"
         },
         "light": {
@@ -246,7 +246,7 @@
         "media_player": {
             "idle": "Inactivo",
             "off": "Apagado",
-            "on": "[%key:state::default::on%]",
+            "on": "Encendido",
             "paused": "En pausa",
             "playing": "Reproduciendo",
             "standby": "Apagado"
@@ -259,26 +259,26 @@
             "problem": "Problema"
         },
         "remote": {
-            "off": "[%key:state::default::off%]",
-            "on": "[%key:state::default::on%]"
+            "off": "Apagado",
+            "on": "Encendido"
         },
         "scene": {
             "scening": "En escena"
         },
         "script": {
             "off": "Apagado",
-            "on": "[%key:state::default::on%]"
+            "on": "Encendido"
         },
         "sensor": {
             "off": "Apagado",
-            "on": "[%key:state::default::on%]"
+            "on": "Encendido"
         },
         "sun": {
             "above_horizon": "Sobre el horizonte",
             "below_horizon": "Bajo el horizonte"
         },
         "switch": {
-            "off": "[%key:state::default::off%]",
+            "off": "Apagado",
             "on": "Encendido"
         },
         "timer": {
@@ -291,8 +291,8 @@
             "docked": "En base",
             "error": "Error",
             "idle": "Inactivo",
-            "off": "[%key:state::default::off%]",
-            "on": "[%key:state::default::on%]",
+            "off": "Apagado",
+            "on": "Encendido",
             "paused": "En pausa",
             "returning": "Volviendo a la base"
         },

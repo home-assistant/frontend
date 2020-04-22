@@ -71,7 +71,7 @@
         },
         "device_tracker": {
             "home": "En Casa",
-            "not_home": "Fuera de Casa"
+            "not_home": "Fuera de casa"
         },
         "person": {
             "home": "En Casa",
@@ -213,7 +213,7 @@
             "not_home": "Fuera de Casa"
         },
         "fan": {
-            "off": "[%key:state::default::off%]",
+            "off": "Desactivado",
             "on": "Encendido"
         },
         "group": {
@@ -674,11 +674,13 @@
                 "buttons": {
                     "add": "Agregar dispositivos",
                     "reconfigure": "Reconfigurar dispositivo",
-                    "remove": "Eliminar dispositivo"
+                    "remove": "Eliminar dispositivo",
+                    "zigbee_information": "Información de Zigbee"
                 },
                 "confirmations": {
                     "remove": "¿Está seguro de que desea eliminar el dispositivo?"
                 },
+                "device_signature": "Firma del dispositivo Zigbee",
                 "last_seen": "Visto por última vez",
                 "manuf": "por {manufacturer}",
                 "no_area": "Sin área",
@@ -687,7 +689,8 @@
                 "services": {
                     "reconfigure": "Reconfigure el dispositivo ZHA (dispositivo de curación). Use esto si tiene problemas con el dispositivo. Si el dispositivo en cuestión es un dispositivo alimentado por batería, asegúrese de que esté activado y acepte los comandos cuando utilice este servicio.",
                     "remove": "Eliminar un dispositivo de la red Zigbee.",
-                    "updateDeviceName": "Establecer un nombre personalizado para este dispositivo en el registro de dispositivos."
+                    "updateDeviceName": "Establecer un nombre personalizado para este dispositivo en el registro de dispositivos.",
+                    "zigbee_information": "Ver la información de Zigbee para el dispositivo."
                 },
                 "unknown": "Desconocido",
                 "zha_device_card": {
@@ -744,6 +747,7 @@
                         "update": "Actualizar"
                     },
                     "picker": {
+                        "create_area": "Crear área",
                         "header": "Áreas",
                         "integrations_page": "Página de integraciones",
                         "introduction": "Las áreas se utilizan para organizar donde están los dispositivos. Esta información se utilizará en todo Home Assistant para ayudarlo a organizar su interfaz, permisos e integraciones con otros sistemas.",
@@ -1733,7 +1737,7 @@
                         "name": "Nombre",
                         "new_zone": "Nueva zona",
                         "passive": "Pasiva",
-                        "passive_note": "Las zonas pasivas están ocultas en la interfaz y no se utilizan como ubicación para rastreadores de dispositivos. Esto es útil si solo quiere usarlas para automatizaciones.",
+                        "passive_note": "Las zonas pasivas están ocultas en la interfaz y no se utilizan como ubicación para rastreadores de dispositivos. Esto es útil si solo quiere usarlo para automatizaciones.",
                         "radius": "Radio",
                         "required_error_msg": "Este campo es requerido",
                         "update": "Actualizar"
@@ -2148,6 +2152,7 @@
                         "header_name": "{name} Ver configuración",
                         "move_left": "Mover vista a la izquierda",
                         "move_right": "Mover vista a la derecha",
+                        "tab_badges": "Fijar encima",
                         "tab_settings": "Configuraciones",
                         "tab_visibility": "Visibilidad",
                         "visibility": {

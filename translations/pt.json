@@ -71,7 +71,7 @@
         },
         "device_tracker": {
             "home": "Casa",
-            "not_home": "Fora"
+            "not_home": "Ausente"
         },
         "person": {
             "home": "Casa",
@@ -83,7 +83,7 @@
             "armed": "Armado",
             "armed_away": "Armado ausente",
             "armed_custom_bypass": "Armado com desvio personalizado",
-            "armed_home": "Armado [%key:state::device_tracker::home%]",
+            "armed_home": "Armado Casa",
             "armed_night": "Armado noite",
             "arming": "A armar",
             "disarmed": "Desarmado",
@@ -93,7 +93,7 @@
         },
         "automation": {
             "off": "Desligado",
-            "on": "[%key:state::default::on%]"
+            "on": "Ligado"
         },
         "binary_sensor": {
             "battery": {
@@ -109,7 +109,7 @@
                 "on": "Ligado"
             },
             "default": {
-                "off": "[%key:state::default::off%]",
+                "off": "Desligado",
                 "on": "Ligado"
             },
             "door": {
@@ -149,7 +149,7 @@
                 "on": "Aberto"
             },
             "presence": {
-                "off": "Fora",
+                "off": "Ausente",
                 "on": "Casa"
             },
             "problem": {
@@ -178,7 +178,7 @@
             }
         },
         "calendar": {
-            "off": "[%key:state::default::off%]",
+            "off": "Desligado",
             "on": "Ligado"
         },
         "camera": {
@@ -192,7 +192,7 @@
             "fan_only": "Apenas ventilar",
             "heat": "Quente",
             "heat_cool": "Calor / Frio",
-            "off": "[%key:state::default::off%]"
+            "off": "Desligado"
         },
         "configurator": {
             "configure": "Configurar",
@@ -214,14 +214,14 @@
         },
         "fan": {
             "off": "Desligada",
-            "on": "[%key:state::default::on%]"
+            "on": "Ligado"
         },
         "group": {
             "closed": "Fechada",
             "closing": "A fechar",
             "home": "Casa",
             "locked": "Bloqueado",
-            "not_home": "Fora",
+            "not_home": "Ausente",
             "off": "Desligado",
             "ok": "OK",
             "on": "Ligado",
@@ -232,7 +232,7 @@
             "unlocked": "Desbloqueado"
         },
         "input_boolean": {
-            "off": "[%key:state::default::off%]",
+            "off": "Desligado",
             "on": "Ligado"
         },
         "light": {
@@ -246,7 +246,7 @@
         "media_player": {
             "idle": "Em espera",
             "off": "Desligado",
-            "on": "[%key:state::default::on%]",
+            "on": "Ligado",
             "paused": "Em pausa",
             "playing": "A reproduzir",
             "standby": "Em espera"
@@ -267,18 +267,18 @@
         },
         "script": {
             "off": "Desligado",
-            "on": "[%key:state::default::on%]"
+            "on": "Ligado"
         },
         "sensor": {
             "off": "Desligado",
-            "on": "[%key:state::default::on%]"
+            "on": "Ligado"
         },
         "sun": {
             "above_horizon": "Acima do horizonte",
             "below_horizon": "Abaixo do horizonte"
         },
         "switch": {
-            "off": "[%key:state::default::off%]",
+            "off": "Desligado",
             "on": "Ligado"
         },
         "timer": {

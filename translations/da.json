@@ -93,7 +93,7 @@
         },
         "automation": {
             "off": "Fra",
-            "on": "[%key:state::default::on%]"
+            "on": "Til"
         },
         "binary_sensor": {
             "battery": {
@@ -109,7 +109,7 @@
                 "on": "Forbundet"
             },
             "default": {
-                "off": "[%key:state::default::off%]",
+                "off": "Fra",
                 "on": "Til"
             },
             "door": {
@@ -178,7 +178,7 @@
             }
         },
         "calendar": {
-            "off": "[%key:state::default::off%]",
+            "off": "Fra",
             "on": "Til"
         },
         "camera": {
@@ -192,7 +192,7 @@
             "fan_only": "Kun blæser",
             "heat": "Varme",
             "heat_cool": "Opvarm/køl",
-            "off": "[%key:state::default::off%]"
+            "off": "Fra"
         },
         "configurator": {
             "configure": "Konfigurer",
@@ -213,8 +213,8 @@
             "not_home": "Ude"
         },
         "fan": {
-            "off": "[%key:state::default::off%]",
-            "on": "[%key:state::default::on%]"
+            "off": "Fra",
+            "on": "Til"
         },
         "group": {
             "closed": "Lukket",
@@ -232,7 +232,7 @@
             "unlocked": "Ulåst"
         },
         "input_boolean": {
-            "off": "[%key:state::default::off%]",
+            "off": "Fra",
             "on": "Til"
         },
         "light": {
@@ -267,18 +267,18 @@
         },
         "script": {
             "off": "Fra",
-            "on": "[%key:state::default::on%]"
+            "on": "Til"
         },
         "sensor": {
             "off": "Fra",
-            "on": "[%key:state::default::on%]"
+            "on": "Til"
         },
         "sun": {
             "above_horizon": "Over horisonten",
             "below_horizon": "Under horisonten"
         },
         "switch": {
-            "off": "[%key:state::default::off%]",
+            "off": "Fra",
             "on": "Til"
         },
         "timer": {

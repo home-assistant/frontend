@@ -187,7 +187,7 @@
             "not_home": "Keluar"
         },
         "fan": {
-            "off": "[%key:state::default::off%]",
+            "off": "Off",
             "on": "On"
         },
         "group": {

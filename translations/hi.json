@@ -35,8 +35,7 @@
     },
     "state": {
         "automation": {
-            "off": "बंद",
-            "on": "[%key:state::default::on%]"
+            "off": "बंद"
         },
         "binary_sensor": {
             "battery": {
@@ -52,7 +51,7 @@
                 "on": "जुड़े हुए"
             },
             "default": {
-                "off": "[%key:state::default::off%]"
+                "off": "बंद"
             },
             "door": {
                 "off": "बंद",
@@ -81,7 +80,7 @@
             }
         },
         "calendar": {
-            "off": "[%key:state::default::off%]"
+            "off": "बंद"
         },
         "camera": {
             "recording": "रिकॉर्डिंग"
@@ -90,14 +89,14 @@
             "cool": "ठंडा",
             "dry": "सूखा",
             "heat": "गर्मी",
-            "off": "[%key:state::default::off%]"
+            "off": "बंद"
         },
         "default": {
             "unavailable": "अनुपलब्ध",
             "unknown": "अनजान"
         },
         "fan": {
-            "off": "[%key:state::default::off%]",
+            "off": "बंद",
             "on": "चालू"
         },
         "group": {

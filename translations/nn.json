@@ -71,7 +71,7 @@
         },
         "device_tracker": {
             "home": "Heime",
-            "not_home": "Borte"
+            "not_home": "Borte "
         },
         "person": {
             "home": "Heime",
@@ -93,7 +93,7 @@
         },
         "automation": {
             "off": "Av",
-            "on": "[%key:state::default::on%]"
+            "on": "På"
         },
         "binary_sensor": {
             "battery": {
@@ -109,7 +109,7 @@
                 "on": "Tilkopla"
             },
             "default": {
-                "off": "[%key:state::default::off%]",
+                "off": "Av",
                 "on": "På"
             },
             "door": {
@@ -149,7 +149,7 @@
                 "on": "Open"
             },
             "presence": {
-                "off": "Borte",
+                "off": "Borte ",
                 "on": "Heime"
             },
             "problem": {
@@ -192,7 +192,7 @@
             "fan_only": "Berre vifte",
             "heat": "Varme",
             "heat_cool": "Oppvarming/Nedkjøling",
-            "off": "[%key:state::default::off%]"
+            "off": "Av"
         },
         "configurator": {
             "configure": "Konfigurerer",
@@ -213,8 +213,8 @@
             "not_home": "Borte"
         },
         "fan": {
-            "off": "[%key:state::default::off%]",
-            "on": "[%key:state::default::on%]"
+            "off": "Av",
+            "on": "På"
         },
         "group": {
             "closed": "Lukka",
@@ -232,7 +232,7 @@
             "unlocked": "Ulåst"
         },
         "input_boolean": {
-            "off": "[%key:state::default::off%]",
+            "off": "Av",
             "on": "På"
         },
         "light": {
@@ -246,7 +246,7 @@
         "media_player": {
             "idle": "Inaktiv",
             "off": "Av",
-            "on": "[%key:state::default::on%]",
+            "on": "På",
             "paused": "Pausa",
             "playing": "Spelar",
             "standby": "Avventer"
@@ -259,26 +259,26 @@
             "problem": "Problem"
         },
         "remote": {
-            "off": "[%key:state::default::off%]",
-            "on": "[%key:state::default::on%]"
+            "off": "Av",
+            "on": "På"
         },
         "scene": {
             "scening": "Scenande"
         },
         "script": {
             "off": "Av",
-            "on": "[%key:state::default::on%]"
+            "on": "På"
         },
         "sensor": {
             "off": "Av",
-            "on": "[%key:state::default::on%]"
+            "on": "På"
         },
         "sun": {
             "above_horizon": "Over horisonten",
             "below_horizon": "Under horisonten"
         },
         "switch": {
-            "off": "[%key:state::default::off%]",
+            "off": "Av",
             "on": "På"
         },
         "timer": {
