@@ -228,6 +228,10 @@ class HassTabsSubpage extends LitElement {
         min-width: 0;
       }
 
+      :host(:not([narrow])) #toolbar-icon {
+        min-width: 40px;
+      }
+
       ha-menu-button,
       ha-paper-icon-button-arrow-prev,
       ::slotted([slot="toolbar-icon"]) {
