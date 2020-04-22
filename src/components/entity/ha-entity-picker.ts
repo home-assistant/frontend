@@ -12,6 +12,7 @@ import {
   property,
   PropertyValues,
   TemplateResult,
+  query,
 } from "lit-element";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../common/dom/fire_event";
@@ -91,7 +92,9 @@ class HaEntityPicker extends LitElement {
 
   @property() public entityFilter?: HaEntityPickerEntityFilterFunc;
 
-  @property({ type: Boolean }) private _opened?: boolean;
+  @property({ type: Boolean }) private _opened = false;
+
+  @query("vaadin-combo-box-light") private _comboBox!: HTMLElement;
 
   private _getStates = memoizeOne(
     (
@@ -142,42 +145,32 @@ class HaEntityPicker extends LitElement {
       }
 
       return states;
-    },
-    (newInputs: unknown[], lastInputs: unknown[]): boolean => {
-      if (newInputs[0]) {
-        return true;
-      }
-      if (newInputs.length !== lastInputs.length) {
-        return false;
-      }
-
-      for (let i = 0; i < newInputs.length; i++) {
-        if (newInputs[i] !== lastInputs[i]) {
-          return false;
-        }
-      }
-      return true;
     }
   );
+
+  protected updated(changedProps: PropertyValues) {
+    if (changedProps.has("_opened") && this._opened) {
+      const states = this._getStates(
+        this._opened,
+        this.hass,
+        this.includeDomains,
+        this.excludeDomains,
+        this.entityFilter,
+        this.includeDeviceClasses
+      );
+      (this._comboBox as any).items = states;
+    }
+  }
 
   protected render(): TemplateResult {
     if (!this.hass) {
       return html``;
     }
-    const states = this._getStates(
-      this._opened,
-      this.hass,
-      this.includeDomains,
-      this.excludeDomains,
-      this.entityFilter,
-      this.includeDeviceClasses
-    );
 
     return html`
       <vaadin-combo-box-light
         item-value-path="entity_id"
         item-label-path="entity_id"
-        .items=${states}
         .value=${this._value}
         .allowCustomValue=${this.allowCustomEntity}
         .renderer=${rowRenderer}
@@ -213,20 +206,17 @@ class HaEntityPicker extends LitElement {
                 </paper-icon-button>
               `
             : ""}
-          ${states.length > 0
-            ? html`
-                <paper-icon-button
-                  aria-label=${this.hass.localize(
-                    "ui.components.entity.entity-picker.show_entities"
-                  )}
-                  slot="suffix"
-                  class="toggle-button"
-                  .icon=${this._opened ? "hass:menu-up" : "hass:menu-down"}
-                >
-                  Toggle
-                </paper-icon-button>
-              `
-            : ""}
+
+          <paper-icon-button
+            aria-label=${this.hass.localize(
+              "ui.components.entity.entity-picker.show_entities"
+            )}
+            slot="suffix"
+            class="toggle-button"
+            .icon=${this._opened ? "hass:menu-up" : "hass:menu-down"}
+          >
+            Toggle
+          </paper-icon-button>
         </paper-input>
       </vaadin-combo-box-light>
     `;
