@@ -27,7 +27,7 @@
         "climate": {
             "fan_mode": {
                 "auto": "自动",
-                "off": "关",
+                "off": "关闭",
                 "on": "开"
             },
             "hvac_action": {
@@ -110,7 +110,7 @@
             },
             "default": {
                 "off": "关闭",
-                "on": "开启"
+                "on": "开"
             },
             "door": {
                 "off": "关闭",
@@ -187,7 +187,6 @@
             "streaming": "监控中"
         },
         "climate": {
-            "auto": "自动",
             "cool": "制冷",
             "dry": "除湿",
             "fan_only": "仅送风",
@@ -207,17 +206,14 @@
             "stopped": "已停止"
         },
         "default": {
-            "off": "关闭",
-            "on": "开",
             "unavailable": "不可用",
             "unknown": "未知"
         },
         "device_tracker": {
-            "home": "在家",
             "not_home": "离开"
         },
         "fan": {
-            "off": "关闭",
+            "off": "[%key:state::default::off%]",
             "on": "开"
         },
         "group": {
@@ -228,7 +224,7 @@
             "not_home": "离开",
             "off": "关闭",
             "ok": "正常",
-            "on": "开启",
+            "on": "开",
             "open": "开启",
             "opening": "正在打开",
             "problem": "异常",
@@ -240,7 +236,7 @@
             "on": "开"
         },
         "light": {
-            "off": "关",
+            "off": "关闭",
             "on": "开"
         },
         "lock": {
@@ -249,15 +245,14 @@
         },
         "media_player": {
             "idle": "空闲",
-            "off": "关",
+            "off": "关闭",
             "on": "开",
             "paused": "已暂停",
             "playing": "正在播放",
             "standby": "待机"
         },
         "person": {
-            "home": "在家",
-            "not_home": "离开"
+            "home": "在家"
         },
         "plant": {
             "ok": "正常",
@@ -271,11 +266,11 @@
             "scening": "场景启用中"
         },
         "script": {
-            "off": "关",
+            "off": "关闭",
             "on": "开"
         },
         "sensor": {
-            "off": "关",
+            "off": "关闭",
             "on": "开"
         },
         "sun": {

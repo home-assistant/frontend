@@ -26,7 +26,7 @@
     "state_attributes": {
         "climate": {
             "fan_mode": {
-                "auto": "Automatski",
+                "auto": "Auto",
                 "off": "Isključen",
                 "on": "Uključen"
             },
@@ -93,7 +93,7 @@
         },
         "automation": {
             "off": "Isključen",
-            "on": "Uključen"
+            "on": "[%key:state::default::on%]"
         },
         "binary_sensor": {
             "battery": {
@@ -109,7 +109,7 @@
                 "on": "Spojen"
             },
             "default": {
-                "off": "Isključen",
+                "off": "[%key:state::default::off%]",
                 "on": "Uključen"
             },
             "door": {
@@ -178,7 +178,7 @@
             }
         },
         "calendar": {
-            "off": "Isključen",
+            "off": "[%key:state::default::off%]",
             "on": "Uključen"
         },
         "camera": {
@@ -187,13 +187,12 @@
             "streaming": "Odašilja"
         },
         "climate": {
-            "auto": "Auto",
             "cool": "Hlađenje",
             "dry": "Suho",
             "fan_only": "Samo ventilator",
             "heat": "Grijanje",
             "heat_cool": "Grijanje/Hlađenje",
-            "off": "Isključen"
+            "off": "[%key:state::default::off%]"
         },
         "configurator": {
             "configure": "Konfiguriranje",
@@ -207,17 +206,14 @@
             "stopped": "zaustavljen"
         },
         "default": {
-            "off": "Isključen",
-            "on": "Uključen",
             "unavailable": "Nedostupan",
             "unknown": "Nepoznato"
         },
         "device_tracker": {
-            "home": "Doma",
             "not_home": "Odsutan"
         },
         "fan": {
-            "off": "Isključen",
+            "off": "[%key:state::default::off%]",
             "on": "Uključen"
         },
         "group": {
@@ -226,9 +222,9 @@
             "home": "Doma",
             "locked": "Zaključano",
             "not_home": "Odsutan",
-            "off": "Uključeno",
+            "off": "Isključen",
             "ok": "U redu",
-            "on": "Uključeno",
+            "on": "Uključen",
             "open": "Otvoreno",
             "opening": "Otvaranje",
             "problem": "Problem",
@@ -240,8 +236,8 @@
             "on": "Uključen"
         },
         "light": {
-            "off": "Isključeno",
-            "on": "Uključeno"
+            "off": "Isključen",
+            "on": "Uključen"
         },
         "lock": {
             "locked": "Zaključan",
@@ -256,8 +252,7 @@
             "standby": "U stanju čekanja"
         },
         "person": {
-            "home": "Doma",
-            "not_home": "Odsutan"
+            "home": "Doma"
         },
         "plant": {
             "ok": "u redu",

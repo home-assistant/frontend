@@ -28,11 +28,15 @@
         },
         "device_tracker": {
             "home": "घर"
+        },
+        "person": {
+            "home": "घर"
         }
     },
     "state": {
         "automation": {
-            "off": "बंद"
+            "off": "बंद",
+            "on": "[%key:state::default::on%]"
         },
         "binary_sensor": {
             "battery": {
@@ -48,7 +52,7 @@
                 "on": "जुड़े हुए"
             },
             "default": {
-                "off": "बंद"
+                "off": "[%key:state::default::off%]"
             },
             "door": {
                 "off": "बंद",
@@ -77,7 +81,7 @@
             }
         },
         "calendar": {
-            "off": "बंद"
+            "off": "[%key:state::default::off%]"
         },
         "camera": {
             "recording": "रिकॉर्डिंग"
@@ -86,33 +90,26 @@
             "cool": "ठंडा",
             "dry": "सूखा",
             "heat": "गर्मी",
-            "off": "बंद"
+            "off": "[%key:state::default::off%]"
         },
         "default": {
-            "off": "बंद",
             "unavailable": "अनुपलब्ध",
             "unknown": "अनजान"
         },
-        "device_tracker": {
-            "home": "घर"
-        },
         "fan": {
-            "off": "बंद",
+            "off": "[%key:state::default::off%]",
             "on": "चालू"
         },
         "group": {
             "home": "घर",
             "off": "बंद",
-            "on": "चालू",
             "problem": "समस्या"
         },
         "input_boolean": {
-            "off": "बंद",
-            "on": "चालू"
+            "off": "बंद"
         },
         "light": {
-            "off": "बंद",
-            "on": "चालू"
+            "off": "बंद"
         },
         "lock": {
             "locked": "अवरोधित",
@@ -143,8 +140,7 @@
             "below_horizon": "क्षितिज के नीचे"
         },
         "switch": {
-            "off": "बंद",
-            "on": "चालू"
+            "off": "बंद"
         },
         "zwave": {
             "default": {

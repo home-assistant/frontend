@@ -93,7 +93,7 @@
         },
         "automation": {
             "off": "Выкл",
-            "on": "Вкл"
+            "on": "[%key:state::default::on%]"
         },
         "binary_sensor": {
             "battery": {
@@ -109,7 +109,7 @@
                 "on": "Подключено"
             },
             "default": {
-                "off": "Выкл",
+                "off": "[%key:state::default::off%]",
                 "on": "Вкл"
             },
             "door": {
@@ -178,7 +178,7 @@
             }
         },
         "calendar": {
-            "off": "Выкл",
+            "off": "[%key:state::default::off%]",
             "on": "Вкл"
         },
         "camera": {
@@ -187,13 +187,12 @@
             "streaming": "Трансляция"
         },
         "climate": {
-            "auto": "Авто",
             "cool": "Охлаждение",
             "dry": "Осушение",
             "fan_only": "Вентиляция",
             "heat": "Обогрев",
             "heat_cool": "Обогрев / Охлаждение",
-            "off": "Выкл"
+            "off": "[%key:state::default::off%]"
         },
         "configurator": {
             "configure": "Настроить",
@@ -207,18 +206,15 @@
             "stopped": "Остановлено"
         },
         "default": {
-            "off": "Выкл",
-            "on": "Вкл",
             "unavailable": "Недоступно",
             "unknown": "Неизвестно"
         },
         "device_tracker": {
-            "home": "Дома",
             "not_home": "Не дома"
         },
         "fan": {
-            "off": "Выкл",
-            "on": "Вкл"
+            "off": "[%key:state::default::off%]",
+            "on": "[%key:state::default::on%]"
         },
         "group": {
             "closed": "Закрыто",
@@ -236,7 +232,7 @@
             "unlocked": "Разблокирована"
         },
         "input_boolean": {
-            "off": "Выкл",
+            "off": "[%key:state::default::off%]",
             "on": "Вкл"
         },
         "light": {
@@ -250,40 +246,39 @@
         "media_player": {
             "idle": "Ожидание",
             "off": "Выкл",
-            "on": "Вкл",
+            "on": "[%key:state::default::on%]",
             "paused": "Пауза",
             "playing": "Воспроизведение",
             "standby": "Ожидание"
         },
         "person": {
-            "home": "Дома",
-            "not_home": "Не дома"
+            "home": "Дома"
         },
         "plant": {
             "ok": "ОК",
             "problem": "Проблема"
         },
         "remote": {
-            "off": "Выкл",
-            "on": "Вкл"
+            "off": "[%key:state::default::off%]",
+            "on": "[%key:state::default::on%]"
         },
         "scene": {
             "scening": "Переход к сцене"
         },
         "script": {
             "off": "Выкл",
-            "on": "Вкл"
+            "on": "[%key:state::default::on%]"
         },
         "sensor": {
             "off": "Выкл",
-            "on": "Вкл"
+            "on": "[%key:state::default::on%]"
         },
         "sun": {
             "above_horizon": "Над горизонтом",
             "below_horizon": "За горизонтом"
         },
         "switch": {
-            "off": "Выкл",
+            "off": "[%key:state::default::off%]",
             "on": "Вкл"
         },
         "timer": {

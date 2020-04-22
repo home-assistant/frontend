@@ -19,7 +19,7 @@
     "state_attributes": {
         "climate": {
             "fan_mode": {
-                "auto": "Auto",
+                "auto": "Automatikoa",
                 "off": "Itzalita",
                 "on": "Piztuta"
             }
@@ -113,7 +113,6 @@
             "recording": "Grabatzen"
         },
         "climate": {
-            "auto": "Automatikoa",
             "cool": "Hotza",
             "dry": "Lehorra",
             "fan_only": "Haizagailua bakarrik",
@@ -132,13 +131,10 @@
             "stopped": "Geldituta"
         },
         "default": {
-            "off": "Itzalita",
-            "on": "Piztuta",
             "unavailable": "Ez dago erabilgarri",
             "unknown": "Ezezaguna"
         },
         "device_tracker": {
-            "home": "Etxean",
             "not_home": "Kanpoan"
         },
         "fan": {
@@ -171,8 +167,7 @@
             "on": "Piztuta"
         },
         "person": {
-            "home": "Etxean",
-            "not_home": "Kanpoan"
+            "home": "Etxean"
         },
         "plant": {
             "ok": "Itzalita",

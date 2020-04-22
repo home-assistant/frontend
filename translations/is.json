@@ -26,8 +26,8 @@
         "climate": {
             "fan_mode": {
                 "auto": "Sjálfvirkt",
-                "off": "Slökkt",
-                "on": "Kveikt"
+                "off": "Af",
+                "on": "Á"
             },
             "hvac_action": {
                 "cooling": "Kæling",
@@ -89,7 +89,7 @@
             "triggered": "Ræst"
         },
         "automation": {
-            "off": "Óvirk",
+            "off": "Af",
             "on": "Virk"
         },
         "binary_sensor": {
@@ -107,7 +107,7 @@
             },
             "default": {
                 "off": "Slökkt",
-                "on": "Kveikt"
+                "on": "Á"
             },
             "door": {
                 "off": "Lokuð",
@@ -171,7 +171,7 @@
         },
         "calendar": {
             "off": "Óvirkt",
-            "on": "Virkt"
+            "on": "Á"
         },
         "camera": {
             "idle": "Aðgerðalaus",
@@ -179,7 +179,6 @@
             "streaming": "Streymi"
         },
         "climate": {
-            "auto": "Sjálfvirkt",
             "cool": "Kæling",
             "dry": "Þurrt",
             "fan_only": "Vifta eingöngu",
@@ -199,13 +198,10 @@
             "stopped": "Stöðvuð"
         },
         "default": {
-            "off": "Af",
-            "on": "Á",
             "unavailable": "Ekki tiltækt",
             "unknown": "Óþekkt"
         },
         "device_tracker": {
-            "home": "Heima",
             "not_home": "Fjarverandi"
         },
         "fan": {
@@ -218,9 +214,9 @@
             "home": "Heima",
             "locked": "Læst",
             "not_home": "Fjarverandi",
-            "off": "Óvirkur",
+            "off": "Af",
             "ok": "Í lagi",
-            "on": "Virkur",
+            "on": "Á",
             "open": "Opin",
             "opening": "Opna",
             "problem": "Vandamál",
@@ -232,8 +228,8 @@
             "on": "Á"
         },
         "light": {
-            "off": "Slökkt",
-            "on": "Kveikt"
+            "off": "Af",
+            "on": "Á"
         },
         "lock": {
             "locked": "Læst",
@@ -241,15 +237,14 @@
         },
         "media_player": {
             "idle": "Aðgerðalaus",
-            "off": "Slökkt",
+            "off": "Af",
             "on": "í gangi",
             "paused": "Í bið",
             "playing": "Spila",
             "standby": "Biðstaða"
         },
         "person": {
-            "home": "Heima",
-            "not_home": "Fjarverandi"
+            "home": "Heima"
         },
         "plant": {
             "ok": "Í lagi",
@@ -260,7 +255,7 @@
             "on": "Virk"
         },
         "script": {
-            "off": "Óvirkt",
+            "off": "Af",
             "on": "Virkt"
         },
         "sensor": {
@@ -273,7 +268,7 @@
         },
         "switch": {
             "off": "Slökkt",
-            "on": "Kveikt"
+            "on": "Á"
         },
         "timer": {
             "active": "virkur",

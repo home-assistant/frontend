@@ -109,7 +109,7 @@
                 "on": "Verbonden"
             },
             "default": {
-                "off": "Uit",
+                "off": "[%key:state::default::off%]",
                 "on": "Aan"
             },
             "door": {
@@ -187,7 +187,6 @@
             "streaming": "Streamen"
         },
         "climate": {
-            "auto": "Auto",
             "cool": "Koelen",
             "dry": "Droog",
             "fan_only": "Alleen ventilatie",
@@ -207,13 +206,10 @@
             "stopped": "Gestopt"
         },
         "default": {
-            "off": "Uit",
-            "on": "Aan",
             "unavailable": "Niet beschikbaar",
             "unknown": "Onbekend"
         },
         "device_tracker": {
-            "home": "Thuis",
             "not_home": "Afwezig"
         },
         "fan": {
@@ -256,8 +252,7 @@
             "standby": "Standby"
         },
         "person": {
-            "home": "Thuis",
-            "not_home": "Afwezig"
+            "home": "Thuis"
         },
         "plant": {
             "ok": "OK",

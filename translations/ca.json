@@ -93,7 +93,7 @@
         },
         "automation": {
             "off": "Desactivat",
-            "on": "Activat"
+            "on": "[%key:state::default::on%]"
         },
         "binary_sensor": {
             "battery": {
@@ -109,7 +109,7 @@
                 "on": "Connectat"
             },
             "default": {
-                "off": "Desactivat",
+                "off": "[%key:state::default::off%]",
                 "on": "Activat"
             },
             "door": {
@@ -150,7 +150,7 @@
             },
             "presence": {
                 "off": "Lliure",
-                "on": "Detectat"
+                "on": "A casa"
             },
             "problem": {
                 "off": "Correcte",
@@ -178,7 +178,7 @@
             }
         },
         "calendar": {
-            "off": "Desactivat",
+            "off": "[%key:state::default::off%]",
             "on": "Activat"
         },
         "camera": {
@@ -187,7 +187,6 @@
             "streaming": "Transmetent vídeo"
         },
         "climate": {
-            "auto": "Automàtic",
             "cool": "Refredar",
             "dry": "Assecar",
             "fan_only": "Només ventilador",
@@ -207,18 +206,15 @@
             "stopped": "Aturat"
         },
         "default": {
-            "off": "Desactivat",
-            "on": "Activat",
             "unavailable": "No disponible",
             "unknown": "Desconegut"
         },
         "device_tracker": {
-            "home": "A casa",
             "not_home": "Fora"
         },
         "fan": {
             "off": "Apagat",
-            "on": "Encès"
+            "on": "Activat"
         },
         "group": {
             "closed": "Tancat",
@@ -236,12 +232,12 @@
             "unlocked": "Desbloquejat"
         },
         "input_boolean": {
-            "off": "Desactivat",
+            "off": "[%key:state::default::off%]",
             "on": "Activat"
         },
         "light": {
-            "off": "Apagada",
-            "on": "Encesa"
+            "off": "Desactivat",
+            "on": "Activat"
         },
         "lock": {
             "locked": "Bloquejat",
@@ -249,15 +245,14 @@
         },
         "media_player": {
             "idle": "Inactiu",
-            "off": "Apagat",
-            "on": "Encès",
+            "off": "Desactivat",
+            "on": "Activat",
             "paused": "Pausat",
             "playing": "Reproduint",
             "standby": "En espera"
         },
         "person": {
-            "home": "A casa",
-            "not_home": "Fora"
+            "home": "A casa"
         },
         "plant": {
             "ok": "Correcte",
@@ -265,18 +260,18 @@
         },
         "remote": {
             "off": "Apagat",
-            "on": "Encès"
+            "on": "Activat"
         },
         "scene": {
             "scening": "Escena activa"
         },
         "script": {
             "off": "Desactivat",
-            "on": "Activat"
+            "on": "[%key:state::default::on%]"
         },
         "sensor": {
             "off": "Desactivat",
-            "on": "Activat"
+            "on": "[%key:state::default::on%]"
         },
         "sun": {
             "above_horizon": "Sobre l'horitzó",
@@ -284,7 +279,7 @@
         },
         "switch": {
             "off": "Apagat",
-            "on": "Encès"
+            "on": "Activat"
         },
         "timer": {
             "active": "actiu",

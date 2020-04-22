@@ -39,6 +39,9 @@
         "device_tracker": {
             "home": "Dahei",
             "not_home": "Nid Dahei"
+        },
+        "person": {
+            "home": "Dahei"
         }
     },
     "state": {
@@ -128,7 +131,6 @@
             "streaming": "Streamt"
         },
         "climate": {
-            "auto": "Automatik",
             "cool": "Chüälä",
             "dry": "Trochä",
             "fan_only": "Nur Lüfter",
@@ -147,17 +149,14 @@
             "stopped": "Gstoppt"
         },
         "default": {
-            "off": "Us",
-            "on": "Ah",
             "unavailable": "Nid verfüägbar",
             "unknown": "Unbekannt"
         },
         "device_tracker": {
-            "home": "Dahei",
             "not_home": "Nid Dahei"
         },
         "fan": {
-            "off": "Us",
+            "off": "[%key:state::default::off%]",
             "on": "Ah"
         },
         "group": {

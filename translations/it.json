@@ -27,8 +27,8 @@
         "climate": {
             "fan_mode": {
                 "auto": "Auto",
-                "off": "Off",
-                "on": "On"
+                "off": "Spento",
+                "on": "Acceso"
             },
             "hvac_action": {
                 "cooling": "Raffreddamento",
@@ -70,7 +70,7 @@
             "unknown": "Ignoto"
         },
         "device_tracker": {
-            "home": "In Casa",
+            "home": "A casa",
             "not_home": "Fuori casa"
         },
         "person": {
@@ -179,7 +179,7 @@
         },
         "calendar": {
             "off": "Disattivo",
-            "on": "Attivo"
+            "on": "Acceso"
         },
         "camera": {
             "idle": "Inattiva",
@@ -187,7 +187,6 @@
             "streaming": "Streaming"
         },
         "climate": {
-            "auto": "Auto",
             "cool": "Freddo",
             "dry": "Secco",
             "fan_only": "Solo ventilatore",
@@ -207,17 +206,14 @@
             "stopped": "Arrestato"
         },
         "default": {
-            "off": "Spento",
-            "on": "Acceso",
             "unavailable": "Non disponibile",
             "unknown": "Sconosciuto"
         },
         "device_tracker": {
-            "home": "A casa",
             "not_home": "Fuori casa"
         },
         "fan": {
-            "off": "Spento",
+            "off": "[%key:state::default::off%]",
             "on": "Acceso"
         },
         "group": {
@@ -256,8 +252,7 @@
             "standby": "Pausa"
         },
         "person": {
-            "home": "A casa",
-            "not_home": "Fuori casa"
+            "home": "A casa"
         },
         "plant": {
             "ok": "OK",
