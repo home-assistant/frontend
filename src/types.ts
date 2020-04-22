@@ -11,6 +11,7 @@ import {
 import { LocalizeFunc } from "./common/translations/localize";
 import { CoreFrontendUserData } from "./data/frontend";
 import { ExternalMessaging } from "./external_app/external_messaging";
+import { getHassTranslations } from "./data/translation";
 
 declare global {
   /* eslint-disable no-var, no-redeclare */
@@ -19,6 +20,7 @@ declare global {
   var __BUILD__: "latest" | "es5";
   var __VERSION__: string;
   var __STATIC_PATH__: string;
+  var __BACKWARDS_COMPAT__: boolean;
   /* eslint-enable no-var, no-redeclare */
 
   interface Window {
@@ -174,6 +176,11 @@ export interface HomeAssistant {
   fetchWithAuth(path: string, init?: { [key: string]: any }): Promise<Response>;
   sendWS(msg: MessageBase): void;
   callWS<T>(msg: MessageBase): Promise<T>;
+  loadBackendTranslation(
+    category: Parameters<typeof getHassTranslations>[2],
+    integration?: Parameters<typeof getHassTranslations>[3],
+    configFlow?: Parameters<typeof getHassTranslations>[4]
+  ): Promise<void>;
 }
 
 export type LightEntity = HassEntityBase & {
@@ -252,6 +259,7 @@ interface ForecastAttribute {
   templow?: number;
   precipitation?: number;
   humidity?: number;
+  condition?: string;
 }
 
 export type WeatherEntity = HassEntityBase & {

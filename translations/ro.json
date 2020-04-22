@@ -1,61 +1,10 @@
 {
-    "attribute": {
-        "weather": {
-            "humidity": "Umiditate",
-            "visibility": "Vizibilitate",
-            "wind_speed": "Viteza vântului"
-        }
-    },
     "config_entry": {
         "disabled_by": {
             "config_entry": "Intrare config",
             "integration": "Integrare",
             "user": "Utilizator"
         }
-    },
-    "domain": {
-        "alarm_control_panel": "Panoul de control alarma",
-        "automation": "Automatizări",
-        "binary_sensor": "Senzor binar",
-        "calendar": "Calendar",
-        "camera": "Camera",
-        "climate": "Clima",
-        "configurator": "Configurator",
-        "conversation": "Conversaţie",
-        "cover": "Jaluzea",
-        "device_tracker": "Dispozitiv tracker",
-        "fan": "Ventilator",
-        "group": "Grup",
-        "hassio": "Hass.io",
-        "history_graph": "Istorie grafic",
-        "homeassistant": "Home Assistant",
-        "image_processing": "Procesarea imaginii",
-        "input_boolean": "Selectie On/Off",
-        "input_datetime": "Selectați o data",
-        "input_number": "Selectați numarul",
-        "input_select": "Selectați",
-        "input_text": "Introduceti un text",
-        "light": "Lumina",
-        "lock": "Blocare",
-        "lovelace": "Lovelace",
-        "mailbox": "Cutie poștală",
-        "media_player": "Media Player",
-        "notify": "Notifica",
-        "person": "Persoană",
-        "plant": "Plantă",
-        "proximity": "Proximitate",
-        "remote": "La distanţă",
-        "scene": "Scenă",
-        "script": "Scenariu",
-        "sensor": "Senzor",
-        "sun": "Soare",
-        "switch": "Comutator",
-        "system_health": "Stare Sistem",
-        "updater": "Updater",
-        "vacuum": "Aspirator",
-        "weblink": "Legătură web",
-        "zha": "ZHA",
-        "zwave": "Z-Wave"
     },
     "groups": {
         "system-admin": "Administratori",
@@ -65,7 +14,6 @@
     "panel": {
         "calendar": "Calendar",
         "config": "Configurare",
-        "dev-info": "Info",
         "developer_tools": "Instrumente pentru dezvoltatori",
         "history": "Istoric",
         "logbook": "Jurnal",
@@ -79,8 +27,8 @@
         "climate": {
             "fan_mode": {
                 "auto": "Auto",
-                "off": "Off",
-                "on": "On"
+                "off": "Oprit",
+                "on": "Pornit"
             },
             "hvac_action": {
                 "cooling": "Răcire",
@@ -126,7 +74,7 @@
             "not_home": "Plecat"
         },
         "person": {
-            "home": "Acasa",
+            "home": "Acasă",
             "not_home": "Plecat"
         }
     },
@@ -239,22 +187,12 @@
             "streaming": "Streaming"
         },
         "climate": {
-            "auto": "Auto",
             "cool": "Rece",
             "dry": "Uscat",
-            "eco": "Eco",
-            "electric": "Electric",
             "fan_only": "Numai ventilator",
-            "gas": "Gaz",
             "heat": "Căldură",
             "heat_cool": "Încălzire / Răcire",
-            "heat_pump": "Pompă de căldură",
-            "high_demand": "Consum mare",
-            "idle": "Inactiv",
-            "manual": "Manual",
-            "off": "Oprit",
-            "on": "Pornit",
-            "performance": "Performanţă"
+            "off": "Oprit"
         },
         "configurator": {
             "configure": "Configurează",
@@ -268,13 +206,10 @@
             "stopped": "Oprit"
         },
         "default": {
-            "off": "Oprit",
-            "on": "Pornit",
             "unavailable": "Indisponibil",
             "unknown": "Necunoscut"
         },
         "device_tracker": {
-            "home": "Acasă",
             "not_home": "Plecat"
         },
         "fan": {
@@ -317,8 +252,7 @@
             "standby": "În așteptare"
         },
         "person": {
-            "home": "Acasă",
-            "not_home": "Plecat"
+            "home": "Acasă"
         },
         "plant": {
             "ok": "OK",
@@ -404,7 +338,6 @@
                 "arm_custom_bypass": "Bypass personalizat",
                 "arm_home": "Armat acasă",
                 "arm_night": "Armat noaptea",
-                "armed_custom_bypass": "Bypass personalizat",
                 "clear_code": "Şterge",
                 "code": "Cod Alarmă",
                 "disarm": "Dezarmat"
@@ -655,12 +588,6 @@
                     "stop": "Stop"
                 }
             },
-            "more_info_settings": {
-                "back": "Întoarce-te",
-                "entity_id": "ID-ul entității",
-                "name": "Nume suprascris",
-                "save": "Salvați"
-            },
             "options_flow": {
                 "form": {
                     "header": "Opțiuni"
@@ -711,10 +638,7 @@
         },
         "notification_toast": {
             "connection_lost": "Conexiunea a fost pierdută. Se reconectează ...",
-            "entity_turned_off": "Oprit {entity}.",
-            "entity_turned_on": "Pornit {entity}",
-            "service_call_failed": "Nu s-a putut apela serviciul {service}.",
-            "service_called": "Serviciu {service} apelat."
+            "service_call_failed": "Nu s-a putut apela serviciul {service}."
         },
         "panel": {
             "config": {
@@ -724,22 +648,17 @@
                 },
                 "areas": {
                     "caption": "Zone",
-                    "create_area": "CREARE ZONĂ",
                     "description": "Privire de ansamblu asupra tuturor zonelor din casa ta.",
                     "editor": {
                         "create": "CREAȚI",
-                        "default_name": "Zonă nouă",
                         "delete": "ȘTERGEȚI",
                         "update": "ACTUALIZAȚI"
                     },
-                    "no_areas": "Se pare că nu ai nici o zonă încă!",
                     "picker": {
-                        "create_area": "CREARE ZONĂ",
                         "header": "Zone",
                         "integrations_page": "Pagina de integrari",
                         "introduction": "Zonele sunt folosite pentru a organiza unde sunt dispozitivele. Aceste informații vor fi utilizate de către Home Assistant pentru a vă ajuta să vă organizați interfața, permisiunile și integrarea cu alte sisteme.",
-                        "introduction2": "Pentru a plasa dispozitive într-o zonă, utilizați link-ul de mai jos pentru a naviga la pagina de integrare și apoi faceți clic pe o integrare configurată pentru a ajunge la cardurile dispozitivului.",
-                        "no_areas": "Se pare că nu ai nici o zonă încă!"
+                        "introduction2": "Pentru a plasa dispozitive într-o zonă, utilizați link-ul de mai jos pentru a naviga la pagina de integrare și apoi faceți clic pe o integrare configurată pentru a ajunge la cardurile dispozitivului."
                     }
                 },
                 "automation": {
@@ -973,7 +892,6 @@
                             "core_config": {
                                 "edit_requires_storage": "Editorul a fost dezactivat deoarece configurația a fost stocata în configuration.yaml.",
                                 "elevation": "Altitudine",
-                                "elevation_feet": "picioare",
                                 "elevation_meters": "metri",
                                 "imperial_example": "Fahrenheit, livre",
                                 "latitude": "Latitudine",
@@ -988,29 +906,6 @@
                             },
                             "header": "Configurare generală",
                             "introduction": "Modificarea configurației poate fi un proces obositor. Noi stim. Această secțiune va încerca să vă facă viața un pic mai ușoară."
-                        },
-                        "server_control": {
-                            "reloading": {
-                                "automation": "Refresh automatizări",
-                                "core": "Reîncărcați nucleul",
-                                "group": "Refresh grupuri",
-                                "heading": "Refresh configurații",
-                                "introduction": "Unele părți din Home Assistant se pot reîncărca fără a necesita o repornire. Apăsarea reîncărcării va descărca configurația actuală și va încărca noua configurație.",
-                                "script": "Reîncărcați script-uri"
-                            },
-                            "server_management": {
-                                "heading": "Server de gestionare",
-                                "introduction": "Controlează-ți serverul Home Assistant ... chiar din Home Assistant.",
-                                "restart": "Repornire",
-                                "stop": "Oprire"
-                            },
-                            "validation": {
-                                "check_config": "Verificați configurația",
-                                "heading": "Validare configurație",
-                                "introduction": "Validați configurația dvs, dacă ați făcut recent unele modificări și doriți să vă asigurați că aceasta este validă.",
-                                "invalid": "Configurația este invalidă",
-                                "valid": "Configurația este validă!"
-                            }
                         }
                     }
                 },
@@ -1038,7 +933,6 @@
                             "caption": "Fă ceva când ..."
                         }
                     },
-                    "automations": "Automatizări",
                     "cant_edit": "Poți edita numai elementele create în UI.",
                     "caption": "Dispozitive",
                     "confirm_rename_entity_ids": "De asemenea, doriți să redenumiți ID-urile entității ale entităților dvs.?",
@@ -1051,13 +945,11 @@
                         "model": "Model"
                     },
                     "description": "Gestionați dispozitivele conectate",
-                    "details": "Iată toate detaliile dispozitivului.",
                     "entities": {
                         "add_entities_lovelace": "Adăugați la Lovelace",
                         "entities": "Entități",
                         "none": "Acest dispozitiv nu are entități"
                     },
-                    "info": "Informații despre dispozitiv",
                     "name": "Nume",
                     "scene": {
                         "create": "Creează un scenariu cu dispozitivul",
@@ -1076,18 +968,6 @@
                 "entities": {
                     "caption": "Entități",
                     "description": "Prezentare generală a tuturor entităților cunoscute.",
-                    "editor": {
-                        "default_name": "Zonă nouă",
-                        "delete": "ȘTERGE",
-                        "enabled_cause": "Dezactivat de {cause}.",
-                        "enabled_description": "Entitățile dezactivate nu vof fi adăugate in Home Assistant",
-                        "enabled_label": "Activează entitatea",
-                        "entity_id": "ID-ul entității",
-                        "name": "Suprascriere nume",
-                        "note": "Notă: este posibil să nu funcționeze încă cu toate integrările.",
-                        "unavailable": "Această entitate nu este disponibilă momentan.",
-                        "update": "ACTUALIZAȚI"
-                    },
                     "picker": {
                         "disable_selected": {
                             "button": "Dezactivați selecția",
@@ -1109,7 +989,6 @@
                         "headers": {
                             "status": "Stare"
                         },
-                        "integrations_page": "Pagina de integrari",
                         "introduction": "Home Assistant păstrează un registru al fiecărei entități pe care a văzut-o vreodată, care poate fi identificată în mod unic. Fiecare dintre aceste entități va avea un ID de entitate atribuit care va fi rezervat doar pentru această entitate.",
                         "introduction2": "Utilizați registrul de entități pentru a înlocui numele, schimba identitatea entității sau a elimina înregistrarea din Home Assistant. Rețineți că eliminarea intrării din registrul entității nu va elimina entitatea. Pentru aceasta, urmați linkul de mai jos și eliminați-l din pagina de integrare.",
                         "remove_selected": {
@@ -1118,14 +997,12 @@
                             "confirm_title": "Doriți să eliminați {number} entități?"
                         },
                         "selected": "{number} selectate",
-                        "show_disabled": "Afișare entități dezactivate",
                         "status": {
                             "disabled": "Dezactivat",
                             "ok": "In regula",
                             "readonly": "Mod doar citire",
                             "unavailable": "Indisponibil"
-                        },
-                        "unavailable": "(indisponibil)"
+                        }
                     }
                 },
                 "header": "Configurați Home Assistant",
@@ -1141,13 +1018,10 @@
                         "no_area": "Nici o zonă",
                         "no_device": "Entități fără dispozitive",
                         "no_devices": "Această integrare nu are dispozitive.",
-                        "restart_confirm": "Reporniți Home Assistant pentru a termina eliminarea acestei integrări",
-                        "via": "Conectat prin"
+                        "restart_confirm": "Reporniți Home Assistant pentru a termina eliminarea acestei integrări"
                     },
                     "config_flow": {
                         "aborted": "Anulat",
-                        "add_area": "Adăugare zonă",
-                        "area_picker_label": "Zonă",
                         "close": "Închide",
                         "created_config": "Configurare creată pentru {name}.",
                         "dismiss": "Ascunde dialogul",
@@ -1156,9 +1030,7 @@
                             "description": "Acest pas necesită să vizitați un site web extern pentru a fi finalizat.",
                             "open_site": "Deschideți site-ul web"
                         },
-                        "failed_create_area": "Nu a reușit să creeze zona.",
                         "finish": "Termina",
-                        "name_new_area": "Numele noii zone?",
                         "not_all_required_fields": "Nu toate câmpurile obligatorii sunt completate.",
                         "submit": "Trimite"
                     },
@@ -1348,11 +1220,7 @@
                         "caption": "Vizualizați utilizatorul",
                         "change_password": "Schimbaţi parola",
                         "deactivate_user": "Dezactivați utilizatorul",
-                        "delete_user": "Ștergeți utilizatorul",
-                        "rename_user": "Redenumiți utilizatorul"
-                    },
-                    "picker": {
-                        "title": "Utilizatori"
+                        "delete_user": "Ștergeți utilizatorul"
                     }
                 },
                 "zha": {
@@ -1371,11 +1239,6 @@
                         "introduction": "Clusterele sunt blocurile pentru funcționalitatea Zigbee. Ele separă funcționalitatea în unități logice. Există tipuri client și server și sunt alcătuite din atribute și comenzi."
                     },
                     "description": "Managementul rețelei Zigbee Home Automation",
-                    "device_card": {
-                        "area_picker_label": "Zonă",
-                        "device_name_placeholder": "Nume dat de utilizator",
-                        "update_name_button": "Actualizați numele"
-                    },
                     "devices": {
                         "header": "Zigbee Home Automation - Dispozitiv"
                     },
@@ -1419,11 +1282,6 @@
                     },
                     "header": "Configurați automatizarea Zigbee Home",
                     "introduction": "Aici este posibil să configurați componenta ZHA. Nu totul este posibil pentru a configura de la UI încă, dar lucrăm la ea.",
-                    "services": {
-                        "reconfigure": "Reconfigurați dispozitivul ZHA (dispozitiv de vindecare). Utilizați acest lucru dacă aveți probleme cu dispozitivul. Dacă dispozitivul în cauză este un dispozitiv alimentat cu baterii, asigurați-vă că este treaz și accepta comenzi atunci când utilizați acest serviciu.",
-                        "remove": "Eliminați un dispozitiv din rețeaua Zigbee.",
-                        "updateDeviceName": "Setați un nume personalizat pentru acest dispozitiv în registrul de dispozitive."
-                    },
                     "title": "Automatizare Zigbee Home"
                 },
                 "zone": {
@@ -1519,14 +1377,11 @@
                     },
                     "info": {
                         "built_using": "Construit folosind",
-                        "default_ui": "{action} {name} ca pagină implicită pe acest dispozitiv",
                         "frontend": "front-end-ui",
                         "icons_by": "Icoane ca",
                         "license": "Publicat sub licenta Apache 2.0",
-                        "lovelace_ui": "Accesați interfața de utilizare Lovelace",
                         "server": "Server",
                         "source": "Sursă:",
-                        "states_ui": "Filtrare stări",
                         "title": "Info"
                     },
                     "logs": {
@@ -1562,10 +1417,6 @@
                     "states": {
                         "alert_entity_field": "Entitatea este un câmp obligatoriu",
                         "attributes": "Atribute",
-                        "copied": "Copiat în clipboard",
-                        "copy_entity_attribute": "Copiați atributele",
-                        "copy_entity_id": "Copiere ID",
-                        "copy_entity_state": "Copiați atributele",
                         "current_entities": "Entități actuale",
                         "description1": "Setați reprezentarea unui dispozitiv în cadrul Home Assistant.",
                         "description2": "Acesta nu va comunica cu dispozitivul actual.",
@@ -1624,8 +1475,7 @@
                     },
                     "safe-mode": {
                         "description": "Home Assistant a avut probleme în timpul încărcării configurației și rulează acum în modul de siguranță. Aruncati o privire la jurnalul de erori pentru a vedea ce a mers prost.",
-                        "header": "Mod de siguranță activat",
-                        "show_errors": "Arată erori"
+                        "header": "Mod de siguranță activat"
                     },
                     "shopping-list": {
                         "add_item": "Adaugare element",
@@ -1657,7 +1507,6 @@
                         "move": "Mutați la Vizualizare",
                         "options": "Mai multe optiuni",
                         "pick_card": "Ce card doriți să adăugați?",
-                        "save": "Salvați",
                         "toggle_editor": "Activeaza editor"
                     },
                     "edit_lovelace": {
@@ -1723,8 +1572,7 @@
                     "configure_ui": "Configurați interfața utilizator",
                     "exit_edit_mode": "Ieșiți din modul de modificare a interfeței de utilizator",
                     "help": "Ajutor",
-                    "refresh": "Reîmprospătare",
-                    "unused_entities": "Entități neutilizate"
+                    "refresh": "Reîmprospătare"
                 },
                 "reload_lovelace": "Reîncarcă Lovelace UI",
                 "unused_entities": {
@@ -2006,7 +1854,6 @@
         },
         "sidebar": {
             "external_app_configuration": "Configurație aplicație",
-            "log_out": "Deconectare",
             "sidebar_toggle": "Schimbati bara laterală"
         }
     }

@@ -27,6 +27,7 @@ import { PolymerChangedEvent } from "../../../../polymer-types";
 import { haStyleDialog } from "../../../../resources/styles";
 import { HomeAssistant } from "../../../../types";
 import { Placeholder, PlaceholderContainer } from "./dialog-thingtalk";
+import { domainToName } from "../../../../data/integration";
 
 declare global {
   // for fire event
@@ -320,7 +321,7 @@ export class ThingTalkPlaceholders extends SubscribeMixin(LitElement) {
 
   private _getLabel(domains: string[], deviceClasses?: string[]) {
     return `${domains
-      .map((domain) => this.hass.localize(`domain.${domain}`))
+      .map((domain) => domainToName(this.hass.localize, domain))
       .join(", ")}${
       deviceClasses ? ` of type ${deviceClasses.join(", ")}` : ""
     }`;
@@ -410,7 +411,7 @@ export class ThingTalkPlaceholders extends SubscribeMixin(LitElement) {
       if (entities.length === 0) {
         // Should not happen because we filter the device picker on domain
         this._error = `No ${placeholder.domains
-          .map((domain) => this.hass.localize(`domain.${domain}`))
+          .map((domain) => domainToName(this.hass.localize, domain))
           .join(", ")} entities found in this device.`;
       } else if (entities.length === 1) {
         applyPatch(

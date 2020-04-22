@@ -9,8 +9,10 @@ import {
 } from "lit-element";
 import memoizeOne from "memoize-one";
 import {
-  integrationDocsUrl,
   integrationIssuesUrl,
+  IntegrationManifest,
+  fetchIntegrationManifests,
+  domainToName,
 } from "../../../data/integration";
 import { HomeAssistant } from "../../../types";
 
@@ -18,9 +20,16 @@ import { HomeAssistant } from "../../../types";
 class IntegrationsCard extends LitElement {
   @property() public hass!: HomeAssistant;
 
+  @property() private _manifests?: { [domain: string]: IntegrationManifest };
+
   private _sortedIntegrations = memoizeOne((components: string[]) => {
     return components.filter((comp) => !comp.includes(".")).sort();
   });
+
+  firstUpdated(changedProps) {
+    super.firstUpdated(changedProps);
+    this._fetchManifests();
+  }
 
   protected render(): TemplateResult {
     return html`
@@ -28,39 +37,50 @@ class IntegrationsCard extends LitElement {
         <table class="card-content">
           <tbody>
             ${this._sortedIntegrations(this.hass!.config.components).map(
-              (domain) => html`
-                <tr>
-                  <td>
-                    <img
-                      loading="lazy"
-                      src="https://brands.home-assistant.io/_/${domain}/icon.png"
-                      srcset="
-                        https://brands.home-assistant.io/_/${domain}/icon@2x.png 2x
-                      "
-                      referrerpolicy="no-referrer"
-                    />
-                  </td>
-                  <td>${domain}</td>
-                  <td>
-                    <a
-                      href=${integrationDocsUrl(domain)}
-                      target="_blank"
-                      rel="noreferrer"
-                    >
-                      Documentation
-                    </a>
-                  </td>
-                  <td>
-                    <a
-                      href=${integrationIssuesUrl(domain)}
-                      target="_blank"
-                      rel="noreferrer"
-                    >
-                      Issues
-                    </a>
-                  </td>
-                </tr>
-              `
+              (domain) => {
+                const manifest = this._manifests && this._manifests[domain];
+                return html`
+                  <tr>
+                    <td>
+                      <img
+                        loading="lazy"
+                        src="https://brands.home-assistant.io/_/${domain}/icon.png"
+                        referrerpolicy="no-referrer"
+                      />
+                    </td>
+                    <td class="name">
+                      ${domainToName(this.hass.localize, domain)}<br />
+                      <span class="domain">${domain}</span>
+                    </td>
+                    ${!manifest
+                      ? ""
+                      : html`
+                          <td>
+                            <a
+                              href=${manifest.documentation}
+                              target="_blank"
+                              rel="noreferrer"
+                            >
+                              Documentation
+                            </a>
+                          </td>
+                          ${!manifest.is_built_in
+                            ? ""
+                            : html`
+                                <td>
+                                  <a
+                                    href=${integrationIssuesUrl(domain)}
+                                    target="_blank"
+                                    rel="noreferrer"
+                                  >
+                                    Issues
+                                  </a>
+                                </td>
+                              `}
+                        `}
+                  </tr>
+                `;
+              }
             )}
           </tbody>
         </table>
@@ -68,19 +88,32 @@ class IntegrationsCard extends LitElement {
     `;
   }
 
+  private async _fetchManifests() {
+    const manifests = {};
+    for (const manifest of await fetchIntegrationManifests(this.hass)) {
+      manifests[manifest.domain] = manifest;
+    }
+    this._manifests = manifests;
+  }
+
   static get styles(): CSSResult {
     return css`
       td {
-        line-height: 2em;
         padding: 0 8px;
       }
       td:first-child {
         padding-left: 0;
       }
+      td.name {
+        padding: 8px;
+      }
+      .domain {
+        color: var(--secondary-text-color);
+      }
       img {
         display: block;
-        max-height: 24px;
-        max-width: 24px;
+        max-height: 40px;
+        max-width: 40px;
       }
       a {
         color: var(--primary-color);

@@ -41,6 +41,7 @@ import { HomeAssistant } from "../../../types";
 import { addEntitiesToLovelaceView } from "../../lovelace/editor/add-entities-to-view";
 import { formatAsPaddedHex } from "./functions";
 import { ItemSelectedEvent, NodeServiceData } from "./types";
+import { showZHADeviceZigbeeInfoDialog } from "../../../dialogs/zha-device-zigbee-signature-dialog/show-dialog-zha-device-zigbee-info";
 
 declare global {
   // for fire event
@@ -367,6 +368,24 @@ class ZHADeviceCard extends LitElement {
                           : ""}
                       `
                     : ""}
+                  ${this.device!.device_type !== "Coordinator"
+                    ? html`
+                        <mwc-button @click=${this._handleZigbeeInfoClicked}>
+                          ${this.hass!.localize(
+                            "ui.dialogs.zha_device_info.buttons.zigbee_information"
+                          )}
+                        </mwc-button>
+                        ${this.showHelp
+                          ? html`
+                              <div class="help-text">
+                                ${this.hass!.localize(
+                                  "ui.dialogs.zha_device_info.services.zigbee_information"
+                                )}
+                              </div>
+                            `
+                          : ""}
+                      `
+                    : ""}
                 </div>
               `
             : ""
@@ -435,6 +454,10 @@ class ZHADeviceCard extends LitElement {
 
   private _onAddDevicesClick() {
     navigate(this, "/config/zha/add/" + this.device!.ieee);
+  }
+
+  private async _handleZigbeeInfoClicked() {
+    showZHADeviceZigbeeInfoDialog(this, { device: this.device! });
   }
 
   private _addToLovelaceView(): void {
@@ -527,6 +550,9 @@ class ZHADeviceCard extends LitElement {
           padding-left: 28px;
           padding-right: 28px;
           padding-bottom: 10px;
+        }
+        .buttons .icon {
+          margin-right: 16px;
         }
       `,
     ];

@@ -1,61 +1,10 @@
 {
-    "attribute": {
-        "weather": {
-            "humidity": "Humidity",
-            "visibility": "Visibility",
-            "wind_speed": "Wind speed"
-        }
-    },
     "config_entry": {
         "disabled_by": {
             "config_entry": "Config Entry",
             "integration": "Integration",
             "user": "User"
         }
-    },
-    "domain": {
-        "alarm_control_panel": "Alarm control panel",
-        "automation": "Automation",
-        "binary_sensor": "Binary sensor",
-        "calendar": "Calendar",
-        "camera": "Camera",
-        "climate": "Climate",
-        "configurator": "Configurator",
-        "conversation": "Conversation",
-        "cover": "Cover",
-        "device_tracker": "Device tracker",
-        "fan": "Fan",
-        "group": "Group",
-        "hassio": "Hass.io",
-        "history_graph": "History graph",
-        "homeassistant": "Home Assistant",
-        "image_processing": "Image processing",
-        "input_boolean": "Input boolean",
-        "input_datetime": "Input datetime",
-        "input_number": "Input number",
-        "input_select": "Input select",
-        "input_text": "Input text",
-        "light": "Light",
-        "lock": "Lock",
-        "lovelace": "Lovelace",
-        "mailbox": "Mailbox",
-        "media_player": "Media player",
-        "notify": "Notify",
-        "person": "Person",
-        "plant": "Plant",
-        "proximity": "Proximity",
-        "remote": "Remote",
-        "scene": "Scene",
-        "script": "Script",
-        "sensor": "Sensor",
-        "sun": "Sun",
-        "switch": "Switch",
-        "system_health": "System Health",
-        "updater": "Updater",
-        "vacuum": "Vacuum",
-        "weblink": "Weblink",
-        "zha": "ZHA",
-        "zwave": "Z-Wave"
     },
     "groups": {
         "system-admin": "Administrators",
@@ -65,7 +14,6 @@
     "panel": {
         "calendar": "Calendar",
         "config": "Configuration",
-        "dev-info": "Info",
         "developer_tools": "Developer Tools",
         "history": "History",
         "logbook": "Logbook",
@@ -239,22 +187,12 @@
             "streaming": "Streaming"
         },
         "climate": {
-            "auto": "Auto",
             "cool": "Cool",
             "dry": "Dry",
-            "eco": "Eco",
-            "electric": "Electric",
             "fan_only": "Fan only",
-            "gas": "Gas",
             "heat": "Heat",
             "heat_cool": "Heat/Cool",
-            "heat_pump": "Heat pump",
-            "high_demand": "High demand",
-            "idle": "Idle",
-            "manual": "Manual",
-            "off": "Off",
-            "on": "On",
-            "performance": "Performance"
+            "off": "Off"
         },
         "configurator": {
             "configure": "Configure",
@@ -268,13 +206,10 @@
             "stopped": "Stopped"
         },
         "default": {
-            "off": "Off",
-            "on": "On",
             "unavailable": "Unavailable",
             "unknown": "Unknown"
         },
         "device_tracker": {
-            "home": "Home",
             "not_home": "Away"
         },
         "fan": {
@@ -317,8 +252,7 @@
             "standby": "Standby"
         },
         "person": {
-            "home": "Home",
-            "not_home": "Away"
+            "home": "Home"
         },
         "plant": {
             "ok": "OK",
@@ -404,7 +338,6 @@
                 "arm_custom_bypass": "Custom bypass",
                 "arm_home": "Arm home",
                 "arm_night": "Arm night",
-                "armed_custom_bypass": "Custom bypass",
                 "clear_code": "Clear",
                 "code": "Code",
                 "disarm": "Disarm"
@@ -614,11 +547,6 @@
                 "title": "System Options for {integration}",
                 "update": "Update"
             },
-            "confirmation": {
-                "cancel": "Cancel",
-                "ok": "OK",
-                "title": "Are you sure?"
-            },
             "domain_toggler": {
                 "title": "Toggle Domains"
             },
@@ -652,15 +580,11 @@
             "helper_settings": {
                 "generic": {
                     "icon": "Icon",
-                    "initial_value": "Initial value at start",
-                    "initial_value_explain": "The value the element will have when Home Assistant starts. When left empty, the value will be restored to it's previous value.",
                     "name": "Name"
                 },
                 "input_datetime": {
                     "date": "Date",
                     "datetime": "Date and time",
-                    "has_date": "Date",
-                    "has_time": "Time",
                     "mode": "What do you want to input",
                     "time": "Time"
                 },
@@ -687,8 +611,6 @@
                     "pattern": "Regex pattern for client-side validation",
                     "text": "Text"
                 },
-                "not_editable": "Not editable",
-                "not_editable_text": "This entity can't be changed from the UI because it is defined in configuration.yaml.",
                 "platform_not_loaded": "The {platform} integration is not loaded. Please add it your configuration either by adding 'default_config:' or '{platform}:'.",
                 "required_error_msg": "This field is required",
                 "yaml_not_editable": "The settings of this entity cannot be edited from the UI. Only entities set up from the UI are configurable from the UI."
@@ -732,12 +654,6 @@
                     "stop": "Stop"
                 }
             },
-            "more_info_settings": {
-                "back": "Go back",
-                "entity_id": "Entity ID",
-                "name": "Name Override",
-                "save": "Save"
-            },
             "options_flow": {
                 "form": {
                     "header": "Options"
@@ -758,11 +674,13 @@
                 "buttons": {
                     "add": "Add Devices",
                     "reconfigure": "Reconfigure Device",
-                    "remove": "Remove Device"
+                    "remove": "Remove Device",
+                    "zigbee_information": "Zigbee Information"
                 },
                 "confirmations": {
                     "remove": "Are you sure that you want to remove the device?"
                 },
+                "device_signature": "Zigbee device signature",
                 "last_seen": "Last Seen",
                 "manuf": "by {manufacturer}",
                 "no_area": "No Area",
@@ -771,7 +689,8 @@
                 "services": {
                     "reconfigure": "Reconfigure ZHA device (heal device). Use this if you are having issues with the device. If the device in question is a battery powered device please ensure it is awake and accepting commands when you use this service.",
                     "remove": "Remove a device from the Zigbee network.",
-                    "updateDeviceName": "Set a custom name for this device in the device registry."
+                    "updateDeviceName": "Set a custom name for this device in the device registry.",
+                    "zigbee_information": "View the Zigbee information for the device."
                 },
                 "unknown": "Unknown",
                 "zha_device_card": {
@@ -801,10 +720,7 @@
         },
         "notification_toast": {
             "connection_lost": "Connection lost. Reconnecting…",
-            "entity_turned_off": "Turned off {entity}.",
-            "entity_turned_on": "Turned on {entity}.",
             "service_call_failed": "Failed to call service {service}.",
-            "service_called": "Service {service} called.",
             "triggered": "Triggered {name}"
         },
         "panel": {
@@ -815,7 +731,6 @@
                 },
                 "areas": {
                     "caption": "Areas",
-                    "create_area": "CREATE AREA",
                     "data_table": {
                         "area": "Area",
                         "devices": "Devices"
@@ -831,7 +746,6 @@
                         "delete": "Delete",
                         "update": "Update"
                     },
-                    "no_areas": "Looks like you have no areas yet!",
                     "picker": {
                         "create_area": "Create Area",
                         "header": "Areas",
@@ -1242,7 +1156,6 @@
                             "core_config": {
                                 "edit_requires_storage": "Editor disabled because config stored in configuration.yaml.",
                                 "elevation": "Elevation",
-                                "elevation_feet": "feet",
                                 "elevation_meters": "meters",
                                 "imperial_example": "Fahrenheit, pounds",
                                 "latitude": "Latitude",
@@ -1257,29 +1170,6 @@
                             },
                             "header": "General Configuration",
                             "introduction": "Changing your configuration can be a tiresome process. We know. This section will try to make your life a little bit easier."
-                        },
-                        "server_control": {
-                            "reloading": {
-                                "automation": "Reload automations",
-                                "core": "Reload core",
-                                "group": "Reload groups",
-                                "heading": "Configuration reloading",
-                                "introduction": "Some parts of Home Assistant can reload without requiring a restart. Hitting reload will unload their current configuration and load the new one.",
-                                "script": "Reload scripts"
-                            },
-                            "server_management": {
-                                "heading": "Server management",
-                                "introduction": "Control your Home Assistant server… from Home Assistant.",
-                                "restart": "Restart",
-                                "stop": "Stop"
-                            },
-                            "validation": {
-                                "check_config": "Check config",
-                                "heading": "Configuration validation",
-                                "introduction": "Validate your configuration if you recently made some changes to your configuration and want to make sure that it is all valid",
-                                "invalid": "Configuration invalid",
-                                "valid": "Configuration valid!"
-                            }
                         }
                     }
                 },
@@ -1304,7 +1194,6 @@
                     }
                 },
                 "devices": {
-                    "area_picker_label": "Area",
                     "automation": {
                         "actions": {
                             "caption": "When something is triggered..."
@@ -1320,7 +1209,6 @@
                             "caption": "Do something when..."
                         }
                     },
-                    "automations": "Automations",
                     "cant_edit": "You can only edit items that are created in the UI.",
                     "caption": "Devices",
                     "confirm_delete": "Are you sure you want to delete this device?",
@@ -1336,14 +1224,12 @@
                     },
                     "delete": "Delete",
                     "description": "Manage connected devices",
-                    "details": "Here are all the details of your device.",
                     "device_not_found": "Device not found.",
                     "entities": {
                         "add_entities_lovelace": "Add to Lovelace",
                         "entities": "Entities",
                         "none": "This device has no entities"
                     },
-                    "info": "Device info",
                     "name": "Name",
                     "no_devices": "No devices",
                     "scene": {
@@ -1365,20 +1251,6 @@
                 "entities": {
                     "caption": "Entities",
                     "description": "Overview of all known entities.",
-                    "editor": {
-                        "confirm_delete": "Are you sure you want to delete this entry?",
-                        "confirm_delete2": "Deleting an entry will not remove the entity from Home Assistant. To do this, you will need to remove the integration '{platform}' from Home Assistant.",
-                        "default_name": "New Area",
-                        "delete": "DELETE",
-                        "enabled_cause": "Disabled by {cause}.",
-                        "enabled_description": "Disabled entities will not be added to Home Assistant.",
-                        "enabled_label": "Enable entity",
-                        "entity_id": "Entity ID",
-                        "name": "Name Override",
-                        "note": "Note: this might not work yet with all integrations.",
-                        "unavailable": "This entity is not currently available.",
-                        "update": "UPDATE"
-                    },
                     "picker": {
                         "disable_selected": {
                             "button": "Disable selected",
@@ -1398,13 +1270,11 @@
                         },
                         "header": "Entities",
                         "headers": {
-                            "enabled": "Enabled",
                             "entity_id": "Entity ID",
                             "integration": "Integration",
                             "name": "Name",
                             "status": "Status"
                         },
-                        "integrations_page": "Integrations page",
                         "introduction": "Home Assistant keeps a registry of every entity it has ever seen that can be uniquely identified. Each of these entities will have an entity ID assigned which will be reserved for just this entity.",
                         "introduction2": "Use the entity registry to override the name, change the entity ID or remove the entry from Home Assistant.",
                         "remove_selected": {
@@ -1415,15 +1285,13 @@
                             "confirm_title": "Do you want to remove {number} entities?"
                         },
                         "selected": "{number} selected",
-                        "show_disabled": "Show disabled entities",
                         "status": {
                             "disabled": "Disabled",
                             "ok": "Ok",
                             "readonly": "Read-only",
                             "restored": "Restored",
                             "unavailable": "Unavailable"
-                        },
-                        "unavailable": "(unavailable)"
+                        }
                     }
                 },
                 "header": "Configure Home Assistant",
@@ -1468,13 +1336,10 @@
                         "no_devices": "This integration has no devices.",
                         "restart_confirm": "Restart Home Assistant to finish removing this integration",
                         "settings_button": "Edit settings for {integration}",
-                        "system_options_button": "System options for {integration}",
-                        "via": "Connected via"
+                        "system_options_button": "System options for {integration}"
                     },
                     "config_flow": {
                         "aborted": "Aborted",
-                        "add_area": "Add Area",
-                        "area_picker_label": "Area",
                         "close": "Close",
                         "created_config": "Created configuration for {name}.",
                         "dismiss": "Dismiss dialog",
@@ -1483,10 +1348,8 @@
                             "description": "This step requires you to visit an external website to be completed.",
                             "open_site": "Open website"
                         },
-                        "failed_create_area": "Failed to create area.",
                         "finish": "Finish",
                         "loading_first_time": "Please wait while the integration is being installed",
-                        "name_new_area": "Name of the new area?",
                         "not_all_required_fields": "Not all required fields are filled in.",
                         "submit": "Submit"
                     },
@@ -1741,28 +1604,22 @@
                         "confirm_user_deletion": "Are you sure you want to delete {name}?",
                         "deactivate_user": "Deactivate user",
                         "delete_user": "Delete user",
-                        "enter_new_name": "Enter new name",
                         "group": "Group",
-                        "group_update_failed": "Group update failed:",
                         "id": "ID",
                         "name": "Name",
                         "owner": "Owner",
-                        "rename_user": "Rename user",
                         "system_generated": "System generated",
                         "system_generated_users_not_editable": "Unable to update system generated users.",
                         "system_generated_users_not_removable": "Unable to remove system generated users.",
                         "unnamed_user": "Unnamed User",
-                        "update_user": "Update",
-                        "user_rename_failed": "User rename failed:"
+                        "update_user": "Update"
                     },
                     "picker": {
                         "headers": {
                             "group": "Group",
                             "name": "Name",
                             "system": "System"
-                        },
-                        "system_generated": "System generated",
-                        "title": "Users"
+                        }
                     }
                 },
                 "zha": {
@@ -1807,11 +1664,6 @@
                         "value": "Value"
                     },
                     "description": "Zigbee Home Automation network management",
-                    "device_card": {
-                        "area_picker_label": "Area",
-                        "device_name_placeholder": "User given name",
-                        "update_name_button": "Update Name"
-                    },
                     "devices": {
                         "header": "Zigbee Home Automation - Device"
                     },
@@ -1865,11 +1717,6 @@
                         "hint_battery_devices": "Note: Sleepy (battery powered) devices need to be awake when executing commands against them. You can generally wake a sleepy device by triggering it.",
                         "hint_wakeup": "Some devices such as Xiaomi sensors have a wake up button that you can press at ~5 second intervals that keep devices awake while you interact with them.",
                         "introduction": "Run ZHA commands that affect a single device. Pick a device to see a list of available commands."
-                    },
-                    "services": {
-                        "reconfigure": "Reconfigure ZHA device (heal device). Use this if you are having issues with the device. If the device in question is a battery powered device please ensure it is awake and accepting commands when you use this service.",
-                        "remove": "Remove a device from the ZigBee network.",
-                        "updateDeviceName": "Set a custom name for this device in the device registry."
                     },
                     "title": "Zigbee Home Automation"
                 },
@@ -1986,20 +1833,15 @@
                     "info": {
                         "built_using": "Built using",
                         "custom_uis": "Custom UIs:",
-                        "default_ui": "{action} {name} as default page on this device",
                         "developed_by": "Developed by a bunch of awesome people.",
                         "frontend": "frontend-ui",
                         "frontend_version": "Frontend version: {version} - {type}",
                         "home_assistant_logo": "Home Assistant logo",
                         "icons_by": "Icons by",
                         "license": "Published under the Apache 2.0 license",
-                        "lovelace_ui": "Go to the Lovelace UI",
                         "path_configuration": "Path to configuration.yaml: {path}",
-                        "remove": "Remove",
                         "server": "server",
-                        "set": "Set",
                         "source": "Source:",
-                        "states_ui": "Go to the states UI",
                         "system_health_error": "System Health component is not loaded. Add 'system_health:' to configuration.yaml",
                         "title": "Info"
                     },
@@ -2044,10 +1886,6 @@
                     "states": {
                         "alert_entity_field": "Entity is a mandatory field",
                         "attributes": "Attributes",
-                        "copied": "Copied to clipboard",
-                        "copy_entity_attribute": "Copy attributes",
-                        "copy_entity_id": "Copy ID",
-                        "copy_entity_state": "Copy state",
                         "current_entities": "Current entities",
                         "description1": "Set the representation of a device within Home Assistant.",
                         "description2": "This will not communicate with the actual device.",
@@ -2108,8 +1946,7 @@
                     },
                     "safe-mode": {
                         "description": "Home Assistant ran into trouble while loading your configuration and is now running in safe mode. Take a look at the error log to see what went wrong.",
-                        "header": "Safe Mode Activated",
-                        "show_errors": "Show errors"
+                        "header": "Safe Mode Activated"
                     },
                     "shopping-list": {
                         "add_item": "Add item",
@@ -2123,9 +1960,6 @@
                 },
                 "editor": {
                     "card": {
-                        "alarm_panel": {
-                            "available_states": "Available States"
-                        },
                         "alarm-panel": {
                             "available_states": "Available States",
                             "description": "The Alarm Panel card allows you to Arm and Disarm your alarm control panel integrations.",
@@ -2155,9 +1989,6 @@
                             "name": "Entities",
                             "show_header_toggle": "Show Header Toggle?",
                             "toggle": "Toggle entities."
-                        },
-                        "entity-button": {
-                            "name": "Entity Button"
                         },
                         "entity-filter": {
                             "description": "The Entity Filter card allows you to define a list of entities that you want to track only when in a certain state.",
@@ -2304,7 +2135,6 @@
                         "options": "More options",
                         "pick_card": "Which card would you like to add?",
                         "pick_card_view_title": "Which card would you like to add to your {name} view?",
-                        "save": "Save",
                         "show_code_editor": "Show Code Editor",
                         "show_visual_editor": "Show Visual Editor",
                         "toggle_editor": "Toggle Editor"
@@ -2386,8 +2216,7 @@
                     "exit_edit_mode": "Exit UI edit mode",
                     "help": "Help",
                     "refresh": "Refresh",
-                    "reload_resources": "Reload resources",
-                    "unused_entities": "Unused entities"
+                    "reload_resources": "Reload resources"
                 },
                 "reload_lovelace": "Reload UI",
                 "reload_resources": {
@@ -2407,8 +2236,7 @@
                     "confirm_delete": "Delete view?",
                     "confirm_delete_existing_cards": "Deleting this view will also remove the cards",
                     "confirm_delete_existing_cards_text": "Are you sure you want to delete your '{name}' view? The view contains {number} cards that will be deleted. This action cannot be undone.",
-                    "confirm_delete_text": "Are you sure you want to delete your '{name}' view?",
-                    "existing_cards": "You can't delete a view that has cards in it. Remove the cards first."
+                    "confirm_delete_text": "Are you sure you want to delete your '{name}' view?"
                 },
                 "warning": {
                     "attribute_not_found": "Attribute {attribute} not available in: {entity}",
@@ -2692,7 +2520,6 @@
         },
         "sidebar": {
             "external_app_configuration": "App Configuration",
-            "log_out": "Log out",
             "sidebar_toggle": "Sidebar Toggle"
         }
     }

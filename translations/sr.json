@@ -1,8 +1,4 @@
 {
-    "domain": {
-        "person": "Особа",
-        "zwave": "Z-Wave"
-    },
     "panel": {
         "calendar": "Kalendar",
         "config": "Конфигурација",
@@ -13,15 +9,6 @@
         "shopping_list": "Листа за куповину",
         "states": "Преглед"
     },
-    "state_attributes": {
-        "climate": {
-            "fan_mode": {
-                "auto": "Аутоматски",
-                "off": "Искључен",
-                "on": "Укључен"
-            }
-        }
-    },
     "state_badge": {
         "alarm_control_panel": {
             "arming": "Aktiviranje",
@@ -30,23 +17,15 @@
         "default": {
             "entity_not_found": "Вредност није пронађена",
             "error": "Грешка"
-        },
-        "person": {
-            "home": "Кући",
-            "not_home": "Одсутан"
         }
     },
     "state": {
-        "climate": {
-            "manual": "Упутство"
-        },
         "sun": {
             "above_horizon": "Iznad horizonta",
             "below_horizon": "Ispod horizonta"
         },
         "switch": {
-            "off": "Isključen",
-            "on": "Uključen"
+            "off": "Isključen"
         },
         "timer": {
             "active": "укључен",
@@ -71,12 +50,6 @@
             "media_player": {
                 "sound_mode": "Režim zvuka",
                 "source": "Izvor"
-            }
-        },
-        "dialogs": {
-            "more_info_settings": {
-                "name": "Naziv",
-                "save": "Sačuvaj"
             }
         },
         "panel": {
@@ -125,9 +98,6 @@
                 "tabs": {
                     "mqtt": {
                         "title": "MQTT"
-                    },
-                    "states": {
-                        "copied": "копирано у међуспремник"
                     }
                 }
             },
@@ -155,9 +125,6 @@
                     }
                 }
             }
-        },
-        "sidebar": {
-            "log_out": "Одјавити се"
         }
     }
 }

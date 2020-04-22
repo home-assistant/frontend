@@ -29,6 +29,12 @@ export interface WeblinkConfig {
   icon?: string;
   url: string;
 }
+export interface TextConfig {
+  type: "text";
+  name: string;
+  icon?: string;
+  text: string;
+}
 export interface CallServiceConfig extends EntityConfig {
   type: "call-service";
   service: string;
@@ -65,7 +71,8 @@ export type LovelaceRowConfig =
   | ButtonRowConfig
   | ButtonsRowConfig
   | ConditionalRowConfig
-  | AttributeRowConfig;
+  | AttributeRowConfig
+  | TextConfig;
 
 export interface LovelaceRow extends HTMLElement {
   hass?: HomeAssistant;

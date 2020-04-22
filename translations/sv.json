@@ -1,61 +1,10 @@
 {
-    "attribute": {
-        "weather": {
-            "humidity": "Luftfuktighet",
-            "visibility": "Sikt",
-            "wind_speed": "Vindhastighet"
-        }
-    },
     "config_entry": {
         "disabled_by": {
             "config_entry": "Konfigurationsvärde",
             "integration": "Integration",
             "user": "Användare"
         }
-    },
-    "domain": {
-        "alarm_control_panel": "Larmkontrollpanel",
-        "automation": "Automation",
-        "binary_sensor": "Binär sensor",
-        "calendar": "Kalender",
-        "camera": "Kamera",
-        "climate": "Klimat",
-        "configurator": "Konfiguratorn",
-        "conversation": "Samtal",
-        "cover": "Rullgardin",
-        "device_tracker": "Enhetsspårare",
-        "fan": "Fläkt",
-        "group": "Grupp",
-        "hassio": "Hass.io",
-        "history_graph": "Historikdiagram",
-        "homeassistant": "Home Assistant",
-        "image_processing": "Bildbehandling",
-        "input_boolean": "Välj av eller på",
-        "input_datetime": "Mata in datum och tid",
-        "input_number": "Mata in tal",
-        "input_select": "Välj",
-        "input_text": "Mata in text",
-        "light": "Lampor",
-        "lock": "Lås",
-        "lovelace": "Lovelace",
-        "mailbox": "Brevlåda",
-        "media_player": "Mediaspelare",
-        "notify": "Meddela",
-        "person": "Person",
-        "plant": "Växt",
-        "proximity": "Närhet",
-        "remote": "Fjärrkontroll",
-        "scene": "Scenario",
-        "script": "Skript",
-        "sensor": "Sensor",
-        "sun": "Sol",
-        "switch": "Kontakt",
-        "system_health": "Systemhälsa",
-        "updater": "Uppdaterare",
-        "vacuum": "Dammsugare",
-        "weblink": "Webblänk",
-        "zha": "ZHA",
-        "zwave": "Z-Wave"
     },
     "groups": {
         "system-admin": "Administratörer",
@@ -65,7 +14,6 @@
     "panel": {
         "calendar": "Kalender",
         "config": "Konfiguration",
-        "dev-info": "Info",
         "developer_tools": "Utvecklarverktyg",
         "history": "Historik",
         "logbook": "Loggbok",
@@ -78,7 +26,7 @@
     "state_attributes": {
         "climate": {
             "fan_mode": {
-                "auto": "Auto",
+                "auto": "Automatisk",
                 "off": "Av",
                 "on": "På"
             },
@@ -239,22 +187,12 @@
             "streaming": "Strömmar"
         },
         "climate": {
-            "auto": "Automatisk",
             "cool": "Kyla",
             "dry": "Avfuktning",
-            "eco": "Eco",
-            "electric": "Elektrisk",
             "fan_only": "Endast fläkt",
-            "gas": "Gas",
             "heat": "Värme",
             "heat_cool": "Värme/Kyla",
-            "heat_pump": "Värmepump",
-            "high_demand": "Stort behov",
-            "idle": "Inaktiv",
-            "manual": "Manuell",
-            "off": "Av",
-            "on": "På",
-            "performance": "Högeffektläge"
+            "off": "Av"
         },
         "configurator": {
             "configure": "Konfigurera",
@@ -268,13 +206,10 @@
             "stopped": "Stoppad"
         },
         "default": {
-            "off": "Av",
-            "on": "På",
             "unavailable": "Otillgänglig",
             "unknown": "Okänd"
         },
         "device_tracker": {
-            "home": "Hemma",
             "not_home": "Borta"
         },
         "fan": {
@@ -317,8 +252,7 @@
             "standby": "Viloläge"
         },
         "person": {
-            "home": "Hemma",
-            "not_home": "Borta"
+            "home": "Hemma"
         },
         "plant": {
             "ok": "Ok",
@@ -404,7 +338,6 @@
                 "arm_custom_bypass": "Larm förbikopplat",
                 "arm_home": "Larma hemmaläge",
                 "arm_night": "Larma nattläge",
-                "armed_custom_bypass": "Larm förbikopplat",
                 "clear_code": "Rensa",
                 "code": "Kod",
                 "disarm": "Larma från"
@@ -608,11 +541,6 @@
                 "title": "Systeminställningar för {integration}",
                 "update": "Uppdatera"
             },
-            "confirmation": {
-                "cancel": "Avbryt",
-                "ok": "OK",
-                "title": "Är du säker?"
-            },
             "domain_toggler": {
                 "title": "Växla domäner"
             },
@@ -646,13 +574,12 @@
             "helper_settings": {
                 "generic": {
                     "icon": "Ikon",
-                    "initial_value": "Initialt värde vid start",
-                    "initial_value_explain": "Värdet som elementet kommer ha när Home Assistant startar. Om det lämnas tomt, så blir värdet återställt till sitt tidigare värde.",
                     "name": "Namn"
                 },
                 "input_datetime": {
-                    "has_date": "Datum",
-                    "has_time": "Tid"
+                    "date": "Datum",
+                    "datetime": "Datum och tid",
+                    "time": "Tid"
                 },
                 "input_number": {
                     "box": "Inmatningsfält",
@@ -675,8 +602,6 @@
                     "pattern": "Regex-mönster för validering på klientsidan",
                     "text": "Text"
                 },
-                "not_editable": "Kan inte redigeras",
-                "not_editable_text": "Denna entitet kan inte ändras från UI eftersom den är definierad i configuration.yaml",
                 "required_error_msg": "Det här fältet krävs"
             },
             "more_info_control": {
@@ -717,12 +642,6 @@
                     "status": "Status",
                     "stop": "Stoppa"
                 }
-            },
-            "more_info_settings": {
-                "back": "Gå tillbaka",
-                "entity_id": "Entitets-ID",
-                "name": "Skriv över namn",
-                "save": "Spara"
             },
             "options_flow": {
                 "form": {
@@ -787,10 +706,7 @@
         },
         "notification_toast": {
             "connection_lost": "Anslutning tappad. Ansluter igen...",
-            "entity_turned_off": "Slog av {entity}.",
-            "entity_turned_on": "Slog på {entity}.",
             "service_call_failed": "Misslyckades med att anropa tjänsten {service}.",
-            "service_called": "Tjänsten {service} anropad.",
             "triggered": "Utlöst {name}"
         },
         "panel": {
@@ -801,7 +717,6 @@
                 },
                 "areas": {
                     "caption": "Områden",
-                    "create_area": "SKAPA OMRÅDE",
                     "description": "Oversikt över alla områden i ditt hem",
                     "editor": {
                         "create": "SKAPA",
@@ -809,7 +724,6 @@
                         "delete": "RADERA",
                         "update": "UPPDATERA"
                     },
-                    "no_areas": "Det verkar som om du inte har några områden än!",
                     "picker": {
                         "create_area": "SKAPA OMRÅDE",
                         "header": "Områden",
@@ -1217,7 +1131,6 @@
                             "core_config": {
                                 "edit_requires_storage": "Redigeraren är inaktiverad eftersom konfigurationen lagras i configuration.yaml.",
                                 "elevation": "Höjd över havet",
-                                "elevation_feet": "fot",
                                 "elevation_meters": "meter",
                                 "imperial_example": "Fahrenheit, pounds",
                                 "latitude": "Latitud",
@@ -1232,29 +1145,6 @@
                             },
                             "header": "Konfiguration och serverhantering",
                             "introduction": "Att ändra din konfiguration kan vara en tröttsam process. Vi vet. Den här avdelningen försöker göra ditt liv lite enklare."
-                        },
-                        "server_control": {
-                            "reloading": {
-                                "automation": "Ladda om automatiseringar",
-                                "core": "Ladda om kärnan",
-                                "group": "Uppdatera grupper",
-                                "heading": "Uppdatering av konfigurationen",
-                                "introduction": "Vissa delar av Home Assistant kan laddas om utan att en omstart krävs. Att trycka på \"Uppdatera\" innebär att den nuvarande konfiguration inaktiveras och den nya laddas.",
-                                "script": "Uppdatera skript"
-                            },
-                            "server_management": {
-                                "heading": "Serverhantering",
-                                "introduction": "Hantera din Home Assistant server... från Home Assistant.",
-                                "restart": "Starta om",
-                                "stop": "Stoppa"
-                            },
-                            "validation": {
-                                "check_config": "Kontrollera konfigurationen",
-                                "heading": "Validering av konfiguration",
-                                "introduction": "Kontrollera din konfiguration om du nyligen gjort ändringar och vill säkerställa att den fortfarande är giltig",
-                                "invalid": "Konfigurationen är inte giltig",
-                                "valid": "Konfigurationen är giltig!"
-                            }
                         }
                     }
                 },
@@ -1279,7 +1169,6 @@
                     }
                 },
                 "devices": {
-                    "area_picker_label": "Område",
                     "automation": {
                         "actions": {
                             "caption": "När något utlöses..."
@@ -1295,9 +1184,9 @@
                             "caption": "Gör något när ..."
                         }
                     },
-                    "automations": "Automatiseringar",
                     "cant_edit": "Du kan bara redigera objekt som skapas i användargränssnittet.",
                     "caption": "Enheter",
+                    "confirm_delete": "Är du säker på att du vill ta bort den här enheten?",
                     "confirm_rename_entity_ids": "Vill du också byta namn på entitetens ID för dina enheter?",
                     "data_table": {
                         "area": "Område",
@@ -1307,15 +1196,14 @@
                         "manufacturer": "Tillverkare",
                         "model": "Modell"
                     },
+                    "delete": "Ta bort",
                     "description": "Hantera anslutna enheter",
-                    "details": "Här är alla detaljer om din enhet.",
                     "device_not_found": "Enheten hittades inte.",
                     "entities": {
                         "add_entities_lovelace": "Lägg till i Lovelace",
                         "entities": "Entiteter",
                         "none": "Den här enheten har inga entiteter"
                     },
-                    "info": "Enhetsinformation",
                     "name": "Namn",
                     "scene": {
                         "create": "Skapa scenario med enhet",
@@ -1336,20 +1224,6 @@
                 "entities": {
                     "caption": "Entiteter",
                     "description": "Översikt över alla kända entiteter",
-                    "editor": {
-                        "confirm_delete": "Är du säker på att du vill ta bort den här posten?",
-                        "confirm_delete2": "Att ta bort en post i registret tar inte bort entiteten från Home Assistant. För att göra det måste du ta bort integrationen '{platform}' från Home Assistant.",
-                        "default_name": "Nytt område",
-                        "delete": "RADERA",
-                        "enabled_cause": "Inaktiverad på grund av {cause}.",
-                        "enabled_description": "Inaktiverade enheter kommer ej läggas till i Home Assistant.",
-                        "enabled_label": "Aktivera enhet",
-                        "entity_id": "Entitets-ID",
-                        "name": "Skriv över namn",
-                        "note": "Obs: detta kanske inte fungerar ännu med alla integrationer.",
-                        "unavailable": "Denna enhet är inte tillgänglig för tillfället.",
-                        "update": "UPPDATERA"
-                    },
                     "picker": {
                         "disable_selected": {
                             "button": "Inaktivera valda",
@@ -1369,13 +1243,11 @@
                         },
                         "header": "Entiteter",
                         "headers": {
-                            "enabled": "Aktiverad",
                             "entity_id": "Entitets-ID",
                             "integration": "Integration",
                             "name": "Namn",
                             "status": "Status"
                         },
-                        "integrations_page": "Integrationssida",
                         "introduction": "Home Assistant har ett entitetsregister som innehåller samtliga identifierade entiteter som någonsin har setts. Var och en av dessa entiteter kommer att ha ett ID-nummer som är reserverat för bara den entiteten.",
                         "introduction2": "Använd entitetsregistret för att överskida namnet, ändra entitets-ID eller ta bort posten från Home Assistant.",
                         "remove_selected": {
@@ -1384,14 +1256,12 @@
                             "confirm_title": "Vill du ta bort {number} entiteter?"
                         },
                         "selected": "{number} valda",
-                        "show_disabled": "Visa inaktiverade entiteter",
                         "status": {
                             "disabled": "Inaktiverad",
                             "ok": "Ok",
                             "readonly": "Skrivskyddad",
                             "unavailable": "Inte tillgänglig"
-                        },
-                        "unavailable": "(ej tillgänglig)"
+                        }
                     }
                 },
                 "header": "Konfigurera Home Assistant",
@@ -1434,13 +1304,10 @@
                         "no_devices": "Denna integration har inga enheter.",
                         "restart_confirm": "Starta om Home Assistant för att slutföra borttagningen av denna integration",
                         "settings_button": "Redigera inställningar för {integration}",
-                        "system_options_button": "Systeminställningar för {integration}",
-                        "via": "Ansluten via"
+                        "system_options_button": "Systeminställningar för {integration}"
                     },
                     "config_flow": {
                         "aborted": "Avbruten",
-                        "add_area": "Lägg till område",
-                        "area_picker_label": "Område",
                         "close": "Stäng",
                         "created_config": "Skapad konfigurering för {name}.",
                         "dismiss": "Avfärda dialogrutan",
@@ -1449,9 +1316,7 @@
                             "description": "Det här steget kräver att du besöker en extern webbplats för att slutföra.",
                             "open_site": "Öppna webbplats"
                         },
-                        "failed_create_area": "Det gick inte att skapa område.",
                         "finish": "Slutför",
-                        "name_new_area": "Namnet på det nya området?",
                         "not_all_required_fields": "Alla obligatoriska fält har inte fyllts i.",
                         "submit": "Skicka"
                     },
@@ -1691,20 +1556,12 @@
                         "confirm_user_deletion": "Är du säker på att du vill ta bort {name} ?",
                         "deactivate_user": "Avaktivera användare",
                         "delete_user": "Ta bort användare",
-                        "enter_new_name": "Ange nytt namn",
                         "group": "Grupp",
-                        "group_update_failed": "Uppdatering av grupp misslyckades.",
                         "id": "ID",
                         "owner": "Ägare",
-                        "rename_user": "Byt namn på användare",
                         "system_generated": "Skapad av systemet",
                         "system_generated_users_not_removable": "Det går inte att ta bort användare som skapats av systemet.",
-                        "unnamed_user": "Namnlös användare",
-                        "user_rename_failed": "Det gick inte att byta namn:"
-                    },
-                    "picker": {
-                        "system_generated": "Skapad av systemet",
-                        "title": "Användare"
+                        "unnamed_user": "Namnlös användare"
                     }
                 },
                 "zha": {
@@ -1749,11 +1606,6 @@
                         "value": "Värde"
                     },
                     "description": "Zigbee Home Automation (ZHA) nätverkshantering",
-                    "device_card": {
-                        "area_picker_label": "Plats",
-                        "device_name_placeholder": "Användarnamn",
-                        "update_name_button": "Uppdatera namn"
-                    },
                     "devices": {
                         "header": "Zigbee Home Automation - Enhet"
                     },
@@ -1807,11 +1659,6 @@
                         "hint_battery_devices": "Obs: Sömniga (batteridrivna) enheter måste vara vakna när du kör kommandon mot dem. Du kan i allmänhet väcka en sömnig enhet genom att utlösa den.",
                         "hint_wakeup": "Vissa enheter, som Xiaomi-sensorer, har en väckningsknapp som du kan trycka på med ca 5 sekunders intervall för att hålla enheterna vakna medan du interagerar med dem.",
                         "introduction": "Kör ZHA-kommandon som påverkar en enda enhet. Välj en enhet för att se en lista över tillgängliga kommandon."
-                    },
-                    "services": {
-                        "reconfigure": "Omkonfigurera ZHA-enheten (läk enheten). Använd det här om du har problem med enheten. Om den aktuella enheten är en batteridriven enhet, se till att den är påslagen och accepterar kommandon när du använder den här tjänstens funktion.",
-                        "remove": "Ta bort en enhet från Zigbee-nätverket.",
-                        "updateDeviceName": "Ange ett anpassat namn för den här enheten i entitetsregistret"
                     },
                     "title": "ZigBee Hemautomation"
                 },
@@ -1914,7 +1761,7 @@
                         "data": "Händelsedata (YAML, valfritt)",
                         "description": "Kör händelse till händelsebuss",
                         "documentation": "Dokumentation om händelser.",
-                        "event_fired": "Händelse {type} utlöst",
+                        "event_fired": "Händelse {name} utlöst",
                         "fire_event": "Utlös händelse",
                         "listen_to_events": "Lyssna på händelser",
                         "listening_to": "Lyssnar på",
@@ -1928,20 +1775,15 @@
                     "info": {
                         "built_using": "Byggt med",
                         "custom_uis": "Anpassade användargränssnitt:",
-                        "default_ui": "{action} {name} som standardsida på den här enheten",
                         "developed_by": "Utvecklad av ett gäng grymma människor.",
                         "frontend": "frontend-UI",
                         "frontend_version": "Frontend-version: {version} - {type}",
                         "home_assistant_logo": "Home Assistant logotyp",
                         "icons_by": "Ikoner av",
                         "license": "Publicerad under Apache 2.0-licensen",
-                        "lovelace_ui": "Gå till Lovelace-utseendet",
                         "path_configuration": "Sökväg till configuration.yaml: {path}",
-                        "remove": "Ta bort",
                         "server": "server",
-                        "set": "Ange",
                         "source": "Källkod:",
-                        "states_ui": "Gå till tillstånds-användargränssnittet",
                         "system_health_error": "Systemhälsokomponenten har inte lästs in. Lägg till 'system_health:' i configuration.yaml",
                         "title": "Info"
                     },
@@ -1986,10 +1828,6 @@
                     "states": {
                         "alert_entity_field": "Enhet är ett obligatoriskt fält",
                         "attributes": "Attribut",
-                        "copied": "Kopierat till urklipp",
-                        "copy_entity_attribute": "Kopiera attribut",
-                        "copy_entity_id": "Kopiera ID",
-                        "copy_entity_state": "Kopiera tillstånd",
                         "current_entities": "Nuvarande enheter",
                         "description1": "Ställ in representationen av en enhet i Home Assistant.",
                         "description2": "Detta kommer inte att kommunicera med den faktiska enheten.",
@@ -2050,8 +1888,7 @@
                     },
                     "safe-mode": {
                         "description": "Home Assistant stötte på problem när din konfiguration laddades och körs nu i felsäkert läge. Ta en titt i felloggen för att se vad som gick fel.",
-                        "header": "Felsäkert läge aktiverat",
-                        "show_errors": "Visa fel"
+                        "header": "Felsäkert läge aktiverat"
                     },
                     "shopping-list": {
                         "add_item": "Lägg till objekt",
@@ -2065,9 +1902,6 @@
                 },
                 "editor": {
                     "card": {
-                        "alarm_panel": {
-                            "available_states": "Tillgängliga tillstånd"
-                        },
                         "alarm-panel": {
                             "available_states": "Tillgängliga tillstånd",
                             "name": "Larmpanel"
@@ -2087,9 +1921,6 @@
                             "show_header_toggle": "Visa rubrikväljare?",
                             "toggle": "Växla entiteter."
                         },
-                        "entity-button": {
-                            "name": "Enhetsknapp"
-                        },
                         "entity-filter": {
                             "name": "Enhetsfilter"
                         },
@@ -2104,6 +1935,7 @@
                         },
                         "generic": {
                             "aspect_ratio": "Bildförhållande",
+                            "attribute": "Attribut",
                             "camera_image": "Kameraentitet",
                             "camera_view": "Kamerauppdatering",
                             "entities": "Entiteter",
@@ -2193,13 +2025,13 @@
                     "edit_card": {
                         "add": "Lägg till kort",
                         "delete": "Ta bort kort",
+                        "duplicate": "Duplicera kort",
                         "edit": "Redigera",
                         "header": "Kortkonfiguration",
                         "move": "Flytta till vy",
                         "options": "Fler alternativ",
                         "pick_card": "Vilket kort vill du lägga till?",
                         "pick_card_view_title": "Vilket kort vill du lägga till i {name} -vyn?",
-                        "save": "Spara",
                         "show_code_editor": "Visa kodredigerare",
                         "show_visual_editor": "Visa visuell redigerare",
                         "toggle_editor": "Visa / Dölj redigerare"
@@ -2274,8 +2106,7 @@
                     "configure_ui": "Konfigurera användargränssnittet",
                     "exit_edit_mode": "Avsluta UI-redigeringsläge",
                     "help": "Hjälp",
-                    "refresh": "Uppdatera",
-                    "unused_entities": "Oanvända enheter"
+                    "refresh": "Uppdatera"
                 },
                 "reload_lovelace": "Ladda om användargränssnittet",
                 "unused_entities": {
@@ -2288,8 +2119,7 @@
                     "title": "Oanvända enheter"
                 },
                 "views": {
-                    "confirm_delete": "Är du säker på att du vill ta bort den här vyn?",
-                    "existing_cards": "Du kan inte ta bort en vy med kort i. Ta först bort korten."
+                    "confirm_delete": "Är du säker på att du vill ta bort den här vyn?"
                 },
                 "warning": {
                     "entity_non_numeric": "Enheten är icke-numerisk: {entity}",
@@ -2567,7 +2397,6 @@
         },
         "sidebar": {
             "external_app_configuration": "Appkonfiguration",
-            "log_out": "Logga ut",
             "sidebar_toggle": "Växlingsknapp för sidofält"
         }
     }

@@ -12,6 +12,7 @@ import { PolymerChangedEvent } from "../../polymer-types";
 import { haStyleDialog } from "../../resources/styles";
 import { HomeAssistant } from "../../types";
 import { HaDomainTogglerDialogParams } from "./show-dialog-domain-toggler";
+import { domainToName } from "../../data/integration";
 
 @customElement("dialog-domain-toggler")
 class DomainTogglerDialog extends LitElement {
@@ -29,7 +30,7 @@ class DomainTogglerDialog extends LitElement {
     }
 
     const domains = this._params.domains
-      .map((domain) => [this.hass.localize(`domain.${domain}`), domain])
+      .map((domain) => [domainToName(this.hass.localize, domain), domain])
       .sort();
 
     return html`

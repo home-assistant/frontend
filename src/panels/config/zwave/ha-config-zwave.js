@@ -92,7 +92,7 @@ class HaConfigZwave extends LocalizeMixin(EventsMixin(PolymerElement)) {
               on-click="_backTapped"
             ></ha-paper-icon-button-arrow-prev>
             <div main-title="">
-              [[localize('ui.panel.config.zwave.caption')]]
+              [[localize('component.zwave.title')]]
             </div>
           </app-toolbar>
         </app-header>
