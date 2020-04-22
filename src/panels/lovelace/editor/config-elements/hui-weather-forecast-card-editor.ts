@@ -49,6 +49,10 @@ export class HuiWeatherForecastCardEditor extends LitElement
     return this._config!.theme || "";
   }
 
+  get _show_forecast(): boolean {
+    return this._config!.show_forecast || true;
+  }
+
   protected render(): TemplateResult {
     if (!this.hass || !this._config) {
       return html``;

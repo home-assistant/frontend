@@ -375,7 +375,7 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
 
       .temp-attribute .temp {
         position: relative;
-        font-size: 52px;
+        font-size: 38px;
         line-height: 1;
         margin-right: 24px;
       }
