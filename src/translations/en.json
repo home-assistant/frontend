@@ -1,48 +1,4 @@
 {
-  "domain": {
-    "alarm_control_panel": "Alarm control panel",
-    "automation": "Automation",
-    "binary_sensor": "Binary sensor",
-    "calendar": "Calendar",
-    "camera": "Camera",
-    "climate": "Climate",
-    "configurator": "Configurator",
-    "conversation": "Conversation",
-    "cover": "Cover",
-    "device_tracker": "Device tracker",
-    "fan": "Fan",
-    "group": "Group",
-    "hassio": "Hass.io",
-    "history_graph": "History graph",
-    "homeassistant": "Home Assistant",
-    "image_processing": "Image processing",
-    "input_boolean": "Input boolean",
-    "input_datetime": "Input datetime",
-    "input_number": "Input number",
-    "input_select": "Input select",
-    "input_text": "Input text",
-    "light": "Light",
-    "lock": "Lock",
-    "lovelace": "Lovelace",
-    "mailbox": "Mailbox",
-    "media_player": "Media player",
-    "notify": "Notify",
-    "person": "Person",
-    "plant": "Plant",
-    "proximity": "Proximity",
-    "remote": "Remote",
-    "scene": "Scene",
-    "script": "Script",
-    "sensor": "Sensor",
-    "sun": "Sun",
-    "switch": "Switch",
-    "system_health": "System Health",
-    "updater": "Updater",
-    "vacuum": "Vacuum",
-    "weblink": "Weblink",
-    "zha": "ZHA",
-    "zwave": "Z-Wave"
-  },
   "panel": {
     "calendar": "Calendar",
     "config": "Configuration",
@@ -57,263 +13,16 @@
   },
   "state": {
     "default": {
-      "off": "Off",
-      "on": "On",
       "unknown": "Unknown",
       "unavailable": "Unavailable"
-    },
-    "alarm_control_panel": {
-      "armed": "Armed",
-      "disarmed": "Disarmed",
-      "armed_home": "Armed home",
-      "armed_away": "Armed away",
-      "armed_night": "Armed night",
-      "armed_custom_bypass": "Armed custom bypass",
-      "pending": "Pending",
-      "arming": "Arming",
-      "disarming": "Disarming",
-      "triggered": "Triggered"
-    },
-    "automation": {
-      "off": "[%key:state::default::off%]",
-      "on": "[%key:state::default::on%]"
-    },
-    "binary_sensor": {
-      "default": {
-        "off": "[%key:state::default::off%]",
-        "on": "[%key:state::default::on%]"
-      },
-      "battery": {
-        "off": "Normal",
-        "on": "Low"
-      },
-      "cold": {
-        "off": "[%key:state::binary_sensor::battery::off%]",
-        "on": "Cold"
-      },
-      "connectivity": {
-        "off": "Disconnected",
-        "on": "Connected"
-      },
-      "door": {
-        "off": "[%key:state::cover::closed%]",
-        "on": "[%key:state::cover::open%]"
-      },
-      "garage_door": {
-        "off": "[%key:state::cover::closed%]",
-        "on": "[%key:state::cover::open%]"
-      },
-      "gas": {
-        "off": "Clear",
-        "on": "Detected"
-      },
-      "heat": {
-        "off": "[%key:state::binary_sensor::battery::off%]",
-        "on": "Hot"
-      },
-      "lock": {
-        "off": "[%key:state::lock::locked%]",
-        "on": "[%key:state::lock::unlocked%]"
-      },
-      "moisture": {
-        "off": "Dry",
-        "on": "Wet"
-      },
-      "motion": {
-        "off": "[%key:state::binary_sensor::gas::off%]",
-        "on": "[%key:state::binary_sensor::gas::on%]"
-      },
-      "occupancy": {
-        "off": "[%key:state::binary_sensor::gas::off%]",
-        "on": "[%key:state::binary_sensor::gas::on%]"
-      },
-      "opening": {
-        "off": "[%key:state::cover::closed%]",
-        "on": "[%key:state::cover::open%]"
-      },
-      "presence": {
-        "off": "[%key:state::device_tracker::not_home%]",
-        "on": "[%key:state::device_tracker::home%]"
-      },
-      "problem": {
-        "off": "OK",
-        "on": "Problem"
-      },
-      "safety": {
-        "off": "Safe",
-        "on": "Unsafe"
-      },
-      "smoke": {
-        "off": "[%key:state::binary_sensor::gas::off%]",
-        "on": "[%key:state::binary_sensor::gas::on%]"
-      },
-      "sound": {
-        "off": "[%key:state::binary_sensor::gas::off%]",
-        "on": "[%key:state::binary_sensor::gas::on%]"
-      },
-      "vibration": {
-        "off": "[%key:state::binary_sensor::gas::off%]",
-        "on": "[%key:state::binary_sensor::gas::on%]"
-      },
-      "window": {
-        "off": "[%key:state::cover::closed%]",
-        "on": "[%key:state::cover::open%]"
-      }
-    },
-    "calendar": {
-      "off": "[%key:state::default::off%]",
-      "on": "[%key:state::default::on%]"
-    },
-    "camera": {
-      "recording": "Recording",
-      "streaming": "Streaming",
-      "idle": "Idle"
-    },
-    "climate": {
-      "off": "[%key:state::default::off%]",
-      "heat": "Heat",
-      "cool": "Cool",
-      "heat_cool": "Heat/Cool",
-      "auto": "Auto",
-      "dry": "Dry",
-      "fan_only": "Fan only"
-    },
-    "configurator": {
-      "configure": "Configure",
-      "configured": "Configured"
-    },
-    "cover": {
-      "open": "Open",
-      "opening": "Opening",
-      "closed": "Closed",
-      "closing": "Closing",
-      "stopped": "Stopped"
-    },
-    "device_tracker": {
-      "home": "Home",
-      "not_home": "Away"
-    },
-    "fan": {
-      "off": "[%key:state::default::off%]",
-      "on": "[%key:state::default::on%]"
-    },
-    "group": {
-      "off": "[%key:state::default::off%]",
-      "on": "[%key:state::default::on%]",
-      "home": "[%key:state::device_tracker::home%]",
-      "not_home": "[%key:state::device_tracker::not_home%]",
-      "open": "[%key:state::cover::open%]",
-      "opening": "[%key:state::cover::opening%]",
-      "closed": "[%key:state::cover::closed%]",
-      "closing": "[%key:state::cover::closing%]",
-      "stopped": "[%key:state::cover::stopped%]",
-      "locked": "[%key:state::lock::locked%]",
-      "unlocked": "[%key:state::lock::unlocked%]",
-      "ok": "[%key:state::binary_sensor::problem::off%]",
-      "problem": "[%key:state::binary_sensor::problem::on%]"
-    },
-    "input_boolean": {
-      "off": "[%key:state::default::off%]",
-      "on": "[%key:state::default::on%]"
-    },
-    "light": {
-      "off": "[%key:state::default::off%]",
-      "on": "[%key:state::default::on%]"
-    },
-    "lock": {
-      "locked": "Locked",
-      "unlocked": "Unlocked"
-    },
-    "media_player": {
-      "off": "[%key:state::default::off%]",
-      "on": "[%key:state::default::on%]",
-      "playing": "Playing",
-      "paused": "Paused",
-      "idle": "Idle",
-      "standby": "Standby"
-    },
-    "person": {
-      "home": "Home",
-      "not_home": "Away"
-    },
-    "plant": {
-      "ok": "[%key:state::binary_sensor::problem::off%]",
-      "problem": "[%key:state::binary_sensor::problem::on%]"
-    },
-    "remote": {
-      "off": "[%key:state::default::off%]",
-      "on": "[%key:state::default::on%]"
-    },
-    "scene": {
-      "scening": "Scening"
-    },
-    "script": {
-      "off": "[%key:state::default::off%]",
-      "on": "[%key:state::default::on%]"
-    },
-    "sensor": {
-      "off": "[%key:state::default::off%]",
-      "on": "[%key:state::default::on%]"
-    },
-    "sun": {
-      "above_horizon": "Above horizon",
-      "below_horizon": "Below horizon"
-    },
-    "switch": {
-      "off": "[%key:state::default::off%]",
-      "on": "[%key:state::default::on%]"
-    },
-    "timer": {
-      "active": "active",
-      "idle": "idle",
-      "paused": "paused"
-    },
-    "vacuum": {
-      "cleaning": "Cleaning",
-      "docked": "Docked",
-      "error": "Error",
-      "idle": "Idle",
-      "off": "[%key:state::default::off%]",
-      "on": "[%key:state::default::on%]",
-      "paused": "Paused",
-      "returning": "Returning to dock"
-    },
-    "weather": {
-      "clear-night": "Clear, night",
-      "cloudy": "Cloudy",
-      "exceptional": "Exceptional",
-      "fog": "Fog",
-      "hail": "Hail",
-      "lightning": "Lightning",
-      "lightning-rainy": "Lightning, rainy",
-      "partlycloudy": "Partly cloudy",
-      "pouring": "Pouring",
-      "rainy": "Rainy",
-      "snowy": "Snowy",
-      "snowy-rainy": "Snowy, rainy",
-      "sunny": "Sunny",
-      "windy": "Windy",
-      "windy-variant": "Windy"
-    },
-    "zwave": {
-      "default": {
-        "initializing": "Initializing",
-        "dead": "Dead",
-        "sleeping": "Sleeping",
-        "ready": "Ready"
-      },
-      "query_stage": {
-        "initializing": "[%key:state::zwave::default::initializing%] ({query_stage})",
-        "dead": "[%key:state::zwave::default::dead%] ({query_stage})"
-      }
     }
   },
   "state_attributes": {
     "climate": {
       "fan_mode": {
-        "off": "[%key:state::default::off%]",
-        "on": "[%key:state::default::on%]",
-        "auto": "[%key:state::climate::auto%]"
+        "off": "Off",
+        "on": "On",
+        "auto": "Auto"
       },
       "preset_mode": {
         "none": "None",
@@ -355,12 +64,12 @@
       "triggered": "Trig"
     },
     "device_tracker": {
-      "home": "[%key:state::device_tracker::home%]",
-      "not_home": "[%key:state::device_tracker::not_home%]"
+      "home": "[%key:state_badge::person::home%]",
+      "not_home": "[%key:state_badge::person::not_home%]"
     },
     "person": {
-      "home": "[%key:state::person::home%]",
-      "not_home": "[%key:state::person::not_home%]"
+      "home": "Home",
+      "not_home": "Away"
     }
   },
   "groups": {
@@ -719,15 +428,18 @@
       "zha_device_info": {
         "manuf": "by {manufacturer}",
         "no_area": "No Area",
+        "device_signature": "Zigbee device signature",
         "buttons": {
           "add": "Add Devices",
           "remove": "Remove Device",
-          "reconfigure": "Reconfigure Device"
+          "reconfigure": "Reconfigure Device",
+          "zigbee_information": "Zigbee Information"
         },
         "services": {
           "reconfigure": "Reconfigure ZHA device (heal device). Use this if you are having issues with the device. If the device in question is a battery powered device please ensure it is awake and accepting commands when you use this service.",
           "updateDeviceName": "Set a custom name for this device in the device registry.",
-          "remove": "Remove a device from the Zigbee network."
+          "remove": "Remove a device from the Zigbee network.",
+          "zigbee_information": "View the Zigbee information for the device."
         },
         "confirmations": {
           "remove": "Are you sure that you want to remove the device?"
@@ -744,6 +456,17 @@
       },
       "domain_toggler": {
         "title": "Toggle Domains"
+      },
+      "mqtt_device_debug_info": {
+        "title": "{device} debug info",
+        "deserialize": "Attempt to parse MQTT messages as JSON",
+        "entities": "Entities",
+        "no_entities": "No entities",
+        "no_triggers": "No triggers",
+        "payload_display": "Payload display",
+        "recent_messages": "{n} most recently received message(s)",
+        "show_as_yaml": "Show as YAML",
+        "triggers": "Triggers"
       }
     },
     "duration": {
@@ -777,6 +500,10 @@
       "config": {
         "header": "Configure Home Assistant",
         "introduction": "Here it is possible to configure your components and Home Assistant. Not everything is possible to configure from the UI yet, but we're working on it.",
+        "filtering": {
+          "filtering_by": "Filtering by",
+          "clear": "Clear"
+        },
         "advanced_mode": {
           "hint_enable": "Missing config options? Enable advanced mode on",
           "link_profile_page": "your profile page"
@@ -1611,9 +1338,12 @@
         "integrations": {
           "caption": "Integrations",
           "description": "Manage and set up integrations",
+          "integration": "integration",
           "discovered": "Discovered",
           "configured": "Configured",
           "new": "Set up a new integration",
+          "add_integration": "Add integration",
+          "no_integrations": "Seems like you don't have any integations configured yet. Click on the button below to add your first integration!",
           "note_about_integrations": "Not all integrations can be configured via the UI yet.",
           "note_about_website_reference": "More are available on the ",
           "home_assistant_website": "Home Assistant website",
@@ -1621,6 +1351,8 @@
           "none": "Nothing configured yet",
           "integration_not_found": "Integration not found.",
           "details": "Integration details",
+          "rename_dialog": "Edit the name of this config entry",
+          "rename_input_label": "Entry name",
           "ignore": {
             "ignore": "Ignore",
             "confirm_ignore_title": "Ignore discovery of {name}?",
@@ -1633,11 +1365,12 @@
             "stop_ignore": "Stop ignoring"
           },
           "config_entry": {
-            "settings_button": "Edit settings for {integration}",
-            "system_options_button": "System options for {integration}",
-            "delete_button": "Delete {integration}",
-            "no_devices": "This integration has no devices.",
-            "no_device": "Entities without devices",
+            "devices": "{count} {count, plural,\n  one {device}\n  other {devices}\n}",
+            "entities": "{count} {count, plural,\n  one {entity}\n  other {entities}\n}",
+            "rename": "Rename",
+            "options": "Options",
+            "system_options": "System options",
+            "delete": "Delete",
             "delete_confirm": "Are you sure you want to delete this integration?",
             "restart_confirm": "Restart Home Assistant to finish removing this integration",
             "manuf": "by {manufacturer}",
@@ -1796,7 +1529,6 @@
           }
         },
         "zwave": {
-          "caption": "Z-Wave",
           "description": "Manage your Z-Wave network",
           "learn_more": "Learn more about Z-Wave",
           "common": {
@@ -2175,7 +1907,8 @@
         "warning": {
           "attribute_not_found": "Attribute {attribute} not available in: {entity}",
           "entity_not_found": "Entity not available: {entity}",
-          "entity_non_numeric": "Entity is non-numeric: {entity}"
+          "entity_non_numeric": "Entity is non-numeric: {entity}",
+          "entity_unavailable": "{entity} is currently unavailable"
         },
         "changed_toast": {
           "message": "The Lovelace UI configuration for this dashboard was updated, refresh to see changes?",

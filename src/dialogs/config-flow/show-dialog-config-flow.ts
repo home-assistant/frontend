@@ -13,6 +13,7 @@ import {
   loadDataEntryFlowDialog,
   showFlowDialog,
 } from "./show-dialog-data-entry-flow";
+import { domainToName } from "../../data/integration";
 
 export const loadConfigFlowDialog = loadDataEntryFlowDialog;
 
@@ -22,17 +23,31 @@ export const showConfigFlowDialog = (
 ): void =>
   showFlowDialog(element, dialogParams, {
     loadDevicesAndAreas: true,
-    getFlowHandlers: (hass) =>
-      getConfigFlowHandlers(hass).then((handlers) =>
-        handlers.sort((handlerA, handlerB) =>
-          caseInsensitiveCompare(
-            hass.localize(`component.${handlerA}.config.title`),
-            hass.localize(`component.${handlerB}.config.title`)
-          )
+    getFlowHandlers: async (hass) => {
+      const [handlers] = await Promise.all([
+        getConfigFlowHandlers(hass),
+        hass.loadBackendTranslation("title", undefined, true),
+      ]);
+
+      return handlers.sort((handlerA, handlerB) =>
+        caseInsensitiveCompare(
+          domainToName(hass.localize, handlerA),
+          domainToName(hass.localize, handlerB)
         )
-      ),
-    createFlow: createConfigFlow,
-    fetchFlow: fetchConfigFlow,
+      );
+    },
+    createFlow: async (hass, handler) => {
+      const [step] = await Promise.all([
+        createConfigFlow(hass, handler),
+        hass.loadBackendTranslation("config", handler),
+      ]);
+      return step;
+    },
+    fetchFlow: async (hass, flowId) => {
+      const step = await fetchConfigFlow(hass, flowId);
+      await hass.loadBackendTranslation("config", step.handler);
+      return step;
+    },
     handleFlowStep: handleConfigFlowStep,
     deleteFlow: deleteConfigFlow,
 
@@ -49,8 +64,10 @@ export const showConfigFlowDialog = (
     },
 
     renderShowFormStepHeader(hass, step) {
-      return hass.localize(
-        `component.${step.handler}.config.step.${step.step_id}.title`
+      return (
+        hass.localize(
+          `component.${step.handler}.config.step.${step.step_id}.title`
+        ) || hass.localize(`component.${step.handler}.title`)
       );
     },
 

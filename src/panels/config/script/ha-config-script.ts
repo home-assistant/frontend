@@ -46,6 +46,11 @@ class HaConfigScript extends HassRouterPage {
     return scripts;
   });
 
+  protected firstUpdated(changedProps) {
+    super.firstUpdated(changedProps);
+    this.hass.loadBackendTranslation("device_automation");
+  }
+
   protected updatePageEl(pageEl, changedProps: PropertyValues) {
     pageEl.hass = this.hass;
     pageEl.narrow = this.narrow;

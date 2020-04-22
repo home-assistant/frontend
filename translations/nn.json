@@ -1,61 +1,10 @@
 {
-    "attribute": {
-        "weather": {
-            "humidity": "Luftfuktigheit",
-            "visibility": "Sikt",
-            "wind_speed": "Vindhastigheit"
-        }
-    },
     "config_entry": {
         "disabled_by": {
             "config_entry": "Konfigurer oppføring",
             "integration": "Integrasjon",
             "user": "Brukar"
         }
-    },
-    "domain": {
-        "alarm_control_panel": "Alarmkontrollpanel",
-        "automation": "Automasjonar",
-        "binary_sensor": "Binærsensor",
-        "calendar": "Kalendar",
-        "camera": "Kamera",
-        "climate": "Klima",
-        "configurator": "Konfigurator",
-        "conversation": "Samtale",
-        "cover": "Dekke",
-        "device_tracker": "Einingssporing",
-        "fan": "Vifte",
-        "group": "Gruppe",
-        "hassio": "Hass.io",
-        "history_graph": "Historisk graf",
-        "homeassistant": "Home Assistant",
-        "image_processing": "Biletehandsaming",
-        "input_boolean": "Angje boolsk",
-        "input_datetime": "Angje dato",
-        "input_number": "Angje nummer",
-        "input_select": "Angje val",
-        "input_text": "Angje tekst",
-        "light": "Lys",
-        "lock": "Lås",
-        "lovelace": "Lovelace",
-        "mailbox": "Postkasse",
-        "media_player": "Mediaspelar",
-        "notify": "Varsle",
-        "person": "Person",
-        "plant": "Plante",
-        "proximity": "Nærleik",
-        "remote": "Fjernkontroll",
-        "scene": "Scene",
-        "script": "Skript",
-        "sensor": "Sensor",
-        "sun": "Sol",
-        "switch": "Brytar",
-        "system_health": "Systemhelse",
-        "updater": "Oppdateringar",
-        "vacuum": "Støvsugar",
-        "weblink": "Nettlenke",
-        "zha": "ZHA",
-        "zwave": "Z-Wave"
     },
     "groups": {
         "system-admin": "Administratorer",
@@ -65,7 +14,6 @@
     "panel": {
         "calendar": "Kalendrar",
         "config": "Konfigurasjon",
-        "dev-info": "Info",
         "developer_tools": "Utviklarverkty",
         "history": "Historie",
         "logbook": "Loggbok",
@@ -123,11 +71,11 @@
         },
         "device_tracker": {
             "home": "Heime",
-            "not_home": "Borte"
+            "not_home": "Borte "
         },
         "person": {
             "home": "Heime",
-            "not_home": "Borte"
+            "not_home": "Borte "
         }
     },
     "state": {
@@ -201,7 +149,7 @@
                 "on": "Open"
             },
             "presence": {
-                "off": "Borte",
+                "off": "Borte ",
                 "on": "Heime"
             },
             "problem": {
@@ -239,22 +187,12 @@
             "streaming": "Strøymer"
         },
         "climate": {
-            "auto": "Auto",
             "cool": "Kjøle",
             "dry": "Tørr",
-            "eco": "Øko",
-            "electric": "Elektrisk",
             "fan_only": "Berre vifte",
-            "gas": "Gass",
             "heat": "Varme",
             "heat_cool": "Oppvarming/Nedkjøling",
-            "heat_pump": "Varmepumpe",
-            "high_demand": "Høg etterspurnad",
-            "idle": "Inaktiv",
-            "manual": "Handbok",
-            "off": "Av",
-            "on": "På",
-            "performance": "Yting"
+            "off": "Av"
         },
         "configurator": {
             "configure": "Konfigurerer",
@@ -268,13 +206,10 @@
             "stopped": "Stoppa"
         },
         "default": {
-            "off": "Av",
-            "on": "På",
             "unavailable": "Utilgjengelig",
             "unknown": "Ukjent"
         },
         "device_tracker": {
-            "home": "Heime",
             "not_home": "Borte"
         },
         "fan": {
@@ -317,8 +252,7 @@
             "standby": "Avventer"
         },
         "person": {
-            "home": "Heime",
-            "not_home": "Borte "
+            "home": "Heime"
         },
         "plant": {
             "ok": "Ok",
@@ -404,7 +338,6 @@
                 "arm_custom_bypass": "Tilpassa bypass",
                 "arm_home": "Heimemodus",
                 "arm_night": "Aktiver natt",
-                "armed_custom_bypass": "Tilpassa bypass",
                 "clear_code": "Slett alt",
                 "code": "Kode",
                 "disarm": "Skru av"
@@ -610,8 +543,8 @@
                 },
                 "sun": {
                     "elevation": "Høgde",
-                    "rising": "Hevande",
-                    "setting": "Innstilling"
+                    "rising": "Soloppgang",
+                    "setting": "Solnedgang"
                 },
                 "updater": {
                     "title": "Oppdater instruksane"
@@ -628,11 +561,6 @@
                     "status": "Status",
                     "stop": "Stopp "
                 }
-            },
-            "more_info_settings": {
-                "entity_id": "Einings-ID",
-                "name": "Namn",
-                "save": "Lagre"
             },
             "options_flow": {
                 "form": {
@@ -679,31 +607,23 @@
         },
         "notification_toast": {
             "connection_lost": "Tilkopling mista. Prøver å kople til på nytt..",
-            "entity_turned_off": "Skrudde av {entity}.",
-            "entity_turned_on": "Skrudde på {entity}.",
-            "service_call_failed": "Klarte ikkje å kalle tenesten {service}.",
-            "service_called": "Tenesten {service} tilkalla"
+            "service_call_failed": "Klarte ikkje å kalle tenesten {service}."
         },
         "panel": {
             "config": {
                 "areas": {
                     "caption": "Områderegister",
-                    "create_area": "LAG OMRÅDE",
                     "description": "Oversikt over områda i heimen din.",
                     "editor": {
                         "create": "LAG",
-                        "default_name": "Nytt område",
                         "delete": "SLETT",
                         "update": "OPPDATER"
                     },
-                    "no_areas": "Ser ut til at du ikkje har noko område endå!",
                     "picker": {
-                        "create_area": "LAG OMRÅDE",
                         "header": "Områderegister",
                         "integrations_page": "Integrasjonsside",
                         "introduction": "Områda vert brukt til å organisere kvar einingar er. Denne informasjonen vil bli brukt av Home Assistant for å hjelpe deg å organisere brukargrensesnittet, løyver og integrasjoner med andre system.",
-                        "introduction2": "For å plassere ei eining i eit område, bruk linken under for å navigere til integrasjonssida og trykk deretter på konfigurer integrasjon for å opne einingskortet.",
-                        "no_areas": "Ser ut til at du ikkje har noko område endå!"
+                        "introduction2": "For å plassere ei eining i eit område, bruk linken under for å navigere til integrasjonssida og trykk deretter på konfigurer integrasjon for å opne einingskortet."
                     }
                 },
                 "automation": {
@@ -919,7 +839,6 @@
                             "core_config": {
                                 "edit_requires_storage": "Redigeringsverkty deaktivert sidan konfigurasjonener lagra i configuration.yaml",
                                 "elevation": "Høgde",
-                                "elevation_feet": "fot",
                                 "elevation_meters": "Meter",
                                 "imperial_example": "Fahrenheit, pound",
                                 "latitude": "Breiddegrad",
@@ -934,29 +853,6 @@
                             },
                             "header": "Konfigurasjon og serverkontroll",
                             "introduction": "Vi veit at endringar i konfigurasjonen kan vere ein slitsam prosess. Denne delen vil forsøke å gjere livet ditt litt lettare."
-                        },
-                        "server_control": {
-                            "reloading": {
-                                "automation": "Oppdater automasjonane",
-                                "core": "Oppdater kjerna",
-                                "group": "Oppdater gruppene",
-                                "heading": "Lastar konfigurasjon på nytt",
-                                "introduction": "Nokre delar av Home Assistant kan oppdaterast utan ein omstart. Ved å trykke på oppdater, vil Home Assistant forkaste den gjeldande konfigurasjonen og erstatte den med den nye.",
-                                "script": "Oppdater skripta"
-                            },
-                            "server_management": {
-                                "heading": "Serveradministrasjon",
-                                "introduction": "Kontroller Home Assistant-serveren din... frå Home Assistant.",
-                                "restart": "Omstart",
-                                "stop": "Stopp"
-                            },
-                            "validation": {
-                                "check_config": "Sjekk konfigurasjonen",
-                                "heading": "Konfigurasjonsvalidering",
-                                "introduction": "Sjekk konfigurasjonen din dersom du nyleg har gjort endringar og ønsker å vere sikker på at den er gyldig ved å køyre ein valideringstest",
-                                "invalid": "Konfigurasjonen er ikkje gyldig",
-                                "valid": "Konfigurasjonen er gyldig!"
-                            }
                         }
                     }
                 },
@@ -969,7 +865,6 @@
                     }
                 },
                 "devices": {
-                    "area_picker_label": "Område",
                     "automation": {
                         "automations": "Automasjonar",
                         "create": "Lag automasjon med eininga",
@@ -985,7 +880,6 @@
                         "model": "Modell"
                     },
                     "description": "Administrer tilkopla einingar",
-                    "info": "Enhetsinformasjon",
                     "name": "Namn",
                     "scene": {
                         "create": "Lag ei scene med denne eininga",
@@ -1004,21 +898,10 @@
                 "entities": {
                     "caption": "Oppføringsregister",
                     "description": "Oversikt over alle kjende oppføringar.",
-                    "editor": {
-                        "default_name": "Nytt område",
-                        "delete": "SLETT",
-                        "enabled_cause": "Deaktivert av {cause}.",
-                        "enabled_description": "Deaktiverte eininga kjem ikkje til å verte lagt til i Home Assistant",
-                        "enabled_label": "Aktiver oppføringa",
-                        "unavailable": "Denne eininga er for augeblinken ikkje tilgjengeleg.",
-                        "update": "OPPDATER"
-                    },
                     "picker": {
                         "header": "Oppføringsregisteret",
-                        "integrations_page": "Integrasjonsside",
                         "introduction": "Home Assistant har eit register over alle oppføringane den nokon gang har sett som kan unikt identifiserast. Kvar av desse oppføringane har ein eigen oppføringsidentifikasjon som er reservert for akkuratt denne oppføringa.",
-                        "introduction2": "Bruk oppføringsregisteret til å skrive over namn, endre oppføringsidentifikasjonane eller fjerne oppføringar frå Home Assistant. Merk deg at å fjerne oppføringa i oppføringregisteret ikkje fjernar sjølve oppføringa. For å gjere dette, gå vidare inn på linken under og fjern oppføringa i integrasjonssida.",
-                        "unavailable": "(utilgjengeleg)"
+                        "introduction2": "Bruk oppføringsregisteret til å skrive over namn, endre oppføringsidentifikasjonane eller fjerne oppføringar frå Home Assistant. Merk deg at å fjerne oppføringa i oppføringregisteret ikkje fjernar sjølve oppføringa. For å gjere dette, gå vidare inn på linken under og fjern oppføringa i integrasjonssida."
                     }
                 },
                 "header": "Konfigurer Home Assistant",
@@ -1034,8 +917,7 @@
                         "no_area": "Inga område",
                         "no_device": "Oppføringar utan einingar",
                         "no_devices": "Denne integrasjonen har ingen oppføringar",
-                        "restart_confirm": "Restart Home Assistant for å fjerne denne integrasjonen",
-                        "via": "Tilkopla via"
+                        "restart_confirm": "Restart Home Assistant for å fjerne denne integrasjonen"
                     },
                     "config_flow": {
                         "close": "Lukk",
@@ -1114,11 +996,7 @@
                         "caption": "Sjå brukaren",
                         "change_password": "Bytt passord",
                         "deactivate_user": "Deaktiver brukaren",
-                        "delete_user": "Slett brukar",
-                        "rename_user": "Gi nytt namn til brukaren"
-                    },
-                    "picker": {
-                        "title": "Brukar"
+                        "delete_user": "Slett brukar"
                     }
                 },
                 "zha": {
@@ -1137,11 +1015,6 @@
                         "introduction": "Klynger er byggesteinane for Zigbee-funksjonaliteten. Dei sepererar funksjonaliteten i logiske einingar. Det er klient- og servertyper, som består av attributtar og kommandoar."
                     },
                     "description": "Zigbee heimeautomasjon nettverksadministrering",
-                    "device_card": {
-                        "area_picker_label": "Område",
-                        "device_name_placeholder": "Brukarnamn",
-                        "update_name_button": "Oppdater namn"
-                    },
                     "devices": {
                         "header": "Zigbee Home Automation - Eininga"
                     },
@@ -1161,11 +1034,6 @@
                         "description": "Lag og modifiser Zigbee-grupper",
                         "group-header": "Zigbee Home Automation - Gruppedetaljer",
                         "groups-header": "Zigbee Home Automation - Gruppehandtering"
-                    },
-                    "services": {
-                        "reconfigure": "Konfigurer ZHA-eininga (heal device) på nytt. Bruk dette om du har problem med eininga. Dersom eining går på batteri, ver sikker på at den er vaken og tek i mot kommandar når du brukar denne tenesta.",
-                        "remove": "Fjern einhet frå Zigbee nettverk",
-                        "updateDeviceName": "Gje einheten eit eige namn i einhetsregistret."
                     }
                 },
                 "zone": {
@@ -1310,7 +1178,6 @@
                         "header": "Kortkonfigurasjon",
                         "move": "Rørsle",
                         "pick_card": "Vel kortet du vil legge til.",
-                        "save": "Lagre",
                         "toggle_editor": "Bytt redigeringsverktøy"
                     },
                     "edit_lovelace": {
@@ -1351,8 +1218,7 @@
                     "close": "Lukk",
                     "configure_ui": "Konfigurer brukargrensesnitt",
                     "help": "Hjelp",
-                    "refresh": "Oppdater",
-                    "unused_entities": "Ubrukte oppføringar"
+                    "refresh": "Oppdater"
                 },
                 "reload_lovelace": "Omlast Lovelace",
                 "unused_entities": {
@@ -1626,8 +1492,7 @@
             }
         },
         "sidebar": {
-            "external_app_configuration": "App-konfigurasjon",
-            "log_out": "Logg ut"
+            "external_app_configuration": "App-konfigurasjon"
         }
     }
 }

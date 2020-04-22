@@ -20,6 +20,8 @@ import "../../components/ha-icon-next";
 import { HomeAssistant } from "../../types";
 import { FlowConfig } from "./show-dialog-data-entry-flow";
 import { configFlowContentStyles } from "./styles";
+import { domainToName } from "../../data/integration";
+import { LocalizeFunc } from "../../common/translations/localize";
 
 interface HandlerObj {
   name: string;
@@ -40,36 +42,42 @@ class StepFlowPickHandler extends LitElement {
 
   private _width?: number;
 
-  private _getHandlers = memoizeOne((h: string[], filter?: string) => {
-    const handlers: HandlerObj[] = h.map((handler) => {
-      return {
-        name:
-          this.hass.localize(`component.${handler}.config.title`) || handler,
-        slug: handler,
-      };
-    });
+  private _getHandlers = memoizeOne(
+    (h: string[], filter?: string, _localize?: LocalizeFunc) => {
+      const handlers: HandlerObj[] = h.map((handler) => {
+        return {
+          name: domainToName(this.hass.localize, handler),
+          slug: handler,
+        };
+      });
 
-    if (filter) {
-      const options: Fuse.FuseOptions<HandlerObj> = {
-        keys: ["name", "slug"],
-        caseSensitive: false,
-        minMatchCharLength: 2,
-        threshold: 0.2,
-      };
-      const fuse = new Fuse(handlers, options);
-      return fuse.search(filter);
+      if (filter) {
+        const options: Fuse.FuseOptions<HandlerObj> = {
+          keys: ["name", "slug"],
+          caseSensitive: false,
+          minMatchCharLength: 2,
+          threshold: 0.2,
+        };
+        const fuse = new Fuse(handlers, options);
+        return fuse.search(filter);
+      }
+      return handlers.sort((a, b) =>
+        a.name.toUpperCase() < b.name.toUpperCase() ? -1 : 1
+      );
     }
-    return handlers.sort((a, b) =>
-      a.name.toUpperCase() < b.name.toUpperCase() ? -1 : 1
-    );
-  });
+  );
 
   protected render(): TemplateResult {
-    const handlers = this._getHandlers(this.handlers, this.filter);
+    const handlers = this._getHandlers(
+      this.handlers,
+      this.filter,
+      this.hass.localize
+    );
 
     return html`
       <h2>${this.hass.localize("ui.panel.config.integrations.new")}</h2>
       <search-input
+        autofocus
         .filter=${this.filter}
         @value-changed=${this._filterChanged}
       ></search-input>
@@ -88,9 +96,6 @@ class StepFlowPickHandler extends LitElement {
                   slot="item-icon"
                   loading="lazy"
                   src="https://brands.home-assistant.io/_/${handler.slug}/icon.png"
-                  srcset="
-                    https://brands.home-assistant.io/_/${handler.slug}/icon@2x.png 2x
-                  "
                   referrerpolicy="no-referrer"
                 />
 

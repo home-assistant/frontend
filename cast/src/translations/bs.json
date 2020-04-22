@@ -1,0 +1,194 @@
+{
+  "state": {
+    "alarm_control_panel": {
+      "armed": "Aktiviran",
+      "armed_away": "Aktiviran izvan ku\u0107e",
+      "armed_custom_bypass": "Aktiviran pod specijalnim rezimom",
+      "armed_home": "Aktiviran kod ku\u0107e",
+      "armed_night": "Aktiviran no\u0107u",
+      "arming": "Aktivacija",
+      "disarmed": "Deaktiviran",
+      "disarming": "Deaktivacija",
+      "pending": "U is\u010dekivanju",
+      "triggered": "Pokrenut"
+    },
+    "automation": {
+      "off": "Isklju\u010den",
+      "on": "Uklju\u010den"
+    },
+    "binary_sensor": {
+      "battery": {
+        "off": "Normalno",
+        "on": "Nisko"
+      },
+      "connectivity": {
+        "off": "Nepovezan",
+        "on": "Povezan"
+      },
+      "default": {
+        "off": "Isklju\u010den",
+        "on": "Uklju\u010den"
+      },
+      "gas": {
+        "off": "\u010cist",
+        "on": "Otkriven"
+      },
+      "moisture": {
+        "off": "Suho",
+        "on": "Mokar"
+      },
+      "motion": {
+        "off": "\u010cist",
+        "on": "Otkriven"
+      },
+      "occupancy": {
+        "off": "\u010cist",
+        "on": "Otkriven"
+      },
+      "opening": {
+        "off": "Zatvoren",
+        "on": "Otvoren"
+      },
+      "presence": {
+        "off": "Odsutan",
+        "on": "Kod ku\u0107e"
+      },
+      "problem": {
+        "off": "OK",
+        "on": "Problem"
+      },
+      "safety": {
+        "off": "Siguran",
+        "on": "Nesiguran"
+      },
+      "smoke": {
+        "off": "\u010cist",
+        "on": "Otkriven"
+      },
+      "sound": {
+        "off": "\u010cist",
+        "on": "Otkriven"
+      },
+      "vibration": {
+        "off": "\u010cist",
+        "on": "Otkriven"
+      }
+    },
+    "calendar": {
+      "off": "Isklju\u010den",
+      "on": "Uklju\u010den"
+    },
+    "camera": {
+      "idle": "Besposlen",
+      "recording": "Snimanje",
+      "streaming": "Predaja slike"
+    },
+    "climate": {
+      "auto": "Auto",
+      "cool": "Hladno",
+      "dry": "Suh",
+      "fan_only": "Samo ventilator",
+      "heat": "Toplota",
+      "off": "Isklju\u010den"
+    },
+    "configurator": {
+      "configure": "Podesite",
+      "configured": "Konfigurirano"
+    },
+    "cover": {
+      "closed": "Zatvoren",
+      "closing": "Zatvoreno",
+      "open": "Otvoren",
+      "opening": "Otvoreno",
+      "stopped": "Zaustavljen"
+    },
+    "default": {
+      "off": "Isklju\u010den",
+      "on": "Uklju\u010den",
+      "unavailable": "Nedostupan",
+      "unknown": "Nepoznat"
+    },
+    "device_tracker": {
+      "home": "Kod ku\u0107e",
+      "not_home": "Odsutan"
+    },
+    "fan": {
+      "off": "Isklju\u010den",
+      "on": "Uklju\u010den"
+    },
+    "group": {
+      "closed": "Zatvoren",
+      "closing": "Zatvoreno",
+      "home": "Kod ku\u0107e",
+      "locked": "Zaklju\u010dan",
+      "not_home": "Odsutan",
+      "off": "Isklju\u010den",
+      "ok": "OK",
+      "on": "Uklju\u010den",
+      "open": "Otvoren",
+      "opening": "Otvoreno",
+      "problem": "Problem",
+      "stopped": "Zaustavljen",
+      "unlocked": "Otklju\u010dan"
+    },
+    "input_boolean": {
+      "off": "Isklju\u010den",
+      "on": "Uklju\u010den"
+    },
+    "light": {
+      "off": "Isklju\u010den",
+      "on": "Uklju\u010den"
+    },
+    "lock": {
+      "locked": "Zaklju\u010dan",
+      "unlocked": "Otklju\u010dan"
+    },
+    "media_player": {
+      "idle": "Besposlen",
+      "off": "Isklju\u010den",
+      "on": "Uklju\u010den",
+      "paused": "Pauziran",
+      "playing": "Prikazuje",
+      "standby": "U stanju \u010dekanja"
+    },
+    "plant": {
+      "ok": "OK",
+      "problem": "Problem"
+    },
+    "remote": {
+      "off": "Isklju\u010den",
+      "on": "Uklju\u010den"
+    },
+    "scene": {
+      "scening": "Scena"
+    },
+    "script": {
+      "off": "Isklju\u010den",
+      "on": "Uklju\u010den"
+    },
+    "sensor": {
+      "off": "Isklju\u010den",
+      "on": "Uklju\u010den"
+    },
+    "sun": {
+      "above_horizon": "Iznad horizonta",
+      "below_horizon": "Ispod horizonta"
+    },
+    "switch": {
+      "off": "Isklju\u010den",
+      "on": "Uklju\u010den"
+    },
+    "zwave": {
+      "default": {
+        "dead": "Mrtav",
+        "initializing": "Inicijalizacija",
+        "ready": "Spreman",
+        "sleeping": "Spava"
+      },
+      "query_stage": {
+        "dead": "Mrtav ({query_stage})",
+        "initializing": "Inicijalizacija ( {query_stage} )"
+      }
+    }
+  }
+}

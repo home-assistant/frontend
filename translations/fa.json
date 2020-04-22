@@ -1,45 +1,4 @@
 {
-    "attribute": {
-        "weather": {
-            "humidity": "رطوبت",
-            "visibility": "قابل دیدن",
-            "wind_speed": "سرعت باد"
-        }
-    },
-    "domain": {
-        "alarm_control_panel": "کنترل پنل آلارم",
-        "automation": "اتوماسیون",
-        "binary_sensor": "حسگر باینری",
-        "calendar": "تقویم",
-        "camera": "دوربین",
-        "climate": "آب و هوا",
-        "configurator": "تنظیم کننده",
-        "conversation": "گفتگو",
-        "cover": "پوشش",
-        "device_tracker": "ردیاب",
-        "fan": "فن",
-        "group": "گروه",
-        "hassio": "Hass.io",
-        "homeassistant": "Home Assistant",
-        "image_processing": "پردازش تصویر",
-        "input_boolean": "ورودی بولین",
-        "light": "چراغ",
-        "lock": "قفل",
-        "lovelace": "Lovelace",
-        "mailbox": "میل باکس",
-        "person": "فرد",
-        "scene": "صحنه",
-        "script": "اسکریپت",
-        "sensor": "سنسور",
-        "sun": "آفتاب",
-        "switch": "سوئیچ",
-        "system_health": "سلامت سیستم",
-        "updater": "به روز رسان",
-        "vacuum": "خلاء",
-        "weblink": "لینک سایت",
-        "zha": "ZHA",
-        "zwave": "Z-Wave"
-    },
     "groups": {
         "system-admin": "مدیران",
         "system-read-only": "کاربران فقط خواندنی",
@@ -48,7 +7,6 @@
     "panel": {
         "calendar": "تقویم",
         "config": "پیکربندی",
-        "dev-info": "اطلاعات",
         "developer_tools": "ابزارهای توسعه",
         "history": "تاریخچه",
         "logbook": "گزارش روزانه",
@@ -195,7 +153,7 @@
         },
         "calendar": {
             "off": "غیرفعال",
-            "on": "فعال"
+            "on": "روشن"
         },
         "camera": {
             "idle": "بیکار",
@@ -203,21 +161,11 @@
             "streaming": "در حال پخش"
         },
         "climate": {
-            "auto": "خودکار",
             "cool": "خنک",
             "dry": "خشک",
-            "eco": "سازگار با محیط زیست",
-            "electric": "الکتریکی",
             "fan_only": "فقط پنکه",
-            "gas": "گاز",
             "heat": "حرارت",
-            "heat_pump": "پمپ حرارتی",
-            "high_demand": "تقاضای بالا",
-            "idle": "بیکار",
-            "manual": "کتابچه راهنمای",
-            "off": "خاموش",
-            "on": "روشن",
-            "performance": "کارایی"
+            "off": "خاموش"
         },
         "configurator": {
             "configure": "پیکربندی",
@@ -231,13 +179,10 @@
             "stopped": "متوقف"
         },
         "default": {
-            "off": "خاموش",
-            "on": "روشن",
             "unavailable": "غیرقابل دسترس",
             "unknown": "نامشخص"
         },
         "device_tracker": {
-            "home": "خانه",
             "not_home": "بیرون"
         },
         "fan": {
@@ -250,9 +195,9 @@
             "home": "خانه",
             "locked": "قفل شده",
             "not_home": "بیرون",
-            "off": "غیرفعال",
+            "off": "خاموش",
             "ok": "خوب",
-            "on": "فعال",
+            "on": "روشن",
             "open": "باز",
             "opening": "در حال باز شدن",
             "problem": "مشکل",
@@ -261,7 +206,7 @@
         },
         "input_boolean": {
             "off": "غیرفعال",
-            "on": "فعال"
+            "on": "روشن"
         },
         "light": {
             "off": "خاموش",
@@ -280,8 +225,7 @@
             "standby": "آماده به کار"
         },
         "person": {
-            "home": "خانه",
-            "not_home": "بیرون"
+            "home": "خانه"
         },
         "plant": {
             "ok": "خوب",
@@ -295,11 +239,11 @@
             "scening": "صحنه"
         },
         "script": {
-            "off": "غیرفعال",
+            "off": "خاموش",
             "on": "فعال"
         },
         "sensor": {
-            "off": "غیر فعال",
+            "off": "خاموش",
             "on": "فعال"
         },
         "sun": {
@@ -356,7 +300,6 @@
             "alarm_control_panel": {
                 "arm_custom_bypass": "بایگانی سفارشی",
                 "arm_night": "نوبت شب",
-                "armed_custom_bypass": "بایگانی سفارشی",
                 "clear_code": "پاک کردن",
                 "code": "کد",
                 "disarm": "خلع سلاح"
@@ -493,11 +436,6 @@
                 "updater": {
                     "title": "دستورالعمل به روز رسانی"
                 }
-            },
-            "more_info_settings": {
-                "entity_id": "شناسه نهاد",
-                "name": "باطل کردن",
-                "save": "ذخیره"
             }
         },
         "duration": {
@@ -518,16 +456,12 @@
         },
         "notification_toast": {
             "connection_lost": "اتصالبرقرار نشد . اتصال مجدد...",
-            "entity_turned_off": "خاموش {نهاد}.",
-            "entity_turned_on": "روشن {نهاد}.",
-            "service_call_failed": "تماس با سرویس {service} ناموفق بود",
-            "service_called": "سرویس {service} نامیده می شود."
+            "service_call_failed": "تماس با سرویس {service} ناموفق بود"
         },
         "panel": {
             "config": {
                 "areas": {
                     "caption": "ثبت نام منطقه",
-                    "create_area": "ایجاد منطقه",
                     "delete": {
                         "confirmation_text": "هیچیک از درستگاه های این ناحیه اختصاص داده نشده اند",
                         "confirmation_title": "آیا مطمئنید که می خواهید این ناحیه را حذف کنید ؟"
@@ -535,12 +469,10 @@
                     "description": "بررسی کلیه مناطق  خانه شما",
                     "editor": {
                         "create": "ايجاد كردن",
-                        "default_name": "منطقه جدید",
                         "delete": "حذف",
                         "update": "به روز رسانی"
                     },
                     "picker": {
-                        "create_area": "ایجاد منطقه",
                         "header": "ثبت منطقه",
                         "integrations_page": "صفحه ادغام",
                         "introduction": "مناطق برای سازمان دهی دستگاه های جاسازی شده استفاده می شوند. این اطلاعات در سراسر دستیار خانگی برای کمک به شما در سازماندهی رابط کاربری، مجوزها و ادغام با دیگر سیستم ها مورد استفاده قرار می گیرد.",
@@ -730,23 +662,6 @@
                             },
                             "header": "پیکربندی و کنترل سرور",
                             "introduction": "تغییر پیکربندی شما می تواند یک روند خسته کننده باشد. ما میدانیم. این بخش سعی خواهد کرد زندگی شما را کمی ساده تر کند."
-                        },
-                        "server_control": {
-                            "reloading": {
-                                "automation": "بازنگری automations",
-                                "core": "بارگذاری مجدد ",
-                                "group": "بارگذاری مجدد گروه ها",
-                                "heading": "بارگذاری مجدد پیکربندی",
-                                "introduction": "برخی از قسمت های Home Assistant می توانند بدون نیاز به راه اندازی مجدد مجدد بارگیری شوند. برای بارگذاری مجدد ضربه بزنید. پیکربندی کنونی خود را بارگیری و اطلاعات جدید را بارگذاری می کند.",
-                                "script": "بازنگری اسکریپت"
-                            },
-                            "server_management": {
-                                "introduction": "صفحه اصلی home assistant سرور خود را کنترل کنید ... از  home assistant"
-                            },
-                            "validation": {
-                                "check_config": "بررسی پیکربندی",
-                                "heading": "تایید  پیکربندی"
-                            }
                         }
                     }
                 },
@@ -764,21 +679,13 @@
                 "entities": {
                     "caption": "ثبت  منطقه",
                     "description": "مرور کلیه اشخاص شناخته شده.",
-                    "editor": {
-                        "default_name": "منطقه جدید",
-                        "delete": "حذف",
-                        "unavailable": "این نهاد در حال حاضر در دسترس نیست",
-                        "update": "به روز رسانی"
-                    },
                     "picker": {
                         "header": "ثبت  منطقه",
-                        "integrations_page": "صفحه ادغام",
                         "introduction": "دستیار خانه نگهداری رجیستری از هر نهاد که تا به حال دیده است که می تواند منحصر به فرد شناسایی شده است. هر یک از این نهاد ها یک شناسه نهادی اختصاص داده است که فقط برای این نهاد محفوظ خواهد ماند.",
                         "introduction2": "از رجیستر entity استفاده کنید تا نام را عوض کند، شناسه موجودیت را تغییر دهید یا ورودی را از صفحه اصلی دستیار حذف کنید. توجه داشته باشید، از بین بردن ورودی رجیستر entity entity entity را حذف نخواهد کرد. برای انجام این کار، پیوند زیر را دنبال کنید و آن را از صفحه ی ادغام حذف کنید.",
                         "status": {
                             "restored": "بازیابی شد"
-                        },
-                        "unavailable": "(در دسترس نیست)"
+                        }
                     }
                 },
                 "header": "پیکربندی HOME ASSistant",
@@ -793,8 +700,7 @@
                         "no_area": "بدون منطقه",
                         "no_device": " بدون دستگاه",
                         "no_devices": "این ادغام هیچ دستگاهی ندارد.",
-                        "restart_confirm": "راه اندازی مجدد home assistant به پایان بردن این ادغام",
-                        "via": "اتصال از طریق"
+                        "restart_confirm": "راه اندازی مجدد home assistant به پایان بردن این ادغام"
                     },
                     "config_flow": {
                         "external_step": {
@@ -874,14 +780,7 @@
                         "confirm_user_deletion": "آیا مطمئنید می خواهید {name} را حذف کنید ؟",
                         "deactivate_user": "غیر فعال کردن کاربر",
                         "delete_user": "حذف کاربر",
-                        "enter_new_name": "نام جدید را وارد کنید",
-                        "group_update_failed": "بروزرسانی گروه انجام نشد:",
-                        "rename_user": "تغییر نام کاربر",
-                        "unnamed_user": "کاربر نامشخص",
-                        "user_rename_failed": "تغییر نام کاربری انجام نشد:"
-                    },
-                    "picker": {
-                        "title": "کاربران"
+                        "unnamed_user": "کاربر نامشخص"
                     }
                 },
                 "zha": {
@@ -898,22 +797,12 @@
                         "value": "مقدار"
                     },
                     "description": "صفحه اصلی اتوماسیون مدیریت شبکه Zigbee",
-                    "device_card": {
-                        "area_picker_label": "منطقه",
-                        "device_name_placeholder": "نام کاربر داده شده",
-                        "update_name_button": "به روز رسانی نام"
-                    },
                     "network_management": {
                         "header": "مدیریت شبکه",
                         "introduction": "دستوراتی که روی کل شبکه تأثیر می گذارند"
                     },
                     "node_management": {
                         "header": "مدیریت دستگاه"
-                    },
-                    "services": {
-                        "reconfigure": "دستگاه ZHA پیکربندی مجدد (تعمیر دستگاه). از این استفاده کنید اگر با دستگاه مشکل دارید. اگر دستگاه مورد نظر یک دستگاه باتری است ، لطفا اطمینان حاصل شود که هنگام استفاده از این سرویس ، دستورات بیدار و پذیرش است.",
-                        "remove": "یک دستگاه را از شبکه ZigBee حذف کنید.",
-                        "updateDeviceName": "یک نام سفارشی برای این دستگاه در رجیستری دستگاه تنظیم کنید."
                     }
                 },
                 "zwave": {
@@ -1056,7 +945,6 @@
                         "duplicate": "کارت تکراری",
                         "edit": "ویرایش",
                         "pick_card": "کارتی را که می خواهید اضافه کنید انتخاب کنید ؛",
-                        "save": "ذخیره",
                         "toggle_editor": "تغییر ویرایشگر"
                     },
                     "edit_view": {
@@ -1094,8 +982,7 @@
                 "menu": {
                     "help": "کمک",
                     "refresh": "تازه کردن",
-                    "reload_resources": "بارگذاری مجدد منابع",
-                    "unused_entities": "نهادهای استفاده نشده"
+                    "reload_resources": "بارگذاری مجدد منابع"
                 },
                 "reload_lovelace": "بازنگری Lovelace",
                 "reload_resources": {
@@ -1262,8 +1149,7 @@
             }
         },
         "sidebar": {
-            "external_app_configuration": "پیکربندی برنامه",
-            "log_out": "خروج"
+            "external_app_configuration": "پیکربندی برنامه"
         }
     }
 }

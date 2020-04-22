@@ -235,6 +235,11 @@ class HaPanelLogbook extends LocalizeMixin(PolymerElement) {
     };
   }
 
+  ready() {
+    super.ready();
+    this.hass.loadBackendTranslation("title");
+  }
+
   connectedCallback() {
     super.connectedCallback();
     // We are unable to parse date because we use intl api to render date

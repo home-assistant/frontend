@@ -1,0 +1,255 @@
+{
+  "state": {
+    "alarm_control_panel": {
+      "armed": "\u05d3\u05e8\u05d5\u05da",
+      "armed_away": "\u05d3\u05e8\u05d5\u05da \u05dc\u05d0 \u05d1\u05d1\u05d9\u05ea",
+      "armed_custom_bypass": "\u05de\u05e2\u05e7\u05e3 \u05de\u05d5\u05ea\u05d0\u05dd \u05d0\u05d9\u05e9\u05d9\u05ea \u05d3\u05e8\u05d5\u05da",
+      "armed_home": "\u05d4\u05d1\u05d9\u05ea \u05d3\u05e8\u05d5\u05da",
+      "armed_night": "\u05d3\u05e8\u05d5\u05da \u05dc\u05d9\u05dc\u05d4",
+      "arming": "\u05de\u05e4\u05e2\u05d9\u05dc",
+      "disarmed": "\u05de\u05e0\u05d5\u05d8\u05e8\u05dc",
+      "disarming": "\u05de\u05e0\u05d8\u05e8\u05dc",
+      "pending": "\u05de\u05de\u05ea\u05d9\u05df",
+      "triggered": "\u05d4\u05d5\u05e4\u05e2\u05dc"
+    },
+    "automation": {
+      "off": "\u05db\u05d1\u05d5\u05d9",
+      "on": "\u05d3\u05dc\u05d5\u05e7"
+    },
+    "binary_sensor": {
+      "battery": {
+        "off": "\u05e0\u05d5\u05e8\u05de\u05dc\u05d9",
+        "on": "\u05e0\u05de\u05d5\u05da"
+      },
+      "cold": {
+        "off": "\u05e8\u05d2\u05d9\u05dc",
+        "on": "\u05e7\u05b7\u05e8"
+      },
+      "connectivity": {
+        "off": "\u05de\u05e0\u05d5\u05ea\u05e7",
+        "on": "\u05de\u05d7\u05d5\u05d1\u05e8"
+      },
+      "default": {
+        "off": "\u05db\u05d1\u05d5\u05d9",
+        "on": "\u05d3\u05dc\u05d5\u05e7"
+      },
+      "door": {
+        "off": "\u05e1\u05d2\u05d5\u05e8\u05d4",
+        "on": "\u05e4\u05ea\u05d5\u05d7\u05d4"
+      },
+      "garage_door": {
+        "off": "\u05e1\u05d2\u05d5\u05e8\u05d4",
+        "on": "\u05e4\u05ea\u05d5\u05d7\u05d4"
+      },
+      "gas": {
+        "off": "\u05e0\u05e7\u05d9",
+        "on": "\u05d0\u05d5\u05ea\u05e8"
+      },
+      "heat": {
+        "off": "\u05e8\u05d2\u05d9\u05dc",
+        "on": "\u05d7\u05dd"
+      },
+      "lock": {
+        "off": "\u05e0\u05e2\u05d5\u05dc",
+        "on": "\u05dc\u05d0 \u05e0\u05e2\u05d5\u05dc"
+      },
+      "moisture": {
+        "off": "\u05d9\u05d1\u05e9",
+        "on": "\u05e8\u05d8\u05d5\u05d1"
+      },
+      "motion": {
+        "off": "\u05e0\u05e7\u05d9",
+        "on": "\u05d6\u05d5\u05d4\u05d4"
+      },
+      "occupancy": {
+        "off": "\u05e0\u05e7\u05d9",
+        "on": "\u05d6\u05d5\u05d4\u05d4"
+      },
+      "opening": {
+        "off": "\u05e1\u05d2\u05d5\u05e8",
+        "on": "\u05e4\u05ea\u05d5\u05d7"
+      },
+      "presence": {
+        "off": "\u05dc\u05d0 \u05e0\u05d5\u05db\u05d7",
+        "on": "\u05e0\u05d5\u05db\u05d7"
+      },
+      "problem": {
+        "off": "\u05d0\u05d5\u05e7\u05d9\u05d9",
+        "on": "\u05d1\u05e2\u05d9\u05d9\u05d4"
+      },
+      "safety": {
+        "off": "\u05d1\u05d8\u05d5\u05d7",
+        "on": "\u05dc\u05d0 \u05d1\u05d8\u05d5\u05d7"
+      },
+      "smoke": {
+        "off": "\u05e0\u05e7\u05d9",
+        "on": "\u05d0\u05d5\u05ea\u05e8"
+      },
+      "sound": {
+        "off": "\u05e0\u05e7\u05d9",
+        "on": "\u05d0\u05d5\u05ea\u05e8"
+      },
+      "vibration": {
+        "off": "\u05e0\u05e7\u05d9",
+        "on": "\u05d0\u05d5\u05ea\u05e8"
+      },
+      "window": {
+        "off": "\u05e1\u05d2\u05d5\u05e8",
+        "on": "\u05e4\u05ea\u05d5\u05d7"
+      }
+    },
+    "calendar": {
+      "off": "\u05db\u05d1\u05d5\u05d9",
+      "on": "\u05d3\u05dc\u05d5\u05e7"
+    },
+    "camera": {
+      "idle": "\u05de\u05d7\u05db\u05d4",
+      "recording": "\u05de\u05e7\u05dc\u05d9\u05d8",
+      "streaming": "\u05de\u05d6\u05e8\u05d9\u05dd"
+    },
+    "climate": {
+      "auto": "\u05d0\u05d5\u05d8\u05d5\u05de\u05d8\u05d9",
+      "cool": "\u05e7\u05e8\u05d5\u05e8",
+      "dry": "\u05d9\u05d1\u05e9",
+      "fan_only": "\u05de\u05d0\u05d5\u05d5\u05e8\u05e8 \u05d1\u05dc\u05d1\u05d3",
+      "heat": "\u05d7\u05d9\u05de\u05d5\u05dd",
+      "heat_cool": "\u05d7\u05d9\u05de\u05d5\u05dd/\u05e7\u05d9\u05e8\u05d5\u05e8",
+      "off": "\u05db\u05d1\u05d5\u05d9"
+    },
+    "configurator": {
+      "configure": "\u05d4\u05d2\u05d3\u05e8",
+      "configured": "\u05d4\u05d5\u05d2\u05d3\u05e8"
+    },
+    "cover": {
+      "closed": "\u05e0\u05e1\u05d2\u05e8",
+      "closing": "\u05e1\u05d5\u05d2\u05e8",
+      "open": "\u05e4\u05ea\u05d5\u05d7",
+      "opening": "\u05e4\u05d5\u05ea\u05d7",
+      "stopped": "\u05e2\u05e6\u05d5\u05e8"
+    },
+    "default": {
+      "off": "\u05db\u05d1\u05d5\u05d9",
+      "on": "\u05de\u05d5\u05e4\u05e2\u05dc",
+      "unavailable": "\u05dc\u05d0 \u05d6\u05de\u05d9\u05df",
+      "unknown": "\u05dc\u05d0 \u05d9\u05d3\u05d5\u05e2"
+    },
+    "device_tracker": {
+      "home": "\u05d1\u05d1\u05d9\u05ea",
+      "not_home": "\u05dc\u05d0 \u05d1\u05d1\u05d9\u05ea"
+    },
+    "fan": {
+      "off": "\u05db\u05d1\u05d5\u05d9",
+      "on": "\u05d3\u05dc\u05d5\u05e7"
+    },
+    "group": {
+      "closed": "\u05e1\u05d2\u05d5\u05e8",
+      "closing": "\u05e1\u05d5\u05d2\u05e8",
+      "home": "\u05d1\u05d1\u05d9\u05ea",
+      "locked": "\u05e0\u05e2\u05d5\u05dc",
+      "not_home": "\u05dc\u05d0 \u05d1\u05d1\u05d9\u05ea",
+      "off": "\u05db\u05d1\u05d5\u05d9",
+      "ok": "\u05ea\u05e7\u05d9\u05df",
+      "on": "\u05d3\u05dc\u05d5\u05e7",
+      "open": "\u05e4\u05ea\u05d5\u05d7",
+      "opening": "\u05e4\u05d5\u05ea\u05d7",
+      "problem": "\u05d1\u05e2\u05d9\u05d4",
+      "stopped": "\u05e0\u05e2\u05e6\u05e8",
+      "unlocked": "\u05e4\u05ea\u05d5\u05d7"
+    },
+    "input_boolean": {
+      "off": "\u05db\u05d1\u05d5\u05d9",
+      "on": "\u05d3\u05dc\u05d5\u05e7"
+    },
+    "light": {
+      "off": "\u05db\u05d1\u05d5\u05d9",
+      "on": "\u05d3\u05dc\u05d5\u05e7"
+    },
+    "lock": {
+      "locked": "\u05e0\u05e2\u05d5\u05dc",
+      "unlocked": "\u05e4\u05ea\u05d5\u05d7"
+    },
+    "media_player": {
+      "idle": "\u05de\u05de\u05ea\u05d9\u05df",
+      "off": "\u05db\u05d1\u05d5\u05d9",
+      "on": "\u05d3\u05dc\u05d5\u05e7",
+      "paused": "\u05de\u05d5\u05e9\u05d4\u05d4",
+      "playing": "\u05de\u05e0\u05d2\u05df",
+      "standby": "\u05de\u05e6\u05d1 \u05d4\u05de\u05ea\u05e0\u05d4"
+    },
+    "person": {
+      "home": "\u05d1\u05d1\u05d9\u05ea",
+      "not_home": "\u05dc\u05d0 \u05e0\u05de\u05e6\u05d0"
+    },
+    "plant": {
+      "ok": "\u05ea\u05e7\u05d9\u05df",
+      "problem": "\u05d1\u05e2\u05d9\u05d4"
+    },
+    "remote": {
+      "off": "\u05db\u05d1\u05d5\u05d9",
+      "on": "\u05d3\u05dc\u05d5\u05e7"
+    },
+    "scene": {
+      "scening": "\u05de\u05e4\u05e2\u05d9\u05dc \u05e1\u05e6\u05e0\u05d4"
+    },
+    "script": {
+      "off": "\u05db\u05d1\u05d5\u05d9",
+      "on": "\u05d3\u05dc\u05d5\u05e7"
+    },
+    "sensor": {
+      "off": "\u05db\u05d1\u05d5\u05d9",
+      "on": "\u05d3\u05dc\u05d5\u05e7"
+    },
+    "sun": {
+      "above_horizon": "\u05de\u05e2\u05dc \u05d4\u05d0\u05d5\u05e4\u05e7",
+      "below_horizon": "\u05de\u05ea\u05d7\u05ea \u05dc\u05d0\u05d5\u05e4\u05e7"
+    },
+    "switch": {
+      "off": "\u05db\u05d1\u05d5\u05d9",
+      "on": "\u05d3\u05dc\u05d5\u05e7"
+    },
+    "timer": {
+      "active": "\u05e4\u05e2\u05d9\u05dc",
+      "idle": "\u05dc\u05d0 \u05e4\u05e2\u05d9\u05dc",
+      "paused": "\u05de\u05d5\u05e9\u05d4\u05d4"
+    },
+    "vacuum": {
+      "cleaning": "\u05de\u05e0\u05e7\u05d4",
+      "docked": "\u05d1\u05e2\u05d2\u05d9\u05e0\u05d4",
+      "error": "\u05e9\u05d2\u05d9\u05d0\u05d4",
+      "idle": "\u05de\u05de\u05ea\u05d9\u05df",
+      "off": "\u05de\u05db\u05d5\u05d1\u05d4",
+      "on": "\u05de\u05d5\u05e4\u05e2\u05dc",
+      "paused": "\u05de\u05d5\u05e9\u05d4\u05d4",
+      "returning": "\u05d7\u05d6\u05d5\u05e8 \u05dc\u05e2\u05d2\u05d9\u05e0\u05d4"
+    },
+    "weather": {
+      "clear-night": "\u05dc\u05d9\u05dc\u05d4 \u05d1\u05d4\u05d9\u05e8",
+      "cloudy": "\u05de\u05e2\u05d5\u05e0\u05df",
+      "exceptional": "\u05d9\u05d5\u05e6\u05d0 \u05d3\u05d5\u05e4\u05df",
+      "fog": "\u05e2\u05e8\u05e4\u05dc",
+      "hail": "\u05d1\u05e8\u05d3",
+      "lightning": "\u05d1\u05e8\u05e7",
+      "lightning-rainy": "\u05d1\u05e8\u05e7, \u05d2\u05e9\u05d5\u05dd",
+      "partlycloudy": "\u05de\u05e2\u05d5\u05e0\u05df \u05d7\u05dc\u05e7\u05d9\u05ea",
+      "pouring": "\u05d2\u05e9\u05d5\u05dd",
+      "rainy": "\u05d2\u05e9\u05d5\u05dd",
+      "snowy": "\u05de\u05d5\u05e9\u05dc\u05d2",
+      "snowy-rainy": "\u05de\u05d5\u05e9\u05dc\u05d2, \u05d2\u05e9\u05d5\u05dd",
+      "sunny": "\u05e9\u05de\u05e9\u05d9",
+      "windy": "\u05e1\u05d5\u05e2\u05e8",
+      "windy-variant": "\u05e1\u05d5\u05e2\u05e8"
+    },
+    "zwave": {
+      "default": {
+        "dead": "\u05de\u05ea",
+        "initializing": "\u05de\u05d0\u05ea\u05d7\u05dc",
+        "ready": "\u05de\u05d5\u05db\u05df",
+        "sleeping": "\u05d9\u05e9\u05df"
+      },
+      "query_stage": {
+        "dead": "\u05de\u05ea ({query_stage})",
+        "initializing": "\u05de\u05d0\u05ea\u05d7\u05dc ({query_stage})"
+      }
+    }
+  }
+}

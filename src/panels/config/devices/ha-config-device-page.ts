@@ -174,7 +174,7 @@ export class HaConfigDevicePage extends LitElement {
         ></paper-icon-button>
 
         <div class="container">
-          <div class="header fullwidth">              
+          <div class="header fullwidth">
             ${
               this.narrow
                 ? ""
@@ -213,11 +213,6 @@ export class HaConfigDevicePage extends LitElement {
                     src="https://brands.home-assistant.io/${
                       integrations[0]
                     }/logo.png"
-                    srcset="
-                      https://brands.home-assistant.io/${
-                        integrations[0]
-                      }/logo@2x.png 2x
-                    "
                     referrerpolicy="no-referrer"
                     @load=${this._onImageLoad}
                     @error=${this._onImageError}

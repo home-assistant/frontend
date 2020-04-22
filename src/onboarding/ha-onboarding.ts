@@ -27,6 +27,7 @@ import { HassElement } from "../state/hass-element";
 import { registerServiceWorker } from "../util/register-service-worker";
 import "./onboarding-create-user";
 import "./onboarding-loading";
+import { HomeAssistant } from "../types";
 
 interface OnboardingEvent<T extends ValidOnboardingStep> {
   type: T;
@@ -45,6 +46,8 @@ declare global {
 
 @customElement("ha-onboarding")
 class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
+  @property() public hass?: HomeAssistant;
+
   public translationFragment = "page-onboarding";
 
   @property() private _loading = false;
@@ -101,6 +104,12 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
     super.updated(changedProps);
     if (changedProps.has("language")) {
       document.querySelector("html")!.setAttribute("lang", this.language!);
+    }
+    if (changedProps.has("hass")) {
+      this.hassChanged(
+        this.hass!,
+        changedProps.get("hass") as HomeAssistant | undefined
+      );
     }
   }
 

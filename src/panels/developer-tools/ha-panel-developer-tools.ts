@@ -29,6 +29,11 @@ class PanelDeveloperTools extends LitElement {
 
   @property() public narrow!: boolean;
 
+  protected firstUpdated(changedProps) {
+    super.firstUpdated(changedProps);
+    this.hass.loadBackendTranslation("title");
+  }
+
   protected render(): TemplateResult {
     const page = this._page;
     return html`

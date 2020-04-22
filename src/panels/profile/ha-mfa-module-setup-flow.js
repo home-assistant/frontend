@@ -170,6 +170,7 @@ class HaMfaModuleSetupFlow extends LocalizeMixin(EventsMixin(PolymerElement)) {
 
   ready() {
     super.ready();
+    this.hass.loadBackendTranslation("mfa_setup", "auth");
     this.addEventListener("keypress", (ev) => {
       if (ev.keyCode === 13) {
         this._submitStep();

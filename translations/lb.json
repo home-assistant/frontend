@@ -1,61 +1,10 @@
 {
-    "attribute": {
-        "weather": {
-            "humidity": "Loftfiichtegkeet",
-            "visibility": "Visibilitéit",
-            "wind_speed": "Wand Vitesse"
-        }
-    },
     "config_entry": {
         "disabled_by": {
             "config_entry": "Konfiguratioun's Entrée",
             "integration": "Integratioun",
             "user": "Benotzer"
         }
-    },
-    "domain": {
-        "alarm_control_panel": "Kontroll Feld Alarm",
-        "automation": "Automatismen",
-        "binary_sensor": "Binären Sensor",
-        "calendar": "Kalenner",
-        "camera": "Kamera",
-        "climate": "Klima",
-        "configurator": "Konfiguréieren",
-        "conversation": "Ënnerhalung",
-        "cover": "Paart",
-        "device_tracker": "Apparat Verfolgung",
-        "fan": "Ventilator",
-        "group": "Gruppe",
-        "hassio": "Hass.io",
-        "history_graph": "Verlafs Grafik",
-        "homeassistant": "Home Assistant",
-        "image_processing": "Bildveraarbechtung",
-        "input_boolean": "Boolean-Agab",
-        "input_datetime": "Datum-/Zäit-Agab",
-        "input_number": "Zuelen-Agab",
-        "input_select": "Auswiel-Agab",
-        "input_text": "Text-Agab",
-        "light": "Luucht",
-        "lock": "Schlass",
-        "lovelace": "Lovelace",
-        "mailbox": "Bréifkëscht",
-        "media_player": "Medie Spiller",
-        "notify": "Notifikatioun",
-        "person": "Persoun",
-        "plant": "Planz",
-        "proximity": "Ëmgéigend",
-        "remote": "Télécommande",
-        "scene": "Zeen",
-        "script": "Script",
-        "sensor": "Sensor",
-        "sun": "Sonn",
-        "switch": "Schalter",
-        "system_health": "System Zoustand",
-        "updater": "Aktualiséierung",
-        "vacuum": "Staubsauger",
-        "weblink": "Weblink",
-        "zha": "ZHA",
-        "zwave": "Z-Wave"
     },
     "groups": {
         "system-admin": "Administrateuren",
@@ -65,7 +14,6 @@
     "panel": {
         "calendar": "Kalenner",
         "config": "Astellungen",
-        "dev-info": "Info",
         "developer_tools": "Entwécklungsgeschir",
         "history": "Verlaf",
         "logbook": "Journal",
@@ -78,7 +26,7 @@
     "state_attributes": {
         "climate": {
             "fan_mode": {
-                "auto": "Autmatesch",
+                "auto": "Auto",
                 "off": "Aus",
                 "on": "Un"
             },
@@ -239,22 +187,12 @@
             "streaming": "Streamt"
         },
         "climate": {
-            "auto": "Auto",
             "cool": "Kill",
             "dry": "Dréchen",
-            "eco": "Eco",
-            "electric": "Elektresch",
             "fan_only": "Nëmme Ventilator",
-            "gas": "Gas",
             "heat": "Heizen",
             "heat_cool": "Hëtzen/Ofkillen",
-            "heat_pump": "Heizung",
-            "high_demand": "Héich Ufro",
-            "idle": "Leerlauf",
-            "manual": "Manuell",
-            "off": "Aus",
-            "on": "Un",
-            "performance": "Leeschtung"
+            "off": "Aus"
         },
         "configurator": {
             "configure": "Astellen",
@@ -268,13 +206,10 @@
             "stopped": "Gestoppt"
         },
         "default": {
-            "off": "Aus",
-            "on": "Un",
             "unavailable": "Net erreechbar",
             "unknown": "Onbekannt"
         },
         "device_tracker": {
-            "home": "Doheem",
             "not_home": "Ënnerwee"
         },
         "fan": {
@@ -317,8 +252,7 @@
             "standby": "Standby"
         },
         "person": {
-            "home": "Doheem",
-            "not_home": "Ënnerwee"
+            "home": "Doheem"
         },
         "plant": {
             "ok": "OK",
@@ -404,7 +338,6 @@
                 "arm_custom_bypass": "Personaliséierte Bypass",
                 "arm_home": "Aktivéiert Doheem",
                 "arm_night": "Aktivéiert Nuecht",
-                "armed_custom_bypass": "Personaliséierte Bypass",
                 "clear_code": "Kloer",
                 "code": "Code",
                 "disarm": "Desaktivéieren"
@@ -614,11 +547,6 @@
                 "title": "System Optiounen fir {integration}",
                 "update": "Aktualiséieren"
             },
-            "confirmation": {
-                "cancel": "Ofbriechen",
-                "ok": "OK",
-                "title": "Sécher?"
-            },
             "domain_toggler": {
                 "title": "Domäner ëmschalten"
             },
@@ -652,15 +580,11 @@
             "helper_settings": {
                 "generic": {
                     "icon": "Ikon",
-                    "initial_value": "Initial Wäert beim start",
-                    "initial_value_explain": "De Wäert deen den Element huet wann Home Assistant start. Wann eidel gelooss, gëtt de Wäert op de fiirechte Wäert zeréckgesat.",
                     "name": "Numm"
                 },
                 "input_datetime": {
                     "date": "Datum",
                     "datetime": "Datum an Zäit",
-                    "has_date": "Datum",
-                    "has_time": "Zäit",
                     "mode": "Wat soll d'Angabe sinn?",
                     "time": "Zäit"
                 },
@@ -687,8 +611,6 @@
                     "pattern": "Regex Muster fir Client-Säiteg Validatioun",
                     "text": "Text"
                 },
-                "not_editable": "Net Editéierbar",
-                "not_editable_text": "Dës Entitéit kann net vum Benotzer Interface aus geännert\nginn well se iwwer configuration.yaml erstallt ass.",
                 "platform_not_loaded": "{platform} Integratioun ass net gelueden. Setz et an deng Konfiguration dobäi mat  'default_config:' oder '{platform}:'.",
                 "required_error_msg": "Dëst Feld ass erfuerderlech",
                 "yaml_not_editable": "D'Astellunge vun dëser Entitéit kënnen net vun vum Benotzer Interface as  geännert ginn. Nëmmen Entitéiten déi iwwer den Benotzer Interface aus konfiguréiert sinn kënnen vun do aus geännert ginn."
@@ -732,12 +654,6 @@
                     "stop": "Stop"
                 }
             },
-            "more_info_settings": {
-                "back": "Géi zréck",
-                "entity_id": "Entitéit ID",
-                "name": "Numm iwwerschreiwen",
-                "save": "Späicheren"
-            },
             "options_flow": {
                 "form": {
                     "header": "Optiounen"
@@ -758,11 +674,13 @@
                 "buttons": {
                     "add": "Apparater dobäisetzen",
                     "reconfigure": "Apparat frësch konfiguréieren",
-                    "remove": "Apparat läschen"
+                    "remove": "Apparat läschen",
+                    "zigbee_information": "Zigbee Informatiounen"
                 },
                 "confirmations": {
                     "remove": "Sécher fir den Apparat ze läsche?"
                 },
+                "device_signature": "Zigbee Apparat Signatur",
                 "last_seen": "Fir d'läscht gesinn",
                 "manuf": "vun {manufacturer}",
                 "no_area": "Kee Beräich",
@@ -771,7 +689,8 @@
                 "services": {
                     "reconfigure": "ZHA Apparat rekonfiguréieren (Apparat heelen). Benotzt dëst am Fall vu Problemer mam Apparat. Falls den Apparat duerch eng Batterie gespeist gëtt stellt sécher dass en un ass a Befeeler entgéint kann huelen",
                     "remove": "Een Apparat vum Zigbee Reseau läschen.",
-                    "updateDeviceName": "Personaliséiert den Numm fir dësen Apparat an der Iwwersiicht vun den Apparaten."
+                    "updateDeviceName": "Personaliséiert den Numm fir dësen Apparat an der Iwwersiicht vun den Apparaten.",
+                    "zigbee_information": "Zigbee Informatioune vum Apparat uweisen."
                 },
                 "unknown": "Onbekannt",
                 "zha_device_card": {
@@ -801,10 +720,7 @@
         },
         "notification_toast": {
             "connection_lost": "Verbindung verluer. Verbindung gëtt nees opgebaut...",
-            "entity_turned_off": "{entity} gouf ausgeschalt",
-            "entity_turned_on": "{entity} gouf ugeschalt",
             "service_call_failed": "Feeler beim opruffen vun {service}",
-            "service_called": "Service {service} operuff",
             "triggered": "{name} ausgeléist"
         },
         "panel": {
@@ -815,7 +731,6 @@
                 },
                 "areas": {
                     "caption": "Beräicher",
-                    "create_area": "Beräich erstellen",
                     "data_table": {
                         "area": "Beräich",
                         "devices": "Apparater"
@@ -831,7 +746,6 @@
                         "delete": "Läschen",
                         "update": "Aktualiséieren"
                     },
-                    "no_areas": "Et sinn nach keng Beräicher do!",
                     "picker": {
                         "create_area": "Beräich erstellen",
                         "header": "Beräicher",
@@ -1242,7 +1156,6 @@
                             "core_config": {
                                 "edit_requires_storage": "Editeur ass desaktivéiert well d'Konfiguratioun an der configuration.yaml gespäichert ass.",
                                 "elevation": "Héicht",
-                                "elevation_feet": "Féiss",
                                 "elevation_meters": "Meter",
                                 "imperial_example": "Fahrenheit, Pënner",
                                 "latitude": "Breedegrad",
@@ -1257,29 +1170,6 @@
                             },
                             "header": "Konfiguratioun an Server Kontroll",
                             "introduction": "D'Ännere vun der Konfiguratioun kann e lästege Prozess sinn. Mir wëssen dat. Dës Sektioun probéiert fir Äert Liewen e bësse méi einfach ze maachen."
-                        },
-                        "server_control": {
-                            "reloading": {
-                                "automation": "Automatismen nei lueden",
-                                "core": "Kär nei lueden",
-                                "group": "Gruppe nei lueden",
-                                "heading": "Konfiguratioun gëtt frësch gelueden",
-                                "introduction": "E puer Deeler vum Home Assistant kënne frësch geluede ginn ouni datt een Neistart néideg ass. Klick op nei luede fir di aktuell Konfiguratioun z'entlueden an di nei Konfiguratioun ze lueden.",
-                                "script": "Skripte nei lueden"
-                            },
-                            "server_management": {
-                                "heading": "Serververwaltung",
-                                "introduction": "Kontrolléiert ären Home Assistant Server ... vun Home Assistant aus.",
-                                "restart": "Neistart",
-                                "stop": "Stop"
-                            },
-                            "validation": {
-                                "check_config": "Konfiguratioun iwwerpréiwen",
-                                "heading": "Validatioun vun der Konfiguratioun",
-                                "introduction": "Validéiert är Konfiguratioun wann Dir viru kuerzem e puer Ännerungen an ärer Konfiguratioun gemaacht hutt a wëllt sécher sinn datt alles gëlteg ass",
-                                "invalid": "Konfiguratioun ongëlteg",
-                                "valid": "Konfiguratioun gëlteg!"
-                            }
                         }
                     }
                 },
@@ -1304,7 +1194,6 @@
                     }
                 },
                 "devices": {
-                    "area_picker_label": "Beräich",
                     "automation": {
                         "actions": {
                             "caption": "Wann eppes ausgeléist gëtt"
@@ -1320,7 +1209,6 @@
                             "caption": "Maach eppes wann..."
                         }
                     },
-                    "automations": "Automatisme",
                     "cant_edit": "Dir kënnt nëmmen Elementer änneren déi an der UI erstallt goufen.",
                     "caption": "Apparater",
                     "confirm_delete": "Sécher fir dësen Appara ze läsche?",
@@ -1336,14 +1224,12 @@
                     },
                     "delete": "Läschen",
                     "description": "Verwalt verbonnen Apparater",
-                    "details": "Hei sinn all Detailer vun ärem Apparat.",
                     "device_not_found": "Apparat net fonnt.",
                     "entities": {
                         "add_entities_lovelace": "Zu Lovelace bäisetzen",
                         "entities": "Entitéiten",
                         "none": "Dësen Appart huet keng Entitéiten."
                     },
-                    "info": "Informatioune vum Apparat",
                     "name": "Numm",
                     "no_devices": "Keng Apparater",
                     "scene": {
@@ -1365,20 +1251,6 @@
                 "entities": {
                     "caption": "Entitéiten",
                     "description": "Iwwersiicht vun all bekannten Entitéiten.",
-                    "editor": {
-                        "confirm_delete": "Sécher fir dës Entrée ze läsche?",
-                        "confirm_delete2": "Beim Läsche vun enger Entrée gëtt dës Entitéit net aus dem Home Assistant erausgeholl. Fir dëst ze maache muss dir d'Integratioun '{platform}' aus dem Home Assistant ewech huelen.",
-                        "default_name": "Neie Beräich",
-                        "delete": "Läschen",
-                        "enabled_cause": "Desaktivéiert duerch {cause}.",
-                        "enabled_description": "Desaktivéiert Entitéiten ginn net am Home Assistant bäigesat.",
-                        "enabled_label": "Entitéit aktivéieren",
-                        "entity_id": "ID vun der Entitéit",
-                        "name": "Numm iwwerschreiwen",
-                        "note": "Nott: dëst funktionéiert villäicht nach net mat all Integratioun.",
-                        "unavailable": "Dës Entitéit ass net erreechbar fir de Moment.",
-                        "update": "Aktualiséieren"
-                    },
                     "picker": {
                         "disable_selected": {
                             "button": "Ausgewielte deaktivéieren",
@@ -1398,13 +1270,11 @@
                         },
                         "header": "Entitéiten",
                         "headers": {
-                            "enabled": "Aktivéiert",
                             "entity_id": "ID vun der Entitéit",
                             "integration": "Integratioun",
                             "name": "Numm",
                             "status": "Status"
                         },
-                        "integrations_page": "Integratiouns Säit",
                         "introduction": "Home Assistant hält eng Lëscht vun all Entitéit's ID déi eenzel erkennbar ass a bis elo vum System erkannt gouf. All eenzel vun dësen Entitéite kritt eng ID zougewise welch nëmme fir dës Entitéit reservéiert ass.",
                         "introduction2": "Benotzt d'Lëscht vun den Entitéite fir d'Nimm z'änneren, d'Entitéits ID z'änneren oder d'Entrée aus dem Home Assistant ze läschen.",
                         "remove_selected": {
@@ -1415,15 +1285,13 @@
                             "confirm_title": "Wëllt dir {number} Entitéite läschen?"
                         },
                         "selected": "{number} ausgewielt",
-                        "show_disabled": "Desaktivéiert Entitéiten uweisen",
                         "status": {
                             "disabled": "Deaktivéiert",
                             "ok": "Ok",
                             "readonly": "Nëmme liesen",
                             "restored": "Restauréiert",
                             "unavailable": "Net erreechbar"
-                        },
-                        "unavailable": "(net verfügbar)"
+                        }
                     }
                 },
                 "header": "Home Assistant astellen",
@@ -1468,13 +1336,10 @@
                         "no_devices": "Dës Integratioun huet keng Apparater.",
                         "restart_confirm": "Start Home Assistant nei fir dës Integratioun ze läschen",
                         "settings_button": "Astellungen ännere fir {integration}",
-                        "system_options_button": "System Optioune fir {integration}",
-                        "via": "Verbonnen via"
+                        "system_options_button": "System Optioune fir {integration}"
                     },
                     "config_flow": {
                         "aborted": "Ofgebrach",
-                        "add_area": "Beräich dobäisetzen",
-                        "area_picker_label": "Beräich",
                         "close": "Zoumaachen",
                         "created_config": "Konfiguratioun erstallt fir {name}.",
                         "dismiss": "Dialog ofbriechen",
@@ -1483,10 +1348,8 @@
                             "description": "Fir dës Etapp ofzeschléisse muss dir eng externe Internetsäit besichen.",
                             "open_site": "Internetsäit opmaachen"
                         },
-                        "failed_create_area": "Feeler beim erstellen vum Beräich.",
                         "finish": "Ofschléissen",
                         "loading_first_time": "Waart w.e.g. während der Installatioun vun der Integratioun",
-                        "name_new_area": "Numm vum neie Beräich?",
                         "not_all_required_fields": "Net all erfuerderlech Felder sinn ausgefëllt.",
                         "submit": "Ofschécken"
                     },
@@ -1741,28 +1604,22 @@
                         "confirm_user_deletion": "Sécher fir {name} ze läsche?",
                         "deactivate_user": "Benotzer déaktivéieren",
                         "delete_user": "Benotzer läschen",
-                        "enter_new_name": "Neie Numm aginn",
                         "group": "Gruppe",
-                        "group_update_failed": "Feeler bei der aktualiséiereung vum Gruppe",
                         "id": "ID",
                         "name": "Numm",
                         "owner": "Proprietär",
-                        "rename_user": "Benotzer ëmbenennen",
                         "system_generated": "Vum System generéiert",
                         "system_generated_users_not_editable": "Net méiglech System generéiert Benotzer z'aktualiséieren.",
                         "system_generated_users_not_removable": "Ka keng System generéiert Benotzer läschen.",
                         "unnamed_user": "Benotzer ouni Numm",
-                        "update_user": "Aktualiséieren",
-                        "user_rename_failed": "Feeler beim ëmbenennen vum Benotzer:"
+                        "update_user": "Aktualiséieren"
                     },
                     "picker": {
                         "headers": {
                             "group": "Grupp",
                             "name": "Numm",
                             "system": "System"
-                        },
-                        "system_generated": "Vum System generéiert",
-                        "title": "Benotzer"
+                        }
                     }
                 },
                 "zha": {
@@ -1807,11 +1664,6 @@
                         "value": "Wäert"
                     },
                     "description": "Gestioun vum Zigbee Home Automation Reseau",
-                    "device_card": {
-                        "area_picker_label": "Beräich",
-                        "device_name_placeholder": "Virnumm",
-                        "update_name_button": "Numm änneren"
-                    },
                     "devices": {
                         "header": "Zigbee Haus Automatismen - Apparat"
                     },
@@ -1865,11 +1717,6 @@
                         "hint_battery_devices": "Note: (Batterie gedriwwen) Apparater déi an de Stand-by gi mussen un si fir Kommandoen unzehuelen. Dir kënnt solch Apparater gewéinlech aus dem Stand-by huelen andeems se ausgeléist ginn.",
                         "hint_wakeup": "Verschidden Apparater wéi Xiaomi Sensoren hunn ee klenge Knäppchen deen een an Intervalle vu ~5s drécke ka fir dass den Apparat un bléift wärend der Interaktioun.",
                         "introduction": "ZHA Kommandoe ausféieren déi nëmmen een Apparat betreffen. Wielt een Apparat aus fir seng Lëscht vun verfügbare Kommandoe ze gesinn."
-                    },
-                    "services": {
-                        "reconfigure": "ZHA Apparat rekonfiguréieren (Apparat heelen). Benotzt dëst am Fall vu Problemer mam Apparat. Falls den Apparat duerch eng Batterie gespeist gëtt stellt sécher dass en un ass a Befeeler entgéint kann huelen",
-                        "remove": "Een Apparat vum Zigbee Reseau läschen.",
-                        "updateDeviceName": "Personaliséiert den Numm fir dësen Apparat an der Iwwersiicht vun den Apparaten."
                     },
                     "title": "Zigbee Haus Automatismen"
                 },
@@ -1986,20 +1833,15 @@
                     "info": {
                         "built_using": "Gebaut mat",
                         "custom_uis": "Personaliséierte Benotzer Interface:",
-                        "default_ui": "{action} {name} als Standard Säit op dësem Apparat",
                         "developed_by": "Entwéckelt vun enger ganzer Rei fantastesche Leit.",
                         "frontend": "frontend-ui",
                         "frontend_version": "Frontend Versioun: {version} - {type}",
                         "home_assistant_logo": "Home Assistant logo",
                         "icons_by": "Ikonen vun",
                         "license": "Verëffentlecht ënnert der Apache 2.0 Lizenz",
-                        "lovelace_ui": "Zum Lovelace Benotzer Interface wiesselen",
                         "path_configuration": "Pad zur configuration.yaml: {path}",
-                        "remove": "Läschen",
                         "server": "server",
-                        "set": "Définéier",
                         "source": "Quell:",
-                        "states_ui": "Zum Zoustänn Benotzer Interface wiesselen",
                         "system_health_error": "System Gesondheet Komponent net gelueden. Setz 'system_health:' zur configuration.yaml dobäi",
                         "title": "Info"
                     },
@@ -2044,10 +1886,6 @@
                     "states": {
                         "alert_entity_field": "Entitéit ass e obligatorescht Feld",
                         "attributes": "Attributer",
-                        "copied": "An de Tëschespäicher kopéiert",
-                        "copy_entity_attribute": "Attributer kopéieren",
-                        "copy_entity_id": "ID kopéieren",
-                        "copy_entity_state": "Zoustand kopéieren",
                         "current_entities": "Aktuell Entitéiten",
                         "description1": "Setzt d'Representatioun vun engem Apparat am Home Assistant.",
                         "description2": "Dëst wäert net mam aktuellen Apparat kommunizéieren.",
@@ -2108,8 +1946,7 @@
                     },
                     "safe-mode": {
                         "description": "Home Assistant konnt Konfiguratioun net richteg lueden an leeft elo am Sécherheetsmodus. Kuck Logbicher fir de Feeler ze fannen.",
-                        "header": "Sécherheetsmodus aktivéiert",
-                        "show_errors": "Feeler uweisen"
+                        "header": "Sécherheetsmodus aktivéiert"
                     },
                     "shopping-list": {
                         "add_item": "Element dobäisetzen",
@@ -2123,9 +1960,6 @@
                 },
                 "editor": {
                     "card": {
-                        "alarm_panel": {
-                            "available_states": "Verfügbar Zoustänn"
-                        },
                         "alarm-panel": {
                             "available_states": "Verfügbar Zoustänn",
                             "description": "D'Alarm Panel Kaart erlaabt et d'Integratioun vun der Alarm Kontroll Panel ze arméieren an ze desaktivéieren.",
@@ -2155,9 +1989,6 @@
                             "name": "Entitéiten",
                             "show_header_toggle": "Titel Schalter uweisen?",
                             "toggle": "Entitéiten ëmschalten"
-                        },
-                        "entity-button": {
-                            "name": "Entitéite Knäppchen"
                         },
                         "entity-filter": {
                             "description": "D'Entity Filter Kaart erlaabt Iech eng Lëscht vun Entitéiten ze definéieren déi nëmmen ugewise gi wann se an engem bestëmmten Zoustand sinn.",
@@ -2304,7 +2135,6 @@
                         "options": "Méi Optiounen",
                         "pick_card": "Wielt eng Kaart aus déi soll dobäigesat ginn.",
                         "pick_card_view_title": "Wéieng Kaart wëllt dir zu ärer {name}Usiicht dobäisetzen?",
-                        "save": "Späicheren",
                         "show_code_editor": "Code Editeur uweisen",
                         "show_visual_editor": "Visuellen Editeur uweisen",
                         "toggle_editor": "Editeur ëmschalten"
@@ -2386,8 +2216,7 @@
                     "exit_edit_mode": "Benotzer Interface Editéierungsmodus verloossen",
                     "help": "Hëllef",
                     "refresh": "Erneieren",
-                    "reload_resources": "Ressource frësch lueden",
-                    "unused_entities": "Onbenotzt Entitéiten"
+                    "reload_resources": "Ressource frësch lueden"
                 },
                 "reload_lovelace": "Benotzer frësch lueden",
                 "reload_resources": {
@@ -2407,8 +2236,7 @@
                     "confirm_delete": "Usiicht läschen?",
                     "confirm_delete_existing_cards": "D'Läschen vun dëser Usiicht läscht och d'Kaarten",
                     "confirm_delete_existing_cards_text": "Sécher fir d'Usiicht '{name}' ze läsche? Dës Usiicht enthält {number} Kaart(en) déi och geläscht ginn. Dës Aktioun kann net réckgängeg gemaach ginn.",
-                    "confirm_delete_text": "Sécher fir d'Usiicht '{name}' ze läsche?",
-                    "existing_cards": "Dir kënnt keng Usiicht mat Kaarten läschen. Läscht d'Kaarten fir d'éischt."
+                    "confirm_delete_text": "Sécher fir d'Usiicht '{name}' ze läsche?"
                 },
                 "warning": {
                     "attribute_not_found": "Attribut {attribute} net disponibel an: {entity}",
@@ -2692,7 +2520,6 @@
         },
         "sidebar": {
             "external_app_configuration": "App Konfiguratioun",
-            "log_out": "Ausloggen",
             "sidebar_toggle": "Säite Kolonne ëmschalten"
         }
     }

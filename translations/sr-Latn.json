@@ -1,7 +1,4 @@
 {
-    "domain": {
-        "zwave": "Z-Wave"
-    },
     "panel": {
         "config": "Konfiguracija",
         "history": "Istorija",
@@ -12,9 +9,6 @@
         "states": "Pregled"
     },
     "state": {
-        "climate": {
-            "manual": "Упутство"
-        },
         "weather": {
             "clear-night": "Vedra noć",
             "cloudy": "Oblačno",
@@ -115,9 +109,6 @@
                     }
                 }
             }
-        },
-        "sidebar": {
-            "log_out": "Odjaviti se"
         }
     }
 }

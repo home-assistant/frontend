@@ -322,6 +322,7 @@ class HaPanelConfig extends HassRouterPage {
 
   protected firstUpdated(changedProps: PropertyValues) {
     super.firstUpdated(changedProps);
+    this.hass.loadBackendTranslation("title");
     if (isComponentLoaded(this.hass, "cloud")) {
       this._updateCloudStatus();
     }

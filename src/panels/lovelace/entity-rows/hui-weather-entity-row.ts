@@ -14,11 +14,11 @@ import {
   getWeatherUnit,
   weatherIcons,
   weatherImages,
+  getSecondaryWeatherAttribute,
 } from "../../../data/weather";
 import { HomeAssistant, WeatherEntity } from "../../../types";
 import { EntitiesCardEntityConfig } from "../cards/types";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
-import "../components/hui-warning";
 import { LovelaceRow } from "./types";
 
 @customElement("hui-weather-entity-row")
@@ -77,92 +77,10 @@ class HuiWeatherEntityRow extends LitElement implements LovelaceRow {
                 `}
           </div>
           <div class="secondary">
-            ${!UNAVAILABLE_STATES.includes(stateObj.state)
-              ? this._getSecondaryAttribute(stateObj)
-              : ""}
+            ${getSecondaryWeatherAttribute(this.hass!, stateObj)}
           </div>
         </div>
       </hui-generic-entity-row>
-    `;
-  }
-
-  private _getSecondaryAttribute(stateObj: WeatherEntity): string | undefined {
-    const extrema = this._getExtrema(stateObj);
-
-    if (extrema) {
-      return extrema;
-    }
-
-    let value: number;
-    let attribute: string;
-
-    if (
-      stateObj.attributes.forecast?.length &&
-      stateObj.attributes.forecast[0].precipitation !== undefined &&
-      stateObj.attributes.forecast[0].precipitation !== null
-    ) {
-      value = stateObj.attributes.forecast[0].precipitation!;
-      attribute = "precipitation";
-    } else if ("humidity" in stateObj.attributes) {
-      value = stateObj.attributes.humidity!;
-      attribute = "humidity";
-    } else {
-      return undefined;
-    }
-
-    return `
-      ${this.hass!.localize(
-        `ui.card.weather.attributes.${attribute}`
-      )} ${value} ${getWeatherUnit(this.hass!, attribute)}
-    `;
-  }
-
-  private _getExtrema(stateObj: WeatherEntity): string | undefined {
-    if (!stateObj.attributes.forecast?.length) {
-      return undefined;
-    }
-
-    let tempLow: number | undefined;
-    let tempHigh: number | undefined;
-    const today = new Date().getDate();
-
-    for (const forecast of stateObj.attributes.forecast!) {
-      if (new Date(forecast.datetime).getDate() !== today) {
-        break;
-      }
-      if (!tempHigh || forecast.temperature > tempHigh) {
-        tempHigh = forecast.temperature;
-      }
-      if (!tempLow || (forecast.templow && forecast.templow < tempLow)) {
-        tempLow = forecast.templow;
-      }
-      if (!forecast.templow && (!tempLow || forecast.temperature < tempLow)) {
-        tempLow = forecast.temperature;
-      }
-    }
-
-    if (!tempLow && !tempHigh) {
-      return undefined;
-    }
-
-    const unit = getWeatherUnit(this.hass!, "temperature");
-
-    return `
-      ${
-        tempHigh
-          ? `
-              ${this.hass!.localize(`ui.card.weather.high`)} ${tempHigh} ${unit}
-            `
-          : ""
-      }
-      ${tempLow && tempHigh ? " / " : ""}
-      ${
-        tempLow
-          ? `
-            ${this.hass!.localize(`ui.card.weather.low`)} ${tempLow} ${unit}
-          `
-          : ""
-      }
     `;
   }
 

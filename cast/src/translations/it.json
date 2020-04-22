@@ -1,0 +1,255 @@
+{
+  "state": {
+    "alarm_control_panel": {
+      "armed": "Attivo",
+      "armed_away": "Attivo fuori casa",
+      "armed_custom_bypass": "Attivo con bypass",
+      "armed_home": "Attivo in casa",
+      "armed_night": "Attivo Notte",
+      "arming": "In attivazione",
+      "disarmed": "Disattivo",
+      "disarming": "In disattivazione",
+      "pending": "In sospeso",
+      "triggered": "Attivato"
+    },
+    "automation": {
+      "off": "Spento",
+      "on": "Acceso"
+    },
+    "binary_sensor": {
+      "battery": {
+        "off": "Normale",
+        "on": "Basso"
+      },
+      "cold": {
+        "off": "Normale",
+        "on": "Freddo"
+      },
+      "connectivity": {
+        "off": "Disconnesso",
+        "on": "Connesso"
+      },
+      "default": {
+        "off": "Spento",
+        "on": "Acceso"
+      },
+      "door": {
+        "off": "Chiusa",
+        "on": "Aperta"
+      },
+      "garage_door": {
+        "off": "Chiusa",
+        "on": "Aperta"
+      },
+      "gas": {
+        "off": "Assente",
+        "on": "Rilevato"
+      },
+      "heat": {
+        "off": "Normale",
+        "on": "Caldo"
+      },
+      "lock": {
+        "off": "Bloccato",
+        "on": "Sbloccato"
+      },
+      "moisture": {
+        "off": "Asciutto",
+        "on": "Bagnato"
+      },
+      "motion": {
+        "off": "Assente",
+        "on": "Rilevato"
+      },
+      "occupancy": {
+        "off": "Vuoto",
+        "on": "Rilevato"
+      },
+      "opening": {
+        "off": "Chiuso",
+        "on": "Aperta"
+      },
+      "presence": {
+        "off": "Fuori casa",
+        "on": "A casa"
+      },
+      "problem": {
+        "off": "OK",
+        "on": "Problema"
+      },
+      "safety": {
+        "off": "Sicuro",
+        "on": "Non Sicuro"
+      },
+      "smoke": {
+        "off": "Assente",
+        "on": "Rilevato"
+      },
+      "sound": {
+        "off": "Assente",
+        "on": "Rilevato"
+      },
+      "vibration": {
+        "off": "Assente",
+        "on": "Rilevata"
+      },
+      "window": {
+        "off": "Chiusa",
+        "on": "Aperta"
+      }
+    },
+    "calendar": {
+      "off": "Disattivo",
+      "on": "Attivo"
+    },
+    "camera": {
+      "idle": "Inattiva",
+      "recording": "In registrazione",
+      "streaming": "Streaming"
+    },
+    "climate": {
+      "auto": "Auto",
+      "cool": "Freddo",
+      "dry": "Secco",
+      "fan_only": "Solo ventilatore",
+      "heat": "Caldo",
+      "heat_cool": "Caldo/Freddo",
+      "off": "Spento"
+    },
+    "configurator": {
+      "configure": "Configura",
+      "configured": "Configurato"
+    },
+    "cover": {
+      "closed": "Chiuso",
+      "closing": "In chiusura",
+      "open": "Aperto",
+      "opening": "In apertura",
+      "stopped": "Arrestato"
+    },
+    "default": {
+      "off": "Spento",
+      "on": "Acceso",
+      "unavailable": "Non disponibile",
+      "unknown": "Sconosciuto"
+    },
+    "device_tracker": {
+      "home": "A casa",
+      "not_home": "Fuori casa"
+    },
+    "fan": {
+      "off": "Spento",
+      "on": "Acceso"
+    },
+    "group": {
+      "closed": "Chiuso",
+      "closing": "Chiusura",
+      "home": "A casa",
+      "locked": "Bloccato",
+      "not_home": "Fuori casa",
+      "off": "Spento",
+      "ok": "OK",
+      "on": "Acceso",
+      "open": "Aperto",
+      "opening": "Apertura",
+      "problem": "Problema",
+      "stopped": "Fermato",
+      "unlocked": "Sbloccato"
+    },
+    "input_boolean": {
+      "off": "Spento",
+      "on": "Acceso"
+    },
+    "light": {
+      "off": "Spento",
+      "on": "Acceso"
+    },
+    "lock": {
+      "locked": "Bloccato",
+      "unlocked": "Sbloccato"
+    },
+    "media_player": {
+      "idle": "Inattivo",
+      "off": "Spento",
+      "on": "Acceso",
+      "paused": "In pausa",
+      "playing": "In riproduzione",
+      "standby": "Pausa"
+    },
+    "person": {
+      "home": "A casa",
+      "not_home": "Fuori casa"
+    },
+    "plant": {
+      "ok": "OK",
+      "problem": "Problema"
+    },
+    "remote": {
+      "off": "Spento",
+      "on": "Acceso"
+    },
+    "scene": {
+      "scening": "Sceneggiando"
+    },
+    "script": {
+      "off": "Spento",
+      "on": "Acceso"
+    },
+    "sensor": {
+      "off": "Spento",
+      "on": "Acceso"
+    },
+    "sun": {
+      "above_horizon": "Sopra l'orizzonte",
+      "below_horizon": "Sotto l'orizzonte"
+    },
+    "switch": {
+      "off": "Spento",
+      "on": "Acceso"
+    },
+    "timer": {
+      "active": "attivo",
+      "idle": "inattivo",
+      "paused": "in pausa"
+    },
+    "vacuum": {
+      "cleaning": "Pulendo",
+      "docked": "In base",
+      "error": "Errore",
+      "idle": "Inattivo",
+      "off": "Spento",
+      "on": "Acceso",
+      "paused": "In pausa",
+      "returning": "Ritorno alla base"
+    },
+    "weather": {
+      "clear-night": "Sereno, notte",
+      "cloudy": "Nuvoloso",
+      "exceptional": "Eccezionale",
+      "fog": "Nebbia",
+      "hail": "Grandine",
+      "lightning": "Temporale",
+      "lightning-rainy": "Temporale, piovoso",
+      "partlycloudy": "Parzialmente nuvoloso",
+      "pouring": "Piogge intense",
+      "rainy": "Piovoso",
+      "snowy": "Nevoso",
+      "snowy-rainy": "Nevoso, piovoso",
+      "sunny": "Soleggiato",
+      "windy": "Ventoso",
+      "windy-variant": "Ventoso"
+    },
+    "zwave": {
+      "default": {
+        "dead": "Disattivo",
+        "initializing": "Avvio",
+        "ready": "Pronto",
+        "sleeping": "In attesa"
+      },
+      "query_stage": {
+        "dead": "Disattivo ({query_stage})",
+        "initializing": "Avvio ({query_stage})"
+      }
+    }
+  }
+}
