@@ -26,8 +26,8 @@
     "state_attributes": {
         "climate": {
             "fan_mode": {
-                "auto": "Auto",
-                "off": "Apagado",
+                "auto": "Automatico",
+                "off": "Desactivado",
                 "on": "Encendido"
             },
             "hvac_action": {
@@ -70,11 +70,11 @@
             "unknown": "Desconocido"
         },
         "device_tracker": {
-            "home": "En casa",
+            "home": "En Casa",
             "not_home": "Fuera de Casa"
         },
         "person": {
-            "home": "En casa",
+            "home": "En Casa",
             "not_home": "Fuera de casa"
         }
     },
@@ -179,7 +179,7 @@
         },
         "calendar": {
             "off": "Desactivado",
-            "on": "Activado"
+            "on": "Encendido"
         },
         "camera": {
             "idle": "Inactivo",
@@ -187,7 +187,6 @@
             "streaming": "Streaming"
         },
         "climate": {
-            "auto": "Automatico",
             "cool": "Enfriar",
             "dry": "Seco",
             "fan_only": "Sólo ventilador",
@@ -207,26 +206,23 @@
             "stopped": "Detenido"
         },
         "default": {
-            "off": "Desactivado",
-            "on": "Encendido",
             "unavailable": "No disponible",
             "unknown": "Desconocido"
         },
         "device_tracker": {
-            "home": "En Casa",
             "not_home": "Fuera de Casa"
         },
         "fan": {
-            "off": "Desactivado",
+            "off": "[%key:state::default::off%]",
             "on": "Encendido"
         },
         "group": {
             "closed": "Cerrado",
             "closing": "Cerrando",
-            "home": "En casa",
+            "home": "En Casa",
             "locked": "Cerrado",
             "not_home": "Fuera de Casa",
-            "off": "Apagado",
+            "off": "Desactivado",
             "ok": "OK",
             "on": "Encendido",
             "open": "Abierto",
@@ -240,7 +236,7 @@
             "on": "Encendido"
         },
         "light": {
-            "off": "Apagado",
+            "off": "Desactivado",
             "on": "Encendido"
         },
         "lock": {
@@ -249,15 +245,14 @@
         },
         "media_player": {
             "idle": "Inactivo",
-            "off": "Apagado",
+            "off": "Desactivado",
             "on": "Encendido",
             "paused": "Pausado",
             "playing": "Reproduciendo",
             "standby": "Modo de espera"
         },
         "person": {
-            "home": "En casa",
-            "not_home": "Fuera de casa"
+            "home": "En casa"
         },
         "plant": {
             "ok": "OK",
@@ -271,11 +266,11 @@
             "scening": "Reproduciendo Escena"
         },
         "script": {
-            "off": "Apagado",
+            "off": "Desactivado",
             "on": "Encendido"
         },
         "sensor": {
-            "off": "",
+            "off": "Desactivado",
             "on": ""
         },
         "sun": {
@@ -284,7 +279,7 @@
         },
         "switch": {
             "off": "",
-            "on": ""
+            "on": "Encendido"
         },
         "timer": {
             "active": "activo",

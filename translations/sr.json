@@ -9,15 +9,6 @@
         "shopping_list": "Листа за куповину",
         "states": "Преглед"
     },
-    "state_attributes": {
-        "climate": {
-            "fan_mode": {
-                "auto": "Аутоматски",
-                "off": "Искључен",
-                "on": "Укључен"
-            }
-        }
-    },
     "state_badge": {
         "alarm_control_panel": {
             "arming": "Aktiviranje",
@@ -26,20 +17,42 @@
         "default": {
             "entity_not_found": "Вредност није пронађена",
             "error": "Грешка"
-        },
-        "person": {
-            "home": "Кући",
-            "not_home": "Одсутан"
         }
     },
     "state": {
+        "automation": {
+            "on": "[%key:state::default::on%]"
+        },
+        "binary_sensor": {
+            "default": {
+                "off": "[%key:state::default::off%]"
+            }
+        },
+        "calendar": {
+            "off": "[%key:state::default::off%]"
+        },
+        "fan": {
+            "off": "[%key:state::default::off%]",
+            "on": "[%key:state::default::on%]"
+        },
+        "media_player": {
+            "on": "[%key:state::default::on%]"
+        },
+        "remote": {
+            "on": "[%key:state::default::on%]"
+        },
+        "script": {
+            "on": "[%key:state::default::on%]"
+        },
+        "sensor": {
+            "on": "[%key:state::default::on%]"
+        },
         "sun": {
             "above_horizon": "Iznad horizonta",
             "below_horizon": "Ispod horizonta"
         },
         "switch": {
-            "off": "Isključen",
-            "on": "Uključen"
+            "off": "Isključen"
         },
         "timer": {
             "active": "укључен",

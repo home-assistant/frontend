@@ -93,7 +93,7 @@
         },
         "automation": {
             "off": "Inactif",
-            "on": "Actif"
+            "on": "[%key:state::default::on%]"
         },
         "binary_sensor": {
             "battery": {
@@ -109,7 +109,7 @@
                 "on": "Connecté"
             },
             "default": {
-                "off": "Inactif",
+                "off": "[%key:state::default::off%]",
                 "on": "Actif"
             },
             "door": {
@@ -178,7 +178,7 @@
             }
         },
         "calendar": {
-            "off": "Inactif",
+            "off": "[%key:state::default::off%]",
             "on": "Actif"
         },
         "camera": {
@@ -187,13 +187,12 @@
             "streaming": "Diffusion en cours"
         },
         "climate": {
-            "auto": "Auto",
             "cool": "Frais",
             "dry": "Sec",
             "fan_only": "Ventilateur seul",
             "heat": "Chauffe",
             "heat_cool": "Chaud/Froid",
-            "off": "Inactif"
+            "off": "[%key:state::default::off%]"
         },
         "configurator": {
             "configure": "Configurer",
@@ -207,13 +206,10 @@
             "stopped": "Arrêté"
         },
         "default": {
-            "off": "Inactif",
-            "on": "Actif",
             "unavailable": "Indisponible",
             "unknown": "Inconnu"
         },
         "device_tracker": {
-            "home": "Présent",
             "not_home": "Absent"
         },
         "fan": {
@@ -237,10 +233,10 @@
         },
         "input_boolean": {
             "off": "Arrêté",
-            "on": "Marche"
+            "on": "Actif"
         },
         "light": {
-            "off": "Éteinte",
+            "off": "Inactif",
             "on": "Actif"
         },
         "lock": {
@@ -249,15 +245,14 @@
         },
         "media_player": {
             "idle": "En veille",
-            "off": "Éteint",
+            "off": "Inactif",
             "on": "Marche",
             "paused": "En pause",
             "playing": "Lecture en cours",
             "standby": "En veille"
         },
         "person": {
-            "home": "Présent",
-            "not_home": "Absent"
+            "home": "Présent"
         },
         "plant": {
             "ok": "OK",
@@ -265,26 +260,26 @@
         },
         "remote": {
             "off": "Arrêt",
-            "on": "Actif"
+            "on": "[%key:state::default::on%]"
         },
         "scene": {
             "scening": "Scénario"
         },
         "script": {
             "off": "Inactif",
-            "on": "Actif"
+            "on": "[%key:state::default::on%]"
         },
         "sensor": {
             "off": "Inactif",
-            "on": "Actif"
+            "on": "[%key:state::default::on%]"
         },
         "sun": {
             "above_horizon": "Au-dessus de l'horizon",
             "below_horizon": "Sous l’horizon"
         },
         "switch": {
-            "off": "Inactif",
-            "on": "On"
+            "off": "[%key:state::default::off%]",
+            "on": "Actif"
         },
         "timer": {
             "active": "actif",

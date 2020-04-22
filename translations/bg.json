@@ -93,7 +93,7 @@
         },
         "automation": {
             "off": "Изключен",
-            "on": "Включен"
+            "on": "[%key:state::default::on%]"
         },
         "binary_sensor": {
             "battery": {
@@ -178,7 +178,7 @@
             }
         },
         "calendar": {
-            "off": "Изключен",
+            "off": "[%key:state::default::off%]",
             "on": "Включен"
         },
         "camera": {
@@ -187,13 +187,12 @@
             "streaming": "Предава"
         },
         "climate": {
-            "auto": "Автоматичен",
             "cool": "Охлаждане",
             "dry": "Сух",
             "fan_only": "Само вентилатор",
             "heat": "Отопление",
             "heat_cool": "Отопление/Охлаждане",
-            "off": "Изключен"
+            "off": "[%key:state::default::off%]"
         },
         "configurator": {
             "configure": "Настройване",
@@ -207,18 +206,15 @@
             "stopped": "Спряна"
         },
         "default": {
-            "off": "Изключен",
-            "on": "Включен",
             "unavailable": "Недостъпен",
             "unknown": "Неизвестно"
         },
         "device_tracker": {
-            "home": "Вкъщи",
             "not_home": "Отсъства"
         },
         "fan": {
-            "off": "Изключен",
-            "on": "Включен"
+            "off": "[%key:state::default::off%]",
+            "on": "[%key:state::default::on%]"
         },
         "group": {
             "closed": "Затворена",
@@ -228,7 +224,7 @@
             "not_home": "Отсъства",
             "off": "Изключен",
             "ok": "ОК",
-            "on": "Включена",
+            "on": "Включен",
             "open": "Отворена",
             "opening": "Отваряне",
             "problem": "Проблем",
@@ -236,12 +232,12 @@
             "unlocked": "Отключена"
         },
         "input_boolean": {
-            "off": "Изключен",
+            "off": "[%key:state::default::off%]",
             "on": "Включен"
         },
         "light": {
-            "off": "Изключено",
-            "on": "Включено"
+            "off": "Изключен",
+            "on": "Включен"
         },
         "lock": {
             "locked": "Заключен",
@@ -250,40 +246,39 @@
         "media_player": {
             "idle": "Неработещ",
             "off": "Изключен",
-            "on": "Включен",
+            "on": "[%key:state::default::on%]",
             "paused": "В пауза",
             "playing": "Възпроизвеждане",
             "standby": "Режим на готовност"
         },
         "person": {
-            "home": "Вкъщи",
-            "not_home": "Отсъства"
+            "home": "Вкъщи"
         },
         "plant": {
             "ok": "ОК",
             "problem": "Проблем"
         },
         "remote": {
-            "off": "Изключен",
-            "on": "Включен"
+            "off": "[%key:state::default::off%]",
+            "on": "[%key:state::default::on%]"
         },
         "scene": {
             "scening": "Промяна на сцена"
         },
         "script": {
             "off": "Изключен",
-            "on": "Включен"
+            "on": "[%key:state::default::on%]"
         },
         "sensor": {
             "off": "Изключен",
-            "on": "Включен"
+            "on": "[%key:state::default::on%]"
         },
         "sun": {
             "above_horizon": "Над хоризонта",
             "below_horizon": "Под хоризонта"
         },
         "switch": {
-            "off": "Изключен",
+            "off": "[%key:state::default::off%]",
             "on": "Включен"
         },
         "timer": {
@@ -296,8 +291,8 @@
             "docked": "В базова станция",
             "error": "Грешка",
             "idle": "Неработещ",
-            "off": "Изключен",
-            "on": "Включен",
+            "off": "[%key:state::default::off%]",
+            "on": "[%key:state::default::on%]",
             "paused": "Пауза",
             "returning": "Връщане в базовата станция"
         },

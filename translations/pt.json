@@ -26,9 +26,9 @@
     "state_attributes": {
         "climate": {
             "fan_mode": {
-                "auto": "Automático",
-                "off": "Desligar",
-                "on": "Ligar"
+                "auto": "Auto",
+                "off": "Desligado",
+                "on": "Ligado"
             },
             "hvac_action": {
                 "cooling": "Resfriar",
@@ -83,7 +83,7 @@
             "armed": "Armado",
             "armed_away": "Armado ausente",
             "armed_custom_bypass": "Armado com desvio personalizado",
-            "armed_home": "Armado Casa",
+            "armed_home": "Armado [%key:state::device_tracker::home%]",
             "armed_night": "Armado noite",
             "arming": "A armar",
             "disarmed": "Desarmado",
@@ -93,7 +93,7 @@
         },
         "automation": {
             "off": "Desligado",
-            "on": "Ligado"
+            "on": "[%key:state::default::on%]"
         },
         "binary_sensor": {
             "battery": {
@@ -109,7 +109,7 @@
                 "on": "Ligado"
             },
             "default": {
-                "off": "Desligado",
+                "off": "[%key:state::default::off%]",
                 "on": "Ligado"
             },
             "door": {
@@ -178,7 +178,7 @@
             }
         },
         "calendar": {
-            "off": "Desligado",
+            "off": "[%key:state::default::off%]",
             "on": "Ligado"
         },
         "camera": {
@@ -187,13 +187,12 @@
             "streaming": "A enviar"
         },
         "climate": {
-            "auto": "Auto",
             "cool": "Frio",
             "dry": "Desumidificar",
             "fan_only": "Apenas ventilar",
             "heat": "Quente",
             "heat_cool": "Calor / Frio",
-            "off": "Desligado"
+            "off": "[%key:state::default::off%]"
         },
         "configurator": {
             "configure": "Configurar",
@@ -207,18 +206,15 @@
             "stopped": "Parado"
         },
         "default": {
-            "off": "Desligado",
-            "on": "Ligado",
             "unavailable": "Indisponível",
             "unknown": "Desconhecido"
         },
         "device_tracker": {
-            "home": "Casa",
             "not_home": "Fora"
         },
         "fan": {
             "off": "Desligada",
-            "on": "Ligado"
+            "on": "[%key:state::default::on%]"
         },
         "group": {
             "closed": "Fechada",
@@ -236,12 +232,12 @@
             "unlocked": "Desbloqueado"
         },
         "input_boolean": {
-            "off": "Desligado",
+            "off": "[%key:state::default::off%]",
             "on": "Ligado"
         },
         "light": {
-            "off": "Desligada",
-            "on": "Ligada"
+            "off": "Desligado",
+            "on": "Ligado"
         },
         "lock": {
             "locked": "Trancada",
@@ -250,14 +246,13 @@
         "media_player": {
             "idle": "Em espera",
             "off": "Desligado",
-            "on": "Ligado",
+            "on": "[%key:state::default::on%]",
             "paused": "Em pausa",
             "playing": "A reproduzir",
             "standby": "Em espera"
         },
         "person": {
-            "home": "Casa",
-            "not_home": "Ausente"
+            "home": "Casa"
         },
         "plant": {
             "ok": "OK",
@@ -271,19 +266,19 @@
             "scening": "Cenas"
         },
         "script": {
-            "off": "Desativado",
-            "on": "Ligado"
+            "off": "Desligado",
+            "on": "[%key:state::default::on%]"
         },
         "sensor": {
             "off": "Desligado",
-            "on": "Ligado"
+            "on": "[%key:state::default::on%]"
         },
         "sun": {
             "above_horizon": "Acima do horizonte",
             "below_horizon": "Abaixo do horizonte"
         },
         "switch": {
-            "off": "Desligado",
+            "off": "[%key:state::default::off%]",
             "on": "Ligado"
         },
         "timer": {
@@ -477,6 +472,7 @@
             "loading": "A carregar",
             "no": "Não",
             "save": "Guardar",
+            "successfully_deleted": "Eliminado com sucesso",
             "successfully_saved": "Salva com sucesso",
             "undo": "Desfazer",
             "yes": "Sim"
@@ -540,6 +536,7 @@
             "helper_settings": {
                 "input_datetime": {
                     "date": "Data",
+                    "mode": "O que deseja inserir",
                     "time": "Hora"
                 },
                 "input_number": {
@@ -651,6 +648,10 @@
                 },
                 "areas": {
                     "caption": "Áreas",
+                    "data_table": {
+                        "area": "Área",
+                        "devices": "Dispositivos"
+                    },
                     "delete": {
                         "confirmation_text": "Todos os dispositivos nesta área ficarão por atribuir.",
                         "confirmation_title": "Tem certeza de que deseja apagar esta área?"
@@ -1116,6 +1117,7 @@
                         }
                     },
                     "caption": "Dispositivos",
+                    "confirm_delete": "Tem a certeza que quer apagar este dispositivo?",
                     "confirm_rename_entity_ids": "Deseja também renomear os id's de entidade de suas entidades?",
                     "data_table": {
                         "area": "Área",
@@ -1251,6 +1253,9 @@
                             "delete": "Apagar",
                             "type": "Tipo de recurso",
                             "url_error_msg": "URL é um campo obrigatório"
+                        },
+                        "picker": {
+                            "no_resources": "Sem recursos"
                         }
                     }
                 },
@@ -1358,7 +1363,7 @@
                     "description": "Reiniciar e parar o servidor do Home Assistant",
                     "section": {
                         "reloading": {
-                            "automation": "Recarregar automatizações",
+                            "automation": "Recarregar automações",
                             "core": "Recarregar localização e personalizações",
                             "group": "Recarregar grupos",
                             "heading": "A recarregar configuração",
@@ -1895,6 +1900,9 @@
                     "reload_resources": "Recarregar recursos"
                 },
                 "reload_lovelace": "Recarregar Lovelace",
+                "reload_resources": {
+                    "refresh_header": "Deseja atualizar?"
+                },
                 "unused_entities": {
                     "available_entities": "Estas são as entidades que tem disponíveis, mas que ainda não estão no seu Lovelace UI.",
                     "domain": "Domínio",

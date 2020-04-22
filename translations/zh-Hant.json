@@ -187,7 +187,6 @@
             "streaming": "監控中"
         },
         "climate": {
-            "auto": "自動",
             "cool": "冷氣",
             "dry": "除濕模式",
             "fan_only": "僅送風",
@@ -207,17 +206,14 @@
             "stopped": "停止"
         },
         "default": {
-            "off": "關閉",
-            "on": "開啟",
             "unavailable": "不可用",
             "unknown": "未知"
         },
         "device_tracker": {
-            "home": "在家",
             "not_home": "離家"
         },
         "fan": {
-            "off": "關閉",
+            "off": "[%key:state::default::off%]",
             "on": "開啟"
         },
         "group": {
@@ -240,8 +236,8 @@
             "on": "開啟"
         },
         "light": {
-            "off": "已關燈",
-            "on": "已開燈"
+            "off": "關閉",
+            "on": "開啟"
         },
         "lock": {
             "locked": "已上鎖",
@@ -256,8 +252,7 @@
             "standby": "待命"
         },
         "person": {
-            "home": "在家",
-            "not_home": "離家"
+            "home": "在家"
         },
         "plant": {
             "ok": "健康",
@@ -284,7 +279,7 @@
         },
         "switch": {
             "off": "關閉",
-            "on": "開啓"
+            "on": "開啟"
         },
         "timer": {
             "active": "啟用",

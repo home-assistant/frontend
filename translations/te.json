@@ -37,8 +37,11 @@
             "unknown": "తెలియదు"
         },
         "device_tracker": {
-            "home": "ఇంట్లో",
+            "home": "ఇంట",
             "not_home": "బయట"
+        },
+        "person": {
+            "home": "ఇంట"
         }
     },
     "state": {
@@ -149,7 +152,6 @@
             "streaming": "ప్రసారం"
         },
         "climate": {
-            "auto": "దానంతట అదే",
             "cool": "చల్లగా",
             "dry": "పొడి",
             "fan_only": "ఫ్యాన్ మాత్రమే",
@@ -168,13 +170,10 @@
             "stopped": "ఆగివుంది"
         },
         "default": {
-            "off": "ఆఫ్",
-            "on": "ఆన్",
             "unavailable": "అందుబాటులో లేదు",
             "unknown": "తెలియదు"
         },
         "device_tracker": {
-            "home": "ఇంట",
             "not_home": "బయట"
         },
         "fan": {

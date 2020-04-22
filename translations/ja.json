@@ -45,7 +45,7 @@
         },
         "automation": {
             "off": "オフ",
-            "on": "オン"
+            "on": "[%key:state::default::on%]"
         },
         "binary_sensor": {
             "battery": {
@@ -61,7 +61,7 @@
                 "on": "接続済"
             },
             "default": {
-                "off": "オフ",
+                "off": "[%key:state::default::off%]",
                 "on": "オン"
             },
             "door": {
@@ -129,19 +129,18 @@
             }
         },
         "calendar": {
-            "off": "オフ",
+            "off": "[%key:state::default::off%]",
             "on": "オン"
         },
         "camera": {
             "idle": "アイドル"
         },
         "climate": {
-            "auto": "オート",
             "cool": "冷房",
             "dry": "ドライ",
             "fan_only": "ファンのみ",
             "heat": "暖房",
-            "off": "オフ"
+            "off": "[%key:state::default::off%]"
         },
         "configurator": {
             "configure": "設定",
@@ -152,18 +151,15 @@
             "opening": "扉"
         },
         "default": {
-            "off": "オフ",
-            "on": "オン",
             "unavailable": "利用不可",
             "unknown": "不明"
         },
         "device_tracker": {
-            "home": "在宅",
             "not_home": "外出"
         },
         "fan": {
-            "off": "オフ",
-            "on": "オン"
+            "off": "[%key:state::default::off%]",
+            "on": "[%key:state::default::on%]"
         },
         "group": {
             "closed": "閉鎖",
@@ -176,7 +172,7 @@
             "opening": "扉"
         },
         "input_boolean": {
-            "off": "オフ",
+            "off": "[%key:state::default::off%]",
             "on": "オン"
         },
         "light": {
@@ -186,35 +182,34 @@
         "media_player": {
             "idle": "アイドル",
             "off": "オフ",
-            "on": "オン",
+            "on": "[%key:state::default::on%]",
             "paused": "一時停止",
             "playing": "再生中"
         },
         "person": {
-            "home": "在宅",
-            "not_home": "外出"
+            "home": "在宅"
         },
         "plant": {
             "ok": "OK"
         },
         "remote": {
-            "off": "オフ",
-            "on": "オン"
+            "off": "[%key:state::default::off%]",
+            "on": "[%key:state::default::on%]"
         },
         "script": {
             "off": "オフ",
-            "on": "オン"
+            "on": "[%key:state::default::on%]"
         },
         "sensor": {
             "off": "オフ",
-            "on": "オン"
+            "on": "[%key:state::default::on%]"
         },
         "sun": {
             "above_horizon": "地平線の上",
             "below_horizon": "地平線より下"
         },
         "switch": {
-            "off": "オフ",
+            "off": "[%key:state::default::off%]",
             "on": "オン"
         },
         "weather": {

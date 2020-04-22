@@ -26,7 +26,7 @@
     "state_attributes": {
         "climate": {
             "fan_mode": {
-                "auto": "Auto",
+                "auto": "Automatisch",
                 "off": "Aus",
                 "on": "An"
             },
@@ -70,7 +70,7 @@
             "unknown": "Unbek."
         },
         "device_tracker": {
-            "home": "Z. Hause",
+            "home": "Zu Hause",
             "not_home": "Abwes."
         },
         "person": {
@@ -93,7 +93,7 @@
         },
         "automation": {
             "off": "Aus",
-            "on": "An"
+            "on": "[%key:state::default::on%]"
         },
         "binary_sensor": {
             "battery": {
@@ -109,7 +109,7 @@
                 "on": "Verbunden"
             },
             "default": {
-                "off": "Aus",
+                "off": "[%key:state::default::off%]",
                 "on": "An"
             },
             "door": {
@@ -178,7 +178,7 @@
             }
         },
         "calendar": {
-            "off": "Aus",
+            "off": "[%key:state::default::off%]",
             "on": "An"
         },
         "camera": {
@@ -187,13 +187,12 @@
             "streaming": "Überträgt"
         },
         "climate": {
-            "auto": "Automatisch",
             "cool": "Kühlen",
             "dry": "Entfeuchten",
             "fan_only": "Nur Ventilator",
             "heat": "Heizen",
             "heat_cool": "Heizen/Kühlen",
-            "off": "Aus"
+            "off": "[%key:state::default::off%]"
         },
         "configurator": {
             "configure": "Konfigurieren",
@@ -207,18 +206,15 @@
             "stopped": "Angehalten"
         },
         "default": {
-            "off": "Aus",
-            "on": "An",
             "unavailable": "Nicht verfügbar",
             "unknown": "Unbekannt"
         },
         "device_tracker": {
-            "home": "Zu Hause",
             "not_home": "Abwesend"
         },
         "fan": {
-            "off": "Aus",
-            "on": "An"
+            "off": "[%key:state::default::off%]",
+            "on": "[%key:state::default::on%]"
         },
         "group": {
             "closed": "Geschlossen",
@@ -236,7 +232,7 @@
             "unlocked": "Entriegelt"
         },
         "input_boolean": {
-            "off": "Aus",
+            "off": "[%key:state::default::off%]",
             "on": "An"
         },
         "light": {
@@ -250,40 +246,39 @@
         "media_player": {
             "idle": "Untätig",
             "off": "Aus",
-            "on": "An",
+            "on": "[%key:state::default::on%]",
             "paused": "Pausiert",
             "playing": "Spielt",
             "standby": "Standby"
         },
         "person": {
-            "home": "Zu Hause",
-            "not_home": "Abwesend"
+            "home": "Zu Hause"
         },
         "plant": {
             "ok": "OK",
             "problem": "Problem"
         },
         "remote": {
-            "off": "Aus",
-            "on": "An"
+            "off": "[%key:state::default::off%]",
+            "on": "[%key:state::default::on%]"
         },
         "scene": {
             "scening": "Szene"
         },
         "script": {
             "off": "Aus",
-            "on": "An"
+            "on": "[%key:state::default::on%]"
         },
         "sensor": {
             "off": "Aus",
-            "on": "An"
+            "on": "[%key:state::default::on%]"
         },
         "sun": {
             "above_horizon": "Über dem Horizont",
             "below_horizon": "Unter dem Horizont"
         },
         "switch": {
-            "off": "Aus",
+            "off": "[%key:state::default::off%]",
             "on": "An"
         },
         "timer": {
@@ -296,8 +291,8 @@
             "docked": "Angedockt",
             "error": "Fehler",
             "idle": "Standby",
-            "off": "Aus",
-            "on": "An",
+            "off": "[%key:state::default::off%]",
+            "on": "[%key:state::default::on%]",
             "paused": "Pausiert",
             "returning": "Rückkehr zur Dockingstation"
         },

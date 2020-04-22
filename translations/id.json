@@ -19,9 +19,9 @@
     "state_attributes": {
         "climate": {
             "fan_mode": {
-                "auto": "Otomatis",
-                "off": "Mati",
-                "on": "Nyala"
+                "auto": "Auto",
+                "off": "Off",
+                "on": "On"
             }
         }
     },
@@ -48,7 +48,7 @@
             "not_home": "Keluar"
         },
         "person": {
-            "home": "Di rumah",
+            "home": "Rumah",
             "not_home": "Keluar"
         }
     },
@@ -161,7 +161,6 @@
             "streaming": "Streaming"
         },
         "climate": {
-            "auto": "Auto",
             "cool": "Sejuk",
             "dry": "Kering",
             "fan_only": "Hanya kipas",
@@ -181,17 +180,14 @@
             "stopped": "Terhenti"
         },
         "default": {
-            "off": "Off",
-            "on": "On",
             "unavailable": "Tidak tersedia",
             "unknown": "Tidak diketahui"
         },
         "device_tracker": {
-            "home": "Rumah",
             "not_home": "Keluar"
         },
         "fan": {
-            "off": "Off",
+            "off": "[%key:state::default::off%]",
             "on": "On"
         },
         "group": {
@@ -230,8 +226,7 @@
             "standby": "Siaga"
         },
         "person": {
-            "home": "Di rumah",
-            "not_home": "Keluar"
+            "home": "Di rumah"
         },
         "plant": {
             "ok": "OK",

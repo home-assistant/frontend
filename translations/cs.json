@@ -26,9 +26,9 @@
     "state_attributes": {
         "climate": {
             "fan_mode": {
-                "auto": "Automaticky",
-                "off": "Vypnuto",
-                "on": "Zapnuto"
+                "auto": "Automatika",
+                "off": "Neaktivní",
+                "on": "Aktivní"
             },
             "hvac_action": {
                 "cooling": "Chlazení",
@@ -86,14 +86,14 @@
             "armed_home": "Aktivní režim doma",
             "armed_night": "Aktivní noční režim",
             "arming": "Aktivování",
-            "disarmed": "Neaktivní",
+            "disarmed": "[%key:state::default::off%]",
             "disarming": "Deaktivování",
             "pending": "Nadcházející",
             "triggered": "Spuštěno"
         },
         "automation": {
             "off": "Neaktivní",
-            "on": "Aktivní"
+            "on": "[%key:state::default::on%]"
         },
         "binary_sensor": {
             "battery": {
@@ -109,7 +109,7 @@
                 "on": "Připojeno"
             },
             "default": {
-                "off": "Neaktivní",
+                "off": "[%key:state::default::off%]",
                 "on": "Aktivní"
             },
             "door": {
@@ -178,7 +178,7 @@
             }
         },
         "calendar": {
-            "off": "Neaktivní",
+            "off": "[%key:state::default::off%]",
             "on": "Aktivní"
         },
         "camera": {
@@ -187,13 +187,12 @@
             "streaming": "Streamování"
         },
         "climate": {
-            "auto": "Automatika",
             "cool": "Chlazení",
             "dry": "Vysoušení",
             "fan_only": "Pouze ventilátor",
             "heat": "Topení",
             "heat_cool": "Vytápění/Chlazení",
-            "off": "Neaktivní"
+            "off": "[%key:state::default::off%]"
         },
         "configurator": {
             "configure": "Nakonfigurovat",
@@ -207,18 +206,15 @@
             "stopped": "Zastaveno"
         },
         "default": {
-            "off": "Neaktivní",
-            "on": "Aktivní",
             "unavailable": "Není k dispozici",
             "unknown": "Nezjištěno"
         },
         "device_tracker": {
-            "home": "Doma",
             "not_home": "Pryč"
         },
         "fan": {
-            "off": "Neaktivní",
-            "on": "Aktivní"
+            "off": "[%key:state::default::off%]",
+            "on": "[%key:state::default::on%]"
         },
         "group": {
             "closed": "Zavřeno",
@@ -236,12 +232,12 @@
             "unlocked": "Odemčeno"
         },
         "input_boolean": {
-            "off": "Neaktivní",
+            "off": "[%key:state::default::off%]",
             "on": "Aktivní"
         },
         "light": {
-            "off": "Nesvítí",
-            "on": "Svítí"
+            "off": "Neaktivní",
+            "on": "Aktivní"
         },
         "lock": {
             "locked": "Zamčeno",
@@ -250,40 +246,39 @@
         "media_player": {
             "idle": "Nečinný",
             "off": "Neaktivní",
-            "on": "Aktivní",
+            "on": "[%key:state::default::on%]",
             "paused": "Pozastaveno",
             "playing": "Přehrávání",
             "standby": "Pohotovostní režim"
         },
         "person": {
-            "home": "Doma",
-            "not_home": "Pryč"
+            "home": "Doma"
         },
         "plant": {
             "ok": "V pořádku",
             "problem": "Problém"
         },
         "remote": {
-            "off": "Neaktivní",
-            "on": "Aktivní"
+            "off": "[%key:state::default::off%]",
+            "on": "[%key:state::default::on%]"
         },
         "scene": {
             "scening": "Scenérie"
         },
         "script": {
             "off": "Neaktivní",
-            "on": "Aktivní"
+            "on": "[%key:state::default::on%]"
         },
         "sensor": {
             "off": "Neaktivní",
-            "on": "Aktivní"
+            "on": "[%key:state::default::on%]"
         },
         "sun": {
             "above_horizon": "Nad horizontem",
             "below_horizon": "Za horizontem"
         },
         "switch": {
-            "off": "Neaktivní",
+            "off": "[%key:state::default::off%]",
             "on": "Aktivní"
         },
         "timer": {

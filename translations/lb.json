@@ -26,7 +26,7 @@
     "state_attributes": {
         "climate": {
             "fan_mode": {
-                "auto": "Autmatesch",
+                "auto": "Auto",
                 "off": "Aus",
                 "on": "Un"
             },
@@ -187,7 +187,6 @@
             "streaming": "Streamt"
         },
         "climate": {
-            "auto": "Auto",
             "cool": "Kill",
             "dry": "Dréchen",
             "fan_only": "Nëmme Ventilator",
@@ -207,17 +206,14 @@
             "stopped": "Gestoppt"
         },
         "default": {
-            "off": "Aus",
-            "on": "Un",
             "unavailable": "Net erreechbar",
             "unknown": "Onbekannt"
         },
         "device_tracker": {
-            "home": "Doheem",
             "not_home": "Ënnerwee"
         },
         "fan": {
-            "off": "Aus",
+            "off": "[%key:state::default::off%]",
             "on": "Un"
         },
         "group": {
@@ -256,8 +252,7 @@
             "standby": "Standby"
         },
         "person": {
-            "home": "Doheem",
-            "not_home": "Ënnerwee"
+            "home": "Doheem"
         },
         "plant": {
             "ok": "OK",

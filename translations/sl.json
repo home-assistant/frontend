@@ -93,7 +93,7 @@
         },
         "automation": {
             "off": "Izključen",
-            "on": "Vklopljen"
+            "on": "[%key:state::default::on%]"
         },
         "binary_sensor": {
             "battery": {
@@ -109,7 +109,7 @@
                 "on": "Povezan"
             },
             "default": {
-                "off": "Izključen",
+                "off": "[%key:state::default::off%]",
                 "on": "Vklopljen"
             },
             "door": {
@@ -178,7 +178,7 @@
             }
         },
         "calendar": {
-            "off": "Izključen",
+            "off": "[%key:state::default::off%]",
             "on": "Vklopljen"
         },
         "camera": {
@@ -187,13 +187,12 @@
             "streaming": "Pretakanje"
         },
         "climate": {
-            "auto": "Samodejno",
             "cool": "Mrzlo",
             "dry": "Suho",
             "fan_only": "Samo ventilator",
             "heat": "Toplo",
             "heat_cool": "Gretje/Hlajenje",
-            "off": "Izključen"
+            "off": "[%key:state::default::off%]"
         },
         "configurator": {
             "configure": "Konfiguriraj",
@@ -207,18 +206,15 @@
             "stopped": "Ustavljeno"
         },
         "default": {
-            "off": "Izključen",
-            "on": "Vklopljen",
             "unavailable": "Ni na voljo",
             "unknown": "Neznano"
         },
         "device_tracker": {
-            "home": "Doma",
             "not_home": "Odsoten"
         },
         "fan": {
-            "off": "Izključen",
-            "on": "Vklopljen"
+            "off": "[%key:state::default::off%]",
+            "on": "[%key:state::default::on%]"
         },
         "group": {
             "closed": "Zaprto",
@@ -236,7 +232,7 @@
             "unlocked": "Odklenjeno"
         },
         "input_boolean": {
-            "off": "Izključen",
+            "off": "[%key:state::default::off%]",
             "on": "Vklopljen"
         },
         "light": {
@@ -250,40 +246,39 @@
         "media_player": {
             "idle": "V pripravljenosti",
             "off": "Izključen",
-            "on": "Vklopljen",
+            "on": "[%key:state::default::on%]",
             "paused": "Na pavzi",
             "playing": "Predvaja",
             "standby": "V pripravljenosti"
         },
         "person": {
-            "home": "Doma",
-            "not_home": "Odsoten"
+            "home": "Doma"
         },
         "plant": {
             "ok": "OK",
             "problem": "Težava"
         },
         "remote": {
-            "off": "Izključen",
-            "on": "Vklopljen"
+            "off": "[%key:state::default::off%]",
+            "on": "[%key:state::default::on%]"
         },
         "scene": {
             "scening": "Nastavitev scene"
         },
         "script": {
             "off": "Izključen",
-            "on": "Vklopljen"
+            "on": "[%key:state::default::on%]"
         },
         "sensor": {
             "off": "Izključen",
-            "on": "Vklopljen"
+            "on": "[%key:state::default::on%]"
         },
         "sun": {
             "above_horizon": "Nad obzorjem",
             "below_horizon": "Pod obzorjem"
         },
         "switch": {
-            "off": "Izključen",
+            "off": "[%key:state::default::off%]",
             "on": "Vklopljen"
         },
         "timer": {

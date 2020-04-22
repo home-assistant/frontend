@@ -75,7 +75,7 @@
         },
         "person": {
             "home": "Heime",
-            "not_home": "Borte"
+            "not_home": "Borte "
         }
     },
     "state": {
@@ -93,7 +93,7 @@
         },
         "automation": {
             "off": "Av",
-            "on": "På"
+            "on": "[%key:state::default::on%]"
         },
         "binary_sensor": {
             "battery": {
@@ -109,7 +109,7 @@
                 "on": "Tilkopla"
             },
             "default": {
-                "off": "Av",
+                "off": "[%key:state::default::off%]",
                 "on": "På"
             },
             "door": {
@@ -187,13 +187,12 @@
             "streaming": "Strøymer"
         },
         "climate": {
-            "auto": "Auto",
             "cool": "Kjøle",
             "dry": "Tørr",
             "fan_only": "Berre vifte",
             "heat": "Varme",
             "heat_cool": "Oppvarming/Nedkjøling",
-            "off": "Av"
+            "off": "[%key:state::default::off%]"
         },
         "configurator": {
             "configure": "Konfigurerer",
@@ -207,18 +206,15 @@
             "stopped": "Stoppa"
         },
         "default": {
-            "off": "Av",
-            "on": "På",
             "unavailable": "Utilgjengelig",
             "unknown": "Ukjent"
         },
         "device_tracker": {
-            "home": "Heime",
             "not_home": "Borte"
         },
         "fan": {
-            "off": "Av",
-            "on": "På"
+            "off": "[%key:state::default::off%]",
+            "on": "[%key:state::default::on%]"
         },
         "group": {
             "closed": "Lukka",
@@ -236,7 +232,7 @@
             "unlocked": "Ulåst"
         },
         "input_boolean": {
-            "off": "Av",
+            "off": "[%key:state::default::off%]",
             "on": "På"
         },
         "light": {
@@ -250,40 +246,39 @@
         "media_player": {
             "idle": "Inaktiv",
             "off": "Av",
-            "on": "På",
+            "on": "[%key:state::default::on%]",
             "paused": "Pausa",
             "playing": "Spelar",
             "standby": "Avventer"
         },
         "person": {
-            "home": "Heime",
-            "not_home": "Borte "
+            "home": "Heime"
         },
         "plant": {
             "ok": "Ok",
             "problem": "Problem"
         },
         "remote": {
-            "off": "Av",
-            "on": "På"
+            "off": "[%key:state::default::off%]",
+            "on": "[%key:state::default::on%]"
         },
         "scene": {
             "scening": "Scenande"
         },
         "script": {
             "off": "Av",
-            "on": "På"
+            "on": "[%key:state::default::on%]"
         },
         "sensor": {
             "off": "Av",
-            "on": "På"
+            "on": "[%key:state::default::on%]"
         },
         "sun": {
             "above_horizon": "Over horisonten",
             "below_horizon": "Under horisonten"
         },
         "switch": {
-            "off": "Av",
+            "off": "[%key:state::default::off%]",
             "on": "På"
         },
         "timer": {

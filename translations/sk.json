@@ -26,9 +26,9 @@
     "state_attributes": {
         "climate": {
             "fan_mode": {
-                "auto": "Auto",
-                "off": "Vypnutý",
-                "on": "Zapnutý"
+                "auto": "Automatika",
+                "off": "Neaktívny",
+                "on": "Aktívny"
             },
             "hvac_action": {
                 "cooling": "Chladenie",
@@ -187,7 +187,6 @@
             "streaming": "Streamovanie"
         },
         "climate": {
-            "auto": "Automatika",
             "cool": "Chladenie",
             "dry": "Sušenie",
             "fan_only": "Iba ventilátor",
@@ -207,17 +206,14 @@
             "stopped": "Zastavené"
         },
         "default": {
-            "off": "Neaktívny",
-            "on": "Aktívny",
             "unavailable": "Nedostupný",
             "unknown": "Neznámy"
         },
         "device_tracker": {
-            "home": "Doma",
             "not_home": "Preč"
         },
         "fan": {
-            "off": "Neaktívny",
+            "off": "[%key:state::default::off%]",
             "on": "Zapnutý"
         },
         "group": {
@@ -226,9 +222,9 @@
             "home": "Doma",
             "locked": "Zamknutá",
             "not_home": "Preč",
-            "off": "Vypnutá",
+            "off": "Neaktívny",
             "ok": "OK",
-            "on": "Zapnutá",
+            "on": "Aktívny",
             "open": "Otvorená",
             "opening": "Otvára sa",
             "problem": "Problém",
@@ -237,11 +233,11 @@
         },
         "input_boolean": {
             "off": "Vypnuté",
-            "on": "Zapnuté"
+            "on": "Aktívny"
         },
         "light": {
-            "off": "Vypnuté",
-            "on": "Zapnuté"
+            "off": "Neaktívny",
+            "on": "Aktívny"
         },
         "lock": {
             "locked": "Zamknutý",
@@ -249,15 +245,14 @@
         },
         "media_player": {
             "idle": "Nečinný",
-            "off": "Vypnutý",
+            "off": "Neaktívny",
             "on": "Zapnutý",
             "paused": "Pozastavený",
             "playing": "Prehrávanie",
             "standby": "Pohotovostný režim"
         },
         "person": {
-            "home": "Doma",
-            "not_home": "Preč"
+            "home": "Doma"
         },
         "plant": {
             "ok": "OK",
@@ -271,7 +266,7 @@
             "scening": "Scénovanie"
         },
         "script": {
-            "off": "Vypnutý",
+            "off": "Neaktívny",
             "on": "Zapnutý"
         },
         "sensor": {
@@ -284,7 +279,7 @@
         },
         "switch": {
             "off": "Vypnutý",
-            "on": "Zapnutý"
+            "on": "Aktívny"
         },
         "timer": {
             "active": "aktívny",

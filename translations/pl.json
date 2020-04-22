@@ -70,12 +70,12 @@
             "unknown": "niezn"
         },
         "device_tracker": {
-            "home": "dom",
+            "home": "w domu",
             "not_home": "poza domem"
         },
         "person": {
-            "home": "dom",
-            "not_home": "poza"
+            "home": "w domu",
+            "not_home": "poza domem"
         }
     },
     "state": {
@@ -109,7 +109,7 @@
                 "on": "online"
             },
             "default": {
-                "off": "wyłączony",
+                "off": "[%key:state::default::off%]",
                 "on": "włączony"
             },
             "door": {
@@ -178,7 +178,7 @@
             }
         },
         "calendar": {
-            "off": "wyłączony",
+            "off": "[%key:state::default::off%]",
             "on": "włączony"
         },
         "camera": {
@@ -187,13 +187,12 @@
             "streaming": "strumieniowanie"
         },
         "climate": {
-            "auto": "automatyczny",
             "cool": "chłodzenie",
             "dry": "osuszanie",
             "fan_only": "tylko wentylator",
             "heat": "grzanie",
             "heat_cool": "grzanie/chłodzenie",
-            "off": "wyłączony"
+            "off": "[%key:state::default::off%]"
         },
         "configurator": {
             "configure": "Skonfiguruj",
@@ -207,18 +206,15 @@
             "stopped": "zatrzymany"
         },
         "default": {
-            "off": "wyłączony",
-            "on": "włączony",
             "unavailable": "niedostępny",
             "unknown": "nieznany"
         },
         "device_tracker": {
-            "home": "w domu",
             "not_home": "poza domem"
         },
         "fan": {
-            "off": "wyłączony",
-            "on": "włączony"
+            "off": "[%key:state::default::off%]",
+            "on": "[%key:state::default::on%]"
         },
         "group": {
             "closed": "zamknięte",
@@ -236,7 +232,7 @@
             "unlocked": "otwarty"
         },
         "input_boolean": {
-            "off": "wyłączony",
+            "off": "[%key:state::default::off%]",
             "on": "włączony"
         },
         "light": {
@@ -250,29 +246,28 @@
         "media_player": {
             "idle": "nieaktywny",
             "off": "wyłączony",
-            "on": "włączony",
+            "on": "[%key:state::default::on%]",
             "paused": "wstrzymany",
             "playing": "odtwarzanie",
             "standby": "tryb czuwania"
         },
         "person": {
-            "home": "w domu",
-            "not_home": "poza domem"
+            "home": "w domu"
         },
         "plant": {
             "ok": "ok",
             "problem": "problem"
         },
         "remote": {
-            "off": "wyłączony",
-            "on": "włączony"
+            "off": "[%key:state::default::off%]",
+            "on": "[%key:state::default::on%]"
         },
         "scene": {
             "scening": "sceny"
         },
         "script": {
             "off": "wyłączony",
-            "on": "włączony"
+            "on": "[%key:state::default::on%]"
         },
         "sensor": {
             "off": "wyłączony",

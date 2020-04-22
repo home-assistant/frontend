@@ -26,7 +26,7 @@
     "state_attributes": {
         "climate": {
             "fan_mode": {
-                "auto": "Auto",
+                "auto": "Automatisk",
                 "off": "Av",
                 "on": "På"
             },
@@ -187,7 +187,6 @@
             "streaming": "Strömmar"
         },
         "climate": {
-            "auto": "Automatisk",
             "cool": "Kyla",
             "dry": "Avfuktning",
             "fan_only": "Endast fläkt",
@@ -207,17 +206,14 @@
             "stopped": "Stoppad"
         },
         "default": {
-            "off": "Av",
-            "on": "På",
             "unavailable": "Otillgänglig",
             "unknown": "Okänd"
         },
         "device_tracker": {
-            "home": "Hemma",
             "not_home": "Borta"
         },
         "fan": {
-            "off": "Av",
+            "off": "[%key:state::default::off%]",
             "on": "På"
         },
         "group": {
@@ -256,8 +252,7 @@
             "standby": "Viloläge"
         },
         "person": {
-            "home": "Hemma",
-            "not_home": "Borta"
+            "home": "Hemma"
         },
         "plant": {
             "ok": "Ok",
