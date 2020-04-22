@@ -10,6 +10,7 @@ import {
 import { HomeAssistant } from "../../../types";
 import "./ha-automation-editor";
 import "./ha-automation-picker";
+import { debounce } from "../../../common/util/debounce";
 
 @customElement("ha-config-automation")
 class HaConfigAutomation extends HassRouterPage {
@@ -22,6 +23,13 @@ class HaConfigAutomation extends HassRouterPage {
   @property() public showAdvanced!: boolean;
 
   @property() public automations: AutomationEntity[] = [];
+
+  private _debouncedUpdateAutomations = debounce((pageEl) => {
+    const newAutomations = this._getAutomations(this.hass.states);
+    if (!this._equal(newAutomations, pageEl.automations)) {
+      pageEl.automations = newAutomations;
+    }
+  }, 10);
 
   protected routerOptions: RouterOptions = {
     defaultPage: "dashboard",
@@ -36,19 +44,15 @@ class HaConfigAutomation extends HassRouterPage {
     },
   };
 
-  private _computeAutomations = memoizeOne((states: HassEntities) => {
-    const automations: AutomationEntity[] = [];
-    Object.values(states).forEach((state) => {
-      if (
-        computeStateDomain(state) === "automation" &&
-        !state.attributes.hidden
-      ) {
-        automations.push(state as AutomationEntity);
-      }
-    });
-
-    return automations;
-  });
+  private _getAutomations = memoizeOne(
+    (states: HassEntities): AutomationEntity[] => {
+      return Object.values(states).filter(
+        (entity) =>
+          computeStateDomain(entity) === "automation" &&
+          !entity.attributes.hidden
+      ) as AutomationEntity[];
+    }
+  );
 
   protected firstUpdated(changedProps) {
     super.firstUpdated(changedProps);
@@ -63,7 +67,11 @@ class HaConfigAutomation extends HassRouterPage {
     pageEl.showAdvanced = this.showAdvanced;
 
     if (this.hass) {
-      pageEl.automations = this._computeAutomations(this.hass.states);
+      if (!pageEl.automations || !changedProps) {
+        pageEl.automations = this._getAutomations(this.hass.states);
+      } else if (changedProps && changedProps.has("hass")) {
+        this._debouncedUpdateAutomations(pageEl);
+      }
     }
 
     if (
@@ -81,6 +89,13 @@ class HaConfigAutomation extends HassRouterPage {
                 entity.attributes.id === automationId
             );
     }
+  }
+
+  private _equal(a: AutomationEntity[], b: AutomationEntity[]): boolean {
+    if (a.length !== b.length) {
+      return false;
+    }
+    return !a.some((automation, index) => automation !== b[index]);
   }
 }
 

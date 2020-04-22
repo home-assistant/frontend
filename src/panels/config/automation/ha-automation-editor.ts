@@ -62,6 +62,7 @@ export class HaAutomationEditor extends LitElement {
   @property() private _errors?: string;
 
   protected render(): TemplateResult {
+    const stateObj = this.hass.states[this.automation.entity_id];
     return html`
       <hass-tabs-subpage
         .hass=${this.hass}
@@ -129,7 +130,7 @@ export class HaAutomationEditor extends LitElement {
                           <div class="layout horizontal center">
                             <ha-entity-toggle
                               .hass=${this.hass}
-                              .stateObj=${this.automation}
+                              .stateObj=${stateObj}
                             ></ha-entity-toggle>
                             ${this.hass.localize(
                               "ui.panel.config.automation.editor.enable_disable"
