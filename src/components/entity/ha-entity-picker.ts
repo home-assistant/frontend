@@ -93,10 +93,9 @@ class HaEntityPicker extends LitElement {
 
   @property({ type: Boolean }) private _opened?: boolean;
 
-  @property() private _hass?: HomeAssistant;
-
   private _getStates = memoizeOne(
     (
+      _opened: boolean,
       hass: this["hass"],
       includeDomains: this["includeDomains"],
       excludeDomains: this["excludeDomains"],
@@ -143,20 +142,31 @@ class HaEntityPicker extends LitElement {
       }
 
       return states;
+    },
+    (newInputs: unknown[], lastInputs: unknown[]): boolean => {
+      if (newInputs[0]) {
+        return true;
+      }
+      if (newInputs.length !== lastInputs.length) {
+        return false;
+      }
+
+      for (let i = 0; i < newInputs.length; i++) {
+        if (newInputs[i] !== lastInputs[i]) {
+          return false;
+        }
+      }
+      return true;
     }
   );
 
-  protected updated(changedProps: PropertyValues) {
-    super.updated(changedProps);
-
-    if (changedProps.has("hass") && !this._opened) {
-      this._hass = this.hass;
-    }
-  }
-
   protected render(): TemplateResult {
+    if (!this.hass) {
+      return html``;
+    }
     const states = this._getStates(
-      this._hass,
+      this._opened,
+      this.hass,
       this.includeDomains,
       this.excludeDomains,
       this.entityFilter,
@@ -176,8 +186,8 @@ class HaEntityPicker extends LitElement {
       >
         <paper-input
           .autofocus=${this.autofocus}
-          .label=${this.label === undefined && this._hass
-            ? this._hass.localize("ui.components.entity.entity-picker.entity")
+          .label=${this.label === undefined
+            ? this.hass.localize("ui.components.entity.entity-picker.entity")
             : this.label}
           .value=${this._value}
           .disabled=${this.disabled}
@@ -190,7 +200,7 @@ class HaEntityPicker extends LitElement {
           ${this.value
             ? html`
                 <paper-icon-button
-                  aria-label=${this.hass!.localize(
+                  aria-label=${this.hass.localize(
                     "ui.components.entity.entity-picker.clear"
                   )}
                   slot="suffix"
@@ -206,7 +216,7 @@ class HaEntityPicker extends LitElement {
           ${states.length > 0
             ? html`
                 <paper-icon-button
-                  aria-label=${this.hass!.localize(
+                  aria-label=${this.hass.localize(
                     "ui.components.entity.entity-picker.show_entities"
                   )}
                   slot="suffix"
