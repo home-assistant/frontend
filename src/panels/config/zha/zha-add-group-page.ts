@@ -89,7 +89,7 @@ export class ZHAAddGroupPage extends LitElement {
 
           <zha-device-endpoint-data-table
             .hass=${this.hass}
-            .devices=${this.deviceEndpoints}
+            .deviceEndpoints=${this.deviceEndpoints}
             .narrow=${this.narrow}
             selectable
             @selection-changed=${this._handleAddSelectionChanged}
@@ -132,11 +132,11 @@ export class ZHAAddGroupPage extends LitElement {
 
   private async _createGroup(): Promise<void> {
     this._processingAdd = true;
-    const group: ZHAGroup = await addGroup(
-      this.hass,
-      this._groupName,
-      this._selectedDevicesToAdd
-    );
+    const members = this._selectedDevicesToAdd.map((member) => {
+      const memberParts = member.split("_");
+      return { ieee: memberParts[0], endpoint_id: memberParts[1] };
+    });
+    const group: ZHAGroup = await addGroup(this.hass, this._groupName, members);
     this._selectedDevicesToAdd = [];
     this._processingAdd = false;
     this._groupName = "";

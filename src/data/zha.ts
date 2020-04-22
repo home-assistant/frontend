@@ -255,7 +255,7 @@ export const removeMembersFromGroup = (
 export const addGroup = (
   hass: HomeAssistant,
   groupName: string,
-  membersToAdd?: string[]
+  membersToAdd?: ZHAGroupMember[]
 ): Promise<ZHAGroup> =>
   hass.callWS({
     type: "zha/group/add",
