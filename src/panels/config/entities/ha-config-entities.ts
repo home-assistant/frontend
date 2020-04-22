@@ -49,6 +49,10 @@ import {
   loadEntityEditorDialog,
   showEntityEditorDialog,
 } from "./show-dialog-entity-editor";
+import { getConfigEntries, ConfigEntry } from "../../../data/config_entries";
+import { LocalizeFunc } from "../../../common/translations/localize";
+import { domainToName } from "../../../data/integration";
+import { navigate } from "../../../common/navigate";
 
 export interface StateEntity extends EntityRegistryEntry {
   readonly?: boolean;
@@ -76,6 +80,8 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
 
   @property() private _stateEntities: StateEntity[] = [];
 
+  @property() public _entries?: ConfigEntry[];
+
   @property() private _showDisabled = false;
 
   @property() private _showUnavailable = true;
@@ -84,12 +90,54 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
 
   @property() private _filter = "";
 
+  @property() private _searchParms = new URLSearchParams(
+    window.location.search
+  );
+
   @property() private _selectedEntities: string[] = [];
 
   @query("hass-tabs-subpage-data-table")
   private _dataTable!: HaTabsSubpageDataTable;
 
   private getDialog?: () => DialogEntityEditor | undefined;
+
+  private _activeFilters = memoize(
+    (
+      filters: URLSearchParams,
+      localize: LocalizeFunc,
+      entries?: ConfigEntry[]
+    ): string[] | undefined => {
+      const filterTexts: string[] = [];
+      filters.forEach((value, key) => {
+        switch (key) {
+          case "config_entry": {
+            if (!entries) {
+              this._loadConfigEntries();
+              break;
+            }
+            const configEntry = entries.find(
+              (entry) => entry.entry_id === value
+            );
+            if (!configEntry) {
+              break;
+            }
+            const integrationName = domainToName(localize, configEntry.domain);
+            filterTexts.push(
+              `${this.hass.localize(
+                "ui.panel.config.integrations.integration"
+              )} ${integrationName}${
+                integrationName !== configEntry.title
+                  ? `: ${configEntry.title}`
+                  : ""
+              }`
+            );
+            break;
+          }
+        }
+      });
+      return filterTexts.length ? filterTexts : undefined;
+    }
+  );
 
   private _columns = memoize(
     (narrow, _language): DataTableColumnContainer => {
@@ -202,6 +250,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
     (
       entities: EntityRegistryEntry[],
       stateEntities: StateEntity[],
+      filters: URLSearchParams,
       showDisabled: boolean,
       showUnavailable: boolean,
       showReadOnly: boolean
@@ -212,9 +261,19 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
 
       const result: EntityRow[] = [];
 
-      for (const entry of showReadOnly
-        ? entities.concat(stateEntities)
-        : entities) {
+      entities = showReadOnly ? entities.concat(stateEntities) : entities;
+
+      filters.forEach((value, key) => {
+        switch (key) {
+          case "config_entry":
+            entities = entities.filter(
+              (entity) => entity.config_entry_id === value
+            );
+            break;
+        }
+      });
+
+      for (const entry of entities) {
         const entity = this.hass.states[entry.entity_id];
         const unavailable = entity?.state === "unavailable";
         const restored = entity?.attributes.restored;
@@ -253,6 +312,16 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
     }
   );
 
+  public constructor() {
+    super();
+    window.addEventListener("location-changed", () => {
+      this._searchParms = new URLSearchParams(window.location.search);
+    });
+    window.addEventListener("popstate", () => {
+      this._searchParms = new URLSearchParams(window.location.search);
+    });
+  }
+
   public hassSubscribe(): UnsubscribeFunc[] {
     return [
       subscribeEntityRegistry(this.hass.connection!, (entities) => {
@@ -277,6 +346,11 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
     if (!this.hass || this._entities === undefined) {
       return html` <hass-loading-screen></hass-loading-screen> `;
     }
+    const activeFilters = this._activeFilters(
+      this._searchParms,
+      this.hass.localize,
+      this._entries
+    );
     const headerToolbar = this._selectedEntities.length
       ? html`
           <p class="selected-txt">
@@ -345,7 +419,29 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
             no-underline
             @value-changed=${this._handleSearchChange}
             .filter=${this._filter}
-          ></search-input>
+          ></search-input
+          >${activeFilters
+            ? html`<div class="active-filters">
+                ${this.narrow
+                  ? html` <div>
+                      <ha-icon icon="hass:filter-variant"></ha-icon>
+                      <paper-tooltip position="left">
+                        ${this.hass.localize(
+                          "ui.panel.config.filtering.filtering_by"
+                        )}
+                        ${activeFilters.join(", ")}
+                      </paper-tooltip>
+                    </div>`
+                  : `${this.hass.localize(
+                      "ui.panel.config.filtering.filtering_by"
+                    )} ${activeFilters.join(", ")}`}
+                <mwc-button @click=${this._clearFilter}
+                  >${this.hass.localize(
+                    "ui.panel.config.filtering.clear"
+                  )}</mwc-button
+                >
+              </div>`
+            : ""}
           <paper-menu-button no-animations horizontal-align="right">
             <paper-icon-button
               aria-label=${this.hass!.localize(
@@ -393,13 +489,16 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
       <hass-tabs-subpage-data-table
         .hass=${this.hass}
         .narrow=${this.narrow}
-        back-path="/config"
+        .backPath=${this._searchParms.has("historyBack")
+          ? undefined
+          : "/config"}
         .route=${this.route}
         .tabs=${configSections.integrations}
         .columns=${this._columns(this.narrow, this.hass.language)}
         .data=${this._filteredEntities(
           this._entities,
           this._stateEntities,
+          this._searchParms,
           this._showDisabled,
           this._showUnavailable,
           this._showReadOnly
@@ -586,6 +685,14 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
     });
   }
 
+  private async _loadConfigEntries() {
+    this._entries = await getConfigEntries(this.hass);
+  }
+
+  private _clearFilter() {
+    navigate(this, window.location.pathname, true);
+  }
+
   static get styles(): CSSResult {
     return css`
       hass-loading-screen {
@@ -629,7 +736,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
       .table-header {
         display: flex;
         justify-content: space-between;
-        align-items: flex-end;
+        align-items: center;
         border-bottom: 1px solid rgba(var(--rgb-primary-text-color), 0.12);
       }
       search-input {
@@ -641,9 +748,10 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
       .search-toolbar {
         display: flex;
         justify-content: space-between;
-        align-items: flex-end;
-        margin-left: -24px;
+        align-items: center;
         color: var(--secondary-text-color);
+        position: relative;
+        top: -8px;
       }
       .selected-txt {
         font-weight: bold;
@@ -658,6 +766,32 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
       .header-btns > mwc-button,
       .header-btns > paper-icon-button {
         margin: 8px;
+      }
+      .active-filters {
+        color: var(--primary-text-color);
+        position: relative;
+        display: flex;
+        align-items: center;
+        padding: 2px 2px 2px 8px;
+        margin-left: 4px;
+        font-size: 14px;
+      }
+      .active-filters ha-icon {
+        color: var(--primary-color);
+      }
+      .active-filters mwc-button {
+        margin-left: 8px;
+      }
+      .active-filters::before {
+        background-color: var(--primary-color);
+        opacity: 0.12;
+        border-radius: 4px;
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        content: "";
       }
     `;
   }

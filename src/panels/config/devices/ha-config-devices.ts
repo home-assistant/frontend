@@ -1,6 +1,5 @@
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { customElement, property, PropertyValues } from "lit-element";
-import { compare } from "../../../common/string/compare";
 import {
   AreaRegistryEntry,
   subscribeAreaRegistry,
@@ -91,9 +90,7 @@ class HaConfigDevices extends HassRouterPage {
   protected updatePageEl(pageEl) {
     pageEl.hass = this.hass;
 
-    if (this._currentPage === "dashboard") {
-      pageEl.domain = this.routeTail.path.substr(1);
-    } else if (this._currentPage === "device") {
+    if (this._currentPage === "device") {
       pageEl.deviceId = this.routeTail.path.substr(1);
     }
 
@@ -109,9 +106,7 @@ class HaConfigDevices extends HassRouterPage {
 
   private _loadData() {
     getConfigEntries(this.hass).then((configEntries) => {
-      this._configEntries = configEntries.sort((conf1, conf2) =>
-        compare(conf1.title, conf2.title)
-      );
+      this._configEntries = configEntries;
     });
     if (this._unsubs) {
       return;

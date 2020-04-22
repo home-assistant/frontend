@@ -1,3 +1,4 @@
+/* eslint-disable lit/no-invalid-html */
 import { HassEntity, UnsubscribeFunc } from "home-assistant-js-websocket";
 import {
   css,
@@ -95,7 +96,7 @@ export class HaRelatedItems extends SubscribeMixin(LitElement) {
                 )}:
               </h3>
               <a
-                href="/config/integrations/config_entry/${relatedConfigEntryId}"
+                href="/config/integrations#config_entry=${relatedConfigEntryId}"
                 @click=${this._close}
               >
                 ${this.hass.localize(`component.${entry.domain}.title`)}:

@@ -32,6 +32,7 @@ export const renderMarkdown = (
         ...whiteListNormal,
         svg: ["xmlns", "height", "width"],
         path: ["transform", "stroke", "d"],
+        img: ["src"],
       };
     }
     whiteList = whiteListSvg;

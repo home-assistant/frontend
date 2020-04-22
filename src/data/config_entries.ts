@@ -10,12 +10,27 @@ export interface ConfigEntry {
   supports_options: boolean;
 }
 
+export interface ConfigEntryMutableParams {
+  title: string;
+}
+
 export interface ConfigEntrySystemOptions {
   disable_new_entities: boolean;
 }
 
 export const getConfigEntries = (hass: HomeAssistant) =>
   hass.callApi<ConfigEntry[]>("GET", "config/config_entries/entry");
+
+export const updateConfigEntry = (
+  hass: HomeAssistant,
+  configEntryId: string,
+  updatedValues: Partial<ConfigEntryMutableParams>
+) =>
+  hass.callWS<ConfigEntry>({
+    type: "config_entries/update",
+    entry_id: configEntryId,
+    ...updatedValues,
+  });
 
 export const deleteConfigEntry = (hass: HomeAssistant, configEntryId: string) =>
   hass.callApi<{
