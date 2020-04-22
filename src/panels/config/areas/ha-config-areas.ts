@@ -68,13 +68,6 @@ class HaConfigAreas extends HassRouterPage {
     }
   }
 
-  protected firstUpdated(changedProps) {
-    super.firstUpdated(changedProps);
-    this.addEventListener("hass-reload-entries", () => {
-      this._loadData();
-    });
-  }
-
   protected updated(changedProps: PropertyValues) {
     super.updated(changedProps);
     if (!this._unsubs && changedProps.has("hass")) {
