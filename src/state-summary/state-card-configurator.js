@@ -5,6 +5,7 @@ import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 import "../components/entity/state-info";
 import LocalizeMixin from "../mixins/localize-mixin";
+import { computeStateDisplay } from "../common/entity/compute_state_display";
 
 /*
  * @appliesMixin LocalizeMixin
@@ -24,7 +25,7 @@ class StateCardConfigurator extends LocalizeMixin(PolymerElement) {
       <div class="horizontal justified layout">
         ${this.stateInfoTemplate}
         <mwc-button hidden$="[[inDialog]]"
-          >[[_localizeState(stateObj.state)]]</mwc-button
+          >[[_localizeState(stateObj)]]</mwc-button
         >
       </div>
 
@@ -56,8 +57,12 @@ class StateCardConfigurator extends LocalizeMixin(PolymerElement) {
     };
   }
 
-  _localizeState(state) {
-    return this.localize(`state.configurator.${state}`);
+  _localizeState(stateObj) {
+    return computeStateDisplay(
+      this.hass.localize,
+      stateObj,
+      this.hass.language
+    );
   }
 }
 customElements.define("state-card-configurator", StateCardConfigurator);

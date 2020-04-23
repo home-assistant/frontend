@@ -30,6 +30,7 @@ import { hasConfigOrEntityChanged } from "../common/has-changed";
 import "../components/hui-warning";
 import { LovelaceCard, LovelaceCardEditor } from "../types";
 import { LightCardConfig } from "./types";
+import { computeStateDisplay } from "../../../common/entity/compute_state_display";
 
 @customElement("hui-light-card")
 export class HuiLightCard extends LitElement implements LovelaceCard {
@@ -154,8 +155,11 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
             ${UNAVAILABLE_STATES.includes(stateObj.state)
               ? html`
                   <div>
-                    ${this.hass.localize(`state.default.${stateObj.state}`) ||
-                    stateObj.state}
+                    ${computeStateDisplay(
+                      this.hass.localize,
+                      stateObj,
+                      this.hass.language
+                    )}
                   </div>
                 `
               : html`
