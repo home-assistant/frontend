@@ -10,6 +10,8 @@ import {
   PropertyValues,
   TemplateResult,
 } from "lit-element";
+import memoizeOne from "memoize-one";
+import * as Fuse from "fuse.js";
 import { compare } from "../../../common/string/compare";
 import { computeRTL } from "../../../common/util/compute_rtl";
 import { afterNextRender } from "../../../common/util/render-status";
@@ -52,6 +54,18 @@ import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../resources/styles";
 import { HomeAssistant, Route } from "../../../types";
 import { configSections } from "../ha-panel-config";
+import { domainToName } from "../../../data/integration";
+import { haStyle } from "../../../resources/styles";
+import { afterNextRender } from "../../../common/util/render-status";
+import "../../../common/search/search-input";
+
+function mergeArrays(a: string[], b: string[]) {
+  const jointArray = a.concat(b);
+  const uniqueArray = jointArray.filter(
+    (item, index) => jointArray.indexOf(item) === index
+  );
+  return uniqueArray;
+}
 
 @customElement("ha-config-integrations")
 class HaConfigIntegrations extends SubscribeMixin(LitElement) {
@@ -79,6 +93,8 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
     window.location.hash.substring(1)
   );
 
+  @property() private _filter?: string;
+
   public hassSubscribe(): UnsubscribeFunc[] {
     return [
       subscribeEntityRegistry(this.hass.connection, (entries) => {
@@ -98,6 +114,51 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
       }),
     ];
   }
+
+  private _filterConfigEntries = memoizeOne(
+    (configEntries: ConfigEntry[], filter?: string): ConfigEntry[] => {
+      if (filter) {
+        const options: Fuse.FuseOptions<ConfigEntry> = {
+          keys: ["entry_id", "domain", "title", "source"],
+          caseSensitive: false,
+          minMatchCharLength: 2,
+          threshold: 0.2,
+        };
+        const fuse = new Fuse(configEntries, options);
+        configEntries = fuse.search(filter);
+      }
+      return configEntries;
+    }
+  );
+
+  private _filterConfigEntriesInProgress = memoizeOne(
+    (
+      configEntriesInProgress: DataEntryFlowProgress[],
+      filter?: string
+    ): DataEntryFlowProgress[] => {
+      if (filter) {
+        let keys: any[] = ["handler"];
+        configEntriesInProgress.map(
+          (entry: DataEntryFlowProgress): DataEntryFlowProgress => {
+            keys = mergeArrays(
+              keys,
+              Object.keys(entry.context).map((key: string) => `context.${key}`)
+            );
+            return entry;
+          }
+        );
+        const options: Fuse.FuseOptions<DataEntryFlowProgress> = {
+          keys,
+          caseSensitive: false,
+          minMatchCharLength: 2,
+          threshold: 0.2,
+        };
+        const fuse = new Fuse(configEntriesInProgress, options);
+        configEntriesInProgress = fuse.search(filter);
+      }
+      return configEntriesInProgress;
+    }
+  );
 
   protected firstUpdated(changed: PropertyValues) {
     super.firstUpdated(changed);
@@ -126,6 +187,15 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
   }
 
   protected render(): TemplateResult {
+    const configEntries = this._filterConfigEntries(
+      this._configEntries,
+      this._filter
+    );
+    const configEntriesInProgress = this._filterConfigEntriesInProgress(
+      this._configEntriesInProgress,
+      this._filter
+    );
+
     return html`
       <hass-tabs-subpage
         .hass=${this.hass}
@@ -161,9 +231,17 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
           </paper-listbox>
         </paper-menu-button>
 
+        <div class="search">
+          <search-input
+            no-label-float
+            .filter=${this._filter}
+            @value-changed=${this._handleSearchChange}
+          ></search-input>
+        </div>
+
         <div class="container">
           ${this._showIgnored
-            ? this._configEntries
+            ? configEntries
                 .filter((item) => item.source === "ignore")
                 .map(
                   (item: ConfigEntry) => html`
@@ -200,8 +278,8 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
                   `
                 )
             : ""}
-          ${this._configEntriesInProgress.length
-            ? this._configEntriesInProgress.map(
+          ${configEntriesInProgress.length
+            ? configEntriesInProgress.map(
                 (flow) => html`
                   <ha-card class="discovered">
                     <div class="header">
@@ -248,8 +326,8 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
                 `
               )
             : ""}
-          ${this._configEntries.length
-            ? this._configEntries.map((item: any) => {
+          ${configEntries.length
+            ? configEntries.map((item: any) => {
                 const devices = this._getDevices(item);
                 const entities = this._getEntities(item);
                 const integrationName = domainToName(
@@ -365,7 +443,8 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
                       </ha-card>
                     `;
               })
-            : html`
+            : !this._configEntries
+            ? html`
                 <ha-card>
                   <div class="card-content">
                     <h1>
@@ -383,7 +462,28 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
                     >
                   </div>
                 </ha-card>
-              `}
+              `
+            : ""}
+          ${this._filter &&
+          !configEntriesInProgress.length &&
+          !configEntries.length
+            ? html`
+                <ha-card>
+                  <div class="card-content">
+                    <h1>
+                      ${this.hass.localize(
+                        "ui.panel.config.integrations.none_found"
+                      )}
+                    </h1>
+                    <p>
+                      ${this.hass.localize(
+                        "ui.panel.config.integrations.none_found_detail"
+                      )}
+                    </p>
+                  </div>
+                </ha-card>
+              `
+            : ""}
         </div>
         <ha-fab
           icon="hass:plus"
@@ -565,6 +665,11 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
     });
   }
 
+  private _handleSearchChange(ev: CustomEvent) {
+    this._filter = ev.detail.value;
+    this.requestUpdate();
+  }
+
   static get styles(): CSSResult[] {
     return [
       haStyle,
@@ -573,7 +678,7 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
           display: grid;
           grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
           grid-gap: 16px 16px;
-          padding: 16px;
+          padding: 8px 16px 16px 16px;
           margin-bottom: 64px;
         }
         ha-card {
@@ -629,6 +734,9 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
           height: 60px;
           margin-bottom: 16px;
           vertical-align: middle;
+        }
+        .search {
+          padding: 2px 16px;
         }
         img {
           max-height: 60px;
