@@ -132,13 +132,13 @@ export const configSections: { [name: string]: PageNavigation[] } = {
     {
       component: "zha",
       path: "/config/zha",
-      translationKey: "ui.panel.config.zha.caption",
+      translationKey: "component.zha.title",
       icon: "hass:zigbee",
     },
     {
       component: "zwave",
       path: "/config/zwave",
-      translationKey: "ui.panel.config.zwave.caption",
+      translationKey: "component.zwave.title",
       icon: "hass:z-wave",
     },
   ],
