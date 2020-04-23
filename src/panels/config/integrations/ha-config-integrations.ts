@@ -443,7 +443,7 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
                       </ha-card>
                     `;
               })
-            : !this._configEntries
+            : !this._configEntries.length
             ? html`
                 <ha-card>
                   <div class="card-content">
