@@ -96,7 +96,6 @@ export const computeStateDisplay = (
     return legacyComputeStateDisplay(localize, stateObj, language);
   }
 
-  // Real code.
   if (stateObj.state === UNKNOWN || stateObj.state === UNAVAILABLE) {
     return localize(`state.default.${stateObj.state}`);
   }
