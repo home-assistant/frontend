@@ -466,7 +466,8 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
             : ""}
           ${this._filter &&
           !configEntriesInProgress.length &&
-          !configEntries.length
+          !configEntries.length &&
+          this._configEntries.length
             ? html`
                 <ha-card>
                   <div class="card-content">
