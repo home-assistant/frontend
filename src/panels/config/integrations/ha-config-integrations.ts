@@ -637,7 +637,8 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
           margin-top: 0;
         }
         ha-fab {
-          position: fixed;
+          position: sticky;
+          float: right;
           bottom: 16px;
           right: 16px;
           z-index: 1;
