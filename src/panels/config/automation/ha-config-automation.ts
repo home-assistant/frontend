@@ -78,16 +78,8 @@ class HaConfigAutomation extends HassRouterPage {
       (!changedProps || changedProps.has("route")) &&
       this._currentPage === "edit"
     ) {
-      pageEl.creatingNew = undefined;
       const automationId = this.routeTail.path.substr(1);
-      pageEl.creatingNew = automationId === "new";
-      pageEl.automation =
-        automationId === "new"
-          ? undefined
-          : pageEl.automations.find(
-              (entity: AutomationEntity) =>
-                entity.attributes.id === automationId
-            );
+      pageEl.automationId = automationId === "new" ? null : automationId;
     }
   }
 
@@ -95,7 +87,7 @@ class HaConfigAutomation extends HassRouterPage {
     if (a.length !== b.length) {
       return false;
     }
-    return !a.some((automation, index) => automation !== b[index]);
+    return a.every((automation, index) => automation === b[index]);
   }
 }
 

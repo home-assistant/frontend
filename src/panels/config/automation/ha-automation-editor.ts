@@ -45,7 +45,9 @@ import { HaDeviceTrigger } from "./trigger/types/ha-automation-trigger-device";
 export class HaAutomationEditor extends LitElement {
   @property() public hass!: HomeAssistant;
 
-  @property() public automation!: AutomationEntity;
+  @property() public automationId!: string;
+
+  @property() public automations!: AutomationEntity[];
 
   @property() public isWide?: boolean;
 
@@ -53,16 +55,18 @@ export class HaAutomationEditor extends LitElement {
 
   @property() public route!: Route;
 
-  @property() public creatingNew?: boolean;
-
   @property() private _config?: AutomationConfig;
 
   @property() private _dirty?: boolean;
 
   @property() private _errors?: string;
 
+  @property() private _entityId?: string;
+
   protected render(): TemplateResult {
-    const stateObj = this.hass.states[this.automation.entity_id];
+    const stateObj = this._entityId
+      ? this.hass.states[this._entityId]
+      : undefined;
     return html`
       <hass-tabs-subpage
         .hass=${this.hass}
@@ -71,7 +75,7 @@ export class HaAutomationEditor extends LitElement {
         .backCallback=${() => this._backTapped()}
         .tabs=${configSections.automation}
       >
-        ${this.creatingNew
+        ${this.automationId
           ? ""
           : html`
               <paper-icon-button
@@ -83,153 +87,162 @@ export class HaAutomationEditor extends LitElement {
                 @click=${this._deleteConfirm}
               ></paper-icon-button>
             `}
-        ${this._errors ? html` <div class="errors">${this._errors}</div> ` : ""}
         ${this._config
           ? html`
               ${this.narrow
                 ? html` <span slot="header">${this._config?.alias}</span> `
                 : ""}
-              <ha-config-section .isWide=${this.isWide}>
-                ${!this.narrow
-                  ? html` <span slot="header">${this._config.alias}</span> `
+              <div class="content">
+                ${this._errors
+                  ? html` <div class="errors">${this._errors}</div> `
                   : ""}
-                <span slot="introduction">
-                  ${this.hass.localize(
-                    "ui.panel.config.automation.editor.introduction"
-                  )}
-                </span>
-                <ha-card>
-                  <div class="card-content">
-                    <paper-input
-                      .label=${this.hass.localize(
-                        "ui.panel.config.automation.editor.alias"
-                      )}
-                      name="alias"
-                      .value=${this._config.alias}
-                      @value-changed=${this._valueChanged}
-                    >
-                    </paper-input>
-                    <ha-textarea
-                      .label=${this.hass.localize(
-                        "ui.panel.config.automation.editor.description.label"
-                      )}
-                      .placeholder=${this.hass.localize(
-                        "ui.panel.config.automation.editor.description.placeholder"
-                      )}
-                      name="description"
-                      .value=${this._config.description}
-                      @value-changed=${this._valueChanged}
-                    ></ha-textarea>
-                  </div>
-                  ${this.creatingNew
-                    ? ""
-                    : html`
-                        <div
-                          class="card-actions layout horizontal justified center"
-                        >
-                          <div class="layout horizontal center">
-                            <ha-entity-toggle
-                              .hass=${this.hass}
+                <ha-config-section .isWide=${this.isWide}>
+                  ${!this.narrow
+                    ? html` <span slot="header">${this._config.alias}</span> `
+                    : ""}
+                  <span slot="introduction">
+                    ${this.hass.localize(
+                      "ui.panel.config.automation.editor.introduction"
+                    )}
+                  </span>
+                  <ha-card>
+                    <div class="card-content">
+                      <paper-input
+                        .label=${this.hass.localize(
+                          "ui.panel.config.automation.editor.alias"
+                        )}
+                        name="alias"
+                        .value=${this._config.alias}
+                        @value-changed=${this._valueChanged}
+                      >
+                      </paper-input>
+                      <ha-textarea
+                        .label=${this.hass.localize(
+                          "ui.panel.config.automation.editor.description.label"
+                        )}
+                        .placeholder=${this.hass.localize(
+                          "ui.panel.config.automation.editor.description.placeholder"
+                        )}
+                        name="description"
+                        .value=${this._config.description}
+                        @value-changed=${this._valueChanged}
+                      ></ha-textarea>
+                    </div>
+                    ${stateObj
+                      ? html`
+                          <div
+                            class="card-actions layout horizontal justified center"
+                          >
+                            <div class="layout horizontal center">
+                              <ha-entity-toggle
+                                .hass=${this.hass}
+                                .stateObj=${stateObj}
+                              ></ha-entity-toggle>
+                              ${this.hass.localize(
+                                "ui.panel.config.automation.editor.enable_disable"
+                              )}
+                            </div>
+                            <mwc-button
+                              @click=${this._excuteAutomation}
                               .stateObj=${stateObj}
-                            ></ha-entity-toggle>
-                            ${this.hass.localize(
-                              "ui.panel.config.automation.editor.enable_disable"
-                            )}
+                            >
+                              ${this.hass.localize(
+                                "ui.card.automation.trigger"
+                              )}
+                            </mwc-button>
                           </div>
-                          <mwc-button @click=${this._excuteAutomation}>
-                            ${this.hass.localize("ui.card.automation.trigger")}
-                          </mwc-button>
-                        </div>
-                      `}
-                </ha-card>
-              </ha-config-section>
+                        `
+                      : ""}
+                  </ha-card>
+                </ha-config-section>
 
-              <ha-config-section .isWide=${this.isWide}>
-                <span slot="header">
-                  ${this.hass.localize(
-                    "ui.panel.config.automation.editor.triggers.header"
-                  )}
-                </span>
-                <span slot="introduction">
-                  <p>
+                <ha-config-section .isWide=${this.isWide}>
+                  <span slot="header">
                     ${this.hass.localize(
-                      "ui.panel.config.automation.editor.triggers.introduction"
+                      "ui.panel.config.automation.editor.triggers.header"
                     )}
-                  </p>
-                  <a
-                    href="https://home-assistant.io/docs/automation/trigger/"
-                    target="_blank"
-                    rel="noreferrer"
-                  >
-                    ${this.hass.localize(
-                      "ui.panel.config.automation.editor.triggers.learn_more"
-                    )}
-                  </a>
-                </span>
-                <ha-automation-trigger
-                  .triggers=${this._config.trigger}
-                  @value-changed=${this._triggerChanged}
-                  .hass=${this.hass}
-                ></ha-automation-trigger>
-              </ha-config-section>
+                  </span>
+                  <span slot="introduction">
+                    <p>
+                      ${this.hass.localize(
+                        "ui.panel.config.automation.editor.triggers.introduction"
+                      )}
+                    </p>
+                    <a
+                      href="https://home-assistant.io/docs/automation/trigger/"
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      ${this.hass.localize(
+                        "ui.panel.config.automation.editor.triggers.learn_more"
+                      )}
+                    </a>
+                  </span>
+                  <ha-automation-trigger
+                    .triggers=${this._config.trigger}
+                    @value-changed=${this._triggerChanged}
+                    .hass=${this.hass}
+                  ></ha-automation-trigger>
+                </ha-config-section>
 
-              <ha-config-section .isWide=${this.isWide}>
-                <span slot="header">
-                  ${this.hass.localize(
-                    "ui.panel.config.automation.editor.conditions.header"
-                  )}
-                </span>
-                <span slot="introduction">
-                  <p>
+                <ha-config-section .isWide=${this.isWide}>
+                  <span slot="header">
                     ${this.hass.localize(
-                      "ui.panel.config.automation.editor.conditions.introduction"
+                      "ui.panel.config.automation.editor.conditions.header"
                     )}
-                  </p>
-                  <a
-                    href="https://home-assistant.io/docs/scripts/conditions/"
-                    target="_blank"
-                    rel="noreferrer"
-                  >
-                    ${this.hass.localize(
-                      "ui.panel.config.automation.editor.conditions.learn_more"
-                    )}
-                  </a>
-                </span>
-                <ha-automation-condition
-                  .conditions=${this._config.condition || []}
-                  @value-changed=${this._conditionChanged}
-                  .hass=${this.hass}
-                ></ha-automation-condition>
-              </ha-config-section>
+                  </span>
+                  <span slot="introduction">
+                    <p>
+                      ${this.hass.localize(
+                        "ui.panel.config.automation.editor.conditions.introduction"
+                      )}
+                    </p>
+                    <a
+                      href="https://home-assistant.io/docs/scripts/conditions/"
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      ${this.hass.localize(
+                        "ui.panel.config.automation.editor.conditions.learn_more"
+                      )}
+                    </a>
+                  </span>
+                  <ha-automation-condition
+                    .conditions=${this._config.condition || []}
+                    @value-changed=${this._conditionChanged}
+                    .hass=${this.hass}
+                  ></ha-automation-condition>
+                </ha-config-section>
 
-              <ha-config-section .isWide=${this.isWide}>
-                <span slot="header">
-                  ${this.hass.localize(
-                    "ui.panel.config.automation.editor.actions.header"
-                  )}
-                </span>
-                <span slot="introduction">
-                  <p>
+                <ha-config-section .isWide=${this.isWide}>
+                  <span slot="header">
                     ${this.hass.localize(
-                      "ui.panel.config.automation.editor.actions.introduction"
+                      "ui.panel.config.automation.editor.actions.header"
                     )}
-                  </p>
-                  <a
-                    href="https://home-assistant.io/docs/automation/action/"
-                    target="_blank"
-                    rel="noreferrer"
-                  >
-                    ${this.hass.localize(
-                      "ui.panel.config.automation.editor.actions.learn_more"
-                    )}
-                  </a>
-                </span>
-                <ha-automation-action
-                  .actions=${this._config.action}
-                  @value-changed=${this._actionChanged}
-                  .hass=${this.hass}
-                ></ha-automation-action>
-              </ha-config-section>
+                  </span>
+                  <span slot="introduction">
+                    <p>
+                      ${this.hass.localize(
+                        "ui.panel.config.automation.editor.actions.introduction"
+                      )}
+                    </p>
+                    <a
+                      href="https://home-assistant.io/docs/automation/action/"
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      ${this.hass.localize(
+                        "ui.panel.config.automation.editor.actions.learn_more"
+                      )}
+                    </a>
+                  </span>
+                  <ha-automation-action
+                    .actions=${this._config.action}
+                    @value-changed=${this._actionChanged}
+                    .hass=${this.hass}
+                  ></ha-automation-action>
+                </ha-config-section>
+              </div>
             `
           : ""}
         <ha-fab
@@ -252,19 +265,19 @@ export class HaAutomationEditor extends LitElement {
   protected updated(changedProps: PropertyValues): void {
     super.updated(changedProps);
 
-    const oldAutomation = changedProps.get("automation") as AutomationEntity;
+    const oldAutomationId = changedProps.get("automationId");
     if (
-      changedProps.has("automation") &&
-      this.automation &&
+      changedProps.has("automationId") &&
+      this.automationId &&
       this.hass &&
       // Only refresh config if we picked a new automation. If same ID, don't fetch it.
-      (!oldAutomation ||
-        oldAutomation.attributes.id !== this.automation.attributes.id)
+      oldAutomationId !== this.automationId
     ) {
+      this._setEntityId();
       this.hass
         .callApi<AutomationConfig>(
           "GET",
-          `config/automation/config/${this.automation.attributes.id}`
+          `config/automation/config/${this.automationId}`
         )
         .then(
           (config) => {
@@ -291,13 +304,12 @@ export class HaAutomationEditor extends LitElement {
                       "err_no",
                       resp.status_code
                     ),
-            });
-            history.back();
+            }).then(() => history.back());
           }
         );
     }
 
-    if (changedProps.has("creatingNew") && this.creatingNew && this.hass) {
+    if (changedProps.has("automationId") && !this.automationId && this.hass) {
       const initData = getAutomationEditorInitData();
       this._dirty = !!initData;
       this._config = {
@@ -311,6 +323,21 @@ export class HaAutomationEditor extends LitElement {
         ...initData,
       };
     }
+
+    if (
+      changedProps.has("automations") &&
+      this.automationId &&
+      !this._entityId
+    ) {
+      this._setEntityId();
+    }
+  }
+
+  private _setEntityId() {
+    const automation = this.automations.find(
+      (entity: AutomationEntity) => entity.attributes.id === this.automationId
+    );
+    this._entityId = automation?.entity_id;
   }
 
   private _valueChanged(ev: CustomEvent) {
@@ -349,8 +376,8 @@ export class HaAutomationEditor extends LitElement {
     this._dirty = true;
   }
 
-  private _excuteAutomation() {
-    triggerAutomation(this.hass, this.automation.entity_id);
+  private _excuteAutomation(ev: Event) {
+    triggerAutomation(this.hass, (ev.target as any).stateObj.entity_id);
   }
 
   private _backTapped(): void {
@@ -380,14 +407,12 @@ export class HaAutomationEditor extends LitElement {
   }
 
   private async _delete() {
-    await deleteAutomation(this.hass, this.automation.attributes.id!);
+    await deleteAutomation(this.hass, this.automationId);
     history.back();
   }
 
   private _saveAutomation(): void {
-    const id = this.creatingNew
-      ? "" + Date.now()
-      : this.automation.attributes.id;
+    const id = this.automationId || String(Date.now());
     this.hass!.callApi(
       "POST",
       "config/automation/config/" + id,
@@ -396,7 +421,7 @@ export class HaAutomationEditor extends LitElement {
       () => {
         this._dirty = false;
 
-        if (this.creatingNew) {
+        if (!this.automationId) {
           navigate(this, `/config/automation/edit/${id}`, true);
         }
       },
