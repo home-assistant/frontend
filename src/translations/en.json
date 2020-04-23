@@ -1431,8 +1431,6 @@
           }
         },
         "zha": {
-          "caption": "ZHA",
-          "title": "Zigbee Home Automation",
           "header": "Configure Zigbee Home Automation",
           "introduction": "Here it is possible to configure the ZHA component. Not everything is possible to configure from the UI yet, but we're working on it.",
           "description": "Zigbee Home Automation network management",
