@@ -667,7 +667,6 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
 
   private _handleSearchChange(ev: CustomEvent) {
     this._filter = ev.detail.value;
-    this.requestUpdate();
   }
 
   static get styles(): CSSResult[] {
