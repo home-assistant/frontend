@@ -20,6 +20,7 @@ import {
   VACUUM_SUPPORT_CLEAN_SPOT,
   VACUUM_SUPPORT_FAN_SPEED,
   VACUUM_SUPPORT_LOCATE,
+  VACUUM_SUPPORT_OPTION,
   VACUUM_SUPPORT_PAUSE,
   VACUUM_SUPPORT_RETURN_HOME,
   VACUUM_SUPPORT_START,
@@ -101,8 +102,13 @@ class MoreInfoVacuum extends LitElement {
 
     const stateObj = this.stateObj;
 
-    const filterExtraAttributes =
-      "fan_speed,fan_speed_list,status,battery_level,battery_icon";
+    let filterExtraAttributes =
+      "fan_speed,fan_speed_list,status,battery_level,battery_icon,option_list";
+    if (stateObj.attributes.option_list) {
+      for (const option of stateObj.attributes.option_list) {
+        filterExtraAttributes = `${filterExtraAttributes},${option},${option}_list`;
+      }
+    }
 
     return html`
       <div class="flex-horizontal">
@@ -199,12 +205,56 @@ class MoreInfoVacuum extends LitElement {
             </div>
           `
         : ""}
+      ${supportsFeature(stateObj, VACUUM_SUPPORT_OPTION)
+        ? html`
+            <div>
+              ${stateObj.attributes.option_list.map(
+                (option) => html`
+                  <div class="flex-horizontal">
+                    <ha-paper-dropdown-menu
+                      .label=${this.formatOptionName(option)}
+                    >
+                      <paper-listbox
+                        slot="dropdown-content"
+                        .selected=${stateObj.attributes[option]}
+                        @iron-select=${this.handleOptionChanged(option)}
+                        attr-for-selected="item-name"
+                      >
+                        ${stateObj.attributes[`${option}_list`]!.map(
+                          (value) => html`
+                            <paper-item .itemName=${value}>
+                              ${value}
+                            </paper-item>
+                          `
+                        )}
+                      </paper-listbox>
+                    </ha-paper-dropdown-menu>
+                    <div
+                      style="justify-content: center; align-self: center; padding-top: 1.3em"
+                    >
+                      <span>
+                        ${stateObj.attributes[option]}
+                      </span>
+                    </div>
+                  </div>
+                `
+              )}
+              <p></p>
+            </div>
+          `
+        : ""}
 
       <ha-attributes
         .stateObj=${this.stateObj}
         .extraFilters=${filterExtraAttributes}
       ></ha-attributes>
     `;
+  }
+
+  private formatOptionName(option: string) {
+    option = option.replace(/_/g, " ");
+    option = option.charAt(0).toUpperCase() + option.slice(1); // Capitalize
+    return option;
   }
 
   private callService(ev: CustomEvent) {
@@ -226,6 +276,23 @@ class MoreInfoVacuum extends LitElement {
       entity_id: this.stateObj!.entity_id,
       fan_speed: newVal,
     });
+  }
+
+  private handleOptionChanged(option: string) {
+    return (ev: CustomEvent) => {
+      const oldVal = this.stateObj!.attributes[option];
+      const newVal = ev.detail.item.itemName;
+
+      if (!newVal || oldVal === newVal) {
+        return;
+      }
+
+      this.hass.callService("vacuum", "set_option", {
+        entity_id: this.stateObj!.entity_id,
+        option: option,
+        value: newVal,
+      });
+    };
   }
 
   static get styles(): CSSResult {

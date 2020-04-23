@@ -12,6 +12,7 @@ export const VACUUM_SUPPORT_STATUS = 128;
 export const VACUUM_SUPPORT_LOCATE = 512;
 export const VACUUM_SUPPORT_CLEAN_SPOT = 1024;
 export const VACUUM_SUPPORT_START = 8192;
+export const VACUUM_SUPPORT_OPTION = 16384;
 
 export type VacuumEntity = HassEntityBase & {
   attributes: HassEntityAttributeBase & {
