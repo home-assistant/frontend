@@ -674,11 +674,13 @@
                 "buttons": {
                     "add": "Apparaten toevoegen",
                     "reconfigure": "Apparaat opnieuw configureren",
-                    "remove": "Verwijder apparaat"
+                    "remove": "Verwijder apparaat",
+                    "zigbee_information": "Zigbee Informatie"
                 },
                 "confirmations": {
                     "remove": "Weet je zeker dat je het apparaat wilt verwijderen?"
                 },
+                "device_signature": "Handtekening van het Zigbee-apparaat",
                 "last_seen": "Laatst gezien",
                 "manuf": "door {manufacturer}",
                 "no_area": "Geen Gebied",
@@ -687,7 +689,8 @@
                 "services": {
                     "reconfigure": "Herconfigureer het ZHA-apparaat (heal device). Gebruik dit als je problemen hebt met het apparaat. Als het een apparaat met batterij is, zorg dan dat het wakker is en commando's accepteert wanneer je deze service gebruikt.",
                     "remove": "Verwijder een apparaat uit het Zigbee-netwerk.",
-                    "updateDeviceName": "Stel een aangepaste naam in voor dit apparaat in het apparaatregister."
+                    "updateDeviceName": "Stel een aangepaste naam in voor dit apparaat in het apparaatregister.",
+                    "zigbee_information": "Bekijk de Zigbee-informatie voor het apparaat."
                 },
                 "unknown": "Onbekend",
                 "zha_device_card": {

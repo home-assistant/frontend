@@ -1378,7 +1378,7 @@
                 },
                 "introduction": "Tutaj możesz skonfigurować Home Assistant'a i jego komponenty. Nie wszystkie opcje można konfigurować z interfejsu użytkownika, ale pracujemy nad tym.",
                 "lovelace": {
-                    "caption": "Dashboardy Lovelace",
+                    "caption": "Dashboardy",
                     "dashboards": {
                         "cant_edit_default": "Standardowego dashboardu Lovelace nie można edytować za pomocą interfejsu użytkownika. Możesz go ukryć, ustawiając jako domyślny inny dashboard.",
                         "cant_edit_yaml": "Dasboard'y zdefiniowane w plikach YAML nie mogą być edytowane z poziomu interfejsu użytkownika. Zmień je w pliku configuration.yaml.",
