@@ -59,6 +59,13 @@ import { haStyle } from "../../../resources/styles";
 import { afterNextRender } from "../../../common/util/render-status";
 import "../../../common/search/search-input";
 
+interface DataEntryFlowProgressSearch {
+  flow_id: string;
+  handler: string;
+  domain: string;
+  title: string;
+}
+
 function mergeArrays(a: string[], b: string[]) {
   const jointArray = a.concat(b);
   const uniqueArray = jointArray.filter(
@@ -144,24 +151,28 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
       filter?: string
     ): DataEntryFlowProgress[] => {
       if (filter) {
-        let keys: any[] = ["handler"];
-        configEntriesInProgress.map(
-          (entry: DataEntryFlowProgress): DataEntryFlowProgress => {
-            keys = mergeArrays(
-              keys,
-              Object.keys(entry.context).map((key: string) => `context.${key}`)
-            );
-            return entry;
-          }
+        let configEntriedInProgressSearch: DataEntryFlowProgressSearch[] = configEntriesInProgress.map(
+          (entry: DataEntryFlowProgress) => ({
+            flow_id: entry.flow_id,
+            handler: entry.handler,
+            domain: domainToName(this.hass.localize, entry.handler),
+            title: localizeConfigFlowTitle(this.hass.localize, entry),
+          })
         );
-        const options: Fuse.FuseOptions<DataEntryFlowProgress> = {
-          keys,
+        const options: Fuse.FuseOptions<DataEntryFlowProgressSearch> = {
+          keys: ["handler", "domain", "title"],
           caseSensitive: false,
           minMatchCharLength: 2,
           threshold: 0.2,
         };
-        const fuse = new Fuse(configEntriesInProgress, options);
-        configEntriesInProgress = fuse.search(filter);
+        const fuse = new Fuse(configEntriedInProgressSearch, options);
+        configEntriedInProgressSearch = fuse.search(filter);
+        configEntriesInProgress = configEntriesInProgress.filter(
+          (entry: DataEntryFlowProgress) =>
+            configEntriedInProgressSearch.findIndex(
+              (e: DataEntryFlowProgressSearch) => e.flow_id === entry.flow_id
+            ) !== -1
+        );
       }
       return configEntriesInProgress;
     }
@@ -287,7 +298,7 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
             : ""}
           ${configEntriesInProgress.length
             ? configEntriesInProgress.map(
-                (flow) => html`
+                (flow: DataEntryFlowProgress) => html`
                   <ha-card class="discovered">
                     <div class="header">
                       ${this.hass.localize(
