@@ -352,8 +352,11 @@
             "climate": {
                 "aux_heat": "Lisälämpö",
                 "away_mode": "Poissa kotoa -tila",
+                "cooling": "{name} jäähdytys",
+                "current_temperature": "{name} nykyinen lämpötila",
                 "currently": "Tällä hetkellä",
                 "fan_mode": "Tuuletustila",
+                "heating": "{name} lämmitys",
                 "high": "korkea",
                 "low": "matala",
                 "on_off": "Päällä / pois",
@@ -361,7 +364,9 @@
                 "preset_mode": "Esiasetus",
                 "swing_mode": "Heilutustila",
                 "target_humidity": "Tavoitekosteus",
-                "target_temperature": "Tavoitelämpötila"
+                "target_temperature": "Tavoitelämpötila",
+                "target_temperature_entity": "{name} tavoitelämpötila",
+                "target_temperature_mode": "{name} tavoitelämpötila {mode}"
             },
             "counter": {
                 "actions": {
@@ -405,6 +410,9 @@
             },
             "script": {
                 "execute": "Suorita"
+            },
+            "service": {
+                "run": "Suorita"
             },
             "timer": {
                 "actions": {
@@ -467,10 +475,12 @@
             "close": "Sulje",
             "delete": "Poista",
             "loading": "Ladataan",
+            "no": "Ei",
             "save": "Tallenna",
             "successfully_deleted": "Poistettu onnistuneesti",
             "successfully_saved": "Tallennus onnistui",
-            "undo": "Kumoa"
+            "undo": "Kumoa",
+            "yes": "Kyllä"
         },
         "components": {
             "area-picker": {
@@ -525,6 +535,7 @@
         },
         "dialogs": {
             "config_entry_system_options": {
+                "enable_new_entities_description": "Jos tämä ei ole käytössä, {integration}-sovelluksen äskettäin löydettyjä entiteettejä ei lisätä automaattisesti Home Assistantiin.",
                 "enable_new_entities_label": "Ota vasta lisätyt kohteet käyttöön.",
                 "title": "Järjestelmäasetukset kohteelle {integration}",
                 "update": "Päivitä"
@@ -540,6 +551,7 @@
                     "name": "Nimen yliajo",
                     "update": "Päivitä"
                 },
+                "related": "liittyvä",
                 "settings": "Asetukset"
             },
             "generic": {
@@ -606,6 +618,7 @@
                     "fan_speed": "Tuulettimen nopeus",
                     "locate": "Paikanna",
                     "pause": "Tauko",
+                    "return_home": "Palaa kotiin",
                     "start": "Käynnistä",
                     "start_pause": "Käynnistys / Tauko",
                     "status": "Tila",
@@ -621,9 +634,12 @@
                 }
             },
             "voice_command": {
+                "did_not_hear": "Home Assistant ei kuullut mitään",
                 "error": "Hups, tapahtui virhe",
+                "found": "Löysin seuraavat sinulle:",
                 "how_can_i_help": "Miten voin auttaa?",
-                "label": "Kirjoita kysymys ja paina 'Enter'"
+                "label": "Kirjoita kysymys ja paina 'Enter'",
+                "label_voice": "Kirjoita ja paina 'Enter' tai napauta mikrofonia puhuaksesi"
             },
             "zha_device_info": {
                 "buttons": {
@@ -955,14 +971,20 @@
                         "fetching_subscription": "Haetaan tilausta...",
                         "google": {
                             "config_documentation": "Asetusten dokumentaatio.",
+                            "devices_pin": "Suojauslaitteiden pin",
+                            "enable_ha_skill": "Aktivoi Home Assistant -taito Google Assistantille",
+                            "enable_state_reporting": "Ota tilaraportointi käyttöön",
                             "enter_pin_error": "PIN-koodin tallentaminen ei onnistu:",
                             "enter_pin_hint": "Anna PIN-koodi turvalaitteiden käyttämistä varten",
                             "info": "Google Assistant Integraatio Home Assistant Cloudille mahdollistaa Home Assistant laitteiden ohjaamisen miltä tahansa Google Assistant laitteelta.",
+                            "manage_entities": "Hallitse kohteita",
                             "security_devices": "Turvalaitteet",
+                            "sync_entities": "Synkronoi kohteet Googleen",
                             "title": "Google Assistant"
                         },
                         "integrations": "Integraatiot",
                         "integrations_introduction": "Home Assistant Cloud integraatiot mahdollistavat pilvipalveluihin käytön ilman että Home Assistant asennus on näkyvissä julkisesti Internetissä.",
+                        "integrations_introduction2": "Tsekkaa verkkosivut kohteesta",
                         "integrations_link_all_features": " kaikki käytettävissä olevat ominaisuudet",
                         "manage_account": "Tilin Hallinta",
                         "nabu_casa_account": "Nabu Casa -tili",
@@ -979,11 +1001,19 @@
                         "sign_out": "Kirjaudu ulos",
                         "thank_you_note": "Kiitos, että olet osa Home Assistant Cloudia. Sinun kaltaisten ihmisten takia pystymme tarjoamaan loistavan kodin automaatiokokemuksen kaikille. Kiitos!",
                         "webhooks": {
+                            "disable_hook_error_msg": "Webhookin poistaminen epäonnistui:",
+                            "link_learn_more": "Lisätietoja webhook-pohjaisten automaatioiden luomisesta.",
+                            "loading": "Ladataan...",
                             "manage": "Hallitse",
+                            "no_hooks_yet": "Näyttää sinulla ei ole vielä webhookeja. Aloita määrittämällä ",
+                            "no_hooks_yet_link_automation": "webhook-automaatio",
+                            "no_hooks_yet_link_integration": "webhook-pohjainen integraatio",
+                            "no_hooks_yet2": "tai luomalla",
                             "title": "Webhooks"
                         }
                     },
                     "alexa": {
+                        "expose": "Julkista Alexalle",
                         "title": "Alexa"
                     },
                     "caption": "Home Assistant Cloud",
@@ -1015,6 +1045,8 @@
                     },
                     "google": {
                         "disable_2FA": "Poista kaksivaiheinen tunnistautuminen",
+                        "expose": "Julkista Google Assistantille",
+                        "exposed_entities": "Julkistetut kohteet",
                         "sync_to_google": "Synkronoidaan muutokset Googleen.",
                         "title": "Google Assistant"
                     },
@@ -1092,9 +1124,12 @@
                     }
                 },
                 "customize": {
+                    "attributes_customize": "Seuraavat määritteet on jo määritetty customize.yaml-tiedostossa.",
+                    "attributes_outside": "Seuraavat attribuutit on räätälöity customize.yaml-tiedoston ulkopuolella.",
                     "attributes_override": "Voit yliajaa ne, jos haluat.",
                     "caption": "Muokkaukset",
                     "description": "Muokkaa laitteita",
+                    "pick_attribute": "Valitse yliajettava määrite",
                     "picker": {
                         "header": "Räätälöinti",
                         "introduction": "Muotoile ominaisuuksia olemuskohtaisesti. Lisäykset/muokkaukset tulevat välittömästi voimaan. Poistetut mukautukset tulevat voimaan, kun olemus päivitetään."
@@ -1164,7 +1199,8 @@
                             "button": "Poista valitut käytöstä"
                         },
                         "enable_selected": {
-                            "button": "Ota valitut käyttöön"
+                            "button": "Ota valitut käyttöön",
+                            "confirm_title": "Haluatko ottaa {number} kohdetta käyttöön?"
                         },
                         "filter": {
                             "filter": "Suodatin",
@@ -1214,6 +1250,7 @@
                 "integrations": {
                     "caption": "Integraatiot",
                     "config_entry": {
+                        "area": "Alueessa {alue}",
                         "delete_button": "Poista {integration}",
                         "delete_confirm": "Haluatko varmasti poistaa tämän integraation?",
                         "device_unavailable": "laite ei saatavissa",
@@ -1332,6 +1369,7 @@
                     "add_person": "Lisää henkilö",
                     "caption": "Henkilöt",
                     "confirm_delete": "Haluatko varmasti poistaa tämän henkilön?",
+                    "confirm_delete2": "Tälle henkilölle kuuluvien laitteiden osoitus poistetaan.",
                     "create_person": "Luo henkilö",
                     "description": "Hallitse henkilöitä, joita Home Assistant seuraa",
                     "detail": {
@@ -1492,6 +1530,10 @@
                         "search_again": "Etsi uudestaan",
                         "spinner": "Etsitään ZHA Zigbee laitteita..."
                     },
+                    "add": {
+                        "caption": "Lisää laitteita",
+                        "description": "Lisää laitteita Zigbee-verkkoon"
+                    },
                     "caption": "ZHA",
                     "cluster_attributes": {
                         "attributes_of_cluster": "Valitun klusterin määritteet",
@@ -1510,15 +1552,20 @@
                         "issue_zigbee_command": "Anna Zigbee käsky"
                     },
                     "clusters": {
+                        "header": "Klusterit",
                         "help_cluster_dropdown": "Valitse klusteri tarkastellaksesi määritteitä ja komentoja."
                     },
                     "common": {
                         "add_devices": "Lisää laitteita",
                         "clusters": "Klusterit",
                         "devices": "Laitteet",
+                        "manufacturer_code_override": "Valmistajan koodin yliajo",
                         "value": "Arvo"
                     },
                     "description": "Zigbee kotiautomaation verkonhallinta",
+                    "devices": {
+                        "header": "Zigbee-kotiautomaatio - laite"
+                    },
                     "group_binding": {
                         "bind_button_label": "Sido ryhmä",
                         "group_picker_label": "Sidottavat ryhmät",
@@ -1539,7 +1586,9 @@
                         "group_info": "Ryhmätiedot",
                         "group_name_placeholder": "Ryhmän nimi",
                         "group_not_found": "Ryhmää ei löytynyt!",
+                        "group-header": "Zigbee-kotiautomaatio - ryhmätiedot",
                         "groups": "Ryhmät",
+                        "groups-header": "Zigbee-kotiautomaatio - ryhmänhallinta",
                         "header": "Zigbee-kotiautomaatio - ryhmänhallinta",
                         "introduction": "Luo ja muokkaa zigbee-ryhmiä",
                         "manage_groups": "Hallitse Zigbee-ryhmiä",
@@ -1550,6 +1599,7 @@
                         "removing_members": "Poistetaan jäseniä",
                         "zha_zigbee_groups": "ZHA Zigbee -ryhmät"
                     },
+                    "header": "Määritä Zigbee-kotiautomaatio",
                     "network_management": {
                         "header": "Verkon hallinta",
                         "introduction": "Koko verkkoon vaikuttavat komennot"
@@ -1557,13 +1607,22 @@
                     "node_management": {
                         "header": "Laitehallinta",
                         "help_node_dropdown": "Valitse laite tarkastellaksesi laitekohtaisia vaihtoehtoja."
-                    }
+                    },
+                    "title": "Zigbee-kotiautomaatio"
                 },
                 "zone": {
                     "caption": "Alueet",
                     "create_zone": "Luo alue",
                     "detail": {
-                        "passive_note": "Passiiviset vyöhykkeet on piilotetaan käyttöliittymässä, eikä niitä käytetä laitteiden paikannuksen sijaintina. Tämä on hyödyllistä, jos haluat käyttää vain automaatioihin."
+                        "create": "Luo",
+                        "delete": "Poista",
+                        "latitude": "Leveysaste",
+                        "longitude": "Pituusaste",
+                        "passive": "Passiivinen",
+                        "passive_note": "Passiiviset vyöhykkeet on piilotetaan käyttöliittymässä, eikä niitä käytetä laitteiden paikannuksen sijaintina. Tämä on hyödyllistä, jos haluat käyttää vain automaatioihin.",
+                        "radius": "Säde",
+                        "required_error_msg": "Tämä kenttä on pakollinen",
+                        "update": "Päivitä"
                     },
                     "edit_home_zone": "Voit asettaa kotisi sijainnin kohdasta Asetukset>Yleinen."
                 },
@@ -1636,7 +1695,10 @@
                         "type": "Tapahtumatyyppi"
                     },
                     "info": {
+                        "built_using": "Rakennettu käyttäen",
+                        "custom_uis": "Mukautetut käyttöliittymät:",
                         "developed_by": "Kehittänyt joukko mahtavia ihmisiä.",
+                        "frontend": "frontend-ui",
                         "frontend_version": "Käyttöliittymän versio: {version} - {type}",
                         "home_assistant_logo": "Home Assistant-logo",
                         "icons_by": "Kuvakkeet luonut",
@@ -1760,7 +1822,8 @@
                             "required": "Vaadittu"
                         },
                         "entities": {
-                            "name": "Kohteet"
+                            "name": "Kohteet",
+                            "show_header_toggle": "Näytä otsikkokytkin?"
                         },
                         "entity-filter": {
                             "name": "Kohteen suodatus"
@@ -1898,6 +1961,7 @@
                         "delete": "Poista näkymä",
                         "edit": "Muokkaa näkymää",
                         "header": "Näytä asetukset",
+                        "header_name": "{nimi} Näytä asetukset",
                         "move_left": "Siirrä näkymää vasemmalle",
                         "move_right": "Siirrä näkymää oikealle",
                         "tab_badges": "Merkit",
@@ -1921,7 +1985,9 @@
                         "confirm_unsaved_changes": "Sinulla on tallentamattomia muutoksia. Haluatko varmasti poistua?",
                         "confirm_unsaved_comments": "Asetuksesi sisältää kommentoituja rivejä. Kommentoituja rivejä ei tallenneta. Haluatko  jatkaa?",
                         "error_invalid_config": "Asetuksesi ovat virheelliset: {error}",
+                        "error_parse_yaml": "YAML-tiedostoa ei voida jäsentää: {error}",
                         "error_remove": "Asetusta ei voida poistaa: {error}",
+                        "error_save_yaml": "YAML-tiedostoa ei voi tallentaa: {error}",
                         "header": "Muokkaa asetuksia",
                         "save": "Tallenna",
                         "saved": "Tallennettu",
@@ -1938,7 +2004,8 @@
                     },
                     "suggest_card": {
                         "add": "Lisää Lovelace-käyttöliittymään",
-                        "create_own": "Valitse toinen kortti"
+                        "create_own": "Valitse toinen kortti",
+                        "header": "Loimme ehdotuksen sinulle"
                     },
                     "view": {
                         "panel_mode": {

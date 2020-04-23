@@ -297,7 +297,7 @@
             "returning": "A regressar à doca"
         },
         "weather": {
-            "clear-night": "Limpo, Noite",
+            "clear-night": "Limpo, noite",
             "cloudy": "Nublado",
             "exceptional": "Excepcional",
             "fog": "Nevoeiro",
@@ -338,7 +338,7 @@
                 "arm_custom_bypass": "Desvio personalizado",
                 "arm_home": "Armado casa",
                 "arm_night": "Armado noite",
-                "clear_code": "Limpo",
+                "clear_code": "Apagar",
                 "code": "Código",
                 "disarm": "Desarmar"
             },
@@ -462,7 +462,9 @@
                     "wnw": "WNW",
                     "wsw": "WSW"
                 },
-                "forecast": "Previsão"
+                "forecast": "Previsão",
+                "high": "Alta",
+                "low": "Baixa"
             }
         },
         "common": {
@@ -479,7 +481,12 @@
         },
         "components": {
             "area-picker": {
-                "area": "Área"
+                "add_dialog": {
+                    "add": "Adicionar",
+                    "name": "Nome"
+                },
+                "area": "Área",
+                "clear": "Limpar"
             },
             "device-picker": {
                 "clear": "Apagar",
@@ -496,6 +503,11 @@
             "history_charts": {
                 "loading_history": "A carregar histórico de estados...",
                 "no_history_found": "Nenhum histórico de estado encontrado."
+            },
+            "related-items": {
+                "area": "Área",
+                "device": "Dispositivo",
+                "integration": "Integração"
             },
             "relative_time": {
                 "duration": {
@@ -524,9 +536,15 @@
                 "title": "Alternar domínios"
             },
             "entity_registry": {
+                "control": "Controle",
+                "dismiss": "Fechar",
                 "editor": {
+                    "delete": "Apagar",
+                    "enabled_label": "Ativar entidade",
                     "update": "Atualizar"
-                }
+                },
+                "related": "Relacionadas",
+                "settings": "Definições"
             },
             "generic": {
                 "cancel": "Cancelar",
@@ -534,16 +552,34 @@
                 "ok": "OK"
             },
             "helper_settings": {
+                "generic": {
+                    "icon": "Ícone",
+                    "name": "Nome"
+                },
                 "input_datetime": {
                     "date": "Data",
+                    "datetime": "Data e hora",
                     "mode": "O que deseja inserir",
                     "time": "Hora"
                 },
                 "input_number": {
-                    "min": "Valor mínimo"
+                    "box": "Campo de entrada",
+                    "min": "Valor mínimo",
+                    "step": "Tamanho do passo",
+                    "unit_of_measurement": "Unidade de medida"
                 },
                 "input_select": {
-                    "add": "Adicionar"
+                    "add": "Adicionar",
+                    "add_option": "Acrescentar opção",
+                    "no_options": "Ainda não existem opções.",
+                    "options": "Opções"
+                },
+                "input_text": {
+                    "max": "Comprimento máximo",
+                    "min": "Comprimento mínimo",
+                    "mode": "Modo de exibição",
+                    "password": "Palavra-passe",
+                    "text": "Texto"
                 }
             },
             "more_info_control": {
@@ -556,7 +592,8 @@
                     "remove_intro": "Se a entidade não estiver em uso, você pode removê-la."
                 },
                 "script": {
-                    "last_action": "Última ocorrência"
+                    "last_action": "Última ocorrência",
+                    "last_triggered": "Última ocorrência"
                 },
                 "settings": "Definições da entidade",
                 "sun": {
@@ -659,10 +696,12 @@
                     "description": "Visão geral de todas as áreas da sua casa.",
                     "editor": {
                         "create": "CRIAR",
+                        "default_name": "Nova área",
                         "delete": "APAGAR",
                         "update": "ATUALIZAR"
                     },
                     "picker": {
+                        "create_area": "Criar área",
                         "header": "Áreas",
                         "integrations_page": "Página de Integrações",
                         "introduction": "As áreas são utilizadas para organizar os dispositivos. Essas informações serão utilizadas no Home Assistant para o ajudar a organizar o seu interface, permissões e integrações com outros sistemas.",
@@ -1136,9 +1175,11 @@
                         "entities": "Entidades",
                         "none": "Este dispositivo não possui entidades"
                     },
+                    "name": "Nome",
                     "no_devices": "Sem dispositivos",
                     "unknown_error": "Erro desconhecido",
-                    "unnamed_device": "Dispositivo sem nome"
+                    "unnamed_device": "Dispositivo sem nome",
+                    "update": "Atualizar"
                 },
                 "entities": {
                     "caption": "Entidades",
@@ -1179,8 +1220,18 @@
                 },
                 "header": "Configurar o Home Assistant",
                 "helpers": {
+                    "caption": "Auxiliares",
                     "dialog": {
                         "create": "Criar"
+                    },
+                    "picker": {
+                        "headers": {
+                            "entity_id": "ID da entidade"
+                        }
+                    },
+                    "types": {
+                        "input_number": "Número",
+                        "input_text": "Texto"
                     }
                 },
                 "integrations": {
@@ -1242,20 +1293,44 @@
                 "lovelace": {
                     "dashboards": {
                         "default_dashboard": "Este é o painel de instrumentos padrão",
+                        "detail": {
+                            "create": "Criar",
+                            "delete": "Apagar",
+                            "dismiss": "Fechar",
+                            "icon": "Ícone",
+                            "require_admin": "Administrador apenas",
+                            "title": "Título",
+                            "title_required": "O título é obrigatório.",
+                            "update": "Atualizar",
+                            "url": "Url"
+                        },
                         "picker": {
                             "headers": {
                                 "default": "Predefinição"
-                            }
+                            },
+                            "open": "Abrir"
                         }
                     },
                     "resources": {
                         "detail": {
+                            "create": "Criar",
                             "delete": "Apagar",
+                            "dismiss": "Fechar",
                             "type": "Tipo de recurso",
-                            "url_error_msg": "URL é um campo obrigatório"
+                            "update": "Atualizar",
+                            "url": "Url",
+                            "url_error_msg": "URL é um campo obrigatório",
+                            "warning_header": "Seja cauteloso!"
                         },
                         "picker": {
+                            "headers": {
+                                "type": "Tipo",
+                                "url": "Url"
+                            },
                             "no_resources": "Sem recursos"
+                        },
+                        "types": {
+                            "css": "Stylesheet"
                         }
                     }
                 },
@@ -1287,8 +1362,8 @@
                 },
                 "scene": {
                     "activated": "Ativar cena {name}.",
-                    "caption": "Cenas",
-                    "description": "Criar e editar cenas",
+                    "caption": "Cenários",
+                    "description": "Criar e editar cenários",
                     "editor": {
                         "default_name": "Nova Cena",
                         "devices": {
@@ -1305,8 +1380,8 @@
                             "introduction": "Entidades que não pertencem a um dispositivo podem ser definidas aqui.",
                             "without_device": "Entidades sem dispositivo"
                         },
-                        "introduction": "Crie cenas para dar vida à sua casa.",
-                        "load_error_not_editable": "Apenas cenas em scenes.yaml são editáveis.",
+                        "introduction": "Crie cenários para dar vida à sua casa.",
+                        "load_error_not_editable": "Apenas cenários em scenes.yaml são editáveis.",
                         "load_error_unknown": "Erro ao carregar cena ({err_no}).",
                         "name": "Nome",
                         "save": "Guardar",
@@ -1317,14 +1392,14 @@
                         "delete_confirm": "Tem certeza de que deseja apagar esta cena?",
                         "delete_scene": "Eliminar cena",
                         "edit_scene": "Editar cena",
-                        "header": "Editor de cenas",
+                        "header": "Editor de cenários",
                         "headers": {
                             "name": "Nome"
                         },
-                        "introduction": "O editor de cenas permite criar e editar cenas. Leia as instruções do link em baixo para se certificar de que configurou o Home Assistant corretamente.",
-                        "learn_more": "Aprender mais sobre cenas",
+                        "introduction": "O editor de cenários permite criar e editar cenários. Leia as instruções do link em baixo para se certificar de que configurou o Home Assistant corretamente.",
+                        "learn_more": "Aprender mais sobre cenários",
                         "no_scenes": "Não conseguimos encontrar nenhuma cena editável",
-                        "only_editable": "Apenas as cenas definidas em scenes.yaml são editáveis.",
+                        "only_editable": "Apenas os cenários definidos em scenes.yaml são editáveis.",
                         "pick_scene": "Escolha uma cena para editar",
                         "show_info_scene": "Mostrar informações sobre a cena"
                     }
@@ -1368,8 +1443,10 @@
                             "group": "Recarregar grupos",
                             "heading": "A recarregar configuração",
                             "introduction": "Algumas partes do Home Assistant podem ser recarregadas sem necessidade de reiniciar. Ao carregar em Recarregar configuração irá descarregar a configuração atual e carregar a nova.",
+                            "person": "Recarregar pessoas",
                             "scene": "Recarregar cenas",
-                            "script": "Recarregar scripts"
+                            "script": "Recarregar scripts",
+                            "zone": "Recarregar zonas"
                         },
                         "server_management": {
                             "confirm_restart": "Tem certeza de que reiniciar o Home Assistant?",
@@ -1432,6 +1509,9 @@
                         "search_again": "Pesquisar Novamente",
                         "spinner": "À procura de dispositivos ZHA Zigbee..."
                     },
+                    "add": {
+                        "caption": "Adicionar Dispositivos"
+                    },
                     "caption": "ZHA",
                     "cluster_attributes": {
                         "attributes_of_cluster": "Atributos do cluster selecionado",
@@ -1451,6 +1531,7 @@
                         "issue_zigbee_command": "Emitir comando ZigBee"
                     },
                     "clusters": {
+                        "header": "Clusters",
                         "help_cluster_dropdown": "Selecione um cluster para visualizar atributos e comandos."
                     },
                     "common": {
@@ -1594,13 +1675,13 @@
                         "title": "Informações"
                     },
                     "logs": {
-                        "clear": "Limpo",
+                        "clear": "Limpar",
                         "details": "Detalhes do log ( {level} )",
                         "load_full_log": "Carregar log completo do Home Assistant",
                         "loading_log": "A carregar o log de erros...",
                         "multiple_messages": "mensagem ocorreu primeiro em {tempo} e repetiu-se {contador} vezes",
                         "no_errors": "Nenhum erro foi reportado.",
-                        "no_issues": "Não há novos acontecimentos!",
+                        "no_issues": "Não há novos problemas!",
                         "refresh": "Atualizar",
                         "title": "Logs"
                     },
@@ -1674,6 +1755,9 @@
                         "no_devices": "Esta página permite-lhe controlar os seus dispositivos, no entanto, parece que ainda não tem dispositivos configurados. Vá para a página de integrações para começar.",
                         "title": "Bem-vindo a casa"
                     },
+                    "entities": {
+                        "never_triggered": "Nunca acionado"
+                    },
                     "picture-elements": {
                         "call_service": "Chamar o serviço {name}",
                         "hold": "Mantenha:",
@@ -1703,7 +1787,12 @@
                             "name": "Botão"
                         },
                         "conditional": {
-                            "name": "Condicional"
+                            "card": "Cartão",
+                            "conditions": "Condições",
+                            "current_state": "atual",
+                            "name": "Condicional",
+                            "state_equal": "Estado é igual a",
+                            "state_not_equal": "Estado não é igual a"
                         },
                         "config": {
                             "optional": "Opcional",
@@ -1741,6 +1830,7 @@
                             "icon": "Ícone",
                             "icon_height": "Altura do ícone",
                             "image": "Endereço para imagem",
+                            "manual": "Manual",
                             "maximum": "Máximo",
                             "minimum": "Mínimo",
                             "name": "Nome",
@@ -1749,6 +1839,7 @@
                             "show_icon": "Mostrar Ícone?",
                             "show_name": "Mostrar nome?",
                             "show_state": "Mostrar Estado?",
+                            "state": "Estado",
                             "tap_action": "Toque em Ação",
                             "theme": "Tema",
                             "title": "Título",
@@ -1795,20 +1886,25 @@
                             "name": "Imagem"
                         },
                         "plant-status": {
+                            "description": "O cartão de Estado da planta é para todos os adoráveis botânicos por aí.",
                             "name": "Estado da planta"
                         },
                         "sensor": {
+                            "description": "O cartão Sensor dá-lhe uma visão rápida do estado dos seus sensores com um gráfico opcional para visualizar a mudança ao longo do tempo.",
                             "graph_detail": "Detalhe do Gráfico",
                             "graph_type": "Tipo De Gráfico",
                             "name": "Sensor"
                         },
                         "shopping-list": {
+                            "description": "O cartão Lista de compras permite adicionar, editar, marcar e limpar itens da sua lista de compras.",
                             "name": "Lista de compras"
                         },
                         "thermostat": {
+                            "description": "O cartão Termóstato dá-lhe o controle da sua entidade de climatização. Permitindo alterar a temperatura e o modo dessa entidade.",
                             "name": "Termóstato"
                         },
                         "vertical-stack": {
+                            "description": "O cartão Agrupamento Vertical permite agrupar vários cartões para que estes fiquem sempre na mesma coluna.",
                             "name": "Agrupamento Vertical"
                         },
                         "weather-forecast": {
@@ -1901,6 +1997,7 @@
                 },
                 "reload_lovelace": "Recarregar Lovelace",
                 "reload_resources": {
+                    "refresh_body": "É preciso atualizar a página para concluir o carregamento. Deseja atualizar agora?",
                     "refresh_header": "Deseja atualizar?"
                 },
                 "unused_entities": {
@@ -2100,6 +2197,7 @@
             "profile": {
                 "advanced_mode": {
                     "description": "Desbloqueia funcionalidades avançadas.",
+                    "link_promo": "Saber mais",
                     "title": "Modo avançado"
                 },
                 "change_password": {
