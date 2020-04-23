@@ -571,6 +571,7 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
           margin-bottom: 64px;
         }
         ha-card {
+          max-width: 500px;
           display: flex;
           flex-direction: column;
           justify-content: space-between;
