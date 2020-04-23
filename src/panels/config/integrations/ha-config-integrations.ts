@@ -229,6 +229,23 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
         .route=${this.route}
         .tabs=${configSections.integrations}
       >
+        ${this.narrow
+          ? html`
+              <div slot="header">
+                <slot name="header">
+                  <div class="search-toolbar">
+                    <search-input
+                      .filter=${this._filter}
+                      class="header"
+                      no-label-float
+                      no-underline
+                      @value-changed=${this._handleSearchChange}
+                    ></search-input>
+                  </div>
+                </slot>
+              </div>
+            `
+          : ""}
         <paper-menu-button
           close-on-activate
           no-animations
@@ -256,13 +273,18 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
           </paper-listbox>
         </paper-menu-button>
 
-        <div class="search">
-          <search-input
-            no-label-float
-            .filter=${this._filter}
-            @value-changed=${this._handleSearchChange}
-          ></search-input>
-        </div>
+        ${!this.narrow
+          ? html`
+              <div class="search">
+                <search-input
+                  no-label-float
+                  no-underline
+                  .filter=${this._filter}
+                  @value-changed=${this._handleSearchChange}
+                ></search-input>
+              </div>
+            `
+          : ""}
 
         <div class="container">
           ${this._showIgnored
@@ -759,6 +781,15 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
           height: 60px;
           margin-bottom: 16px;
           vertical-align: middle;
+        }
+        .search-toolbar {
+          position: relative;
+          left: -8px;
+          top: -7px;
+          display: flex;
+          align-items: center;
+          color: var(--secondary-text-color);
+          padding: 0 16px;
         }
         .search {
           padding: 2px 16px;
