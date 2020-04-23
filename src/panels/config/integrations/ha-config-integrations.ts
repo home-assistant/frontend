@@ -119,7 +119,7 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
     (configEntries: ConfigEntry[], filter?: string): ConfigEntry[] => {
       if (filter) {
         const options: Fuse.FuseOptions<ConfigEntry> = {
-          keys: ["entry_id", "domain", "title", "source"],
+          keys: ["domain", "title"],
           caseSensitive: false,
           minMatchCharLength: 2,
           threshold: 0.2,
