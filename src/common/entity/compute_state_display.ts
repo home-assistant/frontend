@@ -140,9 +140,15 @@ export const computeStateDisplay = (
     return formatDateTime(date, language);
   }
 
-  const deviceClass = stateObj.attributes.device_class || "_";
   return (
-    localize(`component.${domain}.state.${deviceClass}.${stateObj.state}`) ||
+    // Return device class translation
+    (stateObj.attributes.device_class &&
+      localize(
+        `component.${domain}.state.${stateObj.attributes.device_class}.${stateObj.state}`
+      )) ||
+    // Return default translation
+    localize(`component.${domain}.state._.${stateObj.state}`) ||
+    // We don't know! Return the raw state.
     stateObj.state
   );
 };
