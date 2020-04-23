@@ -117,6 +117,13 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
 
   private _filterConfigEntries = memoizeOne(
     (configEntries: ConfigEntry[], filter?: string): ConfigEntry[] => {
+      configEntries = configEntries.map((configEntry: ConfigEntry) => {
+        configEntry.domain = domainToName(
+          this.hass.localize,
+          configEntry.domain
+        );
+        return configEntry;
+      });
       if (filter) {
         const options: Fuse.FuseOptions<ConfigEntry> = {
           keys: ["domain", "title"],
@@ -261,7 +268,7 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
                           />
                         </div>
                         <h2>
-                          ${domainToName(this.hass.localize, item.domain)}
+                          ${item.domain}
                         </h2>
                         <mwc-button
                           @click=${this._removeIgnoredIntegration}
