@@ -124,22 +124,29 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
 
   private _filterConfigEntries = memoizeOne(
     (configEntries: ConfigEntry[], filter?: string): ConfigEntry[] => {
-      configEntries = configEntries.map((configEntry: ConfigEntry) => {
-        configEntry.domain = domainToName(
-          this.hass.localize,
-          configEntry.domain
-        );
-        return configEntry;
-      });
       if (filter) {
+        let configEntriesSearch: ConfigEntry[] = configEntries.map(
+          (configEntry: ConfigEntry) => {
+            return {
+              ...configEntry,
+              domain: domainToName(this.hass.localize, configEntry.domain),
+            };
+          }
+        );
         const options: Fuse.FuseOptions<ConfigEntry> = {
           keys: ["domain", "title"],
           caseSensitive: false,
           minMatchCharLength: 2,
           threshold: 0.2,
         };
-        const fuse = new Fuse(configEntries, options);
-        configEntries = fuse.search(filter);
+        const fuse = new Fuse(configEntriesSearch, options);
+        configEntriesSearch = fuse.search(filter);
+        configEntries = configEntries.filter(
+          (configEntry: ConfigEntry) =>
+            configEntriesSearch.findIndex(
+              (ce: ConfigEntry) => ce.entry_id === configEntry.entry_id
+            ) !== -1
+        );
       }
       return configEntries;
     }
