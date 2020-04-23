@@ -66,14 +66,6 @@ interface DataEntryFlowProgressSearch {
   title: string;
 }
 
-function mergeArrays(a: string[], b: string[]) {
-  const jointArray = a.concat(b);
-  const uniqueArray = jointArray.filter(
-    (item, index) => jointArray.indexOf(item) === index
-  );
-  return uniqueArray;
-}
-
 @customElement("ha-config-integrations")
 class HaConfigIntegrations extends SubscribeMixin(LitElement) {
   @property() public hass!: HomeAssistant;
