@@ -122,7 +122,9 @@ class StepFlowForm extends LitElement {
 
     const data = {};
     this.step.data_schema.forEach((field) => {
-      if ("default" in field) {
+      if ("description" in field && "current_value" in field.description) {
+        data[field.name] = field.description.current_value;
+      } else if ("default" in field) {
         data[field.name] = field.default;
       }
     });
