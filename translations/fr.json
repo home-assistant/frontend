@@ -213,8 +213,8 @@
             "not_home": "Absent"
         },
         "fan": {
-            "off": "Éteint",
-            "on": "Marche"
+            "off": "Off",
+            "on": "On"
         },
         "group": {
             "closed": "Fermé",
@@ -232,7 +232,7 @@
             "unlocked": "Déverrouillé"
         },
         "input_boolean": {
-            "off": "Arrêté",
+            "off": "Off",
             "on": "Actif"
         },
         "light": {
@@ -246,7 +246,7 @@
         "media_player": {
             "idle": "En veille",
             "off": "Inactif",
-            "on": "Marche",
+            "on": "On",
             "paused": "En pause",
             "playing": "Lecture en cours",
             "standby": "En veille"
@@ -259,7 +259,7 @@
             "problem": "Problème"
         },
         "remote": {
-            "off": "Arrêt",
+            "off": "Off",
             "on": "Actif"
         },
         "scene": {
