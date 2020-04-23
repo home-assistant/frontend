@@ -20,6 +20,7 @@ import { HomeAssistant, WeatherEntity } from "../../../types";
 import { EntitiesCardEntityConfig } from "../cards/types";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
 import { LovelaceRow } from "./types";
+import { computeStateDisplay } from "../../../common/entity/compute_state_display";
 
 @customElement("hui-weather-entity-row")
 class HuiWeatherEntityRow extends LitElement implements LovelaceRow {
@@ -69,8 +70,11 @@ class HuiWeatherEntityRow extends LitElement implements LovelaceRow {
         <div class="attributes">
           <div>
             ${UNAVAILABLE_STATES.includes(stateObj.state)
-              ? this.hass.localize(`state.default.${stateObj.state}`) ||
-                stateObj.state
+              ? computeStateDisplay(
+                  this.hass.localize,
+                  stateObj,
+                  this.hass.language
+                )
               : html`
                   ${stateObj.attributes.temperature}
                   ${getWeatherUnit(this.hass, "temperature")}

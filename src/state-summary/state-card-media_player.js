@@ -5,6 +5,7 @@ import { PolymerElement } from "@polymer/polymer/polymer-element";
 import "../components/entity/state-info";
 import LocalizeMixin from "../mixins/localize-mixin";
 import HassMediaPlayerEntity from "../util/hass-media-player-model";
+import { computeStateDisplay } from "../common/entity/compute_state_display";
 
 /*
  * @appliesMixin LocalizeMixin
@@ -85,9 +86,7 @@ class StateCardMediaPlayer extends LocalizeMixin(PolymerElement) {
   computePrimaryText(localize, playerObj) {
     return (
       playerObj.primaryTitle ||
-      localize(`state.media_player.${playerObj.stateObj.state}`) ||
-      localize(`state.default.${playerObj.stateObj.state}`) ||
-      playerObj.stateObj.state
+      computeStateDisplay(localize, playerObj.stateObj, this.hass.language)
     );
   }
 }
