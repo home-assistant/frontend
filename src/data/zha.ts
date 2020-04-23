@@ -227,7 +227,7 @@ export const fetchGroupableDevices = (
   hass: HomeAssistant
 ): Promise<ZHADeviceEndpoint[]> =>
   hass.callWS({
-    type: "zha/devices/groupable2",
+    type: "zha/devices/groupable",
   });
 
 export const addMembersToGroup = (
