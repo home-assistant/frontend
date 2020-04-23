@@ -195,7 +195,9 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
                 ? this.hass!.localize(
                     `state_attributes.climate.hvac_action.${stateObj.attributes.hvac_action}`
                   )
-                : this.hass!.localize(`state.climate.${stateObj.state}`)
+                : this.hass!.localize(
+                    `component.climate.state._.${stateObj.state}`
+                  )
             }
             ${
               stateObj.attributes.preset_mode &&

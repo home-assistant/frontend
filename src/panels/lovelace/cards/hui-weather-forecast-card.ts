@@ -32,6 +32,7 @@ import {
   weatherImages,
 } from "../../../data/weather";
 import { stateIcon } from "../../../common/entity/state_icon";
+import { computeStateDisplay } from "../../../common/entity/compute_state_display";
 
 const DAY_IN_MILLISECONDS = 86400000;
 
@@ -185,8 +186,11 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
                 ${this._config.name || computeStateName(stateObj)}
               </div>
               <div class="state">
-                ${this.hass.localize(`state.weather.${stateObj.state}`) ||
-                stateObj.state}
+                ${computeStateDisplay(
+                  this.hass.localize,
+                  stateObj,
+                  this.hass.language
+                )}
               </div>
             </div>
           </div>
