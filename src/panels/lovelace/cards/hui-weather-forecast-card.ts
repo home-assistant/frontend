@@ -165,7 +165,7 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
         tabindex="0"
       >
         <div class="content">
-          <div class="icon-info">
+          <div class="icon-image">
             ${stateObj.state in weatherImages
               ? html`
                   <img
@@ -179,6 +179,8 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
                     .icon=${weatherIcons[stateObj.state] || stateIcon(stateObj)}
                   ></ha-icon>
                 `}
+          </div>
+          <div class="info-temp">
             <div class="info">
               <div class="name">
                 ${this._config.name || computeStateName(stateObj)}
@@ -191,15 +193,15 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
                 )}
               </div>
             </div>
-          </div>
-          <div class="temp-attribute">
-            <div class="temp">
-              ${stateObj.attributes.temperature}<span
-                >${getWeatherUnit(this.hass, "temperature")}</span
-              >
-            </div>
-            <div class="attribute">
-              ${getSecondaryWeatherAttribute(this.hass, stateObj)}
+            <div class="temp-attribute">
+              <div class="temp">
+                ${stateObj.attributes.temperature}<span
+                  >${getWeatherUnit(this.hass, "temperature")}</span
+                >
+              </div>
+              <div class="attribute">
+                ${getSecondaryWeatherAttribute(this.hass, stateObj)}
+              </div>
             </div>
           </div>
         </div>
@@ -337,39 +339,51 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
         align-items: center;
       }
 
-      .icon-info {
+      .icon-image {
         display: flex;
         align-items: center;
-        min-width: 0;
-        flex: 1;
+        min-width: 64px;
+        margin-right: 16px;
       }
 
       .weather-image,
       .weather-icon {
-        flex: 0 0 66px;
-        margin-right: 16px;
+        flex: 0 0 64px;
       }
 
       .weather-icon {
-        --iron-icon-width: 66px;
-        --iron-icon-height: 66px;
+        --iron-icon-width: 64px;
+        --iron-icon-height: 64px;
+      }
+
+      .info-temp {
+        display: flex;
+        justify-content: space-between;
+        flex-grow: 1;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
       }
 
       .info {
         overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
       }
 
       .name {
-        font-size: 16px;
-        color: var(--secondary-text-color);
+        font-size: 28px;
+        line-height: 1.2;
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
       }
 
       .state {
-        font-size: 28px;
-        line-height: 1.2;
+        font-size: 16px;
+        line-height: 1;
+        color: var(--secondary-text-color);
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
@@ -384,7 +398,7 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
       .temp-attribute .temp {
         position: relative;
         font-size: 38px;
-        line-height: 1;
+        line-height: 1.2;
         margin-right: 24px;
       }
 
@@ -436,16 +450,25 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
         color: var(--secondary-text-color);
       }
 
+      :host([narrow]) .icon-image {
+        min-width: 52px;
+      }
+
       :host([narrow]) .weather-image {
-        flex: 0 0 58px;
+        flex: 0 0 52px;
+        width: 52px;
       }
 
       :host([narrow]) .weather-icon {
-        --iron-icon-width: 58px;
-        --iron-icon-height: 58px;
+        --iron-icon-width: 52px;
+        --iron-icon-height: 52px;
       }
 
-      :host([narrow]) .state {
+      :host([narrow]) .info {
+        justify-content: center;
+      }
+
+      :host([narrow]) .name {
         font-size: 22px;
       }
 
@@ -467,22 +490,12 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
         justify-content: space-around;
       }
 
-      :host([veryVeryNarrow]) .content {
-        flex-wrap: wrap;
-        justify-content: center;
-      }
-
-      :host([veryNarrow]) .icon-info {
+      :host([veryNarrow]) .icon-image {
         flex: initial;
       }
 
-      :host([narrow]) .weather-image {
-        flex: 0 0 48px;
-      }
-
-      :host([narrow]) .weather-icon {
-        --iron-icon-width: 48px;
-        --iron-icon-height: 48px;
+      :host([veryNarrow]) .info-temp {
+        justify-content: flex-end;
       }
 
       :host([veryNarrow]) .info {
@@ -499,6 +512,15 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
 
       :host([veryVeryNarrow]) .temp-attribute {
         padding-top: 4px;
+      }
+
+      :host([veryVeryNarrow]) .content {
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+
+      :host([veryVeryNarrow]) .info-temp {
+        justify-content: center;
       }
 
       .unavailable {
