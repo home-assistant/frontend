@@ -654,6 +654,17 @@
                     "stop": "Stop"
                 }
             },
+            "mqtt_device_debug_info": {
+                "deserialize": "Probeer MQTT-berichten als JSON te parseren",
+                "entities": "Entiteiten",
+                "no_entities": "Geen entiteiten",
+                "no_triggers": "Geen triggers",
+                "payload_display": "Payload-display",
+                "recent_messages": "{n} meest recent ontvangen bericht(en)",
+                "show_as_yaml": "Toon als YAML",
+                "title": "{device} foutopsporingsgegevens",
+                "triggers": "Triggers"
+            },
             "options_flow": {
                 "form": {
                     "header": "Instellingen"
@@ -1294,6 +1305,10 @@
                         }
                     }
                 },
+                "filtering": {
+                    "clear": "Wis",
+                    "filtering_by": "Filteren op"
+                },
                 "header": "Configureer Home Assistant",
                 "helpers": {
                     "caption": "Helpers",
@@ -1321,12 +1336,16 @@
                     }
                 },
                 "integrations": {
+                    "add_integration": "Integratie toevoegen",
                     "caption": "Integraties",
                     "config_entry": {
                         "area": "In {area}",
+                        "delete": "Verwijder",
                         "delete_button": "Verwijder {integration}.",
                         "delete_confirm": "Weet je zeker dat je deze integratie wilt verwijderen?",
                         "device_unavailable": "apparaat niet beschikbaar",
+                        "devices": "{count} {count, plural,\n  one {device}\n  other {devices}\n}",
+                        "entities": "{count} {count, plural,\n  one {entity}\n  other {entities}\n}",
                         "entity_unavailable": "entiteit niet beschikbaar",
                         "firmware": "Firmware: {version}",
                         "hub": "Verbonden via",
@@ -1334,8 +1353,11 @@
                         "no_area": "Geen Gebied",
                         "no_device": "Entiteiten zonder apparaten",
                         "no_devices": "Deze integratie heeft geen apparaten.",
+                        "options": "Opties",
+                        "rename": "Naam wijzigen",
                         "restart_confirm": "Herstart Home Assistant om het verwijderen van deze integratie te voltooien",
                         "settings_button": "Instellingen bewerken voor {integration}",
+                        "system_options": "Systeeminstellingen",
                         "system_options_button": "Systeeminstellingen voor {integration}"
                     },
                     "config_flow": {
@@ -1370,11 +1392,15 @@
                         "show_ignored": "Toon genegeerde integraties",
                         "stop_ignore": "Stop met negeren"
                     },
+                    "integration": "integratie",
                     "integration_not_found": "Integratie niet gevonden.",
                     "new": "Stel een nieuwe integratie in",
+                    "no_integrations": "Het lijkt erop dat je nog geen integraties hebt geconfigureerd. Klik op de knop hieronder om uw eerste integratie toe te voegen!",
                     "none": "Er is nog niets geconfigureerd",
                     "note_about_integrations": "Nog niet alle integraties kunnen via de UI worden geconfigureerd.",
-                    "note_about_website_reference": "Meer zijn beschikbaar op de "
+                    "note_about_website_reference": "Meer zijn beschikbaar op de ",
+                    "rename_dialog": "Bewerk de naam van configuratie item",
+                    "rename_input_label": "Vermeldingsnaam"
                 },
                 "introduction": "Hier kun je je componenten en Home Assistant configureren. Het is nog niet mogelijk om alles te configureren vanuit de interface, maar we werken er aan.",
                 "lovelace": {
@@ -1923,7 +1949,7 @@
                 "add_entities": {
                     "generated_unsupported": "Je kan deze functie alleen gebruiken als je de controle over de Lovelace gebruikersinterface hebt overgenomen",
                     "saving_failed": "Opslaan van de Lovelace gebruikersinterface is mislukt.",
-                    "yaml_unsupported": "Je kan deze functie niet gebruiken wanneer je de Lovelace gebruikersinterface gebruikt in YAML modus."
+                    "yaml_unsupported": "Je kunt deze functie niet gebruiken wanneer je de Lovelace gebruikersinterface gebruikt in YAML modus."
                 },
                 "cards": {
                     "confirm_delete": "Weet je zeker dat je deze kaart wilt verwijderen?",
@@ -2241,7 +2267,8 @@
                 "warning": {
                     "attribute_not_found": "Kenmerk {attribute} niet beschikbaar in: {entity}",
                     "entity_non_numeric": "Entiteit is niet-numeriek: {entity}",
-                    "entity_not_found": "Entiteit niet beschikbaar: {entity}"
+                    "entity_not_found": "Entiteit niet beschikbaar: {entity}",
+                    "entity_unavailable": "{entity} is momenteel niet beschikbaar"
                 }
             },
             "mailbox": {
