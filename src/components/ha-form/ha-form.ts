@@ -30,7 +30,7 @@ export interface HaFormBaseSchema {
   default?: HaFormData;
   required?: boolean;
   optional?: boolean;
-  description?: { suffix?: string; current_value?: any };
+  description?: { suffix?: string; current_value?: HaFormData };
 }
 
 export interface HaFormIntegerSchema extends HaFormBaseSchema {
