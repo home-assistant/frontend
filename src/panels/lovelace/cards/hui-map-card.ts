@@ -38,6 +38,7 @@ import { processConfigEntities } from "../common/process-config-entities";
 import { EntityConfig } from "../entity-rows/types";
 import { LovelaceCard } from "../types";
 import { MapCardConfig } from "./types";
+import "./../../../components/ha-card";
 
 @customElement("hui-map-card")
 class HuiMapCard extends LitElement implements LovelaceCard {

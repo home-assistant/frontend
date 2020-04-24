@@ -24,6 +24,7 @@ import {
   EntitiesEditorEvent,
 } from "../types";
 import { configElementStyle } from "./config-elements-style";
+import "./../../../../components/ha-switch";
 
 const cardConfigStruct = struct({
   type: "string",

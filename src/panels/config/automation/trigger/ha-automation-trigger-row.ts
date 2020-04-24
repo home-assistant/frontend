@@ -30,6 +30,7 @@ import "./types/ha-automation-trigger-time";
 import "./types/ha-automation-trigger-time_pattern";
 import "./types/ha-automation-trigger-webhook";
 import "./types/ha-automation-trigger-zone";
+import "@polymer/paper-dropdown-menu/paper-dropdown-menu-light";
 
 const OPTIONS = [
   "device",

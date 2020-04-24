@@ -13,6 +13,7 @@ import { haStyleDialog } from "../../resources/styles";
 import { HomeAssistant } from "../../types";
 import { HaDomainTogglerDialogParams } from "./show-dialog-domain-toggler";
 import { domainToName } from "../../data/integration";
+import "@material/mwc-button/mwc-button";
 
 @customElement("dialog-domain-toggler")
 class DomainTogglerDialog extends LitElement {

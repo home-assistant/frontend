@@ -11,6 +11,7 @@ import "../../../components/ha-card";
 import { HomeAssistant } from "../../../types";
 import { LovelaceCard } from "../types";
 import { EmptyStateCardConfig } from "./types";
+import "@material/mwc-button/mwc-button";
 
 @customElement("hui-empty-state-card")
 export class HuiEmptyStateCard extends LitElement implements LovelaceCard {
@@ -49,7 +50,7 @@ export class HuiEmptyStateCard extends LitElement implements LovelaceCard {
             </mwc-button>
           </a>
         </div>
-      </header-card>
+      </ha-card>
     `;
   }
 

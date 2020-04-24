@@ -18,6 +18,7 @@ import { MQTTDeviceDebugInfoDialogParams } from "./show-dialog-mqtt-device-debug
 import { MQTTDeviceDebugInfo, fetchMQTTDebugInfo } from "../../data/mqtt";
 import "./mqtt-messages";
 import "./mqtt-discovery-payload";
+import "@material/mwc-button/mwc-button";
 
 @customElement("dialog-mqtt-device-debug-info")
 class DialogMQTTDeviceDebugInfo extends LitElement {

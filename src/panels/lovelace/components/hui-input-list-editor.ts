@@ -11,6 +11,7 @@ import {
 import { fireEvent } from "../../../common/dom/fire_event";
 import { HomeAssistant } from "../../../types";
 import { EditorTarget } from "../editor/types";
+import "@polymer/paper-icon-button/paper-icon-button";
 
 @customElement("hui-input-list-editor")
 export class HuiInputListEditor extends LitElement {

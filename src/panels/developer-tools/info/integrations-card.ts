@@ -15,6 +15,7 @@ import {
   domainToName,
 } from "../../../data/integration";
 import { HomeAssistant } from "../../../types";
+import "../../../components/ha-card";
 
 @customElement("integrations-card")
 class IntegrationsCard extends LitElement {

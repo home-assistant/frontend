@@ -20,6 +20,7 @@ import {
   HaFormMultiSelectData,
   HaFormMultiSelectSchema,
 } from "./ha-form";
+import "@polymer/iron-icon/iron-icon";
 
 @customElement("ha-form-multi_select")
 export class HaFormMultiSelect extends LitElement implements HaFormElement {

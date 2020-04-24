@@ -21,6 +21,8 @@ import { EntitiesCardEntityConfig } from "../cards/types";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
 import { LovelaceRow } from "./types";
 import { computeStateDisplay } from "../../../common/entity/compute_state_display";
+import "./../components/hui-warning";
+import "./../components/hui-generic-entity-row";
 
 @customElement("hui-weather-entity-row")
 class HuiWeatherEntityRow extends LitElement implements LovelaceRow {

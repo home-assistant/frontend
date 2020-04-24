@@ -35,6 +35,8 @@ import { SubscribeMixin } from "../../mixins/subscribe-mixin";
 import { PolymerChangedEvent } from "../../polymer-types";
 import { HomeAssistant } from "../../types";
 import "./ha-devices-picker";
+import "@material/mwc-button/mwc-button";
+import "@polymer/paper-icon-button/paper-icon-button";
 
 interface DevicesByArea {
   [areaId: string]: AreaDevices;

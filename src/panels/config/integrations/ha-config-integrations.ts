@@ -2,17 +2,18 @@
 import "@polymer/app-route/app-route";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import {
+  css,
+  CSSResult,
   customElement,
+  html,
+  LitElement,
   property,
   PropertyValues,
-  LitElement,
   TemplateResult,
-  html,
-  CSSResult,
-  css,
 } from "lit-element";
 import { compare } from "../../../common/string/compare";
 import { computeRTL } from "../../../common/util/compute_rtl";
+import { afterNextRender } from "../../../common/util/render-status";
 import "../../../components/entity/ha-state-icon";
 import "../../../components/ha-card";
 import "../../../components/ha-fab";
@@ -38,6 +39,7 @@ import {
   EntityRegistryEntry,
   subscribeEntityRegistry,
 } from "../../../data/entity_registry";
+import { domainToName } from "../../../data/integration";
 import { showConfigEntrySystemOptionsDialog } from "../../../dialogs/config-entry-system-options/show-dialog-config-entry-system-options";
 import { showConfigFlowDialog } from "../../../dialogs/config-flow/show-dialog-config-flow";
 import { showOptionsFlowDialog } from "../../../dialogs/config-flow/show-dialog-options-flow";
@@ -48,11 +50,9 @@ import {
 } from "../../../dialogs/generic/show-dialog-box";
 import "../../../layouts/hass-tabs-subpage";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
+import { haStyle } from "../../../resources/styles";
 import { HomeAssistant, Route } from "../../../types";
 import { configSections } from "../ha-panel-config";
-import { domainToName } from "../../../data/integration";
-import { haStyle } from "../../../resources/styles";
-import { afterNextRender } from "../../../common/util/render-status";
 
 @customElement("ha-config-integrations")
 class HaConfigIntegrations extends SubscribeMixin(LitElement) {

@@ -15,6 +15,7 @@ import { hasConfigOrEntityChanged } from "../common/has-changed";
 import "../components/hui-generic-entity-row";
 import "../components/hui-warning";
 import { ActionRowConfig, LovelaceRow } from "./types";
+import "@material/mwc-button/mwc-button";
 
 @customElement("hui-script-entity-row")
 class HuiScriptEntityRow extends LitElement implements LovelaceRow {

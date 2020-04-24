@@ -24,6 +24,7 @@ import "./types/ha-automation-action-event";
 import "./types/ha-automation-action-scene";
 import "./types/ha-automation-action-service";
 import "./types/ha-automation-action-wait_template";
+import "@polymer/paper-dropdown-menu/paper-dropdown-menu-light";
 
 const OPTIONS = [
   "condition",

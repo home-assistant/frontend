@@ -16,6 +16,8 @@ import "./types/ha-automation-condition-sun";
 import "./types/ha-automation-condition-template";
 import "./types/ha-automation-condition-time";
 import "./types/ha-automation-condition-zone";
+import "./../../../../components/ha-yaml-editor";
+import "@polymer/paper-dropdown-menu/paper-dropdown-menu-light";
 
 const OPTIONS = [
   "device",

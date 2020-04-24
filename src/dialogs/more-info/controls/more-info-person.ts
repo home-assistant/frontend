@@ -14,6 +14,7 @@ import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/map/ha-map";
 import { showZoneEditor } from "../../../data/zone";
 import { HomeAssistant } from "../../../types";
+import "../../../components/ha-attributes";
 
 @customElement("more-info-person")
 class MoreInfoPerson extends LitElement {

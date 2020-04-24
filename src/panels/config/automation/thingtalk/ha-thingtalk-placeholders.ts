@@ -28,6 +28,7 @@ import { haStyleDialog } from "../../../../resources/styles";
 import { HomeAssistant } from "../../../../types";
 import { Placeholder, PlaceholderContainer } from "./dialog-thingtalk";
 import { domainToName } from "../../../../data/integration";
+import "./../../../../components/entity/ha-entity-picker";
 
 declare global {
   // for fire event

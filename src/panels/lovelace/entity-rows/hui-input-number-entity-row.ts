@@ -17,6 +17,7 @@ import { hasConfigOrEntityChanged } from "../common/has-changed";
 import "../components/hui-generic-entity-row";
 import "../components/hui-warning";
 import { EntityConfig, LovelaceRow } from "./types";
+import "@polymer/paper-input/paper-input";
 
 @customElement("hui-input-number-entity-row")
 class HuiInputNumberEntityRow extends LitElement implements LovelaceRow {

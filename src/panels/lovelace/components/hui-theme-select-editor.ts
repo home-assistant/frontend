@@ -10,6 +10,9 @@ import {
 } from "lit-element";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { HomeAssistant } from "../../../types";
+import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
+import "@polymer/paper-listbox/paper-listbox";
+import "@polymer/paper-item/paper-item";
 
 @customElement("hui-theme-select-editor")
 export class HuiThemeSelectEditor extends LitElement {

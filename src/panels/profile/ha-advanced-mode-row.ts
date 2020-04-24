@@ -13,6 +13,8 @@ import {
   getOptimisticFrontendUserDataCollection,
 } from "../../data/frontend";
 import { HomeAssistant } from "../../types";
+import "../../components/ha-switch";
+import "./ha-settings-row";
 
 @customElement("ha-advanced-mode-row")
 class AdvancedModeRow extends LitElement {

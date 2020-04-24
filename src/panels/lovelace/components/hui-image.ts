@@ -15,6 +15,7 @@ import { STATES_OFF } from "../../../common/const";
 import parseAspectRatio from "../../../common/util/parse-aspect-ratio";
 import { fetchThumbnailUrlWithCache } from "../../../data/camera";
 import { CameraEntity, HomeAssistant } from "../../../types";
+import "../../../components/ha-camera-stream";
 
 const UPDATE_INTERVAL = 10000;
 const DEFAULT_FILTER = "grayscale(100%)";
