@@ -1,4 +1,6 @@
+import "@polymer/app-layout/app-toolbar/app-toolbar";
 import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable";
+import "@polymer/paper-icon-button/paper-icon-button";
 import "@polymer/paper-tabs/paper-tab";
 import "@polymer/paper-tabs/paper-tabs";
 import { HassEntity } from "home-assistant-js-websocket";

@@ -33,6 +33,8 @@ const cardConfigStruct = struct({
   hours_to_show: "number?",
 });
 
+const includeDomains = ["sensor"];
+
 @customElement("hui-sensor-card-editor")
 export class HuiSensorCardEditor extends LitElement
   implements LovelaceCardEditor {
@@ -96,7 +98,7 @@ export class HuiSensorCardEditor extends LitElement
           .hass=${this.hass}
           .value="${this._entity}"
           .configValue=${"entity"}
-          .include-domains=${["sensor"]}
+          .includeDomains=${includeDomains}
           @change="${this._valueChanged}"
           allow-custom-entity
         ></ha-entity-picker>

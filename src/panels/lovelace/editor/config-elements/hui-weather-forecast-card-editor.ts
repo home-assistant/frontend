@@ -8,13 +8,12 @@ import {
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/entity/ha-entity-picker";
 import "../../../../components/ha-switch";
-
-import { EntitiesEditorEvent, EditorTarget } from "../types";
 import { HomeAssistant } from "../../../../types";
 import { WeatherForecastCardConfig } from "../../cards/types";
 import { struct } from "../../common/structs/struct";
 import "../../components/hui-theme-select-editor";
 import { LovelaceCardEditor } from "../../types";
+import { EditorTarget, EntitiesEditorEvent } from "../types";
 import { configElementStyle } from "./config-elements-style";
 
 const cardConfigStruct = struct({
@@ -24,6 +23,8 @@ const cardConfigStruct = struct({
   theme: "string?",
   show_forecast: "boolean?",
 });
+
+const includeDomains = ["weather"];
 
 @customElement("hui-weather-forecast-card-editor")
 export class HuiWeatherForecastCardEditor extends LitElement
@@ -70,7 +71,7 @@ export class HuiWeatherForecastCardEditor extends LitElement
           .hass=${this.hass}
           .value=${this._entity}
           .configValue=${"entity"}
-          .includeDomains=${["weather"]}
+          .includeDomains=${includeDomains}
           @change=${this._valueChanged}
           allow-custom-entity
         ></ha-entity-picker>

@@ -24,6 +24,7 @@ import "./hassio-addon-config";
 import "./hassio-addon-info";
 import "./hassio-addon-logs";
 import "./hassio-addon-network";
+import "../../../src/layouts/hass-subpage";
 
 @customElement("hassio-addon-view")
 class HassioAddonView extends LitElement {

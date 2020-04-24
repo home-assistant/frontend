@@ -17,6 +17,7 @@ import { fireEvent } from "../../common/dom/fire_event";
 import { compare } from "../../common/string/compare";
 import { fetchUsers, User } from "../../data/user";
 import { HomeAssistant } from "../../types";
+import "./ha-user-badge";
 
 class HaUserPicker extends LitElement {
   public hass?: HomeAssistant;

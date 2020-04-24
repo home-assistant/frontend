@@ -24,6 +24,8 @@ const cardConfigStruct = struct({
   theme: "string?",
 });
 
+const includeDomains = ["plant"];
+
 @customElement("hui-plant-status-card-editor")
 export class HuiPlantStatusCardEditor extends LitElement
   implements LovelaceCardEditor {
@@ -65,7 +67,7 @@ export class HuiPlantStatusCardEditor extends LitElement
           .hass=${this.hass}
           .value="${this._entity}"
           .configValue=${"entity"}
-          .include-domains=${["plant"]}
+          .includeDomains=${includeDomains}
           @change="${this._valueChanged}"
           allow-custom-entity
         ></ha-entity-picker>

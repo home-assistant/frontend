@@ -1,4 +1,5 @@
 import "@material/mwc-button";
+import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable";
 import "@polymer/paper-spinner/paper-spinner";
 import {
   css,

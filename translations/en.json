@@ -654,6 +654,17 @@
                     "stop": "Stop"
                 }
             },
+            "mqtt_device_debug_info": {
+                "deserialize": "Attempt to parse MQTT messages as JSON",
+                "entities": "Entities",
+                "no_entities": "No entities",
+                "no_triggers": "No triggers",
+                "payload_display": "Payload display",
+                "recent_messages": "{n} most recently received message(s)",
+                "show_as_yaml": "Show as YAML",
+                "title": "{device} debug info",
+                "triggers": "Triggers"
+            },
             "options_flow": {
                 "form": {
                     "header": "Options"
@@ -1294,6 +1305,10 @@
                         }
                     }
                 },
+                "filtering": {
+                    "clear": "Clear",
+                    "filtering_by": "Filtering by"
+                },
                 "header": "Configure Home Assistant",
                 "helpers": {
                     "caption": "Helpers",
@@ -1321,12 +1336,16 @@
                     }
                 },
                 "integrations": {
+                    "add_integration": "Add integration",
                     "caption": "Integrations",
                     "config_entry": {
                         "area": "In {area}",
+                        "delete": "Delete",
                         "delete_button": "Delete {integration}",
                         "delete_confirm": "Are you sure you want to delete this integration?",
                         "device_unavailable": "device unavailable",
+                        "devices": "{count} {count, plural,\n  one {device}\n  other {devices}\n}",
+                        "entities": "{count} {count, plural,\n  one {entity}\n  other {entities}\n}",
                         "entity_unavailable": "entity unavailable",
                         "firmware": "Firmware: {version}",
                         "hub": "Connected via",
@@ -1334,8 +1353,11 @@
                         "no_area": "No Area",
                         "no_device": "Entities without devices",
                         "no_devices": "This integration has no devices.",
+                        "options": "Options",
+                        "rename": "Rename",
                         "restart_confirm": "Restart Home Assistant to finish removing this integration",
                         "settings_button": "Edit settings for {integration}",
+                        "system_options": "System options",
                         "system_options_button": "System options for {integration}"
                     },
                     "config_flow": {
@@ -1370,11 +1392,15 @@
                         "show_ignored": "Show ignored integrations",
                         "stop_ignore": "Stop ignoring"
                     },
+                    "integration": "integration",
                     "integration_not_found": "Integration not found.",
                     "new": "Set up a new integration",
+                    "no_integrations": "Seems like you don't have any integations configured yet. Click on the button below to add your first integration!",
                     "none": "Nothing configured yet",
                     "note_about_integrations": "Not all integrations can be configured via the UI yet.",
-                    "note_about_website_reference": "More are available on the "
+                    "note_about_website_reference": "More are available on the ",
+                    "rename_dialog": "Edit the name of this config entry",
+                    "rename_input_label": "Entry name"
                 },
                 "introduction": "Here it is possible to configure your components and Home Assistant. Not everything is possible to configure from the UI yet, but we're working on it.",
                 "lovelace": {
@@ -2241,7 +2267,8 @@
                 "warning": {
                     "attribute_not_found": "Attribute {attribute} not available in: {entity}",
                     "entity_non_numeric": "Entity is non-numeric: {entity}",
-                    "entity_not_found": "Entity not available: {entity}"
+                    "entity_not_found": "Entity not available: {entity}",
+                    "entity_unavailable": "{entity} is currently unavailable"
                 }
             },
             "mailbox": {

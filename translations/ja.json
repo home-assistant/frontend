@@ -294,6 +294,9 @@
             "script": {
                 "execute": "実行"
             },
+            "service": {
+                "run": "実行"
+            },
             "water_heater": {
                 "away_mode": "外出モード",
                 "target_temperature": "目標温度"
@@ -302,6 +305,7 @@
                 "attributes": {
                     "air_pressure": "気圧",
                     "humidity": "湿度",
+                    "precipitation": "降水量",
                     "temperature": "温度",
                     "wind_speed": "風速"
                 },
@@ -323,13 +327,18 @@
                     "wnw": "西北西",
                     "wsw": "西南西"
                 },
-                "forecast": "天気予報"
+                "forecast": "天気予報",
+                "high": "高",
+                "low": "低"
             }
         },
         "common": {
             "cancel": "キャンセル",
+            "delete": "削除",
             "loading": "読込中",
             "no": "いいえ",
+            "successfully_deleted": "正常に削除されました",
+            "undo": "元に戻す",
             "yes": "はい"
         },
         "components": {
@@ -387,17 +396,58 @@
                 "title": "ドメインを切り替え"
             },
             "entity_registry": {
+                "dismiss": "消去",
                 "editor": {
+                    "confirm_delete": "このエントリを削除してもよろしいですか？",
                     "delete": "削除",
                     "enabled_cause": "{cause} によって無効にされました。",
+                    "enabled_description": "無効化されたエンティティは Home Assistant に追加されません。",
                     "enabled_label": "エンティティを有効化",
+                    "entity_id": "エンティティ ID",
+                    "icon": "アイコンの上書き",
+                    "name": "名前の上書き",
+                    "unavailable": "このエンティティは現在利用できません。",
                     "update": "更新"
                 }
             },
             "generic": {
                 "cancel": "キャンセル",
+                "close": "閉じる",
                 "default_confirmation_title": "本当ですか？",
                 "ok": "OK"
+            },
+            "helper_settings": {
+                "generic": {
+                    "icon": "アイコン",
+                    "name": "名前"
+                },
+                "input_datetime": {
+                    "date": "日付",
+                    "datetime": "日時",
+                    "mode": "何を入力しますか",
+                    "time": "時刻"
+                },
+                "input_number": {
+                    "box": "入力フィールド",
+                    "max": "最大値",
+                    "min": "最小値",
+                    "mode": "表示モード",
+                    "slider": "スライダー",
+                    "step": "ステップサイズ",
+                    "unit_of_measurement": "測定単位"
+                },
+                "input_select": {
+                    "add": "追加",
+                    "add_option": "オプションを追加",
+                    "no_options": "オプションはまだありません。",
+                    "options": "オプション"
+                },
+                "input_text": {
+                    "mode": "表示モード",
+                    "password": "パスワード",
+                    "text": "テキスト"
+                },
+                "required_error_msg": "この項目は必須です"
             },
             "more_info_control": {
                 "dismiss": "ダイアログを閉じる",
@@ -433,6 +483,10 @@
                 "label_voice": "入力して「enter」を押すか、マイクをタップして話します"
             },
             "zha_device_info": {
+                "buttons": {
+                    "zigbee_information": "Zigbee 情報"
+                },
+                "device_signature": "Zigbee デバイス署名",
                 "services": {
                     "remove": "Zigbee ネットワークからデバイスを削除します。"
                 }
@@ -466,6 +520,13 @@
                 },
                 "areas": {
                     "caption": "エリア",
+                    "data_table": {
+                        "area": "エリア",
+                        "devices": "デバイス"
+                    },
+                    "delete": {
+                        "confirmation_title": "このエリアを削除してもよろしいですか？"
+                    },
                     "description": "すべて自宅のエリアの一覧",
                     "picker": {
                         "header": "エリア"
@@ -611,6 +672,9 @@
                         "delete_confirm": "このオートメーションを削除してもよろしいですか？",
                         "edit_automation": "オートメーションを編集",
                         "header": "オートメーションエディター",
+                        "headers": {
+                            "name": "名前"
+                        },
                         "no_automations": "編集可能なオートメーションが見つかりません。",
                         "only_editable": "automations.yaml で定義されたオートメーションのみが編集可能です。",
                         "show_info_automation": "オートメーションに関する情報を表示"
@@ -688,9 +752,12 @@
                 "devices": {
                     "automation": {
                         "automations": "オートメーション",
+                        "create": "デバイスからオートメーションを作成",
                         "no_automations": "オートメーションなし",
                         "no_device_automations": "このデバイスで利用可能なオートメーションはありません。"
                     },
+                    "cant_edit": "編集できるのは、UI で作成された項目のみです。",
+                    "confirm_delete": "このデバイスを削除してもよろしいですか？",
                     "confirm_rename_entity_ids": "エンティティの ID も変更しますか？",
                     "data_table": {
                         "area": "エリア",
@@ -698,12 +765,16 @@
                         "device": "デバイス",
                         "integration": "インテグレーション",
                         "manufacturer": "メーカー",
-                        "model": "型番"
+                        "model": "型番",
+                        "no_devices": "デバイスなし"
                     },
+                    "delete": "削除",
                     "description": "接続されたデバイスの管理",
                     "device_not_found": "デバイスが見つかりません。",
                     "name": "名前",
+                    "no_devices": "デバイスなし",
                     "scene": {
+                        "create": "デバイスからシーンを作成",
                         "no_scenes": "シーンなし",
                         "scenes": "シーン"
                     },
@@ -736,6 +807,30 @@
                     }
                 },
                 "header": "Home Assistant の設定",
+                "helpers": {
+                    "caption": "ヘルパー",
+                    "dialog": {
+                        "add_helper": "ヘルパーを追加",
+                        "add_platform": "{platform} を追加",
+                        "create": "作成"
+                    },
+                    "picker": {
+                        "add_helper": "ヘルパーを追加",
+                        "headers": {
+                            "editable": "編集可能",
+                            "entity_id": "エンティティ ID",
+                            "name": "名前",
+                            "type": "タイプ"
+                        }
+                    },
+                    "types": {
+                        "input_boolean": "切り替え",
+                        "input_datetime": "日付・時刻",
+                        "input_number": "数",
+                        "input_select": "ドロップダウン",
+                        "input_text": "テキスト"
+                    }
+                },
                 "integrations": {
                     "config_entry": {
                         "delete_button": "{integration} を削除"
@@ -746,12 +841,80 @@
                         "created_config": "{name} の構成が作成しました。",
                         "error_saving_area": "エリアを保存できません: {error}",
                         "finish": "完了",
+                        "loading_first_time": "インテグレーションのインストールを完了するまでお待ちください",
                         "submit": "送信"
                     },
                     "description": "インテグレーションの管理とセットアップ",
                     "details": "インテグレーションの詳細",
                     "home_assistant_website": "Home Assistant のウェブサイト",
                     "integration_not_found": "インテグレーションが見つかりません。"
+                },
+                "lovelace": {
+                    "caption": "Lovelace ダッシュボード",
+                    "dashboards": {
+                        "caption": "ダッシュボード",
+                        "conf_mode": {
+                            "storage": "UI 制御",
+                            "yaml": "YAML ファイル"
+                        },
+                        "default_dashboard": "これはデフォルトのダッシュボードです",
+                        "detail": {
+                            "create": "作成",
+                            "delete": "削除",
+                            "dismiss": "閉じる",
+                            "edit_dashboard": "ダッシュボードを編集",
+                            "icon": "アイコン",
+                            "new_dashboard": "新しいダッシュボードを追加",
+                            "require_admin": "管理者のみ",
+                            "show_sidebar": "サイドバーに表示",
+                            "title": "タイトル",
+                            "title_required": "タイトルが必要です。",
+                            "update": "更新",
+                            "url": "URL"
+                        },
+                        "picker": {
+                            "add_dashboard": "ダッシュボードを追加",
+                            "headers": {
+                                "default": "デフォルト",
+                                "filename": "ファイル名",
+                                "require_admin": "管理者のみ",
+                                "sidebar": "サイドバーに表示",
+                                "title": "タイトル"
+                            },
+                            "open": "開く"
+                        }
+                    },
+                    "description": "Lovelace ダッシュボードを設定する",
+                    "resources": {
+                        "caption": "リソース",
+                        "confirm_delete": "このリソースを削除してもよろしいですか？",
+                        "detail": {
+                            "create": "作成",
+                            "delete": "削除",
+                            "dismiss": "閉じる",
+                            "new_resource": "新しいリソースを追加",
+                            "type": "リソースの種類",
+                            "update": "更新",
+                            "url": "URL",
+                            "url_error_msg": "URL は必須フィールドです",
+                            "warning_header": "注意してください！"
+                        },
+                        "picker": {
+                            "add_resource": "リソースを追加",
+                            "headers": {
+                                "type": "タイプ",
+                                "url": "URL"
+                            },
+                            "no_resources": "リソースなし"
+                        },
+                        "refresh_header": "更新しますか？",
+                        "types": {
+                            "css": "Stylesheet",
+                            "html": "HTML (非推奨)",
+                            "js": "JavaScript ファイル (非推奨)",
+                            "module": "JavaScript モジュール"
+                        }
+                    }
                 },
                 "person": {
                     "caption": "人",
@@ -795,6 +958,9 @@
                         "delete_scene": "シーンを削除",
                         "edit_scene": "シーンを編集",
                         "header": "シーンエディター",
+                        "headers": {
+                            "name": "名前"
+                        },
                         "learn_more": "シーンの情報をもっと見る。",
                         "no_scenes": "編集可能なシーンが見つかりません。",
                         "only_editable": "scenes.yaml で定義されたシーンのみが編集可能です。",
@@ -812,6 +978,10 @@
                     },
                     "picker": {
                         "edit_script": "スクリプトを編集",
+                        "headers": {
+                            "name": "名前"
+                        },
+                        "show_info": "スクリプトに関する情報を表示",
                         "trigger_script": "トリガースクリプト"
                     }
                 },
@@ -849,13 +1019,24 @@
                     "editor": {
                         "activate_user": "ユーザーを有効化",
                         "active": "アクティブ",
+                        "admin": "管理者",
                         "change_password": "パスワードの変更",
                         "deactivate_user": "ユーザーを無効化",
                         "delete_user": "ユーザーを削除",
                         "group": "グループ",
                         "id": "ID",
+                        "name": "名前",
                         "owner": "所有者",
-                        "system_generated": "システムジェネレート"
+                        "system_generated": "システムジェネレート",
+                        "system_generated_users_not_editable": "システムが生成されたユーザーを変更できません。",
+                        "update_user": "更新"
+                    },
+                    "picker": {
+                        "headers": {
+                            "group": "グループ",
+                            "name": "名前",
+                            "system": "システム"
+                        }
                     }
                 },
                 "zha": {
@@ -875,13 +1056,22 @@
                     }
                 },
                 "zone": {
+                    "add_zone": "ゾーンを追加",
+                    "caption": "ゾーン",
+                    "confirm_delete": "このゾーンを削除してもよろしいですか？",
+                    "create_zone": "ゾーンを作成",
                     "detail": {
+                        "create": "作成",
+                        "delete": "削除",
                         "icon": "アイコン",
                         "latitude": "緯度",
                         "longitude": "経度",
                         "name": "名前",
                         "new_zone": "新しいゾーン",
-                        "radius": "半径"
+                        "passive": "パッシブ",
+                        "radius": "半径",
+                        "required_error_msg": "この項目は必須です",
+                        "update": "更新"
                     },
                     "go_to_core_config": "一般的な構成に移動しますか？"
                 },
@@ -982,6 +1172,10 @@
             },
             "lovelace": {
                 "cards": {
+                    "safe-mode": {
+                        "description": "Home Assistant は、構成の読み込み中に問題が発生し、セーフモードで実行されています。エラーログを見て、何が問題だったかを確認してください。",
+                        "header": "セーフモードがアクティブになりました"
+                    },
                     "shopping-list": {
                         "add_item": "アイテムを追加",
                         "clear_items": "チェックされたアイテムを削除"
@@ -993,6 +1187,10 @@
                             "name": "ボタン"
                         },
                         "conditional": {
+                            "card": "カード",
+                            "change_type": "タイプの変更",
+                            "conditions": "条件",
+                            "current_state": "現在",
                             "name": "条件付き"
                         },
                         "entities": {
@@ -1002,10 +1200,18 @@
                         "entity-filter": {
                             "name": "エンティティフィルター"
                         },
+                        "entity": {
+                            "name": "エンティティ"
+                        },
                         "gauge": {
                             "name": "ゲージ"
                         },
                         "generic": {
+                            "attribute": "属性",
+                            "double_tap_action": "ダブルタップアクション",
+                            "manual": "マニュアル",
+                            "no_theme": "テーマなし",
+                            "state": "状態",
                             "theme": "テーマ"
                         },
                         "history-graph": {
@@ -1049,8 +1255,13 @@
                             "name": "垂直スタック"
                         }
                     },
+                    "cardpicker": {
+                        "custom_card": "カスタム",
+                        "no_description": "説明がありません。"
+                    },
                     "edit_card": {
                         "delete": "カードを削除",
+                        "duplicate": "重複するカード",
                         "move": "ビューに移動",
                         "options": "その他のオプション",
                         "pick_card": "どのカードを追加しますか？"
@@ -1060,7 +1271,10 @@
                     },
                     "edit_view": {
                         "move_left": "ビューを左に移動",
-                        "move_right": "ビューを右に移動"
+                        "move_right": "ビューを右に移動",
+                        "tab_badges": "バッジ",
+                        "tab_settings": "設定",
+                        "tab_visibility": "可視性"
                     },
                     "menu": {
                         "open": "Lovelace メニューを開く"
@@ -1071,13 +1285,20 @@
                         "error_invalid_config": "設定が無効です: {error}",
                         "error_parse_yaml": "YAMLを解析できません: {error}",
                         "error_save_yaml": "YAMLを保存できません: {error}"
+                    },
+                    "save_config": {
+                        "close": "閉じる"
                     }
                 },
                 "menu": {
                     "close": "閉じる",
-                    "exit_edit_mode": "UI 編集モードを終了"
+                    "exit_edit_mode": "UI 編集モードを終了",
+                    "reload_resources": "リソースの再読込"
                 },
                 "reload_lovelace": "Lovelace の再読込",
+                "reload_resources": {
+                    "refresh_header": "更新しますか？"
+                },
                 "unused_entities": {
                     "available_entities": "これらは Lovelace UI にまだありませんの使用可能なエンティティです。",
                     "domain": "ドメイン",
@@ -1199,6 +1420,11 @@
                 "change_password": {
                     "current_password": "現在のパスワード",
                     "header": "パスワードの変更"
+                },
+                "dashboard": {
+                    "description": "このデバイスのデフォルトのダッシュボードを選択してください。",
+                    "dropdown_label": "ダッシュボード",
+                    "header": "ダッシュボード"
                 },
                 "force_narrow": {
                     "header": "サイドバーを常に非表示にする"

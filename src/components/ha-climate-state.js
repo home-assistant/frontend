@@ -110,7 +110,7 @@ class HaClimateState extends LocalizeMixin(PolymerElement) {
   }
 
   _localizeState(localize, stateObj) {
-    const stateString = localize(`state.climate.${stateObj.state}`);
+    const stateString = localize(`component.climate.state._.${stateObj.state}`);
     return stateObj.attributes.hvac_action
       ? `${localize(
           `state_attributes.climate.hvac_action.${stateObj.attributes.hvac_action}`

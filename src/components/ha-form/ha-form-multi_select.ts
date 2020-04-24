@@ -1,3 +1,4 @@
+import "@polymer/iron-icon/iron-icon";
 import "@polymer/paper-checkbox/paper-checkbox";
 import "@polymer/paper-input/paper-input";
 import "@polymer/paper-item/paper-icon-item";

@@ -11,6 +11,7 @@ import {
 } from "lit-element";
 import { classMap } from "lit-html/directives/class-map";
 import secondsToDuration from "../../common/datetime/seconds_to_duration";
+import { computeStateDisplay } from "../../common/entity/compute_state_display";
 import { computeStateDomain } from "../../common/entity/compute_state_domain";
 import { computeStateName } from "../../common/entity/compute_state_name";
 import { domainIcon } from "../../common/entity/domain_icon";
@@ -18,7 +19,6 @@ import { stateIcon } from "../../common/entity/state_icon";
 import { timerTimeRemaining } from "../../common/entity/timer_time_remaining";
 import { HomeAssistant } from "../../types";
 import "../ha-label-badge";
-import { computeStateDisplay } from "../../common/entity/compute_state_display";
 
 @customElement("ha-state-label-badge")
 export class HaStateLabelBadge extends LitElement {

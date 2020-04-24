@@ -1,16 +1,14 @@
 import {
-  html,
-  LitElement,
-  TemplateResult,
-  customElement,
-  property,
   css,
   CSSResult,
+  customElement,
+  html,
+  LitElement,
+  property,
+  TemplateResult,
 } from "lit-element";
-
-import { LovelaceRow, TextConfig } from "../entity-rows/types";
-
 import "../../../components/ha-icon";
+import { LovelaceRow, TextConfig } from "../entity-rows/types";
 
 @customElement("hui-text-row")
 class HuiTextRow extends LitElement implements LovelaceRow {

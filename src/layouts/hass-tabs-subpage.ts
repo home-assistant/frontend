@@ -16,6 +16,7 @@ import { navigate } from "../common/navigate";
 import "../components/ha-menu-button";
 import "../components/ha-paper-icon-button-arrow-prev";
 import { HomeAssistant, Route } from "../types";
+import "../components/ha-icon";
 
 export interface PageNavigation {
   path: string;
@@ -226,6 +227,10 @@ class HassTabsSubpage extends LitElement {
         padding: 0 16px;
         width: 20%;
         min-width: 0;
+      }
+
+      :host(:not([narrow])) #toolbar-icon {
+        min-width: 40px;
       }
 
       ha-menu-button,

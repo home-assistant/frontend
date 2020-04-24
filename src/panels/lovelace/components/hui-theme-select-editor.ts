@@ -1,4 +1,7 @@
 import "@material/mwc-button";
+import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
+import "@polymer/paper-item/paper-item";
+import "@polymer/paper-listbox/paper-listbox";
 import {
   css,
   CSSResult,

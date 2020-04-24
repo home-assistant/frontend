@@ -165,7 +165,7 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
       <ha-card
         .header="${this._config.name ||
         stateObj.attributes.friendly_name ||
-        this._label(stateObj.state)}"
+        this._stateDisplay(stateObj.state)}"
       >
         <ha-label-badge
           class="${classMap({ [stateObj.state]: true })}"
@@ -184,7 +184,7 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
                 @click="${this._handleActionClick}"
                 outlined
               >
-                ${this._label(state)}
+                ${this._stateDisplay(state)}
               </mwc-button>
             `;
           })}
@@ -212,7 +212,9 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
                           outlined
                         >
                           ${value === "clear"
-                            ? this._label("clear_code")
+                            ? this.hass!.localize(
+                                `ui.card.alarm_control_panel.clear_code`
+                              )
                             : value}
                         </mwc-button>
                       `;
@@ -232,10 +234,9 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
       : stateLabel;
   }
 
-  private _label(state: string): string {
-    return (
-      this.hass!.localize(`state.alarm_control_panel.${state}`) ||
-      this.hass!.localize(`ui.card.alarm_control_panel.${state}`)
+  private _stateDisplay(state: string): string {
+    return this.hass!.localize(
+      `component.alarm_control_panel.state._.${state}`
     );
   }
 

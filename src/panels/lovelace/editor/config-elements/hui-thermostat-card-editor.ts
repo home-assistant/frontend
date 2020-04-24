@@ -23,6 +23,8 @@ const cardConfigStruct = struct({
   theme: "string?",
 });
 
+const includeDomains = ["climate"];
+
 @customElement("hui-thermostat-card-editor")
 export class HuiThermostatCardEditor extends LitElement
   implements LovelaceCardEditor {
@@ -64,7 +66,7 @@ export class HuiThermostatCardEditor extends LitElement
           .hass=${this.hass}
           .value="${this._entity}"
           .configValue=${"entity"}
-          .include-domains=${["climate"]}
+          .includeDomains=${includeDomains}
           @change="${this._valueChanged}"
           allow-custom-entity
         ></ha-entity-picker>

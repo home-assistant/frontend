@@ -7,6 +7,7 @@ import {
   PropertyValues,
   TemplateResult,
 } from "lit-element";
+import { domainToName } from "../../data/integration";
 import {
   deleteConfig,
   fetchConfig,
@@ -25,7 +26,6 @@ import { loadLovelaceResources } from "./common/load-resources";
 import { showSaveDialog } from "./editor/show-save-config-dialog";
 import "./hui-root";
 import { Lovelace } from "./types";
-import { domainToName } from "../../data/integration";
 
 (window as any).loadCardHelpers = () => import("./custom-card-helpers");
 

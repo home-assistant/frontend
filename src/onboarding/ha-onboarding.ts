@@ -24,10 +24,10 @@ import {
 import { subscribeUser } from "../data/ws-user";
 import { litLocalizeLiteMixin } from "../mixins/lit-localize-lite-mixin";
 import { HassElement } from "../state/hass-element";
+import { HomeAssistant } from "../types";
 import { registerServiceWorker } from "../util/register-service-worker";
 import "./onboarding-create-user";
 import "./onboarding-loading";
-import { HomeAssistant } from "../types";
 
 interface OnboardingEvent<T extends ValidOnboardingStep> {
   type: T;
