@@ -29,6 +29,8 @@ const cardConfigStruct = struct({
   theme: "string?",
 });
 
+const includeDomains = ["alarm_control_panel"];
+
 @customElement("hui-alarm-panel-card-editor")
 export class HuiAlarmPanelCardEditor extends LitElement
   implements LovelaceCardEditor {
@@ -76,7 +78,7 @@ export class HuiAlarmPanelCardEditor extends LitElement
           .hass=${this.hass}
           .value="${this._entity}"
           .configValue=${"entity"}
-          .include-domains=${["alarm_control_panel"]}
+          .includeDomains=${includeDomains}
           @change="${this._valueChanged}"
           allow-custom-entity
         ></ha-entity-picker>
