@@ -1,11 +1,11 @@
-import {
-  LitElement,
-  html,
-  TemplateResult,
-  customElement,
-  property,
-} from "lit-element";
 import { safeDump } from "js-yaml";
+import {
+  customElement,
+  html,
+  LitElement,
+  property,
+  TemplateResult,
+} from "lit-element";
 import { MQTTMessage } from "../../data/mqtt";
 
 @customElement("mqtt-messages")

@@ -22,7 +22,9 @@ import { computeDomain } from "../../../common/entity/compute_domain";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import { domainIcon } from "../../../common/entity/domain_icon";
 import { stateIcon } from "../../../common/entity/state_icon";
+import { navigate } from "../../../common/navigate";
 import "../../../common/search/search-input";
+import { LocalizeFunc } from "../../../common/translations/localize";
 import type {
   DataTableColumnContainer,
   DataTableColumnData,
@@ -30,6 +32,7 @@ import type {
   SelectionChangedEvent,
 } from "../../../components/data-table/ha-data-table";
 import "../../../components/ha-icon";
+import { ConfigEntry, getConfigEntries } from "../../../data/config_entries";
 import {
   computeEntityRegistryName,
   EntityRegistryEntry,
@@ -37,6 +40,7 @@ import {
   subscribeEntityRegistry,
   updateEntityRegistryEntry,
 } from "../../../data/entity_registry";
+import { domainToName } from "../../../data/integration";
 import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
 import "../../../layouts/hass-loading-screen";
 import "../../../layouts/hass-tabs-subpage-data-table";
@@ -49,10 +53,6 @@ import {
   loadEntityEditorDialog,
   showEntityEditorDialog,
 } from "./show-dialog-entity-editor";
-import { getConfigEntries, ConfigEntry } from "../../../data/config_entries";
-import { LocalizeFunc } from "../../../common/translations/localize";
-import { domainToName } from "../../../data/integration";
-import { navigate } from "../../../common/navigate";
 
 export interface StateEntity extends EntityRegistryEntry {
   readonly?: boolean;

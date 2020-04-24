@@ -16,12 +16,12 @@ import { styleMap } from "lit-html/directives/style-map";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../common/dom/fire_event";
 import "../../common/search/search-input";
+import { LocalizeFunc } from "../../common/translations/localize";
 import "../../components/ha-icon-next";
+import { domainToName } from "../../data/integration";
 import { HomeAssistant } from "../../types";
 import { FlowConfig } from "./show-dialog-data-entry-flow";
 import { configFlowContentStyles } from "./styles";
-import { domainToName } from "../../data/integration";
-import { LocalizeFunc } from "../../common/translations/localize";
 
 interface HandlerObj {
   name: string;

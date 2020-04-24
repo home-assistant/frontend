@@ -10,8 +10,8 @@ import {
 } from "home-assistant-js-websocket";
 import { LocalizeFunc } from "./common/translations/localize";
 import { CoreFrontendUserData } from "./data/frontend";
-import { ExternalMessaging } from "./external_app/external_messaging";
 import { getHassTranslations } from "./data/translation";
+import { ExternalMessaging } from "./external_app/external_messaging";
 
 declare global {
   /* eslint-disable no-var, no-redeclare */

@@ -32,6 +32,7 @@ import {
 import "../../../../src/layouts/loading-screen";
 import { generateDefaultViewConfig } from "../../../../src/panels/lovelace/common/generate-lovelace-config";
 import "./hc-layout";
+import "@material/mwc-button/mwc-button";
 
 @customElement("hc-cast")
 class HcCast extends LitElement {

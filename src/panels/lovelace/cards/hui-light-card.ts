@@ -14,6 +14,7 @@ import { classMap } from "lit-html/directives/class-map";
 import { styleMap } from "lit-html/directives/style-map";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { fireEvent } from "../../../common/dom/fire_event";
+import { computeStateDisplay } from "../../../common/entity/compute_state_display";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import { stateIcon } from "../../../common/entity/state_icon";
 import { supportsFeature } from "../../../common/entity/supports-feature";
@@ -154,8 +155,11 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
             ${UNAVAILABLE_STATES.includes(stateObj.state)
               ? html`
                   <div>
-                    ${this.hass.localize(`state.default.${stateObj.state}`) ||
-                    stateObj.state}
+                    ${computeStateDisplay(
+                      this.hass.localize,
+                      stateObj,
+                      this.hass.language
+                    )}
                   </div>
                 `
               : html`

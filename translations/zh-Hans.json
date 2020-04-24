@@ -654,6 +654,17 @@
                     "stop": "停止"
                 }
             },
+            "mqtt_device_debug_info": {
+                "deserialize": "尝试将 MQTT 消息解析为 JSON",
+                "entities": "实体",
+                "no_entities": "没有实体",
+                "no_triggers": "没有触发器",
+                "payload_display": "数据体显示",
+                "recent_messages": "最近 {n} 条收到的消息",
+                "show_as_yaml": "显示为 YAML",
+                "title": "{device} 调试信息",
+                "triggers": "触发器"
+            },
             "options_flow": {
                 "form": {
                     "header": "选项"
@@ -1294,6 +1305,10 @@
                         }
                     }
                 },
+                "filtering": {
+                    "clear": "清除",
+                    "filtering_by": "筛选方式"
+                },
                 "header": "配置 Home Assistant",
                 "helpers": {
                     "caption": "辅助元素",
@@ -1321,12 +1336,16 @@
                     }
                 },
                 "integrations": {
+                    "add_integration": "添加集成",
                     "caption": "集成",
                     "config_entry": {
                         "area": "位于：{area}",
+                        "delete": "删除",
                         "delete_button": "删除{integration}",
                         "delete_confirm": "您确定要删除此集成吗？",
                         "device_unavailable": "设备不可用",
+                        "devices": "{count} {count, plural,\n  one {个设备}\n  other {个设备}\n}",
+                        "entities": "{count} {count, plural,\n  one {个实体}\n  other {个实体}\n}",
                         "entity_unavailable": "实体不可用",
                         "firmware": "固件：{version}",
                         "hub": "连接于",
@@ -1334,8 +1353,11 @@
                         "no_area": "没有区域",
                         "no_device": "无设备关联的实体",
                         "no_devices": "此集成没有设备。",
+                        "options": "选项",
+                        "rename": "重命名",
                         "restart_confirm": "重启 Home Assistant 以完成此集成的删除",
                         "settings_button": "编辑{integration}设置",
+                        "system_options": "系统选项",
                         "system_options_button": "{integration}系统选项"
                     },
                     "config_flow": {
@@ -1370,11 +1392,15 @@
                         "show_ignored": "显示忽略的集成",
                         "stop_ignore": "不再忽略"
                     },
+                    "integration": "个集成",
                     "integration_not_found": "未找到集成。",
                     "new": "设置新集成",
+                    "no_integrations": "您好像还没有配置任何集成。点击下面的按钮来添加第一个集成！",
                     "none": "尚未配置任何集成",
                     "note_about_integrations": "并非所有集成都可以通过 UI 进行配置。",
-                    "note_about_website_reference": "更多可用信息，尽在 "
+                    "note_about_website_reference": "更多可用信息，尽在 ",
+                    "rename_dialog": "编辑此配置项的名称",
+                    "rename_input_label": "条目名称"
                 },
                 "introduction": "您可以在此配置 Home Assistant 及组件。目前并非所有配置都能通过前端 UI 完成，但是我们在努力实现中。",
                 "lovelace": {
@@ -2241,7 +2267,8 @@
                 "warning": {
                     "attribute_not_found": "属性 {attribute} 对 {entity} 不可用",
                     "entity_non_numeric": "实体 {entity} 非数值",
-                    "entity_not_found": "实体 {entity} 不可用"
+                    "entity_not_found": "实体 {entity} 不可用",
+                    "entity_unavailable": "{entity} 当前不可用"
                 }
             },
             "mailbox": {

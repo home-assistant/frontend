@@ -43,6 +43,8 @@ const cardConfigStruct = struct({
   theme: "string?",
 });
 
+const includeDomains = ["camera"];
+
 @customElement("hui-picture-glance-card-editor")
 export class HuiPictureGlanceCardEditor extends LitElement
   implements LovelaceCardEditor {
@@ -150,7 +152,7 @@ export class HuiPictureGlanceCardEditor extends LitElement
           .configValue=${"camera_image"}
           @change="${this._valueChanged}"
           allow-custom-entity
-          .include-domains=${["camera"]}
+          .includeDomains=${includeDomains}
         ></ha-entity-picker>
         <div class="side-by-side">
           <paper-dropdown-menu

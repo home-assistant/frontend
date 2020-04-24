@@ -1,3 +1,5 @@
+import "@material/mwc-button/mwc-button";
+import "@polymer/paper-tooltip/paper-tooltip";
 import {
   css,
   CSSResult,
@@ -8,6 +10,7 @@ import {
   query,
   TemplateResult,
 } from "lit-element";
+import { navigate } from "../common/navigate";
 import "../components/data-table/ha-data-table";
 import type {
   DataTableColumnContainer,
@@ -17,9 +20,6 @@ import type {
 import type { HomeAssistant, Route } from "../types";
 import "./hass-tabs-subpage";
 import type { PageNavigation } from "./hass-tabs-subpage";
-import "@material/mwc-button/mwc-button";
-import { navigate } from "../common/navigate";
-import "@polymer/paper-tooltip/paper-tooltip";
 
 @customElement("hass-tabs-subpage-data-table")
 export class HaTabsSubpageDataTable extends LitElement {

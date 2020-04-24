@@ -614,6 +614,12 @@
                     "stop": "Parar"
                 }
             },
+            "mqtt_device_debug_info": {
+                "payload_display": "Exibição de carga",
+                "recent_messages": "{n} mensagem (s) recebida (s) mais recentemente",
+                "show_as_yaml": "Mostrar como YAML",
+                "triggers": "Gatilhos"
+            },
             "options_flow": {
                 "form": {
                     "header": "Opções"
@@ -1236,8 +1242,13 @@
                         }
                     }
                 },
+                "filtering": {
+                    "clear": "Limpar",
+                    "filtering_by": "Filtrando por"
+                },
                 "header": "Configurar o Home Assistant",
                 "integrations": {
+                    "add_integration": "Adicionar integração",
                     "caption": "Integrações",
                     "config_entry": {
                         "area": "Em {area}",
@@ -1287,6 +1298,7 @@
                         "show_ignored": "Mostrar integrações ignoradas",
                         "stop_ignore": "Deixar de ignorar"
                     },
+                    "integration": "integração",
                     "integration_not_found": "Integração não encontrada.",
                     "new": "Configurar uma nova integração",
                     "none": "Nada configurado ainda",

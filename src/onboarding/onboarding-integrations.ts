@@ -20,6 +20,7 @@ import {
   subscribeConfigFlowInProgress,
 } from "../data/config_flow";
 import { DataEntryFlowProgress } from "../data/data_entry_flow";
+import { domainToName } from "../data/integration";
 import { onboardIntegrationStep } from "../data/onboarding";
 import {
   loadConfigFlowDialog,
@@ -28,7 +29,6 @@ import {
 import { HomeAssistant } from "../types";
 import "./action-badge";
 import "./integration-badge";
-import { domainToName } from "../data/integration";
 
 @customElement("onboarding-integrations")
 class OnboardingIntegrations extends LitElement {

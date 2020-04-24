@@ -23,6 +23,7 @@ import {
   entitiesConfigStruct,
   EntitiesEditorEvent,
 } from "../types";
+import "../../../../components/ha-switch";
 import { configElementStyle } from "./config-elements-style";
 
 const cardConfigStruct = struct({
