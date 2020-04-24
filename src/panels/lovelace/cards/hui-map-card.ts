@@ -37,7 +37,7 @@ import { findEntities } from "../common/find-entites";
 import { processConfigEntities } from "../common/process-config-entities";
 import { EntityConfig } from "../entity-rows/types";
 import { LovelaceCard } from "../types";
-import "./../../../components/ha-card";
+import "../../../components/ha-card";
 import { MapCardConfig } from "./types";
 
 @customElement("hui-map-card")

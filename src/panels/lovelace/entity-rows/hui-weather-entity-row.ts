@@ -20,8 +20,8 @@ import {
 import { HomeAssistant, WeatherEntity } from "../../../types";
 import { EntitiesCardEntityConfig } from "../cards/types";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
-import "./../components/hui-generic-entity-row";
-import "./../components/hui-warning";
+import "../components/hui-generic-entity-row";
+import "../components/hui-warning";
 import { LovelaceRow } from "./types";
 
 @customElement("hui-weather-entity-row")

@@ -8,7 +8,7 @@ import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-card";
 import type { Condition } from "../../../../data/automation";
 import type { HomeAssistant } from "../../../../types";
-import "./../../../../components/ha-yaml-editor";
+import "../../../../components/ha-yaml-editor";
 import "./types/ha-automation-condition-and";
 import "./types/ha-automation-condition-device";
 import "./types/ha-automation-condition-numeric_state";

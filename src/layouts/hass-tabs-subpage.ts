@@ -16,7 +16,7 @@ import { navigate } from "../common/navigate";
 import "../components/ha-menu-button";
 import "../components/ha-paper-icon-button-arrow-prev";
 import { HomeAssistant, Route } from "../types";
-import "./../components/ha-icon";
+import "../components/ha-icon";
 
 export interface PageNavigation {
   path: string;
