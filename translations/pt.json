@@ -517,7 +517,7 @@
                     "second": "{count} {count, plural,\n  one {segundo}\n  other {segundos}\n}",
                     "week": "{count} {count, plural,\n  one {semana}\n  other {semanas}\n}"
                 },
-                "future": "Às {time}",
+                "future": "À {time}",
                 "never": "Nunca",
                 "past": "{time} atrás"
             },
@@ -580,7 +580,8 @@
                     "mode": "Modo de exibição",
                     "password": "Palavra-passe",
                     "text": "Texto"
-                }
+                },
+                "yaml_not_editable": "As configurações desta entidade não podem ser editadas a partir do IU. Apenas as entidades adiccionadas a partir da IU são configuráveis a partir da IU."
             },
             "more_info_control": {
                 "dismiss": "Descartar diálogo",
@@ -610,6 +611,10 @@
                     "start_pause": "Iniciar / Pausar",
                     "stop": "Parar"
                 }
+            },
+            "mqtt_device_debug_info": {
+                "entities": "Entidades",
+                "show_as_yaml": "Mostrar como YAML"
             },
             "options_flow": {
                 "form": {
@@ -1218,6 +1223,10 @@
                         }
                     }
                 },
+                "filtering": {
+                    "clear": "Apagar",
+                    "filtering_by": "A filtrar por"
+                },
                 "header": "Configurar o Home Assistant",
                 "helpers": {
                     "caption": "Auxiliares",
@@ -1235,9 +1244,11 @@
                     }
                 },
                 "integrations": {
+                    "add_integration": "Adicionar integração",
                     "caption": "Integrações",
                     "config_entry": {
                         "area": "Em {area}",
+                        "delete": "Eliminar",
                         "delete_button": "Apagar {integration}",
                         "delete_confirm": "Tem a certeza que pretende apagar esta integração?",
                         "device_unavailable": "Dispositivo indisponível",
@@ -1248,6 +1259,8 @@
                         "no_area": "Nenhuma Área",
                         "no_device": "Entidades sem dispositivos",
                         "no_devices": "Esta integração não possui dispositivos.",
+                        "options": "Opções",
+                        "rename": "Renomear",
                         "restart_confirm": "Reinicie o Home Assistant para concluir a remoção desta integração",
                         "settings_button": "Editar configurações para {integration}",
                         "system_options_button": "Opções do sistema para {integration}"
@@ -1285,6 +1298,7 @@
                     },
                     "integration_not_found": "Integração não encontrada.",
                     "new": "Configurar uma nova integração",
+                    "no_integrations": "Parece que você ainda não possui integrações configuradas. Clique no botão abaixo para adicionar sua primeira integração!",
                     "none": "Nada configurado ainda",
                     "note_about_integrations": "De momento nem todas as integrações podem ser configuradas via UI.",
                     "note_about_website_reference": "Existem mais disponíveis no"
@@ -1306,31 +1320,42 @@
                         },
                         "picker": {
                             "headers": {
-                                "default": "Predefinição"
+                                "default": "Predefinição",
+                                "title": "Título"
                             },
                             "open": "Abrir"
                         }
                     },
                     "resources": {
+                        "cant_edit_yaml": "Você está a usar o Lovelace no modo YAML, portanto, não é possível gerir os seus recursos através do interface do utilizador. Configure-os em configuration.yaml.",
+                        "caption": "Recursos",
+                        "confirm_delete": "Tem certeza de que deseja apagar este recurso?",
                         "detail": {
                             "create": "Criar",
                             "delete": "Apagar",
                             "dismiss": "Fechar",
+                            "new_resource": "Adicionar novo recurso",
                             "type": "Tipo de recurso",
                             "update": "Atualizar",
                             "url": "Url",
                             "url_error_msg": "URL é um campo obrigatório",
-                            "warning_header": "Seja cauteloso!"
+                            "warning_header": "Seja cauteloso!",
+                            "warning_text": "Acrescentar recursos pode ser perigoso, certifique-se que conhece a fonte do recurso e que confia nela. Recursos malignos podem prejudicar seriamente o seu sistema."
                         },
                         "picker": {
+                            "add_resource": "Adicionar recurso",
                             "headers": {
                                 "type": "Tipo",
                                 "url": "Url"
                             },
                             "no_resources": "Sem recursos"
                         },
+                        "refresh_body": "Você tem que atualizar a página para completar a remoção, quer atualizar agora?",
+                        "refresh_header": "Deseja atualizar?",
                         "types": {
-                            "css": "Stylesheet"
+                            "css": "Stylesheet",
+                            "html": "HTML (descontinuado)",
+                            "js": "Ficheiro JavaScript (descontinuado)"
                         }
                     }
                 },
@@ -1574,9 +1599,12 @@
                         "longitude": "Longitude",
                         "name": "Nome",
                         "passive": "Passivo",
+                        "passive_note": "As zonas passivas estão ocultas no frontend e não são usadas como local para rastreadores de dispositivos. Isto é útil se quiser usá-lo apenas para automações.",
                         "radius": "Raio",
                         "required_error_msg": "Este campo é obrigatório"
-                    }
+                    },
+                    "edit_home_zone": "O raio da zona casa ainda não pode ser editado a partir do frontend. Arraste o marcador no mapa para mover a zona inicial.",
+                    "edit_home_zone_narrow": "O raio da zona casa ainda não pode ser editado a partir do frontend. A localização pode ser modificada a partir da configuração geral."
                 },
                 "zwave": {
                     "caption": "Z-Wave",
@@ -1679,7 +1707,7 @@
                         "details": "Detalhes do log ( {level} )",
                         "load_full_log": "Carregar log completo do Home Assistant",
                         "loading_log": "A carregar o log de erros...",
-                        "multiple_messages": "mensagem ocorreu primeiro em {tempo} e repetiu-se {contador} vezes",
+                        "multiple_messages": "mensagem ocorreu primeiro em {time} e repetiu-se {counter} vezes",
                         "no_errors": "Nenhum erro foi reportado.",
                         "no_issues": "Não há novos problemas!",
                         "refresh": "Atualizar",
@@ -1788,6 +1816,8 @@
                         },
                         "conditional": {
                             "card": "Cartão",
+                            "change_type": "Alterar tipo",
+                            "condition_explanation": "O cartão será exibido quando TODAS as condições abaixo forem cumpridas.",
                             "conditions": "Condições",
                             "current_state": "atual",
                             "name": "Condicional",
@@ -1831,6 +1861,7 @@
                             "icon_height": "Altura do ícone",
                             "image": "Endereço para imagem",
                             "manual": "Manual",
+                            "manual_description": "Precisa de adicionar um cartão personalizado ou apenas deseja escrever manualmente o yaml?",
                             "maximum": "Máximo",
                             "minimum": "Mínimo",
                             "name": "Nome",
@@ -1859,11 +1890,13 @@
                             "name": ""
                         },
                         "light": {
+                            "description": "O cartão Luz permite alterar o brilho da luz.",
                             "name": "Luz"
                         },
                         "map": {
                             "dark_mode": "Modo escuro?",
                             "default_zoom": "Zoom padrão",
+                            "description": "O cartão Mapa que lhe permite exibir entidades num mapa.",
                             "geo_location_sources": "Fontes de Geolocalização",
                             "hours_to_show": "Horas a mostrar",
                             "name": "Mapa",
@@ -1871,7 +1904,8 @@
                         },
                         "markdown": {
                             "content": "Conteúdo",
-                            "name": ""
+                            "description": "O cartão Markdown é usado para processar Markdown.",
+                            "name": "Markdown"
                         },
                         "media-control": {
                             "name": "Controlo multimédia"
@@ -1908,6 +1942,7 @@
                             "name": "Agrupamento Vertical"
                         },
                         "weather-forecast": {
+                            "description": "O cartão Previsão do tempo exibe o tempo. Muito útil para incluir nos interfaces que coloca-mos na parede.",
                             "name": "Previsão do tempo"
                         }
                     },
@@ -1967,6 +2002,7 @@
                         "error_parse_yaml": "Não foi possível analisar o YAML: {error}",
                         "error_save_yaml": "Não é possível salvar o YAML: {error}",
                         "header": "Editar configuração",
+                        "resources_moved": "Os recursos não devem mais ser adicionados ao editor de configuração do código fonte do Lovelace, mas podem ser adicionados no painel de configuração do Lovelace.",
                         "save": "Guardar",
                         "saved": "Guardada",
                         "unsaved_changes": "Alterações não guardadas"
@@ -1978,12 +2014,14 @@
                         "header": "Assumir controle sobre a interface do Lovelace",
                         "para": "Por omissão o Home Assistant irá manter a sua interface de utilizador, atualizando-a sempre que uma nova entidade ou novos componentes Lovelace fiquem disponíveis. Se assumir o controlo, não faremos mais alterações automáticas por si.",
                         "para_sure": "Tem certeza que deseja assumir o controlo sobre a interface de utilizador?",
-                        "save": "Assumir o controlo"
+                        "save": "Assumir o controlo",
+                        "yaml_control": "Para assumir o controle no modo YAML, crie um ficheiro YAML com o nome que especificou na sua configuração para este painel de controle, ou o padrão 'ui-lovelace.yaml'."
                     },
                     "view": {
                         "panel_mode": {
                             "description": "Isto faz com que o primeiro cartão ocupe toda a vista, os outros cartões ficaram ocultos.",
-                            "title": "Modo Painel?"
+                            "title": "Modo Painel?",
+                            "warning_multiple_cards": "Esta vista contém mais do que um cartão, mas a vista de painel só pode mostrar 1 cartão."
                         }
                     }
                 },
@@ -2015,7 +2053,8 @@
                 "warning": {
                     "attribute_not_found": "Atributo {attribute} não disponível em: {entity}",
                     "entity_non_numeric": "A entidade é não numérica: {entity}",
-                    "entity_not_found": "Entidade não disponível: {entity}"
+                    "entity_not_found": "Entidade não disponível: {entity}",
+                    "entity_unavailable": "{entity} está indisponível no momento"
                 }
             },
             "mailbox": {

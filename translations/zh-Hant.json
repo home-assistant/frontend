@@ -654,6 +654,17 @@
                     "stop": "停止清掃"
                 }
             },
+            "mqtt_device_debug_info": {
+                "deserialize": "嘗試將 MQTT 訊息解析為 JSON",
+                "entities": "物件",
+                "no_entities": "無物件",
+                "no_triggers": "無觸發",
+                "payload_display": "負載顯示",
+                "recent_messages": "{n} 個最近接收的訊息",
+                "show_as_yaml": "以 YAML 顯示",
+                "title": "{device} debug 訊息",
+                "triggers": "觸發"
+            },
             "options_flow": {
                 "form": {
                     "header": "選項"
@@ -1294,6 +1305,10 @@
                         }
                     }
                 },
+                "filtering": {
+                    "clear": "清除",
+                    "filtering_by": "篩選"
+                },
                 "header": "設定 Home Assistant",
                 "helpers": {
                     "caption": "助手",
@@ -1321,12 +1336,16 @@
                     }
                 },
                 "integrations": {
+                    "add_integration": "新增整合",
                     "caption": "整合",
                     "config_entry": {
                         "area": "於 {area}",
+                        "delete": "刪除",
                         "delete_button": "刪除 {integration}",
                         "delete_confirm": "確定要刪除此整合？",
                         "device_unavailable": "設備不可用",
+                        "devices": "{count} {count, plural,\n  one {設備}\n  other {設備}\n}",
+                        "entities": "{count} {count, plural,\n  one {物件}\n  other {物件}\n}",
                         "entity_unavailable": "物件不可用",
                         "firmware": "韌體：{version}",
                         "hub": "連線：",
@@ -1334,8 +1353,11 @@
                         "no_area": "無分區",
                         "no_device": "物件沒有設備",
                         "no_devices": "此整合沒有任何設備。",
+                        "options": "選項",
+                        "rename": "重新命名",
                         "restart_confirm": "重啟 Home Assistant 以完成此整合移動",
                         "settings_button": "編輯 {integration} 設定",
+                        "system_options": "系統選項",
                         "system_options_button": "{integration} 系統選項"
                     },
                     "config_flow": {
@@ -1370,11 +1392,15 @@
                         "show_ignored": "顯示已忽略整合",
                         "stop_ignore": "停止忽略中"
                     },
+                    "integration": "整合",
                     "integration_not_found": "找不到整合。",
                     "new": "設定新整合",
+                    "no_integrations": "目前似乎沒有設定任何整合。點選下方新增按鈕以新增第一個整合！",
                     "none": "尚未設定",
                     "note_about_integrations": "目前並非所有整合皆可以透過 UI 進行設定。",
-                    "note_about_website_reference": "更多資訊請參閱"
+                    "note_about_website_reference": "更多資訊請參閱",
+                    "rename_dialog": "編輯設定物件名稱",
+                    "rename_input_label": "物件名稱"
                 },
                 "introduction": "此處為 Home Assistant 和元件相關配置區，目前尚未支援透過 UI 進行所有設定，我們正在努力改進中。",
                 "lovelace": {
@@ -2241,7 +2267,8 @@
                 "warning": {
                     "attribute_not_found": "無法使用屬性 {attribute} 之物件：{entity}",
                     "entity_non_numeric": "物件為非數字：{entity}",
-                    "entity_not_found": "物件不可用：{entity}"
+                    "entity_not_found": "物件不可用：{entity}",
+                    "entity_unavailable": "{entity} 目前不可用"
                 }
             },
             "mailbox": {

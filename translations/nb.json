@@ -654,6 +654,17 @@
                     "stop": "Stopp"
                 }
             },
+            "mqtt_device_debug_info": {
+                "deserialize": "Forsøk å analysere MQTT-meldinger som JSON",
+                "entities": "Enheter",
+                "no_entities": "Ingen entiteter",
+                "no_triggers": "Ingen utløsere",
+                "payload_display": "Nyttelastvisning",
+                "recent_messages": "{n} sist mottatte melding(er)",
+                "show_as_yaml": "Vis som YAML",
+                "title": "{device} feilsøkingsinfo",
+                "triggers": "Utløsere"
+            },
             "options_flow": {
                 "form": {
                     "header": "Alternativer"
@@ -1294,6 +1305,10 @@
                         }
                     }
                 },
+                "filtering": {
+                    "clear": "Tøm",
+                    "filtering_by": "Filtrering etter"
+                },
                 "header": "Konfigurer Home Assistant",
                 "helpers": {
                     "caption": "Hjelpere",
@@ -1321,12 +1336,16 @@
                     }
                 },
                 "integrations": {
+                    "add_integration": "Legg til integrasjon",
                     "caption": "Integrasjoner",
                     "config_entry": {
                         "area": "I {area}",
+                        "delete": "Slett",
                         "delete_button": "Slett {integration}",
                         "delete_confirm": "Er du sikker på at du vil slette denne integrasjonen?",
                         "device_unavailable": "enheten er utilgjengelig",
+                        "devices": "{antall} {antall, flertall,\n  én {enhet}\n  andre {enheter}\n}",
+                        "entities": "{antall} {antall, flertall,\n  én {enhet}\n  andre {enheter}\n}",
                         "entity_unavailable": "entiteten er ikke tilgjengelig",
                         "firmware": "Fastvare: {version}",
                         "hub": "Tilkoblet via",
@@ -1334,8 +1353,11 @@
                         "no_area": "Intet område",
                         "no_device": "Oppføringer uten enheter",
                         "no_devices": "Denne integrasjonen har ingen enheter.",
+                        "options": "Alternativer",
+                        "rename": "Gi nytt navn",
                         "restart_confirm": "Start Home Assistant på nytt for å fullføre fjerningen av denne integrasjonen",
                         "settings_button": "Rediger innstillinger for {integration}",
+                        "system_options": "Systemalternativer",
                         "system_options_button": "Systemalternativer for {integration}"
                     },
                     "config_flow": {
@@ -1370,11 +1392,15 @@
                         "show_ignored": "Vis ignorerte integrasjoner",
                         "stop_ignore": "Slutt å ignorere"
                     },
+                    "integration": "integrering",
                     "integration_not_found": "Integrasjon ikke funnet.",
                     "new": "Sett opp en ny integrasjon",
+                    "no_integrations": "Virker som om du ikke har konfigurert noen integrasjoner ennå. Klikk på knappen nedenfor for å legge til din første integrasjon!",
                     "none": "Ingenting er konfigurert enda",
                     "note_about_integrations": "Ikke alle integrasjoner kan konfigureres via brukergrensesnittet ennå.",
-                    "note_about_website_reference": "Flere er tilgjengelige på"
+                    "note_about_website_reference": "Flere er tilgjengelige på",
+                    "rename_dialog": "Redigere navnet på denne config-oppføringen",
+                    "rename_input_label": "Navn på oppføring"
                 },
                 "introduction": "Her er det mulig å konfigurere dine komponenter og Home Assistant. Ikke alt er mulig å konfigurere fra brukergrensesnittet enda, men vi jobber med det.",
                 "lovelace": {
@@ -2241,7 +2267,8 @@
                 "warning": {
                     "attribute_not_found": "Attributtet {attribute} er ikke tilgjengelig i: {entity}",
                     "entity_non_numeric": "Entiteten er ikke-numerisk: {entity}",
-                    "entity_not_found": "Entitet ikke tilgjengelig: {entity}"
+                    "entity_not_found": "Entitet ikke tilgjengelig: {entity}",
+                    "entity_unavailable": "{entity} er for øyeblikket utilgjengelig"
                 }
             },
             "mailbox": {

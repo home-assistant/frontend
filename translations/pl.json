@@ -654,6 +654,17 @@
                     "stop": "Zatrzymaj"
                 }
             },
+            "mqtt_device_debug_info": {
+                "deserialize": "Próba parsowania komunikatów MQTT jako JSON",
+                "entities": "Encje",
+                "no_entities": "Brak encji",
+                "no_triggers": "Brak wyzwalaczy",
+                "payload_display": "Wyświetl payload",
+                "recent_messages": "{n} ostatnio otrzymanych wiadomości",
+                "show_as_yaml": "Pokaż jako YAML",
+                "title": "Informacje o {device}",
+                "triggers": "Wyzwalacze"
+            },
             "options_flow": {
                 "form": {
                     "header": "Opcje"
@@ -1294,6 +1305,10 @@
                         }
                     }
                 },
+                "filtering": {
+                    "clear": "Wyczyść",
+                    "filtering_by": "Filtrowanie przez"
+                },
                 "header": "Konfiguruj Home Assistant'a",
                 "helpers": {
                     "caption": "Pomocnicy",
@@ -1321,12 +1336,16 @@
                     }
                 },
                 "integrations": {
+                    "add_integration": "Dodaj integrację",
                     "caption": "Integracje",
                     "config_entry": {
                         "area": "obszar: {area}",
+                        "delete": "Usuń",
                         "delete_button": "Usuń {integration}",
                         "delete_confirm": "Na pewno chcesz usunąć tę integrację?",
                         "device_unavailable": "urządzenie niedostępne",
+                        "devices": "{count} {count, plural,\n  one {urządzenie}\n  other {urządze(nia/ń)}\n}",
+                        "entities": "{count} {count, plural,\n  one {encja}\n  other {encj(e/i)}\n}",
                         "entity_unavailable": "encja niedostępna",
                         "firmware": "oprogramowanie: {version}",
                         "hub": "połączony poprzez:",
@@ -1334,8 +1353,11 @@
                         "no_area": "brak",
                         "no_device": "Encje bez urządzeń",
                         "no_devices": "Ta integracja nie ma żadnych urządzeń.",
+                        "options": "Opcje",
+                        "rename": "Zmień nazwę",
                         "restart_confirm": "Zrestartuj Home Assistant'a, aby zakończyć usuwanie tej integracji",
                         "settings_button": "Edytuj ustawienia dla {integration}",
+                        "system_options": "Opcje systemowe",
                         "system_options_button": "Opcje systemowe dla {integration}"
                     },
                     "config_flow": {
@@ -1370,11 +1392,15 @@
                         "show_ignored": "Pokaż ignorowane integracje",
                         "stop_ignore": "Wyłączenie ignorowania"
                     },
+                    "integration": "integracja",
                     "integration_not_found": "Nie znaleziono integracji.",
                     "new": "Konfiguruj nową integrację",
+                    "no_integrations": "Wygląda na to, że nie masz jeszcze skonfigurowanych żadnych integracji. Kliknij przycisk poniżej, aby dodać pierwszą integrację!",
                     "none": "Nic jeszcze nie zostało skonfigurowane",
                     "note_about_integrations": "Jeszcze nie wszystkie integracje można skonfigurować za pomocą interfejsu użytkownika.",
-                    "note_about_website_reference": "Więcej jest dostępnych na stronie integracji "
+                    "note_about_website_reference": "Więcej jest dostępnych na stronie integracji ",
+                    "rename_dialog": "Edytuj nazwę tego wpisu konfiguracji",
+                    "rename_input_label": "Nazwa wpisu"
                 },
                 "introduction": "Tutaj możesz skonfigurować Home Assistant'a i jego komponenty. Nie wszystkie opcje można konfigurować z interfejsu użytkownika, ale pracujemy nad tym.",
                 "lovelace": {
@@ -2241,7 +2267,8 @@
                 "warning": {
                     "attribute_not_found": "Atrybut {attribute} jest niedostępny dla: {entity}",
                     "entity_non_numeric": "Encja nie jest numeryczna: {entity}",
-                    "entity_not_found": "Encja niedostępna: {entity}"
+                    "entity_not_found": "Encja niedostępna: {entity}",
+                    "entity_unavailable": "{entity} jest obecnie niedostępna"
                 }
             },
             "mailbox": {
