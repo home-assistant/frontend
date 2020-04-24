@@ -2,36 +2,10 @@ build
 build-translations/*
 translations/*
 node_modules/*
-npm-debug.log
-.DS_Store
 hass_frontend/*
-.reify-cache
 demo/hademo-icons.html
-
-# Python stuff
-*.py[cod]
-*.egg
-*.egg-info
-
-# venv stuff
-pyvenv.cfg
 pip-selfcheck.json
-venv
-.venv
-lib
-bin
-dist
 
 # vscode
 .vscode/*
 !.vscode/extensions.json
-
-# Cast dev settings 
-src/cast/dev_const.ts
-
-# Secrets
-.lokalise_token
-yarn-error.log
-
-#asdf
-.tool-versions
