@@ -442,6 +442,7 @@
                 "attributes": {
                     "air_pressure": "Давление",
                     "humidity": "Влажность",
+                    "precipitation": "Осадки",
                     "temperature": "Температура",
                     "visibility": "Видимость",
                     "wind_speed": "Ветер"
@@ -464,7 +465,9 @@
                     "wnw": "ЗСЗ",
                     "wsw": "ЗЮЗ"
                 },
-                "forecast": "Прогноз"
+                "forecast": "Прогноз",
+                "high": "Высокий",
+                "low": "Низкий"
             }
         },
         "common": {
@@ -650,6 +653,17 @@
                     "status": "Состояние",
                     "stop": "Остановить"
                 }
+            },
+            "mqtt_device_debug_info": {
+                "deserialize": "Разбирать сообщения в формате JSON",
+                "entities": "Объекты",
+                "no_entities": "Нет объектов",
+                "no_triggers": "Нет триггеров",
+                "payload_display": "Содержание сообщений",
+                "recent_messages": "{n} последних полученных сообщений",
+                "show_as_yaml": "Показывать сообщения в формате YAML",
+                "title": "Отладочная информация устройства {device}",
+                "triggers": "Триггеры"
             },
             "options_flow": {
                 "form": {
@@ -1291,6 +1305,10 @@
                         }
                     }
                 },
+                "filtering": {
+                    "clear": "Очистить",
+                    "filtering_by": "Отфильтровано по принадлежности к"
+                },
                 "header": "Настройка Home Assistant",
                 "helpers": {
                     "caption": "Вспомогательное",
@@ -1318,12 +1336,16 @@
                     }
                 },
                 "integrations": {
+                    "add_integration": "Добавить интеграцию",
                     "caption": "Интеграции",
                     "config_entry": {
                         "area": "Помещение: {area}",
+                        "delete": "Удалить",
                         "delete_button": "Удалить интеграцию {integration}",
                         "delete_confirm": "Вы уверены, что хотите удалить эту интеграцию?",
                         "device_unavailable": "устройство недоступно",
+                        "devices": "{count} {count, plural,\n  one {device}\n  other {devices}\n}",
+                        "entities": "{count} {count, plural,\n  one {entity}\n  other {entities}\n}",
                         "entity_unavailable": "объект недоступен",
                         "firmware": "Прошивка: {version}",
                         "hub": "Подключено через",
@@ -1331,8 +1353,11 @@
                         "no_area": "Не указано",
                         "no_device": "Объекты без устройств",
                         "no_devices": "Эта интеграция не имеет устройств",
+                        "options": "Параметры",
+                        "rename": "Переименовать",
                         "restart_confirm": "Перезапустите Home Assistant, чтобы завершить удаление этой интеграции",
                         "settings_button": "Настройки интеграции {integration}",
+                        "system_options": "Настройки интеграции",
                         "system_options_button": "Системные параметры интеграции {integration}"
                     },
                     "config_flow": {
@@ -1367,11 +1392,15 @@
                         "show_ignored": "Показать игнорируемые интеграции",
                         "stop_ignore": "Прекратить игнорировать"
                     },
+                    "integration": "интеграции",
                     "integration_not_found": "Интеграция не найдена.",
                     "new": "Интеграции",
+                    "no_integrations": "Похоже, у Вас ещё нет настроенных интеграций. Нажмите на кнопку в правом нижнем углу, чтобы добавить свою первую интеграцию!",
                     "none": "Пока ничего не настроено",
                     "note_about_integrations": "Пока что не все интеграции могут быть настроены через пользовательский интерфейс.",
-                    "note_about_website_reference": "Все доступные интеграции Вы можете найти на "
+                    "note_about_website_reference": "Все доступные интеграции Вы можете найти на ",
+                    "rename_dialog": "Изменение названия интеграции",
+                    "rename_input_label": "Название"
                 },
                 "introduction": "Здесь можно настроить Home Assistant. Пока что не все настройки доступны из интерфейса, но мы работаем над этим.",
                 "lovelace": {
@@ -2238,7 +2267,8 @@
                 "warning": {
                     "attribute_not_found": "Атрибут {attribute} недоступен в {entity}",
                     "entity_non_numeric": "Объект не является числом: {entity}",
-                    "entity_not_found": "Объект {entity} недоступен."
+                    "entity_not_found": "Объект {entity} недоступен.",
+                    "entity_unavailable": "Объект \"{entity}\" сейчас недоступен"
                 }
             },
             "mailbox": {

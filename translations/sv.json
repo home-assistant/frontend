@@ -328,7 +328,7 @@
     },
     "ui": {
         "auth_store": {
-            "ask": "Vill du spara den här inloggningen?",
+            "ask": "Vill du fortsätta vara inloggad?",
             "confirm": "Spara inloggning",
             "decline": "Nej tack"
         },
@@ -442,6 +442,7 @@
                 "attributes": {
                     "air_pressure": "Lufttryck",
                     "humidity": "Luftfuktighet",
+                    "precipitation": "Prognos",
                     "temperature": "Temperatur",
                     "visibility": "Sikt",
                     "wind_speed": "Vindhastighet"
@@ -464,7 +465,9 @@
                     "wnw": "VNV",
                     "wsw": "VSV"
                 },
-                "forecast": "Prognos"
+                "forecast": "Prognos",
+                "high": "Hög",
+                "low": "Låg"
             }
         },
         "common": {
@@ -602,7 +605,9 @@
                     "pattern": "Regex-mönster för validering på klientsidan",
                     "text": "Text"
                 },
-                "required_error_msg": "Det här fältet krävs"
+                "platform_not_loaded": "{platform} integrationen har ej lästs in. Lägg till integrationen genom att lägga till 'default_config:' eller '{platform}:'.",
+                "required_error_msg": "Det här fältet krävs",
+                "yaml_not_editable": "Inställningar för denna entitet kan inte ändras från användargränssnittet. Enbart entiteter uppsatta från användargränssnittet är konfigurerbara från användargränssnittet."
             },
             "more_info_control": {
                 "dismiss": "Avfärda",
@@ -642,6 +647,9 @@
                     "status": "Status",
                     "stop": "Stoppa"
                 }
+            },
+            "mqtt_device_debug_info": {
+                "entities": "Entiteter"
             },
             "options_flow": {
                 "form": {
@@ -860,7 +868,7 @@
                             "delete": "Radera",
                             "delete_confirm": "Säker på att du vill radera?",
                             "duplicate": "Duplicera",
-                            "header": "Triggers",
+                            "header": "Händelse",
                             "introduction": "Triggers är det som startar en automation. Det är möjligt att ange flera triggers för samma regel. När en trigger inträffar kommer Home Assistant att validera eventuella villkor och sedan köra åtgärden.",
                             "learn_more": "Lär dig mer om utlösare",
                             "name": "Trigger",
@@ -1292,6 +1300,7 @@
                     "caption": "Integrationer",
                     "config_entry": {
                         "area": "I {area}",
+                        "delete": "Ta bort",
                         "delete_button": "Ta bort {integration}",
                         "delete_confirm": "Är du säker på att du vill radera denna integration?",
                         "device_unavailable": "enhet otillgänglig",
@@ -1302,6 +1311,7 @@
                         "no_area": "Inget område (\"area\")",
                         "no_device": "Entitet utan enheter",
                         "no_devices": "Denna integration har inga enheter.",
+                        "rename": "Döp om",
                         "restart_confirm": "Starta om Home Assistant för att slutföra borttagningen av denna integration",
                         "settings_button": "Redigera inställningar för {integration}",
                         "system_options_button": "Systeminställningar för {integration}"
@@ -1347,7 +1357,7 @@
                 "lovelace": {
                     "caption": "Lovelace kontrollpaneler",
                     "dashboards": {
-                        "cant_edit_yaml": "Instrumentpaneler som definieras i YAML kan inte bli redigerade från UI. Ändra dem i configuration.yaml.",
+                        "cant_edit_yaml": "Instrumentpaneler som definieras i YAML kan inte bli redigerade från användargränssnittet. Ändra dem i configuration.yaml.",
                         "caption": "Kontrollpaneler",
                         "conf_mode": {
                             "storage": "UI-kontrollerad",
@@ -1366,7 +1376,7 @@
                             "title": "Sidofältets titel",
                             "update": "Uppdatera",
                             "url": "URL",
-                            "url_error_msg": "URL-adressen kan inte innehålla mellanslag eller specialtecken, med undantag för _ och -"
+                            "url_error_msg": "URL adressen ska innehålla ett '-' och kan inte innehålla mellanslag eller specialtecken, med undantag för '_ ' och '-'"
                         },
                         "picker": {
                             "add_dashboard": "Lägg till instrumentpanel",
@@ -1382,7 +1392,7 @@
                     },
                     "description": "Konfigurera dina Lovelace kontrollpaneler",
                     "resources": {
-                        "cant_edit_yaml": "Du använder Lovelace i YAML-läge, därför kan du inte sköta dina resurser genom UI. Du får göra det i configuration.yaml istället.",
+                        "cant_edit_yaml": "Du använder Lovelace i YAML-läge, därför kan du inte sköta dina resurser genom användargränssnittet. Du får göra det i configuration.yaml istället.",
                         "caption": "Resurser",
                         "confirm_delete": "Är du säker på att du vill ta bort denna resurs?",
                         "detail": {
@@ -1472,8 +1482,8 @@
                         "delete_confirm": "Är du säker på att du vill radera detta scenario?",
                         "delete_scene": "Ta bort scenario",
                         "edit_scene": "Redigera scenario",
-                        "header": "Scenario-redigerare",
-                        "introduction": "Scenarioredigeraren låter dig skapa och redigera scenario. Följ länken nedan för att läsa instruktionerna för att se till att du har konfigurerat Home Assistant korrekt.",
+                        "header": "Scenarieredigerare",
+                        "introduction": "Scenarieredigeraren låter dig skapa och redigera scenario. Följ länken nedan för att läsa instruktionerna för att se till att du har konfigurerat Home Assistant korrekt.",
                         "learn_more": "Läs dig mer om scenarier",
                         "no_scenes": "Vi kunde inte hitta några redigerbara scenarier",
                         "only_editable": "Endast scenarier definierade i scenes.yaml kan redigeras.",
@@ -1864,8 +1874,8 @@
             "lovelace": {
                 "add_entities": {
                     "generated_unsupported": "Du kan bara använda den här funktionen när du har tagit kontroll över Lovelace UI.",
-                    "saving_failed": "Det gick inte att spara Lovelace UI-konfigurationen.",
-                    "yaml_unsupported": "Du kan inte använda den här funktionen när du använder Lovelace UI i YAML-läge."
+                    "saving_failed": "Det gick inte att spara Lovelace användargränssnittskonfigurationen.",
+                    "yaml_unsupported": "Du kan inte använda den här funktionen när du använder Lovelace användargränssnitt i YAML-läge."
                 },
                 "cards": {
                     "confirm_delete": "Är du säker på att du vill ta bort det här kortet?",
@@ -1945,6 +1955,7 @@
                             "icon": "Ikon",
                             "icon_height": "Ikonhöjd",
                             "image": "Bildsökväg",
+                            "manual": "Manuell",
                             "maximum": "",
                             "minimum": "",
                             "name": "Namn",
@@ -2087,7 +2098,7 @@
                         "save": "Ta kontroll",
                         "yaml_config": "För att hjälpa dig igång, så är här nuvarande inställning för denna instrumentpanel:",
                         "yaml_control": "Om du vill ta kontroll i YAML-läge skapar du en YAML-fil med det namn du angav i konfigurationen för den här instrumentpanelen eller standard \"ui-lovelace.yaml\".",
-                        "yaml_mode": "Du använder YAML-läge, vilket betyder att du inte kan ändra dina Lovelace-inställning från UI. Om du vill ändra Lovelace från UI, ta bort 'mode: yaml' från dina Lovelaceinställningar i 'configuration.yaml'"
+                        "yaml_mode": "Du använder YAML-läge, vilket betyder att du inte kan ändra dina Lovelace-inställning från användargränssnittet. Om du vill ändra Lovelace från användargränssnittet, ta bort 'mode: yaml' från dina Lovelaceinställningar i 'configuration.yaml'"
                     },
                     "suggest_card": {
                         "add": "Lägg till i Lovelace-gränsnitt",
@@ -2123,7 +2134,8 @@
                 },
                 "warning": {
                     "entity_non_numeric": "Enheten är icke-numerisk: {entity}",
-                    "entity_not_found": "Enheten är ej tillgänglig: {entity}"
+                    "entity_not_found": "Enheten är ej tillgänglig: {entity}",
+                    "entity_unavailable": "{entity} är otillgänglig"
                 }
             },
             "mailbox": {

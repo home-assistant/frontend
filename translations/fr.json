@@ -654,6 +654,10 @@
                     "stop": "Arrêter"
                 }
             },
+            "mqtt_device_debug_info": {
+                "entities": "Entités",
+                "triggers": "Déclencheurs"
+            },
             "options_flow": {
                 "form": {
                     "header": "Options"
@@ -1294,6 +1298,10 @@
                         }
                     }
                 },
+                "filtering": {
+                    "clear": "Effacer",
+                    "filtering_by": "Filtrage par"
+                },
                 "header": "Configurer Home Assistant",
                 "helpers": {
                     "caption": "Entrées",
@@ -1321,9 +1329,11 @@
                     }
                 },
                 "integrations": {
+                    "add_integration": "Ajouter l'intégration",
                     "caption": "Intégrations",
                     "config_entry": {
                         "area": "Dans {area}",
+                        "delete": "Supprimer",
                         "delete_button": "Supprimer {integration}",
                         "delete_confirm": "Êtes-vous sûr de vouloir supprimer cette intégration?",
                         "device_unavailable": "appareil indisponible",
@@ -1334,8 +1344,11 @@
                         "no_area": "Pas de pièce",
                         "no_device": "Entités sans appareils",
                         "no_devices": "Cette intégration n'a pas d'appareils.",
+                        "options": "Options",
+                        "rename": "Renommer",
                         "restart_confirm": "Redémarrer Home Assistant pour terminer la suppression de cette intégration",
                         "settings_button": "Modifier les paramètres pour {integration}",
+                        "system_options": "Options système",
                         "system_options_button": "Options système pour {integration}"
                     },
                     "config_flow": {
@@ -1370,11 +1383,13 @@
                         "show_ignored": "Afficher les intégrations ignorées",
                         "stop_ignore": "Arrêter d'ignorer"
                     },
+                    "integration": "intégration",
                     "integration_not_found": "Intégration introuvable.",
                     "new": "Configurer une nouvelle intégration",
                     "none": "Rien n'est encore configuré",
                     "note_about_integrations": "Toutes les intégrations ne peuvent pas encore être configurées via l'interface utilisateur.",
-                    "note_about_website_reference": "D'autres sont disponibles sur le "
+                    "note_about_website_reference": "D'autres sont disponibles sur le ",
+                    "rename_input_label": "Nom de l'entrée"
                 },
                 "introduction": "Ici, il est possible de configurer vos composants et Home Assistant. Tout n'est pas encore possible de configurer à partir de l'interface utilisateur, mais nous y travaillons.",
                 "lovelace": {
