@@ -1,4 +1,3 @@
-/* eslint-disable lit/no-invalid-html */
 import "@polymer/app-route/app-route";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import {
@@ -288,7 +287,7 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
                                   ${devices.length
                                     ? html`
                                         <a
-                                          href="/config/devices/dashboard?historyBack=1&config_entry=${item.entry_id}"
+                                          href=${`/config/devices/dashboard?historyBack=1&config_entry=${item.entry_id}`}
                                           >${this.hass.localize(
                                             "ui.panel.config.integrations.config_entry.devices",
                                             "count",
@@ -303,7 +302,7 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
                                   ${entities.length
                                     ? html`
                                         <a
-                                          href="/config/entities?historyBack=1&config_entry=${item.entry_id}"
+                                          href=${`/config/entities?historyBack=1&config_entry=${item.entry_id}`}
                                           >${this.hass.localize(
                                             "ui.panel.config.integrations.config_entry.entities",
                                             "count",
