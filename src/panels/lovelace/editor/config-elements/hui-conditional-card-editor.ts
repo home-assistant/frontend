@@ -1,4 +1,5 @@
 import "@polymer/paper-tabs";
+import "@polymer/paper-tabs/paper-tab";
 import {
   css,
   CSSResult,
@@ -23,7 +24,6 @@ import {
 } from "../card-editor/hui-card-editor";
 import "../card-editor/hui-card-picker";
 import { GUIModeChangedEvent } from "../types";
-import "@polymer/paper-tabs/paper-tab";
 
 const conditionStruct = struct({
   entity: "string",

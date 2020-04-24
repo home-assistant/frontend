@@ -10,6 +10,7 @@ import {
 } from "lit-element";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { fireEvent } from "../../../common/dom/fire_event";
+import { computeStateDisplay } from "../../../common/entity/compute_state_display";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import { stateIcon } from "../../../common/entity/state_icon";
 import { isValidEntityId } from "../../../common/entity/valid_entity_id";
@@ -29,7 +30,6 @@ import {
 } from "../types";
 import { HuiErrorCard } from "./hui-error-card";
 import { EntityCardConfig } from "./types";
-import { computeStateDisplay } from "../../../common/entity/compute_state_display";
 
 @customElement("hui-entity-card")
 export class HuiEntityCard extends LitElement implements LovelaceCard {

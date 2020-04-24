@@ -22,13 +22,13 @@ import {
   subscribeDeviceRegistry,
 } from "../../../../data/device_registry";
 import { subscribeEntityRegistry } from "../../../../data/entity_registry";
+import { domainToName } from "../../../../data/integration";
 import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
 import { PolymerChangedEvent } from "../../../../polymer-types";
 import { haStyleDialog } from "../../../../resources/styles";
 import { HomeAssistant } from "../../../../types";
-import { Placeholder, PlaceholderContainer } from "./dialog-thingtalk";
-import { domainToName } from "../../../../data/integration";
 import "./../../../../components/entity/ha-entity-picker";
+import { Placeholder, PlaceholderContainer } from "./dialog-thingtalk";
 
 declare global {
   // for fire event

@@ -1,3 +1,4 @@
+import "@material/mwc-button/mwc-button";
 import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable";
 import "@polymer/paper-input/paper-input";
 import {
@@ -16,7 +17,6 @@ import { PolymerChangedEvent } from "../../polymer-types";
 import { haStyleDialog } from "../../resources/styles";
 import { HomeAssistant } from "../../types";
 import { DialogParams } from "./show-dialog-box";
-import "@material/mwc-button/mwc-button";
 
 @customElement("dialog-box")
 class DialogBox extends LitElement {

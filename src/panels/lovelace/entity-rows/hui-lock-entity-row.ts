@@ -1,3 +1,4 @@
+import "@material/mwc-button/mwc-button";
 import {
   css,
   CSSResult,
@@ -14,7 +15,6 @@ import { hasConfigOrEntityChanged } from "../common/has-changed";
 import "../components/hui-generic-entity-row";
 import "../components/hui-warning";
 import { EntityConfig, LovelaceRow } from "./types";
-import "@material/mwc-button/mwc-button";
 
 @customElement("hui-lock-entity-row")
 class HuiLockEntityRow extends LitElement implements LovelaceRow {

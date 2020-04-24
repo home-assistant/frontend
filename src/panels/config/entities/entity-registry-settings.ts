@@ -1,3 +1,4 @@
+import "@material/mwc-button/mwc-button";
 import "@polymer/paper-input/paper-input";
 import { HassEntity } from "home-assistant-js-websocket";
 import {
@@ -25,7 +26,6 @@ import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box
 import type { PolymerChangedEvent } from "../../../polymer-types";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
-import "@material/mwc-button/mwc-button";
 
 @customElement("entity-registry-settings")
 export class EntityRegistrySettings extends LitElement {

@@ -1,4 +1,5 @@
 import "@material/mwc-button";
+import "@polymer/paper-input/paper-input";
 import "@polymer/paper-spinner/paper-spinner";
 import {
   css,
@@ -24,7 +25,6 @@ import { PolymerChangedEvent } from "../../../polymer-types";
 import { haStyleDialog } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
 import { AddUserDialogParams } from "./show-dialog-add-user";
-import "@polymer/paper-input/paper-input";
 
 @customElement("dialog-add-user")
 export class DialogAddUser extends LitElement {

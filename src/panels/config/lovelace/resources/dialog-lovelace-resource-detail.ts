@@ -1,5 +1,7 @@
 import "@material/mwc-button/mwc-button";
+import "@polymer/paper-input/paper-input";
 import "@polymer/paper-item/paper-item";
+import "@polymer/paper-listbox/paper-listbox";
 import {
   css,
   CSSResult,
@@ -10,6 +12,7 @@ import {
   TemplateResult,
 } from "lit-element";
 import { createCloseHeading } from "../../../../components/ha-dialog";
+import "../../../../components/ha-paper-dropdown-menu";
 import {
   LovelaceResource,
   LovelaceResourcesMutableParams,
@@ -18,9 +21,6 @@ import { PolymerChangedEvent } from "../../../../polymer-types";
 import { haStyleDialog } from "../../../../resources/styles";
 import { HomeAssistant } from "../../../../types";
 import { LovelaceResourceDetailsDialogParams } from "./show-dialog-lovelace-resource-detail";
-import "@polymer/paper-input/paper-input";
-import "@polymer/paper-listbox/paper-listbox";
-import "../../../../components/ha-paper-dropdown-menu";
 
 @customElement("dialog-lovelace-resource-detail")
 export class DialogLovelaceResourceDetail extends LitElement {

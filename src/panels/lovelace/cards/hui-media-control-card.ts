@@ -45,8 +45,8 @@ import { findEntities } from "../common/find-entites";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
 import "../components/hui-marquee";
 import type { LovelaceCard, LovelaceCardEditor } from "../types";
-import { MediaControlCardConfig } from "./types";
 import "./../components/hui-warning";
+import { MediaControlCardConfig } from "./types";
 
 function getContrastRatio(
   rgb1: [number, number, number],

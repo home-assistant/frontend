@@ -13,9 +13,9 @@ import { classMap } from "lit-html/directives/class-map";
 import { styleMap } from "lit-html/directives/style-map";
 import { STATES_OFF } from "../../../common/const";
 import parseAspectRatio from "../../../common/util/parse-aspect-ratio";
+import "../../../components/ha-camera-stream";
 import { fetchThumbnailUrlWithCache } from "../../../data/camera";
 import { CameraEntity, HomeAssistant } from "../../../types";
-import "../../../components/ha-camera-stream";
 
 const UPDATE_INTERVAL = 10000;
 const DEFAULT_FILTER = "grayscale(100%)";

@@ -28,8 +28,8 @@ import { hasAction } from "../common/has-action";
 import { processConfigEntities } from "../common/process-config-entities";
 import "../components/hui-warning-element";
 import { LovelaceCard, LovelaceCardEditor } from "../types";
-import { GlanceCardConfig, GlanceConfigEntity } from "./types";
 import "./../components/hui-timestamp-display";
+import { GlanceCardConfig, GlanceConfigEntity } from "./types";
 
 @customElement("hui-glance-card")
 export class HuiGlanceCard extends LitElement implements LovelaceCard {

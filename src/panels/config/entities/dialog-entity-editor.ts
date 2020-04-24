@@ -1,4 +1,6 @@
+import "@polymer/app-layout/app-toolbar/app-toolbar";
 import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable";
+import "@polymer/paper-icon-button/paper-icon-button";
 import "@polymer/paper-tabs/paper-tab";
 import "@polymer/paper-tabs/paper-tabs";
 import { HassEntity } from "home-assistant-js-websocket";
@@ -30,8 +32,6 @@ import type { HomeAssistant } from "../../../types";
 import { PLATFORMS_WITH_SETTINGS_TAB } from "./const";
 import "./entity-registry-settings";
 import type { EntityRegistryDetailDialogParams } from "./show-dialog-entity-editor";
-import "@polymer/app-layout/app-toolbar/app-toolbar";
-import "@polymer/paper-icon-button/paper-icon-button";
 
 interface Tabs {
   [key: string]: Tab;

@@ -1,4 +1,5 @@
 import "@material/mwc-button";
+import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable";
 import "@polymer/paper-spinner/paper-spinner";
 import {
   css,
@@ -19,7 +20,6 @@ import type { PolymerChangedEvent } from "../../../polymer-types";
 import { haStyleDialog } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import type { SaveDialogParams } from "./show-save-config-dialog";
-import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable";
 
 const EMPTY_CONFIG = { views: [] };
 

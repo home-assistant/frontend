@@ -8,9 +8,9 @@ import {
   property,
   TemplateResult,
 } from "lit-element";
+import "../../../components/ha-attributes";
 import { TimerEntity } from "../../../data/timer";
 import { HomeAssistant } from "../../../types";
-import "../../../components/ha-attributes";
 
 @customElement("more-info-timer")
 class MoreInfoTimer extends LitElement {

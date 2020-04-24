@@ -1,24 +1,24 @@
+import "@material/mwc-button/mwc-button";
 import {
-  LitElement,
   css,
-  html,
   CSSResult,
-  TemplateResult,
   customElement,
+  html,
+  LitElement,
   property,
+  TemplateResult,
 } from "lit-element";
+import { computeStateName } from "../../common/entity/compute_state_name";
 import "../../components/ha-dialog";
 import "../../components/ha-switch";
-import { computeDeviceName } from "../../data/device_registry";
-import { computeStateName } from "../../common/entity/compute_state_name";
-import { haStyleDialog } from "../../resources/styles";
 import type { HaSwitch } from "../../components/ha-switch";
+import { computeDeviceName } from "../../data/device_registry";
+import { fetchMQTTDebugInfo, MQTTDeviceDebugInfo } from "../../data/mqtt";
+import { haStyleDialog } from "../../resources/styles";
 import { HomeAssistant } from "../../types";
-import { MQTTDeviceDebugInfoDialogParams } from "./show-dialog-mqtt-device-debug-info";
-import { MQTTDeviceDebugInfo, fetchMQTTDebugInfo } from "../../data/mqtt";
-import "./mqtt-messages";
 import "./mqtt-discovery-payload";
-import "@material/mwc-button/mwc-button";
+import "./mqtt-messages";
+import { MQTTDeviceDebugInfoDialogParams } from "./show-dialog-mqtt-device-debug-info";
 
 @customElement("dialog-mqtt-device-debug-info")
 class DialogMQTTDeviceDebugInfo extends LitElement {

@@ -1,3 +1,4 @@
+import "@polymer/paper-dropdown-menu/paper-dropdown-menu-light";
 import "@polymer/paper-icon-button/paper-icon-button";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
@@ -24,7 +25,6 @@ import "./types/ha-automation-action-event";
 import "./types/ha-automation-action-scene";
 import "./types/ha-automation-action-service";
 import "./types/ha-automation-action-wait_template";
-import "@polymer/paper-dropdown-menu/paper-dropdown-menu-light";
 
 const OPTIONS = [
   "condition",

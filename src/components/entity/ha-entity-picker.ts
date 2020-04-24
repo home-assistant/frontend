@@ -11,8 +11,8 @@ import {
   LitElement,
   property,
   PropertyValues,
-  TemplateResult,
   query,
+  TemplateResult,
 } from "lit-element";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../common/dom/fire_event";

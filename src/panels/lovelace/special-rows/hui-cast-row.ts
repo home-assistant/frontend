@@ -1,3 +1,4 @@
+import "@material/mwc-button/mwc-button";
 import {
   css,
   CSSResult,
@@ -16,7 +17,6 @@ import {
 import "../../../components/ha-icon";
 import { HomeAssistant } from "../../../types";
 import { CastConfig, LovelaceRow } from "../entity-rows/types";
-import "@material/mwc-button/mwc-button";
 
 @customElement("hui-cast-row")
 class HuiCastRow extends LitElement implements LovelaceRow {
