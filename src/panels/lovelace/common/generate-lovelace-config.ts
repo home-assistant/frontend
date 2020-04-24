@@ -25,6 +25,7 @@ import {
   EntityRegistryEntry,
   subscribeEntityRegistry,
 } from "../../../data/entity_registry";
+import { domainToName } from "../../../data/integration";
 import {
   LovelaceCardConfig,
   LovelaceConfig,
@@ -41,7 +42,6 @@ import {
 } from "../cards/types";
 import { processEditorEntities } from "../editor/process-editor-entities";
 import { LovelaceRowConfig, WeblinkConfig } from "../entity-rows/types";
-import { domainToName } from "../../../data/integration";
 
 const DEFAULT_VIEW_ENTITY_ID = "group.default_view";
 const DOMAINS_BADGES = [

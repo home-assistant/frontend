@@ -1,5 +1,9 @@
+import "@material/mwc-button/mwc-button";
+import "@polymer/paper-icon-button/paper-icon-button";
 import "@polymer/paper-input/paper-input";
 import type { PaperInputElement } from "@polymer/paper-input/paper-input";
+import "@polymer/paper-item/paper-item";
+import "@polymer/paper-item/paper-item-body";
 import {
   css,
   CSSResult,

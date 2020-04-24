@@ -1,3 +1,4 @@
+import "@material/mwc-button/mwc-button";
 import {
   css,
   CSSResult,
@@ -49,7 +50,7 @@ export class HuiEmptyStateCard extends LitElement implements LovelaceCard {
             </mwc-button>
           </a>
         </div>
-      </header-card>
+      </ha-card>
     `;
   }
 

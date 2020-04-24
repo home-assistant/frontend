@@ -8,31 +8,29 @@ import {
   PropertyValues,
   TemplateResult,
 } from "lit-element";
-
-import "../../../components/ha-icon";
-import "../../../components/ha-card";
-import "../components/hui-warning";
-
-import { WeatherForecastCardConfig } from "./types";
-import { LovelaceCard, LovelaceCardEditor } from "../types";
-import { HomeAssistant, WeatherEntity } from "../../../types";
-import { findEntities } from "../common/find-entites";
-import { hasConfigOrEntityChanged } from "../common/has-changed";
-import { actionHandler } from "../common/directives/action-handler-directive";
-import { isValidEntityId } from "../../../common/entity/valid_entity_id";
-import { computeStateName } from "../../../common/entity/compute_state_name";
-import { fireEvent } from "../../../common/dom/fire_event";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
+import { fireEvent } from "../../../common/dom/fire_event";
+import { computeStateDisplay } from "../../../common/entity/compute_state_display";
+import { computeStateName } from "../../../common/entity/compute_state_name";
+import { stateIcon } from "../../../common/entity/state_icon";
+import { isValidEntityId } from "../../../common/entity/valid_entity_id";
 import { debounce } from "../../../common/util/debounce";
+import "../../../components/ha-card";
+import "../../../components/ha-icon";
 import { UNAVAILABLE } from "../../../data/entity";
 import {
-  weatherIcons,
   getSecondaryWeatherAttribute,
   getWeatherUnit,
+  weatherIcons,
   weatherImages,
 } from "../../../data/weather";
-import { stateIcon } from "../../../common/entity/state_icon";
-import { computeStateDisplay } from "../../../common/entity/compute_state_display";
+import { HomeAssistant, WeatherEntity } from "../../../types";
+import { actionHandler } from "../common/directives/action-handler-directive";
+import { findEntities } from "../common/find-entites";
+import { hasConfigOrEntityChanged } from "../common/has-changed";
+import "../components/hui-warning";
+import { LovelaceCard, LovelaceCardEditor } from "../types";
+import { WeatherForecastCardConfig } from "./types";
 
 const DAY_IN_MILLISECONDS = 86400000;
 

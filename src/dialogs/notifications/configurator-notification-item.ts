@@ -7,11 +7,11 @@ import {
   TemplateResult,
 } from "lit-element";
 import { fireEvent } from "../../common/dom/fire_event";
+import { computeStateDisplay } from "../../common/entity/compute_state_display";
+import { domainToName } from "../../data/integration";
 import { PersitentNotificationEntity } from "../../data/persistent_notification";
 import { HomeAssistant } from "../../types";
 import "./notification-item-template";
-import { domainToName } from "../../data/integration";
-import { computeStateDisplay } from "../../common/entity/compute_state_display";
 
 @customElement("configurator-notification-item")
 export class HuiConfiguratorNotificationItem extends LitElement {

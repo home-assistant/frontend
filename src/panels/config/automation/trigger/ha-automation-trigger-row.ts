@@ -1,3 +1,4 @@
+import "@polymer/paper-dropdown-menu/paper-dropdown-menu-light";
 import "@polymer/paper-icon-button/paper-icon-button";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";

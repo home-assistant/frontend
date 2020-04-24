@@ -14,6 +14,7 @@ import {
   DataTableRowData,
   RowClickedEvent,
 } from "../../../components/data-table/ha-data-table";
+import "../../../components/entity/ha-state-icon";
 import { AreaRegistryEntry } from "../../../data/area_registry";
 import { ConfigEntry } from "../../../data/config_entries";
 import {
@@ -25,11 +26,10 @@ import {
   EntityRegistryEntry,
   findBatteryEntity,
 } from "../../../data/entity_registry";
+import { domainToName } from "../../../data/integration";
 import "../../../layouts/hass-tabs-subpage-data-table";
-import "../../../components/entity/ha-state-icon";
 import { HomeAssistant, Route } from "../../../types";
 import { configSections } from "../ha-panel-config";
-import { domainToName } from "../../../data/integration";
 
 interface DeviceRowData extends DeviceRegistryEntry {
   device?: DeviceRowData;

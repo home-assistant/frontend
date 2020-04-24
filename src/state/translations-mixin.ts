@@ -1,10 +1,12 @@
+import { atLeastVersion } from "../common/config/version";
 import { computeLocalize } from "../common/translations/localize";
 import { computeRTL } from "../common/util/compute_rtl";
+import { debounce } from "../common/util/debounce";
 import {
   getHassTranslations,
+  getHassTranslationsPre109,
   saveTranslationPreferences,
   TranslationCategory,
-  getHassTranslationsPre109,
 } from "../data/translation";
 import { translationMetadata } from "../resources/translations-metadata";
 import { Constructor, HomeAssistant } from "../types";
@@ -15,8 +17,6 @@ import {
   getUserLanguage,
 } from "../util/hass-translation";
 import { HassBaseEl } from "./hass-base-mixin";
-import { atLeastVersion } from "../common/config/version";
-import { debounce } from "../common/util/debounce";
 
 interface LoadedTranslationCategory {
   // individual integrations loaded for this category
