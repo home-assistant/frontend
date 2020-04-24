@@ -521,7 +521,7 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
         "ui.panel.config.integrations.rename_input_label"
       ),
     });
-    if (!newName) {
+    if (newName === null) {
       return;
     }
     const newEntry = await updateConfigEntry(this.hass, configEntry.entry_id, {
