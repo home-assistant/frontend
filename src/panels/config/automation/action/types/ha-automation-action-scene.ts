@@ -6,6 +6,8 @@ import { PolymerChangedEvent } from "../../../../../polymer-types";
 import { HomeAssistant } from "../../../../../types";
 import { ActionElement } from "../ha-automation-action-row";
 
+const includeDomains = ["scene"];
+
 @customElement("ha-automation-action-scene")
 export class HaSceneAction extends LitElement implements ActionElement {
   @property() public hass!: HomeAssistant;
@@ -24,7 +26,7 @@ export class HaSceneAction extends LitElement implements ActionElement {
         .hass=${this.hass}
         .value=${scene}
         @value-changed=${this._entityPicked}
-        include-domains="['scene']"
+        .includeDomains=${includeDomains}
         allow-custom-entity
       ></ha-entity-picker>
     `;

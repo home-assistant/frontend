@@ -8,6 +8,8 @@ import type { GeoLocationTrigger } from "../../../../../data/automation";
 import type { HomeAssistant } from "../../../../../types";
 import { handleChangeEvent } from "../ha-automation-trigger-row";
 
+const includeDomains = ["zone"];
+
 @customElement("ha-automation-trigger-geo_location")
 export default class HaGeolocationTrigger extends LitElement {
   @property() public hass!: HomeAssistant;
@@ -42,7 +44,7 @@ export default class HaGeolocationTrigger extends LitElement {
         @value-changed=${this._zonePicked}
         .hass=${this.hass}
         allow-custom-entity
-        include-domains="['zone']"
+        .includeDomains=${includeDomains}
       ></ha-entity-picker>
       <label id="eventlabel">
         ${this.hass.localize(

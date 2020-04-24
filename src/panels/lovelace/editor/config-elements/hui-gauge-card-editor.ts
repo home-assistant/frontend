@@ -30,6 +30,8 @@ const cardConfigStruct = struct({
   theme: "string?",
 });
 
+const includeDomains = ["sensor"];
+
 @customElement("hui-gauge-card-editor")
 export class HuiGaugeCardEditor extends LitElement
   implements LovelaceCardEditor {
@@ -87,7 +89,7 @@ export class HuiGaugeCardEditor extends LitElement
           .hass=${this.hass}
           .value="${this._entity}"
           .configValue=${"entity"}
-          .include-domains=${["sensor"]}
+          .includeDomains=${includeDomains}
           @change="${this._valueChanged}"
           allow-custom-entity
         ></ha-entity-picker>
