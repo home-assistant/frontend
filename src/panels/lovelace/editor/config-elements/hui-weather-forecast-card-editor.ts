@@ -25,6 +25,8 @@ const cardConfigStruct = struct({
   show_forecast: "boolean?",
 });
 
+const includeDomains = ["weather"];
+
 @customElement("hui-weather-forecast-card-editor")
 export class HuiWeatherForecastCardEditor extends LitElement
   implements LovelaceCardEditor {
@@ -70,7 +72,7 @@ export class HuiWeatherForecastCardEditor extends LitElement
           .hass=${this.hass}
           .value=${this._entity}
           .configValue=${"entity"}
-          .includeDomains=${["weather"]}
+          .includeDomains=${includeDomains}
           @change=${this._valueChanged}
           allow-custom-entity
         ></ha-entity-picker>

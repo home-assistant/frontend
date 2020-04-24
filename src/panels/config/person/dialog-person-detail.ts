@@ -18,6 +18,8 @@ import { haStyleDialog } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
 import { PersonDetailDialogParams } from "./show-dialog-person-detail";
 
+const includeDomains = ["device_tracker"];
+
 class DialogPersonDetail extends LitElement {
   @property() public hass!: HomeAssistant;
 
@@ -106,7 +108,7 @@ class DialogPersonDetail extends LitElement {
                   <ha-entities-picker
                     .hass=${this.hass}
                     .value=${this._deviceTrackers}
-                    .include-domains=${["device_tracker"]}
+                    .includeDomains=${includeDomains}
                     .pickedEntityLabel=${this.hass.localize(
                       "ui.panel.config.person.detail.device_tracker_picked"
                     )}
