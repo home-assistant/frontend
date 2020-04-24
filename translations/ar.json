@@ -302,17 +302,17 @@
                 "currently": "حاليا",
                 "fan_mode": "وضع المروحة",
                 "on_off": "إيقاف/تشغيل",
-                "target_humidity": "Doelluchtvochtigheid",
+                "target_humidity": "نسبة الرطوبة المستهدفة",
                 "target_temperature": "درجة الحرارة المستهدفة"
             },
             "fan": {
-                "direction": "Richting",
-                "speed": "Snelheid"
+                "direction": "الإتجاه",
+                "speed": "السرعة"
             },
             "light": {
-                "brightness": "Helderheid",
-                "color_temperature": "Kleurtemperatuur",
-                "white_value": "Witwaarde"
+                "brightness": "السطوع",
+                "color_temperature": "درجة حرارة اللون",
+                "white_value": "قيمة الأبيض"
             },
             "lock": {
                 "lock": "قفل",
@@ -354,7 +354,7 @@
                 }
             },
             "relative_time": {
-                "never": "Nooit"
+                "never": "أبدا"
             },
             "service-picker": {
                 "service": "خدمة"
@@ -588,7 +588,7 @@
                         "confirm_delete_ignore_title": "توقف عن تجاهل {name} ؟",
                         "ignore": "تجاهل",
                         "ignored": "تجاهل",
-                        "show_ignored": "Visa ",
+                        "show_ignored": "عرض المتجاهل",
                         "stop_ignore": "توقف عن التجاهل"
                     },
                     "new": "إعداد تكامل جديد",
