@@ -10,9 +10,9 @@ import {
 import "../../../components/dialog/ha-paper-dialog";
 import {
   domainToName,
+  fetchIntegrationManifest,
   integrationIssuesUrl,
   IntegrationManifest,
-  fetchIntegrationManifest,
 } from "../../../data/integration";
 import { getLoggedErrorIntegration } from "../../../data/system_log";
 import { PolymerChangedEvent } from "../../../polymer-types";

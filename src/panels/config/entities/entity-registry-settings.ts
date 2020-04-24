@@ -1,3 +1,4 @@
+import "@material/mwc-button/mwc-button";
 import "@polymer/paper-input/paper-input";
 import { HassEntity } from "home-assistant-js-websocket";
 import {

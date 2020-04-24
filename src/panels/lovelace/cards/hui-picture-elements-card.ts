@@ -9,6 +9,7 @@ import {
   TemplateResult,
 } from "lit-element";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
+import "../../../components/ha-card";
 import { HomeAssistant } from "../../../types";
 import { findEntities } from "../common/find-entites";
 import { LovelaceElement, LovelaceElementConfig } from "../elements/types";
@@ -107,7 +108,7 @@ class HuiPictureElementsCard extends LitElement implements LovelaceCard {
     }
 
     return html`
-      <ha-card .header="${this._config.title}">
+      <ha-card .header=${this._config.title}>
         <div id="root">
           <hui-image
             .hass=${this._hass}

@@ -1,3 +1,4 @@
+import * as Fuse from "fuse.js";
 import {
   css,
   CSSResult,
@@ -11,17 +12,14 @@ import {
 import { classMap } from "lit-html/directives/class-map";
 import { until } from "lit-html/directives/until";
 import memoizeOne from "memoize-one";
-import * as Fuse from "fuse.js";
-
-import { CardPickTarget } from "../types";
-import { LovelaceCard } from "../../types";
-import { LovelaceCardConfig, LovelaceConfig } from "../../../../data/lovelace";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import "../../../../common/search/search-input";
 import { UNAVAILABLE_STATES } from "../../../../data/entity";
+import { LovelaceCardConfig, LovelaceConfig } from "../../../../data/lovelace";
 import {
-  CUSTOM_TYPE_PREFIX,
   CustomCardEntry,
   customCards,
+  CUSTOM_TYPE_PREFIX,
   getCustomCardEntry,
 } from "../../../../data/lovelace_custom_cards";
 import { HomeAssistant } from "../../../../types";
@@ -30,9 +28,9 @@ import {
   computeUsedEntities,
 } from "../../common/compute-unused-entities";
 import { createCardElement } from "../../create-element/create-card-element";
+import { LovelaceCard } from "../../types";
 import { getCardStubConfig } from "../get-card-stub-config";
-
-import "../../../../common/search/search-input";
+import { CardPickTarget } from "../types";
 
 interface Card {
   type: string;

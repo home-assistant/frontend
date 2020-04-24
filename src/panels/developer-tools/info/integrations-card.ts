@@ -8,11 +8,12 @@ import {
   TemplateResult,
 } from "lit-element";
 import memoizeOne from "memoize-one";
+import "../../../components/ha-card";
 import {
+  domainToName,
+  fetchIntegrationManifests,
   integrationIssuesUrl,
   IntegrationManifest,
-  fetchIntegrationManifests,
-  domainToName,
 } from "../../../data/integration";
 import { HomeAssistant } from "../../../types";
 

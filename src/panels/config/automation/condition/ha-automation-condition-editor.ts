@@ -1,3 +1,4 @@
+import "@polymer/paper-dropdown-menu/paper-dropdown-menu-light";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
 import type { PaperListboxElement } from "@polymer/paper-listbox/paper-listbox";
@@ -7,6 +8,7 @@ import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-card";
 import type { Condition } from "../../../../data/automation";
 import type { HomeAssistant } from "../../../../types";
+import "../../../../components/ha-yaml-editor";
 import "./types/ha-automation-condition-and";
 import "./types/ha-automation-condition-device";
 import "./types/ha-automation-condition-numeric_state";

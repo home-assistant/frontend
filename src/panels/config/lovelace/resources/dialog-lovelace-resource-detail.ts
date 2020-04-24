@@ -1,3 +1,7 @@
+import "@material/mwc-button/mwc-button";
+import "@polymer/paper-input/paper-input";
+import "@polymer/paper-item/paper-item";
+import "@polymer/paper-listbox/paper-listbox";
 import {
   css,
   CSSResult,
@@ -8,6 +12,7 @@ import {
   TemplateResult,
 } from "lit-element";
 import { createCloseHeading } from "../../../../components/ha-dialog";
+import "../../../../components/ha-paper-dropdown-menu";
 import {
   LovelaceResource,
   LovelaceResourcesMutableParams,
