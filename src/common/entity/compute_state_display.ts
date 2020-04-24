@@ -1,11 +1,11 @@
 import { HassEntity } from "home-assistant-js-websocket";
+import { UNAVAILABLE, UNKNOWN } from "../../data/entity";
+import { atLeastCachedVersion } from "../config/version";
 import { formatDate } from "../datetime/format_date";
 import { formatDateTime } from "../datetime/format_date_time";
 import { formatTime } from "../datetime/format_time";
 import { LocalizeFunc } from "../translations/localize";
 import { computeStateDomain } from "./compute_state_domain";
-import { UNKNOWN, UNAVAILABLE } from "../../data/entity";
-import { atLeastCachedVersion } from "../config/version";
 
 const legacyComputeStateDisplay = (
   localize: LocalizeFunc,
@@ -96,7 +96,6 @@ export const computeStateDisplay = (
     return legacyComputeStateDisplay(localize, stateObj, language);
   }
 
-  // Real code.
   if (stateObj.state === UNKNOWN || stateObj.state === UNAVAILABLE) {
     return localize(`state.default.${stateObj.state}`);
   }
@@ -141,9 +140,15 @@ export const computeStateDisplay = (
     return formatDateTime(date, language);
   }
 
-  const deviceClass = stateObj.attributes.device_class || "_";
   return (
-    localize(`component.${domain}.state.${deviceClass}.${stateObj.state}`) ||
+    // Return device class translation
+    (stateObj.attributes.device_class &&
+      localize(
+        `component.${domain}.state.${stateObj.attributes.device_class}.${stateObj.state}`
+      )) ||
+    // Return default translation
+    localize(`component.${domain}.state._.${stateObj.state}`) ||
+    // We don't know! Return the raw state.
     stateObj.state
   );
 };

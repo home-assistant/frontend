@@ -291,8 +291,8 @@
             "docked": "I dock",
             "error": "Fejl",
             "idle": "Inaktiv",
-            "off": "Off",
-            "on": "On",
+            "off": "Slukket",
+            "on": "Tændt",
             "paused": "Sat på pause",
             "returning": "Vender tilbage til dock"
         },
@@ -742,6 +742,7 @@
                     "description": "Oversigt over alle områder i dit hjem.",
                     "editor": {
                         "create": "Opret",
+                        "default_name": "Nyt område",
                         "delete": "Slet",
                         "update": "Opdater"
                     },
@@ -750,7 +751,8 @@
                         "header": "Områder",
                         "integrations_page": "Integrationsside",
                         "introduction": "Områder bruges til at organisere hvor enheder befinder sig. Disse oplysninger vil blive brugt i Home Assistant til at hjælpe dig med at organisere din brugerflade, tilladelser og integrationer med andre systemer.",
-                        "introduction2": "Hvis du vil placere enheder i et område, skal du bruge linket herunder til at navigere til integrationssiden og derefter klikke på en konfigureret integration for at komme til enhedskortene."
+                        "introduction2": "Hvis du vil placere enheder i et område, skal du bruge linket herunder til at navigere til integrationssiden og derefter klikke på en konfigureret integration for at komme til enhedskortene.",
+                        "no_areas": "Det ser ud til, at du endnu ikke har nogen områder endnu!"
                     }
                 },
                 "automation": {

@@ -7,10 +7,11 @@ import {
   TemplateResult,
 } from "lit-element";
 import { fireEvent } from "../../common/dom/fire_event";
+import { computeStateDisplay } from "../../common/entity/compute_state_display";
+import { domainToName } from "../../data/integration";
 import { PersitentNotificationEntity } from "../../data/persistent_notification";
 import { HomeAssistant } from "../../types";
 import "./notification-item-template";
-import { domainToName } from "../../data/integration";
 
 @customElement("configurator-notification-item")
 export class HuiConfiguratorNotificationItem extends LitElement {
@@ -38,8 +39,10 @@ export class HuiConfiguratorNotificationItem extends LitElement {
         </div>
 
         <mwc-button slot="actions" @click="${this._handleClick}"
-          >${this.hass.localize(
-            `state.configurator.${this.notification.state}`
+          >${computeStateDisplay(
+            this.hass.localize,
+            this.notification,
+            this.hass.language
           )}</mwc-button
         >
       </notification-item-template>

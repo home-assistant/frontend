@@ -14,6 +14,8 @@ function zoneAndLocationFilter(stateObj) {
   return hasLocation(stateObj) && computeStateDomain(stateObj) !== "zone";
 }
 
+const includeDomains = ["zone"];
+
 @customElement("ha-automation-trigger-zone")
 export class HaZoneTrigger extends LitElement {
   @property() public hass!: HomeAssistant;
@@ -49,7 +51,7 @@ export class HaZoneTrigger extends LitElement {
         @value-changed=${this._zonePicked}
         .hass=${this.hass}
         allow-custom-entity
-        .includeDomains=${["zone"]}
+        .includeDomains=${includeDomains}
       ></ha-entity-picker>
       <label id="eventlabel">
         ${this.hass.localize(

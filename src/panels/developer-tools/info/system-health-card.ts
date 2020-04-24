@@ -8,12 +8,12 @@ import {
   TemplateResult,
 } from "lit-element";
 import "../../../components/ha-card";
+import { domainToName } from "../../../data/integration";
 import {
   fetchSystemHealthInfo,
   SystemHealthInfo,
 } from "../../../data/system_health";
 import { HomeAssistant } from "../../../types";
-import { domainToName } from "../../../data/integration";
 
 const sortKeys = (a: string, b: string) => {
   if (a === "homeassistant") {

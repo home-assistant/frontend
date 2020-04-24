@@ -36,12 +36,12 @@ import {
   ZHADevice,
   ZHAEntityReference,
 } from "../../../data/zha";
+import { showZHADeviceZigbeeInfoDialog } from "../../../dialogs/zha-device-zigbee-signature-dialog/show-dialog-zha-device-zigbee-info";
 import { haStyle } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
 import { addEntitiesToLovelaceView } from "../../lovelace/editor/add-entities-to-view";
 import { formatAsPaddedHex } from "./functions";
 import { ItemSelectedEvent, NodeServiceData } from "./types";
-import { showZHADeviceZigbeeInfoDialog } from "../../../dialogs/zha-device-zigbee-signature-dialog/show-dialog-zha-device-zigbee-info";
 
 declare global {
   // for fire event

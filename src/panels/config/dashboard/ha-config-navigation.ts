@@ -42,7 +42,8 @@ class HaConfigNavigation extends LitElement {
                   <ha-icon .icon=${page.icon} slot="item-icon"></ha-icon>
                   <paper-item-body two-line>
                     ${this.hass.localize(
-                      `ui.panel.config.${page.component}.caption`
+                      page.translationKey ||
+                        `ui.panel.config.${page.component}.caption`
                     )}
                     ${page.component === "cloud" && (page.info as CloudStatus)
                       ? page.info.logged_in

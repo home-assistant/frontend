@@ -1,5 +1,6 @@
 import "@polymer/app-route/app-location";
 import { html, property, PropertyValues } from "lit-element";
+import { setHAVersion } from "../common/config/version";
 import { navigate } from "../common/navigate";
 import { getStorageDefaultPanelUrlPath } from "../data/panel";
 import "../resources/custom-card-support";
@@ -12,7 +13,6 @@ import {
 } from "../util/register-service-worker";
 import "./ha-init-page";
 import "./home-assistant-main";
-import { setHAVersion } from "../common/config/version";
 
 export class HomeAssistantAppEl extends HassElement {
   @property() private _route?: Route;

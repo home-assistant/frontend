@@ -1,18 +1,18 @@
-/* eslint-disable lit/no-invalid-html */
 import "@polymer/app-route/app-route";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import {
+  css,
+  CSSResult,
   customElement,
+  html,
+  LitElement,
   property,
   PropertyValues,
-  LitElement,
   TemplateResult,
-  html,
-  CSSResult,
-  css,
 } from "lit-element";
 import { compare } from "../../../common/string/compare";
 import { computeRTL } from "../../../common/util/compute_rtl";
+import { afterNextRender } from "../../../common/util/render-status";
 import "../../../components/entity/ha-state-icon";
 import "../../../components/ha-card";
 import "../../../components/ha-fab";
@@ -38,6 +38,7 @@ import {
   EntityRegistryEntry,
   subscribeEntityRegistry,
 } from "../../../data/entity_registry";
+import { domainToName } from "../../../data/integration";
 import { showConfigEntrySystemOptionsDialog } from "../../../dialogs/config-entry-system-options/show-dialog-config-entry-system-options";
 import { showConfigFlowDialog } from "../../../dialogs/config-flow/show-dialog-config-flow";
 import { showOptionsFlowDialog } from "../../../dialogs/config-flow/show-dialog-options-flow";
@@ -48,11 +49,9 @@ import {
 } from "../../../dialogs/generic/show-dialog-box";
 import "../../../layouts/hass-tabs-subpage";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
+import { haStyle } from "../../../resources/styles";
 import { HomeAssistant, Route } from "../../../types";
 import { configSections } from "../ha-panel-config";
-import { domainToName } from "../../../data/integration";
-import { haStyle } from "../../../resources/styles";
-import { afterNextRender } from "../../../common/util/render-status";
 
 @customElement("ha-config-integrations")
 class HaConfigIntegrations extends SubscribeMixin(LitElement) {
@@ -253,6 +252,10 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
             ? this._configEntries.map((item: any) => {
                 const devices = this._getDevices(item);
                 const entities = this._getEntities(item);
+                const integrationName = domainToName(
+                  this.hass.localize,
+                  item.domain
+                );
                 return item.source === "ignore"
                   ? ""
                   : html`
@@ -271,10 +274,12 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
                             />
                           </div>
                           <h1>
-                            ${domainToName(this.hass.localize, item.domain)}
+                            ${integrationName}
                           </h1>
                           <h2>
-                            ${item.title}
+                            ${integrationName === item.title
+                              ? html`&nbsp;`
+                              : item.title}
                           </h2>
                           ${devices.length || entities.length
                             ? html`
@@ -282,7 +287,7 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
                                   ${devices.length
                                     ? html`
                                         <a
-                                          href="/config/devices/dashboard?historyBack=1&config_entry=${item.entry_id}"
+                                          href=${`/config/devices/dashboard?historyBack=1&config_entry=${item.entry_id}`}
                                           >${this.hass.localize(
                                             "ui.panel.config.integrations.config_entry.devices",
                                             "count",
@@ -297,7 +302,7 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
                                   ${entities.length
                                     ? html`
                                         <a
-                                          href="/config/entities?historyBack=1&config_entry=${item.entry_id}"
+                                          href=${`/config/entities?historyBack=1&config_entry=${item.entry_id}`}
                                           >${this.hass.localize(
                                             "ui.panel.config.integrations.config_entry.entities",
                                             "count",
@@ -385,8 +390,9 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
           aria-label=${this.hass.localize("ui.panel.config.integrations.new")}
           title=${this.hass.localize("ui.panel.config.integrations.new")}
           @click=${this._createFlow}
-          ?rtl=${computeRTL(this.hass!)}
+          ?is-wide=${this.isWide}
           ?narrow=${this.narrow}
+          ?rtl=${computeRTL(this.hass!)}
         ></ha-fab>
       </hass-tabs-subpage>
     `;
@@ -520,7 +526,7 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
         "ui.panel.config.integrations.rename_input_label"
       ),
     });
-    if (!newName) {
+    if (newName === null) {
       return;
     }
     const newEntry = await updateConfigEntry(this.hass, configEntry.entry_id, {
@@ -571,6 +577,7 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
           margin-bottom: 64px;
         }
         ha-card {
+          max-width: 500px;
           display: flex;
           flex-direction: column;
           justify-content: space-between;
@@ -642,12 +649,21 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
           right: 16px;
           z-index: 1;
         }
+        ha-fab[is-wide] {
+          bottom: 24px;
+          right: 24px;
+        }
         ha-fab[narrow] {
           bottom: 84px;
         }
         ha-fab[rtl] {
           right: auto;
           left: 16px;
+        }
+        ha-fab[is-wide].rtl {
+          bottom: 24px;
+          left: 24px;
+          right: auto;
         }
         paper-menu-button {
           color: var(--secondary-text-color);

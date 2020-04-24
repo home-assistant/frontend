@@ -28,6 +28,7 @@ import { computeRTLDirection } from "../../common/util/compute_rtl";
 import { debounce } from "../../common/util/debounce";
 import { afterNextRender } from "../../common/util/render-status";
 import "../../components/ha-icon";
+import "../../components/ha-menu-button";
 import "../../components/ha-paper-icon-button-arrow-next";
 import "../../components/ha-paper-icon-button-arrow-prev";
 import type { LovelaceConfig, LovelacePanelConfig } from "../../data/lovelace";
@@ -81,12 +82,17 @@ class HUIRoot extends LitElement {
 
   protected render(): TemplateResult {
     return html`
-    <ha-app-layout id="layout">
-      <app-header slot="header" effects="waterfall" class=${classMap({
-        "edit-mode": this._editMode,
-      })} fixed condenses>
-        ${
-          this._editMode
+      <ha-app-layout id="layout">
+        <app-header
+          slot="header"
+          effects="waterfall"
+          class=${classMap({
+            "edit-mode": this._editMode,
+          })}
+          fixed
+          condenses
+        >
+          ${this._editMode
             ? html`
                 <app-toolbar class="edit-mode">
                   <paper-icon-button
@@ -263,11 +269,8 @@ class HUIRoot extends LitElement {
                     </paper-listbox>
                   </paper-menu-button>
                 </app-toolbar>
-              `
-        }
-
-        ${
-          this.lovelace!.config.views.length > 1 || this._editMode
+              `}
+          ${this.lovelace!.config.views.length > 1 || this._editMode
             ? html`
                 <div sticky>
                   <paper-tabs
@@ -352,14 +355,17 @@ class HUIRoot extends LitElement {
                   </paper-tabs>
                 </div>
               `
-            : ""
-        }
-      </app-header>
-      <div id='view' class="${classMap({
-        "tabs-hidden":
-          !this._editMode && this.lovelace!.config.views.length < 2,
-      })}" @ll-rebuild='${this._debouncedConfigChanged}'></div>
-    </app-header-layout>
+            : ""}
+        </app-header>
+        <div
+          id="view"
+          class="${classMap({
+            "tabs-hidden":
+              !this._editMode && this.lovelace!.config.views.length < 2,
+          })}"
+          @ll-rebuild="${this._debouncedConfigChanged}"
+        ></div>
+      </ha-app-layout>
     `;
   }
 

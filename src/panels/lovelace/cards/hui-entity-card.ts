@@ -10,6 +10,7 @@ import {
 } from "lit-element";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { fireEvent } from "../../../common/dom/fire_event";
+import { computeStateDisplay } from "../../../common/entity/compute_state_display";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import { stateIcon } from "../../../common/entity/state_icon";
 import { isValidEntityId } from "../../../common/entity/valid_entity_id";
@@ -128,13 +129,11 @@ export class HuiEntityCard extends LitElement implements LovelaceCard {
               >${"attribute" in this._config
                 ? stateObj.attributes[this._config.attribute!] ||
                   this.hass.localize("state.default.unknown")
-                : this.hass.localize(`state.default.${stateObj.state}`) ||
-                  this.hass.localize(
-                    `state.${this._config.entity.split(".")[0]}.${
-                      stateObj.state
-                    }`
-                  ) ||
-                  stateObj.state}</span
+                : computeStateDisplay(
+                    this.hass.localize,
+                    stateObj,
+                    this.hass.language
+                  )}</span
             >${showUnit
               ? html`
                   <span class="measurement"

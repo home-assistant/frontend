@@ -8,12 +8,12 @@ import {
   getConfigFlowHandlers,
   handleConfigFlowStep,
 } from "../../data/config_flow";
+import { domainToName } from "../../data/integration";
 import {
   DataEntryFlowDialogParams,
   loadDataEntryFlowDialog,
   showFlowDialog,
 } from "./show-dialog-data-entry-flow";
-import { domainToName } from "../../data/integration";
 
 export const loadConfigFlowDialog = loadDataEntryFlowDialog;
 

@@ -185,7 +185,7 @@ class MoreInfoClimate extends LitElement {
                   .map(
                     (mode) => html`
                       <paper-item item-name=${mode}>
-                        ${hass.localize(`state.climate.${mode}`)}
+                        ${hass.localize(`component.climate.state._.${mode}`)}
                       </paper-item>
                     `
                   )}

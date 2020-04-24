@@ -34,6 +34,8 @@ const cardConfigStruct = struct({
   double_tap_action: struct.optional(actionConfigStruct),
 });
 
+const includeDomains = ["light"];
+
 @customElement("hui-light-card-editor")
 export class HuiLightCardEditor extends LitElement
   implements LovelaceCardEditor {
@@ -95,7 +97,7 @@ export class HuiLightCardEditor extends LitElement
           .hass=${this.hass}
           .value=${this._entity}
           .configValue=${"entity"}
-          .include-domains=${["light"]}
+          .includeDomains=${includeDomains}
           @change=${this._valueChanged}
           allow-custom-entity
         ></ha-entity-picker>

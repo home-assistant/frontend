@@ -4,6 +4,7 @@ import { ripple } from "@material/mwc-ripple/ripple-directive";
 import { customElement, html, TemplateResult } from "lit-element";
 import { classMap } from "lit-html/directives/class-map";
 import type { Constructor } from "../types";
+import "./ha-icon";
 
 const MwcFab = customElements.get("mwc-fab") as Constructor<Fab>;
 

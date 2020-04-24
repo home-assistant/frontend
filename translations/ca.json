@@ -654,6 +654,17 @@
                     "stop": "Atura"
                 }
             },
+            "mqtt_device_debug_info": {
+                "deserialize": "Intenta analitzar els missatges MQTT com a format JSON",
+                "entities": "Entitats",
+                "no_entities": "No hi ha entitats",
+                "no_triggers": "No hi ha disparadors",
+                "payload_display": "Mostra les dades/payload",
+                "recent_messages": "{n} últim/s missatge/s rebut/s",
+                "show_as_yaml": "Mostra en YAML",
+                "title": "Informació de depuració de {device}",
+                "triggers": "Disparadors"
+            },
             "options_flow": {
                 "form": {
                     "header": "Opcions"
@@ -763,7 +774,7 @@
                             "add": "Afegir acció",
                             "delete": "Elimina",
                             "delete_confirm": "Segur que vols eliminar-ho?",
-                            "duplicate": "Duplicar",
+                            "duplicate": "Duplica",
                             "header": "Accions",
                             "introduction": "Les accions són allò que farà Home Assistant quan es dispari l'automatització i es compleixin totes les condicions (si n'hi ha).",
                             "learn_more": "Més informació sobre les accions",
@@ -808,7 +819,7 @@
                             "add": "Afegir condició",
                             "delete": "Elimina",
                             "delete_confirm": "Segur que vols eliminar-ho?",
-                            "duplicate": "Duplicar",
+                            "duplicate": "Duplica",
                             "header": "Condicions",
                             "introduction": "Les condicions són part opcional d'una automatització i es poden utilitzar per permetre o evitar que es produeixi una acció quan es dispari l'automatització. Les condicions són similars als activadors però funcionen de forma diferent: un activador analitza els esdeveniments que ocorren en el sistema mentre que una condició només observa com està el sistema en un moment determinat, per exemple, un activador se n'adonarà de quan s'està activant un interruptor mentre que una condició només pot veure si un interruptor està activat o desactivat.",
                             "learn_more": "Més informació sobre les condicions",
@@ -878,15 +889,15 @@
                         "load_error_unknown": "Error en carregar l’automatització ({err_no}).",
                         "save": "Desa",
                         "triggers": {
-                            "add": "Afegir activador",
+                            "add": "Afegeix disparador",
                             "delete": "Elimina",
                             "delete_confirm": "Segur que vols eliminar-ho?",
-                            "duplicate": "Duplicar",
-                            "header": "Activadors",
+                            "duplicate": "Duplica",
+                            "header": "Disparadors",
                             "introduction": "Els activadors són les regles que fan que es dispari una automatització. Pots definir més d'un activador per a cada automatització. Una vegada s'iniciï un activador, el Home Assistant validarà les condicions (si n'hi ha) i finalment cridarà l'acció.",
                             "learn_more": "Més informació sobre els activadors",
                             "name": "Disparador",
-                            "type_select": "Tipus d'activador",
+                            "type_select": "Tipus de disparador",
                             "type": {
                                 "device": {
                                     "extra_fields": {
@@ -1046,7 +1057,7 @@
                             "link_learn_more": "Més informació sobre la creació d'automatizacions basats en webhook.",
                             "loading": "Carregant ...",
                             "manage": "Gestiona",
-                            "no_hooks_yet": "Sembla que encara no tens cap webhook. Comença configurant una",
+                            "no_hooks_yet": "Sembla que encara no tens cap webhook. Comença configurant una ",
                             "no_hooks_yet_link_automation": "automatització de webhook",
                             "no_hooks_yet_link_integration": "integració basada en webhook",
                             "no_hooks_yet2": "o bé creant una",
@@ -1294,6 +1305,10 @@
                         }
                     }
                 },
+                "filtering": {
+                    "clear": "Esborra",
+                    "filtering_by": "Filtratge per"
+                },
                 "header": "Configuració de Home Assistant",
                 "helpers": {
                     "caption": "Ajudants",
@@ -1321,12 +1336,16 @@
                     }
                 },
                 "integrations": {
+                    "add_integration": "Afegeix integració",
                     "caption": "Integracions",
                     "config_entry": {
                         "area": "A {area}",
+                        "delete": "Elimina",
                         "delete_button": "Elimina {integration}",
                         "delete_confirm": "Estàs segur que vols eliminar aquesta integració?",
                         "device_unavailable": "dispositiu no disponible",
+                        "devices": "{count} {count, plural,\n  one {dispositiu}\n  other {dispositius}\n}",
+                        "entities": "{count} {count, plural,\n  one {entitat}\n  other {entitats}\n}",
                         "entity_unavailable": "entitat no disponible",
                         "firmware": "Firmware: {version}",
                         "hub": "Connectat a través de",
@@ -1334,8 +1353,11 @@
                         "no_area": "Sense àrea",
                         "no_device": "Entitats sense dispositius",
                         "no_devices": "Aquesta integració no té dispositius.",
+                        "options": "Opcions",
+                        "rename": "Canvia el nom",
                         "restart_confirm": "Reinicia el Home Assistant per acabar d'eliminar aquesta integració",
                         "settings_button": "Edita la configuració de {integration}",
+                        "system_options": "Opcions de sistema",
                         "system_options_button": "Opcions de sistema de {integration}"
                     },
                     "config_flow": {
@@ -1370,11 +1392,15 @@
                         "show_ignored": "Mostra les integracions ignorades",
                         "stop_ignore": "Deixa d'ignorar"
                     },
+                    "integration": "integració",
                     "integration_not_found": "No s'ha trobat la integració.",
                     "new": "Configura una nova integració",
+                    "no_integrations": "Sembla que encara no tens cap integració configurada. Prem al botó de sota per afegir la teva primera integració!",
                     "none": "Encara no hi ha res configurat",
                     "note_about_integrations": "Encara no es poden configurar totes les integracions a través de la UI.",
-                    "note_about_website_reference": "N'hi ha més disponibles al "
+                    "note_about_website_reference": "N'hi ha més disponibles al ",
+                    "rename_dialog": "Edita el nom de l'entrada de configuració",
+                    "rename_input_label": "Nom de l’entrada"
                 },
                 "introduction": "Aquí pots configurar Home Assistant i els seus components. Encara no és possible configurar-ho tot des de la interfície d'usuari, però hi estem treballant.",
                 "lovelace": {
@@ -2241,7 +2267,8 @@
                 "warning": {
                     "attribute_not_found": "L'atribut {attribute} de {entity} no és disponible.",
                     "entity_non_numeric": "Entitat no numèrica: {entity}",
-                    "entity_not_found": "Entitat no disponible: {entity}"
+                    "entity_not_found": "Entitat no disponible: {entity}",
+                    "entity_unavailable": "{entity} no està disponible actualment"
                 }
             },
             "mailbox": {

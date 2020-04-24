@@ -1,3 +1,4 @@
+import "@material/mwc-button/mwc-button";
 import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable";
 import "@polymer/paper-input/paper-input";
 import {
@@ -72,6 +73,7 @@ class DialogBox extends LitElement {
                   autofocus
                   .value=${this._value}
                   @value-changed=${this._valueChanged}
+                  @keyup=${this._handleKeyUp}
                   .label=${this._params.inputLabel
                     ? this._params.inputLabel
                     : ""}
@@ -110,6 +112,12 @@ class DialogBox extends LitElement {
       this._params!.cancel();
     }
     this._params = undefined;
+  }
+
+  private _handleKeyUp(ev: KeyboardEvent) {
+    if (ev.keyCode === 13) {
+      this._confirm();
+    }
   }
 
   private async _confirm(): Promise<void> {

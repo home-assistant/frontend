@@ -34,6 +34,8 @@ export class HaServiceAction extends LitElement implements ActionElement {
     return { service: "", data: {} };
   }
 
+  private _domain = memoizeOne((service: string) => [computeDomain(service)]);
+
   private _getServiceData = memoizeOne((service: string) => {
     if (!service) {
       return [];
@@ -85,7 +87,7 @@ export class HaServiceAction extends LitElement implements ActionElement {
               .value=${entity_id}
               .label=${entity.description}
               @value-changed=${this._entityPicked}
-              .includeDomains=${[computeDomain(service)]}
+              .includeDomains=${this._domain(service)}
               allow-custom-entity
             ></ha-entity-picker>
           `
