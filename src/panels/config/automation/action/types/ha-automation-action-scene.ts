@@ -24,7 +24,7 @@ export class HaSceneAction extends LitElement implements ActionElement {
         .hass=${this.hass}
         .value=${scene}
         @value-changed=${this._entityPicked}
-        .includeDomains=${["scene"]}
+        include-domains="['scene']"
         allow-custom-entity
       ></ha-entity-picker>
     `;

@@ -49,7 +49,7 @@ export class HaZoneTrigger extends LitElement {
         @value-changed=${this._zonePicked}
         .hass=${this.hass}
         allow-custom-entity
-        .includeDomains=${["zone"]}
+        include-domains="['zone']"
       ></ha-entity-picker>
       <label id="eventlabel">
         ${this.hass.localize(
