@@ -75,7 +75,7 @@ export class HaAutomationEditor extends LitElement {
         .backCallback=${() => this._backTapped()}
         .tabs=${configSections.automation}
       >
-        ${this.automationId
+        ${!this.automationId
           ? ""
           : html`
               <paper-icon-button
