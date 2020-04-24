@@ -7,6 +7,7 @@ import {
   TemplateResult,
 } from "lit-element";
 import { fireEvent } from "../../common/dom/fire_event";
+import "../paper-time-input";
 import { HaFormElement, HaFormTimeData, HaFormTimeSchema } from "./ha-form";
 
 @customElement("ha-form-positive_time_period_dict")

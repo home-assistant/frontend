@@ -43,10 +43,11 @@ export class HuiDialogSelectView extends LitElement {
         @opened-changed="${this._openedChanged}"
       >
         <h2>Choose a view</h2>
-        <hui-views-list 
-        .lovelaceConfig=${this._params!.lovelaceConfig}
-        @view-selected=${this._selectView}>
-        </hui-view-list>
+        <hui-views-list
+          .lovelaceConfig=${this._params!.lovelaceConfig}
+          @view-selected=${this._selectView}
+        >
+        </hui-views-list>
       </ha-paper-dialog>
     `;
   }

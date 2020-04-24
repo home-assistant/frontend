@@ -1,3 +1,5 @@
+import "@polymer/paper-spinner/paper-spinner";
+import { HassEntity } from "home-assistant-js-websocket";
 import {
   css,
   CSSResult,
@@ -8,16 +10,13 @@ import {
   PropertyValues,
   TemplateResult,
 } from "lit-element";
+import { fetchRecent } from "../../../data/history";
 import { HomeAssistant } from "../../../types";
-import { HassEntity } from "home-assistant-js-websocket";
-
-import "@polymer/paper-spinner/paper-spinner";
+import { coordinates } from "../common/graph/coordinates";
+import { hasConfigOrEntityChanged } from "../common/has-changed";
 import "../components/hui-graph-base";
 import { LovelaceHeaderFooter } from "../types";
 import { GraphHeaderFooterConfig } from "./types";
-import { hasConfigOrEntityChanged } from "../common/has-changed";
-import { fetchRecent } from "../../../data/history";
-import { coordinates } from "../common/graph/coordinates";
 
 const MINUTE = 60000;
 const DAY = 86400000;

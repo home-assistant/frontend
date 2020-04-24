@@ -1,8 +1,8 @@
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 /* eslint-plugin-disable lit */
 import { PolymerElement } from "@polymer/polymer/polymer-element";
-import LocalizeMixin from "../mixins/localize-mixin";
 import { computeStateDisplay } from "../common/entity/compute_state_display";
+import LocalizeMixin from "../mixins/localize-mixin";
 
 /*
  * @appliesMixin LocalizeMixin

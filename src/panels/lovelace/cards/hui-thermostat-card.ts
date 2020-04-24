@@ -386,7 +386,7 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
         @action=${this._handleAction}
         .actionHandler=${actionHandler()}
         tabindex="0"
-      ></ha-icon>
+      ></paper-icon-button>
     `;
   }
 

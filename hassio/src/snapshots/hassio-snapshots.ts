@@ -132,7 +132,7 @@ class HassioSnapshots extends LitElement {
                       (addon, idx) => html`
                         <paper-checkbox
                           .idx=${idx}
-                          .checked="{{item.checked}}"
+                          .checked=${addon.checked}
                           @checked-changed=${this._addonChecked}
                         >
                           ${addon.name}
@@ -202,7 +202,6 @@ class HassioSnapshots extends LitElement {
                         .icon=${snapshot.type === "full"
                           ? "hassio:package-variant-closed"
                           : "hassio:package-variant"}
-                        .
                         .icon-class="snapshot"
                       ></hassio-card-content>
                     </div>
