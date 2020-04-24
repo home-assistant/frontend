@@ -18,6 +18,8 @@ const cardConfigStruct = struct({
   entity: "string?",
 });
 
+const includeDomains = ["media_player"];
+
 @customElement("hui-media-control-card-editor")
 export class HuiMediaControlCardEditor extends LitElement
   implements LovelaceCardEditor {
@@ -50,7 +52,7 @@ export class HuiMediaControlCardEditor extends LitElement
           .hass=${this.hass}
           .value="${this._entity}"
           .configValue=${"entity"}
-          .include-domains=${["media_player"]}
+          .includeDomains=${includeDomains}
           @change="${this._valueChanged}"
           allow-custom-entity
         ></ha-entity-picker>
