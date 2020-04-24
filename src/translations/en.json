@@ -866,6 +866,9 @@
                     "for": "Duration"
                   }
                 },
+                "not": {
+                  "label": "Not"
+                },
                 "numeric_state": {
                   "label": "[%key:ui::panel::config::automation::editor::triggers::type::numeric_state::label%]",
                   "above": "[%key:ui::panel::config::automation::editor::triggers::type::numeric_state::above%]",

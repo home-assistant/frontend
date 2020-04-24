@@ -9,6 +9,7 @@ import type { Condition } from "../../../../data/automation";
 import type { HomeAssistant } from "../../../../types";
 import "./types/ha-automation-condition-and";
 import "./types/ha-automation-condition-device";
+import "./types/ha-automation-condition-not";
 import "./types/ha-automation-condition-numeric_state";
 import "./types/ha-automation-condition-or";
 import "./types/ha-automation-condition-state";
@@ -21,6 +22,7 @@ const OPTIONS = [
   "device",
   "and",
   "or",
+  "not",
   "state",
   "numeric_state",
   "sun",
