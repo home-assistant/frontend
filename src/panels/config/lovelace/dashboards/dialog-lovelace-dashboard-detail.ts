@@ -10,6 +10,7 @@ import {
 import { createCloseHeading } from "../../../../components/ha-dialog";
 import "../../../../components/ha-icon-input";
 import { HaSwitch } from "../../../../components/ha-switch";
+import { slugify } from "../../../../common/string/slugify";
 import {
   LovelaceDashboard,
   LovelaceDashboardCreateParams,
@@ -229,10 +230,11 @@ export class DialogLovelaceDashboardDetail extends LitElement {
     if ((this.hass.userData?.showAdvanced && this._urlPath) || !this._title) {
       return;
     }
-    const parts = this._title.toLowerCase().split(" ");
 
-    this._urlPath =
-      parts.length === 1 ? `lovelace-${parts[0]}` : parts.join("_");
+    const slugifyTitle = slugify(this._title);
+    this._urlPath = slugifyTitle.includes("-")
+      ? slugifyTitle
+      : `lovelace-${slugifyTitle}`;
   }
 
   private _showSidebarChanged(ev: Event) {
