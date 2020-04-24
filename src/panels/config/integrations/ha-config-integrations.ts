@@ -385,8 +385,9 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
           aria-label=${this.hass.localize("ui.panel.config.integrations.new")}
           title=${this.hass.localize("ui.panel.config.integrations.new")}
           @click=${this._createFlow}
-          ?rtl=${computeRTL(this.hass!)}
+          ?is-wide=${this.isWide}
           ?narrow=${this.narrow}
+          ?rtl=${computeRTL(this.hass!)}
         ></ha-fab>
       </hass-tabs-subpage>
     `;
@@ -643,12 +644,21 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
           right: 16px;
           z-index: 1;
         }
+        ha-fab[is-wide] {
+          bottom: 24px;
+          right: 24px;
+        }
         ha-fab[narrow] {
           bottom: 84px;
         }
         ha-fab[rtl] {
           right: auto;
           left: 16px;
+        }
+        ha-fab[is-wide].rtl {
+          bottom: 24px;
+          left: 24px;
+          right: auto;
         }
         paper-menu-button {
           color: var(--secondary-text-color);
