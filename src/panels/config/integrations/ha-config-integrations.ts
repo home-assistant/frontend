@@ -764,7 +764,9 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
           padding: 0 16px;
         }
         .search {
-          padding: 2px 16px;
+          padding: 0 16px;
+          background: var(--sidebar-background-color);
+          border-bottom: 1px solid var(--divider-color);
         }
         img {
           max-height: 60px;
