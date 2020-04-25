@@ -654,6 +654,17 @@
                     "stop": "Stop"
                 }
             },
+            "mqtt_device_debug_info": {
+                "deserialize": "Probéieren MQTT Noriichten als JSON ze liesen",
+                "entities": "Entitéiten",
+                "no_entities": "Keng Entitéiten",
+                "no_triggers": "Keng Ausléiser",
+                "payload_display": "Payload uweisen",
+                "recent_messages": "{n} läscht erhaalen Noriicht(en)",
+                "show_as_yaml": "Als YAML uweisen",
+                "title": "{device} debug Informatiounen",
+                "triggers": "Ausléiser"
+            },
             "options_flow": {
                 "form": {
                     "header": "Optiounen"
@@ -1294,6 +1305,10 @@
                         }
                     }
                 },
+                "filtering": {
+                    "clear": "Läschen",
+                    "filtering_by": "Filteren anhand vun"
+                },
                 "header": "Home Assistant astellen",
                 "helpers": {
                     "caption": "Helper",
@@ -1321,12 +1336,16 @@
                     }
                 },
                 "integrations": {
+                    "add_integration": "Integratioun dobäisetzen",
                     "caption": "Integratiounen",
                     "config_entry": {
                         "area": "An {area}",
+                        "delete": "Läschen",
                         "delete_button": "{integration} läschen",
                         "delete_confirm": "Sécher fir dës Integratioun ze läsche?",
                         "device_unavailable": "Apparat net erreechbar",
+                        "devices": "{count} {count, plural,\n  een {device}\n méi {devices}\n}",
+                        "entities": "{count} {count, plural,\n  eng {entity}\n  méi {entities}\n}",
                         "entity_unavailable": "Entitéit net erreechbar",
                         "firmware": "Firmware: {version}",
                         "hub": "Verbonnen via",
@@ -1334,8 +1353,11 @@
                         "no_area": "Kee Beräich",
                         "no_device": "Entitéiten ouni Apparater",
                         "no_devices": "Dës Integratioun huet keng Apparater.",
+                        "options": "Optiounen",
+                        "rename": "Ëmbenennen",
                         "restart_confirm": "Start Home Assistant nei fir dës Integratioun ze läschen",
                         "settings_button": "Astellungen ännere fir {integration}",
+                        "system_options": "System Optiounen",
                         "system_options_button": "System Optioune fir {integration}"
                     },
                     "config_flow": {
@@ -1370,11 +1392,15 @@
                         "show_ignored": "Ignoréiert Integratiounen uweisen",
                         "stop_ignore": "Ophale mam ignoréieren"
                     },
+                    "integration": "Integratioun",
                     "integration_not_found": "Integratioun net fonnt.",
                     "new": "Eng nei Integratioun ariichten",
+                    "no_integrations": "Et gesäit suu ass wéi wann nach keng Integratioun ageriicht ass. Klick de Knäppchen hei ënnen fir déi éischt Integratioun anzeriichten.",
                     "none": "Nach näischt konfiguréiert",
                     "note_about_integrations": "Net all Integratioune könne nach via den Benotzer Interface konfiguréiert ginn.",
-                    "note_about_website_reference": "Méi sin der disponibel op der "
+                    "note_about_website_reference": "Méi sin der disponibel op der ",
+                    "rename_dialog": "Numm vun dësem Objet läschen",
+                    "rename_input_label": "Numm"
                 },
                 "introduction": "Hei ass et méiglech är Komponenten vum Home Assistant ze konfiguréieren. Net alles ass méiglech fir iwwert den Interface anzestellen, mee mir schaffen drun.",
                 "lovelace": {
@@ -2241,7 +2267,8 @@
                 "warning": {
                     "attribute_not_found": "Attribut {attribute} net disponibel an: {entity}",
                     "entity_non_numeric": "Entitéit ass net numerescher Natur: {entity}",
-                    "entity_not_found": "Entitéit net erreechbar: {entity}"
+                    "entity_not_found": "Entitéit net erreechbar: {entity}",
+                    "entity_unavailable": "{entity} ass fir de Moment net erreechbar"
                 }
             },
             "mailbox": {
