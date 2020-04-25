@@ -656,6 +656,7 @@
             },
             "mqtt_device_debug_info": {
                 "entities": "Entités",
+                "no_entities": "Aucune entité",
                 "triggers": "Déclencheurs"
             },
             "options_flow": {

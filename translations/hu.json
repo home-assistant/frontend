@@ -654,6 +654,17 @@
                     "stop": "Leállítás"
                 }
             },
+            "mqtt_device_debug_info": {
+                "deserialize": "Kísérlet az MQTT-üzenetek JSON-ként való elemzésére",
+                "entities": "Entitások",
+                "no_entities": "Nincsenek entitások",
+                "no_triggers": "Nincsenek eseményindítók",
+                "payload_display": "Payload megjelenítése",
+                "recent_messages": "{n} legfrissebb fogadott üzenet",
+                "show_as_yaml": "Megjelenítés YAML-ként",
+                "title": "{device} debug infók",
+                "triggers": "Eseményindítók"
+            },
             "options_flow": {
                 "form": {
                     "header": "Opciók"
@@ -752,7 +763,7 @@
                         "integrations_page": "Integrációk oldal",
                         "introduction": "A területekkel az eszközök elhelyezkedés szerint rendszerezhetők. Ezen információk felhasználásával a Home Assistant segíteni tud előkészíteni a felületet, a jogosultságokat és az integrációt más rendszerekkel.",
                         "introduction2": "Az eszközök területekbe történő elhelyezéséhez használd az alábbi linket az integrációs oldalra való navigáláshoz, majd kattints egy konfigurált integrációra az eszközkártyák eléréséhez.",
-                        "no_areas": "Úgy tűnik, nem hoztál még létre egy területet sem!"
+                        "no_areas": "Úgy tűnik, még nincs egy területed sem!"
                     }
                 },
                 "automation": {
@@ -1294,6 +1305,10 @@
                         }
                     }
                 },
+                "filtering": {
+                    "clear": "Törlés",
+                    "filtering_by": "Szűrés"
+                },
                 "header": "Home Assistant beállítása",
                 "helpers": {
                     "caption": "Segítők",
@@ -1321,12 +1336,16 @@
                     }
                 },
                 "integrations": {
+                    "add_integration": "Integráció hozzáadása",
                     "caption": "Integrációk",
                     "config_entry": {
                         "area": "Terület: {area}",
+                        "delete": "Törlés",
                         "delete_button": "Törlés: {integration}",
                         "delete_confirm": "Biztosan törölni szeretnéd ezt az integrációt?",
                         "device_unavailable": "eszköz nem érhető el",
+                        "devices": "{count} {count, plural,\n  one {eszköz}\n  other {eszköz}\n}",
+                        "entities": "{count} {count, plural,\n  one {entitás}\n  other {entitás}\n}",
                         "entity_unavailable": "entitás nem érhető el",
                         "firmware": "Firmware: {version}",
                         "hub": "Kapcsolódva",
@@ -1334,8 +1353,11 @@
                         "no_area": "Nincs Terület",
                         "no_device": "Eszköz nélküli entitások",
                         "no_devices": "Ez az integráció nem rendelkezik eszközökkel.",
+                        "options": "Opciók",
+                        "rename": "Átnevezés",
                         "restart_confirm": "Indítsd újra a Home Assistant-ot az integráció törlésének befejezéséhez",
                         "settings_button": "{integration} beállításainak szerkesztése",
+                        "system_options": "Rendszerbeállítások",
                         "system_options_button": "{integration} rendszerbeállításai"
                     },
                     "config_flow": {
@@ -1370,11 +1392,15 @@
                         "show_ignored": "Mellőzött integrációk megjelenítése",
                         "stop_ignore": "Mellőzés visszavonása"
                     },
+                    "integration": "integráció",
                     "integration_not_found": "Integráció nem található.",
                     "new": "Új integráció beállítása",
+                    "no_integrations": "Úgy tűnik, még nincs beállítva egyetlen integráció sem. Kattints az alábbi gombra az első integráció hozzáadásához!",
                     "none": "Még semmi sincs beállítva",
                     "note_about_integrations": "Még nem minden integráció konfigurálható a felhasználói felületen keresztül.",
-                    "note_about_website_reference": "Továbbiak érhetőek el itt: "
+                    "note_about_website_reference": "Továbbiak érhetőek el itt: ",
+                    "rename_dialog": "A konfigurációs bejegyzés nevének szerkesztése",
+                    "rename_input_label": "Bejegyzés neve"
                 },
                 "introduction": "Itt a komponenseket és a Home Assistant szervert lehet beállítani. Még nem lehet mindent a felületről, de dolgozunk rajta.",
                 "lovelace": {
@@ -2241,7 +2267,8 @@
                 "warning": {
                     "attribute_not_found": "A(z) {attribute} attribútum nem érhető el a(z) {entity} entitásban.",
                     "entity_non_numeric": "Entitás nem numerikus: {entity}",
-                    "entity_not_found": "Entitás nem elérhető: {entity}"
+                    "entity_not_found": "Entitás nem elérhető: {entity}",
+                    "entity_unavailable": "{entity} jelenleg nem elérhető"
                 }
             },
             "mailbox": {

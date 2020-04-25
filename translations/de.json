@@ -1324,6 +1324,7 @@
                     "caption": "Integrationen",
                     "config_entry": {
                         "area": "In {area}",
+                        "delete": "Löschen",
                         "delete_button": "{integration} löschen",
                         "delete_confirm": "Möchtest du diese Integration wirklich löschen?",
                         "device_unavailable": "Gerät nicht verfügbar",
@@ -1336,6 +1337,7 @@
                         "no_devices": "Diese Integration hat keine Geräte.",
                         "restart_confirm": "Starte Home Assistant neu, um das Entfernen dieser Integration abzuschließen",
                         "settings_button": "Einstellungen für {integration} bearbeiten",
+                        "system_options": "Systemoptionen",
                         "system_options_button": "Systemoptionen für {integration}"
                     },
                     "config_flow": {
