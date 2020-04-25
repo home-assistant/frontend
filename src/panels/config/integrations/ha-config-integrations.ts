@@ -105,16 +105,6 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
             this.hass.loadBackendTranslation("config", flow.handler);
           }
         }
-        this._configEntriesInProgress = flowsInProgress.map(
-          (flow: DataEntryFlowProgress): DataEntryFlowProgressExtended => ({
-            ...flow,
-            title: localizeConfigFlowTitle(this.hass.localize, flow),
-          })
-        );
-        console.log(
-          "this._configEntriesInProgress:",
-          this._configEntriesInProgress
-        );
       }),
     ];
   }
@@ -140,6 +130,12 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
       configEntriesInProgress: DataEntryFlowProgressExtended[],
       filter?: string
     ): DataEntryFlowProgressExtended[] => {
+      configEntriesInProgress = configEntriesInProgress.map(
+        (flow: DataEntryFlowProgressExtended) => ({
+          ...flow,
+          title: localizeConfigFlowTitle(this.hass.localize, flow),
+        })
+      );
       if (filter) {
         const options: Fuse.FuseOptions<DataEntryFlowProgressExtended> = {
           keys: ["handler", "title"],
@@ -189,12 +185,6 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
       this._configEntriesInProgress,
       this._filter
     );
-
-    // if (configEntriesInProgress.length)
-    //   console.log(
-    //     "localizeConfigFlowTitle:",
-    //     localizeConfigFlowTitle(this.hass.localize, configEntriesInProgress[0])
-    //   );
 
     return html`
       <hass-tabs-subpage
@@ -319,7 +309,7 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
                         />
                       </div>
                       <h2>
-                        ${flow.title}
+                        ${localizeConfigFlowTitle(this.hass.localize, flow)}
                       </h2>
                       <mwc-button
                         unelevated
