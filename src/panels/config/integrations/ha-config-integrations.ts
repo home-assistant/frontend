@@ -31,7 +31,7 @@ import {
   localizeConfigFlowTitle,
   subscribeConfigFlowInProgress,
 } from "../../../data/config_flow";
-import { DataEntryFlowProgress } from "../../../data/data_entry_flow";
+import type { DataEntryFlowProgress } from "../../../data/data_entry_flow";
 import {
   DeviceRegistryEntry,
   subscribeDeviceRegistry,
@@ -59,11 +59,8 @@ import { haStyle } from "../../../resources/styles";
 import { afterNextRender } from "../../../common/util/render-status";
 import "../../../common/search/search-input";
 
-interface DataEntryFlowProgressSearch {
-  flow_id: string;
-  handler: string;
-  domain: string;
-  title: string;
+interface DataEntryFlowProgressExtended extends DataEntryFlowProgress {
+  title?: string;
 }
 
 @customElement("ha-config-integrations")
@@ -80,7 +77,8 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
 
   @property() private _configEntries: ConfigEntry[] = [];
 
-  @property() private _configEntriesInProgress: DataEntryFlowProgress[] = [];
+  @property()
+  private _configEntriesInProgress: DataEntryFlowProgressExtended[] = [];
 
   @property() private _entityRegistryEntries: EntityRegistryEntry[] = [];
 
@@ -110,6 +108,16 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
             this.hass.loadBackendTranslation("config", flow.handler);
           }
         }
+        this._configEntriesInProgress = flowsInProgress.map(
+          (flow: DataEntryFlowProgress): DataEntryFlowProgressExtended => ({
+            ...flow,
+            title: localizeConfigFlowTitle(this.hass.localize, flow),
+          })
+        );
+        console.log(
+          "this._configEntriesInProgress:",
+          this._configEntriesInProgress
+        );
       }),
     ];
   }
@@ -132,32 +140,18 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
 
   private _filterConfigEntriesInProgress = memoizeOne(
     (
-      configEntriesInProgress: DataEntryFlowProgress[],
+      configEntriesInProgress: DataEntryFlowProgressExtended[],
       filter?: string
-    ): DataEntryFlowProgress[] => {
+    ): DataEntryFlowProgressExtended[] => {
       if (filter) {
-        let configEntriedInProgressSearch: DataEntryFlowProgressSearch[] = configEntriesInProgress.map(
-          (entry: DataEntryFlowProgress) => ({
-            flow_id: entry.flow_id,
-            handler: entry.handler,
-            domain: domainToName(this.hass.localize, entry.handler),
-            title: localizeConfigFlowTitle(this.hass.localize, entry),
-          })
-        );
-        const options: Fuse.FuseOptions<DataEntryFlowProgressSearch> = {
-          keys: ["handler", "domain", "title"],
+        const options: Fuse.FuseOptions<DataEntryFlowProgressExtended> = {
+          keys: ["handler", "title"],
           caseSensitive: false,
           minMatchCharLength: 2,
           threshold: 0.2,
         };
-        const fuse = new Fuse(configEntriedInProgressSearch, options);
-        configEntriedInProgressSearch = fuse.search(filter);
-        configEntriesInProgress = configEntriesInProgress.filter(
-          (entry: DataEntryFlowProgress) =>
-            configEntriedInProgressSearch.findIndex(
-              (e: DataEntryFlowProgressSearch) => e.flow_id === entry.flow_id
-            ) !== -1
-        );
+        const fuse = new Fuse(configEntriesInProgress, options);
+        configEntriesInProgress = fuse.search(filter);
       }
       return configEntriesInProgress;
     }
@@ -198,6 +192,12 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
       this._configEntriesInProgress,
       this._filter
     );
+
+    // if (configEntriesInProgress.length)
+    //   console.log(
+    //     "localizeConfigFlowTitle:",
+    //     localizeConfigFlowTitle(this.hass.localize, configEntriesInProgress[0])
+    //   );
 
     return html`
       <hass-tabs-subpage
@@ -305,7 +305,7 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
             : ""}
           ${configEntriesInProgress.length
             ? configEntriesInProgress.map(
-                (flow: DataEntryFlowProgress) => html`
+                (flow: DataEntryFlowProgressExtended) => html`
                   <ha-card class="discovered">
                     <div class="header">
                       ${this.hass.localize(
@@ -322,7 +322,7 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
                         />
                       </div>
                       <h2>
-                        ${localizeConfigFlowTitle(this.hass.localize, flow)}
+                        ${flow.title}
                       </h2>
                       <mwc-button
                         unelevated

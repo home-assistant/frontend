@@ -83,5 +83,15 @@ export const localizeConfigFlowTitle = (
     args.push(key);
     args.push(placeholders[key]);
   });
+  console.log(
+    `localize('component.${flow.handler}.config.flow_title', `,
+    ...args,
+    `):`,
+    localize(`component.${flow.handler}.config.flow_title`, ...args)
+  );
+  console.log(
+    "localize:",
+    localize(`component.${flow.handler}.config.flow_title`, ...args)
+  );
   return localize(`component.${flow.handler}.config.flow_title`, ...args);
 };
