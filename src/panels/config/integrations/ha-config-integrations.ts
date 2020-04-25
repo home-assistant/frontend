@@ -117,28 +117,14 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
   private _filterConfigEntries = memoizeOne(
     (configEntries: ConfigEntry[], filter?: string): ConfigEntry[] => {
       if (filter) {
-        let configEntriesSearch: ConfigEntry[] = configEntries.map(
-          (configEntry: ConfigEntry) => {
-            return {
-              ...configEntry,
-              domain: domainToName(this.hass.localize, configEntry.domain),
-            };
-          }
-        );
         const options: Fuse.FuseOptions<ConfigEntry> = {
-          keys: ["domain", "title"],
+          keys: ["domain_name", "title"],
           caseSensitive: false,
           minMatchCharLength: 2,
           threshold: 0.2,
         };
-        const fuse = new Fuse(configEntriesSearch, options);
-        configEntriesSearch = fuse.search(filter);
-        configEntries = configEntries.filter(
-          (configEntry: ConfigEntry) =>
-            configEntriesSearch.findIndex(
-              (ce: ConfigEntry) => ce.entry_id === configEntry.entry_id
-            ) !== -1
-        );
+        const fuse = new Fuse(configEntries, options);
+        configEntries = fuse.search(filter);
       }
       return configEntries;
     }
@@ -300,7 +286,7 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
                           />
                         </div>
                         <h2>
-                          ${item.domain}
+                          ${item.domain_name}
                         </h2>
                         <mwc-button
                           @click=${this._removeIgnoredIntegration}
@@ -366,7 +352,7 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
               )
             : ""}
           ${configEntries.length
-            ? configEntries.map((item: any) => {
+            ? configEntries.map((item: ConfigEntry) => {
                 const devices = this._getDevices(item);
                 const entities = this._getEntities(item);
                 const integrationName = domainToName(
@@ -540,9 +526,16 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
 
   private _loadConfigEntries() {
     getConfigEntries(this.hass).then((configEntries) => {
-      this._configEntries = configEntries.sort((conf1, conf2) =>
-        compare(conf1.domain + conf1.title, conf2.domain + conf2.title)
-      );
+      this._configEntries = configEntries
+        .sort((conf1, conf2) =>
+          compare(conf1.domain + conf1.title, conf2.domain + conf2.title)
+        )
+        .map(
+          (entry: ConfigEntry): ConfigEntry => ({
+            ...entry,
+            domain_name: domainToName(this.hass.localize, entry.domain),
+          })
+        );
     });
   }
 
