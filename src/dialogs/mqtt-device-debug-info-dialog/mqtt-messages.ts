@@ -48,7 +48,7 @@ class MQTTMessages extends LitElement {
         class="expander ${classMap({ open: this._open })}"
         @click=${this._handleToggle}
       >
-        ${this.summary} ABCD
+        ${this.summary}
       </div>
       ${this._open
         ? html`
