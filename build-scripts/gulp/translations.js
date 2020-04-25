@@ -14,7 +14,7 @@ const { mapFiles } = require("../util");
 const env = require("../env");
 const paths = require("../paths");
 
-const inDir = "translations";
+const inDir = "translations/frontend";
 const workDir = "build-translations";
 const fullDir = workDir + "/full";
 const coreDir = workDir + "/core";
