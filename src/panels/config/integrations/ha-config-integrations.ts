@@ -54,9 +54,6 @@ import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../resources/styles";
 import { HomeAssistant, Route } from "../../../types";
 import { configSections } from "../ha-panel-config";
-import { domainToName } from "../../../data/integration";
-import { haStyle } from "../../../resources/styles";
-import { afterNextRender } from "../../../common/util/render-status";
 import "../../../common/search/search-input";
 
 interface DataEntryFlowProgressExtended extends DataEntryFlowProgress {
