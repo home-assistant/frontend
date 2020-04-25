@@ -184,7 +184,7 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
                 @click="${this._handleActionClick}"
                 outlined
               >
-                ${this._stateDisplay(state)}
+                ${this._actionDisplay(state)}
               </mwc-button>
             `;
           })}
@@ -232,6 +232,10 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
       !stateLabel
       ? ""
       : stateLabel;
+  }
+
+  private _actionDisplay(state: string): string {
+    return this.hass!.localize(`ui.card.alarm_control_panel.${state}`);
   }
 
   private _stateDisplay(state: string): string {
