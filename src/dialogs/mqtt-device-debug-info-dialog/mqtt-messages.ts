@@ -1,6 +1,7 @@
 import { safeDump } from "js-yaml";
 import {
   css,
+  CSSResult,
   customElement,
   html,
   LitElement,
@@ -9,10 +10,13 @@ import {
 } from "lit-element";
 import { classMap } from "lit-html/directives/class-map";
 import { formatTimeWithSeconds } from "../../common/datetime/format_time";
+import { HomeAssistant } from "../../types";
 import { MQTTMessage } from "../../data/mqtt";
 
 @customElement("mqtt-messages")
 class MQTTMessages extends LitElement {
+  public hass!: HomeAssistant;
+
   @property() public messages!: MQTTMessage[];
 
   @property() public showAsYaml = false;
@@ -127,7 +131,7 @@ class MQTTMessages extends LitElement {
     return jsonPayload;
   }
 
-  private _handleToggle(ev) {
+  private _handleToggle() {
     this._open = !this._open;
   }
 

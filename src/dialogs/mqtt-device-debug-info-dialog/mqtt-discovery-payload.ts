@@ -1,6 +1,7 @@
 import { safeDump } from "js-yaml";
 import {
   css,
+  CSSResult,
   customElement,
   html,
   LitElement,
@@ -42,7 +43,7 @@ class MQTTDiscoveryPayload extends LitElement {
     `;
   }
 
-  private _handleToggle(ev) {
+  private _handleToggle() {
     this._open = !this._open;
   }
 
