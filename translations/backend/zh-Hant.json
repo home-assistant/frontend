@@ -1,0 +1,349 @@
+{
+  "component": {
+    "sensor": {
+      "state": {
+        "_": {
+          "off": "\u95dc\u9589",
+          "on": "\u958b\u5553"
+        }
+      }
+    },
+    "zwave": {
+      "state": {
+        "_": {
+          "initializing": "\u6b63\u5728\u521d\u59cb\u5316",
+          "dead": "\u5931\u53bb\u9023\u7dda",
+          "sleeping": "\u4f11\u7720\u4e2d",
+          "ready": "\u6e96\u5099\u5c31\u7dd2"
+        },
+        "query_stage": {
+          "initializing": "\u6b63\u5728\u521d\u59cb\u5316",
+          "dead": "\u5931\u53bb\u9023\u7dda"
+        }
+      }
+    },
+    "ebusd": {
+      "state": {
+        "day": "\u767d\u5929",
+        "night": "\u591c\u665a"
+      }
+    },
+    "light": {
+      "state": {
+        "_": {
+          "off": "\u5df2\u95dc\u71c8",
+          "on": "\u5df2\u958b\u71c8"
+        }
+      }
+    },
+    "switch": {
+      "state": {
+        "_": {
+          "off": "\u95dc\u9589",
+          "on": "\u958b\u5553"
+        }
+      }
+    },
+    "binary_sensor": {
+      "state": {
+        "_": {
+          "off": "\u95dc\u9589",
+          "on": "\u958b\u555f"
+        },
+        "battery": {
+          "off": "\u96fb\u91cf\u6b63\u5e38",
+          "on": "\u96fb\u91cf\u4f4e"
+        },
+        "cold": {
+          "off": "\u6b63\u5e38",
+          "on": "\u51b7"
+        },
+        "connectivity": {
+          "off": "\u5df2\u65b7\u7dda",
+          "on": "\u5df2\u9023\u7dda"
+        },
+        "door": {
+          "off": "\u5df2\u95dc\u9589",
+          "on": "\u5df2\u958b\u555f"
+        },
+        "garage_door": {
+          "off": "\u95dc\u9589",
+          "on": "\u5df2\u958b\u555f"
+        },
+        "gas": {
+          "off": "\u672a\u89f8\u767c",
+          "on": "\u5df2\u89f8\u767c"
+        },
+        "heat": {
+          "off": "\u6b63\u5e38",
+          "on": "\u71b1"
+        },
+        "lock": {
+          "off": "\u5df2\u4e0a\u9396",
+          "on": "\u5df2\u89e3\u9396"
+        },
+        "moisture": {
+          "off": "\u4e7e\u71e5",
+          "on": "\u6fd5\u6f64"
+        },
+        "motion": {
+          "off": "\u7121\u4eba",
+          "on": "\u6709\u4eba"
+        },
+        "occupancy": {
+          "off": "\u672a\u89f8\u767c",
+          "on": "\u5df2\u89f8\u767c"
+        },
+        "opening": {
+          "off": "\u95dc\u9589",
+          "on": "\u958b\u555f"
+        },
+        "presence": {
+          "off": "\u96e2\u5bb6",
+          "on": "\u5728\u5bb6"
+        },
+        "problem": {
+          "off": "\u78ba\u5b9a",
+          "on": "\u7570\u5e38"
+        },
+        "safety": {
+          "off": "\u5b89\u5168",
+          "on": "\u5371\u96aa"
+        },
+        "smoke": {
+          "off": "\u672a\u89f8\u767c",
+          "on": "\u5df2\u89f8\u767c"
+        },
+        "sound": {
+          "off": "\u672a\u89f8\u767c",
+          "on": "\u5df2\u89f8\u767c"
+        },
+        "vibration": {
+          "off": "\u672a\u5075\u6e2c",
+          "on": "\u5075\u6e2c"
+        },
+        "window": {
+          "off": "\u95dc\u9589",
+          "on": "\u958b\u555f"
+        }
+      }
+    },
+    "lock": {
+      "state": {
+        "_": {
+          "locked": "\u5df2\u4e0a\u9396",
+          "unlocked": "\u5df2\u89e3\u9396"
+        }
+      }
+    },
+    "cover": {
+      "state": {
+        "_": {
+          "open": "\u958b\u555f",
+          "opening": "\u958b\u555f\u4e2d",
+          "closed": "\u95dc\u9589",
+          "closing": "\u95dc\u9589\u4e2d",
+          "stopped": "\u505c\u6b62"
+        }
+      }
+    },
+    "alarm_control_panel": {
+      "state": {
+        "_": {
+          "armed": "\u5df2\u8b66\u6212",
+          "disarmed": "\u8b66\u6212\u89e3\u9664",
+          "armed_home": "\u5728\u5bb6\u8b66\u6212",
+          "armed_away": "\u96e2\u5bb6\u8b66\u6212",
+          "armed_night": "\u591c\u9593\u8b66\u6212",
+          "armed_custom_bypass": "\u8b66\u6212\u6a21\u5f0f\u72c0\u614b",
+          "pending": "\u7b49\u5f85\u4e2d",
+          "arming": "\u8b66\u6212\u4e2d",
+          "disarming": "\u89e3\u9664\u4e2d",
+          "triggered": "\u5df2\u89f8\u767c"
+        }
+      }
+    },
+    "media_player": {
+      "state": {
+        "_": {
+          "off": "\u95dc\u9589",
+          "on": "\u958b\u555f",
+          "playing": "\u64ad\u653e\u4e2d",
+          "paused": "\u66ab\u505c",
+          "idle": "\u9592\u7f6e",
+          "standby": "\u5f85\u547d"
+        }
+      }
+    },
+    "device_tracker": {
+      "state": {
+        "_": {
+          "home": "\u5728\u5bb6",
+          "not_home": "\u96e2\u5bb6"
+        }
+      }
+    },
+    "vacuum": {
+      "state": {
+        "_": {
+          "cleaning": "\u6e05\u6383\u4e2d",
+          "docked": "\u5145\u96fb\u4e2d",
+          "error": "\u932f\u8aa4",
+          "idle": "\u66ab\u505c",
+          "off": "\u95dc\u9589",
+          "on": "\u958b\u555f",
+          "paused": "\u66ab\u505c",
+          "returning": "\u8fd4\u56de\u5145\u96fb"
+        }
+      }
+    },
+    "fan": {
+      "state": {
+        "_": {
+          "off": "\u95dc\u9589",
+          "on": "\u958b\u555f"
+        }
+      }
+    },
+    "climate": {
+      "state": {
+        "_": {
+          "off": "\u95dc\u9589",
+          "heat": "\u6696\u6c23",
+          "cool": "\u51b7\u6c23",
+          "heat_cool": "\u6696\u6c23/\u51b7\u6c23",
+          "auto": "\u81ea\u52d5",
+          "dry": "\u9664\u6fd5\u6a21\u5f0f",
+          "fan_only": "\u50c5\u9001\u98a8"
+        }
+      }
+    },
+    "automation": {
+      "state": {
+        "_": {
+          "off": "\u95dc\u9589",
+          "on": "\u958b\u555f"
+        }
+      }
+    },
+    "calendar": {
+      "state": {
+        "_": {
+          "off": "\u95dc\u9589",
+          "on": "\u958b\u555f"
+        }
+      }
+    },
+    "camera": {
+      "state": {
+        "_": {
+          "recording": "\u9304\u5f71\u4e2d",
+          "streaming": "\u76e3\u63a7\u4e2d",
+          "idle": "\u5f85\u547d"
+        }
+      }
+    },
+    "configurator": {
+      "state": {
+        "_": {
+          "configure": "\u8a2d\u5b9a",
+          "configured": "\u8a2d\u5b9a\u6210\u529f"
+        }
+      }
+    },
+    "group": {
+      "state": {
+        "_": {
+          "off": "\u95dc\u9589",
+          "on": "\u958b\u555f",
+          "home": "\u5728\u5bb6",
+          "not_home": "\u96e2\u5bb6",
+          "open": "\u958b\u555f",
+          "closed": "\u95dc\u9589",
+          "locked": "\u5df2\u4e0a\u9396",
+          "unlocked": "\u5df2\u89e3\u9396",
+          "ok": "\u6b63\u5e38",
+          "problem": "\u7570\u5e38"
+        }
+      }
+    },
+    "input_boolean": {
+      "state": {
+        "_": {
+          "off": "\u95dc\u9589",
+          "on": "\u958b\u555f"
+        }
+      }
+    },
+    "person": {
+      "state": {
+        "_": {
+          "home": "\u5728\u5bb6",
+          "not_home": "\u96e2\u5bb6"
+        }
+      }
+    },
+    "plant": {
+      "state": {
+        "_": {
+          "ok": "\u5065\u5eb7",
+          "problem": "\u7570\u5e38"
+        }
+      }
+    },
+    "remote": {
+      "state": {
+        "_": {
+          "off": "\u95dc\u9589",
+          "on": "\u958b\u5553"
+        }
+      }
+    },
+    "script": {
+      "state": {
+        "_": {
+          "off": "\u95dc\u9589",
+          "on": "\u958b\u5553"
+        }
+      }
+    },
+    "sun": {
+      "state": {
+        "_": {
+          "above_horizon": "\u65e5\u51fa\u6771\u6d77",
+          "below_horizon": "\u65e5\u843d\u897f\u5c71"
+        }
+      }
+    },
+    "timer": {
+      "state": {
+        "_": {
+          "active": "\u555f\u7528",
+          "idle": "\u66ab\u505c",
+          "paused": "\u66ab\u505c"
+        }
+      }
+    },
+    "weather": {
+      "state": {
+        "_": {
+          "clear-night": "\u6674\u7a7a\u3001\u591c\u9593",
+          "cloudy": "\u591a\u96f2",
+          "exceptional": "\u4f8b\u5916",
+          "fog": "\u6709\u9727",
+          "hail": "\u51b0\u96f9",
+          "lightning": "\u6709\u96f7",
+          "lightning-rainy": "\u6709\u96f7\u96e8",
+          "partlycloudy": "\u5c40\u90e8\u591a\u96f2",
+          "pouring": "\u5927\u96e8",
+          "rainy": "\u6709\u96e8",
+          "snowy": "\u6709\u96ea",
+          "snowy-rainy": "\u6709\u96ea\u3001\u6709\u96e8",
+          "sunny": "\u6674\u5929",
+          "windy": "\u6709\u98a8",
+          "windy-variant": "\u6709\u98a8"
+        }
+      }
+    }
+  }
+}

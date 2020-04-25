@@ -1,0 +1,343 @@
+{
+  "component": {
+    "zwave": {
+      "state": {
+        "_": {
+          "initializing": "Ba\u015flat\u0131l\u0131yor",
+          "dead": "\u00d6l\u00fc",
+          "sleeping": "Uyuyor",
+          "ready": "Haz\u0131r"
+        },
+        "query_stage": {
+          "initializing": "Ba\u015flat\u0131l\u0131yor ( {query_stage} )",
+          "dead": "\u00d6l\u00fc ({query_stage})"
+        }
+      }
+    },
+    "binary_sensor": {
+      "state": {
+        "_": {
+          "off": "Kapal\u0131",
+          "on": "A\u00e7\u0131k"
+        },
+        "battery": {
+          "off": "Normal",
+          "on": "D\u00fc\u015f\u00fck"
+        },
+        "cold": {
+          "off": "Normal",
+          "on": "So\u011fuk"
+        },
+        "connectivity": {
+          "off": "Ba\u011flant\u0131 kesildi",
+          "on": "Ba\u011fl\u0131"
+        },
+        "door": {
+          "off": "Kapal\u0131",
+          "on": "A\u00e7\u0131k"
+        },
+        "garage_door": {
+          "off": "Kapal\u0131",
+          "on": "A\u00e7\u0131k"
+        },
+        "gas": {
+          "off": "Temiz",
+          "on": "Alg\u0131land\u0131"
+        },
+        "heat": {
+          "off": "Normal",
+          "on": "S\u0131cak"
+        },
+        "lock": {
+          "off": "Kilit kapal\u0131",
+          "on": "Kilit a\u00e7\u0131k"
+        },
+        "moisture": {
+          "off": "Kuru",
+          "on": "Islak"
+        },
+        "motion": {
+          "off": "Temiz",
+          "on": "Alg\u0131land\u0131"
+        },
+        "occupancy": {
+          "off": "Temiz",
+          "on": "Alg\u0131land\u0131"
+        },
+        "opening": {
+          "off": "Kapal\u0131",
+          "on": "A\u00e7\u0131k"
+        },
+        "presence": {
+          "off": "D\u0131\u015farda",
+          "on": "Evde"
+        },
+        "problem": {
+          "off": "Tamam",
+          "on": "Sorun"
+        },
+        "safety": {
+          "off": "G\u00fcvenli",
+          "on": "G\u00fcvensiz"
+        },
+        "smoke": {
+          "off": "Temiz",
+          "on": "Alg\u0131land\u0131"
+        },
+        "sound": {
+          "off": "Temiz",
+          "on": "Alg\u0131land\u0131"
+        },
+        "vibration": {
+          "off": "Temiz",
+          "on": "Alg\u0131land\u0131"
+        },
+        "window": {
+          "off": "Kapal\u0131",
+          "on": "A\u00e7\u0131k"
+        }
+      }
+    },
+    "alarm_control_panel": {
+      "state": {
+        "_": {
+          "armed": "Etkin",
+          "disarmed": "Etkisiz",
+          "armed_home": "Etkin evde",
+          "armed_away": "Etkin d\u0131\u015far\u0131da",
+          "armed_night": "Etkin gece",
+          "armed_custom_bypass": "\u00d6zel alarm atlatmas\u0131",
+          "pending": "Beklemede",
+          "arming": "Etkinle\u015fiyor",
+          "disarming": "Etkisizle\u015ftiriliyor",
+          "triggered": "Tetiklendi"
+        }
+      }
+    },
+    "automation": {
+      "state": {
+        "_": {
+          "off": "Kapal\u0131",
+          "on": "A\u00e7\u0131k"
+        }
+      }
+    },
+    "calendar": {
+      "state": {
+        "_": {
+          "off": "Kapal\u0131",
+          "on": "A\u00e7\u0131k"
+        }
+      }
+    },
+    "camera": {
+      "state": {
+        "_": {
+          "recording": "Kaydediliyor",
+          "streaming": "Yay\u0131n ak\u0131\u015f\u0131",
+          "idle": "Bo\u015fta"
+        }
+      }
+    },
+    "climate": {
+      "state": {
+        "_": {
+          "off": "Kapal\u0131",
+          "heat": "S\u0131cak",
+          "cool": "Serin",
+          "heat_cool": "Is\u0131tma / So\u011futma",
+          "auto": "Otomatik",
+          "dry": "Kuru",
+          "fan_only": "Sadece fan"
+        }
+      }
+    },
+    "configurator": {
+      "state": {
+        "_": {
+          "configure": "Ayarla",
+          "configured": "Ayarland\u0131"
+        }
+      }
+    },
+    "cover": {
+      "state": {
+        "_": {
+          "open": "A\u00e7\u0131k",
+          "opening": "A\u00e7\u0131l\u0131yor",
+          "closed": "Kapal\u0131",
+          "closing": "Kapan\u0131yor",
+          "stopped": "Durduruldu"
+        }
+      }
+    },
+    "device_tracker": {
+      "state": {
+        "_": {
+          "home": "Evde",
+          "not_home": "D\u0131\u015far\u0131da"
+        }
+      }
+    },
+    "fan": {
+      "state": {
+        "_": {
+          "off": "Kapal\u0131",
+          "on": "A\u00e7\u0131k"
+        }
+      }
+    },
+    "group": {
+      "state": {
+        "_": {
+          "off": "Kapal\u0131",
+          "on": "A\u00e7\u0131k",
+          "home": "Evde",
+          "not_home": "D\u0131\u015far\u0131da",
+          "open": "A\u00e7\u0131k",
+          "closed": "Kapand\u0131",
+          "locked": "Kilitli",
+          "unlocked": "Kilitli de\u011fil",
+          "ok": "Tamam",
+          "problem": "Problem"
+        }
+      }
+    },
+    "input_boolean": {
+      "state": {
+        "_": {
+          "off": "Kapal\u0131",
+          "on": "A\u00e7\u0131k"
+        }
+      }
+    },
+    "light": {
+      "state": {
+        "_": {
+          "off": "Kapal\u0131",
+          "on": "A\u00e7\u0131k"
+        }
+      }
+    },
+    "lock": {
+      "state": {
+        "_": {
+          "locked": "Kilitli",
+          "unlocked": "Kilitli de\u011fil"
+        }
+      }
+    },
+    "media_player": {
+      "state": {
+        "_": {
+          "off": "Kapal\u0131",
+          "on": "A\u00e7\u0131k",
+          "playing": "Oynuyor",
+          "paused": "Durduruldu",
+          "idle": "Bo\u015fta",
+          "standby": "Bekleme modu"
+        }
+      }
+    },
+    "person": {
+      "state": {
+        "_": {
+          "home": "Evde",
+          "not_home": "D\u0131\u015far\u0131da"
+        }
+      }
+    },
+    "plant": {
+      "state": {
+        "_": {
+          "ok": "Tamam",
+          "problem": "Problem"
+        }
+      }
+    },
+    "remote": {
+      "state": {
+        "_": {
+          "off": "Kapal\u0131",
+          "on": "A\u00e7\u0131k"
+        }
+      }
+    },
+    "script": {
+      "state": {
+        "_": {
+          "off": "Kapal\u0131",
+          "on": "A\u00e7\u0131k"
+        }
+      }
+    },
+    "sensor": {
+      "state": {
+        "_": {
+          "off": "Kapal\u0131",
+          "on": "A\u00e7\u0131k"
+        }
+      }
+    },
+    "sun": {
+      "state": {
+        "_": {
+          "above_horizon": "Ufkun \u00fczerinde",
+          "below_horizon": "Ufkun alt\u0131nda"
+        }
+      }
+    },
+    "switch": {
+      "state": {
+        "_": {
+          "off": "Kapal\u0131",
+          "on": "A\u00e7\u0131k"
+        }
+      }
+    },
+    "vacuum": {
+      "state": {
+        "_": {
+          "cleaning": "Temizleniyor",
+          "docked": "Dock'da",
+          "error": "Hata",
+          "idle": "Bo\u015fta",
+          "off": "Kapal\u0131",
+          "on": "A\u00e7\u0131k",
+          "paused": "Durduruldu",
+          "returning": "Dock'a geri d\u00f6n\u00fc\u015f"
+        }
+      }
+    },
+    "timer": {
+      "state": {
+        "_": {
+          "active": "Aktif",
+          "idle": "Bo\u015fta",
+          "paused": "Durduruldu"
+        }
+      }
+    },
+    "weather": {
+      "state": {
+        "_": {
+          "clear-night": "A\u00e7\u0131k, gece",
+          "cloudy": "Bulutlu",
+          "exceptional": "Ola\u011fan\u00fcst\u00fc",
+          "fog": "Sis",
+          "hail": "Selam",
+          "lightning": "Y\u0131ld\u0131r\u0131m",
+          "lightning-rainy": "Y\u0131ld\u0131r\u0131m, ya\u011fmurlu",
+          "partlycloudy": "Par\u00e7al\u0131 bulutlu",
+          "pouring": "D\u00f6kme",
+          "rainy": "Ya\u011fmurlu",
+          "snowy": "Karl\u0131",
+          "snowy-rainy": "Karl\u0131, ya\u011fmurlu",
+          "sunny": "G\u00fcne\u015fli",
+          "windy": "R\u00fczgarl\u0131",
+          "windy-variant": "R\u00fczgarl\u0131"
+        }
+      }
+    }
+  }
+}

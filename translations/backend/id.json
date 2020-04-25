@@ -1,0 +1,343 @@
+{
+  "component": {
+    "sensor": {
+      "state": {
+        "_": {
+          "off": "Off",
+          "on": "On"
+        }
+      }
+    },
+    "binary_sensor": {
+      "state": {
+        "_": {
+          "off": "Off",
+          "on": "On"
+        },
+        "battery": {
+          "off": "Normal",
+          "on": "Rendah"
+        },
+        "cold": {
+          "off": "Normal",
+          "on": "Dingin"
+        },
+        "connectivity": {
+          "off": "Terputus",
+          "on": "Terhubung"
+        },
+        "door": {
+          "off": "Tertutup",
+          "on": "Terbuka"
+        },
+        "garage_door": {
+          "off": "Tertutup",
+          "on": "Terbuka"
+        },
+        "gas": {
+          "off": "Kosong",
+          "on": "Terdeteksi"
+        },
+        "heat": {
+          "off": "Normal",
+          "on": "Panas"
+        },
+        "lock": {
+          "off": "Terkunci",
+          "on": "Terbuka"
+        },
+        "moisture": {
+          "off": "Kering",
+          "on": "Basah"
+        },
+        "motion": {
+          "off": "Tidak ada",
+          "on": "Terdeteksi"
+        },
+        "occupancy": {
+          "off": "Tidak ada",
+          "on": "Terdeteksi"
+        },
+        "opening": {
+          "off": "Tertutup",
+          "on": "Terbuka"
+        },
+        "presence": {
+          "off": "Keluar",
+          "on": "Rumah"
+        },
+        "problem": {
+          "off": "Oke",
+          "on": "Masalah"
+        },
+        "safety": {
+          "off": "Aman",
+          "on": "Tidak aman"
+        },
+        "smoke": {
+          "off": "Tidak ada",
+          "on": "Terdeteksi"
+        },
+        "sound": {
+          "off": "Tidak ada",
+          "on": "Terdeteksi"
+        },
+        "vibration": {
+          "off": "Tidak ada",
+          "on": "Terdeteksi"
+        },
+        "window": {
+          "off": "Tertutup",
+          "on": "Terbuka"
+        }
+      }
+    },
+    "alarm_control_panel": {
+      "state": {
+        "_": {
+          "armed": "Bersenjata",
+          "disarmed": "Dilucuti",
+          "armed_home": "Armed home",
+          "armed_away": "Armed away",
+          "armed_night": "Armed night",
+          "armed_custom_bypass": "Armed custom bypass",
+          "pending": "Tertunda",
+          "arming": "Mempersenjatai",
+          "disarming": "Melucuti",
+          "triggered": "Terpicu"
+        }
+      }
+    },
+    "automation": {
+      "state": {
+        "_": {
+          "off": "Off",
+          "on": "On"
+        }
+      }
+    },
+    "calendar": {
+      "state": {
+        "_": {
+          "off": "Off",
+          "on": "On"
+        }
+      }
+    },
+    "camera": {
+      "state": {
+        "_": {
+          "recording": "Merekam",
+          "streaming": "Streaming",
+          "idle": "Siaga"
+        }
+      }
+    },
+    "climate": {
+      "state": {
+        "_": {
+          "off": "Off",
+          "heat": "Panas",
+          "cool": "Sejuk",
+          "heat_cool": "Panas/Dingin",
+          "auto": "Auto",
+          "dry": "Kering",
+          "fan_only": "Hanya kipas"
+        }
+      }
+    },
+    "configurator": {
+      "state": {
+        "_": {
+          "configure": "Konfigurasi",
+          "configured": "Terkonfigurasi"
+        }
+      }
+    },
+    "cover": {
+      "state": {
+        "_": {
+          "open": "Buka",
+          "opening": "Membuka",
+          "closed": "Tertutup",
+          "closing": "Menutup",
+          "stopped": "Terhenti"
+        }
+      }
+    },
+    "device_tracker": {
+      "state": {
+        "_": {
+          "home": "Rumah",
+          "not_home": "Keluar"
+        }
+      }
+    },
+    "fan": {
+      "state": {
+        "_": {
+          "off": "Off",
+          "on": "On"
+        }
+      }
+    },
+    "group": {
+      "state": {
+        "_": {
+          "off": "Off",
+          "on": "On",
+          "home": "Rumah",
+          "not_home": "Keluar",
+          "open": "Terbuka",
+          "closed": "Tertutup",
+          "locked": "Terkunci",
+          "unlocked": "Terbuka",
+          "ok": "OK",
+          "problem": "Masalah"
+        }
+      }
+    },
+    "input_boolean": {
+      "state": {
+        "_": {
+          "off": "Off",
+          "on": "On"
+        }
+      }
+    },
+    "light": {
+      "state": {
+        "_": {
+          "off": "Off",
+          "on": "On"
+        }
+      }
+    },
+    "lock": {
+      "state": {
+        "_": {
+          "locked": "Terkunci",
+          "unlocked": "Terbuka"
+        }
+      }
+    },
+    "media_player": {
+      "state": {
+        "_": {
+          "off": "Off",
+          "on": "On",
+          "playing": "Memainkan",
+          "paused": "Jeda",
+          "idle": "Diam",
+          "standby": "Siaga"
+        }
+      }
+    },
+    "person": {
+      "state": {
+        "_": {
+          "home": "Di rumah",
+          "not_home": "Keluar"
+        }
+      }
+    },
+    "plant": {
+      "state": {
+        "_": {
+          "ok": "OK",
+          "problem": "Masalah"
+        }
+      }
+    },
+    "remote": {
+      "state": {
+        "_": {
+          "off": "Off",
+          "on": "On"
+        }
+      }
+    },
+    "script": {
+      "state": {
+        "_": {
+          "off": "Off",
+          "on": "On"
+        }
+      }
+    },
+    "sun": {
+      "state": {
+        "_": {
+          "above_horizon": "Terbit",
+          "below_horizon": "Tenggelam"
+        }
+      }
+    },
+    "switch": {
+      "state": {
+        "_": {
+          "off": "Off",
+          "on": "On"
+        }
+      }
+    },
+    "vacuum": {
+      "state": {
+        "_": {
+          "cleaning": "Membersihkan",
+          "docked": "Berlabuh",
+          "error": "Kesalahan",
+          "idle": "Siaga",
+          "off": "Padam",
+          "on": "Nyala",
+          "paused": "Dijeda",
+          "returning": "Kembali ke dock"
+        }
+      }
+    },
+    "timer": {
+      "state": {
+        "_": {
+          "active": "Aktif",
+          "idle": "Siaga",
+          "paused": "Jeda"
+        }
+      }
+    },
+    "weather": {
+      "state": {
+        "_": {
+          "clear-night": "Cerah, malam",
+          "cloudy": "Berawan",
+          "exceptional": "Luar biasa",
+          "fog": "Kabut",
+          "hail": "Hujan es",
+          "lightning": "Petir",
+          "lightning-rainy": "Petir, hujan",
+          "partlycloudy": "Sebagian berawan",
+          "pouring": "Hujan lebat",
+          "rainy": "Hujan",
+          "snowy": "Bersalju",
+          "snowy-rainy": "Bersalju, hujan",
+          "sunny": "Cerah",
+          "windy": "Berangin",
+          "windy-variant": "Berangin"
+        }
+      }
+    },
+    "zwave": {
+      "state": {
+        "_": {
+          "initializing": "Inisialisasi",
+          "dead": "Mati",
+          "sleeping": "Tidur",
+          "ready": "Siap"
+        },
+        "query_stage": {
+          "initializing": "Inisialisasi ( {query_stage} )",
+          "dead": "Mati ({query_stage})"
+        }
+      }
+    }
+  }
+}

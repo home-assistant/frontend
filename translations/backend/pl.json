@@ -1,0 +1,349 @@
+{
+  "component": {
+    "sensor": {
+      "state": {
+        "_": {
+          "off": "wy\u0142\u0105czony",
+          "on": "w\u0142\u0105czony"
+        }
+      }
+    },
+    "zwave": {
+      "state": {
+        "_": {
+          "initializing": "inicjalizacja",
+          "dead": "martwy",
+          "sleeping": "u\u015bpiony",
+          "ready": "gotowy"
+        },
+        "query_stage": {
+          "initializing": "inicjalizacja",
+          "dead": "martwy"
+        }
+      }
+    },
+    "ebusd": {
+      "state": {
+        "day": "Dzie\u0144",
+        "night": "Noc"
+      }
+    },
+    "light": {
+      "state": {
+        "_": {
+          "off": "wy\u0142\u0105czony",
+          "on": "w\u0142\u0105czony"
+        }
+      }
+    },
+    "switch": {
+      "state": {
+        "_": {
+          "off": "wy\u0142\u0105czony",
+          "on": "w\u0142\u0105czony"
+        }
+      }
+    },
+    "binary_sensor": {
+      "state": {
+        "_": {
+          "off": "wy\u0142\u0105czony",
+          "on": "w\u0142\u0105czony"
+        },
+        "battery": {
+          "off": "na\u0142adowana",
+          "on": "roz\u0142adowana"
+        },
+        "cold": {
+          "off": "normalnie",
+          "on": "zimno"
+        },
+        "connectivity": {
+          "off": "offline",
+          "on": "online"
+        },
+        "door": {
+          "off": "zamkni\u0119te",
+          "on": "otwarte"
+        },
+        "garage_door": {
+          "off": "zamkni\u0119ta",
+          "on": "otwarta"
+        },
+        "gas": {
+          "off": "brak",
+          "on": "wykryto"
+        },
+        "heat": {
+          "off": "normalnie",
+          "on": "gor\u0105co"
+        },
+        "lock": {
+          "off": "zamkni\u0119ty",
+          "on": "otwarty"
+        },
+        "moisture": {
+          "off": "brak wilgoci",
+          "on": "wilgo\u0107"
+        },
+        "motion": {
+          "off": "brak",
+          "on": "wykryto"
+        },
+        "occupancy": {
+          "off": "brak",
+          "on": "wykryto"
+        },
+        "opening": {
+          "off": "zamkni\u0119te",
+          "on": "otwarte"
+        },
+        "presence": {
+          "off": "poza domem",
+          "on": "w domu"
+        },
+        "problem": {
+          "off": "ok",
+          "on": "problem"
+        },
+        "safety": {
+          "off": "brak zagro\u017cenia",
+          "on": "zagro\u017cenie"
+        },
+        "smoke": {
+          "off": "brak",
+          "on": "wykryto"
+        },
+        "sound": {
+          "off": "brak",
+          "on": "wykryto"
+        },
+        "vibration": {
+          "off": "brak",
+          "on": "wykryto"
+        },
+        "window": {
+          "off": "zamkni\u0119te",
+          "on": "otwarte"
+        }
+      }
+    },
+    "lock": {
+      "state": {
+        "_": {
+          "locked": "zamkni\u0119ty",
+          "unlocked": "otwarty"
+        }
+      }
+    },
+    "cover": {
+      "state": {
+        "_": {
+          "open": "otwarta",
+          "opening": "otwieranie",
+          "closed": "zamkni\u0119ta",
+          "closing": "zamykanie",
+          "stopped": "zatrzymany"
+        }
+      }
+    },
+    "alarm_control_panel": {
+      "state": {
+        "_": {
+          "armed": "uzbrojony",
+          "disarmed": "rozbrojony",
+          "armed_home": "uzbrojony (w domu)",
+          "armed_away": "uzbrojony (poza domem)",
+          "armed_night": "uzbrojony (noc)",
+          "armed_custom_bypass": "uzbrojony (cz\u0119\u015bciowo)",
+          "pending": "oczekuje",
+          "arming": "uzbrajanie",
+          "disarming": "rozbrajanie",
+          "triggered": "wyzwolony"
+        }
+      }
+    },
+    "media_player": {
+      "state": {
+        "_": {
+          "off": "wy\u0142\u0105czony",
+          "on": "w\u0142\u0105czony",
+          "playing": "odtwarzanie",
+          "paused": "wstrzymany",
+          "idle": "nieaktywny",
+          "standby": "tryb czuwania"
+        }
+      }
+    },
+    "device_tracker": {
+      "state": {
+        "_": {
+          "home": "w domu",
+          "not_home": "poza domem"
+        }
+      }
+    },
+    "vacuum": {
+      "state": {
+        "_": {
+          "cleaning": "sprz\u0105tanie",
+          "docked": "w stacji dokuj\u0105cej",
+          "error": "b\u0142\u0105d",
+          "idle": "nieaktywny",
+          "off": "wy\u0142\u0105czony",
+          "on": "w\u0142\u0105czony",
+          "paused": "wstrzymany",
+          "returning": "powr\u00f3t do stacji dokuj\u0105cej"
+        }
+      }
+    },
+    "fan": {
+      "state": {
+        "_": {
+          "off": "wy\u0142\u0105czony",
+          "on": "w\u0142\u0105czony"
+        }
+      }
+    },
+    "climate": {
+      "state": {
+        "_": {
+          "off": "wy\u0142\u0105czony",
+          "heat": "grzanie",
+          "cool": "ch\u0142odzenie",
+          "heat_cool": "grzanie/ch\u0142odzenie",
+          "auto": "automatyczny",
+          "dry": "osuszanie",
+          "fan_only": "tylko wentylator"
+        }
+      }
+    },
+    "automation": {
+      "state": {
+        "_": {
+          "off": "wy\u0142\u0105czony",
+          "on": "w\u0142\u0105czony"
+        }
+      }
+    },
+    "calendar": {
+      "state": {
+        "_": {
+          "off": "wy\u0142\u0105czony",
+          "on": "w\u0142\u0105czony"
+        }
+      }
+    },
+    "camera": {
+      "state": {
+        "_": {
+          "recording": "nagrywanie",
+          "streaming": "strumieniowanie",
+          "idle": "nieaktywna"
+        }
+      }
+    },
+    "configurator": {
+      "state": {
+        "_": {
+          "configure": "skonfiguruj",
+          "configured": "skonfigurowany"
+        }
+      }
+    },
+    "group": {
+      "state": {
+        "_": {
+          "off": "wy\u0142\u0105czony",
+          "on": "w\u0142\u0105czony",
+          "home": "w domu",
+          "not_home": "poza domem",
+          "open": "otwarte",
+          "closed": "zamkni\u0119te",
+          "locked": "zamkni\u0119ty",
+          "unlocked": "otwarty",
+          "ok": "ok",
+          "problem": "problem"
+        }
+      }
+    },
+    "input_boolean": {
+      "state": {
+        "_": {
+          "off": "wy\u0142\u0105czony",
+          "on": "w\u0142\u0105czony"
+        }
+      }
+    },
+    "person": {
+      "state": {
+        "_": {
+          "home": "w domu",
+          "not_home": "poza domem"
+        }
+      }
+    },
+    "plant": {
+      "state": {
+        "_": {
+          "ok": "ok",
+          "problem": "problem"
+        }
+      }
+    },
+    "remote": {
+      "state": {
+        "_": {
+          "off": "wy\u0142\u0105czony",
+          "on": "w\u0142\u0105czony"
+        }
+      }
+    },
+    "script": {
+      "state": {
+        "_": {
+          "off": "wy\u0142\u0105czony",
+          "on": "w\u0142\u0105czony"
+        }
+      }
+    },
+    "sun": {
+      "state": {
+        "_": {
+          "above_horizon": "powy\u017cej horyzontu",
+          "below_horizon": "poni\u017cej horyzontu"
+        }
+      }
+    },
+    "timer": {
+      "state": {
+        "_": {
+          "active": "aktywny",
+          "idle": "nieaktywny",
+          "paused": "wstrzymany"
+        }
+      }
+    },
+    "weather": {
+      "state": {
+        "_": {
+          "clear-night": "pogodnie, noc",
+          "cloudy": "pochmurno",
+          "exceptional": "wyj\u0105tkowy",
+          "fog": "mg\u0142a",
+          "hail": "grad",
+          "lightning": "b\u0142yskawice",
+          "lightning-rainy": "burza",
+          "partlycloudy": "cz\u0119\u015bciowe zachmurzenie",
+          "pouring": "ulewa",
+          "rainy": "deszczowo",
+          "snowy": "\u015bnie\u017cnie",
+          "snowy-rainy": "\u015bnie\u017cnie, deszczowo",
+          "sunny": "s\u0142onecznie",
+          "windy": "wietrznie",
+          "windy-variant": "wietrznie"
+        }
+      }
+    }
+  }
+}

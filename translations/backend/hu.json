@@ -1,0 +1,349 @@
+{
+  "component": {
+    "sensor": {
+      "state": {
+        "_": {
+          "off": "Ki",
+          "on": "Be"
+        }
+      }
+    },
+    "zwave": {
+      "state": {
+        "_": {
+          "initializing": "Inicializ\u00e1l\u00e1s",
+          "dead": "Halott",
+          "sleeping": "Alv\u00e1s",
+          "ready": "K\u00e9sz"
+        },
+        "query_stage": {
+          "initializing": "Inicializ\u00e1l\u00e1s",
+          "dead": "Halott"
+        }
+      }
+    },
+    "ebusd": {
+      "state": {
+        "day": "Nappal",
+        "night": "\u00c9jszaka"
+      }
+    },
+    "light": {
+      "state": {
+        "_": {
+          "off": "Ki",
+          "on": "Be"
+        }
+      }
+    },
+    "switch": {
+      "state": {
+        "_": {
+          "off": "Ki",
+          "on": "Be"
+        }
+      }
+    },
+    "binary_sensor": {
+      "state": {
+        "_": {
+          "off": "Ki",
+          "on": "Be"
+        },
+        "battery": {
+          "off": "Norm\u00e1l",
+          "on": "Alacsony"
+        },
+        "cold": {
+          "off": "Norm\u00e1l",
+          "on": "Hideg"
+        },
+        "connectivity": {
+          "off": "Lekapcsol\u00f3dva",
+          "on": "Kapcsol\u00f3dva"
+        },
+        "door": {
+          "off": "Z\u00e1rva",
+          "on": "Nyitva"
+        },
+        "garage_door": {
+          "off": "Z\u00e1rva",
+          "on": "Nyitva"
+        },
+        "gas": {
+          "off": "Norm\u00e1l",
+          "on": "\u00c9szlelve"
+        },
+        "heat": {
+          "off": "Norm\u00e1l",
+          "on": "Meleg"
+        },
+        "lock": {
+          "off": "Bez\u00e1rva",
+          "on": "Kinyitva"
+        },
+        "moisture": {
+          "off": "Sz\u00e1raz",
+          "on": "Nedves"
+        },
+        "motion": {
+          "off": "Norm\u00e1l",
+          "on": "\u00c9szlelve"
+        },
+        "occupancy": {
+          "off": "Norm\u00e1l",
+          "on": "\u00c9szlelve"
+        },
+        "opening": {
+          "off": "Z\u00e1rva",
+          "on": "Nyitva"
+        },
+        "presence": {
+          "off": "T\u00e1vol",
+          "on": "Otthon"
+        },
+        "problem": {
+          "off": "OK",
+          "on": "Probl\u00e9ma"
+        },
+        "safety": {
+          "off": "Biztons\u00e1gos",
+          "on": "Nem biztons\u00e1gos"
+        },
+        "smoke": {
+          "off": "Norm\u00e1l",
+          "on": "\u00c9szlelve"
+        },
+        "sound": {
+          "off": "Norm\u00e1l",
+          "on": "\u00c9szlelve"
+        },
+        "vibration": {
+          "off": "Norm\u00e1l",
+          "on": "\u00c9szlelve"
+        },
+        "window": {
+          "off": "Z\u00e1rva",
+          "on": "Nyitva"
+        }
+      }
+    },
+    "lock": {
+      "state": {
+        "_": {
+          "locked": "Bez\u00e1rva",
+          "unlocked": "Kinyitva"
+        }
+      }
+    },
+    "cover": {
+      "state": {
+        "_": {
+          "open": "Nyitva",
+          "opening": "Nyit\u00e1s",
+          "closed": "Z\u00e1rva",
+          "closing": "Z\u00e1r\u00e1s",
+          "stopped": "Meg\u00e1ll\u00edtva"
+        }
+      }
+    },
+    "alarm_control_panel": {
+      "state": {
+        "_": {
+          "armed": "\u00c9les\u00edtve",
+          "disarmed": "Hat\u00e1stalan\u00edtva",
+          "armed_home": "\u00c9les\u00edtve otthon",
+          "armed_away": "\u00c9les\u00edtve t\u00e1vol",
+          "armed_night": "\u00c9les\u00edtve \u00e9jszaka",
+          "armed_custom_bypass": "\u00c9les\u00edtve \u00e1thidal\u00e1ssal",
+          "pending": "F\u00fcgg\u0151ben",
+          "arming": "\u00c9les\u00edt\u00e9s",
+          "disarming": "Hat\u00e1stalan\u00edt\u00e1s",
+          "triggered": "Riaszt\u00e1s"
+        }
+      }
+    },
+    "media_player": {
+      "state": {
+        "_": {
+          "off": "Ki",
+          "on": "Be",
+          "playing": "Lej\u00e1tsz\u00e1s",
+          "paused": "Sz\u00fcnetel",
+          "idle": "T\u00e9tlen",
+          "standby": "K\u00e9szenl\u00e9t"
+        }
+      }
+    },
+    "device_tracker": {
+      "state": {
+        "_": {
+          "home": "Otthon",
+          "not_home": "T\u00e1vol"
+        }
+      }
+    },
+    "vacuum": {
+      "state": {
+        "_": {
+          "cleaning": "Takar\u00edt\u00e1s",
+          "docked": "Dokkolva",
+          "error": "Hiba",
+          "idle": "T\u00e9tlen",
+          "off": "Ki",
+          "on": "Be",
+          "paused": "Sz\u00fcnetel",
+          "returning": "Dokkol\u00e1s folyamatban"
+        }
+      }
+    },
+    "fan": {
+      "state": {
+        "_": {
+          "off": "Ki",
+          "on": "Be"
+        }
+      }
+    },
+    "climate": {
+      "state": {
+        "_": {
+          "off": "Ki",
+          "heat": "F\u0171t\u00e9s",
+          "cool": "H\u0171t\u00e9s",
+          "heat_cool": "F\u0171t\u00e9s/H\u0171t\u00e9s",
+          "auto": "Automatikus",
+          "dry": "Sz\u00e1raz",
+          "fan_only": "Csak ventil\u00e1tor"
+        }
+      }
+    },
+    "automation": {
+      "state": {
+        "_": {
+          "off": "Ki",
+          "on": "Be"
+        }
+      }
+    },
+    "calendar": {
+      "state": {
+        "_": {
+          "off": "Ki",
+          "on": "Be"
+        }
+      }
+    },
+    "camera": {
+      "state": {
+        "_": {
+          "recording": "Felv\u00e9tel",
+          "streaming": "Streamel\u00e9s",
+          "idle": "T\u00e9tlen"
+        }
+      }
+    },
+    "configurator": {
+      "state": {
+        "_": {
+          "configure": "Be\u00e1ll\u00edt\u00e1s",
+          "configured": "Be\u00e1ll\u00edtva"
+        }
+      }
+    },
+    "group": {
+      "state": {
+        "_": {
+          "off": "Ki",
+          "on": "Be",
+          "home": "Otthon",
+          "not_home": "T\u00e1vol",
+          "open": "Nyitva",
+          "closed": "Z\u00e1rva",
+          "locked": "Bez\u00e1rva",
+          "unlocked": "Kinyitva",
+          "ok": "OK",
+          "problem": "Probl\u00e9ma"
+        }
+      }
+    },
+    "input_boolean": {
+      "state": {
+        "_": {
+          "off": "Ki",
+          "on": "Be"
+        }
+      }
+    },
+    "person": {
+      "state": {
+        "_": {
+          "home": "Otthon",
+          "not_home": "T\u00e1vol"
+        }
+      }
+    },
+    "plant": {
+      "state": {
+        "_": {
+          "ok": "OK",
+          "problem": "Probl\u00e9ma"
+        }
+      }
+    },
+    "remote": {
+      "state": {
+        "_": {
+          "off": "Ki",
+          "on": "Be"
+        }
+      }
+    },
+    "script": {
+      "state": {
+        "_": {
+          "off": "Ki",
+          "on": "Be"
+        }
+      }
+    },
+    "sun": {
+      "state": {
+        "_": {
+          "above_horizon": "L\u00e1t\u00f3hat\u00e1r felett",
+          "below_horizon": "L\u00e1t\u00f3hat\u00e1r alatt"
+        }
+      }
+    },
+    "timer": {
+      "state": {
+        "_": {
+          "active": "Akt\u00edv",
+          "idle": "T\u00e9tlen",
+          "paused": "Sz\u00fcnetel"
+        }
+      }
+    },
+    "weather": {
+      "state": {
+        "_": {
+          "clear-night": "Tiszta, \u00e9jszaka",
+          "cloudy": "Felh\u0151s",
+          "exceptional": "Kiv\u00e9teles",
+          "fog": "K\u00f6d",
+          "hail": "J\u00e9ges\u0151",
+          "lightning": "Vihar",
+          "lightning-rainy": "Viharos, es\u0151s",
+          "partlycloudy": "R\u00e9szben felh\u0151s",
+          "pouring": "Szakad",
+          "rainy": "Es\u0151s",
+          "snowy": "Havaz\u00e1s",
+          "snowy-rainy": "Havas, es\u0151s",
+          "sunny": "Napos",
+          "windy": "Szeles",
+          "windy-variant": "Szeles"
+        }
+      }
+    }
+  }
+}
