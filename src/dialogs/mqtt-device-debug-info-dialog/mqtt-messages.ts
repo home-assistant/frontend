@@ -1,11 +1,14 @@
 import { safeDump } from "js-yaml";
 import {
+  css,
   customElement,
   html,
   LitElement,
   property,
   TemplateResult,
 } from "lit-element";
+import { classMap } from "lit-html/directives/class-map";
+import { formatTimeWithSeconds } from "../../common/datetime/format_time";
 import { MQTTMessage } from "../../data/mqtt";
 
 @customElement("mqtt-messages")
@@ -37,24 +40,32 @@ class MQTTMessages extends LitElement {
 
   protected render(): TemplateResult {
     return html`
-      <details @toggle=${this._handleToggle}>
-        <summary>
-          ${this.summary}
-        </summary>
-        ${this._open
-          ? html`
-              <ul>
-                ${this.messages.map(
-                  (message) => html`
-                    <li>
-                      ${this._renderSingleMessage(message)}
-                    </li>
-                  `
-                )}
-              </ul>
-            `
-          : ""}
-      </details>
+      <div
+        class="expander ${classMap({ open: this._open })}"
+        @click=${this._handleToggle}
+      >
+        ${this.summary} ABCD
+      </div>
+      ${this._open
+        ? html`
+            <ul class="messagelist">
+              ${this.messages.map(
+                (message) => html`
+                  <li class="message">
+                    <div class="time">
+                      Received
+                      ${formatTimeWithSeconds(
+                        new Date(message.time),
+                        this.hass.language
+                      )}
+                    </div>
+                    ${this._renderSingleMessage(message)}
+                  </li>
+                `
+              )}
+            </ul>
+          `
+        : ""}
     `;
   }
 
@@ -62,10 +73,8 @@ class MQTTMessages extends LitElement {
     const topic = message.topic;
     return this._showTopic
       ? html`
-          <ul>
-            <li>
-              Topic: ${topic}
-            </li>
+          <ul class="messagewithtopic">
+            <li>Topic: <code>${topic}</code></li>
             <li>
               Payload: ${this._renderSinglePayload(message)}
             </li>
@@ -119,7 +128,55 @@ class MQTTMessages extends LitElement {
   }
 
   private _handleToggle(ev) {
-    this._open = ev.target.open;
+    this._open = !this._open;
+  }
+
+  static get styles(): CSSResult {
+    return css`
+      .expander {
+        position: relative;
+        padding-left: 16px;
+      }
+      .expander:before {
+        content: "";
+        position: absolute;
+        border-right: 2px solid var(--primary-text-color);
+        border-bottom: 2px solid var(--primary-text-color);
+        width: 5px;
+        height: 5px;
+        top: calc(50% - 2px);
+        left: 0px;
+        transform: translateY(-50%) rotate(-45deg);
+      }
+      .expander.open:before {
+        transform: translateY(-50%) rotate(45deg);
+      }
+      .message {
+        background-color: var(--primary-background-color);
+        font-size: 0.9em;
+        margin-bottom: 12px;
+      }
+      .messagelist {
+        list-style-type: none;
+        margin: 0;
+        padding-left: 16px;
+      }
+      .messagewithtopic {
+        list-style-type: none;
+        padding-left: 0;
+      }
+      code {
+        background-color: var(--secondary-background-color);
+      }
+      pre {
+        background-color: var(--secondary-background-color);
+        display: inline-block;
+        font-size: 0.9em;
+        margin: 0;
+        padding-left: 4px;
+        padding-right: 4px;
+      }
+    `;
   }
 }
 

@@ -1,11 +1,13 @@
 import { safeDump } from "js-yaml";
 import {
+  css,
   customElement,
   html,
   LitElement,
   property,
   TemplateResult,
 } from "lit-element";
+import { classMap } from "lit-html/directives/class-map";
 
 @customElement("mqtt-discovery-payload")
 class MQTTDiscoveryPayload extends LitElement {
@@ -19,12 +21,15 @@ class MQTTDiscoveryPayload extends LitElement {
 
   protected render(): TemplateResult {
     return html`
-      <details @toggle=${this._handleToggle}>
-        <summary>
-          ${this.summary}
-        </summary>
+      <div
+        class="expander ${classMap({ open: this._open })}"
+        @click=${this._handleToggle}
+      >
+        ${this.summary}
+      </div>
+      <div class="payload">
         ${this._open ? this._renderPayload() : ""}
-      </details>
+      </div>
     `;
   }
 
@@ -38,7 +43,40 @@ class MQTTDiscoveryPayload extends LitElement {
   }
 
   private _handleToggle(ev) {
-    this._open = ev.target.open;
+    this._open = !this._open;
+  }
+
+  static get styles(): CSSResult {
+    return css`
+      .expander {
+        position: relative;
+        padding-left: 16px;
+      }
+      .expander:before {
+        content: "";
+        position: absolute;
+        border-right: 2px solid var(--primary-text-color);
+        border-bottom: 2px solid var(--primary-text-color);
+        width: 5px;
+        height: 5px;
+        top: calc(50% - 2px);
+        left: -0px;
+        transform: translateY(-50%) rotate(-45deg);
+      }
+      .expander.open:before {
+        transform: translateY(-50%) rotate(45deg);
+      }
+      .payload {
+        padding-left: 16px;
+      }
+      pre {
+        background-color: var(--secondary-background-color);
+        display: inline-block;
+        font-size: 0.9em;
+        padding-left: 4px;
+        padding-right: 4px;
+      }
+    `;
   }
 }
 
