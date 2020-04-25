@@ -341,11 +341,21 @@
                 "on_off": "إيقاف/تشغيل",
                 "operation": "تشغيل",
                 "target_temperature": "درجة الحرارة المستهدفة"
+            },
+            "weather": {
+                "attributes": {
+                    "precipitation": "ترسب"
+                },
+                "high": "عالي",
+                "low": "منخفض"
             }
         },
         "common": {
             "cancel": "إلغاء",
-            "loading": "جار التحميل"
+            "delete": "حذف",
+            "loading": "جار التحميل",
+            "successfully_deleted": "تم الحذف بنجاح",
+            "undo": "تراجع"
         },
         "components": {
             "entity": {
@@ -361,9 +371,37 @@
             }
         },
         "dialogs": {
+            "helper_settings": {
+                "input_datetime": {
+                    "date": "تاريخ",
+                    "datetime": "التاريخ والوقت",
+                    "mode": "ما الذي تريد إدخاله",
+                    "time": "الوقت"
+                }
+            },
             "more_info_control": {
                 "sun": {
                     "setting": "ضبط"
+                }
+            },
+            "mqtt_device_debug_info": {
+                "deserialize": "محاولة تحليل رسائل MQTT كJSON",
+                "entities": "الكيانات",
+                "no_entities": "لا توجد كيانات",
+                "no_triggers": "لا توجد محفزات",
+                "payload_display": "عرض الـPayload",
+                "recent_messages": "{n} آخر الرسائل التي تم استلامها",
+                "show_as_yaml": "إظهار كـ YAML",
+                "title": "{device} معلومات تصحيح الأخطاء",
+                "triggers": "محفزات"
+            },
+            "zha_device_info": {
+                "buttons": {
+                    "zigbee_information": "معلومات Zigbee"
+                },
+                "device_signature": "توقيع جهاز Zigbee",
+                "services": {
+                    "zigbee_information": "عرض معلومات Zigbee للجهاز."
                 }
             }
         },
@@ -379,6 +417,16 @@
         },
         "panel": {
             "config": {
+                "areas": {
+                    "data_table": {
+                        "area": "المنطقة",
+                        "devices": "الأجهزة"
+                    },
+                    "delete": {
+                        "confirmation_text": "سيتم إلغاء تعيين جميع الأجهزة في هذه المنطقة.",
+                        "confirmation_title": "هل أنت متأكد أنك تريد حذف هذه المنطقة؟"
+                    }
+                },
                 "automation": {
                     "caption": "التشغيل التلقائي",
                     "description": "إنشاء وتحرير التشغيل الألي",
@@ -541,6 +589,9 @@
                     "picker": {
                         "add_automation": "أضف متحكم آلي",
                         "header": "محرر المتحكم الآلي",
+                        "headers": {
+                            "name": "الاسم"
+                        },
                         "introduction": "محرر المتحكم الآلي يسمح لك بإنشاء وتحرير المتحكمات الآلية. يرجى قراءة [الإرشادات] (https://home-assistant.io/docs/automation/editor/) للتأكد من إعدادك Home Assistant بشكل صحيح.",
                         "learn_more": "معرفة المزيد عن التحكم الآلي",
                         "no_automations": "لم تعثر على أي متحكم آلي قابل للتعديل",
@@ -566,19 +617,55 @@
                     "caption": "التخصيص",
                     "description": "تخصيص الكيانات الخاصة بك"
                 },
+                "devices": {
+                    "confirm_delete": "هل أنت متأكد أنك تريد حذف هذا الجهاز؟",
+                    "data_table": {
+                        "no_devices": "لا توجد أجهزة"
+                    },
+                    "delete": "حذف",
+                    "no_devices": "لا توجد أجهزة"
+                },
+                "entities": {
+                    "picker": {
+                        "status": {
+                            "restored": "مستعاد"
+                        }
+                    }
+                },
+                "filtering": {
+                    "clear": "محو",
+                    "filtering_by": "التصفية حسب"
+                },
                 "header": "برمجة نظام مساعد البيت",
+                "helpers": {
+                    "picker": {
+                        "headers": {
+                            "entity_id": "معرف الكيان"
+                        }
+                    }
+                },
                 "integrations": {
+                    "add_integration": "أضف integration",
                     "caption": "تكاملات",
                     "config_entry": {
+                        "delete": "حذف",
                         "delete_confirm": "هل تريد حقا حذف هذا التكامل؟",
                         "device_unavailable": "الجهاز غير متوفر",
+                        "devices": "{count} {count, plural,\n  one {جهاز}\n  other {أجهزة}\n}",
+                        "entities": "{count} {count, plural,\n  one {كيان}\n  other {كيانات}\n}",
                         "entity_unavailable": "العنصر غير متوفر",
                         "firmware": "نظام التشغيل {version}",
                         "manuf": "بواسطة {manufacturer}",
                         "no_area": "لا توجد منطقة",
                         "no_device": "عناصر بدون أجهزة",
                         "no_devices": "هذا التكامل لا يوجد لديه الأجهزة.",
-                        "restart_confirm": "اعادة تشغيل هوم اسيستينت لإنهاء حذف هذه التكامل"
+                        "options": "خيارات",
+                        "rename": "إعادة تسمية",
+                        "restart_confirm": "اعادة تشغيل هوم اسيستينت لإنهاء حذف هذه التكامل",
+                        "system_options": "خيارات النظام"
+                    },
+                    "config_flow": {
+                        "loading_first_time": "يرجى الانتظار بينما يتم تثبيت الـintegration"
                     },
                     "configure": "إعداد",
                     "configured": "تم الإعداد",
@@ -591,12 +678,23 @@
                         "show_ignored": "Visa ",
                         "stop_ignore": "توقف عن التجاهل"
                     },
+                    "integration": "integration",
                     "new": "إعداد تكامل جديد",
-                    "none": "لم يتم الإعداد بعد"
+                    "no_integrations": "يبدوأن ليس هناك أي integations  بعد. انقر على الزر أدناه لإضافة واحدة!",
+                    "none": "لم يتم الإعداد بعد",
+                    "rename_dialog": "تعديل الاسم",
+                    "rename_input_label": "الاسم"
                 },
                 "introduction": "يمكنك هنا برمجة المكونات الخاصة بك و إعداد نظام مساعد البيت. ليس كل شيء متاح للبرمجة من خلال واجهة المستخدم حتى الآن، ولكننا نعمل على ذلك.",
                 "lovelace": {
                     "dashboards": {
+                        "cant_edit_default": "لا يمكن تعديل لوحة تحكم لوفليس القياسية من واجهة المستخدم. يمكنك إخفائه عن طريق تعيين لوحة تحكم أخرى كإعداد افتراضي.",
+                        "default_dashboard": "هذه هي لوحة المعلومات الافتراضية",
+                        "detail": {
+                            "remove_default": "إزالة كإعداد افتراضي على هذا الجهاز",
+                            "set_default": "تعيين إعداد افتراضي على هذا الجهاز",
+                            "title_required": "العنوان مطلوب."
+                        },
                         "picker": {
                             "headers": {
                                 "default": "الافتراضي"
@@ -607,8 +705,13 @@
                         "detail": {
                             "create": "إنشاء",
                             "delete": "حذف",
+                            "type": "نوع الموارد",
                             "update": "تحديث",
-                            "url": "عنوان url"
+                            "url": "عنوان url",
+                            "url_error_msg": "عنوان URL هو حقل مطلوب"
+                        },
+                        "picker": {
+                            "no_resources": "لا توجد موارد"
                         }
                     }
                 },
@@ -617,11 +720,24 @@
                         "device_tracker_pick": "اختر جهاز لتتبع"
                     }
                 },
+                "scene": {
+                    "picker": {
+                        "headers": {
+                            "name": "الاسم"
+                        }
+                    }
+                },
                 "script": {
                     "caption": "السكريبت",
                     "description": "إنشاء و تحرير السكريبت",
                     "editor": {
                         "alias": "الاسم"
+                    },
+                    "picker": {
+                        "headers": {
+                            "name": "الاسم"
+                        },
+                        "show_info": "عرض معلومات حول السكربت"
                     }
                 },
                 "users": {
@@ -636,10 +752,21 @@
                     "description": "ادارة المستخدمين",
                     "editor": {
                         "activate_user": "تفعيل المستخدم",
+                        "admin": "مدير",
                         "caption": "عرض المستخدم",
                         "change_password": "تغيير كلمة السر",
                         "deactivate_user": "إلغاء تنشيط المستخدم",
-                        "delete_user": "حذف المستخدم"
+                        "delete_user": "حذف المستخدم",
+                        "name": "الاسم",
+                        "system_generated_users_not_editable": "غير قادر على تحديث المستخدمين الذين تم إنشاؤهم بواسطة النظام.",
+                        "update_user": "تحديث"
+                    },
+                    "picker": {
+                        "headers": {
+                            "group": "مجموعة",
+                            "name": "الاسم",
+                            "system": "نظام"
+                        }
                     }
                 },
                 "zwave": {
@@ -679,18 +806,114 @@
             "lovelace": {
                 "editor": {
                     "card": {
+                        "alarm-panel": {
+                            "description": "تسمح لك بطاقة لوحة الإنذار بتفعيل وتعطيل لوحة التحكم الخاصة بالانذار ."
+                        },
+                        "button": {
+                            "description": "تتيح لك بطاقة الأزرار إضافة أزرار لأداء المهام."
+                        },
                         "conditional": {
                             "card": "بطاقة",
-                            "current_state": "الحالي"
+                            "change_type": "نوع التغيير",
+                            "condition_explanation": "ستظهر البطاقة عند استيفاء جميع الشروط أدناه.",
+                            "conditions": "شروط",
+                            "current_state": "الحالي",
+                            "description": "تعرض البطاقة الشرطية بطاقة أخرى استنادًا إلى حالات الكيان.",
+                            "state_equal": "الحالة تساوي",
+                            "state_not_equal": "الحالة لا تساوي"
+                        },
+                        "entities": {
+                            "description": "بطاقة الكيانات هي أكثر أنواع البطاقات شيوعًا. تقوم بتجميع العناصر معًا في قوائم."
+                        },
+                        "entity-filter": {
+                            "description": "تتيح لك بطاقة تصفية الكيانات تحديد قائمة بالكيانات التي تريد تتبعها فقط عندما تكون في حالة معينة."
+                        },
+                        "entity": {
+                            "description": "تمنحك بطاقة الكيان نظرة عامة سريعة عن حالة الكيان.",
+                            "name": "الكيان"
+                        },
+                        "gauge": {
+                            "description": "بطاقة القياس هي بطاقة أساسية تسمح برؤية بيانات الاستشعار بصريًا."
+                        },
+                        "generic": {
+                            "attribute": "السمه",
+                            "double_tap_action": "تأثير النقر المزدوج",
+                            "manual": "يدويا",
+                            "manual_description": "هل تريد إضافة بطاقة مخصصة أو ترغب فقط في كتابة yaml يدويًا؟",
+                            "no_theme": "لا توجد تصاميم متاحة",
+                            "state": "الحالة"
+                        },
+                        "glance": {
+                            "description": "بطاقة اللمحة مفيدة لتجميع أجهزة استشعار متعددة في نظرة عامة مدمجة."
+                        },
+                        "history-graph": {
+                            "description": "تسمح لك بطاقة الرسم البياني التاريخي بعرض رسم بياني لكل من الكيانات المذكورة."
+                        },
+                        "horizontal-stack": {
+                            "description": "تتيح لك بطاقة التكديس الأفقي تجميع عدة بطاقات معًا ، بحيث تكون دائمًا بجانب بعضها البعض في مساحة عمود واحد."
+                        },
+                        "iframe": {
+                            "description": "تسمح لك بطاقة صفحة الويب بتضمين صفحة ويب مباشرةً في Home Assistant."
+                        },
+                        "light": {
+                            "description": "تسمح لك بطاقة الضوء بتغيير سطوع الضوء."
+                        },
+                        "map": {
+                            "description": "بطاقة الخريطة التي تتيح لك عرض الكيانات على الخريطة.",
+                            "hours_to_show": "ساعات للعرض"
+                        },
+                        "markdown": {
+                            "description": "يتم استخدام بطاقة Markdown لعرض Markdown."
+                        },
+                        "media-control": {
+                            "description": "يتم استخدام بطاقة التحكم بالوسائط لعرض كيانات مشغل الوسائط على واجهة مع عناصر تحكم سهلة الاستخدام."
+                        },
+                        "picture-elements": {
+                            "description": "بطاقة عناصر الصورة هي واحدة من أكثر أنواع البطاقات تنوعا. تسمح لك البطاقات بوضع الرموز أو النص وحتى الخدمات! على صورة تستند إلى إحداثيات."
+                        },
+                        "picture-entity": {
+                            "description": "تعرض بطاقة كيان الصورة كيانًا في شكل صورة. بدلاً من الصور من عنوان URL، يمكنه أيضًا عرض صورة كيانات الكاميرا."
+                        },
+                        "picture-glance": {
+                            "description": "تعرض بطاقة \"لمحة الصورة\" صورة وحالات كيان مقابلة كرمز. تسمح الكيانات الموجودة على الجانب الأيمن بإجراءات التبديل ، بينما تظهر جهات أخرى حوار المعلومات أكثر."
+                        },
+                        "picture": {
+                            "description": "تسمح لك بطاقة الصورة بتعيين صورة لاستخدامها في التنقل إلى مسارات مختلفة في واجهتك أو لاستدعاء خدمة."
+                        },
+                        "plant-status": {
+                            "description": "بطاقة حالة النبات هي لجميع محبين النباتات."
+                        },
+                        "sensor": {
+                            "description": "تمنحك بطاقة المستشعر لمحة عامة سريعة عن حالة المستشعرات الخاصة بك مع رسم بياني اختياري لتصور التغيير بمرور الوقت."
+                        },
+                        "shopping-list": {
+                            "description": "تتيح لك بطاقة قائمة التسوق إضافة عناصر وتحريرها وإلغاء تحديدها ومسحها من قائمة التسوق الخاصة بك."
+                        },
+                        "thermostat": {
+                            "description": "تتيح بطاقة الترموستات التحكم في كيان المناخ لديك. يسمح لك بتغيير درجة حرارة الكيان ووضعه."
+                        },
+                        "vertical-stack": {
+                            "description": "تسمح لك بطاقة التكديس الرأسي بتجميع بطاقات متعددة بحيث تكون دائمًا في نفس العمود."
+                        },
+                        "weather-forecast": {
+                            "description": "تعرض بطاقة توقعات الطقس حالة الطقس. من المفيد جدًا تضمينه في الواجهات التي يعرضها الأشخاص على الحائط."
                         }
+                    },
+                    "cardpicker": {
+                        "custom_card": "معدل",
+                        "no_description": "لا يوجد وصف متاح."
                     },
                     "edit_card": {
                         "delete": "حذف",
+                        "duplicate": "بطاقة مكررة",
                         "edit": "تصحيح",
                         "move": "نقل"
                     },
                     "edit_view": {
-                        "tab_visibility": "الرؤية"
+                        "tab_visibility": "الرؤية",
+                        "visibility": {
+                            "select_users": "تحديد المستخدمين الذين يجب أن يروا طريقة العرض هذه في التنقل"
+                        }
                     },
                     "raw_editor": {
                         "header": "تعديل",
@@ -699,11 +922,31 @@
                         "unsaved_changes": "التغييرات غير محفوظة"
                     },
                     "save_config": {
-                        "cancel": "لا يهم"
+                        "cancel": "لا يهم",
+                        "empty_config": "ابدأ بلوحة معلومات فارغة"
+                    },
+                    "view": {
+                        "panel_mode": {
+                            "warning_multiple_cards": "تحتوي طريقة العرض هذه على أكثر من بطاقة ، ولكن يمكن أن تعرض طريقة عرض اللوحة بطاقة واحدة فقط."
+                        }
                     }
                 },
+                "menu": {
+                    "reload_resources": "إعادة تحميل الموارد"
+                },
+                "reload_resources": {
+                    "refresh_body": "يجب عليك تحديث الصفحة لإكمال إعادة التحميل ، هل تريد التحديث الآن؟",
+                    "refresh_header": "هل تريد التحديث؟"
+                },
+                "views": {
+                    "confirm_delete_existing_cards": "سيؤدي حذف هذا العرض إلى إزالة البطاقات أيضًا",
+                    "confirm_delete_existing_cards_text": "هل أنت متأكد من أنك تريد حذف طريقة عرض '{name}'؟ تحتوي طريقة العرض على {number} بطاقات سيتم حذفها. لا يمكن التراجع عن هذا الإجراء.",
+                    "confirm_delete_text": "هل أنت متأكد من أنك تريد حذف عرض \"{name}\" ؟"
+                },
                 "warning": {
-                    "entity_not_found": "الجهاز غير متوفر: {entity}"
+                    "attribute_not_found": "السمة {attribute} غير متاحة في: {entity}",
+                    "entity_not_found": "الجهاز غير متوفر: {entity}",
+                    "entity_unavailable": "العنصر غير متوفر"
                 }
             },
             "mailbox": {
@@ -749,6 +992,11 @@
                     "submit": "إرسال"
                 },
                 "current_user": "أنت مسجّل الدخول حاليًا كـ {fullName} .",
+                "dashboard": {
+                    "description": "اختر لوحة معلومات افتراضية لهذا الجهاز.",
+                    "dropdown_label": "لوحة المعلومات",
+                    "header": "لوحة المعلومات"
+                },
                 "is_owner": "أنت مالك",
                 "language": {
                     "dropdown_label": "اللغة",

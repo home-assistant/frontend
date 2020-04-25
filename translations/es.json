@@ -71,7 +71,7 @@
         },
         "device_tracker": {
             "home": "En casa",
-            "not_home": "Fuera"
+            "not_home": "Fuera de casa"
         },
         "person": {
             "home": "En casa",
@@ -291,8 +291,8 @@
             "docked": "En base",
             "error": "Error",
             "idle": "Inactivo",
-            "off": "Apagado",
-            "on": "Encendido",
+            "off": "Apagada",
+            "on": "Encendida",
             "paused": "En pausa",
             "returning": "Volviendo a la base"
         },
@@ -660,9 +660,9 @@
                 "no_entities": "No hay entidades",
                 "no_triggers": "No hay desencadenantes",
                 "payload_display": "Mostrar payload",
-                "recent_messages": "{n} mensaje(s) recibidos más recientemente",
+                "recent_messages": "{n} mensaje(s) recibido(s) más recientemente",
                 "show_as_yaml": "Mostrar como YAML",
-                "title": "{device} información de depuración",
+                "title": "Información de depuración de {device}",
                 "triggers": "Desencadenantes"
             },
             "options_flow": {

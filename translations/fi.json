@@ -328,7 +328,7 @@
     },
     "ui": {
         "auth_store": {
-            "ask": "Haluatko tallentaa tämän käyttäjätunnuksen?",
+            "ask": "Haluatko pysyä kirjautuneena sisään?",
             "confirm": "Tallenna käyttäjätunnus",
             "decline": "Ei kiitos"
         },
@@ -513,9 +513,13 @@
             },
             "related-items": {
                 "area": "Alue",
+                "automation": "Osa seuraavia automaatioita",
                 "device": "Laite",
                 "entity": "Liittyvät kohteet",
-                "integration": "Integraatio"
+                "group": "Osa seuraavia ryhmiä",
+                "integration": "Integraatio",
+                "scene": "Osa seuraavia tilanteita",
+                "script": "Osa seuraavia skriptejä"
             },
             "relative_time": {
                 "duration": {
@@ -546,9 +550,14 @@
                 "editor": {
                     "confirm_delete": "Haluatko varmasti poistaa tämän kohteen?",
                     "delete": "Poista",
+                    "enabled_cause": "{cause} on poistanut sen käytöstä.",
+                    "enabled_description": "Käytöstä poistettuja kohteita ei lisätä Home Assistantiin.",
+                    "enabled_label": "Ota kohte käyttöön",
                     "entity_id": "Kohde ID",
                     "icon": "Kuvakkeen yliajo",
                     "name": "Nimen yliajo",
+                    "note": "Huomaa: tämä ei ehkä vielä toimi kaikissa integraatioissa.",
+                    "unavailable": "Tämä kohde ei ole tällä hetkellä käytettävissä.",
                     "update": "Päivitä"
                 },
                 "related": "liittyvä",
@@ -625,6 +634,12 @@
                     "stop": "Pysäytä"
                 }
             },
+            "mqtt_device_debug_info": {
+                "no_triggers": "Ei laukaisimia",
+                "payload_display": "Tietosisältönäyttö",
+                "show_as_yaml": "Näytä YAML-muodossa",
+                "triggers": "Laukaisimet"
+            },
             "options_flow": {
                 "form": {
                     "header": "Asetukset"
@@ -658,7 +673,9 @@
                 "power_source": "Virtalähde",
                 "quirk": "Oikku",
                 "services": {
+                    "reconfigure": "Määritä ZHA-laite uudelleen (paranna laite). Käytä tätä, jos sinulla on ongelmia laitteen kanssa. Jos kyseinen laite on akkukäyttöinen laite, varmista, että se on hereillä ja hyväksyy komentoja, kun käytät tätä palvelua.",
                     "remove": "Poista laite Zigbee-verkosta.",
+                    "updateDeviceName": "Määritä laitteelle mukautettu nimi laiterekisterissä.",
                     "zigbee_information": "Tarkastele laitteen Zigbee-tietoja."
                 },
                 "unknown": "Tuntematon",
@@ -939,6 +956,7 @@
                     "picker": {
                         "add_automation": "Lisää automaatio",
                         "delete_automation": "Poista automaatio",
+                        "delete_confirm": "Haluatko varmasti poistaa tämän automaation?",
                         "edit_automation": "Muokkaa automaatiota",
                         "header": "Automaatioeditori",
                         "headers": {
@@ -947,6 +965,7 @@
                         "introduction": "Automaatioeditorissa voit luoda ja muokata automaatioita. Kannattaa lukea ohjeet, jotta osaat varmasti kirjoittaa automaatiot oikein.",
                         "learn_more": "Lisätietoja automatisoinneista",
                         "no_automations": "Ei muokattavia automaatioita",
+                        "only_editable": "Vain automaatiot tiedostossa automations.yaml ovat muokattavissa.",
                         "pick_automation": "Valitse automaatio, jota haluat muokata",
                         "show_info_automation": "Näytä tietoja automaatiosta"
                     }
@@ -1014,6 +1033,8 @@
                     },
                     "alexa": {
                         "expose": "Julkista Alexalle",
+                        "exposed_entities": "Julkistetut kohteet",
+                        "not_exposed_entities": "eJulk",
                         "title": "Alexa"
                     },
                     "caption": "Home Assistant Cloud",
@@ -1028,11 +1049,15 @@
                         "will_be_auto_renewed": "Uusitaan automaattisesti"
                     },
                     "dialog_cloudhook": {
+                        "available_at": "Webhook on saatavana seuraavassa URL-osoitteessa:",
                         "close": "Sulje",
                         "confirm_disable": "Haluatko varmasti poistaa tämän webhookin käytöstä?",
                         "copied_to_clipboard": "Kopioitiin leikepöydälle",
+                        "info_disable_webhook": "Jos et enää halua käyttää tätä webhookia, voit",
                         "link_disable_webhook": "Poista käytöstä",
-                        "view_documentation": "Näytä dokumentaatio"
+                        "managed_by_integration": "Tätä webhookia hallitsee integrointi, eikä sitä voi poistaa käytöstä.",
+                        "view_documentation": "Näytä dokumentaatio",
+                        "webhook_for": "Webhook kohteelle {name}"
                     },
                     "forgot_password": {
                         "check_your_email": "Tarkista sähköpostistasi ohjeet salasanan vaihtamiseen.",
@@ -1047,6 +1072,7 @@
                         "disable_2FA": "Poista kaksivaiheinen tunnistautuminen",
                         "expose": "Julkista Google Assistantille",
                         "exposed_entities": "Julkistetut kohteet",
+                        "not_exposed_entities": "Julkistamattomat kohteet",
                         "sync_to_google": "Synkronoidaan muutokset Googleen.",
                         "title": "Google Assistant"
                     },
@@ -1125,8 +1151,10 @@
                 },
                 "customize": {
                     "attributes_customize": "Seuraavat määritteet on jo määritetty customize.yaml-tiedostossa.",
+                    "attributes_not_set": "Seuraavia määritteitä ei määritetty. Aseta ne, jos haluat.",
                     "attributes_outside": "Seuraavat attribuutit on räätälöity customize.yaml-tiedoston ulkopuolella.",
                     "attributes_override": "Voit yliajaa ne, jos haluat.",
+                    "attributes_set": "Seuraavat kohteet määritteet asetetaan ohjelmallisesti.",
                     "caption": "Muokkaukset",
                     "description": "Muokkaa laitteita",
                     "pick_attribute": "Valitse yliajettava määrite",
@@ -1156,6 +1184,7 @@
                     "cant_edit": "Voit muokata vain käyttöliittymässä luotuja kohteita.",
                     "caption": "Laitteet",
                     "confirm_delete": "Haluatko varmasti poistaa tämän laitteen?",
+                    "confirm_rename_entity_ids": "Haluatko myös nimetä kohteiden ID:t uudelleen?",
                     "data_table": {
                         "area": "Alue",
                         "battery": "Akku",
@@ -1196,7 +1225,8 @@
                     "description": "Yleiskuva kaikista tunnetuista entiteeteistä.",
                     "picker": {
                         "disable_selected": {
-                            "button": "Poista valitut käytöstä"
+                            "button": "Poista valitut käytöstä",
+                            "confirm_text": "Käytöstä poistettuja kohteita ei lisätä Home Assistantiin."
                         },
                         "enable_selected": {
                             "button": "Ota valitut käyttöön",
@@ -1218,7 +1248,9 @@
                         "introduction2": "Yksikkörekisterin avulla voit ohittaa nimeä, muuttaa yksikön tunnusta tai poistaa merkinnän Home Assistantista. Huomaa, että rekisterimerkinnän poistaminen ei poista yksikköä sinäänsä. Sitä voit seuraamalla alla olevaa linkkiä ja poistamalla sitä integrointisivulta.",
                         "remove_selected": {
                             "button": "Poista valitut",
-                            "confirm_partly_title": "Vain {number} valittua entiteettiä voidaan poistaa."
+                            "confirm_partly_title": "Vain {number} valittua entiteettiä voidaan poistaa.",
+                            "confirm_text": "Sinun tulisi poistaa ne Lovelace-käyttöliittymästä ja automaatioista, jos ne sisältävät näitä kohteita.",
+                            "confirm_title": "Haluatko poistaa {number} kohdetta?"
                         },
                         "selected": "{numero} valittuna",
                         "status": {
@@ -1230,12 +1262,18 @@
                         }
                     }
                 },
+                "filtering": {
+                    "clear": "Tyhjennä"
+                },
                 "header": "Säädä Home Assistanttia",
                 "helpers": {
                     "dialog": {
+                        "add_helper": "Lisää apustin",
+                        "add_platform": "Lisää {platform}",
                         "create": "Luo"
                     },
                     "picker": {
+                        "add_helper": "Lisää apustin",
                         "headers": {
                             "editable": "Muokattavissa",
                             "entity_id": "Kohde ID",
@@ -1244,13 +1282,17 @@
                         }
                     },
                     "types": {
-                        "input_datetime": "Päivämäärä ja/tai kellonaika"
+                        "input_boolean": "Kytkin",
+                        "input_datetime": "Päivämäärä ja/tai kellonaika",
+                        "input_select": "Alasvetovalikko"
                     }
                 },
                 "integrations": {
+                    "add_integration": "Lisää integraatio",
                     "caption": "Integraatiot",
                     "config_entry": {
                         "area": "Alueessa {alue}",
+                        "delete": "Poista",
                         "delete_button": "Poista {integration}",
                         "delete_confirm": "Haluatko varmasti poistaa tämän integraation?",
                         "device_unavailable": "laite ei saatavissa",
@@ -1261,8 +1303,11 @@
                         "no_area": "Ei aluetta",
                         "no_device": "Kohteet ilman laitteita",
                         "no_devices": "Tällä integraatiolla ei ole laitteita.",
+                        "options": "Asetukset",
+                        "rename": "Nimeä uudelleen",
                         "restart_confirm": "Käynnistä Home Assistant uudellen viimeistelläksesi tämän integraation poistamisen",
                         "settings_button": "Muokkaa {Integration}-asetuksia",
+                        "system_options": "Järjestelmäasetukset",
                         "system_options_button": "{Integration}-järjestelmän asetukset"
                     },
                     "config_flow": {
@@ -1270,6 +1315,7 @@
                         "close": "Sulje",
                         "created_config": "Asetus luotu {name}",
                         "dismiss": "Sulje ikkuna",
+                        "error_saving_area": "Virhe tallennettaessa aluetta: {error}",
                         "external_step": {
                             "description": "Tämä vaihe edellyttää, että vierailet ulkopuolisella verkkosivustolla.",
                             "open_site": "Avaa verkkosivusto"
@@ -1292,21 +1338,26 @@
                         "show_ignored": "Näytä ohitetut integraatiot",
                         "stop_ignore": "Lopeta ohittaminen"
                     },
+                    "integration": "integraatio",
                     "integration_not_found": "Integraatiota ei löydy.",
                     "new": "Määritä uusi integraatio",
                     "none": "Mitään ei ole vielä määritetty",
                     "note_about_integrations": "Kaikkia integraatioita ei voi vielä määrittää käyttöliittymän kautta.",
-                    "note_about_website_reference": "Lisää saatavilla"
+                    "note_about_website_reference": "Lisää saatavilla",
+                    "rename_dialog": "Muokkaa tämän määritysmerkinnän nimeä",
+                    "rename_input_label": "Merkinnän nimi"
                 },
                 "introduction": "Täällä voit säätää Home Assistanttia ja sen komponentteja. Huomioithan, ettei kaikkea voi vielä säätää käyttöliittymän kautta, mutta teemme jatkuvasti töitä sen mahdollistamiseksi.",
                 "lovelace": {
                     "caption": "Lovelace-kojelaudat",
                     "dashboards": {
+                        "cant_edit_yaml": "YAML-tiedostossa määritettyjä kojelautoja ei voi muokata käyttöliittymästä. Muuta niitä tiedostossa configuration.yaml.",
                         "caption": "Kojelaudat",
                         "conf_mode": {
                             "storage": "Käyttöliittymäohjattu",
                             "yaml": "YAML tiedosto"
                         },
+                        "confirm_delete": "Haluatko varmasti poistaa tämän kojelaudan?",
                         "default_dashboard": "Tämä on oletuskojelauta",
                         "detail": {
                             "create": "Luo",
@@ -1315,7 +1366,9 @@
                             "edit_dashboard": "Muokkaa kojelautaa",
                             "icon": "Kuvake",
                             "new_dashboard": "Lisää uusi kojelauta",
+                            "remove_default": "Poista oletuksena tässä laitteessa",
                             "require_admin": "Vain järjestelmänvalvoja",
+                            "set_default": "Aseta oletukseksi tässä laitteessa",
                             "show_sidebar": "Näytä sivupalkissa",
                             "title": "Otsikko",
                             "title_required": "Otsikko vaaditaan.",
@@ -1336,8 +1389,11 @@
                             "open": "Avaa"
                         }
                     },
+                    "description": "Määritä Lovelace-kojelaudat",
                     "resources": {
+                        "cant_edit_yaml": "Käytät Lovelacea YAML-tilassa, joten et voi hallita resursseja käyttöliittymän kautta. Hallitse niitä tiedostossa configuration.yaml.",
                         "caption": "Resurssit",
+                        "confirm_delete": "Haluatko varmasti poistaa tämän resurssin?",
                         "detail": {
                             "create": "Luo",
                             "delete": "Poista",
@@ -1347,7 +1403,8 @@
                             "update": "Päivitä",
                             "url": "Url",
                             "url_error_msg": "URL on pakollinen kenttä",
-                            "warning_header": "Ole varovainen!"
+                            "warning_header": "Ole varovainen!",
+                            "warning_text": "Resurssien lisääminen voi olla vaarallista. Varmista, että tiedät resurssin lähteen ja luotat niihin. Huonot resurssit voivat vahingoittaa järjestelmääsi vakavasti."
                         },
                         "picker": {
                             "add_resource": "Lisää resurssi",
@@ -1357,6 +1414,8 @@
                             },
                             "no_resources": "Ei resursseja"
                         },
+                        "refresh_body": "Sinun on päivitettävä sivu suorittaaksesi poiston loppuun. Haluatko päivittää nyt?",
+                        "refresh_header": "Haluatko päivittää?",
                         "types": {
                             "css": "Tyylitiedosto",
                             "html": "HTML (vanhentunut)",
@@ -1387,6 +1446,7 @@
                         "no_device_tracker_available_intro": "Kun sinulla on laitteita, jotka ilmaisevat henkilön läsnäolon, voit kohdistaa ne henkilöön täällä. Voit lisätä ensimmäisen laitteen lisäämällä läsnäolon tunnistusintegraation sivulta.",
                         "update": "Päivitä"
                     },
+                    "introduction": "Täällä voit määritellä jokaisen kiinnostavan henkilön Home Assistantissa.",
                     "no_persons_created_yet": "Näyttää siltä, ettet ole vielä luonut yhtään henkilöä."
                 },
                 "scene": {
@@ -1426,6 +1486,9 @@
                             "name": "Nimi"
                         },
                         "introduction": "Tilanne-editorin avulla voit luoda ja muokata tilanteita. Seuraa alla olevaa linkkiä lukeaksesi ohjeet varmistaaksesi, että olet määrittänyt Home Assistant -sovelluksen oikein.",
+                        "learn_more": "Lisätietoja tilanteista",
+                        "no_scenes": "Emme löytäneet muokattavia tilanteita",
+                        "only_editable": "Vain tilanteet tiedostossa scenes.yaml ovat muokattavissa.",
                         "pick_scene": "Valitse muokattava tilanne",
                         "show_info_scene": "Näytä tietoja tilanteesta"
                     }
@@ -1439,8 +1502,11 @@
                         "delete_confirm": "Haluatko varmasti poistaa tämän skriptin?",
                         "delete_script": "Poista skripti",
                         "header": "Skripti: {name}",
+                        "introduction": "Käytä scriptejä suorittaaksesi toimintasarjan.",
+                        "link_available_actions": "Lisätietoja saatavilla olevista toiminnoista",
                         "load_error_not_editable": "Vain scripts.yaml-tiedostossa olevat skriptit ovat muokattavissa.",
-                        "sequence": "Järjestys"
+                        "sequence": "Järjestys",
+                        "sequence_sentence": "Skriptin toimintojen järjestys."
                     },
                     "picker": {
                         "add_script": "Lisää skripti",
@@ -1449,6 +1515,7 @@
                         "headers": {
                             "name": "Nimi"
                         },
+                        "introduction": "Skriptieditorin avulla voit luoda ja muokata skriptejä. Seuraa alla olevaa linkkiä lukeaksesi ohjeet varmistaaksesi, että olet määrittänyt Home Assistant -sovelluksen oikein.",
                         "learn_more": "Lisätietoja skripteistä",
                         "no_scripts": "Emme löytäneet muokattavia skriptejä",
                         "show_info": "Näytä tietoja skriptistä",
@@ -1553,7 +1620,8 @@
                     },
                     "clusters": {
                         "header": "Klusterit",
-                        "help_cluster_dropdown": "Valitse klusteri tarkastellaksesi määritteitä ja komentoja."
+                        "help_cluster_dropdown": "Valitse klusteri tarkastellaksesi määritteitä ja komentoja.",
+                        "introduction": "Klusterit ovat rakennuspalikoita Zigbee-toiminnallisuudelle. Ne erottavat toiminnallisuuden loogisiksi yksiköiksi. On asiakas- ja palvelintyyppejä, jotka koostuvat määritteistä ja komennoista."
                     },
                     "common": {
                         "add_devices": "Lisää laitteita",
@@ -1568,6 +1636,7 @@
                     },
                     "group_binding": {
                         "bind_button_label": "Sido ryhmä",
+                        "group_picker_help": "Valitse ryhmä, jos haluat antaa sidontakomennon.",
                         "group_picker_label": "Sidottavat ryhmät",
                         "header": "Ryhmäsidonta",
                         "introduction": "Sido ja pura ryhmiä",
@@ -1579,6 +1648,7 @@
                         "caption": "Ryhmät",
                         "create": "Luo ryhmä",
                         "create_group": "Zigbee-kotiautomaatio - Luo ryhmä",
+                        "create_group_details": "Kirjoita tarvittavat tiedot uuden Zigbee-ryhmän luomiseksi",
                         "creating_group": "Ryhmän luominen",
                         "description": "Luo ja muokkaa Zigbee-ryhmiä",
                         "group_details": "Tässä ovat kaikki valitun Zigbee-ryhmän tiedot.",
@@ -1600,31 +1670,42 @@
                         "zha_zigbee_groups": "ZHA Zigbee -ryhmät"
                     },
                     "header": "Määritä Zigbee-kotiautomaatio",
+                    "introduction": "Täällä on mahdollista määrittää ZHA-komponentti. Kaikkia ei ole vielä mahdollista määrittää käyttöliittymästä, mutta työskentelemme sen parissa.",
                     "network_management": {
                         "header": "Verkon hallinta",
                         "introduction": "Koko verkkoon vaikuttavat komennot"
                     },
                     "node_management": {
                         "header": "Laitehallinta",
-                        "help_node_dropdown": "Valitse laite tarkastellaksesi laitekohtaisia vaihtoehtoja."
+                        "help_node_dropdown": "Valitse laite tarkastellaksesi laitekohtaisia vaihtoehtoja.",
+                        "introduction": "Suorita ZHA-komennot, jotka vaikuttavat yhteen laitteeseen. Valitse laite nähdäksesi luettelon käytettävissä olevista komennoista."
                     },
                     "title": "Zigbee-kotiautomaatio"
                 },
                 "zone": {
+                    "add_zone": "Lisää vyöhyke",
                     "caption": "Alueet",
+                    "confirm_delete": "Haluatko varmasti poistaa tämän vyöhykkeen?",
                     "create_zone": "Luo alue",
+                    "description": "Hallitse vyöhykkeitä, joissa haluat seurata ihmisiä.",
                     "detail": {
                         "create": "Luo",
                         "delete": "Poista",
+                        "icon": "Kuvake",
+                        "icon_error_msg": "Kuvakkeen tulisi olla muodossa etuliite:ikoni, esimerkiksi: mdi:koti",
                         "latitude": "Leveysaste",
                         "longitude": "Pituusaste",
+                        "name": "Nimi",
+                        "new_zone": "Uusi vyöhyke",
                         "passive": "Passiivinen",
                         "passive_note": "Passiiviset vyöhykkeet on piilotetaan käyttöliittymässä, eikä niitä käytetä laitteiden paikannuksen sijaintina. Tämä on hyödyllistä, jos haluat käyttää vain automaatioihin.",
                         "radius": "Säde",
                         "required_error_msg": "Tämä kenttä on pakollinen",
                         "update": "Päivitä"
                     },
-                    "edit_home_zone": "Voit asettaa kotisi sijainnin kohdasta Asetukset>Yleinen."
+                    "edit_home_zone": "Voit asettaa kotisi sijainnin kohdasta Asetukset>Yleinen.",
+                    "introduction": "Vyöhykkeiden avulla voit määrittää alueita maan päällä. Kun henkilö on vyöhykkeellä, tila saa vyöhykkeen nimen. Vyöhykkeitä voidaan käyttää myös laukaisimina tai ehtoina automaatioissa.",
+                    "no_zones_created_yet": "Näyttää siltä, että et ole vielä luonut vyöhykkeitä."
                 },
                 "zwave": {
                     "caption": "Z-Wave",
@@ -1683,14 +1764,20 @@
             "developer-tools": {
                 "tabs": {
                     "events": {
+                        "alert_event_type": "Tapahtumatyyppi on pakollinen kenttä",
                         "available_events": "Käytettävissä olevat tapahtumat",
+                        "count_listeners": "({count} kuuntelijaa)",
                         "data": "Tapahtuman data (YAML, valinnainen)",
+                        "description": "Lähetä tapahtumaa Home Assistantin tapahtumaväylään.",
                         "documentation": "Tapahtumien dokumentaatio.",
+                        "event_fired": "Tapahtuma {name} käynnistetty",
                         "fire_event": "Laukaise tapahtuma",
                         "listen_to_events": "Kuuntele tapahtumia",
                         "listening_to": "Kuunnellaan",
+                        "notification_event_fired": "Tapahtuma {type} käynnistetty!",
                         "start_listening": "Aloita kuuntelu",
                         "stop_listening": "Lopeta kuuntelu",
+                        "subscribe_to": "Tilaa tapahtuma",
                         "title": "Tapahtumat",
                         "type": "Tapahtumatyyppi"
                     },
@@ -1721,9 +1808,12 @@
                         "description_listen": "Kuuntele aihetta",
                         "description_publish": "Julkaise paketti",
                         "listening_to": "Kuunnellaan",
+                        "message_received": "Viesti {id} vastaanotettu aiheessa {topic} {time}:",
+                        "payload": "Tietosisältö (malli sallittu)",
                         "publish": "Julkaise",
                         "start_listening": "Aloita kuuntelu",
                         "stop_listening": "Lopeta kuuntelu",
+                        "subscribe_to": "Tilaa aihe",
                         "title": "MQTT",
                         "topic": "aihe"
                     },
@@ -1742,8 +1832,13 @@
                     },
                     "states": {
                         "attributes": "Määritteet",
+                        "current_entities": "Nykyiset kohteet",
                         "entity": "Kohde",
+                        "filter_attributes": "Suodata määritteitä",
+                        "filter_entities": "Suodata kohteita",
+                        "filter_states": "Suodata tiloja",
                         "more_info": "Lisätietoja",
+                        "no_entities": "Ei kohteita",
                         "set_state": "Aseta tila",
                         "state": "Tila",
                         "title": "Tilat"
@@ -1759,11 +1854,13 @@
                 "showing_entries": "Näytetään tapahtumat alkaen"
             },
             "logbook": {
+                "entries_not_found": "Lokikirjauksia ei löytynyt.",
                 "period": "aikajakso",
                 "showing_entries": "Näytetään kirjaukset ajalta"
             },
             "lovelace": {
                 "add_entities": {
+                    "generated_unsupported": "Voit käyttää tätä toimintoa vain, kun olet ottanut hallintaan Lovelace-käyttöliittymän.",
                     "saving_failed": "Lovelacen käyttöliittymän asetusten tallennus epäonnistui.",
                     "yaml_unsupported": "Tätä toimintoa ei voi käyttää, kun Lovelace-käyttöliittymää käytetään YAML-tilassa."
                 },
@@ -1796,7 +1893,7 @@
                     }
                 },
                 "changed_toast": {
-                    "message": "Lovelace-asetukset päivitettiin, haluatko päivittää näkymän?",
+                    "message": "Lovelace-asetukset päivitettiin. Haluatko päivittää näkymän?",
                     "refresh": "Päivitä"
                 },
                 "editor": {
@@ -1832,6 +1929,7 @@
                             "name": "Kohde"
                         },
                         "gauge": {
+                            "description": "Mittarikortti on peruskortti, jonka avulla anturitiedot voidaan nähdä visuaalisesti.",
                             "name": "Mittari",
                             "severity": {
                                 "define": "Määritä vakavuus?",
@@ -1954,6 +2052,7 @@
                     },
                     "edit_lovelace": {
                         "edit_title": "Muokkaa otsikkoa",
+                        "explanation": "Tämä otsikko on esillä näkymien yläpuolella Lovelace-käyttöliittymässä.",
                         "header": "Lovelace-käyttöliittymän otsikko"
                     },
                     "edit_view": {
@@ -2000,7 +2099,8 @@
                         "header": "Hallitse Lovelace käyttöliittymääsi",
                         "para": "Oletuksena Home Assistant ylläpitää käyttöliittymääsi, päivittäen sitä uusien yksiköiden tai Lovelace komponenttien tullessa saataville. Jos muokkaat käyttöliittymääsi, emme enää tee muutoksia automaattisesti.",
                         "para_sure": "Oletko varma, että haluat ottaa haltuun käyttöliittymän?",
-                        "save": "Ota hallintaan"
+                        "save": "Ota hallintaan",
+                        "yaml_mode": "Käytät YAML-tilaa, mikä tarkoittaa, että et voi muuttaa Lovelace-kokoonpanoa käyttöliittymästä. Jos haluat muuttaa Lovelace-sovellusta käyttöliittymästä, poista 'mode: yaml' Lovelace-määrityksestäsi tiedostossa 'configuration.yaml'."
                     },
                     "suggest_card": {
                         "add": "Lisää Lovelace-käyttöliittymään",
@@ -2025,6 +2125,7 @@
                     "refresh_header": "Haluatko päivittää?"
                 },
                 "unused_entities": {
+                    "available_entities": "Nämä ovat yksiköitä, jotka sinulla on käytettävissä, mutta joita ei vielä ole Lovelace-käyttöliittymässäsi.",
                     "domain": "Toimialue",
                     "entity": "Kohde",
                     "entity_id": "Kohde ID",
@@ -2038,7 +2139,8 @@
                 },
                 "warning": {
                     "entity_non_numeric": "Yksikkö ei ole numeerinen: {entity}",
-                    "entity_not_found": "Yksikkö ei ole käytettävissä: {entity}"
+                    "entity_not_found": "Yksikkö ei ole käytettävissä: {entity}",
+                    "entity_unavailable": "{entity} ei ole tällä hetkellä käytettävissä"
                 }
             },
             "mailbox": {
@@ -2315,7 +2417,8 @@
             }
         },
         "sidebar": {
-            "external_app_configuration": "Sovelluksen määritykset"
+            "external_app_configuration": "Sovelluksen määritykset",
+            "sidebar_toggle": "Sivupalkin kytkin"
         }
     }
 }

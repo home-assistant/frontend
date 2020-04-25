@@ -654,6 +654,17 @@
                     "stop": "Stop"
                 }
             },
+            "mqtt_device_debug_info": {
+                "deserialize": "Forsøg på at fortolke MQTT-meddelelser som JSON",
+                "entities": "Entiteter",
+                "no_entities": "Ingen entiteter",
+                "no_triggers": "Ingen udløsere",
+                "payload_display": "Payload-visning",
+                "recent_messages": "{n} senest modtagne meddelelser",
+                "show_as_yaml": "Vis som YAML",
+                "title": "{device} debug-oplysninger",
+                "triggers": "Udløsere"
+            },
             "options_flow": {
                 "form": {
                     "header": "Indstillinger"
@@ -1294,6 +1305,10 @@
                         }
                     }
                 },
+                "filtering": {
+                    "clear": "Ryd",
+                    "filtering_by": "Filtrering efter"
+                },
                 "header": "Konfigurer Home Assistant",
                 "helpers": {
                     "caption": "Hjælpere",
@@ -1321,9 +1336,11 @@
                     }
                 },
                 "integrations": {
+                    "add_integration": "Tilføj integration",
                     "caption": "Integrationer",
                     "config_entry": {
                         "area": "I {area}",
+                        "delete": "Slet",
                         "delete_button": "Slet {integration}",
                         "delete_confirm": "Er du sikker på, at du vil fjerne denne integration?",
                         "device_unavailable": "entitet utilgængelig",
@@ -1334,8 +1351,11 @@
                         "no_area": "Intet område",
                         "no_device": "Entiteter uden enhed",
                         "no_devices": "Denne integration har ingen enheder",
+                        "options": "Indstillinger",
+                        "rename": "Omdøb",
                         "restart_confirm": "Genstart Home Assistant for at fuldføre fjernelsen af denne integration",
                         "settings_button": "Ret indstillinger for {integration}",
+                        "system_options": "Systemindstillinger",
                         "system_options_button": "Systemindstillinger for {integration}"
                     },
                     "config_flow": {
@@ -1370,11 +1390,15 @@
                         "show_ignored": "Vis ignorerede integrationer",
                         "stop_ignore": "Stop med at ignorere"
                     },
+                    "integration": "integration",
                     "integration_not_found": "Integrationen blev ikke fundet.",
                     "new": "Opret en ny integration",
+                    "no_integrations": "Det ser ud til, at du ikke har konfigureret nogen integrationer endnu. Klik på knappen nedenfor for at tilføje din første integration!",
                     "none": "Intet konfigureret endnu",
                     "note_about_integrations": "Ikke alle integrationer kan konfigureres via brugerfladen endnu.",
-                    "note_about_website_reference": "Flere er tilgængelige på "
+                    "note_about_website_reference": "Flere er tilgængelige på ",
+                    "rename_dialog": "Rediger navnet på denne konfigurationspost",
+                    "rename_input_label": "Navn på post"
                 },
                 "introduction": "Her er det muligt at konfigurere dine komponenter og Home Assistant. Ikke alt er muligt at konfigurere fra brugerfladen endnu, men vi arbejder på det.",
                 "lovelace": {
@@ -2241,7 +2265,8 @@
                 "warning": {
                     "attribute_not_found": "Egenskaben {attribute} er ikke tilgængelig i: {entity}",
                     "entity_non_numeric": "Entitet er ikke-numerisk: {entity}",
-                    "entity_not_found": "Entitet ikke tilgængelig: {entity}"
+                    "entity_not_found": "Entitet ikke tilgængelig: {entity}",
+                    "entity_unavailable": "{entity} er ikke tilgængelig i øjeblikket"
                 }
             },
             "mailbox": {

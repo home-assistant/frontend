@@ -356,7 +356,7 @@
                 "current_temperature": "{name} aktuell temperatur",
                 "currently": "Nuvarande",
                 "fan_mode": "Fläktläge",
-                "heating": "{namn} värmer",
+                "heating": "{name} värmer",
                 "high": "hög",
                 "low": "låg",
                 "on_off": "På / av",

@@ -2216,12 +2216,12 @@
                         "close": "Close",
                         "empty_config": "Start with an empty dashboard",
                         "header": "Take control of your Lovelace UI",
-                        "para": "By default Home Assistant will maintain your user interface, updating it when new entities or Lovelace UI components become available. If you take control we will no longer make changes automatically for you.",
+                        "para": "This dashboard is currently being maintained by Home Assistant. It is automatically updated when new entities or Lovelace UI components become available. If you take control, this dashboard will no longer be automatically updated. You can always create a new dashboard in configuration to play around with.",
                         "para_sure": "Are you sure you want to take control of your user interface?",
                         "save": "Take control",
                         "yaml_config": "To help you start here is the current config of this dashboard:",
                         "yaml_control": "To take control in YAML mode, create a YAML file with the name you specified in your config for this dashboard, or the default 'ui-lovelace.yaml'.",
-                        "yaml_mode": "You are using YAML mode, which means you cannot change your Lovelace config from the UI. If you want to change Lovelace from the UI, remove 'mode: yaml' from your Lovelace configuration in 'configuration.yaml.'"
+                        "yaml_mode": "You are using YAML mode for this dashboard, which means you cannot change your Lovelace config from the UI. If you want to manage this dashboard from the UI, remove 'mode: yaml' from your Lovelace configuration in 'configuration.yaml.'."
                     },
                     "suggest_card": {
                         "add": "Add to Lovelace UI",
