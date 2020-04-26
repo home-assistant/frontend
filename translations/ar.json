@@ -705,6 +705,7 @@
                         "detail": {
                             "create": "إنشاء",
                             "delete": "حذف",
+                            "dismiss": "اغلاق",
                             "type": "نوع الموارد",
                             "update": "تحديث",
                             "url": "عنوان url",
