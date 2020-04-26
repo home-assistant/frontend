@@ -14,11 +14,18 @@ const { mapFiles } = require("../util");
 const env = require("../env");
 const paths = require("../paths");
 
-const inDir = "translations";
+const inFrontendDir = "translations/frontend";
+const inBackendDir = "translations/backend";
 const workDir = "build-translations";
 const fullDir = workDir + "/full";
 const coreDir = workDir + "/core";
 const outDir = workDir + "/output";
+let mergeBackend = false;
+
+gulp.task("translations-enable-merge-backend", (done) => {
+  mergeBackend = true;
+  done();
+});
 
 String.prototype.rsplit = function (sep, maxsplit) {
   var split = this.split(sep);
@@ -171,20 +178,32 @@ gulp.task(
  * the Lokalise update to translations/en.json will not happen immediately.
  */
 gulp.task("build-master-translation", function () {
+  const src = [path.join(paths.translations_src, "en.json")];
+
+  if (mergeBackend) {
+    src.push(path.join(inBackendDir, "en.json"));
+  }
+
   return gulp
-    .src(path.join(paths.translations_src, "en.json"))
+    .src(src)
     .pipe(
       transform(function (data, file) {
         return lokaliseTransform(data, data, file);
       })
     )
-    .pipe(rename("translationMaster.json"))
+    .pipe(
+      merge({
+        fileName: "translationMaster.json",
+      })
+    )
     .pipe(gulp.dest(workDir));
 });
 
 gulp.task("build-merged-translations", function () {
   return gulp
-    .src([inDir + "/*.json", workDir + "/test.json"], { allowEmpty: true })
+    .src([inFrontendDir + "/*.json", workDir + "/test.json"], {
+      allowEmpty: true,
+    })
     .pipe(
       transform(function (data, file) {
         return lokaliseTransform(data, data, file);
@@ -207,7 +226,10 @@ gulp.task("build-merged-translations", function () {
           if (lang === "test") {
             src.push(workDir + "/test.json");
           } else if (lang !== "en") {
-            src.push(inDir + "/" + lang + ".json");
+            src.push(inFrontendDir + "/" + lang + ".json");
+            if (mergeBackend) {
+              src.push(inBackendDir + "/" + lang + ".json");
+            }
           }
         }
         return gulp

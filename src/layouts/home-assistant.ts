@@ -1,6 +1,5 @@
 import "@polymer/app-route/app-location";
 import { html, property, PropertyValues } from "lit-element";
-import { setHAVersion } from "../common/config/version";
 import { navigate } from "../common/navigate";
 import { getStorageDefaultPanelUrlPath } from "../data/panel";
 import "../resources/custom-card-support";
@@ -70,9 +69,6 @@ export class HomeAssistantAppEl extends HassElement {
 
   protected hassConnected() {
     super.hassConnected();
-    if (__BACKWARDS_COMPAT__) {
-      setHAVersion(this.hass!.connection.haVersion);
-    }
     // @ts-ignore
     this._loadHassTranslations(this.hass!.language, "state");
   }

@@ -1,0 +1,349 @@
+{
+  "component": {
+    "sensor": {
+      "state": {
+        "_": {
+          "off": "\u05db\u05d1\u05d5\u05d9",
+          "on": "\u05d3\u05dc\u05d5\u05e7"
+        }
+      }
+    },
+    "ebusd": {
+      "state": {
+        "day": "\u05d9\u05d5\u05dd",
+        "night": "\u05dc\u05d9\u05dc\u05d4"
+      }
+    },
+    "binary_sensor": {
+      "state": {
+        "_": {
+          "off": "\u05db\u05d1\u05d5\u05d9",
+          "on": "\u05d3\u05dc\u05d5\u05e7"
+        },
+        "battery": {
+          "off": "\u05e0\u05d5\u05e8\u05de\u05dc\u05d9",
+          "on": "\u05e0\u05de\u05d5\u05da"
+        },
+        "cold": {
+          "off": "\u05e8\u05d2\u05d9\u05dc",
+          "on": "\u05e7\u05b7\u05e8"
+        },
+        "connectivity": {
+          "off": "\u05de\u05e0\u05d5\u05ea\u05e7",
+          "on": "\u05de\u05d7\u05d5\u05d1\u05e8"
+        },
+        "door": {
+          "off": "\u05e1\u05d2\u05d5\u05e8\u05d4",
+          "on": "\u05e4\u05ea\u05d5\u05d7\u05d4"
+        },
+        "garage_door": {
+          "off": "\u05e1\u05d2\u05d5\u05e8\u05d4",
+          "on": "\u05e4\u05ea\u05d5\u05d7\u05d4"
+        },
+        "gas": {
+          "off": "\u05e0\u05e7\u05d9",
+          "on": "\u05d0\u05d5\u05ea\u05e8"
+        },
+        "heat": {
+          "off": "\u05e8\u05d2\u05d9\u05dc",
+          "on": "\u05d7\u05dd"
+        },
+        "lock": {
+          "off": "\u05e0\u05e2\u05d5\u05dc",
+          "on": "\u05dc\u05d0 \u05e0\u05e2\u05d5\u05dc"
+        },
+        "moisture": {
+          "off": "\u05d9\u05d1\u05e9",
+          "on": "\u05e8\u05d8\u05d5\u05d1"
+        },
+        "motion": {
+          "off": "\u05e0\u05e7\u05d9",
+          "on": "\u05d6\u05d5\u05d4\u05d4"
+        },
+        "occupancy": {
+          "off": "\u05e0\u05e7\u05d9",
+          "on": "\u05d6\u05d5\u05d4\u05d4"
+        },
+        "opening": {
+          "off": "\u05e1\u05d2\u05d5\u05e8",
+          "on": "\u05e4\u05ea\u05d5\u05d7"
+        },
+        "presence": {
+          "off": "\u05dc\u05d0 \u05e0\u05d5\u05db\u05d7",
+          "on": "\u05e0\u05d5\u05db\u05d7"
+        },
+        "problem": {
+          "off": "\u05d0\u05d5\u05e7\u05d9\u05d9",
+          "on": "\u05d1\u05e2\u05d9\u05d9\u05d4"
+        },
+        "safety": {
+          "off": "\u05d1\u05d8\u05d5\u05d7",
+          "on": "\u05dc\u05d0 \u05d1\u05d8\u05d5\u05d7"
+        },
+        "smoke": {
+          "off": "\u05e0\u05e7\u05d9",
+          "on": "\u05d0\u05d5\u05ea\u05e8"
+        },
+        "sound": {
+          "off": "\u05e0\u05e7\u05d9",
+          "on": "\u05d0\u05d5\u05ea\u05e8"
+        },
+        "vibration": {
+          "off": "\u05e0\u05e7\u05d9",
+          "on": "\u05d0\u05d5\u05ea\u05e8"
+        },
+        "window": {
+          "off": "\u05e1\u05d2\u05d5\u05e8",
+          "on": "\u05e4\u05ea\u05d5\u05d7"
+        }
+      }
+    },
+    "alarm_control_panel": {
+      "state": {
+        "_": {
+          "armed": "\u05d3\u05e8\u05d5\u05da",
+          "disarmed": "\u05de\u05e0\u05d5\u05d8\u05e8\u05dc",
+          "armed_home": "\u05d4\u05d1\u05d9\u05ea \u05d3\u05e8\u05d5\u05da",
+          "armed_away": "\u05d3\u05e8\u05d5\u05da \u05dc\u05d0 \u05d1\u05d1\u05d9\u05ea",
+          "armed_night": "\u05d3\u05e8\u05d5\u05da \u05dc\u05d9\u05dc\u05d4",
+          "armed_custom_bypass": "\u05de\u05e2\u05e7\u05e3 \u05de\u05d5\u05ea\u05d0\u05dd \u05d0\u05d9\u05e9\u05d9\u05ea \u05d3\u05e8\u05d5\u05da",
+          "pending": "\u05de\u05de\u05ea\u05d9\u05df",
+          "arming": "\u05de\u05e4\u05e2\u05d9\u05dc",
+          "disarming": "\u05de\u05e0\u05d8\u05e8\u05dc",
+          "triggered": "\u05d4\u05d5\u05e4\u05e2\u05dc"
+        }
+      }
+    },
+    "automation": {
+      "state": {
+        "_": {
+          "off": "\u05db\u05d1\u05d5\u05d9",
+          "on": "\u05d3\u05dc\u05d5\u05e7"
+        }
+      }
+    },
+    "calendar": {
+      "state": {
+        "_": {
+          "off": "\u05db\u05d1\u05d5\u05d9",
+          "on": "\u05d3\u05dc\u05d5\u05e7"
+        }
+      }
+    },
+    "camera": {
+      "state": {
+        "_": {
+          "recording": "\u05de\u05e7\u05dc\u05d9\u05d8",
+          "streaming": "\u05de\u05d6\u05e8\u05d9\u05dd",
+          "idle": "\u05de\u05d7\u05db\u05d4"
+        }
+      }
+    },
+    "climate": {
+      "state": {
+        "_": {
+          "off": "\u05db\u05d1\u05d5\u05d9",
+          "heat": "\u05d7\u05d9\u05de\u05d5\u05dd",
+          "cool": "\u05e7\u05e8\u05d5\u05e8",
+          "heat_cool": "\u05d7\u05d9\u05de\u05d5\u05dd/\u05e7\u05d9\u05e8\u05d5\u05e8",
+          "auto": "\u05d0\u05d5\u05d8\u05d5\u05de\u05d8\u05d9",
+          "dry": "\u05d9\u05d1\u05e9",
+          "fan_only": "\u05de\u05d0\u05d5\u05d5\u05e8\u05e8 \u05d1\u05dc\u05d1\u05d3"
+        }
+      }
+    },
+    "configurator": {
+      "state": {
+        "_": {
+          "configure": "\u05d4\u05d2\u05d3\u05e8",
+          "configured": "\u05d4\u05d5\u05d2\u05d3\u05e8"
+        }
+      }
+    },
+    "cover": {
+      "state": {
+        "_": {
+          "open": "\u05e4\u05ea\u05d5\u05d7",
+          "opening": "\u05e4\u05d5\u05ea\u05d7",
+          "closed": "\u05e0\u05e1\u05d2\u05e8",
+          "closing": "\u05e1\u05d5\u05d2\u05e8",
+          "stopped": "\u05e2\u05e6\u05d5\u05e8"
+        }
+      }
+    },
+    "device_tracker": {
+      "state": {
+        "_": {
+          "home": "\u05d1\u05d1\u05d9\u05ea",
+          "not_home": "\u05dc\u05d0 \u05d1\u05d1\u05d9\u05ea"
+        }
+      }
+    },
+    "fan": {
+      "state": {
+        "_": {
+          "off": "\u05db\u05d1\u05d5\u05d9",
+          "on": "\u05d3\u05dc\u05d5\u05e7"
+        }
+      }
+    },
+    "group": {
+      "state": {
+        "_": {
+          "off": "\u05db\u05d1\u05d5\u05d9",
+          "on": "\u05d3\u05dc\u05d5\u05e7",
+          "home": "\u05d1\u05d1\u05d9\u05ea",
+          "not_home": "\u05dc\u05d0 \u05d1\u05d1\u05d9\u05ea",
+          "open": "\u05e4\u05ea\u05d5\u05d7",
+          "closed": "\u05e1\u05d2\u05d5\u05e8",
+          "locked": "\u05e0\u05e2\u05d5\u05dc",
+          "unlocked": "\u05e4\u05ea\u05d5\u05d7",
+          "ok": "\u05ea\u05e7\u05d9\u05df",
+          "problem": "\u05d1\u05e2\u05d9\u05d4"
+        }
+      }
+    },
+    "input_boolean": {
+      "state": {
+        "_": {
+          "off": "\u05db\u05d1\u05d5\u05d9",
+          "on": "\u05d3\u05dc\u05d5\u05e7"
+        }
+      }
+    },
+    "light": {
+      "state": {
+        "_": {
+          "off": "\u05db\u05d1\u05d5\u05d9",
+          "on": "\u05d3\u05dc\u05d5\u05e7"
+        }
+      }
+    },
+    "lock": {
+      "state": {
+        "_": {
+          "locked": "\u05e0\u05e2\u05d5\u05dc",
+          "unlocked": "\u05e4\u05ea\u05d5\u05d7"
+        }
+      }
+    },
+    "media_player": {
+      "state": {
+        "_": {
+          "off": "\u05db\u05d1\u05d5\u05d9",
+          "on": "\u05d3\u05dc\u05d5\u05e7",
+          "playing": "\u05de\u05e0\u05d2\u05df",
+          "paused": "\u05de\u05d5\u05e9\u05d4\u05d4",
+          "idle": "\u05de\u05de\u05ea\u05d9\u05df",
+          "standby": "\u05de\u05e6\u05d1 \u05d4\u05de\u05ea\u05e0\u05d4"
+        }
+      }
+    },
+    "person": {
+      "state": {
+        "_": {
+          "home": "\u05d1\u05d1\u05d9\u05ea",
+          "not_home": "\u05dc\u05d0 \u05e0\u05de\u05e6\u05d0"
+        }
+      }
+    },
+    "plant": {
+      "state": {
+        "_": {
+          "ok": "\u05ea\u05e7\u05d9\u05df",
+          "problem": "\u05d1\u05e2\u05d9\u05d4"
+        }
+      }
+    },
+    "remote": {
+      "state": {
+        "_": {
+          "off": "\u05db\u05d1\u05d5\u05d9",
+          "on": "\u05d3\u05dc\u05d5\u05e7"
+        }
+      }
+    },
+    "script": {
+      "state": {
+        "_": {
+          "off": "\u05db\u05d1\u05d5\u05d9",
+          "on": "\u05d3\u05dc\u05d5\u05e7"
+        }
+      }
+    },
+    "sun": {
+      "state": {
+        "_": {
+          "above_horizon": "\u05de\u05e2\u05dc \u05d4\u05d0\u05d5\u05e4\u05e7",
+          "below_horizon": "\u05de\u05ea\u05d7\u05ea \u05dc\u05d0\u05d5\u05e4\u05e7"
+        }
+      }
+    },
+    "switch": {
+      "state": {
+        "_": {
+          "off": "\u05db\u05d1\u05d5\u05d9",
+          "on": "\u05d3\u05dc\u05d5\u05e7"
+        }
+      }
+    },
+    "vacuum": {
+      "state": {
+        "_": {
+          "cleaning": "\u05de\u05e0\u05e7\u05d4",
+          "docked": "\u05d1\u05e2\u05d2\u05d9\u05e0\u05d4",
+          "error": "\u05e9\u05d2\u05d9\u05d0\u05d4",
+          "idle": "\u05de\u05de\u05ea\u05d9\u05df",
+          "off": "\u05de\u05db\u05d5\u05d1\u05d4",
+          "on": "\u05de\u05d5\u05e4\u05e2\u05dc",
+          "paused": "\u05de\u05d5\u05e9\u05d4\u05d4",
+          "returning": "\u05d7\u05d6\u05d5\u05e8 \u05dc\u05e2\u05d2\u05d9\u05e0\u05d4"
+        }
+      }
+    },
+    "timer": {
+      "state": {
+        "_": {
+          "active": "\u05e4\u05e2\u05d9\u05dc",
+          "idle": "\u05dc\u05d0 \u05e4\u05e2\u05d9\u05dc",
+          "paused": "\u05de\u05d5\u05e9\u05d4\u05d4"
+        }
+      }
+    },
+    "weather": {
+      "state": {
+        "_": {
+          "clear-night": "\u05dc\u05d9\u05dc\u05d4 \u05d1\u05d4\u05d9\u05e8",
+          "cloudy": "\u05de\u05e2\u05d5\u05e0\u05df",
+          "exceptional": "\u05d9\u05d5\u05e6\u05d0 \u05d3\u05d5\u05e4\u05df",
+          "fog": "\u05e2\u05e8\u05e4\u05dc",
+          "hail": "\u05d1\u05e8\u05d3",
+          "lightning": "\u05d1\u05e8\u05e7",
+          "lightning-rainy": "\u05d1\u05e8\u05e7, \u05d2\u05e9\u05d5\u05dd",
+          "partlycloudy": "\u05de\u05e2\u05d5\u05e0\u05df \u05d7\u05dc\u05e7\u05d9\u05ea",
+          "pouring": "\u05d2\u05e9\u05d5\u05dd",
+          "rainy": "\u05d2\u05e9\u05d5\u05dd",
+          "snowy": "\u05de\u05d5\u05e9\u05dc\u05d2",
+          "snowy-rainy": "\u05de\u05d5\u05e9\u05dc\u05d2, \u05d2\u05e9\u05d5\u05dd",
+          "sunny": "\u05e9\u05de\u05e9\u05d9",
+          "windy": "\u05e1\u05d5\u05e2\u05e8",
+          "windy-variant": "\u05e1\u05d5\u05e2\u05e8"
+        }
+      }
+    },
+    "zwave": {
+      "state": {
+        "_": {
+          "initializing": "\u05de\u05d0\u05ea\u05d7\u05dc",
+          "dead": "\u05de\u05ea",
+          "sleeping": "\u05d9\u05e9\u05df",
+          "ready": "\u05de\u05d5\u05db\u05df"
+        },
+        "query_stage": {
+          "initializing": "\u05de\u05d0\u05ea\u05d7\u05dc ({query_stage})",
+          "dead": "\u05de\u05ea ({query_stage})"
+        }
+      }
+    }
+  }
+}
