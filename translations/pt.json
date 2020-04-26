@@ -606,15 +606,20 @@
                     "title": "Instruções para atualização"
                 },
                 "vacuum": {
+                    "fan_speed": "Velocidade do ventilador",
                     "pause": "Pausa",
                     "start": "Iniciar",
                     "start_pause": "Iniciar / Pausar",
+                    "status": "Estado",
                     "stop": "Parar"
                 }
             },
             "mqtt_device_debug_info": {
+                "deserialize": "Tentativa de analisar mensagens MQTT como JSON",
                 "entities": "Entidades",
-                "show_as_yaml": "Mostrar como YAML"
+                "no_entities": "Sem entidades",
+                "show_as_yaml": "Mostrar como YAML",
+                "triggers": "Gatilhos"
             },
             "options_flow": {
                 "form": {
@@ -1156,6 +1161,7 @@
                         "conditions": {
                             "caption": "Só fazer alguma coisa se..."
                         },
+                        "no_device_automations": "Não há automações disponíveis para este dispositivo.",
                         "triggers": {
                             "caption": "Fazer alguma coisa quando..."
                         }
@@ -1214,6 +1220,9 @@
                         },
                         "introduction": "O Home Assistant mantém um registo de todas as entidades que foram alguma vez detetadas e que podem ser identificadas de uma forma única. Cada uma dessas entidades terá um ID de entidade atribuído, que será reservado apenas para essa entidade.",
                         "introduction2": "Use o registo da entidade para substituir o nome, alterar o ID da entidade ou remover a entrada do Home Assistant. Note que a remoção da entrada do registo de entidade não removerá a entidade. Para fazer isso, siga o link abaixo e remova-o da página de integrações.",
+                        "remove_selected": {
+                            "confirm_partly_title": "Somente {número} entidades selecionadas podem ser removidas."
+                        },
                         "selected": "Selecionou {number}",
                         "status": {
                             "disabled": "Desativado",
@@ -1263,6 +1272,7 @@
                         "rename": "Renomear",
                         "restart_confirm": "Reinicie o Home Assistant para concluir a remoção desta integração",
                         "settings_button": "Editar configurações para {integration}",
+                        "system_options": "Opções do sistema",
                         "system_options_button": "Opções do sistema para {integration}"
                     },
                     "config_flow": {
@@ -1296,6 +1306,7 @@
                         "show_ignored": "Mostrar integrações ignoradas",
                         "stop_ignore": "Parar de ignorar"
                     },
+                    "integration": "Integração",
                     "integration_not_found": "Integração não encontrada.",
                     "new": "Configurar uma nova integração",
                     "no_integrations": "Parece que você ainda não possui integrações configuradas. Clique no botão abaixo para adicionar sua primeira integração!",
@@ -1355,7 +1366,8 @@
                         "types": {
                             "css": "Stylesheet",
                             "html": "HTML (descontinuado)",
-                            "js": "Ficheiro JavaScript (descontinuado)"
+                            "js": "Ficheiro JavaScript (descontinuado)",
+                            "module": "Módulo JavaScript"
                         }
                     }
                 },
@@ -1809,6 +1821,7 @@
                     "card": {
                         "alarm-panel": {
                             "available_states": "Estados Disponíveis",
+                            "description": "O cartão Painel de alarme permite que você arme e desarme as integrações do painel de controle de alarme.",
                             "name": "Painel de alarme"
                         },
                         "button": {
@@ -2048,7 +2061,9 @@
                     "title": "Entidades não expostas"
                 },
                 "views": {
-                    "confirm_delete": "Eliminar vista?"
+                    "confirm_delete": "Eliminar vista?",
+                    "confirm_delete_existing_cards": "Eliminar esta vista vai também remover os cartões",
+                    "confirm_delete_text": "Tem certeza de que deseja apagar a sua vista '{name}'?"
                 },
                 "warning": {
                     "attribute_not_found": "Atributo {attribute} não disponível em: {entity}",

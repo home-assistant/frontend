@@ -2216,12 +2216,12 @@
                         "close": "關閉",
                         "empty_config": "以空白主面板開始",
                         "header": "自行編輯 Lovelace UI",
-                        "para": "Home Assistant 於預設下，將維護您的使用者介面、於新物件或 Lovelace UI 元件可使用時進行更新。假如選擇自行編輯，系統將不再為您自動進行變更。",
+                        "para": "主面板目前正由 Home Assistant 維護、於新物件或 Lovelace UI 元件可使用時自動進行更新。假如選擇自行編輯，系統將不再為您自動更新主面板，亦可隨時於設定中新增主面板。",
                         "para_sure": "確定要自行編輯使用者介面？",
                         "save": "自行編輯",
                         "yaml_config": "目前此主面板設定：",
                         "yaml_control": "欲使用 YAML 進行控制、新增一個與此主面板相同名稱的 YAML 檔案、或者預設為「ui-lovelace.yaml」。",
-                        "yaml_mode": "正使用 YAML 模式、表示您無法藉由 UI 變更 Lovelace 設定。假如您想由 UI 中進行變更、請於「configuration.yaml」檔案中移除「mode: yaml」參數。"
+                        "yaml_mode": "正使用 YAML 模式、表示您無法藉由 UI 變更 Lovelace 設定。假如您想由 UI 中進行變更、請於「configuration.yaml」檔案中移除 'mode: yaml' 參數。"
                     },
                     "suggest_card": {
                         "add": "新增至 Lovelace UI",
