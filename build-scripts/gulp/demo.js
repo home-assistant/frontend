@@ -16,6 +16,7 @@ gulp.task(
       process.env.NODE_ENV = "development";
     },
     "clean-demo",
+    "translations-enable-merge-backend",
     gulp.parallel(
       "gen-icons-app",
       "gen-icons-mdi",
@@ -35,6 +36,8 @@ gulp.task(
       process.env.NODE_ENV = "production";
     },
     "clean-demo",
+    // Cast needs to be backwards compatible and older HA has no translations
+    "translations-enable-merge-backend",
     gulp.parallel(
       "gen-icons-app",
       "gen-icons-mdi",
