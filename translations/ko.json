@@ -654,6 +654,17 @@
                     "stop": "중지"
                 }
             },
+            "mqtt_device_debug_info": {
+                "deserialize": "MQTT 메시지를 JSON 으로 구문 분석하기",
+                "entities": "구성요소",
+                "no_entities": "구성요소가 없습니다",
+                "no_triggers": "트리거가 없습니다",
+                "payload_display": "페이로드 표시",
+                "recent_messages": "{n} 개의 최근 수신 메시지",
+                "show_as_yaml": "YAML 로 표시",
+                "title": "{device} 디버그 정보",
+                "triggers": "트리거"
+            },
             "options_flow": {
                 "form": {
                     "header": "옵션"
@@ -1294,6 +1305,10 @@
                         }
                     }
                 },
+                "filtering": {
+                    "clear": "지우기",
+                    "filtering_by": "필터링"
+                },
                 "header": "Home Assistant 설정",
                 "helpers": {
                     "caption": "도우미",
@@ -1321,12 +1336,16 @@
                     }
                 },
                 "integrations": {
+                    "add_integration": "통합 구성요소 추가",
                     "caption": "통합 구성요소",
                     "config_entry": {
                         "area": "{area}에 위치",
+                        "delete": "삭제",
                         "delete_button": "{integration} 삭제",
                         "delete_confirm": "이 통합 구성요소를 제거하시겠습니까?",
                         "device_unavailable": "기기 사용불가",
+                        "devices": "{count} {count, plural,\none {기기}\nother {기기}\n}",
+                        "entities": "{count} {count, plural,\none {구성요소}\nother {구성요소}\n}",
                         "entity_unavailable": "구성요소 사용불가",
                         "firmware": "펌웨어: {version}",
                         "hub": "연결 경유 대상",
@@ -1334,8 +1353,11 @@
                         "no_area": "영역 없음",
                         "no_device": "기기가 없는 구성요소",
                         "no_devices": "이 통합 구성요소는 설정해야 할 기기가 없습니다.",
+                        "options": "옵션",
+                        "rename": "이름 변경",
                         "restart_confirm": "통합 구성요소 제거 완료를 위해 Home Assistant 웹 페이지를 다시 불러옵니다",
                         "settings_button": "{integration} 설정 편집",
+                        "system_options": "시스템 옵션",
                         "system_options_button": "{integration} 시스템 옵션"
                     },
                     "config_flow": {
@@ -1370,11 +1392,15 @@
                         "show_ignored": "무시된 통합 구성요소 표시",
                         "stop_ignore": "무시 중지"
                     },
+                    "integration": "통합 구성요소",
                     "integration_not_found": "통합 구성요소를 찾을 수 없습니다.",
                     "new": "새로운 통합 구성요소 설정",
+                    "no_integrations": "아직 통합 구성요소를 구성하지 않은 것 같습니다. 첫 번째 통합 구성요소를 추가하려면 아래 버튼을 클릭해주세요!",
                     "none": "설정된 통합 구성요소가 없습니다",
                     "note_about_integrations": "아직 UI 에서 모든 통합 구성요소를 구성할 수 있는 것은 아닙니다.",
-                    "note_about_website_reference": "더 많은 구성요소는 다음에서 살펴 봐주세요. "
+                    "note_about_website_reference": "더 많은 구성요소는 다음에서 살펴 봐주세요. ",
+                    "rename_dialog": "이 구성 항목의 이름을 편집하기",
+                    "rename_input_label": "구성 항목의 이름"
                 },
                 "introduction": "여기에서 구성요소와  Home Assistant 를 설정할 수 있습니다. 아직 여기서 모두 설정할 수는 없지만, 모든 내용을 설정할 수 있도록 작업 중입니다.",
                 "lovelace": {
@@ -2190,12 +2216,12 @@
                         "close": "닫기",
                         "empty_config": "비어있는 대시보드로 시작",
                         "header": "Lovelace UI 직접 관리하기",
-                        "para": "기본적으로 Home Assistant 는 사용자 인터페이스를 유지 관리하고, 사용할 수 있는 새로운 구성요소 또는 Lovelace 구성요소가 있을 때 업데이트를 합니다. 사용자가 직접 관리하는 경우 Home Assistant 는 더 이상 자동으로 변경하지 않습니다.",
+                        "para": "이 대시보드는 현재 Home Assistant 에 의해 유지 관리되고 있습니다. 사용할 수 있는 새로운 구성요소나 Lovelace UI 구성요소가 있을 때 자동으로 업데이트됩니다. 사용자가 직접 관리하는 경우 이 대시보드는 더 이상 자동으로 업데이트되지 않습니다. 언제든지 설정에서 새로운 대시보드를 만들 수 있습니다.",
                         "para_sure": "사용자 인터페이스를 직접 관리하시겠습니까?",
                         "save": "직접 관리할게요",
                         "yaml_config": "시작하는데 도움이 될 수 있는 대시보드의 현재 구성은 다음과 같습니다:",
                         "yaml_control": "YAML 모드로 제어하려면 대시보드의 구성에서 지정한 이름의 YAML 파일을 만들거나 기본 제공된 'ui-lovelace.yaml' 을 사용해주세요.",
-                        "yaml_mode": "YAML 모드를 사용 중이므로 UI 에서 Lovelace 구성을 변경할 수 없습니다. Lovelace 를 UI 에서 변경하려면 'configuration.yaml' 의 Lovelace 구성에서 'mode:yaml' 을 제거해주세요."
+                        "yaml_mode": "이 대시보드는 YAML 모드를 사용 중이므로 UI 에서 Lovelace 구성을 변경할 수 없습니다. Lovelace 를 UI 에서 변경하려면 'configuration.yaml' 의 Lovelace 구성에서 'mode:yaml' 을 제거해주세요."
                     },
                     "suggest_card": {
                         "add": "Lovelace UI 에 추가",
@@ -2241,7 +2267,8 @@
                 "warning": {
                     "attribute_not_found": "{attribute} 속성을 사용할 수 없습니다: {entity}",
                     "entity_non_numeric": "구성요소가 숫자형식이 아닙니다: {entity}",
-                    "entity_not_found": "구성요소를 사용할 수 없습니다: {entity}"
+                    "entity_not_found": "구성요소를 사용할 수 없습니다: {entity}",
+                    "entity_unavailable": "{entity} 는 현재 사용할 수 없습니다"
                 }
             },
             "mailbox": {

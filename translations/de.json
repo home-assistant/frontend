@@ -654,6 +654,15 @@
                     "stop": "Stoppen"
                 }
             },
+            "mqtt_device_debug_info": {
+                "entities": "Entitäten",
+                "no_entities": "Keine Entitäten",
+                "no_triggers": "Keine Auslöser",
+                "recent_messages": "{n} zuletzt empfangene Nachricht(en)",
+                "show_as_yaml": "Als YAML anzeigen",
+                "title": "{device} Debug-Informationen",
+                "triggers": "Auslöser"
+            },
             "options_flow": {
                 "form": {
                     "header": "Optionen"
@@ -1294,6 +1303,10 @@
                         }
                     }
                 },
+                "filtering": {
+                    "clear": "Leeren",
+                    "filtering_by": "Filtern nach"
+                },
                 "header": "Home Assistant konfigurieren",
                 "helpers": {
                     "caption": "Helfer",
@@ -1321,6 +1334,7 @@
                     }
                 },
                 "integrations": {
+                    "add_integration": "Integration hinzufügen",
                     "caption": "Integrationen",
                     "config_entry": {
                         "area": "In {area}",
@@ -1328,6 +1342,8 @@
                         "delete_button": "{integration} löschen",
                         "delete_confirm": "Möchtest du diese Integration wirklich löschen?",
                         "device_unavailable": "Gerät nicht verfügbar",
+                        "devices": "{count} {count, plural,\n one {Gerät}\n other {Geräte}\n}",
+                        "entities": "{count} {count, plural,\none {Einheit}\nother {Einheiten}\n}",
                         "entity_unavailable": "Entität nicht verfügbar",
                         "firmware": "Firmware: {version}",
                         "hub": "Verbunden über",
@@ -1335,6 +1351,8 @@
                         "no_area": "Kein Bereich",
                         "no_device": "Entitäten ohne Geräte",
                         "no_devices": "Diese Integration hat keine Geräte.",
+                        "options": "Optionen",
+                        "rename": "Umbenennen",
                         "restart_confirm": "Starte Home Assistant neu, um das Entfernen dieser Integration abzuschließen",
                         "settings_button": "Einstellungen für {integration} bearbeiten",
                         "system_options": "Systemoptionen",
@@ -1372,11 +1390,15 @@
                         "show_ignored": "Ignorierte Integrationen anzeigen",
                         "stop_ignore": "Nicht mehr ignorieren"
                     },
+                    "integration": "Integration",
                     "integration_not_found": "Integration nicht gefunden.",
                     "new": "Richte eine neue Integration ein",
+                    "no_integrations": "Sie haben anscheinend noch keine Integrationen konfiguriert. Klicken Sie auf die Schaltfläche unten, um Ihre erste Integration hinzuzufügen!",
                     "none": "Noch nichts konfiguriert",
                     "note_about_integrations": "Nicht alle Integrationen können über die Benutzeroberfläche konfiguriert werden.",
-                    "note_about_website_reference": "Weitere Informationen finden Sie auf der "
+                    "note_about_website_reference": "Weitere Informationen finden Sie auf der ",
+                    "rename_dialog": "Bearbeiten Sie den Namen dieses Konfigurationseintrags",
+                    "rename_input_label": "Eintragsname"
                 },
                 "introduction": "Hier ist es möglich, deine Komponenten und Home Assistant zu konfigurieren. Noch ist nicht alles über die GUI einstellbar, aber wir arbeiten daran.",
                 "lovelace": {
@@ -2192,12 +2214,12 @@
                         "close": "Schließen",
                         "empty_config": "Beginnen Sie mit einem leeren Dashboard",
                         "header": "Lovelace Userinterface selbst verwalten",
-                        "para": "Standardmäßig verwaltet Home Assistant deine Benutzeroberfläche und aktualisiert sie, sobald neue Entitäten oder Lovelace-Komponenten verfügbar sind. Wenn du die Verwaltung selbst übernehmen möchtest, nehmen wir für dich keine Änderungen mehr vor.",
+                        "para": "Dieses Dashboard wird derzeit von Home Assistant verwaltet. Es wird automatisch aktualisiert, wenn neue Entitäten oder Lovelace-UI-Komponenten verfügbar werden. Wenn Sie die Kontrolle übernehmen, wird dieses Dashboard nicht mehr automatisch aktualisiert. Sie können jederzeit ein neues Dashboard in der Konfiguration erstellen, mit dem Sie herumspielen können.",
                         "para_sure": "Bist du dir sicher, dass du die Benutzeroberfläche selbst verwalten möchtest?",
                         "save": "Kontrolle übernehmen",
                         "yaml_config": "Um dir den Einstieg zu erleichtern, findest du hier die aktuelle Konfiguration dieses Dashboards:",
                         "yaml_control": "Um die Kontrolle im YAML-Modus zu übernehmen, erstellen Sie eine YAML-Datei mit dem Namen, den Sie in Ihrer Konfiguration für dieses Dashboard angegeben haben, oder mit der Standardeinstellung 'ui-lovelace.yaml'.",
-                        "yaml_mode": "Du verwendest den YAML-Modus. Daher kannst du deine Lovelace-Konfiguration nicht über die Benutzeroberfläche ändern. Wenn du Lovelace über die Benutzeroberfläche ändern möchtest, entferne den 'mode: yaml' aus deiner Lovelace-Konfiguration in 'configuration.yaml'."
+                        "yaml_mode": "Sie verwenden den YAML-Modus für dieses Dashboard. Dies bedeutet, dass Sie Ihre Lovelace-Konfiguration nicht über die Benutzeroberfläche ändern können. Wenn Sie dieses Dashboard über die Benutzeroberfläche verwalten möchten, entfernen Sie \"mode: yaml\" aus Ihrer Lovelace-Konfiguration in \"configuration.yaml\"."
                     },
                     "suggest_card": {
                         "add": "Zu Lovelace hinzufügen",
@@ -2243,7 +2265,8 @@
                 "warning": {
                     "attribute_not_found": "Attribut {attribute} nicht verfügbar in: {entity}",
                     "entity_non_numeric": "Die Entität ist nicht-numerisch: {entity}",
-                    "entity_not_found": "Entität nicht verfügbar: {entity}"
+                    "entity_not_found": "Entität nicht verfügbar: {entity}",
+                    "entity_unavailable": "{entity} ist derzeit nicht verfügbar"
                 }
             },
             "mailbox": {

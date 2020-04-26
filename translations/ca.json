@@ -214,7 +214,7 @@
         },
         "fan": {
             "off": "Apagat",
-            "on": "Activat"
+            "on": "Engegat"
         },
         "group": {
             "closed": "Tancat",
@@ -246,7 +246,7 @@
         "media_player": {
             "idle": "Inactiu",
             "off": "Desactivat",
-            "on": "Activat",
+            "on": "Encès",
             "paused": "Pausat",
             "playing": "Reproduint",
             "standby": "En espera"
@@ -260,7 +260,7 @@
         },
         "remote": {
             "off": "Apagat",
-            "on": "Activat"
+            "on": "Encès"
         },
         "scene": {
             "scening": "Escena activa"
