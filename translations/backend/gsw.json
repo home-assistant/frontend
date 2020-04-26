@@ -1,0 +1,299 @@
+{
+  "component": {
+    "binary_sensor": {
+      "state": {
+        "_": {
+          "off": "Us",
+          "on": "Ah"
+        },
+        "battery": {
+          "off": "Normau",
+          "on": "Nidrig"
+        },
+        "connectivity": {
+          "off": "Trennt",
+          "on": "Verbunge"
+        },
+        "gas": {
+          "off": "Frei",
+          "on": "Erk\u00e4nnt"
+        },
+        "heat": {
+          "on": "Heiss"
+        },
+        "moisture": {
+          "off": "Troch\u00e4",
+          "on": "Nass"
+        },
+        "motion": {
+          "off": "Ok",
+          "on": "Erch\u00e4nt"
+        },
+        "occupancy": {
+          "off": "Ok",
+          "on": "Erch\u00e4nt"
+        },
+        "opening": {
+          "off": "Gschlos\u00e4",
+          "on": "Off\u00e4"
+        },
+        "presence": {
+          "off": "Nid Dahei",
+          "on": "Dahei"
+        },
+        "problem": {
+          "off": "OK",
+          "on": "Problem"
+        },
+        "safety": {
+          "off": "Sicher",
+          "on": "Unsicher"
+        },
+        "smoke": {
+          "off": "Ok",
+          "on": "Erch\u00e4nt"
+        },
+        "sound": {
+          "off": "Ok",
+          "on": "Erch\u00e4nt"
+        },
+        "vibration": {
+          "off": "Ok",
+          "on": "Erch\u00e4nt"
+        }
+      }
+    },
+    "automation": {
+      "state": {
+        "_": {
+          "off": "Us",
+          "on": "Ah"
+        }
+      }
+    },
+    "calendar": {
+      "state": {
+        "_": {
+          "off": "Us",
+          "on": "Ah"
+        }
+      }
+    },
+    "camera": {
+      "state": {
+        "_": {
+          "recording": "Nimt uf",
+          "streaming": "Streamt",
+          "idle": "L\u00e4\u00e4rlauf"
+        }
+      }
+    },
+    "climate": {
+      "state": {
+        "_": {
+          "off": "Us",
+          "heat": "Heiz\u00e4",
+          "cool": "Ch\u00fc\u00e4l\u00e4",
+          "auto": "Automatik",
+          "dry": "Troch\u00e4",
+          "fan_only": "Nur L\u00fcfter"
+        }
+      }
+    },
+    "configurator": {
+      "state": {
+        "_": {
+          "configure": "Konfiguri\u00e4r\u00e4",
+          "configured": "Konfiguri\u00e4rt"
+        }
+      }
+    },
+    "cover": {
+      "state": {
+        "_": {
+          "open": "Off\u00e4",
+          "opening": "Am \u00f6ffn\u00e4",
+          "closed": "Gschloss\u00e4",
+          "closing": "Am schliesse",
+          "stopped": "Gstoppt"
+        }
+      }
+    },
+    "group": {
+      "state": {
+        "_": {
+          "off": "Us",
+          "on": "Ah",
+          "home": "Dahei",
+          "not_home": "Nid Dahei",
+          "open": "Off\u00e4",
+          "closed": "Gschloss\u00e4",
+          "locked": "Gsperrt",
+          "unlocked": "Entsperrt",
+          "ok": "Ok",
+          "problem": "Problem"
+        }
+      }
+    },
+    "light": {
+      "state": {
+        "_": {
+          "off": "Us",
+          "on": "Ah"
+        }
+      }
+    },
+    "lock": {
+      "state": {
+        "_": {
+          "locked": "Gsperrt",
+          "unlocked": "Entsperrt"
+        }
+      }
+    },
+    "plant": {
+      "state": {
+        "_": {
+          "ok": "OK",
+          "problem": "Problem"
+        }
+      }
+    },
+    "remote": {
+      "state": {
+        "_": {
+          "off": "Us",
+          "on": "Ah"
+        }
+      }
+    },
+    "script": {
+      "state": {
+        "_": {
+          "off": "Us",
+          "on": "Ah"
+        }
+      }
+    },
+    "sensor": {
+      "state": {
+        "_": {
+          "off": "Us",
+          "on": "Ah"
+        }
+      }
+    },
+    "sun": {
+      "state": {
+        "_": {
+          "above_horizon": "\u00dcberem Horizont",
+          "below_horizon": "Underem Horizont"
+        }
+      }
+    },
+    "switch": {
+      "state": {
+        "_": {
+          "off": "Us",
+          "on": "Ah"
+        }
+      }
+    },
+    "vacuum": {
+      "state": {
+        "_": {
+          "cleaning": "Putze",
+          "error": "F\u00e4hler",
+          "off": "Us",
+          "on": "I",
+          "paused": "Pause"
+        }
+      }
+    },
+    "alarm_control_panel": {
+      "state": {
+        "_": {
+          "armed": "Scharf",
+          "disarmed": "Nid scharf",
+          "armed_home": "Scharf dihei",
+          "armed_away": "Scharf usswerts",
+          "armed_night": "Scharf Nacht",
+          "pending": "Usstehehnd",
+          "arming": "Scharf stel\u00e4",
+          "disarming": "Entsperr\u00e4",
+          "triggered": "Usgl\u00f6sst"
+        }
+      }
+    },
+    "device_tracker": {
+      "state": {
+        "_": {
+          "home": "Dahei",
+          "not_home": "Nid Dahei"
+        }
+      }
+    },
+    "fan": {
+      "state": {
+        "_": {
+          "off": "Us",
+          "on": "Ah"
+        }
+      }
+    },
+    "input_boolean": {
+      "state": {
+        "_": {
+          "off": "Us",
+          "on": "Ah"
+        }
+      }
+    },
+    "media_player": {
+      "state": {
+        "_": {
+          "off": "Us",
+          "on": "Ah",
+          "playing": "Am spil\u00e4",
+          "paused": "Pousi\u00e4r\u00e4",
+          "idle": "L\u00e4\u00e4rlauf",
+          "standby": "Standby"
+        }
+      }
+    },
+    "weather": {
+      "state": {
+        "_": {
+          "clear-night": "Klar, Nacht",
+          "cloudy": "Bedeckt",
+          "fog": "N\u00e4bu",
+          "hail": "H\u00e4gu",
+          "lightning": "Blitz\u00e4",
+          "lightning-rainy": "Blitz\u00e4, R\u00e4ge",
+          "partlycloudy": "Teilwis bedeckt",
+          "pouring": "Sch\u00fctte",
+          "rainy": "R\u00e4gn\u00e4risch",
+          "snowy": "Schneie",
+          "snowy-rainy": "Schneie, r\u00e4gnerisch",
+          "sunny": "sunnig",
+          "windy": "windig",
+          "windy-variant": "windig"
+        }
+      }
+    },
+    "zwave": {
+      "state": {
+        "_": {
+          "initializing": "Inizialisi\u00e4r\u00e4",
+          "dead": "Tod",
+          "sleeping": "Schlaf\u00e4",
+          "ready": "Parat"
+        },
+        "query_stage": {
+          "initializing": "Inizialisi\u00e4r\u00e4 ( {query_stage} )",
+          "dead": "Tod ({query_stage})"
+        }
+      }
+    }
+  }
+}

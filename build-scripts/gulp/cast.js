@@ -16,6 +16,7 @@ gulp.task(
       process.env.IS_CAST = "true";
     },
     "clean-cast",
+    "translations-enable-merge-backend",
     gulp.parallel(
       "gen-icons-app",
       "gen-icons-mdi",
@@ -34,6 +35,7 @@ gulp.task(
       process.env.NODE_ENV = "production";
     },
     "clean-cast",
+    "translations-enable-merge-backend",
     gulp.parallel("gen-icons-app", "gen-icons-mdi", "build-translations"),
     "copy-static-cast",
     "webpack-prod-cast",
