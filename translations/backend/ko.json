@@ -1,0 +1,349 @@
+{
+  "component": {
+    "sensor": {
+      "state": {
+        "_": {
+          "off": "\uaebc\uc9d0",
+          "on": "\ucf1c\uc9d0"
+        }
+      }
+    },
+    "zwave": {
+      "state": {
+        "_": {
+          "initializing": "\ucd08\uae30\ud654\uc911",
+          "dead": "\uc751\ub2f5\uc5c6\uc74c",
+          "sleeping": "\uc808\uc804\ubaa8\ub4dc",
+          "ready": "\uc900\ube44"
+        },
+        "query_stage": {
+          "initializing": "\ucd08\uae30\ud654\uc911 ({query_stage})",
+          "dead": "\uc751\ub2f5\uc5c6\uc74c ({query_stage})"
+        }
+      }
+    },
+    "ebusd": {
+      "state": {
+        "day": "\uc8fc\uac04",
+        "night": "\uc57c\uac04"
+      }
+    },
+    "light": {
+      "state": {
+        "_": {
+          "off": "\uaebc\uc9d0",
+          "on": "\ucf1c\uc9d0"
+        }
+      }
+    },
+    "switch": {
+      "state": {
+        "_": {
+          "off": "\uaebc\uc9d0",
+          "on": "\ucf1c\uc9d0"
+        }
+      }
+    },
+    "binary_sensor": {
+      "state": {
+        "_": {
+          "off": "\uaebc\uc9d0",
+          "on": "\ucf1c\uc9d0"
+        },
+        "battery": {
+          "off": "\ubcf4\ud1b5",
+          "on": "\ub0ae\uc74c"
+        },
+        "cold": {
+          "off": "\ubcf4\ud1b5",
+          "on": "\uc800\uc628"
+        },
+        "connectivity": {
+          "off": "\uc5f0\uacb0\ud574\uc81c\ub428",
+          "on": "\uc5f0\uacb0\ub428"
+        },
+        "door": {
+          "off": "\ub2eb\ud798",
+          "on": "\uc5f4\ub9bc"
+        },
+        "garage_door": {
+          "off": "\ub2eb\ud798",
+          "on": "\uc5f4\ub9bc"
+        },
+        "gas": {
+          "off": "\uc774\uc0c1\uc5c6\uc74c",
+          "on": "\uac10\uc9c0\ub428"
+        },
+        "heat": {
+          "off": "\ubcf4\ud1b5",
+          "on": "\uace0\uc628"
+        },
+        "lock": {
+          "off": "\uc7a0\uae40",
+          "on": "\ud574\uc81c"
+        },
+        "moisture": {
+          "off": "\uac74\uc870\ud568",
+          "on": "\uc2b5\ud568"
+        },
+        "motion": {
+          "off": "\uc774\uc0c1\uc5c6\uc74c",
+          "on": "\uac10\uc9c0\ub428"
+        },
+        "occupancy": {
+          "off": "\uc774\uc0c1\uc5c6\uc74c",
+          "on": "\uac10\uc9c0\ub428"
+        },
+        "opening": {
+          "off": "\ub2eb\ud798",
+          "on": "\uc5f4\ub9bc"
+        },
+        "presence": {
+          "off": "\uc678\ucd9c",
+          "on": "\uc7ac\uc2e4"
+        },
+        "problem": {
+          "off": "\ubb38\uc81c\uc5c6\uc74c",
+          "on": "\ubb38\uc81c\uc788\uc74c"
+        },
+        "safety": {
+          "off": "\uc548\uc804",
+          "on": "\uc704\ud5d8"
+        },
+        "smoke": {
+          "off": "\uc774\uc0c1\uc5c6\uc74c",
+          "on": "\uac10\uc9c0\ub428"
+        },
+        "sound": {
+          "off": "\uc774\uc0c1\uc5c6\uc74c",
+          "on": "\uac10\uc9c0\ub428"
+        },
+        "vibration": {
+          "off": "\uc774\uc0c1\uc5c6\uc74c",
+          "on": "\uac10\uc9c0\ub428"
+        },
+        "window": {
+          "off": "\ub2eb\ud798",
+          "on": "\uc5f4\ub9bc"
+        }
+      }
+    },
+    "lock": {
+      "state": {
+        "_": {
+          "locked": "\uc7a0\uae40",
+          "unlocked": "\ud574\uc81c"
+        }
+      }
+    },
+    "cover": {
+      "state": {
+        "_": {
+          "open": "\uc5f4\ub9bc",
+          "opening": "\uc5ec\ub294\uc911",
+          "closed": "\ub2eb\ud798",
+          "closing": "\ub2eb\ub294\uc911",
+          "stopped": "\uba48\ucda4"
+        }
+      }
+    },
+    "alarm_control_panel": {
+      "state": {
+        "_": {
+          "armed": "\uacbd\ube44\uc911",
+          "disarmed": "\ud574\uc81c\ub428",
+          "armed_home": "\uacbd\ube44\uc911(\uc7ac\uc2e4)",
+          "armed_away": "\uacbd\ube44\uc911(\uc678\ucd9c)",
+          "armed_night": "\uacbd\ube44\uc911(\uc57c\uac04)",
+          "armed_custom_bypass": "\uacbd\ube44\uc911(\uc0ac\uc6a9\uc790 \uc6b0\ud68c)",
+          "pending": "\ubcf4\ub958\uc911",
+          "arming": "\uacbd\ube44\uc911",
+          "disarming": "\ud574\uc81c\uc911",
+          "triggered": "\uc791\ub3d9\ub428"
+        }
+      }
+    },
+    "media_player": {
+      "state": {
+        "_": {
+          "off": "\uaebc\uc9d0",
+          "on": "\ucf1c\uc9d0",
+          "playing": "\uc7ac\uc0dd\uc911",
+          "paused": "\uc77c\uc2dc\uc911\uc9c0",
+          "idle": "\ub300\uae30\uc911",
+          "standby": "\uc900\ube44\uc911"
+        }
+      }
+    },
+    "device_tracker": {
+      "state": {
+        "_": {
+          "home": "\uc7ac\uc2e4",
+          "not_home": "\uc678\ucd9c"
+        }
+      }
+    },
+    "vacuum": {
+      "state": {
+        "_": {
+          "cleaning": "\uccad\uc18c\uc911",
+          "docked": "\ucda9\uc804\uc911",
+          "error": "\uc791\ub3d9 \uc624\ub958",
+          "idle": "\ub300\uae30\uc911",
+          "off": "\uaebc\uc9d0",
+          "on": "\ucf1c\uc9d0",
+          "paused": "\uc77c\uc2dc\uc911\uc9c0\ub428",
+          "returning": "\ucda9\uc804 \ubcf5\uadc0 \uc911"
+        }
+      }
+    },
+    "fan": {
+      "state": {
+        "_": {
+          "off": "\uaebc\uc9d0",
+          "on": "\ucf1c\uc9d0"
+        }
+      }
+    },
+    "climate": {
+      "state": {
+        "_": {
+          "off": "\uaebc\uc9d0",
+          "heat": "\ub09c\ubc29",
+          "cool": "\ub0c9\ubc29",
+          "heat_cool": "\ub0c9\ub09c\ubc29",
+          "auto": "\uc790\ub3d9",
+          "dry": "\uc81c\uc2b5",
+          "fan_only": "\uc1a1\ud48d"
+        }
+      }
+    },
+    "automation": {
+      "state": {
+        "_": {
+          "off": "\uaebc\uc9d0",
+          "on": "\ucf1c\uc9d0"
+        }
+      }
+    },
+    "calendar": {
+      "state": {
+        "_": {
+          "off": "\uaebc\uc9d0",
+          "on": "\ucf1c\uc9d0"
+        }
+      }
+    },
+    "camera": {
+      "state": {
+        "_": {
+          "recording": "\ub179\ud654\uc911",
+          "streaming": "\uc2a4\ud2b8\ub9ac\ubc0d",
+          "idle": "\ub300\uae30\uc911"
+        }
+      }
+    },
+    "configurator": {
+      "state": {
+        "_": {
+          "configure": "\uc124\uc815",
+          "configured": "\uc124\uc815\ub428"
+        }
+      }
+    },
+    "group": {
+      "state": {
+        "_": {
+          "off": "\uaebc\uc9d0",
+          "on": "\ucf1c\uc9d0",
+          "home": "\uc7ac\uc2e4",
+          "not_home": "\uc678\ucd9c",
+          "open": "\uc5f4\ub9bc",
+          "closed": "\ub2eb\ud798",
+          "locked": "\uc7a0\uae40",
+          "unlocked": "\ud574\uc81c",
+          "ok": "\ubb38\uc81c\uc5c6\uc74c",
+          "problem": "\ubb38\uc81c\uc788\uc74c"
+        }
+      }
+    },
+    "input_boolean": {
+      "state": {
+        "_": {
+          "off": "\uaebc\uc9d0",
+          "on": "\ucf1c\uc9d0"
+        }
+      }
+    },
+    "person": {
+      "state": {
+        "_": {
+          "home": "\uc7ac\uc2e4",
+          "not_home": "\uc678\ucd9c"
+        }
+      }
+    },
+    "plant": {
+      "state": {
+        "_": {
+          "ok": "\ubb38\uc81c\uc5c6\uc74c",
+          "problem": "\ubb38\uc81c\uc788\uc74c"
+        }
+      }
+    },
+    "remote": {
+      "state": {
+        "_": {
+          "off": "\uaebc\uc9d0",
+          "on": "\ucf1c\uc9d0"
+        }
+      }
+    },
+    "script": {
+      "state": {
+        "_": {
+          "off": "\uaebc\uc9d0",
+          "on": "\ucf1c\uc9d0"
+        }
+      }
+    },
+    "sun": {
+      "state": {
+        "_": {
+          "above_horizon": "\uc8fc\uac04",
+          "below_horizon": "\uc57c\uac04"
+        }
+      }
+    },
+    "timer": {
+      "state": {
+        "_": {
+          "active": "\ud65c\uc131\ud654",
+          "idle": "\ub300\uae30\uc911",
+          "paused": "\uc77c\uc2dc\uc911\uc9c0\ub428"
+        }
+      }
+    },
+    "weather": {
+      "state": {
+        "_": {
+          "clear-night": "\ub9d1\uc74c (\ubc24)",
+          "cloudy": "\ud750\ub9bc",
+          "exceptional": "\uc608\uc678\uc0ac\ud56d",
+          "fog": "\uc548\uac1c",
+          "hail": "\uc6b0\ubc15",
+          "lightning": "\ubc88\uac1c",
+          "lightning-rainy": "\ub1cc\uc6b0",
+          "partlycloudy": "\ub300\uccb4\ub85c \ud750\ub9bc",
+          "pouring": "\ud638\uc6b0",
+          "rainy": "\ube44",
+          "snowy": "\ub208",
+          "snowy-rainy": "\uc9c4\ub208\uac1c\ube44",
+          "sunny": "\ub9d1\uc74c",
+          "windy": "\ubc14\ub78c",
+          "windy-variant": "\ubc14\ub78c"
+        }
+      }
+    }
+  }
+}

@@ -16,6 +16,7 @@ gulp.task(
       process.env.NODE_ENV = "development";
     },
     "clean-gallery",
+    "translations-enable-merge-backend",
     gulp.parallel("gen-icons-app", "gen-icons-mdi", "build-translations"),
     "copy-static-gallery",
     "gen-index-gallery-dev",
@@ -30,6 +31,7 @@ gulp.task(
       process.env.NODE_ENV = "production";
     },
     "clean-gallery",
+    "translations-enable-merge-backend",
     gulp.parallel("gen-icons-app", "gen-icons-mdi", "build-translations"),
     "copy-static-gallery",
     "webpack-prod-gallery",
