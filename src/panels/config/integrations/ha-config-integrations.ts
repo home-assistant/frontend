@@ -135,14 +135,13 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
         return configEntries;
       }
       const options: Fuse.FuseOptions<ConfigEntryExtended> = {
-        keys: ["localized_domain_name", "title"],
+        keys: ["domain", "localized_domain_name", "title"],
         caseSensitive: false,
         minMatchCharLength: 2,
         threshold: 0.2,
       };
       const fuse = new Fuse(configEntries, options);
-      const filteredConfigEntries = fuse.search(filter);
-      return filteredConfigEntries;
+      return fuse.search(filter);
     }
   );
 
@@ -167,8 +166,7 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
         threshold: 0.2,
       };
       const fuse = new Fuse(configEntriesInProgress, options);
-      const filteredConfigEntriesInProgress = fuse.search(filter);
-      return filteredConfigEntriesInProgress;
+      return fuse.search(filter);
     }
   );
 
