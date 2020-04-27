@@ -33,7 +33,7 @@ export const demoThemeJimpower = () => ({
   "label-badge-border-color": "green",
   "paper-listbox-color": "var(--primary-color)",
   "paper-slider-disabled-secondary-color": "var(--disabled-text-color)",
-  "paper-card-background-color": "#434954",
+  "card-background-color": "#434954",
   "label-badge-text-color": "var(--primary-text-color)",
   "paper-slider-knob-start-color": "var(--accent-color)",
   "switch-unchecked-track-color": "var(--disabled-text-color)",
