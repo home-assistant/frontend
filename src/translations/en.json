@@ -1351,6 +1351,8 @@
           "home_assistant_website": "Home Assistant website",
           "configure": "Configure",
           "none": "Nothing configured yet",
+          "none_found": "No integrations found",
+          "none_found_detail": "Adjust your search criteria.",
           "integration_not_found": "Integration not found.",
           "details": "Integration details",
           "rename_dialog": "Edit the name of this config entry",

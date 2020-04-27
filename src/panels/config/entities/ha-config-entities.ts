@@ -745,6 +745,10 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
         position: relative;
         top: 2px;
       }
+      .search-toolbar search-input {
+        margin-left: 8px;
+        top: 1px;
+      }
       .search-toolbar {
         display: flex;
         justify-content: space-between;
