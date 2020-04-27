@@ -491,20 +491,18 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
           !configEntries.length &&
           this._configEntries.length
             ? html`
-                <ha-card>
-                  <div class="card-content">
-                    <h1>
-                      ${this.hass.localize(
-                        "ui.panel.config.integrations.none_found"
-                      )}
-                    </h1>
-                    <p>
-                      ${this.hass.localize(
-                        "ui.panel.config.integrations.none_found_detail"
-                      )}
-                    </p>
-                  </div>
-                </ha-card>
+                <div class="none-found">
+                  <h1>
+                    ${this.hass.localize(
+                      "ui.panel.config.integrations.none_found"
+                    )}
+                  </h1>
+                  <p>
+                    ${this.hass.localize(
+                      "ui.panel.config.integrations.none_found_detail"
+                    )}
+                  </p>
+                </div>
               `
             : ""}
         </div>
@@ -766,6 +764,10 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
           height: 60px;
           margin-bottom: 16px;
           vertical-align: middle;
+        }
+        .none-found {
+          margin: auto;
+          text-align: center;
         }
         search-input.header {
           display: block;
