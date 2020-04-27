@@ -14,7 +14,10 @@ import memoizeOne from "memoize-one";
 import * as Fuse from "fuse.js";
 import { compare } from "../../../common/string/compare";
 import { computeRTL } from "../../../common/util/compute_rtl";
-import { afterNextRender } from "../../../common/util/render-status";
+import {
+  afterNextRender,
+  nextRender,
+} from "../../../common/util/render-status";
 import "../../../components/entity/ha-state-icon";
 import "../../../components/ha-card";
 import "../../../components/ha-fab";
@@ -57,7 +60,11 @@ import { configSections } from "../ha-panel-config";
 import "../../../common/search/search-input";
 
 interface DataEntryFlowProgressExtended extends DataEntryFlowProgress {
-  title?: string;
+  localized_title?: string;
+}
+
+interface ConfigEntryExtended extends ConfigEntry {
+  localized_domain_name?: string;
 }
 
 @customElement("ha-config-integrations")
@@ -72,7 +79,7 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
 
   @property() public route!: Route;
 
-  @property() private _configEntries: ConfigEntry[] = [];
+  @property() private _configEntries: ConfigEntryExtended[] = [];
 
   @property()
   private _configEntriesInProgress: DataEntryFlowProgressExtended[] = [];
@@ -97,31 +104,45 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
       subscribeDeviceRegistry(this.hass.connection, (entries) => {
         this._deviceRegistryEntries = entries;
       }),
-      subscribeConfigFlowInProgress(this.hass, (flowsInProgress) => {
-        this._configEntriesInProgress = flowsInProgress;
-        for (const flow of flowsInProgress) {
+      subscribeConfigFlowInProgress(this.hass, async (flowsInProgress) => {
+        const translationsPromisses: Promise<void>[] = [];
+        flowsInProgress.forEach((flow) => {
           // To render title placeholders
           if (flow.context.title_placeholders) {
-            this.hass.loadBackendTranslation("config", flow.handler);
+            translationsPromisses.push(
+              this.hass.loadBackendTranslation("config", flow.handler)
+            );
           }
-        }
+        });
+        await Promise.all(translationsPromisses);
+        await nextRender();
+        this._configEntriesInProgress = flowsInProgress.map((flow) => {
+          return {
+            ...flow,
+            localized_title: localizeConfigFlowTitle(this.hass.localize, flow),
+          };
+        });
       }),
     ];
   }
 
   private _filterConfigEntries = memoizeOne(
-    (configEntries: ConfigEntry[], filter?: string): ConfigEntry[] => {
-      if (filter) {
-        const options: Fuse.FuseOptions<ConfigEntry> = {
-          keys: ["domain_name", "title"],
-          caseSensitive: false,
-          minMatchCharLength: 2,
-          threshold: 0.2,
-        };
-        const fuse = new Fuse(configEntries, options);
-        configEntries = fuse.search(filter);
+    (
+      configEntries: ConfigEntryExtended[],
+      filter?: string
+    ): ConfigEntryExtended[] => {
+      if (!filter) {
+        return configEntries;
       }
-      return configEntries;
+      const options: Fuse.FuseOptions<ConfigEntryExtended> = {
+        keys: ["localized_domain_name", "title"],
+        caseSensitive: false,
+        minMatchCharLength: 2,
+        threshold: 0.2,
+      };
+      const fuse = new Fuse(configEntries, options);
+      const filteredConfigEntries = fuse.search(filter);
+      return filteredConfigEntries;
     }
   );
 
@@ -136,17 +157,18 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
           title: localizeConfigFlowTitle(this.hass.localize, flow),
         })
       );
-      if (filter) {
-        const options: Fuse.FuseOptions<DataEntryFlowProgressExtended> = {
-          keys: ["handler", "title"],
-          caseSensitive: false,
-          minMatchCharLength: 2,
-          threshold: 0.2,
-        };
-        const fuse = new Fuse(configEntriesInProgress, options);
-        configEntriesInProgress = fuse.search(filter);
+      if (!filter) {
+        return configEntriesInProgress;
       }
-      return configEntriesInProgress;
+      const options: Fuse.FuseOptions<DataEntryFlowProgressExtended> = {
+        keys: ["handler", "localized_title"],
+        caseSensitive: false,
+        minMatchCharLength: 2,
+        threshold: 0.2,
+      };
+      const fuse = new Fuse(configEntriesInProgress, options);
+      const filteredConfigEntriesInProgress = fuse.search(filter);
+      return filteredConfigEntriesInProgress;
     }
   );
 
@@ -198,15 +220,13 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
           ? html`
               <div slot="header">
                 <slot name="header">
-                  <div class="search-toolbar">
-                    <search-input
-                      .filter=${this._filter}
-                      class="header"
-                      no-label-float
-                      no-underline
-                      @value-changed=${this._handleSearchChange}
-                    ></search-input>
-                  </div>
+                  <search-input
+                    .filter=${this._filter}
+                    class="header"
+                    no-label-float
+                    no-underline
+                    @value-changed=${this._handleSearchChange}
+                  ></search-input>
                 </slot>
               </div>
             `
@@ -223,11 +243,7 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
             slot="dropdown-trigger"
             alt="menu"
           ></paper-icon-button>
-          <paper-listbox
-            slot="dropdown-content"
-            role="listbox"
-            selected="{{selectedItem}}"
-          >
+          <paper-listbox slot="dropdown-content" role="listbox">
             <paper-item @tap=${this._toggleShowIgnored}>
               ${this.hass.localize(
                 this._showIgnored
@@ -256,7 +272,7 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
             ? configEntries
                 .filter((item) => item.source === "ignore")
                 .map(
-                  (item: ConfigEntry) => html`
+                  (item: ConfigEntryExtended) => html`
                     <ha-card class="ignored">
                       <div class="header">
                         ${this.hass.localize(
@@ -273,7 +289,7 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
                           />
                         </div>
                         <h2>
-                          ${item.domain_name}
+                          ${item.localized_domain_name}
                         </h2>
                         <mwc-button
                           @click=${this._removeIgnoredIntegration}
@@ -309,7 +325,7 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
                         />
                       </div>
                       <h2>
-                        ${localizeConfigFlowTitle(this.hass.localize, flow)}
+                        ${flow.localized_title}
                       </h2>
                       <mwc-button
                         unelevated
@@ -339,13 +355,9 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
               )
             : ""}
           ${configEntries.length
-            ? configEntries.map((item: ConfigEntry) => {
+            ? configEntries.map((item: ConfigEntryExtended) => {
                 const devices = this._getDevices(item);
                 const entities = this._getEntities(item);
-                const integrationName = domainToName(
-                  this.hass.localize,
-                  item.domain
-                );
                 return item.source === "ignore"
                   ? ""
                   : html`
@@ -364,10 +376,10 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
                             />
                           </div>
                           <h1>
-                            ${integrationName}
+                            ${item.localized_domain_name}
                           </h1>
                           <h2>
-                            ${integrationName === item.title
+                            ${item.localized_domain_name === item.title
                               ? html`&nbsp;`
                               : item.title}
                           </h2>
@@ -518,9 +530,12 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
           compare(conf1.domain + conf1.title, conf2.domain + conf2.title)
         )
         .map(
-          (entry: ConfigEntry): ConfigEntry => ({
+          (entry: ConfigEntry): ConfigEntryExtended => ({
             ...entry,
-            domain_name: domainToName(this.hass.localize, entry.domain),
+            localized_domain_name: domainToName(
+              this.hass.localize,
+              entry.domain
+            ),
           })
         );
     });
@@ -754,19 +769,22 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
           margin-bottom: 16px;
           vertical-align: middle;
         }
-        .search-toolbar {
+        search-input.header {
+          display: block;
           position: relative;
           left: -8px;
           top: -7px;
-          display: flex;
-          align-items: center;
           color: var(--secondary-text-color);
-          padding: 0 16px;
+          margin-left: 16px;
         }
         .search {
           padding: 0 16px;
           background: var(--sidebar-background-color);
           border-bottom: 1px solid var(--divider-color);
+        }
+        .search search-input {
+          position: relative;
+          top: 2px;
         }
         img {
           max-height: 60px;

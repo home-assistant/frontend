@@ -3,7 +3,6 @@ import { HomeAssistant } from "../types";
 export interface ConfigEntry {
   entry_id: string;
   domain: string;
-  domain_name?: string;
   title: string;
   source: string;
   state: string;
