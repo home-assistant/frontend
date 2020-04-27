@@ -150,7 +150,7 @@ const getWeatherExtrema = (
     ${
       tempHigh
         ? `
-            ${hass!.localize(`ui.card.weather.high`)} ${tempHigh} ${unit}
+            ${tempHigh} ${unit}
           `
         : ""
     }
@@ -158,7 +158,7 @@ const getWeatherExtrema = (
     ${
       tempLow
         ? `
-          ${hass!.localize(`ui.card.weather.low`)} ${tempLow} ${unit}
+          ${tempLow} ${unit}
         `
         : ""
     }
