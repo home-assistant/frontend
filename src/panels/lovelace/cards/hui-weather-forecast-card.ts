@@ -165,7 +165,7 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
         tabindex="0"
       >
         <div class="content">
-          <div class="icon-info">
+          <div class="icon-image">
             ${stateObj.state in weatherImages
               ? html`
                   <img
@@ -179,7 +179,9 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
                     .icon=${weatherIcons[stateObj.state] || stateIcon(stateObj)}
                   ></ha-icon>
                 `}
-            <div class="info">
+          </div>
+          <div class="info">
+            <div class="name-state">
               <div class="name">
                 ${this._config.name || computeStateName(stateObj)}
               </div>
@@ -191,15 +193,15 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
                 )}
               </div>
             </div>
-          </div>
-          <div class="temp-attribute">
-            <div class="temp">
-              ${stateObj.attributes.temperature}<span
-                >${getWeatherUnit(this.hass, "temperature")}</span
-              >
-            </div>
-            <div class="attribute">
-              ${getSecondaryWeatherAttribute(this.hass, stateObj)}
+            <div class="temp-attribute">
+              <div class="temp">
+                ${stateObj.attributes.temperature}<span
+                  >${getWeatherUnit(this.hass, "temperature")}</span
+                >
+              </div>
+              <div class="attribute">
+                ${getSecondaryWeatherAttribute(this.hass, stateObj)}
+              </div>
             </div>
           </div>
         </div>
@@ -312,7 +314,7 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
     } else {
       this.removeAttribute("verynarrow");
     }
-    if (this.offsetWidth < 200) {
+    if (this.offsetWidth < 225) {
       this.setAttribute("veryverynarrow", "");
     } else {
       this.removeAttribute("veryverynarrow");
@@ -337,61 +339,72 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
         align-items: center;
       }
 
-      .icon-info {
+      .icon-image {
         display: flex;
         align-items: center;
-        min-width: 0;
-        flex: 1;
+        min-width: 64px;
+        margin-right: 16px;
       }
 
       .weather-image,
       .weather-icon {
-        flex: 0 0 66px;
-        margin-right: 16px;
+        flex: 0 0 64px;
       }
 
       .weather-icon {
-        --iron-icon-width: 66px;
-        --iron-icon-height: 66px;
+        --iron-icon-width: 64px;
+        --iron-icon-height: 64px;
       }
 
       .info {
+        display: flex;
+        justify-content: space-between;
+        flex-grow: 1;
         overflow: hidden;
-      }
-
-      .name {
-        font-size: 16px;
-        color: var(--secondary-text-color);
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-      }
-
-      .state {
-        font-size: 28px;
-        line-height: 1.2;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
       }
 
       .temp-attribute {
-        display: flex;
-        flex-direction: column;
-        align-items: flex-end;
+        text-align: right;
       }
 
       .temp-attribute .temp {
         position: relative;
-        font-size: 38px;
-        line-height: 1;
         margin-right: 24px;
       }
 
       .temp-attribute .temp span {
         position: absolute;
         font-size: 24px;
-        top: 4px;
+        top: 1px;
+      }
+
+      .name,
+      .temp-attribute .temp {
+        font-size: 28px;
+        line-height: 1.2;
+      }
+
+      .state,
+      .attribute {
+        font-size: 14px;
+        line-height: 1;
+      }
+
+      .name-state {
+        overflow: hidden;
+        padding-right: 12px;
+        width: 100%;
+      }
+
+      .name,
+      .state {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      .attribute {
+        white-space: nowrap;
       }
 
       .forecast {
@@ -427,78 +440,10 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
         --iron-icon-height: 40px;
       }
 
-      .attribute {
-        line-height: 1;
-      }
-
       .attribute,
-      .templow {
+      .templow,
+      .state {
         color: var(--secondary-text-color);
-      }
-
-      :host([narrow]) .weather-image {
-        flex: 0 0 58px;
-      }
-
-      :host([narrow]) .weather-icon {
-        --iron-icon-width: 58px;
-        --iron-icon-height: 58px;
-      }
-
-      :host([narrow]) .state {
-        font-size: 22px;
-      }
-
-      :host([narrow]) .temp-attribute .temp {
-        font-size: 44px;
-        margin-right: 18px;
-      }
-
-      :host([narrow]) .temp-attribute .temp span {
-        font-size: 18px;
-        top: 3px;
-      }
-
-      :host([narrow]) .attribute {
-        display: none;
-      }
-
-      :host([narrow]) .forecast {
-        justify-content: space-around;
-      }
-
-      :host([veryVeryNarrow]) .content {
-        flex-wrap: wrap;
-        justify-content: center;
-      }
-
-      :host([veryNarrow]) .icon-info {
-        flex: initial;
-      }
-
-      :host([narrow]) .weather-image {
-        flex: 0 0 48px;
-      }
-
-      :host([narrow]) .weather-icon {
-        --iron-icon-width: 48px;
-        --iron-icon-height: 48px;
-      }
-
-      :host([veryNarrow]) .info {
-        display: none;
-      }
-
-      :host([veryNarrow]) .temp-attribute .temp {
-        font-size: 36px;
-      }
-
-      :host([veryNarrow]) .temp-attribute .temp span {
-        top: 2px;
-      }
-
-      :host([veryVeryNarrow]) .temp-attribute {
-        padding-top: 4px;
       }
 
       .unavailable {
@@ -509,6 +454,73 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
         font-size: 16px;
         padding: 10px 20px;
         text-align: center;
+      }
+
+      /* ============= NARROW ============= */
+
+      :host([narrow]) .icon-image {
+        min-width: 52px;
+      }
+
+      :host([narrow]) .weather-image {
+        flex: 0 0 52px;
+        width: 52px;
+      }
+
+      :host([narrow]) .weather-icon {
+        --iron-icon-width: 52px;
+        --iron-icon-height: 52px;
+      }
+
+      :host([narrow]) .forecast {
+        justify-content: space-around;
+      }
+
+      :host([narrow]) .name,
+      :host([narrow]) .temp-attribute .temp {
+        font-size: 22px;
+      }
+
+      :host([narrow]) .temp-attribute .temp {
+        margin-right: 16px;
+      }
+
+      :host([narrow]) .temp span {
+        top: 1px;
+        font-size: 16px;
+      }
+
+      /* ============= VERY NARROW ============= */
+
+      :host([veryNarrow]) .state,
+      :host([veryNarrow]) .attribute {
+        display: none;
+      }
+
+      :host([veryNarrow]) .info {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      :host([veryNarrow]) .name-state {
+        padding-right: 0;
+      }
+
+      /* ============= VERY VERY NARROW ============= */
+
+      :host([veryVeryNarrow]) .info {
+        padding-top: 4px;
+        align-items: center;
+      }
+
+      :host([veryVeryNarrow]) .content {
+        flex-wrap: wrap;
+        justify-content: center;
+        flex-direction: column;
+      }
+
+      :host([veryVeryNarrow]) .icon-image {
+        margin-right: 0;
       }
     `;
   }
