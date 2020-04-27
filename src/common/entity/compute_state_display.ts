@@ -30,7 +30,7 @@ const legacyComputeStateDisplay = (
     stateObj.attributes.unit_of_measurement &&
     !["unknown", "unavailable"].includes(stateObj.state)
   ) {
-    display = `${stateObj.state} ${stateObj.attributes.unit_of_measurement}`;
+    display = stateObj.state + " " + stateObj.attributes.unit_of_measurement;
   } else if (domain === "input_datetime") {
     let date: Date;
     if (!stateObj.attributes.has_time) {
