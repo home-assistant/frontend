@@ -1,0 +1,342 @@
+{
+  "component": {
+    "sensor": {
+      "state": {
+        "_": {
+          "off": "Af",
+          "on": "Aan"
+        }
+      }
+    },
+    "binary_sensor": {
+      "state": {
+        "_": {
+          "off": "Af",
+          "on": "Aan"
+        },
+        "battery": {
+          "off": "Normaal",
+          "on": "Laag"
+        },
+        "cold": {
+          "off": "Normaal",
+          "on": "Koud"
+        },
+        "connectivity": {
+          "off": "Ontkoppel",
+          "on": "Gekoppel"
+        },
+        "door": {
+          "off": "Toe",
+          "on": "Oop"
+        },
+        "garage_door": {
+          "off": "Toe",
+          "on": "Oop"
+        },
+        "gas": {
+          "off": "Ongemerk",
+          "on": "Bespeur"
+        },
+        "heat": {
+          "off": "Normaal",
+          "on": "Warm"
+        },
+        "lock": {
+          "off": "Gesluit",
+          "on": "Oopgesluit"
+        },
+        "moisture": {
+          "off": "Droog",
+          "on": "Nat"
+        },
+        "motion": {
+          "off": "Ongemerk",
+          "on": "Bespeur"
+        },
+        "occupancy": {
+          "off": "Ongemerk",
+          "on": "Bespeur"
+        },
+        "opening": {
+          "off": "Toe",
+          "on": "Oop"
+        },
+        "presence": {
+          "off": "Elders",
+          "on": "Tuis"
+        },
+        "problem": {
+          "off": "OK",
+          "on": "Probleem"
+        },
+        "safety": {
+          "off": "Veilige",
+          "on": "Onveilige"
+        },
+        "smoke": {
+          "off": "Ongemerk",
+          "on": "Bespeur"
+        },
+        "sound": {
+          "off": "Ongemerk",
+          "on": "Bespeur"
+        },
+        "vibration": {
+          "off": "Ongemerk",
+          "on": "Bespeur"
+        },
+        "window": {
+          "off": "Toe",
+          "on": "Oop"
+        }
+      }
+    },
+    "alarm_control_panel": {
+      "state": {
+        "_": {
+          "armed": "Gewapen",
+          "disarmed": "Ontwapen",
+          "armed_home": "Gewapend tuis",
+          "armed_away": "Gewapend weg",
+          "armed_night": "Gewapend nag",
+          "armed_custom_bypass": "Gewapende pasgemaakte omseil",
+          "pending": "Hangende",
+          "arming": "Bewapen Tans",
+          "disarming": "Ontwapen Tans",
+          "triggered": "Geaktiveer"
+        }
+      }
+    },
+    "automation": {
+      "state": {
+        "_": {
+          "off": "Af",
+          "on": "Aan"
+        }
+      }
+    },
+    "calendar": {
+      "state": {
+        "_": {
+          "off": "Af",
+          "on": "Aan"
+        }
+      }
+    },
+    "camera": {
+      "state": {
+        "_": {
+          "recording": "Opname",
+          "streaming": "Stroming",
+          "idle": "Onaktief"
+        }
+      }
+    },
+    "climate": {
+      "state": {
+        "_": {
+          "off": "Af",
+          "heat": "Hitte",
+          "cool": "Koel",
+          "heat_cool": "Verhit/Verkoel",
+          "auto": "Outo",
+          "dry": "Droog",
+          "fan_only": "Slegs waaier"
+        }
+      }
+    },
+    "configurator": {
+      "state": {
+        "_": {
+          "configure": "Stel op",
+          "configured": "Opgestel"
+        }
+      }
+    },
+    "cover": {
+      "state": {
+        "_": {
+          "open": "Oop",
+          "opening": "Opening",
+          "closed": "Toe",
+          "closing": "Sluiting",
+          "stopped": "Gestop"
+        }
+      }
+    },
+    "device_tracker": {
+      "state": {
+        "_": {
+          "home": "Tuis",
+          "not_home": "Elders"
+        }
+      }
+    },
+    "fan": {
+      "state": {
+        "_": {
+          "off": "Af",
+          "on": "Aan"
+        }
+      }
+    },
+    "group": {
+      "state": {
+        "_": {
+          "off": "Af",
+          "on": "Aan",
+          "home": "Tuis",
+          "not_home": "Elders",
+          "open": "Oop",
+          "closed": "Toe",
+          "locked": "Gesluit",
+          "unlocked": "Oopgesluit",
+          "ok": "OK",
+          "problem": "Probleem"
+        }
+      }
+    },
+    "input_boolean": {
+      "state": {
+        "_": {
+          "off": "Af",
+          "on": "Aan"
+        }
+      }
+    },
+    "light": {
+      "state": {
+        "_": {
+          "off": "Af",
+          "on": "Aan"
+        }
+      }
+    },
+    "lock": {
+      "state": {
+        "_": {
+          "locked": "Gesluit",
+          "unlocked": "Oopgesluit"
+        }
+      }
+    },
+    "media_player": {
+      "state": {
+        "_": {
+          "off": "Af",
+          "on": "Aan",
+          "playing": "Speel Tans",
+          "paused": "Onderbreek",
+          "idle": "Onaktief",
+          "standby": "Gereed"
+        }
+      }
+    },
+    "person": {
+      "state": {
+        "_": {
+          "home": "Tuis",
+          "not_home": "Elders"
+        }
+      }
+    },
+    "plant": {
+      "state": {
+        "_": {
+          "ok": "OK",
+          "problem": "Probleem"
+        }
+      }
+    },
+    "remote": {
+      "state": {
+        "_": {
+          "off": "Af",
+          "on": "Aan"
+        }
+      }
+    },
+    "script": {
+      "state": {
+        "_": {
+          "off": "Af",
+          "on": "Aan"
+        }
+      }
+    },
+    "sun": {
+      "state": {
+        "_": {
+          "above_horizon": "Bo horison",
+          "below_horizon": "Onder horison"
+        }
+      }
+    },
+    "switch": {
+      "state": {
+        "_": {
+          "off": "Af",
+          "on": "Aan"
+        }
+      }
+    },
+    "vacuum": {
+      "state": {
+        "_": {
+          "cleaning": "Skoonmaak",
+          "docked": "Vasgemeer by hawe",
+          "error": "Fout",
+          "idle": "Onaktief",
+          "off": "Af",
+          "on": "Aan",
+          "paused": "Onderbreek",
+          "returning": "Oppad terug hawe toe"
+        }
+      }
+    },
+    "timer": {
+      "state": {
+        "_": {
+          "active": "aktief",
+          "idle": "onaktief",
+          "paused": "Onderbreek"
+        }
+      }
+    },
+    "weather": {
+      "state": {
+        "_": {
+          "clear-night": "Helder, nag",
+          "cloudy": "Bewolk",
+          "fog": "Mis",
+          "hail": "Hael",
+          "lightning": "Weerlig",
+          "lightning-rainy": "Weerlig, Re\u00ebnagtig",
+          "partlycloudy": "Gedeeltelik bewolk",
+          "pouring": "Stort",
+          "rainy": "Re\u00ebnagtig",
+          "snowy": "Sneeuagtig",
+          "snowy-rainy": "Ysre\u00ebn",
+          "sunny": "Sonnig",
+          "windy": "Winderig",
+          "windy-variant": "Winderig"
+        }
+      }
+    },
+    "zwave": {
+      "state": {
+        "_": {
+          "initializing": "Inisialiseer",
+          "dead": "Dood",
+          "sleeping": "Aan die slaap",
+          "ready": "Gereed"
+        },
+        "query_stage": {
+          "initializing": "Inisialiseer ({query_stage})",
+          "dead": "Dood ({query_stage})"
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,343 @@
+{
+  "component": {
+    "binary_sensor": {
+      "state": {
+        "_": {
+          "off": "Neakt\u00edvny",
+          "on": "Akt\u00edvny"
+        },
+        "battery": {
+          "off": "Norm\u00e1lna",
+          "on": "Slab\u00e1"
+        },
+        "cold": {
+          "off": "Norm\u00e1lny",
+          "on": "Studen\u00fd"
+        },
+        "connectivity": {
+          "off": "Odpojen\u00fd",
+          "on": "Pripojen\u00fd"
+        },
+        "door": {
+          "off": "Zatvoren\u00e9",
+          "on": "Otvoren\u00e9"
+        },
+        "garage_door": {
+          "off": "Zatvoren\u00e9",
+          "on": "Otvoren\u00e9"
+        },
+        "gas": {
+          "off": "\u017diadny plyn",
+          "on": "Zachyten\u00fd plyn"
+        },
+        "heat": {
+          "off": "Norm\u00e1lny",
+          "on": "Hor\u00faci"
+        },
+        "lock": {
+          "off": "Zamknut\u00fd",
+          "on": "Odomknut\u00fd"
+        },
+        "moisture": {
+          "off": "Sucho",
+          "on": "Vlhko"
+        },
+        "motion": {
+          "off": "K\u013eud",
+          "on": "Pohyb"
+        },
+        "occupancy": {
+          "off": "Vo\u013en\u00e9",
+          "on": "Obsaden\u00e9"
+        },
+        "opening": {
+          "off": "Zatvoren\u00e9",
+          "on": "Otvoren\u00e9"
+        },
+        "presence": {
+          "off": "Pre\u010d",
+          "on": "Doma"
+        },
+        "problem": {
+          "off": "OK",
+          "on": "Probl\u00e9m"
+        },
+        "safety": {
+          "off": "Zabezpe\u010den\u00e9",
+          "on": "Nezabezpe\u010den\u00e9"
+        },
+        "smoke": {
+          "off": "\u017diadny dym",
+          "on": "Zachyten\u00fd dym"
+        },
+        "sound": {
+          "off": "Ticho",
+          "on": "Zachyten\u00fd zvuk"
+        },
+        "vibration": {
+          "off": "K\u013eud",
+          "on": "Zachyten\u00e9 vibr\u00e1cie"
+        },
+        "window": {
+          "off": "Zatvoren\u00e9",
+          "on": "Otvoren\u00e9"
+        }
+      }
+    },
+    "alarm_control_panel": {
+      "state": {
+        "_": {
+          "armed": "Akt\u00edvny",
+          "disarmed": "Neakt\u00edvny",
+          "armed_home": "Akt\u00edvny doma",
+          "armed_away": "Akt\u00edvny v nepr\u00edtomnosti",
+          "armed_night": "Akt\u00edvny v noci",
+          "armed_custom_bypass": "Zak\u00f3dovan\u00e9 prisp\u00f4soben\u00e9 vyl\u00fa\u010denie",
+          "pending": "\u010cak\u00e1 sa",
+          "arming": "Aktivuje sa",
+          "disarming": "Deaktivuje sa",
+          "triggered": "Spusten\u00fd"
+        }
+      }
+    },
+    "automation": {
+      "state": {
+        "_": {
+          "off": "Neakt\u00edvny",
+          "on": "Akt\u00edvna"
+        }
+      }
+    },
+    "calendar": {
+      "state": {
+        "_": {
+          "off": "Neakt\u00edvny",
+          "on": "Akt\u00edvny"
+        }
+      }
+    },
+    "camera": {
+      "state": {
+        "_": {
+          "recording": "Z\u00e1znam",
+          "streaming": "Streamovanie",
+          "idle": "Ne\u010dinn\u00e1"
+        }
+      }
+    },
+    "climate": {
+      "state": {
+        "_": {
+          "off": "Vypnut\u00e9",
+          "heat": "K\u00farenie",
+          "cool": "Chladenie",
+          "heat_cool": "Vykurovanie / Chladenie",
+          "auto": "Automatika",
+          "dry": "Su\u0161enie",
+          "fan_only": "Iba ventil\u00e1tor"
+        }
+      }
+    },
+    "configurator": {
+      "state": {
+        "_": {
+          "configure": "Konfigurova\u0165",
+          "configured": "Nakonfigurovan\u00e9"
+        }
+      }
+    },
+    "cover": {
+      "state": {
+        "_": {
+          "open": "Otvoren\u00e9",
+          "opening": "Otv\u00e1ra sa",
+          "closed": "Zatvoren\u00e9",
+          "closing": "Zatv\u00e1ra sa",
+          "stopped": "Zastaven\u00e9"
+        }
+      }
+    },
+    "device_tracker": {
+      "state": {
+        "_": {
+          "home": "Doma",
+          "not_home": "Pre\u010d"
+        }
+      }
+    },
+    "fan": {
+      "state": {
+        "_": {
+          "off": "Neakt\u00edvny",
+          "on": "Zapnut\u00fd"
+        }
+      }
+    },
+    "group": {
+      "state": {
+        "_": {
+          "off": "Vypnut\u00e1",
+          "on": "Zapnut\u00e1",
+          "home": "Doma",
+          "not_home": "Pre\u010d",
+          "open": "Otvoren\u00e1",
+          "closed": "Zatvoren\u00e1",
+          "locked": "Zamknut\u00e1",
+          "unlocked": "Odomknut\u00e1",
+          "ok": "OK",
+          "problem": "Probl\u00e9m"
+        }
+      }
+    },
+    "input_boolean": {
+      "state": {
+        "_": {
+          "off": "Vypnut\u00e9",
+          "on": "Zapnut\u00e9"
+        }
+      }
+    },
+    "light": {
+      "state": {
+        "_": {
+          "off": "Vypnut\u00e9",
+          "on": "Zapnut\u00e9"
+        }
+      }
+    },
+    "lock": {
+      "state": {
+        "_": {
+          "locked": "Zamknut\u00fd",
+          "unlocked": "Odomknut\u00fd"
+        }
+      }
+    },
+    "media_player": {
+      "state": {
+        "_": {
+          "off": "Vypnut\u00fd",
+          "on": "Zapnut\u00fd",
+          "playing": "Prehr\u00e1vanie",
+          "paused": "Pozastaven\u00fd",
+          "idle": "Ne\u010dinn\u00fd",
+          "standby": "Pohotovostn\u00fd re\u017eim"
+        }
+      }
+    },
+    "person": {
+      "state": {
+        "_": {
+          "home": "Doma",
+          "not_home": "Pre\u010d"
+        }
+      }
+    },
+    "plant": {
+      "state": {
+        "_": {
+          "ok": "OK",
+          "problem": "Probl\u00e9m"
+        }
+      }
+    },
+    "remote": {
+      "state": {
+        "_": {
+          "off": "Vypnut\u00fd",
+          "on": "Zapnut\u00fd"
+        }
+      }
+    },
+    "script": {
+      "state": {
+        "_": {
+          "off": "Vypnut\u00fd",
+          "on": "Zapnut\u00fd"
+        }
+      }
+    },
+    "sensor": {
+      "state": {
+        "_": {
+          "off": "Neakt\u00edvny",
+          "on": "Akt\u00edvny"
+        }
+      }
+    },
+    "sun": {
+      "state": {
+        "_": {
+          "above_horizon": "Nad horizontom",
+          "below_horizon": "Za horizontom"
+        }
+      }
+    },
+    "switch": {
+      "state": {
+        "_": {
+          "off": "Vypnut\u00fd",
+          "on": "Zapnut\u00fd"
+        }
+      }
+    },
+    "vacuum": {
+      "state": {
+        "_": {
+          "cleaning": "\u010cist\u00ed",
+          "docked": "V doku",
+          "error": "Chyba",
+          "idle": "Ne\u010dinn\u00fd",
+          "off": "Vypnut\u00fd",
+          "on": "Zapnut\u00fd",
+          "paused": "Pozastaven\u00fd",
+          "returning": "Vracia sa do doku"
+        }
+      }
+    },
+    "timer": {
+      "state": {
+        "_": {
+          "active": "akt\u00edvny",
+          "idle": "ne\u010dinn\u00fd",
+          "paused": "pozastaven\u00fd"
+        }
+      }
+    },
+    "weather": {
+      "state": {
+        "_": {
+          "clear-night": "Jasno, v noci",
+          "cloudy": "Zamra\u010den\u00e9",
+          "exceptional": "V\u00fdnimo\u010dn\u00e9",
+          "fog": "Hmla",
+          "hail": "Krupobitie",
+          "lightning": "Blesky",
+          "lightning-rainy": "Blesky, da\u017edivo",
+          "partlycloudy": "\u010ciasto\u010dne zamra\u010den\u00e9",
+          "pouring": "Lej\u00faco",
+          "rainy": "Da\u017edivo",
+          "snowy": "Zasne\u017eeno",
+          "snowy-rainy": "Zasne\u017eeno, da\u017edivo",
+          "sunny": "slne\u010dno",
+          "windy": "Veterno",
+          "windy-variant": "Veterno"
+        }
+      }
+    },
+    "zwave": {
+      "state": {
+        "_": {
+          "initializing": "Inicializ\u00e1cia",
+          "dead": "Nereaguje",
+          "sleeping": "\u00dasporn\u00fd re\u017eim",
+          "ready": "Pripraven\u00e9"
+        },
+        "query_stage": {
+          "initializing": "Inicializ\u00e1cia ( {query_stage} )",
+          "dead": "Nereaguje ({query_stage})"
+        }
+      }
+    }
+  }
+}
