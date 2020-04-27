@@ -129,6 +129,8 @@ export class HuiEntityCard extends LitElement implements LovelaceCard {
               >${"attribute" in this._config
                 ? stateObj.attributes[this._config.attribute!] ||
                   this.hass.localize("state.default.unknown")
+                : stateObj.attributes.unit_of_measurement
+                ? stateObj.state
                 : computeStateDisplay(
                     this.hass.localize,
                     stateObj,

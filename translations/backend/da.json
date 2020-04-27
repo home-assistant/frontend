@@ -1,0 +1,349 @@
+{
+  "component": {
+    "sensor": {
+      "state": {
+        "_": {
+          "off": "Fra",
+          "on": "Til"
+        }
+      }
+    },
+    "zwave": {
+      "state": {
+        "_": {
+          "initializing": "Initialiserer",
+          "dead": "D\u00f8d",
+          "sleeping": "Sover",
+          "ready": "Klar"
+        },
+        "query_stage": {
+          "initializing": "Initialiserer ( {query_stage} )",
+          "dead": "D\u00f8d ({query_stage})"
+        }
+      }
+    },
+    "ebusd": {
+      "state": {
+        "day": "Dag",
+        "night": "Nat"
+      }
+    },
+    "light": {
+      "state": {
+        "_": {
+          "off": "Slukket",
+          "on": "T\u00e6ndt"
+        }
+      }
+    },
+    "switch": {
+      "state": {
+        "_": {
+          "off": "Fra",
+          "on": "Til"
+        }
+      }
+    },
+    "binary_sensor": {
+      "state": {
+        "_": {
+          "off": "Fra",
+          "on": "Til"
+        },
+        "battery": {
+          "off": "Normal",
+          "on": "Lav"
+        },
+        "cold": {
+          "off": "Normal",
+          "on": "Kold"
+        },
+        "connectivity": {
+          "off": "Afbrudt",
+          "on": "Forbundet"
+        },
+        "door": {
+          "off": "Lukket",
+          "on": "\u00c5ben"
+        },
+        "garage_door": {
+          "off": "Lukket",
+          "on": "\u00c5ben"
+        },
+        "gas": {
+          "off": "Ikke registreret",
+          "on": "Registreret"
+        },
+        "heat": {
+          "off": "Normal",
+          "on": "Varm"
+        },
+        "lock": {
+          "off": "L\u00e5st",
+          "on": "Ul\u00e5st"
+        },
+        "moisture": {
+          "off": "T\u00f8r",
+          "on": "Fugtig"
+        },
+        "motion": {
+          "off": "Ikke registreret",
+          "on": "Registreret"
+        },
+        "occupancy": {
+          "off": "Ikke registreret",
+          "on": "Registreret"
+        },
+        "opening": {
+          "off": "Lukket",
+          "on": "\u00c5ben"
+        },
+        "presence": {
+          "off": "Ude",
+          "on": "Hjemme"
+        },
+        "problem": {
+          "off": "OK",
+          "on": "Problem"
+        },
+        "safety": {
+          "off": "Sikret",
+          "on": "Usikret"
+        },
+        "smoke": {
+          "off": "Ikke registreret",
+          "on": "Registreret"
+        },
+        "sound": {
+          "off": "Ikke registreret",
+          "on": "Registreret"
+        },
+        "vibration": {
+          "off": "Ikke registreret",
+          "on": "Registreret"
+        },
+        "window": {
+          "off": "Lukket",
+          "on": "\u00c5ben"
+        }
+      }
+    },
+    "lock": {
+      "state": {
+        "_": {
+          "locked": "L\u00e5st",
+          "unlocked": "Ul\u00e5st"
+        }
+      }
+    },
+    "cover": {
+      "state": {
+        "_": {
+          "open": "\u00c5ben",
+          "opening": "\u00c5bner",
+          "closed": "Lukket",
+          "closing": "Lukker",
+          "stopped": "Stoppet"
+        }
+      }
+    },
+    "alarm_control_panel": {
+      "state": {
+        "_": {
+          "armed": "Tilkoblet",
+          "disarmed": "Frakoblet",
+          "armed_home": "Tilkoblet hjemme",
+          "armed_away": "Tilkoblet ude",
+          "armed_night": "Tilkoblet nat",
+          "armed_custom_bypass": "Tilkoblet brugerdefineret bypass",
+          "pending": "Afventer",
+          "arming": "Tilkobler",
+          "disarming": "Frakobler",
+          "triggered": "Udl\u00f8st"
+        }
+      }
+    },
+    "media_player": {
+      "state": {
+        "_": {
+          "off": "Slukket",
+          "on": "T\u00e6ndt",
+          "playing": "Afspiller",
+          "paused": "Sat p\u00e5 pause",
+          "idle": "Inaktiv",
+          "standby": "Standby"
+        }
+      }
+    },
+    "device_tracker": {
+      "state": {
+        "_": {
+          "home": "Hjemme",
+          "not_home": "Ude"
+        }
+      }
+    },
+    "vacuum": {
+      "state": {
+        "_": {
+          "cleaning": "G\u00f8r rent",
+          "docked": "I dock",
+          "error": "Fejl",
+          "idle": "Inaktiv",
+          "off": "Off",
+          "on": "On",
+          "paused": "Sat p\u00e5 pause",
+          "returning": "Vender tilbage til dock"
+        }
+      }
+    },
+    "fan": {
+      "state": {
+        "_": {
+          "off": "Fra",
+          "on": "Til"
+        }
+      }
+    },
+    "climate": {
+      "state": {
+        "_": {
+          "off": "Fra",
+          "heat": "Varme",
+          "cool": "K\u00f8l",
+          "heat_cool": "Opvarm/k\u00f8l",
+          "auto": "Auto",
+          "dry": "T\u00f8r",
+          "fan_only": "Kun bl\u00e6ser"
+        }
+      }
+    },
+    "automation": {
+      "state": {
+        "_": {
+          "off": "Fra",
+          "on": "Til"
+        }
+      }
+    },
+    "calendar": {
+      "state": {
+        "_": {
+          "off": "Fra",
+          "on": "Til"
+        }
+      }
+    },
+    "camera": {
+      "state": {
+        "_": {
+          "recording": "Optager",
+          "streaming": "Streamer",
+          "idle": "Inaktiv"
+        }
+      }
+    },
+    "configurator": {
+      "state": {
+        "_": {
+          "configure": "Konfigurer",
+          "configured": "Konfigureret"
+        }
+      }
+    },
+    "group": {
+      "state": {
+        "_": {
+          "off": "Fra",
+          "on": "Til",
+          "home": "Hjemme",
+          "not_home": "Ude",
+          "open": "\u00c5ben",
+          "closed": "Lukket",
+          "locked": "L\u00e5st",
+          "unlocked": "Ul\u00e5st",
+          "ok": "OK",
+          "problem": "Problem"
+        }
+      }
+    },
+    "input_boolean": {
+      "state": {
+        "_": {
+          "off": "Fra",
+          "on": "Til"
+        }
+      }
+    },
+    "person": {
+      "state": {
+        "_": {
+          "home": "Hjemme",
+          "not_home": "Ude"
+        }
+      }
+    },
+    "plant": {
+      "state": {
+        "_": {
+          "ok": "OK",
+          "problem": "Problem"
+        }
+      }
+    },
+    "remote": {
+      "state": {
+        "_": {
+          "off": "Slukket",
+          "on": "T\u00e6ndt"
+        }
+      }
+    },
+    "script": {
+      "state": {
+        "_": {
+          "off": "Fra",
+          "on": "Til"
+        }
+      }
+    },
+    "sun": {
+      "state": {
+        "_": {
+          "above_horizon": "Over horisonten",
+          "below_horizon": "Under horisonten"
+        }
+      }
+    },
+    "timer": {
+      "state": {
+        "_": {
+          "active": "aktiv",
+          "idle": "inaktiv",
+          "paused": "pause"
+        }
+      }
+    },
+    "weather": {
+      "state": {
+        "_": {
+          "clear-night": "Klart, nat",
+          "cloudy": "Overskyet",
+          "exceptional": "Enest\u00e5ende",
+          "fog": "T\u00e5ge",
+          "hail": "Hagl",
+          "lightning": "Lyn",
+          "lightning-rainy": "Lyn, regnvejr",
+          "partlycloudy": "Delvist overskyet",
+          "pouring": "Regnvejr",
+          "rainy": "Regnfuldt",
+          "snowy": "Sne",
+          "snowy-rainy": "Sne, regn",
+          "sunny": "Solrig",
+          "windy": "Bl\u00e6sende",
+          "windy-variant": "Bl\u00e6sende"
+        }
+      }
+    }
+  }
+}

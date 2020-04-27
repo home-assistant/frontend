@@ -1,0 +1,343 @@
+{
+  "component": {
+    "sensor": {
+      "state": {
+        "_": {
+          "off": "Av",
+          "on": "P\u00e5"
+        }
+      }
+    },
+    "zwave": {
+      "state": {
+        "_": {
+          "initializing": "Initialiserer",
+          "dead": "D\u00f8d",
+          "sleeping": "S\u00f8v",
+          "ready": "Klar"
+        },
+        "query_stage": {
+          "initializing": "Initialiserer ({query_stage})",
+          "dead": "D\u00f8d ({query_stage})"
+        }
+      }
+    },
+    "binary_sensor": {
+      "state": {
+        "_": {
+          "off": "Av",
+          "on": "P\u00e5"
+        },
+        "battery": {
+          "off": "Normalt",
+          "on": "L\u00e5gt"
+        },
+        "cold": {
+          "off": "Normal",
+          "on": "Kald"
+        },
+        "connectivity": {
+          "off": "Fr\u00e5kopla",
+          "on": "Tilkopla"
+        },
+        "door": {
+          "off": "Lukka",
+          "on": "Open"
+        },
+        "garage_door": {
+          "off": "Lukka",
+          "on": "Open"
+        },
+        "gas": {
+          "off": "Ikkje oppdaga",
+          "on": "Oppdaga"
+        },
+        "heat": {
+          "off": "Normal",
+          "on": "Varm"
+        },
+        "lock": {
+          "off": "L\u00e5st",
+          "on": "Ul\u00e5st"
+        },
+        "moisture": {
+          "off": "T\u00f8rr",
+          "on": "V\u00e5t"
+        },
+        "motion": {
+          "off": "Ikkje oppdaga",
+          "on": "Oppdaga"
+        },
+        "occupancy": {
+          "off": "Ikkje oppdaga",
+          "on": "Oppdaga"
+        },
+        "opening": {
+          "off": "Lukka",
+          "on": "Open"
+        },
+        "presence": {
+          "off": "Borte",
+          "on": "Heime"
+        },
+        "problem": {
+          "off": "Ok",
+          "on": "Problem"
+        },
+        "safety": {
+          "off": "Sikker",
+          "on": "Usikker"
+        },
+        "smoke": {
+          "off": "Ikkje oppdaga",
+          "on": "Oppdaga"
+        },
+        "sound": {
+          "off": "Ikkje oppdaga",
+          "on": "Oppdaga"
+        },
+        "vibration": {
+          "off": "Ikkje oppdaga",
+          "on": "Oppdaga"
+        },
+        "window": {
+          "off": "Lukka",
+          "on": "Open"
+        }
+      }
+    },
+    "alarm_control_panel": {
+      "state": {
+        "_": {
+          "armed": "P\u00e5sl\u00e5tt",
+          "disarmed": "Avsl\u00e5tt",
+          "armed_home": "P\u00e5 for heime",
+          "armed_away": "P\u00e5 for borte",
+          "armed_night": "P\u00e5 for natta",
+          "armed_custom_bypass": "Armert tilpassa unntak",
+          "pending": "I vente av",
+          "arming": "Skrur p\u00e5",
+          "disarming": "Skrur av",
+          "triggered": "Utl\u00f8yst"
+        }
+      }
+    },
+    "automation": {
+      "state": {
+        "_": {
+          "off": "Av",
+          "on": "P\u00e5"
+        }
+      }
+    },
+    "calendar": {
+      "state": {
+        "_": {
+          "off": "Av",
+          "on": "P\u00e5"
+        }
+      }
+    },
+    "camera": {
+      "state": {
+        "_": {
+          "recording": "Opptak",
+          "streaming": "Str\u00f8ymer",
+          "idle": "Inaktiv"
+        }
+      }
+    },
+    "climate": {
+      "state": {
+        "_": {
+          "off": "Av",
+          "heat": "Varme",
+          "cool": "Kj\u00f8le",
+          "heat_cool": "Oppvarming/Nedkj\u00f8ling",
+          "auto": "Auto",
+          "dry": "T\u00f8rr",
+          "fan_only": "Berre vifte"
+        }
+      }
+    },
+    "configurator": {
+      "state": {
+        "_": {
+          "configure": "Konfigurerer",
+          "configured": "Konfigurert"
+        }
+      }
+    },
+    "cover": {
+      "state": {
+        "_": {
+          "open": "Open",
+          "opening": "Opnar",
+          "closed": "Lukka",
+          "closing": "Lukkar",
+          "stopped": "Stoppa"
+        }
+      }
+    },
+    "device_tracker": {
+      "state": {
+        "_": {
+          "home": "Heime",
+          "not_home": "Borte"
+        }
+      }
+    },
+    "fan": {
+      "state": {
+        "_": {
+          "off": "Av",
+          "on": "P\u00e5"
+        }
+      }
+    },
+    "group": {
+      "state": {
+        "_": {
+          "off": "Av",
+          "on": "P\u00e5",
+          "home": "Heime",
+          "not_home": "Borte",
+          "open": "Open",
+          "closed": "Lukka",
+          "locked": "L\u00e5st",
+          "unlocked": "Ul\u00e5st",
+          "ok": "Ok",
+          "problem": "Problem"
+        }
+      }
+    },
+    "input_boolean": {
+      "state": {
+        "_": {
+          "off": "Av",
+          "on": "P\u00e5"
+        }
+      }
+    },
+    "light": {
+      "state": {
+        "_": {
+          "off": "Av",
+          "on": "P\u00e5"
+        }
+      }
+    },
+    "lock": {
+      "state": {
+        "_": {
+          "locked": "L\u00e5st",
+          "unlocked": "Ul\u00e5st"
+        }
+      }
+    },
+    "media_player": {
+      "state": {
+        "_": {
+          "off": "Av",
+          "on": "P\u00e5",
+          "playing": "Spelar",
+          "paused": "Pausa",
+          "idle": "Inaktiv",
+          "standby": "Avventer"
+        }
+      }
+    },
+    "person": {
+      "state": {
+        "_": {
+          "home": "Heime",
+          "not_home": "Borte "
+        }
+      }
+    },
+    "plant": {
+      "state": {
+        "_": {
+          "ok": "Ok",
+          "problem": "Problem"
+        }
+      }
+    },
+    "remote": {
+      "state": {
+        "_": {
+          "off": "Av",
+          "on": "P\u00e5"
+        }
+      }
+    },
+    "script": {
+      "state": {
+        "_": {
+          "off": "Av",
+          "on": "P\u00e5"
+        }
+      }
+    },
+    "sun": {
+      "state": {
+        "_": {
+          "above_horizon": "Over horisonten",
+          "below_horizon": "Under horisonten"
+        }
+      }
+    },
+    "switch": {
+      "state": {
+        "_": {
+          "off": "Av",
+          "on": "P\u00e5"
+        }
+      }
+    },
+    "vacuum": {
+      "state": {
+        "_": {
+          "cleaning": "Reingjer",
+          "docked": "Parkert",
+          "error": "Feil",
+          "idle": "Tomgang",
+          "off": "Av",
+          "on": "P\u00e5",
+          "paused": "Pausa",
+          "returning": "G\u00e5 tilbake til ladestasjonen"
+        }
+      }
+    },
+    "timer": {
+      "state": {
+        "_": {
+          "active": "aktiv",
+          "idle": "tomgang",
+          "paused": "pausa"
+        }
+      }
+    },
+    "weather": {
+      "state": {
+        "_": {
+          "clear-night": "Klart, natt",
+          "cloudy": "Overskya",
+          "exceptional": "Utmerka",
+          "fog": "T\u00e5ke",
+          "hail": "Hagl",
+          "lightning": "Lyn",
+          "lightning-rainy": "Lyn, regn",
+          "partlycloudy": "Delvis overskya",
+          "pouring": "P\u00f8sande",
+          "rainy": "Regn",
+          "snowy": "Sn\u00f8",
+          "snowy-rainy": "Sn\u00f8, regn",
+          "sunny": "Mykje sol",
+          "windy": "Vind",
+          "windy-variant": "Vind"
+        }
+      }
+    }
+  }
+}

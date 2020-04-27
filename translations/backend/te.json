@@ -1,0 +1,315 @@
+{
+  "component": {
+    "binary_sensor": {
+      "state": {
+        "_": {
+          "off": "\u0c06\u0c2b\u0c4d",
+          "on": "\u0c06\u0c28\u0c4d"
+        },
+        "battery": {
+          "off": "\u0c38\u0c3e\u0c27\u0c3e\u0c30\u0c23",
+          "on": "\u0c24\u0c15\u0c4d\u0c15\u0c41\u0c35"
+        },
+        "cold": {
+          "on": "\u0c1a\u0c32\u0c4d\u0c32\u0c28\u0c3f"
+        },
+        "connectivity": {
+          "off": "\u0c21\u0c3f\u0c38\u0c4d\u0c15\u0c28\u0c46\u0c15\u0c4d\u0c1f\u0c4d",
+          "on": "\u0c15\u0c28\u0c46\u0c15\u0c4d\u0c1f\u0c4d"
+        },
+        "door": {
+          "off": "\u0c2e\u0c42\u0c38\u0c41\u0c15\u0c41\u0c02\u0c26\u0c3f",
+          "on": "\u0c24\u0c46\u0c30\u0c3f\u0c1a\u0c3f\u0c35\u0c41\u0c02\u0c26\u0c3f"
+        },
+        "garage_door": {
+          "off": "\u0c2e\u0c42\u0c38\u0c41\u0c15\u0c41\u0c02\u0c26\u0c3f",
+          "on": "\u0c24\u0c46\u0c30\u0c3f\u0c1a\u0c3f\u0c35\u0c41\u0c02\u0c26\u0c3f"
+        },
+        "gas": {
+          "off": "\u0c17\u0c4d\u0c2f\u0c3e\u0c38\u0c4d \u0c06\u0c2b\u0c4d",
+          "on": "\u0c17\u0c4d\u0c2f\u0c3e\u0c38\u0c4d \u0c06\u0c28\u0c4d"
+        },
+        "heat": {
+          "off": "\u0c38\u0c3e\u0c27\u0c3e\u0c30\u0c23",
+          "on": "\u0c35\u0c47\u0c21\u0c3f"
+        },
+        "lock": {
+          "off": "\u0c32\u0c3e\u0c15\u0c4d \u0c1a\u0c47\u0c2f\u0c2c\u0c21\u0c3f\u0c02\u0c26\u0c3f",
+          "on": "\u0c32\u0c3e\u0c15\u0c4d \u0c1a\u0c47\u0c2f\u0c2c\u0c21\u0c32\u0c47\u0c26\u0c41"
+        },
+        "moisture": {
+          "off": "\u0c2a\u0c4a\u0c21\u0c3f",
+          "on": "\u0c24\u0c21\u0c3f"
+        },
+        "motion": {
+          "off": "\u0c15\u0c26\u0c32\u0c3f\u0c15 \u0c32\u0c47\u0c26\u0c41",
+          "on": "\u0c15\u0c26\u0c32\u0c3f\u0c15 \u0c35\u0c41\u0c02\u0c26\u0c3f"
+        },
+        "occupancy": {
+          "off": "\u0c09\u0c28\u0c3f\u0c15\u0c3f\u0c21\u0c3f \u0c32\u0c47\u0c26\u0c41",
+          "on": "\u0c09\u0c28\u0c3f\u0c15\u0c3f\u0c21\u0c3f \u0c09\u0c02\u0c26\u0c3f"
+        },
+        "opening": {
+          "off": "\u0c2e\u0c42\u0c38\u0c3f\u0c35\u0c41\u0c02\u0c26\u0c3f",
+          "on": "\u0c24\u0c46\u0c30\u0c41\u0c1a\u0c41\u0c15\u0c41\u0c02\u0c1f\u0c4b\u0c02\u0c26\u0c3f"
+        },
+        "presence": {
+          "off": "\u0c2c\u0c2f\u0c1f",
+          "on": "\u0c07\u0c02\u0c1f"
+        },
+        "problem": {
+          "off": "OK",
+          "on": "\u0c38\u0c2e\u0c38\u0c4d\u0c2f"
+        },
+        "safety": {
+          "off": "\u0c15\u0c4d\u0c37\u0c47\u0c2e\u0c02",
+          "on": "\u0c15\u0c4d\u0c37\u0c47\u0c2e\u0c02 \u0c15\u0c3e\u0c26\u0c41"
+        },
+        "smoke": {
+          "off": "\u0c2a\u0c4a\u0c17 \u0c32\u0c47\u0c26\u0c41",
+          "on": "\u0c2a\u0c4a\u0c17 \u0c35\u0c41\u0c02\u0c26\u0c3f"
+        },
+        "sound": {
+          "off": "\u0c36\u0c2c\u0c4d\u0c27\u0c02 \u0c32\u0c47\u0c26\u0c41",
+          "on": "\u0c36\u0c2c\u0c4d\u0c27\u0c02 \u0c35\u0c41\u0c02\u0c26\u0c3f"
+        },
+        "vibration": {
+          "off": "\u0c15\u0c26\u0c32\u0c1f\u0c4d\u0c32\u0c47\u0c26\u0c41",
+          "on": "\u0c15\u0c26\u0c41\u0c32\u0c41\u0c24\u0c4b\u0c02\u0c26\u0c3f"
+        },
+        "window": {
+          "off": "\u0c2e\u0c42\u0c38\u0c41\u0c15\u0c41\u0c02\u0c26\u0c3f",
+          "on": "\u0c24\u0c46\u0c30\u0c3f\u0c1a\u0c3f\u0c35\u0c41\u0c02\u0c26\u0c3f"
+        }
+      }
+    },
+    "alarm_control_panel": {
+      "state": {
+        "_": {
+          "armed": "\u0c2d\u0c26\u0c4d\u0c30\u0c24 \u0c35\u0c41\u0c02\u0c26\u0c3f",
+          "disarmed": "\u0c2d\u0c26\u0c4d\u0c30\u0c24 \u0c32\u0c47\u0c26\u0c41",
+          "armed_home": "\u0c38\u0c46\u0c15\u0c4d\u0c2f\u0c42\u0c30\u0c3f\u0c1f\u0c40 \u0c38\u0c3f\u0c38\u0c4d\u0c1f\u0c2e\u0c4d \u0c06\u0c28\u0c4d \u0c1a\u0c47\u0c2f\u0c2c\u0c21\u0c3f\u0c02\u0c26\u0c3f",
+          "armed_away": "\u0c07\u0c02\u0c1f \u0c2c\u0c2f\u0c1f \u0c2d\u0c26\u0c4d\u0c30\u0c24",
+          "armed_night": "\u0c30\u0c3e\u0c24\u0c4d\u0c30\u0c3f \u0c2a\u0c42\u0c1f \u0c2d\u0c26\u0c4d\u0c30\u0c24",
+          "armed_custom_bypass": "\u0c2d\u0c26\u0c4d\u0c30\u0c24 \u0c15\u0c38\u0c4d\u0c1f\u0c2e\u0c4d \u0c2c\u0c48\u0c2a\u0c3e\u0c38\u0c4d",
+          "pending": "\u0c2a\u0c46\u0c02\u0c21\u0c3f\u0c02\u0c17\u0c4d",
+          "arming": "\u0c2d\u0c26\u0c4d\u0c30\u0c3f\u0c02\u0c1a\u0c41\u0c1f",
+          "disarming": "\u0c2d\u0c26\u0c4d\u0c30\u0c24 \u0c24\u0c40\u0c38\u0c3f\u0c35\u0c47\u0c2f\u0c41\u0c1f",
+          "triggered": "\u0c0a\u0c2a\u0c02\u0c26\u0c41\u0c15\u0c41\u0c02\u0c26\u0c3f"
+        }
+      }
+    },
+    "automation": {
+      "state": {
+        "_": {
+          "off": "\u0c06\u0c2b\u0c4d",
+          "on": "\u0c06\u0c28\u0c4d"
+        }
+      }
+    },
+    "calendar": {
+      "state": {
+        "_": {
+          "off": "\u0c06\u0c2b\u0c4d",
+          "on": "\u0c06\u0c28\u0c4d"
+        }
+      }
+    },
+    "camera": {
+      "state": {
+        "_": {
+          "recording": "\u0c30\u0c3f\u0c15\u0c3e\u0c30\u0c4d\u0c21\u0c3f\u0c02\u0c17\u0c4d",
+          "streaming": "\u0c2a\u0c4d\u0c30\u0c38\u0c3e\u0c30\u0c02",
+          "idle": "\u0c10\u0c21\u0c3f\u0c32\u0c4d"
+        }
+      }
+    },
+    "climate": {
+      "state": {
+        "_": {
+          "off": "\u0c06\u0c2b\u0c4d",
+          "heat": "\u0c35\u0c46\u0c1a\u0c4d\u0c1a\u0c17\u0c3e",
+          "cool": "\u0c1a\u0c32\u0c4d\u0c32\u0c17\u0c3e",
+          "auto": "\u0c26\u0c3e\u0c28\u0c02\u0c24\u0c1f \u0c05\u0c26\u0c47",
+          "dry": "\u0c2a\u0c4a\u0c21\u0c3f",
+          "fan_only": "\u0c2b\u0c4d\u0c2f\u0c3e\u0c28\u0c4d \u0c2e\u0c3e\u0c24\u0c4d\u0c30\u0c2e\u0c47"
+        }
+      }
+    },
+    "configurator": {
+      "state": {
+        "_": {
+          "configure": "\u0c15\u0c3e\u0c28\u0c4d\u0c2b\u0c3f\u0c17\u0c30\u0c4d",
+          "configured": "\u0c15\u0c3e\u0c28\u0c4d\u0c2b\u0c3f\u0c17\u0c30\u0c4d"
+        }
+      }
+    },
+    "cover": {
+      "state": {
+        "_": {
+          "open": "\u0c24\u0c46\u0c30\u0c3f\u0c1a\u0c3f\u0c35\u0c41\u0c02\u0c26\u0c3f",
+          "opening": "\u0c24\u0c46\u0c30\u0c41\u0c1a\u0c41\u0c15\u0c41\u0c02\u0c1f\u0c4b\u0c02\u0c26\u0c3f",
+          "closed": "\u0c2e\u0c42\u0c38\u0c41\u0c15\u0c41\u0c02\u0c26\u0c3f",
+          "closing": "\u0c2e\u0c42\u0c38\u0c41\u0c15\u0c41\u0c02\u0c1f\u0c4b\u0c02\u0c26\u0c3f",
+          "stopped": "\u0c06\u0c17\u0c3f\u0c35\u0c41\u0c02\u0c26\u0c3f"
+        }
+      }
+    },
+    "device_tracker": {
+      "state": {
+        "_": {
+          "home": "\u0c07\u0c02\u0c1f",
+          "not_home": "\u0c2c\u0c2f\u0c1f"
+        }
+      }
+    },
+    "fan": {
+      "state": {
+        "_": {
+          "off": "\u0c06\u0c2b\u0c4d",
+          "on": "\u0c06\u0c28\u0c4d"
+        }
+      }
+    },
+    "group": {
+      "state": {
+        "_": {
+          "off": "\u0c06\u0c2b\u0c4d",
+          "on": "\u0c06\u0c28\u0c4d",
+          "home": "\u0c07\u0c02\u0c1f",
+          "not_home": "\u0c2c\u0c2f\u0c1f",
+          "open": "\u0c24\u0c46\u0c30\u0c3f\u0c1a\u0c3f\u0c35\u0c41\u0c02\u0c26\u0c3f",
+          "closed": "\u0c2e\u0c42\u0c38\u0c41\u0c15\u0c41\u0c02\u0c26\u0c3f",
+          "locked": "\u0c2e\u0c42\u0c38\u0c3f \u0c35\u0c41\u0c02\u0c21\u0c41",
+          "unlocked": "\u0c24\u0c46\u0c30\u0c41\u0c1a\u0c3f \u0c35\u0c41\u0c02\u0c21\u0c41",
+          "ok": "\u0c05\u0c32\u0c3e\u0c17\u0c47",
+          "problem": "\u0c38\u0c2e\u0c38\u0c4d\u0c2f"
+        }
+      }
+    },
+    "input_boolean": {
+      "state": {
+        "_": {
+          "off": "\u0c06\u0c2b\u0c4d",
+          "on": "\u0c06\u0c28\u0c4d"
+        }
+      }
+    },
+    "light": {
+      "state": {
+        "_": {
+          "off": "\u0c06\u0c2b\u0c4d",
+          "on": "\u0c06\u0c28\u0c4d"
+        }
+      }
+    },
+    "lock": {
+      "state": {
+        "_": {
+          "locked": "\u0c2e\u0c42\u0c38\u0c3f \u0c35\u0c41\u0c02\u0c21\u0c41",
+          "unlocked": "\u0c24\u0c46\u0c30\u0c41\u0c1a\u0c3f \u0c35\u0c41\u0c02\u0c21\u0c41"
+        }
+      }
+    },
+    "media_player": {
+      "state": {
+        "_": {
+          "off": "\u0c06\u0c2b\u0c4d",
+          "on": "\u0c06\u0c28\u0c4d",
+          "playing": "\u0c06\u0c21\u0c41\u0c24\u0c4b\u0c02\u0c26\u0c3f",
+          "paused": "\u0c06\u0c2a\u0c3f\u0c35\u0c41\u0c02\u0c26\u0c3f",
+          "idle": "\u0c10\u0c21\u0c3f\u0c32\u0c4d",
+          "standby": "\u0c28\u0c3f\u0c32\u0c15\u0c21"
+        }
+      }
+    },
+    "plant": {
+      "state": {
+        "_": {
+          "ok": "\u0c05\u0c32\u0c3e\u0c17\u0c47",
+          "problem": "\u0c38\u0c2e\u0c38\u0c4d\u0c2f"
+        }
+      }
+    },
+    "remote": {
+      "state": {
+        "_": {
+          "off": "\u0c06\u0c2b\u0c4d",
+          "on": "\u0c06\u0c28\u0c4d"
+        }
+      }
+    },
+    "script": {
+      "state": {
+        "_": {
+          "off": "\u0c06\u0c2b\u0c4d",
+          "on": "\u0c06\u0c28\u0c4d"
+        }
+      }
+    },
+    "sensor": {
+      "state": {
+        "_": {
+          "off": "\u0c06\u0c2b\u0c4d",
+          "on": "\u0c06\u0c28\u0c4d"
+        }
+      }
+    },
+    "sun": {
+      "state": {
+        "_": {
+          "above_horizon": "\u0c39\u0c4b\u0c30\u0c3f\u0c1c\u0c4b\u0c28\u0c4d \u0c2a\u0c48\u0c28",
+          "below_horizon": "\u0c39\u0c4b\u0c30\u0c3f\u0c1c\u0c4b\u0c28\u0c4d \u0c15\u0c4d\u0c30\u0c3f\u0c02\u0c26"
+        }
+      }
+    },
+    "switch": {
+      "state": {
+        "_": {
+          "off": "\u0c06\u0c2b\u0c4d",
+          "on": "\u0c06\u0c28\u0c4d"
+        }
+      }
+    },
+    "vacuum": {
+      "state": {
+        "_": {
+          "cleaning": "\u0c36\u0c41\u0c2d\u0c4d\u0c30\u0c2a\u0c30\u0c41\u0c1a\u0c41\u0c24\u0c4b\u0c02\u0c26\u0c3f"
+        }
+      }
+    },
+    "weather": {
+      "state": {
+        "_": {
+          "cloudy": "\u0c2e\u0c47\u0c18\u0c3e\u0c35\u0c43\u0c24\u0c02",
+          "fog": "\u0c2a\u0c4a\u0c17\u0c2e\u0c02\u0c1a\u0c41",
+          "hail": "\u0c35\u0c21\u0c17\u0c33\u0c4d\u0c33\u0c41",
+          "lightning": "\u0c2e\u0c46\u0c30\u0c41\u0c2a\u0c41\u0c32\u0c41",
+          "lightning-rainy": "\u0c2e\u0c46\u0c30\u0c41\u0c2a\u0c41, \u0c35\u0c30\u0c4d\u0c37\u0c02",
+          "partlycloudy": "\u0c2a\u0c3e\u0c15\u0c4d\u0c37\u0c3f\u0c15\u0c02\u0c17\u0c3e \u0c2e\u0c47\u0c18\u0c3e\u0c35\u0c43\u0c24\u0c02",
+          "pouring": "\u0c15\u0c41\u0c02\u0c2d\u0c35\u0c43\u0c37\u0c4d\u0c1f\u0c3f",
+          "rainy": "\u0c35\u0c30\u0c4d\u0c37\u0c02",
+          "snowy": "\u0c2e\u0c02\u0c1a\u0c41",
+          "snowy-rainy": "\u0c2e\u0c02\u0c1a\u0c41, \u0c35\u0c30\u0c4d\u0c37\u0c02",
+          "sunny": "\u0c0e\u0c02\u0c21",
+          "windy": "\u0c17\u0c3e\u0c32\u0c41\u0c32\u0c24\u0c4b",
+          "windy-variant": "\u0c17\u0c3e\u0c32\u0c41\u0c32\u0c24\u0c4b"
+        }
+      }
+    },
+    "zwave": {
+      "state": {
+        "_": {
+          "initializing": "\u0c38\u0c3f\u0c26\u0c4d\u0c27\u0c02 \u0c05\u0c35\u0c41\u0c24\u0c4b\u0c02\u0c26\u0c3f",
+          "dead": "\u0c2e\u0c43\u0c24 \u0c2a\u0c30\u0c3f\u0c15\u0c30\u0c02",
+          "sleeping": "\u0c28\u0c3f\u0c26\u0c4d\u0c30\u0c3f\u0c38\u0c4d\u0c24\u0c4b\u0c02\u0c26\u0c3f",
+          "ready": "\u0c30\u0c46\u0c21\u0c40"
+        },
+        "query_stage": {
+          "initializing": "\u0c38\u0c3f\u0c26\u0c4d\u0c27\u0c02 \u0c05\u0c35\u0c41\u0c24\u0c4b\u0c02\u0c26\u0c3f ( {query_stage} )",
+          "dead": "\u0c2e\u0c43\u0c24 \u0c2a\u0c30\u0c3f\u0c15\u0c30\u0c02 ({query_stage})"
+        }
+      }
+    }
+  }
+}

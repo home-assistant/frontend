@@ -1,0 +1,349 @@
+{
+  "component": {
+    "sensor": {
+      "state": {
+        "_": {
+          "off": "Desactivat",
+          "on": "Activat"
+        }
+      }
+    },
+    "zwave": {
+      "state": {
+        "_": {
+          "initializing": "Inicialitzant",
+          "dead": "No disponible",
+          "sleeping": "Dormint",
+          "ready": "A punt"
+        },
+        "query_stage": {
+          "initializing": "Inicialitzant",
+          "dead": "No disponible"
+        }
+      }
+    },
+    "ebusd": {
+      "state": {
+        "day": "Dia",
+        "night": "Nit"
+      }
+    },
+    "light": {
+      "state": {
+        "_": {
+          "off": "Apagada",
+          "on": "Encesa"
+        }
+      }
+    },
+    "switch": {
+      "state": {
+        "_": {
+          "off": "Apagat",
+          "on": "Enc\u00e8s"
+        }
+      }
+    },
+    "binary_sensor": {
+      "state": {
+        "_": {
+          "off": "Desactivat",
+          "on": "Activat"
+        },
+        "battery": {
+          "off": "Normal",
+          "on": "Baixa"
+        },
+        "cold": {
+          "off": "Normal",
+          "on": "Fred"
+        },
+        "connectivity": {
+          "off": "Desconnectat",
+          "on": "Connectat"
+        },
+        "door": {
+          "off": "Tancada",
+          "on": "Oberta"
+        },
+        "garage_door": {
+          "off": "Tancada",
+          "on": "Oberta"
+        },
+        "gas": {
+          "off": "Lliure",
+          "on": "Detectat"
+        },
+        "heat": {
+          "off": "Normal",
+          "on": "Calent"
+        },
+        "lock": {
+          "off": "Bloquejat",
+          "on": "Desbloquejat"
+        },
+        "moisture": {
+          "off": "Sec",
+          "on": "Humit"
+        },
+        "motion": {
+          "off": "Lliure",
+          "on": "Detectat"
+        },
+        "occupancy": {
+          "off": "Lliure",
+          "on": "Detectat"
+        },
+        "opening": {
+          "off": "Tancat",
+          "on": "Obert"
+        },
+        "presence": {
+          "off": "Lliure",
+          "on": "Detectat"
+        },
+        "problem": {
+          "off": "Correcte",
+          "on": "Problema"
+        },
+        "safety": {
+          "off": "Segur",
+          "on": "No segur"
+        },
+        "smoke": {
+          "off": "Lliure",
+          "on": "Detectat"
+        },
+        "sound": {
+          "off": "Lliure",
+          "on": "Detectat"
+        },
+        "vibration": {
+          "off": "Lliure",
+          "on": "Detectat"
+        },
+        "window": {
+          "off": "Tancada",
+          "on": "Oberta"
+        }
+      }
+    },
+    "lock": {
+      "state": {
+        "_": {
+          "locked": "Bloquejat",
+          "unlocked": "Desbloquejat"
+        }
+      }
+    },
+    "cover": {
+      "state": {
+        "_": {
+          "open": "Oberta",
+          "opening": "Obrint",
+          "closed": "Tancada",
+          "closing": "Tancant",
+          "stopped": "Aturat"
+        }
+      }
+    },
+    "alarm_control_panel": {
+      "state": {
+        "_": {
+          "armed": "Activada",
+          "disarmed": "Desactivada",
+          "armed_home": "Activada, mode a casa",
+          "armed_away": "Activada, mode fora",
+          "armed_night": "Activada, mode nocturn",
+          "armed_custom_bypass": "Activada, bypass personalitzat",
+          "pending": "Pendent",
+          "arming": "Activant",
+          "disarming": "Desactivant",
+          "triggered": "Disparada"
+        }
+      }
+    },
+    "media_player": {
+      "state": {
+        "_": {
+          "off": "Apagat",
+          "on": "Enc\u00e8s",
+          "playing": "Reproduint",
+          "paused": "Pausat",
+          "idle": "Inactiu",
+          "standby": "En espera"
+        }
+      }
+    },
+    "device_tracker": {
+      "state": {
+        "_": {
+          "home": "A casa",
+          "not_home": "Fora"
+        }
+      }
+    },
+    "vacuum": {
+      "state": {
+        "_": {
+          "cleaning": "Netejant",
+          "docked": "Aparcat",
+          "error": "Error",
+          "idle": "Inactiu",
+          "off": "Apagat",
+          "on": "Enc\u00e8s",
+          "paused": "Pausat",
+          "returning": "Retornant a la base"
+        }
+      }
+    },
+    "fan": {
+      "state": {
+        "_": {
+          "off": "Apagat",
+          "on": "Enc\u00e8s"
+        }
+      }
+    },
+    "climate": {
+      "state": {
+        "_": {
+          "off": "Apagat",
+          "heat": "Escalfar",
+          "cool": "Refredar",
+          "heat_cool": "Escalfar/Refredar",
+          "auto": "Autom\u00e0tic",
+          "dry": "Assecar",
+          "fan_only": "Nom\u00e9s ventilador"
+        }
+      }
+    },
+    "automation": {
+      "state": {
+        "_": {
+          "off": "Desactivat",
+          "on": "Activat"
+        }
+      }
+    },
+    "calendar": {
+      "state": {
+        "_": {
+          "off": "Desactivat",
+          "on": "Activat"
+        }
+      }
+    },
+    "camera": {
+      "state": {
+        "_": {
+          "recording": "Enregistrant",
+          "streaming": "Transmetent v\u00eddeo",
+          "idle": "Inactiu"
+        }
+      }
+    },
+    "configurator": {
+      "state": {
+        "_": {
+          "configure": "Configurar",
+          "configured": "Configurat"
+        }
+      }
+    },
+    "group": {
+      "state": {
+        "_": {
+          "off": "Desactivat",
+          "on": "Activat",
+          "home": "A casa",
+          "not_home": "Fora",
+          "open": "Obert",
+          "closed": "Tancat",
+          "locked": "Bloquejat",
+          "unlocked": "Desbloquejat",
+          "ok": "Correcte",
+          "problem": "Problema"
+        }
+      }
+    },
+    "input_boolean": {
+      "state": {
+        "_": {
+          "off": "Desactivat",
+          "on": "Activat"
+        }
+      }
+    },
+    "person": {
+      "state": {
+        "_": {
+          "home": "A casa",
+          "not_home": "Fora"
+        }
+      }
+    },
+    "plant": {
+      "state": {
+        "_": {
+          "ok": "Correcte",
+          "problem": "Problema"
+        }
+      }
+    },
+    "remote": {
+      "state": {
+        "_": {
+          "off": "Apagat",
+          "on": "Enc\u00e8s"
+        }
+      }
+    },
+    "script": {
+      "state": {
+        "_": {
+          "off": "Desactivat",
+          "on": "Activat"
+        }
+      }
+    },
+    "sun": {
+      "state": {
+        "_": {
+          "above_horizon": "Sobre l'horitz\u00f3",
+          "below_horizon": "Sota l'horitz\u00f3"
+        }
+      }
+    },
+    "timer": {
+      "state": {
+        "_": {
+          "active": "Actiu",
+          "idle": "inactiu",
+          "paused": "Pausat"
+        }
+      }
+    },
+    "weather": {
+      "state": {
+        "_": {
+          "clear-night": "Ser\u00e8, nit",
+          "cloudy": "Ennuvolat",
+          "exceptional": "Excepcional",
+          "fog": "Boira",
+          "hail": "Calamarsa",
+          "lightning": "Llamps",
+          "lightning-rainy": "Tempesta",
+          "partlycloudy": "Parcialment ennuvolat",
+          "pouring": "Pluja",
+          "rainy": "Pluj\u00f3s",
+          "snowy": "Neu",
+          "snowy-rainy": "Aiguaneu",
+          "sunny": "Assolellat",
+          "windy": "Vent\u00f3s",
+          "windy-variant": "Vent\u00f3s"
+        }
+      }
+    }
+  }
+}
