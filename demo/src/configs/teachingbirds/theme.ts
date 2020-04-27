@@ -13,7 +13,7 @@ export const demoThemeTeachingbirds = () => ({
   "paper-listbox-color": "#FFFFFF",
   "paper-toggle-button-checked-bar-color": "var(--light-primary-color)",
   "switch-unchecked-track-color": "var(--primary-text-color)",
-  "paper-card-background-color": "#4e4e4e",
+  "card-background-color": "#4e4e4e",
   "label-badge-text-color": "var(--text-primary-color)",
   "primary-background-color": "#303030",
   "sidebar-icon-color": "var(--paper-item-icon-color)",
