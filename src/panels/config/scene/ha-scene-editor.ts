@@ -455,8 +455,10 @@ export class HaSceneEditor extends SubscribeMixin(LitElement) {
     const scene = this.scenes.find(
       (entity: SceneEntity) => entity.attributes.id === this.sceneId
     );
+    if (!scene) {
+      return;
+    }
     this._scene = scene;
-
     const { context } = await activateScene(this.hass, this._scene.entity_id);
     this._activateContextId = context.id;
     this._unsubscribeEvents = await this.hass!.connection.subscribeEvents<
