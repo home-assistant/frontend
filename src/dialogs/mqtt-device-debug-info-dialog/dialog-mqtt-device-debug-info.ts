@@ -80,7 +80,7 @@ class DialogMQTTDeviceDebugInfo extends LitElement {
         <h4>
           ${this.hass!.localize("ui.dialogs.mqtt_device_debug_info.entities")}
         </h4>
-        <ul>
+        <ul class="entitylist">
           ${this._debugInfo.entities.length
             ? this._renderEntities()
             : html`
@@ -92,7 +92,7 @@ class DialogMQTTDeviceDebugInfo extends LitElement {
         <h4>
           ${this.hass!.localize("ui.dialogs.mqtt_device_debug_info.triggers")}
         </h4>
-        <ul>
+        <ul class="triggerlist">
           ${this._debugInfo.triggers.length
             ? this._renderTriggers()
             : html`
@@ -125,11 +125,11 @@ class DialogMQTTDeviceDebugInfo extends LitElement {
     return html`
       ${this._debugInfo!.entities.map(
         (entity) => html`
-          <li>
+          <li class="entitylistitem">
             '${computeStateName(this.hass.states[entity.entity_id])}'
             (<code>${entity.entity_id}</code>)
             <br />MQTT discovery data:
-            <ul>
+            <ul class="discoverydata">
               <li>
                 Topic:
                 <code>${entity.discovery_data.topic}</code>
@@ -177,16 +177,23 @@ class DialogMQTTDeviceDebugInfo extends LitElement {
     return html`
       ${this._debugInfo!.triggers.map(
         (trigger) => html`
-          <li>
-            Discovery topic:
-            <code>${trigger.discovery_data.topic}</code>
-            <mqtt-discovery-payload
-              .hass=${this.hass}
-              .payload=${trigger.discovery_data.payload}
-              .showAsYaml=${this._showAsYaml}
-              .summary="Discovery payload"
-            >
+          <li class="triggerlistitem">
+            MQTT discovery data:
+            <ul class="discoverydata">
+            <li>
+              Topic:
+              <code>${trigger.discovery_data.topic}</code>
+            </li>
+            <li>
+              <mqtt-discovery-payload
+                .hass=${this.hass}
+                .payload=${trigger.discovery_data.payload}
+                .showAsYaml=${this._showAsYaml}
+                .summary=${"Payload"}
+              >
+            </li>
             </mqtt-discovery-payload>
+            </ul>
           </li>
         `
       )}
@@ -203,6 +210,17 @@ class DialogMQTTDeviceDebugInfo extends LitElement {
         }
         ha-switch {
           margin: 16px;
+        }
+        .discoverydata {
+          list-style-type: none;
+          margin: 4px;
+          padding-left: 16px;
+        }
+        .entitylistitem {
+          margin-bottom: 12px;
+        }
+        .triggerlistitem {
+          margin-bottom: 12px;
         }
       `,
     ];
