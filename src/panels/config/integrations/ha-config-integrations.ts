@@ -12,7 +12,7 @@ import {
 } from "lit-element";
 import memoizeOne from "memoize-one";
 import * as Fuse from "fuse.js";
-import { compare } from "../../../common/string/compare";
+import { caseInsensitiveCompare } from "../../../common/string/compare";
 import { computeRTL } from "../../../common/util/compute_rtl";
 import {
   afterNextRender,
@@ -52,6 +52,11 @@ import { HomeAssistant, Route } from "../../../types";
 import { configSections } from "../ha-panel-config";
 import "../../../common/search/search-input";
 import "./ha-integration-card";
+import type {
+  EntryRemovedEvent as ConfigEntryRemovedEvent,
+  EntryUpdatedEvent as ConfigEntryUpdatedEvent,
+} from "./ha-integration-card";
+import { HASSDomEvent } from "../../../common/dom/fire_event";
 
 interface DataEntryFlowProgressExtended extends DataEntryFlowProgress {
   localized_title?: string;
@@ -292,7 +297,11 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
             `
           : ""}
 
-        <div class="container">
+        <div
+          class="container"
+          @entry-removed=${this._handleRemoved}
+          @entry-updated=${this._handleUpdated}
+        >
           ${this._showIgnored
             ? ignoredConfigEntries.map(
                 (item: ConfigEntryExtended) => html`
@@ -445,9 +454,6 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
   private _loadConfigEntries() {
     getConfigEntries(this.hass).then((configEntries) => {
       this._configEntries = configEntries
-        .sort((conf1, conf2) =>
-          compare(conf1.domain + conf1.title, conf2.domain + conf2.title)
-        )
         .map(
           (entry: ConfigEntry): ConfigEntryExtended => ({
             ...entry,
@@ -456,8 +462,29 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
               entry.domain
             ),
           })
+        )
+        .sort((conf1, conf2) =>
+          caseInsensitiveCompare(
+            conf1.localized_domain_name + conf1.title,
+            conf2.localized_domain_name + conf2.title
+          )
         );
     });
+  }
+
+  private _handleRemoved(ev: HASSDomEvent<ConfigEntryRemovedEvent>) {
+    this._configEntries = this._configEntries.filter(
+      (entry) => entry.entry_id !== ev.detail.entryId
+    );
+  }
+
+  private _handleUpdated(ev: HASSDomEvent<ConfigEntryUpdatedEvent>) {
+    const newEntry = ev.detail.entry;
+    this._configEntries = this._configEntries!.map((entry) =>
+      entry.entry_id === newEntry.entry_id
+        ? { ...newEntry, localized_domain_name: entry.localized_domain_name }
+        : entry
+    );
   }
 
   private _createFlow() {

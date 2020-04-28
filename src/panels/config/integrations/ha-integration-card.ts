@@ -5,6 +5,7 @@ import {
   html,
   CSSResult,
   css,
+  TemplateResult,
 } from "lit-element";
 import { HomeAssistant } from "../../../types";
 import { ConfigEntryExtended } from "./ha-config-integrations";
@@ -24,8 +25,24 @@ import {
   showAlertDialog,
 } from "../../../dialogs/generic/show-dialog-box";
 import { haStyle } from "../../../resources/styles";
-import "../../../components/ha-icon-prev";
 import "../../../components/ha-icon-next";
+import { fireEvent } from "../../../common/dom/fire_event";
+
+export interface EntryUpdatedEvent {
+  entry: ConfigEntry;
+}
+
+export interface EntryRemovedEvent {
+  entryId: string;
+}
+
+declare global {
+  // for fire event
+  interface HASSDomEvents {
+    "entry-updated": EntryUpdatedEvent;
+    "entry-removed": EntryRemovedEvent;
+  }
+}
 
 @customElement("ha-integration-card")
 class HaIntegrationCard extends LitElement {
@@ -39,17 +56,24 @@ class HaIntegrationCard extends LitElement {
 
   @property() public deviceRegistryEntries!: DeviceRegistryEntry[];
 
-  @property() private _selectedConfigEntry?: ConfigEntryExtended;
+  @property() private _selectedConfigEntryId?: string;
 
-  protected render() {
-    return this.items.length === 1
-      ? this._renderSingleEntry(this.items[0])
-      : this._selectedConfigEntry
-      ? this._renderSingleEntry(this._selectedConfigEntry)
-      : this._renderGroupedIntegration();
+  protected render(): TemplateResult {
+    if (this.items.length === 1) {
+      return this._renderSingleEntry(this.items[0]);
+    }
+    if (this._selectedConfigEntryId) {
+      const configEntry = this.items.find(
+        (entry) => entry.entry_id === this._selectedConfigEntryId
+      );
+      if (configEntry) {
+        return this._renderSingleEntry(configEntry);
+      }
+    }
+    return this._renderGroupedIntegration();
   }
 
-  private _renderGroupedIntegration() {
+  private _renderGroupedIntegration(): TemplateResult {
     return html`
       <ha-card class="group">
         <div class="group-header">
@@ -66,7 +90,9 @@ class HaIntegrationCard extends LitElement {
         <paper-listbox>
           ${this.items.map(
             (item) =>
-              html`<paper-item .entry=${item} @click=${this._selectConfigEntry}
+              html`<paper-item
+                .entryId=${item.entry_id}
+                @click=${this._selectConfigEntry}
                 ><paper-item-body>${item.title}</paper-item-body
                 ><ha-icon-next></ha-icon-next
               ></paper-item>`
@@ -76,7 +102,7 @@ class HaIntegrationCard extends LitElement {
     `;
   }
 
-  private _renderSingleEntry(item: ConfigEntryExtended) {
+  private _renderSingleEntry(item: ConfigEntryExtended): TemplateResult {
     const devices = this._getDevices(item);
     const entities = this._getEntities(item);
     return html`
@@ -86,7 +112,11 @@ class HaIntegrationCard extends LitElement {
         .id=${item.entry_id}
       >
         ${this.items.length > 1
-          ? html`<ha-icon-prev @click=${this._back}></ha-icon-prev>`
+          ? html`<paper-icon-button
+              class="back-btn"
+              icon="hass:chevron-left"
+              @click=${this._back}
+            ></paper-icon-button>`
           : ""}
         <div class="card-content">
           <div class="image">
@@ -186,11 +216,11 @@ class HaIntegrationCard extends LitElement {
   }
 
   private _selectConfigEntry(ev: Event) {
-    this._selectedConfigEntry = (ev.currentTarget as any).entry;
+    this._selectedConfigEntryId = (ev.currentTarget as any).entryId;
   }
 
   private _back() {
-    this._selectedConfigEntry = undefined;
+    this._selectedConfigEntryId = undefined;
   }
 
   private _getEntities(configEntry: ConfigEntry): EntityRegistryEntry[] {
@@ -244,9 +274,7 @@ class HaIntegrationCard extends LitElement {
     const newEntry = await updateConfigEntry(this.hass, configEntry.entry_id, {
       title: newName,
     });
-    //this._configEntries = this._configEntries!.map((entry) =>
-    //  entry.entry_id === newEntry.entry_id ? newEntry : entry
-    //);
+    fireEvent(this, "entry-updated", { entry: newEntry });
   }
 
   private async _removeIntegration(ev) {
@@ -262,9 +290,7 @@ class HaIntegrationCard extends LitElement {
       return;
     }
     deleteConfigEntry(this.hass, entryId).then((result) => {
-      //this._configEntries = this._configEntries.filter(
-      //  (entry) => entry.entry_id !== entryId
-      //);
+      fireEvent(this, "entry-removed", { entryId });
 
       if (result.require_restart) {
         showAlertDialog(this, {
@@ -361,12 +387,10 @@ class HaIntegrationCard extends LitElement {
           cursor: pointer;
           min-height: 35px;
         }
-        ha-icon-prev {
+        .back-btn {
           position: absolute;
-          padding: 8px;
           background: #ffffffe0;
           border-radius: 50%;
-          margin: 8px;
         }
       `,
     ];
