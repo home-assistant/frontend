@@ -28,24 +28,24 @@ import { haStyle } from "../../../resources/styles";
 import "../../../components/ha-icon-next";
 import { fireEvent } from "../../../common/dom/fire_event";
 
-export interface EntryUpdatedEvent {
+export interface ConfigEntryUpdatedEvent {
   entry: ConfigEntry;
 }
 
-export interface EntryRemovedEvent {
+export interface ConfigEntryRemovedEvent {
   entryId: string;
 }
 
 declare global {
   // for fire event
   interface HASSDomEvents {
-    "entry-updated": EntryUpdatedEvent;
-    "entry-removed": EntryRemovedEvent;
+    "entry-updated": ConfigEntryUpdatedEvent;
+    "entry-removed": ConfigEntryRemovedEvent;
   }
 }
 
 @customElement("ha-integration-card")
-class HaIntegrationCard extends LitElement {
+export class HaIntegrationCard extends LitElement {
   @property() public hass!: HomeAssistant;
 
   @property() public domain!: string;
@@ -56,15 +56,15 @@ class HaIntegrationCard extends LitElement {
 
   @property() public deviceRegistryEntries!: DeviceRegistryEntry[];
 
-  @property() private _selectedConfigEntryId?: string;
+  @property() public selectedConfigEntryId?: string;
 
   protected render(): TemplateResult {
     if (this.items.length === 1) {
       return this._renderSingleEntry(this.items[0]);
     }
-    if (this._selectedConfigEntryId) {
+    if (this.selectedConfigEntryId) {
       const configEntry = this.items.find(
-        (entry) => entry.entry_id === this._selectedConfigEntryId
+        (entry) => entry.entry_id === this.selectedConfigEntryId
       );
       if (configEntry) {
         return this._renderSingleEntry(configEntry);
@@ -216,11 +216,12 @@ class HaIntegrationCard extends LitElement {
   }
 
   private _selectConfigEntry(ev: Event) {
-    this._selectedConfigEntryId = (ev.currentTarget as any).entryId;
+    this.selectedConfigEntryId = (ev.currentTarget as any).entryId;
   }
 
   private _back() {
-    this._selectedConfigEntryId = undefined;
+    this.selectedConfigEntryId = undefined;
+    this.classList.remove("highlight");
   }
 
   private _getEntities(configEntry: ConfigEntry): EntityRegistryEntry[] {
@@ -317,7 +318,7 @@ class HaIntegrationCard extends LitElement {
         ha-card.single {
           justify-content: space-between;
         }
-        ha-card.highlight {
+        :host(.highlight) ha-card {
           border: 1px solid var(--accent-color);
         }
         .card-content {

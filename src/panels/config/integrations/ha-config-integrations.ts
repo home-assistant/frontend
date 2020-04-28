@@ -53,8 +53,9 @@ import { configSections } from "../ha-panel-config";
 import "../../../common/search/search-input";
 import "./ha-integration-card";
 import type {
-  EntryRemovedEvent as ConfigEntryRemovedEvent,
-  EntryUpdatedEvent as ConfigEntryUpdatedEvent,
+  ConfigEntryRemovedEvent,
+  ConfigEntryUpdatedEvent,
+  HaIntegrationCard,
 } from "./ha-integration-card";
 import { HASSDomEvent } from "../../../common/dom/fire_event";
 
@@ -217,12 +218,20 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
       this._configEntries.length
     ) {
       afterNextRender(() => {
-        const card = this.shadowRoot!.getElementById(
-          this._searchParms.get("config_entry")!
+        const entryId = this._searchParms.get("config_entry")!;
+        const configEntry = this._configEntries.find(
+          (entry) => entry.entry_id === entryId
         );
+        if (!configEntry) {
+          return;
+        }
+        const card: HaIntegrationCard = this.shadowRoot!.getElementById(
+          configEntry?.domain
+        ) as HaIntegrationCard;
         if (card) {
           card.scrollIntoView();
           card.classList.add("highlight");
+          card.selectedConfigEntryId = entryId;
         }
       });
     }
@@ -390,6 +399,7 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
             ? Array.from(groupedConfigEntries.entries()).map(
                 ([domain, items]) =>
                   html`<ha-integration-card
+                    .id=${domain}
                     .hass=${this.hass}
                     .domain=${domain}
                     .items=${items}
