@@ -28,9 +28,11 @@ class MQTTDiscoveryPayload extends LitElement {
       >
         ${this.summary}
       </div>
-      <div class="payload">
-        ${this._open ? this._renderPayload() : ""}
-      </div>
+      ${this._open
+        ? html` <div class="payload">
+            ${this._renderPayload()}
+          </div>`
+        : ""}
     `;
   }
 
@@ -50,8 +52,11 @@ class MQTTDiscoveryPayload extends LitElement {
   static get styles(): CSSResult {
     return css`
       .expander {
+        cursor: pointer;
         position: relative;
-        padding-left: 16px;
+        padding: 8px;
+        padding-left: 29px;
+        border: 1px solid var(--divider-color);
       }
       .expander:before {
         content: "";
@@ -60,18 +65,19 @@ class MQTTDiscoveryPayload extends LitElement {
         border-bottom: 2px solid var(--primary-text-color);
         width: 5px;
         height: 5px;
-        top: calc(50% - 2px);
-        left: -0px;
+        top: 50%;
+        left: 12px;
         transform: translateY(-50%) rotate(-45deg);
       }
       .expander.open:before {
         transform: translateY(-50%) rotate(45deg);
       }
       .payload {
+        border: 1px solid var(--divider-color);
+        border-top: 0;
         padding-left: 16px;
       }
       pre {
-        background-color: var(--secondary-background-color);
         display: inline-block;
         font-size: 0.9em;
         padding-left: 4px;

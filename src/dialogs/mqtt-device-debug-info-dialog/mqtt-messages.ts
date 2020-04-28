@@ -52,7 +52,7 @@ class MQTTMessages extends LitElement {
       </div>
       ${this._open
         ? html`
-            <ul class="messagelist">
+            <ul class="message-list">
               ${this.messages.map(
                 (message) => html`
                   <li class="message">
@@ -77,7 +77,7 @@ class MQTTMessages extends LitElement {
     const topic = message.topic;
     return this._showTopic
       ? html`
-          <ul class="messagewithtopic">
+          <ul class="message-with-topic">
             <li>Topic: <code>${topic}</code></li>
             <li>
               Payload: ${this._renderSinglePayload(message)}
@@ -138,8 +138,11 @@ class MQTTMessages extends LitElement {
   static get styles(): CSSResult {
     return css`
       .expander {
+        cursor: pointer;
         position: relative;
-        padding-left: 16px;
+        padding: 8px;
+        padding-left: 29px;
+        border: 1px solid var(--divider-color);
       }
       .expander:before {
         content: "";
@@ -148,32 +151,24 @@ class MQTTMessages extends LitElement {
         border-bottom: 2px solid var(--primary-text-color);
         width: 5px;
         height: 5px;
-        top: calc(50% - 2px);
-        left: 0px;
+        top: 50%;
+        left: 12px;
         transform: translateY(-50%) rotate(-45deg);
       }
       .expander.open:before {
         transform: translateY(-50%) rotate(45deg);
       }
       .message {
-        background-color: var(--primary-background-color);
         font-size: 0.9em;
         margin-bottom: 12px;
       }
-      .messagelist {
-        list-style-type: none;
+      .message-list {
+        border: 1px solid var(--divider-color);
+        border-top: 0;
+        padding-left: 28px;
         margin: 0;
-        padding-left: 16px;
-      }
-      .messagewithtopic {
-        list-style-type: none;
-        padding-left: 0;
-      }
-      code {
-        background-color: var(--secondary-background-color);
       }
       pre {
-        background-color: var(--secondary-background-color);
         display: inline-block;
         font-size: 0.9em;
         margin: 0;
