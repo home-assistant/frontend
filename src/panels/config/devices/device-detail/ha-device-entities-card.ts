@@ -159,7 +159,9 @@ export class HaDeviceEntitiesCard extends LitElement {
     addEntitiesToLovelaceView(
       this,
       this.hass,
-      this.entities.map((entity) => entity.entity_id)
+      this.entities
+        .filter((entity) => !entity.disabled_by)
+        .map((entity) => entity.entity_id)
     );
   }
 
