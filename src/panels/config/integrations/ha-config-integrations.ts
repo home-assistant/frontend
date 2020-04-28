@@ -601,9 +601,6 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
           flex-direction: column;
           justify-content: space-between;
         }
-        ha-card.highlight {
-          border: 1px solid var(--accent-color);
-        }
         .discovered {
           border: 1px solid var(--primary-color);
         }
@@ -663,24 +660,6 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
           margin: auto;
           text-align: center;
         }
-        search-input.header {
-          display: block;
-          position: relative;
-          left: -8px;
-          top: -7px;
-          color: var(--secondary-text-color);
-          margin-left: 16px;
-        }
-        .search {
-          padding: 0 16px;
-          background: var(--sidebar-background-color);
-          border-bottom: 1px solid var(--divider-color);
-        }
-        .search search-input {
-          position: relative;
-          top: 2px;
-        }
-
         h1 {
           margin-bottom: 0;
         }
