@@ -59,7 +59,7 @@ class HaPanelDevInfo extends LitElement {
           )}<br />
           ${this.hass.localize("ui.panel.developer-tools.tabs.info.source")}
           <a
-            href="https://github.com/home-assistant/home-assistant"
+            href="https://github.com/home-assistant/core"
             target="_blank" rel="noreferrer"
             >${this.hass.localize(
               "ui.panel.developer-tools.tabs.info.server"
@@ -67,7 +67,7 @@ class HaPanelDevInfo extends LitElement {
           >
           &mdash;
           <a
-            href="https://github.com/home-assistant/home-assistant-polymer"
+            href="https://github.com/home-assistant/frontend"
             target="_blank" rel="noreferrer"
             >${this.hass.localize(
               "ui.panel.developer-tools.tabs.info.frontend"
