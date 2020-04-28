@@ -5,6 +5,7 @@ export interface MQTTMessage {
   payload: string;
   qos: number;
   retain: number;
+  time: string;
 }
 
 export interface MQTTTopicDebugInfo {
