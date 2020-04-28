@@ -10,21 +10,7 @@ import {
 import { HomeAssistant } from "../../../types";
 import { LovelaceCard } from "../types";
 import { ErrorCardConfig } from "./types";
-import { until } from "lit-html/directives/until";
-
-export const createErrorCardElement = (config: ErrorCardConfig) => {
-  const el = document.createElement("hui-error-card");
-  el.setConfig(config);
-  return el;
-};
-
-export const createErrorCardConfig = (error, origConfig) => ({
-  type: "error",
-  error,
-  origConfig,
-});
-
-let jsYamlPromise: Promise<typeof import("js-yaml")>;
+import { safeDump } from "js-yaml";
 
 @customElement("hui-error-card")
 export class HuiErrorCard extends LitElement implements LovelaceCard {
@@ -48,17 +34,10 @@ export class HuiErrorCard extends LitElement implements LovelaceCard {
     return html`
       ${this._config.error}
       ${this._config.origConfig
-        ? html`${this._renderConfig(this._config.origConfig)}`
+        ? html`<pre>${safeDump(this._config.origConfig)}</pre>
+            }`
         : ""}
     `;
-  }
-
-  private _renderConfig(config) {
-    if (!jsYamlPromise) {
-      jsYamlPromise = import(/* webpackChunkName: "js-yaml" */ "js-yaml");
-    }
-    const yaml = jsYamlPromise.then((jsYaml) => jsYaml.safeDump(config));
-    return html` <pre>${until(yaml, "")}</pre> `;
   }
 
   static get styles(): CSSResult {
