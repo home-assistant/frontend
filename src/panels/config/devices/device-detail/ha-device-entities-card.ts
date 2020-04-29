@@ -28,24 +28,20 @@ import { EntityRegistryStateEntry } from "../ha-config-device-page";
 export class HaDeviceEntitiesCard extends LitElement {
   @property() public hass!: HomeAssistant;
 
-  @property() public deviceId!: string;
-
   @property() public entities!: EntityRegistryStateEntry[];
-
-  @property() public narrow!: boolean;
 
   @property() private _showDisabled = false;
 
   @queryAll("#entities > *") private _entityRows?: LovelaceRow[];
 
-  protected updated(changedProps: PropertyValues): void {
-    super.updated(changedProps);
-    if (!changedProps.has("hass")) {
-      return;
+  protected shouldUpdate(changedProps: PropertyValues) {
+    if (changedProps.has("hass")) {
+      this._entityRows?.forEach((element) => {
+        element.hass = this.hass;
+      });
+      return changedProps.size > 1;
     }
-    this._entityRows?.forEach((element) => {
-      element.hass = this.hass;
-    });
+    return true;
   }
 
   protected render(): TemplateResult {
