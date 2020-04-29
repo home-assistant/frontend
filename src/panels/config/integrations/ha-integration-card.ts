@@ -131,9 +131,7 @@ export class HaIntegrationCard extends LitElement {
             ${item.localized_domain_name}
           </h1>
           <h2>
-            ${item.localized_domain_name === item.title
-              ? html`&nbsp;`
-              : item.title}
+            ${item.localized_domain_name === item.title ? "" : item.title}
           </h2>
           ${devices.length || entities.length
             ? html`
@@ -373,6 +371,7 @@ export class HaIntegrationCard extends LitElement {
         }
         h2 {
           margin-top: 0;
+          min-height: 24px;
         }
         paper-menu-button {
           color: var(--secondary-text-color);

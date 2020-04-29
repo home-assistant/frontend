@@ -70,14 +70,15 @@ export interface ConfigEntryExtended extends ConfigEntry {
 const groupByIntegration = (
   entries: ConfigEntryExtended[]
 ): Map<string, ConfigEntryExtended[]> => {
-  return entries.reduce(
-    (entryMap, entry) =>
-      entryMap.set(entry.domain, [
-        ...(entryMap.get(entry.domain) || []),
-        entry,
-      ]),
-    new Map()
-  );
+  const result = new Map();
+  entries.forEach((entry) => {
+    if (result.has(entry.domain)) {
+      result.get(entry.domain).push(entry);
+    } else {
+      result.set(entry.domain, [entry]);
+    }
+  });
+  return result;
 };
 
 @customElement("ha-config-integrations")
@@ -167,12 +168,11 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
         configEntries,
         filter
       );
-      const ignored = filteredConfigEnties.filter((item, index) => {
+      const ignored: ConfigEntryExtended[] = [];
+      filteredConfigEnties.forEach((item, index) => {
         if (item.source === "ignore") {
-          filteredConfigEnties.splice(index, 1);
-          return true;
+          ignored.push(filteredConfigEnties.splice(index, 1)[0]);
         }
-        return false;
       });
       return [groupByIntegration(filteredConfigEnties), ignored];
     }
@@ -225,11 +225,13 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
         if (!configEntry) {
           return;
         }
-        const card: HaIntegrationCard = this.shadowRoot!.getElementById(
-          configEntry?.domain
+        const card: HaIntegrationCard = this.shadowRoot!.querySelector(
+          `[data-domain=${configEntry?.domain}]`
         ) as HaIntegrationCard;
         if (card) {
-          card.scrollIntoView();
+          card.scrollIntoView({
+            block: "center",
+          });
           card.classList.add("highlight");
           card.selectedConfigEntryId = entryId;
         }
@@ -399,7 +401,7 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
             ? Array.from(groupedConfigEntries.entries()).map(
                 ([domain, items]) =>
                   html`<ha-integration-card
-                    .id=${domain}
+                    data-domain=${domain}
                     .hass=${this.hass}
                     .domain=${domain}
                     .items=${items}
