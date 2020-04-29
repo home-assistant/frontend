@@ -35,11 +35,11 @@ export class HaDeviceEntitiesCard extends LitElement {
   @queryAll("#entities > *") private _entityRows?: LovelaceRow[];
 
   protected shouldUpdate(changedProps: PropertyValues) {
-    if (changedProps.size === 1 && changedProps.has("hass")) {
+    if (changedProps.has("hass")) {
       this._entityRows?.forEach((element) => {
         element.hass = this.hass;
       });
-      return false;
+      return changedProps.size > 1;
     }
     return true;
   }
