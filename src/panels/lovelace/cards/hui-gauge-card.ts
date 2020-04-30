@@ -23,6 +23,7 @@ import { hasConfigOrEntityChanged } from "../common/has-changed";
 import "../components/hui-warning";
 import { LovelaceCard, LovelaceCardEditor } from "../types";
 import { GaugeCardConfig } from "./types";
+import { debounce } from "../../../common/util/debounce";
 
 export const severityMap = {
   red: "var(--label-badge-red)",
@@ -65,9 +66,14 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
 
   @property() public hass?: HomeAssistant;
 
-  @property() private _baseUnit = "50px";
-
   @property() private _config?: GaugeCardConfig;
+
+  private _resizeObserver?: ResizeObserver;
+
+  public connectedCallback(): void {
+    super.connectedCallback();
+    this.updateComplete.then(() => this._measureCard());
+  }
 
   public getCardSize(): number {
     return 2;
@@ -124,14 +130,6 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
         tabindex="0"
         style=${styleMap({
           "--round-slider-bar-color": sliderBarColor,
-          "--font-size":
-            this.clientWidth > 200
-              ? "14px"
-              : this.clientWidth > 125
-              ? "12px"
-              : "10px",
-          "--round-slider-path-width":
-            this.clientWidth < 200 ? this.clientWidth / 7 + "px" : "35px",
         })}
       >
         <round-slider
@@ -159,6 +157,10 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
 
   protected shouldUpdate(changedProps: PropertyValues): boolean {
     return hasConfigOrEntityChanged(this, changedProps);
+  }
+
+  protected firstUpdated(): void {
+    this._attachObserver();
   }
 
   protected updated(changedProps: PropertyValues): void {
@@ -218,6 +220,40 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
     fireEvent(this, "hass-more-info", { entityId: this._config!.entity });
   }
 
+  private _attachObserver(): void {
+    if (typeof ResizeObserver !== "function") {
+      import("resize-observer").then((modules) => {
+        modules.install();
+        this._attachObserver();
+      });
+      return;
+    }
+
+    this._resizeObserver = new ResizeObserver(
+      debounce(() => this._measureCard(), 250, false)
+    );
+
+    const card = this.shadowRoot!.querySelector("ha-card");
+    // If we show an error or warning there is no ha-card
+    if (!card) {
+      return;
+    }
+    this._resizeObserver.observe(card);
+  }
+
+  private _measureCard() {
+    if (this.offsetWidth < 200) {
+      this.setAttribute("narrow", "");
+    } else {
+      this.removeAttribute("narrow");
+    }
+    if (this.offsetWidth < 150) {
+      this.setAttribute("veryNarrow", "");
+    } else {
+      this.removeAttribute("veryNarrow");
+    }
+  }
+
   static get styles(): CSSResult {
     return css`
       ha-card {
@@ -227,17 +263,9 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
         padding: 16px 16px 0 16px;
         display: flex;
         align-items: center;
+        justify-content: center;
         flex-direction: column;
         box-sizing: border-box;
-
-        --value-font-size: calc(var(--font-size) * 2);
-        --name-font-size: var(--font-size);
-        --name-padding-top: 5%;
-        --slider-width: 50%;
-        --gauge-data-top: calc((var(--font-size) * -2));
-        --gauge-data-bottom: var(--font-size);
-        --round-slider-path-color: var(--disabled-text-color);
-        --round-slider-linecap: "butt";
       }
 
       ha-card:focus {
@@ -247,6 +275,9 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
 
       round-slider {
         max-width: 200px;
+        --round-slider-path-width: 35px;
+        --round-slider-path-color: var(--disabled-text-color);
+        --round-slider-linecap: "butt";
       }
 
       .gauge-data {
@@ -254,17 +285,59 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
         text-align: center;
         position: relative;
         color: var(--primary-text-color);
-        margin-top: var(--gauge-data-top);
-        margin-bottom: var(--gauge-data-bottom);
+        margin-top: -28px;
+        margin-bottom: 14px;
       }
 
       .gauge-data .percent {
-        font-size: var(--value-font-size);
+        font-size: 28px;
       }
 
       .gauge-data .name {
-        padding-top: var(--name-padding-top);
-        font-size: var(--name-font-size);
+        padding-top: 6px;
+        font-size: 14px;
+      }
+
+      /* ============= NARROW ============= */
+
+      :host([narrow]) round-slider {
+        --round-slider-path-width: 22px;
+      }
+
+      :host([narrow]) .gauge-data {
+        margin-top: -24px;
+        margin-bottom: 12px;
+      }
+
+      :host([narrow]) .gauge-data .percent {
+        font-size: 24px;
+      }
+
+      :host([narrow]) .gauge-data .name {
+        font-size: 12px;
+      }
+
+      /* ============= VERY NARROW ============= */
+
+      :host([veryNarrow]) round-slider {
+        --round-slider-path-width: 15px;
+      }
+
+      :host([veryNarrow]) ha-card {
+        padding-bottom: 16px;
+      }
+
+      :host([veryNarrow]) .gauge-data {
+        margin-top: 0;
+        margin-bottom: 0;
+      }
+
+      :host([veryNarrow]) .gauge-data .percent {
+        font-size: 20px;
+      }
+
+      :host([veryNarrow]) .gauge-data .name {
+        font-size: 10px;
       }
     `;
   }
