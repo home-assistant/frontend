@@ -49,6 +49,9 @@ const createWebpackConfig = ({
         },
       ],
     },
+    externals: {
+      esprima: "esprima",
+    },
     optimization: {
       minimizer: [
         new TerserPlugin({
