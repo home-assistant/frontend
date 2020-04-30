@@ -70,6 +70,10 @@ DO NOT DELETE ANY TEXT from this template! Otherwise, your issue may be closed w
   You can find this information at `/developer-tools/state`
 -->
 
+```yaml
+
+```
+
 ## Problem-relevant configuration
 
 <!--
