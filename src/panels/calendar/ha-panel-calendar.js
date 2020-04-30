@@ -8,12 +8,15 @@ import { html } from "@polymer/polymer/lib/utils/html-tag";
 /* eslint-plugin-disable lit */
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 import moment from "moment";
-import dates from "react-big-calendar/lib/utils/dates";
+//import dates from "react-big-calendar/lib/utils/dates";
+
+import "../../components/ha-menu-button";
 import "../../components/ha-card";
 import "../../components/ha-menu-button";
 import LocalizeMixin from "../../mixins/localize-mixin";
 import "../../resources/ha-style";
-import "./ha-big-calendar";
+//import "./ha-big-calendar";
+import "./ha-full-calendar";
 
 const DEFAULT_VIEW = "month";
 
@@ -97,14 +100,7 @@ class HaPanelCalendar extends LocalizeMixin(PolymerElement) {
             </ha-card>
           </div>
           <div class="flex layout horizontal wrap">
-            <ha-big-calendar
-              default-date="[[currentDate]]"
-              default-view="[[currentView]]"
-              on-navigate="_handleNavigate"
-              on-view="_handleViewChanged"
-              events="[[events]]"
-            >
-            </ha-big-calendar>
+            <ha-full-calendar events="[[events]]"></ha-full-calendar>
           </div>
         </div>
       </app-header-layout>
@@ -160,9 +156,13 @@ class HaPanelCalendar extends LocalizeMixin(PolymerElement) {
   }
 
   _fetchData() {
-    const start = dates.firstVisibleDay(this.currentDate).toISOString();
-    const end = dates.lastVisibleDay(this.currentDate).toISOString();
-    const params = encodeURI(`?start=${start}&end=${end}`);
+    //const start = dates.firstVisibleDay(this.currentDate).toISOString();
+    //const end = dates.lastVisibleDay(this.currentDate).toISOString();
+    const start = new Date(this.currentDate);
+    const end = new Date(this.currentDate);
+    const params = encodeURI(
+      `?start=${start.toISOString()}&end=${end.toISOString()}`
+    );
     const calls = this.selectedCalendars.map((cal) =>
       this.hass.callApi("get", `calendars/${cal}${params}`)
     );

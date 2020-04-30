@@ -1,26 +1,16 @@
 {
-  "extends": [
-    "plugin:@typescript-eslint/recommended",
-    "airbnb-typescript/base",
-    "plugin:wc/recommended",
-    "plugin:lit/recommended",
-    "prettier",
-    "prettier/@typescript-eslint"
-  ],
-  "parser": "@typescript-eslint/parser",
+  "extends": ["airbnb-base", "prettier"],
   "parserOptions": {
-    "ecmaVersion": 2020,
+    "ecmaVersion": "2020",
     "ecmaFeatures": {
       "jsx": true,
       "modules": true
-    },
-    "sourceType": "module",
-    "project": "./tsconfig.json"
+    }
   },
   "settings": {
     "import/resolver": {
       "webpack": {
-        "config": "./webpack.config.js"
+        "config": "webpack.config.js"
       }
     }
   },
@@ -36,7 +26,7 @@
   },
   "env": {
     "browser": true,
-    "es6": true
+    "mocha": true
   },
   "rules": {
     "class-methods-use-this": 0,
@@ -59,31 +49,16 @@
     "radix": 0,
     "no-alert": 0,
     "no-return-await": 0,
-    "no-nested-ternary": 0,
     "prefer-destructuring": 0,
     "no-restricted-globals": [2, "event"],
     "prefer-promise-reject-errors": 0,
-    "import/order": 0,
     "import/prefer-default-export": 0,
     "import/no-unresolved": 0,
-    "import/no-cycle": 0,
-    "import/extensions": [
-      2,
-      "ignorePackages",
-      { "ts": "never", "js": "never" }
-    ],
-    "no-restricted-syntax": ["error", "LabeledStatement", "WithStatement"],
+    "import/extensions": [2, "ignorePackages"],
     "object-curly-newline": 0,
     "default-case": 0,
-    "wc/no-self-class": 0,
-    "@typescript-eslint/camelcase": 0,
-    "@typescript-eslint/ban-ts-ignore": 0,
-    "@typescript-eslint/no-use-before-define": 0,
-    "@typescript-eslint/no-non-null-assertion": 0,
-    "@typescript-eslint/no-explicit-any": 0,
-    "@typescript-eslint/no-unused-vars": 0,
-    "@typescript-eslint/explicit-function-return-type": 0
+    "no-restricted-syntax": [0, "ForOfStatement"],
+    "prettier/prettier": "error"
   },
-  "plugins": ["disable", "import", "lit", "prettier", "@typescript-eslint"],
-  "processor": "disable/disable"
+  "plugins": ["prettier"]
 }
