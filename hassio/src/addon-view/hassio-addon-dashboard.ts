@@ -35,7 +35,7 @@ class HassioAddonDashboard extends LitElement {
 
   @property({ attribute: false }) public addon?: HassioAddonDetails;
 
-  @property({ type: Boolean, reflect: true }) public narrow!: boolean;
+  @property({ type: Boolean }) public narrow!: boolean;
 
   private _computeTail = memoizeOne((route: Route) => {
     const dividerPos = route.path.indexOf("/", 1);

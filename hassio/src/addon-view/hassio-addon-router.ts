@@ -12,7 +12,7 @@ import { HassioAddonDetails } from "../../../src/data/hassio/addon";
 
 @customElement("hassio-addon-router")
 class HassioAddonRouter extends HassRouterPage {
-  @property({ type: Boolean, reflect: true }) public narrow = false;
+  @property({ type: Boolean }) public narrow = false;
 
   @property({ attribute: false }) public hass!: HomeAssistant;
 
