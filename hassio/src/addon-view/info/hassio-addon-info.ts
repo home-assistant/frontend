@@ -91,7 +91,7 @@ const PERMIS_DESC = {
 
 @customElement("hassio-addon-info")
 class HassioAddonInfo extends LitElement {
-  @property({ type: Boolean, reflect: true }) public narrow!: boolean;
+  @property({ type: Boolean }) public narrow!: boolean;
 
   @property({ attribute: false }) public hass!: HomeAssistant;
 

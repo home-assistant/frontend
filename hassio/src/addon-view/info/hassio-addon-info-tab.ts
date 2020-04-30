@@ -16,7 +16,7 @@ import "./hassio-addon-info";
 
 @customElement("hassio-addon-info-tab")
 class HassioAddonInfoDashboard extends LitElement {
-  @property({ type: Boolean, reflect: true }) public narrow!: boolean;
+  @property({ type: Boolean }) public narrow!: boolean;
 
   @property({ attribute: false }) public hass!: HomeAssistant;
 

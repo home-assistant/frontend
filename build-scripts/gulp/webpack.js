@@ -59,7 +59,7 @@ const handler = (done) => (err, stats) => {
 gulp.task("webpack-watch-app", () => {
   // we are not calling done, so this command will run forever
   webpack(createAppConfig({ isProdBuild: false, latestBuild: true })).watch(
-    { ignored: /build-translations/ },
+    { ignored: /build-translations/, poll: true },
     handler()
   );
   gulp.watch(
@@ -131,7 +131,7 @@ gulp.task("webpack-watch-hassio", () => {
       isProdBuild: false,
       latestBuild: false,
     })
-  ).watch({}, handler());
+  ).watch({ poll: true }, handler());
 });
 
 gulp.task(
