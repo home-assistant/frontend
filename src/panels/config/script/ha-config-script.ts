@@ -1,4 +1,4 @@
-import { HassEntities, HassEntity } from "home-assistant-js-websocket";
+import { HassEntities } from "home-assistant-js-websocket";
 import { customElement, property, PropertyValues } from "lit-element";
 import memoizeOne from "memoize-one";
 import { computeStateDomain } from "../../../common/entity/compute_state_domain";
@@ -9,6 +9,15 @@ import {
 import { HomeAssistant } from "../../../types";
 import "./ha-script-editor";
 import "./ha-script-picker";
+import { debounce } from "../../../common/util/debounce";
+import { ScriptEntity } from "../../../data/script";
+
+const equal = (a: ScriptEntity[], b: ScriptEntity[]): boolean => {
+  if (a.length !== b.length) {
+    return false;
+  }
+  return a.every((enityA, index) => enityA === b[index]);
+};
 
 @customElement("ha-config-script")
 class HaConfigScript extends HassRouterPage {
@@ -20,7 +29,7 @@ class HaConfigScript extends HassRouterPage {
 
   @property() public showAdvanced!: boolean;
 
-  @property() public scripts: HassEntity[] = [];
+  @property() public scripts: ScriptEntity[] = [];
 
   protected routerOptions: RouterOptions = {
     defaultPage: "dashboard",
@@ -35,15 +44,18 @@ class HaConfigScript extends HassRouterPage {
     },
   };
 
-  private _computeScripts = memoizeOne((states: HassEntities) => {
-    const scripts: HassEntity[] = [];
-    Object.values(states).forEach((state) => {
-      if (computeStateDomain(state) === "script" && !state.attributes.hidden) {
-        scripts.push(state);
-      }
-    });
+  private _debouncedUpdateScripts = debounce((pageEl) => {
+    const newScript = this._getScripts(this.hass.states);
+    if (!equal(newScript, pageEl.scripts)) {
+      pageEl.scripts = newScript;
+    }
+  }, 10);
 
-    return scripts;
+  private _getScripts = memoizeOne((states: HassEntities): ScriptEntity[] => {
+    return Object.values(states).filter(
+      (entity) =>
+        computeStateDomain(entity) === "script" && !entity.attributes.hidden
+    ) as ScriptEntity[];
   });
 
   protected firstUpdated(changedProps) {
@@ -59,7 +71,11 @@ class HaConfigScript extends HassRouterPage {
     pageEl.showAdvanced = this.showAdvanced;
 
     if (this.hass) {
-      pageEl.scripts = this._computeScripts(this.hass.states);
+      if (!pageEl.scripts || !changedProps) {
+        pageEl.scripts = this._getScripts(this.hass.states);
+      } else if (changedProps && changedProps.has("hass")) {
+        this._debouncedUpdateScripts(pageEl);
+      }
     }
 
     if (
@@ -68,13 +84,7 @@ class HaConfigScript extends HassRouterPage {
     ) {
       pageEl.creatingNew = undefined;
       const scriptEntityId = this.routeTail.path.substr(1);
-      pageEl.creatingNew = scriptEntityId === "new";
-      pageEl.script =
-        scriptEntityId === "new"
-          ? undefined
-          : pageEl.scripts.find(
-              (entity: HassEntity) => entity.entity_id === scriptEntityId
-            );
+      pageEl.scriptEntityId = scriptEntityId === "new" ? null : scriptEntityId;
     }
   }
 }
