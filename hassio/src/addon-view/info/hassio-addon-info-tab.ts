@@ -1,4 +1,6 @@
+import "@polymer/paper-spinner/paper-spinner-lite";
 import {
+  css,
   CSSResult,
   customElement,
   html,
@@ -39,7 +41,18 @@ class HassioAddonInfoDashboard extends LitElement {
   }
 
   static get styles(): CSSResult[] {
-    return [haStyle, hassioStyle];
+    return [
+      haStyle,
+      hassioStyle,
+      css`
+        @media screen and (min-width: 1024px) {
+          .content {
+            width: 50%;
+            margin-left: 25%;
+          }
+        }
+      `,
+    ];
   }
 }
 
