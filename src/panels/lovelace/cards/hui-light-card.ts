@@ -1,38 +1,36 @@
+import "@polymer/paper-icon-button/paper-icon-button";
+import "@thomasloven/round-slider";
 import {
-  html,
-  LitElement,
-  PropertyValues,
-  TemplateResult,
-  property,
-  customElement,
   css,
   CSSResult,
+  customElement,
+  html,
+  LitElement,
+  property,
+  PropertyValues,
+  TemplateResult,
 } from "lit-element";
 import { classMap } from "lit-html/directives/class-map";
 import { styleMap } from "lit-html/directives/style-map";
-import "@polymer/paper-icon-button/paper-icon-button";
-import "@thomasloven/round-slider";
-
-import { stateIcon } from "../../../common/entity/state_icon";
-import { computeStateName } from "../../../common/entity/compute_state_name";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
-
-import "../../../components/ha-card";
-import "../components/hui-warning";
-
 import { fireEvent } from "../../../common/dom/fire_event";
-import { HomeAssistant, LightEntity } from "../../../types";
-import { LovelaceCard, LovelaceCardEditor } from "../types";
-import { hasConfigOrEntityChanged } from "../common/has-changed";
-import { LightCardConfig } from "./types";
+import { computeStateDisplay } from "../../../common/entity/compute_state_display";
+import { computeStateName } from "../../../common/entity/compute_state_name";
+import { stateIcon } from "../../../common/entity/state_icon";
 import { supportsFeature } from "../../../common/entity/supports-feature";
-import { SUPPORT_BRIGHTNESS } from "../../../data/light";
-import { findEntities } from "../common/find-entites";
+import "../../../components/ha-card";
 import { UNAVAILABLE_STATES } from "../../../data/entity";
-import { actionHandler } from "../common/directives/action-handler-directive";
-import { hasAction } from "../common/has-action";
+import { SUPPORT_BRIGHTNESS } from "../../../data/light";
 import { ActionHandlerEvent } from "../../../data/lovelace";
+import { HomeAssistant, LightEntity } from "../../../types";
+import { actionHandler } from "../common/directives/action-handler-directive";
+import { findEntities } from "../common/find-entites";
 import { handleAction } from "../common/handle-action";
+import { hasAction } from "../common/has-action";
+import { hasConfigOrEntityChanged } from "../common/has-changed";
+import "../components/hui-warning";
+import { LovelaceCard, LovelaceCardEditor } from "../types";
+import { LightCardConfig } from "./types";
 
 @customElement("hui-light-card")
 export class HuiLightCard extends LitElement implements LovelaceCard {
@@ -157,8 +155,11 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
             ${UNAVAILABLE_STATES.includes(stateObj.state)
               ? html`
                   <div>
-                    ${this.hass.localize(`state.default.${stateObj.state}`) ||
-                      stateObj.state}
+                    ${computeStateDisplay(
+                      this.hass.localize,
+                      stateObj,
+                      this.hass.language
+                    )}
                   </div>
                 `
               : html`

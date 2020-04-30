@@ -1,7 +1,7 @@
 import { HassEntities } from "home-assistant-js-websocket";
+import { GroupEntity } from "../../types";
 import { computeDomain } from "./compute_domain";
 import { getGroupEntities } from "./get_group_entities";
-import { GroupEntity } from "../../types";
 
 // Return an object containing all entities that the view will show
 // including embedded groups.

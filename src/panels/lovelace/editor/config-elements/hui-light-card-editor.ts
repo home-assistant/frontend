@@ -1,30 +1,28 @@
+import "@polymer/paper-input/paper-input";
 import {
+  customElement,
   html,
   LitElement,
-  TemplateResult,
-  customElement,
   property,
+  TemplateResult,
 } from "lit-element";
-import "@polymer/paper-input/paper-input";
-
-import "../../components/hui-theme-select-editor";
-import "../../components/hui-action-editor";
-import "../../../../components/ha-icon-input";
-import "../../components/hui-entity-editor";
-
-import { struct } from "../../common/structs/struct";
-import {
-  EntitiesEditorEvent,
-  EditorTarget,
-  actionConfigStruct,
-} from "../types";
-import { HomeAssistant } from "../../../../types";
-import { LovelaceCardEditor } from "../../types";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import { configElementStyle } from "./config-elements-style";
-import { LightCardConfig } from "../../cards/types";
 import { stateIcon } from "../../../../common/entity/state_icon";
+import "../../../../components/ha-icon-input";
 import { ActionConfig } from "../../../../data/lovelace";
+import { HomeAssistant } from "../../../../types";
+import { LightCardConfig } from "../../cards/types";
+import { struct } from "../../common/structs/struct";
+import "../../components/hui-action-editor";
+import "../../components/hui-entity-editor";
+import "../../components/hui-theme-select-editor";
+import { LovelaceCardEditor } from "../../types";
+import {
+  actionConfigStruct,
+  EditorTarget,
+  EntitiesEditorEvent,
+} from "../types";
+import { configElementStyle } from "./config-elements-style";
 
 const cardConfigStruct = struct({
   type: "string",
@@ -35,6 +33,8 @@ const cardConfigStruct = struct({
   hold_action: struct.optional(actionConfigStruct),
   double_tap_action: struct.optional(actionConfigStruct),
 });
+
+const includeDomains = ["light"];
 
 @customElement("hui-light-card-editor")
 export class HuiLightCardEditor extends LitElement
@@ -97,7 +97,7 @@ export class HuiLightCardEditor extends LitElement
           .hass=${this.hass}
           .value=${this._entity}
           .configValue=${"entity"}
-          include-domains='["light"]'
+          .includeDomains=${includeDomains}
           @change=${this._valueChanged}
           allow-custom-entity
         ></ha-entity-picker>
@@ -120,7 +120,7 @@ export class HuiLightCardEditor extends LitElement
             )})"
             .value=${this._icon}
             .placeholder=${this._icon ||
-              stateIcon(this.hass.states[this._entity])}
+            stateIcon(this.hass.states[this._entity])}
             .configValue=${"icon"}
             @value-changed=${this._valueChanged}
           ></ha-icon-input>

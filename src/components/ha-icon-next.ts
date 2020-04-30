@@ -1,6 +1,6 @@
 import "@polymer/iron-icon/iron-icon";
 // Not duplicate, this is for typing.
-// tslint:disable-next-line
+// eslint-disable-next-line
 import { HaIcon } from "./ha-icon";
 
 export class HaIconNext extends HaIcon {

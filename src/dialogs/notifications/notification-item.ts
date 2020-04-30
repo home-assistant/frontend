@@ -1,18 +1,16 @@
+import { HassEntity } from "home-assistant-js-websocket";
 import {
+  customElement,
+  html,
   LitElement,
   property,
-  customElement,
   PropertyValues,
   TemplateResult,
-  html,
 } from "lit-element";
-import { HassEntity } from "home-assistant-js-websocket";
-
+import { PersistentNotification } from "../../data/persistent_notification";
+import { HomeAssistant } from "../../types";
 import "./configurator-notification-item";
 import "./persistent-notification-item";
-
-import { HomeAssistant } from "../../types";
-import { PersistentNotification } from "../../data/persistent_notification";
 
 @customElement("notification-item")
 export class HuiNotificationItem extends LitElement {

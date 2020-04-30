@@ -1,41 +1,42 @@
+import deepFreeze from "deep-freeze";
 import {
   css,
-  html,
-  LitElement,
-  TemplateResult,
   CSSResultArray,
   customElement,
+  html,
+  LitElement,
   property,
   query,
+  TemplateResult,
 } from "lit-element";
-
-import deepFreeze from "deep-freeze";
-
-import { HomeAssistant } from "../../../../types";
-import { LovelaceCardConfig } from "../../../../data/lovelace";
-import "./hui-card-preview";
-import { addCards } from "../config-util";
-
-import "../../../../components/ha-yaml-editor";
 import "../../../../components/dialog/ha-paper-dialog";
+import type { HaPaperDialog } from "../../../../components/dialog/ha-paper-dialog";
+import "../../../../components/ha-yaml-editor";
+import type { HaYamlEditor } from "../../../../components/ha-yaml-editor";
+import { LovelaceCardConfig } from "../../../../data/lovelace";
 import { haStyleDialog } from "../../../../resources/styles";
-import { showEditCardDialog } from "./show-edit-card-dialog";
-import { computeCards } from "../../common/generate-lovelace-config";
-import { SuggestCardDialogParams } from "./show-suggest-card-dialog";
+import { HomeAssistant } from "../../../../types";
 import { showSaveSuccessToast } from "../../../../util/toast-saved-success";
-// tslint:disable-next-line
-import { HaPaperDialog } from "../../../../components/dialog/ha-paper-dialog";
-// tslint:disable-next-line
-import { HaYamlEditor } from "../../../../components/ha-yaml-editor";
+import { computeCards } from "../../common/generate-lovelace-config";
+import { addCards } from "../config-util";
+import "./hui-card-preview";
+import { showEditCardDialog } from "./show-edit-card-dialog";
+import { SuggestCardDialogParams } from "./show-suggest-card-dialog";
 
 @customElement("hui-dialog-suggest-card")
 export class HuiDialogSuggestCard extends LitElement {
   @property() protected hass!: HomeAssistant;
+
   @property() private _params?: SuggestCardDialogParams;
+
   @property() private _cardConfig?: LovelaceCardConfig[];
-  @property() private _saving: boolean = false;
-  @property() private _yamlMode: boolean = false;
+
+  @property() private _saving = false;
+
+  @property() private _yamlMode = false;
+
   @query("ha-paper-dialog") private _dialog?: HaPaperDialog;
+
   @query("ha-yaml-editor") private _yamlEditor?: HaYamlEditor;
 
   public async showDialog(params: SuggestCardDialogParams): Promise<void> {

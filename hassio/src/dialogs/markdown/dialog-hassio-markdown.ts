@@ -1,7 +1,7 @@
 import "@polymer/app-layout/app-toolbar/app-toolbar";
+import { PaperDialogElement } from "@polymer/paper-dialog";
 import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable";
 import "@polymer/paper-icon-button/paper-icon-button";
-import { PaperDialogElement } from "@polymer/paper-dialog";
 import {
   css,
   CSSResult,
@@ -9,21 +9,21 @@ import {
   html,
   LitElement,
   property,
-  TemplateResult,
   query,
+  TemplateResult,
 } from "lit-element";
-
-import { hassioStyle } from "../../resources/hassio-style";
-import { haStyleDialog } from "../../../../src/resources/styles";
-import { HassioMarkdownDialogParams } from "./show-dialog-hassio-markdown";
-
 import "../../../../src/components/dialog/ha-paper-dialog";
 import "../../../../src/components/ha-markdown";
+import { haStyleDialog } from "../../../../src/resources/styles";
+import { hassioStyle } from "../../resources/hassio-style";
+import { HassioMarkdownDialogParams } from "./show-dialog-hassio-markdown";
 
 @customElement("dialog-hassio-markdown")
 class HassioMarkdownDialog extends LitElement {
   @property() public title!: string;
+
   @property() public content!: string;
+
   @query("#dialog") private _dialog!: PaperDialogElement;
 
   public showDialog(params: HassioMarkdownDialogParams) {

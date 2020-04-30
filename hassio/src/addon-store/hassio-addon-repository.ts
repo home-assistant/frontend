@@ -1,29 +1,31 @@
+import "@polymer/paper-card/paper-card";
 import {
   css,
-  TemplateResult,
+  CSSResultArray,
   html,
   LitElement,
   property,
-  CSSResultArray,
+  TemplateResult,
 } from "lit-element";
-import "@polymer/paper-card/paper-card";
 import memoizeOne from "memoize-one";
-
-import "../components/hassio-card-content";
-import { hassioStyle } from "../resources/hassio-style";
-import { HomeAssistant } from "../../../src/types";
+import { atLeastVersion } from "../../../src/common/config/version";
+import { navigate } from "../../../src/common/navigate";
 import {
   HassioAddonInfo,
   HassioAddonRepository,
 } from "../../../src/data/hassio/addon";
-import { navigate } from "../../../src/common/navigate";
+import { HomeAssistant } from "../../../src/types";
+import "../components/hassio-card-content";
 import { filterAndSort } from "../components/hassio-filter-addons";
-import { atLeastVersion } from "../../../src/common/config/version";
+import { hassioStyle } from "../resources/hassio-style";
 
 class HassioAddonRepositoryEl extends LitElement {
   @property() public hass!: HomeAssistant;
+
   @property() public repo!: HassioAddonRepository;
+
   @property() public addons!: HassioAddonInfo[];
+
   @property() public filter!: string;
 
   private _getAddons = memoizeOne(

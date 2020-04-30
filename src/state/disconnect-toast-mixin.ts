@@ -1,6 +1,6 @@
-import { HassBaseEl } from "./hass-base-mixin";
-import { showToast } from "../util/toast";
 import { Constructor } from "../types";
+import { showToast } from "../util/toast";
+import { HassBaseEl } from "./hass-base-mixin";
 
 export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
   class extends superClass {

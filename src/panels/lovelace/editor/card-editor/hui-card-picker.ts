@@ -1,33 +1,49 @@
+import * as Fuse from "fuse.js";
 import {
-  html,
   css,
-  LitElement,
-  TemplateResult,
   CSSResult,
   customElement,
+  html,
+  LitElement,
   property,
   PropertyValues,
+  TemplateResult,
 } from "lit-element";
-import { until } from "lit-html/directives/until";
 import { classMap } from "lit-html/directives/class-map";
-
-import { CardPickTarget } from "../types";
-import { HomeAssistant } from "../../../../types";
-import { LovelaceCard } from "../../types";
-import { LovelaceCardConfig, LovelaceConfig } from "../../../../data/lovelace";
+import { until } from "lit-html/directives/until";
+import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import { createCardElement } from "../../create-element/create-card-element";
-import { getCardStubConfig } from "../get-card-stub-config";
-import {
-  computeUsedEntities,
-  calcUnusedEntities,
-} from "../../common/compute-unused-entities";
+import "../../../../common/search/search-input";
 import { UNAVAILABLE_STATES } from "../../../../data/entity";
+import { LovelaceCardConfig, LovelaceConfig } from "../../../../data/lovelace";
 import {
+  CustomCardEntry,
   customCards,
-  getCustomCardEntry,
   CUSTOM_TYPE_PREFIX,
+  getCustomCardEntry,
 } from "../../../../data/lovelace_custom_cards";
+import { HomeAssistant } from "../../../../types";
+import {
+  calcUnusedEntities,
+  computeUsedEntities,
+} from "../../common/compute-unused-entities";
+import { createCardElement } from "../../create-element/create-card-element";
+import { LovelaceCard } from "../../types";
+import { getCardStubConfig } from "../get-card-stub-config";
+import { CardPickTarget } from "../types";
+
+interface Card {
+  type: string;
+  name?: string;
+  description?: string;
+  noElement?: boolean;
+  isCustom?: boolean;
+}
+
+interface CardElement {
+  card: Card;
+  element: TemplateResult;
+}
 
 const previewCards: string[] = [
   "alarm-panel",
@@ -63,10 +79,40 @@ const nonPreviewCards: string[] = [
 @customElement("hui-card-picker")
 export class HuiCardPicker extends LitElement {
   @property() public hass?: HomeAssistant;
+
+  @property() private _cards: CardElement[] = [];
+
   public lovelace?: LovelaceConfig;
+
   public cardPicked?: (cardConf: LovelaceCardConfig) => void;
+
+  private _filter?: string;
+
   private _unusedEntities?: string[];
+
   private _usedEntities?: string[];
+
+  private _filterCards = memoizeOne(
+    (cardElements: CardElement[], filter?: string): CardElement[] => {
+      if (filter) {
+        let cards = cardElements.map(
+          (cardElement: CardElement) => cardElement.card
+        );
+        const options: Fuse.FuseOptions<Card> = {
+          keys: ["type", "name", "description"],
+          caseSensitive: false,
+          minMatchCharLength: 2,
+          threshold: 0.2,
+        };
+        const fuse = new Fuse(cards, options);
+        cards = fuse.search(filter);
+        cardElements = cardElements.filter((cardElement: CardElement) =>
+          cards.includes(cardElement.card)
+        );
+      }
+      return cardElements;
+    }
+  );
 
   protected render(): TemplateResult {
     if (
@@ -79,50 +125,16 @@ export class HuiCardPicker extends LitElement {
     }
 
     return html`
+      <search-input
+        .filter=${this._filter}
+        no-label-float
+        @value-changed=${this._handleSearchChange}
+      ></search-input>
       <div class="cards-container">
-        ${previewCards.map((type: string) => {
-          return html`
-            ${until(
-              this._renderCardElement(type),
-              html`
-                <div class="card spinner">
-                  <paper-spinner active alt="Loading"></paper-spinner>
-                </div>
-              `
-            )}
-          `;
-        })}
-        ${nonPreviewCards.map((type: string) => {
-          return html`
-            ${until(
-              this._renderCardElement(type, true),
-              html`
-                <div class="card spinner">
-                  <paper-spinner active alt="Loading"></paper-spinner>
-                </div>
-              `
-            )}
-          `;
-        })}
+        ${this._filterCards(this._cards, this._filter).map(
+          (cardElement: CardElement) => cardElement.element
+        )}
       </div>
-      ${customCards.length
-        ? html`
-            <div class="cards-container">
-              ${customCards.map((card) => {
-                return html`
-                  ${until(
-                    this._renderCardElement(card.type, true, true),
-                    html`
-                      <div class="card spinner">
-                        <paper-spinner active alt="Loading"></paper-spinner>
-                      </div>
-                    `
-                  )}
-                `;
-              })}
-            </div>
-          `
-        : ""}
       <div class="cards-container">
         <div
           class="card"
@@ -176,6 +188,56 @@ export class HuiCardPicker extends LitElement {
         !UNAVAILABLE_STATES.includes(this.hass!.states[eid].state)
     );
 
+    this._loadCards();
+  }
+
+  private _loadCards() {
+    let cards: Card[] = previewCards
+      .map((type: string) => ({
+        type,
+        name: this.hass!.localize(`ui.panel.lovelace.editor.card.${type}.name`),
+        description: this.hass!.localize(
+          `ui.panel.lovelace.editor.card.${type}.description`
+        ),
+      }))
+      .concat(
+        nonPreviewCards.map((type: string) => ({
+          type,
+          name: this.hass!.localize(
+            `ui.panel.lovelace.editor.card.${type}.name`
+          ),
+          description: this.hass!.localize(
+            `ui.panel.lovelace.editor.card.${type}.description`
+          ),
+          noElement: true,
+        }))
+      );
+    if (customCards.length > 0) {
+      cards = cards.concat(
+        customCards.map((ccard: CustomCardEntry) => ({
+          type: ccard.type,
+          name: ccard.name,
+          description: ccard.description,
+          noElement: true,
+          isCustom: true,
+        }))
+      );
+    }
+    this._cards = cards.map((card: Card) => ({
+      card: card,
+      element: html`${until(
+        this._renderCardElement(card),
+        html`
+          <div class="card spinner">
+            <paper-spinner active alt="Loading"></paper-spinner>
+          </div>
+        `
+      )}`,
+    }));
+  }
+
+  private _handleSearchChange(ev: CustomEvent) {
+    this._filter = ev.detail.value;
     this.requestUpdate();
   }
 
@@ -191,6 +253,7 @@ export class HuiCardPicker extends LitElement {
 
         .card {
           height: 100%;
+          max-width: 500px;
           display: flex;
           flex-direction: column;
           border-radius: 4px;
@@ -276,11 +339,9 @@ export class HuiCardPicker extends LitElement {
     return element;
   }
 
-  private async _renderCardElement(
-    type: string,
-    noElement: boolean = false,
-    isCustom: boolean = false
-  ): Promise<TemplateResult> {
+  private async _renderCardElement(card: Card): Promise<TemplateResult> {
+    let { type } = card;
+    const { noElement, isCustom, name, description } = card;
     const customCard = isCustom ? getCustomCardEntry(type) : undefined;
     if (isCustom) {
       type = `${CUSTOM_TYPE_PREFIX}${type}`;
@@ -321,18 +382,14 @@ export class HuiCardPicker extends LitElement {
               this.hass!.localize(
                 `ui.panel.lovelace.editor.cardpicker.no_description`
               )
-            : this.hass!.localize(
-                `ui.panel.lovelace.editor.card.${cardConfig.type}.description`
-              )}
+            : description}
         </div>
         <div class="card-header">
           ${customCard
             ? `${this.hass!.localize(
                 "ui.panel.lovelace.editor.cardpicker.custom_card"
               )}: ${customCard.name || customCard.type}`
-            : this.hass!.localize(
-                `ui.panel.lovelace.editor.card.${cardConfig.type}.name`
-              )}
+            : name}
         </div>
       </div>
     `;

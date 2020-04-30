@@ -1,9 +1,9 @@
 import {
-  HassEntityBase,
   HassEntityAttributeBase,
+  HassEntityBase,
 } from "home-assistant-js-websocket";
-import { HomeAssistant } from "../types";
 import { navigate } from "../common/navigate";
+import { HomeAssistant } from "../types";
 import { DeviceCondition, DeviceTrigger } from "./device_automation";
 import { Action } from "./script";
 
@@ -189,7 +189,7 @@ export const showAutomationEditor = (
   data?: Partial<AutomationConfig>
 ) => {
   inititialAutomationEditorData = data;
-  navigate(el, "/config/automation/new");
+  navigate(el, "/config/automation/edit/new");
 };
 
 export const getAutomationEditorInitData = () => {

@@ -17,7 +17,7 @@ describe("featureClassNames", () => {
   });
 
   it("Matches no features", () => {
-    // tslint:disable-next-line
+    // eslint-disable-next-line
     const stateObj = <HassEntity>{
       attributes: {
         supported_features: 64,
@@ -27,7 +27,7 @@ describe("featureClassNames", () => {
   });
 
   it("Matches one feature", () => {
-    // tslint:disable-next-line
+    // eslint-disable-next-line
     const stateObj = <HassEntity>{
       attributes: {
         supported_features: 72,
@@ -40,7 +40,7 @@ describe("featureClassNames", () => {
   });
 
   it("Matches two features", () => {
-    // tslint:disable-next-line
+    // eslint-disable-next-line
     const stateObj = <HassEntity>{
       attributes: {
         supported_features: 73,

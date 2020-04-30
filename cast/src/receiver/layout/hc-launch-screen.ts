@@ -1,17 +1,18 @@
 import {
-  LitElement,
-  TemplateResult,
-  html,
-  customElement,
-  CSSResult,
   css,
+  CSSResult,
+  customElement,
+  html,
+  LitElement,
   property,
+  TemplateResult,
 } from "lit-element";
 import { HomeAssistant } from "../../../../src/types";
 
 @customElement("hc-launch-screen")
 class HcLaunchScreen extends LitElement {
   @property() public hass?: HomeAssistant;
+
   @property() public error?: string;
 
   protected render(): TemplateResult {
@@ -22,11 +23,7 @@ class HcLaunchScreen extends LitElement {
         />
         <div class="status">
           ${this.hass ? "Connected" : "Not Connected"}
-          ${this.error
-            ? html`
-                <p>Error: ${this.error}</p>
-              `
-            : ""}
+          ${this.error ? html` <p>Error: ${this.error}</p> ` : ""}
         </div>
       </div>
     `;

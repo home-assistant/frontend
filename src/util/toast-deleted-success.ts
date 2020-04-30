@@ -1,6 +1,6 @@
-import { showToast } from "./toast";
-import { HomeAssistant } from "../types";
 import { ShowToastParams } from "../managers/notification-manager";
+import { HomeAssistant } from "../types";
+import { showToast } from "./toast";
 
 export const showDeleteSuccessToast = (
   el: HTMLElement,

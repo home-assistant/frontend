@@ -1,3 +1,7 @@
+import "@material/mwc-button/mwc-button";
+import "@polymer/paper-input/paper-input";
+import "@polymer/paper-item/paper-item";
+import "@polymer/paper-listbox/paper-listbox";
 import {
   css,
   CSSResult,
@@ -7,23 +11,29 @@ import {
   property,
   TemplateResult,
 } from "lit-element";
-import { HomeAssistant } from "../../../../types";
+import { createCloseHeading } from "../../../../components/ha-dialog";
+import "../../../../components/ha-paper-dropdown-menu";
 import {
   LovelaceResource,
   LovelaceResourcesMutableParams,
 } from "../../../../data/lovelace";
-import { LovelaceResourceDetailsDialogParams } from "./show-dialog-lovelace-resource-detail";
 import { PolymerChangedEvent } from "../../../../polymer-types";
-import { createCloseHeading } from "../../../../components/ha-dialog";
 import { haStyleDialog } from "../../../../resources/styles";
+import { HomeAssistant } from "../../../../types";
+import { LovelaceResourceDetailsDialogParams } from "./show-dialog-lovelace-resource-detail";
 
 @customElement("dialog-lovelace-resource-detail")
 export class DialogLovelaceResourceDetail extends LitElement {
   @property() public hass!: HomeAssistant;
+
   @property() private _params?: LovelaceResourceDetailsDialogParams;
+
   @property() private _url!: LovelaceResource["url"];
+
   @property() private _type!: LovelaceResource["type"];
+
   @property() private _error?: string;
+
   @property() private _submitting = false;
 
   public async showDialog(
@@ -62,11 +72,7 @@ export class DialogLovelaceResourceDetail extends LitElement {
         )}
       >
         <div>
-          ${this._error
-            ? html`
-                <div class="error">${this._error}</div>
-              `
-            : ""}
+          ${this._error ? html` <div class="error">${this._error}</div> ` : ""}
           <div class="form">
             <h3 class="warning">
               ${this.hass!.localize(

@@ -1,7 +1,6 @@
-import { UpdatingElement, property, customElement } from "lit-element";
-// eslint-disable-next-line import/no-webpack-loader-syntax
+import { customElement, property, UpdatingElement } from "lit-element";
 // @ts-ignore
-// tslint:disable-next-line: no-implicit-dependencies
+// eslint-disable-next-line import/no-webpack-loader-syntax
 import markdownWorker from "workerize-loader!../resources/markdown_worker";
 import { fireEvent } from "../common/dom/fire_event";
 
@@ -10,6 +9,7 @@ let worker: any | undefined;
 @customElement("ha-markdown")
 class HaMarkdown extends UpdatingElement {
   @property() public content = "";
+
   @property({ type: Boolean }) public allowSvg = false;
 
   protected update(changedProps) {

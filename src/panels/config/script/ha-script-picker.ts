@@ -17,19 +17,23 @@ import { computeRTL } from "../../../common/util/compute_rtl";
 import { DataTableColumnContainer } from "../../../components/data-table/ha-data-table";
 import "../../../components/ha-fab";
 import { triggerScript } from "../../../data/script";
+import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
 import "../../../layouts/hass-tabs-subpage-data-table";
 import { haStyle } from "../../../resources/styles";
 import { HomeAssistant, Route } from "../../../types";
 import { showToast } from "../../../util/toast";
 import { configSections } from "../ha-panel-config";
-import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
 
 @customElement("ha-script-picker")
 class HaScriptPicker extends LitElement {
   @property() public hass!: HomeAssistant;
+
   @property() public scripts!: HassEntity[];
+
   @property() public isWide!: boolean;
+
   @property() public narrow!: boolean;
+
   @property() public route!: Route;
 
   private _scripts = memoizeOne((scripts: HassEntity[]) => {
@@ -134,7 +138,7 @@ class HaScriptPicker extends LitElement {
           @click=${this._showHelp}
         ></paper-icon-button>
       </hass-tabs-subpage-data-table>
-      <a href="/config/script/new">
+      <a href="/config/script/edit/new">
         <ha-fab
           ?is-wide=${this.isWide}
           ?narrow=${this.narrow}

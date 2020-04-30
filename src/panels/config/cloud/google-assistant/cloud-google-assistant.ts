@@ -1,47 +1,43 @@
+import "@polymer/paper-icon-button";
 import {
-  LitElement,
-  TemplateResult,
-  html,
-  CSSResult,
   css,
+  CSSResult,
   customElement,
+  html,
+  LitElement,
   property,
+  TemplateResult,
 } from "lit-element";
 import memoizeOne from "memoize-one";
-import "@polymer/paper-icon-button";
-
-import "../../../../layouts/hass-subpage";
-import "../../../../layouts/hass-loading-screen";
-import "../../../../components/ha-card";
-import "../../../../components/entity/state-info";
-import "../../../../components/ha-switch";
-
-import { HomeAssistant } from "../../../../types";
+import { fireEvent } from "../../../../common/dom/fire_event";
+import { computeDomain } from "../../../../common/entity/compute_domain";
+import { computeStateName } from "../../../../common/entity/compute_state_name";
 import {
-  CloudStatusLoggedIn,
-  CloudPreferences,
-  updateCloudGoogleEntityConfig,
-  cloudSyncGoogleAssistant,
-  GoogleEntityConfig,
-} from "../../../../data/cloud";
-import {
+  EntityFilter,
   generateFilter,
   isEmptyFilter,
-  EntityFilter,
 } from "../../../../common/entity/entity_filter";
 import { compare } from "../../../../common/string/compare";
-import { fireEvent } from "../../../../common/dom/fire_event";
-import { showToast } from "../../../../util/toast";
-import { showDomainTogglerDialog } from "../../../../dialogs/domain-toggler/show-dialog-domain-toggler";
+import "../../../../components/entity/state-info";
+import "../../../../components/ha-card";
+import "../../../../components/ha-switch";
+import type { HaSwitch } from "../../../../components/ha-switch";
 import {
-  GoogleEntity,
+  CloudPreferences,
+  CloudStatusLoggedIn,
+  cloudSyncGoogleAssistant,
+  GoogleEntityConfig,
+  updateCloudGoogleEntityConfig,
+} from "../../../../data/cloud";
+import {
   fetchCloudGoogleEntities,
+  GoogleEntity,
 } from "../../../../data/google_assistant";
-// tslint:disable-next-line: no-duplicate-imports
-import { HaSwitch } from "../../../../components/ha-switch";
-
-import { computeStateName } from "../../../../common/entity/compute_state_name";
-import { computeDomain } from "../../../../common/entity/compute_domain";
+import { showDomainTogglerDialog } from "../../../../dialogs/domain-toggler/show-dialog-domain-toggler";
+import "../../../../layouts/hass-loading-screen";
+import "../../../../layouts/hass-subpage";
+import type { HomeAssistant } from "../../../../types";
+import { showToast } from "../../../../util/toast";
 
 const DEFAULT_CONFIG_EXPOSE = true;
 
@@ -53,13 +49,20 @@ const configIsExposed = (config: GoogleEntityConfig) =>
 @customElement("cloud-google-assistant")
 class CloudGoogleAssistant extends LitElement {
   @property() public hass!: HomeAssistant;
+
   @property() public cloudStatus!: CloudStatusLoggedIn;
+
   @property() public narrow!: boolean;
+
   @property() private _entities?: GoogleEntity[];
+
   @property()
   private _entityConfigs: CloudPreferences["google_entity_configs"] = {};
+
   private _popstateSyncAttached = false;
+
   private _popstateReloadStatusAttached = false;
+
   private _isInitialExposed?: Set<string>;
 
   private _getEntityFilterFunc = memoizeOne((filter: EntityFilter) =>
@@ -73,9 +76,7 @@ class CloudGoogleAssistant extends LitElement {
 
   protected render(): TemplateResult {
     if (this._entities === undefined) {
-      return html`
-        <hass-loading-screen></hass-loading-screen>
-      `;
+      return html` <hass-loading-screen></hass-loading-screen> `;
     }
     const emptyFilter = isEmptyFilter(this.cloudStatus.google_entities);
     const filterFunc = this._getEntityFilterFunc(
@@ -161,13 +162,7 @@ class CloudGoogleAssistant extends LitElement {
         "ui.panel.config.cloud.google.title"
       )}">
         <span slot="toolbar-icon">
-          ${selected}${
-      !this.narrow
-        ? html`
-            selected
-          `
-        : ""
-    }
+          ${selected}${!this.narrow ? html` selected ` : ""}
         </span>
         ${
           emptyFilter

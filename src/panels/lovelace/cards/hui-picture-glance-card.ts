@@ -1,37 +1,35 @@
 import {
-  html,
-  LitElement,
-  TemplateResult,
-  customElement,
-  property,
   css,
   CSSResult,
+  customElement,
+  html,
+  LitElement,
+  property,
   PropertyValues,
+  TemplateResult,
 } from "lit-element";
 import { classMap } from "lit-html/directives/class-map";
 import { ifDefined } from "lit-html/directives/if-defined";
-
+import { DOMAINS_TOGGLE } from "../../../common/const";
+import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
+import { computeDomain } from "../../../common/entity/compute_domain";
+import { computeStateDisplay } from "../../../common/entity/compute_state_display";
+import { computeStateName } from "../../../common/entity/compute_state_name";
+import { stateIcon } from "../../../common/entity/state_icon";
 import "../../../components/ha-card";
 import "../../../components/ha-icon";
+import { ActionHandlerEvent } from "../../../data/lovelace";
+import { HomeAssistant } from "../../../types";
+import { actionHandler } from "../common/directives/action-handler-directive";
+import { findEntities } from "../common/find-entites";
+import { handleAction } from "../common/handle-action";
+import { hasAction } from "../common/has-action";
+import { hasConfigOrEntityChanged } from "../common/has-changed";
+import { processConfigEntities } from "../common/process-config-entities";
 import "../components/hui-image";
 import "../components/hui-warning-element";
-
-import { computeStateName } from "../../../common/entity/compute_state_name";
-import { computeDomain } from "../../../common/entity/compute_domain";
-import { stateIcon } from "../../../common/entity/state_icon";
-import { computeStateDisplay } from "../../../common/entity/compute_state_display";
-import { DOMAINS_TOGGLE } from "../../../common/const";
 import { LovelaceCard, LovelaceCardEditor } from "../types";
-import { HomeAssistant } from "../../../types";
-import { processConfigEntities } from "../common/process-config-entities";
 import { PictureGlanceCardConfig, PictureGlanceEntityConfig } from "./types";
-import { hasConfigOrEntityChanged } from "../common/has-changed";
-import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
-import { actionHandler } from "../common/directives/action-handler-directive";
-import { hasAction } from "../common/has-action";
-import { ActionHandlerEvent } from "../../../data/lovelace";
-import { handleAction } from "../common/handle-action";
-import { findEntities } from "../common/find-entites";
 
 const STATES_OFF = new Set(["closed", "locked", "not_home", "off"]);
 
@@ -200,9 +198,7 @@ class HuiPictureGlanceCard extends LitElement implements LovelaceCard {
         ></hui-image>
         <div class="box">
           ${this._config.title
-            ? html`
-                <div class="title">${this._config.title}</div>
-              `
+            ? html` <div class="title">${this._config.title}</div> `
             : ""}
           <div class="row">
             ${this._entitiesDialog!.map((entityConf) =>
@@ -267,9 +263,7 @@ class HuiPictureGlanceCard extends LitElement implements LovelaceCard {
           `}"
         ></ha-icon>
         ${this._config!.show_state !== true && entityConf.show_state !== true
-          ? html`
-              <div class="state"></div>
-            `
+          ? html` <div class="state"></div> `
           : html`
               <div class="state">
                 ${entityConf.attribute

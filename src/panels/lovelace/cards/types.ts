@@ -1,8 +1,8 @@
-import { LovelaceCardConfig, ActionConfig } from "../../../data/lovelace";
+import { ActionConfig, LovelaceCardConfig } from "../../../data/lovelace";
 import { Condition } from "../common/validate-condition";
-import { EntityConfig, EntityFilterEntityConfig } from "../entity-rows/types";
-import { LovelaceElementConfig } from "../elements/types";
 import { HuiImage } from "../components/hui-image";
+import { LovelaceElementConfig } from "../elements/types";
+import { EntityConfig, EntityFilterEntityConfig } from "../entity-rows/types";
 import { LovelaceHeaderFooterConfig } from "../header-footer/types";
 
 export interface AlarmPanelCardConfig extends LovelaceCardConfig {
@@ -29,7 +29,12 @@ export interface EntityCardConfig extends LovelaceCardConfig {
 
 export interface EntitiesCardEntityConfig extends EntityConfig {
   type?: string;
-  secondary_info?: "entity-id" | "last-changed";
+  secondary_info?:
+    | "entity-id"
+    | "last-changed"
+    | "last-triggered"
+    | "position"
+    | "tilt-position";
   action_name?: string;
   service?: string;
   service_data?: object;
@@ -269,4 +274,5 @@ export interface ThermostatCardConfig extends LovelaceCardConfig {
 export interface WeatherForecastCardConfig extends LovelaceCardConfig {
   entity: string;
   name?: string;
+  show_forecast?: boolean;
 }

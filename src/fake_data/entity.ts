@@ -1,9 +1,8 @@
+/* eslint-disable max-classes-per-file */
 import {
-  HassEntityAttributeBase,
   HassEntity,
+  HassEntityAttributeBase,
 } from "home-assistant-js-websocket";
-
-/* tslint:disable:max-classes-per-file */
 
 const now = () => new Date().toISOString();
 const randomTime = () =>
@@ -11,13 +10,21 @@ const randomTime = () =>
 
 export class Entity {
   public domain: string;
+
   public objectId: string;
+
   public entityId: string;
+
   public lastChanged: string;
+
   public lastUpdated: string;
+
   public state: string;
+
   public baseAttributes: HassEntityAttributeBase & { [key: string]: any };
+
   public attributes: HassEntityAttributeBase & { [key: string]: any };
+
   public hass?: any;
 
   constructor(domain, objectId, state, baseAttributes) {
@@ -33,7 +40,7 @@ export class Entity {
   }
 
   public async handleService(domain, service, data: { [key: string]: any }) {
-    // tslint:disable-next-line
+    // eslint-disable-next-line
     console.log(
       `Unmocked service for ${this.entityId}: ${domain}/${service}`,
       data
@@ -47,7 +54,7 @@ export class Entity {
       state === this.state ? this.lastChanged : this.lastUpdated;
     this.attributes = { ...this.baseAttributes, ...attributes };
 
-    // tslint:disable-next-line
+    // eslint-disable-next-line
     console.log("update", this.entityId, this);
 
     this.hass.updateStates({
@@ -73,7 +80,7 @@ class LightEntity extends Entity {
     }
 
     if (service === "turn_on") {
-      // tslint:disable-next-line
+      // eslint-disable-next-line
       let { brightness, hs_color, brightness_pct } = data;
       brightness = (255 * brightness_pct) / 100;
       this.update("on", { ...this.attributes, brightness, hs_color });

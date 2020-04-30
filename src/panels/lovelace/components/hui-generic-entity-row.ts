@@ -1,31 +1,29 @@
-import { computeStateName } from "../../../common/entity/compute_state_name";
 import {
-  LitElement,
-  html,
   css,
   CSSResult,
-  PropertyValues,
+  html,
+  LitElement,
   property,
+  PropertyValues,
   TemplateResult,
 } from "lit-element";
-import { ifDefined } from "lit-html/directives/if-defined";
-
-import "../../../components/entity/state-badge";
-import "../../../components/ha-relative-time";
-import "../../../components/ha-icon";
-import "../components/hui-warning";
-
-import { HomeAssistant } from "../../../types";
-import { computeRTL } from "../../../common/util/compute_rtl";
-import { toggleAttribute } from "../../../common/dom/toggle_attribute";
-import { DOMAINS_HIDE_MORE_INFO } from "../../../common/const";
-import { computeDomain } from "../../../common/entity/compute_domain";
 import { classMap } from "lit-html/directives/class-map";
+import { ifDefined } from "lit-html/directives/if-defined";
+import { DOMAINS_HIDE_MORE_INFO } from "../../../common/const";
+import { toggleAttribute } from "../../../common/dom/toggle_attribute";
+import { computeDomain } from "../../../common/entity/compute_domain";
+import { computeStateName } from "../../../common/entity/compute_state_name";
+import { computeRTL } from "../../../common/util/compute_rtl";
+import "../../../components/entity/state-badge";
+import "../../../components/ha-icon";
+import "../../../components/ha-relative-time";
+import { ActionHandlerEvent } from "../../../data/lovelace";
+import { HomeAssistant } from "../../../types";
 import { EntitiesCardEntityConfig } from "../cards/types";
 import { actionHandler } from "../common/directives/action-handler-directive";
-import { hasAction } from "../common/has-action";
-import { ActionHandlerEvent } from "../../../data/lovelace";
 import { handleAction } from "../common/handle-action";
+import { hasAction } from "../common/has-action";
+import "./hui-warning";
 
 class HuiGenericEntityRow extends LitElement {
   @property() public hass?: HomeAssistant;
@@ -94,27 +92,37 @@ class HuiGenericEntityRow extends LitElement {
           ? html`
               <div class="secondary">
                 ${this.secondaryText ||
-                  (this.config.secondary_info === "entity-id"
-                    ? stateObj.entity_id
-                    : this.config.secondary_info === "last-changed"
+                (this.config.secondary_info === "entity-id"
+                  ? stateObj.entity_id
+                  : this.config.secondary_info === "last-changed"
+                  ? html`
+                      <ha-relative-time
+                        .hass=${this.hass}
+                        .datetime=${stateObj.last_changed}
+                      ></ha-relative-time>
+                    `
+                  : this.config.secondary_info === "last-triggered"
+                  ? stateObj.attributes.last_triggered
                     ? html`
                         <ha-relative-time
                           .hass=${this.hass}
-                          .datetime=${stateObj.last_changed}
+                          .datetime=${stateObj.attributes.last_triggered}
                         ></ha-relative-time>
                       `
-                    : this.config.secondary_info === "last-triggered"
-                    ? stateObj.attributes.last_triggered
-                      ? html`
-                          <ha-relative-time
-                            .hass=${this.hass}
-                            .datetime=${stateObj.attributes.last_triggered}
-                          ></ha-relative-time>
-                        `
-                      : this.hass.localize(
-                          "ui.panel.lovelace.cards.entities.never_triggered"
-                        )
-                    : "")}
+                    : this.hass.localize(
+                        "ui.panel.lovelace.cards.entities.never_triggered"
+                      )
+                  : this.config.secondary_info === "position" &&
+                    stateObj.attributes.current_position !== undefined
+                  ? `${this.hass.localize("ui.card.cover.position")}: ${
+                      stateObj.attributes.current_position
+                    }`
+                  : this.config.secondary_info === "tilt-position" &&
+                    stateObj.attributes.current_tilt_position !== undefined
+                  ? `${this.hass.localize("ui.card.cover.tilt_position")}: ${
+                      stateObj.attributes.current_tilt_position
+                    }`
+                  : "")}
               </div>
             `
           : ""}

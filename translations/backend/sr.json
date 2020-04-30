@@ -1,0 +1,39 @@
+{
+  "component": {
+    "sun": {
+      "state": {
+        "_": {
+          "above_horizon": "Iznad horizonta",
+          "below_horizon": "Ispod horizonta"
+        }
+      }
+    },
+    "switch": {
+      "state": {
+        "_": {
+          "off": "Isklju\u010den",
+          "on": "Uklju\u010den"
+        }
+      }
+    },
+    "timer": {
+      "state": {
+        "_": {
+          "active": "\u0443\u043a\u0459\u0443\u0447\u0435\u043d",
+          "idle": "\u043d\u0435\u0430\u043a\u0442\u043d\u0430 \u0447\u0435\u043a\u0430\u045a\u0443"
+        }
+      }
+    },
+    "zwave": {
+      "state": {
+        "_": {
+          "ready": "Spreman"
+        },
+        "query_stage": {
+          "initializing": " ( {query_stage} )",
+          "dead": " ({query_stage})"
+        }
+      }
+    }
+  }
+}

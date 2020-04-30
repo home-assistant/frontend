@@ -8,16 +8,14 @@ import {
   property,
   TemplateResult,
 } from "lit-element";
-
-import { hassioStyle } from "../resources/hassio-style";
-import { haStyle } from "../../../src/resources/styles";
 import {
-  HassioHostInfo,
   HassioHassOSInfo,
+  HassioHostInfo,
 } from "../../../src/data/hassio/host";
 import { HassioSupervisorInfo } from "../../../src/data/hassio/supervisor";
+import { haStyle } from "../../../src/resources/styles";
 import { HomeAssistant } from "../../../src/types";
-
+import { hassioStyle } from "../resources/hassio-style";
 import "./hassio-host-info";
 import "./hassio-supervisor-info";
 import "./hassio-supervisor-log";
@@ -25,8 +23,11 @@ import "./hassio-supervisor-log";
 @customElement("hassio-system")
 class HassioSystem extends LitElement {
   @property() public hass!: HomeAssistant;
+
   @property() public supervisorInfo!: HassioSupervisorInfo;
+
   @property() public hostInfo!: HassioHostInfo;
+
   @property() public hassOsInfo!: HassioHassOSInfo;
 
   public render(): TemplateResult | void {

@@ -1,37 +1,35 @@
 import {
-  html,
-  LitElement,
-  PropertyValues,
-  TemplateResult,
-  customElement,
-  property,
   css,
   CSSResult,
+  customElement,
+  html,
+  LitElement,
+  property,
+  PropertyValues,
+  TemplateResult,
 } from "lit-element";
 import { classMap } from "lit-html/directives/class-map";
 import { ifDefined } from "lit-html/directives/if-defined";
-
-import { computeStateName } from "../../../common/entity/compute_state_name";
-import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import relativeTime from "../../../common/datetime/relative_time";
-
+import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
+import { computeDomain } from "../../../common/entity/compute_domain";
+import { computeStateDisplay } from "../../../common/entity/compute_state_display";
+import { computeStateName } from "../../../common/entity/compute_state_name";
 import "../../../components/entity/state-badge";
 import "../../../components/ha-card";
 import "../../../components/ha-icon";
-import "../components/hui-warning-element";
-
-import { computeStateDisplay } from "../../../common/entity/compute_state_display";
-import { HomeAssistant } from "../../../types";
-import { LovelaceCard, LovelaceCardEditor } from "../types";
-import { processConfigEntities } from "../common/process-config-entities";
-import { GlanceCardConfig, GlanceConfigEntity } from "./types";
-import { actionHandler } from "../common/directives/action-handler-directive";
-import { hasAction } from "../common/has-action";
-import { ActionHandlerEvent } from "../../../data/lovelace";
-import { handleAction } from "../common/handle-action";
-import { computeDomain } from "../../../common/entity/compute_domain";
 import { UNAVAILABLE_STATES } from "../../../data/entity";
+import { ActionHandlerEvent } from "../../../data/lovelace";
+import { HomeAssistant } from "../../../types";
+import { actionHandler } from "../common/directives/action-handler-directive";
 import { findEntities } from "../common/find-entites";
+import { handleAction } from "../common/handle-action";
+import { hasAction } from "../common/has-action";
+import { processConfigEntities } from "../common/process-config-entities";
+import "../components/hui-warning-element";
+import { LovelaceCard, LovelaceCardEditor } from "../types";
+import "../components/hui-timestamp-display";
+import { GlanceCardConfig, GlanceConfigEntity } from "./types";
 
 @customElement("hui-glance-card")
 export class HuiGlanceCard extends LitElement implements LovelaceCard {
@@ -254,7 +252,7 @@ export class HuiGlanceCard extends LitElement implements LovelaceCard {
                 .overrideImage=${entityConf.image}
                 .stateColor=${(entityConf.state_color === false ||
                   entityConf.state_color) ??
-                  this._config!.state_color}
+                this._config!.state_color}
               ></state-badge>
             `
           : ""}

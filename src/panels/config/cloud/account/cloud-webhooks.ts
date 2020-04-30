@@ -1,26 +1,28 @@
-import { html, LitElement, PropertyValues, property } from "lit-element";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-item/paper-item-body";
 import "@polymer/paper-spinner/paper-spinner";
-
+import { html, LitElement, property, PropertyValues } from "lit-element";
 import "../../../../components/ha-card";
 import "../../../../components/ha-switch";
-
-import { HomeAssistant, WebhookError } from "../../../../types";
-import { Webhook, fetchWebhooks } from "../../../../data/webhook";
 import {
+  CloudStatusLoggedIn,
+  CloudWebhook,
   createCloudhook,
   deleteCloudhook,
-  CloudWebhook,
-  CloudStatusLoggedIn,
 } from "../../../../data/cloud";
+import { fetchWebhooks, Webhook } from "../../../../data/webhook";
+import { HomeAssistant, WebhookError } from "../../../../types";
 import { showManageCloudhookDialog } from "../dialog-manage-cloudhook/show-dialog-manage-cloudhook";
 
 export class CloudWebhooks extends LitElement {
   @property() public hass?: HomeAssistant;
+
   @property() public cloudStatus?: CloudStatusLoggedIn;
+
   @property() private _cloudHooks?: { [webhookId: string]: CloudWebhook };
+
   @property() private _localHooks?: Webhook[];
+
   @property() private _progress: string[];
 
   constructor() {
@@ -128,9 +130,7 @@ export class CloudWebhooks extends LitElement {
                   )}
                 </mwc-button>
               `
-            : html`
-                <ha-switch @click="${this._enableWebhook}"></ha-switch>
-              `}
+            : html` <ha-switch @click="${this._enableWebhook}"></ha-switch> `}
         </div>
       `
     );

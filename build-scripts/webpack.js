@@ -49,6 +49,9 @@ const createWebpackConfig = ({
         },
       ],
     },
+    externals: {
+      esprima: "esprima",
+    },
     optimization: {
       minimizer: [
         new TerserPlugin({
@@ -70,6 +73,7 @@ const createWebpackConfig = ({
         __BUILD__: JSON.stringify(latestBuild ? "latest" : "es5"),
         __VERSION__: JSON.stringify(version),
         __DEMO__: false,
+        __BACKWARDS_COMPAT__: false,
         __STATIC_PATH__: "/static/",
         "process.env.NODE_ENV": JSON.stringify(
           isProdBuild ? "production" : "development"
@@ -221,6 +225,9 @@ const createCastConfig = ({ isProdBuild, latestBuild }) => {
     outputRoot: paths.cast_root,
     isProdBuild,
     latestBuild,
+    defineOverlay: {
+      __BACKWARDS_COMPAT__: true,
+    },
   });
 };
 

@@ -1,32 +1,33 @@
 import {
-  html,
-  PropertyValues,
-  customElement,
-  TemplateResult,
-  property,
-} from "lit-element";
-import {
-  getAuth,
+  Auth,
   createConnection,
   genClientId,
-  Auth,
+  getAuth,
   subscribeConfig,
 } from "home-assistant-js-websocket";
-import { litLocalizeLiteMixin } from "../mixins/lit-localize-lite-mixin";
 import {
+  customElement,
+  html,
+  property,
+  PropertyValues,
+  TemplateResult,
+} from "lit-element";
+import { HASSDomEvent } from "../common/dom/fire_event";
+import { subscribeOne } from "../common/util/subscribe-one";
+import { hassUrl } from "../data/auth";
+import {
+  fetchOnboardingOverview,
+  OnboardingResponses,
   OnboardingStep,
   ValidOnboardingStep,
-  OnboardingResponses,
-  fetchOnboardingOverview,
 } from "../data/onboarding";
+import { subscribeUser } from "../data/ws-user";
+import { litLocalizeLiteMixin } from "../mixins/lit-localize-lite-mixin";
+import { HassElement } from "../state/hass-element";
+import { HomeAssistant } from "../types";
 import { registerServiceWorker } from "../util/register-service-worker";
-import { HASSDomEvent } from "../common/dom/fire_event";
 import "./onboarding-create-user";
 import "./onboarding-loading";
-import { hassUrl } from "../data/auth";
-import { HassElement } from "../state/hass-element";
-import { subscribeOne } from "../common/util/subscribe-one";
-import { subscribeUser } from "../data/ws-user";
 
 interface OnboardingEvent<T extends ValidOnboardingStep> {
   type: T;
@@ -45,33 +46,37 @@ declare global {
 
 @customElement("ha-onboarding")
 class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
+  @property() public hass?: HomeAssistant;
+
   public translationFragment = "page-onboarding";
 
   @property() private _loading = false;
+
   @property() private _steps?: OnboardingStep[];
 
   protected render(): TemplateResult {
     const step = this._curStep()!;
 
     if (this._loading || !step) {
-      return html`
-        <onboarding-loading></onboarding-loading>
-      `;
-    } else if (step.step === "user") {
+      return html` <onboarding-loading></onboarding-loading> `;
+    }
+    if (step.step === "user") {
       return html`
         <onboarding-create-user
           .localize=${this.localize}
           .language=${this.language}
         ></onboarding-create-user>
       `;
-    } else if (step.step === "core_config") {
+    }
+    if (step.step === "core_config") {
       return html`
         <onboarding-core-config
           .hass=${this.hass}
           .onboardingLocalize=${this.localize}
         ></onboarding-core-config>
       `;
-    } else if (step.step === "integration") {
+    }
+    if (step.step === "integration") {
       return html`
         <onboarding-integrations
           .hass=${this.hass}
@@ -99,6 +104,12 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
     super.updated(changedProps);
     if (changedProps.has("language")) {
       document.querySelector("html")!.setAttribute("lang", this.language!);
+    }
+    if (changedProps.has("hass")) {
+      this.hassChanged(
+        this.hass!,
+        changedProps.get("hass") as HomeAssistant | undefined
+      );
     }
   }
 

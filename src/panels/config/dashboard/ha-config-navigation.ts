@@ -1,28 +1,28 @@
 import "@polymer/iron-icon/iron-icon";
-import "@polymer/paper-item/paper-item-body";
 import "@polymer/paper-item/paper-icon-item";
-
+import "@polymer/paper-item/paper-item-body";
+import {
+  css,
+  CSSResult,
+  customElement,
+  html,
+  LitElement,
+  property,
+  TemplateResult,
+} from "lit-element";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
-
 import "../../../components/ha-card";
 import "../../../components/ha-icon-next";
-import {
-  LitElement,
-  html,
-  TemplateResult,
-  property,
-  customElement,
-  CSSResult,
-  css,
-} from "lit-element";
-import { HomeAssistant } from "../../../types";
 import { CloudStatus, CloudStatusLoggedIn } from "../../../data/cloud";
 import { PageNavigation } from "../../../layouts/hass-tabs-subpage";
+import { HomeAssistant } from "../../../types";
 
 @customElement("ha-config-navigation")
 class HaConfigNavigation extends LitElement {
   @property() public hass!: HomeAssistant;
+
   @property() public showAdvanced!: boolean;
+
   @property() public pages!: PageNavigation[];
 
   protected render(): TemplateResult {
@@ -42,7 +42,8 @@ class HaConfigNavigation extends LitElement {
                   <ha-icon .icon=${page.icon} slot="item-icon"></ha-icon>
                   <paper-item-body two-line>
                     ${this.hass.localize(
-                      `ui.panel.config.${page.component}.caption`
+                      page.translationKey ||
+                        `ui.panel.config.${page.component}.caption`
                     )}
                     ${page.component === "cloud" && (page.info as CloudStatus)
                       ? page.info.logged_in

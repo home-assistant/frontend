@@ -34,7 +34,7 @@ export const demoThemeKernehed = () => ({
   "label-badge-border-color": "green",
   "paper-listbox-color": "#777777",
   "paper-slider-disabled-secondary-color": "var(--disabled-text-color)",
-  "paper-card-background-color": "#292929",
+  "card-background-color": "#292929",
   "label-badge-text-color": "var(--primary-text-color)",
   "paper-slider-knob-start-color": "var(--accent-color)",
   "switch-unchecked-track-color": "var(--disabled-text-color)",

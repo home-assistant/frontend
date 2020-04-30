@@ -3,25 +3,24 @@ import "@polymer/paper-input/paper-input";
 import "@polymer/paper-item/paper-icon-item";
 import "@polymer/paper-item/paper-item-body";
 import "@vaadin/vaadin-combo-box/theme/material/vaadin-combo-box-light";
-import memoizeOne from "memoize-one";
-
-import "./state-badge";
-
-import { computeStateName } from "../../common/entity/compute_state_name";
+import { HassEntity } from "home-assistant-js-websocket";
 import {
-  LitElement,
-  TemplateResult,
-  html,
   css,
   CSSResult,
+  html,
+  LitElement,
   property,
   PropertyValues,
+  query,
+  TemplateResult,
 } from "lit-element";
-import { HomeAssistant } from "../../types";
-import { HassEntity } from "home-assistant-js-websocket";
-import { PolymerChangedEvent } from "../../polymer-types";
+import memoizeOne from "memoize-one";
 import { fireEvent } from "../../common/dom/fire_event";
 import { computeDomain } from "../../common/entity/compute_domain";
+import { computeStateName } from "../../common/entity/compute_state_name";
+import { PolymerChangedEvent } from "../../polymer-types";
+import { HomeAssistant } from "../../types";
+import "./state-badge";
 
 export type HaEntityPickerEntityFilterFunc = (entityId: HassEntity) => boolean;
 
@@ -54,13 +53,19 @@ const rowRenderer = (
 };
 
 class HaEntityPicker extends LitElement {
-  @property({ type: Boolean }) public autofocus?: boolean;
+  @property({ type: Boolean }) public autofocus = false;
+
   @property({ type: Boolean }) public disabled?: boolean;
+
   @property({ type: Boolean, attribute: "allow-custom-entity" })
   public allowCustomEntity;
+
   @property() public hass?: HomeAssistant;
+
   @property() public label?: string;
+
   @property() public value?: string;
+
   /**
    * Show entities from specific domains.
    * @type {Array}
@@ -68,6 +73,7 @@ class HaEntityPicker extends LitElement {
    */
   @property({ type: Array, attribute: "include-domains" })
   public includeDomains?: string[];
+
   /**
    * Show no entities of these domains.
    * @type {Array}
@@ -75,6 +81,7 @@ class HaEntityPicker extends LitElement {
    */
   @property({ type: Array, attribute: "exclude-domains" })
   public excludeDomains?: string[];
+
   /**
    * Show only entities of these device classes.
    * @type {Array}
@@ -82,12 +89,16 @@ class HaEntityPicker extends LitElement {
    */
   @property({ type: Array, attribute: "include-device-classes" })
   public includeDeviceClasses?: string[];
+
   @property() public entityFilter?: HaEntityPickerEntityFilterFunc;
-  @property({ type: Boolean }) private _opened?: boolean;
-  @property() private _hass?: HomeAssistant;
+
+  @property({ type: Boolean }) private _opened = false;
+
+  @query("vaadin-combo-box-light") private _comboBox!: HTMLElement;
 
   private _getStates = memoizeOne(
     (
+      _opened: boolean,
       hass: this["hass"],
       includeDomains: this["includeDomains"],
       excludeDomains: this["excludeDomains"],
@@ -138,27 +149,28 @@ class HaEntityPicker extends LitElement {
   );
 
   protected updated(changedProps: PropertyValues) {
-    super.updated(changedProps);
-
-    if (changedProps.has("hass") && !this._opened) {
-      this._hass = this.hass;
+    if (changedProps.has("_opened") && this._opened) {
+      const states = this._getStates(
+        this._opened,
+        this.hass,
+        this.includeDomains,
+        this.excludeDomains,
+        this.entityFilter,
+        this.includeDeviceClasses
+      );
+      (this._comboBox as any).items = states;
     }
   }
 
   protected render(): TemplateResult {
-    const states = this._getStates(
-      this._hass,
-      this.includeDomains,
-      this.excludeDomains,
-      this.entityFilter,
-      this.includeDeviceClasses
-    );
+    if (!this.hass) {
+      return html``;
+    }
 
     return html`
       <vaadin-combo-box-light
         item-value-path="entity_id"
         item-label-path="entity_id"
-        .items=${states}
         .value=${this._value}
         .allowCustomValue=${this.allowCustomEntity}
         .renderer=${rowRenderer}
@@ -167,8 +179,8 @@ class HaEntityPicker extends LitElement {
       >
         <paper-input
           .autofocus=${this.autofocus}
-          .label=${this.label === undefined && this._hass
-            ? this._hass.localize("ui.components.entity.entity-picker.entity")
+          .label=${this.label === undefined
+            ? this.hass.localize("ui.components.entity.entity-picker.entity")
             : this.label}
           .value=${this._value}
           .disabled=${this.disabled}
@@ -181,7 +193,7 @@ class HaEntityPicker extends LitElement {
           ${this.value
             ? html`
                 <paper-icon-button
-                  aria-label=${this.hass!.localize(
+                  aria-label=${this.hass.localize(
                     "ui.components.entity.entity-picker.clear"
                   )}
                   slot="suffix"
@@ -194,20 +206,17 @@ class HaEntityPicker extends LitElement {
                 </paper-icon-button>
               `
             : ""}
-          ${states.length > 0
-            ? html`
-                <paper-icon-button
-                  aria-label=${this.hass!.localize(
-                    "ui.components.entity.entity-picker.show_entities"
-                  )}
-                  slot="suffix"
-                  class="toggle-button"
-                  .icon=${this._opened ? "hass:menu-up" : "hass:menu-down"}
-                >
-                  Toggle
-                </paper-icon-button>
-              `
-            : ""}
+
+          <paper-icon-button
+            aria-label=${this.hass.localize(
+              "ui.components.entity.entity-picker.show_entities"
+            )}
+            slot="suffix"
+            class="toggle-button"
+            .icon=${this._opened ? "hass:menu-up" : "hass:menu-down"}
+          >
+            Toggle
+          </paper-icon-button>
         </paper-input>
       </vaadin-combo-box-light>
     `;

@@ -1,8 +1,8 @@
 import { html } from "@polymer/polymer/lib/utils/html-tag";
+/* eslint-plugin-disable lit */
 import { PolymerElement } from "@polymer/polymer/polymer-element";
-
-import "./ha-paper-slider";
 import "./ha-icon";
+import "./ha-paper-slider";
 
 class HaLabeledSlider extends PolymerElement {
   static get template() {

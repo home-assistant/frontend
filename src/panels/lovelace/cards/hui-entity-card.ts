@@ -1,37 +1,35 @@
 import {
-  html,
-  LitElement,
-  PropertyValues,
-  TemplateResult,
-  customElement,
-  property,
   css,
   CSSResult,
+  customElement,
+  html,
+  LitElement,
+  property,
+  PropertyValues,
+  TemplateResult,
 } from "lit-element";
-
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
+import { fireEvent } from "../../../common/dom/fire_event";
+import { computeStateDisplay } from "../../../common/entity/compute_state_display";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import { stateIcon } from "../../../common/entity/state_icon";
-
+import { isValidEntityId } from "../../../common/entity/valid_entity_id";
 import "../../../components/ha-card";
 import "../../../components/ha-icon";
+import { UNAVAILABLE_STATES } from "../../../data/entity";
+import { HomeAssistant } from "../../../types";
+import { actionHandler } from "../common/directives/action-handler-directive";
+import { findEntities } from "../common/find-entites";
+import { hasConfigOrEntityChanged } from "../common/has-changed";
 import "../components/hui-warning";
-
+import { createHeaderFooterElement } from "../create-element/create-header-footer-element";
 import {
   LovelaceCard,
   LovelaceCardEditor,
   LovelaceHeaderFooter,
 } from "../types";
-import { HomeAssistant } from "../../../types";
-import { fireEvent } from "../../../common/dom/fire_event";
-import { EntityCardConfig } from "./types";
-import { hasConfigOrEntityChanged } from "../common/has-changed";
-import { actionHandler } from "../common/directives/action-handler-directive";
-import { isValidEntityId } from "../../../common/entity/valid_entity_id";
-import { findEntities } from "../common/find-entites";
-import { createHeaderFooterElement } from "../create-element/create-header-footer-element";
-import { UNAVAILABLE_STATES } from "../../../data/entity";
 import { HuiErrorCard } from "./hui-error-card";
+import { EntityCardConfig } from "./types";
 
 @customElement("hui-entity-card")
 export class HuiEntityCard extends LitElement implements LovelaceCard {
@@ -63,7 +61,9 @@ export class HuiEntityCard extends LitElement implements LovelaceCard {
   }
 
   @property() public hass?: HomeAssistant;
+
   @property() private _config?: EntityCardConfig;
+
   private _footerElement?: HuiErrorCard | LovelaceHeaderFooter;
 
   public setConfig(config: EntityCardConfig): void {
@@ -129,20 +129,20 @@ export class HuiEntityCard extends LitElement implements LovelaceCard {
               >${"attribute" in this._config
                 ? stateObj.attributes[this._config.attribute!] ||
                   this.hass.localize("state.default.unknown")
-                : this.hass.localize(`state.default.${stateObj.state}`) ||
-                  this.hass.localize(
-                    `state.${this._config.entity.split(".")[0]}.${
-                      stateObj.state
-                    }`
-                  ) ||
-                  stateObj.state}</span
+                : stateObj.attributes.unit_of_measurement
+                ? stateObj.state
+                : computeStateDisplay(
+                    this.hass.localize,
+                    stateObj,
+                    this.hass.language
+                  )}</span
             >${showUnit
               ? html`
                   <span class="measurement"
                     >${this._config.unit ||
-                      (this._config.attribute
-                        ? ""
-                        : stateObj.attributes.unit_of_measurement)}</span
+                    (this._config.attribute
+                      ? ""
+                      : stateObj.attributes.unit_of_measurement)}</span
                   >
                 `
               : ""}

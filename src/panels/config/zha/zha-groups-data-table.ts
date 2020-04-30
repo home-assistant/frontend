@@ -1,26 +1,22 @@
-import "../../../components/data-table/ha-data-table";
-import "../../../components/entity/ha-state-icon";
-
-import memoizeOne from "memoize-one";
-
 import {
-  LitElement,
-  html,
-  TemplateResult,
-  property,
   customElement,
+  html,
+  LitElement,
+  property,
   query,
+  TemplateResult,
 } from "lit-element";
-import { HomeAssistant } from "../../../types";
-// tslint:disable-next-line
-import {
+import memoizeOne from "memoize-one";
+import { navigate } from "../../../common/navigate";
+import "../../../components/data-table/ha-data-table";
+import type {
   DataTableColumnContainer,
   HaDataTable,
 } from "../../../components/data-table/ha-data-table";
-// tslint:disable-next-line
-import { ZHAGroup, ZHADevice } from "../../../data/zha";
+import "../../../components/entity/ha-state-icon";
+import type { ZHADevice, ZHAGroup } from "../../../data/zha";
+import type { HomeAssistant } from "../../../types";
 import { formatAsPaddedHex } from "./functions";
-import { navigate } from "../../../common/navigate";
 
 export interface GroupRowData extends ZHAGroup {
   group?: GroupRowData;
@@ -30,9 +26,13 @@ export interface GroupRowData extends ZHAGroup {
 @customElement("zha-groups-data-table")
 export class ZHAGroupsDataTable extends LitElement {
   @property() public hass!: HomeAssistant;
+
   @property() public narrow = false;
+
   @property() public groups: ZHAGroup[] = [];
+
   @property() public selectable = false;
+
   @query("ha-data-table") private _dataTable!: HaDataTable;
 
   private _groups = memoizeOne((groups: ZHAGroup[]) => {
@@ -83,9 +83,7 @@ export class ZHAGroupsDataTable extends LitElement {
               type: "numeric",
               width: "15%",
               template: (groupId: number) => {
-                return html`
-                  ${formatAsPaddedHex(groupId)}
-                `;
+                return html` ${formatAsPaddedHex(groupId)} `;
               },
               sortable: true,
             },
@@ -94,9 +92,7 @@ export class ZHAGroupsDataTable extends LitElement {
               type: "numeric",
               width: "15%",
               template: (members: ZHADevice[]) => {
-                return html`
-                  ${members.length}
-                `;
+                return html` ${members.length} `;
               },
               sortable: true,
             },

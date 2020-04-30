@@ -1,6 +1,6 @@
 import { DemoConfig } from "../types";
-import { demoLovelaceKernehed } from "./lovelace";
 import { demoEntitiesKernehed } from "./entities";
+import { demoLovelaceKernehed } from "./lovelace";
 import { demoThemeKernehed } from "./theme";
 
 export const demoKernehed: DemoConfig = {

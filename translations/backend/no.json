@@ -1,0 +1,127 @@
+{
+  "component": {
+    "zwave": {
+      "state": {
+        "_": {
+          "initializing": "Initialiserer",
+          "dead": "D\u00f8d",
+          "sleeping": "Sover",
+          "ready": "Klar"
+        }
+      }
+    },
+    "ebusd": {
+      "state": {
+        "day": "Dag",
+        "night": "Natt"
+      }
+    },
+    "binary_sensor": {
+      "state": {
+        "battery": {
+          "off": "Normalt",
+          "on": "Lavt"
+        },
+        "cold": {
+          "on": "Kald"
+        },
+        "gas": {
+          "off": "Klar",
+          "on": "Oppdaget"
+        },
+        "heat": {
+          "on": "Varm"
+        },
+        "moisture": {
+          "off": "T\u00f8rr",
+          "on": "V\u00e5t"
+        },
+        "problem": {
+          "off": "OK",
+          "on": "Problem"
+        },
+        "safety": {
+          "off": "Sikker",
+          "on": "Usikker"
+        }
+      }
+    },
+    "cover": {
+      "state": {
+        "_": {
+          "closing": "Lukker",
+          "stopped": "Stoppet"
+        }
+      }
+    },
+    "alarm_control_panel": {
+      "state": {
+        "_": {
+          "armed": "Armert",
+          "disarmed": "Avsl\u00e5tt",
+          "armed_home": "Armert hjemme",
+          "armed_away": "Armert borte",
+          "armed_night": "Armert natt",
+          "armed_custom_bypass": "Armert tilpasset unntak",
+          "pending": "Ventende",
+          "arming": "Armerer",
+          "disarming": "Disarmer",
+          "triggered": "Utl\u00f8st"
+        }
+      }
+    },
+    "media_player": {
+      "state": {
+        "_": {
+          "playing": "Spiller"
+        }
+      }
+    },
+    "vacuum": {
+      "state": {
+        "_": {
+          "cleaning": "Rengj\u00f8ring",
+          "docked": "Dokket",
+          "error": "Feil",
+          "returning": "Returner til dokken"
+        }
+      }
+    },
+    "climate": {
+      "state": {
+        "_": {
+          "heat": "Varme"
+        }
+      }
+    },
+    "camera": {
+      "state": {
+        "_": {
+          "recording": "Opptak",
+          "streaming": "Str\u00f8mming"
+        }
+      }
+    },
+    "weather": {
+      "state": {
+        "_": {
+          "clear-night": "Klart, natt",
+          "cloudy": "Skyet",
+          "exceptional": "Eksepsjonell",
+          "fog": "T\u00e5ke",
+          "hail": "Hagl",
+          "lightning": "Lyn",
+          "lightning-rainy": "Lyn, regnfult",
+          "partlycloudy": "Delvis skyet",
+          "pouring": "Kraftig regn",
+          "rainy": "Regnfull",
+          "snowy": "Sn\u00f8",
+          "snowy-rainy": "Sludd",
+          "sunny": "Solfylt",
+          "windy": "Vindfult",
+          "windy-variant": "Vindfult"
+        }
+      }
+    }
+  }
+}

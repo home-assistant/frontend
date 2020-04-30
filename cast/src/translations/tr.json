@@ -1,0 +1,255 @@
+{
+  "state": {
+    "alarm_control_panel": {
+      "armed": "Etkin",
+      "armed_away": "Etkin d\u0131\u015far\u0131da",
+      "armed_custom_bypass": "\u00d6zel alarm atlatmas\u0131",
+      "armed_home": "Etkin evde",
+      "armed_night": "Etkin gece",
+      "arming": "Etkinle\u015fiyor",
+      "disarmed": "Etkisiz",
+      "disarming": "Etkisizle\u015ftiriliyor",
+      "pending": "Beklemede",
+      "triggered": "Tetiklendi"
+    },
+    "automation": {
+      "off": "Kapal\u0131",
+      "on": "A\u00e7\u0131k"
+    },
+    "binary_sensor": {
+      "battery": {
+        "off": "Normal",
+        "on": "D\u00fc\u015f\u00fck"
+      },
+      "cold": {
+        "off": "Normal",
+        "on": "So\u011fuk"
+      },
+      "connectivity": {
+        "off": "Ba\u011flant\u0131 kesildi",
+        "on": "Ba\u011fl\u0131"
+      },
+      "default": {
+        "off": "Kapal\u0131",
+        "on": "A\u00e7\u0131k"
+      },
+      "door": {
+        "off": "Kapal\u0131",
+        "on": "A\u00e7\u0131k"
+      },
+      "garage_door": {
+        "off": "Kapal\u0131",
+        "on": "A\u00e7\u0131k"
+      },
+      "gas": {
+        "off": "Temiz",
+        "on": "Alg\u0131land\u0131"
+      },
+      "heat": {
+        "off": "Normal",
+        "on": "S\u0131cak"
+      },
+      "lock": {
+        "off": "Kilit kapal\u0131",
+        "on": "Kilit a\u00e7\u0131k"
+      },
+      "moisture": {
+        "off": "Kuru",
+        "on": "Islak"
+      },
+      "motion": {
+        "off": "Temiz",
+        "on": "Alg\u0131land\u0131"
+      },
+      "occupancy": {
+        "off": "Temiz",
+        "on": "Alg\u0131land\u0131"
+      },
+      "opening": {
+        "off": "Kapal\u0131",
+        "on": "A\u00e7\u0131k"
+      },
+      "presence": {
+        "off": "D\u0131\u015farda",
+        "on": "Evde"
+      },
+      "problem": {
+        "off": "Tamam",
+        "on": "Sorun"
+      },
+      "safety": {
+        "off": "G\u00fcvenli",
+        "on": "G\u00fcvensiz"
+      },
+      "smoke": {
+        "off": "Temiz",
+        "on": "Alg\u0131land\u0131"
+      },
+      "sound": {
+        "off": "Temiz",
+        "on": "Alg\u0131land\u0131"
+      },
+      "vibration": {
+        "off": "Temiz",
+        "on": "Alg\u0131land\u0131"
+      },
+      "window": {
+        "off": "Kapal\u0131",
+        "on": "A\u00e7\u0131k"
+      }
+    },
+    "calendar": {
+      "off": "Kapal\u0131",
+      "on": "A\u00e7\u0131k"
+    },
+    "camera": {
+      "idle": "Bo\u015fta",
+      "recording": "Kaydediliyor",
+      "streaming": "Yay\u0131n ak\u0131\u015f\u0131"
+    },
+    "climate": {
+      "auto": "Otomatik",
+      "cool": "Serin",
+      "dry": "Kuru",
+      "fan_only": "Sadece fan",
+      "heat": "S\u0131cak",
+      "heat_cool": "Is\u0131tma / So\u011futma",
+      "off": "Kapal\u0131"
+    },
+    "configurator": {
+      "configure": "Ayarla",
+      "configured": "Ayarland\u0131"
+    },
+    "cover": {
+      "closed": "Kapal\u0131",
+      "closing": "Kapan\u0131yor",
+      "open": "A\u00e7\u0131k",
+      "opening": "A\u00e7\u0131l\u0131yor",
+      "stopped": "Durduruldu"
+    },
+    "default": {
+      "off": "Kapal\u0131",
+      "on": "A\u00e7\u0131k",
+      "unavailable": "Mevcut de\u011fil",
+      "unknown": "Bilinmeyen"
+    },
+    "device_tracker": {
+      "home": "Evde",
+      "not_home": "D\u0131\u015far\u0131da"
+    },
+    "fan": {
+      "off": "Kapal\u0131",
+      "on": "A\u00e7\u0131k"
+    },
+    "group": {
+      "closed": "Kapand\u0131",
+      "closing": "Kapan\u0131yor",
+      "home": "Evde",
+      "locked": "Kilitli",
+      "not_home": "D\u0131\u015far\u0131da",
+      "off": "Kapal\u0131",
+      "ok": "Tamam",
+      "on": "A\u00e7\u0131k",
+      "open": "A\u00e7\u0131k",
+      "opening": "A\u00e7\u0131l\u0131yor",
+      "problem": "Problem",
+      "stopped": "Durduruldu",
+      "unlocked": "Kilitli de\u011fil"
+    },
+    "input_boolean": {
+      "off": "Kapal\u0131",
+      "on": "A\u00e7\u0131k"
+    },
+    "light": {
+      "off": "Kapal\u0131",
+      "on": "A\u00e7\u0131k"
+    },
+    "lock": {
+      "locked": "Kilitli",
+      "unlocked": "Kilitli de\u011fil"
+    },
+    "media_player": {
+      "idle": "Bo\u015fta",
+      "off": "Kapal\u0131",
+      "on": "A\u00e7\u0131k",
+      "paused": "Durduruldu",
+      "playing": "Oynuyor",
+      "standby": "Bekleme modu"
+    },
+    "person": {
+      "home": "Evde",
+      "not_home": "D\u0131\u015far\u0131da"
+    },
+    "plant": {
+      "ok": "Tamam",
+      "problem": "Problem"
+    },
+    "remote": {
+      "off": "Kapal\u0131",
+      "on": "A\u00e7\u0131k"
+    },
+    "scene": {
+      "scening": "senaryolar"
+    },
+    "script": {
+      "off": "Kapal\u0131",
+      "on": "A\u00e7\u0131k"
+    },
+    "sensor": {
+      "off": "Kapal\u0131",
+      "on": "A\u00e7\u0131k"
+    },
+    "sun": {
+      "above_horizon": "Ufkun \u00fczerinde",
+      "below_horizon": "Ufkun alt\u0131nda"
+    },
+    "switch": {
+      "off": "Kapal\u0131",
+      "on": "A\u00e7\u0131k"
+    },
+    "timer": {
+      "active": "Aktif",
+      "idle": "Bo\u015fta",
+      "paused": "Durduruldu"
+    },
+    "vacuum": {
+      "cleaning": "Temizleniyor",
+      "docked": "Dock'da",
+      "error": "Hata",
+      "idle": "Bo\u015fta",
+      "off": "Kapal\u0131",
+      "on": "A\u00e7\u0131k",
+      "paused": "Durduruldu",
+      "returning": "Dock'a geri d\u00f6n\u00fc\u015f"
+    },
+    "weather": {
+      "clear-night": "A\u00e7\u0131k, gece",
+      "cloudy": "Bulutlu",
+      "exceptional": "Ola\u011fan\u00fcst\u00fc",
+      "fog": "Sis",
+      "hail": "Selam",
+      "lightning": "Y\u0131ld\u0131r\u0131m",
+      "lightning-rainy": "Y\u0131ld\u0131r\u0131m, ya\u011fmurlu",
+      "partlycloudy": "Par\u00e7al\u0131 bulutlu",
+      "pouring": "D\u00f6kme",
+      "rainy": "Ya\u011fmurlu",
+      "snowy": "Karl\u0131",
+      "snowy-rainy": "Karl\u0131, ya\u011fmurlu",
+      "sunny": "G\u00fcne\u015fli",
+      "windy": "R\u00fczgarl\u0131",
+      "windy-variant": "R\u00fczgarl\u0131"
+    },
+    "zwave": {
+      "default": {
+        "dead": "\u00d6l\u00fc",
+        "initializing": "Ba\u015flat\u0131l\u0131yor",
+        "ready": "Haz\u0131r",
+        "sleeping": "Uyuyor"
+      },
+      "query_stage": {
+        "dead": "\u00d6l\u00fc ({query_stage})",
+        "initializing": "Ba\u015flat\u0131l\u0131yor ( {query_stage} )"
+      }
+    }
+  }
+}

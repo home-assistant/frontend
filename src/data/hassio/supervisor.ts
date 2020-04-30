@@ -1,5 +1,5 @@
 import { HomeAssistant, PanelInfo } from "../../types";
-import { HassioResponse, hassioApiResultExtractor } from "./common";
+import { hassioApiResultExtractor, HassioResponse } from "./common";
 
 export type HassioHomeAssistantInfo = any;
 export type HassioSupervisorInfo = any;
@@ -37,8 +37,11 @@ export const fetchHassioSupervisorInfo = async (hass: HomeAssistant) => {
   );
 };
 
-export const fetchSupervisorLogs = async (hass: HomeAssistant) => {
-  return hass.callApi<string>("GET", "hassio/supervisor/logs");
+export const fetchHassioLogs = async (
+  hass: HomeAssistant,
+  provider: string
+) => {
+  return hass.callApi<string>("GET", `hassio/${provider}/logs`);
 };
 
 export const createHassioSession = async (hass: HomeAssistant) => {

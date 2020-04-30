@@ -1,0 +1,349 @@
+{
+  "component": {
+    "sensor": {
+      "state": {
+        "_": {
+          "off": "Izklju\u010den",
+          "on": "Vklopljen"
+        }
+      }
+    },
+    "zwave": {
+      "state": {
+        "_": {
+          "initializing": "Inicializacija",
+          "dead": "Mrtev",
+          "sleeping": "Spanje",
+          "ready": "Pripravljen"
+        },
+        "query_stage": {
+          "initializing": "Inicializacija ({query_stage})",
+          "dead": "Mrtev ({query_stage})"
+        }
+      }
+    },
+    "ebusd": {
+      "state": {
+        "day": "Dan",
+        "night": "No\u010d"
+      }
+    },
+    "light": {
+      "state": {
+        "_": {
+          "off": "Izklju\u010den",
+          "on": "Vklopljen"
+        }
+      }
+    },
+    "switch": {
+      "state": {
+        "_": {
+          "off": "Izklju\u010den",
+          "on": "Vklopljen"
+        }
+      }
+    },
+    "binary_sensor": {
+      "state": {
+        "_": {
+          "off": "Izklju\u010den",
+          "on": "Vklopljen"
+        },
+        "battery": {
+          "off": "Normalno",
+          "on": "Nizko"
+        },
+        "cold": {
+          "off": "Normalno",
+          "on": "Hladno"
+        },
+        "connectivity": {
+          "off": "Povezava prekinjena",
+          "on": "Povezan"
+        },
+        "door": {
+          "off": "Zaprto",
+          "on": "Odprto"
+        },
+        "garage_door": {
+          "off": "Zaprto",
+          "on": "Odprto"
+        },
+        "gas": {
+          "off": "\u010cisto",
+          "on": "Zaznano"
+        },
+        "heat": {
+          "off": "Normalno",
+          "on": "Vro\u010de"
+        },
+        "lock": {
+          "off": "Zaklenjeno",
+          "on": "Odklenjeno"
+        },
+        "moisture": {
+          "off": "Suho",
+          "on": "Mokro"
+        },
+        "motion": {
+          "off": "\u010cisto",
+          "on": "Zaznano"
+        },
+        "occupancy": {
+          "off": "\u010cisto",
+          "on": "Zaznano"
+        },
+        "opening": {
+          "off": "Zaprto",
+          "on": "Odprto"
+        },
+        "presence": {
+          "off": "Odsoten",
+          "on": "Doma"
+        },
+        "problem": {
+          "off": "OK",
+          "on": "Te\u017eava"
+        },
+        "safety": {
+          "off": "Varno",
+          "on": "Nevarno"
+        },
+        "smoke": {
+          "off": "\u010cisto",
+          "on": "Zaznano"
+        },
+        "sound": {
+          "off": "\u010cisto",
+          "on": "Zaznano"
+        },
+        "vibration": {
+          "off": "\u010cisto",
+          "on": "Zaznano"
+        },
+        "window": {
+          "off": "Zaprto",
+          "on": "Odprto"
+        }
+      }
+    },
+    "lock": {
+      "state": {
+        "_": {
+          "locked": "Zaklenjeno",
+          "unlocked": "Odklenjeno"
+        }
+      }
+    },
+    "cover": {
+      "state": {
+        "_": {
+          "open": "Odprto",
+          "opening": "Odpiranje",
+          "closed": "Zaprto",
+          "closing": "Zapiranje",
+          "stopped": "Ustavljeno"
+        }
+      }
+    },
+    "alarm_control_panel": {
+      "state": {
+        "_": {
+          "armed": "Omogo\u010den",
+          "disarmed": "Onemogo\u010den",
+          "armed_home": "Omogo\u010den-doma",
+          "armed_away": "Omogo\u010den-zunaj",
+          "armed_night": "Omogo\u010den-no\u010d",
+          "armed_custom_bypass": "Vklopljen izjeme po meri",
+          "pending": "V teku",
+          "arming": "Omogo\u010danje",
+          "disarming": "Onemogo\u010danje",
+          "triggered": "Spro\u017een"
+        }
+      }
+    },
+    "media_player": {
+      "state": {
+        "_": {
+          "off": "Izklju\u010den",
+          "on": "Vklopljen",
+          "playing": "Predvaja",
+          "paused": "Na pavzi",
+          "idle": "V pripravljenosti",
+          "standby": "V pripravljenosti"
+        }
+      }
+    },
+    "device_tracker": {
+      "state": {
+        "_": {
+          "home": "Doma",
+          "not_home": "Odsoten"
+        }
+      }
+    },
+    "vacuum": {
+      "state": {
+        "_": {
+          "cleaning": "\u010cistim",
+          "docked": "Priklju\u010den",
+          "error": "Napaka",
+          "idle": "V pripravljenosti",
+          "off": "Izklju\u010den",
+          "on": "Vklju\u010den",
+          "paused": "Zaustavljeno",
+          "returning": "Vra\u010dam se na postajo"
+        }
+      }
+    },
+    "fan": {
+      "state": {
+        "_": {
+          "off": "Izklju\u010den",
+          "on": "Vklopljen"
+        }
+      }
+    },
+    "climate": {
+      "state": {
+        "_": {
+          "off": "Izklju\u010den",
+          "heat": "Toplo",
+          "cool": "Mrzlo",
+          "heat_cool": "Gretje/Hlajenje",
+          "auto": "Samodejno",
+          "dry": "Suho",
+          "fan_only": "Samo ventilator"
+        }
+      }
+    },
+    "automation": {
+      "state": {
+        "_": {
+          "off": "Izklju\u010den",
+          "on": "Vklopljen"
+        }
+      }
+    },
+    "calendar": {
+      "state": {
+        "_": {
+          "off": "Izklju\u010den",
+          "on": "Vklopljen"
+        }
+      }
+    },
+    "camera": {
+      "state": {
+        "_": {
+          "recording": "Snemanje",
+          "streaming": "Pretakanje",
+          "idle": "V pripravljenosti"
+        }
+      }
+    },
+    "configurator": {
+      "state": {
+        "_": {
+          "configure": "Konfiguriraj",
+          "configured": "Konfigurirano"
+        }
+      }
+    },
+    "group": {
+      "state": {
+        "_": {
+          "off": "Izklju\u010den",
+          "on": "Vklopljen",
+          "home": "Doma",
+          "not_home": "Odsoten",
+          "open": "Odprto",
+          "closed": "Zaprto",
+          "locked": "Zaklenjeno",
+          "unlocked": "Odklenjeno",
+          "ok": "OK",
+          "problem": "Te\u017eava"
+        }
+      }
+    },
+    "input_boolean": {
+      "state": {
+        "_": {
+          "off": "Izklju\u010den",
+          "on": "Vklopljen"
+        }
+      }
+    },
+    "person": {
+      "state": {
+        "_": {
+          "home": "Doma",
+          "not_home": "Odsoten"
+        }
+      }
+    },
+    "plant": {
+      "state": {
+        "_": {
+          "ok": "OK",
+          "problem": "Te\u017eava"
+        }
+      }
+    },
+    "remote": {
+      "state": {
+        "_": {
+          "off": "Izklju\u010den",
+          "on": "Vklopljen"
+        }
+      }
+    },
+    "script": {
+      "state": {
+        "_": {
+          "off": "Izklju\u010den",
+          "on": "Vklopljen"
+        }
+      }
+    },
+    "sun": {
+      "state": {
+        "_": {
+          "above_horizon": "Nad obzorjem",
+          "below_horizon": "Pod obzorjem"
+        }
+      }
+    },
+    "timer": {
+      "state": {
+        "_": {
+          "active": "aktiven",
+          "idle": "V pripravljenosti",
+          "paused": "Na pavzi"
+        }
+      }
+    },
+    "weather": {
+      "state": {
+        "_": {
+          "clear-night": "Jasna, no\u010d",
+          "cloudy": "Obla\u010dno",
+          "exceptional": "Izjemno",
+          "fog": "Megla",
+          "hail": "To\u010da",
+          "lightning": "Grmenje",
+          "lightning-rainy": "Grmenje, de\u017eevno",
+          "partlycloudy": "Delno obla\u010dno",
+          "pouring": "Mo\u010dan de\u017e",
+          "rainy": "De\u017eevno",
+          "snowy": "Sne\u017eno",
+          "snowy-rainy": "Sne\u017eno, de\u017eevno",
+          "sunny": "Son\u010dno",
+          "windy": "Vetrovno",
+          "windy-variant": "Vetrovno"
+        }
+      }
+    }
+  }
+}

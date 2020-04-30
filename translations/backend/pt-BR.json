@@ -1,0 +1,349 @@
+{
+  "component": {
+    "sensor": {
+      "state": {
+        "_": {
+          "off": "Desligado",
+          "on": "Ligado"
+        }
+      }
+    },
+    "zwave": {
+      "state": {
+        "_": {
+          "initializing": "Iniciando",
+          "dead": "Morto",
+          "sleeping": "Dormindo",
+          "ready": "Pronto"
+        },
+        "query_stage": {
+          "initializing": "Iniciando ( {query_stage} )",
+          "dead": "Morto ({query_stage})"
+        }
+      }
+    },
+    "ebusd": {
+      "state": {
+        "day": "Dia",
+        "night": "Noite"
+      }
+    },
+    "light": {
+      "state": {
+        "_": {
+          "off": "Desligada",
+          "on": "Ligada"
+        }
+      }
+    },
+    "alarm_control_panel": {
+      "state": {
+        "_": {
+          "armed": "Armado",
+          "disarmed": "Desarmado",
+          "armed_home": "Armado casa",
+          "armed_away": "Armado ausente",
+          "armed_night": "Armado noite",
+          "armed_custom_bypass": "Armado em \u00e1reas espec\u00edficas",
+          "pending": "Pendente",
+          "arming": "Armando",
+          "disarming": "Desarmando",
+          "triggered": "Acionado"
+        }
+      }
+    },
+    "lock": {
+      "state": {
+        "_": {
+          "locked": "Trancado",
+          "unlocked": "Destrancado"
+        }
+      }
+    },
+    "fan": {
+      "state": {
+        "_": {
+          "off": "Desligado",
+          "on": "Ligado"
+        }
+      }
+    },
+    "binary_sensor": {
+      "state": {
+        "_": {
+          "off": "Desligado",
+          "on": "Ligado"
+        },
+        "battery": {
+          "off": "Normal",
+          "on": "Fraca"
+        },
+        "cold": {
+          "off": "Normal",
+          "on": "Frio"
+        },
+        "connectivity": {
+          "off": "Desconectado",
+          "on": "Conectado"
+        },
+        "door": {
+          "off": "Fechado",
+          "on": "Aberto"
+        },
+        "garage_door": {
+          "off": "Fechado",
+          "on": "Aberto"
+        },
+        "gas": {
+          "off": "Limpo",
+          "on": "Detectado"
+        },
+        "heat": {
+          "off": "Normal",
+          "on": "Quente"
+        },
+        "lock": {
+          "off": "Trancado",
+          "on": "Desbloqueado"
+        },
+        "moisture": {
+          "off": "Seco",
+          "on": "Molhado"
+        },
+        "motion": {
+          "off": "Desligado",
+          "on": "Detectado"
+        },
+        "occupancy": {
+          "off": "Desocupado",
+          "on": "Detectado"
+        },
+        "opening": {
+          "off": "Fechado",
+          "on": "Aberto"
+        },
+        "presence": {
+          "off": "Ausente",
+          "on": "Em casa"
+        },
+        "problem": {
+          "off": "OK",
+          "on": "Problema"
+        },
+        "safety": {
+          "off": "Seguro",
+          "on": "N\u00e3o seguro"
+        },
+        "smoke": {
+          "off": "Limpo",
+          "on": "Detectado"
+        },
+        "sound": {
+          "off": "Limpo",
+          "on": "Detectado"
+        },
+        "vibration": {
+          "off": "Limpo",
+          "on": "Detectado"
+        },
+        "window": {
+          "off": "Fechado",
+          "on": "Aberto"
+        }
+      }
+    },
+    "automation": {
+      "state": {
+        "_": {
+          "off": "Desligado",
+          "on": "Ativa"
+        }
+      }
+    },
+    "calendar": {
+      "state": {
+        "_": {
+          "off": "Inativo",
+          "on": "Ativo"
+        }
+      }
+    },
+    "camera": {
+      "state": {
+        "_": {
+          "recording": "Gravando",
+          "streaming": "Transmitindo",
+          "idle": "Ocioso"
+        }
+      }
+    },
+    "climate": {
+      "state": {
+        "_": {
+          "off": "Desligado",
+          "heat": "Quente",
+          "cool": "Frio",
+          "heat_cool": "Quente/Frio",
+          "auto": "Autom\u00e1tico",
+          "dry": "Seco",
+          "fan_only": "Apenas ventilador"
+        }
+      }
+    },
+    "configurator": {
+      "state": {
+        "_": {
+          "configure": "Configurar",
+          "configured": "Configurado"
+        }
+      }
+    },
+    "cover": {
+      "state": {
+        "_": {
+          "open": "Aberto",
+          "opening": "Abrindo",
+          "closed": "Fechado",
+          "closing": "Fechando",
+          "stopped": "Parado"
+        }
+      }
+    },
+    "device_tracker": {
+      "state": {
+        "_": {
+          "home": "Em casa",
+          "not_home": "Ausente"
+        }
+      }
+    },
+    "group": {
+      "state": {
+        "_": {
+          "off": "Desligado",
+          "on": "Ligado",
+          "home": "Em casa",
+          "not_home": "Ausente",
+          "open": "Aberto",
+          "closed": "Fechado",
+          "locked": "Trancado",
+          "unlocked": "Destrancado",
+          "ok": "OK",
+          "problem": "Problema"
+        }
+      }
+    },
+    "input_boolean": {
+      "state": {
+        "_": {
+          "off": "Desligado",
+          "on": "Ligado"
+        }
+      }
+    },
+    "media_player": {
+      "state": {
+        "_": {
+          "off": "Desligado",
+          "on": "Ligado",
+          "playing": "Tocando",
+          "paused": "Pausado",
+          "idle": "Ocioso",
+          "standby": "Em espera"
+        }
+      }
+    },
+    "person": {
+      "state": {
+        "_": {
+          "home": "Em casa",
+          "not_home": "Ausente"
+        }
+      }
+    },
+    "plant": {
+      "state": {
+        "_": {
+          "ok": "Ok",
+          "problem": "Problema"
+        }
+      }
+    },
+    "remote": {
+      "state": {
+        "_": {
+          "off": "Desligado",
+          "on": "Ligado"
+        }
+      }
+    },
+    "script": {
+      "state": {
+        "_": {
+          "off": "Desligado",
+          "on": "Ligado"
+        }
+      }
+    },
+    "sun": {
+      "state": {
+        "_": {
+          "above_horizon": "Acima do horizonte",
+          "below_horizon": "Abaixo do horizonte"
+        }
+      }
+    },
+    "switch": {
+      "state": {
+        "_": {
+          "off": "Desligado",
+          "on": "Ligado"
+        }
+      }
+    },
+    "vacuum": {
+      "state": {
+        "_": {
+          "cleaning": "Limpando",
+          "docked": "Baseado",
+          "error": "Erro",
+          "idle": "Em espera",
+          "off": "Desligado",
+          "on": "Ligado",
+          "paused": "Pausado",
+          "returning": "Retornando para base"
+        }
+      }
+    },
+    "timer": {
+      "state": {
+        "_": {
+          "active": "ativo",
+          "idle": "ocioso",
+          "paused": "Pausado"
+        }
+      }
+    },
+    "weather": {
+      "state": {
+        "_": {
+          "clear-night": "Noite clara",
+          "cloudy": "Nublado",
+          "exceptional": "Excepcional",
+          "fog": "Nevoeiro",
+          "hail": "Granizo",
+          "lightning": "Raios",
+          "lightning-rainy": "Raios, chuvoso",
+          "partlycloudy": "Parcialmente nublado",
+          "pouring": "Torrencial",
+          "rainy": "Chuvoso",
+          "snowy": "Neve",
+          "snowy-rainy": "Neve, chuva",
+          "sunny": "Ensolarado",
+          "windy": "Ventoso",
+          "windy-variant": "Ventoso"
+        }
+      }
+    }
+  }
+}

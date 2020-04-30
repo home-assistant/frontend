@@ -1,7 +1,7 @@
 import "@material/mwc-button";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
+/* eslint-plugin-disable lit */
 import { PolymerElement } from "@polymer/polymer/polymer-element";
-
 import LocalizeMixin from "../mixins/localize-mixin";
 
 const STATES_INTERCEPTABLE = {
@@ -76,7 +76,7 @@ class HaVacuumState extends LocalizeMixin(PolymerElement) {
       ? this.localize(
           `ui.card.vacuum.actions.${STATES_INTERCEPTABLE[state].action}`
         )
-      : this.localize(`state.vacuum.${state}`);
+      : this.localize(`component.vacuum._.${state}`);
   }
 
   _callService(ev) {

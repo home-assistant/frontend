@@ -1,22 +1,20 @@
+import "@polymer/paper-input/paper-input";
 import {
+  customElement,
   html,
   LitElement,
-  TemplateResult,
-  customElement,
   property,
+  TemplateResult,
 } from "lit-element";
-import "@polymer/paper-input/paper-input";
-
-import "../../components/hui-theme-select-editor";
-import "../../../../components/entity/ha-entity-picker";
-
-import { struct } from "../../common/structs/struct";
-import { EntitiesEditorEvent, EditorTarget } from "../types";
-import { HomeAssistant } from "../../../../types";
-import { LovelaceCardEditor } from "../../types";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import { configElementStyle } from "./config-elements-style";
+import "../../../../components/entity/ha-entity-picker";
+import { HomeAssistant } from "../../../../types";
 import { ThermostatCardConfig } from "../../cards/types";
+import { struct } from "../../common/structs/struct";
+import "../../components/hui-theme-select-editor";
+import { LovelaceCardEditor } from "../../types";
+import { EditorTarget, EntitiesEditorEvent } from "../types";
+import { configElementStyle } from "./config-elements-style";
 
 const cardConfigStruct = struct({
   type: "string",
@@ -24,6 +22,8 @@ const cardConfigStruct = struct({
   name: "string?",
   theme: "string?",
 });
+
+const includeDomains = ["climate"];
 
 @customElement("hui-thermostat-card-editor")
 export class HuiThermostatCardEditor extends LitElement
@@ -66,7 +66,7 @@ export class HuiThermostatCardEditor extends LitElement
           .hass=${this.hass}
           .value="${this._entity}"
           .configValue=${"entity"}
-          include-domains='["climate"]'
+          .includeDomains=${includeDomains}
           @change="${this._valueChanged}"
           allow-custom-entity
         ></ha-entity-picker>

@@ -1,8 +1,8 @@
+import "@polymer/paper-dropdown-menu/paper-dropdown-menu-light";
 import "@polymer/paper-icon-button/paper-icon-button";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
-// tslint:disable-next-line
-import { PaperListboxElement } from "@polymer/paper-listbox/paper-listbox";
+import type { PaperListboxElement } from "@polymer/paper-listbox/paper-listbox";
 import "@polymer/paper-menu-button/paper-menu-button";
 import {
   css,
@@ -15,17 +15,15 @@ import {
 import { dynamicElement } from "../../../../common/dom/dynamic-element-directive";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-card";
-import { HomeAssistant } from "../../../../types";
+import type { Action } from "../../../../data/script";
 import { showConfirmationDialog } from "../../../../dialogs/generic/show-dialog-box";
-
-import { Action } from "../../../../data/script";
-
-import "./types/ha-automation-action-service";
-import "./types/ha-automation-action-device_id";
-import "./types/ha-automation-action-delay";
-import "./types/ha-automation-action-event";
+import type { HomeAssistant } from "../../../../types";
 import "./types/ha-automation-action-condition";
+import "./types/ha-automation-action-delay";
+import "./types/ha-automation-action-device_id";
+import "./types/ha-automation-action-event";
 import "./types/ha-automation-action-scene";
+import "./types/ha-automation-action-service";
 import "./types/ha-automation-action-wait_template";
 
 const OPTIONS = [
@@ -78,9 +76,13 @@ export const handleChangeEvent = (element: ActionElement, ev: CustomEvent) => {
 @customElement("ha-automation-action-row")
 export default class HaAutomationActionRow extends LitElement {
   @property() public hass!: HomeAssistant;
+
   @property() public action!: Action;
+
   @property() public index!: number;
+
   @property() public totalActions!: number;
+
   @property() private _yamlMode = false;
 
   protected render() {

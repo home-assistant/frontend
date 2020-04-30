@@ -2,33 +2,38 @@ import "@material/mwc-button";
 import "@polymer/paper-input/paper-input";
 import "@polymer/paper-tooltip/paper-tooltip";
 import {
+  css,
   CSSResult,
   customElement,
   html,
   LitElement,
   property,
   TemplateResult,
-  css,
 } from "lit-element";
-import { PolymerChangedEvent } from "../../../polymer-types";
-import { haStyleDialog } from "../../../resources/styles";
-import { HomeAssistant } from "../../../types";
-import { UserDetailDialogParams } from "./show-dialog-user-detail";
-import "../../../components/ha-switch";
 import { createCloseHeading } from "../../../components/ha-dialog";
+import "../../../components/ha-switch";
 import {
   SYSTEM_GROUP_ID_ADMIN,
   SYSTEM_GROUP_ID_USER,
 } from "../../../data/user";
+import { PolymerChangedEvent } from "../../../polymer-types";
+import { haStyleDialog } from "../../../resources/styles";
+import { HomeAssistant } from "../../../types";
+import { UserDetailDialogParams } from "./show-dialog-user-detail";
 
 @customElement("dialog-user-detail")
 class DialogUserDetail extends LitElement {
   @property() public hass!: HomeAssistant;
+
   @property() private _name!: string;
+
   @property() private _isAdmin?: boolean;
+
   @property() private _error?: string;
+
   @property() private _params?: UserDetailDialogParams;
-  @property() private _submitting: boolean = false;
+
+  @property() private _submitting = false;
 
   public async showDialog(params: UserDetailDialogParams): Promise<void> {
     this._params = params;
@@ -52,11 +57,7 @@ class DialogUserDetail extends LitElement {
         .heading=${createCloseHeading(this.hass, user.name)}
       >
         <div>
-          ${this._error
-            ? html`
-                <div class="error">${this._error}</div>
-              `
-            : ""}
+          ${this._error ? html` <div class="error">${this._error}</div> ` : ""}
           <div class="secondary">
             ${this.hass.localize("ui.panel.config.users.editor.id")}: ${user.id}
           </div>
@@ -139,8 +140,8 @@ class DialogUserDetail extends LitElement {
           <mwc-button
             @click=${this._updateEntry}
             .disabled=${!this._name ||
-              this._submitting ||
-              user.system_generated}
+            this._submitting ||
+            user.system_generated}
           >
             ${this.hass!.localize("ui.panel.config.users.editor.update_user")}
           </mwc-button>

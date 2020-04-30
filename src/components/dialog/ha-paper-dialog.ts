@@ -1,10 +1,12 @@
 import "@polymer/paper-dialog/paper-dialog";
+import type { PaperDialogElement } from "@polymer/paper-dialog/paper-dialog";
 import { mixinBehaviors } from "@polymer/polymer/lib/legacy/class";
-import { HaIronFocusablesHelper } from "./ha-iron-focusables-helper.js";
-// tslint:disable-next-line
-import { PaperDialogElement } from "@polymer/paper-dialog/paper-dialog";
+import type { Constructor } from "../../types";
+import { HaIronFocusablesHelper } from "./ha-iron-focusables-helper";
 
-const paperDialogClass = customElements.get("paper-dialog");
+const paperDialogClass = customElements.get("paper-dialog") as Constructor<
+  PaperDialogElement
+>;
 
 // behavior that will override existing iron-overlay-behavior and call the fixed implementation
 const haTabFixBehaviorImpl = {
@@ -25,4 +27,5 @@ declare global {
     "ha-paper-dialog": HaPaperDialog;
   }
 }
+// @ts-ignore
 customElements.define("ha-paper-dialog", HaPaperDialog);

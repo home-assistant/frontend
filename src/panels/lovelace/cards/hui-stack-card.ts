@@ -1,17 +1,16 @@
 import {
+  css,
+  CSSResult,
   html,
   LitElement,
-  TemplateResult,
-  CSSResult,
-  css,
   property,
   PropertyValues,
+  TemplateResult,
 } from "lit-element";
-
-import { createCardElement } from "../create-element/create-card-element";
-import { LovelaceCard, LovelaceCardEditor } from "../types";
 import { LovelaceCardConfig } from "../../../data/lovelace";
 import { HomeAssistant } from "../../../types";
+import { createCardElement } from "../create-element/create-card-element";
+import { LovelaceCard, LovelaceCardEditor } from "../types";
 import { StackCardConfig } from "./types";
 
 export abstract class HuiStackCard extends LitElement implements LovelaceCard {
@@ -27,8 +26,11 @@ export abstract class HuiStackCard extends LitElement implements LovelaceCard {
   }
 
   @property() public hass?: HomeAssistant;
+
   @property() public editMode?: boolean;
+
   @property() protected _cards?: LovelaceCard[];
+
   @property() private _config?: StackCardConfig;
 
   public getCardSize(): number {
@@ -68,9 +70,7 @@ export abstract class HuiStackCard extends LitElement implements LovelaceCard {
 
     return html`
       ${this._config.title
-        ? html`
-            <div class="card-header">${this._config.title}</div>
-          `
+        ? html` <div class="card-header">${this._config.title}</div> `
         : ""}
       <div id="root">${this._cards}</div>
     `;

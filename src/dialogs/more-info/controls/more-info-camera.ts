@@ -1,31 +1,31 @@
+import "@polymer/paper-checkbox/paper-checkbox";
+import type { PaperCheckboxElement } from "@polymer/paper-checkbox/paper-checkbox";
 import {
+  css,
+  CSSResult,
+  html,
+  LitElement,
   property,
   PropertyValues,
-  LitElement,
   TemplateResult,
-  html,
-  CSSResult,
-  css,
 } from "lit-element";
-
-import { HomeAssistant, CameraEntity } from "../../../types";
+import { supportsFeature } from "../../../common/entity/supports-feature";
+import "../../../components/ha-camera-stream";
 import {
-  CAMERA_SUPPORT_STREAM,
   CameraPreferences,
+  CAMERA_SUPPORT_STREAM,
   fetchCameraPrefs,
   updateCameraPrefs,
 } from "../../../data/camera";
-import { supportsFeature } from "../../../common/entity/supports-feature";
-import "../../../components/ha-camera-stream";
-import "@polymer/paper-checkbox/paper-checkbox";
-// Not duplicate import, it's for typing
-// tslint:disable-next-line
-import { PaperCheckboxElement } from "@polymer/paper-checkbox/paper-checkbox";
+import type { CameraEntity, HomeAssistant } from "../../../types";
 
 class MoreInfoCamera extends LitElement {
   @property() public hass?: HomeAssistant;
+
   @property() public stateObj?: CameraEntity;
+
   @property() private _cameraPrefs?: CameraPreferences;
+
   @property() private _attached = false;
 
   public connectedCallback() {

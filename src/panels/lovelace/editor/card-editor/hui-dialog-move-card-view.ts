@@ -1,22 +1,19 @@
+import "@polymer/paper-item/paper-item";
 import {
-  html,
-  LitElement,
-  TemplateResult,
-  customElement,
-  property,
   css,
   CSSResult,
+  customElement,
+  html,
+  LitElement,
+  property,
+  TemplateResult,
 } from "lit-element";
-import "@polymer/paper-item/paper-item";
 import "../../../../components/dialog/ha-paper-dialog";
-// tslint:disable-next-line:no-duplicate-imports
-import { HaPaperDialog } from "../../../../components/dialog/ha-paper-dialog";
-
+import type { HaPaperDialog } from "../../../../components/dialog/ha-paper-dialog";
+import type { PolymerChangedEvent } from "../../../../polymer-types";
 import "../../components/hui-views-list";
-
 import { moveCard } from "../config-util";
-import { MoveCardViewDialogParams } from "./show-move-card-view-dialog";
-import { PolymerChangedEvent } from "../../../../polymer-types";
+import type { MoveCardViewDialogParams } from "./show-move-card-view-dialog";
 
 @customElement("hui-dialog-move-card-view")
 export class HuiDialogMoveCardView extends LitElement {
@@ -38,11 +35,12 @@ export class HuiDialogMoveCardView extends LitElement {
         @opened-changed="${this._openedChanged}"
       >
         <h2>Choose view to move card</h2>
-        <hui-views-list 
-        .lovelaceConfig=${this._params!.lovelace.config} 
-        .selected=${this._params!.path![0]} 
-        @view-selected=${this._moveCard}>
-        </hui-view-list>
+        <hui-views-list
+          .lovelaceConfig=${this._params!.lovelace.config}
+          .selected=${this._params!.path![0]}
+          @view-selected=${this._moveCard}
+        >
+        </hui-views-list>
       </ha-paper-dialog>
     `;
   }
