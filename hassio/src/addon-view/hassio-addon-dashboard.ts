@@ -9,6 +9,7 @@ import {
   property,
   TemplateResult,
 } from "lit-element";
+import memoizeOne from "memoize-one";
 import {
   fetchHassioAddonInfo,
   HassioAddonDetails,
@@ -16,20 +17,23 @@ import {
 import { haStyle } from "../../../src/resources/styles";
 import { HomeAssistant, Route } from "../../../src/types";
 import { hassioStyle } from "../resources/hassio-style";
-import "./hassio-addon-audio";
-import "./hassio-addon-config";
-import "./hassio-addon-info";
-import "./hassio-addon-logs";
-import "./hassio-addon-network";
-import "../../../src/layouts/hass-subpage";
+import "./config/hassio-addon-audio";
+import "./config/hassio-addon-config";
+import "./info/hassio-addon-info";
+import "./log/hassio-addon-logs";
+import "./config/hassio-addon-network";
+import type { PageNavigation } from "../../../src/layouts/hass-tabs-subpage";
+import "../../../src/layouts/hass-tabs-subpage";
 
+import "./hassio-addon-router";
 @customElement("hassio-addon-dashboard")
 class HassioAddonDashboard extends LitElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public route!: Route;
+  @property({ attribute: false }) public route!: Route;
 
-  @property() public addon?: HassioAddonDetails;
+  @property({ attribute: false }) public addon?: HassioAddonDetails;
+
   @property({ type: Boolean, reflect: true }) public narrow!: boolean;
 
   private _computeTail = memoizeOne((route: Route) => {

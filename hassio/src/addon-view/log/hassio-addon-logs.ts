@@ -12,11 +12,11 @@ import {
 import {
   fetchHassioAddonLogs,
   HassioAddonDetails,
-} from "../../../src/data/hassio/addon";
-import { haStyle } from "../../../src/resources/styles";
-import { HomeAssistant } from "../../../src/types";
-import "../components/hassio-ansi-to-html";
-import { hassioStyle } from "../resources/hassio-style";
+} from "../../../../src/data/hassio/addon";
+import { haStyle } from "../../../../src/resources/styles";
+import { HomeAssistant } from "../../../../src/types";
+import "../../components/hassio-ansi-to-html";
+import { hassioStyle } from "../../resources/hassio-style";
 
 @customElement("hassio-addon-logs")
 class HassioAddonLogs extends LitElement {

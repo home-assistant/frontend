@@ -12,14 +12,14 @@ import {
   TemplateResult,
 } from "lit-element";
 import { classMap } from "lit-html/directives/class-map";
-import { atLeastVersion } from "../../../src/common/config/version";
-import { fireEvent } from "../../../src/common/dom/fire_event";
-import { navigate } from "../../../src/common/navigate";
-import "../../../src/components/buttons/ha-call-api-button";
-import "../../../src/components/buttons/ha-progress-button";
-import "../../../src/components/ha-label-badge";
-import "../../../src/components/ha-markdown";
-import "../../../src/components/ha-switch";
+import { atLeastVersion } from "../../../../src/common/config/version";
+import { fireEvent } from "../../../../src/common/dom/fire_event";
+import { navigate } from "../../../../src/common/navigate";
+import "../../../../src/components/buttons/ha-call-api-button";
+import "../../../../src/components/buttons/ha-progress-button";
+import "../../../../src/components/ha-label-badge";
+import "../../../../src/components/ha-markdown";
+import "../../../../src/components/ha-switch";
 import {
   fetchHassioAddonChangelog,
   HassioAddonDetails,
@@ -29,12 +29,12 @@ import {
   setHassioAddonOption,
   setHassioAddonSecurity,
   uninstallHassioAddon,
-} from "../../../src/data/hassio/addon";
-import { haStyle } from "../../../src/resources/styles";
-import { HomeAssistant } from "../../../src/types";
-import "../components/hassio-card-content";
-import { showHassioMarkdownDialog } from "../dialogs/markdown/show-dialog-hassio-markdown";
-import { hassioStyle } from "../resources/hassio-style";
+} from "../../../../src/data/hassio/addon";
+import { haStyle } from "../../../../src/resources/styles";
+import { HomeAssistant } from "../../../../src/types";
+import "../../components/hassio-card-content";
+import { showHassioMarkdownDialog } from "../../dialogs/markdown/show-dialog-hassio-markdown";
+import { hassioStyle } from "../../resources/hassio-style";
 
 const PERMIS_DESC = {
   rating: {
@@ -92,15 +92,17 @@ const PERMIS_DESC = {
 @customElement("hassio-addon-info")
 class HassioAddonInfo extends LitElement {
   @property({ type: Boolean, reflect: true }) public narrow!: boolean;
-  @property() public hass!: HomeAssistant;
 
-  @property() public addon!: HassioAddonDetails;
+  @property({ attribute: false }) public hass!: HomeAssistant;
+
+  @property({ attribute: false }) public addon!: HassioAddonDetails;
 
   @property() private _error?: string;
 
   @property({ type: Boolean }) private _installing = false;
 
   protected render(): TemplateResult {
+    console.log("addon-info");
     return html`
       ${this._computeUpdateAvailable
         ? html`
@@ -186,7 +188,7 @@ class HassioAddonInfo extends LitElement {
           <div class="description light-color">
             ${this.addon.description}.<br />
             Visit
-            <a href="${this.addon.url}" target="_blank" rel="noreferrer">
+            <a href="${this.addon.url!}" target="_blank" rel="noreferrer">
               ${this.addon.name} page</a
             >
             for details.
@@ -194,7 +196,7 @@ class HassioAddonInfo extends LitElement {
           ${this.addon.logo
             ? html`
                 <a
-                  href="${this.addon.url}"
+                  href="${this.addon.url!}"
                   target="_blank"
                   class="logo"
                   rel="noreferrer"
@@ -426,7 +428,7 @@ class HassioAddonInfo extends LitElement {
                 ${this._computeShowWebUI
                   ? html`
                       <a
-                        .href=${this._pathWebui}
+                        href=${this._pathWebui!}
                         tabindex="-1"
                         target="_blank"
                         class="right"

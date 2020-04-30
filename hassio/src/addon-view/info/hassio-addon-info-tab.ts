@@ -17,14 +17,14 @@ import "./hassio-addon-info";
 @customElement("hassio-addon-info-tab")
 class HassioAddonInfoDashboard extends LitElement {
   @property({ type: Boolean, reflect: true }) public narrow!: boolean;
-  @property() public hass!: HomeAssistant;
-  @property() public addon?: HassioAddonDetails;
+
+  @property({ attribute: false }) public hass!: HomeAssistant;
+
+  @property({ attribute: false }) public addon?: HassioAddonDetails;
 
   protected render(): TemplateResult {
     if (!this.addon) {
-      return html`
-        <paper-spinner-lite active></paper-spinner-lite>
-      `;
+      return html` <paper-spinner-lite active></paper-spinner-lite> `;
     }
 
     return html`
