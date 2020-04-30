@@ -46,7 +46,10 @@ import {
   SceneEntity,
   SCENE_IGNORED_DOMAINS,
 } from "../../../data/scene";
-import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
+import {
+  showConfirmationDialog,
+  showAlertDialog,
+} from "../../../dialogs/generic/show-dialog-box";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../resources/styles";
 import { HomeAssistant, Route } from "../../../types";
@@ -73,13 +76,13 @@ export class HaSceneEditor extends SubscribeMixin(LitElement) {
 
   @property() public route!: Route;
 
-  @property() public scene?: SceneEntity;
+  @property() public sceneId?: string;
 
-  @property() public creatingNew?: boolean;
+  @property() public scenes!: SceneEntity[];
 
   @property() public showAdvanced!: boolean;
 
-  @property() private _dirty?: boolean;
+  @property() private _dirty = false;
 
   @property() private _errors?: string;
 
@@ -92,6 +95,8 @@ export class HaSceneEditor extends SubscribeMixin(LitElement) {
   @property() private _deviceRegistryEntries: DeviceRegistryEntry[] = [];
 
   @property() private _entityRegistryEntries: EntityRegistryEntry[] = [];
+
+  @property() private _scene?: SceneEntity;
 
   private _storedStates: SceneEntities = {};
 
@@ -172,8 +177,8 @@ export class HaSceneEditor extends SubscribeMixin(LitElement) {
       this._deviceEntityLookup,
       this._deviceRegistryEntries
     );
-    const name = this.scene
-      ? computeStateName(this.scene)
+    const name = this._scene
+      ? computeStateName(this._scene)
       : this.hass.localize("ui.panel.config.scene.editor.default_name");
 
     return html`
@@ -184,7 +189,7 @@ export class HaSceneEditor extends SubscribeMixin(LitElement) {
         .backCallback=${() => this._backTapped()}
         .tabs=${configSections.automation}
       >
-        ${this.creatingNew
+        ${!this.sceneId
           ? ""
           : html`
               <paper-icon-button
@@ -212,7 +217,7 @@ export class HaSceneEditor extends SubscribeMixin(LitElement) {
             <ha-card>
               <div class="card-content">
                 <paper-input
-                  .value=${this.scene ? computeStateName(this.scene) : ""}
+                  .value=${this._scene ? computeStateName(this._scene) : ""}
                   @value-changed=${this._nameChanged}
                   label=${this.hass.localize(
                     "ui.panel.config.scene.editor.name"
@@ -250,8 +255,8 @@ export class HaSceneEditor extends SubscribeMixin(LitElement) {
                       ></paper-icon-button>
                     </div>
                     ${device.entities.map((entityId) => {
-                      const stateObj = this.hass.states[entityId];
-                      if (!stateObj) {
+                      const entityStateObj = this.hass.states[entityId];
+                      if (!entityStateObj) {
                         return html``;
                       }
                       return html`
@@ -261,11 +266,11 @@ export class HaSceneEditor extends SubscribeMixin(LitElement) {
                           class="device-entity"
                         >
                           <state-badge
-                            .stateObj=${stateObj}
+                            .stateObj=${entityStateObj}
                             slot="item-icon"
                           ></state-badge>
                           <paper-item-body>
-                            ${computeStateName(stateObj)}
+                            ${computeStateName(entityStateObj)}
                           </paper-item-body>
                         </paper-icon-item>
                       `;
@@ -313,8 +318,8 @@ export class HaSceneEditor extends SubscribeMixin(LitElement) {
                           )}
                         >
                           ${entities.map((entityId) => {
-                            const stateObj = this.hass.states[entityId];
-                            if (!stateObj) {
+                            const entityStateObj = this.hass.states[entityId];
+                            if (!entityStateObj) {
                               return html``;
                             }
                             return html`
@@ -324,11 +329,11 @@ export class HaSceneEditor extends SubscribeMixin(LitElement) {
                                 class="device-entity"
                               >
                                 <state-badge
-                                  .stateObj=${stateObj}
+                                  .stateObj=${entityStateObj}
                                   slot="item-icon"
                                 ></state-badge>
                                 <paper-item-body>
-                                  ${computeStateName(stateObj)}
+                                  ${computeStateName(entityStateObj)}
                                 </paper-item-body>
                                 <paper-icon-button
                                   icon="hass:delete"
@@ -386,19 +391,19 @@ export class HaSceneEditor extends SubscribeMixin(LitElement) {
   protected updated(changedProps: PropertyValues): void {
     super.updated(changedProps);
 
-    const oldscene = changedProps.get("scene") as SceneEntity;
+    const oldscene = changedProps.get("sceneId");
 
     if (
-      changedProps.has("scene") &&
-      this.scene &&
+      changedProps.has("sceneId") &&
+      this.sceneId &&
       this.hass &&
       // Only refresh config if we picked a new scene. If same ID, don't fetch it.
-      (!oldscene || oldscene.attributes.id !== this.scene.attributes.id)
+      (!oldscene || oldscene !== this.sceneId)
     ) {
       this._loadConfig();
     }
 
-    if (changedProps.has("creatingNew") && this.creatingNew && this.hass) {
+    if (changedProps.has("sceneId") && !this.sceneId && this.hass) {
       this._dirty = false;
       const initData = getSceneEditorInitData();
       this._config = {
@@ -436,6 +441,29 @@ export class HaSceneEditor extends SubscribeMixin(LitElement) {
         }
       }
     }
+    if (
+      changedProps.has("scenes") &&
+      this.sceneId &&
+      this._config &&
+      !this._scene
+    ) {
+      this._setScene();
+    }
+  }
+
+  private async _setScene() {
+    const scene = this.scenes.find(
+      (entity: SceneEntity) => entity.attributes.id === this.sceneId
+    );
+    if (!scene) {
+      return;
+    }
+    this._scene = scene;
+    const { context } = await activateScene(this.hass, this._scene.entity_id);
+    this._activateContextId = context.id;
+    this._unsubscribeEvents = await this.hass!.connection.subscribeEvents<
+      HassEvent
+    >((event) => this._stateChanged(event), "state_changed");
   }
 
   private _showMoreInfo(ev: Event) {
@@ -446,20 +474,20 @@ export class HaSceneEditor extends SubscribeMixin(LitElement) {
   private async _loadConfig() {
     let config: SceneConfig;
     try {
-      config = await getSceneConfig(this.hass, this.scene!.attributes.id!);
+      config = await getSceneConfig(this.hass, this.sceneId!);
     } catch (err) {
-      alert(
-        err.status_code === 404
-          ? this.hass.localize(
-              "ui.panel.config.scene.editor.load_error_not_editable"
-            )
-          : this.hass.localize(
-              "ui.panel.config.scene.editor.load_error_unknown",
-              "err_no",
-              err.status_code
-            )
-      );
-      history.back();
+      showAlertDialog(this, {
+        text:
+          err.status_code === 404
+            ? this.hass.localize(
+                "ui.panel.config.scene.editor.load_error_not_editable"
+              )
+            : this.hass.localize(
+                "ui.panel.config.scene.editor.load_error_unknown",
+                "err_no",
+                err.status_code
+              ),
+      }).then(() => history.back());
       return;
     }
 
@@ -469,13 +497,7 @@ export class HaSceneEditor extends SubscribeMixin(LitElement) {
 
     this._initEntities(config);
 
-    const { context } = await activateScene(this.hass, this.scene!.entity_id);
-
-    this._activateContextId = context.id;
-
-    this._unsubscribeEvents = await this.hass!.connection.subscribeEvents<
-      HassEvent
-    >((event) => this._stateChanged(event), "state_changed");
+    this._setScene();
 
     this._dirty = false;
     this._config = config;
@@ -564,6 +586,7 @@ export class HaSceneEditor extends SubscribeMixin(LitElement) {
       event.context.id !== this._activateContextId &&
       this._entities.includes(event.data.entity_id)
     ) {
+      console.log(event);
       this._dirty = true;
     }
   }
@@ -598,7 +621,7 @@ export class HaSceneEditor extends SubscribeMixin(LitElement) {
   }
 
   private async _delete(): Promise<void> {
-    await deleteScene(this.hass, this.scene!.attributes.id!);
+    await deleteScene(this.hass, this.sceneId!);
     applyScene(this.hass, this._storedStates);
     history.back();
   }
@@ -634,13 +657,13 @@ export class HaSceneEditor extends SubscribeMixin(LitElement) {
   }
 
   private async _saveScene(): Promise<void> {
-    const id = this.creatingNew ? "" + Date.now() : this.scene!.attributes.id!;
+    const id = !this.sceneId ? "" + Date.now() : this.sceneId!;
     this._config = { ...this._config, entities: this._calculateStates() };
     try {
       await saveScene(this.hass, id, this._config);
       this._dirty = false;
 
-      if (this.creatingNew) {
+      if (!this.sceneId) {
         navigate(this, `/config/scene/edit/${id}`, true);
       }
     } catch (err) {
