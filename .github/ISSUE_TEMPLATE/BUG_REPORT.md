@@ -62,6 +62,14 @@ DO NOT DELETE ANY TEXT from this template! Otherwise, your issue may be closed w
 - Browser and browser version:
 - Operating system:
 
+## State of relevant entities
+
+<!--
+  If your issue is about how an entity is shown in the UI, please add the state
+  and attributes for all situations with a screenshot of the UI.
+  You can find this information at `/developer-tools/state`
+-->
+
 ## Problem-relevant configuration
 
 <!--
