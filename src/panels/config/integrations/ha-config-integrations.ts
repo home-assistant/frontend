@@ -590,7 +590,7 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
       title: this.hass!.localize(
         "ui.panel.config.integrations.ignore.confirm_delete_ignore_title",
         "name",
-        this.hass.localize(`component.${entry.domain}.config.title`)
+        this.hass.localize(`component.${entry.domain}.title`)
       ),
       text: this.hass!.localize(
         "ui.panel.config.integrations.ignore.confirm_delete_ignore"
