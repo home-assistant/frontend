@@ -317,16 +317,14 @@ export class HaConfigDevicePage extends LitElement {
             </div>
             <div class="column">
             ${
-              isComponentLoaded(this.hass, "scene")
+              isComponentLoaded(this.hass, "scene") && entities.length
                 ? html`
                     <ha-card>
                         <div class="card-header">
                           ${this.hass.localize(
                             "ui.panel.config.devices.scene.scenes"
                           )}
-                          ${
-                            entities.length
-                              ? html`
+
                                   <paper-icon-button
                                     @click=${this._createScene}
                                     title=${this.hass.localize(
@@ -334,9 +332,6 @@ export class HaConfigDevicePage extends LitElement {
                                     )}
                                     icon="hass:plus-circle"
                                   ></paper-icon-button>
-                                `
-                              : ""
-                          }
                         </div>
 
                         ${
