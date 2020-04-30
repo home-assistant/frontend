@@ -1,0 +1,343 @@
+{
+  "component": {
+    "sensor": {
+      "state": {
+        "_": {
+          "off": "Izsl\u0113gts",
+          "on": "Iesl\u0113gts"
+        }
+      }
+    },
+    "light": {
+      "state": {
+        "_": {
+          "off": "Izsl\u0113gta",
+          "on": "Iesl\u0113gta"
+        }
+      }
+    },
+    "switch": {
+      "state": {
+        "_": {
+          "off": "Izsl\u0113gts",
+          "on": "Iesl\u0113gts"
+        }
+      }
+    },
+    "binary_sensor": {
+      "state": {
+        "_": {
+          "off": "Izsl\u0113gts",
+          "on": "Iesl\u0113gts"
+        },
+        "battery": {
+          "off": "Norm\u0101ls",
+          "on": "Zems"
+        },
+        "cold": {
+          "off": "Norm\u0101ls",
+          "on": "Auksts"
+        },
+        "connectivity": {
+          "off": "Atvienots",
+          "on": "Piesl\u0113dzies"
+        },
+        "door": {
+          "off": "Aizv\u0113rtas",
+          "on": "Atv\u0113rtas"
+        },
+        "garage_door": {
+          "off": "Aizv\u0113rtas",
+          "on": "Atv\u0113rtas"
+        },
+        "gas": {
+          "off": "Br\u012bvs",
+          "on": "Sajusta"
+        },
+        "heat": {
+          "off": "Norm\u0101ls",
+          "on": "Karsts"
+        },
+        "lock": {
+          "off": "Sl\u0113gts",
+          "on": "Atsl\u0113gts"
+        },
+        "moisture": {
+          "off": "Sauss",
+          "on": "Slapj\u0161"
+        },
+        "motion": {
+          "off": "Br\u012bvs",
+          "on": "Sajusta"
+        },
+        "occupancy": {
+          "off": "Br\u012bvs",
+          "on": "Aiz\u0146emts"
+        },
+        "opening": {
+          "off": "Aizv\u0113rts",
+          "on": "Atv\u0113rts"
+        },
+        "presence": {
+          "off": "Promb\u016btne",
+          "on": "M\u0101j\u0101s"
+        },
+        "problem": {
+          "off": "OK",
+          "on": "Probl\u0113ma"
+        },
+        "safety": {
+          "off": "Dro\u0161i",
+          "on": "Nedro\u0161i"
+        },
+        "smoke": {
+          "off": "Br\u012bvs",
+          "on": "Sajusta"
+        },
+        "sound": {
+          "off": "Br\u012bvs",
+          "on": "Sajusts"
+        },
+        "vibration": {
+          "off": "Br\u012bvs",
+          "on": "Sajusts"
+        },
+        "window": {
+          "off": "Aizv\u0113rts",
+          "on": "Atv\u0113rts"
+        }
+      }
+    },
+    "alarm_control_panel": {
+      "state": {
+        "_": {
+          "armed": "Piesl\u0113gta",
+          "disarmed": "Atsl\u0113gta",
+          "armed_home": "Piesl\u0113gta m\u0101j\u0101s",
+          "armed_away": "Piesl\u0113gta uz promb\u016btni",
+          "armed_night": "Piesl\u0113gta uz nakti",
+          "armed_custom_bypass": "Piesl\u0113gts piel\u0101gots apvedce\u013c\u0161",
+          "pending": "Gaida",
+          "arming": "Piesl\u0113dzas",
+          "disarming": "Atsl\u0113dzas",
+          "triggered": "Aktiviz\u0113ta"
+        }
+      }
+    },
+    "automation": {
+      "state": {
+        "_": {
+          "off": "Izsl\u0113gts",
+          "on": "Iesl\u0113gts"
+        }
+      }
+    },
+    "calendar": {
+      "state": {
+        "_": {
+          "off": "Izsl\u0113gts",
+          "on": "Iesl\u0113gts"
+        }
+      }
+    },
+    "camera": {
+      "state": {
+        "_": {
+          "recording": "Ieraksta",
+          "streaming": "Straum\u0113",
+          "idle": "D\u012bkst\u0101ve"
+        }
+      }
+    },
+    "climate": {
+      "state": {
+        "_": {
+          "off": "Izsl\u0113gts",
+          "heat": "Sild\u012b\u0161ana",
+          "cool": "Dzes\u0113\u0161ana",
+          "heat_cool": "Sild\u012bt / Atdzes\u0113t",
+          "auto": "Auto",
+          "dry": "Sauss",
+          "fan_only": "Tikai ventilators"
+        }
+      }
+    },
+    "configurator": {
+      "state": {
+        "_": {
+          "configure": "Konfigur\u0113t",
+          "configured": "Konfigur\u0113ts"
+        }
+      }
+    },
+    "cover": {
+      "state": {
+        "_": {
+          "open": "Atv\u0113rts",
+          "opening": "Atveras",
+          "closed": "Sl\u0113gts",
+          "closing": "Sl\u0113dzas",
+          "stopped": "Aptur\u0113ts"
+        }
+      }
+    },
+    "device_tracker": {
+      "state": {
+        "_": {
+          "home": "M\u0101j\u0101s",
+          "not_home": "Prom"
+        }
+      }
+    },
+    "fan": {
+      "state": {
+        "_": {
+          "off": "Izsl\u0113gts",
+          "on": "Iesl\u0113gts"
+        }
+      }
+    },
+    "group": {
+      "state": {
+        "_": {
+          "off": "Izsl\u0113gta",
+          "on": "Iesl\u0113gta",
+          "home": "M\u0101j\u0101s",
+          "not_home": "Promb\u016btn\u0113",
+          "open": "Atv\u0113rta",
+          "closed": "Sl\u0113gta",
+          "locked": "Blo\u0137\u0113ta",
+          "unlocked": "Atblo\u0137\u0113ta",
+          "ok": "OK",
+          "problem": "Probl\u0113ma"
+        }
+      }
+    },
+    "input_boolean": {
+      "state": {
+        "_": {
+          "off": "Izsl\u0113gta",
+          "on": "Iesl\u0113gta"
+        }
+      }
+    },
+    "lock": {
+      "state": {
+        "_": {
+          "locked": "Aizsl\u0113gts",
+          "unlocked": "Atsl\u0113gts"
+        }
+      }
+    },
+    "media_player": {
+      "state": {
+        "_": {
+          "off": "Izsl\u0113gts",
+          "on": "Iesl\u0113gts",
+          "playing": "Atska\u0146o",
+          "paused": "Aptur\u0113ts",
+          "idle": "D\u012bkst\u0101v\u0113",
+          "standby": "Gaid\u012b\u0161anas re\u017e\u012bm\u0101"
+        }
+      }
+    },
+    "person": {
+      "state": {
+        "_": {
+          "home": "M\u0101j\u0101s",
+          "not_home": "Promb\u016btne"
+        }
+      }
+    },
+    "plant": {
+      "state": {
+        "_": {
+          "ok": "Labi",
+          "problem": "Probl\u0113ma"
+        }
+      }
+    },
+    "remote": {
+      "state": {
+        "_": {
+          "off": "Izsl\u0113gta",
+          "on": "Iesl\u0113gts"
+        }
+      }
+    },
+    "script": {
+      "state": {
+        "_": {
+          "off": "Izsl\u0113gts",
+          "on": "Iesl\u0113gts"
+        }
+      }
+    },
+    "sun": {
+      "state": {
+        "_": {
+          "above_horizon": "Virs horizonta",
+          "below_horizon": "Zem horizonta"
+        }
+      }
+    },
+    "vacuum": {
+      "state": {
+        "_": {
+          "cleaning": "Notiek uzkop\u0161ana",
+          "docked": "Pie doka",
+          "error": "K\u013c\u016bda",
+          "idle": "D\u012bkst\u0101v\u0113",
+          "off": "Izsl\u0113gts",
+          "on": "Iesl\u0113gts",
+          "paused": "Aptur\u0113ts",
+          "returning": "Ce\u013c\u0101 pie doka"
+        }
+      }
+    },
+    "timer": {
+      "state": {
+        "_": {
+          "active": "akt\u012bvs",
+          "idle": "d\u012bkst\u0101ve",
+          "paused": "aptur\u0113ts"
+        }
+      }
+    },
+    "weather": {
+      "state": {
+        "_": {
+          "clear-night": "Skaidrs, nakts",
+          "cloudy": "M\u0101ko\u0146ains",
+          "exceptional": "Iz\u0146\u0113muma k\u0101rt\u0101",
+          "fog": "Migla",
+          "hail": "Krusa",
+          "lightning": "Zibens",
+          "lightning-rainy": "Zibens, lietus",
+          "partlycloudy": "Da\u013c\u0113ji apm\u0101cies",
+          "pouring": "Lietusg\u0101ze",
+          "rainy": "Lietains",
+          "snowy": "Sniegs",
+          "snowy-rainy": "Sniegs, lietus",
+          "sunny": "Saulains",
+          "windy": "V\u0113jains",
+          "windy-variant": "V\u0113jains"
+        }
+      }
+    },
+    "zwave": {
+      "state": {
+        "_": {
+          "initializing": "Inicializ\u0113",
+          "dead": "Beigta",
+          "sleeping": "Gu\u013c",
+          "ready": "Gatavs"
+        },
+        "query_stage": {
+          "initializing": "Inicializ\u0113 ({query_stage})",
+          "dead": "Beigta ({query_stage})"
+        }
+      }
+    }
+  }
+}

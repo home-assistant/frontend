@@ -1,25 +1,23 @@
+import "@material/mwc-button";
 import {
-  LitElement,
+  css,
+  CSSResult,
   customElement,
   html,
+  LitElement,
   property,
-  CSSResult,
-  css,
 } from "lit-element";
-import "@material/mwc-button";
-import "../../../../components/ha-card";
-
-import { HaDeviceCondition } from "./types/ha-automation-condition-device";
-
 import { fireEvent } from "../../../../common/dom/fire_event";
-import { HomeAssistant } from "../../../../types";
-
-import "./ha-automation-condition-row";
+import "../../../../components/ha-card";
 import { Condition } from "../../../../data/automation";
+import { HomeAssistant } from "../../../../types";
+import "./ha-automation-condition-row";
+import { HaDeviceCondition } from "./types/ha-automation-condition-device";
 
 @customElement("ha-automation-condition")
 export default class HaAutomationCondition extends LitElement {
   @property() public hass!: HomeAssistant;
+
   @property() public conditions!: Condition[];
 
   protected render() {

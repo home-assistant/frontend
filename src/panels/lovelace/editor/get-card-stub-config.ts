@@ -1,5 +1,5 @@
-import { HomeAssistant } from "../../../types";
 import { LovelaceCardConfig } from "../../../data/lovelace";
+import { HomeAssistant } from "../../../types";
 import { getCardElementClass } from "../create-element/create-card-element";
 
 export const getCardStubConfig = async (

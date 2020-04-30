@@ -1,24 +1,21 @@
-import "../../../components/buttons/ha-call-service-button";
-import "../../../components/ha-service-description";
-import "../../../components/ha-card";
-import "../ha-config-section";
 import "@material/mwc-button";
 import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
 import "@polymer/paper-icon-button/paper-icon-button";
 import "@polymer/paper-input/paper-input";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
-
 import {
   css,
   CSSResult,
   html,
   LitElement,
+  property,
   PropertyValues,
   TemplateResult,
-  property,
 } from "lit-element";
-
+import "../../../components/buttons/ha-call-service-button";
+import "../../../components/ha-card";
+import "../../../components/ha-service-description";
 import {
   Attribute,
   Cluster,
@@ -29,6 +26,7 @@ import {
 } from "../../../data/zha";
 import { haStyle } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
+import "../ha-config-section";
 import { formatAsPaddedHex } from "./functions";
 import {
   ChangeEvent,
@@ -38,14 +36,23 @@ import {
 
 export class ZHAClusterAttributes extends LitElement {
   @property() public hass?: HomeAssistant;
+
   @property() public isWide?: boolean;
+
   @property() public showHelp = false;
+
   @property() public selectedNode?: ZHADevice;
+
   @property() public selectedCluster?: Cluster;
+
   @property() private _attributes: Attribute[] = [];
+
   @property() private _selectedAttributeIndex = -1;
+
   @property() private _attributeValue?: any = "";
+
   @property() private _manufacturerCodeOverride?: string | number;
+
   @property() private _setAttributeServiceData?: SetAttributeServiceData;
 
   protected updated(changedProperties: PropertyValues): void {
@@ -97,9 +104,9 @@ export class ZHAClusterAttributes extends LitElement {
                   (entry) => html`
                     <paper-item
                       >${entry.name +
-                        " (id: " +
-                        formatAsPaddedHex(entry.id) +
-                        ")"}</paper-item
+                      " (id: " +
+                      formatAsPaddedHex(entry.id) +
+                      ")"}</paper-item
                     >
                   `
                 )}
@@ -207,7 +214,7 @@ export class ZHAClusterAttributes extends LitElement {
     | ReadAttributeServiceData
     | undefined {
     if (!this.selectedCluster || !this.selectedNode) {
-      return;
+      return undefined;
     }
     return {
       ieee: this.selectedNode!.ieee,
@@ -225,7 +232,7 @@ export class ZHAClusterAttributes extends LitElement {
     | SetAttributeServiceData
     | undefined {
     if (!this.selectedCluster || !this.selectedNode) {
-      return;
+      return undefined;
     }
     return {
       ieee: this.selectedNode!.ieee,

@@ -1,17 +1,16 @@
-import {
-  LitElement,
-  html,
-  TemplateResult,
-  CSSResult,
-  css,
-  property,
-  PropertyValues,
-  customElement,
-} from "lit-element";
 import "@material/mwc-button";
-
-import { HomeAssistant } from "../../../types";
+import {
+  css,
+  CSSResult,
+  customElement,
+  html,
+  LitElement,
+  property,
+  TemplateResult,
+} from "lit-element";
+import "../../../components/ha-attributes";
 import { TimerEntity } from "../../../data/timer";
+import { HomeAssistant } from "../../../types";
 
 @customElement("more-info-timer")
 class MoreInfoTimer extends LitElement {
@@ -68,13 +67,6 @@ class MoreInfoTimer extends LitElement {
           : ""}
       </div>
     `;
-  }
-
-  protected updated(changedProps: PropertyValues) {
-    super.updated(changedProps);
-    if (!changedProps.has("stateObj") || !this.stateObj) {
-      return;
-    }
   }
 
   private _handleActionClick(e: MouseEvent): void {

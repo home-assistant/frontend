@@ -1,12 +1,8 @@
 import { InputBoolean } from "../../../data/input_boolean";
-
-import { InputText } from "../../../data/input_text";
-
-import { InputNumber } from "../../../data/input_number";
-
-import { InputSelect } from "../../../data/input_select";
-
 import { InputDateTime } from "../../../data/input_datetime";
+import { InputNumber } from "../../../data/input_number";
+import { InputSelect } from "../../../data/input_select";
+import { InputText } from "../../../data/input_text";
 
 export const HELPER_DOMAINS = [
   "input_boolean",

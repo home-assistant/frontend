@@ -1,0 +1,266 @@
+{
+  "component": {
+    "binary_sensor": {
+      "state": {
+        "_": {
+          "off": "Isklju\u010den",
+          "on": "Uklju\u010den"
+        },
+        "battery": {
+          "off": "Normalno",
+          "on": "Nisko"
+        },
+        "connectivity": {
+          "off": "Nepovezan",
+          "on": "Povezan"
+        },
+        "gas": {
+          "off": "\u010cist",
+          "on": "Otkriven"
+        },
+        "moisture": {
+          "off": "Suho",
+          "on": "Mokar"
+        },
+        "motion": {
+          "off": "\u010cist",
+          "on": "Otkriven"
+        },
+        "occupancy": {
+          "off": "\u010cist",
+          "on": "Otkriven"
+        },
+        "opening": {
+          "off": "Zatvoren",
+          "on": "Otvoren"
+        },
+        "presence": {
+          "off": "Odsutan",
+          "on": "Kod ku\u0107e"
+        },
+        "problem": {
+          "off": "OK",
+          "on": "Problem"
+        },
+        "safety": {
+          "off": "Siguran",
+          "on": "Nesiguran"
+        },
+        "smoke": {
+          "off": "\u010cist",
+          "on": "Otkriven"
+        },
+        "sound": {
+          "off": "\u010cist",
+          "on": "Otkriven"
+        },
+        "vibration": {
+          "off": "\u010cist",
+          "on": "Otkriven"
+        }
+      }
+    },
+    "alarm_control_panel": {
+      "state": {
+        "_": {
+          "armed": "Aktiviran",
+          "disarmed": "Deaktiviran",
+          "armed_home": "Aktiviran kod ku\u0107e",
+          "armed_away": "Aktiviran izvan ku\u0107e",
+          "armed_night": "Aktiviran no\u0107u",
+          "armed_custom_bypass": "Aktiviran pod specijalnim rezimom",
+          "pending": "U is\u010dekivanju",
+          "arming": "Aktivacija",
+          "disarming": "Deaktivacija",
+          "triggered": "Pokrenut"
+        }
+      }
+    },
+    "automation": {
+      "state": {
+        "_": {
+          "off": "Isklju\u010den",
+          "on": "Uklju\u010den"
+        }
+      }
+    },
+    "calendar": {
+      "state": {
+        "_": {
+          "off": "Isklju\u010den",
+          "on": "Uklju\u010den"
+        }
+      }
+    },
+    "camera": {
+      "state": {
+        "_": {
+          "recording": "Snimanje",
+          "streaming": "Predaja slike",
+          "idle": "Besposlen"
+        }
+      }
+    },
+    "climate": {
+      "state": {
+        "_": {
+          "off": "Isklju\u010den",
+          "heat": "Toplota",
+          "cool": "Hladno",
+          "auto": "Auto",
+          "dry": "Suh",
+          "fan_only": "Samo ventilator"
+        }
+      }
+    },
+    "configurator": {
+      "state": {
+        "_": {
+          "configure": "Podesite",
+          "configured": "Konfigurirano"
+        }
+      }
+    },
+    "cover": {
+      "state": {
+        "_": {
+          "open": "Otvoren",
+          "opening": "Otvoreno",
+          "closed": "Zatvoren",
+          "closing": "Zatvoreno",
+          "stopped": "Zaustavljen"
+        }
+      }
+    },
+    "device_tracker": {
+      "state": {
+        "_": {
+          "home": "Kod ku\u0107e",
+          "not_home": "Odsutan"
+        }
+      }
+    },
+    "fan": {
+      "state": {
+        "_": {
+          "off": "Isklju\u010den",
+          "on": "Uklju\u010den"
+        }
+      }
+    },
+    "group": {
+      "state": {
+        "_": {
+          "off": "Isklju\u010den",
+          "on": "Uklju\u010den",
+          "home": "Kod ku\u0107e",
+          "not_home": "Odsutan",
+          "open": "Otvoren",
+          "closed": "Zatvoren",
+          "locked": "Zaklju\u010dan",
+          "unlocked": "Otklju\u010dan",
+          "ok": "OK",
+          "problem": "Problem"
+        }
+      }
+    },
+    "input_boolean": {
+      "state": {
+        "_": {
+          "off": "Isklju\u010den",
+          "on": "Uklju\u010den"
+        }
+      }
+    },
+    "light": {
+      "state": {
+        "_": {
+          "off": "Isklju\u010den",
+          "on": "Uklju\u010den"
+        }
+      }
+    },
+    "lock": {
+      "state": {
+        "_": {
+          "locked": "Zaklju\u010dan",
+          "unlocked": "Otklju\u010dan"
+        }
+      }
+    },
+    "media_player": {
+      "state": {
+        "_": {
+          "off": "Isklju\u010den",
+          "on": "Uklju\u010den",
+          "playing": "Prikazuje",
+          "paused": "Pauziran",
+          "idle": "Besposlen",
+          "standby": "U stanju \u010dekanja"
+        }
+      }
+    },
+    "plant": {
+      "state": {
+        "_": {
+          "ok": "OK",
+          "problem": "Problem"
+        }
+      }
+    },
+    "remote": {
+      "state": {
+        "_": {
+          "off": "Isklju\u010den",
+          "on": "Uklju\u010den"
+        }
+      }
+    },
+    "script": {
+      "state": {
+        "_": {
+          "off": "Isklju\u010den",
+          "on": "Uklju\u010den"
+        }
+      }
+    },
+    "sensor": {
+      "state": {
+        "_": {
+          "off": "Isklju\u010den",
+          "on": "Uklju\u010den"
+        }
+      }
+    },
+    "sun": {
+      "state": {
+        "_": {
+          "above_horizon": "Iznad horizonta",
+          "below_horizon": "Ispod horizonta"
+        }
+      }
+    },
+    "switch": {
+      "state": {
+        "_": {
+          "off": "Isklju\u010den",
+          "on": "Uklju\u010den"
+        }
+      }
+    },
+    "zwave": {
+      "state": {
+        "_": {
+          "initializing": "Inicijalizacija",
+          "dead": "Mrtav",
+          "sleeping": "Spava",
+          "ready": "Spreman"
+        },
+        "query_stage": {
+          "initializing": "Inicijalizacija ( {query_stage} )",
+          "dead": "Mrtav ({query_stage})"
+        }
+      }
+    }
+  }
+}

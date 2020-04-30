@@ -1,20 +1,18 @@
+import "@polymer/paper-icon-button/paper-icon-button";
 import {
-  html,
-  LitElement,
-  TemplateResult,
-  customElement,
-  property,
   css,
   CSSResult,
+  customElement,
+  html,
+  LitElement,
+  property,
+  TemplateResult,
 } from "lit-element";
-import "@polymer/paper-icon-button/paper-icon-button";
-
-import { HomeAssistant } from "../../../types";
 import { fireEvent } from "../../../common/dom/fire_event";
-import { EntityConfig } from "../entity-rows/types";
-
 import "../../../components/entity/ha-entity-picker";
+import { HomeAssistant } from "../../../types";
 import { EditorTarget } from "../editor/types";
+import { EntityConfig } from "../entity-rows/types";
 
 @customElement("hui-entity-editor")
 export class HuiEntityEditor extends LitElement {
@@ -32,14 +30,10 @@ export class HuiEntityEditor extends LitElement {
     return html`
       <h3>
         ${this.label ||
-          this.hass!.localize(
-            "ui.panel.lovelace.editor.card.generic.entities"
-          ) +
-            " (" +
-            this.hass!.localize(
-              "ui.panel.lovelace.editor.card.config.required"
-            ) +
-            ")"}
+        this.hass!.localize("ui.panel.lovelace.editor.card.generic.entities") +
+          " (" +
+          this.hass!.localize("ui.panel.lovelace.editor.card.config.required") +
+          ")"}
       </h3>
       <div class="entities">
         ${this.entities.map((entityConf, index) => {

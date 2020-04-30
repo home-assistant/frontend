@@ -1,11 +1,10 @@
 import { html } from "@polymer/polymer/lib/utils/html-tag";
+/* eslint-plugin-disable lit */
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 
 class HaServiceDescription extends PolymerElement {
   static get template() {
-    return html`
-      [[_getDescription(hass, domain, service)]]
-    `;
+    return html` [[_getDescription(hass, domain, service)]] `;
   }
 
   static get properties() {

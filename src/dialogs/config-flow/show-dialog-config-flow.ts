@@ -1,18 +1,19 @@
-import {
-  getConfigFlowHandlers,
-  fetchConfigFlow,
-  handleConfigFlowStep,
-  deleteConfigFlow,
-  createConfigFlow,
-} from "../../data/config_flow";
 import { html } from "lit-element";
+import { caseInsensitiveCompare } from "../../common/string/compare";
 import { localizeKey } from "../../common/translations/localize";
 import {
-  showFlowDialog,
+  createConfigFlow,
+  deleteConfigFlow,
+  fetchConfigFlow,
+  getConfigFlowHandlers,
+  handleConfigFlowStep,
+} from "../../data/config_flow";
+import { domainToName } from "../../data/integration";
+import {
   DataEntryFlowDialogParams,
   loadDataEntryFlowDialog,
+  showFlowDialog,
 } from "./show-dialog-data-entry-flow";
-import { caseInsensitiveCompare } from "../../common/string/compare";
 
 export const loadConfigFlowDialog = loadDataEntryFlowDialog;
 
@@ -22,17 +23,31 @@ export const showConfigFlowDialog = (
 ): void =>
   showFlowDialog(element, dialogParams, {
     loadDevicesAndAreas: true,
-    getFlowHandlers: (hass) =>
-      getConfigFlowHandlers(hass).then((handlers) =>
-        handlers.sort((handlerA, handlerB) =>
-          caseInsensitiveCompare(
-            hass.localize(`component.${handlerA}.config.title`),
-            hass.localize(`component.${handlerB}.config.title`)
-          )
+    getFlowHandlers: async (hass) => {
+      const [handlers] = await Promise.all([
+        getConfigFlowHandlers(hass),
+        hass.loadBackendTranslation("title", undefined, true),
+      ]);
+
+      return handlers.sort((handlerA, handlerB) =>
+        caseInsensitiveCompare(
+          domainToName(hass.localize, handlerA),
+          domainToName(hass.localize, handlerB)
         )
-      ),
-    createFlow: createConfigFlow,
-    fetchFlow: fetchConfigFlow,
+      );
+    },
+    createFlow: async (hass, handler) => {
+      const [step] = await Promise.all([
+        createConfigFlow(hass, handler),
+        hass.loadBackendTranslation("config", handler),
+      ]);
+      return step;
+    },
+    fetchFlow: async (hass, flowId) => {
+      const step = await fetchConfigFlow(hass, flowId);
+      await hass.loadBackendTranslation("config", step.handler);
+      return step;
+    },
     handleFlowStep: handleConfigFlowStep,
     deleteFlow: deleteConfigFlow,
 
@@ -44,15 +59,15 @@ export const showConfigFlowDialog = (
       );
 
       return description
-        ? html`
-            <ha-markdown allowsvg .content=${description}></ha-markdown>
-          `
+        ? html` <ha-markdown allowsvg .content=${description}></ha-markdown> `
         : "";
     },
 
     renderShowFormStepHeader(hass, step) {
-      return hass.localize(
-        `component.${step.handler}.config.step.${step.step_id}.title`
+      return (
+        hass.localize(
+          `component.${step.handler}.config.step.${step.step_id}.title`
+        ) || hass.localize(`component.${step.handler}.title`)
       );
     },
 
@@ -63,9 +78,7 @@ export const showConfigFlowDialog = (
         step.description_placeholders
       );
       return description
-        ? html`
-            <ha-markdown allowsvg .content=${description}></ha-markdown>
-          `
+        ? html` <ha-markdown allowsvg .content=${description}></ha-markdown> `
         : "";
     },
 
@@ -99,9 +112,7 @@ export const showConfigFlowDialog = (
           )}
         </p>
         ${description
-          ? html`
-              <ha-markdown allowsvg .content=${description}></ha-markdown>
-            `
+          ? html` <ha-markdown allowsvg .content=${description}></ha-markdown> `
           : ""}
       `;
     },
@@ -109,16 +120,15 @@ export const showConfigFlowDialog = (
     renderCreateEntryDescription(hass, step) {
       const description = localizeKey(
         hass.localize,
-        `component.${step.handler}.config.create_entry.${step.description ||
-          "default"}`,
+        `component.${step.handler}.config.create_entry.${
+          step.description || "default"
+        }`,
         step.description_placeholders
       );
 
       return html`
         ${description
-          ? html`
-              <ha-markdown allowsvg .content=${description}></ha-markdown>
-            `
+          ? html` <ha-markdown allowsvg .content=${description}></ha-markdown> `
           : ""}
         <p>
           ${hass.localize(

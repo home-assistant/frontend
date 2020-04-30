@@ -1,33 +1,39 @@
+import "@material/mwc-button";
+import "@polymer/paper-input/paper-input";
 import {
-  LitElement,
-  html,
   css,
   CSSResult,
-  TemplateResult,
+  html,
+  LitElement,
   property,
+  TemplateResult,
 } from "lit-element";
 import memoizeOne from "memoize-one";
-
-import "@polymer/paper-input/paper-input";
-import "@material/mwc-button";
-
 import "../../../components/entity/ha-entities-picker";
-import "../../../components/user/ha-user-picker";
-import { PersonDetailDialogParams } from "./show-dialog-person-detail";
-import { PolymerChangedEvent } from "../../../polymer-types";
-import { HomeAssistant } from "../../../types";
-import { PersonMutableParams } from "../../../data/person";
 import { createCloseHeading } from "../../../components/ha-dialog";
+import "../../../components/user/ha-user-picker";
+import { PersonMutableParams } from "../../../data/person";
+import { PolymerChangedEvent } from "../../../polymer-types";
 import { haStyleDialog } from "../../../resources/styles";
+import { HomeAssistant } from "../../../types";
+import { PersonDetailDialogParams } from "./show-dialog-person-detail";
+
+const includeDomains = ["device_tracker"];
 
 class DialogPersonDetail extends LitElement {
   @property() public hass!: HomeAssistant;
+
   @property() private _name!: string;
+
   @property() private _userId?: string;
+
   @property() private _deviceTrackers!: string[];
+
   @property() private _error?: string;
+
   @property() private _params?: PersonDetailDialogParams;
-  @property() private _submitting: boolean = false;
+
+  @property() private _submitting = false;
 
   private _deviceTrackersAvailable = memoizeOne((hass) => {
     return Object.keys(hass.states).some(
@@ -70,11 +76,7 @@ class DialogPersonDetail extends LitElement {
         )}
       >
         <div>
-          ${this._error
-            ? html`
-                <div class="error">${this._error}</div>
-              `
-            : ""}
+          ${this._error ? html` <div class="error">${this._error}</div> ` : ""}
           <div class="form">
             <paper-input
               .value=${this._name}
@@ -106,7 +108,7 @@ class DialogPersonDetail extends LitElement {
                   <ha-entities-picker
                     .hass=${this.hass}
                     .value=${this._deviceTrackers}
-                    include-domains='["device_tracker"]'
+                    .includeDomains=${includeDomains}
                     .pickedEntityLabel=${this.hass.localize(
                       "ui.panel.config.person.detail.device_tracker_picked"
                     )}

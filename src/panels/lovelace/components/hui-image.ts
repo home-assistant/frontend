@@ -1,21 +1,21 @@
-import { STATES_OFF } from "../../../common/const";
-
-import parseAspectRatio from "../../../common/util/parse-aspect-ratio";
 import {
-  LitElement,
-  TemplateResult,
-  html,
-  property,
-  CSSResult,
   css,
+  CSSResult,
+  customElement,
+  html,
+  LitElement,
+  property,
   PropertyValues,
   query,
-  customElement,
+  TemplateResult,
 } from "lit-element";
-import { HomeAssistant, CameraEntity } from "../../../types";
-import { styleMap } from "lit-html/directives/style-map";
 import { classMap } from "lit-html/directives/class-map";
+import { styleMap } from "lit-html/directives/style-map";
+import { STATES_OFF } from "../../../common/const";
+import parseAspectRatio from "../../../common/util/parse-aspect-ratio";
+import "../../../components/ha-camera-stream";
 import { fetchThumbnailUrlWithCache } from "../../../data/camera";
+import { CameraEntity, HomeAssistant } from "../../../types";
 
 const UPDATE_INTERVAL = 10000;
 const DEFAULT_FILTER = "grayscale(100%)";
@@ -71,9 +71,11 @@ export class HuiImage extends LitElement {
   }
 
   protected render(): TemplateResult {
+    if (!this.hass) {
+      return html``;
+    }
     const ratio = this.aspectRatio ? parseAspectRatio(this.aspectRatio) : null;
-    const stateObj =
-      this.hass && this.entity ? this.hass.states[this.entity] : undefined;
+    const stateObj = this.entity ? this.hass.states[this.entity] : undefined;
     const state = stateObj ? stateObj.state : "unavailable";
 
     // Figure out image source to use
@@ -84,8 +86,7 @@ export class HuiImage extends LitElement {
 
     if (this.cameraImage) {
       if (this.cameraView === "live") {
-        cameraObj =
-          this.hass && (this.hass.states[this.cameraImage] as CameraEntity);
+        cameraObj = this.hass.states[this.cameraImage] as CameraEntity;
       } else {
         imageSrc = this._cameraImageSrc;
       }
@@ -103,7 +104,7 @@ export class HuiImage extends LitElement {
     }
 
     if (imageSrc) {
-      imageSrc = this.hass!.hassUrl(imageSrc);
+      imageSrc = this.hass.hassUrl(imageSrc);
     }
 
     // Figure out filter to use
@@ -164,7 +165,6 @@ export class HuiImage extends LitElement {
     if (changedProps.has("cameraImage") && this.cameraView !== "live") {
       this._updateCameraImageSrc();
       this._startUpdateCameraInterval();
-      return;
     }
   }
 

@@ -1,8 +1,8 @@
 import { html } from "@polymer/polymer/lib/utils/html-tag";
+/* eslint-plugin-disable lit */
 import { PolymerElement } from "@polymer/polymer/polymer-element";
-
-import LocalizeMixin from "../mixins/localize-mixin";
 import { CLIMATE_PRESET_NONE } from "../data/climate";
+import LocalizeMixin from "../mixins/localize-mixin";
 
 /*
  * @appliesMixin LocalizeMixin
@@ -110,7 +110,7 @@ class HaClimateState extends LocalizeMixin(PolymerElement) {
   }
 
   _localizeState(localize, stateObj) {
-    const stateString = localize(`state.climate.${stateObj.state}`);
+    const stateString = localize(`component.climate.state._.${stateObj.state}`);
     return stateObj.attributes.hvac_action
       ? `${localize(
           `state_attributes.climate.hvac_action.${stateObj.attributes.hvac_action}`

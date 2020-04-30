@@ -1,46 +1,39 @@
-import {
-  LitElement,
-  TemplateResult,
-  html,
-  CSSResultArray,
-  css,
-  property,
-  PropertyValues,
-  customElement,
-} from "lit-element";
 import "@material/mwc-button";
 import "@polymer/paper-card/paper-card";
 import "@polymer/paper-checkbox/paper-checkbox";
+import type { PaperCheckboxElement } from "@polymer/paper-checkbox/paper-checkbox";
 import "@polymer/paper-input/paper-input";
+import type { PaperInputElement } from "@polymer/paper-input/paper-input";
 import "@polymer/paper-radio-button/paper-radio-button";
 import "@polymer/paper-radio-group/paper-radio-group";
-
-import "../components/hassio-card-content";
-import { hassioStyle } from "../resources/hassio-style";
-import { haStyle } from "../../../src/resources/styles";
-
-import { showHassioSnapshotDialog } from "../dialogs/snapshot/show-dialog-hassio-snapshot";
-import { HomeAssistant } from "../../../src/types";
+import type { PaperRadioGroupElement } from "@polymer/paper-radio-group/paper-radio-group";
 import {
-  HassioSnapshot,
-  fetchHassioSnapshots,
-  reloadHassioSnapshots,
-  HassioFullSnapshotCreateParams,
-  HassioPartialSnapshotCreateParams,
+  css,
+  CSSResultArray,
+  customElement,
+  html,
+  LitElement,
+  property,
+  PropertyValues,
+  TemplateResult,
+} from "lit-element";
+import { fireEvent } from "../../../src/common/dom/fire_event";
+import {
   createHassioFullSnapshot,
   createHassioPartialSnapshot,
+  fetchHassioSnapshots,
+  HassioFullSnapshotCreateParams,
+  HassioPartialSnapshotCreateParams,
+  HassioSnapshot,
+  reloadHassioSnapshots,
 } from "../../../src/data/hassio/snapshot";
 import { HassioSupervisorInfo } from "../../../src/data/hassio/supervisor";
 import { PolymerChangedEvent } from "../../../src/polymer-types";
-import { fireEvent } from "../../../src/common/dom/fire_event";
-
-// Not duplicate, used for typing
-// tslint:disable-next-line
-import { PaperInputElement } from "@polymer/paper-input/paper-input";
-// tslint:disable-next-line
-import { PaperRadioGroupElement } from "@polymer/paper-radio-group/paper-radio-group";
-// tslint:disable-next-line
-import { PaperCheckboxElement } from "@polymer/paper-checkbox/paper-checkbox";
+import { haStyle } from "../../../src/resources/styles";
+import { HomeAssistant } from "../../../src/types";
+import "../components/hassio-card-content";
+import { showHassioSnapshotDialog } from "../dialogs/snapshot/show-dialog-hassio-snapshot";
+import { hassioStyle } from "../resources/hassio-style";
 
 interface CheckboxItem {
   slug: string;
@@ -51,13 +44,21 @@ interface CheckboxItem {
 @customElement("hassio-snapshots")
 class HassioSnapshots extends LitElement {
   @property() public hass!: HomeAssistant;
+
   @property() public supervisorInfo!: HassioSupervisorInfo;
+
   @property() private _snapshotName = "";
+
   @property() private _snapshotPassword = "";
+
   @property() private _snapshotHasPassword = false;
+
   @property() private _snapshotType: HassioSnapshot["type"] = "full";
+
   @property() private _snapshots?: HassioSnapshot[] = [];
+
   @property() private _addonList: CheckboxItem[] = [];
+
   @property() private _folderList: CheckboxItem[] = [
     {
       slug: "homeassistant",
@@ -68,7 +69,9 @@ class HassioSnapshots extends LitElement {
     { slug: "share", name: "Share", checked: true },
     { slug: "addons/local", name: "Local add-ons", checked: true },
   ];
+
   @property() private _creatingSnapshot = false;
+
   @property() private _error = "";
 
   public async refreshData() {
@@ -129,7 +132,7 @@ class HassioSnapshots extends LitElement {
                       (addon, idx) => html`
                         <paper-checkbox
                           .idx=${idx}
-                          .checked="{{item.checked}}"
+                          .checked=${addon.checked}
                           @checked-changed=${this._addonChecked}
                         >
                           ${addon.name}
@@ -157,9 +160,7 @@ class HassioSnapshots extends LitElement {
                   `
                 : undefined}
               ${this._error !== ""
-                ? html`
-                    <p class="error">${this._error}</p>
-                  `
+                ? html` <p class="error">${this._error}</p> `
                 : undefined}
             </div>
             <div class="card-actions">
@@ -201,7 +202,6 @@ class HassioSnapshots extends LitElement {
                         .icon=${snapshot.type === "full"
                           ? "hassio:package-variant-closed"
                           : "hassio:package-variant"}
-                        .
                         .icon-class="snapshot"
                       ></hassio-card-content>
                     </div>

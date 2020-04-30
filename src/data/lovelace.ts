@@ -1,10 +1,10 @@
-import { HomeAssistant } from "../types";
 import {
   Connection,
   getCollection,
   HassEventBase,
 } from "home-assistant-js-websocket";
 import { HASSDomEvent } from "../common/dom/fire_event";
+import { HomeAssistant } from "../types";
 
 export interface LovelacePanelConfig {
   mode: "yaml" | "storage";

@@ -1,27 +1,34 @@
-import "@polymer/app-route/app-route";
-
-import "./ha-scene-editor";
-import "./ha-scene-dashboard";
-
+import { HassEntities } from "home-assistant-js-websocket";
+import { customElement, property, PropertyValues } from "lit-element";
+import memoizeOne from "memoize-one";
+import { computeStateDomain } from "../../../common/entity/compute_state_domain";
+import { SceneEntity } from "../../../data/scene";
 import {
   HassRouterPage,
   RouterOptions,
 } from "../../../layouts/hass-router-page";
-import { property, customElement, PropertyValues } from "lit-element";
 import { HomeAssistant } from "../../../types";
-import { computeStateDomain } from "../../../common/entity/compute_state_domain";
-import { computeStateName } from "../../../common/entity/compute_state_name";
-import { compare } from "../../../common/string/compare";
-import { SceneEntity } from "../../../data/scene";
-import memoizeOne from "memoize-one";
-import { HassEntities } from "home-assistant-js-websocket";
+import "./ha-scene-dashboard";
+import "./ha-scene-editor";
+import { debounce } from "../../../common/util/debounce";
+
+const equal = (a: SceneEntity[], b: SceneEntity[]): boolean => {
+  if (a.length !== b.length) {
+    return false;
+  }
+  return a.every((scene, index) => scene === b[index]);
+};
 
 @customElement("ha-config-scene")
 class HaConfigScene extends HassRouterPage {
   @property() public hass!: HomeAssistant;
+
   @property() public narrow!: boolean;
+
   @property() public isWide!: boolean;
+
   @property() public showAdvanced!: boolean;
+
   @property() public scenes: SceneEntity[] = [];
 
   protected routerOptions: RouterOptions = {
@@ -37,22 +44,19 @@ class HaConfigScene extends HassRouterPage {
     },
   };
 
-  private _computeScenes = memoizeOne((states: HassEntities) => {
-    const scenes: SceneEntity[] = [];
-    Object.values(states).forEach((state) => {
-      if (computeStateDomain(state) === "scene" && !state.attributes.hidden) {
-        scenes.push(state as SceneEntity);
-      }
-    });
+  private _debouncedUpdateScenes = debounce((pageEl) => {
+    const newScenes = this._getScenes(this.hass.states);
+    if (!equal(newScenes, pageEl.scenes)) {
+      pageEl.scenes = newScenes;
+    }
+  }, 10);
 
-    return scenes.sort((a, b) => {
-      return compare(computeStateName(a), computeStateName(b));
-    });
+  private _getScenes = memoizeOne((states: HassEntities): SceneEntity[] => {
+    return Object.values(states).filter(
+      (entity) =>
+        computeStateDomain(entity) === "scene" && !entity.attributes.hidden
+    ) as SceneEntity[];
   });
-
-  public disconnectedCallback() {
-    super.disconnectedCallback();
-  }
 
   protected updatePageEl(pageEl, changedProps: PropertyValues) {
     pageEl.hass = this.hass;
@@ -62,7 +66,11 @@ class HaConfigScene extends HassRouterPage {
     pageEl.showAdvanced = this.showAdvanced;
 
     if (this.hass) {
-      pageEl.scenes = this._computeScenes(this.hass.states);
+      if (!pageEl.scenes || !changedProps) {
+        pageEl.scenes = this._getScenes(this.hass.states);
+      } else if (changedProps && changedProps.has("hass")) {
+        this._debouncedUpdateScenes(pageEl);
+      }
     }
 
     if (
@@ -71,13 +79,7 @@ class HaConfigScene extends HassRouterPage {
     ) {
       pageEl.creatingNew = undefined;
       const sceneId = this.routeTail.path.substr(1);
-      pageEl.creatingNew = sceneId === "new" ? true : false;
-      pageEl.scene =
-        sceneId === "new"
-          ? undefined
-          : pageEl.scenes.find(
-              (entity: SceneEntity) => entity.attributes.id === sceneId
-            );
+      pageEl.sceneId = sceneId === "new" ? null : sceneId;
     }
   }
 }

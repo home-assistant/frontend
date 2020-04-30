@@ -1,28 +1,30 @@
 import {
+  customElement,
   html,
   LitElement,
-  TemplateResult,
-  customElement,
   property,
+  TemplateResult,
 } from "lit-element";
-
-import "../../../../components/entity/ha-entity-picker";
-import "../../components/hui-theme-select-editor";
-
-import { struct } from "../../common/structs/struct";
-import { EntitiesEditorEvent, EditorTarget } from "../types";
-import { HomeAssistant } from "../../../../types";
-import { LovelaceCardEditor } from "../../types";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import { configElementStyle } from "./config-elements-style";
+import "../../../../components/entity/ha-entity-picker";
+import "../../../../components/ha-switch";
+import { HomeAssistant } from "../../../../types";
 import { WeatherForecastCardConfig } from "../../cards/types";
+import { struct } from "../../common/structs/struct";
+import "../../components/hui-theme-select-editor";
+import { LovelaceCardEditor } from "../../types";
+import { EditorTarget, EntitiesEditorEvent } from "../types";
+import { configElementStyle } from "./config-elements-style";
 
 const cardConfigStruct = struct({
   type: "string",
   entity: "string?",
   name: "string?",
   theme: "string?",
+  show_forecast: "boolean?",
 });
+
+const includeDomains = ["weather"];
 
 @customElement("hui-weather-forecast-card-editor")
 export class HuiWeatherForecastCardEditor extends LitElement
@@ -48,6 +50,10 @@ export class HuiWeatherForecastCardEditor extends LitElement
     return this._config!.theme || "";
   }
 
+  get _show_forecast(): boolean {
+    return this._config!.show_forecast || true;
+  }
+
   protected render(): TemplateResult {
     if (!this.hass || !this._config) {
       return html``;
@@ -63,28 +69,36 @@ export class HuiWeatherForecastCardEditor extends LitElement
             "ui.panel.lovelace.editor.card.config.required"
           )})"
           .hass=${this.hass}
-          .value="${this._entity}"
+          .value=${this._entity}
           .configValue=${"entity"}
-          include-domains='["weather"]'
-          @change="${this._valueChanged}"
+          .includeDomains=${includeDomains}
+          @change=${this._valueChanged}
           allow-custom-entity
         ></ha-entity-picker>
-        <paper-input
-          .label="${this.hass.localize(
-            "ui.panel.lovelace.editor.card.generic.name"
-          )} (${this.hass.localize(
-            "ui.panel.lovelace.editor.card.config.optional"
-          )})"
-          .value="${this._name}"
-          .configValue="${"name"}"
-          @value-changed="${this._valueChanged}"
-        ></paper-input>
-        <hui-theme-select-editor
-          .hass=${this.hass}
-          .value="${this._theme}"
-          .configValue="${"theme"}"
-          @value-changed="${this._valueChanged}"
-        ></hui-theme-select-editor>
+        <div class="side-by-side">
+          <paper-input
+            .label="${this.hass.localize(
+              "ui.panel.lovelace.editor.card.generic.name"
+            )} (${this.hass.localize(
+              "ui.panel.lovelace.editor.card.config.optional"
+            )})"
+            .value=${this._name}
+            .configValue=${"name"}
+            @value-changed=${this._valueChanged}
+          ></paper-input>
+          <hui-theme-select-editor
+            .hass=${this.hass}
+            .value=${this._theme}
+            .configValue=${"theme"}
+            @value-changed=${this._valueChanged}
+          ></hui-theme-select-editor>
+        </div>
+        <ha-switch
+          .checked=${this._config!.show_forecast !== false}
+          .configValue=${"show_forecast"}
+          @change=${this._valueChanged}
+          >Show forecast</ha-switch
+        >
       </div>
     `;
   }
@@ -103,7 +117,8 @@ export class HuiWeatherForecastCardEditor extends LitElement
       } else {
         this._config = {
           ...this._config,
-          [target.configValue!]: target.value,
+          [target.configValue!]:
+            target.checked !== undefined ? target.checked : target.value,
         };
       }
     }

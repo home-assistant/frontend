@@ -1,9 +1,8 @@
-import { html, LitElement, TemplateResult } from "lit-element";
 import "@material/mwc-button";
-
+import { html, LitElement, TemplateResult } from "lit-element";
 import "../../../src/components/ha-card";
-import { actionHandler } from "../../../src/panels/lovelace/common/directives/action-handler-directive";
 import { ActionHandlerEvent } from "../../../src/data/lovelace";
+import { actionHandler } from "../../../src/panels/lovelace/common/directives/action-handler-directive";
 
 export class DemoUtilLongPress extends LitElement {
   protected render(): TemplateResult {

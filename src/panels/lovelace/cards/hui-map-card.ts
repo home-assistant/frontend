@@ -1,46 +1,44 @@
 import "@polymer/paper-icon-button/paper-icon-button";
+import { HassEntity } from "home-assistant-js-websocket";
 import {
-  Layer,
-  Marker,
   Circle,
-  Map,
   CircleMarker,
-  Polyline,
   LatLngTuple,
+  Layer,
+  Map,
+  Marker,
+  Polyline,
 } from "leaflet";
 import {
-  LitElement,
-  TemplateResult,
   css,
-  html,
-  property,
-  PropertyValues,
   CSSResult,
   customElement,
+  html,
+  LitElement,
+  property,
+  PropertyValues,
+  TemplateResult,
 } from "lit-element";
-import "../../map/ha-entity-marker";
-
+import { classMap } from "lit-html/directives/class-map";
 import {
-  setupLeafletMap,
   createTileLayer,
   LeafletModuleType,
+  setupLeafletMap,
 } from "../../../common/dom/setup-leaflet-map";
+import { computeDomain } from "../../../common/entity/compute_domain";
 import { computeStateDomain } from "../../../common/entity/compute_state_domain";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import { debounce } from "../../../common/util/debounce";
 import parseAspectRatio from "../../../common/util/parse-aspect-ratio";
-import { computeDomain } from "../../../common/entity/compute_domain";
-
-import { HomeAssistant } from "../../../types";
-import { LovelaceCard } from "../types";
-import { EntityConfig } from "../entity-rows/types";
-import { processConfigEntities } from "../common/process-config-entities";
-import { MapCardConfig } from "./types";
-import { classMap } from "lit-html/directives/class-map";
-import { findEntities } from "../common/find-entites";
-
-import { HassEntity } from "home-assistant-js-websocket";
 import { fetchRecent } from "../../../data/history";
+import { HomeAssistant } from "../../../types";
+import "../../map/ha-entity-marker";
+import { findEntities } from "../common/find-entites";
+import { processConfigEntities } from "../common/process-config-entities";
+import { EntityConfig } from "../entity-rows/types";
+import { LovelaceCard } from "../types";
+import "../../../components/ha-card";
+import { MapCardConfig } from "./types";
 
 @customElement("hui-map-card")
 class HuiMapCard extends LitElement implements LovelaceCard {
@@ -73,22 +71,28 @@ class HuiMapCard extends LitElement implements LovelaceCard {
 
   @property({ type: Boolean, reflect: true })
   public isPanel = false;
+
   @property({ type: Boolean, reflect: true })
   public editMode = false;
 
   @property()
   private _history?: HassEntity[][];
+
   private _date?: Date;
-  private _loaded = false;
 
   @property()
   private _config?: MapCardConfig;
+
   private _configEntities?: EntityConfig[];
-  // tslint:disable-next-line
+
+  // eslint-disable-next-line
   private Leaflet?: LeafletModuleType;
+
   private _leafletMap?: Map;
+
   // @ts-ignore
   private _resizeObserver?: ResizeObserver;
+
   private _debouncedResizeListener = debounce(
     () => {
       if (!this._leafletMap) {
@@ -99,12 +103,19 @@ class HuiMapCard extends LitElement implements LovelaceCard {
     100,
     false
   );
+
   private _mapItems: Array<Marker | Circle> = [];
+
   private _mapZones: Array<Marker | Circle> = [];
+
   private _mapPaths: Array<Polyline | CircleMarker> = [];
+
   private _connected = false;
+
   private _colorDict: { [key: string]: string } = {};
-  private _colorIndex: number = 0;
+
+  private _colorIndex = 0;
+
   private _colors: string[] = [
     "#0288D1",
     "#00AA00",
@@ -283,10 +294,6 @@ class HuiMapCard extends LitElement implements LovelaceCard {
   }
 
   private async loadMap(): Promise<void> {
-    if (this._loaded) {
-      return;
-    }
-    this._loaded = true;
     [this._leafletMap, this.Leaflet] = await setupLeafletMap(
       this._mapEl,
       this._config !== undefined ? this._config.dark_mode === true : false

@@ -1,11 +1,10 @@
 import { customElement } from "lit-element";
-
+import { LovelaceCardConfig } from "../../../data/lovelace";
+import { computeCardSize } from "../common/compute-card-size";
 import { HuiConditionalBase } from "../components/hui-conditional-base";
 import { createCardElement } from "../create-element/create-card-element";
 import { LovelaceCard, LovelaceCardEditor } from "../types";
-import { computeCardSize } from "../common/compute-card-size";
 import { ConditionalCardConfig } from "./types";
-import { LovelaceCardConfig } from "../../../data/lovelace";
 
 @customElement("hui-conditional-card")
 class HuiConditionalCard extends HuiConditionalBase implements LovelaceCard {

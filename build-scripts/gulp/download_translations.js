@@ -2,7 +2,7 @@ const del = require("del");
 const gulp = require("gulp");
 const mapStream = require("map-stream");
 
-const inDir = "translations";
+const inDir = "translations/frontend";
 const downloadDir = inDir + "/downloads";
 
 const tasks = [];
@@ -12,7 +12,7 @@ function hasHtml(data) {
 }
 
 function recursiveCheckHasHtml(file, data, errors, recKey) {
-  Object.keys(data).forEach(function(key) {
+  Object.keys(data).forEach(function (key) {
     if (typeof data[key] === "object") {
       const nextRecKey = recKey ? `${recKey}.${key}` : key;
       recursiveCheckHasHtml(file, data[key], errors, nextRecKey);
@@ -25,7 +25,7 @@ function recursiveCheckHasHtml(file, data, errors, recKey) {
 function checkHtml() {
   const errors = [];
 
-  return mapStream(function(file, cb) {
+  return mapStream(function (file, cb) {
     const content = file.contents;
     let error;
     if (content) {
@@ -42,19 +42,19 @@ function checkHtml() {
 }
 
 let taskName = "clean-downloaded-translations";
-gulp.task(taskName, function() {
+gulp.task(taskName, function () {
   return del([`${downloadDir}/**`]);
 });
 tasks.push(taskName);
 
 taskName = "check-translations-html";
-gulp.task(taskName, function() {
+gulp.task(taskName, function () {
   return gulp.src(`${downloadDir}/*.json`).pipe(checkHtml());
 });
 tasks.push(taskName);
 
 taskName = "move-downloaded-translations";
-gulp.task(taskName, function() {
+gulp.task(taskName, function () {
   return gulp.src(`${downloadDir}/*.json`).pipe(gulp.dest(inDir));
 });
 tasks.push(taskName);

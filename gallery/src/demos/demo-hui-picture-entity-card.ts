@@ -1,9 +1,9 @@
 import { html } from "@polymer/polymer/lib/utils/html-tag";
+/* eslint-plugin-disable lit */
 import { PolymerElement } from "@polymer/polymer/polymer-element";
-
-import "../components/demo-cards";
-import { provideHass } from "../../../src/fake_data/provide_hass";
 import { getEntity } from "../../../src/fake_data/entity";
+import { provideHass } from "../../../src/fake_data/provide_hass";
+import "../components/demo-cards";
 
 const ENTITIES = [
   getEntity("light", "kitchen_lights", "on", {
@@ -82,9 +82,7 @@ const CONFIGS = [
 
 class DemoPicEntity extends PolymerElement {
   static get template() {
-    return html`
-      <demo-cards id="demos" configs="[[_configs]]"></demo-cards>
-    `;
+    return html` <demo-cards id="demos" configs="[[_configs]]"></demo-cards> `;
   }
 
   static get properties() {
@@ -99,6 +97,7 @@ class DemoPicEntity extends PolymerElement {
   public ready() {
     super.ready();
     const hass = provideHass(this.$.demos);
+    hass.updateTranslations(null, "en");
     hass.addEntities(ENTITIES);
   }
 }

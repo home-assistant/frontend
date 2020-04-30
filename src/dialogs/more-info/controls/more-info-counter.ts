@@ -1,20 +1,20 @@
-import {
-  LitElement,
-  html,
-  TemplateResult,
-  CSSResult,
-  css,
-  property,
-  customElement,
-} from "lit-element";
 import "@material/mwc-button";
 import { HassEntity } from "home-assistant-js-websocket";
-
+import {
+  css,
+  CSSResult,
+  customElement,
+  html,
+  LitElement,
+  property,
+  TemplateResult,
+} from "lit-element";
 import { HomeAssistant } from "../../../types";
 
 @customElement("more-info-counter")
 class MoreInfoCounter extends LitElement {
   @property() public hass!: HomeAssistant;
+
   @property() public stateObj?: HassEntity;
 
   protected render(): TemplateResult {

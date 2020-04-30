@@ -1,0 +1,349 @@
+{
+  "component": {
+    "sensor": {
+      "state": {
+        "_": {
+          "off": "Aus",
+          "on": "Un"
+        }
+      }
+    },
+    "zwave": {
+      "state": {
+        "_": {
+          "initializing": "Initialis\u00e9iert",
+          "dead": "Net Ereechbar",
+          "sleeping": "Schl\u00e9ift",
+          "ready": "Bereet"
+        },
+        "query_stage": {
+          "initializing": "Initialis\u00e9iert ( {query_stage} )",
+          "dead": "Net Ereechbar ({query_stage})"
+        }
+      }
+    },
+    "ebusd": {
+      "state": {
+        "day": "Dag",
+        "night": "Nuecht"
+      }
+    },
+    "light": {
+      "state": {
+        "_": {
+          "off": "Aus",
+          "on": "Un"
+        }
+      }
+    },
+    "switch": {
+      "state": {
+        "_": {
+          "off": "Aus",
+          "on": "Un"
+        }
+      }
+    },
+    "binary_sensor": {
+      "state": {
+        "_": {
+          "off": "Aus",
+          "on": "Un"
+        },
+        "battery": {
+          "off": "Normal",
+          "on": "Niddreg"
+        },
+        "cold": {
+          "off": "Normal",
+          "on": "Kal"
+        },
+        "connectivity": {
+          "off": "Net Verbonnen",
+          "on": "Verbonnen"
+        },
+        "door": {
+          "off": "Zou",
+          "on": "Op"
+        },
+        "garage_door": {
+          "off": "Zou",
+          "on": "Op"
+        },
+        "gas": {
+          "off": "Kloer",
+          "on": "Detekt\u00e9iert"
+        },
+        "heat": {
+          "off": "Normal",
+          "on": "Waarm"
+        },
+        "lock": {
+          "off": "Gespaart",
+          "on": "Net gespaart"
+        },
+        "moisture": {
+          "off": "Dr\u00e9chen",
+          "on": "Naass"
+        },
+        "motion": {
+          "off": "Roueg",
+          "on": "Detekt\u00e9iert"
+        },
+        "occupancy": {
+          "off": "Roueg",
+          "on": "Detekt\u00e9iert"
+        },
+        "opening": {
+          "off": "Zou",
+          "on": "Op"
+        },
+        "presence": {
+          "off": "\u00cbnnerwee",
+          "on": "Doheem"
+        },
+        "problem": {
+          "off": "OK",
+          "on": "Problem"
+        },
+        "safety": {
+          "off": "S\u00e9cher",
+          "on": "Ons\u00e9cher"
+        },
+        "smoke": {
+          "off": "Kloer",
+          "on": "Detekt\u00e9iert"
+        },
+        "sound": {
+          "off": "Roueg",
+          "on": "Detekt\u00e9iert"
+        },
+        "vibration": {
+          "off": "Kloer",
+          "on": "Detekt\u00e9iert"
+        },
+        "window": {
+          "off": "Zou",
+          "on": "Op"
+        }
+      }
+    },
+    "lock": {
+      "state": {
+        "_": {
+          "locked": "Gespaart",
+          "unlocked": "Net gespaart"
+        }
+      }
+    },
+    "cover": {
+      "state": {
+        "_": {
+          "open": "Op",
+          "opening": "G\u00ebtt opgemaach",
+          "closed": "Zou",
+          "closing": "G\u00ebtt zougemaach",
+          "stopped": "Gestoppt"
+        }
+      }
+    },
+    "alarm_control_panel": {
+      "state": {
+        "_": {
+          "armed": "Aktiv\u00e9iert",
+          "disarmed": "Desaktiv\u00e9iert",
+          "armed_home": "Aktiv\u00e9iert Doheem",
+          "armed_away": "Aktiv\u00e9iert \u00cbnnerwee",
+          "armed_night": "Aktiv\u00e9iert Nuecht",
+          "armed_custom_bypass": "Aktiv, Benotzerdefin\u00e9iert",
+          "pending": "Ustoend",
+          "arming": "Aktiv\u00e9ieren",
+          "disarming": "Desaktiv\u00e9ieren",
+          "triggered": "Ausgel\u00e9ist"
+        }
+      }
+    },
+    "media_player": {
+      "state": {
+        "_": {
+          "off": "Aus",
+          "on": "Un",
+          "playing": "Spillt",
+          "paused": "Pauseiert",
+          "idle": "Waart",
+          "standby": "Standby"
+        }
+      }
+    },
+    "device_tracker": {
+      "state": {
+        "_": {
+          "home": "Doheem",
+          "not_home": "\u00cbnnerwee"
+        }
+      }
+    },
+    "vacuum": {
+      "state": {
+        "_": {
+          "cleaning": "Botzt",
+          "docked": "Agedockt",
+          "error": "Feeler",
+          "idle": "Waart",
+          "off": "Aus",
+          "on": "Un",
+          "paused": "Pauseiert",
+          "returning": "K\u00ebnnt zur Statioun zer\u00e9ck"
+        }
+      }
+    },
+    "fan": {
+      "state": {
+        "_": {
+          "off": "Aus",
+          "on": "Un"
+        }
+      }
+    },
+    "climate": {
+      "state": {
+        "_": {
+          "off": "Aus",
+          "heat": "Heizen",
+          "cool": "Kill",
+          "heat_cool": "H\u00ebtzen/Ofkillen",
+          "auto": "Auto",
+          "dry": "Dr\u00e9chen",
+          "fan_only": "N\u00ebmme Ventilator"
+        }
+      }
+    },
+    "automation": {
+      "state": {
+        "_": {
+          "off": "Aus",
+          "on": "Un"
+        }
+      }
+    },
+    "calendar": {
+      "state": {
+        "_": {
+          "off": "Aus",
+          "on": "Un"
+        }
+      }
+    },
+    "camera": {
+      "state": {
+        "_": {
+          "recording": "H\u00eblt Op",
+          "streaming": "Streamt",
+          "idle": "Roueg"
+        }
+      }
+    },
+    "configurator": {
+      "state": {
+        "_": {
+          "configure": "Astellen",
+          "configured": "Agestallt"
+        }
+      }
+    },
+    "group": {
+      "state": {
+        "_": {
+          "off": "Aus",
+          "on": "Un",
+          "home": "Doheem",
+          "not_home": "\u00cbnnerwee",
+          "open": "Op",
+          "closed": "Zou",
+          "locked": "Gespaart",
+          "unlocked": "Net gespaart",
+          "ok": "OK",
+          "problem": "Problem"
+        }
+      }
+    },
+    "input_boolean": {
+      "state": {
+        "_": {
+          "off": "Aus",
+          "on": "Un"
+        }
+      }
+    },
+    "person": {
+      "state": {
+        "_": {
+          "home": "Doheem",
+          "not_home": "\u00cbnnerwee"
+        }
+      }
+    },
+    "plant": {
+      "state": {
+        "_": {
+          "ok": "OK",
+          "problem": "Problem"
+        }
+      }
+    },
+    "remote": {
+      "state": {
+        "_": {
+          "off": "Aus",
+          "on": "Un"
+        }
+      }
+    },
+    "script": {
+      "state": {
+        "_": {
+          "off": "Aus",
+          "on": "Un"
+        }
+      }
+    },
+    "sun": {
+      "state": {
+        "_": {
+          "above_horizon": "Iwwert dem Horizont",
+          "below_horizon": "\u00cbnnert dem Horizont"
+        }
+      }
+    },
+    "timer": {
+      "state": {
+        "_": {
+          "active": "Aktiv",
+          "idle": "Waart",
+          "paused": "Pauseiert"
+        }
+      }
+    },
+    "weather": {
+      "state": {
+        "_": {
+          "clear-night": "Kloer, Nuecht",
+          "cloudy": "Wollekeg",
+          "exceptional": "Aussergew\u00e9inlech",
+          "fog": "Niwwel",
+          "hail": "Kn\u00ebppelsteng",
+          "lightning": "Bl\u00ebtz",
+          "lightning-rainy": "Bl\u00ebtz, Reen",
+          "partlycloudy": "Liicht wollekeg",
+          "pouring": "Schloreen",
+          "rainy": "Reen",
+          "snowy": "Schn\u00e9i",
+          "snowy-rainy": "Schn\u00e9i, Reen",
+          "sunny": "Sonneg",
+          "windy": "L\u00ebfteg",
+          "windy-variant": "L\u00ebfteg"
+        }
+      }
+    }
+  }
+}

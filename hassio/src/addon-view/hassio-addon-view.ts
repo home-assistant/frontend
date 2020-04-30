@@ -12,32 +12,31 @@ import {
   property,
   TemplateResult,
 } from "lit-element";
-
-import { HomeAssistant, Route } from "../../../src/types";
 import {
-  HassioAddonDetails,
   fetchHassioAddonInfo,
+  HassioAddonDetails,
 } from "../../../src/data/hassio/addon";
-import { hassioStyle } from "../resources/hassio-style";
 import { haStyle } from "../../../src/resources/styles";
-
+import { HomeAssistant, Route } from "../../../src/types";
+import { hassioStyle } from "../resources/hassio-style";
 import "./hassio-addon-audio";
 import "./hassio-addon-config";
 import "./hassio-addon-info";
 import "./hassio-addon-logs";
 import "./hassio-addon-network";
+import "../../../src/layouts/hass-subpage";
 
 @customElement("hassio-addon-view")
 class HassioAddonView extends LitElement {
   @property() public hass!: HomeAssistant;
+
   @property() public route!: Route;
+
   @property() public addon?: HassioAddonDetails;
 
   protected render(): TemplateResult {
     if (!this.addon) {
-      return html`
-        <paper-spinner-lite active></paper-spinner-lite>
-      `;
+      return html` <paper-spinner-lite active></paper-spinner-lite> `;
     }
     return html`
       <hass-subpage header="Hass.io: add-on details" hassio>

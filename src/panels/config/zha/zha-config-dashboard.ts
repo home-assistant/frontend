@@ -1,32 +1,31 @@
+import "@polymer/paper-item/paper-item";
+import "@polymer/paper-item/paper-item-body";
 import {
-  LitElement,
-  TemplateResult,
-  html,
-  CSSResultArray,
   css,
+  CSSResultArray,
   customElement,
+  html,
+  LitElement,
   property,
   PropertyValues,
+  TemplateResult,
 } from "lit-element";
-import "@polymer/paper-item/paper-item-body";
-import "@polymer/paper-item/paper-item";
-import "../../../components/ha-card";
-import "../../../components/ha-icon-next";
-import "../../../layouts/hass-subpage";
-import "../ha-config-section";
-
-import { haStyle } from "../../../resources/styles";
-import { HomeAssistant, Route } from "../../../types";
-import { fetchDevices, ZHADevice } from "../../../data/zha";
-import { sortZHADevices, formatAsPaddedHex } from "./functions";
 import memoizeOne from "memoize-one";
+import { navigate } from "../../../common/navigate";
 import "../../../components/data-table/ha-data-table";
-// tslint:disable-next-line: no-duplicate-imports
-import {
+import type {
   DataTableColumnContainer,
   RowClickedEvent,
 } from "../../../components/data-table/ha-data-table";
-import { navigate } from "../../../common/navigate";
+import "../../../components/ha-card";
+import "../../../components/ha-icon-next";
+import { fetchDevices } from "../../../data/zha";
+import type { ZHADevice } from "../../../data/zha";
+import "../../../layouts/hass-subpage";
+import { haStyle } from "../../../resources/styles";
+import type { HomeAssistant, Route } from "../../../types";
+import "../ha-config-section";
+import { formatAsPaddedHex, sortZHADevices } from "./functions";
 
 export interface DeviceRowData extends ZHADevice {
   device?: DeviceRowData;
@@ -35,12 +34,18 @@ export interface DeviceRowData extends ZHADevice {
 @customElement("zha-config-dashboard")
 class ZHAConfigDashboard extends LitElement {
   @property() public hass!: HomeAssistant;
+
   @property() public route!: Route;
+
   @property() public narrow!: boolean;
+
   @property() public isWide!: boolean;
+
   @property() private _devices: ZHADevice[] = [];
+
   private pages: string[] = ["add", "groups"];
-  private _firstUpdatedCalled: boolean = false;
+
+  private _firstUpdatedCalled = false;
 
   private _memoizeDevices = memoizeOne((devices: ZHADevice[]) => {
     let outputDevices: DeviceRowData[] = devices;
@@ -108,7 +113,7 @@ class ZHAConfigDashboard extends LitElement {
 
   protected render(): TemplateResult {
     return html`
-      <hass-subpage .header=${this.hass.localize("ui.panel.config.zha.title")}>
+      <hass-subpage .header=${this.hass.localize("component.zha.title")}>
         <ha-config-section .narrow=${this.narrow} .isWide=${this.isWide}>
           <div slot="header">
             ${this.hass.localize("ui.panel.config.zha.header")}

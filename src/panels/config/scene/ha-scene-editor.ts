@@ -1,61 +1,59 @@
-import {
-  LitElement,
-  TemplateResult,
-  html,
-  CSSResult,
-  css,
-  PropertyValues,
-  property,
-  customElement,
-} from "lit-element";
-import "@polymer/app-layout/app-header/app-header";
-import "@polymer/app-layout/app-toolbar/app-toolbar";
 import "@polymer/paper-icon-button/paper-icon-button";
-import "@polymer/paper-item/paper-item";
 import "@polymer/paper-item/paper-icon-item";
+import "@polymer/paper-item/paper-item";
 import "@polymer/paper-item/paper-item-body";
-
+import { HassEvent } from "home-assistant-js-websocket";
+import {
+  css,
+  CSSResult,
+  customElement,
+  html,
+  LitElement,
+  property,
+  PropertyValues,
+  TemplateResult,
+} from "lit-element";
 import { classMap } from "lit-html/directives/class-map";
-
-import "../../../components/ha-fab";
-import "../../../components/device/ha-device-picker";
-import "../../../components/entity/ha-entities-picker";
-import "../../../components/ha-paper-icon-button-arrow-prev";
-import "../../../layouts/ha-app-layout";
-
+import memoizeOne from "memoize-one";
+import { fireEvent } from "../../../common/dom/fire_event";
+import { computeDomain } from "../../../common/entity/compute_domain";
 import { computeStateName } from "../../../common/entity/compute_state_name";
-
-import { haStyle } from "../../../resources/styles";
-import { HomeAssistant, Route } from "../../../types";
 import { navigate } from "../../../common/navigate";
 import { computeRTL } from "../../../common/util/compute_rtl";
+import "../../../components/device/ha-device-picker";
+import "../../../components/entity/ha-entities-picker";
+import "../../../components/ha-card";
+import "../../../components/ha-fab";
+import "../../../components/ha-paper-icon-button-arrow-prev";
 import {
-  SceneEntity,
-  SceneConfig,
-  getSceneConfig,
-  deleteScene,
-  saveScene,
-  SCENE_IGNORED_DOMAINS,
-  SceneEntities,
-  applyScene,
-  activateScene,
-  getSceneEditorInitData,
-} from "../../../data/scene";
-import { fireEvent } from "../../../common/dom/fire_event";
-import {
+  computeDeviceName,
   DeviceRegistryEntry,
   subscribeDeviceRegistry,
-  computeDeviceName,
 } from "../../../data/device_registry";
 import {
   EntityRegistryEntry,
   subscribeEntityRegistry,
 } from "../../../data/entity_registry";
+import {
+  activateScene,
+  applyScene,
+  deleteScene,
+  getSceneConfig,
+  getSceneEditorInitData,
+  saveScene,
+  SceneConfig,
+  SceneEntities,
+  SceneEntity,
+  SCENE_IGNORED_DOMAINS,
+} from "../../../data/scene";
+import {
+  showConfirmationDialog,
+  showAlertDialog,
+} from "../../../dialogs/generic/show-dialog-box";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
-import memoizeOne from "memoize-one";
-import { computeDomain } from "../../../common/entity/compute_domain";
-import { HassEvent } from "home-assistant-js-websocket";
-import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
+import { haStyle } from "../../../resources/styles";
+import { HomeAssistant, Route } from "../../../types";
+import "../ha-config-section";
 import { configSections } from "../ha-panel-config";
 
 interface DeviceEntities {
@@ -71,22 +69,41 @@ interface DeviceEntitiesLookup {
 @customElement("ha-scene-editor")
 export class HaSceneEditor extends SubscribeMixin(LitElement) {
   @property() public hass!: HomeAssistant;
+
   @property() public narrow!: boolean;
+
   @property() public isWide!: boolean;
+
   @property() public route!: Route;
-  @property() public scene?: SceneEntity;
-  @property() public creatingNew?: boolean;
+
+  @property() public sceneId?: string;
+
+  @property() public scenes!: SceneEntity[];
+
   @property() public showAdvanced!: boolean;
-  @property() private _dirty?: boolean;
+
+  @property() private _dirty = false;
+
   @property() private _errors?: string;
+
   @property() private _config!: SceneConfig;
+
   @property() private _entities: string[] = [];
+
   @property() private _devices: string[] = [];
+
   @property() private _deviceRegistryEntries: DeviceRegistryEntry[] = [];
+
   @property() private _entityRegistryEntries: EntityRegistryEntry[] = [];
+
+  @property() private _scene?: SceneEntity;
+
   private _storedStates: SceneEntities = {};
+
   private _unsubscribeEvents?: () => void;
+
   @property() private _deviceEntityLookup: DeviceEntitiesLookup = {};
+
   private _activateContextId?: string;
 
   private _getEntitiesDevices = memoizeOne(
@@ -160,21 +177,19 @@ export class HaSceneEditor extends SubscribeMixin(LitElement) {
       this._deviceEntityLookup,
       this._deviceRegistryEntries
     );
-    const name = this.scene
-      ? computeStateName(this.scene)
+    const name = this._scene
+      ? computeStateName(this._scene)
       : this.hass.localize("ui.panel.config.scene.editor.default_name");
 
     return html`
-        <hass-tabs-subpage
+      <hass-tabs-subpage
         .hass=${this.hass}
         .narrow=${this.narrow}
         .route=${this.route}
         .backCallback=${() => this._backTapped()}
         .tabs=${configSections.automation}
       >
-
-      ${
-        this.creatingNew
+        ${!this.sceneId
           ? ""
           : html`
               <paper-icon-button
@@ -185,234 +200,210 @@ export class HaSceneEditor extends SubscribeMixin(LitElement) {
                 icon="hass:delete"
                 @click=${this._deleteTapped}
               ></paper-icon-button>
-            `
-      }
-
-          ${
-            this._errors
-              ? html`
-                  <div class="errors">${this._errors}</div>
-                `
-              : ""
-          }
-          ${
-            this.narrow
-              ? html`
-                  <span slot="header">${name}</span>
-                `
-              : ""
-          }
-          <div
-            id="root"
-            class="${classMap({
-              rtl: computeRTL(this.hass),
-            })}"
-          >
-            <ha-config-section .isWide=${this.isWide}>
-              ${
-                !this.narrow
-                  ? html`
-                      <span slot="header">${name}</span>
-                    `
-                  : ""
-              }
-              <div slot="introduction">
-                ${this.hass.localize(
-                  "ui.panel.config.scene.editor.introduction"
-                )}
-              </div>
-              <ha-card>
-                <div class="card-content">
-                  <paper-input
-                    .value=${this.scene ? computeStateName(this.scene) : ""}
-                    @value-changed=${this._nameChanged}
-                    label=${this.hass.localize(
-                      "ui.panel.config.scene.editor.name"
-                    )}
-                  ></paper-input>
-                </div>
-              </ha-card>
-            </ha-config-section>
-
-            <ha-config-section .isWide=${this.isWide}>
-              <div slot="header">
-                ${this.hass.localize(
-                  "ui.panel.config.scene.editor.devices.header"
-                )}
-              </div>
-              <div slot="introduction">
-                ${this.hass.localize(
-                  "ui.panel.config.scene.editor.devices.introduction"
-                )}
-              </div>
-
-              ${devices.map(
-                (device) =>
-                  html`
-                    <ha-card>
-                      <div class="card-header">
-                        ${device.name}
-                        <paper-icon-button
-                          icon="hass:delete"
-                          title="${this.hass.localize(
-                            "ui.panel.config.scene.editor.devices.delete"
-                          )}"
-                          .device=${device.id}
-                          @click=${this._deleteDevice}
-                        ></paper-icon-button>
-                      </div>
-                      ${device.entities.map((entityId) => {
-                        const stateObj = this.hass.states[entityId];
-                        if (!stateObj) {
-                          return html``;
-                        }
-                        return html`
-                          <paper-icon-item
-                            .entityId=${entityId}
-                            @click=${this._showMoreInfo}
-                            class="device-entity"
-                          >
-                            <state-badge
-                              .stateObj=${stateObj}
-                              slot="item-icon"
-                            ></state-badge>
-                            <paper-item-body>
-                              ${computeStateName(stateObj)}
-                            </paper-item-body>
-                          </paper-icon-item>
-                        `;
-                      })}
-                    </ha-card>
-                  `
-              )}
-
-              <ha-card
-                .header=${this.hass.localize(
-                  "ui.panel.config.scene.editor.devices.add"
-                )}
-              >
-                <div class="card-content">
-                  <ha-device-picker
-                    @value-changed=${this._devicePicked}
-                    .hass=${this.hass}
-                    .label=${this.hass.localize(
-                      "ui.panel.config.scene.editor.devices.add"
-                    )}
-                  />
-                </div>
-              </ha-card>
-            </ha-config-section>
-
-            ${
-              this.showAdvanced
-                ? html`
-                    <ha-config-section .isWide=${this.isWide}>
-                      <div slot="header">
-                        ${this.hass.localize(
-                          "ui.panel.config.scene.editor.entities.header"
-                        )}
-                      </div>
-                      <div slot="introduction">
-                        ${this.hass.localize(
-                          "ui.panel.config.scene.editor.entities.introduction"
-                        )}
-                      </div>
-                      ${entities.length
-                        ? html`
-                            <ha-card
-                              class="entities"
-                              .header=${this.hass.localize(
-                                "ui.panel.config.scene.editor.entities.without_device"
-                              )}
-                            >
-                              ${entities.map((entityId) => {
-                                const stateObj = this.hass.states[entityId];
-                                if (!stateObj) {
-                                  return html``;
-                                }
-                                return html`
-                                  <paper-icon-item
-                                    .entityId=${entityId}
-                                    @click=${this._showMoreInfo}
-                                    class="device-entity"
-                                  >
-                                    <state-badge
-                                      .stateObj=${stateObj}
-                                      slot="item-icon"
-                                    ></state-badge>
-                                    <paper-item-body>
-                                      ${computeStateName(stateObj)}
-                                    </paper-item-body>
-                                    <paper-icon-button
-                                      icon="hass:delete"
-                                      .entityId=${entityId}
-                                      .title="${this.hass.localize(
-                                        "ui.panel.config.scene.editor.entities.delete"
-                                      )}"
-                                      @click=${this._deleteEntity}
-                                    ></paper-icon-button>
-                                  </paper-icon-item>
-                                `;
-                              })}
-                            </ha-card>
-                          `
-                        : ""}
-
-                      <ha-card
-                        header=${this.hass.localize(
-                          "ui.panel.config.scene.editor.entities.add"
-                        )}
-                      >
-                        <div class="card-content">
-                          ${this.hass.localize(
-                            "ui.panel.config.scene.editor.entities.device_entities"
-                          )}
-                          <ha-entity-picker
-                            @value-changed=${this._entityPicked}
-                            .excludeDomains=${SCENE_IGNORED_DOMAINS}
-                            .hass=${this.hass}
-                            label=${this.hass.localize(
-                              "ui.panel.config.scene.editor.entities.add"
-                            )}
-                          />
-                        </div>
-                      </ha-card>
-                    </ha-config-section>
-                  `
-                : ""
-            }
-          </div>
-        <ha-fab
-          ?is-wide="${this.isWide}"
-          ?narrow="${this.narrow}"
-          ?dirty="${this._dirty}"
-          icon="hass:content-save"
-          .title="${this.hass.localize("ui.panel.config.scene.editor.save")}"
-          @click=${this._saveScene}
+            `}
+        ${this._errors ? html` <div class="errors">${this._errors}</div> ` : ""}
+        ${this.narrow ? html` <span slot="header">${name}</span> ` : ""}
+        <div
+          id="root"
           class="${classMap({
             rtl: computeRTL(this.hass),
           })}"
+        >
+          <ha-config-section .isWide=${this.isWide}>
+            ${!this.narrow ? html` <span slot="header">${name}</span> ` : ""}
+            <div slot="introduction">
+              ${this.hass.localize("ui.panel.config.scene.editor.introduction")}
+            </div>
+            <ha-card>
+              <div class="card-content">
+                <paper-input
+                  .value=${this._scene ? computeStateName(this._scene) : ""}
+                  @value-changed=${this._nameChanged}
+                  label=${this.hass.localize(
+                    "ui.panel.config.scene.editor.name"
+                  )}
+                ></paper-input>
+              </div>
+            </ha-card>
+          </ha-config-section>
+
+          <ha-config-section .isWide=${this.isWide}>
+            <div slot="header">
+              ${this.hass.localize(
+                "ui.panel.config.scene.editor.devices.header"
+              )}
+            </div>
+            <div slot="introduction">
+              ${this.hass.localize(
+                "ui.panel.config.scene.editor.devices.introduction"
+              )}
+            </div>
+
+            ${devices.map(
+              (device) =>
+                html`
+                  <ha-card>
+                    <div class="card-header">
+                      ${device.name}
+                      <paper-icon-button
+                        icon="hass:delete"
+                        title="${this.hass.localize(
+                          "ui.panel.config.scene.editor.devices.delete"
+                        )}"
+                        .device=${device.id}
+                        @click=${this._deleteDevice}
+                      ></paper-icon-button>
+                    </div>
+                    ${device.entities.map((entityId) => {
+                      const entityStateObj = this.hass.states[entityId];
+                      if (!entityStateObj) {
+                        return html``;
+                      }
+                      return html`
+                        <paper-icon-item
+                          .entityId=${entityId}
+                          @click=${this._showMoreInfo}
+                          class="device-entity"
+                        >
+                          <state-badge
+                            .stateObj=${entityStateObj}
+                            slot="item-icon"
+                          ></state-badge>
+                          <paper-item-body>
+                            ${computeStateName(entityStateObj)}
+                          </paper-item-body>
+                        </paper-icon-item>
+                      `;
+                    })}
+                  </ha-card>
+                `
+            )}
+
+            <ha-card
+              .header=${this.hass.localize(
+                "ui.panel.config.scene.editor.devices.add"
+              )}
+            >
+              <div class="card-content">
+                <ha-device-picker
+                  @value-changed=${this._devicePicked}
+                  .hass=${this.hass}
+                  .label=${this.hass.localize(
+                    "ui.panel.config.scene.editor.devices.add"
+                  )}
+                ></ha-device-picker>
+              </div>
+            </ha-card>
+          </ha-config-section>
+
+          ${this.showAdvanced
+            ? html`
+                <ha-config-section .isWide=${this.isWide}>
+                  <div slot="header">
+                    ${this.hass.localize(
+                      "ui.panel.config.scene.editor.entities.header"
+                    )}
+                  </div>
+                  <div slot="introduction">
+                    ${this.hass.localize(
+                      "ui.panel.config.scene.editor.entities.introduction"
+                    )}
+                  </div>
+                  ${entities.length
+                    ? html`
+                        <ha-card
+                          class="entities"
+                          .header=${this.hass.localize(
+                            "ui.panel.config.scene.editor.entities.without_device"
+                          )}
+                        >
+                          ${entities.map((entityId) => {
+                            const entityStateObj = this.hass.states[entityId];
+                            if (!entityStateObj) {
+                              return html``;
+                            }
+                            return html`
+                              <paper-icon-item
+                                .entityId=${entityId}
+                                @click=${this._showMoreInfo}
+                                class="device-entity"
+                              >
+                                <state-badge
+                                  .stateObj=${entityStateObj}
+                                  slot="item-icon"
+                                ></state-badge>
+                                <paper-item-body>
+                                  ${computeStateName(entityStateObj)}
+                                </paper-item-body>
+                                <paper-icon-button
+                                  icon="hass:delete"
+                                  .entityId=${entityId}
+                                  .title="${this.hass.localize(
+                                    "ui.panel.config.scene.editor.entities.delete"
+                                  )}"
+                                  @click=${this._deleteEntity}
+                                ></paper-icon-button>
+                              </paper-icon-item>
+                            `;
+                          })}
+                        </ha-card>
+                      `
+                    : ""}
+
+                  <ha-card
+                    header=${this.hass.localize(
+                      "ui.panel.config.scene.editor.entities.add"
+                    )}
+                  >
+                    <div class="card-content">
+                      ${this.hass.localize(
+                        "ui.panel.config.scene.editor.entities.device_entities"
+                      )}
+                      <ha-entity-picker
+                        @value-changed=${this._entityPicked}
+                        .excludeDomains=${SCENE_IGNORED_DOMAINS}
+                        .hass=${this.hass}
+                        label=${this.hass.localize(
+                          "ui.panel.config.scene.editor.entities.add"
+                        )}
+                      ></ha-entity-picker>
+                    </div>
+                  </ha-card>
+                </ha-config-section>
+              `
+            : ""}
+        </div>
+        <ha-fab
+          ?is-wide=${this.isWide}
+          ?narrow=${this.narrow}
+          ?dirty=${this._dirty}
+          icon="hass:content-save"
+          .title=${this.hass.localize("ui.panel.config.scene.editor.save")}
+          @click=${this._saveScene}
+          class=${classMap({
+            rtl: computeRTL(this.hass),
+          })}
         ></ha-fab>
-      </ha-app-layout>
+      </hass-tabs-subpage>
     `;
   }
 
   protected updated(changedProps: PropertyValues): void {
     super.updated(changedProps);
 
-    const oldscene = changedProps.get("scene") as SceneEntity;
+    const oldscene = changedProps.get("sceneId");
 
     if (
-      changedProps.has("scene") &&
-      this.scene &&
+      changedProps.has("sceneId") &&
+      this.sceneId &&
       this.hass &&
       // Only refresh config if we picked a new scene. If same ID, don't fetch it.
-      (!oldscene || oldscene.attributes.id !== this.scene.attributes.id)
+      (!oldscene || oldscene !== this.sceneId)
     ) {
       this._loadConfig();
     }
 
-    if (changedProps.has("creatingNew") && this.creatingNew && this.hass) {
+    if (changedProps.has("sceneId") && !this.sceneId && this.hass) {
       this._dirty = false;
       const initData = getSceneEditorInitData();
       this._config = {
@@ -450,6 +441,29 @@ export class HaSceneEditor extends SubscribeMixin(LitElement) {
         }
       }
     }
+    if (
+      changedProps.has("scenes") &&
+      this.sceneId &&
+      this._config &&
+      !this._scene
+    ) {
+      this._setScene();
+    }
+  }
+
+  private async _setScene() {
+    const scene = this.scenes.find(
+      (entity: SceneEntity) => entity.attributes.id === this.sceneId
+    );
+    if (!scene) {
+      return;
+    }
+    this._scene = scene;
+    const { context } = await activateScene(this.hass, this._scene.entity_id);
+    this._activateContextId = context.id;
+    this._unsubscribeEvents = await this.hass!.connection.subscribeEvents<
+      HassEvent
+    >((event) => this._stateChanged(event), "state_changed");
   }
 
   private _showMoreInfo(ev: Event) {
@@ -460,20 +474,20 @@ export class HaSceneEditor extends SubscribeMixin(LitElement) {
   private async _loadConfig() {
     let config: SceneConfig;
     try {
-      config = await getSceneConfig(this.hass, this.scene!.attributes.id!);
+      config = await getSceneConfig(this.hass, this.sceneId!);
     } catch (err) {
-      alert(
-        err.status_code === 404
-          ? this.hass.localize(
-              "ui.panel.config.scene.editor.load_error_not_editable"
-            )
-          : this.hass.localize(
-              "ui.panel.config.scene.editor.load_error_unknown",
-              "err_no",
-              err.status_code
-            )
-      );
-      history.back();
+      showAlertDialog(this, {
+        text:
+          err.status_code === 404
+            ? this.hass.localize(
+                "ui.panel.config.scene.editor.load_error_not_editable"
+              )
+            : this.hass.localize(
+                "ui.panel.config.scene.editor.load_error_unknown",
+                "err_no",
+                err.status_code
+              ),
+      }).then(() => history.back());
       return;
     }
 
@@ -483,13 +497,7 @@ export class HaSceneEditor extends SubscribeMixin(LitElement) {
 
     this._initEntities(config);
 
-    const { context } = await activateScene(this.hass, this.scene!.entity_id);
-
-    this._activateContextId = context.id;
-
-    this._unsubscribeEvents = await this.hass!.connection.subscribeEvents<
-      HassEvent
-    >((event) => this._stateChanged(event), "state_changed");
+    this._setScene();
 
     this._dirty = false;
     this._config = config;
@@ -612,7 +620,7 @@ export class HaSceneEditor extends SubscribeMixin(LitElement) {
   }
 
   private async _delete(): Promise<void> {
-    await deleteScene(this.hass, this.scene!.attributes.id!);
+    await deleteScene(this.hass, this.sceneId!);
     applyScene(this.hass, this._storedStates);
     history.back();
   }
@@ -642,19 +650,19 @@ export class HaSceneEditor extends SubscribeMixin(LitElement) {
   private _getCurrentState(entityId: string) {
     const stateObj = this.hass.states[entityId];
     if (!stateObj) {
-      return;
+      return undefined;
     }
     return { ...stateObj.attributes, state: stateObj.state };
   }
 
   private async _saveScene(): Promise<void> {
-    const id = this.creatingNew ? "" + Date.now() : this.scene!.attributes.id!;
+    const id = !this.sceneId ? "" + Date.now() : this.sceneId!;
     this._config = { ...this._config, entities: this._calculateStates() };
     try {
       await saveScene(this.hass, id, this._config);
       this._dirty = false;
 
-      if (this.creatingNew) {
+      if (!this.sceneId) {
         navigate(this, `/config/scene/edit/${id}`, true);
       }
     } catch (err) {

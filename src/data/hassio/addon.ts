@@ -1,5 +1,5 @@
 import { HomeAssistant } from "../../types";
-import { HassioResponse, hassioApiResultExtractor } from "./common";
+import { hassioApiResultExtractor, HassioResponse } from "./common";
 
 export interface HassioAddonInfo {
   name: string;
@@ -12,6 +12,7 @@ export interface HassioAddonInfo {
   detached: boolean;
   available: boolean;
   build: boolean;
+  advanced: boolean;
   url: string | null;
   icon: boolean;
   logo: boolean;

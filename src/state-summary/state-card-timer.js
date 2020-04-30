@@ -1,11 +1,10 @@
 import "@polymer/iron-flex-layout/iron-flex-layout-classes";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
+/* eslint-plugin-disable lit */
 import { PolymerElement } from "@polymer/polymer/polymer-element";
-
-import "../components/entity/state-info";
-
-import { timerTimeRemaining } from "../common/entity/timer_time_remaining";
 import secondsToDuration from "../common/datetime/seconds_to_duration";
+import { timerTimeRemaining } from "../common/entity/timer_time_remaining";
+import "../components/entity/state-info";
 
 class StateCardTimer extends PolymerElement {
   static get template() {

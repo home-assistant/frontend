@@ -1,17 +1,16 @@
+import "@material/mwc-button/mwc-button";
 import {
+  css,
+  CSSResult,
+  customElement,
   html,
   LitElement,
-  TemplateResult,
-  CSSResult,
-  css,
-  customElement,
   property,
+  TemplateResult,
 } from "lit-element";
-
 import "../../../components/ha-card";
-
-import { LovelaceCard } from "../types";
 import { HomeAssistant } from "../../../types";
+import { LovelaceCard } from "../types";
 import { EmptyStateCardConfig } from "./types";
 
 @customElement("hui-empty-state-card")
@@ -23,7 +22,7 @@ export class HuiEmptyStateCard extends LitElement implements LovelaceCard {
   }
 
   public setConfig(_config: EmptyStateCardConfig): void {
-    // tslint:disable-next-line
+    // eslint-disable-next-line
   }
 
   protected render(): TemplateResult {
@@ -51,7 +50,7 @@ export class HuiEmptyStateCard extends LitElement implements LovelaceCard {
             </mwc-button>
           </a>
         </div>
-      </header-card>
+      </ha-card>
     `;
   }
 

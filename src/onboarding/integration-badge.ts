@@ -1,29 +1,33 @@
 import {
-  LitElement,
-  TemplateResult,
-  html,
-  customElement,
-  property,
-  CSSResult,
   css,
+  CSSResult,
+  customElement,
+  html,
+  LitElement,
+  property,
+  TemplateResult,
 } from "lit-element";
 import "../components/ha-icon";
 
 @customElement("integration-badge")
 class IntegrationBadge extends LitElement {
-  @property() public icon!: string;
+  @property() public domain!: string;
+
   @property() public title!: string;
+
   @property() public badgeIcon?: string;
+
   @property({ type: Boolean, reflect: true }) public clickable = false;
 
   protected render(): TemplateResult {
     return html`
       <div class="icon">
-        <iron-icon .icon=${this.icon}></iron-icon>
+        <img
+          src="https://brands.home-assistant.io/${this.domain}/icon.png"
+          referrerpolicy="no-referrer"
+        />
         ${this.badgeIcon
-          ? html`
-              <ha-icon class="badge" .icon=${this.badgeIcon}></ha-icon>
-            `
+          ? html` <ha-icon class="badge" .icon=${this.badgeIcon}></ha-icon> `
           : ""}
       </div>
       <div class="title">${this.title}</div>
@@ -43,33 +47,35 @@ class IntegrationBadge extends LitElement {
         color: var(--primary-text-color);
       }
 
+      img {
+        max-width: 100%;
+        max-height: 100%;
+      }
+
       .icon {
         position: relative;
         margin: 0 auto 8px;
         height: 40px;
         width: 40px;
-        border-radius: 50%;
-        border: 1px solid var(--secondary-text-color);
         display: flex;
         align-items: center;
         justify-content: center;
       }
 
       :host([clickable]) .icon {
-        border-color: var(--primary-color);
-        border-width: 2px;
       }
 
       .badge {
         position: absolute;
-        color: var(--primary-color);
-        bottom: -5px;
-        right: -5px;
-        background-color: white;
+        color: white;
+        bottom: -7px;
+        right: -10px;
+        background-color: var(--label-badge-green);
         border-radius: 50%;
         width: 18px;
         display: block;
         height: 18px;
+        border: 2px solid white;
       }
 
       .title {

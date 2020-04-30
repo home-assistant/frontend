@@ -1,47 +1,98 @@
-import "../../../layouts/hass-tabs-subpage-data-table";
-
 import {
-  LitElement,
-  html,
-  TemplateResult,
-  property,
   customElement,
+  html,
+  LitElement,
+  property,
+  TemplateResult,
 } from "lit-element";
-import { HomeAssistant, Route } from "../../../types";
-import {
-  DeviceRegistryEntry,
-  computeDeviceName,
-  DeviceEntityLookup,
-} from "../../../data/device_registry";
-import {
-  EntityRegistryEntry,
-  findBatteryEntity,
-} from "../../../data/entity_registry";
-import { ConfigEntry } from "../../../data/config_entries";
-import { AreaRegistryEntry } from "../../../data/area_registry";
-import { configSections } from "../ha-panel-config";
 import memoizeOne from "memoize-one";
+import { HASSDomEvent } from "../../../common/dom/fire_event";
+import { navigate } from "../../../common/navigate";
 import { LocalizeFunc } from "../../../common/translations/localize";
-import { DeviceRowData } from "./ha-devices-data-table";
 import {
   DataTableColumnContainer,
   DataTableRowData,
   RowClickedEvent,
 } from "../../../components/data-table/ha-data-table";
-import { navigate } from "../../../common/navigate";
-import { HASSDomEvent } from "../../../common/dom/fire_event";
+import "../../../components/entity/ha-state-icon";
+import { AreaRegistryEntry } from "../../../data/area_registry";
+import { ConfigEntry } from "../../../data/config_entries";
+import {
+  computeDeviceName,
+  DeviceEntityLookup,
+  DeviceRegistryEntry,
+} from "../../../data/device_registry";
+import {
+  EntityRegistryEntry,
+  findBatteryEntity,
+} from "../../../data/entity_registry";
+import { domainToName } from "../../../data/integration";
+import "../../../layouts/hass-tabs-subpage-data-table";
+import { HomeAssistant, Route } from "../../../types";
+import { configSections } from "../ha-panel-config";
+
+interface DeviceRowData extends DeviceRegistryEntry {
+  device?: DeviceRowData;
+  area?: string;
+  integration?: string;
+  battery_entity?: string;
+}
 
 @customElement("ha-config-devices-dashboard")
 export class HaConfigDeviceDashboard extends LitElement {
   @property() public hass!: HomeAssistant;
+
   @property() public narrow = false;
+
   @property() public isWide = false;
+
   @property() public devices!: DeviceRegistryEntry[];
+
   @property() public entries!: ConfigEntry[];
+
   @property() public entities!: EntityRegistryEntry[];
+
   @property() public areas!: AreaRegistryEntry[];
-  @property() public domain!: string;
+
   @property() public route!: Route;
+
+  @property() private _searchParms = new URLSearchParams(
+    window.location.search
+  );
+
+  private _activeFilters = memoizeOne(
+    (
+      entries: ConfigEntry[],
+      filters: URLSearchParams,
+      localize: LocalizeFunc
+    ): string[] | undefined => {
+      const filterTexts: string[] = [];
+      filters.forEach((value, key) => {
+        switch (key) {
+          case "config_entry": {
+            const configEntry = entries.find(
+              (entry) => entry.entry_id === value
+            );
+            if (!configEntry) {
+              break;
+            }
+            const integrationName = domainToName(localize, configEntry.domain);
+            filterTexts.push(
+              `${this.hass.localize(
+                "ui.panel.config.integrations.integration"
+              )} ${integrationName}${
+                integrationName !== configEntry.title
+                  ? `: ${configEntry.title}`
+                  : ""
+              }`
+            );
+            break;
+          }
+        }
+      });
+      return filterTexts.length ? filterTexts : undefined;
+    }
+  );
 
   private _devices = memoizeOne(
     (
@@ -49,7 +100,7 @@ export class HaConfigDeviceDashboard extends LitElement {
       entries: ConfigEntry[],
       entities: EntityRegistryEntry[],
       areas: AreaRegistryEntry[],
-      domain: string,
+      filters: URLSearchParams,
       localize: LocalizeFunc
     ) => {
       // Some older installations might have devices pointing at invalid entryIDs
@@ -83,14 +134,15 @@ export class HaConfigDeviceDashboard extends LitElement {
         areaLookup[area.area_id] = area;
       }
 
-      if (domain) {
-        outputDevices = outputDevices.filter((device) =>
-          device.config_entries.find(
-            (entryId) =>
-              entryId in entryLookup && entryLookup[entryId].domain === domain
-          )
-        );
-      }
+      filters.forEach((value, key) => {
+        switch (key) {
+          case "config_entry":
+            outputDevices = outputDevices.filter((device) =>
+              device.config_entries.includes(value)
+            );
+            break;
+        }
+      });
 
       outputDevices = outputDevices.map((device) => {
         return {
@@ -108,9 +160,8 @@ export class HaConfigDeviceDashboard extends LitElement {
                 .filter((entId) => entId in entryLookup)
                 .map(
                   (entId) =>
-                    localize(
-                      `component.${entryLookup[entId].domain}.config.title`
-                    ) || entryLookup[entId].domain
+                    localize(`component.${entryLookup[entId].domain}.title`) ||
+                    entryLookup[entId].domain
                 )
                 .join(", ")
             : "No integration",
@@ -160,9 +211,7 @@ export class HaConfigDeviceDashboard extends LitElement {
                         .stateObj=${battery}
                       ></ha-state-icon>
                     `
-                  : html`
-                      -
-                    `;
+                  : html` - `;
               },
             },
           }
@@ -228,20 +277,30 @@ export class HaConfigDeviceDashboard extends LitElement {
                         .stateObj=${battery}
                       ></ha-state-icon>
                     `
-                  : html`
-                      -
-                    `;
+                  : html` - `;
               },
             },
           }
   );
+
+  public constructor() {
+    super();
+    window.addEventListener("location-changed", () => {
+      this._searchParms = new URLSearchParams(window.location.search);
+    });
+    window.addEventListener("popstate", () => {
+      this._searchParms = new URLSearchParams(window.location.search);
+    });
+  }
 
   protected render(): TemplateResult {
     return html`
       <hass-tabs-subpage-data-table
         .hass=${this.hass}
         .narrow=${this.narrow}
-        back-path="/config"
+        .backPath=${this._searchParms.has("historyBack")
+          ? undefined
+          : "/config"}
         .tabs=${configSections.integrations}
         .route=${this.route}
         .columns=${this._columns(this.narrow)}
@@ -250,7 +309,12 @@ export class HaConfigDeviceDashboard extends LitElement {
           this.entries,
           this.entities,
           this.areas,
-          this.domain,
+          this._searchParms,
+          this.hass.localize
+        )}
+        .activeFilters=${this._activeFilters(
+          this.entries,
+          this._searchParms,
           this.hass.localize
         )}
         @row-click=${this._handleRowClicked}

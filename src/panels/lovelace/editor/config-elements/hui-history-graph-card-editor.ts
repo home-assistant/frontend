@@ -1,23 +1,21 @@
+import "@polymer/paper-input/paper-input";
 import {
+  customElement,
   html,
   LitElement,
-  TemplateResult,
-  customElement,
   property,
+  TemplateResult,
 } from "lit-element";
-import "@polymer/paper-input/paper-input";
-
-import "../../components/hui-entity-editor";
-
-import { struct } from "../../common/structs/struct";
-import { EntitiesEditorEvent, EditorTarget } from "../types";
-import { HomeAssistant } from "../../../../types";
-import { LovelaceCardEditor } from "../../types";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import { EntityConfig } from "../../entity-rows/types";
-import { processEditorEntities } from "../process-editor-entities";
-import { configElementStyle } from "./config-elements-style";
+import { HomeAssistant } from "../../../../types";
 import { HistoryGraphCardConfig } from "../../cards/types";
+import { struct } from "../../common/structs/struct";
+import "../../components/hui-entity-editor";
+import { EntityConfig } from "../../entity-rows/types";
+import { LovelaceCardEditor } from "../../types";
+import { processEditorEntities } from "../process-editor-entities";
+import { EditorTarget, EntitiesEditorEvent } from "../types";
+import { configElementStyle } from "./config-elements-style";
 
 const entitiesConfigStruct = struct.union([
   {

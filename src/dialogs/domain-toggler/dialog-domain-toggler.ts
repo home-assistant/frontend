@@ -1,21 +1,24 @@
+import "@material/mwc-button/mwc-button";
 import {
+  css,
+  CSSResultArray,
   customElement,
+  html,
   LitElement,
   property,
-  CSSResultArray,
-  css,
   TemplateResult,
-  html,
 } from "lit-element";
 import "../../components/dialog/ha-paper-dialog";
-import { HomeAssistant } from "../../types";
-import { HaDomainTogglerDialogParams } from "./show-dialog-domain-toggler";
+import { domainToName } from "../../data/integration";
 import { PolymerChangedEvent } from "../../polymer-types";
 import { haStyleDialog } from "../../resources/styles";
+import { HomeAssistant } from "../../types";
+import { HaDomainTogglerDialogParams } from "./show-dialog-domain-toggler";
 
 @customElement("dialog-domain-toggler")
 class DomainTogglerDialog extends LitElement {
   public hass!: HomeAssistant;
+
   @property() private _params?: HaDomainTogglerDialogParams;
 
   public async showDialog(params: HaDomainTogglerDialogParams): Promise<void> {
@@ -28,7 +31,7 @@ class DomainTogglerDialog extends LitElement {
     }
 
     const domains = this._params.domains
-      .map((domain) => [this.hass.localize(`domain.${domain}`), domain])
+      .map((domain) => [domainToName(this.hass.localize, domain), domain])
       .sort();
 
     return html`

@@ -1,15 +1,12 @@
 import "@polymer/paper-dialog-behavior/paper-dialog-shared-styles";
 import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
+/* eslint-plugin-disable lit */
 import { PolymerElement } from "@polymer/polymer/polymer-element";
-
-import "../resources/ha-style";
-
-import "./more-info/more-info-controls";
-
 import { computeStateDomain } from "../common/entity/compute_state_domain";
-
 import DialogMixin from "../mixins/dialog-mixin";
+import "../resources/ha-style";
+import "./more-info/more-info-controls";
 
 /*
  * @appliesMixin DialogMixin

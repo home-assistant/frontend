@@ -1,20 +1,20 @@
+import "@material/mwc-button/mwc-button";
 import {
-  html,
-  LitElement,
-  TemplateResult,
-  property,
   css,
   CSSResult,
   customElement,
+  html,
+  LitElement,
+  property,
   PropertyValues,
+  TemplateResult,
 } from "lit-element";
-
+import { UNAVAILABLE_STATES } from "../../../data/entity";
+import { HomeAssistant } from "../../../types";
+import { hasConfigOrEntityChanged } from "../common/has-changed";
 import "../components/hui-generic-entity-row";
 import "../components/hui-warning";
-
-import { HomeAssistant } from "../../../types";
-import { LovelaceRow, EntityConfig } from "./types";
-import { hasConfigOrEntityChanged } from "../common/has-changed";
+import { EntityConfig, LovelaceRow } from "./types";
 
 @customElement("hui-lock-entity-row")
 class HuiLockEntityRow extends LitElement implements LovelaceRow {
@@ -54,7 +54,11 @@ class HuiLockEntityRow extends LitElement implements LovelaceRow {
 
     return html`
       <hui-generic-entity-row .hass=${this.hass} .config=${this._config}>
-        <mwc-button @click="${this._callService}" class="text-content">
+        <mwc-button
+          @click="${this._callService}"
+          .disabled=${UNAVAILABLE_STATES.includes(stateObj.state)}
+          class="text-content"
+        >
           ${stateObj.state === "locked"
             ? this.hass!.localize("ui.card.lock.unlock")
             : this.hass!.localize("ui.card.lock.lock")}

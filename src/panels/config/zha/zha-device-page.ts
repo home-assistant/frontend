@@ -1,47 +1,52 @@
-import "../../../layouts/hass-subpage";
-import "../../../components/ha-paper-icon-button-arrow-prev";
-import "./zha-device-binding";
-import "./zha-group-binding";
-import "./zha-cluster-attributes";
-import "./zha-cluster-commands";
-import "./zha-clusters";
-import "./zha-node";
 import "@polymer/paper-icon-button/paper-icon-button";
-
 import {
+  css,
   CSSResult,
+  customElement,
   html,
   LitElement,
   property,
   PropertyValues,
   TemplateResult,
-  customElement,
-  css,
 } from "lit-element";
-
 import { HASSDomEvent } from "../../../common/dom/fire_event";
+import "../../../components/ha-paper-icon-button-arrow-prev";
 import {
   Cluster,
   fetchBindableDevices,
-  ZHADevice,
-  fetchZHADevice,
-  ZHAGroup,
   fetchGroups,
+  fetchZHADevice,
+  ZHADevice,
+  ZHAGroup,
 } from "../../../data/zha";
+import "../../../layouts/hass-subpage";
 import { haStyle } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
 import { sortZHADevices, sortZHAGroups } from "./functions";
 import { ZHAClusterSelectedParams } from "./types";
+import "./zha-cluster-attributes";
+import "./zha-cluster-commands";
+import "./zha-clusters";
+import "./zha-device-binding";
+import "./zha-group-binding";
+import "./zha-node";
 
 @customElement("zha-device-page")
 export class ZHADevicePage extends LitElement {
   @property() public hass?: HomeAssistant;
+
   @property() public isWide?: boolean;
+
   @property() public ieee?: string;
+
   @property() public device?: ZHADevice;
+
   @property() public narrow?: boolean;
+
   @property() private _selectedCluster?: Cluster;
+
   @property() private _bindableDevices: ZHADevice[] = [];
+
   @property() private _groups: ZHAGroup[] = [];
 
   protected updated(changedProperties: PropertyValues): void {
@@ -111,7 +116,7 @@ export class ZHADevicePage extends LitElement {
                 : ""}
             `
           : ""}
-        <div class="spacer" />
+        <div class="spacer"></div>
       </hass-subpage>
     `;
   }

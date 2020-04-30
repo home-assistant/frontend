@@ -1,0 +1,255 @@
+{
+  "state": {
+    "alarm_control_panel": {
+      "armed": "Activ\u00e9",
+      "armed_away": "Enclench\u00e9e (absent)",
+      "armed_custom_bypass": "Activ\u00e9e avec exception",
+      "armed_home": "Enclench\u00e9e (pr\u00e9sent)",
+      "armed_night": "Enclench\u00e9 (nuit)",
+      "arming": "Activation",
+      "disarmed": "D\u00e9sactiv\u00e9e",
+      "disarming": "D\u00e9sactivation",
+      "pending": "En attente",
+      "triggered": "D\u00e9clench\u00e9"
+    },
+    "automation": {
+      "off": "Inactif",
+      "on": "Actif"
+    },
+    "binary_sensor": {
+      "battery": {
+        "off": "Normal",
+        "on": "Faible"
+      },
+      "cold": {
+        "off": "Normale",
+        "on": "Froid"
+      },
+      "connectivity": {
+        "off": "D\u00e9connect\u00e9",
+        "on": "Connect\u00e9"
+      },
+      "default": {
+        "off": "Inactif",
+        "on": "Actif"
+      },
+      "door": {
+        "off": "Ferm\u00e9e",
+        "on": "Ouverte"
+      },
+      "garage_door": {
+        "off": "Ferm\u00e9e",
+        "on": "Ouverte"
+      },
+      "gas": {
+        "off": "Non d\u00e9tect\u00e9",
+        "on": "D\u00e9tect\u00e9"
+      },
+      "heat": {
+        "off": "Normale",
+        "on": "Chaud"
+      },
+      "lock": {
+        "off": "Verrouill\u00e9",
+        "on": "D\u00e9verrouill\u00e9"
+      },
+      "moisture": {
+        "off": "Sec",
+        "on": "Humide"
+      },
+      "motion": {
+        "off": "RAS",
+        "on": "D\u00e9tect\u00e9"
+      },
+      "occupancy": {
+        "off": "RAS",
+        "on": "D\u00e9tect\u00e9"
+      },
+      "opening": {
+        "off": "Ferm\u00e9",
+        "on": "Ouvert"
+      },
+      "presence": {
+        "off": "Absent",
+        "on": "Pr\u00e9sent"
+      },
+      "problem": {
+        "off": "OK",
+        "on": "Probl\u00e8me"
+      },
+      "safety": {
+        "off": "S\u00e9curis\u00e9",
+        "on": "Dangereux"
+      },
+      "smoke": {
+        "off": "RAS",
+        "on": "D\u00e9tect\u00e9"
+      },
+      "sound": {
+        "off": "RAS",
+        "on": "D\u00e9tect\u00e9"
+      },
+      "vibration": {
+        "off": "RAS",
+        "on": "D\u00e9tect\u00e9e"
+      },
+      "window": {
+        "off": "Ferm\u00e9e",
+        "on": "Ouverte"
+      }
+    },
+    "calendar": {
+      "off": "Inactif",
+      "on": "Actif"
+    },
+    "camera": {
+      "idle": "En veille",
+      "recording": "Enregistrement",
+      "streaming": "Diffusion en cours"
+    },
+    "climate": {
+      "auto": "Auto",
+      "cool": "Frais",
+      "dry": "Sec",
+      "fan_only": "Ventilateur seul",
+      "heat": "Chauffe",
+      "heat_cool": "Chaud/Froid",
+      "off": "Inactif"
+    },
+    "configurator": {
+      "configure": "Configurer",
+      "configured": "Configur\u00e9"
+    },
+    "cover": {
+      "closed": "Ferm\u00e9",
+      "closing": "Fermeture",
+      "open": "Ouvert",
+      "opening": "Ouverture",
+      "stopped": "Arr\u00eat\u00e9"
+    },
+    "default": {
+      "off": "Inactif",
+      "on": "Actif",
+      "unavailable": "Indisponible",
+      "unknown": "Inconnu"
+    },
+    "device_tracker": {
+      "home": "Pr\u00e9sent",
+      "not_home": "Absent"
+    },
+    "fan": {
+      "off": "\u00c9teint",
+      "on": "Marche"
+    },
+    "group": {
+      "closed": "Ferm\u00e9",
+      "closing": "Fermeture",
+      "home": "Pr\u00e9sent",
+      "locked": "Verrouill\u00e9",
+      "not_home": "Absent",
+      "off": "Inactif",
+      "ok": "OK",
+      "on": "Actif",
+      "open": "Ouvert",
+      "opening": "Ouverture",
+      "problem": "Probl\u00e8me",
+      "stopped": "Arr\u00eat\u00e9",
+      "unlocked": "D\u00e9verrouill\u00e9"
+    },
+    "input_boolean": {
+      "off": "Arr\u00eat\u00e9",
+      "on": "Marche"
+    },
+    "light": {
+      "off": "\u00c9teinte",
+      "on": "Actif"
+    },
+    "lock": {
+      "locked": "Verrouill\u00e9",
+      "unlocked": "D\u00e9verrouill\u00e9"
+    },
+    "media_player": {
+      "idle": "En veille",
+      "off": "\u00c9teint",
+      "on": "Marche",
+      "paused": "En pause",
+      "playing": "Lecture en cours",
+      "standby": "En veille"
+    },
+    "person": {
+      "home": "Pr\u00e9sent",
+      "not_home": "Absent"
+    },
+    "plant": {
+      "ok": "OK",
+      "problem": "Probl\u00e8me"
+    },
+    "remote": {
+      "off": "Arr\u00eat",
+      "on": "Actif"
+    },
+    "scene": {
+      "scening": "Sc\u00e9nario"
+    },
+    "script": {
+      "off": "Inactif",
+      "on": "Actif"
+    },
+    "sensor": {
+      "off": "Inactif",
+      "on": "Actif"
+    },
+    "sun": {
+      "above_horizon": "Au-dessus de l'horizon",
+      "below_horizon": "Sous l\u2019horizon"
+    },
+    "switch": {
+      "off": "Inactif",
+      "on": "On"
+    },
+    "timer": {
+      "active": "actif",
+      "idle": "en veille",
+      "paused": "en pause"
+    },
+    "vacuum": {
+      "cleaning": "Nettoyage",
+      "docked": "Sur la base",
+      "error": "Erreur",
+      "idle": "Inactif",
+      "off": "Off",
+      "on": "On",
+      "paused": "En pause",
+      "returning": "Retourne \u00e0 la base"
+    },
+    "weather": {
+      "clear-night": "Nuit d\u00e9gag\u00e9e",
+      "cloudy": "Nuageux",
+      "exceptional": "Exceptionnel",
+      "fog": "Brouillard",
+      "hail": "Gr\u00eale",
+      "lightning": "Orage",
+      "lightning-rainy": "Orage / Pluie",
+      "partlycloudy": "Partiellement nuageux",
+      "pouring": "Averses",
+      "rainy": "Pluie",
+      "snowy": "Neige",
+      "snowy-rainy": "Neige / Pluie",
+      "sunny": "Soleil",
+      "windy": "Vent",
+      "windy-variant": "Vent"
+    },
+    "zwave": {
+      "default": {
+        "dead": "Morte",
+        "initializing": "Initialisation",
+        "ready": "Pr\u00eat",
+        "sleeping": "En veille"
+      },
+      "query_stage": {
+        "dead": "Morte ( {query_stage} )",
+        "initializing": "Initialisation ( {query_stage} )"
+      }
+    }
+  }
+}

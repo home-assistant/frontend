@@ -1,18 +1,31 @@
-import { translationMetadata } from "../resources/translations-metadata";
+import { atLeastVersion } from "../common/config/version";
+import { computeLocalize } from "../common/translations/localize";
+import { computeRTL } from "../common/util/compute_rtl";
+import { debounce } from "../common/util/debounce";
 import {
-  getTranslation,
+  getHassTranslations,
+  getHassTranslationsPre109,
+  saveTranslationPreferences,
+  TranslationCategory,
+} from "../data/translation";
+import { translationMetadata } from "../resources/translations-metadata";
+import { Constructor, HomeAssistant } from "../types";
+import { storeState } from "../util/ha-pref-storage";
+import {
   getLocalLanguage,
+  getTranslation,
   getUserLanguage,
 } from "../util/hass-translation";
 import { HassBaseEl } from "./hass-base-mixin";
-import { computeLocalize } from "../common/translations/localize";
-import { computeRTL } from "../common/util/compute_rtl";
-import { HomeAssistant, Constructor } from "../types";
-import { storeState } from "../util/ha-pref-storage";
-import {
-  getHassTranslations,
-  saveTranslationPreferences,
-} from "../data/translation";
+
+interface LoadedTranslationCategory {
+  // individual integrations loaded for this category
+  integrations: string[];
+  // if integrations that have been set up for this category are loaded
+  setup: boolean;
+  // if
+  configFlow: boolean;
+}
 
 /*
  * superClass needs to contain `this.hass` and `this._updateHass`.
@@ -20,8 +33,13 @@ import {
 
 export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
   class extends superClass {
-    // tslint:disable-next-line: variable-name
+    // eslint-disable-next-line: variable-name
     private __coreProgress?: string;
+
+    private __loadedTranslations: {
+      // track what things have been loaded
+      [category: string]: LoadedTranslationCategory;
+    } = {};
 
     protected firstUpdated(changedProps) {
       super.firstUpdated(changedProps);
@@ -39,11 +57,18 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
           this._selectLanguage(language, false);
         }
       });
+      this.hass!.connection.subscribeEvents(
+        debounce(() => {
+          this._refetchCachedHassTranslations(false, false);
+        }, 500),
+        "component_loaded"
+      );
       this._applyTranslations(this.hass!);
     }
 
     protected hassReconnected() {
       super.hassReconnected();
+      this._refetchCachedHassTranslations(true, false);
       this._applyTranslations(this.hass!);
     }
 
@@ -68,19 +93,86 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
       if (saveToBackend) {
         saveTranslationPreferences(this.hass, { language });
       }
-
       this._applyTranslations(this.hass);
+      this._refetchCachedHassTranslations(true, true);
     }
 
     private _applyTranslations(hass: HomeAssistant) {
+      document.querySelector("html")!.setAttribute("lang", hass.language);
       this.style.direction = computeRTL(hass) ? "rtl" : "ltr";
       this._loadCoreTranslations(hass.language);
-      this._loadHassTranslations(hass.language);
       this._loadFragmentTranslations(hass.language, hass.panelUrl);
     }
 
-    private async _loadHassTranslations(language: string) {
-      const resources = await getHassTranslations(this.hass!, language);
+    private async _loadHassTranslations(
+      language: string,
+      category: Parameters<typeof getHassTranslations>[2],
+      integration?: Parameters<typeof getHassTranslations>[3],
+      configFlow?: Parameters<typeof getHassTranslations>[4],
+      force = false
+    ) {
+      if (
+        __BACKWARDS_COMPAT__ &&
+        !atLeastVersion(this.hass!.connection.haVersion, 0, 109)
+      ) {
+        if (category !== "state") {
+          return;
+        }
+        const resources = await getHassTranslationsPre109(this.hass!, language);
+
+        // Ignore the repsonse if user switched languages before we got response
+        if (this.hass!.language !== language) {
+          return;
+        }
+
+        this._updateResources(language, resources);
+        return;
+      }
+
+      let alreadyLoaded: LoadedTranslationCategory;
+
+      if (category in this.__loadedTranslations) {
+        alreadyLoaded = this.__loadedTranslations[category];
+      } else {
+        alreadyLoaded = this.__loadedTranslations[category] = {
+          integrations: [],
+          setup: false,
+          configFlow: false,
+        };
+      }
+
+      // Check if already loaded
+      if (!force) {
+        if (integration) {
+          if (alreadyLoaded.integrations.includes(integration)) {
+            return;
+          }
+        } else if (
+          configFlow ? alreadyLoaded.configFlow : alreadyLoaded.setup
+        ) {
+          return;
+        }
+      }
+
+      // Add to cache
+      if (integration) {
+        if (!alreadyLoaded.integrations.includes(integration)) {
+          alreadyLoaded.integrations.push(integration);
+        }
+      } else {
+        alreadyLoaded.setup = true;
+        if (configFlow) {
+          alreadyLoaded.configFlow = true;
+        }
+      }
+
+      const resources = await getHassTranslations(
+        this.hass!,
+        language,
+        category,
+        integration,
+        configFlow
+      );
 
       // Ignore the repsonse if user switched languages before we got response
       if (this.hass!.language !== language) {
@@ -133,5 +225,27 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
         changes.localize = computeLocalize(this, language, resources);
       }
       this._updateHass(changes);
+    }
+
+    private _refetchCachedHassTranslations(
+      includeConfigFlow: boolean,
+      clearIntegrations: boolean
+    ) {
+      for (const [category, cache] of Object.entries(
+        this.__loadedTranslations
+      )) {
+        if (clearIntegrations) {
+          cache.integrations = [];
+        }
+        if (cache.setup) {
+          this._loadHassTranslations(
+            this.hass!.language,
+            category as TranslationCategory,
+            undefined,
+            includeConfigFlow && cache.configFlow,
+            true
+          );
+        }
+      }
     }
   };

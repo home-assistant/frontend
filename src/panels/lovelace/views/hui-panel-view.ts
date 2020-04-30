@@ -1,24 +1,25 @@
 import {
+  customElement,
   property,
   PropertyValues,
-  customElement,
   UpdatingElement,
 } from "lit-element";
-
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
-
-import { HomeAssistant } from "../../../types";
-import { LovelaceCard, Lovelace } from "../types";
-import { createCardElement } from "../create-element/create-card-element";
 import { LovelaceViewConfig } from "../../../data/lovelace";
+import { HomeAssistant } from "../../../types";
+import { createCardElement } from "../create-element/create-card-element";
+import { Lovelace, LovelaceCard } from "../types";
 
 let editCodeLoaded = false;
 
 @customElement("hui-panel-view")
 export class HUIPanelView extends UpdatingElement {
   @property() public hass?: HomeAssistant;
+
   @property() public lovelace?: Lovelace;
+
   @property() public config?: LovelaceViewConfig;
+
   @property({ type: Number }) public index!: number;
 
   protected firstUpdated(changedProperties: PropertyValues): void {

@@ -1,11 +1,11 @@
+import "@material/mwc-button";
 import "@polymer/iron-flex-layout/iron-flex-layout-classes";
 import "@polymer/iron-input/iron-input";
-import "@material/mwc-button";
 import "@polymer/paper-input/paper-input";
 import "@polymer/paper-spinner/paper-spinner";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
+/* eslint-plugin-disable lit */
 import { PolymerElement } from "@polymer/polymer/polymer-element";
-
 import "../../../components/ha-markdown";
 
 class MoreInfoConfigurator extends PolymerElement {
@@ -110,7 +110,7 @@ class MoreInfoConfigurator extends PolymerElement {
 
       fieldInput: {
         type: Object,
-        value: function() {
+        value: function () {
           return {};
         },
       },
@@ -135,10 +135,10 @@ class MoreInfoConfigurator extends PolymerElement {
     this.isConfiguring = true;
 
     this.hass.callService("configurator", "configure", data).then(
-      function() {
+      function () {
         this.isConfiguring = false;
       }.bind(this),
-      function() {
+      function () {
         this.isConfiguring = false;
       }.bind(this)
     );

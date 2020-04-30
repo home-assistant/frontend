@@ -2,16 +2,15 @@ import "@material/mwc-button";
 import "@polymer/paper-checkbox/paper-checkbox";
 import "@polymer/paper-input/paper-input";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
+/* eslint-plugin-disable lit */
 import { PolymerElement } from "@polymer/polymer/polymer-element";
-
 import { safeDump, safeLoad } from "js-yaml";
-
 import "../../../components/entity/ha-entity-picker";
 import "../../../components/ha-code-editor";
-import "../../../resources/ha-style";
+import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
 import { EventsMixin } from "../../../mixins/events-mixin";
 import LocalizeMixin from "../../../mixins/localize-mixin";
-import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
+import "../../../resources/ha-style";
 
 const ERROR_SENTINEL = {};
 /*
@@ -247,6 +246,9 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
       return;
     }
     var state = this.hass.states[this._entityId];
+    if (!state) {
+      return;
+    }
     this._state = state.state;
     this._stateAttributes = safeDump(state.attributes);
   }
@@ -273,10 +275,10 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
 
   computeEntities(hass, _entityFilter, _stateFilter, _attributeFilter) {
     return Object.keys(hass.states)
-      .map(function(key) {
+      .map(function (key) {
         return hass.states[key];
       })
-      .filter(function(value) {
+      .filter(function (value) {
         if (!value.entity_id.includes(_entityFilter.toLowerCase())) {
           return false;
         }
@@ -315,9 +317,7 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
 
             if (
               attributeValue !== null &&
-              JSON.stringify(attributeValue)
-                .toLowerCase()
-                .includes(valueFilter)
+              JSON.stringify(attributeValue).toLowerCase().includes(valueFilter)
             ) {
               return true;
             }
@@ -329,7 +329,7 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
 
         return true;
       })
-      .sort(function(entityA, entityB) {
+      .sort(function (entityA, entityB) {
         if (entityA.entity_id < entityB.entity_id) {
           return -1;
         }

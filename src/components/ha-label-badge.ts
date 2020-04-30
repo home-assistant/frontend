@@ -1,20 +1,24 @@
 import {
+  css,
+  CSSResult,
   html,
   LitElement,
+  property,
   PropertyValues,
   TemplateResult,
-  CSSResult,
-  css,
-  property,
 } from "lit-element";
 import { classMap } from "lit-html/directives/class-map";
 import "./ha-icon";
 
 class HaLabelBadge extends LitElement {
   @property() public value?: string;
+
   @property() public icon?: string;
+
   @property() public label?: string;
+
   @property() public description?: string;
+
   @property() public image?: string;
 
   protected render(): TemplateResult {
@@ -28,14 +32,10 @@ class HaLabelBadge extends LitElement {
             })}"
           >
             ${this.icon && !this.value && !this.image
-              ? html`
-                  <ha-icon .icon="${this.icon}"></ha-icon>
-                `
+              ? html` <ha-icon .icon="${this.icon}"></ha-icon> `
               : ""}
             ${this.value && !this.image
-              ? html`
-                  <span>${this.value}</span>
-                `
+              ? html` <span>${this.value}</span> `
               : ""}
           </div>
           ${this.label
@@ -52,9 +52,7 @@ class HaLabelBadge extends LitElement {
             : ""}
         </div>
         ${this.description
-          ? html`
-              <div class="title">${this.description}</div>
-            `
+          ? html` <div class="title">${this.description}</div> `
           : ""}
       </div>
     `;

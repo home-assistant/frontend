@@ -1,0 +1,343 @@
+{
+  "component": {
+    "sensor": {
+      "state": {
+        "_": {
+          "off": "V\u00e4ljas",
+          "on": "Sees"
+        }
+      }
+    },
+    "binary_sensor": {
+      "state": {
+        "_": {
+          "off": "V\u00e4ljas",
+          "on": "Sees"
+        },
+        "battery": {
+          "off": "Tavaline",
+          "on": "Madal"
+        },
+        "cold": {
+          "off": "Normaalne",
+          "on": "Jahe"
+        },
+        "connectivity": {
+          "off": "Lahti \u00fchendatud",
+          "on": "\u00dchendatud"
+        },
+        "door": {
+          "off": "Suletud",
+          "on": "Avatud"
+        },
+        "garage_door": {
+          "off": "Suletud",
+          "on": "Avatud"
+        },
+        "gas": {
+          "off": "Puudub",
+          "on": "Tuvastatud"
+        },
+        "heat": {
+          "off": "Normaalne",
+          "on": "Palav"
+        },
+        "lock": {
+          "off": "Lukus",
+          "on": "Lukustamata"
+        },
+        "moisture": {
+          "off": "Kuiv",
+          "on": "M\u00e4rg"
+        },
+        "motion": {
+          "off": "Puudub",
+          "on": "Tuvastatud"
+        },
+        "occupancy": {
+          "off": "Puudub",
+          "on": "Tuvastatud"
+        },
+        "opening": {
+          "off": "Suletud",
+          "on": "Avatud"
+        },
+        "presence": {
+          "off": "Eemal",
+          "on": "Kodus"
+        },
+        "problem": {
+          "off": "OK",
+          "on": "Probleem"
+        },
+        "safety": {
+          "off": "Ohutu",
+          "on": "Ohtlik"
+        },
+        "smoke": {
+          "off": "Puudub",
+          "on": "Tuvastatud"
+        },
+        "sound": {
+          "off": "Puudub",
+          "on": "Tuvastatud"
+        },
+        "vibration": {
+          "off": "Puudub",
+          "on": "Tuvastatud"
+        },
+        "window": {
+          "off": "Suletud",
+          "on": "Avatud"
+        }
+      }
+    },
+    "alarm_control_panel": {
+      "state": {
+        "_": {
+          "armed": "Valves",
+          "disarmed": "Maas",
+          "armed_home": "Valves kodus",
+          "armed_away": "Valves eemal",
+          "armed_night": "Valves \u00f6ine",
+          "armed_custom_bypass": "Valves, eranditega",
+          "pending": "Ootel",
+          "arming": "Valvestab",
+          "disarming": "Maas...",
+          "triggered": "H\u00e4ires"
+        }
+      }
+    },
+    "automation": {
+      "state": {
+        "_": {
+          "off": "V\u00e4ljas",
+          "on": "Sees"
+        }
+      }
+    },
+    "calendar": {
+      "state": {
+        "_": {
+          "off": "V\u00e4ljas",
+          "on": "Sees"
+        }
+      }
+    },
+    "camera": {
+      "state": {
+        "_": {
+          "recording": "Salvestab",
+          "streaming": "Voogedastab",
+          "idle": "Ootel"
+        }
+      }
+    },
+    "climate": {
+      "state": {
+        "_": {
+          "off": "V\u00e4ljas",
+          "heat": "Soojenda",
+          "cool": "Jahuta",
+          "heat_cool": "K\u00fcta/jahuta",
+          "auto": "Automaatne",
+          "dry": "Kuiv",
+          "fan_only": "Ainult ventilaator"
+        }
+      }
+    },
+    "configurator": {
+      "state": {
+        "_": {
+          "configure": "Seadista",
+          "configured": "Seadistatud"
+        }
+      }
+    },
+    "cover": {
+      "state": {
+        "_": {
+          "open": "Avatud",
+          "opening": "Avaneb",
+          "closed": "Suletud",
+          "closing": "Sulgub",
+          "stopped": "Peatatud"
+        }
+      }
+    },
+    "device_tracker": {
+      "state": {
+        "_": {
+          "home": "Kodus",
+          "not_home": "Eemal"
+        }
+      }
+    },
+    "fan": {
+      "state": {
+        "_": {
+          "off": "V\u00e4ljas",
+          "on": "Sees"
+        }
+      }
+    },
+    "group": {
+      "state": {
+        "_": {
+          "off": "V\u00e4ljas",
+          "on": "Sees",
+          "home": "Kodus",
+          "not_home": "Eemal",
+          "open": "Avatud",
+          "closed": "Suletud",
+          "locked": "Lukus",
+          "unlocked": "Lukustamata",
+          "ok": "OK",
+          "problem": "Probleem"
+        }
+      }
+    },
+    "input_boolean": {
+      "state": {
+        "_": {
+          "off": "V\u00e4ljas",
+          "on": "Sees"
+        }
+      }
+    },
+    "light": {
+      "state": {
+        "_": {
+          "off": "V\u00e4ljas",
+          "on": "Sees"
+        }
+      }
+    },
+    "lock": {
+      "state": {
+        "_": {
+          "locked": "Lukus",
+          "unlocked": "Lahti"
+        }
+      }
+    },
+    "media_player": {
+      "state": {
+        "_": {
+          "off": "V\u00e4ljas",
+          "on": "Sees",
+          "playing": "M\u00e4ngib",
+          "paused": "Peatatud",
+          "idle": "Ootel",
+          "standby": "Unere\u017eiimil"
+        }
+      }
+    },
+    "person": {
+      "state": {
+        "_": {
+          "home": "Kodus",
+          "not_home": "Eemal"
+        }
+      }
+    },
+    "plant": {
+      "state": {
+        "_": {
+          "ok": "OK",
+          "problem": "Probleem"
+        }
+      }
+    },
+    "remote": {
+      "state": {
+        "_": {
+          "off": "V\u00e4ljas",
+          "on": "Sees"
+        }
+      }
+    },
+    "script": {
+      "state": {
+        "_": {
+          "off": "V\u00e4ljas",
+          "on": "Sees"
+        }
+      }
+    },
+    "sun": {
+      "state": {
+        "_": {
+          "above_horizon": "T\u00f5usnud",
+          "below_horizon": "Loojunud"
+        }
+      }
+    },
+    "switch": {
+      "state": {
+        "_": {
+          "off": "V\u00e4ljas",
+          "on": "Sees"
+        }
+      }
+    },
+    "vacuum": {
+      "state": {
+        "_": {
+          "cleaning": "Puhastamine",
+          "docked": "Dokitud",
+          "error": "Viga",
+          "idle": "Ootel",
+          "off": "V\u00e4ljas",
+          "on": "Sees",
+          "paused": "Peatatud",
+          "returning": "P\u00f6\u00f6rdun tagasi dokki"
+        }
+      }
+    },
+    "timer": {
+      "state": {
+        "_": {
+          "active": "aktiivne",
+          "idle": "ootel",
+          "paused": "peatatud"
+        }
+      }
+    },
+    "weather": {
+      "state": {
+        "_": {
+          "clear-night": "Selge \u00f6\u00f6",
+          "cloudy": "Pilves",
+          "exceptional": "Erakordne",
+          "fog": "Udu",
+          "hail": "Rahe",
+          "lightning": "\u00c4ikeseline",
+          "lightning-rainy": "\u00c4ikeseline, vihmane",
+          "partlycloudy": "Osaliselt pilves",
+          "pouring": "Kallab",
+          "rainy": "Vihmane",
+          "snowy": "Lumine",
+          "snowy-rainy": "L\u00f6rtsine",
+          "sunny": "P\u00e4ikeseline",
+          "windy": "Tuuline",
+          "windy-variant": "Tuuline"
+        }
+      }
+    },
+    "zwave": {
+      "state": {
+        "_": {
+          "initializing": "L\u00e4htestan",
+          "dead": "Surnud",
+          "sleeping": "Ootel",
+          "ready": "Valmis"
+        },
+        "query_stage": {
+          "initializing": "L\u00e4htestan ( {query_stage} )",
+          "dead": "Surnud ({query_stage})"
+        }
+      }
+    }
+  }
+}

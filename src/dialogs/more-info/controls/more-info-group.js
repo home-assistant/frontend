@@ -1,11 +1,10 @@
 import { dom } from "@polymer/polymer/lib/legacy/polymer.dom";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
+/* eslint-plugin-disable lit */
 import { PolymerElement } from "@polymer/polymer/polymer-element";
-
-import "../../../state-summary/state-card-content";
-
-import { computeStateDomain } from "../../../common/entity/compute_state_domain";
 import dynamicContentUpdater from "../../../common/dom/dynamic_content_updater";
+import { computeStateDomain } from "../../../common/entity/compute_state_domain";
+import "../../../state-summary/state-card-content";
 
 class MoreInfoGroup extends PolymerElement {
   static get template() {

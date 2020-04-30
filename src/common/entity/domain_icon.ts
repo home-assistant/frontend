@@ -107,7 +107,7 @@ export const domainIcon = (domain: string, state?: string): string => {
       }
 
     default:
-      // tslint:disable-next-line
+      // eslint-disable-next-line
       console.warn(
         "Unable to find icon for domain " + domain + " (" + state + ")"
       );

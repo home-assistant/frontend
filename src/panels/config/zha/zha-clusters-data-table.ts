@@ -1,24 +1,20 @@
-import "../../../components/data-table/ha-data-table";
-import "../../../components/entity/ha-state-icon";
-
-import memoizeOne from "memoize-one";
-
 import {
-  LitElement,
-  html,
-  TemplateResult,
-  property,
   customElement,
+  html,
+  LitElement,
+  property,
   query,
+  TemplateResult,
 } from "lit-element";
-import { HomeAssistant } from "../../../types";
-// tslint:disable-next-line
-import {
+import memoizeOne from "memoize-one";
+import "../../../components/data-table/ha-data-table";
+import type {
   DataTableColumnContainer,
   HaDataTable,
 } from "../../../components/data-table/ha-data-table";
-// tslint:disable-next-line
-import { Cluster } from "../../../data/zha";
+import "../../../components/entity/ha-state-icon";
+import type { Cluster } from "../../../data/zha";
+import type { HomeAssistant } from "../../../types";
 import { formatAsPaddedHex } from "./functions";
 
 export interface ClusterRowData extends Cluster {
@@ -29,8 +25,11 @@ export interface ClusterRowData extends Cluster {
 @customElement("zha-clusters-data-table")
 export class ZHAClustersDataTable extends LitElement {
   @property() public hass!: HomeAssistant;
+
   @property() public narrow = false;
+
   @property() public clusters: Cluster[] = [];
+
   @query("ha-data-table") private _dataTable!: HaDataTable;
 
   private _clusters = memoizeOne((clusters: Cluster[]) => {
@@ -67,9 +66,7 @@ export class ZHAClustersDataTable extends LitElement {
             id: {
               title: "ID",
               template: (id: number) => {
-                return html`
-                  ${formatAsPaddedHex(id)}
-                `;
+                return html` ${formatAsPaddedHex(id)} `;
               },
               sortable: true,
               width: "15%",
