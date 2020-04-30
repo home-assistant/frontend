@@ -1,0 +1,342 @@
+{
+  "component": {
+    "sensor": {
+      "state": {
+        "_": {
+          "off": "T\u1eaft",
+          "on": "B\u1eadt"
+        }
+      }
+    },
+    "binary_sensor": {
+      "state": {
+        "_": {
+          "off": "T\u1eaft",
+          "on": "B\u1eadt"
+        },
+        "battery": {
+          "off": "B\u00ecnh th\u01b0\u1eddng",
+          "on": "Th\u1ea5p"
+        },
+        "cold": {
+          "off": "B\u00ecnh th\u01b0\u1eddng",
+          "on": "L\u1ea1nh"
+        },
+        "connectivity": {
+          "off": "\u0110\u00e3 ng\u1eaft k\u1ebft n\u1ed1i",
+          "on": "\u0110\u00e3 k\u1ebft n\u1ed1i"
+        },
+        "door": {
+          "off": "\u0110\u00f3ng",
+          "on": "M\u1edf"
+        },
+        "garage_door": {
+          "off": "\u0110\u00f3ng",
+          "on": "M\u1edf"
+        },
+        "gas": {
+          "off": "Tr\u00f4\u0341ng tra\u0309i",
+          "on": "Ph\u00e1t hi\u1ec7n"
+        },
+        "heat": {
+          "off": "B\u00ecnh th\u01b0\u1eddng",
+          "on": "N\u00f3ng"
+        },
+        "lock": {
+          "off": "\u0110\u00e3 kho\u00e1",
+          "on": "M\u1edf kho\u00e1"
+        },
+        "moisture": {
+          "off": "Kh\u00f4",
+          "on": "\u01af\u1edbt"
+        },
+        "motion": {
+          "off": "Tr\u00f4\u0341ng tra\u0309i",
+          "on": "Ph\u00e1t hi\u1ec7n"
+        },
+        "occupancy": {
+          "off": "Tr\u00f4\u0341ng tra\u0309i",
+          "on": "Ph\u00e1t hi\u1ec7n"
+        },
+        "opening": {
+          "off": "\u0110\u00e3 \u0111\u00f3ng",
+          "on": "M\u1edf"
+        },
+        "presence": {
+          "off": "\u0110i v\u1eafng",
+          "on": "\u1ede nh\u00e0"
+        },
+        "problem": {
+          "off": "OK",
+          "on": "C\u00f3 v\u1ea5n \u0111\u1ec1"
+        },
+        "safety": {
+          "off": "An to\u00e0n",
+          "on": "Kh\u00f4ng an to\u00e0n"
+        },
+        "smoke": {
+          "off": "Tr\u00f4\u0341ng tra\u0309i",
+          "on": "Ph\u00e1t hi\u1ec7n"
+        },
+        "sound": {
+          "off": "Tr\u00f4\u0341ng tra\u0309i",
+          "on": "Ph\u00e1t hi\u1ec7n"
+        },
+        "vibration": {
+          "off": "Tr\u00f4\u0341ng tra\u0309i",
+          "on": "Ph\u00e1t hi\u1ec7n"
+        },
+        "window": {
+          "off": "\u0110\u00f3ng",
+          "on": "M\u1edf"
+        }
+      }
+    },
+    "alarm_control_panel": {
+      "state": {
+        "_": {
+          "armed": "K\u00edch ho\u1ea1t an ninh",
+          "disarmed": "V\u00f4 hi\u1ec7u h\u00f3a",
+          "armed_home": "B\u1ea3o v\u1ec7 \u1edf nh\u00e0",
+          "armed_away": "B\u1ea3o v\u1ec7 \u0111i v\u1eafng",
+          "armed_night": "Ban \u0111\u00eam",
+          "armed_custom_bypass": "T\u00f9y ch\u1ec9nh b\u1ecf qua An ninh",
+          "pending": "\u0110ang ch\u1edd x\u1eed l\u00fd",
+          "arming": "K\u00edch ho\u1ea1t",
+          "disarming": "Gi\u1ea3i gi\u00e1p",
+          "triggered": "K\u00edch ho\u1ea1t"
+        }
+      }
+    },
+    "automation": {
+      "state": {
+        "_": {
+          "off": "T\u1eaft",
+          "on": "B\u1eadt"
+        }
+      }
+    },
+    "calendar": {
+      "state": {
+        "_": {
+          "off": "T\u1eaft",
+          "on": "B\u1eadt"
+        }
+      }
+    },
+    "camera": {
+      "state": {
+        "_": {
+          "recording": "Ghi \u00e2m",
+          "streaming": "Ph\u00e1t tr\u1ef1c tuy\u1ebfn",
+          "idle": "Kh\u00f4ng ho\u1ea1t \u0111\u1ed9ng"
+        }
+      }
+    },
+    "climate": {
+      "state": {
+        "_": {
+          "off": "T\u1eaft",
+          "heat": "Nhi\u1ec7t",
+          "cool": "M\u00e1t m\u1ebb",
+          "heat_cool": "N\u00f3ng/L\u1ea1nh",
+          "auto": "T\u01b0\u0323 \u0111\u00f4\u0323ng",
+          "dry": "Kh\u00f4",
+          "fan_only": "Ch\u1ec9 c\u00f3 qu\u1ea1t"
+        }
+      }
+    },
+    "configurator": {
+      "state": {
+        "_": {
+          "configure": "C\u1ea5u h\u00ecnh",
+          "configured": "\u0110\u00e3 c\u1ea5u h\u00ecnh"
+        }
+      }
+    },
+    "cover": {
+      "state": {
+        "_": {
+          "open": "M\u1edf",
+          "opening": "\u0110ang m\u1edf",
+          "closed": "\u0110\u00e3 \u0111\u00f3ng",
+          "closing": "\u0110ang \u0111\u00f3ng",
+          "stopped": "\u0110\u00e3 d\u1eebng"
+        }
+      }
+    },
+    "device_tracker": {
+      "state": {
+        "_": {
+          "home": "\u1ede nh\u00e0",
+          "not_home": "\u0110i v\u1eafng"
+        }
+      }
+    },
+    "fan": {
+      "state": {
+        "_": {
+          "off": "T\u1eaft",
+          "on": "B\u1eadt"
+        }
+      }
+    },
+    "group": {
+      "state": {
+        "_": {
+          "off": "T\u1eaft",
+          "on": "B\u1eadt",
+          "home": "\u1ede nh\u00e0",
+          "not_home": "\u0110i v\u1eafng",
+          "open": "M\u1edf",
+          "closed": "\u0110\u00e3 \u0111\u00f3ng",
+          "locked": "Kho\u00e1",
+          "unlocked": "M\u1edf kho\u00e1",
+          "ok": "OK",
+          "problem": "V\u1ea5n \u0111\u1ec1"
+        }
+      }
+    },
+    "input_boolean": {
+      "state": {
+        "_": {
+          "off": "T\u1eaft",
+          "on": "B\u1eadt"
+        }
+      }
+    },
+    "light": {
+      "state": {
+        "_": {
+          "off": "T\u1eaft",
+          "on": "B\u1eadt"
+        }
+      }
+    },
+    "lock": {
+      "state": {
+        "_": {
+          "locked": "\u0110\u00e3 kh\u00f3a",
+          "unlocked": "M\u1edf kh\u00f3a"
+        }
+      }
+    },
+    "media_player": {
+      "state": {
+        "_": {
+          "off": "T\u1eaft",
+          "on": "B\u1eadt",
+          "playing": "\u0110ang ch\u01a1i",
+          "paused": "T\u1ea1m d\u1eebng",
+          "idle": "Kh\u00f4ng ho\u1ea1t \u0111\u1ed9ng",
+          "standby": "Ch\u1ebf \u0111\u1ed9 ch\u1edd"
+        }
+      }
+    },
+    "person": {
+      "state": {
+        "_": {
+          "home": "\u1ede nh\u00e0",
+          "not_home": "\u0110i v\u1eafng"
+        }
+      }
+    },
+    "plant": {
+      "state": {
+        "_": {
+          "ok": "OK",
+          "problem": "V\u1ea5n \u0111\u1ec1"
+        }
+      }
+    },
+    "remote": {
+      "state": {
+        "_": {
+          "off": "T\u1eaft",
+          "on": "B\u1eadt"
+        }
+      }
+    },
+    "script": {
+      "state": {
+        "_": {
+          "off": "T\u1eaft",
+          "on": "B\u1eadt"
+        }
+      }
+    },
+    "sun": {
+      "state": {
+        "_": {
+          "above_horizon": "Tr\u00ean \u0111\u01b0\u1eddng ch\u00e2n tr\u1eddi",
+          "below_horizon": "D\u01b0\u1edbi \u0111\u01b0\u1eddng ch\u00e2n tr\u1eddi"
+        }
+      }
+    },
+    "switch": {
+      "state": {
+        "_": {
+          "off": "T\u1eaft",
+          "on": "B\u1eadt"
+        }
+      }
+    },
+    "vacuum": {
+      "state": {
+        "_": {
+          "cleaning": "\u0110ang l\u00e0m s\u1ea1ch",
+          "docked": "\u0110\u00e3 v\u00e0o dock",
+          "error": "L\u1ed7i",
+          "idle": "Kh\u00f4ng ho\u1ea1t \u0111\u1ed9ng",
+          "off": "M\u1edf",
+          "on": "T\u1eaft",
+          "paused": "T\u1ea1m d\u1eebng",
+          "returning": "\u0110ang tr\u1edf l\u1ea1i dock"
+        }
+      }
+    },
+    "timer": {
+      "state": {
+        "_": {
+          "active": "ho\u1ea1t \u0111\u1ed9ng",
+          "idle": "nh\u00e0n r\u1ed7i",
+          "paused": "t\u1ea1m d\u1eebng"
+        }
+      }
+    },
+    "weather": {
+      "state": {
+        "_": {
+          "clear-night": "Tr\u1eddi trong, \u0111\u00eam",
+          "cloudy": "Nhi\u1ec1u m\u00e2y",
+          "fog": "S\u01b0\u01a1ng m\u00f9",
+          "hail": "M\u01b0a \u0111a\u0341",
+          "lightning": "S\u00e9t",
+          "lightning-rainy": "S\u00e9t, m\u01b0a",
+          "partlycloudy": "M\u00e2y r\u1ea3i r\u00e1c",
+          "pouring": "M\u01b0a l\u1edbn",
+          "rainy": "M\u01b0a",
+          "snowy": "Tuy\u1ebft",
+          "snowy-rainy": "Tuy\u1ebft, m\u01b0a",
+          "sunny": "N\u1eafng \u0111\u1eb9p",
+          "windy": "Gi\u00f3 nh\u1eb9",
+          "windy-variant": "Gi\u00f3 nh\u1eb9"
+        }
+      }
+    },
+    "zwave": {
+      "state": {
+        "_": {
+          "initializing": "Kh\u1edfi t\u1ea1o",
+          "dead": "\u0110\u00e3 t\u1eaft",
+          "sleeping": "Ng\u1ee7",
+          "ready": "S\u1eb5n s\u00e0ng"
+        },
+        "query_stage": {
+          "initializing": "Kh\u1edfi t\u1ea1o ( {query_stage} )",
+          "dead": "\u0110\u00e3 t\u1eaft ({query_stage})"
+        }
+      }
+    }
+  }
+}

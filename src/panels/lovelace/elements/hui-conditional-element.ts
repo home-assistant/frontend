@@ -1,18 +1,20 @@
+import { HomeAssistant } from "../../../types";
+import { createStyledHuiElement } from "../cards/picture-elements/create-styled-hui-element";
 import {
   checkConditionsMet,
   validateConditionalConfig,
-} from "../../lovelace/common/validate-condition";
-import { createStyledHuiElement } from "../cards/picture-elements/create-styled-hui-element";
+} from "../common/validate-condition";
 import {
+  ConditionalElementConfig,
   LovelaceElement,
   LovelaceElementConfig,
-  ConditionalElementConfig,
 } from "./types";
-import { HomeAssistant } from "../../../types";
 
 class HuiConditionalElement extends HTMLElement implements LovelaceElement {
   public _hass?: HomeAssistant;
+
   private _config?: ConditionalElementConfig;
+
   private _elements: LovelaceElement[] = [];
 
   public setConfig(config: ConditionalElementConfig): void {
@@ -27,7 +29,7 @@ class HuiConditionalElement extends HTMLElement implements LovelaceElement {
     }
 
     if (this._elements.length > 0) {
-      this._elements.map((el: LovelaceElement) => {
+      this._elements.forEach((el: LovelaceElement) => {
         if (el.parentElement) {
           el.parentElement.removeChild(el);
         }
@@ -38,7 +40,7 @@ class HuiConditionalElement extends HTMLElement implements LovelaceElement {
 
     this._config = config;
 
-    this._config.elements.map((elementConfig: LovelaceElementConfig) => {
+    this._config.elements.forEach((elementConfig: LovelaceElementConfig) => {
       this._elements.push(createStyledHuiElement(elementConfig));
     });
 
@@ -58,7 +60,7 @@ class HuiConditionalElement extends HTMLElement implements LovelaceElement {
 
     const visible = checkConditionsMet(this._config.conditions, this._hass);
 
-    this._elements.map((el: LovelaceElement) => {
+    this._elements.forEach((el: LovelaceElement) => {
       if (visible) {
         el.hass = this._hass;
         if (!el.parentElement) {

@@ -8,18 +8,18 @@ import {
   property,
   TemplateResult,
 } from "lit-element";
-
-import { HomeAssistant } from "../../../src/types";
-import { HassioAddonInfo } from "../../../src/data/hassio/addon";
-import { navigate } from "../../../src/common/navigate";
-import { hassioStyle } from "../resources/hassio-style";
-import { haStyle } from "../../../src/resources/styles";
-import "../components/hassio-card-content";
 import { atLeastVersion } from "../../../src/common/config/version";
+import { navigate } from "../../../src/common/navigate";
+import { HassioAddonInfo } from "../../../src/data/hassio/addon";
+import { haStyle } from "../../../src/resources/styles";
+import { HomeAssistant } from "../../../src/types";
+import "../components/hassio-card-content";
+import { hassioStyle } from "../resources/hassio-style";
 
 @customElement("hassio-addons")
 class HassioAddons extends LitElement {
   @property() public hass!: HomeAssistant;
+
   @property() public addons?: HassioAddonInfo[];
 
   protected render(): TemplateResult {

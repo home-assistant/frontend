@@ -1,8 +1,9 @@
 import "@polymer/iron-flex-layout/iron-flex-layout-classes";
 import "@polymer/paper-icon-button/paper-icon-button";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
+/* eslint-plugin-disable lit */
 import { PolymerElement } from "@polymer/polymer/polymer-element";
-
+import { UNAVAILABLE_STATES } from "../data/entity";
 import CoverEntity from "../util/cover-model";
 
 class HaCoverTiltControls extends PolymerElement {
@@ -63,11 +64,17 @@ class HaCoverTiltControls extends PolymerElement {
   }
 
   computeOpenDisabled(stateObj, entityObj) {
+    if (UNAVAILABLE_STATES.includes(stateObj.state)) {
+      return true;
+    }
     var assumedState = stateObj.attributes.assumed_state === true;
     return entityObj.isFullyOpenTilt && !assumedState;
   }
 
   computeClosedDisabled(stateObj, entityObj) {
+    if (UNAVAILABLE_STATES.includes(stateObj.state)) {
+      return true;
+    }
     var assumedState = stateObj.attributes.assumed_state === true;
     return entityObj.isFullyClosedTilt && !assumedState;
   }

@@ -1,13 +1,11 @@
 import "@polymer/polymer/lib/utils/debounce";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
+/* eslint-plugin-disable lit */
 import { PolymerElement } from "@polymer/polymer/polymer-element";
-
-import LocalizeMixin from "../mixins/localize-mixin";
-
-import "./entity/ha-chart-base";
-
 import { formatDateTimeWithSeconds } from "../common/datetime/format_date_time";
 import { computeRTL } from "../common/util/compute_rtl";
+import LocalizeMixin from "../mixins/localize-mixin";
+import "./entity/ha-chart-base";
 
 class StateHistoryChartTimeline extends LocalizeMixin(PolymerElement) {
   static get template() {

@@ -3,15 +3,13 @@ import "@polymer/paper-icon-button/paper-icon-button";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
+/* eslint-plugin-disable lit */
 import { PolymerElement } from "@polymer/polymer/polymer-element";
-
+import { attributeClassNames } from "../../../common/entity/attribute_class_names";
 import "../../../components/ha-attributes";
 import "../../../components/ha-paper-dropdown-menu";
 import "../../../components/ha-switch";
-
 import { EventsMixin } from "../../../mixins/events-mixin";
-import { attributeClassNames } from "../../../common/entity/attribute_class_names";
-
 import LocalizeMixin from "../../../mixins/localize-mixin";
 
 /*

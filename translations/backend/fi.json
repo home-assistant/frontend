@@ -1,0 +1,343 @@
+{
+  "component": {
+    "sensor": {
+      "state": {
+        "_": {
+          "off": "Pois",
+          "on": "P\u00e4\u00e4ll\u00e4"
+        }
+      }
+    },
+    "binary_sensor": {
+      "state": {
+        "_": {
+          "off": "Pois",
+          "on": "P\u00e4\u00e4ll\u00e4"
+        },
+        "battery": {
+          "off": "Normaali",
+          "on": "Alhainen"
+        },
+        "cold": {
+          "off": "Normaali",
+          "on": "Kylm\u00e4"
+        },
+        "connectivity": {
+          "off": "Ei yhteytt\u00e4",
+          "on": "Yhdistetty"
+        },
+        "door": {
+          "off": "Suljettu",
+          "on": "Auki"
+        },
+        "garage_door": {
+          "off": "Suljettu",
+          "on": "Auki"
+        },
+        "gas": {
+          "off": "Pois",
+          "on": "Havaittu"
+        },
+        "heat": {
+          "off": "Normaali",
+          "on": "Kuuma"
+        },
+        "lock": {
+          "off": "Lukittu",
+          "on": "Auki"
+        },
+        "moisture": {
+          "off": "Kuiva",
+          "on": "Kostea"
+        },
+        "motion": {
+          "off": "Ei liikett\u00e4",
+          "on": "Havaittu"
+        },
+        "occupancy": {
+          "off": "Ei liikett\u00e4",
+          "on": "Havaittu"
+        },
+        "opening": {
+          "off": "Suljettu",
+          "on": "Auki"
+        },
+        "presence": {
+          "off": "Poissa",
+          "on": "Kotona"
+        },
+        "problem": {
+          "off": "OK",
+          "on": "Ongelma"
+        },
+        "safety": {
+          "off": "Turvallinen",
+          "on": "Vaarallinen"
+        },
+        "smoke": {
+          "off": "Ei savua",
+          "on": "Havaittu"
+        },
+        "sound": {
+          "off": "Ei \u00e4\u00e4nt\u00e4",
+          "on": "Havaittu"
+        },
+        "vibration": {
+          "off": "Ei v\u00e4rin\u00e4\u00e4",
+          "on": "Havaittu"
+        },
+        "window": {
+          "off": "Suljettu",
+          "on": "Auki"
+        }
+      }
+    },
+    "alarm_control_panel": {
+      "state": {
+        "_": {
+          "armed": "Viritetty",
+          "disarmed": "Viritys pois",
+          "armed_home": "Viritetty (kotona)",
+          "armed_away": "Viritetty (poissa)",
+          "armed_night": "Viritetty (y\u00f6)",
+          "armed_custom_bypass": "Virityksen ohittaminen",
+          "pending": "Odottaa",
+          "arming": "Viritys",
+          "disarming": "Virityksen poisto",
+          "triggered": "Lauennut"
+        }
+      }
+    },
+    "automation": {
+      "state": {
+        "_": {
+          "off": "Pois",
+          "on": "P\u00e4\u00e4ll\u00e4"
+        }
+      }
+    },
+    "calendar": {
+      "state": {
+        "_": {
+          "off": "Pois p\u00e4\u00e4lt\u00e4",
+          "on": "P\u00e4\u00e4ll\u00e4"
+        }
+      }
+    },
+    "camera": {
+      "state": {
+        "_": {
+          "recording": "Tallentaa",
+          "streaming": "Toistaa",
+          "idle": "Lepotilassa"
+        }
+      }
+    },
+    "climate": {
+      "state": {
+        "_": {
+          "off": "Pois",
+          "heat": "L\u00e4mmitys",
+          "cool": "J\u00e4\u00e4hdytys",
+          "heat_cool": "L\u00e4mmitys/j\u00e4\u00e4hdytys",
+          "auto": "Automaatilla",
+          "dry": "Kuivaus",
+          "fan_only": "Tuuletus"
+        }
+      }
+    },
+    "configurator": {
+      "state": {
+        "_": {
+          "configure": "M\u00e4\u00e4rittele",
+          "configured": "M\u00e4\u00e4ritetty"
+        }
+      }
+    },
+    "cover": {
+      "state": {
+        "_": {
+          "open": "Auki",
+          "opening": "Avataan",
+          "closed": "Suljettu",
+          "closing": "Suljetaan",
+          "stopped": "Pys\u00e4ytetty"
+        }
+      }
+    },
+    "device_tracker": {
+      "state": {
+        "_": {
+          "home": "Kotona",
+          "not_home": "Poissa"
+        }
+      }
+    },
+    "fan": {
+      "state": {
+        "_": {
+          "off": "Pois",
+          "on": "P\u00e4\u00e4ll\u00e4"
+        }
+      }
+    },
+    "group": {
+      "state": {
+        "_": {
+          "off": "Pois",
+          "on": "P\u00e4\u00e4ll\u00e4",
+          "home": "Kotona",
+          "not_home": "Poissa",
+          "open": "Auki",
+          "closed": "Suljettu",
+          "locked": "Lukittu",
+          "unlocked": "Avattu",
+          "ok": "Ok",
+          "problem": "Ongelma"
+        }
+      }
+    },
+    "input_boolean": {
+      "state": {
+        "_": {
+          "off": "Pois",
+          "on": "P\u00e4\u00e4ll\u00e4"
+        }
+      }
+    },
+    "light": {
+      "state": {
+        "_": {
+          "off": "Pois",
+          "on": "P\u00e4\u00e4ll\u00e4"
+        }
+      }
+    },
+    "lock": {
+      "state": {
+        "_": {
+          "locked": "Lukittu",
+          "unlocked": "Auki"
+        }
+      }
+    },
+    "media_player": {
+      "state": {
+        "_": {
+          "off": "Pois",
+          "on": "P\u00e4\u00e4ll\u00e4",
+          "playing": "Toistaa",
+          "paused": "Pys\u00e4ytetty",
+          "idle": "Lepotilassa",
+          "standby": "Lepotilassa"
+        }
+      }
+    },
+    "person": {
+      "state": {
+        "_": {
+          "home": "Koti",
+          "not_home": "Poissa"
+        }
+      }
+    },
+    "plant": {
+      "state": {
+        "_": {
+          "ok": "Ok",
+          "problem": "Ongelma"
+        }
+      }
+    },
+    "remote": {
+      "state": {
+        "_": {
+          "off": "Pois",
+          "on": "P\u00e4\u00e4ll\u00e4"
+        }
+      }
+    },
+    "script": {
+      "state": {
+        "_": {
+          "off": "Pois",
+          "on": "P\u00e4\u00e4ll\u00e4"
+        }
+      }
+    },
+    "sun": {
+      "state": {
+        "_": {
+          "above_horizon": "Horisontin yll\u00e4",
+          "below_horizon": "Horisontin alapuolella"
+        }
+      }
+    },
+    "switch": {
+      "state": {
+        "_": {
+          "off": "Pois",
+          "on": "P\u00e4\u00e4ll\u00e4"
+        }
+      }
+    },
+    "vacuum": {
+      "state": {
+        "_": {
+          "cleaning": "Imuroi",
+          "docked": "Telakoituna",
+          "error": "Virhe",
+          "idle": "Lepotilassa",
+          "off": "Pois p\u00e4\u00e4lt\u00e4",
+          "on": "P\u00e4\u00e4ll\u00e4",
+          "paused": "Pys\u00e4ytetty",
+          "returning": "Palaamassa telakkaan"
+        }
+      }
+    },
+    "timer": {
+      "state": {
+        "_": {
+          "active": "aktiivinen",
+          "idle": "Lepotilassa",
+          "paused": "Pys\u00e4ytetty"
+        }
+      }
+    },
+    "weather": {
+      "state": {
+        "_": {
+          "clear-night": "Y\u00f6, selke\u00e4\u00e4",
+          "cloudy": "Pilvist\u00e4",
+          "exceptional": "Poikkeuksellinen",
+          "fog": "Sumuista",
+          "hail": "Raekuuroja",
+          "lightning": "Ukkoskuuroja",
+          "lightning-rainy": "Ukkosvaara, sateista",
+          "partlycloudy": "Osittain pilvist\u00e4",
+          "pouring": "Kaatosadetta",
+          "rainy": "Sateista",
+          "snowy": "Lumisadetta",
+          "snowy-rainy": "R\u00e4nt\u00e4sadetta",
+          "sunny": "Aurinkoista",
+          "windy": "Tuulista",
+          "windy-variant": "Tuulista"
+        }
+      }
+    },
+    "zwave": {
+      "state": {
+        "_": {
+          "initializing": "Alustaa",
+          "dead": "Kuollut",
+          "sleeping": "Lepotilassa",
+          "ready": "Valmis"
+        },
+        "query_stage": {
+          "initializing": "Alustaa ( {query_stage} )",
+          "dead": "Kuollut ({query_stage})"
+        }
+      }
+    }
+  }
+}

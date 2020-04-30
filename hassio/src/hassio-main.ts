@@ -1,39 +1,38 @@
-import { customElement, PropertyValues, property } from "lit-element";
-import { PolymerElement } from "@polymer/polymer";
 import "@polymer/paper-icon-button";
-
-import "../../src/resources/ha-style";
+import { PolymerElement } from "@polymer/polymer";
+import { customElement, property, PropertyValues } from "lit-element";
 import { applyThemesOnElement } from "../../src/common/dom/apply_themes_on_element";
 import { fireEvent } from "../../src/common/dom/fire_event";
+import { navigate } from "../../src/common/navigate";
+import { fetchHassioAddonInfo } from "../../src/data/hassio/addon";
+import {
+  fetchHassioHassOsInfo,
+  fetchHassioHostInfo,
+  HassioHassOSInfo,
+  HassioHostInfo,
+} from "../../src/data/hassio/host";
+import {
+  createHassioSession,
+  fetchHassioHomeAssistantInfo,
+  fetchHassioSupervisorInfo,
+  HassioHomeAssistantInfo,
+  HassioPanelInfo,
+  HassioSupervisorInfo,
+} from "../../src/data/hassio/supervisor";
+import {
+  AlertDialogParams,
+  showAlertDialog,
+} from "../../src/dialogs/generic/show-dialog-box";
+import { makeDialogManager } from "../../src/dialogs/make-dialog-manager";
 import {
   HassRouterPage,
   RouterOptions,
 } from "../../src/layouts/hass-router-page";
-import { HomeAssistant } from "../../src/types";
-import {
-  fetchHassioSupervisorInfo,
-  fetchHassioHomeAssistantInfo,
-  HassioSupervisorInfo,
-  HassioHomeAssistantInfo,
-  createHassioSession,
-  HassioPanelInfo,
-} from "../../src/data/hassio/supervisor";
-import {
-  fetchHassioHostInfo,
-  fetchHassioHassOsInfo,
-  HassioHostInfo,
-  HassioHassOSInfo,
-} from "../../src/data/hassio/host";
-import { fetchHassioAddonInfo } from "../../src/data/hassio/addon";
-import { makeDialogManager } from "../../src/dialogs/make-dialog-manager";
 import { ProvideHassLitMixin } from "../../src/mixins/provide-hass-lit-mixin";
+import "../../src/resources/ha-style";
+import { HomeAssistant } from "../../src/types";
 // Don't codesplit it, that way the dashboard always loads fast.
 import "./hassio-pages-with-tabs";
-import { navigate } from "../../src/common/navigate";
-import {
-  showAlertDialog,
-  AlertDialogParams,
-} from "../../src/dialogs/generic/show-dialog-box";
 
 // The register callback of the IronA11yKeysBehavior inside paper-icon-button
 // is not called, causing _keyBindings to be uninitiliazed for paper-icon-button,
@@ -44,7 +43,9 @@ customElements.get("paper-icon-button").prototype._keyBindings = {};
 @customElement("hassio-main")
 class HassioMain extends ProvideHassLitMixin(HassRouterPage) {
   @property() public hass!: HomeAssistant;
+
   @property() public panel!: HassioPanelInfo;
+
   @property() public narrow!: boolean;
 
   protected routerOptions: RouterOptions = {
@@ -76,9 +77,13 @@ class HassioMain extends ProvideHassLitMixin(HassRouterPage) {
       },
     },
   };
+
   @property() private _supervisorInfo: HassioSupervisorInfo;
+
   @property() private _hostInfo: HassioHostInfo;
+
   @property() private _hassOsInfo?: HassioHassOSInfo;
+
   @property() private _hassInfo: HassioHomeAssistantInfo;
 
   protected firstUpdated(changedProps: PropertyValues) {

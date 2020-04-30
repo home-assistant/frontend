@@ -1,35 +1,35 @@
+import "@material/mwc-button";
+import "@polymer/iron-icon";
+import "@polymer/paper-input/paper-input";
 import {
-  LitElement,
+  Auth,
+  Connection,
+  createConnection,
+  ERR_CANNOT_CONNECT,
+  ERR_HASS_HOST_REQUIRED,
+  ERR_INVALID_AUTH,
+  ERR_INVALID_HTTPS_TO_HTTP,
+  getAuth,
+  getAuthOptions,
+} from "home-assistant-js-websocket";
+import {
+  css,
+  CSSResult,
   customElement,
+  html,
+  LitElement,
   property,
   TemplateResult,
-  html,
-  CSSResult,
-  css,
 } from "lit-element";
-import {
-  getAuth,
-  createConnection,
-  Auth,
-  getAuthOptions,
-  ERR_HASS_HOST_REQUIRED,
-  ERR_INVALID_HTTPS_TO_HTTP,
-  Connection,
-  ERR_CANNOT_CONNECT,
-  ERR_INVALID_AUTH,
-} from "home-assistant-js-websocket";
-import "@polymer/iron-icon";
-import "@material/mwc-button";
-import "@polymer/paper-input/paper-input";
+import { CastManager, getCastManager } from "../../../../src/cast/cast_manager";
+import { castSendShowDemo } from "../../../../src/cast/receiver_messages";
 import {
   loadTokens,
   saveTokens,
 } from "../../../../src/common/auth/token_storage";
 import "../../../../src/layouts/loading-screen";
-import { CastManager, getCastManager } from "../../../../src/cast/cast_manager";
-import "./hc-layout";
-import { castSendShowDemo } from "../../../../src/cast/receiver_messages";
 import { registerServiceWorker } from "../../../../src/util/register-service-worker";
+import "./hc-layout";
 
 const seeFAQ = (qid) => html`
   See <a href="./faq.html${qid ? `#${qid}` : ""}">the FAQ</a> for more
@@ -61,13 +61,19 @@ const INTRO = html`
 @customElement("hc-connect")
 export class HcConnect extends LitElement {
   @property() private loading = false;
+
   // If we had stored credentials but we cannot connect,
   // show a screen asking retry or logout.
   @property() private cannotConnect = false;
+
   @property() private error?: string | TemplateResult;
+
   @property() private auth?: Auth;
+
   @property() private connection?: Connection;
+
   @property() private castManager?: CastManager | null;
+
   private openDemo = false;
 
   protected render(): TemplateResult {
@@ -92,9 +98,7 @@ export class HcConnect extends LitElement {
     }
 
     if (this.castManager === undefined || this.loading) {
-      return html`
-        <loading-screen></loading-screen>
-      `;
+      return html` <loading-screen></loading-screen> `;
     }
 
     if (this.castManager === null) {
@@ -127,11 +131,7 @@ export class HcConnect extends LitElement {
                 @keydown=${this._handleInputKeyDown}
               ></paper-input>
             </p>
-            ${this.error
-              ? html`
-                  <p class="error">${this.error}</p>
-                `
-              : ""}
+            ${this.error ? html` <p class="error">${this.error}</p> ` : ""}
           </div>
           <div class="card-actions">
             <mwc-button @click=${this._handleDemo}>
@@ -211,7 +211,8 @@ export class HcConnect extends LitElement {
     if (value === "") {
       this.error = "Please enter a Home Assistant URL.";
       return;
-    } else if (value.indexOf("://") === -1) {
+    }
+    if (value.indexOf("://") === -1) {
       this.error =
         "Please enter your full URL, including the protocol part (https://).";
       return;

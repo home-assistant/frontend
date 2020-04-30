@@ -1,0 +1,255 @@
+{
+  "state": {
+    "alarm_control_panel": {
+      "armed": "Ingeschakeld",
+      "armed_away": "Ingeschakeld afwezig",
+      "armed_custom_bypass": "Ingeschakeld met overbrugging(en)",
+      "armed_home": "Ingeschakeld thuis",
+      "armed_night": "Ingeschakeld nacht",
+      "arming": "Schakelt in",
+      "disarmed": "Uitgeschakeld",
+      "disarming": "Schakelt uit",
+      "pending": "In wacht",
+      "triggered": "Geactiveerd"
+    },
+    "automation": {
+      "off": "Uit",
+      "on": "Aan"
+    },
+    "binary_sensor": {
+      "battery": {
+        "off": "Normaal",
+        "on": "Laag"
+      },
+      "cold": {
+        "off": "Normaal",
+        "on": "Koud"
+      },
+      "connectivity": {
+        "off": "Verbroken",
+        "on": "Verbonden"
+      },
+      "default": {
+        "off": "Uit",
+        "on": "Aan"
+      },
+      "door": {
+        "off": "Dicht",
+        "on": "Open"
+      },
+      "garage_door": {
+        "off": "Dicht",
+        "on": "Open"
+      },
+      "gas": {
+        "off": "Niet gedetecteerd",
+        "on": "Gedetecteerd"
+      },
+      "heat": {
+        "off": "Normaal",
+        "on": "Heet"
+      },
+      "lock": {
+        "off": "Vergrendeld",
+        "on": "Ontgrendeld"
+      },
+      "moisture": {
+        "off": "Droog",
+        "on": "Vochtig"
+      },
+      "motion": {
+        "off": "Niet gedetecteerd",
+        "on": "Gedetecteerd"
+      },
+      "occupancy": {
+        "off": "Niet gedetecteerd",
+        "on": "Gedetecteerd"
+      },
+      "opening": {
+        "off": "Gesloten",
+        "on": "Open"
+      },
+      "presence": {
+        "off": "Afwezig",
+        "on": "Thuis"
+      },
+      "problem": {
+        "off": "OK",
+        "on": "Probleem"
+      },
+      "safety": {
+        "off": "Veilig",
+        "on": "Onveilig"
+      },
+      "smoke": {
+        "off": "Niet gedetecteerd",
+        "on": "Gedetecteerd"
+      },
+      "sound": {
+        "off": "Niet gedetecteerd",
+        "on": "Gedetecteerd"
+      },
+      "vibration": {
+        "off": "Niet gedetecteerd",
+        "on": "Gedetecteerd"
+      },
+      "window": {
+        "off": "Dicht",
+        "on": "Open"
+      }
+    },
+    "calendar": {
+      "off": "Uit",
+      "on": "Aan"
+    },
+    "camera": {
+      "idle": "Inactief",
+      "recording": "Opnemen",
+      "streaming": "Streamen"
+    },
+    "climate": {
+      "auto": "Auto",
+      "cool": "Koelen",
+      "dry": "Droog",
+      "fan_only": "Alleen ventilatie",
+      "heat": "Verwarmen",
+      "heat_cool": "Verwarmen/Koelen",
+      "off": "Uit"
+    },
+    "configurator": {
+      "configure": "Configureer",
+      "configured": "Geconfigureerd"
+    },
+    "cover": {
+      "closed": "Gesloten",
+      "closing": "Sluit",
+      "open": "Open",
+      "opening": "Opent",
+      "stopped": "Gestopt"
+    },
+    "default": {
+      "off": "Uit",
+      "on": "Aan",
+      "unavailable": "Niet beschikbaar",
+      "unknown": "Onbekend"
+    },
+    "device_tracker": {
+      "home": "Thuis",
+      "not_home": "Afwezig"
+    },
+    "fan": {
+      "off": "Uit",
+      "on": "Aan"
+    },
+    "group": {
+      "closed": "Gesloten",
+      "closing": "Sluiten",
+      "home": "Thuis",
+      "locked": "Vergrendeld",
+      "not_home": "Afwezig",
+      "off": "Uit",
+      "ok": "OK",
+      "on": "Aan",
+      "open": "Open",
+      "opening": "Openen",
+      "problem": "Probleem",
+      "stopped": "Gestopt",
+      "unlocked": "Ontgrendeld"
+    },
+    "input_boolean": {
+      "off": "Uit",
+      "on": "Aan"
+    },
+    "light": {
+      "off": "Uit",
+      "on": "Aan"
+    },
+    "lock": {
+      "locked": "Vergrendeld",
+      "unlocked": "Ontgrendeld"
+    },
+    "media_player": {
+      "idle": "Inactief",
+      "off": "Uit",
+      "on": "Aan",
+      "paused": "Gepauzeerd",
+      "playing": "Afspelen",
+      "standby": "Standby"
+    },
+    "person": {
+      "home": "Thuis",
+      "not_home": "Afwezig"
+    },
+    "plant": {
+      "ok": "OK",
+      "problem": "Probleem"
+    },
+    "remote": {
+      "off": "Uit",
+      "on": "Aan"
+    },
+    "scene": {
+      "scening": "Sc\u00e8nes"
+    },
+    "script": {
+      "off": "Uit",
+      "on": "Aan"
+    },
+    "sensor": {
+      "off": "Uit",
+      "on": "Aan"
+    },
+    "sun": {
+      "above_horizon": "Boven de horizon",
+      "below_horizon": "Onder de horizon"
+    },
+    "switch": {
+      "off": "Uit",
+      "on": "Aan"
+    },
+    "timer": {
+      "active": "actief",
+      "idle": "inactief",
+      "paused": "gepauzeerd"
+    },
+    "vacuum": {
+      "cleaning": "Reinigen",
+      "docked": "Gedockt",
+      "error": "Fout",
+      "idle": "Inactief",
+      "off": "Uit",
+      "on": "Aan",
+      "paused": "Gepauseerd",
+      "returning": "Terugkeren naar dock"
+    },
+    "weather": {
+      "clear-night": "Helder, nacht",
+      "cloudy": "Bewolkt",
+      "exceptional": "Uitzonderlijk",
+      "fog": "Mist",
+      "hail": "Hagel",
+      "lightning": "Bliksem",
+      "lightning-rainy": "Bliksem, regenachtig",
+      "partlycloudy": "Gedeeltelijk bewolkt",
+      "pouring": "Regen",
+      "rainy": "Regenachtig",
+      "snowy": "Sneeuwachtig",
+      "snowy-rainy": "Sneeuw-, regenachtig",
+      "sunny": "Zonnig",
+      "windy": "Winderig",
+      "windy-variant": "Winderig"
+    },
+    "zwave": {
+      "default": {
+        "dead": "Onbereikbaar",
+        "initializing": "Initialiseren",
+        "ready": "Gereed",
+        "sleeping": "Slaapt"
+      },
+      "query_stage": {
+        "dead": "Onbereikbaar ({query_stage})",
+        "initializing": "Initialiseren ( {query_stage} )"
+      }
+    }
+  }
+}

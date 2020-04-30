@@ -1,50 +1,47 @@
+import "@polymer/paper-tooltip/paper-tooltip";
 import {
-  property,
-  LitElement,
-  html,
-  customElement,
   css,
   CSSResult,
+  customElement,
+  html,
+  LitElement,
+  property,
 } from "lit-element";
-
+import { ifDefined } from "lit-html/directives/if-defined";
 import memoizeOne from "memoize-one";
-
-import "@polymer/paper-tooltip/paper-tooltip";
-
-import "../../../layouts/hass-tabs-subpage";
-import "../../../layouts/hass-error-screen";
-import "../ha-config-section";
-
-import "./device-detail/ha-device-info-card";
-import "./device-detail/ha-device-card-mqtt";
-import "./device-detail/ha-device-entities-card";
-import { HomeAssistant, Route } from "../../../types";
+import { isComponentLoaded } from "../../../common/config/is_component_loaded";
+import { computeStateName } from "../../../common/entity/compute_state_name";
+import { createValidEntityId } from "../../../common/entity/valid_entity_id";
+import { compare } from "../../../common/string/compare";
+import "../../../components/entity/ha-state-icon";
+import "../../../components/ha-icon-next";
+import { AreaRegistryEntry } from "../../../data/area_registry";
 import { ConfigEntry } from "../../../data/config_entries";
 import {
-  EntityRegistryEntry,
-  updateEntityRegistryEntry,
-  findBatteryEntity,
-} from "../../../data/entity_registry";
-import {
-  DeviceRegistryEntry,
   computeDeviceName,
+  DeviceRegistryEntry,
   updateDeviceRegistryEntry,
 } from "../../../data/device_registry";
-import { AreaRegistryEntry } from "../../../data/area_registry";
+import {
+  EntityRegistryEntry,
+  findBatteryEntity,
+  updateEntityRegistryEntry,
+} from "../../../data/entity_registry";
+import { SceneEntities, showSceneEditor } from "../../../data/scene";
+import { findRelated, RelatedResult } from "../../../data/search";
 import {
   loadDeviceRegistryDetailDialog,
   showDeviceRegistryDetailDialog,
 } from "../../../dialogs/device-registry-detail/show-dialog-device-registry-detail";
-import "../../../components/ha-icon-next";
-import { compare } from "../../../common/string/compare";
-import { computeStateName } from "../../../common/entity/compute_state_name";
-import { createValidEntityId } from "../../../common/entity/valid_entity_id";
+import "../../../layouts/hass-error-screen";
+import "../../../layouts/hass-tabs-subpage";
+import { HomeAssistant, Route } from "../../../types";
+import "../ha-config-section";
 import { configSections } from "../ha-panel-config";
-import { RelatedResult, findRelated } from "../../../data/search";
-import { SceneEntities, showSceneEditor } from "../../../data/scene";
+import "./device-detail/ha-device-card-mqtt";
+import "./device-detail/ha-device-entities-card";
+import "./device-detail/ha-device-info-card";
 import { showDeviceAutomationDialog } from "./device-detail/show-dialog-device-automation";
-import { isComponentLoaded } from "../../../common/config/is_component_loaded";
-import { ifDefined } from "lit-html/directives/if-defined";
 
 export interface EntityRegistryStateEntry extends EntityRegistryEntry {
   stateName?: string;
@@ -53,15 +50,25 @@ export interface EntityRegistryStateEntry extends EntityRegistryEntry {
 @customElement("ha-config-device-page")
 export class HaConfigDevicePage extends LitElement {
   @property() public hass!: HomeAssistant;
+
   @property() public devices!: DeviceRegistryEntry[];
+
   @property() public entries!: ConfigEntry[];
+
   @property() public entities!: EntityRegistryEntry[];
+
   @property() public areas!: AreaRegistryEntry[];
+
   @property() public deviceId!: string;
+
   @property({ type: Boolean, reflect: true }) public narrow!: boolean;
+
   @property() public isWide!: boolean;
+
   @property() public showAdvanced!: boolean;
+
   @property() public route!: Route;
+
   @property() private _related?: RelatedResult;
 
   private _device = memoizeOne(
@@ -167,7 +174,7 @@ export class HaConfigDevicePage extends LitElement {
         ></paper-icon-button>
 
         <div class="container">
-          <div class="header fullwidth">              
+          <div class="header fullwidth">
             ${
               this.narrow
                 ? ""
@@ -206,11 +213,6 @@ export class HaConfigDevicePage extends LitElement {
                     src="https://brands.home-assistant.io/${
                       integrations[0]
                     }/logo.png"
-                    srcset="
-                      https://brands.home-assistant.io/${
-                        integrations[0]
-                      }/logo@2x.png 2x
-                    "
                     referrerpolicy="no-referrer"
                     @load=${this._onImageLoad}
                     @error=${this._onImageError}

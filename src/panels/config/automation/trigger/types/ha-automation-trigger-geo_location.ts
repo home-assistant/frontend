@@ -1,17 +1,19 @@
 import "@polymer/paper-radio-button/paper-radio-button";
 import "@polymer/paper-radio-group/paper-radio-group";
-// tslint:disable-next-line
-import { PaperRadioGroupElement } from "@polymer/paper-radio-group/paper-radio-group";
-import "../../../../../components/entity/ha-entity-picker";
-import { LitElement, customElement, property, html } from "lit-element";
-import { HomeAssistant } from "../../../../../types";
-import { handleChangeEvent } from "../ha-automation-trigger-row";
+import type { PaperRadioGroupElement } from "@polymer/paper-radio-group/paper-radio-group";
+import { customElement, html, LitElement, property } from "lit-element";
 import { fireEvent } from "../../../../../common/dom/fire_event";
-import { GeoLocationTrigger } from "../../../../../data/automation";
+import "../../../../../components/entity/ha-entity-picker";
+import type { GeoLocationTrigger } from "../../../../../data/automation";
+import type { HomeAssistant } from "../../../../../types";
+import { handleChangeEvent } from "../ha-automation-trigger-row";
+
+const includeDomains = ["zone"];
 
 @customElement("ha-automation-trigger-geo_location")
 export default class HaGeolocationTrigger extends LitElement {
   @property() public hass!: HomeAssistant;
+
   @property() public trigger!: GeoLocationTrigger;
 
   public static get defaultConfig() {
@@ -42,7 +44,7 @@ export default class HaGeolocationTrigger extends LitElement {
         @value-changed=${this._zonePicked}
         .hass=${this.hass}
         allow-custom-entity
-        .includeDomains=${["zone"]}
+        .includeDomains=${includeDomains}
       ></ha-entity-picker>
       <label id="eventlabel">
         ${this.hass.localize(

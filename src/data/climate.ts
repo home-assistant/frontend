@@ -1,6 +1,6 @@
 import {
-  HassEntityBase,
   HassEntityAttributeBase,
+  HassEntityBase,
 } from "home-assistant-js-websocket";
 
 export type HvacMode =

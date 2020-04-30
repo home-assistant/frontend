@@ -1,5 +1,4 @@
 import { customElement } from "lit-element";
-
 import { CallServiceConfig } from "../entity-rows/types";
 import { HuiButtonRow } from "./hui-button-row";
 

@@ -1,31 +1,30 @@
+import "@polymer/paper-input/paper-input";
+import type { PaperInputElement } from "@polymer/paper-input/paper-input";
 import {
+  css,
+  CSSResult,
+  customElement,
   html,
   LitElement,
-  PropertyValues,
-  TemplateResult,
-  CSSResult,
-  css,
   property,
-  customElement,
+  PropertyValues,
   query,
+  TemplateResult,
 } from "lit-element";
 import { classMap } from "lit-html/directives/class-map";
-
+import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
+import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-card";
 import "../../../components/ha-label-badge";
-import "../components/hui-warning";
-
-import { LovelaceCard } from "../types";
-import { HomeAssistant } from "../../../types";
 import {
   callAlarmAction,
   FORMAT_NUMBER,
 } from "../../../data/alarm_control_panel";
-import { AlarmPanelCardConfig } from "./types";
-import { PaperInputElement } from "@polymer/paper-input/paper-input";
-import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
+import type { HomeAssistant } from "../../../types";
 import { findEntities } from "../common/find-entites";
-import { fireEvent } from "../../../common/dom/fire_event";
+import "../components/hui-warning";
+import type { LovelaceCard } from "../types";
+import { AlarmPanelCardConfig } from "./types";
 
 const ICONS = {
   armed_away: "hass:shield-lock",
@@ -165,8 +164,8 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
     return html`
       <ha-card
         .header="${this._config.name ||
-          stateObj.attributes.friendly_name ||
-          this._label(stateObj.state)}"
+        stateObj.attributes.friendly_name ||
+        this._stateDisplay(stateObj.state)}"
       >
         <ha-label-badge
           class="${classMap({ [stateObj.state]: true })}"
@@ -185,7 +184,7 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
                 @click="${this._handleActionClick}"
                 outlined
               >
-                ${this._label(state)}
+                ${this._actionDisplay(state)}
               </mwc-button>
             `;
           })}
@@ -205,9 +204,7 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
               <div id="keypad">
                 ${BUTTONS.map((value) => {
                   return value === ""
-                    ? html`
-                        <mwc-button disabled></mwc-button>
-                      `
+                    ? html` <mwc-button disabled></mwc-button> `
                     : html`
                         <mwc-button
                           .value="${value}"
@@ -215,7 +212,9 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
                           outlined
                         >
                           ${value === "clear"
-                            ? this._label("clear_code")
+                            ? this.hass!.localize(
+                                `ui.card.alarm_control_panel.clear_code`
+                              )
                             : value}
                         </mwc-button>
                       `;
@@ -235,10 +234,13 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
       : stateLabel;
   }
 
-  private _label(state: string): string {
-    return (
-      this.hass!.localize(`state.alarm_control_panel.${state}`) ||
-      this.hass!.localize(`ui.card.alarm_control_panel.${state}`)
+  private _actionDisplay(state: string): string {
+    return this.hass!.localize(`ui.card.alarm_control_panel.${state}`);
+  }
+
+  private _stateDisplay(state: string): string {
+    return this.hass!.localize(
+      `component.alarm_control_panel.state._.${state}`
     );
   }
 

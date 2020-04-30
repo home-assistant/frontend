@@ -1,53 +1,61 @@
+import "@material/mwc-button";
+import "@polymer/paper-icon-button/paper-icon-button";
+import "@polymer/paper-spinner/paper-spinner";
 import {
-  property,
-  LitElement,
-  html,
-  customElement,
   css,
   CSSResult,
+  customElement,
+  html,
+  LitElement,
+  property,
   PropertyValues,
 } from "lit-element";
-
 import memoizeOne from "memoize-one";
-
-import "../../../layouts/hass-subpage";
-import "../../../layouts/hass-error-screen";
-import "../ha-config-section";
-import { HomeAssistant } from "../../../types";
+import { HASSDomEvent } from "../../../common/dom/fire_event";
+import { navigate } from "../../../common/navigate";
+import { SelectionChangedEvent } from "../../../components/data-table/ha-data-table";
 import {
+  addMembersToGroup,
+  fetchGroup,
+  fetchGroupableDevices,
+  removeGroups,
+  removeMembersFromGroup,
   ZHADevice,
   ZHAGroup,
-  fetchGroup,
-  removeGroups,
-  fetchGroupableDevices,
-  addMembersToGroup,
-  removeMembersFromGroup,
 } from "../../../data/zha";
+import "../../../layouts/hass-error-screen";
+import "../../../layouts/hass-subpage";
+import { HomeAssistant } from "../../../types";
+import "../ha-config-section";
 import { formatAsPaddedHex } from "./functions";
 import "./zha-device-card";
 import "./zha-devices-data-table";
-import { navigate } from "../../../common/navigate";
-import "@polymer/paper-icon-button/paper-icon-button";
-import "@polymer/paper-spinner/paper-spinner";
-import "@material/mwc-button";
-import { SelectionChangedEvent } from "../../../components/data-table/ha-data-table";
-import { HASSDomEvent } from "../../../common/dom/fire_event";
 
 @customElement("zha-group-page")
 export class ZHAGroupPage extends LitElement {
   @property() public hass!: HomeAssistant;
+
   @property() public group?: ZHAGroup;
+
   @property() public groupId!: number;
+
   @property() public narrow!: boolean;
+
   @property() public isWide!: boolean;
+
   @property() public devices: ZHADevice[] = [];
-  @property() private _processingAdd: boolean = false;
-  @property() private _processingRemove: boolean = false;
+
+  @property() private _processingAdd = false;
+
+  @property() private _processingRemove = false;
+
   @property() private _filteredDevices: ZHADevice[] = [];
+
   @property() private _selectedDevicesToAdd: string[] = [];
+
   @property() private _selectedDevicesToRemove: string[] = [];
 
-  private _firstUpdatedCalled: boolean = false;
+  private _firstUpdatedCalled = false;
 
   private _members = memoizeOne(
     (group: ZHAGroup): ZHADevice[] => group.members
@@ -152,7 +160,7 @@ export class ZHAGroupPage extends LitElement {
                 <div class="paper-dialog-buttons">
                   <mwc-button
                     .disabled="${!this._selectedDevicesToRemove.length ||
-                      this._processingRemove}"
+                    this._processingRemove}"
                     @click="${this._removeMembersFromGroup}"
                     class="button"
                   >
@@ -186,7 +194,7 @@ export class ZHAGroupPage extends LitElement {
           <div class="paper-dialog-buttons">
             <mwc-button
               .disabled="${!this._selectedDevicesToAdd.length ||
-                this._processingAdd}"
+              this._processingAdd}"
               @click="${this._addMembersToGroup}"
               class="button"
             >

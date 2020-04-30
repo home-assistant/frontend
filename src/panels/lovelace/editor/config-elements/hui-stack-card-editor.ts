@@ -1,25 +1,27 @@
+import "@polymer/paper-icon-button/paper-icon-button";
+import "@polymer/paper-tabs";
+import "@polymer/paper-tabs/paper-tab";
 import {
+  css,
+  CSSResult,
+  customElement,
   html,
   LitElement,
-  TemplateResult,
-  customElement,
   property,
-  CSSResult,
-  css,
   query,
+  TemplateResult,
 } from "lit-element";
-import "@polymer/paper-tabs";
-
-import { struct } from "../../common/structs/struct";
-import { HomeAssistant } from "../../../../types";
-import { LovelaceCardEditor } from "../../types";
-import { StackCardConfig } from "../../cards/types";
 import { fireEvent, HASSDomEvent } from "../../../../common/dom/fire_event";
 import { LovelaceConfig } from "../../../../data/lovelace";
+import { HomeAssistant } from "../../../../types";
+import { StackCardConfig } from "../../cards/types";
+import { struct } from "../../common/structs/struct";
+import { LovelaceCardEditor } from "../../types";
 import {
-  HuiCardEditor,
   ConfigChangedEvent,
+  HuiCardEditor,
 } from "../card-editor/hui-card-editor";
+import "../card-editor/hui-card-picker";
 import { GUIModeChangedEvent } from "../types";
 
 const cardConfigStruct = struct({
@@ -32,11 +34,17 @@ const cardConfigStruct = struct({
 export class HuiStackCardEditor extends LitElement
   implements LovelaceCardEditor {
   @property() public hass?: HomeAssistant;
+
   @property() public lovelace?: LovelaceConfig;
+
   @property() private _config?: StackCardConfig;
-  @property() private _selectedCard: number = 0;
+
+  @property() private _selectedCard = 0;
+
   @property() private _GUImode = true;
+
   @property() private _guiModeAvailable? = true;
+
   @query("hui-card-editor") private _cardEditorEl?: HuiCardEditor;
 
   public setConfig(config: StackCardConfig): void {
@@ -74,63 +82,61 @@ export class HuiStackCardEditor extends LitElement
             <paper-tab>
               <ha-icon icon="hass:plus"></ha-icon>
             </paper-tab>
-          <paper-tabs>
+          </paper-tabs>
         </div>
 
         <div id="editor">
-          ${
-            selected < numcards
-              ? html`
-                  <div id="card-options">
-                    <mwc-button
-                      @click=${this._toggleMode}
-                      .disabled=${!this._guiModeAvailable}
-                      class="gui-mode-button"
-                    >
-                      ${this.hass!.localize(
-                        !this._cardEditorEl || this._GUImode
-                          ? "ui.panel.lovelace.editor.edit_card.show_code_editor"
-                          : "ui.panel.lovelace.editor.edit_card.show_visual_editor"
-                      )}
-                    </mwc-button>
-                    <paper-icon-button
-                      id="move-before"
-                      title="Move card before"
-                      icon="hass:arrow-left"
-                      .disabled=${selected === 0}
-                      @click=${this._handleMove}
-                    ></paper-icon-button>
+          ${selected < numcards
+            ? html`
+                <div id="card-options">
+                  <mwc-button
+                    @click=${this._toggleMode}
+                    .disabled=${!this._guiModeAvailable}
+                    class="gui-mode-button"
+                  >
+                    ${this.hass!.localize(
+                      !this._cardEditorEl || this._GUImode
+                        ? "ui.panel.lovelace.editor.edit_card.show_code_editor"
+                        : "ui.panel.lovelace.editor.edit_card.show_visual_editor"
+                    )}
+                  </mwc-button>
+                  <paper-icon-button
+                    id="move-before"
+                    title="Move card before"
+                    icon="hass:arrow-left"
+                    .disabled=${selected === 0}
+                    @click=${this._handleMove}
+                  ></paper-icon-button>
 
-                    <paper-icon-button
-                      id="move-after"
-                      title="Move card after"
-                      icon="hass:arrow-right"
-                      .disabled=${selected === numcards - 1}
-                      @click=${this._handleMove}
-                    ></paper-icon-button>
+                  <paper-icon-button
+                    id="move-after"
+                    title="Move card after"
+                    icon="hass:arrow-right"
+                    .disabled=${selected === numcards - 1}
+                    @click=${this._handleMove}
+                  ></paper-icon-button>
 
-                    <paper-icon-button
-                      icon="hass:delete"
-                      @click=${this._handleDeleteCard}
-                    ></paper-icon-button>
-                  </div>
+                  <paper-icon-button
+                    icon="hass:delete"
+                    @click=${this._handleDeleteCard}
+                  ></paper-icon-button>
+                </div>
 
-                  <hui-card-editor
-                    .hass=${this.hass}
-                    .value=${this._config.cards[selected]}
-                    .lovelace=${this.lovelace}
-                    @config-changed=${this._handleConfigChanged}
-                    @GUImode-changed=${this._handleGUIModeChanged}
-                  ></hui-card-editor>
-                `
-              : html`
-                  <hui-card-picker
-                    .hass=${this.hass}
-                    .lovelace=${this.lovelace}
-                    @config-changed="${this._handleCardPicked}"
-                  ></hui-card-picker>
-                `
-          }
+                <hui-card-editor
+                  .hass=${this.hass}
+                  .value=${this._config.cards[selected]}
+                  .lovelace=${this.lovelace}
+                  @config-changed=${this._handleConfigChanged}
+                  @GUImode-changed=${this._handleGUIModeChanged}
+                ></hui-card-editor>
+              `
+            : html`
+                <hui-card-picker
+                  .hass=${this.hass}
+                  .lovelace=${this.lovelace}
+                  @config-changed="${this._handleCardPicked}"
+                ></hui-card-picker>
+              `}
         </div>
       </div>
     `;

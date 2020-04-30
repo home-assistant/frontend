@@ -1,7 +1,8 @@
 import "@polymer/iron-flex-layout/iron-flex-layout-classes";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
+/* eslint-plugin-disable lit */
 import { PolymerElement } from "@polymer/polymer/polymer-element";
-
+import { computeStateDisplay } from "../common/entity/compute_state_display";
 import "../components/entity/state-info";
 import LocalizeMixin from "../mixins/localize-mixin";
 import HassMediaPlayerEntity from "../util/hass-media-player-model";
@@ -85,9 +86,7 @@ class StateCardMediaPlayer extends LocalizeMixin(PolymerElement) {
   computePrimaryText(localize, playerObj) {
     return (
       playerObj.primaryTitle ||
-      localize(`state.media_player.${playerObj.stateObj.state}`) ||
-      localize(`state.default.${playerObj.stateObj.state}`) ||
-      playerObj.stateObj.state
+      computeStateDisplay(localize, playerObj.stateObj, this.hass.language)
     );
   }
 }

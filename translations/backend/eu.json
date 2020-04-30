@@ -1,0 +1,281 @@
+{
+  "component": {
+    "sensor": {
+      "state": {
+        "_": {
+          "off": "Itzalita",
+          "on": "Piztuta"
+        }
+      }
+    },
+    "binary_sensor": {
+      "state": {
+        "_": {
+          "off": "Itzalita",
+          "on": "Piztuta"
+        },
+        "battery": {
+          "off": "Normala",
+          "on": "Baxua"
+        },
+        "cold": {
+          "off": "Normala",
+          "on": "Hotza"
+        },
+        "connectivity": {
+          "off": "Deskonektatuta",
+          "on": "Konektatuta"
+        },
+        "door": {
+          "off": "Itxita",
+          "on": "Ireki"
+        },
+        "garage_door": {
+          "off": "Itxita",
+          "on": "Ireki"
+        },
+        "heat": {
+          "off": "Normala",
+          "on": "Beroa"
+        },
+        "lock": {
+          "off": "Itxita",
+          "on": "Irekita"
+        },
+        "moisture": {
+          "off": "Lehorra",
+          "on": "Buztita"
+        },
+        "opening": {
+          "off": "Itxita",
+          "on": "Ireki"
+        },
+        "presence": {
+          "off": "Kanpoan",
+          "on": "Etxean"
+        },
+        "problem": {
+          "off": "Ondo",
+          "on": "Arazoa"
+        },
+        "safety": {
+          "off": "Babestuta"
+        },
+        "window": {
+          "off": "Itxita",
+          "on": "Ireki"
+        }
+      }
+    },
+    "alarm_control_panel": {
+      "state": {
+        "_": {
+          "pending": "Zain",
+          "triggered": "Abiarazita"
+        }
+      }
+    },
+    "automation": {
+      "state": {
+        "_": {
+          "off": "Itzalita",
+          "on": "Piztuta"
+        }
+      }
+    },
+    "calendar": {
+      "state": {
+        "_": {
+          "off": "Itzalita",
+          "on": "Piztuta"
+        }
+      }
+    },
+    "camera": {
+      "state": {
+        "_": {
+          "recording": "Grabatzen"
+        }
+      }
+    },
+    "climate": {
+      "state": {
+        "_": {
+          "off": "Itzalita",
+          "heat": "Beroa",
+          "cool": "Hotza",
+          "auto": "Automatikoa",
+          "dry": "Lehorra",
+          "fan_only": "Haizagailua bakarrik"
+        }
+      }
+    },
+    "configurator": {
+      "state": {
+        "_": {
+          "configure": "Konfiguratu",
+          "configured": "Konfiguratuta"
+        }
+      }
+    },
+    "fan": {
+      "state": {
+        "_": {
+          "off": "Itzalita",
+          "on": "Piztuta"
+        }
+      }
+    },
+    "group": {
+      "state": {
+        "_": {
+          "off": "Itzalita",
+          "on": "Piztuta",
+          "home": "Etxean",
+          "not_home": "Kanpoan",
+          "open": "Ireki",
+          "closed": "Itxita",
+          "ok": "Itzalita",
+          "problem": "Arazoa"
+        }
+      }
+    },
+    "input_boolean": {
+      "state": {
+        "_": {
+          "off": "Itzalita",
+          "on": "Piztuta"
+        }
+      }
+    },
+    "light": {
+      "state": {
+        "_": {
+          "off": "Itzalita",
+          "on": "Piztuta"
+        }
+      }
+    },
+    "person": {
+      "state": {
+        "_": {
+          "home": "Etxean",
+          "not_home": "Kanpoan"
+        }
+      }
+    },
+    "plant": {
+      "state": {
+        "_": {
+          "ok": "Itzalita",
+          "problem": "Arazoa"
+        }
+      }
+    },
+    "remote": {
+      "state": {
+        "_": {
+          "off": "Itzalita",
+          "on": "Piztuta"
+        }
+      }
+    },
+    "script": {
+      "state": {
+        "_": {
+          "off": "Itzalita",
+          "on": "Piztuta"
+        }
+      }
+    },
+    "sun": {
+      "state": {
+        "_": {
+          "above_horizon": "Horizonte gainetik",
+          "below_horizon": "Horizonte azpitik"
+        }
+      }
+    },
+    "vacuum": {
+      "state": {
+        "_": {
+          "cleaning": "Garbitzen",
+          "docked": "Basean",
+          "error": "Errorea",
+          "off": "Itzalita",
+          "on": "Piztuta",
+          "returning": "Basera itzultzen"
+        }
+      }
+    },
+    "cover": {
+      "state": {
+        "_": {
+          "open": "Irekita",
+          "opening": "Irekitzen",
+          "closed": "Itxita",
+          "closing": "Ixten",
+          "stopped": "Geldituta"
+        }
+      }
+    },
+    "device_tracker": {
+      "state": {
+        "_": {
+          "home": "Etxean",
+          "not_home": "Kanpoan"
+        }
+      }
+    },
+    "media_player": {
+      "state": {
+        "_": {
+          "off": "Itzalita",
+          "on": "Piztuta"
+        }
+      }
+    },
+    "switch": {
+      "state": {
+        "_": {
+          "off": "Itzalita",
+          "on": "Piztuta"
+        }
+      }
+    },
+    "weather": {
+      "state": {
+        "_": {
+          "clear-night": "Garbia, gaua",
+          "cloudy": "Hodeitsua",
+          "fog": "Lainoa",
+          "hail": "Txingorra",
+          "lightning": "Tximistak",
+          "lightning-rainy": "Tximistak, euritsua",
+          "partlycloudy": "Ostarteak",
+          "pouring": "Botatzen",
+          "rainy": "Euritsua",
+          "snowy": "Elurtsua",
+          "snowy-rainy": "Elurtsua, euritsua",
+          "sunny": "Eguzkitsua",
+          "windy": "Haizetsua",
+          "windy-variant": "Haizetsua"
+        }
+      }
+    },
+    "zwave": {
+      "state": {
+        "_": {
+          "initializing": "Hasieratzen",
+          "dead": "Hilda",
+          "sleeping": "Lotan",
+          "ready": "Prest"
+        },
+        "query_stage": {
+          "initializing": "Hasieratzen ({query_stage})",
+          "dead": "Ez du erantzuten ({query_stage})"
+        }
+      }
+    }
+  }
+}

@@ -1,16 +1,16 @@
+// @ts-ignore
+import chipStyles from "@material/chips/dist/mdc.chips.min.css";
+import { ripple } from "@material/mwc-ripple/ripple-directive";
 import {
   css,
   CSSResult,
+  customElement,
   html,
   LitElement,
   property,
   TemplateResult,
-  customElement,
   unsafeCSS,
 } from "lit-element";
-import { ripple } from "@material/mwc-ripple/ripple-directive";
-// @ts-ignore
-import chipStyles from "@material/chips/dist/mdc.chips.min.css";
 import { fireEvent } from "../common/dom/fire_event";
 
 declare global {

@@ -1,32 +1,34 @@
-import "./ha-config-devices-dashboard";
-import "./ha-config-device-page";
-import { compare } from "../../../common/string/compare";
+import { UnsubscribeFunc } from "home-assistant-js-websocket";
+import { customElement, property, PropertyValues } from "lit-element";
 import {
-  subscribeAreaRegistry,
   AreaRegistryEntry,
+  subscribeAreaRegistry,
 } from "../../../data/area_registry";
-import {
-  HassRouterPage,
-  RouterOptions,
-} from "../../../layouts/hass-router-page";
-import { property, customElement, PropertyValues } from "lit-element";
-import { HomeAssistant } from "../../../types";
 import { ConfigEntry, getConfigEntries } from "../../../data/config_entries";
+import {
+  DeviceRegistryEntry,
+  subscribeDeviceRegistry,
+} from "../../../data/device_registry";
 import {
   EntityRegistryEntry,
   subscribeEntityRegistry,
 } from "../../../data/entity_registry";
 import {
-  DeviceRegistryEntry,
-  subscribeDeviceRegistry,
-} from "../../../data/device_registry";
-import { UnsubscribeFunc } from "home-assistant-js-websocket";
+  HassRouterPage,
+  RouterOptions,
+} from "../../../layouts/hass-router-page";
+import { HomeAssistant } from "../../../types";
+import "./ha-config-device-page";
+import "./ha-config-devices-dashboard";
 
 @customElement("ha-config-devices")
 class HaConfigDevices extends HassRouterPage {
   @property() public hass!: HomeAssistant;
+
   @property() public narrow!: boolean;
+
   @property() public isWide!: boolean;
+
   @property() public showAdvanced!: boolean;
 
   protected routerOptions: RouterOptions = {
@@ -43,8 +45,11 @@ class HaConfigDevices extends HassRouterPage {
   };
 
   @property() private _configEntries: ConfigEntry[] = [];
+
   @property() private _entityRegistryEntries: EntityRegistryEntry[] = [];
+
   @property() private _deviceRegistryEntries: DeviceRegistryEntry[] = [];
+
   @property() private _areas: AreaRegistryEntry[] = [];
 
   private _unsubs?: UnsubscribeFunc[];
@@ -85,9 +90,7 @@ class HaConfigDevices extends HassRouterPage {
   protected updatePageEl(pageEl) {
     pageEl.hass = this.hass;
 
-    if (this._currentPage === "dashboard") {
-      pageEl.domain = this.routeTail.path.substr(1);
-    } else if (this._currentPage === "device") {
+    if (this._currentPage === "device") {
       pageEl.deviceId = this.routeTail.path.substr(1);
     }
 
@@ -103,9 +106,7 @@ class HaConfigDevices extends HassRouterPage {
 
   private _loadData() {
     getConfigEntries(this.hass).then((configEntries) => {
-      this._configEntries = configEntries.sort((conf1, conf2) =>
-        compare(conf1.title, conf2.title)
-      );
+      this._configEntries = configEntries;
     });
     if (this._unsubs) {
       return;

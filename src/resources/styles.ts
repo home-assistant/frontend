@@ -5,7 +5,7 @@ export const derivedStyles = {
   "error-state-color": "var(--error-color)",
   "state-icon-unavailable-color": "var(--disabled-text-color)",
   "sidebar-text-color": "var(--primary-text-color)",
-  "sidebar-background-color": "var(--paper-listbox-background-color);",
+  "sidebar-background-color": "var(--card-background-color)",
   "sidebar-selected-text-color": "var(--primary-color)",
   "sidebar-selected-icon-color": "var(--primary-color)",
   "sidebar-icon-color": "rgba(var(--rgb-primary-text-color), 0.6)",
@@ -51,7 +51,11 @@ export const derivedStyles = {
 
 export const haStyle = css`
   :host {
-    @apply --paper-font-body1;
+    font-family: var(--paper-font-body1_-_font-family);
+    -webkit-font-smoothing: var(--paper-font-body1_-_-webkit-font-smoothing);
+    font-size: var(--paper-font-body1_-_font-size);
+    font-weight: var(--paper-font-body1_-_font-weight);
+    line-height: var(--paper-font-body1_-_line-height);
   }
 
   app-header-layout,
@@ -73,7 +77,25 @@ export const haStyle = css`
   }
 
   h1 {
-    @apply --paper-font-title;
+    font-family: var(--paper-font-title_-_font-family);
+    -webkit-font-smoothing: var(--paper-font-title_-_-webkit-font-smoothing);
+    white-space: var(--paper-font-title_-_white-space);
+    overflow: var(--paper-font-title_-_overflow);
+    text-overflow: var(--paper-font-title_-_text-overflow);
+    font-size: var(--paper-font-title_-_font-size);
+    font-weight: var(--paper-font-title_-_font-weight);
+    line-height: var(--paper-font-title_-_line-height);
+  }
+
+  h2 {
+    font-family: var(--paper-font-subhead_-_font-family);
+    -webkit-font-smoothing: var(--paper-font-subhead_-_-webkit-font-smoothing);
+    white-space: var(--paper-font-subhead_-_white-space);
+    overflow: var(--paper-font-subhead_-_overflow);
+    text-overflow: var(--paper-font-subhead_-_text-overflow);
+    font-size: var(--paper-font-subhead_-_font-size);
+    font-weight: var(--paper-font-subhead_-_font-weight);
+    line-height: var(--paper-font-subhead_-_line-height);
   }
 
   .secondary {

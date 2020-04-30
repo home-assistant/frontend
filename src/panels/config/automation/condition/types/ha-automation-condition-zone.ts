@@ -1,21 +1,23 @@
 import "@polymer/paper-radio-button/paper-radio-button";
-import "../../../../../components/entity/ha-entity-picker";
-
-import { hasLocation } from "../../../../../common/entity/has_location";
-import { computeStateDomain } from "../../../../../common/entity/compute_state_domain";
-import { LitElement, property, html, customElement } from "lit-element";
-import { HomeAssistant } from "../../../../../types";
-import { PolymerChangedEvent } from "../../../../../polymer-types";
+import { customElement, html, LitElement, property } from "lit-element";
 import { fireEvent } from "../../../../../common/dom/fire_event";
+import { computeStateDomain } from "../../../../../common/entity/compute_state_domain";
+import { hasLocation } from "../../../../../common/entity/has_location";
+import "../../../../../components/entity/ha-entity-picker";
 import { ZoneCondition } from "../../../../../data/automation";
+import { PolymerChangedEvent } from "../../../../../polymer-types";
+import { HomeAssistant } from "../../../../../types";
 
 function zoneAndLocationFilter(stateObj) {
   return hasLocation(stateObj) && computeStateDomain(stateObj) !== "zone";
 }
 
+const includeDomains = ["zone"];
+
 @customElement("ha-automation-condition-zone")
 export class HaZoneCondition extends LitElement {
   @property() public hass!: HomeAssistant;
+
   @property() public condition!: ZoneCondition;
 
   public static get defaultConfig() {
@@ -46,7 +48,7 @@ export class HaZoneCondition extends LitElement {
         @value-changed=${this._zonePicked}
         .hass=${this.hass}
         allow-custom-entity
-        .includeDomains=${["zone"]}
+        .includeDomains=${includeDomains}
       ></ha-entity-picker>
       <label id="eventlabel">
         ${this.hass.localize(

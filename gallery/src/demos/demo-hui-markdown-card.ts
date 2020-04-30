@@ -1,6 +1,6 @@
 import { html } from "@polymer/polymer/lib/utils/html-tag";
+/* eslint-plugin-disable lit */
 import { PolymerElement } from "@polymer/polymer/polymer-element";
-
 import "../components/demo-cards";
 
 const CONFIGS = [
@@ -254,9 +254,7 @@ const CONFIGS = [
 
 class DemoMarkdown extends PolymerElement {
   static get template() {
-    return html`
-      <demo-cards configs="[[_configs]]"></demo-cards>
-    `;
+    return html` <demo-cards configs="[[_configs]]"></demo-cards> `;
   }
 
   static get properties() {

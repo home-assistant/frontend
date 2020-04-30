@@ -1,7 +1,7 @@
 import "@polymer/iron-image/iron-image";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
+/* eslint-plugin-disable lit */
 import { PolymerElement } from "@polymer/polymer/polymer-element";
-
 import { EventsMixin } from "../../mixins/events-mixin";
 
 /*

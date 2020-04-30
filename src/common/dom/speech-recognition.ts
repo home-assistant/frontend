@@ -1,4 +1,4 @@
-/* tslint:disable */
+/* eslint-disable */
 // @ts-ignore
 export const SpeechRecognition =
   // @ts-ignore
@@ -11,4 +11,4 @@ export const SpeechGrammarList =
 export const SpeechRecognitionEvent =
   // @ts-ignore
   window.SpeechRecognitionEvent || window.webkitSpeechRecognitionEvent;
-/* tslint:enable */
+/* eslint-enable */

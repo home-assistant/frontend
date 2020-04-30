@@ -1,23 +1,24 @@
+import "@polymer/paper-icon-button/paper-icon-button";
+import "@polymer/paper-input/paper-input";
 import {
-  html,
   css,
+  CSSResult,
+  customElement,
+  html,
   LitElement,
   property,
   TemplateResult,
-  CSSResult,
-  customElement,
 } from "lit-element";
-import "@polymer/paper-input/paper-input";
-
-import { HomeAssistant } from "../../../types";
 import { fireEvent } from "../../../common/dom/fire_event";
-
+import { HomeAssistant } from "../../../types";
 import { EditorTarget } from "../editor/types";
 
 @customElement("hui-input-list-editor")
 export class HuiInputListEditor extends LitElement {
   @property() protected value?: string[];
+
   @property() protected hass?: HomeAssistant;
+
   @property() protected inputLabel?: string;
 
   protected render(): TemplateResult {

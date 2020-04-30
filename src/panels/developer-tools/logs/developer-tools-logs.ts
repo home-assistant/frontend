@@ -1,21 +1,18 @@
 import {
-  LitElement,
-  html,
-  CSSResult,
   css,
-  TemplateResult,
+  CSSResult,
+  customElement,
+  html,
+  LitElement,
   property,
   query,
-  customElement,
+  TemplateResult,
 } from "lit-element";
-
-import { HomeAssistant } from "../../../types";
 import { haStyle } from "../../../resources/styles";
-
-import "../logs/system-log-card";
-import "../logs/error-log-card";
-// tslint:disable-next-line
-import { SystemLogCard } from "../logs/system-log-card";
+import { HomeAssistant } from "../../../types";
+import "./error-log-card";
+import "./system-log-card";
+import type { SystemLogCard } from "./system-log-card";
 
 @customElement("developer-tools-logs")
 export class HaPanelDevLogs extends LitElement {

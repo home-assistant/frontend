@@ -1,16 +1,14 @@
 import "@polymer/iron-flex-layout/iron-flex-layout-classes";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
-
 import { html } from "@polymer/polymer/lib/utils/html-tag";
+/* eslint-plugin-disable lit */
 import { PolymerElement } from "@polymer/polymer/polymer-element";
-
+import { featureClassNames } from "../../../common/entity/feature_class_names";
 import "../../../components/ha-attributes";
 import "../../../components/ha-color-picker";
 import "../../../components/ha-labeled-slider";
 import "../../../components/ha-paper-dropdown-menu";
-
-import { featureClassNames } from "../../../common/entity/feature_class_names";
 import { EventsMixin } from "../../../mixins/events-mixin";
 import LocalizeMixin from "../../../mixins/localize-mixin";
 

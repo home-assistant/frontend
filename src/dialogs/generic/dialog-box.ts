@@ -1,28 +1,29 @@
-import {
-  LitElement,
-  html,
-  css,
-  CSSResult,
-  TemplateResult,
-  customElement,
-  property,
-} from "lit-element";
+import "@material/mwc-button/mwc-button";
 import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable";
 import "@polymer/paper-input/paper-input";
-
+import {
+  css,
+  CSSResult,
+  customElement,
+  html,
+  LitElement,
+  property,
+  TemplateResult,
+} from "lit-element";
+import { classMap } from "lit-html/directives/class-map";
 import "../../components/dialog/ha-paper-dialog";
 import "../../components/ha-switch";
-
-import { HomeAssistant } from "../../types";
-import { DialogParams } from "./show-dialog-box";
 import { PolymerChangedEvent } from "../../polymer-types";
 import { haStyleDialog } from "../../resources/styles";
-import { classMap } from "lit-html/directives/class-map";
+import { HomeAssistant } from "../../types";
+import { DialogParams } from "./show-dialog-box";
 
 @customElement("dialog-box")
 class DialogBox extends LitElement {
   @property() public hass!: HomeAssistant;
+
   @property() private _params?: DialogParams;
+
   @property() private _value?: string;
 
   public async showDialog(params: DialogParams): Promise<void> {
@@ -72,6 +73,7 @@ class DialogBox extends LitElement {
                   autofocus
                   .value=${this._value}
                   @value-changed=${this._valueChanged}
+                  @keyup=${this._handleKeyUp}
                   .label=${this._params.inputLabel
                     ? this._params.inputLabel
                     : ""}
@@ -84,13 +86,13 @@ class DialogBox extends LitElement {
         </paper-dialog-scrollable>
         <div class="paper-dialog-buttons">
           ${confirmPrompt &&
-            html`
-              <mwc-button @click="${this._dismiss}">
-                ${this._params.dismissText
-                  ? this._params.dismissText
-                  : this.hass.localize("ui.dialogs.generic.cancel")}
-              </mwc-button>
-            `}
+          html`
+            <mwc-button @click="${this._dismiss}">
+              ${this._params.dismissText
+                ? this._params.dismissText
+                : this.hass.localize("ui.dialogs.generic.cancel")}
+            </mwc-button>
+          `}
           <mwc-button @click="${this._confirm}">
             ${this._params.confirmText
               ? this._params.confirmText
@@ -110,6 +112,12 @@ class DialogBox extends LitElement {
       this._params!.cancel();
     }
     this._params = undefined;
+  }
+
+  private _handleKeyUp(ev: KeyboardEvent) {
+    if (ev.keyCode === 13) {
+      this._confirm();
+    }
   }
 
   private async _confirm(): Promise<void> {

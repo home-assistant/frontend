@@ -1,5 +1,5 @@
-import { HomeAssistant, CameraEntity } from "../types";
 import { timeCachePromiseFunc } from "../common/util/time-cache-function-promise";
+import { CameraEntity, HomeAssistant } from "../types";
 import { getSignedPath } from "./auth";
 
 export const CAMERA_SUPPORT_ON_OFF = 1;

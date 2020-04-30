@@ -1,17 +1,15 @@
 import {
-  LitElement,
-  html,
-  CSSResult,
   css,
-  TemplateResult,
+  CSSResult,
+  html,
+  LitElement,
   property,
+  TemplateResult,
 } from "lit-element";
-
-import { HomeAssistant } from "../../../types";
 import { haStyle } from "../../../resources/styles";
-
-import "./system-health-card";
+import { HomeAssistant } from "../../../types";
 import "./integrations-card";
+import "./system-health-card";
 
 const JS_TYPE = __BUILD__;
 const JS_VERSION = __VERSION__;
@@ -61,7 +59,7 @@ class HaPanelDevInfo extends LitElement {
           )}<br />
           ${this.hass.localize("ui.panel.developer-tools.tabs.info.source")}
           <a
-            href="https://github.com/home-assistant/home-assistant"
+            href="https://github.com/home-assistant/core"
             target="_blank" rel="noreferrer"
             >${this.hass.localize(
               "ui.panel.developer-tools.tabs.info.server"
@@ -69,7 +67,7 @@ class HaPanelDevInfo extends LitElement {
           >
           &mdash;
           <a
-            href="https://github.com/home-assistant/home-assistant-polymer"
+            href="https://github.com/home-assistant/frontend"
             target="_blank" rel="noreferrer"
             >${this.hass.localize(
               "ui.panel.developer-tools.tabs.info.frontend"

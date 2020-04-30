@@ -1,6 +1,6 @@
 import { html } from "@polymer/polymer/lib/utils/html-tag";
+/* eslint-plugin-disable lit */
 import { PolymerElement } from "@polymer/polymer/polymer-element";
-
 import "./ha-label-badge";
 
 class HaDemoBadge extends PolymerElement {

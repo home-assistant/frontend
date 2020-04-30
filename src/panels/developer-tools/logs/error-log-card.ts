@@ -1,19 +1,19 @@
-import {
-  LitElement,
-  html,
-  CSSResult,
-  css,
-  TemplateResult,
-  property,
-} from "lit-element";
-import "@polymer/paper-icon-button/paper-icon-button";
 import "@material/mwc-button";
-
-import { HomeAssistant } from "../../../types";
+import "@polymer/paper-icon-button/paper-icon-button";
+import {
+  css,
+  CSSResult,
+  html,
+  LitElement,
+  property,
+  TemplateResult,
+} from "lit-element";
 import { fetchErrorLog } from "../../../data/error_log";
+import { HomeAssistant } from "../../../types";
 
 class ErrorLogCard extends LitElement {
   @property() public hass!: HomeAssistant;
+
   @property() private _errorLog?: string;
 
   protected render(): TemplateResult {

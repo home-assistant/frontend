@@ -1,13 +1,12 @@
 import {
+  customElement,
   html,
   LitElement,
-  TemplateResult,
-  customElement,
   property,
+  TemplateResult,
 } from "lit-element";
-
-import { HomeAssistant } from "../../../../types";
 import { HASSDomEvent } from "../../../../common/dom/fire_event";
+import { HomeAssistant } from "../../../../types";
 import "./hui-edit-view";
 import { EditViewDialogParams } from "./show-edit-view-dialog";
 

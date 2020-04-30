@@ -1,22 +1,25 @@
+import "@polymer/paper-spinner/paper-spinner";
+import { HassEntity } from "home-assistant-js-websocket";
 import {
+  css,
+  CSSResult,
+  customElement,
   html,
   LitElement,
-  TemplateResult,
-  customElement,
   property,
   PropertyValues,
-  CSSResult,
-  css,
+  TemplateResult,
 } from "lit-element";
-
-import "../components/hui-graph-base";
-
-import { LovelaceHeaderFooter } from "../types";
+import { fetchRecent } from "../../../data/history";
 import { HomeAssistant } from "../../../types";
+import { coordinates } from "../common/graph/coordinates";
+import { hasConfigOrEntityChanged } from "../common/has-changed";
+import "../components/hui-graph-base";
+import { LovelaceHeaderFooter } from "../types";
 import { GraphHeaderFooterConfig } from "./types";
-import { getHistoryCoordinates } from "../common/graph/get-history-coordinates";
 
 const MINUTE = 60000;
+const DAY = 86400000;
 
 @customElement("hui-graph-header-footer")
 export class HuiGraphHeaderFooter extends LitElement
@@ -26,9 +29,16 @@ export class HuiGraphHeaderFooter extends LitElement
   }
 
   @property() public hass?: HomeAssistant;
+
   @property() protected _config?: GraphHeaderFooterConfig;
-  @property() private _coordinates?: any;
+
+  @property() private _coordinates?: number[][];
+
   private _date?: Date;
+
+  private _stateHistory?: HassEntity[];
+
+  private _fetching = false;
 
   public setConfig(config: GraphHeaderFooterConfig): void {
     if (!config?.entity || config.entity.split(".")[0] !== "sensor") {
@@ -59,8 +69,18 @@ export class HuiGraphHeaderFooter extends LitElement
 
     if (!this._coordinates) {
       return html`
-        <div class="info">
-          No state history found.
+        <div class="container">
+          <paper-spinner active></paper-spinner>
+        </div>
+      `;
+    }
+
+    if (this._coordinates.length < 1) {
+      return html`
+        <div class="container">
+          <div class="info">
+            No state history found.
+          </div>
         </div>
       `;
     }
@@ -70,16 +90,25 @@ export class HuiGraphHeaderFooter extends LitElement
     `;
   }
 
-  protected firstUpdated(): void {
-    this._date = new Date();
+  protected shouldUpdate(changedProps: PropertyValues): boolean {
+    return hasConfigOrEntityChanged(this, changedProps);
   }
 
   protected updated(changedProps: PropertyValues) {
-    if (!this._config || !this.hass) {
+    if (
+      !this._config ||
+      !this.hass ||
+      (this._fetching && !changedProps.has("_config"))
+    ) {
       return;
     }
 
     if (changedProps.has("_config")) {
+      const oldConfig = changedProps.get("_config") as GraphHeaderFooterConfig;
+      if (!oldConfig || oldConfig.entity !== this._config.entity) {
+        this._stateHistory = [];
+      }
+
       this._getCoordinates();
     } else if (Date.now() - this._date!.getTime() >= MINUTE) {
       this._getCoordinates();
@@ -87,21 +116,62 @@ export class HuiGraphHeaderFooter extends LitElement
   }
 
   private async _getCoordinates(): Promise<void> {
-    this._coordinates = await getHistoryCoordinates(
+    this._fetching = true;
+    const endTime = new Date();
+    const startTime =
+      !this._date || !this._stateHistory?.length
+        ? new Date(
+            new Date().setHours(
+              endTime.getHours() - this._config!.hours_to_show!
+            )
+          )
+        : this._date;
+
+    if (this._stateHistory!.length) {
+      this._stateHistory = this._stateHistory!.filter(
+        (entity) =>
+          endTime.getTime() - new Date(entity.last_changed).getTime() <= DAY
+      );
+    }
+
+    const stateHistory = await fetchRecent(
       this.hass!,
       this._config!.entity,
+      startTime,
+      endTime,
+      Boolean(this._stateHistory!.length)
+    );
+
+    if (stateHistory.length && stateHistory[0].length) {
+      this._stateHistory!.push(...stateHistory[0]);
+    }
+
+    this._coordinates = coordinates(
+      this._stateHistory,
       this._config!.hours_to_show!,
+      500,
       this._config!.detail!
     );
 
-    this._date = new Date();
+    this._date = endTime;
+    this._fetching = false;
   }
 
   static get styles(): CSSResult {
     return css`
+      paper-spinner {
+        position: absolute;
+        top: calc(50% - 28px);
+      }
+      .container {
+        display: flex;
+        justify-content: center;
+        position: relative;
+        padding-bottom: 20%;
+      }
       .info {
-        text-align: center;
-        line-height: 58px;
+        position: absolute;
+        top: calc(50% - 16px);
         color: var(--secondary-text-color);
       }
     `;

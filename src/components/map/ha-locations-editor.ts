@@ -1,27 +1,27 @@
 import {
-  LitElement,
-  property,
-  TemplateResult,
-  html,
-  CSSResult,
-  css,
-  customElement,
-  PropertyValues,
-} from "lit-element";
-import {
-  Marker,
-  Map,
+  Circle,
+  DivIcon,
   DragEndEvent,
   LatLng,
-  Circle,
+  Map,
+  Marker,
   MarkerOptions,
-  DivIcon,
 } from "leaflet";
 import {
-  setupLeafletMap,
-  LeafletModuleType,
-} from "../../common/dom/setup-leaflet-map";
+  css,
+  CSSResult,
+  customElement,
+  html,
+  LitElement,
+  property,
+  PropertyValues,
+  TemplateResult,
+} from "lit-element";
 import { fireEvent } from "../../common/dom/fire_event";
+import {
+  LeafletModuleType,
+  setupLeafletMap,
+} from "../../common/dom/setup-leaflet-map";
 import { defaultRadiusColor } from "../../data/zone";
 
 declare global {
@@ -48,13 +48,17 @@ export interface MarkerLocation {
 @customElement("ha-locations-editor")
 export class HaLocationsEditor extends LitElement {
   @property() public locations?: MarkerLocation[];
+
   public fitZoom = 16;
 
-  // tslint:disable-next-line
+  // eslint-disable-next-line
   private Leaflet?: LeafletModuleType;
-  // tslint:disable-next-line
+
+  // eslint-disable-next-line
   private _leafletMap?: Map;
+
   private _locationMarkers?: { [key: string]: Marker | Circle };
+
   private _circles: { [key: string]: Circle } = {};
 
   public fitMap(): void {
@@ -93,9 +97,7 @@ export class HaLocationsEditor extends LitElement {
   }
 
   protected render(): TemplateResult {
-    return html`
-      <div id="map"></div>
-    `;
+    return html` <div id="map"></div> `;
   }
 
   protected firstUpdated(changedProps: PropertyValues): void {

@@ -1,13 +1,13 @@
 import { HassEntity, UnsubscribeFunc } from "home-assistant-js-websocket";
 import {
+  css,
+  CSSResult,
   customElement,
   html,
   LitElement,
   property,
   PropertyValues,
   TemplateResult,
-  CSSResult,
-  css,
 } from "lit-element";
 import { fireEvent } from "../common/dom/fire_event";
 import {
@@ -28,11 +28,17 @@ import "./ha-switch";
 @customElement("ha-related-items")
 export class HaRelatedItems extends SubscribeMixin(LitElement) {
   @property() public hass!: HomeAssistant;
+
   @property() public itemType!: ItemType;
+
   @property() public itemId!: string;
+
   @property() private _entries?: ConfigEntry[];
+
   @property() private _devices?: DeviceRegistryEntry[];
+
   @property() private _areas?: AreaRegistryEntry[];
+
   @property() private _related?: RelatedResult;
 
   public hassSubscribe(): UnsubscribeFunc[] {
@@ -80,7 +86,7 @@ export class HaRelatedItems extends SubscribeMixin(LitElement) {
               (configEntry) => configEntry.entry_id === relatedConfigEntryId
             );
             if (!entry) {
-              return;
+              return "";
             }
             return html`
               <h3>
@@ -89,10 +95,10 @@ export class HaRelatedItems extends SubscribeMixin(LitElement) {
                 )}:
               </h3>
               <a
-                href="/config/integrations/config_entry/${relatedConfigEntryId}"
+                href=${`/config/integrations#config_entry=${relatedConfigEntryId}`}
                 @click=${this._close}
               >
-                ${this.hass.localize(`component.${entry.domain}.config.title`)}:
+                ${this.hass.localize(`component.${entry.domain}.title`)}:
                 ${entry.title}
               </a>
             `;
@@ -104,7 +110,7 @@ export class HaRelatedItems extends SubscribeMixin(LitElement) {
               (dev) => dev.id === relatedDeviceId
             );
             if (!device) {
-              return;
+              return "";
             }
             return html`
               <h3>
@@ -125,7 +131,7 @@ export class HaRelatedItems extends SubscribeMixin(LitElement) {
               (ar) => ar.area_id === relatedAreaId
             );
             if (!area) {
-              return;
+              return "";
             }
             return html`
               <h3>
@@ -146,7 +152,7 @@ export class HaRelatedItems extends SubscribeMixin(LitElement) {
                   entityId
                 ];
                 if (!entity) {
-                  return;
+                  return "";
                 }
                 return html`
                   <li>
@@ -170,7 +176,7 @@ export class HaRelatedItems extends SubscribeMixin(LitElement) {
               ${this._related.group.map((groupId) => {
                 const group: HassEntity | undefined = this.hass.states[groupId];
                 if (!group) {
-                  return;
+                  return "";
                 }
                 return html`
                   <li>
@@ -196,7 +202,7 @@ export class HaRelatedItems extends SubscribeMixin(LitElement) {
                   sceneId
                 ];
                 if (!scene) {
-                  return;
+                  return "";
                 }
                 return html`
                   <li>
@@ -224,7 +230,7 @@ export class HaRelatedItems extends SubscribeMixin(LitElement) {
                   automationId
                 ];
                 if (!automation) {
-                  return;
+                  return "";
                 }
                 return html`
                   <li>
@@ -234,7 +240,7 @@ export class HaRelatedItems extends SubscribeMixin(LitElement) {
                       .entityId="${automationId}"
                     >
                       ${automation.attributes.friendly_name ||
-                        automation.entity_id}
+                      automation.entity_id}
                     </button>
                   </li>
                 `;
@@ -253,7 +259,7 @@ export class HaRelatedItems extends SubscribeMixin(LitElement) {
                   scriptId
                 ];
                 if (!script) {
-                  return;
+                  return "";
                 }
                 return html`
                   <li>

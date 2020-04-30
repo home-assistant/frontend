@@ -1,6 +1,6 @@
 import { html } from "@polymer/polymer/lib/utils/html-tag";
+/* eslint-plugin-disable lit */
 import { PolymerElement } from "@polymer/polymer/polymer-element";
-
 import { getEntity } from "../../../src/fake_data/entity";
 import { provideHass } from "../../../src/fake_data/provide_hass";
 import "../components/demo-cards";
@@ -10,6 +10,9 @@ const ENTITIES = [
     friendly_name: "Alarm",
   }),
   getEntity("alarm_control_panel", "alarm_armed", "armed_home", {
+    friendly_name: "Alarm",
+  }),
+  getEntity("alarm_control_panel", "unavailable", "unavailable", {
     friendly_name: "Alarm",
   }),
 ];
@@ -35,6 +38,15 @@ const CONFIGS = [
     config: `
 - type: alarm-panel
   entity: alarm_control_panel.alarm
+  states:
+    - arm_home
+    `,
+  },
+  {
+    heading: "Unavailable",
+    config: `
+- type: alarm-panel
+  entity: alarm_control_panel.unavailable
   states:
     - arm_home
     `,
@@ -72,6 +84,7 @@ class DemoAlarmPanelEntity extends PolymerElement {
   public ready() {
     super.ready();
     const hass = provideHass(this.$.demos);
+    hass.updateTranslations(null, "en");
     hass.addEntities(ENTITIES);
   }
 }

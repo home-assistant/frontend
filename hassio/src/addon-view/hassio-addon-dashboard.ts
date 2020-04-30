@@ -9,30 +9,26 @@ import {
   property,
   TemplateResult,
 } from "lit-element";
-import memoizeOne from "memoize-one";
-import { HomeAssistant, Route } from "../../../src/types";
 import {
-  HassioAddonDetails,
   fetchHassioAddonInfo,
+  HassioAddonDetails,
 } from "../../../src/data/hassio/addon";
-import { hassioStyle } from "../resources/hassio-style";
 import { haStyle } from "../../../src/resources/styles";
-import "../../../src/layouts/hass-tabs-subpage";
-
-// tslint:disable-next-line
-import { PageNavigation } from "../../../src/layouts/hass-tabs-subpage";
-
-import "./config/hassio-addon-audio";
-import "./config/hassio-addon-config";
-import "./info/hassio-addon-info";
-import "./log/hassio-addon-logs";
-import "./config/hassio-addon-network";
-import "./hassio-addon-router";
+import { HomeAssistant, Route } from "../../../src/types";
+import { hassioStyle } from "../resources/hassio-style";
+import "./hassio-addon-audio";
+import "./hassio-addon-config";
+import "./hassio-addon-info";
+import "./hassio-addon-logs";
+import "./hassio-addon-network";
+import "../../../src/layouts/hass-subpage";
 
 @customElement("hassio-addon-dashboard")
 class HassioAddonDashboard extends LitElement {
   @property() public hass!: HomeAssistant;
+
   @property() public route!: Route;
+
   @property() public addon?: HassioAddonDetails;
   @property({ type: Boolean, reflect: true }) public narrow!: boolean;
 
@@ -51,9 +47,7 @@ class HassioAddonDashboard extends LitElement {
 
   protected render(): TemplateResult {
     if (!this.addon) {
-      return html`
-        <paper-spinner-lite active></paper-spinner-lite>
-      `;
+      return html` <paper-spinner-lite active></paper-spinner-lite> `;
     }
 
     const addonTabs: PageNavigation[] = [

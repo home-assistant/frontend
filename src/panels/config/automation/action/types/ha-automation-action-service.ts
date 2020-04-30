@@ -1,37 +1,40 @@
 import "@polymer/paper-input/paper-input";
-import "../../../../../components/ha-service-picker";
-import "../../../../../components/entity/ha-entity-picker";
-import "../../../../../components/ha-yaml-editor";
-
 import {
+  customElement,
   LitElement,
   property,
-  customElement,
   PropertyValues,
   query,
 } from "lit-element";
-import { ActionElement, handleChangeEvent } from "../ha-automation-action-row";
-import { HomeAssistant } from "../../../../../types";
 import { html } from "lit-html";
 import memoizeOne from "memoize-one";
+import { fireEvent } from "../../../../../common/dom/fire_event";
 import { computeDomain } from "../../../../../common/entity/compute_domain";
 import { computeObjectId } from "../../../../../common/entity/compute_object_id";
-import { PolymerChangedEvent } from "../../../../../polymer-types";
-import { fireEvent } from "../../../../../common/dom/fire_event";
+import "../../../../../components/entity/ha-entity-picker";
+import "../../../../../components/ha-service-picker";
+import "../../../../../components/ha-yaml-editor";
+import type { HaYamlEditor } from "../../../../../components/ha-yaml-editor";
 import { ServiceAction } from "../../../../../data/script";
-// tslint:disable-next-line
-import { HaYamlEditor } from "../../../../../components/ha-yaml-editor";
+import type { PolymerChangedEvent } from "../../../../../polymer-types";
+import type { HomeAssistant } from "../../../../../types";
+import { ActionElement, handleChangeEvent } from "../ha-automation-action-row";
 
 @customElement("ha-automation-action-service")
 export class HaServiceAction extends LitElement implements ActionElement {
   @property() public hass!: HomeAssistant;
+
   @property() public action!: ServiceAction;
+
   @query("ha-yaml-editor") private _yamlEditor?: HaYamlEditor;
+
   private _actionData?: ServiceAction["data"];
 
   public static get defaultConfig() {
     return { service: "", data: {} };
   }
+
+  private _domain = memoizeOne((service: string) => [computeDomain(service)]);
 
   private _getServiceData = memoizeOne((service: string) => {
     if (!service) {
@@ -84,7 +87,7 @@ export class HaServiceAction extends LitElement implements ActionElement {
               .value=${entity_id}
               .label=${entity.description}
               @value-changed=${this._entityPicked}
-              .includeDomains=${[computeDomain(service)]}
+              .includeDomains=${this._domain(service)}
               allow-custom-entity
             ></ha-entity-picker>
           `

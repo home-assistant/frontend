@@ -1,31 +1,36 @@
+import "@polymer/paper-icon-button/paper-icon-button";
+import "@polymer/paper-input/paper-input";
+import type { PaperInputElement } from "@polymer/paper-input/paper-input";
 import {
   customElement,
-  LitElement,
   html,
+  LitElement,
   property,
-  TemplateResult,
   query,
+  TemplateResult,
 } from "lit-element";
-
-import { HaFormElement, HaFormStringData, HaFormStringSchema } from "./ha-form";
 import { fireEvent } from "../../common/dom/fire_event";
-
-import "@polymer/paper-input/paper-input";
-import "@polymer/paper-icon-button/paper-icon-button";
-// Not duplicate, is for typing
-// tslint:disable-next-line
-import { PaperInputElement } from "@polymer/paper-input/paper-input";
+import type {
+  HaFormElement,
+  HaFormStringData,
+  HaFormStringSchema,
+} from "./ha-form";
 
 @customElement("ha-form-string")
 export class HaFormString extends LitElement implements HaFormElement {
   @property() public schema!: HaFormStringSchema;
+
   @property() public data!: HaFormStringData;
+
   @property() public label!: string;
+
   @property() public suffix!: string;
+
   @property() private _unmaskedPassword = false;
+
   @query("paper-input") private _input?: HTMLElement;
 
-  public focus() {
+  public focus(): void {
     if (this._input) {
       this._input.focus();
     }
@@ -67,11 +72,11 @@ export class HaFormString extends LitElement implements HaFormElement {
         `;
   }
 
-  private _toggleUnmaskedPassword(ev: Event) {
+  private _toggleUnmaskedPassword(ev: Event): void {
     this._unmaskedPassword = (ev.target as any).active;
   }
 
-  private _valueChanged(ev: Event) {
+  private _valueChanged(ev: Event): void {
     const value = (ev.target as PaperInputElement).value;
     if (this.data === value) {
       return;
@@ -81,7 +86,7 @@ export class HaFormString extends LitElement implements HaFormElement {
     });
   }
 
-  private get _stringType() {
+  private get _stringType(): string {
     if (this.schema.format) {
       if (["email", "url"].includes(this.schema.format)) {
         return this.schema.format;

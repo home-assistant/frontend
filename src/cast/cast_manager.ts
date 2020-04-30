@@ -1,17 +1,13 @@
+/* eslint-disable no-undef, no-console */
+import { Auth } from "home-assistant-js-websocket";
 import { castApiAvailable } from "./cast_framework";
-import { CAST_APP_ID, CAST_NS, CAST_DEV } from "./const";
+import { CAST_APP_ID, CAST_DEV, CAST_NS } from "./const";
 import { CAST_DEV_HASS_URL } from "./dev_const";
 import {
   castSendAuth,
   HassMessage as ReceiverMessage,
 } from "./receiver_messages";
-import {
-  SessionStateEventData,
-  CastStateEventData,
-  // tslint:disable-next-line: no-implicit-dependencies
-} from "chromecast-caf-receiver/cast.framework";
-import { SenderMessage, ReceiverStatusMessage } from "./sender_messages";
-import { Auth } from "home-assistant-js-websocket";
+import { ReceiverStatusMessage, SenderMessage } from "./sender_messages";
 
 let managerProm: Promise<CastManager> | undefined;
 
@@ -29,14 +25,14 @@ a user presses the cast button we send auth if not connected yet, then send
 command as usual.
 */
 
-/* tslint:disable:no-console */
-
 type CastEvent = "connection-changed" | "state-changed";
 
 export class CastManager {
   public auth?: Auth;
+
   // If the cast connection is connected to our Hass.
   public status?: ReceiverStatusMessage;
+
   private _eventListeners: { [event: string]: CastEventListener[] } = {};
 
   constructor(auth?: Auth) {
@@ -48,10 +44,12 @@ export class CastManager {
       autoJoinPolicy: chrome.cast.AutoJoinPolicy.ORIGIN_SCOPED,
     });
     context.addEventListener(
+      // @ts-ignore
       cast.framework.CastContextEventType.SESSION_STATE_CHANGED,
       (ev) => this._sessionStateChanged(ev)
     );
     context.addEventListener(
+      // @ts-ignore
       cast.framework.CastContextEventType.CAST_STATE_CHANGED,
       (ev) => this._castStateChanged(ev)
     );
@@ -92,6 +90,7 @@ export class CastManager {
   }
 
   public get castContext() {
+    // @ts-ignore
     return cast.framework.CastContext.getInstance();
   }
 
@@ -119,7 +118,7 @@ export class CastManager {
     }
   }
 
-  private _sessionStateChanged(ev: SessionStateEventData) {
+  private _sessionStateChanged(ev) {
     if (__DEV__) {
       console.log("Cast session state changed", ev.sessionState);
     }
@@ -142,7 +141,7 @@ export class CastManager {
     }
   }
 
-  private _castStateChanged(ev: CastStateEventData) {
+  private _castStateChanged(ev) {
     if (__DEV__) {
       console.log("Cast state changed", ev.castState);
     }

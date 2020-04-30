@@ -1,50 +1,47 @@
+import "@polymer/paper-item/paper-icon-item";
+import "@polymer/paper-item/paper-item";
+import "@polymer/paper-item/paper-item-body";
 import {
-  LitElement,
-  TemplateResult,
-  html,
-  property,
-  customElement,
   css,
   CSSResult,
-  queryAll,
+  customElement,
+  html,
+  LitElement,
+  property,
   PropertyValues,
+  queryAll,
+  TemplateResult,
 } from "lit-element";
-
-import { HomeAssistant } from "../../../../types";
-
-import "../../../../components/entity/state-badge";
-
-import "@polymer/paper-item/paper-item";
-import "@polymer/paper-item/paper-icon-item";
-import "@polymer/paper-item/paper-item-body";
-
-import "../../../../components/ha-card";
-import "../../../../components/ha-icon";
-import { showEntityEditorDialog } from "../../entities/show-dialog-entity-editor";
 import { computeDomain } from "../../../../common/entity/compute_domain";
 import { domainIcon } from "../../../../common/entity/domain_icon";
-import { EntityRegistryStateEntry } from "../ha-config-device-page";
-import { addEntitiesToLovelaceView } from "../../../lovelace/editor/add-entities-to-view";
+import "../../../../components/entity/state-badge";
+import "../../../../components/ha-card";
+import "../../../../components/ha-icon";
+import { HomeAssistant } from "../../../../types";
 import { createRowElement } from "../../../lovelace/create-element/create-row-element";
+import { addEntitiesToLovelaceView } from "../../../lovelace/editor/add-entities-to-view";
 import { LovelaceRow } from "../../../lovelace/entity-rows/types";
+import { showEntityEditorDialog } from "../../entities/show-dialog-entity-editor";
+import { EntityRegistryStateEntry } from "../ha-config-device-page";
 
 @customElement("ha-device-entities-card")
 export class HaDeviceEntitiesCard extends LitElement {
   @property() public hass!: HomeAssistant;
-  @property() public deviceId!: string;
+
   @property() public entities!: EntityRegistryStateEntry[];
-  @property() public narrow!: boolean;
+
   @property() private _showDisabled = false;
+
   @queryAll("#entities > *") private _entityRows?: LovelaceRow[];
 
-  protected updated(changedProps: PropertyValues): void {
-    super.updated(changedProps);
-    if (!changedProps.has("hass")) {
-      return;
+  protected shouldUpdate(changedProps: PropertyValues) {
+    if (changedProps.has("hass")) {
+      this._entityRows?.forEach((element) => {
+        element.hass = this.hass;
+      });
+      return changedProps.size > 1;
     }
-    this._entityRows?.forEach((element) => {
-      element.hass = this.hass;
-    });
+    return true;
   }
 
   protected render(): TemplateResult {
@@ -126,9 +123,7 @@ export class HaDeviceEntitiesCard extends LitElement {
     element.entry = entry;
     element.addEventListener("hass-more-info", (ev) => this._openEditEntry(ev));
 
-    return html`
-      <div>${element}</div>
-    `;
+    return html` <div>${element}</div> `;
   }
 
   private _renderEntry(entry: EntityRegistryStateEntry): TemplateResult {

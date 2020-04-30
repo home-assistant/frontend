@@ -28,7 +28,7 @@ const runDevServer = ({
     open: true,
     watchContentBase: true,
     contentBase,
-  }).listen(port, listenHost, function(err) {
+  }).listen(port, listenHost, function (err) {
     if (err) {
       throw err;
     }
@@ -150,9 +150,8 @@ gulp.task(
 
 gulp.task("webpack-dev-server-gallery", () => {
   runDevServer({
-    compiler: webpack(
-      createGalleryConfig({ latestBuild: true, isProdBuild: false })
-    ),
+    // We don't use the es5 build, but the dev server will fuck up the publicPath if we don't
+    compiler: webpack(bothBuilds(createGalleryConfig, { isProdBuild: false })),
     contentBase: paths.gallery_root,
     port: 8100,
   });

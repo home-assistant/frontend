@@ -1,12 +1,12 @@
-import { loadCodeMirror } from "../resources/codemirror.ondemand";
-import { fireEvent } from "../common/dom/fire_event";
-import {
-  UpdatingElement,
-  property,
-  customElement,
-  PropertyValues,
-} from "lit-element";
 import { Editor } from "codemirror";
+import {
+  customElement,
+  property,
+  PropertyValues,
+  UpdatingElement,
+} from "lit-element";
+import { fireEvent } from "../common/dom/fire_event";
+import { loadCodeMirror } from "../resources/codemirror.ondemand";
 
 declare global {
   interface HASSDomEvents {
@@ -17,10 +17,17 @@ declare global {
 @customElement("ha-code-editor")
 export class HaCodeEditor extends UpdatingElement {
   public codemirror?: Editor;
+
   @property() public mode?: string;
-  @property() public autofocus = false;
+
+  @property({ type: Boolean }) public autofocus = false;
+
+  @property({ type: Boolean }) public readOnly = false;
+
   @property() public rtl = false;
+
   @property() public error = false;
+
   @property() private _value = "";
 
   public set value(value: string) {
@@ -32,7 +39,7 @@ export class HaCodeEditor extends UpdatingElement {
   }
 
   public get hasComments(): boolean {
-    return this.shadowRoot!.querySelector("span.cm-comment") ? true : false;
+    return !!this.shadowRoot!.querySelector("span.cm-comment");
   }
 
   public connectedCallback() {
@@ -123,6 +130,7 @@ export class HaCodeEditor extends UpdatingElement {
       mode: this.mode,
       autofocus: this.autofocus !== false,
       viewportMargin: Infinity,
+      readOnly: this.readOnly,
       extraKeys: {
         Tab: "indentMore",
         "Shift-Tab": "indentLess",

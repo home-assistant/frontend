@@ -1,32 +1,31 @@
+import deepFreeze from "deep-freeze";
 import {
   css,
-  html,
-  LitElement,
-  TemplateResult,
   CSSResultArray,
   customElement,
+  html,
+  LitElement,
   property,
   query,
+  TemplateResult,
 } from "lit-element";
-
-import "./hui-card-preview";
-import "../../../../components/dialog/ha-paper-dialog";
-
-import deepFreeze from "deep-freeze";
-
-// tslint:disable-next-line: no-duplicate-imports
-import { HaPaperDialog } from "../../../../components/dialog/ha-paper-dialog";
-import { HomeAssistant } from "../../../../types";
-import { LovelaceCardConfig } from "../../../../data/lovelace";
-import { haStyleDialog } from "../../../../resources/styles";
-import { DeleteCardDialogParams } from "./show-delete-card-dialog";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import "../../../../components/dialog/ha-paper-dialog";
+import type { HaPaperDialog } from "../../../../components/dialog/ha-paper-dialog";
+import type { LovelaceCardConfig } from "../../../../data/lovelace";
+import { haStyleDialog } from "../../../../resources/styles";
+import type { HomeAssistant } from "../../../../types";
+import "./hui-card-preview";
+import type { DeleteCardDialogParams } from "./show-delete-card-dialog";
 
 @customElement("hui-dialog-delete-card")
 export class HuiDialogDeleteCard extends LitElement {
   @property() protected hass!: HomeAssistant;
+
   @property() private _params?: DeleteCardDialogParams;
+
   @property() private _cardConfig?: LovelaceCardConfig;
+
   @query("ha-paper-dialog") private _dialog!: HaPaperDialog;
 
   public async showDialog(params: DeleteCardDialogParams): Promise<void> {
@@ -45,7 +44,7 @@ export class HuiDialogDeleteCard extends LitElement {
     }
 
     return html`
-      <ha-paper-dialog with-backdrop opened>
+      <ha-paper-dialog with-backdrop opened modal>
         <h2>
           ${this.hass.localize("ui.panel.lovelace.cards.confirm_delete")}
         </h2>

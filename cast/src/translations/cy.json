@@ -1,0 +1,243 @@
+{
+  "state": {
+    "alarm_control_panel": {
+      "armed": "Arfogi",
+      "armed_away": "Arfog i ffwrdd",
+      "armed_custom_bypass": "Ffordd osgoi larwm personol",
+      "armed_home": "Arfogi gartref",
+      "armed_night": "Arfog nos",
+      "arming": "Arfogi",
+      "disarmed": "Diarfogi",
+      "disarming": "Ddiarfogi",
+      "pending": "Yn yr arfaeth",
+      "triggered": "Sbarduno"
+    },
+    "automation": {
+      "off": "I ffwrdd",
+      "on": "Ar"
+    },
+    "binary_sensor": {
+      "battery": {
+        "off": "Arferol",
+        "on": "Isel"
+      },
+      "cold": {
+        "off": "Arferol",
+        "on": "Oer"
+      },
+      "connectivity": {
+        "off": "Wedi datgysylltu",
+        "on": "Cysylltiedig"
+      },
+      "default": {
+        "off": "i ffwrdd",
+        "on": "Ar"
+      },
+      "door": {
+        "off": "Cau",
+        "on": "Agor"
+      },
+      "garage_door": {
+        "off": "Cau",
+        "on": "Agor"
+      },
+      "gas": {
+        "off": "Clir",
+        "on": "Wedi'i ganfod"
+      },
+      "heat": {
+        "off": "Arferol",
+        "on": "Poeth"
+      },
+      "lock": {
+        "off": "Cloi",
+        "on": "Dad-gloi"
+      },
+      "moisture": {
+        "off": "Sych",
+        "on": "Gwlyb"
+      },
+      "motion": {
+        "off": "Clir",
+        "on": "Wedi'i ganfod"
+      },
+      "occupancy": {
+        "off": "Clir",
+        "on": "Wedi'i ganfod"
+      },
+      "opening": {
+        "off": "Cau",
+        "on": "Agor"
+      },
+      "presence": {
+        "off": "Allan",
+        "on": "Gartref"
+      },
+      "problem": {
+        "off": "iawn",
+        "on": "Problem"
+      },
+      "safety": {
+        "off": "Diogel",
+        "on": "Anniogel"
+      },
+      "smoke": {
+        "off": "Clir",
+        "on": "Wedi'i ganfod"
+      },
+      "sound": {
+        "off": "Clir",
+        "on": "Wedi'i ganfod"
+      },
+      "vibration": {
+        "off": "Clir",
+        "on": "Wedi'i ganfod"
+      },
+      "window": {
+        "off": "Cau",
+        "on": "Agored"
+      }
+    },
+    "calendar": {
+      "off": "i ffwrdd",
+      "on": "Ar"
+    },
+    "camera": {
+      "idle": "Segur",
+      "recording": "Recordio",
+      "streaming": "Ffrydio"
+    },
+    "climate": {
+      "auto": "Awto",
+      "cool": "Sefydlog",
+      "dry": "Sych",
+      "fan_only": "Fan yn unig",
+      "heat": "Gwres",
+      "off": "i ffwrdd"
+    },
+    "configurator": {
+      "configure": "Ffurfweddu",
+      "configured": "Wedi'i ffurfweddu"
+    },
+    "cover": {
+      "closed": "Ar gau",
+      "closing": "Cau",
+      "open": "Agor",
+      "opening": "Yn agor",
+      "stopped": "Stopio"
+    },
+    "default": {
+      "off": "I ffwrdd",
+      "on": "Ar",
+      "unavailable": "Ddim ar gael",
+      "unknown": "Anhysbys"
+    },
+    "device_tracker": {
+      "home": "Gartref",
+      "not_home": "Diim gartref"
+    },
+    "fan": {
+      "off": "i ffwrdd",
+      "on": "Ar"
+    },
+    "group": {
+      "closed": "Wedi cau",
+      "closing": "Yn cau",
+      "home": "Gartref",
+      "locked": " Cloi",
+      "not_home": "Dim gartref",
+      "off": "i ffwrdd",
+      "ok": "Iawn",
+      "on": "Ar",
+      "open": "Agored",
+      "opening": "Agor",
+      "problem": "Problem",
+      "stopped": "Stopio",
+      "unlocked": "Dadgloi"
+    },
+    "input_boolean": {
+      "off": "i ffwrdd",
+      "on": "Ar"
+    },
+    "light": {
+      "off": "i ffwrdd",
+      "on": "Ar"
+    },
+    "lock": {
+      "locked": "Wedi cloi",
+      "unlocked": "Datgloi"
+    },
+    "media_player": {
+      "idle": "Segur",
+      "off": "i ffwrdd",
+      "on": "Ar",
+      "paused": "Wedi rhewi",
+      "playing": "Chwarae",
+      "standby": "Gorffwys"
+    },
+    "person": {
+      "home": "Gartref",
+      "not_home": "I ffwrdd"
+    },
+    "plant": {
+      "ok": "Iawn",
+      "problem": "Problem"
+    },
+    "remote": {
+      "off": "i ffwrdd",
+      "on": "Ar"
+    },
+    "scene": {
+      "scening": "Sefyllfa"
+    },
+    "script": {
+      "off": "i ffwrdd",
+      "on": "Ar"
+    },
+    "sensor": {
+      "off": "i ffwrdd",
+      "on": "Ar"
+    },
+    "sun": {
+      "above_horizon": "Dros y gorwel",
+      "below_horizon": "Islaw'r gorwel"
+    },
+    "switch": {
+      "off": "i ffwrdd",
+      "on": "Ar"
+    },
+    "timer": {
+      "active": "gweithredol",
+      "idle": "segur",
+      "paused": "wedi rhewi"
+    },
+    "weather": {
+      "clear-night": "Clir, nos",
+      "cloudy": "Cymylog",
+      "fog": "Niwl",
+      "hail": "Cenllysg",
+      "lightning": "Mellt",
+      "lightning-rainy": "Mellt, glawog",
+      "partlycloudy": "Cymharol gymylog",
+      "pouring": "Arllwys",
+      "rainy": "Glawog",
+      "snowy": "Eira",
+      "snowy-rainy": "Eira, gwlyb",
+      "sunny": "Heulog",
+      "windy": "Gwyntog",
+      "windy-variant": "Gwyntog"
+    },
+    "zwave": {
+      "default": {
+        "dead": "Marw",
+        "initializing": "Ymgychwyn",
+        "ready": "Barod",
+        "sleeping": "Cysgu"
+      },
+      "query_stage": {
+        "dead": "Marw ({query_stage})",
+        "initializing": "Ymgychwyn ( {query_stage} )"
+      }
+    }
+  }
+}

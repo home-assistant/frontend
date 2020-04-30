@@ -12,31 +12,29 @@ import {
   TemplateResult,
 } from "lit-element";
 import { classMap } from "lit-html/directives/class-map";
-
-import "../../../../src/components/buttons/ha-call-api-button";
-import "../../../../src/components/buttons/ha-progress-button";
-import "../../../../src/components/ha-label-badge";
-import "../../../../src/components/ha-markdown";
-import "../../../../src/components/ha-switch";
-import "../../components/hassio-card-content";
-
-import { fireEvent } from "../../../../src/common/dom/fire_event";
+import { atLeastVersion } from "../../../src/common/config/version";
+import { fireEvent } from "../../../src/common/dom/fire_event";
+import { navigate } from "../../../src/common/navigate";
+import "../../../src/components/buttons/ha-call-api-button";
+import "../../../src/components/buttons/ha-progress-button";
+import "../../../src/components/ha-label-badge";
+import "../../../src/components/ha-markdown";
+import "../../../src/components/ha-switch";
 import {
+  fetchHassioAddonChangelog,
   HassioAddonDetails,
   HassioAddonSetOptionParams,
   HassioAddonSetSecurityParams,
+  installHassioAddon,
   setHassioAddonOption,
   setHassioAddonSecurity,
   uninstallHassioAddon,
-  installHassioAddon,
-  fetchHassioAddonChangelog,
-} from "../../../../src/data/hassio/addon";
-import { hassioStyle } from "../../resources/hassio-style";
-import { haStyle } from "../../../../src/resources/styles";
-import { HomeAssistant } from "../../../../src/types";
-import { navigate } from "../../../../src/common/navigate";
-import { showHassioMarkdownDialog } from "../../dialogs/markdown/show-dialog-hassio-markdown";
-import { atLeastVersion } from "../../../../src/common/config/version";
+} from "../../../src/data/hassio/addon";
+import { haStyle } from "../../../src/resources/styles";
+import { HomeAssistant } from "../../../src/types";
+import "../components/hassio-card-content";
+import { showHassioMarkdownDialog } from "../dialogs/markdown/show-dialog-hassio-markdown";
+import { hassioStyle } from "../resources/hassio-style";
 
 const PERMIS_DESC = {
   rating: {
@@ -95,8 +93,11 @@ const PERMIS_DESC = {
 class HassioAddonInfo extends LitElement {
   @property({ type: Boolean, reflect: true }) public narrow!: boolean;
   @property() public hass!: HomeAssistant;
+
   @property() public addon!: HassioAddonDetails;
+
   @property() private _error?: string;
+
   @property({ type: Boolean }) private _installing = false;
 
   protected render(): TemplateResult {
@@ -179,9 +180,7 @@ class HassioAddonInfo extends LitElement {
                           ></iron-icon>
                         `}
                   `
-                : html`
-                    ${this.addon.version_latest}
-                  `}
+                : html` ${this.addon.version_latest} `}
             </div>
           </div>
           <div class="description light-color">
@@ -380,11 +379,7 @@ class HassioAddonInfo extends LitElement {
                   : ""}
               `
             : ""}
-          ${this._error
-            ? html`
-                <div class="errors">${this._error}</div>
-              `
-            : ""}
+          ${this._error ? html` <div class="errors">${this._error}</div> ` : ""}
         </div>
         <div class="card-actions">
           ${this.addon.version
@@ -722,8 +717,9 @@ class HassioAddonInfo extends LitElement {
       };
       fireEvent(this, "hass-api-called", eventdata);
     } catch (err) {
-      this._error = `Failed to set addon security option, ${err.body?.message ||
-        err}`;
+      this._error = `Failed to set addon security option, ${
+        err.body?.message || err
+      }`;
     }
   }
 
@@ -757,8 +753,9 @@ class HassioAddonInfo extends LitElement {
         content,
       });
     } catch (err) {
-      this._error = `Failed to get addon changelog, ${err.body?.message ||
-        err}`;
+      this._error = `Failed to get addon changelog, ${
+        err.body?.message || err
+      }`;
     }
   }
 
