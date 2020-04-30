@@ -370,7 +370,7 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
                       <h2>
                         ${flow.localized_title}
                       </h2>
-                      <div class="buttons">
+                      <div>
                         <mwc-button
                           unelevated
                           @click=${this._continueFlow}
@@ -622,9 +622,6 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
           color: var(--text-primary-color);
           padding: 8px;
           text-align: center;
-        }
-        .buttons {
-          display: block;
         }
         .card-content {
           display: flex;
