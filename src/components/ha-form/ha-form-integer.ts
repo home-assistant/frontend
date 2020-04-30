@@ -77,7 +77,12 @@ export class HaFormInteger extends LitElement implements HaFormElement {
   }
 
   private get _value() {
-    return this.data || this.schema.default || 0;
+    return (
+      this.data ||
+      this.schema.description?.suggested_value ||
+      this.schema.default ||
+      0
+    );
   }
 
   private _handleCheckboxChange(ev: Event) {
