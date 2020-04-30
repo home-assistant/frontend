@@ -22,7 +22,6 @@ import {
   deleteScript,
   getScriptEditorInitData,
   ScriptConfig,
-  ScriptEntity,
 } from "../../../data/script";
 import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
 import "../../../layouts/ha-app-layout";
@@ -36,15 +35,13 @@ import { configSections } from "../ha-panel-config";
 export class HaScriptEditor extends LitElement {
   @property() public hass!: HomeAssistant;
 
-  @property() public script!: ScriptEntity;
+  @property() public scriptEntityId!: string;
+
+  @property() public route!: Route;
 
   @property() public isWide?: boolean;
 
   @property() public narrow!: boolean;
-
-  @property() public route!: Route;
-
-  @property() public creatingNew?: boolean;
 
   @property() private _config?: ScriptConfig;
 
@@ -61,7 +58,7 @@ export class HaScriptEditor extends LitElement {
         .backCallback=${() => this._backTapped()}
         .tabs=${configSections.automation}
       >
-        ${this.creatingNew
+        ${!this.scriptEntityId
           ? ""
           : html`
               <paper-icon-button
@@ -161,18 +158,18 @@ export class HaScriptEditor extends LitElement {
   protected updated(changedProps: PropertyValues): void {
     super.updated(changedProps);
 
-    const oldScript = changedProps.get("script") as ScriptEntity;
+    const oldScript = changedProps.get("scriptEntityId");
     if (
-      changedProps.has("script") &&
-      this.script &&
+      changedProps.has("scriptEntityId") &&
+      this.scriptEntityId &&
       this.hass &&
       // Only refresh config if we picked a new script. If same ID, don't fetch it.
-      (!oldScript || oldScript.entity_id !== this.script.entity_id)
+      (!oldScript || oldScript !== this.scriptEntityId)
     ) {
       this.hass
         .callApi<ScriptConfig>(
           "GET",
-          `config/script/config/${computeObjectId(this.script.entity_id)}`
+          `config/script/config/${computeObjectId(this.scriptEntityId)}`
         )
         .then(
           (config) => {
@@ -202,7 +199,11 @@ export class HaScriptEditor extends LitElement {
         );
     }
 
-    if (changedProps.has("creatingNew") && this.creatingNew && this.hass) {
+    if (
+      changedProps.has("scriptEntityId") &&
+      !this.scriptEntityId &&
+      this.hass
+    ) {
       const initData = getScriptEditorInitData();
       this._dirty = !!initData;
       this._config = {
@@ -259,19 +260,19 @@ export class HaScriptEditor extends LitElement {
   }
 
   private async _delete() {
-    await deleteScript(this.hass, computeObjectId(this.script.entity_id));
+    await deleteScript(this.hass, computeObjectId(this.scriptEntityId));
     history.back();
   }
 
   private _saveScript(): void {
-    const id = this.creatingNew
-      ? "" + Date.now()
-      : computeObjectId(this.script.entity_id);
+    const id = this.scriptEntityId
+      ? computeObjectId(this.scriptEntityId)
+      : Date.now();
     this.hass!.callApi("POST", "config/script/config/" + id, this._config).then(
       () => {
         this._dirty = false;
 
-        if (this.creatingNew) {
+        if (!this.scriptEntityId) {
           navigate(this, `/config/script/edit/${id}`, true);
         }
       },
