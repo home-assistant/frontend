@@ -102,7 +102,6 @@ class HassioAddonInfo extends LitElement {
   @property({ type: Boolean }) private _installing = false;
 
   protected render(): TemplateResult {
-    console.log("addon-info");
     return html`
       ${this._computeUpdateAvailable
         ? html`
