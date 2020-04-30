@@ -586,7 +586,6 @@ export class HaSceneEditor extends SubscribeMixin(LitElement) {
       event.context.id !== this._activateContextId &&
       this._entities.includes(event.data.entity_id)
     ) {
-      console.log(event);
       this._dirty = true;
     }
   }
