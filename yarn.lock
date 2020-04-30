@@ -2318,7 +2318,7 @@
   resolved "https://registry.yarnpkg.com/@sinonjs/text-encoding/-/text-encoding-0.7.1.tgz#8da5c6530915653f3a1f38fd5f101d8c3f8079c5"
   integrity sha512-+iTbntw2IZPb/anVDbypzfQa+ay64MW0Zo8aJ8gZPWMMK6/OubMVb6lUPMagqjOPnmtauXnFCACVl3O7ogjeqQ==
 
-"@thomasloven/round-slider@^0.4.1":
+"@thomasloven/round-slider@0.4.1":
   version "0.4.1"
   resolved "https://registry.yarnpkg.com/@thomasloven/round-slider/-/round-slider-0.4.1.tgz#42ddd28abb25c378dce35c4c0ccdd72ea63b3b25"
   integrity sha512-Z6jrXG5vowKQkOwdsyGDLi8ZT9lUfcYjFsaQe8djhDE8+x41GYp5lkJ4uCwT787A8WcODbtQfYtuxPOlZcizTw==

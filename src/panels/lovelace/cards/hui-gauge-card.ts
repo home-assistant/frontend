@@ -66,9 +66,7 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
   }
 
   @property() public hass?: HomeAssistant;
-  @property() private _baseUnit = "50px";
   @property() private _config?: GaugeCardConfig;
-  private _updated?: boolean;
 
   public getCardSize(): number {
     return 2;
@@ -82,11 +80,6 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
       throw new Error("Invalid Entity");
     }
     this._config = { min: 0, max: 100, ...config };
-  }
-
-  public connectedCallback(): void {
-    super.connectedCallback();
-    this._setBaseUnit();
   }
 
   protected render(): TemplateResult {
@@ -129,14 +122,21 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
         @click=${this._handleClick}
         tabindex="0"
         style=${styleMap({
-          "--base-unit": this._baseUnit,
           "--round-slider-bar-color": sliderBarColor,
+          "--font-size":
+            this.clientWidth > 200
+              ? "14px"
+              : this.clientWidth > 125
+              ? "12px"
+              : "10px",
+          "--round-slider-path-width":
+            this.clientWidth < 200 ? this.clientWidth / 7 + "px" : "35px",
         })}
       >
         <round-slider
-          .readonly=${true}
-          .arcLength=${180}
-          .startAngle=${180}
+          readonly
+          arcLength="180"
+          startAngle="180"
           .value=${state}
           .min=${this._config.min}
           .max=${this._config.max}
@@ -158,11 +158,6 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
 
   protected shouldUpdate(changedProps: PropertyValues): boolean {
     return hasConfigOrEntityChanged(this, changedProps);
-  }
-
-  protected firstUpdated(): void {
-    this._updated = true;
-    this._setBaseUnit();
   }
 
   protected updated(changedProps: PropertyValues): void {
@@ -218,20 +213,6 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
     return severityMap.normal;
   }
 
-  private _setBaseUnit(): void {
-    if (!this.isConnected || !this._updated) {
-      return;
-    }
-    const baseUnit = this._computeBaseUnit();
-    if (baseUnit !== "0px") {
-      this._baseUnit = baseUnit;
-    }
-  }
-
-  private _computeBaseUnit(): string {
-    return this.clientWidth < 200 ? this.clientWidth / 5 + "px" : "50px";
-  }
-
   private _handleClick(): void {
     fireEvent(this, "hass-more-info", { entityId: this._config!.entity });
   }
@@ -248,11 +229,14 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
         flex-direction: column;
         box-sizing: border-box;
 
-        --value-font-size: calc(var(--base-unit) * 0.55);
-        --name-font-size: calc(var(--base-unit) * 0.3);
-        --name-padding-top: calc(var(--base-unit) * 0.15);
-        --slider-width: calc(var(--base-unit) * 4);
-        --gauge-data-top: calc(var(--base-unit) * -0.5);
+        --value-font-size: calc(var(--font-size) * 2);
+        --name-font-size: var(--font-size);
+        --name-padding-top: 5%;
+        --slider-width: 50%;
+        --gauge-data-top: calc((var(--font-size) * -2));
+        --gauge-data-bottom: var(--font-size);
+        --round-slider-path-color: var(--disabled-text-color);
+        --round-slider-linecap: "butt";
       }
 
       ha-card:focus {
@@ -261,10 +245,7 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
       }
 
       round-slider {
-        --round-slider-path-width: calc(var(--base-unit) * 0.7);
-        --round-slider-path-color: var(--disabled-text-color);
-        --round-slider-linecap: "butt";
-        width: var(--slider-width);
+        max-width: 200px;
       }
 
       .gauge-data {
@@ -272,7 +253,8 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
         text-align: center;
         position: relative;
         color: var(--primary-text-color);
-        top: var(--gauge-data-top);
+        margin-top: var(--gauge-data-top);
+        margin-bottom: var(--gauge-data-bottom);
       }
 
       .gauge-data .percent {
