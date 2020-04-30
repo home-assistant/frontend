@@ -26,6 +26,7 @@ import type { PageNavigation } from "../../../src/layouts/hass-tabs-subpage";
 import "../../../src/layouts/hass-tabs-subpage";
 
 import "./hassio-addon-router";
+
 @customElement("hassio-addon-dashboard")
 class HassioAddonDashboard extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
