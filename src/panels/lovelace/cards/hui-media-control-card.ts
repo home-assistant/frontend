@@ -15,12 +15,10 @@ import {
 } from "lit-element";
 import { classMap } from "lit-html/directives/class-map";
 import { styleMap } from "lit-html/directives/style-map";
-import { Swatch } from "node-vibrant/lib/color
+import { Swatch } from "node-vibrant/lib/color";
 import Vibrant from "node-vibrant";
 
-import { debounce } from "../../../common/util/debounce";
 import { computeRTLDirection } from "../../../common/util/compute_rtl";
-import { fireEvent } from "../../../common/dom/fire_event";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { computeStateName } from "../../../common/entity/compute_state_name";
@@ -209,9 +207,10 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
   @property() private _veryNarrow = false;
 
   @property() private _cardHeight = 0;
-  @query("paper-progress") private _progressBar?: PaperProgressElement;
 
   @property() private _marqueeActive = false;
+
+  @query("paper-progress") private _progressBar?: PaperProgressElement;
 
   private _progressInterval?: number;
 
@@ -324,11 +323,7 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
             <div class="color-block"></div>
             <div class="no-img"></div>
             <div class="image"></div>
-            ${hasNoImage
-              ? ""
-              : html`
-                  <div class="color-gradient"></div>
-                `}
+            ${hasNoImage ? "" : html` <div class="color-gradient"></div> `}
           </div>
           <div
             class="player ${classMap({
@@ -344,7 +339,7 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
                 <ha-icon .icon=${stateIcon(stateObj)}></ha-icon>
                 <div>
                   ${this._config!.name ||
-                    computeStateName(this.hass!.states[this._config!.entity])}
+                  computeStateName(this.hass!.states[this._config!.entity])}
                 </div>
               </div>
               <paper-icon-button
@@ -420,7 +415,7 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
                                     ignore-bar-touch
                                     .dir=${computeRTLDirection(this.hass!)}
                                     .value=${stateObj.attributes.volume_level! *
-                                      100}
+                                    100}
                                     @change=${this._selectedValueChanged}
                                   ></ha-slider>
                                 `
