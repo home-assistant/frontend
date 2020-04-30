@@ -629,6 +629,7 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
         .card-content {
           display: flex;
           height: 100%;
+          margin-top: 0;
           padding: 16px;
           text-align: center;
           flex-direction: column;
