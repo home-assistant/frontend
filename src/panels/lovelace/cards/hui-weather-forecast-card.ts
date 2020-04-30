@@ -409,7 +409,7 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
 
       .forecast {
         display: flex;
-        justify-content: space-between;
+        justify-content: space-around;
         padding-top: 16px;
       }
 
