@@ -472,10 +472,6 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
         --iron-icon-height: 52px;
       }
 
-      :host([narrow]) .forecast {
-        justify-content: space-around;
-      }
-
       :host([narrow]) .name,
       :host([narrow]) .temp-attribute .temp {
         font-size: 22px;
