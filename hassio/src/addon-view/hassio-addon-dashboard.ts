@@ -63,6 +63,14 @@ class HassioAddonDashboard extends LitElement {
       },
     ];
 
+    if (this.addon.documentation) {
+      addonTabs.push({
+        name: "Documentation",
+        path: `/hassio/addon/${this.addon.slug}/documentation`,
+        icon: "mdi:text-box",
+      });
+    }
+
     if (this.addon.version) {
       addonTabs.push(
         {
