@@ -10,6 +10,7 @@ export const DISCOVERY_SOURCES = ["unignore", "homekit", "ssdp", "zeroconf"];
 export const createConfigFlow = (hass: HomeAssistant, handler: string) =>
   hass.callApi<DataEntryFlowStep>("POST", "config/config_entries/flow", {
     handler,
+    show_advanced_options: Boolean(hass.userData?.showAdvanced),
   });
 
 export const fetchConfigFlow = (hass: HomeAssistant, flowId: string) =>
