@@ -370,28 +370,30 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
                       <h2>
                         ${flow.localized_title}
                       </h2>
-                      <mwc-button
-                        unelevated
-                        @click=${this._continueFlow}
-                        .flowId=${flow.flow_id}
-                      >
-                        ${this.hass.localize(
-                          "ui.panel.config.integrations.configure"
-                        )}
-                      </mwc-button>
-                      ${DISCOVERY_SOURCES.includes(flow.context.source) &&
-                      flow.context.unique_id
-                        ? html`
-                            <mwc-button
-                              @click=${this._ignoreFlow}
-                              .flow=${flow}
-                            >
-                              ${this.hass.localize(
-                                "ui.panel.config.integrations.ignore.ignore"
-                              )}
-                            </mwc-button>
-                          `
-                        : ""}
+                      <div>
+                        <mwc-button
+                          unelevated
+                          @click=${this._continueFlow}
+                          .flowId=${flow.flow_id}
+                        >
+                          ${this.hass.localize(
+                            "ui.panel.config.integrations.configure"
+                          )}
+                        </mwc-button>
+                        ${DISCOVERY_SOURCES.includes(flow.context.source) &&
+                        flow.context.unique_id
+                          ? html`
+                              <mwc-button
+                                @click=${this._ignoreFlow}
+                                .flow=${flow}
+                              >
+                                ${this.hass.localize(
+                                  "ui.panel.config.integrations.ignore.ignore"
+                                )}
+                              </mwc-button>
+                            `
+                          : ""}
+                      </div>
                     </div>
                   </ha-card>
                 `
@@ -622,8 +624,13 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
           text-align: center;
         }
         .card-content {
+          display: flex;
+          height: 100%;
+          margin-top: 0;
           padding: 16px;
           text-align: center;
+          flex-direction: column;
+          justify-content: space-between;
         }
         .image {
           display: flex;
