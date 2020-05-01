@@ -1,4 +1,3 @@
-import { PolymerElement } from "@polymer/polymer";
 import { customElement, property } from "lit-element";
 import { HassioHassOSInfo, HassioHostInfo } from "../../src/data/hassio/host";
 import {
@@ -17,28 +16,28 @@ import "./dashboard/hassio-dashboard";
 import "./snapshots/hassio-snapshots";
 import "./system/hassio-system";
 
-@customElement("hassio-tabs-router")
-class HassioTabsRouter extends HassRouterPage {
-  @property() public hass!: HomeAssistant;
+@customElement("hassio-panel-router")
+class HassioPanelRouter extends HassRouterPage {
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public supervisorInfo: HassioSupervisorInfo;
+  @property({ attribute: false }) public supervisorInfo: HassioSupervisorInfo;
 
-  @property() public hostInfo: HassioHostInfo;
+  @property({ attribute: false }) public hostInfo: HassioHostInfo;
 
-  @property() public hassInfo: HassioHomeAssistantInfo;
+  @property({ attribute: false }) public hassInfo: HassioHomeAssistantInfo;
 
-  @property() public hassOsInfo!: HassioHassOSInfo;
+  @property({ attribute: false }) public hassOsInfo!: HassioHassOSInfo;
 
   protected routerOptions: RouterOptions = {
     routes: {
       dashboard: {
         tag: "hassio-dashboard",
       },
-      snapshots: {
-        tag: "hassio-snapshots",
-      },
       store: {
         tag: "hassio-addon-store",
+      },
+      snapshots: {
+        tag: "hassio-snapshots",
       },
       system: {
         tag: "hassio-system",
@@ -47,27 +46,16 @@ class HassioTabsRouter extends HassRouterPage {
   };
 
   protected updatePageEl(el) {
-    if ("setProperties" in el) {
-      // As long as we have Polymer pages
-      (el as PolymerElement).setProperties({
-        hass: this.hass,
-        supervisorInfo: this.supervisorInfo,
-        hostInfo: this.hostInfo,
-        hassInfo: this.hassInfo,
-        hassOsInfo: this.hassOsInfo,
-      });
-    } else {
-      el.hass = this.hass;
-      el.supervisorInfo = this.supervisorInfo;
-      el.hostInfo = this.hostInfo;
-      el.hassInfo = this.hassInfo;
-      el.hassOsInfo = this.hassOsInfo;
-    }
+    el.hass = this.hass;
+    el.supervisorInfo = this.supervisorInfo;
+    el.hostInfo = this.hostInfo;
+    el.hassInfo = this.hassInfo;
+    el.hassOsInfo = this.hassOsInfo;
   }
 }
 
 declare global {
   interface HTMLElementTagNameMap {
-    "hassio-tabs-router": HassioTabsRouter;
+    "hassio-panel-router": HassioPanelRouter;
   }
 }
