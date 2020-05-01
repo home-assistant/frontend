@@ -16,10 +16,37 @@ import daygridStyle from "@fullcalendar/daygrid/main.min.css";
 
 import "../../components/ha-paper-icon-button-arrow-next";
 import "../../components/ha-paper-icon-button-arrow-prev";
+import { fireEvent } from "../../common/dom/fire_event";
+
+interface CalendarEvent {
+  end?: Date;
+  start: Date;
+  summary: string;
+  title: string;
+}
+
+export interface CalendarViewChanged {
+  end: Date;
+  start: Date;
+  view: string;
+}
+
+declare global {
+  interface HASSDomEvents {
+    "view-changed": CalendarViewChanged;
+  }
+}
+
+const fullCalendarConfig = {
+  header: false,
+  plugins: [dayGridPlugin],
+  defaultView: "dayGridMonth",
+};
 
 class HAFullCalendar extends LitElement {
-  public calendar?: Calendar;
-  @property() public events = [];
+  @property() public events: CalendarEvent[] = [];
+
+  @property() private calendar?: Calendar;
 
   protected render() {
     return html`
@@ -43,10 +70,11 @@ class HAFullCalendar extends LitElement {
                   <paper-dropdown-menu label="View">
                     <paper-listbox
                       slot="dropdown-content"
-                      selected=${this.calendar.view.type}
+                      attr-for-selected="view"
+                      .selected=${this.calendar.view.type}
                       @iron-select=${this._handleView}
                     >
-                      <paper-item .view=${"day"}>Day</paper-item>
+                      <paper-item .view=${"dayGridDay"}>Day</paper-item>
                       <paper-item .view=${"dayGridWeek"}>Week</paper-item>
                       <paper-item .view=${"dayGridMonth"}>Month</paper-item>
                     </paper-listbox>
@@ -68,49 +96,46 @@ class HAFullCalendar extends LitElement {
     }
 
     if (changedProps.has("events")) {
-      // this.calendar.refetchEvents();
       this.calendar.removeAllEventSources();
       this.calendar.addEventSource(this.events);
     }
   }
 
   protected firstUpdated() {
-    const config = {
-      header: false,
-      plugins: [dayGridPlugin],
-      //events: this._getEvents,
-    };
-
     this.calendar = new Calendar(
       this.shadowRoot!.getElementById("calendar")!,
-      config
+      fullCalendarConfig
     );
+
     this.calendar.render();
   }
 
   private _handleNext() {
     this.calendar!.next();
-    this.requestUpdate();
+    this._fireViewChanged();
   }
 
   private _handlePrev() {
     this.calendar!.prev();
-    this.requestUpdate();
+    this._fireViewChanged();
   }
 
   private _handleToday() {
     this.calendar!.today();
-    this.requestUpdate();
+    this._fireViewChanged();
   }
 
   private _handleView(ev) {
     this.calendar!.changeView(ev.detail.item.view);
-    console.log(ev.detail.item.view);
+    this._fireViewChanged();
   }
 
-  private _getEvents(fetchInfo, successCallback) {
-    //console.log(fetchInfo);
-    successCallback(this.events);
+  private _fireViewChanged() {
+    fireEvent(this, "view-changed", {
+      start: this.calendar!.view.activeStart,
+      end: this.calendar!.view.activeEnd,
+      view: this.calendar!.view.type,
+    });
   }
 
   static get styles(): CSSResult {
@@ -216,6 +241,15 @@ class HAFullCalendar extends LitElement {
 
       .fc-today {
         background: #e1f5fe;
+      }
+
+      .fc button .fc-icon {
+        /* non-theme */
+        position: relative;
+        top: -0.05em;
+        /* seems to be a good adjustment across browsers */
+        margin: 0 0.2em;
+        vertical-align: middle;
       }
     `;
   }
