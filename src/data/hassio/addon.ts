@@ -47,6 +47,7 @@ export interface HassioAddonDetails extends HassioAddonInfo {
   auto_uart: boolean;
   icon: boolean;
   logo: boolean;
+  stage: "stable" | "experimental" | "deprecated";
   changelog: boolean;
   hassio_api: boolean;
   hassio_role: "default" | "homeassistant" | "manager" | "admin";
