@@ -26,6 +26,7 @@ export interface HassioAddonDetails extends HassioAddonInfo {
   auto_update: boolean;
   url: null | string;
   detached: boolean;
+  documentation: boolean;
   available: boolean;
   arch: "armhf" | "aarch64" | "i386" | "amd64";
   machine: any;
@@ -133,6 +134,13 @@ export const fetchHassioAddonLogs = async (
   slug: string
 ) => {
   return hass.callApi<string>("GET", `hassio/addons/${slug}/logs`);
+};
+
+export const fetchHassioAddonDocumentation = async (
+  hass: HomeAssistant,
+  slug: string
+) => {
+  return hass.callApi<string>("GET", `hassio/addons/${slug}/documentation`);
 };
 
 export const setHassioAddonOption = async (
