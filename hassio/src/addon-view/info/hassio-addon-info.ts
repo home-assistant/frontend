@@ -37,6 +37,11 @@ import { showHassioMarkdownDialog } from "../../dialogs/markdown/show-dialog-has
 import { hassioStyle } from "../../resources/hassio-style";
 
 const PERMIS_DESC = {
+  stage: {
+    title: "Add-on Stage",
+    description:
+      "Add-ons can have one of three stages:\n\n**Stable**: These are add-ons ready to be used in production.\n**Experimental**: These may contain bugs, and may be unfinished.\n**Deprecated:**: These add-ons will no longer recieve any updates.",
+  },
   rating: {
     title: "Add-on Security Rating",
     description:
@@ -205,6 +210,18 @@ class HassioAddonInfo extends LitElement {
               `
             : ""}
           <div class="security">
+            <ha-label-badge
+              class=${classMap({
+                green: this.addon.stage === "stable",
+                yellow: this.addon.stage === "experimental",
+                red: this.addon.stage === "deprecated",
+              })}
+              @click=${this._showMoreInfo}
+              id="stage"
+              .value=${this.addon.stage}
+              label="stage"
+              description=""
+            ></ha-label-badge>
             <ha-label-badge
               class=${classMap({
                 green: [5, 6].includes(Number(this.addon.rating)),
