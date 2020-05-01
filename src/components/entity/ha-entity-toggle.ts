@@ -12,7 +12,7 @@ import {
 import { STATES_OFF } from "../../common/const";
 import { computeStateDomain } from "../../common/entity/compute_state_domain";
 import { computeStateName } from "../../common/entity/compute_state_name";
-import { UNAVAILABLE_STATES } from "../../data/entity";
+import { UNAVAILABLE_STATES, UNAVAILABLE } from "../../data/entity";
 import { forwardHaptic } from "../../data/haptics";
 import { HomeAssistant } from "../../types";
 import "../ha-switch";
@@ -40,14 +40,14 @@ class HaEntityToggle extends LitElement {
         <paper-icon-button
           aria-label=${`Turn ${computeStateName(this.stateObj)} off`}
           icon="hass:flash-off"
-          .disabled=${UNAVAILABLE_STATES.includes(this.stateObj.state)}
+          .disabled=${this.stateObj.state === UNAVAILABLE}
           @click=${this._turnOff}
           ?state-active=${!this._isOn}
         ></paper-icon-button>
         <paper-icon-button
           aria-label=${`Turn ${computeStateName(this.stateObj)} on`}
           icon="hass:flash"
-          .disabled=${UNAVAILABLE_STATES.includes(this.stateObj.state)}
+          .disabled=${this.stateObj.state === UNAVAILABLE}
           @click=${this._turnOn}
           ?state-active=${this._isOn}
         ></paper-icon-button>
