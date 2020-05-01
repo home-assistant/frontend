@@ -36,7 +36,17 @@ import "../../components/hassio-card-content";
 import { showHassioMarkdownDialog } from "../../dialogs/markdown/show-dialog-hassio-markdown";
 import { hassioStyle } from "../../resources/hassio-style";
 
+const STAGE_ICON = {
+  stable: "mdi:check-circle",
+  experimental: "mdi:flask",
+  deprecated: "mdi:exclamation-thick",
+};
+
 const PERMIS_DESC = {
+  stage: {
+    title: "Add-on Stage",
+    description: `Add-ons can have one of three stages:\n\n<ha-icon icon='${STAGE_ICON.stable}'></ha-icon>**Stable**: These are add-ons ready to be used in production.\n<ha-icon icon='${STAGE_ICON.experimental}'></ha-icon>**Experimental**: These may contain bugs, and may be unfinished.\n<ha-icon icon='${STAGE_ICON.deprecated}'></ha-icon>**Deprecated**: These add-ons will no longer recieve any updates.`,
+  },
   rating: {
     title: "Add-on Security Rating",
     description:
@@ -205,6 +215,18 @@ class HassioAddonInfo extends LitElement {
               `
             : ""}
           <div class="security">
+            <ha-label-badge
+              class=${classMap({
+                green: this.addon.stage === "stable",
+                yellow: this.addon.stage === "experimental",
+                red: this.addon.stage === "deprecated",
+              })}
+              @click=${this._showMoreInfo}
+              id="stage"
+              .icon=${STAGE_ICON[this.addon.stage]}
+              label="stage"
+              description=""
+            ></ha-label-badge>
             <ha-label-badge
               class=${classMap({
                 green: [5, 6].includes(Number(this.addon.rating)),
