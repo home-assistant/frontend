@@ -128,6 +128,8 @@ class StepFlowForm extends LitElement {
         data[field.name] = field.default;
       }
     });
+
+    this._stepData = data;
     return data;
   }
 
