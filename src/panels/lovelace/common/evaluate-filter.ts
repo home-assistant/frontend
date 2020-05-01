@@ -38,7 +38,7 @@ export const evaluateFilter = (stateObj: HassEntity, filter: any): boolean => {
         state !== null &&
         typeof state !== typeof undefined
       ) {
-        return state.match(JSON.stringify(value));
+        return (JSON.stringify(state) as any).match(value);
       }
       return state.match(value);
     }
