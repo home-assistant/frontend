@@ -223,7 +223,7 @@ class HassioAddonInfo extends LitElement {
               })}
               @click=${this._showMoreInfo}
               id="stage"
-              .icon=${STAGE_ICON[this.addon.stage!]}
+              .icon=${STAGE_ICON[this.addon.stage]}
               label="stage"
               description=""
             ></ha-label-badge>
