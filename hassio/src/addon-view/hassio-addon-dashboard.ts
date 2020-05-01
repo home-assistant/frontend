@@ -1,6 +1,3 @@
-import "@polymer/app-layout/app-header-layout/app-header-layout";
-import "@polymer/app-layout/app-header/app-header";
-import "@polymer/app-layout/app-toolbar/app-toolbar";
 import "@polymer/paper-icon-button/paper-icon-button";
 import "@polymer/paper-spinner/paper-spinner-lite";
 import {
@@ -12,6 +9,7 @@ import {
   property,
   TemplateResult,
 } from "lit-element";
+import memoizeOne from "memoize-one";
 import {
   fetchHassioAddonInfo,
   HassioAddonDetails,
@@ -19,65 +17,86 @@ import {
 import { haStyle } from "../../../src/resources/styles";
 import { HomeAssistant, Route } from "../../../src/types";
 import { hassioStyle } from "../resources/hassio-style";
-import "./hassio-addon-audio";
-import "./hassio-addon-config";
-import "./hassio-addon-info";
-import "./hassio-addon-logs";
-import "./hassio-addon-network";
-import "../../../src/layouts/hass-subpage";
+import "./config/hassio-addon-audio";
+import "./config/hassio-addon-config";
+import "./info/hassio-addon-info";
+import "./log/hassio-addon-logs";
+import "./config/hassio-addon-network";
+import type { PageNavigation } from "../../../src/layouts/hass-tabs-subpage";
+import "../../../src/layouts/hass-tabs-subpage";
 
-@customElement("hassio-addon-view")
-class HassioAddonView extends LitElement {
-  @property() public hass!: HomeAssistant;
+import "./hassio-addon-router";
 
-  @property() public route!: Route;
+@customElement("hassio-addon-dashboard")
+class HassioAddonDashboard extends LitElement {
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public addon?: HassioAddonDetails;
+  @property({ attribute: false }) public route!: Route;
+
+  @property({ attribute: false }) public addon?: HassioAddonDetails;
+
+  @property({ type: Boolean }) public narrow!: boolean;
+
+  private _computeTail = memoizeOne((route: Route) => {
+    const dividerPos = route.path.indexOf("/", 1);
+    return dividerPos === -1
+      ? {
+          prefix: route.prefix + route.path,
+          path: "",
+        }
+      : {
+          prefix: route.prefix + route.path.substr(0, dividerPos),
+          path: route.path.substr(dividerPos),
+        };
+  });
 
   protected render(): TemplateResult {
     if (!this.addon) {
       return html` <paper-spinner-lite active></paper-spinner-lite> `;
     }
+
+    const addonTabs: PageNavigation[] = [
+      {
+        name: "Info",
+        path: `/hassio/addon/${this.addon.slug}/info`,
+        icon: "mdi:information-variant",
+      },
+    ];
+
+    if (this.addon.version) {
+      addonTabs.push(
+        {
+          name: "Configuration",
+          path: `/hassio/addon/${this.addon.slug}/config`,
+          icon: "mdi:cogs",
+        },
+        {
+          name: "Log",
+          path: `/hassio/addon/${this.addon.slug}/logs`,
+          icon: "mdi:math-log",
+        }
+      );
+    }
+
+    const route = this._computeTail(this.route);
+
     return html`
-      <hass-subpage header="Hass.io: add-on details" hassio>
-        <div class="content">
-          <hassio-addon-info
-            .hass=${this.hass}
-            .addon=${this.addon}
-          ></hassio-addon-info>
-
-          ${this.addon && this.addon.version
-            ? html`
-                <hassio-addon-config
-                  .hass=${this.hass}
-                  .addon=${this.addon}
-                ></hassio-addon-config>
-
-                ${this.addon.audio
-                  ? html`
-                      <hassio-addon-audio
-                        .hass=${this.hass}
-                        .addon=${this.addon}
-                      ></hassio-addon-audio>
-                    `
-                  : ""}
-                ${this.addon.network
-                  ? html`
-                      <hassio-addon-network
-                        .hass=${this.hass}
-                        .addon=${this.addon}
-                      ></hassio-addon-network>
-                    `
-                  : ""}
-
-                <hassio-addon-logs
-                  .hass=${this.hass}
-                  .addon=${this.addon}
-                ></hassio-addon-logs>
-              `
-            : ""}
-        </div>
-      </hass-subpage>
+      <hass-tabs-subpage
+        .hass=${this.hass}
+        .narrow=${this.narrow}
+        .backPath=${this.addon.version ? "/hassio/dashboard" : "/hassio/store"}
+        .route=${route}
+        .hassio=${true}
+        .tabs=${addonTabs}
+      >
+        <span slot="header">${this.addon.name}</span>
+        <hassio-addon-router
+          .route=${route}
+          .narrow=${this.narrow}
+          .hass=${this.hass}
+          .addon=${this.addon}
+        ></hassio-addon-router>
+      </hass-tabs-subpage>
     `;
   }
 
@@ -141,7 +160,7 @@ class HassioAddonView extends LitElement {
   }
 
   private async _routeDataChanged(routeData: Route): Promise<void> {
-    const addon = routeData.path.substr(1);
+    const addon = routeData.path.split("/")[1];
     try {
       const addoninfo = await fetchHassioAddonInfo(this.hass, addon);
       this.addon = addoninfo;
@@ -153,6 +172,6 @@ class HassioAddonView extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "hassio-addon-view": HassioAddonView;
+    "hassio-addon-dashboard": HassioAddonDashboard;
   }
 }

@@ -10,15 +10,15 @@ import {
   PropertyValues,
   TemplateResult,
 } from "lit-element";
-import { fireEvent } from "../../../src/common/dom/fire_event";
+import { fireEvent } from "../../../../src/common/dom/fire_event";
 import {
   HassioAddonDetails,
   HassioAddonSetOptionParams,
   setHassioAddonOption,
-} from "../../../src/data/hassio/addon";
-import { haStyle } from "../../../src/resources/styles";
-import { HomeAssistant } from "../../../src/types";
-import { hassioStyle } from "../resources/hassio-style";
+} from "../../../../src/data/hassio/addon";
+import { haStyle } from "../../../../src/resources/styles";
+import { HomeAssistant } from "../../../../src/types";
+import { hassioStyle } from "../../resources/hassio-style";
 
 interface NetworkItem {
   description: string;
@@ -32,9 +32,9 @@ interface NetworkItemInput extends PaperInputElement {
 
 @customElement("hassio-addon-network")
 class HassioAddonNetwork extends LitElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public addon!: HassioAddonDetails;
+  @property({ attribute: false }) public addon!: HassioAddonDetails;
 
   @property() private _error?: string;
 
@@ -70,7 +70,7 @@ class HassioAddonNetwork extends LitElement {
                       <paper-input
                         @value-changed=${this._configChanged}
                         placeholder="disabled"
-                        .value=${item.host}
+                        .value=${String(item.host)}
                         .container=${item.container}
                         no-label-float
                       ></paper-input>
