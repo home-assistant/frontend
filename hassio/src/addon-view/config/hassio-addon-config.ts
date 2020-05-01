@@ -12,24 +12,24 @@ import {
   query,
   TemplateResult,
 } from "lit-element";
-import { fireEvent } from "../../../src/common/dom/fire_event";
-import "../../../src/components/ha-yaml-editor";
-import type { HaYamlEditor } from "../../../src/components/ha-yaml-editor";
+import { fireEvent } from "../../../../src/common/dom/fire_event";
+import "../../../../src/components/ha-yaml-editor";
+import type { HaYamlEditor } from "../../../../src/components/ha-yaml-editor";
 import {
   HassioAddonDetails,
   HassioAddonSetOptionParams,
   setHassioAddonOption,
-} from "../../../src/data/hassio/addon";
-import { showConfirmationDialog } from "../../../src/dialogs/generic/show-dialog-box";
-import { haStyle } from "../../../src/resources/styles";
-import type { HomeAssistant } from "../../../src/types";
-import { hassioStyle } from "../resources/hassio-style";
+} from "../../../../src/data/hassio/addon";
+import { showConfirmationDialog } from "../../../../src/dialogs/generic/show-dialog-box";
+import { haStyle } from "../../../../src/resources/styles";
+import type { HomeAssistant } from "../../../../src/types";
+import { hassioStyle } from "../../resources/hassio-style";
 
 @customElement("hassio-addon-config")
 class HassioAddonConfig extends LitElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public addon!: HassioAddonDetails;
+  @property({ attribute: false }) public addon!: HassioAddonDetails;
 
   @property() private _error?: string;
 
