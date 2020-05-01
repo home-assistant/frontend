@@ -32,7 +32,7 @@ import { ProvideHassLitMixin } from "../../src/mixins/provide-hass-lit-mixin";
 import "../../src/resources/ha-style";
 import { HomeAssistant } from "../../src/types";
 // Don't codesplit it, that way the dashboard always loads fast.
-import "./hassio-pages-with-tabs";
+import "./hassio-panel";
 
 // The register callback of the IronA11yKeysBehavior inside paper-icon-button
 // is not called, causing _keyBindings to be uninitiliazed for paper-icon-button,
@@ -55,7 +55,7 @@ class HassioMain extends ProvideHassLitMixin(HassRouterPage) {
     showLoading: true,
     routes: {
       dashboard: {
-        tag: "hassio-pages-with-tabs",
+        tag: "hassio-panel",
         cache: true,
       },
       snapshots: "dashboard",
@@ -132,8 +132,7 @@ class HassioMain extends ProvideHassLitMixin(HassRouterPage) {
 
   protected updatePageEl(el) {
     // the tabs page does its own routing so needs full route.
-    const route =
-      el.nodeName === "HASSIO-PAGES-WITH-TABS" ? this.route : this.routeTail;
+    const route = el.nodeName === "HASSIO-PANEL" ? this.route : this.routeTail;
 
     if ("setProperties" in el) {
       // As long as we have Polymer pages
