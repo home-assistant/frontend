@@ -62,7 +62,7 @@ class HassioAddonConfigDashboard extends LitElement {
         @media screen and (min-width: 1024px) {
           .content {
             width: 50%;
-            margin-left: 25%;
+            margin: auto;
           }
         }
         hassio-addon-network,
