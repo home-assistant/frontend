@@ -67,7 +67,7 @@ class HassioAddonDashboard extends LitElement {
       addonTabs.push({
         name: "Documentation",
         path: `/hassio/addon/${this.addon.slug}/documentation`,
-        icon: "mdi:text-box",
+        icon: "mdi:file-document",
       });
     }
 
