@@ -45,7 +45,9 @@ class HassioAddonLogDashboard extends LitElement {
         @media screen and (min-width: 1024px) {
           .content {
             width: 50%;
-            margin-left: 25%;
+            margin: auto;
+            margin-top: 8px;
+            max-width: 1024px;
           }
         }
       `,
