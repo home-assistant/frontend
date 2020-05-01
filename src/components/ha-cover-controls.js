@@ -2,7 +2,7 @@ import "@polymer/paper-icon-button/paper-icon-button";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 /* eslint-plugin-disable lit */
 import { PolymerElement } from "@polymer/polymer/polymer-element";
-import { UNAVAILABLE_STATES } from "../data/entity";
+import { UNAVAILABLE } from "../data/entity";
 import CoverEntity from "../util/cover-model";
 
 class HaCoverControls extends PolymerElement {
@@ -30,6 +30,7 @@ class HaCoverControls extends PolymerElement {
           icon="hass:stop"
           on-click="onStopTap"
           invisible$="[[!entityObj.supportsStop]]"
+          disabled="[[computStopDisabled(stateObj)]]"
         ></paper-icon-button>
         <paper-icon-button
           aria-label="Close cover"
@@ -81,8 +82,15 @@ class HaCoverControls extends PolymerElement {
     }
   }
 
+  computeStopDisabled(stateObj) {
+    if (stateObj.state === UNAVAILABLE) {
+      return true;
+    }
+    return false;
+  }
+
   computeOpenDisabled(stateObj, entityObj) {
-    if (UNAVAILABLE_STATES.includes(stateObj.state)) {
+    if (stateObj.state === UNAVAILABLE) {
       return true;
     }
     var assumedState = stateObj.attributes.assumed_state === true;
@@ -90,7 +98,7 @@ class HaCoverControls extends PolymerElement {
   }
 
   computeClosedDisabled(stateObj, entityObj) {
-    if (UNAVAILABLE_STATES.includes(stateObj.state)) {
+    if (stateObj.state === UNAVAILABLE) {
       return true;
     }
     var assumedState = stateObj.attributes.assumed_state === true;
