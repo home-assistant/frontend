@@ -8,6 +8,7 @@ import { HomeAssistant } from "../../../src/types";
 import "./info/hassio-addon-info-tab";
 import "./config/hassio-addon-config-tab";
 import "./log/hassio-addon-log-tab";
+import "./documentation/hassio-addon-documentation-tab";
 import { HassioAddonDetails } from "../../../src/data/hassio/addon";
 
 @customElement("hassio-addon-router")
@@ -24,6 +25,9 @@ class HassioAddonRouter extends HassRouterPage {
     routes: {
       info: {
         tag: "hassio-addon-info-tab",
+      },
+      documentation: {
+        tag: "hassio-addon-documentation-tab",
       },
       config: {
         tag: "hassio-addon-config-tab",

@@ -63,6 +63,8 @@ class HassioAddonConfigDashboard extends LitElement {
           .content {
             width: 50%;
             margin: auto;
+            margin-top: 8px;
+            max-width: 1024px;
           }
         }
         hassio-addon-network,
