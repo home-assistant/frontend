@@ -62,10 +62,10 @@ class HassioMain extends ProvideHassLitMixin(HassRouterPage) {
       store: "dashboard",
       system: "dashboard",
       addon: {
-        tag: "hassio-addon-view",
+        tag: "hassio-addon-dashboard",
         load: () =>
           import(
-            /* webpackChunkName: "hassio-addon-view" */ "./addon-view/hassio-addon-view"
+            /* webpackChunkName: "hassio-addon-dashboard" */ "./addon-view/hassio-addon-dashboard"
           ),
       },
       ingress: {
@@ -231,7 +231,7 @@ class HassioMain extends ProvideHassLitMixin(HassRouterPage) {
           text: "Add-on is not running. Please start it first",
           title: addon.name,
         },
-        () => navigate(this, `/hassio/addon/${addon.slug}`, true)
+        () => navigate(this, `/hassio/addon/${addon.slug}/info`, true)
       );
 
       return;

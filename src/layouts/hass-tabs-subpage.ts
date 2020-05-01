@@ -82,7 +82,7 @@ class HassTabsSubpage extends LitElement {
                     <span class="name"
                       >${page.translationKey
                         ? this.hass.localize(page.translationKey)
-                        : name}</span
+                        : page.name}</span
                     >
                   `
                 : ""}
@@ -97,7 +97,7 @@ class HassTabsSubpage extends LitElement {
     super.updated(changedProperties);
     if (changedProperties.has("route")) {
       this._activeTab = this.tabs.find((tab) =>
-        this.route.prefix.includes(tab.path)
+        `${this.route.prefix}${this.route.path}`.includes(tab.path)
       );
     }
   }
