@@ -18,7 +18,6 @@ import {
   HassioAddonDetails,
   HassioAddonSetOptionParams,
   setHassioAddonOption,
-  restartHassioAddon,
 } from "../../../../src/data/hassio/addon";
 import {
   fetchHassioHardwareAudio,
