@@ -25,7 +25,7 @@ export const suggestRestart = async (
       await restartHassioAddon(hass, addon.slug);
     } catch (err) {
       showAlertDialog(element, {
-        title: "Faled to restart",
+        title: "Failed to restart",
         text: err.body.message,
       });
     }
