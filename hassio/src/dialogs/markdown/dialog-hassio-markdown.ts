@@ -43,10 +43,7 @@ class HassioMarkdownDialog extends LitElement {
           <div main-title="">${this.title}</div>
         </app-toolbar>
         <paper-dialog-scrollable>
-          <ha-markdown
-            .breaks=${false}
-            .content=${this.content || ""}
-          ></ha-markdown>
+          <ha-markdown .content=${this.content || ""}></ha-markdown>
         </paper-dialog-scrollable>
       </ha-paper-dialog>
     `;

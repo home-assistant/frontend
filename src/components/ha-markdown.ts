@@ -12,7 +12,7 @@ class HaMarkdown extends UpdatingElement {
 
   @property({ type: Boolean }) public allowSvg = false;
 
-  @property({ type: Boolean }) public breaks = true;
+  @property({ type: Boolean }) public breaks = false;
 
   protected update(changedProps) {
     super.update(changedProps);

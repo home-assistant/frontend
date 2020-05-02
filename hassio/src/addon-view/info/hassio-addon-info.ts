@@ -493,7 +493,6 @@ class HassioAddonInfo extends LitElement {
             <paper-card>
               <div class="card-content">
                 <ha-markdown
-                  .breaks=${false}
                   .content=${this.addon.long_description}
                 ></ha-markdown>
               </div>

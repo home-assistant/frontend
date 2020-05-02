@@ -50,7 +50,13 @@ export const showOptionsFlowDialog = (
         );
 
         return description
-          ? html` <ha-markdown allowsvg .content=${description}></ha-markdown> `
+          ? html`
+              <ha-markdown
+                breaks
+                allowsvg
+                .content=${description}
+              ></ha-markdown>
+            `
           : "";
       },
 
@@ -69,7 +75,13 @@ export const showOptionsFlowDialog = (
           step.description_placeholders
         );
         return description
-          ? html` <ha-markdown allowsvg .content=${description}></ha-markdown> `
+          ? html`
+              <ha-markdown
+                allowsvg
+                breaks
+                .content=${description}
+              ></ha-markdown>
+            `
           : "";
       },
 
