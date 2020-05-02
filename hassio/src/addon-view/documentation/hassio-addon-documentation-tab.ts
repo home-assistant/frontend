@@ -1,5 +1,5 @@
 import "@polymer/paper-spinner/paper-spinner-lite";
-
+import "@polymer/paper-card/paper-card";
 import {
   css,
   CSSResult,
@@ -41,12 +41,14 @@ class HassioAddonDocumentationDashboard extends LitElement {
     }
     return html`
       <div class="content">
-        ${this._error ? html` <div class="errors">${this._error}</div> ` : ""}
-        <div class="card-content">
-          ${this._content
-            ? html`<ha-markdown .content=${this._content}></ha-markdown>`
-            : html`<loading-screen></loading-screen>`}
-        </div>
+        <paper-card>
+          ${this._error ? html` <div class="errors">${this._error}</div> ` : ""}
+          <div class="card-content">
+            ${this._content
+              ? html`<ha-markdown .content=${this._content}></ha-markdown>`
+              : html`<loading-screen></loading-screen>`}
+          </div>
+        </paper-card>
       </div>
     `;
   }
@@ -56,6 +58,9 @@ class HassioAddonDocumentationDashboard extends LitElement {
       haStyle,
       hassioStyle,
       css`
+        paper-card {
+          display: block;
+        }
         .content {
           margin: auto;
           padding: 8px;
