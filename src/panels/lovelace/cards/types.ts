@@ -34,7 +34,8 @@ export interface EntitiesCardEntityConfig extends EntityConfig {
     | "last-changed"
     | "last-triggered"
     | "position"
-    | "tilt-position";
+    | "tilt-position"
+    | "brightness";
   action_name?: string;
   service?: string;
   service_data?: object;
