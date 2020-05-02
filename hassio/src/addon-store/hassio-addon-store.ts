@@ -88,6 +88,7 @@ class HassioAddonStore extends LitElement {
         .narrow=${this.narrow}
         .route=${this.route}
         hassio
+        main-page
         .tabs=${supervisorTabs}
       >
         <span slot="header">Add-on store</span>
