@@ -65,6 +65,7 @@ class HaLabelBadge extends LitElement {
           display: inline-block;
           text-align: center;
           vertical-align: top;
+          padding: var(--ha-label-badge-padding, 0 0 0 0);
         }
         .label-badge {
           position: relative;
