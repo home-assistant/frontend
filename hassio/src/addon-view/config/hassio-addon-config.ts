@@ -25,6 +25,8 @@ import { haStyle } from "../../../../src/resources/styles";
 import type { HomeAssistant } from "../../../../src/types";
 import { hassioStyle } from "../../resources/hassio-style";
 
+import { suggestAddonRestart } from "../../dialogs/suggestAddonRestart";
+
 @customElement("hassio-addon-config")
 class HassioAddonConfig extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -164,6 +166,9 @@ class HassioAddonConfig extends LitElement {
       this._error = `Failed to save addon configuration, ${
         err.body?.message || err
       }`;
+    }
+    if (!this._error && this.addon?.state === "started") {
+      await suggestAddonRestart(this, this.hass, this.addon);
     }
   }
 }
