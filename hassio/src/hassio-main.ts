@@ -204,7 +204,7 @@ class HassioMain extends ProvideHassLitMixin(HassRouterPage) {
       await awaitAlert(
         {
           text: "Unable to fetch add-on info to start Ingress",
-          title: "Hass.io",
+          title: "Supervisor",
         },
         () => history.back()
       );
