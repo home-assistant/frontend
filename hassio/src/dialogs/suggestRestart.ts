@@ -1,10 +1,13 @@
-import { LitElement } from "lit-element";
+import type { LitElement } from "lit-element";
 import {
   HassioAddonDetails,
   restartHassioAddon,
 } from "../../../src/data/hassio/addon";
 import { HomeAssistant } from "../../../src/types";
-import { showConfirmationDialog } from "../../../src/dialogs/generic/show-dialog-box";
+import {
+  showConfirmationDialog,
+  showAlertDialog,
+} from "../../../src/dialogs/generic/show-dialog-box";
 
 export const suggestRestart = async (
   element: LitElement,
@@ -21,7 +24,10 @@ export const suggestRestart = async (
     try {
       await restartHassioAddon(hass, addon.slug);
     } catch (err) {
-      throw Error(`Failed to restart addon, ${err.body?.message || err}`);
+      showAlertDialog(element, {
+        title: "Faled to restart",
+        text: err.body.message,
+      });
     }
   }
 };

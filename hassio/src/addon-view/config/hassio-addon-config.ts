@@ -167,11 +167,7 @@ class HassioAddonConfig extends LitElement {
       }`;
     }
     if (!this._error && this.addon?.state === "started") {
-      try {
-        await suggestRestart(this, this.hass, this.addon);
-      } catch (err) {
-        this._error = `Failed to restart addon, ${err.body?.message || err}`;
-      }
+      await suggestRestart(this, this.hass, this.addon);
     }
   }
 }
