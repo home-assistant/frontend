@@ -264,8 +264,8 @@ export class DialogEntityEditor extends LitElement {
         /* overrule the ha-style-dialog max-height on small screens */
         @media all and (max-width: 450px), all and (max-height: 500px) {
           app-toolbar {
-            background-color: var(--primary-color);
-            color: var(--text-primary-color);
+            background-color: var(--app-header-background-color);
+            color: var(--app-header-text-color, white);
           }
           ha-paper-dialog {
             height: 100%;
