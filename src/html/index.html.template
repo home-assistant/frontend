@@ -51,6 +51,9 @@
         height: 112px;
         background-color: #THEMEC;
       }
+      html {
+        background-color: var(--primary-background-color, #fafafa);
+      }
     </style>
   </head>
   <body>
