@@ -40,6 +40,7 @@ class HassioDashboard extends LitElement {
         .hass=${this.hass}
         .narrow=${this.narrow}
         hassio
+        main-page
         .route=${this.route}
         .tabs=${supervisorTabs}
       >
