@@ -8,7 +8,7 @@ import {
   HassRouterPage,
   RouterOptions,
 } from "../../src/layouts/hass-router-page";
-import { HomeAssistant } from "../../src/types";
+import { HomeAssistant, Route } from "../../src/types";
 import "./addon-store/hassio-addon-store";
 // Don't codesplit it, that way the dashboard always loads fast.
 import "./dashboard/hassio-dashboard";
@@ -19,6 +19,10 @@ import "./system/hassio-system";
 @customElement("hassio-panel-router")
 class HassioPanelRouter extends HassRouterPage {
   @property({ attribute: false }) public hass!: HomeAssistant;
+
+  @property({ attribute: false }) public route!: Route;
+
+  @property({ type: Boolean }) public narrow!: boolean;
 
   @property({ attribute: false }) public supervisorInfo: HassioSupervisorInfo;
 
@@ -47,6 +51,8 @@ class HassioPanelRouter extends HassRouterPage {
 
   protected updatePageEl(el) {
     el.hass = this.hass;
+    el.route = this.route;
+    el.narrow = this.narrow;
     el.supervisorInfo = this.supervisorInfo;
     el.hostInfo = this.hostInfo;
     el.hassInfo = this.hassInfo;

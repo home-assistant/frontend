@@ -13,34 +13,49 @@ import {
   HassioSupervisorInfo,
 } from "../../../src/data/hassio/supervisor";
 import { haStyle } from "../../../src/resources/styles";
-import { HomeAssistant } from "../../../src/types";
+import { HomeAssistant, Route } from "../../../src/types";
+import "../../../src/layouts/hass-tabs-subpage";
 import "./hassio-addons";
 import "./hassio-update";
 
+import { supervisorTabs } from "../hassio-panel";
+
 @customElement("hassio-dashboard")
 class HassioDashboard extends LitElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public supervisorInfo!: HassioSupervisorInfo;
+  @property({ type: Boolean }) public narrow!: boolean;
 
-  @property() public hassInfo!: HassioHomeAssistantInfo;
+  @property({ attribute: false }) public route!: Route;
 
-  @property() public hassOsInfo!: HassioHassOSInfo;
+  @property({ attribute: false }) public supervisorInfo!: HassioSupervisorInfo;
+
+  @property({ attribute: false }) public hassInfo!: HassioHomeAssistantInfo;
+
+  @property({ attribute: false }) public hassOsInfo!: HassioHassOSInfo;
 
   protected render(): TemplateResult {
     return html`
-      <div class="content">
-        <hassio-update
-          .hass=${this.hass}
-          .hassInfo=${this.hassInfo}
-          .supervisorInfo=${this.supervisorInfo}
-          .hassOsInfo=${this.hassOsInfo}
-        ></hassio-update>
-        <hassio-addons
-          .hass=${this.hass}
-          .addons=${this.supervisorInfo.addons}
-        ></hassio-addons>
-      </div>
+      <hass-tabs-subpage
+        .hass=${this.hass}
+        .narrow=${this.narrow}
+        .route=${this.route}
+        .tabs=${supervisorTabs}
+      >
+        <span slot="header">Dashboard</span>
+        <div class="content">
+          <hassio-update
+            .hass=${this.hass}
+            .hassInfo=${this.hassInfo}
+            .supervisorInfo=${this.supervisorInfo}
+            .hassOsInfo=${this.hassOsInfo}
+          ></hassio-update>
+          <hassio-addons
+            .hass=${this.hass}
+            .addons=${this.supervisorInfo.addons}
+          ></hassio-addons>
+        </div>
+      </hass-tabs-subpage>
     `;
   }
 
