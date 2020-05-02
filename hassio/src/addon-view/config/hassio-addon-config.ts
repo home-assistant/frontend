@@ -116,6 +116,7 @@ class HassioAddonConfig extends LitElement {
       title: this.addon.name,
       text: "Are you sure you want to reset all your options?",
       confirmText: "reset options",
+      dismissText: "no",
     });
 
     if (!confirmed) {

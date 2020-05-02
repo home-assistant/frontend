@@ -26,6 +26,7 @@ import { PolymerChangedEvent } from "../../../../src/polymer-types";
 import { haStyleDialog } from "../../../../src/resources/styles";
 import { HomeAssistant } from "../../../../src/types";
 import { HassioSnapshotDialogParams } from "./show-dialog-hassio-snapshot";
+import { showConfirmationDialog } from "../../../../src/dialogs/generic/show-dialog-box";
 
 const _computeFolders = (folders) => {
   const list: Array<{ slug: string; name: string; checked: boolean }> = [];
@@ -312,8 +313,15 @@ class HassioSnapshotDialog extends LitElement {
     this._snapshotPassword = ev.detail.value;
   }
 
-  private _partialRestoreClicked() {
-    if (!confirm("Are you sure you want to restore this snapshot?")) {
+  private async _partialRestoreClicked(): Promise<void> {
+    const confirmed = await showConfirmationDialog(this, {
+      title: this.snapshot!.name,
+      text: "Are you sure you want to restore this snapshot?",
+      confirmText: "restore snapshot",
+      dismissText: "no",
+    });
+
+    if (!confirmed) {
       return;
     }
 
@@ -358,8 +366,15 @@ class HassioSnapshotDialog extends LitElement {
       );
   }
 
-  private _fullRestoreClicked() {
-    if (!confirm("Are you sure you want to restore this snapshot?")) {
+  private async _fullRestoreClicked(): Promise<void> {
+    const confirmed = await showConfirmationDialog(this, {
+      title: this.snapshot!.name,
+      text: "Are you sure you want to restore this snapshot?",
+      confirmText: "restore snapshot",
+      dismissText: "no",
+    });
+
+    if (!confirmed) {
       return;
     }
 
@@ -384,8 +399,15 @@ class HassioSnapshotDialog extends LitElement {
       );
   }
 
-  private _deleteClicked() {
-    if (!confirm("Are you sure you want to delete this snapshot?")) {
+  private async _deleteClicked(): Promise<void> {
+    const confirmed = await showConfirmationDialog(this, {
+      title: this.snapshot!.name,
+      text: "Are you sure you want to delete this snapshot?",
+      confirmText: "delete snapshot",
+      dismissText: "no",
+    });
+
+    if (!confirmed) {
       return;
     }
 
