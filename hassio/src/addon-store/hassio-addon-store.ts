@@ -86,7 +86,6 @@ class HassioAddonStore extends LitElement {
       <hass-tabs-subpage
         .hass=${this.hass}
         .narrow=${this.narrow}
-        !hassio
         .route=${this.route}
         .tabs=${supervisorTabs}
       >
