@@ -59,7 +59,7 @@ class HassioAddonDashboard extends LitElement {
       {
         name: "Info",
         path: `/hassio/addon/${this.addon.slug}/info`,
-        icon: "mdi:information-variant",
+        icon: "hassio:information-variant",
       },
     ];
 
@@ -67,7 +67,7 @@ class HassioAddonDashboard extends LitElement {
       addonTabs.push({
         name: "Documentation",
         path: `/hassio/addon/${this.addon.slug}/documentation`,
-        icon: "mdi:file-document",
+        icon: "hassio:file-document",
       });
     }
 
@@ -76,12 +76,12 @@ class HassioAddonDashboard extends LitElement {
         {
           name: "Configuration",
           path: `/hassio/addon/${this.addon.slug}/config`,
-          icon: "mdi:cogs",
+          icon: "hassio:cogs",
         },
         {
           name: "Log",
           path: `/hassio/addon/${this.addon.slug}/logs`,
-          icon: "mdi:math-log",
+          icon: "hassio:math-log",
         }
       );
     }
@@ -94,7 +94,7 @@ class HassioAddonDashboard extends LitElement {
         .narrow=${this.narrow}
         .backPath=${this.addon.version ? "/hassio/dashboard" : "/hassio/store"}
         .route=${route}
-        .hassio=${true}
+        hassio
         .tabs=${addonTabs}
       >
         <span slot="header">${this.addon.name}</span>

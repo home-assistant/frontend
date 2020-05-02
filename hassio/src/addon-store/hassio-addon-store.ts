@@ -13,10 +13,13 @@ import {
   reloadHassioAddons,
 } from "../../../src/data/hassio/addon";
 import "../../../src/layouts/loading-screen";
-import { HomeAssistant } from "../../../src/types";
+import "../../../src/layouts/hass-tabs-subpage";
+import { HomeAssistant, Route } from "../../../src/types";
 import "../components/hassio-search-input";
 import "./hassio-addon-repository";
 import "./hassio-repositories-editor";
+
+import { supervisorTabs } from "../hassio-panel";
 
 const sortRepos = (a: HassioAddonRepository, b: HassioAddonRepository) => {
   if (a.slug === "local") {
@@ -35,11 +38,15 @@ const sortRepos = (a: HassioAddonRepository, b: HassioAddonRepository) => {
 };
 
 class HassioAddonStore extends LitElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() private _addons?: HassioAddonInfo[];
+  @property({ type: Boolean }) public narrow!: boolean;
 
-  @property() private _repos?: HassioAddonRepository[];
+  @property({ attribute: false }) public route!: Route;
+
+  @property({ attribute: false }) private _addons?: HassioAddonInfo[];
+
+  @property({ attribute: false }) private _repos?: HassioAddonRepository[];
 
   @property() private _filter?: string;
 
@@ -52,42 +59,61 @@ class HassioAddonStore extends LitElement {
   }
 
   protected render(): TemplateResult {
-    if (!this._addons || !this._repos) {
-      return html` <loading-screen></loading-screen> `;
-    }
     const repos: TemplateResult[] = [];
 
-    for (const repo of this._repos) {
-      const addons = this._addons!.filter(
-        (addon) => addon.repository === repo.slug
-      );
+    if (this._repos) {
+      for (const repo of this._repos) {
+        const addons = this._addons!.filter(
+          (addon) => addon.repository === repo.slug
+        );
 
-      if (addons.length === 0) {
-        continue;
+        if (addons.length === 0) {
+          continue;
+        }
+
+        repos.push(html`
+          <hassio-addon-repository
+            .hass=${this.hass}
+            .repo=${repo}
+            .addons=${addons}
+            .filter=${this._filter}
+          ></hassio-addon-repository>
+        `);
       }
-
-      repos.push(html`
-        <hassio-addon-repository
-          .hass=${this.hass}
-          .repo=${repo}
-          .addons=${addons}
-          .filter=${this._filter}
-        ></hassio-addon-repository>
-      `);
     }
 
     return html`
-      <hassio-repositories-editor
+      <hass-tabs-subpage
         .hass=${this.hass}
-        .repos=${this._repos}
-      ></hassio-repositories-editor>
+        .narrow=${this.narrow}
+        .route=${this.route}
+        hassio
+        .tabs=${supervisorTabs}
+      >
+        <span slot="header">Add-on store</span>
+        <paper-icon-button
+          icon="hassio:reload"
+          slot="toolbar-icon"
+          aria-label="Reload add-ons"
+          @click=${this.refreshData}
+        ></paper-icon-button>
 
-      <hassio-search-input
-        .filter=${this._filter}
-        @value-changed=${this._filterChanged}
-      ></hassio-search-input>
+        ${repos.length === 0
+          ? html`<loading-screen></loading-screen>`
+          : html`
+              <hassio-repositories-editor
+                .hass=${this.hass}
+                .repos=${this._repos!}
+              ></hassio-repositories-editor>
 
-      ${repos}
+              <hassio-search-input
+                .filter=${this._filter}
+                @value-changed=${this._filterChanged}
+              ></hassio-search-input>
+
+              ${repos}
+            `}
+      </hass-tabs-subpage>
     `;
   }
 
