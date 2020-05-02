@@ -147,9 +147,9 @@ class HassioSupervisorInfo extends LitElement {
 Beta releases are for testers and early adopters and can contain unstable code changes. Make sure you have backups of your data before you activate this feature.
 
 This includes beta releases for:
-- Home Assistant (Release Candidates)
-- Hass.io supervisor
-- Host system`)
+- Home Assistant Core (Release Candidates)
+- Home Assistant Supervisor
+- Home Assistant Operating System`)
     ) {
       return;
     }
