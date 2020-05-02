@@ -12,6 +12,8 @@ class HaMarkdown extends UpdatingElement {
 
   @property({ type: Boolean }) public allowSvg = false;
 
+  @property({ type: Boolean }) public breaks = false;
+
   protected update(changedProps) {
     super.update(changedProps);
 
@@ -26,7 +28,7 @@ class HaMarkdown extends UpdatingElement {
     this.innerHTML = await worker.renderMarkdown(
       this.content,
       {
-        breaks: true,
+        breaks: this.breaks,
         gfm: true,
         tables: true,
       },
