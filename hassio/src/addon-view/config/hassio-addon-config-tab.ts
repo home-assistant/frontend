@@ -59,13 +59,10 @@ class HassioAddonConfigDashboard extends LitElement {
       haStyle,
       hassioStyle,
       css`
-        @media screen and (min-width: 1024px) {
-          .content {
-            width: 50%;
-            margin: auto;
-            margin-top: 8px;
-            max-width: 1024px;
-          }
+        .content {
+          margin: auto;
+          padding: 8px;
+          max-width: 1024px;
         }
         hassio-addon-network,
         hassio-addon-audio,
