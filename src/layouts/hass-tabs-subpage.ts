@@ -39,7 +39,7 @@ class HassTabsSubpage extends LitElement {
 
   @property({ type: Boolean }) public hassio = false;
 
-  @property({ type: Boolean }) public mainPage = false;
+  @property({ type: Boolean, attribute: "main-page" }) public mainPage = false;
 
   @property() public route!: Route;
 

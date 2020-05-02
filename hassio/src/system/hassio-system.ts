@@ -43,7 +43,7 @@ class HassioSystem extends LitElement {
         .hass=${this.hass}
         .narrow=${this.narrow}
         hassio
-        mainPage
+        main-page
         .route=${this.route}
         .tabs=${supervisorTabs}
       >
