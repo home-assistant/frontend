@@ -9,10 +9,10 @@ import {
 } from "lit-element";
 import { Calendar } from "@fullcalendar/core";
 import dayGridPlugin from "@fullcalendar/daygrid";
-import fullcalendarStyle from "@fullcalendar/core/main.min.css";
-import daygridStyle from "@fullcalendar/daygrid/main.min.css";
-//import timegridStyle from "@fullcalendar/timegrid/main.min.css";
-//import listStyle from "@fullcalendar/list/main.min.css";
+// @ts-ignore
+import fullcalendarStyle from "@fullcalendar/core/main.css";
+// @ts-ignore
+import daygridStyle from "@fullcalendar/daygrid/main.css";
 
 import "../../components/ha-paper-icon-button-arrow-next";
 import "../../components/ha-paper-icon-button-arrow-prev";
@@ -38,9 +38,11 @@ declare global {
 }
 
 const fullCalendarConfig = {
-  header: false,
+  headerToolbar: false,
   plugins: [dayGridPlugin],
-  defaultView: "dayGridMonth",
+  initialView: "dayGridMonth",
+  dayMaxEventRows: true,
+  height: "calc(100vh - 190px)",
 };
 
 class HAFullCalendar extends LitElement {
@@ -48,37 +50,42 @@ class HAFullCalendar extends LitElement {
 
   @property() private calendar?: Calendar;
 
+  @property({ type: Boolean, reflect: true, attribute: "narrow" })
+  public narrow = false;
+
   protected render() {
     return html`
       <ha-card>
         <div class="card-content">
           ${this.calendar
             ? html`
-                <div class="side-by-side">
+                <div class="header">
                   <div class="navigation">
+                    <mwc-button @click=${this._handleToday}>Today</mwc-button>
                     <ha-paper-icon-button-arrow-prev @click=${this._handlePrev}
                       >Prev</ha-paper-icon-button-arrow-prev
                     >
                     <ha-paper-icon-button-arrow-next @click=${this._handleNext}
                       >Next</ha-paper-icon-button-arrow-next
                     >
-                    <mwc-button @click=${this._handleToday}>Today</mwc-button>
                   </div>
-                  <h1>
+                  <div class="title">
                     ${this.calendar.view.title}
-                  </h1>
-                  <paper-dropdown-menu label="View">
-                    <paper-listbox
-                      slot="dropdown-content"
-                      attr-for-selected="view"
-                      .selected=${this.calendar.view.type}
-                      @iron-select=${this._handleView}
-                    >
-                      <paper-item .view=${"dayGridDay"}>Day</paper-item>
-                      <paper-item .view=${"dayGridWeek"}>Week</paper-item>
-                      <paper-item .view=${"dayGridMonth"}>Month</paper-item>
-                    </paper-listbox>
-                  </paper-dropdown-menu>
+                  </div>
+                  <div>
+                    <paper-dropdown-menu label="View">
+                      <paper-listbox
+                        slot="dropdown-content"
+                        attr-for-selected="view"
+                        .selected=${this.calendar.view.type}
+                        @iron-select=${this._handleView}
+                      >
+                        <paper-item .view=${"dayGridDay"}>Day</paper-item>
+                        <paper-item .view=${"dayGridWeek"}>Week</paper-item>
+                        <paper-item .view=${"dayGridMonth"}>Month</paper-item>
+                      </paper-listbox>
+                    </paper-dropdown-menu>
+                  </div>
                 </div>
               `
             : ""}
@@ -107,7 +114,7 @@ class HAFullCalendar extends LitElement {
       fullCalendarConfig
     );
 
-    this.calendar.render();
+    this.calendar!.render();
   }
 
   private _handleNext() {
@@ -140,116 +147,91 @@ class HAFullCalendar extends LitElement {
 
   static get styles(): CSSResult {
     return css`
-      .side-by-side {
+      ${unsafeCSS(fullcalendarStyle)}
+      ${unsafeCSS(daygridStyle)}
+      
+
+      .header {
         display: flex;
+      }
+
+      .header > * {
+        display: flex;
+        align-items: center;
       }
 
       .navigation {
         flex-grow: 0;
-        padding-top: 5px;
       }
 
-      h1 {
-        text-align: center;
+      .title {
         flex-grow: 1;
-        margin-top: 12px;
+        margin-left: 8px;
+        font-size: 22px;
+        font-weight: 400;
+        letter-spacing: 0;
+        line-height: 28px;
+        white-space: nowrap;
       }
 
       paper-dropdown-menu {
         flex-grow: 0;
-        position: relative;
-        top: -12px;
+        top: -8px;
+        width: 100px;
       }
 
-      ${unsafeCSS(fullcalendarStyle)}
-      ${unsafeCSS(daygridStyle)}
-      
-      .fc-state-highlight {
-        opacity: 0;
+      .fc-scrollgrid-section-header td {
         border: none;
       }
 
-      .fc-day-header {
+      th.fc-col-header-cell.fc-day {
         color: #70757a;
         font-size: 11px;
-        font-weight: 500;
-        line-height: 20px;
+        font-weight: 400;
         text-transform: uppercase;
       }
 
-      .fc-day-top {
+      .fc-daygrid-day-top {
         text-align: center;
+        padding-top: 8px;
       }
 
-      .fc-day-number {
+      table.fc-scrollgrid-sync-table tbody tr:first-child .fc-daygrid-day-top {
+        padding-top: 0;
+      }
+
+      a.fc-daygrid-day-number {
         float: none !important;
+        font-size: 12px;
+      }
+
+      td.fc-day-today {
+        background: inherit;
+      }
+
+      td.fc-day-today .fc-daygrid-day-number {
+        height: 24px;
+        color: #fff;
+        background-color: #1a73e8;
+        border-radius: 50%;
+        display: inline-block;
+        text-align: center;
+        white-space: nowrap;
+        width: max-content;
+        min-width: 24px;
+      }
+
+      .fc-daygrid-day-events {
+        margin-top: 4px;
       }
 
       .fc-event {
         border-radius: 4px;
-        border: none;
-        padding: 4px;
-        background-color: var(--primary-color);
+        line-height: 1.7;
       }
 
-      .fc td,
-      .fc th {
-        border-width: 1px !important;
-        padding: 0 !important;
-        vertical-align: top !important;
-      }
-
-      td.fc-today {
-        background: #e1f5fe !important;
-      }
-
-      /* Inherits background for each event from Schedule. */
-      .fc-event .fc-bg {
-        z-index: 1 !important;
-        opacity: 0.25 !important;
-      }
-
-      /* Normal font weight for the time in each event */
-      .fc-time-grid-event .fc-time {
-        font-weight: normal !important;
-      }
-
-      /* Apply same opacity to all day events */
-      .fc-ltr .fc-h-event.fc-not-end,
-      .fc-rtl .fc-h-event.fc-not-start {
-        opacity: 0.65 !important;
-        margin-left: 12px !important;
-        padding: 5px !important;
-      }
-
-      /* Apply same opacity to all day events */
-      .fc-day-grid-event.fc-h-event.fc-event.fc-not-start.fc-end {
-        opacity: 0.65 !important;
-        margin-left: 12px !important;
-        padding: 5px !important;
-      }
-
-      /* The active button box is ugly so the active button will have the same appearance of the hover */
-      .fc-state-active {
-        background-color: rgba(158, 158, 158, 0.2);
-      }
-
-      /* Not raised button */
-      .fc-state-default {
-        box-shadow: None;
-      }
-
-      .fc-today {
-        background: #e1f5fe;
-      }
-
-      .fc button .fc-icon {
-        /* non-theme */
-        position: relative;
-        top: -0.05em;
-        /* seems to be a good adjustment across browsers */
-        margin: 0 0.2em;
-        vertical-align: middle;
+      .fc-daygrid-block-event .fc-event-main {
+        padding: 0 1px;
       }
     `;
   }

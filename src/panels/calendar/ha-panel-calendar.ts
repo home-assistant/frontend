@@ -37,11 +37,12 @@ interface Calendar {
 }
 
 interface CalendarEvent {
-  end?: Date;
-  start: Date;
   summary: string;
   title: string;
+  start: string;
+  end?: string;
   backgroundColor?: string;
+  borderColor?: string;
 }
 
 const palette = [
@@ -141,13 +142,31 @@ class PanelCalendar extends LitElement {
   protected render(): TemplateResult {
     return html`
       <app-header-layout has-scrolling-region>
-        <app-header fixed slot="header">
-          <app-toolbar>
+        <app-header fixed slot="header"
+          ><app-toolbar>
             <ha-menu-button
               .hass=${this.hass}
               .narrow=${this.narrow}
             ></ha-menu-button>
             <div main-title>${this.hass.localize("panel.calendar")}</div>
+            <paper-menu-button
+              no-animations
+              horizontal-align="right"
+              horizontal-offset="-5"
+            >
+              <paper-icon-button
+                aria-label=""
+                title=""
+                icon="hass:dots-vertical"
+                slot="dropdown-trigger"
+              ></paper-icon-button>
+              <paper-listbox @iron-select="" slot="dropdown-content">
+                <paper-item aria-label="">
+                  Select Calendars
+                  <!--  TODO: Localize -->
+                </paper-item>
+              </paper-listbox>
+            </paper-menu-button>
           </app-toolbar>
         </app-header>
         <div class="content">
@@ -209,7 +228,7 @@ class PanelCalendar extends LitElement {
       this._calendars
         .filter((selCal) => selCal.selected)
         .forEach(async (selCal, idx) => {
-          const events = await this.hass.callApi<CalendarEvent[]>(
+          const events = await this.hass.callApi<any[]>(
             "GET",
             `calendars/${selCal.calendar.entity_id}${params}`
           );
@@ -218,12 +237,14 @@ class PanelCalendar extends LitElement {
             if (!eventStart) {
               return;
             }
+            const eventEnd = this._getDate(ev.end);
             const event: CalendarEvent = {
               start: eventStart,
-              end: this._getDate(ev.end),
+              end: eventEnd,
               title: ev.summary,
               summary: ev.summary,
               backgroundColor: selCal.backgroundColor,
+              borderColor: selCal.backgroundColor,
             };
 
             calEvents.push(event);
@@ -240,17 +261,17 @@ class PanelCalendar extends LitElement {
     });
   }
 
-  private _getDate(dateObj: any): Date | undefined {
+  private _getDate(dateObj: any): string | undefined {
     if (typeof dateObj === "string") {
-      return new Date(dateObj);
+      return dateObj;
     }
 
     if (dateObj.dateTime) {
-      return new Date(dateObj.dateTime);
+      return dateObj.dateTime;
     }
 
     if (dateObj.date) {
-      return new Date(dateObj.date);
+      return dateObj.date;
     }
 
     return undefined;
@@ -285,20 +306,25 @@ class PanelCalendar extends LitElement {
         .calendar-list {
           padding-right: 16px;
           min-width: 170px;
-          flex: 1 0 15%;
+          flex: 0 0 15%;
         }
 
-        :host([narrow]) .content {
-          flex-direction: column;
-        }
-        :host([narrow]) .calendar-list {
-          margin-bottom: 24px;
-          width: 100%;
+        ha-full-calendar {
+          flex-grow: 1;
         }
 
         .calendar-toggle {
           display: flex;
           padding: 0 16px 16px 16px;
+        }
+
+        :host([narrow]) .content {
+          flex-direction: column-reverse;
+          padding: 0;
+        }
+        :host([narrow]) .calendar-list {
+          margin-bottom: 24px;
+          width: 100%;
         }
       `,
     ];
