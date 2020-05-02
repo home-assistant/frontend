@@ -2800,6 +2800,19 @@
               "abort": {
                 "not_allowed": "Your computer is not allowed."
               }
+            },
+            "openid": {
+              "abort": {
+                "invalid_auth": "Invalid authentication."
+              },
+              "step": {
+                "authenticate": {
+                  "description": "Redirecting to external provider"
+                },
+                "authorize": {
+                  "description": "Checking authorization for provided user"
+                }
+              }
             }
           }
         }
