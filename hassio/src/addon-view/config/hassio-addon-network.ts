@@ -16,6 +16,8 @@ import {
   HassioAddonSetOptionParams,
   setHassioAddonOption,
 } from "../../../../src/data/hassio/addon";
+import { suggestAddonRestart } from "../../dialogs/suggestAddonRestart";
+
 import { haStyle } from "../../../../src/resources/styles";
 import { HomeAssistant } from "../../../../src/types";
 import { hassioStyle } from "../../resources/hassio-style";
@@ -165,6 +167,9 @@ class HassioAddonNetwork extends LitElement {
         err.body?.message || err
       }`;
     }
+    if (!this._error && this.addon?.state === "started") {
+      await suggestAddonRestart(this, this.hass, this.addon);
+    }
   }
 
   private async _saveTapped(): Promise<void> {
@@ -190,6 +195,9 @@ class HassioAddonNetwork extends LitElement {
       this._error = `Failed to set addon network configuration, ${
         err.body?.message || err
       }`;
+    }
+    if (!this._error && this.addon?.state === "started") {
+      await suggestAddonRestart(this, this.hass, this.addon);
     }
   }
 }

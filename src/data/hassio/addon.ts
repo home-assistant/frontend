@@ -175,6 +175,13 @@ export const installHassioAddon = async (hass: HomeAssistant, slug: string) => {
   );
 };
 
+export const restartHassioAddon = async (hass: HomeAssistant, slug: string) => {
+  return hass.callApi<HassioResponse<void>>(
+    "POST",
+    `hassio/addons/${slug}/restart`
+  );
+};
+
 export const uninstallHassioAddon = async (
   hass: HomeAssistant,
   slug: string
