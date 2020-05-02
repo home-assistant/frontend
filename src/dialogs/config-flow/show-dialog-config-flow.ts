@@ -59,7 +59,9 @@ export const showConfigFlowDialog = (
       );
 
       return description
-        ? html` <ha-markdown allowsvg .content=${description}></ha-markdown> `
+        ? html`
+            <ha-markdown allowsvg breaks .content=${description}></ha-markdown>
+          `
         : "";
     },
 
@@ -78,7 +80,9 @@ export const showConfigFlowDialog = (
         step.description_placeholders
       );
       return description
-        ? html` <ha-markdown allowsvg .content=${description}></ha-markdown> `
+        ? html`
+            <ha-markdown allowsvg breaks .content=${description}></ha-markdown>
+          `
         : "";
     },
 
@@ -112,7 +116,13 @@ export const showConfigFlowDialog = (
           )}
         </p>
         ${description
-          ? html` <ha-markdown allowsvg .content=${description}></ha-markdown> `
+          ? html`
+              <ha-markdown
+                allowsvg
+                breaks
+                .content=${description}
+              ></ha-markdown>
+            `
           : ""}
       `;
     },
@@ -128,7 +138,13 @@ export const showConfigFlowDialog = (
 
       return html`
         ${description
-          ? html` <ha-markdown allowsvg .content=${description}></ha-markdown> `
+          ? html`
+              <ha-markdown
+                allowsvg
+                breaks
+                .content=${description}
+              ></ha-markdown>
+            `
           : ""}
         <p>
           ${hass.localize(
