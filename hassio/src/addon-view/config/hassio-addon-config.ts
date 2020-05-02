@@ -43,7 +43,8 @@ class HassioAddonConfig extends LitElement {
     const valid = editor ? editor.isValid : true;
 
     return html`
-      <paper-card heading="Config">
+      <h1>${this.addon.name}</h1>
+      <paper-card heading="Configuration">
         <div class="card-content">
           <ha-yaml-editor
             @value-changed=${this._configChanged}
