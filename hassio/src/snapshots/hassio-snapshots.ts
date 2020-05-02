@@ -30,10 +30,13 @@ import {
 import { HassioSupervisorInfo } from "../../../src/data/hassio/supervisor";
 import { PolymerChangedEvent } from "../../../src/polymer-types";
 import { haStyle } from "../../../src/resources/styles";
-import { HomeAssistant } from "../../../src/types";
+import { HomeAssistant, Route } from "../../../src/types";
+import "../../../src/layouts/hass-tabs-subpage";
 import "../components/hassio-card-content";
 import { showHassioSnapshotDialog } from "../dialogs/snapshot/show-dialog-hassio-snapshot";
 import { hassioStyle } from "../resources/hassio-style";
+
+import { supervisorTabs } from "../hassio-panel";
 
 interface CheckboxItem {
   slug: string;
@@ -43,9 +46,13 @@ interface CheckboxItem {
 
 @customElement("hassio-snapshots")
 class HassioSnapshots extends LitElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public supervisorInfo!: HassioSupervisorInfo;
+  @property({ type: Boolean }) public narrow!: boolean;
+
+  @property({ attribute: false }) public route!: Route;
+
+  @property({ attribute: false }) public supervisorInfo!: HassioSupervisorInfo;
 
   @property() private _snapshotName = "";
 
@@ -81,135 +88,152 @@ class HassioSnapshots extends LitElement {
 
   protected render(): TemplateResult {
     return html`
-      <div class="content">
-        <h1>
-          Create snapshot
-        </h1>
-        <p class="description">
-          Snapshots allow you to easily backup and restore all data of your Home
-          Assistant instance.
-        </p>
-        <div class="card-group">
-          <paper-card>
-            <div class="card-content">
-              <paper-input
-                autofocus
-                label="Name"
-                name="snapshotName"
-                .value=${this._snapshotName}
-                @value-changed=${this._handleTextValueChanged}
-              ></paper-input>
-              Type:
-              <paper-radio-group
-                name="snapshotType"
-                .selected=${this._snapshotType}
-                @selected-changed=${this._handleRadioValueChanged}
-              >
-                <paper-radio-button name="full">
-                  Full snapshot
-                </paper-radio-button>
-                <paper-radio-button name="partial">
-                  Partial snapshot
-                </paper-radio-button>
-              </paper-radio-group>
-              ${this._snapshotType === "full"
-                ? undefined
-                : html`
-                    Folders:
-                    ${this._folderList.map(
-                      (folder, idx) => html`
-                        <paper-checkbox
-                          .idx=${idx}
-                          .checked=${folder.checked}
-                          @checked-changed=${this._folderChecked}
-                        >
-                          ${folder.name}
-                        </paper-checkbox>
-                      `
-                    )}
-                    Add-ons:
-                    ${this._addonList.map(
-                      (addon, idx) => html`
-                        <paper-checkbox
-                          .idx=${idx}
-                          .checked=${addon.checked}
-                          @checked-changed=${this._addonChecked}
-                        >
-                          ${addon.name}
-                        </paper-checkbox>
-                      `
-                    )}
-                  `}
-              Security:
-              <paper-checkbox
-                name="snapshotHasPassword"
-                .checked=${this._snapshotHasPassword}
-                @checked-changed=${this._handleCheckboxValueChanged}
-              >
-                Password protection
-              </paper-checkbox>
-              ${this._snapshotHasPassword
-                ? html`
-                    <paper-input
-                      label="Password"
-                      type="password"
-                      name="snapshotPassword"
-                      .value=${this._snapshotPassword}
-                      @value-changed=${this._handleTextValueChanged}
-                    ></paper-input>
-                  `
-                : undefined}
-              ${this._error !== ""
-                ? html` <p class="error">${this._error}</p> `
-                : undefined}
-            </div>
-            <div class="card-actions">
-              <mwc-button
-                .disabled=${this._creatingSnapshot}
-                @click=${this._createSnapshot}
-              >
-                Create
-              </mwc-button>
-            </div>
-          </paper-card>
-        </div>
+      <hass-tabs-subpage
+        .hass=${this.hass}
+        .narrow=${this.narrow}
+        hassio
+        .route=${this.route}
+        .tabs=${supervisorTabs}
+      >
+        <span slot="header">Snapshots</span>
 
-        <h1>Available snapshots</h1>
-        <div class="card-group">
-          ${this._snapshots === undefined
-            ? undefined
-            : this._snapshots.length === 0
-            ? html`
-                <paper-card>
-                  <div class="card-content">
-                    You don't have any snapshots yet.
-                  </div>
-                </paper-card>
-              `
-            : this._snapshots.map(
-                (snapshot) => html`
-                  <paper-card
-                    class="pointer"
-                    .snapshot=${snapshot}
-                    @click=${this._snapshotClicked}
-                  >
+        <paper-icon-button
+          icon="hassio:reload"
+          slot="toolbar-icon"
+          aria-label="Reload snapshots"
+          @click=${this.refreshData}
+        ></paper-icon-button>
+
+        <div class="content">
+          <h1>
+            Create snapshot
+          </h1>
+          <p class="description">
+            Snapshots allow you to easily backup and restore all data of your
+            Home Assistant instance.
+          </p>
+          <div class="card-group">
+            <paper-card>
+              <div class="card-content">
+                <paper-input
+                  autofocus
+                  label="Name"
+                  name="snapshotName"
+                  .value=${this._snapshotName}
+                  @value-changed=${this._handleTextValueChanged}
+                ></paper-input>
+                Type:
+                <paper-radio-group
+                  name="snapshotType"
+                  .selected=${this._snapshotType}
+                  @selected-changed=${this._handleRadioValueChanged}
+                >
+                  <paper-radio-button name="full">
+                    Full snapshot
+                  </paper-radio-button>
+                  <paper-radio-button name="partial">
+                    Partial snapshot
+                  </paper-radio-button>
+                </paper-radio-group>
+                ${this._snapshotType === "full"
+                  ? undefined
+                  : html`
+                      Folders:
+                      ${this._folderList.map(
+                        (folder, idx) => html`
+                          <paper-checkbox
+                            .idx=${idx}
+                            .checked=${folder.checked}
+                            @checked-changed=${this._folderChecked}
+                          >
+                            ${folder.name}
+                          </paper-checkbox>
+                        `
+                      )}
+                      Add-ons:
+                      ${this._addonList.map(
+                        (addon, idx) => html`
+                          <paper-checkbox
+                            .idx=${idx}
+                            .checked=${addon.checked}
+                            @checked-changed=${this._addonChecked}
+                          >
+                            ${addon.name}
+                          </paper-checkbox>
+                        `
+                      )}
+                    `}
+                Security:
+                <paper-checkbox
+                  name="snapshotHasPassword"
+                  .checked=${this._snapshotHasPassword}
+                  @checked-changed=${this._handleCheckboxValueChanged}
+                >
+                  Password protection
+                </paper-checkbox>
+                ${this._snapshotHasPassword
+                  ? html`
+                      <paper-input
+                        label="Password"
+                        type="password"
+                        name="snapshotPassword"
+                        .value=${this._snapshotPassword}
+                        @value-changed=${this._handleTextValueChanged}
+                      ></paper-input>
+                    `
+                  : undefined}
+                ${this._error !== ""
+                  ? html` <p class="error">${this._error}</p> `
+                  : undefined}
+              </div>
+              <div class="card-actions">
+                <mwc-button
+                  .disabled=${this._creatingSnapshot}
+                  @click=${this._createSnapshot}
+                >
+                  Create
+                </mwc-button>
+              </div>
+            </paper-card>
+          </div>
+
+          <h1>Available snapshots</h1>
+          <div class="card-group">
+            ${this._snapshots === undefined
+              ? undefined
+              : this._snapshots.length === 0
+              ? html`
+                  <paper-card>
                     <div class="card-content">
-                      <hassio-card-content
-                        .hass=${this.hass}
-                        .title=${snapshot.name || snapshot.slug}
-                        .description=${this._computeDetails(snapshot)}
-                        .datetime=${snapshot.date}
-                        .icon=${snapshot.type === "full"
-                          ? "hassio:package-variant-closed"
-                          : "hassio:package-variant"}
-                        .icon-class="snapshot"
-                      ></hassio-card-content>
+                      You don't have any snapshots yet.
                     </div>
                   </paper-card>
                 `
-              )}
+              : this._snapshots.map(
+                  (snapshot) => html`
+                    <paper-card
+                      class="pointer"
+                      .snapshot=${snapshot}
+                      @click=${this._snapshotClicked}
+                    >
+                      <div class="card-content">
+                        <hassio-card-content
+                          .hass=${this.hass}
+                          .title=${snapshot.name || snapshot.slug}
+                          .description=${this._computeDetails(snapshot)}
+                          .datetime=${snapshot.date}
+                          .icon=${snapshot.type === "full"
+                            ? "hassio:package-variant-closed"
+                            : "hassio:package-variant"}
+                          .icon-class="snapshot"
+                        ></hassio-card-content>
+                      </div>
+                    </paper-card>
+                  `
+                )}
+          </div>
         </div>
-      </div>
+      </hass-tabs-subpage>
     `;
   }
 
