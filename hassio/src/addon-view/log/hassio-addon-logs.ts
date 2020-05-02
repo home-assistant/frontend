@@ -13,7 +13,6 @@ import {
   fetchHassioAddonLogs,
   HassioAddonDetails,
 } from "../../../../src/data/hassio/addon";
-import "../../../../src/layouts/loading-screen";
 import { haStyle } from "../../../../src/resources/styles";
 import { HomeAssistant } from "../../../../src/types";
 import "../../components/hassio-ansi-to-html";
@@ -36,14 +35,15 @@ class HassioAddonLogs extends LitElement {
 
   protected render(): TemplateResult {
     return html`
-      <paper-card heading="Log">
+      <h1>${this.addon.name}</h1>
+      <paper-card>
         ${this._error ? html` <div class="errors">${this._error}</div> ` : ""}
         <div class="card-content">
           ${this._content
             ? html`<hassio-ansi-to-html
                 .content=${this._content}
               ></hassio-ansi-to-html>`
-            : html`<loading-screen></loading-screen>`}
+            : ""}
         </div>
         <div class="card-actions">
           <mwc-button @click=${this._refresh}>Refresh</mwc-button>

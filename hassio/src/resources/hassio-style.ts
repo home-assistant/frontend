@@ -4,8 +4,12 @@ export const hassioStyle = css`
   .content {
     margin: 8px;
   }
-  h1 {
+  h1,
+  .description,
+  .card-content {
     color: var(--primary-text-color);
+  }
+  h1 {
     font-size: 2em;
     margin-bottom: 8px;
     font-family: var(--paper-font-headline_-_font-family);

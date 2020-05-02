@@ -123,6 +123,9 @@ class HassioAddonStore extends LitElement {
       hassio-addon-repository {
         margin-top: 24px;
       }
+      hassio-search-input {
+        --iron-icon-fill-color: var(--primary-text-color);
+      }
     `;
   }
 }
