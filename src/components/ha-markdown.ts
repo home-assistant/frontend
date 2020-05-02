@@ -11,6 +11,7 @@ class HaMarkdown extends UpdatingElement {
   @property() public content = "";
 
   @property({ type: Boolean }) public allowSvg = false;
+
   @property({ type: Boolean }) public breaks = true;
 
   protected update(changedProps) {
