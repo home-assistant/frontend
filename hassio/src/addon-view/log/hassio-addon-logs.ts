@@ -13,7 +13,6 @@ import {
   fetchHassioAddonLogs,
   HassioAddonDetails,
 } from "../../../../src/data/hassio/addon";
-import "../../../../src/layouts/loading-screen";
 import { haStyle } from "../../../../src/resources/styles";
 import { HomeAssistant } from "../../../../src/types";
 import "../../components/hassio-ansi-to-html";
