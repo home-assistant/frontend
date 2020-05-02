@@ -39,6 +39,8 @@ class HassTabsSubpage extends LitElement {
 
   @property({ type: Boolean }) public hassio = false;
 
+  @property({ type: Boolean, attribute: "main-page" }) public mainPage = false;
+
   @property() public route!: Route;
 
   @property() public tabs!: PageNavigation[];
@@ -114,11 +116,21 @@ class HassTabsSubpage extends LitElement {
 
     return html`
       <div class="toolbar">
-        <ha-paper-icon-button-arrow-prev
-          aria-label="Back"
-          .hassio=${this.hassio}
-          @click=${this._backTapped}
-        ></ha-paper-icon-button-arrow-prev>
+        ${this.mainPage
+          ? html`
+              <ha-menu-button
+                .hass=${this.hass}
+                .hassio=${this.hassio}
+                .narrow=${this.narrow}
+              ></ha-menu-button>
+            `
+          : html`
+              <ha-paper-icon-button-arrow-prev
+                aria-label="Back"
+                .hassio=${this.hassio}
+                @click=${this._backTapped}
+              ></ha-paper-icon-button-arrow-prev>
+            `}
         ${this.narrow
           ? html` <div class="main-title"><slot name="header"></slot></div> `
           : ""}
