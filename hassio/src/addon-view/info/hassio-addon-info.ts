@@ -615,6 +615,7 @@ class HassioAddonInfo extends LitElement {
           cursor: pointer;
           margin-right: 4px;
           --iron-icon-height: 45px;
+          --ha-label-badge-padding: 8px 0 0 0;
         }
       `,
     ];
