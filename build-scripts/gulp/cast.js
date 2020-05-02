@@ -13,7 +13,6 @@ gulp.task(
   gulp.series(
     async function setEnv() {
       process.env.NODE_ENV = "development";
-      process.env.IS_CAST = "true";
     },
     "clean-cast",
     "translations-enable-merge-backend",
