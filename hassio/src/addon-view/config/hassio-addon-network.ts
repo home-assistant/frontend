@@ -15,7 +15,9 @@ import {
   HassioAddonDetails,
   HassioAddonSetOptionParams,
   setHassioAddonOption,
+  restartHassioAddon,
 } from "../../../../src/data/hassio/addon";
+import { showConfirmationDialog } from "../../../../src/dialogs/generic/show-dialog-box";
 import { haStyle } from "../../../../src/resources/styles";
 import { HomeAssistant } from "../../../../src/types";
 import { hassioStyle } from "../../resources/hassio-style";
@@ -165,6 +167,7 @@ class HassioAddonNetwork extends LitElement {
         err.body?.message || err
       }`;
     }
+    await this._restartAddon();
   }
 
   private async _saveTapped(): Promise<void> {
@@ -190,6 +193,24 @@ class HassioAddonNetwork extends LitElement {
       this._error = `Failed to set addon network configuration, ${
         err.body?.message || err
       }`;
+    }
+    await this._restartAddon();
+  }
+
+  private async _restartAddon(): Promise<void> {
+    if (this.addon?.state === "started") {
+      const confirmed = await showConfirmationDialog(this, {
+        title: this.addon.name,
+        text: "Do you want to restart the add-on with your changes?",
+        confirmText: "restart add-on",
+      });
+      if (confirmed) {
+        try {
+          await restartHassioAddon(this.hass, this.addon.slug);
+        } catch (err) {
+          this._error = `Failed to restart addon, ${err.body?.message || err}`;
+        }
+      }
     }
   }
 }
