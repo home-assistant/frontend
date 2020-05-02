@@ -523,9 +523,9 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
     });
   }
 
-  private _ignoreFlow(ev: Event) {
+  private async _ignoreFlow(ev: Event) {
     const flow = (ev.target! as any).flow;
-    showConfirmationDialog(this, {
+    const confirmed = await showConfirmationDialog(this, {
       title: this.hass!.localize(
         "ui.panel.config.integrations.ignore.confirm_ignore_title",
         "name",
@@ -537,11 +537,13 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
       confirmText: this.hass!.localize(
         "ui.panel.config.integrations.ignore.ignore"
       ),
-      confirm: () => {
-        ignoreConfigFlow(this.hass, flow.flow_id);
-        getConfigFlowInProgressCollection(this.hass.connection).refresh();
-      },
     });
+    if (!confirmed) {
+      return;
+    }
+    await ignoreConfigFlow(this.hass, flow.flow_id);
+    this._loadConfigEntries();
+    getConfigFlowInProgressCollection(this.hass.connection).refresh();
   }
 
   private _toggleShowIgnored() {
