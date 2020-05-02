@@ -153,6 +153,14 @@ class HaAuthFlow extends litLocalizeLiteMixin(LitElement) {
             )}
           ></ha-markdown>
         `;
+      case "external":
+        return html` ${this._computeStepDescription(step)
+          ? html`
+              <ha-markdown
+                .content=${this._computeStepDescription(step)}
+              ></ha-markdown>
+            `
+          : html``}`;
       case "form":
         return html`
           ${this._computeStepDescription(step)
@@ -281,7 +289,9 @@ class HaAuthFlow extends litLocalizeLiteMixin(LitElement) {
     this._stepData = ev.detail.value;
   }
 
-  private _computeStepDescription(step: DataEntryFlowStepForm) {
+  private _computeStepDescription(
+    step: DataEntryFlowStepForm | DataEntryFlowStepExternal
+  ) {
     const resourceKey = `ui.panel.page-authorize.form.providers.${step.handler[0]}.step.${step.step_id}.description`;
     const args: string[] = [];
     const placeholders = step.description_placeholders || {};
