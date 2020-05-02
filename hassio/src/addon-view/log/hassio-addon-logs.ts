@@ -35,7 +35,8 @@ class HassioAddonLogs extends LitElement {
 
   protected render(): TemplateResult {
     return html`
-      <paper-card heading="${this.addon.name} Log">
+      <h1>${this.addon.name}</h1>
+      <paper-card>
         ${this._error ? html` <div class="errors">${this._error}</div> ` : ""}
         <div class="card-content">
           ${this._content
