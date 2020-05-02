@@ -44,7 +44,10 @@ class HassioAddonDocumentationDashboard extends LitElement {
         ${this._error ? html` <div class="errors">${this._error}</div> ` : ""}
         <div class="card-content">
           ${this._content
-            ? html`<ha-markdown .content=${this._content}></ha-markdown>`
+            ? html`<ha-markdown
+                .breaks=${false}
+                .content=${this._content}
+              ></ha-markdown>`
             : html`<loading-screen></loading-screen>`}
         </div>
       </div>
