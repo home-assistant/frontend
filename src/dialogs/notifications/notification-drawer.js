@@ -6,7 +6,7 @@ import { html } from "@polymer/polymer/lib/utils/html-tag";
 /* eslint-plugin-disable lit */
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 import { computeDomain } from "../../common/entity/compute_domain";
-import "../../components/ha-paper-icon-button-prev";
+import "../../components/ha-paper-icon-button-arrow-prev";
 import { subscribeNotifications } from "../../data/persistent_notification";
 import { EventsMixin } from "../../mixins/events-mixin";
 import LocalizeMixin from "../../mixins/localize-mixin";
@@ -51,7 +51,7 @@ export class HuiNotificationDrawer extends EventsMixin(
     <app-drawer id="drawer" opened="{{open}}" disable-swipe align="start">
       <app-toolbar>
         <div main-title>[[localize('ui.notification_drawer.title')]]</div>
-        <ha-paper-icon-button-prev on-click="_closeDrawer" aria-label$="[[localize('ui.notification_drawer.close')]]"></paper-icon-button>
+        <ha-paper-icon-button-arrow-prev on-click="_closeDrawer" aria-label$="[[localize('ui.notification_drawer.close')]]"></ha-paper-icon-button-arrow-prev>
       </app-toolbar>
       <div class="notifications">
         <template is="dom-if" if="[[!_empty(notifications)]]">
