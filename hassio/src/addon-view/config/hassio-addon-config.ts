@@ -19,12 +19,13 @@ import {
   HassioAddonDetails,
   HassioAddonSetOptionParams,
   setHassioAddonOption,
-  restartHassioAddon,
 } from "../../../../src/data/hassio/addon";
 import { showConfirmationDialog } from "../../../../src/dialogs/generic/show-dialog-box";
 import { haStyle } from "../../../../src/resources/styles";
 import type { HomeAssistant } from "../../../../src/types";
 import { hassioStyle } from "../../resources/hassio-style";
+
+import { suggestRestart } from "../../dialogs/suggestRestart";
 
 @customElement("hassio-addon-config")
 class HassioAddonConfig extends LitElement {
@@ -165,18 +166,11 @@ class HassioAddonConfig extends LitElement {
         err.body?.message || err
       }`;
     }
-    if (this.addon?.state === "started") {
-      const confirmed = await showConfirmationDialog(this, {
-        title: this.addon.name,
-        text: "Do you want to restart the add-on with your changes?",
-        confirmText: "restart add-on",
-      });
-      if (confirmed) {
-        try {
-          await restartHassioAddon(this.hass, this.addon.slug);
-        } catch (err) {
-          this._error = `Failed to restart addon, ${err.body?.message || err}`;
-        }
+    if (!this._error && this.addon?.state === "started") {
+      try {
+        await suggestRestart(this, this.hass, this.addon);
+      } catch (err) {
+        this._error = `Failed to restart addon, ${err.body?.message || err}`;
       }
     }
   }
