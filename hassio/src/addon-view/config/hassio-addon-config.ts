@@ -25,7 +25,7 @@ import { haStyle } from "../../../../src/resources/styles";
 import type { HomeAssistant } from "../../../../src/types";
 import { hassioStyle } from "../../resources/hassio-style";
 
-import { suggestRestart } from "../../dialogs/suggestRestart";
+import { suggestAddonRestart } from "../../dialogs/suggestAddonRestart";
 
 @customElement("hassio-addon-config")
 class HassioAddonConfig extends LitElement {
@@ -167,7 +167,7 @@ class HassioAddonConfig extends LitElement {
       }`;
     }
     if (!this._error && this.addon?.state === "started") {
-      await suggestRestart(this, this.hass, this.addon);
+      await suggestAddonRestart(this, this.hass, this.addon);
     }
   }
 }

@@ -23,7 +23,7 @@ import {
   fetchHassioHardwareAudio,
   HassioHardwareAudioDevice,
 } from "../../../../src/data/hassio/hardware";
-import { suggestRestart } from "../../dialogs/suggestRestart";
+import { suggestAddonRestart } from "../../dialogs/suggestAddonRestart";
 import { haStyle } from "../../../../src/resources/styles";
 import { HomeAssistant } from "../../../../src/types";
 import { hassioStyle } from "../../resources/hassio-style";
@@ -185,7 +185,7 @@ class HassioAddonAudio extends LitElement {
       this._error = "Failed to set addon audio device";
     }
     if (!this._error && this.addon?.state === "started") {
-      await suggestRestart(this, this.hass, this.addon);
+      await suggestAddonRestart(this, this.hass, this.addon);
     }
   }
 }

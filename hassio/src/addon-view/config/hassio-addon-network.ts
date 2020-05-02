@@ -16,7 +16,7 @@ import {
   HassioAddonSetOptionParams,
   setHassioAddonOption,
 } from "../../../../src/data/hassio/addon";
-import { suggestRestart } from "../../dialogs/suggestRestart";
+import { suggestAddonRestart } from "../../dialogs/suggestAddonRestart";
 
 import { haStyle } from "../../../../src/resources/styles";
 import { HomeAssistant } from "../../../../src/types";
@@ -168,7 +168,7 @@ class HassioAddonNetwork extends LitElement {
       }`;
     }
     if (!this._error && this.addon?.state === "started") {
-      await suggestRestart(this, this.hass, this.addon);
+      await suggestAddonRestart(this, this.hass, this.addon);
     }
   }
 
@@ -197,7 +197,7 @@ class HassioAddonNetwork extends LitElement {
       }`;
     }
     if (!this._error && this.addon?.state === "started") {
-      await suggestRestart(this, this.hass, this.addon);
+      await suggestAddonRestart(this, this.hass, this.addon);
     }
   }
 }

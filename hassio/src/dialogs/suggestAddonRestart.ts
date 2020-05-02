@@ -9,7 +9,7 @@ import {
   showAlertDialog,
 } from "../../../src/dialogs/generic/show-dialog-box";
 
-export const suggestRestart = async (
+export const suggestAddonRestart = async (
   element: LitElement,
   hass: HomeAssistant,
   addon: HassioAddonDetails
