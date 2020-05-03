@@ -408,35 +408,21 @@ class HassioAddonInfo extends LitElement {
         <div class="card-actions">
           ${this.addon.version
             ? html`
-                <mwc-button class="warning" @click=${this._uninstallClicked}>
-                  Uninstall
-                </mwc-button>
-                ${this.addon.build
-                  ? html`
-                      <ha-call-api-button
-                        class="warning"
-                        .hass=${this.hass}
-                        .path="hassio/addons/${this.addon.slug}/rebuild"
-                      >
-                        Rebuild
-                      </ha-call-api-button>
-                    `
-                  : ""}
                 ${this._computeIsRunning
                   ? html`
-                      <ha-call-api-button
-                        class="warning"
-                        .hass=${this.hass}
-                        .path="hassio/addons/${this.addon.slug}/restart"
-                      >
-                        Restart
-                      </ha-call-api-button>
                       <ha-call-api-button
                         class="warning"
                         .hass=${this.hass}
                         .path="hassio/addons/${this.addon.slug}/stop"
                       >
                         Stop
+                      </ha-call-api-button>
+                      <ha-call-api-button
+                        class="warning"
+                        .hass=${this.hass}
+                        .path="hassio/addons/${this.addon.slug}/restart"
+                      >
+                        Restart
                       </ha-call-api-button>
                     `
                   : html`
@@ -467,6 +453,23 @@ class HassioAddonInfo extends LitElement {
                       <mwc-button class="right" @click=${this._openIngress}>
                         Open web UI
                       </mwc-button>
+                    `
+                  : ""}
+                <mwc-button
+                  class=" right warning"
+                  @click=${this._uninstallClicked}
+                >
+                  Uninstall
+                </mwc-button>
+                ${this.addon.build
+                  ? html`
+                      <ha-call-api-button
+                        class="warning"
+                        .hass=${this.hass}
+                        .path="hassio/addons/${this.addon.slug}/rebuild"
+                      >
+                        Rebuild
+                      </ha-call-api-button>
                     `
                   : ""}
               `
