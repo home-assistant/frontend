@@ -19,12 +19,13 @@ import "@material/mwc-menu";
 import "@material/mwc-button";
 import "@material/mwc-list/mwc-list-item";
 import type { Menu } from "@material/mwc-menu";
+import type { ListItemBase } from "@material/mwc-list/mwc-list-item-base";
+import type { Button } from "@material/mwc-button";
 
 import "../../components/ha-icon";
 
 import type { CalendarViewChanged, CalendarEvent } from "../../types";
 import { fireEvent } from "../../common/dom/fire_event";
-import { ListItemBase } from "@material/mwc-list/mwc-list-item-base";
 
 declare global {
   interface HASSDomEvents {
@@ -48,7 +49,7 @@ class HAFullCalendar extends LitElement {
   @property({ type: Boolean, reflect: true, attribute: "narrow" })
   public narrow = false;
 
-  @query("mwc-menu") private _viewMenu?: Menu;
+  @query(".view-selection mwc-button") private _viewMenuButton?: Button;
 
   protected render() {
     return html`
@@ -80,7 +81,7 @@ class HAFullCalendar extends LitElement {
                 </div>
                 <div class="view-selection">
                   <mwc-button outlined @click=${this._handleViewButtonClick}>
-                    View <ha-icon icon="hass:chevron-down"></ha-icon>
+                    <ha-icon icon="hass:chevron-down"></ha-icon>
                   </mwc-button>
                   <mwc-menu activatable @selected=${this._handleView}>
                     <mwc-list-item value="dayGridDay">Day</mwc-list-item>
@@ -136,15 +137,18 @@ class HAFullCalendar extends LitElement {
     this._fireViewChanged();
   }
 
-  private _handleView() {
-    const newView = (this._viewMenu!.selected as ListItemBase).value;
+  private _handleView(ev) {
+    const selectedItem = (ev.target as Menu).selected as ListItemBase;
 
-    this.calendar!.changeView(newView);
+    this._viewMenuButton!.label = selectedItem.text;
+
+    this.calendar!.changeView(selectedItem.value);
     this._fireViewChanged();
   }
 
   private _handleViewButtonClick() {
-    this._viewMenu!.open = !this._viewMenu!.open;
+    const menu = this.shadowRoot!.querySelector("mwc-menu")! as Menu;
+    menu.open = !menu.open;
   }
 
   private _fireViewChanged() {
