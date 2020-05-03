@@ -193,18 +193,19 @@ class HassioAddonInfo extends LitElement {
                 : html` ${this.addon.version_latest} `}
             </div>
           </div>
-          ${this.addon.version
-            ? html`
-                <div class="description light-color">
+          <div class="description light-color">
+            ${this.addon.version
+              ? html`
                   Current version: ${this.addon.version}
-                  <div class="version-history" @click=${this._openChangelog}>
-                    <span>(</span
-                    ><span class="version-history-link">version history</span
+                  <div class="changelog" @click=${this._openChangelog}>
+                    <span>(</span><span class="changelog-link">changelog</span
                     ><span>)</span>
                   </div>
-                </div>
-              `
-            : ""}
+                `
+              : html`<span class="changelog-link" @click=${this._openChangelog}
+                  >Changelog</span
+                >`}
+          </div>
 
           <div class="description light-color">
             ${this.addon.description}.<br />
@@ -625,10 +626,10 @@ class HassioAddonInfo extends LitElement {
           --iron-icon-height: 45px;
           --ha-label-badge-padding: 8px 0 0 0;
         }
-        .version-history {
+        .changelog {
           display: contents;
         }
-        .version-history-link {
+        .changelog-link {
           color: var(--primary-color);
           text-decoration: underline;
           cursor: pointer;
