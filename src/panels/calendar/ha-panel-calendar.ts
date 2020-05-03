@@ -12,11 +12,11 @@ import { styleMap } from "lit-html/directives/style-map";
 import "@polymer/app-layout/app-header-layout/app-header-layout";
 import "@polymer/app-layout/app-header/app-header";
 import "@polymer/app-layout/app-toolbar/app-toolbar";
-import "@polymer/paper-checkbox/paper-checkbox";
+import "@material/mwc-checkbox";
+import "@material/mwc-formfield";
 
 import "../../components/ha-menu-button";
 import "../../components/ha-card";
-import "../../components/ha-checkbox";
 import "./ha-full-calendar";
 
 import type {
@@ -137,23 +137,21 @@ class PanelCalendar extends LitElement {
         </app-header>
         <div class="content">
           <div class="calendar-list">
-            <ha-card header="Calendars">
-              ${this._calendars.map(
-                (selCal) =>
-                  html`<div class="calendar-toggle">
-                    <paper-checkbox
+            ${this._calendars.map(
+              (selCal) =>
+                html`<div>
+                  <mwc-formfield .label=${selCal.calendar.name}>
+                    <mwc-checkbox
                       style=${styleMap({
-                        "--primary-color": selCal.backgroundColor,
+                        "--mdc-theme-secondary": selCal.backgroundColor,
                       })}
                       .value=${selCal.calendar.entity_id}
                       .checked=${selCal.selected}
                       @change=${this._handleToggle}
-                    >
-                      ${selCal.calendar.name}</paper-checkbox
-                    >
-                  </div>`
-              )}
-            </ha-card>
+                    ></mwc-checkbox>
+                  </mwc-formfield>
+                </div>`
+            )}
           </div>
           <ha-full-calendar
             .events=${this._events}
@@ -279,11 +277,6 @@ class PanelCalendar extends LitElement {
           flex-grow: 1;
         }
 
-        .calendar-toggle {
-          display: flex;
-          padding: 0 16px 16px 16px;
-        }
-
         :host([narrow]) .content {
           flex-direction: column-reverse;
           padding: 0;
@@ -291,6 +284,7 @@ class PanelCalendar extends LitElement {
         :host([narrow]) .calendar-list {
           margin-bottom: 24px;
           width: 100%;
+          padding-right: 0;
         }
       `,
     ];

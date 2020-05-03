@@ -6,6 +6,7 @@ import {
   html,
   css,
   unsafeCSS,
+  query,
 } from "lit-element";
 import { Calendar } from "@fullcalendar/core";
 import dayGridPlugin from "@fullcalendar/daygrid";
@@ -13,10 +14,17 @@ import dayGridPlugin from "@fullcalendar/daygrid";
 import fullcalendarStyle from "@fullcalendar/core/main.css";
 // @ts-ignore
 import daygridStyle from "@fullcalendar/daygrid/main.css";
-import "@polymer/paper-icon-button/paper-icon-button";
+import "@material/mwc-icon-button";
+import "@material/mwc-menu";
+import "@material/mwc-button";
+import "@material/mwc-list/mwc-list-item";
+import type { Menu } from "@material/mwc-menu";
+
+import "../../components/ha-icon";
 
 import type { CalendarViewChanged, CalendarEvent } from "../../types";
 import { fireEvent } from "../../common/dom/fire_event";
+import { ListItemBase } from "@material/mwc-list/mwc-list-item-base";
 
 declare global {
   interface HASSDomEvents {
@@ -29,7 +37,7 @@ const fullCalendarConfig = {
   plugins: [dayGridPlugin],
   initialView: "dayGridMonth",
   dayMaxEventRows: true,
-  height: "calc(100vh - 190px)",
+  height: "calc(100vh - 158px)",
 };
 
 class HAFullCalendar extends LitElement {
@@ -40,51 +48,53 @@ class HAFullCalendar extends LitElement {
   @property({ type: Boolean, reflect: true, attribute: "narrow" })
   public narrow = false;
 
+  @query("mwc-menu") private _viewMenu?: Menu;
+
   protected render() {
     return html`
-      <ha-card>
-        <div class="card-content">
-          ${this.calendar
-            ? html`
-                <div class="header">
-                  <div class="navigation">
-                    <mwc-button @click=${this._handleToday}>Today</mwc-button>
-                    <paper-icon-button
-                      icon="hass:chevron-left"
-                      class="prev"
-                      @click=${this._handlePrev}
-                      >Prev</paper-icon-button
-                    >
-                    <paper-icon-button
-                      icon="hass:chevron-right"
-                      class="next"
-                      @click=${this._handleNext}
-                      >Next</paper-icon-button
-                    >
-                  </div>
-                  <div class="title">
-                    ${this.calendar.view.title}
-                  </div>
-                  <div>
-                    <paper-dropdown-menu label="View">
-                      <paper-listbox
-                        slot="dropdown-content"
-                        attr-for-selected="view"
-                        .selected=${this.calendar.view.type}
-                        @iron-select=${this._handleView}
-                      >
-                        <paper-item .view=${"dayGridDay"}>Day</paper-item>
-                        <paper-item .view=${"dayGridWeek"}>Week</paper-item>
-                        <paper-item .view=${"dayGridMonth"}>Month</paper-item>
-                      </paper-listbox>
-                    </paper-dropdown-menu>
-                  </div>
+      <div class="card-content">
+        ${this.calendar
+          ? html`
+              <div class="header">
+                <div class="navigation">
+                  <mwc-button outlined @click=${this._handleToday}
+                    >Today</mwc-button
+                  >
+                  <mwc-icon-button
+                    class="prev"
+                    label="Prev"
+                    @click=${this._handlePrev}
+                  >
+                    <ha-icon icon="hass:chevron-left"></ha-icon>
+                  </mwc-icon-button>
+                  <mwc-icon-button
+                    class="next"
+                    label="Next"
+                    @click=${this._handleNext}
+                  >
+                    <ha-icon icon="hass:chevron-right"></ha-icon>
+                  </mwc-icon-button>
                 </div>
-              `
-            : ""}
-          <div id="calendar"></div>
-        </div>
-      </ha-card>
+                <div class="title">
+                  ${this.calendar.view.title}
+                </div>
+                <div class="view-selection">
+                  <mwc-button outlined @click=${this._handleViewButtonClick}>
+                    View <ha-icon icon="hass:chevron-down"></ha-icon>
+                  </mwc-button>
+                  <mwc-menu activatable @selected=${this._handleView}>
+                    <mwc-list-item value="dayGridDay">Day</mwc-list-item>
+                    <mwc-list-item value="dayGridWeek">Week</mwc-list-item>
+                    <mwc-list-item selected activated value="dayGridMonth"
+                      >Month</mwc-list-item
+                    >
+                  </mwc-menu>
+                </div>
+              </div>
+            `
+          : ""}
+        <div id="calendar"></div>
+      </div>
     `;
   }
 
@@ -126,9 +136,15 @@ class HAFullCalendar extends LitElement {
     this._fireViewChanged();
   }
 
-  private _handleView(ev) {
-    this.calendar!.changeView(ev.detail.item.view);
+  private _handleView() {
+    const newView = (this._viewMenu!.selected as ListItemBase).value;
+
+    this.calendar!.changeView(newView);
     this._fireViewChanged();
+  }
+
+  private _handleViewButtonClick() {
+    this._viewMenu!.open = !this._viewMenu!.open;
   }
 
   private _fireViewChanged() {
@@ -175,10 +191,8 @@ class HAFullCalendar extends LitElement {
         margin-left: -4px;
       }
 
-      paper-dropdown-menu {
-        flex-grow: 0;
-        top: -8px;
-        width: 100px;
+      .view-selection {
+        position: relative;
       }
 
       .fc-scrollgrid-section-header td {
