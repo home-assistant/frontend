@@ -7,7 +7,6 @@ import {
   property,
   PropertyValues,
   TemplateResult,
-  svg,
 } from "lit-element";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { fireEvent } from "../../../common/dom/fire_event";
@@ -22,9 +21,6 @@ import { UNAVAILABLE } from "../../../data/entity";
 import {
   getSecondaryWeatherAttribute,
   getWeatherUnit,
-  weatherIcons,
-  weatherImages,
-  getWeatherStateSVG,
   getWeatherStateIcon,
 } from "../../../data/weather";
 import { HomeAssistant, WeatherEntity } from "../../../types";
