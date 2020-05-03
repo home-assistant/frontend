@@ -464,7 +464,7 @@ class HassioAddonInfo extends LitElement {
                 ${this.addon.build
                   ? html`
                       <ha-call-api-button
-                        class="warning"
+                        class="warning right"
                         .hass=${this.hass}
                         .path="hassio/addons/${this.addon.slug}/rebuild"
                       >
