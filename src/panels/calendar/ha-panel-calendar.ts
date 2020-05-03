@@ -137,6 +137,7 @@ class PanelCalendar extends LitElement {
         </app-header>
         <div class="content">
           <div class="calendar-list">
+            <div class="calendar-list-header">My Calendars</div>
             ${this._calendars.map(
               (selCal) =>
                 html`<div>
@@ -271,6 +272,11 @@ class PanelCalendar extends LitElement {
           padding-right: 16px;
           min-width: 170px;
           flex: 0 0 15%;
+        }
+
+        .calendar-list-header {
+          font-size: 16px;
+          padding: 16px 16px 8px 8px;
         }
 
         ha-full-calendar {

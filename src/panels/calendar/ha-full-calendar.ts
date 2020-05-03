@@ -167,6 +167,7 @@ class HAFullCalendar extends LitElement {
       .header > * {
         display: flex;
         align-items: center;
+        padding-bottom: 8px;
       }
 
       .navigation {
@@ -184,11 +185,13 @@ class HAFullCalendar extends LitElement {
       }
 
       .prev {
-        margin-right: -4px;
+        margin-right: -8px;
+        padding-left: 12px;
       }
 
       .next {
-        margin-left: -4px;
+        margin-left: -8px;
+        padding-right: 4px;
       }
 
       .view-selection {
