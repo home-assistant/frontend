@@ -104,6 +104,7 @@ class HAFullCalendar extends LitElement {
   protected firstUpdated() {
     this.calendar = new Calendar(
       this.shadowRoot!.getElementById("calendar")!,
+      // @ts-ignore
       fullCalendarConfig
     );
 
