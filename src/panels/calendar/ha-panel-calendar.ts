@@ -7,7 +7,6 @@ import "@polymer/paper-checkbox/paper-checkbox";
 
 import "../../components/ha-menu-button";
 import "../../components/ha-card";
-import "../../components/ha-switch";
 import "../../components/ha-checkbox";
 
 import "../../resources/ha-style";
@@ -19,31 +18,16 @@ import {
   CSSResultArray,
   css,
 } from "lit-element";
-import { HomeAssistant } from "../../types";
+import {
+  HomeAssistant,
+  SelectedCalendar,
+  CalendarEvent,
+  Calendar,
+} from "../../types";
 import { haStyle } from "../../resources/styles";
 import { HASSDomEvent } from "../../common/dom/fire_event";
 import type { CalendarViewChanged } from "./ha-full-calendar";
 import { styleMap } from "lit-html/directives/style-map";
-
-interface SelectedCalendar {
-  selected: boolean;
-  calendar: Calendar;
-  backgroundColor: string;
-}
-
-interface Calendar {
-  entity_id: string;
-  name: string;
-}
-
-interface CalendarEvent {
-  summary: string;
-  title: string;
-  start: string;
-  end?: string;
-  backgroundColor?: string;
-  borderColor?: string;
-}
 
 const palette = [
   "ff0029",
@@ -149,24 +133,6 @@ class PanelCalendar extends LitElement {
               .narrow=${this.narrow}
             ></ha-menu-button>
             <div main-title>${this.hass.localize("panel.calendar")}</div>
-            <paper-menu-button
-              no-animations
-              horizontal-align="right"
-              horizontal-offset="-5"
-            >
-              <paper-icon-button
-                aria-label=""
-                title=""
-                icon="hass:dots-vertical"
-                slot="dropdown-trigger"
-              ></paper-icon-button>
-              <paper-listbox @iron-select="" slot="dropdown-content">
-                <paper-item aria-label="">
-                  Select Calendars
-                  <!--  TODO: Localize -->
-                </paper-item>
-              </paper-listbox>
-            </paper-menu-button>
           </app-toolbar>
         </app-header>
         <div class="content">

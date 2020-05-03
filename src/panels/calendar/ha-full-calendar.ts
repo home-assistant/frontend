@@ -13,9 +13,8 @@ import dayGridPlugin from "@fullcalendar/daygrid";
 import fullcalendarStyle from "@fullcalendar/core/main.css";
 // @ts-ignore
 import daygridStyle from "@fullcalendar/daygrid/main.css";
+import "@polymer/paper-icon-button/paper-icon-button";
 
-import "../../components/ha-paper-icon-button-arrow-next";
-import "../../components/ha-paper-icon-button-arrow-prev";
 import { fireEvent } from "../../common/dom/fire_event";
 
 interface CalendarEvent {
@@ -62,11 +61,17 @@ class HAFullCalendar extends LitElement {
                 <div class="header">
                   <div class="navigation">
                     <mwc-button @click=${this._handleToday}>Today</mwc-button>
-                    <ha-paper-icon-button-arrow-prev @click=${this._handlePrev}
-                      >Prev</ha-paper-icon-button-arrow-prev
+                    <paper-icon-button
+                      icon="hass:chevron-left"
+                      class="prev"
+                      @click=${this._handlePrev}
+                      >Prev</paper-icon-button
                     >
-                    <ha-paper-icon-button-arrow-next @click=${this._handleNext}
-                      >Next</ha-paper-icon-button-arrow-next
+                    <paper-icon-button
+                      icon="hass:chevron-right"
+                      class="next"
+                      @click=${this._handleNext}
+                      >Next</paper-icon-button
                     >
                   </div>
                   <div class="title">
@@ -149,7 +154,6 @@ class HAFullCalendar extends LitElement {
     return css`
       ${unsafeCSS(fullcalendarStyle)}
       ${unsafeCSS(daygridStyle)}
-      
 
       .header {
         display: flex;
@@ -172,6 +176,14 @@ class HAFullCalendar extends LitElement {
         letter-spacing: 0;
         line-height: 28px;
         white-space: nowrap;
+      }
+
+      .prev {
+        margin-right: -4px;
+      }
+
+      .next {
+        margin-left: -4px;
       }
 
       paper-dropdown-menu {

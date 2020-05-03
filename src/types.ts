@@ -96,6 +96,26 @@ export interface Panels {
   [name: string]: PanelInfo;
 }
 
+export interface Calendar {
+  entity_id: string;
+  name: string;
+}
+
+export interface SelectedCalendar {
+  selected: boolean;
+  calendar: Calendar;
+  backgroundColor: string;
+}
+
+export interface CalendarEvent {
+  summary: string;
+  title: string;
+  start: string;
+  end?: string;
+  backgroundColor?: string;
+  borderColor?: string;
+}
+
 export interface Translation {
   nativeName: string;
   isRTL: boolean;
