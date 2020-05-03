@@ -7,6 +7,7 @@ import {
   property,
   PropertyValues,
   TemplateResult,
+  svg,
 } from "lit-element";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { fireEvent } from "../../../common/dom/fire_event";
@@ -23,6 +24,8 @@ import {
   getWeatherUnit,
   weatherIcons,
   weatherImages,
+  getWeatherStateSVG,
+  getWeatherStateIcon,
 } from "../../../data/weather";
 import { HomeAssistant, WeatherEntity } from "../../../types";
 import { actionHandler } from "../common/directives/action-handler-directive";
@@ -158,6 +161,8 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
       hourly = timeDiff < DAY_IN_MILLISECONDS;
     }
 
+    const weatherStateIcon = getWeatherStateIcon(stateObj.state, this);
+
     return html`
       <ha-card
         @action=${this._handleAction}
@@ -166,17 +171,12 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
       >
         <div class="content">
           <div class="icon-image">
-            ${stateObj.state in weatherImages
-              ? html`
-                  <img
-                    class="weather-image"
-                    src="${weatherImages[stateObj.state]}"
-                  />
-                `
+            ${weatherStateIcon
+              ? weatherStateIcon
               : html`
                   <ha-icon
                     class="weather-icon"
-                    .icon=${weatherIcons[stateObj.state] || stateIcon(stateObj)}
+                    .icon=${stateIcon(stateObj)}
                   ></ha-icon>
                 `}
           </div>
@@ -231,21 +231,7 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
                       ${item.condition !== undefined && item.condition !== null
                         ? html`
                             <div class="forecast-image-icon">
-                              ${item.condition in weatherImages
-                                ? html`
-                                    <img
-                                      class="forecast-image"
-                                      src="${weatherImages[item.condition]}"
-                                    />
-                                  `
-                                : item.condition in weatherIcons
-                                ? html`
-                                    <ha-icon
-                                      class="forecast-icon"
-                                      .icon=${weatherIcons[item.condition]}
-                                    ></ha-icon>
-                                  `
-                                : ""}
+                              ${getWeatherStateIcon(item.condition, this)}
                             </div>
                           `
                         : ""}
@@ -330,6 +316,7 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
       ha-card {
         cursor: pointer;
         padding: 16px;
+        --weather-icon-sun-color: blue;
       }
 
       .content {
@@ -346,9 +333,9 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
         margin-right: 16px;
       }
 
-      .weather-image,
-      .weather-icon {
+      .icon-image > * {
         flex: 0 0 64px;
+        height: 64px;
       }
 
       .weather-icon {
@@ -428,9 +415,10 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
       .forecast-image-icon {
         padding-top: 4px;
         padding-bottom: 4px;
+        display: flex;
       }
 
-      .forecast-image {
+      .forecast-image-icon > * {
         width: 40px;
       }
 
