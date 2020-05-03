@@ -27,8 +27,6 @@
     "@fullcalendar/core": "5.0.0-beta.2",
     "@fullcalendar/daygrid": "5.0.0-beta.2",
     "@material/chips": "^5.0.0",
-    "@material/data-table": "^3.2.0",
-    "@material/mwc-base": "^0.10.0",
     "@material/mwc-button": "^0.13.0",
     "@material/mwc-checkbox": "^0.13.0",
     "@material/mwc-dialog": "^0.13.0",
