@@ -184,7 +184,7 @@ const getWeatherExtrema = (
   `;
 };
 
-export const getWeatherStateSVG = (state: string): SVGTemplateResult => {
+const getWeatherStateSVG = (state: string): SVGTemplateResult => {
   // rain is 4 in the y view box tall
   return svg`
   <svg
@@ -258,10 +258,8 @@ export const getWeatherStateIcon = (
     `--weather-icon-${state}`
   );
 
-  if (userDefinedIcon) {
-    return html`
-      <div style=${styleMap({ "background-image": userDefinedIcon })}></div>
-    `;
+  if (state in weatherImages) {
+    return html`${getWeatherStateSVG(state)}`;
   }
 
   if (state in weatherIcons) {
@@ -270,8 +268,10 @@ export const getWeatherStateIcon = (
     `;
   }
 
-  if (state in weatherImages) {
-    return html`${getWeatherStateSVG(state)}`;
+  if (userDefinedIcon) {
+    return html`
+      <div style=${styleMap({ "background-image": userDefinedIcon })}></div>
+    `;
   }
 
   return undefined;
