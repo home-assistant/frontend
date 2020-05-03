@@ -148,7 +148,7 @@ export class HUIView extends LitElement {
 
         .column > * {
           display: block;
-          margin: 4px 4px 8px;
+          margin: var(--hui-view-column-margin);
         }
 
         ha-fab {
