@@ -154,7 +154,7 @@ class HassioSupervisorInfo extends LitElement {
         </b>
         <br /><br />
         This includes beta releases for:
-        <li>Home Assistant Core (Release Candidates)</li>
+        <li>Home Assistant Core</li>
         <li>Home Assistant Supervisor</li>
         <li>Home Assistant Operating System</li>
         <br />
