@@ -214,7 +214,7 @@ class HassioHostInfo extends LitElement {
   private async _shutdownHost(): Promise<void> {
     const confirmed = await showConfirmationDialog(this, {
       title: "Shutdown",
-      text: "Are you sure you want to reboot the host?",
+      text: "Are you sure you want to shutdown the host?",
       confirmText: "shutdown host",
       dismissText: "no",
     });
