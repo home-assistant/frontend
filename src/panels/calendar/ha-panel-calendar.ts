@@ -1,5 +1,14 @@
-import { TemplateResult, html } from "lit-html";
-/* eslint-disable import/extensions */
+import {
+  customElement,
+  LitElement,
+  property,
+  CSSResultArray,
+  css,
+  TemplateResult,
+  html,
+} from "lit-element";
+import { styleMap } from "lit-html/directives/style-map";
+
 import "@polymer/app-layout/app-header-layout/app-header-layout";
 import "@polymer/app-layout/app-header/app-header";
 import "@polymer/app-layout/app-toolbar/app-toolbar";
@@ -8,26 +17,17 @@ import "@polymer/paper-checkbox/paper-checkbox";
 import "../../components/ha-menu-button";
 import "../../components/ha-card";
 import "../../components/ha-checkbox";
-
-import "../../resources/ha-style";
 import "./ha-full-calendar";
-import {
-  customElement,
-  LitElement,
-  property,
-  CSSResultArray,
-  css,
-} from "lit-element";
-import {
+
+import type {
   HomeAssistant,
   SelectedCalendar,
   CalendarEvent,
   Calendar,
+  CalendarViewChanged,
 } from "../../types";
 import { haStyle } from "../../resources/styles";
 import { HASSDomEvent } from "../../common/dom/fire_event";
-import type { CalendarViewChanged } from "./ha-full-calendar";
-import { styleMap } from "lit-html/directives/style-map";
 
 const palette = [
   "ff0029",

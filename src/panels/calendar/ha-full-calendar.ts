@@ -15,20 +15,8 @@ import fullcalendarStyle from "@fullcalendar/core/main.css";
 import daygridStyle from "@fullcalendar/daygrid/main.css";
 import "@polymer/paper-icon-button/paper-icon-button";
 
+import type { CalendarViewChanged, CalendarEvent } from "../../types";
 import { fireEvent } from "../../common/dom/fire_event";
-
-interface CalendarEvent {
-  end?: Date;
-  start: Date;
-  summary: string;
-  title: string;
-}
-
-export interface CalendarViewChanged {
-  end: Date;
-  start: Date;
-  view: string;
-}
 
 declare global {
   interface HASSDomEvents {

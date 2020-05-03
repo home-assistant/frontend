@@ -116,6 +116,12 @@ export interface CalendarEvent {
   borderColor?: string;
 }
 
+export interface CalendarViewChanged {
+  end: Date;
+  start: Date;
+  view: string;
+}
+
 export interface Translation {
   nativeName: string;
   isRTL: boolean;
