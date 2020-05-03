@@ -12,13 +12,23 @@ import {
 import "../../../src/components/buttons/ha-call-api-button";
 import { fetchHassioHardwareInfo } from "../../../src/data/hassio/hardware";
 import {
+  fetchHassioHostInfo,
   HassioHassOSInfo,
   HassioHostInfo as HassioHostInfoType,
+  rebootHost,
+  shutdownHost,
+  updateOS,
+  changeHostOptions,
 } from "../../../src/data/hassio/host";
 import { haStyle } from "../../../src/resources/styles";
 import { HomeAssistant } from "../../../src/types";
 import { showHassioMarkdownDialog } from "../dialogs/markdown/show-dialog-hassio-markdown";
 import { hassioStyle } from "../resources/hassio-style";
+import {
+  showConfirmationDialog,
+  showAlertDialog,
+  showPromptDialog,
+} from "../../../src/dialogs/generic/show-dialog-box";
 
 @customElement("hassio-host-info")
 class HassioHostInfo extends LitElement {
@@ -76,21 +86,15 @@ class HassioHostInfo extends LitElement {
         <div class="card-actions">
           ${this.hostInfo.features.includes("reboot")
             ? html`
-                <ha-call-api-button
-                  class="warning"
-                  .hass=${this.hass}
-                  path="hassio/host/reboot"
-                  >Reboot</ha-call-api-button
+                <mwc-button class="warning" @click=${this._rebootHost}
+                  >Reboot</mwc-button
                 >
               `
             : ""}
           ${this.hostInfo.features.includes("shutdown")
             ? html`
-                <ha-call-api-button
-                  class="warning"
-                  .hass=${this.hass}
-                  path="hassio/host/shutdown"
-                  >Shutdown</ha-call-api-button
+                <mwc-button class="warning" @click=${this._shutdownHost}
+                  >Shutdown</mwc-button
                 >
               `
             : ""}
@@ -106,11 +110,7 @@ class HassioHostInfo extends LitElement {
               `
             : ""}
           ${this.hostInfo.version !== this.hostInfo.version_latest
-            ? html`
-                <ha-call-api-button .hass=${this.hass} path="hassio/os/update"
-                  >Update</ha-call-api-button
-                >
-              `
+            ? html` <mwc-button @click=${this._updateOS}>Update</mwc-button> `
             : ""}
         </div>
       </paper-card>
@@ -189,6 +189,72 @@ class HassioHostInfo extends LitElement {
     }
   }
 
+  private async _rebootHost(): Promise<void> {
+    const confirmed = await showConfirmationDialog(this, {
+      title: "Reboot",
+      text: "Are you sure you want to reboot the host?",
+      confirmText: "reboot host",
+      dismissText: "no",
+    });
+
+    if (!confirmed) {
+      return;
+    }
+
+    try {
+      await rebootHost(this.hass);
+    } catch (err) {
+      showAlertDialog(this, {
+        title: "Failed to reboot",
+        text: err.body.message,
+      });
+    }
+  }
+
+  private async _shutdownHost(): Promise<void> {
+    const confirmed = await showConfirmationDialog(this, {
+      title: "Shutdown",
+      text: "Are you sure you want to reboot the host?",
+      confirmText: "shutdown host",
+      dismissText: "no",
+    });
+
+    if (!confirmed) {
+      return;
+    }
+
+    try {
+      await shutdownHost(this.hass);
+    } catch (err) {
+      showAlertDialog(this, {
+        title: "Failed to shutdown",
+        text: err.body.message,
+      });
+    }
+  }
+
+  private async _updateOS(): Promise<void> {
+    const confirmed = await showConfirmationDialog(this, {
+      title: "Update",
+      text: "Are you sure you want to update the OS?",
+      confirmText: "update os",
+      dismissText: "no",
+    });
+
+    if (!confirmed) {
+      return;
+    }
+
+    try {
+      await updateOS(this.hass);
+    } catch (err) {
+      showAlertDialog(this, {
+        title: "Failed to update",
+        text: err.body.message,
+      });
+    }
+  }
+
   private _objectToMarkdown(obj, indent = ""): string {
     let data = "";
     Object.keys(obj).forEach((key) => {
@@ -210,11 +276,25 @@ class HassioHostInfo extends LitElement {
     return data;
   }
 
-  private _changeHostnameClicked(): void {
-    const curHostname = this.hostInfo.hostname;
-    const hostname = prompt("Please enter a new hostname:", curHostname);
+  private async _changeHostnameClicked(): Promise<void> {
+    const curHostname: string = this.hostInfo.hostname;
+    const hostname = await showPromptDialog(this, {
+      title: "Change hostname",
+      inputLabel: "Please enter a new hostname:",
+      inputType: "string",
+      defaultValue: curHostname,
+    });
+
     if (hostname && hostname !== curHostname) {
-      this.hass.callApi("POST", "hassio/host/options", { hostname });
+      try {
+        await changeHostOptions(this.hass, { hostname });
+        this.hostInfo = await fetchHassioHostInfo(this.hass);
+      } catch (err) {
+        showAlertDialog(this, {
+          title: "Setting hostname failed",
+          text: err.body.message,
+        });
+      }
     }
   }
 }

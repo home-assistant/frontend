@@ -145,15 +145,20 @@ class HassioSupervisorInfo extends LitElement {
   private async _joinBeta() {
     const confirmed = await showConfirmationDialog(this, {
       title: "WARNING",
-      text: `Beta releases are for testers and early adopters and can contain unstable code changes. Make sure you have backups of your data before you activate this feature.
-
-      This includes beta releases for:
-      - Home Assistant Core (Release Candidates)
-      - Home Assistant Supervisor
-      - Home Assistant Operating System
-
-      Do you want to join the beta channel?
-      `,
+      text: html` Beta releases are for testers and early adopters and can
+        contain unstable code changes.
+        <br />
+        <b>
+          Make sure you have backups of your data before you activate this
+          feature.
+        </b>
+        <br /><br />
+        This includes beta releases for:
+        <li>Home Assistant Core (Release Candidates)</li>
+        <li>Home Assistant Supervisor</li>
+        <li>Home Assistant Operating System</li>
+        <br />
+        Do you want to join the beta channel?`,
       confirmText: "join beta",
       dismissText: "no",
     });
