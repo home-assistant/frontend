@@ -327,7 +327,6 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
                         <img
                           src="https://brands.home-assistant.io/${item.domain}/logo.png"
                           referrerpolicy="no-referrer"
-                          class="ignored-image"
                           @error=${this._onImageError}
                           @load=${this._onImageLoad}
                         />
@@ -620,7 +619,7 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
         .ignored {
           border: 1px solid var(--light-theme-disabled-color);
         }
-        .ignored-image {
+        .ignored img {
           filter: grayscale(1);
         }
         .ignored .header {
