@@ -155,16 +155,17 @@ class PanelCalendar extends LitElement {
     `;
   }
 
-  private async _fetchCalendars() {
-    const cals = await this.hass.callApi<Calendar[]>("GET", "calendars");
-
-    this._calendars = cals.map((cal, idx) => ({
-      selected: true,
-      calendar: cal,
-      backgroundColor: `#${palette[idx % palette.length]}`,
-    }));
-
-    this._fetchData();
+  private _fetchCalendars() {
+    this.hass
+      .callApi<Calendar[]>("GET", "calendars")
+      .then((result) => {
+        this._calendars = result.map((cal, idx) => ({
+          selected: true,
+          calendar: cal,
+          backgroundColor: `#${palette[idx % palette.length]}`,
+        }));
+      })
+      .then(() => this._fetchData());
   }
 
   private async _fetchData() {
@@ -247,6 +248,10 @@ class PanelCalendar extends LitElement {
   private _handleViewChanged(ev: HASSDomEvent<CalendarViewChanged>) {
     this._start = ev.detail.start;
     this._end = ev.detail.end;
+
+    console.log(ev.detail.start);
+    console.log(ev.detail.end);
+
     this._fetchData();
   }
 
@@ -265,7 +270,7 @@ class PanelCalendar extends LitElement {
           flex: 0 0 15%;
           overflow: hidden;
         }
-        .calendar-list > div {
+        <<<<<<< HEAD =======>>>>>>>990d0e69... Updates .calendar-list > div {
           white-space: nowrap;
           text-overflow: ellipsis;
           overflow: hidden;
