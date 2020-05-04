@@ -619,6 +619,9 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
         .ignored {
           border: 1px solid var(--light-theme-disabled-color);
         }
+        .ignored img {
+          filter: grayscale(1);
+        }
         .ignored .header {
           background: var(--light-theme-disabled-color);
           color: var(--text-primary-color);
