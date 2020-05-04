@@ -26,7 +26,7 @@
   "dependencies": {
     "@fullcalendar/core": "5.0.0-beta.2",
     "@fullcalendar/daygrid": "5.0.0-beta.2",
-    "@material/chips": "^5.0.0",
+    "@material/chips": "^6.0.0-canary.35a32aaea.0",
     "@material/mwc-button": "0.14.1",
     "@material/mwc-checkbox": "0.14.1",
     "@material/mwc-dialog": "0.14.1",
@@ -36,6 +36,7 @@
     "@material/mwc-list": "0.14.1",
     "@material/mwc-menu": "0.14.1",
     "@material/mwc-ripple": "0.14.1",
+    "@material/mwc-select": "0.14.1",
     "@material/mwc-switch": "0.14.1",
     "@mdi/js": "4.9.95",
     "@mdi/svg": "4.9.95",

@@ -95,8 +95,8 @@ const palette = [
 class PanelCalendar extends LitElement {
   @property() public hass!: HomeAssistant;
 
-  @property({ type: Boolean, reflect: true, attribute: "narrow" })
-  public narrow = false;
+  @property({ type: Boolean, reflect: true })
+  public narrow!: boolean;
 
   @property() private _calendars: SelectedCalendar[] = [];
 
@@ -106,21 +106,12 @@ class PanelCalendar extends LitElement {
 
   private _end?: Date;
 
-  private _firstUpdate = false;
-
   protected firstUpdated(changedProps) {
     super.firstUpdated(changedProps);
     if (!this.hass) {
       return;
     }
-
     this._fetchCalendars();
-  }
-
-  protected updated() {
-    if (!this._firstUpdate) {
-      this._fetchData();
-    }
   }
 
   protected render(): TemplateResult {
@@ -156,6 +147,7 @@ class PanelCalendar extends LitElement {
           </div>
           <ha-full-calendar
             .events=${this._events}
+            .narrow=${this.narrow}
             @view-changed=${this._handleViewChanged}
           ></ha-full-calendar>
         </div>
@@ -163,23 +155,21 @@ class PanelCalendar extends LitElement {
     `;
   }
 
-  private _fetchCalendars() {
-    this.hass.callApi<Calendar[]>("GET", "calendars").then((result) => {
-      this._calendars = result.map((cal, idx) => ({
-        selected: true,
-        calendar: cal,
-        backgroundColor: `#${palette[idx]}`,
-      }));
-    });
+  private async _fetchCalendars() {
+    const cals = await this.hass.callApi<Calendar[]>("GET", "calendars");
+
+    this._calendars = cals.map((cal, idx) => ({
+      selected: true,
+      calendar: cal,
+      backgroundColor: `#${palette[idx % palette.length]}`,
+    }));
+
+    this._fetchData();
   }
 
-  private _fetchData() {
-    if (!this._start || !this._end) {
+  private async _fetchData() {
+    if (!this._start || !this._end || !this._calendars.length) {
       return;
-    }
-
-    if (!this._firstUpdate && this._calendars.length) {
-      this._firstUpdate = true;
     }
 
     const start = new Date(this._start);
@@ -189,41 +179,43 @@ class PanelCalendar extends LitElement {
     );
 
     const calEvents: CalendarEvent[] = [];
-    const calls = new Promise((resolve) => {
-      this._calendars
-        .filter((selCal) => selCal.selected)
-        .forEach(async (selCal, idx) => {
-          const events = await this.hass.callApi<any[]>(
-            "GET",
-            `calendars/${selCal.calendar.entity_id}${params}`
-          );
-          events.forEach((ev) => {
-            const eventStart = this._getDate(ev.start);
-            if (!eventStart) {
-              return;
-            }
-            const eventEnd = this._getDate(ev.end);
-            const event: CalendarEvent = {
-              start: eventStart,
-              end: eventEnd,
-              title: ev.summary,
-              summary: ev.summary,
-              backgroundColor: selCal.backgroundColor,
-              borderColor: selCal.backgroundColor,
-            };
+    const promises: Promise<any>[] = [];
 
-            calEvents.push(event);
+    const selectedCals = this._calendars.filter((selCal) => selCal.selected);
 
-            if (idx === this._calendars.filter((c) => c.selected).length - 1) {
-              resolve();
-            }
-          });
-        });
+    selectedCals.forEach((selCal) => {
+      promises.push(
+        this.hass.callApi<any[]>(
+          "GET",
+          `calendars/${selCal.calendar.entity_id}${params}`
+        )
+      );
     });
 
-    calls.then(() => {
-      this._events = calEvents;
+    const results = await Promise.all(promises);
+
+    results.forEach((result, idx) => {
+      const cal = selectedCals[idx];
+      result.forEach((ev) => {
+        const eventStart = this._getDate(ev.start);
+        if (!eventStart) {
+          return;
+        }
+        const eventEnd = this._getDate(ev.end);
+        const event: CalendarEvent = {
+          start: eventStart,
+          end: eventEnd,
+          title: ev.summary,
+          summary: ev.summary,
+          backgroundColor: cal.backgroundColor,
+          borderColor: cal.backgroundColor,
+        };
+
+        calEvents.push(event);
+      });
     });
+
+    this._events = calEvents;
   }
 
   private _getDate(dateObj: any): string | undefined {
@@ -243,13 +235,12 @@ class PanelCalendar extends LitElement {
   }
 
   private _handleToggle(ev) {
-    const cals = this._calendars.map((cal) => {
+    this._calendars = this._calendars.map((cal) => {
       if (ev.target.value === cal.calendar.entity_id) {
         cal.selected = ev.target.checked;
       }
       return cal;
     });
-    this._calendars = cals;
     this._fetchData();
   }
 
@@ -272,6 +263,12 @@ class PanelCalendar extends LitElement {
           padding-right: 16px;
           min-width: 170px;
           flex: 0 0 15%;
+          overflow: hidden;
+        }
+        .calendar-list > div {
+          white-space: nowrap;
+          text-overflow: ellipsis;
+          overflow: hidden;
         }
 
         .calendar-list-header {
@@ -285,7 +282,7 @@ class PanelCalendar extends LitElement {
 
         :host([narrow]) .content {
           flex-direction: column-reverse;
-          padding: 0;
+          padding: 8px 0 0 0;
         }
         :host([narrow]) .calendar-list {
           margin-bottom: 24px;

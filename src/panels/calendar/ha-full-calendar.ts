@@ -6,7 +6,6 @@ import {
   html,
   css,
   unsafeCSS,
-  query,
 } from "lit-element";
 import { Calendar } from "@fullcalendar/core";
 import dayGridPlugin from "@fullcalendar/daygrid";
@@ -14,18 +13,15 @@ import dayGridPlugin from "@fullcalendar/daygrid";
 import fullcalendarStyle from "@fullcalendar/core/main.css";
 // @ts-ignore
 import daygridStyle from "@fullcalendar/daygrid/main.css";
-import "@material/mwc-icon-button";
-import "@material/mwc-menu";
+import "@material/mwc-select";
 import "@material/mwc-button";
 import "@material/mwc-list/mwc-list-item";
-import type { Menu } from "@material/mwc-menu";
-import type { ListItemBase } from "@material/mwc-list/mwc-list-item-base";
-import type { Button } from "@material/mwc-button";
 
-import "../../components/ha-icon";
+import "../../components/ha-icon-button";
 
 import type { CalendarViewChanged, CalendarEvent } from "../../types";
 import { fireEvent } from "../../common/dom/fire_event";
+import { haStyle } from "../../resources/styles";
 
 declare global {
   interface HASSDomEvents {
@@ -44,12 +40,10 @@ const fullCalendarConfig = {
 class HAFullCalendar extends LitElement {
   @property() public events: CalendarEvent[] = [];
 
+  @property({ type: Boolean, reflect: true })
+  public narrow!: boolean;
+
   @property() private calendar?: Calendar;
-
-  @property({ type: Boolean, reflect: true, attribute: "narrow" })
-  public narrow = false;
-
-  @query(".view-selection mwc-button") private _viewMenuButton?: Button;
 
   protected render() {
     return html`
@@ -57,41 +51,60 @@ class HAFullCalendar extends LitElement {
         ${this.calendar
           ? html`
               <div class="header">
-                <div class="navigation">
-                  <mwc-button outlined @click=${this._handleToday}
-                    >Today</mwc-button
+                ${!this.narrow
+                  ? html` <div class="navigation">
+                        <mwc-button outlined @click=${this._handleToday}
+                          >Today</mwc-button
+                        >
+                        <ha-icon-button
+                          label="Prev"
+                          icon="hass:chevron-left"
+                          @click=${this._handlePrev}
+                        >
+                        </ha-icon-button>
+                        <ha-icon-button
+                          label="Next"
+                          icon="hass:chevron-right"
+                          @click=${this._handleNext}
+                        >
+                        </ha-icon-button>
+                      </div>
+                      <h1>
+                        ${this.calendar.view.title}
+                      </h1>`
+                  : ""}
+                <mwc-select outlined label="view" @change=${this._handleView}>
+                  <mwc-list-item value="dayGridDay">Day</mwc-list-item>
+                  <mwc-list-item value="dayGridWeek">Week</mwc-list-item>
+                  <mwc-list-item selected value="dayGridMonth"
+                    >Month</mwc-list-item
                   >
-                  <mwc-icon-button
-                    class="prev"
-                    label="Prev"
-                    @click=${this._handlePrev}
-                  >
-                    <ha-icon icon="hass:chevron-left"></ha-icon>
-                  </mwc-icon-button>
-                  <mwc-icon-button
-                    class="next"
-                    label="Next"
-                    @click=${this._handleNext}
-                  >
-                    <ha-icon icon="hass:chevron-right"></ha-icon>
-                  </mwc-icon-button>
-                </div>
-                <div class="title">
-                  ${this.calendar.view.title}
-                </div>
-                <div class="view-selection">
-                  <mwc-button outlined @click=${this._handleViewButtonClick}>
-                    <ha-icon icon="hass:chevron-down"></ha-icon>
-                  </mwc-button>
-                  <mwc-menu activatable @selected=${this._handleView}>
-                    <mwc-list-item value="dayGridDay">Day</mwc-list-item>
-                    <mwc-list-item value="dayGridWeek">Week</mwc-list-item>
-                    <mwc-list-item selected activated value="dayGridMonth"
-                      >Month</mwc-list-item
-                    >
-                  </mwc-menu>
-                </div>
+                </mwc-select>
               </div>
+              ${this.narrow
+                ? html`<div class="header">
+                    <div class="navigation">
+                      <mwc-button outlined @click=${this._handleToday}
+                        >Today</mwc-button
+                      >
+                      <ha-icon-button
+                        label="Prev"
+                        icon="hass:chevron-left"
+                        @click=${this._handlePrev}
+                      >
+                      </ha-icon-button>
+                      <ha-icon-button
+                        label="Next"
+                        icon="hass:chevron-right"
+                        @click=${this._handleNext}
+                      >
+                      </ha-icon-button>
+                    </div>
+                    <h1>
+                      ${this.calendar.view.title}
+                    </h1>
+                  </div>`
+                : ""}
             `
           : ""}
         <div id="calendar"></div>
@@ -138,17 +151,8 @@ class HAFullCalendar extends LitElement {
   }
 
   private _handleView(ev) {
-    const selectedItem = (ev.target as Menu).selected as ListItemBase;
-
-    this._viewMenuButton!.label = selectedItem.text;
-
-    this.calendar!.changeView(selectedItem.value);
+    this.calendar!.changeView(ev.target.value);
     this._fireViewChanged();
-  }
-
-  private _handleViewButtonClick() {
-    const menu = this.shadowRoot!.querySelector("mwc-menu")! as Menu;
-    menu.open = !menu.open;
   }
 
   private _fireViewChanged() {
@@ -159,103 +163,97 @@ class HAFullCalendar extends LitElement {
     });
   }
 
-  static get styles(): CSSResult {
-    return css`
-      ${unsafeCSS(fullcalendarStyle)}
-      ${unsafeCSS(daygridStyle)}
+  static get styles(): CSSResult[] {
+    return [
+      haStyle,
+      css`
+        ${unsafeCSS(fullcalendarStyle)}
+        ${unsafeCSS(daygridStyle)}
 
       .header {
-        display: flex;
-      }
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          padding-bottom: 8px;
+        }
 
-      .header > * {
-        display: flex;
-        align-items: center;
-        padding-bottom: 8px;
-      }
+        :host([narrow]) .header {
+          padding-right: 8px;
+          padding-left: 8px;
+        }
 
-      .navigation {
-        flex-grow: 0;
-      }
+        .navigation {
+          display: flex;
+          align-items: center;
+          flex-grow: 0;
+        }
 
-      .title {
-        flex-grow: 1;
-        margin-left: 8px;
-        font-size: 22px;
-        font-weight: 400;
-        letter-spacing: 0;
-        line-height: 28px;
-        white-space: nowrap;
-      }
+        :host([narrow]) mwc-select {
+          width: 100%;
+        }
 
-      .prev {
-        margin-right: -8px;
-        padding-left: 12px;
-      }
+        .fc-scrollgrid-section-header td {
+          border: none;
+        }
 
-      .next {
-        margin-left: -8px;
-        padding-right: 4px;
-      }
+        th.fc-col-header-cell.fc-day {
+          color: #70757a;
+          font-size: 11px;
+          font-weight: 400;
+          text-transform: uppercase;
+        }
 
-      .view-selection {
-        position: relative;
-      }
+        .fc-daygrid-day-top {
+          text-align: center;
+          padding-top: 8px;
+        }
 
-      .fc-scrollgrid-section-header td {
-        border: none;
-      }
+        table.fc-scrollgrid-sync-table
+          tbody
+          tr:first-child
+          .fc-daygrid-day-top {
+          padding-top: 0;
+        }
 
-      th.fc-col-header-cell.fc-day {
-        color: #70757a;
-        font-size: 11px;
-        font-weight: 400;
-        text-transform: uppercase;
-      }
+        a.fc-daygrid-day-number {
+          float: none !important;
+          font-size: 12px;
+        }
 
-      .fc-daygrid-day-top {
-        text-align: center;
-        padding-top: 8px;
-      }
+        td.fc-day-today {
+          background: inherit;
+        }
 
-      table.fc-scrollgrid-sync-table tbody tr:first-child .fc-daygrid-day-top {
-        padding-top: 0;
-      }
+        td.fc-day-today .fc-daygrid-day-number {
+          height: 24px;
+          color: #fff;
+          background-color: #1a73e8;
+          border-radius: 50%;
+          display: inline-block;
+          text-align: center;
+          white-space: nowrap;
+          width: max-content;
+          min-width: 24px;
+        }
 
-      a.fc-daygrid-day-number {
-        float: none !important;
-        font-size: 12px;
-      }
+        .fc-daygrid-day-events {
+          margin-top: 4px;
+        }
 
-      td.fc-day-today {
-        background: inherit;
-      }
+        .fc-event {
+          border-radius: 4px;
+          line-height: 1.7;
+        }
 
-      td.fc-day-today .fc-daygrid-day-number {
-        height: 24px;
-        color: #fff;
-        background-color: #1a73e8;
-        border-radius: 50%;
-        display: inline-block;
-        text-align: center;
-        white-space: nowrap;
-        width: max-content;
-        min-width: 24px;
-      }
+        .fc-daygrid-block-event .fc-event-main {
+          padding: 0 1px;
+        }
 
-      .fc-daygrid-day-events {
-        margin-top: 4px;
-      }
-
-      .fc-event {
-        border-radius: 4px;
-        line-height: 1.7;
-      }
-
-      .fc-daygrid-block-event .fc-event-main {
-        padding: 0 1px;
-      }
-    `;
+        .fc-day-past .fc-daygrid-day-events {
+          opacity: 0.5;
+        }
+      `,
+    ];
   }
 }
 
