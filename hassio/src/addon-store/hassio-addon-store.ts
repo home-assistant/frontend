@@ -18,7 +18,6 @@ import { navigate } from "../../../src/common/navigate";
 import { HomeAssistant, Route } from "../../../src/types";
 import "../../../src/common/search/search-input";
 import "./hassio-addon-repository";
-import "../dialogs/repositories/dialog-hassio-repositories";
 
 import { supervisorTabs } from "../hassio-panel";
 
