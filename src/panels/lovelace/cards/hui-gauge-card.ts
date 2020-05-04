@@ -238,7 +238,7 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
     if (!card) {
       return;
     }
-    this._resizeObserver.observe(card);
+    this._resizeObserver.observe(this);
   }
 
   private _measureCard() {
