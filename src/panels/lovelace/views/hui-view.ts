@@ -7,23 +7,28 @@ import {
 } from "lit-element";
 import { classMap } from "lit-html/directives/class-map";
 import type { DataItem, Item } from "muuri";
-import type { Options } from "../../../types/Muuri/options";
+import type { Options } from "../../../types/Muuri/options.d";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { computeRTL } from "../../../common/util/compute_rtl";
 import { debounce } from "../../../common/util/debounce";
 import "../../../components/entity/ha-state-label-badge";
-import {
+import type {
   LovelaceBadgeConfig,
   LovelaceCardConfig,
   LovelaceViewConfig,
 } from "../../../data/lovelace";
-import { HomeAssistant } from "../../../types";
-import { HuiErrorCard } from "../cards/hui-error-card";
+import type { HomeAssistant } from "../../../types";
+import type { HuiErrorCard } from "../cards/hui-error-card";
 import { processConfigEntities } from "../common/process-config-entities";
 import { createBadgeElement } from "../create-element/create-badge-element";
 import { createCardElement } from "../create-element/create-card-element";
 import { showEditCardDialog } from "../editor/card-editor/show-edit-card-dialog";
-import { Lovelace, LovelaceBadge, LovelaceCard, MuuriItem } from "../types";
+import type {
+  Lovelace,
+  LovelaceBadge,
+  LovelaceCard,
+  MuuriItem,
+} from "../types";
 
 let muuri: any;
 let installResizeObserver: any;

@@ -1,6 +1,6 @@
-import Grid from "muuri";
-import { Item } from "./item";
-import { DraggerEvent } from "./events";
+import type Grid from "muuri";
+import type { Item } from "./item.d";
+import type { DraggerEvent } from "./events.d";
 
 export interface Options {
   items?: Element[] | NodeList | string;
