@@ -31,6 +31,7 @@ import { hasConfigOrEntityChanged } from "../common/has-changed";
 import "../components/hui-warning";
 import { LovelaceCard, LovelaceCardEditor } from "../types";
 import { WeatherForecastCardConfig } from "./types";
+import { installResizeObserver } from "../common/install-resize-observer";
 
 const DAY_IN_MILLISECONDS = 86400000;
 
@@ -287,24 +288,18 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
   }
 
   private _attachObserver(): void {
-    if (typeof ResizeObserver !== "function") {
-      import("resize-observer").then((modules) => {
-        modules.install();
-        this._attachObserver();
-      });
-      return;
-    }
+    installResizeObserver().then(() => {
+      this._resizeObserver = new ResizeObserver(
+        debounce(() => this._measureCard(), 250, false)
+      );
 
-    this._resizeObserver = new ResizeObserver(
-      debounce(() => this._measureCard(), 250, false)
-    );
-
-    const card = this.shadowRoot!.querySelector("ha-card");
-    // If we show an error or warning there is no ha-card
-    if (!card) {
-      return;
-    }
-    this._resizeObserver.observe(card);
+      const card = this.shadowRoot!.querySelector("ha-card");
+      // If we show an error or warning there is no ha-card
+      if (!card) {
+        return;
+      }
+      this._resizeObserver.observe(card);
+    });
   }
 
   private _measureCard() {

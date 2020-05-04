@@ -47,6 +47,7 @@ import "../components/hui-marquee";
 import type { LovelaceCard, LovelaceCardEditor } from "../types";
 import "../components/hui-warning";
 import { MediaControlCardConfig } from "./types";
+import { installResizeObserver } from "../common/install-resize-observer";
 
 function getContrastRatio(
   rgb1: [number, number, number],
@@ -626,24 +627,18 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
   }
 
   private _attachObserver(): void {
-    if (typeof ResizeObserver !== "function") {
-      import("resize-observer").then((modules) => {
-        modules.install();
-        this._attachObserver();
-      });
-      return;
-    }
+    installResizeObserver().then(() => {
+      this._resizeObserver = new ResizeObserver(
+        debounce(() => this._measureCard(), 250, false)
+      );
 
-    this._resizeObserver = new ResizeObserver(
-      debounce(() => this._measureCard(), 250, false)
-    );
-
-    const card = this.shadowRoot!.querySelector("ha-card");
-    // If we show an error or warning there is no ha-card
-    if (!card) {
-      return;
-    }
-    this._resizeObserver.observe(card);
+      const card = this.shadowRoot!.querySelector("ha-card");
+      // If we show an error or warning there is no ha-card
+      if (!card) {
+        return;
+      }
+      this._resizeObserver.observe(card);
+    });
   }
 
   private _handleMoreInfo(): void {

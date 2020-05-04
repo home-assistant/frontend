@@ -31,6 +31,7 @@ import { hasConfigOrEntityChanged } from "../common/has-changed";
 import "../components/hui-generic-entity-row";
 import "../components/hui-warning";
 import { EntityConfig, LovelaceRow } from "./types";
+import { installResizeObserver } from "../common/install-resize-observer";
 
 @customElement("hui-media-player-entity-row")
 class HuiMediaPlayerEntityRow extends LitElement implements LovelaceRow {
@@ -209,19 +210,13 @@ class HuiMediaPlayerEntityRow extends LitElement implements LovelaceRow {
   }
 
   private _attachObserver(): void {
-    if (typeof ResizeObserver !== "function") {
-      import("resize-observer").then((modules) => {
-        modules.install();
-        this._attachObserver();
-      });
-      return;
-    }
+    installResizeObserver().then(() => {
+      this._resizeObserver = new ResizeObserver(() =>
+        this._debouncedResizeListener()
+      );
 
-    this._resizeObserver = new ResizeObserver(() =>
-      this._debouncedResizeListener()
-    );
-
-    this._resizeObserver.observe(this);
+      this._resizeObserver.observe(this);
+    });
   }
 
   private _computeControlIcon(stateObj: HassEntity): string {

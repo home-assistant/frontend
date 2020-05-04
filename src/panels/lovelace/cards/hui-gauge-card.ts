@@ -24,6 +24,7 @@ import "../components/hui-warning";
 import { LovelaceCard, LovelaceCardEditor } from "../types";
 import { GaugeCardConfig } from "./types";
 import { debounce } from "../../../common/util/debounce";
+import { installResizeObserver } from "../common/install-resize-observer";
 
 export const severityMap = {
   red: "var(--label-badge-red)",
@@ -221,24 +222,18 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
   }
 
   private _attachObserver(): void {
-    if (typeof ResizeObserver !== "function") {
-      import("resize-observer").then((modules) => {
-        modules.install();
-        this._attachObserver();
-      });
-      return;
-    }
+    installResizeObserver().then(() => {
+      this._resizeObserver = new ResizeObserver(
+        debounce(() => this._measureCard(), 250, false)
+      );
 
-    this._resizeObserver = new ResizeObserver(
-      debounce(() => this._measureCard(), 250, false)
-    );
-
-    const card = this.shadowRoot!.querySelector("ha-card");
-    // If we show an error or warning there is no ha-card
-    if (!card) {
-      return;
-    }
-    this._resizeObserver.observe(card);
+      const card = this.shadowRoot!.querySelector("ha-card");
+      // If we show an error or warning there is no ha-card
+      if (!card) {
+        return;
+      }
+      this._resizeObserver.observe(card);
+    });
   }
 
   private _measureCard() {
