@@ -34,7 +34,6 @@ const fullCalendarConfig = {
   plugins: [dayGridPlugin],
   initialView: "dayGridMonth",
   dayMaxEventRows: true,
-  height: "calc(100vh - 158px)",
 };
 
 class HAFullCalendar extends LitElement {
@@ -47,43 +46,11 @@ class HAFullCalendar extends LitElement {
 
   protected render() {
     return html`
-      <div class="card-content">
-        ${this.calendar
-          ? html`
-              <div class="header">
-                ${!this.narrow
-                  ? html` <div class="navigation">
-                        <mwc-button outlined @click=${this._handleToday}
-                          >Today</mwc-button
-                        >
-                        <ha-icon-button
-                          label="Prev"
-                          icon="hass:chevron-left"
-                          @click=${this._handlePrev}
-                        >
-                        </ha-icon-button>
-                        <ha-icon-button
-                          label="Next"
-                          icon="hass:chevron-right"
-                          @click=${this._handleNext}
-                        >
-                        </ha-icon-button>
-                      </div>
-                      <h1>
-                        ${this.calendar.view.title}
-                      </h1>`
-                  : ""}
-                <mwc-select outlined label="view" @change=${this._handleView}>
-                  <mwc-list-item value="dayGridDay">Day</mwc-list-item>
-                  <mwc-list-item value="dayGridWeek">Week</mwc-list-item>
-                  <mwc-list-item selected value="dayGridMonth"
-                    >Month</mwc-list-item
-                  >
-                </mwc-select>
-              </div>
-              ${this.narrow
-                ? html`<div class="header">
-                    <div class="navigation">
+      ${this.calendar
+        ? html`
+            <div class="header">
+              ${!this.narrow
+                ? html` <div class="navigation">
                       <mwc-button outlined @click=${this._handleToday}
                         >Today</mwc-button
                       >
@@ -102,13 +69,43 @@ class HAFullCalendar extends LitElement {
                     </div>
                     <h1>
                       ${this.calendar.view.title}
-                    </h1>
-                  </div>`
+                    </h1>`
                 : ""}
-            `
-          : ""}
-        <div id="calendar"></div>
-      </div>
+              <mwc-select outlined label="view" @change=${this._handleView}>
+                <mwc-list-item value="dayGridDay">Day</mwc-list-item>
+                <mwc-list-item value="dayGridWeek">Week</mwc-list-item>
+                <mwc-list-item selected value="dayGridMonth"
+                  >Month</mwc-list-item
+                >
+              </mwc-select>
+            </div>
+            ${this.narrow
+              ? html`<div class="header">
+                  <div class="navigation">
+                    <mwc-button outlined @click=${this._handleToday}
+                      >Today</mwc-button
+                    >
+                    <ha-icon-button
+                      label="Prev"
+                      icon="hass:chevron-left"
+                      @click=${this._handlePrev}
+                    >
+                    </ha-icon-button>
+                    <ha-icon-button
+                      label="Next"
+                      icon="hass:chevron-right"
+                      @click=${this._handleNext}
+                    >
+                    </ha-icon-button>
+                  </div>
+                  <h1>
+                    ${this.calendar.view.title}
+                  </h1>
+                </div>`
+              : ""}
+          `
+        : ""}
+      <div id="calendar"></div>
     `;
   }
 
@@ -170,7 +167,12 @@ class HAFullCalendar extends LitElement {
         ${unsafeCSS(fullcalendarStyle)}
         ${unsafeCSS(daygridStyle)}
 
-      .header {
+      :host {
+          display: flex;
+          flex-direction: column;
+        }
+
+        .header {
           display: flex;
           align-items: center;
           justify-content: space-between;
@@ -190,6 +192,10 @@ class HAFullCalendar extends LitElement {
 
         :host([narrow]) mwc-select {
           width: 100%;
+        }
+
+        #calendar {
+          flex-grow: 1;
         }
 
         .fc-scrollgrid-section-header td {

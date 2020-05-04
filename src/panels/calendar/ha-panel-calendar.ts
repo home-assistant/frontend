@@ -262,6 +262,10 @@ class PanelCalendar extends LitElement {
         .content {
           padding: 16px;
           display: flex;
+          box-sizing: border-box;
+        }
+        :host(:not([narrow])) .content {
+          height: calc(100vh - 64px);
         }
 
         .calendar-list {
@@ -270,7 +274,8 @@ class PanelCalendar extends LitElement {
           flex: 0 0 15%;
           overflow: hidden;
         }
-        <<<<<<< HEAD =======>>>>>>>990d0e69... Updates .calendar-list > div {
+
+        .calendar-list > div {
           white-space: nowrap;
           text-overflow: ellipsis;
           overflow: hidden;
@@ -284,7 +289,9 @@ class PanelCalendar extends LitElement {
         ha-full-calendar {
           flex-grow: 1;
         }
-
+        :host([narrow]) ha-full-calendar {
+          height: calc(100vh - 72px);
+        }
         :host([narrow]) .content {
           flex-direction: column-reverse;
           padding: 8px 0 0 0;
