@@ -19,6 +19,7 @@ import {
 import { haStyle } from "../../../src/resources/styles";
 import { HomeAssistant } from "../../../src/types";
 import { hassioStyle } from "../resources/hassio-style";
+import { showConfirmationDialog } from "../../../src/dialogs/generic/show-dialog-box";
 
 @customElement("hassio-supervisor-info")
 class HassioSupervisorInfo extends LitElement {
@@ -142,17 +143,30 @@ class HassioSupervisorInfo extends LitElement {
   }
 
   private async _joinBeta() {
-    if (
-      !confirm(`WARNING:
-Beta releases are for testers and early adopters and can contain unstable code changes. Make sure you have backups of your data before you activate this feature.
+    const confirmed = await showConfirmationDialog(this, {
+      title: "WARNING",
+      text: html` Beta releases are for testers and early adopters and can
+        contain unstable code changes.
+        <br />
+        <b>
+          Make sure you have backups of your data before you activate this
+          feature.
+        </b>
+        <br /><br />
+        This includes beta releases for:
+        <li>Home Assistant Core</li>
+        <li>Home Assistant Supervisor</li>
+        <li>Home Assistant Operating System</li>
+        <br />
+        Do you want to join the beta channel?`,
+      confirmText: "join beta",
+      dismissText: "no",
+    });
 
-This includes beta releases for:
-- Home Assistant Core (Release Candidates)
-- Home Assistant Supervisor
-- Home Assistant Operating System`)
-    ) {
+    if (!confirmed) {
       return;
     }
+
     try {
       const data: SupervisorOptions = { channel: "beta" };
       await setSupervisorOption(this.hass, data);
