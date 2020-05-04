@@ -1,11 +1,9 @@
 import "@polymer/paper-styles/typography";
 import "@polymer/polymer/lib/elements/dom-if";
 import "@polymer/polymer/lib/elements/dom-repeat";
-import "../../src/components/ha-iconset-svg";
 import "../../src/resources/ha-style";
 import "../../src/resources/roboto";
 import "./ha-demo";
-import "./resources/hademo-icons";
 
 /* polyfill for paper-dropdown */
 setTimeout(() => {
