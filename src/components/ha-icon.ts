@@ -33,7 +33,7 @@ const findIconChunk = (icon): string => {
     }
     lastChunk = chunk;
   }
-  return lastChunk.file;
+  return lastChunk!.file;
 };
 
 @customElement("ha-icon")
@@ -108,19 +108,13 @@ export class HaIcon extends LitElement {
       icons: iconPromise,
       cached: false,
     };
-    this._setPath(iconPromise, iconName, true);
+    this._setPath(iconPromise, iconName);
+    this._debouncedWriteCache();
   }
 
-  private async _setPath(
-    promise: Promise<Icons>,
-    iconName: string,
-    cache = false
-  ) {
+  private async _setPath(promise: Promise<Icons>, iconName: string) {
     const iconPack = await promise;
     this._path = iconPack[iconName];
-    if (cache) {
-      this._debouncedWriteCache();
-    }
   }
 }
 declare global {
