@@ -311,7 +311,7 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
       ha-card {
         cursor: pointer;
         padding: 16px;
-        --weather-icon-sun-color: blue;
+        /* --weather-icon-sun-color: blue; */
       }
 
       .content {
