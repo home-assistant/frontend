@@ -27,3 +27,23 @@ export const fetchHassioHassOsInfo = async (hass: HomeAssistant) => {
     )
   );
 };
+
+export const rebootHost = async (hass: HomeAssistant) => {
+  return hass.callApi<HassioResponse<void>>("POST", "hassio/host/reboot");
+};
+
+export const shutdownHost = async (hass: HomeAssistant) => {
+  return hass.callApi<HassioResponse<void>>("POST", "hassio/host/shutdown");
+};
+
+export const updateOS = async (hass: HomeAssistant) => {
+  return hass.callApi<HassioResponse<void>>("POST", "hassio/os/update");
+};
+
+export const changeHostOptions = async (hass: HomeAssistant, options: any) => {
+  return hass.callApi<HassioResponse<void>>(
+    "POST",
+    "hassio/host/options",
+    options
+  );
+};

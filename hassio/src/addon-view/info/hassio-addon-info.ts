@@ -35,6 +35,7 @@ import { HomeAssistant } from "../../../../src/types";
 import "../../components/hassio-card-content";
 import { showHassioMarkdownDialog } from "../../dialogs/markdown/show-dialog-hassio-markdown";
 import { hassioStyle } from "../../resources/hassio-style";
+import { showConfirmationDialog } from "../../../../src/dialogs/generic/show-dialog-box";
 
 const STAGE_ICON = {
   stable: "mdi:check-circle",
@@ -407,35 +408,21 @@ class HassioAddonInfo extends LitElement {
         <div class="card-actions">
           ${this.addon.version
             ? html`
-                <mwc-button class="warning" @click=${this._uninstallClicked}>
-                  Uninstall
-                </mwc-button>
-                ${this.addon.build
-                  ? html`
-                      <ha-call-api-button
-                        class="warning"
-                        .hass=${this.hass}
-                        .path="hassio/addons/${this.addon.slug}/rebuild"
-                      >
-                        Rebuild
-                      </ha-call-api-button>
-                    `
-                  : ""}
                 ${this._computeIsRunning
                   ? html`
-                      <ha-call-api-button
-                        class="warning"
-                        .hass=${this.hass}
-                        .path="hassio/addons/${this.addon.slug}/restart"
-                      >
-                        Restart
-                      </ha-call-api-button>
                       <ha-call-api-button
                         class="warning"
                         .hass=${this.hass}
                         .path="hassio/addons/${this.addon.slug}/stop"
                       >
                         Stop
+                      </ha-call-api-button>
+                      <ha-call-api-button
+                        class="warning"
+                        .hass=${this.hass}
+                        .path="hassio/addons/${this.addon.slug}/restart"
+                      >
+                        Restart
                       </ha-call-api-button>
                     `
                   : html`
@@ -466,6 +453,23 @@ class HassioAddonInfo extends LitElement {
                       <mwc-button class="right" @click=${this._openIngress}>
                         Open web UI
                       </mwc-button>
+                    `
+                  : ""}
+                <mwc-button
+                  class=" right warning"
+                  @click=${this._uninstallClicked}
+                >
+                  Uninstall
+                </mwc-button>
+                ${this.addon.build
+                  ? html`
+                      <ha-call-api-button
+                        class="warning right"
+                        .hass=${this.hass}
+                        .path="hassio/addons/${this.addon.slug}/rebuild"
+                      >
+                        Rebuild
+                      </ha-call-api-button>
                     `
                   : ""}
               `
@@ -801,9 +805,17 @@ class HassioAddonInfo extends LitElement {
   }
 
   private async _uninstallClicked(): Promise<void> {
-    if (!confirm("Are you sure you want to uninstall this add-on?")) {
+    const confirmed = await showConfirmationDialog(this, {
+      title: this.addon.name,
+      text: "Are you sure you want to uninstall this add-on?",
+      confirmText: "uninstall add-on",
+      dismissText: "no",
+    });
+
+    if (!confirmed) {
       return;
     }
+
     this._error = undefined;
     try {
       await uninstallHassioAddon(this.hass, this.addon.slug);
