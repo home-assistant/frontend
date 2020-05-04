@@ -17,12 +17,12 @@ import { fireEvent } from "../../../common/dom/fire_event";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import { isValidEntityId } from "../../../common/entity/valid_entity_id";
 import "../../../components/ha-card";
-import { HomeAssistant } from "../../../types";
+import type { HomeAssistant } from "../../../types";
 import { findEntities } from "../common/find-entites";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
 import "../components/hui-warning";
-import { LovelaceCard, LovelaceCardEditor } from "../types";
-import { GaugeCardConfig } from "./types";
+import type { LovelaceCard, LovelaceCardEditor } from "../types";
+import type { GaugeCardConfig } from "./types";
 import { debounce } from "../../../common/util/debounce";
 import { installResizeObserver } from "../common/install-resize-observer";
 
