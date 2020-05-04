@@ -28,12 +28,16 @@ import {
 } from "../../../src/data/hassio/addon";
 
 import { setSupervisorOption } from "../../../src/data/hassio/supervisor";
+import { HassioRepositoryDialogParams } from "./show-dialog-repositories";
 
 @customElement("hassio-repository-editor")
 class HassioRepositoryEditor extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() private _repos: HassioAddonRepository[] = [];
+  @property({ attribute: false }) private _repos: HassioAddonRepository[] = [];
+
+  @property({ attribute: false })
+  private _dialogParams?: HassioRepositoryDialogParams;
 
   @query("#repository_input") private _optionInput?: PaperInputElement;
 
@@ -43,8 +47,9 @@ class HassioRepositoryEditor extends LitElement {
 
   @property() private _error?: string;
 
-  public async showDialog(params: any): Promise<void> {
-    this._repos = params.repos;
+  public async showDialog(_dialogParams: any): Promise<void> {
+    this._dialogParams = _dialogParams;
+    this._repos = _dialogParams.repos;
     this._opened = true;
     await this.updateComplete;
   }
@@ -110,7 +115,7 @@ class HassioRepositoryEditor extends LitElement {
           </div>
         </div>
         <mwc-button slot="primaryAction" @click="${this.closeDialog}">
-          Cancel
+          Close
         </mwc-button>
       </ha-dialog>
     `;
@@ -169,7 +174,7 @@ class HassioRepositoryEditor extends LitElement {
     this._prosessing = true;
     const repositories = this._filteredRepositories(this._repos);
     const newRepositories = repositories.map((repo) => {
-      return repo.url;
+      return repo.source;
     });
     newRepositories.push(input.value);
 
@@ -180,6 +185,7 @@ class HassioRepositoryEditor extends LitElement {
 
       const addonsInfo = await fetchHassioAddonsInfo(this.hass);
       this._repos = addonsInfo.repositories;
+      this._dialogParams!.loadData();
       input.value = "";
     } catch (err) {
       this._error = err;
@@ -198,20 +204,20 @@ class HassioRepositoryEditor extends LitElement {
     }
     const newRepositories = repositories
       .map((repo) => {
-        return repo.url;
+        return repo.source;
       })
       .filter((repo) => {
-        return repo !== repository.url;
+        return repo !== repository.source;
       });
 
     try {
-      console.log(newRepositories);
       await setSupervisorOption(this.hass, {
         addons_repositories: newRepositories,
       });
 
       const addonsInfo = await fetchHassioAddonsInfo(this.hass);
       this._repos = addonsInfo.repositories;
+      this._dialogParams!.loadData();
     } catch (err) {
       this._error = err;
     }

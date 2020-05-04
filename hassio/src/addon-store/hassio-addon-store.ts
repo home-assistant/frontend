@@ -158,7 +158,10 @@ class HassioAddonStore extends LitElement {
   }
 
   private async _manageRepositories() {
-    showRepositoriesDialog(this);
+    showRepositoriesDialog(this, {
+      repos: this._repos!,
+      loadData: () => this._loadData(),
+    });
   }
 
   private async _loadData() {
