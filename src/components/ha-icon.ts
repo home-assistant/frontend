@@ -9,10 +9,32 @@ import {
   TemplateResult,
 } from "lit-element";
 import "./ha-svg-icon";
+import { debounce } from "../common/util/debounce";
+import { iconMetadata } from "../resources/icon-metadata";
+import { IconMetadata } from "../types";
+
+interface Icons {
+  [key: string]: string;
+}
+
+interface Chunks {
+  [key: string]: { icons: Promise<Icons>; cached: boolean };
+}
 
 const iconStore = new Store("hass-icon-db", "mdi-icon-store");
-const partPromise = {};
+const chunks: Chunks = {};
 const MDI_PREFIXES = ["mdi", "hass", "hassio"];
+
+const findIconChunk = (icon): string => {
+  let lastChunk: IconMetadata;
+  for (const chunk of iconMetadata) {
+    if (chunk.start !== undefined && icon < chunk.start) {
+      break;
+    }
+    lastChunk = chunk;
+  }
+  return lastChunk.file;
+};
 
 @customElement("ha-icon")
 export class HaIcon extends LitElement {
@@ -21,6 +43,23 @@ export class HaIcon extends LitElement {
   @property() private _path?: string;
 
   @property() private _noMdi = false;
+
+  private _debouncedWriteCache = debounce(() => {
+    // We do a batch opening the store just once, for (considerable) performance
+    iconStore._withIDBStore("readwrite", async (store) => {
+      for (const part of Object.values(chunks)) {
+        if (part.cached) {
+          continue;
+        }
+        part.cached = true;
+        // eslint-disable-next-line no-await-in-loop
+        const icons = await part.icons;
+        Object.entries(icons).forEach(([name, path]) => {
+          store.put(path, name);
+        });
+      }
+    });
+  }, 2000);
 
   protected updated(changedProps: PropertyValues) {
     if (changedProps.has("icon")) {
@@ -56,31 +95,31 @@ export class HaIcon extends LitElement {
       this._path = cachedPath;
       return;
     }
-    const part = iconName[0];
-    if (part in partPromise) {
-      this._setPath(partPromise[part], iconName);
+    const chunk = findIconChunk(iconName);
+
+    if (chunk in chunks) {
+      this._setPath(chunks[chunk].icons, iconName);
       return;
     }
-    partPromise[part] = fetch(`/static/mdi/${part}.json`).then((response) =>
+    const iconPromise = fetch(`/static/mdi/${chunk}.json`).then((response) =>
       response.json()
     );
-    this._setPath(partPromise[part], iconName, true);
+    chunks[chunk] = {
+      icons: iconPromise,
+      cached: false,
+    };
+    this._setPath(iconPromise, iconName, true);
   }
 
   private async _setPath(
-    promise: Promise<object>,
+    promise: Promise<Icons>,
     iconName: string,
     cache = false
   ) {
     const iconPack = await promise;
     this._path = iconPack[iconName];
     if (cache) {
-      // We do a batch opening the store just once, for (considerable) performance
-      iconStore._withIDBStore("readwrite", (store) => {
-        Object.entries(iconPack).forEach(([name, path]) => {
-          store.put(path, name);
-        });
-      });
+      this._debouncedWriteCache();
     }
   }
 }
