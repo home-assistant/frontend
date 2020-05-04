@@ -19,6 +19,8 @@ import "../components/hassio-search-input";
 import "./hassio-addon-repository";
 import "./hassio-repositories-editor";
 
+import { HassioRepositoryEditor } from "./hassio-repositor-editor";
+
 import { supervisorTabs } from "../hassio-panel";
 
 const sortRepos = (a: HassioAddonRepository, b: HassioAddonRepository) => {
