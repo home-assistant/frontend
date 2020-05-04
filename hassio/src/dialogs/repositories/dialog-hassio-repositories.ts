@@ -16,22 +16,22 @@ import {
   TemplateResult,
 } from "lit-element";
 import memoizeOne from "memoize-one";
-import "../../../src/components/ha-dialog";
-import "../../../src/components/ha-icon-input";
-import "../../../src/components/ha-switch";
+import "../../../../src/components/ha-dialog";
+import "../../../../src/components/ha-icon-input";
+import "../../../../src/components/ha-switch";
 
-import { haStyle, haStyleDialog } from "../../../src/resources/styles";
-import type { HomeAssistant } from "../../../src/types";
+import { haStyle, haStyleDialog } from "../../../../src/resources/styles";
+import type { HomeAssistant } from "../../../../src/types";
 import {
   HassioAddonRepository,
   fetchHassioAddonsInfo,
-} from "../../../src/data/hassio/addon";
+} from "../../../../src/data/hassio/addon";
 
-import { setSupervisorOption } from "../../../src/data/hassio/supervisor";
+import { setSupervisorOption } from "../../../../src/data/hassio/supervisor";
 import { HassioRepositoryDialogParams } from "./show-dialog-repositories";
 
-@customElement("hassio-repository-editor")
-class HassioRepositoryEditor extends LitElement {
+@customElement("dialog-hassio-repositories")
+class HassioRepositoriesDialog extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) private _repos: HassioAddonRepository[] = [];
@@ -229,6 +229,6 @@ class HassioRepositoryEditor extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "hassio-repository-editor": HassioRepositoryEditor;
+    "dialog-hassio-repositories": HassioRepositoriesDialog;
   }
 }

@@ -14,14 +14,15 @@ import {
 } from "../../../src/data/hassio/addon";
 import "../../../src/layouts/loading-screen";
 import "../../../src/layouts/hass-tabs-subpage";
+import { navigate } from "../../../src/common/navigate";
 import { HomeAssistant, Route } from "../../../src/types";
 import "../../../src/common/search/search-input";
 import "./hassio-addon-repository";
-import "./hassio-repositories-editor";
+import "../dialogs/repositories/dialog-hassio-repositories";
 
 import { supervisorTabs } from "../hassio-panel";
 
-import { showRepositoriesDialog } from "./show-dialog-repositories";
+import { showRepositoriesDialog } from "../dialogs/repositories/show-dialog-repositories";
 
 const sortRepos = (a: HassioAddonRepository, b: HassioAddonRepository) => {
   if (a.slug === "local") {
@@ -134,10 +135,11 @@ class HassioAddonStore extends LitElement {
         ${!this.hass.userData?.showAdvanced
           ? html`
               <div class="advanced">
-                <p>
-                  Missing add-ons? Enable advanced mode on
-                  <a href="/profile">your profile page</a>.
-                </p>
+                Missing add-ons? Enable advanced mode on
+                <div class="advanced-link" @click=${this._openProfile}>
+                  your profile page
+                </div>
+                .
               </div>
             `
           : ""}
@@ -179,6 +181,10 @@ class HassioAddonStore extends LitElement {
     this._filter = e.detail.value;
   }
 
+  private _openProfile(): void {
+    navigate(this, "/profile");
+  }
+
   static get styles(): CSSResult {
     return css`
       hassio-addon-repository {
@@ -195,6 +201,13 @@ class HassioAddonStore extends LitElement {
       }
       .advanced {
         padding: 12px;
+        display: flex;
+      }
+      .advanced-link {
+        color: var(--primary-color);
+        text-decoration: underline;
+        cursor: pointer;
+        margin-left: 0.5em;
       }
     `;
   }

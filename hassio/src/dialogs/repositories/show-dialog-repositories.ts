@@ -1,6 +1,6 @@
-import { fireEvent } from "../../../src/common/dom/fire_event";
-import "./hassio-repository-editor";
-import { HassioAddonRepository } from "../../../src/data/hassio/addon";
+import { fireEvent } from "../../../../src/common/dom/fire_event";
+import "./dialog-hassio-repositories";
+import { HassioAddonRepository } from "../../../../src/data/hassio/addon";
 
 export interface HassioRepositoryDialogParams {
   repos: HassioAddonRepository[];
@@ -12,10 +12,10 @@ export const showRepositoriesDialog = (
   dialogParams: HassioRepositoryDialogParams
 ): void => {
   fireEvent(element, "show-dialog", {
-    dialogTag: "hassio-repository-editor",
+    dialogTag: "dialog-hassio-repositories",
     dialogImport: () =>
       import(
-        /* webpackChunkName: "hassio-repository-editor" */ "./hassio-repository-editor"
+        /* webpackChunkName: "ialog-hassio-repositories" */ "./dialog-hassio-repositories"
       ),
     dialogParams,
   });
