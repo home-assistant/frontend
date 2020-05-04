@@ -17,8 +17,6 @@ import {
 } from "lit-element";
 import memoizeOne from "memoize-one";
 import "../../../../src/components/ha-dialog";
-import "../../../../src/components/ha-icon-input";
-import "../../../../src/components/ha-switch";
 
 import { haStyle, haStyleDialog } from "../../../../src/resources/styles";
 import type { HomeAssistant } from "../../../../src/types";
