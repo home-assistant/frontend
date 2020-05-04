@@ -185,10 +185,12 @@ class HassioRepositoryEditor extends LitElement {
 
       const addonsInfo = await fetchHassioAddonsInfo(this.hass);
       this._repos = addonsInfo.repositories;
-      this._dialogParams!.loadData();
+
+      await this._dialogParams!.loadData();
+
       input.value = "";
     } catch (err) {
-      this._error = err;
+      this._error = err.message;
     }
     this._prosessing = false;
   }
@@ -217,9 +219,10 @@ class HassioRepositoryEditor extends LitElement {
 
       const addonsInfo = await fetchHassioAddonsInfo(this.hass);
       this._repos = addonsInfo.repositories;
-      this._dialogParams!.loadData();
+
+      await this._dialogParams!.loadData();
     } catch (err) {
-      this._error = err;
+      this._error = err.message;
     }
   }
 }

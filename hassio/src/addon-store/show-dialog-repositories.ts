@@ -4,7 +4,7 @@ import { HassioAddonRepository } from "../../../src/data/hassio/addon";
 
 export interface HassioRepositoryDialogParams {
   repos: HassioAddonRepository[];
-  loadData: () => void;
+  loadData: () => Promise<void>;
 }
 
 export const showRepositoriesDialog = (
