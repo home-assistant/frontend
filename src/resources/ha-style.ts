@@ -92,8 +92,6 @@ documentContainer.innerHTML = `<custom-style>
       --rgb-primary-text-color: 33, 33, 33;
       --rgb-secondary-text-color: 114, 114, 114;
       --rgb-text-primary-color: 255, 255, 255;
-      /* other */
-      --hui-column-margin:4px 4px 8px;
 
       ${Object.entries(derivedStyles)
         .map(([key, value]) => `--${key}: ${value};`)
