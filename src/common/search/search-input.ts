@@ -25,6 +25,9 @@ class SearchInput extends LitElement {
   @property({ type: Boolean })
   public autofocus = false;
 
+  @property({ type: Boolean })
+  public hassio = false;
+
   public focus() {
     this.shadowRoot!.querySelector("paper-input")!.focus();
   }
@@ -47,14 +50,18 @@ class SearchInput extends LitElement {
         @value-changed=${this._filterInputChanged}
         .noLabelFloat=${this.noLabelFloat}
       >
-        <ha-icon icon="hass:magnify" slot="prefix" class="prefix"></ha-icon>
+        <ha-icon
+          icon="${this.hassio ? "hassio" : "hass"}:magnify"
+          slot="prefix"
+          class="prefix"
+        ></ha-icon>
         ${this.filter &&
         html`
           <paper-icon-button
             slot="suffix"
             class="suffix"
             @click=${this._clearSearch}
-            icon="hass:close"
+            icon="${this.hassio ? "hassio" : "hass"}:close"
             alt="Clear"
             title="Clear"
           ></paper-icon-button>

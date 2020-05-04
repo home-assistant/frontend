@@ -1,6 +1,7 @@
 import "@material/mwc-button/mwc-button";
 import "@polymer/paper-icon-button/paper-icon-button";
 import "@polymer/paper-input/paper-input";
+import "@polymer/paper-spinner/paper-spinner";
 import type { PaperInputElement } from "@polymer/paper-input/paper-input";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-item/paper-item-body";
@@ -14,35 +15,36 @@ import {
   query,
   TemplateResult,
 } from "lit-element";
-import { classMap } from "lit-html/directives/class-map";
-import { fireEvent } from "../../../src/common/dom/fire_event";
+import memoizeOne from "memoize-one";
+import "../../../src/components/ha-dialog";
 import "../../../src/components/ha-icon-input";
 import "../../../src/components/ha-switch";
-import { showConfirmationDialog } from "../../../src/dialogs/generic/show-dialog-box";
-import { haStyleDialog } from "../../../src/resources/styles";
+
+import { haStyle, haStyleDialog } from "../../../src/resources/styles";
 import type { HomeAssistant } from "../../../src/types";
+import {
+  HassioAddonRepository,
+  fetchHassioAddonsInfo,
+} from "../../../src/data/hassio/addon";
+
+import { setSupervisorOption } from "../../../src/data/hassio/supervisor";
 
 @customElement("hassio-repository-editor")
-export class HassioRepositoryEditor extends LitElement {
-  @property() public hass!: HomeAssistant;
+class HassioRepositoryEditor extends LitElement {
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() private _options: string[] = [];
+  @property() private _repos: HassioAddonRepository[] = [];
 
-  @query("#option_input") private _optionInput?: PaperInputElement;
+  @query("#repository_input") private _optionInput?: PaperInputElement;
 
   @property() private _opened = false;
 
-  @property() private _platform?: string;
+  @property() private _prosessing = false;
 
   @property() private _error?: string;
 
-  @property() private _submitting = false;
-
-  @query(".form") private _form?: HTMLDivElement;
-
-  public async showDialog(): Promise<void> {
-    this._platform = undefined;
-    this._item = undefined;
+  public async showDialog(params: any): Promise<void> {
+    this._repos = params.repos;
     this._opened = true;
     await this.updateComplete;
   }
@@ -52,27 +54,37 @@ export class HassioRepositoryEditor extends LitElement {
     this._error = "";
   }
 
+  private _filteredRepositories = memoizeOne((repos: HassioAddonRepository[]) =>
+    repos
+      .filter((repo) => repo.slug !== "core" && repo.slug !== "local")
+      .sort((a, b) => (a.name < b.name ? -1 : 1))
+  );
+
   protected render(): TemplateResult {
+    const repositories = this._filteredRepositories(this._repos);
     return html`
       <ha-dialog
         .open=${this._opened}
         @closing=${this.closeDialog}
-        class=${classMap({ "button-left": !this._platform })}
         scrimClickAction
         escapeKeyAction
-        heading="Manage Add-on repositories"
+        heading="Manage add-on repositories"
       >
+        ${this._error ? html`<div class="error">${this._error}</div>` : ""}
         <div class="form">
-          Repositories:
-          ${this._options.length
-            ? this._options.map((option, index) => {
+          ${repositories.length
+            ? repositories.map((repo) => {
                 return html`
                   <paper-item class="option">
-                    <paper-item-body> ${option} </paper-item-body>
+                    <paper-item-body two-line>
+                      <div>${repo.name}</div>
+                      <div secondary>${repo.maintainer}</div>
+                      <div secondary>${repo.url}</div>
+                    </paper-item-body>
                     <paper-icon-button
-                      .index=${index}
+                      .slug=${repo.slug}
                       title="Remove"
-                      @click=${this._removeOption}
+                      @click=${this._removeRepository}
                       icon="hassio:delete"
                     ></paper-icon-button>
                   </paper-item>
@@ -90,49 +102,23 @@ export class HassioRepositoryEditor extends LitElement {
               label="Add repository"
               @keydown=${this._handleKeyAdd}
             ></paper-input>
-            <mwc-button @click=${this._addOption}>Add</mwc-button>
+            <mwc-button @click=${this._addRepository}>
+              ${this._prosessing
+                ? html`<paper-spinner active></paper-spinner>`
+                : "Add"}
+            </mwc-button>
           </div>
         </div>
-        <mwc-button
-          slot="primaryAction"
-          @click="${this._createItem}"
-          .disabled=${this._submitting}
-        >
-          ${this.hass!.localize("ui.panel.config.helpers.dialog.create")}
-        </mwc-button>
-        <mwc-button
-          slot="secondaryAction"
-          @click="${this._goBack}"
-          .disabled=${this._submitting}
-        >
-          Back
-        </mwc-button>
-
         <mwc-button slot="primaryAction" @click="${this.closeDialog}">
-          ${this.hass!.localize("ui.common.cancel")}
+          Cancel
         </mwc-button>
       </ha-dialog>
     `;
   }
 
-  private _platformPicked(ev: Event): void {
-    this._platform = (ev.currentTarget! as any).platform;
-    this._focusForm();
-  }
-
-  private async _focusForm(): Promise<void> {
-    await this.updateComplete;
-    (this._form?.lastElementChild as HTMLElement).focus();
-  }
-
-  private _goBack() {
-    this._platform = undefined;
-    this._item = undefined;
-    this._error = undefined;
-  }
-
   static get styles(): CSSResult[] {
     return [
+      haStyle,
       haStyleDialog,
       css`
         ha-dialog.button-left {
@@ -172,56 +158,63 @@ export class HassioRepositoryEditor extends LitElement {
     if (ev.keyCode !== 13) {
       return;
     }
-    this._addOption();
+    this._addRepository();
   }
 
-  private _addOption() {
+  private async _addRepository() {
     const input = this._optionInput;
     if (!input || !input.value) {
       return;
     }
-    fireEvent(this, "value-changed", {
-      value: { ...this._item, options: [...this._options, input.value] },
+    this._prosessing = true;
+    const repositories = this._filteredRepositories(this._repos);
+    const newRepositories = repositories.map((repo) => {
+      return repo.url;
     });
-    input.value = "";
+    newRepositories.push(input.value);
+
+    try {
+      await setSupervisorOption(this.hass, {
+        addons_repositories: newRepositories,
+      });
+
+      const addonsInfo = await fetchHassioAddonsInfo(this.hass);
+      this._repos = addonsInfo.repositories;
+      input.value = "";
+    } catch (err) {
+      this._error = err;
+    }
+    this._prosessing = false;
   }
 
-  private async _removeOption(ev: Event) {
-    if (
-      !(await showConfirmationDialog(this, {
-        title: "Delete this item?",
-        text: "Are you sure you want to delete this item?",
-      }))
-    ) {
+  private async _removeRepository(ev: Event) {
+    const slug = (ev.target as any).slug;
+    const repositories = this._filteredRepositories(this._repos);
+    const repository = repositories.find((repo) => {
+      return repo.slug === slug;
+    });
+    if (!repository) {
       return;
     }
-    const index = (ev.target as any).index;
-    const options = [...this._options];
-    options.splice(index, 1);
-    fireEvent(this, "value-changed", {
-      value: { ...this._item, options },
-    });
-  }
+    const newRepositories = repositories
+      .map((repo) => {
+        return repo.url;
+      })
+      .filter((repo) => {
+        return repo !== repository.url;
+      });
 
-  private _valueChanged(ev: CustomEvent) {
-    if (!this.new && !this._item) {
-      return;
+    try {
+      console.log(newRepositories);
+      await setSupervisorOption(this.hass, {
+        addons_repositories: newRepositories,
+      });
+
+      const addonsInfo = await fetchHassioAddonsInfo(this.hass);
+      this._repos = addonsInfo.repositories;
+    } catch (err) {
+      this._error = err;
     }
-    ev.stopPropagation();
-    const configValue = (ev.target as any).configValue;
-    const value = ev.detail.value;
-    if (this[`_${configValue}`] === value) {
-      return;
-    }
-    const newValue = { ...this._item };
-    if (!value) {
-      delete newValue[configValue];
-    } else {
-      newValue[configValue] = ev.detail.value;
-    }
-    fireEvent(this, "value-changed", {
-      value: newValue,
-    });
   }
 }
 
