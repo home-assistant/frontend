@@ -44,11 +44,14 @@ gulp.task("gen-icons-json", (done) => {
     fs.mkdirSync(OUTPUT_DIR);
   }
   Object.entries(split).forEach(([filename, icons]) => {
-    const lines = icons.map((icon) => {
-      return `"${icon.name}":"${icon.path}"`;
+    const output = {};
+    icons.forEach((icon) => {
+      output[icon.name] = icon.path;
     });
-    const output = `{${lines.join(",")}}`;
-    fs.writeFileSync(path.resolve(OUTPUT_DIR, `${filename}.json`), output);
+    fs.writeFileSync(
+      path.resolve(OUTPUT_DIR, `${filename}.json`),
+      JSON.stringify(output)
+    );
   });
   done();
 });

@@ -1,10 +1,7 @@
-import "@polymer/iron-icon/iron-icon";
-// Not duplicate, this is for typing.
-// eslint-disable-next-line
-import { HaIcon } from "./ha-icon";
+import { HaSvgIcon } from "./ha-svg-icon";
 import { mdiChevronRight, mdiChevronLeft } from "@mdi/js";
 
-export class HaIconPrev extends HaIcon {
+export class HaIconPrev extends HaSvgIcon {
   public connectedCallback() {
     super.connectedCallback();
 

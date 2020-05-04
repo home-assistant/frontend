@@ -1,22 +1,26 @@
 import "@polymer/iron-icon/iron-icon";
 import { get, Store } from "idb-keyval";
 import {
-  css,
-  CSSResult,
   customElement,
   LitElement,
   property,
   PropertyValues,
-  svg,
+  html,
+  TemplateResult,
 } from "lit-element";
+import "./ha-svg-icon";
 
 const iconStore = new Store("hass-icon-db", "mdi-icon-store");
 const partPromise = {};
+const MDI_PREFIXES = ["mdi", "hass", "hassio"];
 
 @customElement("ha-icon")
 export class HaIcon extends LitElement {
   @property() public icon?: string;
-  @property() public path?: string;
+
+  @property() private _path?: string;
+
+  @property() private _noMdi = false;
 
   protected updated(changedProps: PropertyValues) {
     if (changedProps.has("icon")) {
@@ -24,29 +28,32 @@ export class HaIcon extends LitElement {
     }
   }
 
-  protected render() {
-    if (!this.path) {
-      return;
+  protected render(): TemplateResult {
+    if (!this.icon) {
+      return html``;
     }
-    return svg`
-    <svg 
-      viewBox="0 0 24 24" 
-      preserveAspectRatio="xMidYMid meet"
-      focusable="false">
-      <g>
-        <path d=${this.path}></path>
-      </g>
-    </svg>`;
+    if (this._noMdi) {
+      return html`<iron-icon .icon=${this.icon}></iron-icon>`;
+    }
+    return html`<ha-svg-icon .path=${this._path}></ha-svg-icon>`;
   }
 
   private async _loadIcon() {
     if (!this.icon) {
       return;
     }
-    const iconName = this.icon.replace("mdi:", "").replace("hass:", "");
+    const icon = this.icon.split(":", 2);
+    if (!MDI_PREFIXES.includes(icon[0])) {
+      this._noMdi = true;
+      return;
+    }
+
+    this._noMdi = false;
+
+    const iconName = icon[1];
     const cachedPath: string = await get(iconName, iconStore);
     if (cachedPath) {
-      this.path = cachedPath;
+      this._path = cachedPath;
       return;
     }
     const part = iconName[0];
@@ -66,7 +73,7 @@ export class HaIcon extends LitElement {
     cache = false
   ) {
     const iconPack = await promise;
-    this.path = iconPack[iconName];
+    this._path = iconPack[iconName];
     if (cache) {
       // We do a batch opening the store just once, for (considerable) performance
       iconStore._withIDBStore("readwrite", (store) => {
@@ -75,35 +82,6 @@ export class HaIcon extends LitElement {
         });
       });
     }
-  }
-
-  static get styles(): CSSResult {
-    return css`
-      :host {
-        display: var(--layout-inline_-_display);
-        -ms-flex-align: var(--layout-center-center_-_-ms-flex-align);
-        -webkit-align-items: var(--layout-center-center_-_-webkit-align-items);
-        align-items: var(--layout-center-center_-_align-items);
-        -ms-flex-pack: var(--layout-center-center_-_-ms-flex-pack);
-        -webkit-justify-content: var(
-          --layout-center-center_-_-webkit-justify-content
-        );
-        justify-content: var(--layout-center-center_-_justify-content);
-        position: relative;
-        vertical-align: middle;
-        fill: var(--iron-icon-fill-color, currentcolor);
-        stroke: var(--iron-icon-stroke-color, none);
-        width: var(--iron-icon-width, 24px);
-        height: var(--iron-icon-height, 24px);
-      }
-
-      svg {
-        width: 100%;
-        height: 100%;
-        pointer-events: none;
-        display: block;
-      }
-    `;
   }
 }
 declare global {

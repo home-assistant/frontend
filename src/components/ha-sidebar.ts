@@ -29,6 +29,7 @@ import {
   getExternalConfig,
 } from "../external_app/external_config";
 import type { HomeAssistant, PanelInfo } from "../types";
+import "./ha-svg-icon";
 import "./ha-icon";
 import "./ha-menu-button";
 import "./user/ha-user-badge";
@@ -206,10 +207,10 @@ class HaSidebar extends LitElement {
                 @mouseleave=${this._itemMouseLeave}
               >
                 <paper-icon-item>
-                  <ha-icon
+                  <ha-svg-icon
                     slot="item-icon"
                     .path=${mdiCellphoneSettingsVariant}
-                  ></ha-icon>
+                  ></ha-svg-icon>
                   <span class="item-text">
                     ${hass.localize("ui.sidebar.external_app_configuration")}
                   </span>
@@ -231,7 +232,7 @@ class HaSidebar extends LitElement {
           aria-role="option"
           @click=${this._handleShowNotificationDrawer}
         >
-          <ha-icon slot="item-icon" .path=${mdiBell}></ha-icon>
+          <ha-svg-icon slot="item-icon" .path=${mdiBell}></ha-svg-icon>
           ${!this.expanded && notificationCount > 0
             ? html`
                 <span class="notification-badge" slot="item-icon">
@@ -563,7 +564,8 @@ class HaSidebar extends LitElement {
         padding-right: 12px;
       }
 
-      ha-icon[slot="item-icon"] {
+      ha-icon[slot="item-icon"],
+      ha-svg-icon[slot="item-icon"] {
         color: var(--sidebar-icon-color);
       }
 
@@ -604,7 +606,8 @@ class HaSidebar extends LitElement {
         font-size: 14px;
       }
 
-      a.iron-selected paper-icon-item ha-icon {
+      a.iron-selected paper-icon-item ha-icon,
+      a.iron-selected paper-icon-item ha-svg-icon {
         color: var(--sidebar-selected-icon-color);
       }
 
@@ -666,7 +669,7 @@ class HaSidebar extends LitElement {
         padding: 0px 6px;
         color: var(--text-primary-color);
       }
-      ha-icon + .notification-badge {
+      ha-svg-icon + .notification-badge {
         position: absolute;
         bottom: 14px;
         left: 26px;
