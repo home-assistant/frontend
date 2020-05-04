@@ -140,7 +140,6 @@ const createAppConfig = ({ isProdBuild, latestBuild, isStatsBuild }) => {
       core: "./src/entrypoints/core.ts",
       compatibility: "./src/entrypoints/compatibility.ts",
       "custom-panel": "./src/entrypoints/custom-panel.ts",
-      "hass-icons": "./src/entrypoints/hass-icons.ts",
     },
     outputRoot: paths.root,
     isProdBuild,

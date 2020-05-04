@@ -26,7 +26,7 @@ const getMeta = () => {
 
 const splitBySize = (meta) => {
   const chunks = [];
-  const CHUNK_SIZE = 20000;
+  const CHUNK_SIZE = 100000;
 
   let curSize = 0;
   let startKey;
@@ -73,7 +73,7 @@ gulp.task("gen-icons-json", (done) => {
   const split = splitBySize(meta);
 
   if (!fs.existsSync(OUTPUT_DIR)) {
-    fs.mkdirSync(OUTPUT_DIR);
+    fs.mkdirSync(OUTPUT_DIR, { recursive: true });
   }
   const manifest = [];
 
