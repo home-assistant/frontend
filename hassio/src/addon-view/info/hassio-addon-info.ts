@@ -351,14 +351,18 @@ class HassioAddonInfo extends LitElement {
                     haptic
                   ></ha-switch>
                 </div>
-                <div class="state">
-                  <div>Auto update</div>
-                  <ha-switch
-                    @change=${this._autoUpdateToggled}
-                    .checked=${this.addon.auto_update}
-                    haptic
-                  ></ha-switch>
-                </div>
+                ${this.addon.auto_update || this.hass.userData?.showAdvanced
+                  ? html`
+                      <div class="state">
+                        <div>Auto update</div>
+                        <ha-switch
+                          @change=${this._autoUpdateToggled}
+                          .checked=${this.addon.auto_update}
+                          haptic
+                        ></ha-switch>
+                      </div>
+                    `
+                  : ""}
                 ${this.addon.ingress
                   ? html`
                       <div class="state">
