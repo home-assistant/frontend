@@ -18,6 +18,7 @@ import {
 } from "../../../../components/data-table/ha-data-table";
 import "../../../../components/ha-fab";
 import "../../../../components/ha-icon";
+import "../../../../components/ha-icon-button";
 import {
   createDashboard,
   deleteDashboard,

@@ -32,7 +32,6 @@ export class HaIconButton extends LitElement {
 
   private _handleClick(ev) {
     if (this.disabled) {
-      console.log(ev);
       ev.stopPropagation();
     }
   }

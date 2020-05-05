@@ -618,7 +618,7 @@ class HassioAddonInfo extends LitElement {
         .security ha-label-badge {
           cursor: pointer;
           margin-right: 4px;
-          --ha-icon-height: 45px;
+          --mdc-icon-size: 45px;
           --ha-label-badge-padding: 8px 0 0 0;
         }
       `,

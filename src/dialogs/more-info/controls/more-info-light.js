@@ -11,6 +11,7 @@ import "../../../components/ha-labeled-slider";
 import "../../../components/ha-paper-dropdown-menu";
 import { EventsMixin } from "../../../mixins/events-mixin";
 import LocalizeMixin from "../../../mixins/localize-mixin";
+import "../../../components/ha-icon-button";
 
 const FEATURE_CLASS_NAMES = {
   1: "has-brightness",

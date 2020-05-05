@@ -18,6 +18,7 @@ import "./ha-form-customize";
 class HaConfigCustomize extends LocalizeMixin(PolymerElement) {
   static get template() {
     return html`
+      <style include="ha-style"></style>
       <hass-tabs-subpage
         hass="[[hass]]"
         narrow="[[narrow]]"

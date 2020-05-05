@@ -158,8 +158,7 @@ export class HassioUpdate extends LitElement {
       hassioStyle,
       css`
         .icon {
-          --icon-height: 48px;
-          --icon-width: 48px;
+          --mdc-icon-size: 48px;
           float: right;
           margin: 0 0 2px 10px;
         }

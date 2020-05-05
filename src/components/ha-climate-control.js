@@ -32,8 +32,7 @@ class HaClimateControl extends EventsMixin(PolymerElement) {
           text-align: right;
         }
         ha-icon-button {
-          height: 48px;
-          width: 48px;
+          --mdc-icon-size: 32px;
         }
       </style>
 

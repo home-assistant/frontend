@@ -619,8 +619,7 @@ class HUIRoot extends LitElement {
     });
   }
 
-  private _moveViewLeft(ev) {
-    console.log(ev);
+  private _moveViewLeft() {
     if (this._curView === 0) {
       return;
     }

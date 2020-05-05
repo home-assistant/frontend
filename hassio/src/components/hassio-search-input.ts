@@ -67,6 +67,9 @@ class HassioSearchInput extends LitElement {
       .prefix {
         margin: 8px;
       }
+      ha-icon {
+        color: var(--primary-text-color);
+      }
     `;
   }
 }

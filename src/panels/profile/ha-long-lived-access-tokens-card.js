@@ -4,6 +4,7 @@ import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 import { formatDateTime } from "../../common/datetime/format_date_time";
 import "../../components/ha-card";
+import "../../components/ha-icon-button";
 import { showAlertDialog } from "../../dialogs/generic/show-dialog-box";
 import { EventsMixin } from "../../mixins/events-mixin";
 import LocalizeMixin from "../../mixins/localize-mixin";

@@ -901,15 +901,15 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
       }
 
       .narrow ha-icon-button {
-        width: 40px;
-        height: 40px;
+        --mdc-icon-button-size: 40px;
+        --mdc-icon-size: 20px;
       }
 
       .narrow ha-icon-button[action="media_play"],
       .narrow ha-icon-button[action="media_play_pause"],
       .narrow ha-icon-button[action="turn_on"] {
-        width: 50px;
-        height: 50px;
+        --mdc-icon-button-size: 50px;
+        --mdc-icon-size: 25px;
       }
 
       .no-progress.player:not(.no-controls) {

@@ -57,8 +57,7 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
           padding: 4px;
         }
         .entities ha-icon-button {
-          height: 24px;
-          padding: 0;
+          --mdc-icon-button-size: 24px;
         }
         .entities td:nth-child(3) {
           white-space: pre-wrap;

@@ -312,8 +312,7 @@ export class HaDevicePicker extends SubscribeMixin(LitElement) {
   static get styles(): CSSResult {
     return css`
       paper-input > ha-icon-button {
-        width: 24px;
-        height: 24px;
+        --mdc-icon-button-size: 24px;
         padding: 2px;
         color: var(--secondary-text-color);
       }

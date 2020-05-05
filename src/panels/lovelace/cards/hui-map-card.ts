@@ -669,7 +669,8 @@ class HuiMapCard extends LitElement implements LovelaceCard {
       ha-icon-button {
         position: absolute;
         top: 75px;
-        left: 7px;
+        left: 3px;
+        outline: none;
       }
 
       #root {
