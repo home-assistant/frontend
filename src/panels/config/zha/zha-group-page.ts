@@ -30,7 +30,6 @@ import "../ha-config-section";
 import { formatAsPaddedHex } from "./functions";
 import "./zha-device-card";
 import "./zha-device-endpoint-data-table";
-// eslint-disable-next-line import/no-duplicates
 import { ZHADeviceEndpointDataTable } from "./zha-device-endpoint-data-table";
 
 @customElement("zha-group-page")
