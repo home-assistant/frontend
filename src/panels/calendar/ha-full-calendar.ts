@@ -58,57 +58,37 @@ class HAFullCalendar extends LitElement {
       ${this.calendar
         ? html`
             <div class="header">
+              <div class="navigation">
+                <mwc-button outlined class="today" @click=${this._handleToday}
+                  >Today</mwc-button
+                >
+                <ha-icon-button
+                  label="Prev"
+                  icon="hass:chevron-left"
+                  class="prev"
+                  @click=${this._handlePrev}
+                >
+                </ha-icon-button>
+                <ha-icon-button
+                  label="Next"
+                  icon="hass:chevron-right"
+                  class="next"
+                  @click=${this._handleNext}
+                >
+                </ha-icon-button>
+              </div>
+              <h1>
+                ${this.calendar.view.title}
+              </h1>
               ${!this.narrow
-                ? html` <div class="navigation">
-                      <mwc-button outlined @click=${this._handleToday}
-                        >Today</mwc-button
-                      >
-                      <ha-icon-button
-                        label="Prev"
-                        icon="hass:chevron-left"
-                        @click=${this._handlePrev}
-                      >
-                      </ha-icon-button>
-                      <ha-icon-button
-                        label="Next"
-                        icon="hass:chevron-right"
-                        @click=${this._handleNext}
-                      >
-                      </ha-icon-button>
-                    </div>
-                    <h1>
-                      ${this.calendar.view.title}
-                    </h1>`
+                ? html`
+                    <ha-button-toggle-group
+                      .buttons=${viewButtons}
+                      @value-changed=${this._handleView}
+                    ></ha-button-toggle-group>
+                  `
                 : ""}
-              <ha-button-toggle-group
-                .buttons=${viewButtons}
-                @value-changed=${this._handleView}
-              ></ha-button-toggle-group>
             </div>
-            ${this.narrow
-              ? html`<div class="header">
-                  <div class="navigation">
-                    <mwc-button outlined @click=${this._handleToday}
-                      >Today</mwc-button
-                    >
-                    <ha-icon-button
-                      label="Prev"
-                      icon="hass:chevron-left"
-                      @click=${this._handlePrev}
-                    >
-                    </ha-icon-button>
-                    <ha-icon-button
-                      label="Next"
-                      icon="hass:chevron-right"
-                      @click=${this._handleNext}
-                    >
-                    </ha-icon-button>
-                  </div>
-                  <h1>
-                    ${this.calendar.view.title}
-                  </h1>
-                </div>`
-              : ""}
           `
         : ""}
       <div id="calendar"></div>
@@ -194,6 +174,15 @@ class HAFullCalendar extends LitElement {
           display: flex;
           align-items: center;
           flex-grow: 0;
+        }
+
+        .today {
+          margin-right: 20px;
+        }
+
+        .prev,
+        .next {
+          --mdc-icon-button-size: 32px;
         }
 
         #calendar {

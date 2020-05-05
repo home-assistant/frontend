@@ -264,6 +264,7 @@ class PanelCalendar extends LitElement {
           display: flex;
           box-sizing: border-box;
         }
+
         :host(:not([narrow])) .content {
           height: calc(100vh - 64px);
         }
@@ -273,6 +274,7 @@ class PanelCalendar extends LitElement {
           min-width: 170px;
           flex: 0 0 15%;
           overflow: hidden;
+          --mdc-theme-text-primary-on-background: var(--text-primary-color);
         }
 
         .calendar-list > div {
@@ -289,13 +291,16 @@ class PanelCalendar extends LitElement {
         ha-full-calendar {
           flex-grow: 1;
         }
+
         :host([narrow]) ha-full-calendar {
           height: calc(100vh - 72px);
         }
+
         :host([narrow]) .content {
           flex-direction: column-reverse;
           padding: 8px 0 0 0;
         }
+
         :host([narrow]) .calendar-list {
           margin-bottom: 24px;
           width: 100%;
