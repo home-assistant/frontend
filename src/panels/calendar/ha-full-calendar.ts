@@ -37,6 +37,7 @@ const fullCalendarConfig = {
   plugins: [dayGridPlugin],
   initialView: "dayGridMonth",
   dayMaxEventRows: true,
+  height: "parent",
 };
 
 const viewButtons: ToggleButton[] = [
