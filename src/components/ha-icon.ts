@@ -25,7 +25,7 @@ interface Chunks {
 
 const iconStore = new Store("hass-icon-db", "mdi-icon-store");
 const chunks: Chunks = {};
-const MDI_PREFIXES = ["mdi", "hass", "hassio"];
+const MDI_PREFIXES = ["mdi", "hass", "hassio", "hademo"];
 
 const findIconChunk = (icon): string => {
   let lastChunk: IconMetadata;
