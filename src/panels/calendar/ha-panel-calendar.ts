@@ -23,11 +23,11 @@ import type {
   HomeAssistant,
   SelectedCalendar,
   CalendarEvent,
-  Calendar,
   CalendarViewChanged,
 } from "../../types";
 import { haStyle } from "../../resources/styles";
 import { HASSDomEvent } from "../../common/dom/fire_event";
+import { computeDomain } from "../../common/entity/compute_domain";
 
 const palette = [
   "ff0029",
@@ -156,16 +156,19 @@ class PanelCalendar extends LitElement {
   }
 
   private _fetchCalendars() {
-    this.hass
-      .callApi<Calendar[]>("GET", "calendars")
-      .then((result) => {
-        this._calendars = result.map((cal, idx) => ({
-          selected: true,
-          calendar: cal,
-          backgroundColor: `#${palette[idx % palette.length]}`,
-        }));
-      })
-      .then(() => this._fetchData());
+    this._calendars = Object.keys(this.hass.states)
+      .filter((eid) => computeDomain(eid) === "calendar")
+      .sort()
+      .map((eid, idx) => ({
+        selected: true,
+        calendar: {
+          entity_id: eid,
+          name: this.hass.states[eid].attributes.friendly_name || "",
+        },
+        backgroundColor: `#${palette[idx % palette.length]}`,
+      }));
+
+    this._fetchData();
   }
 
   private async _fetchData() {
