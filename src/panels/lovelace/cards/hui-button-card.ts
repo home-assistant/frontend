@@ -176,7 +176,7 @@ export class HuiButtonCard extends LitElement implements LovelaceCard {
                   color: stateObj ? this._computeColor(stateObj) : "",
                   height: this._config.icon_height
                     ? this._config.icon_height
-                    : "auto",
+                    : "",
                 })}
               ></ha-icon>
             `
@@ -238,6 +238,7 @@ export class HuiButtonCard extends LitElement implements LovelaceCard {
         width: 40%;
         height: auto;
         color: var(--paper-item-icon-color, #44739e);
+        --mdc-icon-size: 100%;
       }
 
       ha-icon,

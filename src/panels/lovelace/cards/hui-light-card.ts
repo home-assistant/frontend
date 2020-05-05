@@ -1,4 +1,4 @@
-import "@polymer/paper-icon-button/paper-icon-button";
+import "../../../components/ha-icon-button";
 import "@thomasloven/round-slider";
 import {
   css,
@@ -104,12 +104,12 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
 
     return html`
       <ha-card>
-        <paper-icon-button
+        <ha-icon-button
           icon="hass:dots-vertical"
           class="more-info"
           @click=${this._handleMoreInfo}
           tabindex="0"
-        ></paper-icon-button>
+        ></ha-icon-button>
 
         <div class="content">
           <div id="controls">
@@ -126,7 +126,7 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
                     : "hidden",
                 })}
               ></round-slider>
-              <paper-icon-button
+              <ha-icon-button
                 class="light-button ${classMap({
                   "slider-center": supportsFeature(
                     stateObj,
@@ -135,8 +135,8 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
                   "state-on": stateObj.state === "on",
                   "state-unavailable": stateObj.state === "unavailable",
                 })}"
-                .disabled=${UNAVAILABLE_STATES.includes(stateObj.state)}
                 .icon=${this._config.icon || stateIcon(stateObj)}
+                .disabled=${UNAVAILABLE_STATES.includes(stateObj.state)}
                 style=${styleMap({
                   filter: this._computeBrightness(stateObj),
                   color: this._computeColor(stateObj),
@@ -147,7 +147,7 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
                   hasDoubleClick: hasAction(this._config!.double_tap_action),
                 })}
                 tabindex="0"
-              ></paper-icon-button>
+              ></ha-icon-button>
             </div>
           </div>
 
@@ -329,6 +329,8 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
         top: 50%;
         left: 50%;
         transform: translate(-50%, -50%);
+        --mdc-icon-button-size: 100%;
+        --mdc-icon-size: 100%;
       }
 
       .light-button.state-on {

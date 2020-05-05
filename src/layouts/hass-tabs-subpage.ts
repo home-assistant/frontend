@@ -14,7 +14,7 @@ import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../common/config/is_component_loaded";
 import { navigate } from "../common/navigate";
 import "../components/ha-menu-button";
-import "../components/ha-paper-icon-button-arrow-prev";
+import "../components/ha-icon-button-arrow-prev";
 import { HomeAssistant, Route } from "../types";
 import "../components/ha-icon";
 
@@ -125,11 +125,10 @@ class HassTabsSubpage extends LitElement {
               ></ha-menu-button>
             `
           : html`
-              <ha-paper-icon-button-arrow-prev
+              <ha-icon-button-arrow-prev
                 aria-label="Back"
-                .hassio=${this.hassio}
                 @click=${this._backTapped}
-              ></ha-paper-icon-button-arrow-prev>
+              ></ha-icon-button-arrow-prev>
             `}
         ${this.narrow
           ? html` <div class="main-title"><slot name="header"></slot></div> `
@@ -246,7 +245,7 @@ class HassTabsSubpage extends LitElement {
       }
 
       ha-menu-button,
-      ha-paper-icon-button-arrow-prev,
+      ha-icon-button-arrow-prev,
       ::slotted([slot="toolbar-icon"]) {
         flex-shrink: 0;
         pointer-events: auto;

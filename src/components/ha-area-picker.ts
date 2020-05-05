@@ -1,4 +1,4 @@
-import "@polymer/paper-icon-button/paper-icon-button";
+import "./ha-icon-button";
 import "@polymer/paper-input/paper-input";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-item/paper-item-body";
@@ -117,7 +117,7 @@ export class HaAreaPicker extends SubscribeMixin(LitElement) {
         >
           ${this.value
             ? html`
-                <paper-icon-button
+                <ha-icon-button
                   aria-label=${this.hass.localize(
                     "ui.components.area-picker.clear"
                   )}
@@ -128,12 +128,12 @@ export class HaAreaPicker extends SubscribeMixin(LitElement) {
                   no-ripple
                 >
                   ${this.hass.localize("ui.components.area-picker.clear")}
-                </paper-icon-button>
+                </ha-icon-button>
               `
             : ""}
           ${this._areas.length > 0
             ? html`
-                <paper-icon-button
+                <ha-icon-button
                   aria-label=${this.hass.localize(
                     "ui.components.area-picker.show_areas"
                   )}
@@ -142,7 +142,7 @@ export class HaAreaPicker extends SubscribeMixin(LitElement) {
                   .icon=${this._opened ? "hass:menu-up" : "hass:menu-down"}
                 >
                   ${this.hass.localize("ui.components.area-picker.toggle")}
-                </paper-icon-button>
+                </ha-icon-button>
               `
             : ""}
         </paper-input>
@@ -214,7 +214,7 @@ export class HaAreaPicker extends SubscribeMixin(LitElement) {
 
   static get styles(): CSSResult {
     return css`
-      paper-input > paper-icon-button {
+      paper-input > ha-icon-button {
         width: 24px;
         height: 24px;
         padding: 2px;

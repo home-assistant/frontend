@@ -1,4 +1,4 @@
-import "@polymer/paper-icon-button/paper-icon-button";
+import "../../../components/ha-icon-button";
 import "@polymer/paper-item/paper-icon-item";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-item/paper-item-body";
@@ -24,7 +24,6 @@ import "../../../components/device/ha-device-picker";
 import "../../../components/entity/ha-entities-picker";
 import "../../../components/ha-card";
 import "../../../components/ha-fab";
-import "../../../components/ha-paper-icon-button-arrow-prev";
 import {
   computeDeviceName,
   DeviceRegistryEntry,
@@ -192,14 +191,14 @@ export class HaSceneEditor extends SubscribeMixin(LitElement) {
         ${!this.sceneId
           ? ""
           : html`
-              <paper-icon-button
+              <ha-icon-button
                 slot="toolbar-icon"
                 title="${this.hass.localize(
                   "ui.panel.config.scene.picker.delete_scene"
                 )}"
                 icon="hass:delete"
                 @click=${this._deleteTapped}
-              ></paper-icon-button>
+              ></ha-icon-button>
             `}
         ${this._errors ? html` <div class="errors">${this._errors}</div> ` : ""}
         ${this.narrow ? html` <span slot="header">${name}</span> ` : ""}
@@ -245,14 +244,14 @@ export class HaSceneEditor extends SubscribeMixin(LitElement) {
                   <ha-card>
                     <div class="card-header">
                       ${device.name}
-                      <paper-icon-button
+                      <ha-icon-button
                         icon="hass:delete"
                         title="${this.hass.localize(
                           "ui.panel.config.scene.editor.devices.delete"
                         )}"
                         .device=${device.id}
                         @click=${this._deleteDevice}
-                      ></paper-icon-button>
+                      ></ha-icon-button>
                     </div>
                     ${device.entities.map((entityId) => {
                       const entityStateObj = this.hass.states[entityId];
@@ -335,14 +334,14 @@ export class HaSceneEditor extends SubscribeMixin(LitElement) {
                                 <paper-item-body>
                                   ${computeStateName(entityStateObj)}
                                 </paper-item-body>
-                                <paper-icon-button
+                                <ha-icon-button
                                   icon="hass:delete"
                                   .entityId=${entityId}
                                   .title="${this.hass.localize(
                                     "ui.panel.config.scene.editor.entities.delete"
                                   )}"
                                   @click=${this._deleteEntity}
-                                ></paper-icon-button>
+                                ></ha-icon-button>
                               </paper-icon-item>
                             `;
                           })}
@@ -715,10 +714,10 @@ export class HaSceneEditor extends SubscribeMixin(LitElement) {
         paper-icon-item {
           padding: 8px 16px;
         }
-        ha-card paper-icon-button {
+        ha-card ha-icon-button {
           color: var(--secondary-text-color);
         }
-        .card-header > paper-icon-button {
+        .card-header > ha-icon-button {
           float: right;
           position: relative;
           top: -8px;

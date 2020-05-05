@@ -3,7 +3,7 @@ import "@polymer/app-layout/app-header-layout/app-header-layout";
 import "@polymer/app-layout/app-header/app-header";
 import "@polymer/app-layout/app-scroll-effects/effects/waterfall";
 import "@polymer/app-layout/app-toolbar/app-toolbar";
-import "@polymer/paper-icon-button/paper-icon-button";
+import "../../components/ha-icon-button";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
 import "@polymer/paper-menu-button/paper-menu-button";
@@ -29,8 +29,8 @@ import { debounce } from "../../common/util/debounce";
 import { afterNextRender } from "../../common/util/render-status";
 import "../../components/ha-icon";
 import "../../components/ha-menu-button";
-import "../../components/ha-paper-icon-button-arrow-next";
-import "../../components/ha-paper-icon-button-arrow-prev";
+import "../../components/ha-icon-button-arrow-next";
+import "../../components/ha-icon-button-arrow-prev";
 import type { LovelaceConfig, LovelacePanelConfig } from "../../data/lovelace";
 import {
   showAlertDialog,
@@ -95,7 +95,7 @@ class HUIRoot extends LitElement {
           ${this._editMode
             ? html`
                 <app-toolbar class="edit-mode">
-                  <paper-icon-button
+                  <ha-icon-button
                     aria-label="${this.hass!.localize(
                       "ui.panel.lovelace.menu.exit_edit_mode"
                     )}"
@@ -104,11 +104,11 @@ class HUIRoot extends LitElement {
                     )}"
                     icon="hass:close"
                     @click="${this._editModeDisable}"
-                  ></paper-icon-button>
+                  ></ha-icon-button>
                   <div main-title>
                     ${this.config.title ||
                     this.hass!.localize("ui.panel.lovelace.editor.header")}
-                    <paper-icon-button
+                    <ha-icon-button
                       aria-label="${this.hass!.localize(
                         "ui.panel.lovelace.editor.edit_lovelace.edit_title"
                       )}"
@@ -118,21 +118,21 @@ class HUIRoot extends LitElement {
                       icon="hass:pencil"
                       class="edit-icon"
                       @click="${this._editLovelace}"
-                    ></paper-icon-button>
+                    ></ha-icon-button>
                   </div>
-                  <paper-icon-button
+                  <ha-icon-button
                     icon="hass:help-circle"
                     title="${this.hass!.localize(
                       "ui.panel.lovelace.menu.help"
                     )}"
                     @click="${this._handleHelp}"
-                  ></paper-icon-button>
+                  ></ha-icon-button>
                   <paper-menu-button
                     no-animations
                     horizontal-align="right"
                     horizontal-offset="-5"
                   >
-                    <paper-icon-button
+                    <ha-icon-button
                       aria-label=${this.hass!.localize(
                         "ui.panel.lovelace.editor.menu.open"
                       )}
@@ -141,7 +141,7 @@ class HUIRoot extends LitElement {
                       )}"
                       icon="hass:dots-vertical"
                       slot="dropdown-trigger"
-                    ></paper-icon-button>
+                    ></ha-icon-button>
                     <paper-listbox
                       @iron-select="${this._deselect}"
                       slot="dropdown-content"
@@ -178,11 +178,11 @@ class HUIRoot extends LitElement {
                   <div main-title>${this.config.title || "Home Assistant"}</div>
                   ${this._conversation(this.hass.config.components)
                     ? html`
-                        <paper-icon-button
+                        <ha-icon-button
                           aria-label="Start conversation"
                           icon="hass:microphone"
                           @click=${this._showVoiceCommandDialog}
-                        ></paper-icon-button>
+                        ></ha-icon-button>
                       `
                     : ""}
                   <paper-menu-button
@@ -190,7 +190,7 @@ class HUIRoot extends LitElement {
                     horizontal-align="right"
                     horizontal-offset="-5"
                   >
-                    <paper-icon-button
+                    <ha-icon-button
                       aria-label=${this.hass!.localize(
                         "ui.panel.lovelace.editor.menu.open"
                       )}
@@ -199,7 +199,7 @@ class HUIRoot extends LitElement {
                       )}"
                       icon="hass:dots-vertical"
                       slot="dropdown-trigger"
-                    ></paper-icon-button>
+                    ></ha-icon-button>
                     <paper-listbox
                       @iron-select="${this._deselect}"
                       slot="dropdown-content"
@@ -297,14 +297,14 @@ class HUIRoot extends LitElement {
                         >
                           ${this._editMode
                             ? html`
-                                <ha-paper-icon-button-arrow-prev
+                                <ha-icon-button-arrow-prev
                                   title="${this.hass!.localize(
                                     "ui.panel.lovelace.editor.edit_view.move_left"
                                   )}"
                                   class="edit-icon view"
                                   @click="${this._moveViewLeft}"
                                   ?disabled="${this._curView === 0}"
-                                ></ha-paper-icon-button-arrow-prev>
+                                ></ha-icon-button-arrow-prev>
                               `
                             : ""}
                           ${view.icon
@@ -325,7 +325,7 @@ class HUIRoot extends LitElement {
                                   icon="hass:pencil"
                                   @click="${this._editView}"
                                 ></ha-icon>
-                                <ha-paper-icon-button-arrow-next
+                                <ha-icon-button-arrow-next
                                   title="${this.hass!.localize(
                                     "ui.panel.lovelace.editor.edit_view.move_right"
                                   )}"
@@ -334,7 +334,7 @@ class HUIRoot extends LitElement {
                                   ?disabled="${(this._curView! as number) +
                                     1 ===
                                   this.lovelace!.config.views.length}"
-                                ></ha-paper-icon-button-arrow-next>
+                                ></ha-icon-button-arrow-next>
                               `
                             : ""}
                         </paper-tab>
@@ -342,14 +342,14 @@ class HUIRoot extends LitElement {
                     )}
                     ${this._editMode
                       ? html`
-                          <paper-icon-button
+                          <ha-icon-button
                             id="add-view"
                             @click="${this._addView}"
                             title="${this.hass!.localize(
                               "ui.panel.lovelace.editor.edit_view.add"
                             )}"
                             icon="hass:plus"
-                          ></paper-icon-button>
+                          ></ha-icon-button>
                         `
                       : ""}
                   </paper-tabs>
@@ -405,9 +405,8 @@ class HUIRoot extends LitElement {
         .edit-icon {
           color: var(--accent-color);
           padding-left: 8px;
-        }
-        .edit-icon[disabled] {
-          color: var(--disabled-text-color);
+          vertical-align: middle;
+          --mdc-theme-text-disabled-on-light: var(--disabled-text-color);
         }
         .edit-icon.view {
           display: none;
@@ -620,7 +619,11 @@ class HUIRoot extends LitElement {
     });
   }
 
-  private _moveViewLeft() {
+  private _moveViewLeft(ev) {
+    console.log(ev);
+    if (this._curView === 0) {
+      return;
+    }
     const lovelace = this.lovelace!;
     const oldIndex = this._curView as number;
     const newIndex = (this._curView as number) - 1;
@@ -629,6 +632,9 @@ class HUIRoot extends LitElement {
   }
 
   private _moveViewRight() {
+    if ((this._curView! as number) + 1 === this.lovelace!.config.views.length) {
+      return;
+    }
     const lovelace = this.lovelace!;
     const oldIndex = this._curView as number;
     const newIndex = (this._curView as number) + 1;

@@ -1,4 +1,4 @@
-import "@polymer/paper-icon-button/paper-icon-button";
+import "../../../components/ha-icon-button";
 import "@polymer/paper-input/paper-input";
 import {
   css,
@@ -36,13 +36,13 @@ export class HuiInputListEditor extends LitElement {
             .index="${index}"
             @value-changed="${this._valueChanged}"
             @blur="${this._consolidateEntries}"
-            ><paper-icon-button
+            ><ha-icon-button
               slot="suffix"
               class="clear-button"
               icon="hass:close"
               no-ripple
               @click="${this._removeEntry}"
-              >Clear</paper-icon-button
+              >Clear</ha-icon-button
             ></paper-input
           >
         `;
@@ -99,7 +99,7 @@ export class HuiInputListEditor extends LitElement {
 
   static get styles(): CSSResult {
     return css`
-      paper-input > paper-icon-button {
+      paper-input > ha-icon-button {
         width: 24px;
         height: 24px;
         padding: 2px;

@@ -1,5 +1,5 @@
 import "@material/mwc-button";
-import "@polymer/paper-icon-button/paper-icon-button";
+import "../../../components/ha-icon-button";
 import "@polymer/paper-spinner/paper-spinner";
 import {
   css,
@@ -101,11 +101,11 @@ export class ZHAGroupPage extends LitElement {
 
     return html`
       <hass-subpage .header=${this.group.name}>
-        <paper-icon-button
+        <ha-icon-button
           slot="toolbar-icon"
           icon="hass:delete"
           @click=${this._deleteGroup}
-        ></paper-icon-button>
+        ></ha-icon-button>
         <ha-config-section .isWide=${this.isWide}>
           <div class="header">
             ${this.hass.localize("ui.panel.config.zha.groups.group_info")}

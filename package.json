@@ -29,6 +29,7 @@
     "@material/mwc-checkbox": "^0.13.0",
     "@material/mwc-dialog": "^0.13.0",
     "@material/mwc-fab": "^0.13.0",
+    "@material/mwc-icon-button": "^0.13.0",
     "@material/mwc-ripple": "^0.13.0",
     "@material/mwc-switch": "^0.13.0",
     "@mdi/js": "4.9.95",
@@ -55,7 +56,6 @@
     "@polymer/paper-dialog-scrollable": "^3.0.1",
     "@polymer/paper-drawer-panel": "^3.0.1",
     "@polymer/paper-dropdown-menu": "^3.0.1",
-    "@polymer/paper-icon-button": "^3.0.2",
     "@polymer/paper-input": "^3.0.1",
     "@polymer/paper-item": "^3.0.1",
     "@polymer/paper-listbox": "^3.0.1",
@@ -200,12 +200,15 @@
     "lit-html": "^1.1.2",
     "@material/button": "^5.0.0",
     "@material/checkbox": "^5.0.0",
+    "@material/density": "^5.0.0",
     "@material/dialog": "^5.0.0",
     "@material/fab": "^5.0.0",
+    "@material/feature-targeting": "^5.0.0",
     "@material/switch": "^5.0.0",
     "@material/ripple": "^5.0.0",
     "@material/dom": "^5.0.0",
-    "@material/touch-target": "^5.0.0"
+    "@material/touch-target": "^5.0.0",
+    "@material/theme": "^5.0.0"
   },
   "main": "src/home-assistant.js",
   "husky": {

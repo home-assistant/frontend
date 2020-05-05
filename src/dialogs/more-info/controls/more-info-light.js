@@ -168,11 +168,11 @@ class MoreInfoLight extends LocalizeMixin(EventsMixin(PolymerElement)) {
             saturation-segments="{{saturationSegments}}"
           >
           </ha-color-picker>
-          <paper-icon-button
+          <ha-icon-button
             icon="mdi:palette"
             on-click="segmentClick"
             class="control segmentationButton"
-          ></paper-icon-button>
+          ></ha-icon-button>
         </div>
 
         <div class="control effect_list">

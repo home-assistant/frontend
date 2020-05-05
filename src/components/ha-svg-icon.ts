@@ -27,21 +27,14 @@ export class HaSvgIcon extends LitElement {
   static get styles(): CSSResult {
     return css`
       :host {
-        display: var(--layout-inline_-_display);
-        -ms-flex-align: var(--layout-center-center_-_-ms-flex-align);
-        -webkit-align-items: var(--layout-center-center_-_-webkit-align-items);
-        align-items: var(--layout-center-center_-_align-items);
-        -ms-flex-pack: var(--layout-center-center_-_-ms-flex-pack);
-        -webkit-justify-content: var(
-          --layout-center-center_-_-webkit-justify-content
-        );
-        justify-content: var(--layout-center-center_-_justify-content);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
         position: relative;
         vertical-align: middle;
-        fill: var(--iron-icon-fill-color, currentcolor);
-        stroke: var(--iron-icon-stroke-color, none);
-        width: var(--iron-icon-width, 24px);
-        height: var(--iron-icon-height, 24px);
+        fill: currentcolor;
+        width: var(--mdc-icon-size, 24px);
+        height: var(--mdc-icon-size, 24px);
       }
       svg {
         width: 100%;

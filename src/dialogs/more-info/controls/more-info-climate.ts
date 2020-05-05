@@ -443,9 +443,9 @@ class MoreInfoClimate extends LitElement {
         color: var(--primary-text-color);
       }
 
-      .container-hvac_modes iron-icon,
-      .container-fan_list iron-icon,
-      .container-swing_list iron-icon {
+      .container-hvac_modes ha-icon,
+      .container-fan_list ha-icon,
+      .container-swing_list ha-icon {
         margin: 22px 16px 0 0;
       }
 

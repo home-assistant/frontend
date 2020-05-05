@@ -50,10 +50,10 @@ const CONFIGS = [
         top: 12%
         left: 6%
         transform: rotate(-60deg) scaleX(-1)
-        --iron-icon-height: 30px
-        --iron-icon-width: 30px
-        --iron-icon-stroke-color: black
-        --iron-icon-fill-color: rgba(50, 50, 50, .75)
+        --icon-height: 30px
+        --icon-width: 30px
+        --icon-stroke-color: black
+        --icon-fill-color: rgba(50, 50, 50, .75)
     - type: image
       entity: light.bed_light
       tap_action:
@@ -99,10 +99,10 @@ const CONFIGS = [
         top: 12%
         left: 6%
         transform: rotate(-60deg) scaleX(-1)
-        --iron-icon-height: 30px
-        --iron-icon-width: 30px
-        --iron-icon-stroke-color: black
-        --iron-icon-fill-color: rgba(50, 50, 50, .75)
+        --icon-height: 30px
+        --icon-width: 30px
+        --icon-stroke-color: black
+        --icon-fill-color: rgba(50, 50, 50, .75)
     - type: image
       entity: light.bed_light
       tap_action:

@@ -1,7 +1,7 @@
 import "@polymer/app-layout/app-header/app-header";
 import "@polymer/app-layout/app-toolbar/app-toolbar";
 import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
-import "@polymer/paper-icon-button/paper-icon-button";
+import "../../../components/ha-icon-button";
 import "@polymer/paper-input/paper-input";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
@@ -14,7 +14,7 @@ import { sortStatesByName } from "../../../common/entity/states_sort_by_name";
 import "../../../components/buttons/ha-call-service-button";
 import "../../../components/ha-card";
 import "../../../components/ha-menu-button";
-import "../../../components/ha-paper-icon-button-arrow-prev";
+import "../../../components/ha-icon-button-arrow-prev";
 import "../../../components/ha-service-description";
 import "../../../layouts/ha-app-layout";
 import { EventsMixin } from "../../../mixins/events-mixin";
@@ -88,9 +88,9 @@ class HaConfigZwave extends LocalizeMixin(EventsMixin(PolymerElement)) {
       <ha-app-layout has-scrolling-region="">
         <app-header slot="header" fixed="">
           <app-toolbar>
-            <ha-paper-icon-button-arrow-prev
+            <ha-icon-button-arrow-prev
               on-click="_backTapped"
-            ></ha-paper-icon-button-arrow-prev>
+            ></ha-icon-button-arrow-prev>
             <div main-title="">
               [[localize('component.zwave.title')]]
             </div>
@@ -107,11 +107,11 @@ class HaConfigZwave extends LocalizeMixin(EventsMixin(PolymerElement)) {
         <ha-config-section is-wide="[[isWide]]">
           <div class="sectionHeader" slot="header">
             <span>Z-Wave Node Management</span>
-            <paper-icon-button
+            <ha-icon-button
               class="toggle-help-icon"
               on-click="toggleHelp"
               icon="hass:help-circle"
-            ></paper-icon-button>
+            ></ha-icon-button>
           </div>
           <span slot="introduction">
             Run Z-Wave commands that affect a single node. Pick a node to see a

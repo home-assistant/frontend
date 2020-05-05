@@ -92,12 +92,12 @@ class HassioAddonStore extends LitElement {
         .tabs=${supervisorTabs}
       >
         <span slot="header">Add-on store</span>
-        <paper-icon-button
+        <ha-icon-button
           icon="hassio:reload"
           slot="toolbar-icon"
           aria-label="Reload add-ons"
           @click=${this.refreshData}
-        ></paper-icon-button>
+        ></ha-icon-button>
 
         ${repos.length === 0
           ? html`<loading-screen></loading-screen>`
@@ -151,7 +151,7 @@ class HassioAddonStore extends LitElement {
         margin-top: 24px;
       }
       hassio-search-input {
-        --iron-icon-fill-color: var(--primary-text-color);
+        --icon-fill-color: var(--primary-text-color);
       }
     `;
   }

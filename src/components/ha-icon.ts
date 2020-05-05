@@ -7,6 +7,8 @@ import {
   PropertyValues,
   html,
   TemplateResult,
+  css,
+  CSSResult,
 } from "lit-element";
 import "./ha-svg-icon";
 import { debounce } from "../common/util/debounce";
@@ -115,6 +117,19 @@ export class HaIcon extends LitElement {
   private async _setPath(promise: Promise<Icons>, iconName: string) {
     const iconPack = await promise;
     this._path = iconPack[iconName];
+  }
+
+  static get styles(): CSSResult {
+    return css`
+      :host {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        vertical-align: middle;
+        fill: currentcolor;
+      }
+    `;
   }
 }
 declare global {

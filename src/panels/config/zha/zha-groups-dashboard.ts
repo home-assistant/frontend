@@ -1,5 +1,5 @@
 import "@material/mwc-button";
-import "@polymer/paper-icon-button/paper-icon-button";
+import "../../../components/ha-icon-button";
 import "@polymer/paper-spinner/paper-spinner";
 import {
   css,
@@ -56,11 +56,11 @@ export class ZHAGroupsDashboard extends LitElement {
           "ui.panel.config.zha.groups.groups-header"
         )}
       >
-        <paper-icon-button
+        <ha-icon-button
           slot="toolbar-icon"
           icon="hass:plus"
           @click=${this._addGroup}
-        ></paper-icon-button>
+        ></ha-icon-button>
 
         <div class="content">
           ${this._groups

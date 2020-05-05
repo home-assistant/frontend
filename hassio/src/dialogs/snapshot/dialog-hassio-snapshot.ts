@@ -1,10 +1,10 @@
 import "@material/mwc-button";
 import "@polymer/app-layout/app-toolbar/app-toolbar";
-import "@polymer/iron-icon/iron-icon";
 import { PaperCheckboxElement } from "@polymer/paper-checkbox/paper-checkbox";
 import { PaperDialogElement } from "@polymer/paper-dialog";
 import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable";
-import "@polymer/paper-icon-button/paper-icon-button";
+import "../../../../src/components/ha-icon-button";
+import "../../../../src/components/ha-icon";
 import "@polymer/paper-input/paper-input";
 import {
   css,
@@ -119,10 +119,10 @@ class HassioSnapshotDialog extends LitElement {
         .on-iron-overlay-closed=${this._dialogClosed}
       >
         <app-toolbar>
-          <paper-icon-button
+          <ha-icon-button
             icon="hassio:close"
             dialog-dismiss=""
-          ></paper-icon-button>
+          ></ha-icon-button>
           <div main-title="">${this._computeName}</div>
         </app-toolbar>
         <div class="details">
@@ -200,13 +200,13 @@ class HassioSnapshotDialog extends LitElement {
         <ul class="buttons">
           <li>
             <mwc-button @click=${this._downloadClicked}>
-              <iron-icon icon="hassio:download" class="icon"></iron-icon>
+              <ha-icon icon="hassio:download" class="icon"></ha-icon>
               Download Snapshot
             </mwc-button>
           </li>
           <li>
             <mwc-button @click=${this._partialRestoreClicked}>
-              <iron-icon icon="hassio:history" class="icon"> </iron-icon>
+              <ha-icon icon="hassio:history" class="icon"> </ha-icon>
               Restore Selected
             </mwc-button>
           </li>
@@ -214,7 +214,7 @@ class HassioSnapshotDialog extends LitElement {
             ? html`
                 <li>
                   <mwc-button @click=${this._fullRestoreClicked}>
-                    <iron-icon icon="hassio:history" class="icon"> </iron-icon>
+                    <ha-icon icon="hassio:history" class="icon"> </ha-icon>
                     Wipe &amp; restore
                   </mwc-button>
                 </li>
@@ -222,7 +222,7 @@ class HassioSnapshotDialog extends LitElement {
             : ""}
           <li>
             <mwc-button @click=${this._deleteClicked}>
-              <iron-icon icon="hassio:delete" class="icon warning"> </iron-icon>
+              <ha-icon icon="hassio:delete" class="icon warning"> </ha-icon>
               <span class="warning">Delete Snapshot</span>
             </mwc-button>
           </li>

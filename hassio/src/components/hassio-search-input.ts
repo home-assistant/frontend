@@ -1,6 +1,6 @@
 import "@material/mwc-button";
-import "@polymer/iron-icon/iron-icon";
-import "@polymer/paper-icon-button/paper-icon-button";
+import "../../../src/components/ha-icon-button";
+import "../../../src/components/ha-icon";
 import "@polymer/paper-input/paper-input";
 import {
   css,
@@ -24,21 +24,17 @@ class HassioSearchInput extends LitElement {
           .value=${this.filter}
           @value-changed=${this._filterInputChanged}
         >
-          <iron-icon
-            icon="hassio:magnify"
-            slot="prefix"
-            class="prefix"
-          ></iron-icon>
+          <ha-icon icon="hassio:magnify" slot="prefix" class="prefix"></ha-icon>
           ${this.filter &&
           html`
-            <paper-icon-button
+            <ha-icon-button
               slot="suffix"
               class="suffix"
               @click=${this._clearSearch}
               icon="hassio:close"
               alt="Clear"
               title="Clear"
-            ></paper-icon-button>
+            ></ha-icon-button>
           `}
         </paper-input>
       </div>

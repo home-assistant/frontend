@@ -1,4 +1,4 @@
-import "@polymer/paper-icon-button/paper-icon-button";
+import "../../../components/ha-icon-button";
 import "@thomasloven/round-slider";
 import { HassEntity } from "home-assistant-js-websocket";
 import {
@@ -222,12 +222,12 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
           [mode]: true,
         })}
       >
-        <paper-icon-button
+        <ha-icon-button
           icon="hass:dots-vertical"
           class="more-info"
           @click=${this._handleMoreInfo}
           tabindex="0"
-        ></paper-icon-button>
+        ></ha-icon-button>
 
         <div class="content">
           <div id="controls">
@@ -380,14 +380,14 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
       return html``;
     }
     return html`
-      <paper-icon-button
+      <ha-icon-button
         class="${classMap({ "selected-icon": currentMode === mode })}"
         .mode="${mode}"
         .icon="${modeIcons[mode]}"
         @action=${this._handleAction}
         .actionHandler=${actionHandler()}
         tabindex="0"
-      ></paper-icon-button>
+      ></ha-icon-button>
     `;
   }
 

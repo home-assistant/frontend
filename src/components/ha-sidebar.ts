@@ -1,6 +1,6 @@
 import { mdiBell, mdiCellphoneSettingsVariant } from "@mdi/js";
 import "@polymer/app-layout/app-toolbar/app-toolbar";
-import "@polymer/paper-icon-button/paper-icon-button";
+import "./ha-icon-button";
 import "@polymer/paper-item/paper-icon-item";
 import type { PaperIconItemElement } from "@polymer/paper-item/paper-icon-item";
 import "@polymer/paper-item/paper-item";
@@ -153,13 +153,13 @@ class HaSidebar extends LitElement {
       <div class="menu">
         ${!this.narrow
           ? html`
-              <paper-icon-button
+              <ha-icon-button
                 aria-label=${hass.localize("ui.sidebar.sidebar_toggle")}
                 .icon=${hass.dockedSidebar === "docked"
                   ? "hass:menu-open"
                   : "hass:menu"}
                 @click=${this._toggleSidebar}
-              ></paper-icon-button>
+              ></ha-icon-button>
             `
           : ""}
         <span class="title">Home Assistant</span>
@@ -496,13 +496,13 @@ class HaSidebar extends LitElement {
         width: 256px;
       }
 
-      .menu paper-icon-button {
+      .menu ha-icon-button {
         color: var(--sidebar-icon-color);
       }
-      :host([expanded]) .menu paper-icon-button {
+      :host([expanded]) .menu ha-icon-button {
         margin-right: 23px;
       }
-      :host([expanded][_rtl]) .menu paper-icon-button {
+      :host([expanded][_rtl]) .menu ha-icon-button {
         margin-right: 0px;
         margin-left: 23px;
       }
@@ -714,7 +714,7 @@ class HaSidebar extends LitElement {
         font-weight: 500;
       }
 
-      :host([_rtl]) .menu paper-icon-button {
+      :host([_rtl]) .menu ha-icon-button {
         -webkit-transform: scaleX(-1);
         transform: scaleX(-1);
       }

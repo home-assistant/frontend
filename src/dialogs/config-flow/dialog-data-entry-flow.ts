@@ -1,6 +1,6 @@
 import "@material/mwc-button";
 import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable";
-import "@polymer/paper-icon-button/paper-icon-button";
+import "../../components/ha-icon-button";
 import "@polymer/paper-spinner/paper-spinner";
 import "@polymer/paper-tooltip/paper-tooltip";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
@@ -146,13 +146,13 @@ class DataEntryFlowDialog extends LitElement {
             // to reset the element.
             ""
           : html`
-              <paper-icon-button
+              <ha-icon-button
                 aria-label=${this.hass.localize(
                   "ui.panel.config.integrations.config_flow.dismiss"
                 )}
                 icon="hass:close"
                 dialog-dismiss
-              ></paper-icon-button>
+              ></ha-icon-button>
               ${this._step === null
                 ? // Show handler picker
                   html`
@@ -336,7 +336,7 @@ class DataEntryFlowDialog extends LitElement {
           display: block;
           padding: 0;
         }
-        paper-icon-button {
+        ha-icon-button {
           display: inline-block;
           padding: 8px;
           margin: 16px 16px 0 0;

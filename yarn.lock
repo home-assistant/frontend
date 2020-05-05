@@ -1599,7 +1599,7 @@
   dependencies:
     tslib "^1.9.3"
 
-"@material/base@=5.0.0-canary.a1a0deb3e.0":
+"@material/base@5.0.0-canary.a1a0deb3e.0", "@material/base@=5.0.0-canary.a1a0deb3e.0":
   version "5.0.0-canary.a1a0deb3e.0"
   resolved "https://registry.yarnpkg.com/@material/base/-/base-5.0.0-canary.a1a0deb3e.0.tgz#fbdf14e16e388d4d6c0cf93debe26700694fffa8"
   integrity sha512-l3MMqLNdzv67EVjBZi33vDlrhU+mzHn6OzaiaX9Q08WS+tX5Co1WfdQtHhcYEPslS5aYv6kaU9FQL96Hb6fbpw==
@@ -1663,7 +1663,7 @@
     "@material/typography" "^5.0.0"
     tslib "^1.9.3"
 
-"@material/density@^5.0.0":
+"@material/density@5.0.0-canary.a1a0deb3e.0", "@material/density@^5.0.0":
   version "5.0.0"
   resolved "https://registry.yarnpkg.com/@material/density/-/density-5.0.0.tgz#643d9bd1a5d89b3985d48fd1d6572f73d05fb2e9"
   integrity sha512-K2TnVrSjS7muxcy3gxKsYsCFlZI3qGbG39jPziqHUcnJKCpilspBHRiUvRDyLeUPO/0KbWHJmVjdVsQbgY61hg==
@@ -1719,10 +1719,22 @@
     "@material/touch-target" "^5.0.0"
     "@material/typography" "^5.0.0"
 
-"@material/feature-targeting@^5.0.0":
+"@material/feature-targeting@5.0.0-canary.a1a0deb3e.0", "@material/feature-targeting@^5.0.0":
   version "5.0.0"
   resolved "https://registry.yarnpkg.com/@material/feature-targeting/-/feature-targeting-5.0.0.tgz#5a6c392e61a1d96bf7082999b40c3298ef76cfc7"
   integrity sha512-6XSuTdrjA7XNqEChpDI4+9aSNzoxvuaTFIAMykH7B9wpykvlINI972m9keVF5GW2+pIGmSIAtwv9z5L+sjnS1g==
+
+"@material/icon-button@=5.0.0-canary.a1a0deb3e.0":
+  version "5.0.0-canary.a1a0deb3e.0"
+  resolved "https://registry.yarnpkg.com/@material/icon-button/-/icon-button-5.0.0-canary.a1a0deb3e.0.tgz#0b06f0d3e924dc2d6d178e3c6e2cff571a25949b"
+  integrity sha512-g5lN2zVovaF2w4FYJatcmsPVYLO42ZWLWXYzu5EbktbIOxVGp0N+NYOUhb6HKm8/pjPnqn7ZZGoiqC5NCn2JRA==
+  dependencies:
+    "@material/base" "5.0.0-canary.a1a0deb3e.0"
+    "@material/density" "5.0.0-canary.a1a0deb3e.0"
+    "@material/feature-targeting" "5.0.0-canary.a1a0deb3e.0"
+    "@material/ripple" "5.0.0-canary.a1a0deb3e.0"
+    "@material/theme" "5.0.0-canary.a1a0deb3e.0"
+    tslib "^1.9.3"
 
 "@material/mwc-base@^0.13.0":
   version "0.13.0"
@@ -1787,6 +1799,18 @@
     lit-html "^1.1.2"
     tslib "^1.10.0"
 
+"@material/mwc-icon-button@^0.13.0":
+  version "0.13.0"
+  resolved "https://registry.yarnpkg.com/@material/mwc-icon-button/-/mwc-icon-button-0.13.0.tgz#0d6382ee4cd4c2dd7e84c12d899e3c2cb411f9ab"
+  integrity sha512-txgK6+51u3Upp394WUiZr0Yf6tUfruSNFloBRmGY0ekUIimsbSCcFyvhjA4UTFaIgroxdtULnr7qT4K3Kh2IbQ==
+  dependencies:
+    "@material/icon-button" "=5.0.0-canary.a1a0deb3e.0"
+    "@material/mwc-base" "^0.13.0"
+    "@material/mwc-icon" "^0.13.0"
+    "@material/mwc-ripple" "^0.13.0"
+    lit-element "^2.2.1"
+    tslib "^1.10.0"
+
 "@material/mwc-icon@^0.13.0":
   version "0.13.0"
   resolved "https://registry.yarnpkg.com/@material/mwc-icon/-/mwc-icon-0.13.0.tgz#3472caf99de1f28f5607a3ef56ad33c7a8dfe0bc"
@@ -1819,7 +1843,7 @@
     lit-element "^2.2.1"
     tslib "^1.10.0"
 
-"@material/ripple@=5.0.0-canary.a1a0deb3e.0", "@material/ripple@^5.0.0":
+"@material/ripple@5.0.0-canary.a1a0deb3e.0", "@material/ripple@=5.0.0-canary.a1a0deb3e.0", "@material/ripple@^5.0.0":
   version "5.0.0"
   resolved "https://registry.yarnpkg.com/@material/ripple/-/ripple-5.0.0.tgz#78beaf2066806955b311195d30b116d32e719247"
   integrity sha512-92kMA2FeXm/bX0vY/SH3DLtE88ARelxtjqZq01whzsqo3ngEiZDUqr0+tJ1WvsXSiJ50VI5mtz3wxjnd0hzhwA==
@@ -1860,7 +1884,7 @@
     "@material/theme" "^5.0.0"
     tslib "^1.9.3"
 
-"@material/theme@^5.0.0":
+"@material/theme@5.0.0-canary.a1a0deb3e.0", "@material/theme@^5.0.0":
   version "5.0.0"
   resolved "https://registry.yarnpkg.com/@material/theme/-/theme-5.0.0.tgz#ff8498d883b083f91f53d0d340e31c78ea34cc8d"
   integrity sha512-YBHxiAvT2ACIQ2VM6zeZ4mhq+lgYFAxB0CUX54o7/mqO4E/uZzyzPsyU85KtCeNuEJCP+a0cxN/aqIgLF9/BRA==
@@ -2267,7 +2291,7 @@
     "@polymer/paper-styles" "^3.0.0-pre.26"
     "@polymer/polymer" "^3.0.0"
 
-"@polymer/paper-icon-button@^3.0.0-pre.26", "@polymer/paper-icon-button@^3.0.2":
+"@polymer/paper-icon-button@^3.0.0-pre.26":
   version "3.0.2"
   resolved "https://registry.yarnpkg.com/@polymer/paper-icon-button/-/paper-icon-button-3.0.2.tgz#a1254faadc2c8dd135ce1ae33bcc161a94c31f65"
   integrity sha512-kOdxQgnKL097bggFF6PWvsBYuWg+MCcoHoTHX6bh/MuZoWFZNjrFntFqwuB4oEbpjCpfm4moA33muPJFj7CihQ==

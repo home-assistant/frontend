@@ -2,7 +2,7 @@ import "@polymer/app-layout/app-header-layout/app-header-layout";
 import "@polymer/app-layout/app-header/app-header";
 import "@polymer/app-layout/app-toolbar/app-toolbar";
 import "@polymer/paper-checkbox/paper-checkbox";
-import "@polymer/paper-icon-button/paper-icon-button";
+import "../../components/ha-icon-button";
 import "@polymer/paper-input/paper-input";
 import "@polymer/paper-item/paper-icon-item";
 import "@polymer/paper-item/paper-item";
@@ -74,22 +74,22 @@ class HaPanelShoppingList extends LocalizeMixin(PolymerElement) {
             ></ha-menu-button>
             <div main-title>[[localize('panel.shopping_list')]]</div>
 
-            <paper-icon-button
+            <ha-icon-button
               hidden$="[[!conversation]]"
               aria-label="Start conversation"
               icon="hass:microphone"
               on-click="_showVoiceCommandDialog"
-            ></paper-icon-button>
+            ></ha-icon-button>
 
             <paper-menu-button
               horizontal-align="right"
               horizontal-offset="-5"
               vertical-offset="-5"
             >
-              <paper-icon-button
+              <ha-icon-button
                 icon="hass:dots-vertical"
                 slot="dropdown-trigger"
-              ></paper-icon-button>
+              ></ha-icon-button>
               <paper-listbox slot="dropdown-content">
                 <paper-item on-click="_clearCompleted"
                   >[[localize('ui.panel.shopping-list.clear_completed')]]</paper-item
@@ -102,11 +102,11 @@ class HaPanelShoppingList extends LocalizeMixin(PolymerElement) {
         <div class="content">
           <ha-card>
             <paper-icon-item on-focus="_focusRowInput">
-              <paper-icon-button
+              <ha-icon-button
                 slot="item-icon"
                 icon="hass:plus"
                 on-click="_addItem"
-              ></paper-icon-button>
+              ></ha-icon-button>
               <paper-item-body>
                 <paper-input
                   id="addBox"
