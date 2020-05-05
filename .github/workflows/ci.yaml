@@ -35,7 +35,7 @@ jobs:
         env:
           CI: true
       - name: Build icons
-        run: ./node_modules/.bin/gulp gen-icons-hassio gen-icons-mdi gen-icons-app
+        run: ./node_modules/.bin/gulp gen-icons-json
       - name: Build translations
         run: ./node_modules/.bin/gulp build-translations
       - name: Run eslint

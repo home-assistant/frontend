@@ -11,6 +11,7 @@ import "../../../components/ha-labeled-slider";
 import "../../../components/ha-paper-dropdown-menu";
 import { EventsMixin } from "../../../mixins/events-mixin";
 import LocalizeMixin from "../../../mixins/localize-mixin";
+import "../../../components/ha-icon-button";
 
 const FEATURE_CLASS_NAMES = {
   1: "has-brightness",
@@ -168,11 +169,11 @@ class MoreInfoLight extends LocalizeMixin(EventsMixin(PolymerElement)) {
             saturation-segments="{{saturationSegments}}"
           >
           </ha-color-picker>
-          <paper-icon-button
+          <ha-icon-button
             icon="mdi:palette"
             on-click="segmentClick"
             class="control segmentationButton"
-          ></paper-icon-button>
+          ></ha-icon-button>
         </div>
 
         <div class="control effect_list">

@@ -1,4 +1,4 @@
-import "@polymer/paper-icon-button/paper-icon-button";
+import "../../components/ha-icon-button";
 import "@polymer/paper-tooltip/paper-tooltip";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 /* eslint-plugin-disable lit */
@@ -17,10 +17,10 @@ class HaRefreshTokens extends LocalizeMixin(EventsMixin(PolymerElement)) {
   static get template() {
     return html`
       <style>
-        paper-icon-button {
+        ha-icon-button {
           color: var(--primary-text-color);
         }
-        paper-icon-button[disabled] {
+        ha-icon-button[disabled] {
           color: var(--disabled-text-color);
         }
       </style>
@@ -39,11 +39,11 @@ class HaRefreshTokens extends LocalizeMixin(EventsMixin(PolymerElement)) {
                   >[[localize('ui.panel.profile.refresh_tokens.current_token_tooltip')]]</paper-tooltip
                 >
               </template>
-              <paper-icon-button
+              <ha-icon-button
                 icon="hass:delete"
                 on-click="_handleDelete"
                 disabled="[[item.is_current]]"
-              ></paper-icon-button>
+              ></ha-icon-button>
             </div>
           </ha-settings-row>
         </template>

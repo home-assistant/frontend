@@ -1,5 +1,5 @@
 import "@material/mwc-button";
-import "@polymer/paper-icon-button/paper-icon-button";
+import "../../../components/ha-icon-button";
 import "@polymer/paper-spinner/paper-spinner";
 import {
   css,
@@ -86,11 +86,11 @@ class ZHAAddDevicesPage extends LitElement {
                     "ui.panel.config.zha.add_device_page.search_again"
                   )}
                 </mwc-button>
-                <paper-icon-button
+                <ha-icon-button
                   class="toggle-help-icon"
                   @click="${this._onHelpTap}"
                   icon="hass:help-circle"
-                ></paper-icon-button>
+                ></ha-icon-button>
                 ${this._showHelp
                   ? html`
                       <ha-service-description

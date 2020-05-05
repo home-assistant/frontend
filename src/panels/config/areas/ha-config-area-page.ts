@@ -104,12 +104,12 @@ class HaConfigAreaPage extends LitElement {
             `
           : ""}
 
-        <paper-icon-button
+        <ha-icon-button
           slot="toolbar-icon"
           icon="hass:settings"
           .entry=${area}
           @click=${this._showSettings}
-        ></paper-icon-button>
+        ></ha-icon-button>
 
         <div class="container">
           ${!this.narrow

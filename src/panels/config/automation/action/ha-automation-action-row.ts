@@ -1,5 +1,5 @@
 import "@polymer/paper-dropdown-menu/paper-dropdown-menu-light";
-import "@polymer/paper-icon-button/paper-icon-button";
+import "../../../../components/ha-icon-button";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
 import type { PaperListboxElement } from "@polymer/paper-listbox/paper-listbox";
@@ -96,18 +96,18 @@ export default class HaAutomationActionRow extends LitElement {
           <div class="card-menu">
             ${this.index !== 0
               ? html`
-                  <paper-icon-button
+                  <ha-icon-button
                     icon="hass:arrow-up"
                     @click=${this._moveUp}
-                  ></paper-icon-button>
+                  ></ha-icon-button>
                 `
               : ""}
             ${this.index !== this.totalActions - 1
               ? html`
-                  <paper-icon-button
+                  <ha-icon-button
                     icon="hass:arrow-down"
                     @click=${this._moveDown}
-                  ></paper-icon-button>
+                  ></ha-icon-button>
                 `
               : ""}
             <paper-menu-button
@@ -117,10 +117,10 @@ export default class HaAutomationActionRow extends LitElement {
               vertical-offset="-5"
               close-on-activate
             >
-              <paper-icon-button
+              <ha-icon-button
                 icon="hass:dots-vertical"
                 slot="dropdown-trigger"
-              ></paper-icon-button>
+              ></ha-icon-button>
               <paper-listbox slot="dropdown-content">
                 <paper-item
                   @tap=${this._switchYamlMode}

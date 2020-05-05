@@ -2,8 +2,6 @@ window.loadES5Adapter().then(() => {
   // eslint-disable-next-line
   import(/* webpackChunkName: "roboto" */ "../../src/resources/roboto");
   // eslint-disable-next-line
-  import(/* webpackChunkName: "hassio-icons" */ "./resources/hassio-icons");
-  // eslint-disable-next-line
   import(/* webpackChunkName: "hassio-main" */ "./hassio-main");
 });
 

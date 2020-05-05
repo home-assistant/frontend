@@ -1,4 +1,4 @@
-import "@polymer/paper-icon-button/paper-icon-button";
+import "../../components/ha-icon-button";
 import "@polymer/paper-input/paper-input";
 import {
   css,
@@ -50,14 +50,14 @@ class SearchInput extends LitElement {
         <ha-icon icon="hass:magnify" slot="prefix" class="prefix"></ha-icon>
         ${this.filter &&
         html`
-          <paper-icon-button
+          <ha-icon-button
             slot="suffix"
             class="suffix"
             @click=${this._clearSearch}
             icon="hass:close"
             alt="Clear"
             title="Clear"
-          ></paper-icon-button>
+          ></ha-icon-button>
         `}
       </paper-input>
     `;

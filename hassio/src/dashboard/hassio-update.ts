@@ -1,5 +1,4 @@
 import "@material/mwc-button";
-import "@polymer/iron-icon/iron-icon";
 import "@polymer/paper-card/paper-card";
 import {
   css,
@@ -17,6 +16,7 @@ import {
   HassioSupervisorInfo,
 } from "../../../src/data/hassio/supervisor";
 import { haStyle } from "../../../src/resources/styles";
+import "../../../src/components/ha-icon";
 import { HomeAssistant } from "../../../src/types";
 import "../components/hassio-card-content";
 import { hassioStyle } from "../resources/hassio-style";
@@ -112,7 +112,7 @@ export class HassioUpdate extends LitElement {
           ${icon
             ? html`
                 <div class="icon">
-                  <iron-icon .icon=${icon}></iron-icon>
+                  <ha-icon .icon=${icon}></ha-icon>
                 </div>
               `
             : ""}
@@ -158,8 +158,7 @@ export class HassioUpdate extends LitElement {
       hassioStyle,
       css`
         .icon {
-          --iron-icon-height: 48px;
-          --iron-icon-width: 48px;
+          --mdc-icon-size: 48px;
           float: right;
           margin: 0 0 2px 10px;
           color: var(--primary-text-color);

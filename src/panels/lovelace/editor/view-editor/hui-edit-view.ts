@@ -1,6 +1,6 @@
 import "@material/mwc-button";
 import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable";
-import "@polymer/paper-icon-button/paper-icon-button";
+import "../../../../components/ha-icon-button";
 import "@polymer/paper-spinner/paper-spinner";
 import "@polymer/paper-tabs/paper-tab";
 import "@polymer/paper-tabs/paper-tabs";
