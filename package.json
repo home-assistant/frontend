@@ -34,9 +34,7 @@
     "@material/mwc-formfield": "0.14.1",
     "@material/mwc-icon-button": "0.14.1",
     "@material/mwc-list": "0.14.1",
-    "@material/mwc-menu": "0.14.1",
     "@material/mwc-ripple": "0.14.1",
-    "@material/mwc-select": "0.14.1",
     "@material/mwc-switch": "0.14.1",
     "@mdi/js": "4.9.95",
     "@mdi/svg": "4.9.95",
@@ -198,18 +196,7 @@
   "resolutions": {
     "@webcomponents/webcomponentsjs": "^2.2.10",
     "@polymer/polymer": "3.1.0",
-    "lit-html": "^1.1.2",
-    "@material/button": "^5.0.0",
-    "@material/checkbox": "^5.0.0",
-    "@material/density": "^5.0.0",
-    "@material/dialog": "^5.0.0",
-    "@material/fab": "^5.0.0",
-    "@material/feature-targeting": "^5.0.0",
-    "@material/switch": "^5.0.0",
-    "@material/ripple": "^5.0.0",
-    "@material/dom": "^5.0.0",
-    "@material/touch-target": "^5.0.0",
-    "@material/theme": "^5.0.0"
+    "lit-html": "^1.1.2"
   },
   "main": "src/home-assistant.js",
   "husky": {
