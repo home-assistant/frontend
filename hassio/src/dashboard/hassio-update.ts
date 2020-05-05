@@ -167,6 +167,7 @@ export class HassioUpdate extends LitElement {
           font-size: var(--paper-font-subhead_-_font-size);
           font-weight: 500;
           margin-bottom: 0.5em;
+          color: var(--primary-text-color);
         }
         .warning {
           color: var(--secondary-text-color);
