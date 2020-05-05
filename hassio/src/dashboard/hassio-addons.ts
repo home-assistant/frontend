@@ -96,7 +96,7 @@ class HassioAddons extends LitElement {
   }
 
   private _addonTapped(ev: any): void {
-    navigate(this, `/hassio/addon/${ev.currentTarget.addon.slug}`);
+    navigate(this, `/hassio/addon/${ev.currentTarget.addon.slug}/info`);
   }
 
   private _openStore(): void {

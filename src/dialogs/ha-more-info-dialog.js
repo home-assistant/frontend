@@ -41,8 +41,8 @@ class HaMoreInfoDialog extends DialogMixin(PolymerElement) {
         /* overrule the ha-style-dialog max-height on small screens */
         @media all and (max-width: 450px), all and (max-height: 500px) {
           more-info-controls {
-            --more-info-header-background: var(--primary-color);
-            --more-info-header-color: var(--text-primary-color);
+            --more-info-header-background: var(--app-header-background-color);
+            --more-info-header-color: var(--app-header-text-color, white);
           }
           :host {
             width: 100% !important;

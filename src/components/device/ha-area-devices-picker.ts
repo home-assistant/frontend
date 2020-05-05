@@ -1,5 +1,5 @@
 import "@material/mwc-button/mwc-button";
-import "@polymer/paper-icon-button/paper-icon-button";
+import "../ha-icon-button";
 import "@polymer/paper-input/paper-input";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-item/paper-item-body";
@@ -61,7 +61,7 @@ const rowRenderer = (
         margin: -10px 0;
         padding: 0;
       }
-      paper-icon-button {
+      ha-icon-button {
         float: right;
       }
       .devices {
@@ -325,7 +325,7 @@ export class HaAreaDevicesPicker extends SubscribeMixin(LitElement) {
         >
           ${this.value
             ? html`
-                <paper-icon-button
+                <ha-icon-button
                   aria-label=${this.hass.localize(
                     "ui.components.device-picker.clear"
                   )}
@@ -336,12 +336,12 @@ export class HaAreaDevicesPicker extends SubscribeMixin(LitElement) {
                   no-ripple
                 >
                   Clear
-                </paper-icon-button>
+                </ha-icon-button>
               `
             : ""}
           ${areas.length > 0
             ? html`
-                <paper-icon-button
+                <ha-icon-button
                   aria-label=${this.hass.localize(
                     "ui.components.device-picker.show_devices"
                   )}
@@ -350,7 +350,7 @@ export class HaAreaDevicesPicker extends SubscribeMixin(LitElement) {
                   .icon=${this._opened ? "hass:menu-up" : "hass:menu-down"}
                 >
                   Toggle
-                </paper-icon-button>
+                </ha-icon-button>
               `
             : ""}
         </paper-input>
@@ -408,7 +408,7 @@ export class HaAreaDevicesPicker extends SubscribeMixin(LitElement) {
 
   static get styles(): CSSResult {
     return css`
-      paper-input > paper-icon-button {
+      paper-input > ha-icon-button {
         width: 24px;
         height: 24px;
         padding: 2px;

@@ -120,7 +120,7 @@ export type Trigger =
   | DeviceTrigger;
 
 export interface LogicalCondition {
-  condition: "and" | "or";
+  condition: "and" | "not" | "or";
   conditions: Condition[];
 }
 

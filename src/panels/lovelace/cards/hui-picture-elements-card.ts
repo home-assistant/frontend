@@ -19,6 +19,8 @@ import { PictureElementsCardConfig } from "./types";
 
 @customElement("hui-picture-elements-card")
 class HuiPictureElementsCard extends LitElement implements LovelaceCard {
+  @property() public hass?: HomeAssistant;
+
   public static getStubConfig(
     hass: HomeAssistant,
     entities: string[],
@@ -51,18 +53,6 @@ class HuiPictureElementsCard extends LitElement implements LovelaceCard {
 
   @property() private _config?: PictureElementsCardConfig;
 
-  private _hass?: HomeAssistant;
-
-  set hass(hass: HomeAssistant) {
-    this._hass = hass;
-    for (const el of Array.from(
-      this.shadowRoot!.querySelectorAll("#root > *")
-    )) {
-      const element = el as LovelaceElement;
-      element.hass = this._hass;
-    }
-  }
-
   public getCardSize(): number {
     return 4;
   }
@@ -84,9 +74,19 @@ class HuiPictureElementsCard extends LitElement implements LovelaceCard {
 
   protected updated(changedProps: PropertyValues): void {
     super.updated(changedProps);
-    if (!this._config || !this._hass) {
+    if (!this._config || !this.hass) {
       return;
     }
+
+    if (changedProps.has("hass")) {
+      for (const el of Array.from(
+        this.shadowRoot!.querySelectorAll("#root > *")
+      )) {
+        const element = el as LovelaceElement;
+        element.hass = this.hass;
+      }
+    }
+
     const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
     const oldConfig = changedProps.get("_config") as
       | PictureElementsCardConfig
@@ -98,12 +98,12 @@ class HuiPictureElementsCard extends LitElement implements LovelaceCard {
       oldHass.themes !== this.hass.themes ||
       oldConfig.theme !== this._config.theme
     ) {
-      applyThemesOnElement(this, this._hass.themes, this._config.theme);
+      applyThemesOnElement(this, this.hass.themes, this._config.theme);
     }
   }
 
   protected render(): TemplateResult {
-    if (!this._config) {
+    if (!this.hass || !this._config) {
       return html``;
     }
 
@@ -111,7 +111,7 @@ class HuiPictureElementsCard extends LitElement implements LovelaceCard {
       <ha-card .header=${this._config.title}>
         <div id="root">
           <hui-image
-            .hass=${this._hass}
+            .hass=${this.hass}
             .image=${this._config.image}
             .stateImage=${this._config.state_image}
             .stateFilter=${this._config.state_filter}
@@ -123,7 +123,7 @@ class HuiPictureElementsCard extends LitElement implements LovelaceCard {
           ${this._config.elements.map(
             (elementConfig: LovelaceElementConfig) => {
               const element = createStyledHuiElement(elementConfig);
-              element.hass = this._hass;
+              element.hass = this.hass;
 
               return element;
             }

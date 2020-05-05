@@ -1,8 +1,8 @@
-import "@polymer/iron-icon/iron-icon";
 import "@polymer/paper-input/paper-input";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 /* eslint-plugin-disable lit */
 import { PolymerElement } from "@polymer/polymer/polymer-element";
+import "../../../../components/ha-icon";
 
 class HaCustomizeIcon extends PolymerElement {
   static get template() {
@@ -18,7 +18,7 @@ class HaCustomizeIcon extends PolymerElement {
           margin-top: 10px;
         }
       </style>
-      <iron-icon class="icon-image" icon="[[item.value]]"></iron-icon>
+      <ha-icon class="icon-image" icon="[[item.value]]"></ha-icon>
       <paper-input
         disabled="[[item.secondary]]"
         label="icon"

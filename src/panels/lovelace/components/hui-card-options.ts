@@ -1,5 +1,5 @@
 import "@material/mwc-button";
-import "@polymer/paper-icon-button/paper-icon-button";
+import "../../../components/ha-icon-button";
 import "@polymer/paper-listbox/paper-listbox";
 import "@polymer/paper-menu-button/paper-menu-button";
 import {
@@ -42,7 +42,7 @@ export class HuiCardOptions extends LitElement {
             >
           </div>
           <div class="secondary-actions">
-            <paper-icon-button
+            <ha-icon-button
               title="Move card down"
               class="move-arrow"
               icon="hass:arrow-down"
@@ -50,27 +50,27 @@ export class HuiCardOptions extends LitElement {
               ?disabled=${this.lovelace!.config.views[this.path![0]].cards!
                 .length ===
               this.path![1] + 1}
-            ></paper-icon-button>
-            <paper-icon-button
+            ></ha-icon-button>
+            <ha-icon-button
               title="Move card up"
               class="move-arrow"
               icon="hass:arrow-up"
               @click=${this._cardUp}
               ?disabled=${this.path![1] === 0}
-            ></paper-icon-button>
+            ></ha-icon-button>
             <paper-menu-button
               horizontal-align="right"
               vertical-align="bottom"
               vertical-offset="40"
               close-on-activate
             >
-              <paper-icon-button
+              <ha-icon-button
                 icon="hass:dots-vertical"
                 slot="dropdown-trigger"
                 aria-label=${this.hass!.localize(
                   "ui.panel.lovelace.editor.edit_card.options"
                 )}
-              ></paper-icon-button>
+              ></ha-icon-button>
               <paper-listbox slot="dropdown-content">
                 <paper-item @tap=${this._moveCard}>
                   ${this.hass!.localize(
@@ -127,11 +127,11 @@ export class HuiCardOptions extends LitElement {
         text-align: right;
       }
 
-      paper-icon-button {
+      ha-icon-button {
         color: var(--primary-text-color);
       }
 
-      paper-icon-button.move-arrow[disabled] {
+      ha-icon-button.move-arrow[disabled] {
         color: var(--disabled-text-color);
       }
 

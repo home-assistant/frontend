@@ -219,8 +219,7 @@ class HuiShoppingListCard extends LitElement implements LovelaceCard {
 
       .addRow ha-icon {
         color: var(--secondary-text-color);
-        --iron-icon-width: 26px;
-        --iron-icon-height: 26px;
+        --mdc-icon-size: 26px;
       }
 
       .addButton {

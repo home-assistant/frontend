@@ -2,7 +2,7 @@ import "@material/mwc-button";
 import "@polymer/app-layout/app-header-layout/app-header-layout";
 import "@polymer/app-layout/app-header/app-header";
 import "@polymer/app-layout/app-toolbar/app-toolbar";
-import "@polymer/paper-icon-button/paper-icon-button";
+import "../../components/ha-icon-button";
 import "@polymer/paper-spinner/paper-spinner";
 import { safeDump, safeLoad } from "js-yaml";
 import {
@@ -53,10 +53,10 @@ class LovelaceFullConfigEditor extends LitElement {
       <app-header-layout>
         <app-header>
           <app-toolbar>
-            <paper-icon-button
+            <ha-icon-button
               icon="hass:close"
               @click="${this._closeEditor}"
-            ></paper-icon-button>
+            ></ha-icon-button>
             <div main-title>
               ${this.hass!.localize(
                 "ui.panel.lovelace.editor.raw_editor.header"

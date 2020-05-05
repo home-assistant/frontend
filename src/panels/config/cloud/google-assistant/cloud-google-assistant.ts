@@ -1,4 +1,4 @@
-import "@polymer/paper-icon-button";
+import "../../../../components/ha-icon-button";
 import {
   css,
   CSSResult,
@@ -167,11 +167,11 @@ class CloudGoogleAssistant extends LitElement {
         ${
           emptyFilter
             ? html`
-                <paper-icon-button
+                <ha-icon-button
                   slot="toolbar-icon"
                   icon="hass:tune"
                   @click=${this._openDomainToggler}
-                ></paper-icon-button>
+                ></ha-icon-button>
               `
             : ""
         }

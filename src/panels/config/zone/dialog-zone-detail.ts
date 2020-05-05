@@ -105,6 +105,7 @@ class DialogZoneDetail extends LitElement {
           ${this._error ? html` <div class="error">${this._error}</div> ` : ""}
           <div class="form">
             <paper-input
+              dialogInitialFocus
               .value=${this._name}
               .configValue=${"name"}
               @value-changed=${this._valueChanged}
@@ -114,7 +115,8 @@ class DialogZoneDetail extends LitElement {
               .errorMessage="${this.hass!.localize(
                 "ui.panel.config.zone.detail.required_error_msg"
               )}"
-              .invalid=${nameValid}
+              required
+              auto-validate
             ></paper-input>
             <paper-input
               .value=${this._icon}

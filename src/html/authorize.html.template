@@ -49,7 +49,6 @@
 
     <script type="module" crossorigin="use-credentials">
       import "<%= latestPageJS %>";
-      import "<%= latestHassIconsJS %>";
       window.providersPromise = fetch("/auth/providers", {
         credentials: "same-origin",
       });
@@ -62,7 +61,6 @@
           _ls("/static/polyfills/custom-elements-es5-adapter.js");
           _ls("<%= es5Compatibility %>");
           _ls("<%= es5PageJS %>");
-          _ls("<%= es5HassIconsJS %>");
         }
       })();
     </script>

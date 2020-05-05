@@ -4,6 +4,7 @@ import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 import { formatDateTime } from "../../common/datetime/format_date_time";
 import "../../components/ha-card";
+import "../../components/ha-icon-button";
 import { showAlertDialog } from "../../dialogs/generic/show-dialog-box";
 import { EventsMixin } from "../../mixins/events-mixin";
 import LocalizeMixin from "../../mixins/localize-mixin";
@@ -24,7 +25,7 @@ class HaLongLivedTokens extends LocalizeMixin(EventsMixin(PolymerElement)) {
         a {
           color: var(--primary-color);
         }
-        paper-icon-button {
+        ha-icon-button {
           color: var(--primary-text-color);
         }
       </style>
@@ -52,10 +53,10 @@ class HaLongLivedTokens extends LocalizeMixin(EventsMixin(PolymerElement)) {
           <ha-settings-row two-line>
             <span slot="heading">[[item.client_name]]</span>
             <div slot="description">[[_formatCreatedAt(item.created_at)]]</div>
-            <paper-icon-button
+            <ha-icon-button
               icon="hass:delete"
               on-click="_handleDelete"
-            ></paper-icon-button>
+            ></ha-icon-button>
           </ha-settings-row>
         </template>
         <div class="card-actions">

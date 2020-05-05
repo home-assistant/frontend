@@ -14,7 +14,7 @@ import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../common/config/is_component_loaded";
 import { navigate } from "../common/navigate";
 import "../components/ha-menu-button";
-import "../components/ha-paper-icon-button-arrow-prev";
+import "../components/ha-icon-button-arrow-prev";
 import { HomeAssistant, Route } from "../types";
 import "../components/ha-icon";
 
@@ -38,6 +38,8 @@ class HassTabsSubpage extends LitElement {
   @property() public backCallback?: () => void;
 
   @property({ type: Boolean }) public hassio = false;
+
+  @property({ type: Boolean, attribute: "main-page" }) public mainPage = false;
 
   @property() public route!: Route;
 
@@ -82,7 +84,7 @@ class HassTabsSubpage extends LitElement {
                     <span class="name"
                       >${page.translationKey
                         ? this.hass.localize(page.translationKey)
-                        : name}</span
+                        : page.name}</span
                     >
                   `
                 : ""}
@@ -97,7 +99,7 @@ class HassTabsSubpage extends LitElement {
     super.updated(changedProperties);
     if (changedProperties.has("route")) {
       this._activeTab = this.tabs.find((tab) =>
-        this.route.prefix.includes(tab.path)
+        `${this.route.prefix}${this.route.path}`.includes(tab.path)
       );
     }
   }
@@ -114,11 +116,20 @@ class HassTabsSubpage extends LitElement {
 
     return html`
       <div class="toolbar">
-        <ha-paper-icon-button-arrow-prev
-          aria-label="Back"
-          .hassio=${this.hassio}
-          @click=${this._backTapped}
-        ></ha-paper-icon-button-arrow-prev>
+        ${this.mainPage
+          ? html`
+              <ha-menu-button
+                .hass=${this.hass}
+                .hassio=${this.hassio}
+                .narrow=${this.narrow}
+              ></ha-menu-button>
+            `
+          : html`
+              <ha-icon-button-arrow-prev
+                aria-label="Back"
+                @click=${this._backTapped}
+              ></ha-icon-button-arrow-prev>
+            `}
         ${this.narrow
           ? html` <div class="main-title"><slot name="header"></slot></div> `
           : ""}
@@ -234,7 +245,7 @@ class HassTabsSubpage extends LitElement {
       }
 
       ha-menu-button,
-      ha-paper-icon-button-arrow-prev,
+      ha-icon-button-arrow-prev,
       ::slotted([slot="toolbar-icon"]) {
         flex-shrink: 0;
         pointer-events: auto;

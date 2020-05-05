@@ -10,7 +10,7 @@ import {
   TemplateResult,
 } from "lit-element";
 import "../components/ha-menu-button";
-import "../components/ha-paper-icon-button-arrow-prev";
+import "../components/ha-icon-button-arrow-prev";
 import { haStyle } from "../resources/styles";
 import { HomeAssistant } from "../types";
 
@@ -33,9 +33,9 @@ class HassLoadingScreen extends LitElement {
               ></ha-menu-button>
             `
           : html`
-              <ha-paper-icon-button-arrow-prev
+              <ha-icon-button-arrow-prev
                 @click=${this._handleBack}
-              ></ha-paper-icon-button-arrow-prev>
+              ></ha-icon-button-arrow-prev>
             `}
       </app-toolbar>
       <div class="content">

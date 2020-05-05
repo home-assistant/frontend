@@ -167,11 +167,11 @@ export class HaConfigDevicePage extends LitElement {
             : ""
         }
 
-        <paper-icon-button
+        <ha-icon-button
           slot="toolbar-icon"
           icon="hass:settings"
           @click=${this._showSettings}
-        ></paper-icon-button>
+        ></ha-icon-button>
 
         <div class="container">
           <div class="header fullwidth">
@@ -259,13 +259,13 @@ export class HaConfigDevicePage extends LitElement {
                         ${this.hass.localize(
                           "ui.panel.config.devices.automation.automations"
                         )}
-                        <paper-icon-button
+                        <ha-icon-button
                           @click=${this._showAutomationDialog}
                           title=${this.hass.localize(
                             "ui.panel.config.devices.automation.create"
                           )}
                           icon="hass:plus-circle"
-                        ></paper-icon-button>
+                        ></ha-icon-button>
                       </div>
                       ${this._related?.automation?.length
                         ? this._related.automation.map((automation) => {
@@ -317,26 +317,21 @@ export class HaConfigDevicePage extends LitElement {
             </div>
             <div class="column">
             ${
-              isComponentLoaded(this.hass, "scene")
+              isComponentLoaded(this.hass, "scene") && entities.length
                 ? html`
                     <ha-card>
                         <div class="card-header">
                           ${this.hass.localize(
                             "ui.panel.config.devices.scene.scenes"
                           )}
-                          ${
-                            entities.length
-                              ? html`
-                                  <paper-icon-button
+
+                                  <ha-icon-button
                                     @click=${this._createScene}
                                     title=${this.hass.localize(
                                       "ui.panel.config.devices.scene.create"
                                     )}
                                     icon="hass:plus-circle"
-                                  ></paper-icon-button>
-                                `
-                              : ""
-                          }
+                                  ></ha-icon-button>
                         </div>
 
                         ${
@@ -397,13 +392,13 @@ export class HaConfigDevicePage extends LitElement {
                           ${this.hass.localize(
                             "ui.panel.config.devices.script.scripts"
                           )}
-                          <paper-icon-button
+                          <ha-icon-button
                             @click=${this._showScriptDialog}
                             title=${this.hass.localize(
                               "ui.panel.config.devices.script.create"
                             )}
                             icon="hass:plus-circle"
-                          ></paper-icon-button>
+                          ></ha-icon-button>
                         </div>
                         ${this._related?.script?.length
                           ? this._related.script.map((script) => {
@@ -562,7 +557,7 @@ export class HaConfigDevicePage extends LitElement {
         justify-content: space-between;
       }
 
-      .card-header paper-icon-button {
+      .card-header ha-icon-button {
         margin-right: -8px;
         color: var(--primary-color);
         height: auto;

@@ -79,6 +79,7 @@ class DialogPersonDetail extends LitElement {
           ${this._error ? html` <div class="error">${this._error}</div> ` : ""}
           <div class="form">
             <paper-input
+              dialogInitialFocus
               .value=${this._name}
               @value-changed=${this._nameChanged}
               label="${this.hass!.localize(
@@ -87,7 +88,8 @@ class DialogPersonDetail extends LitElement {
               error-message="${this.hass!.localize(
                 "ui.panel.config.person.detail.name_error_msg"
               )}"
-              .invalid=${nameInvalid}
+              required
+              auto-validate
             ></paper-input>
             <ha-user-picker
               label="${this.hass!.localize(
