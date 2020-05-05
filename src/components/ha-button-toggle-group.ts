@@ -70,6 +70,7 @@ export class HaButtonToggleGroup extends LitElement {
 
       :host ha-icon-button {
         color: var(--button-toggle-text-color, var(--primary-color));
+        transition: background-color 0.3s;
       }
 
       :host ha-icon-button[active] {
