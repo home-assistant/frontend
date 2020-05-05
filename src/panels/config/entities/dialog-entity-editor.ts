@@ -1,6 +1,6 @@
 import "@polymer/app-layout/app-toolbar/app-toolbar";
 import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable";
-import "@polymer/paper-icon-button/paper-icon-button";
+import "../../../components/ha-icon-button";
 import "@polymer/paper-tabs/paper-tab";
 import "@polymer/paper-tabs/paper-tabs";
 import { HassEntity } from "home-assistant-js-websocket";
@@ -94,25 +94,25 @@ export class DialogEntityEditor extends LitElement {
         @close-dialog=${this.closeDialog}
       >
         <app-toolbar>
-          <paper-icon-button
+          <ha-icon-button
             aria-label=${this.hass.localize(
               "ui.dialogs.entity_registry.dismiss"
             )}
             icon="hass:close"
             dialog-dismiss
-          ></paper-icon-button>
+          ></ha-icon-button>
           <div class="main-title" main-title>
             ${stateObj ? computeStateName(stateObj) : entry?.name || entityId}
           </div>
           ${stateObj
             ? html`
-                <paper-icon-button
+                <ha-icon-button
                   aria-label=${this.hass.localize(
                     "ui.dialogs.entity_registry.control"
                   )}
                   icon="hass:tune"
                   @click=${this._openMoreInfo}
-                ></paper-icon-button>
+                ></ha-icon-button>
               `
             : ""}
         </app-toolbar>
@@ -264,8 +264,8 @@ export class DialogEntityEditor extends LitElement {
         /* overrule the ha-style-dialog max-height on small screens */
         @media all and (max-width: 450px), all and (max-height: 500px) {
           app-toolbar {
-            background-color: var(--primary-color);
-            color: var(--text-primary-color);
+            background-color: var(--app-header-background-color);
+            color: var(--app-header-text-color, white);
           }
           ha-paper-dialog {
             height: 100%;

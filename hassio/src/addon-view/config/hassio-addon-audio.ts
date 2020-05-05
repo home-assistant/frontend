@@ -18,20 +18,21 @@ import {
   HassioAddonDetails,
   HassioAddonSetOptionParams,
   setHassioAddonOption,
-} from "../../../src/data/hassio/addon";
+} from "../../../../src/data/hassio/addon";
 import {
   fetchHassioHardwareAudio,
   HassioHardwareAudioDevice,
-} from "../../../src/data/hassio/hardware";
-import { haStyle } from "../../../src/resources/styles";
-import { HomeAssistant } from "../../../src/types";
-import { hassioStyle } from "../resources/hassio-style";
+} from "../../../../src/data/hassio/hardware";
+import { suggestAddonRestart } from "../../dialogs/suggestAddonRestart";
+import { haStyle } from "../../../../src/resources/styles";
+import { HomeAssistant } from "../../../../src/types";
+import { hassioStyle } from "../../resources/hassio-style";
 
 @customElement("hassio-addon-audio")
 class HassioAddonAudio extends LitElement {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public addon!: HassioAddonDetails;
+  @property({ attribute: false }) public addon!: HassioAddonDetails;
 
   @property() private _error?: string;
 
@@ -56,7 +57,7 @@ class HassioAddonAudio extends LitElement {
             <paper-listbox
               slot="dropdown-content"
               attr-for-selected="device"
-              .selected=${this._selectedInput}
+              .selected=${this._selectedInput!}
             >
               ${this._inputDevices &&
               this._inputDevices.map((item) => {
@@ -75,7 +76,7 @@ class HassioAddonAudio extends LitElement {
             <paper-listbox
               slot="dropdown-content"
               attr-for-selected="device"
-              .selected=${this._selectedOutput}
+              .selected=${this._selectedOutput!}
             >
               ${this._outputDevices &&
               this._outputDevices.map((item) => {
@@ -182,6 +183,9 @@ class HassioAddonAudio extends LitElement {
       await setHassioAddonOption(this.hass, this.addon.slug, data);
     } catch {
       this._error = "Failed to set addon audio device";
+    }
+    if (!this._error && this.addon?.state === "started") {
+      await suggestAddonRestart(this, this.hass, this.addon);
     }
   }
 }

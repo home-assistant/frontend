@@ -1,4 +1,4 @@
-import "@polymer/paper-icon-button/paper-icon-button";
+import "../ha-icon-button";
 import { HassEntity } from "home-assistant-js-websocket";
 import {
   css,
@@ -37,20 +37,20 @@ class HaEntityToggle extends LitElement {
 
     if (this.stateObj.attributes.assumed_state) {
       return html`
-        <paper-icon-button
+        <ha-icon-button
           aria-label=${`Turn ${computeStateName(this.stateObj)} off`}
           icon="hass:flash-off"
           .disabled=${this.stateObj.state === UNAVAILABLE}
           @click=${this._turnOff}
           ?state-active=${!this._isOn}
-        ></paper-icon-button>
-        <paper-icon-button
+        ></ha-icon-button>
+        <ha-icon-button
           aria-label=${`Turn ${computeStateName(this.stateObj)} on`}
           icon="hass:flash"
           .disabled=${this.stateObj.state === UNAVAILABLE}
           @click=${this._turnOn}
           ?state-active=${this._isOn}
-        ></paper-icon-button>
+        ></ha-icon-button>
       `;
     }
 
@@ -144,15 +144,12 @@ class HaEntityToggle extends LitElement {
         white-space: nowrap;
         min-width: 38px;
       }
-      paper-icon-button {
-        color: var(
-          --paper-icon-button-inactive-color,
-          var(--primary-text-color)
-        );
+      ha-icon-button {
+        color: var(--ha-icon-button-inactive-color, var(--primary-text-color));
         transition: color 0.5s;
       }
-      paper-icon-button[state-active] {
-        color: var(--paper-icon-button-active-color, var(--primary-color));
+      ha-icon-button[state-active] {
+        color: var(--ha-icon-button-active-color, var(--primary-color));
       }
       ha-switch {
         padding: 13px 5px;

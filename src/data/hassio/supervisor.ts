@@ -37,8 +37,11 @@ export const fetchHassioSupervisorInfo = async (hass: HomeAssistant) => {
   );
 };
 
-export const fetchSupervisorLogs = async (hass: HomeAssistant) => {
-  return hass.callApi<string>("GET", "hassio/supervisor/logs");
+export const fetchHassioLogs = async (
+  hass: HomeAssistant,
+  provider: string
+) => {
+  return hass.callApi<string>("GET", `hassio/${provider}/logs`);
 };
 
 export const createHassioSession = async (hass: HomeAssistant) => {

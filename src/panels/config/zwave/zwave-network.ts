@@ -1,4 +1,4 @@
-import "@polymer/paper-icon-button/paper-icon-button";
+import "../../../components/ha-icon-button";
 import "@polymer/paper-spinner/paper-spinner";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import {
@@ -58,11 +58,11 @@ export class ZwaveNetwork extends LitElement {
               "ui.panel.config.zwave.network_management.header"
             )}
           </span>
-          <paper-icon-button
+          <ha-icon-button
             class="toggle-help-icon"
             @click="${this._onHelpTap}"
             icon="hass:help-circle"
-          ></paper-icon-button>
+          ></ha-icon-button>
         </div>
         <div slot="introduction">
           ${this.hass!.localize(

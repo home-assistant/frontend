@@ -1,5 +1,4 @@
 import "@material/mwc-button";
-import "@polymer/iron-icon";
 import "@polymer/paper-input/paper-input";
 import {
   Auth,
@@ -27,6 +26,7 @@ import {
   loadTokens,
   saveTokens,
 } from "../../../../src/common/auth/token_storage";
+import "../../../../src/components/ha-icon";
 import "../../../../src/layouts/loading-screen";
 import { registerServiceWorker } from "../../../../src/util/register-service-worker";
 import "./hc-layout";
@@ -136,11 +136,11 @@ export class HcConnect extends LitElement {
           <div class="card-actions">
             <mwc-button @click=${this._handleDemo}>
               Show Demo
-              <iron-icon
+              <ha-icon
                 .icon=${this.castManager.castState === "CONNECTED"
                   ? "hass:cast-connected"
                   : "hass:cast"}
-              ></iron-icon>
+              ></ha-icon>
             </mwc-button>
             <div class="spacer"></div>
             <mwc-button @click=${this._handleConnect}>Authorize</mwc-button>
@@ -316,7 +316,7 @@ export class HcConnect extends LitElement {
         color: darkred;
       }
 
-      mwc-button iron-icon {
+      mwc-button ha-icon {
         margin-left: 8px;
       }
 

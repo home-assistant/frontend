@@ -1,4 +1,4 @@
-import "@polymer/paper-icon-button/paper-icon-button";
+import "./ha-icon-button";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 /* eslint-plugin-disable lit */
 import { PolymerElement } from "@polymer/polymer/polymer-element";
@@ -18,27 +18,27 @@ class HaCoverControls extends PolymerElement {
       </style>
 
       <div class="state">
-        <paper-icon-button
+        <ha-icon-button
           aria-label="Open cover"
           icon="[[computeOpenIcon(stateObj)]]"
           on-click="onOpenTap"
           invisible$="[[!entityObj.supportsOpen]]"
           disabled="[[computeOpenDisabled(stateObj, entityObj)]]"
-        ></paper-icon-button>
-        <paper-icon-button
+        ></ha-icon-button>
+        <ha-icon-button
           aria-label="Stop the cover from moving"
           icon="hass:stop"
           on-click="onStopTap"
           invisible$="[[!entityObj.supportsStop]]"
           disabled="[[computStopDisabled(stateObj)]]"
-        ></paper-icon-button>
-        <paper-icon-button
+        ></ha-icon-button>
+        <ha-icon-button
           aria-label="Close cover"
           icon="[[computeCloseIcon(stateObj)]]"
           on-click="onCloseTap"
           invisible$="[[!entityObj.supportsClose]]"
           disabled="[[computeClosedDisabled(stateObj, entityObj)]]"
-        ></paper-icon-button>
+        ></ha-icon-button>
       </div>
     `;
   }

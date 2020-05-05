@@ -12,6 +12,13 @@ import "./ha-automation-editor";
 import "./ha-automation-picker";
 import { debounce } from "../../../common/util/debounce";
 
+const equal = (a: AutomationEntity[], b: AutomationEntity[]): boolean => {
+  if (a.length !== b.length) {
+    return false;
+  }
+  return a.every((automation, index) => automation === b[index]);
+};
+
 @customElement("ha-config-automation")
 class HaConfigAutomation extends HassRouterPage {
   @property() public hass!: HomeAssistant;
@@ -26,7 +33,7 @@ class HaConfigAutomation extends HassRouterPage {
 
   private _debouncedUpdateAutomations = debounce((pageEl) => {
     const newAutomations = this._getAutomations(this.hass.states);
-    if (!this._equal(newAutomations, pageEl.automations)) {
+    if (!equal(newAutomations, pageEl.automations)) {
       pageEl.automations = newAutomations;
     }
   }, 10);
@@ -81,13 +88,6 @@ class HaConfigAutomation extends HassRouterPage {
       const automationId = this.routeTail.path.substr(1);
       pageEl.automationId = automationId === "new" ? null : automationId;
     }
-  }
-
-  private _equal(a: AutomationEntity[], b: AutomationEntity[]): boolean {
-    if (a.length !== b.length) {
-      return false;
-    }
-    return a.every((automation, index) => automation === b[index]);
   }
 }
 

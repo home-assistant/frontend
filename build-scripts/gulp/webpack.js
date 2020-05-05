@@ -28,7 +28,7 @@ const runDevServer = ({
     open: true,
     watchContentBase: true,
     contentBase,
-  }).listen(port, listenHost, function(err) {
+  }).listen(port, listenHost, function (err) {
     if (err) {
       throw err;
     }

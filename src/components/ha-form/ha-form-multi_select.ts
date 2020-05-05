@@ -1,4 +1,3 @@
-import "@polymer/iron-icon/iron-icon";
 import "@polymer/paper-checkbox/paper-checkbox";
 import "@polymer/paper-input/paper-input";
 import "@polymer/paper-item/paper-icon-item";
@@ -21,6 +20,7 @@ import {
   HaFormMultiSelectData,
   HaFormMultiSelectSchema,
 } from "./ha-form";
+import "../ha-icon";
 
 @customElement("ha-form-multi_select")
 export class HaFormMultiSelect extends LitElement implements HaFormElement {
@@ -64,11 +64,11 @@ export class HaFormMultiSelect extends LitElement implements HaFormElement {
             input-aria-haspopup="listbox"
             autocomplete="off"
           >
-            <iron-icon
+            <ha-icon
               icon="paper-dropdown-menu:arrow-drop-down"
               suffix
               slot="suffix"
-            ></iron-icon>
+            ></ha-icon>
           </paper-input>
         </div>
         <paper-listbox

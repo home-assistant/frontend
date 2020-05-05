@@ -18,6 +18,7 @@ import {
 } from "../../../../components/data-table/ha-data-table";
 import "../../../../components/ha-fab";
 import "../../../../components/ha-icon";
+import "../../../../components/ha-icon-button";
 import {
   createDashboard,
   deleteDashboard,
@@ -153,11 +154,11 @@ export class HaConfigLovelaceDashboards extends LitElement {
         template: (urlPath) =>
           narrow
             ? html`
-                <paper-icon-button
+                <ha-icon-button
                   icon="hass:open-in-new"
                   .urlPath=${urlPath}
                   @click=${this._navigate}
-                ></paper-icon-button>
+                ></ha-icon-button>
               `
             : html`
                 <mwc-button .urlPath=${urlPath} @click=${this._navigate}

@@ -1,4 +1,4 @@
-import "@polymer/paper-icon-button/paper-icon-button";
+import "../../../components/ha-icon-button";
 import { HassEntity } from "home-assistant-js-websocket";
 import {
   css,
@@ -53,14 +53,14 @@ class HaScriptPicker extends LitElement {
           type: "icon-button",
           template: (_toggle, script) =>
             html`
-              <paper-icon-button
+              <ha-icon-button
                 .script=${script}
                 icon="hass:play"
                 title="${this.hass.localize(
                   "ui.panel.config.script.picker.activate_script"
                 )}"
                 @click=${(ev: Event) => this._runScript(ev)}
-              ></paper-icon-button>
+              ></ha-icon-button>
             `,
         },
         name: {
@@ -88,14 +88,14 @@ class HaScriptPicker extends LitElement {
           title: "",
           type: "icon-button",
           template: (_info, script) => html`
-            <paper-icon-button
+            <ha-icon-button
               .script=${script}
               @click=${this._showInfo}
               icon="hass:information-outline"
               title="${this.hass.localize(
                 "ui.panel.config.script.picker.show_info"
               )}"
-            ></paper-icon-button>
+            ></ha-icon-button>
           `,
         },
         edit: {
@@ -103,12 +103,12 @@ class HaScriptPicker extends LitElement {
           type: "icon-button",
           template: (_info, script: any) => html`
             <a href="/config/script/edit/${script.entity_id}">
-              <paper-icon-button
+              <ha-icon-button
                 icon="hass:pencil"
                 title="${this.hass.localize(
                   "ui.panel.config.script.picker.edit_script"
                 )}"
-              ></paper-icon-button>
+              ></ha-icon-button>
             </a>
           `,
         },
@@ -132,11 +132,11 @@ class HaScriptPicker extends LitElement {
         )}
         hasFab
       >
-        <paper-icon-button
+        <ha-icon-button
           slot="toolbar-icon"
           icon="hass:help-circle"
           @click=${this._showHelp}
-        ></paper-icon-button>
+        ></ha-icon-button>
       </hass-tabs-subpage-data-table>
       <a href="/config/script/edit/new">
         <ha-fab

@@ -380,31 +380,31 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
                   >
                 `
               : html`
-                  <paper-icon-button
+                  <ha-icon-button
                     id="enable-btn"
                     icon="hass:undo"
                     @click=${this._enableSelected}
-                  ></paper-icon-button>
+                  ></ha-icon-button>
                   <paper-tooltip for="enable-btn">
                     ${this.hass.localize(
                       "ui.panel.config.entities.picker.enable_selected.button"
                     )}
                   </paper-tooltip>
-                  <paper-icon-button
+                  <ha-icon-button
                     id="disable-btn"
                     icon="hass:cancel"
                     @click=${this._disableSelected}
-                  ></paper-icon-button>
+                  ></ha-icon-button>
                   <paper-tooltip for="disable-btn">
                     ${this.hass.localize(
                       "ui.panel.config.entities.picker.disable_selected.button"
                     )}
                   </paper-tooltip>
-                  <paper-icon-button
+                  <ha-icon-button
                     id="remove-btn"
                     icon="hass:delete"
                     @click=${this._removeSelected}
-                  ></paper-icon-button>
+                  ></ha-icon-button>
                   <paper-tooltip for="remove-btn">
                     ${this.hass.localize(
                       "ui.panel.config.entities.picker.remove_selected.button"
@@ -443,7 +443,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
               </div>`
             : ""}
           <paper-menu-button no-animations horizontal-align="right">
-            <paper-icon-button
+            <ha-icon-button
               aria-label=${this.hass!.localize(
                 "ui.panel.config.entities.picker.filter.filter"
               )}
@@ -452,7 +452,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
               )}"
               icon="hass:filter-variant"
               slot="dropdown-trigger"
-            ></paper-icon-button>
+            ></ha-icon-button>
             <paper-listbox slot="dropdown-content">
               <paper-icon-item @tap="${this._showDisabledChanged}">
                 <paper-checkbox
@@ -745,6 +745,10 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
         position: relative;
         top: 2px;
       }
+      .search-toolbar search-input {
+        margin-left: 8px;
+        top: 1px;
+      }
       .search-toolbar {
         display: flex;
         justify-content: space-between;
@@ -764,7 +768,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
         font-size: 16px;
       }
       .header-btns > mwc-button,
-      .header-btns > paper-icon-button {
+      .header-btns > ha-icon-button {
         margin: 8px;
       }
       .active-filters {

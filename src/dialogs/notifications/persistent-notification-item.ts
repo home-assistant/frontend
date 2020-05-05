@@ -32,7 +32,10 @@ export class HuiPersistentNotificationItem extends LitElement {
           ${this.notification.title}
         </span>
 
-        <ha-markdown content="${this.notification.message}"></ha-markdown>
+        <ha-markdown
+          breaks
+          content="${this.notification.message}"
+        ></ha-markdown>
 
         <div class="time">
           <span>

@@ -352,8 +352,7 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
       }
 
       .weather-icon {
-        --iron-icon-width: 64px;
-        --iron-icon-height: 64px;
+        --mdc-icon-size: 64px;
       }
 
       .info {
@@ -409,7 +408,7 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
 
       .forecast {
         display: flex;
-        justify-content: space-between;
+        justify-content: space-around;
         padding-top: 16px;
       }
 
@@ -436,8 +435,7 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
       }
 
       .forecast-icon {
-        --iron-icon-width: 40px;
-        --iron-icon-height: 40px;
+        --mdc-icon-size: 40px;
       }
 
       .attribute,
@@ -468,12 +466,7 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
       }
 
       :host([narrow]) .weather-icon {
-        --iron-icon-width: 52px;
-        --iron-icon-height: 52px;
-      }
-
-      :host([narrow]) .forecast {
-        justify-content: space-around;
+        --mdc-icon-size: 52px;
       }
 
       :host([narrow]) .name,

@@ -4,11 +4,7 @@ import {
   LovelaceCardConfig,
 } from "../../../data/lovelace";
 import { CUSTOM_TYPE_PREFIX } from "../../../data/lovelace_custom_cards";
-import {
-  createErrorCardConfig,
-  createErrorCardElement,
-  HuiErrorCard,
-} from "../cards/hui-error-card";
+import type { HuiErrorCard } from "../cards/hui-error-card";
 import { LovelaceElement, LovelaceElementConfig } from "../elements/types";
 import { LovelaceRow, LovelaceRowConfig } from "../entity-rows/types";
 import { LovelaceHeaderFooterConfig } from "../header-footer/types";
@@ -18,6 +14,7 @@ import {
   LovelaceCardConstructor,
   LovelaceHeaderFooter,
 } from "../types";
+import type { ErrorCardConfig } from "../cards/types";
 
 const TIMEOUT = 2000;
 
@@ -49,6 +46,25 @@ interface CreateElementConfigTypes {
   };
 }
 
+export const createErrorCardElement = (config: ErrorCardConfig) => {
+  const el = document.createElement("hui-error-card");
+  if (customElements.get("hui-error-card")) {
+    el.setConfig(config);
+  } else {
+    import("../cards/hui-error-card");
+    customElements
+      .whenDefined("hui-error-card")
+      .then(() => el.setConfig(config));
+  }
+  return el;
+};
+
+export const createErrorCardConfig = (error, origConfig) => ({
+  type: "error",
+  error,
+  origConfig,
+});
+
 const _createElement = <T extends keyof CreateElementConfigTypes>(
   tag: string,
   config: CreateElementConfigTypes[T]["config"]
@@ -73,7 +89,7 @@ const _createErrorElement = <T extends keyof CreateElementConfigTypes>(
   config: CreateElementConfigTypes[T]["config"]
 ): HuiErrorCard => createErrorCardElement(createErrorCardConfig(error, config));
 
-const _maybeCreate = <T extends keyof CreateElementConfigTypes>(
+const _customCreate = <T extends keyof CreateElementConfigTypes>(
   tag: string,
   config: CreateElementConfigTypes[T]["config"]
 ) => {
@@ -95,6 +111,28 @@ const _maybeCreate = <T extends keyof CreateElementConfigTypes>(
     fireEvent(element, "ll-rebuild");
   });
 
+  return element;
+};
+
+const _lazyCreate = <T extends keyof CreateElementConfigTypes>(
+  tag: string,
+  config: CreateElementConfigTypes[T]["config"]
+) => {
+  if (customElements.get(tag)) {
+    return _createElement(tag, config);
+  }
+  const element = document.createElement(
+    tag
+  ) as CreateElementConfigTypes[T]["element"];
+  customElements.whenDefined(tag).then(() => {
+    try {
+      // @ts-ignore
+      element.setConfig(config);
+    } catch (err) {
+      // We let it rebuild and the error wil be handled by _createElement
+      fireEvent(element, "ll-rebuild");
+    }
+  });
   return element;
 };
 
@@ -129,7 +167,7 @@ export const createLovelaceElement = <T extends keyof CreateElementConfigTypes>(
   const customTag = config.type ? _getCustomTag(config.type) : undefined;
 
   if (customTag) {
-    return _maybeCreate(customTag, config);
+    return _customCreate(customTag, config);
   }
 
   let type: string | undefined;
@@ -152,7 +190,7 @@ export const createLovelaceElement = <T extends keyof CreateElementConfigTypes>(
 
   if (lazyLoadTypes && type in lazyLoadTypes) {
     lazyLoadTypes[type]();
-    return _maybeCreate(tag, config);
+    return _lazyCreate(tag, config);
   }
 
   if (alwaysLoadTypes && alwaysLoadTypes.has(type)) {

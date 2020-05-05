@@ -1,4 +1,4 @@
-import "@polymer/paper-icon-button/paper-icon-button";
+import "./ha-icon-button";
 import "@polymer/paper-input/paper-input";
 import "@polymer/paper-item/paper-item";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
@@ -11,7 +11,7 @@ class HaComboBox extends EventsMixin(PolymerElement) {
   static get template() {
     return html`
       <style>
-        paper-input > paper-icon-button {
+        paper-input > ha-icon-button {
           width: 24px;
           height: 24px;
           padding: 2px;
@@ -36,19 +36,19 @@ class HaComboBox extends EventsMixin(PolymerElement) {
           class="input"
           value="[[value]]"
         >
-          <paper-icon-button
+          <ha-icon-button
             slot="suffix"
             class="clear-button"
             icon="hass:close"
             hidden$="[[!value]]"
-            >Clear</paper-icon-button
+            >Clear</ha-icon-button
           >
-          <paper-icon-button
+          <ha-icon-button
             slot="suffix"
             class="toggle-button"
             icon="[[_computeToggleIcon(opened)]]"
             hidden$="[[!items.length]]"
-            >Toggle</paper-icon-button
+            >Toggle</ha-icon-button
           >
         </paper-input>
         <template>

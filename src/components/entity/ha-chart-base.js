@@ -1,6 +1,6 @@
 /* eslint-plugin-disable lit */
 import { IronResizableBehavior } from "@polymer/iron-resizable-behavior/iron-resizable-behavior";
-import "@polymer/paper-icon-button/paper-icon-button";
+import "../ha-icon-button";
 import { mixinBehaviors } from "@polymer/polymer/lib/legacy/class";
 import { timeOut } from "@polymer/polymer/lib/utils/async";
 import { Debouncer } from "@polymer/polymer/lib/utils/debounce";
@@ -107,7 +107,7 @@ class HaChartBase extends mixinBehaviors(
           margin-right: inherit;
           margin-left: 4px;
         }
-        paper-icon-button {
+        ha-icon-button {
           color: var(--secondary-text-color);
         }
       </style>

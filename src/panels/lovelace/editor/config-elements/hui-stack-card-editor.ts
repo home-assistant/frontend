@@ -1,4 +1,4 @@
-import "@polymer/paper-icon-button/paper-icon-button";
+import "../../../../components/ha-icon-button";
 import "@polymer/paper-tabs";
 import "@polymer/paper-tabs/paper-tab";
 import {
@@ -100,26 +100,26 @@ export class HuiStackCardEditor extends LitElement
                         : "ui.panel.lovelace.editor.edit_card.show_visual_editor"
                     )}
                   </mwc-button>
-                  <paper-icon-button
+                  <ha-icon-button
                     id="move-before"
                     title="Move card before"
                     icon="hass:arrow-left"
                     .disabled=${selected === 0}
                     @click=${this._handleMove}
-                  ></paper-icon-button>
+                  ></ha-icon-button>
 
-                  <paper-icon-button
+                  <ha-icon-button
                     id="move-after"
                     title="Move card after"
                     icon="hass:arrow-right"
                     .disabled=${selected === numcards - 1}
                     @click=${this._handleMove}
-                  ></paper-icon-button>
+                  ></ha-icon-button>
 
-                  <paper-icon-button
+                  <ha-icon-button
                     icon="hass:delete"
                     @click=${this._handleDeleteCard}
-                  ></paper-icon-button>
+                  ></ha-icon-button>
                 </div>
 
                 <hui-card-editor
