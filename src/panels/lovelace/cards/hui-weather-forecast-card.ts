@@ -23,13 +23,13 @@ import {
   getWeatherUnit,
   getWeatherStateIcon,
 } from "../../../data/weather";
-import { HomeAssistant, WeatherEntity } from "../../../types";
+import type { HomeAssistant, WeatherEntity } from "../../../types";
 import { actionHandler } from "../common/directives/action-handler-directive";
 import { findEntities } from "../common/find-entites";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
 import "../components/hui-warning";
-import { LovelaceCard, LovelaceCardEditor } from "../types";
-import { WeatherForecastCardConfig } from "./types";
+import type { LovelaceCard, LovelaceCardEditor } from "../types";
+import type { WeatherForecastCardConfig } from "./types";
 
 const DAY_IN_MILLISECONDS = 86400000;
 
@@ -311,7 +311,6 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
       ha-card {
         cursor: pointer;
         padding: 16px;
-        /* --weather-icon-sun-color: blue; */
       }
 
       .content {
