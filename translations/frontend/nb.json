@@ -1344,8 +1344,6 @@
                         "delete_button": "Slett {integration}",
                         "delete_confirm": "Er du sikker på at du vil slette denne integrasjonen?",
                         "device_unavailable": "enheten er utilgjengelig",
-                        "devices": "{antall} {antall, flertall,\n  én {enhet}\n  andre {enheter}\n}",
-                        "entities": "{antall} {antall, flertall,\n  én {enhet}\n  andre {enheter}\n}",
                         "entity_unavailable": "entiteten er ikke tilgjengelig",
                         "firmware": "Fastvare: {version}",
                         "hub": "Tilkoblet via",
