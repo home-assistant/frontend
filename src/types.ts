@@ -122,6 +122,12 @@ export interface CalendarViewChanged {
   view: string;
 }
 
+export interface ToggleButton {
+  label?: string;
+  icon: string;
+  value: string;
+}
+
 export interface Translation {
   nativeName: string;
   isRTL: boolean;

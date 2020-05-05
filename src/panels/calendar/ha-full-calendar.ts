@@ -13,13 +13,16 @@ import dayGridPlugin from "@fullcalendar/daygrid";
 import fullcalendarStyle from "@fullcalendar/core/main.css";
 // @ts-ignore
 import daygridStyle from "@fullcalendar/daygrid/main.css";
-import "@material/mwc-select";
 import "@material/mwc-button";
-import "@material/mwc-list/mwc-list-item";
 
 import "../../components/ha-icon-button";
+import "../../components/ha-button-toggle-group";
 
-import type { CalendarViewChanged, CalendarEvent } from "../../types";
+import type {
+  CalendarViewChanged,
+  CalendarEvent,
+  ToggleButton,
+} from "../../types";
 import { fireEvent } from "../../common/dom/fire_event";
 import { haStyle } from "../../resources/styles";
 
@@ -35,6 +38,12 @@ const fullCalendarConfig = {
   initialView: "dayGridMonth",
   dayMaxEventRows: true,
 };
+
+const viewButtons: ToggleButton[] = [
+  { label: "Month View", value: "dayGridMonth", icon: "hass:view-module" },
+  { label: "Week View", value: "dayGridWeek", icon: "hass:view-week" },
+  { label: "Day View", value: "dayGridDay", icon: "hass:view-day" },
+];
 
 class HAFullCalendar extends LitElement {
   @property() public events: CalendarEvent[] = [];
@@ -71,13 +80,10 @@ class HAFullCalendar extends LitElement {
                       ${this.calendar.view.title}
                     </h1>`
                 : ""}
-              <mwc-select outlined label="view" @change=${this._handleView}>
-                <mwc-list-item value="dayGridDay">Day</mwc-list-item>
-                <mwc-list-item value="dayGridWeek">Week</mwc-list-item>
-                <mwc-list-item selected value="dayGridMonth"
-                  >Month</mwc-list-item
-                >
-              </mwc-select>
+              <ha-button-toggle-group
+                .buttons=${viewButtons}
+                @value-changed=${this._handleView}
+              ></ha-button-toggle-group>
             </div>
             ${this.narrow
               ? html`<div class="header">
@@ -148,7 +154,7 @@ class HAFullCalendar extends LitElement {
   }
 
   private _handleView(ev) {
-    this.calendar!.changeView(ev.target.value);
+    this.calendar!.changeView(ev.detail.value);
     this._fireViewChanged();
   }
 
@@ -188,10 +194,6 @@ class HAFullCalendar extends LitElement {
           display: flex;
           align-items: center;
           flex-grow: 0;
-        }
-
-        :host([narrow]) mwc-select {
-          width: 100%;
         }
 
         #calendar {
