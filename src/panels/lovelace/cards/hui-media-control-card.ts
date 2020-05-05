@@ -654,7 +654,7 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
   private _handleClick(e: MouseEvent): void {
     this.hass!.callService(
       "media_player",
-      (e.currentTarget! as PaperIconButtonElement).getAttribute("action")!,
+      (e.currentTarget! as HTMLElement).getAttribute("action")!,
       {
         entity_id: this._config!.entity,
       }
