@@ -45,7 +45,9 @@ export class HuiButtonsBase extends LitElement {
       ${(this.configEntities || []).map((entityConf) => {
         const stateObj = this._hass!.states[entityConf.entity];
         if (!stateObj) {
-          return html`<div class='missing'><iron-icon icon="hass:alert"></div>`;
+          return html`<div class="missing">
+            <ha-icon icon="hass:alert"></ha-icon>
+          </div>`;
         }
 
         return html`

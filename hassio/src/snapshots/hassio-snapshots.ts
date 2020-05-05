@@ -98,12 +98,12 @@ class HassioSnapshots extends LitElement {
       >
         <span slot="header">Snapshots</span>
 
-        <paper-icon-button
+        <ha-icon-button
           icon="hassio:reload"
           slot="toolbar-icon"
           aria-label="Reload snapshots"
           @click=${this.refreshData}
-        ></paper-icon-button>
+        ></ha-icon-button>
 
         <div class="content">
           <h1>

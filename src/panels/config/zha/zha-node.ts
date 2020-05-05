@@ -1,4 +1,4 @@
-import "@polymer/paper-icon-button/paper-icon-button";
+import "../../../components/ha-icon-button";
 import {
   css,
   CSSResult,
@@ -37,11 +37,11 @@ export class ZHANode extends LitElement {
               "ui.panel.config.zha.node_management.header"
             )}</span
           >
-          <paper-icon-button
+          <ha-icon-button
             class="toggle-help-icon"
             @click="${this._onHelpTap}"
             icon="hass:help-circle"
-          ></paper-icon-button>
+          ></ha-icon-button>
         </div>
         <span slot="introduction">
           ${this.hass!.localize(

@@ -1,1 +1,0 @@
-import "../resources/hass-icons";

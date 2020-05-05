@@ -1,5 +1,5 @@
 import "@material/mwc-button";
-import "@polymer/paper-icon-button/paper-icon-button";
+import "../../../components/ha-icon-button";
 import {
   css,
   CSSResult,
@@ -21,10 +21,10 @@ class ErrorLogCard extends LitElement {
       <p class="error-log-intro">
         ${this._errorLog
           ? html`
-              <paper-icon-button
+              <ha-icon-button
                 icon="hass:refresh"
                 @click=${this._refreshErrorLog}
-              ></paper-icon-button>
+              ></ha-icon-button>
             `
           : html`
               <mwc-button raised @click=${this._refreshErrorLog}>
@@ -53,7 +53,7 @@ class ErrorLogCard extends LitElement {
         margin: 16px;
       }
 
-      paper-icon-button {
+      ha-icon-button {
         float: right;
       }
 

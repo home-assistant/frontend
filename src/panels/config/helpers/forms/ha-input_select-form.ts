@@ -1,5 +1,5 @@
 import "@material/mwc-button/mwc-button";
-import "@polymer/paper-icon-button/paper-icon-button";
+import "../../../../components/ha-icon-button";
 import "@polymer/paper-input/paper-input";
 import type { PaperInputElement } from "@polymer/paper-input/paper-input";
 import "@polymer/paper-item/paper-item";
@@ -96,14 +96,14 @@ class HaInputSelectForm extends LitElement {
               return html`
                 <paper-item class="option">
                   <paper-item-body> ${option} </paper-item-body>
-                  <paper-icon-button
+                  <ha-icon-button
                     .index=${index}
                     .title=${this.hass.localize(
                       "ui.dialogs.helper_settings.input_select.remove_option"
                     )}
                     @click=${this._removeOption}
                     icon="hass:delete"
-                  ></paper-icon-button>
+                  ></ha-icon-button>
                 </paper-item>
               `;
             })

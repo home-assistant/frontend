@@ -1,4 +1,4 @@
-import "@polymer/paper-icon-button/paper-icon-button";
+import "../../../components/ha-icon-button";
 import "@polymer/paper-tooltip/paper-tooltip";
 import {
   css,
@@ -105,14 +105,14 @@ class HaAutomationPicker extends LitElement {
         title: "",
         type: "icon-button",
         template: (_info, automation) => html`
-          <paper-icon-button
+          <ha-icon-button
             .automation=${automation}
             @click=${this._showInfo}
             icon="hass:information-outline"
             title="${this.hass.localize(
               "ui.panel.config.automation.picker.show_info_automation"
             )}"
-          ></paper-icon-button>
+          ></ha-icon-button>
         `,
       };
       columns.edit = {
@@ -126,7 +126,7 @@ class HaAutomationPicker extends LitElement {
                 : undefined
             )}
           >
-            <paper-icon-button
+            <ha-icon-button
               .icon=${automation.attributes.id
                 ? "hass:pencil"
                 : "hass:pencil-off"}
@@ -134,7 +134,7 @@ class HaAutomationPicker extends LitElement {
               title="${this.hass.localize(
                 "ui.panel.config.automation.picker.show_info_automation"
               )}"
-            ></paper-icon-button>
+            ></ha-icon-button>
           </a>
           ${!automation.attributes.id
             ? html`

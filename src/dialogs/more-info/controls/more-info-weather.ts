@@ -1,4 +1,3 @@
-import "@polymer/iron-icon/iron-icon";
 import { HassEntity } from "home-assistant-js-websocket";
 import {
   css,
@@ -10,6 +9,7 @@ import {
 } from "lit-element";
 import { html, TemplateResult } from "lit-html";
 import { HomeAssistant } from "../../../types";
+import "../../../components/ha-icon";
 
 const cardinalDirections = [
   "N",
@@ -79,7 +79,7 @@ class MoreInfoWeather extends LitElement {
 
     return html`
       <div class="flex">
-        <iron-icon icon="hass:thermometer"></iron-icon>
+        <ha-icon icon="hass:thermometer"></ha-icon>
         <div class="main">
           ${this.hass.localize("ui.card.weather.attributes.temperature")}
         </div>
@@ -90,7 +90,7 @@ class MoreInfoWeather extends LitElement {
       ${this._showValue(this.stateObj.attributes.pressure)
         ? html`
             <div class="flex">
-              <iron-icon icon="hass:gauge"></iron-icon>
+              <ha-icon icon="hass:gauge"></ha-icon>
               <div class="main">
                 ${this.hass.localize("ui.card.weather.attributes.air_pressure")}
               </div>
@@ -104,7 +104,7 @@ class MoreInfoWeather extends LitElement {
       ${this._showValue(this.stateObj.attributes.humidity)
         ? html`
             <div class="flex">
-              <iron-icon icon="hass:water-percent"></iron-icon>
+              <ha-icon icon="hass:water-percent"></ha-icon>
               <div class="main">
                 ${this.hass.localize("ui.card.weather.attributes.humidity")}
               </div>
@@ -115,7 +115,7 @@ class MoreInfoWeather extends LitElement {
       ${this._showValue(this.stateObj.attributes.wind_speed)
         ? html`
             <div class="flex">
-              <iron-icon icon="hass:weather-windy"></iron-icon>
+              <ha-icon icon="hass:weather-windy"></ha-icon>
               <div class="main">
                 ${this.hass.localize("ui.card.weather.attributes.wind_speed")}
               </div>
@@ -131,7 +131,7 @@ class MoreInfoWeather extends LitElement {
       ${this._showValue(this.stateObj.attributes.visibility)
         ? html`
             <div class="flex">
-              <iron-icon icon="hass:eye"></iron-icon>
+              <ha-icon icon="hass:eye"></ha-icon>
               <div class="main">
                 ${this.hass.localize("ui.card.weather.attributes.visibility")}
               </div>
@@ -151,9 +151,9 @@ class MoreInfoWeather extends LitElement {
                 <div class="flex">
                   ${item.condition
                     ? html`
-                        <iron-icon
+                        <ha-icon
                           .icon="${weatherIcons[item.condition]}"
-                        ></iron-icon>
+                        ></ha-icon>
                       `
                     : ""}
                   ${!this._showValue(item.templow)
@@ -193,7 +193,7 @@ class MoreInfoWeather extends LitElement {
 
   static get styles(): CSSResult {
     return css`
-      iron-icon {
+      ha-icon {
         color: var(--paper-item-icon-color);
       }
       .section {

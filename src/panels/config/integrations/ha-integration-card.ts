@@ -112,11 +112,11 @@ export class HaIntegrationCard extends LitElement {
         .id=${item.entry_id}
       >
         ${this.items.length > 1
-          ? html`<paper-icon-button
+          ? html`<ha-icon-button
               class="back-btn"
               icon="hass:chevron-left"
               @click=${this._back}
-            ></paper-icon-button>`
+            ></ha-icon-button>`
           : ""}
         <div class="card-content">
           <div class="image">
@@ -188,13 +188,13 @@ export class HaIntegrationCard extends LitElement {
             vertical-offset="40"
             close-on-activate
           >
-            <paper-icon-button
+            <ha-icon-button
               icon="hass:dots-vertical"
               slot="dropdown-trigger"
               aria-label=${this.hass!.localize(
                 "ui.panel.lovelace.editor.edit_card.options"
               )}
-            ></paper-icon-button>
+            ></ha-icon-button>
             <paper-listbox slot="dropdown-content">
               <paper-item @tap=${this._showSystemOptions}>
                 ${this.hass.localize(

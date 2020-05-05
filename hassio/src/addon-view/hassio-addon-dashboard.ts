@@ -1,4 +1,4 @@
-import "@polymer/paper-icon-button/paper-icon-button";
+import "../../../src/components/ha-icon-button";
 import "@polymer/paper-spinner/paper-spinner-lite";
 import {
   css,

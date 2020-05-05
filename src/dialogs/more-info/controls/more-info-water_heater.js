@@ -28,16 +28,6 @@ class MoreInfoWaterHeater extends LocalizeMixin(EventsMixin(PolymerElement)) {
           color: var(--primary-text-color);
         }
 
-        .container-away_mode,
-        .container-temperature,
-        .container-operation_list,
-
-        .has-away_mode .container-away_mode,
-        .has-target_temperature .container-temperature,
-        .has-operation_mode .container-operation_list,
-
-        .container-operation_list iron-icon,
-
         ha-paper-dropdown-menu {
           width: 100%;
         }

@@ -56,9 +56,8 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
         .entities td {
           padding: 4px;
         }
-        .entities paper-icon-button {
-          height: 24px;
-          padding: 0;
+        .entities ha-icon-button {
+          --mdc-icon-button-size: 24px;
         }
         .entities td:nth-child(3) {
           white-space: pre-wrap;
@@ -150,13 +149,13 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
         <template is="dom-repeat" items="[[_entities]]" as="entity">
           <tr>
             <td>
-              <paper-icon-button
+              <ha-icon-button
                 on-click="entityMoreInfo"
                 icon="hass:information-outline"
                 alt="[[localize('ui.panel.developer-tools.tabs.states.more_info')]]"
                 title="[[localize('ui.panel.developer-tools.tabs.states.more_info')]]"
               >
-              </paper-icon-button>
+              </ha-icon-button>
               <a href="#" on-click="entitySelected">[[entity.entity_id]]</a>
             </td>
             <td>[[entity.state]]</td>
