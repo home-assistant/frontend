@@ -330,7 +330,11 @@ export const getWeatherStateIcon = (
 
   if (userDefinedIcon) {
     return html`
-      <div style=${styleMap({ "background-image": userDefinedIcon })}></div>
+      <div
+        style="background-size: cover;${styleMap({
+          "background-image": userDefinedIcon,
+        })}"
+      ></div>
     `;
   }
 
