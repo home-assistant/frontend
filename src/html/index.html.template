@@ -51,6 +51,9 @@
         height: 112px;
         background-color: #THEMEC;
       }
+      html {
+        background-color: var(--primary-background-color, #fafafa);
+      }
     </style>
   </head>
   <body>
@@ -62,7 +65,6 @@
     <script type="module" crossorigin="use-credentials">
       import "<%= latestCoreJS %>";
       import "<%= latestAppJS %>";
-      import "<%= latestHassIconsJS %>";
       window.customPanelJS = "<%= latestCustomPanelJS %>";
     </script>
     {% for extra_module in extra_modules -%}
@@ -79,7 +81,6 @@
           _ls("<%= es5Compatibility %>");
           _ls("<%= es5CoreJS %>");
           _ls("<%= es5AppJS %>");
-          _ls("<%= es5HassIconsJS %>");
           {% for extra_script in extra_js_es5 -%}
           _ls("{{ extra_script }}");
           {% endfor -%}

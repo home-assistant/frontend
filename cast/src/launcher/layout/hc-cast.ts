@@ -1,4 +1,3 @@
-import "@polymer/iron-icon";
 import "@polymer/paper-item/paper-icon-item";
 import "@polymer/paper-listbox/paper-listbox";
 import { Auth, Connection } from "home-assistant-js-websocket";
@@ -83,7 +82,7 @@ class HcCast extends LitElement {
           ? html`
               <p class="center-item">
                 <mwc-button raised @click=${this._handleLaunch}>
-                  <iron-icon icon="hass:cast"></iron-icon>
+                  <ha-icon icon="hass:cast"></ha-icon>
                   Start Casting
                 </mwc-button>
               </p>
@@ -121,7 +120,7 @@ class HcCast extends LitElement {
           ${this.castManager.status
             ? html`
                 <mwc-button @click=${this._handleLaunch}>
-                  <iron-icon icon="hass:cast-connected"></iron-icon>
+                  <ha-icon icon="hass:cast-connected"></ha-icon>
                   Manage
                 </mwc-button>
               `
@@ -243,7 +242,7 @@ class HcCast extends LitElement {
         color: var(--secondary-text-color);
       }
 
-      mwc-button iron-icon {
+      mwc-button ha-icon {
         margin-right: 8px;
         height: 18px;
       }

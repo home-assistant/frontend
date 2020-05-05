@@ -3,7 +3,7 @@ const gulp = require("gulp");
 
 require("./clean.js");
 require("./translations.js");
-require("./gen-icons.js");
+require("./gen-icons-json.js");
 require("./gather-static.js");
 require("./webpack.js");
 require("./service-worker.js");
@@ -17,13 +17,7 @@ gulp.task(
     },
     "clean-demo",
     "translations-enable-merge-backend",
-    gulp.parallel(
-      "gen-icons-app",
-      "gen-icons-mdi",
-      "gen-icons-demo",
-      "gen-index-demo-dev",
-      "build-translations"
-    ),
+    gulp.parallel("gen-icons-json", "gen-index-demo-dev", "build-translations"),
     "copy-static-demo",
     "webpack-dev-server-demo"
   )
@@ -38,12 +32,7 @@ gulp.task(
     "clean-demo",
     // Cast needs to be backwards compatible and older HA has no translations
     "translations-enable-merge-backend",
-    gulp.parallel(
-      "gen-icons-app",
-      "gen-icons-mdi",
-      "gen-icons-demo",
-      "build-translations"
-    ),
+    gulp.parallel("gen-icons-json", "build-translations"),
     "copy-static-demo",
     "webpack-prod-demo",
     "gen-index-demo-prod"

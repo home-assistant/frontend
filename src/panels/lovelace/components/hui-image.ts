@@ -71,9 +71,11 @@ export class HuiImage extends LitElement {
   }
 
   protected render(): TemplateResult {
+    if (!this.hass) {
+      return html``;
+    }
     const ratio = this.aspectRatio ? parseAspectRatio(this.aspectRatio) : null;
-    const stateObj =
-      this.hass && this.entity ? this.hass.states[this.entity] : undefined;
+    const stateObj = this.entity ? this.hass.states[this.entity] : undefined;
     const state = stateObj ? stateObj.state : "unavailable";
 
     // Figure out image source to use
@@ -84,8 +86,7 @@ export class HuiImage extends LitElement {
 
     if (this.cameraImage) {
       if (this.cameraView === "live") {
-        cameraObj =
-          this.hass && (this.hass.states[this.cameraImage] as CameraEntity);
+        cameraObj = this.hass.states[this.cameraImage] as CameraEntity;
       } else {
         imageSrc = this._cameraImageSrc;
       }
@@ -103,7 +104,7 @@ export class HuiImage extends LitElement {
     }
 
     if (imageSrc) {
-      imageSrc = this.hass!.hassUrl(imageSrc);
+      imageSrc = this.hass.hassUrl(imageSrc);
     }
 
     // Figure out filter to use

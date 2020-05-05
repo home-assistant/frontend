@@ -103,6 +103,7 @@ class HaAuthFlow extends litLocalizeLiteMixin(LitElement) {
           ${this.localize("ui.panel.page-authorize.abort_intro")}:
           <ha-markdown
             allowsvg
+            breaks
             .content=${this.localize(
               `ui.panel.page-authorize.form.providers.${step.handler[0]}.abort.${step.reason}`
             )}
@@ -113,6 +114,7 @@ class HaAuthFlow extends litLocalizeLiteMixin(LitElement) {
           ${this._computeStepDescription(step)
             ? html`
                 <ha-markdown
+                  breaks
                   .content=${this._computeStepDescription(step)}
                 ></ha-markdown>
               `

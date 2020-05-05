@@ -26,6 +26,7 @@ export interface HassioAddonDetails extends HassioAddonInfo {
   auto_update: boolean;
   url: null | string;
   detached: boolean;
+  documentation: boolean;
   available: boolean;
   arch: "armhf" | "aarch64" | "i386" | "amd64";
   machine: any;
@@ -46,6 +47,7 @@ export interface HassioAddonDetails extends HassioAddonInfo {
   auto_uart: boolean;
   icon: boolean;
   logo: boolean;
+  stage: "stable" | "experimental" | "deprecated";
   changelog: boolean;
   hassio_api: boolean;
   hassio_role: "default" | "homeassistant" | "manager" | "admin";
@@ -135,6 +137,13 @@ export const fetchHassioAddonLogs = async (
   return hass.callApi<string>("GET", `hassio/addons/${slug}/logs`);
 };
 
+export const fetchHassioAddonDocumentation = async (
+  hass: HomeAssistant,
+  slug: string
+) => {
+  return hass.callApi<string>("GET", `hassio/addons/${slug}/documentation`);
+};
+
 export const setHassioAddonOption = async (
   hass: HomeAssistant,
   slug: string,
@@ -163,6 +172,13 @@ export const installHassioAddon = async (hass: HomeAssistant, slug: string) => {
   return hass.callApi<HassioResponse<void>>(
     "POST",
     `hassio/addons/${slug}/install`
+  );
+};
+
+export const restartHassioAddon = async (hass: HomeAssistant, slug: string) => {
+  return hass.callApi<HassioResponse<void>>(
+    "POST",
+    `hassio/addons/${slug}/restart`
   );
 };
 

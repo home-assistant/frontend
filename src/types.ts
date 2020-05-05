@@ -109,6 +109,11 @@ export interface TranslationMetadata {
   };
 }
 
+export interface IconMetadata {
+  start: string;
+  file: string;
+}
+
 export interface Notification {
   notification_id: string;
   message: string;

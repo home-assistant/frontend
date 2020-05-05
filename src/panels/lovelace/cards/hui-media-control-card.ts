@@ -1,5 +1,4 @@
-import "@polymer/paper-icon-button/paper-icon-button";
-import type { PaperIconButtonElement } from "@polymer/paper-icon-button/paper-icon-button";
+import "../../../components/ha-icon-button";
 import "@polymer/paper-progress/paper-progress";
 import type { PaperProgressElement } from "@polymer/paper-progress/paper-progress";
 import {
@@ -352,11 +351,11 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
               </div>
             </div>
             <div>
-              <paper-icon-button
+              <ha-icon-button
                 icon="hass:dots-vertical"
                 class="more-info"
                 @click=${this._handleMoreInfo}
-              ></paper-icon-button>
+              ></ha-icon-button>
             </div>
           </div>
           ${isUnavailable
@@ -392,11 +391,11 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
                         <div class="controls">
                           ${controls!.map(
                             (control) => html`
-                              <paper-icon-button
+                              <ha-icon-button
                                 .icon=${control.icon}
                                 action=${control.action}
                                 @click=${this._handleClick}
-                              ></paper-icon-button>
+                              ></ha-icon-button>
                             `
                           )}
                         </div>
@@ -655,7 +654,7 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
   private _handleClick(e: MouseEvent): void {
     this.hass!.callService(
       "media_player",
-      (e.currentTarget! as PaperIconButtonElement).getAttribute("action")!,
+      (e.currentTarget! as HTMLElement).getAttribute("action")!,
       {
         entity_id: this._config!.entity,
       }
@@ -831,17 +830,17 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
         align-items: center;
       }
 
-      .controls paper-icon-button {
-        width: 44px;
-        height: 44px;
+      .controls ha-icon-button {
+        --mdc-icon-button-size: 44px;
+        --mdc-icon-size: 22px;
       }
 
-      paper-icon-button[action="media_play"],
-      paper-icon-button[action="media_play_pause"],
-      paper-icon-button[action="turn_on"],
-      paper-icon-button[action="turn_off"] {
-        width: 56px;
-        height: 56px;
+      ha-icon-button[action="media_play"],
+      ha-icon-button[action="media_play_pause"],
+      ha-icon-button[action="turn_on"],
+      ha-icon-button[action="turn_off"] {
+        --mdc-icon-button-size: 56px;
+        --mdc-icon-size: 28px;
       }
 
       .top-info {
@@ -901,16 +900,16 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
         padding-bottom: 0;
       }
 
-      .narrow paper-icon-button {
-        width: 40px;
-        height: 40px;
+      .narrow ha-icon-button {
+        --mdc-icon-button-size: 40px;
+        --mdc-icon-size: 20px;
       }
 
-      .narrow paper-icon-button[action="media_play"],
-      .narrow paper-icon-button[action="media_play_pause"],
-      .narrow paper-icon-button[action="turn_on"] {
-        width: 50px;
-        height: 50px;
+      .narrow ha-icon-button[action="media_play"],
+      .narrow ha-icon-button[action="media_play_pause"],
+      .narrow ha-icon-button[action="turn_on"] {
+        --mdc-icon-button-size: 50px;
+        --mdc-icon-size: 25px;
       }
 
       .no-progress.player:not(.no-controls) {

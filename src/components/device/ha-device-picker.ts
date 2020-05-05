@@ -1,4 +1,4 @@
-import "@polymer/paper-icon-button/paper-icon-button";
+import "../ha-icon-button";
 import "@polymer/paper-input/paper-input";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-item/paper-item-body";
@@ -247,7 +247,7 @@ export class HaDevicePicker extends SubscribeMixin(LitElement) {
         >
           ${this.value
             ? html`
-                <paper-icon-button
+                <ha-icon-button
                   aria-label=${this.hass.localize(
                     "ui.components.device-picker.clear"
                   )}
@@ -258,12 +258,12 @@ export class HaDevicePicker extends SubscribeMixin(LitElement) {
                   no-ripple
                 >
                   Clear
-                </paper-icon-button>
+                </ha-icon-button>
               `
             : ""}
           ${devices.length > 0
             ? html`
-                <paper-icon-button
+                <ha-icon-button
                   aria-label=${this.hass.localize(
                     "ui.components.device-picker.show_devices"
                   )}
@@ -272,7 +272,7 @@ export class HaDevicePicker extends SubscribeMixin(LitElement) {
                   .icon=${this._opened ? "hass:menu-up" : "hass:menu-down"}
                 >
                   Toggle
-                </paper-icon-button>
+                </ha-icon-button>
               `
             : ""}
         </paper-input>
@@ -311,9 +311,8 @@ export class HaDevicePicker extends SubscribeMixin(LitElement) {
 
   static get styles(): CSSResult {
     return css`
-      paper-input > paper-icon-button {
-        width: 24px;
-        height: 24px;
+      paper-input > ha-icon-button {
+        --mdc-icon-button-size: 24px;
         padding: 2px;
         color: var(--secondary-text-color);
       }

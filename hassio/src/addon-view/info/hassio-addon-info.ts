@@ -1,5 +1,4 @@
 import "@material/mwc-button";
-import "@polymer/iron-icon/iron-icon";
 import "@polymer/paper-card/paper-card";
 import "@polymer/paper-tooltip/paper-tooltip";
 import {
@@ -12,14 +11,15 @@ import {
   TemplateResult,
 } from "lit-element";
 import { classMap } from "lit-html/directives/class-map";
-import { atLeastVersion } from "../../../src/common/config/version";
-import { fireEvent } from "../../../src/common/dom/fire_event";
-import { navigate } from "../../../src/common/navigate";
-import "../../../src/components/buttons/ha-call-api-button";
-import "../../../src/components/buttons/ha-progress-button";
-import "../../../src/components/ha-label-badge";
-import "../../../src/components/ha-markdown";
-import "../../../src/components/ha-switch";
+import { atLeastVersion } from "../../../../src/common/config/version";
+import { fireEvent } from "../../../../src/common/dom/fire_event";
+import { navigate } from "../../../../src/common/navigate";
+import "../../../../src/components/buttons/ha-call-api-button";
+import "../../../../src/components/buttons/ha-progress-button";
+import "../../../../src/components/ha-label-badge";
+import "../../../../src/components/ha-markdown";
+import "../../../../src/components/ha-switch";
+import "../../../../src/components/ha-icon";
 import {
   fetchHassioAddonChangelog,
   HassioAddonDetails,
@@ -29,18 +29,29 @@ import {
   setHassioAddonOption,
   setHassioAddonSecurity,
   uninstallHassioAddon,
-} from "../../../src/data/hassio/addon";
-import { haStyle } from "../../../src/resources/styles";
-import { HomeAssistant } from "../../../src/types";
-import "../components/hassio-card-content";
-import { showHassioMarkdownDialog } from "../dialogs/markdown/show-dialog-hassio-markdown";
-import { hassioStyle } from "../resources/hassio-style";
+} from "../../../../src/data/hassio/addon";
+import { haStyle } from "../../../../src/resources/styles";
+import { HomeAssistant } from "../../../../src/types";
+import "../../components/hassio-card-content";
+import { showHassioMarkdownDialog } from "../../dialogs/markdown/show-dialog-hassio-markdown";
+import { hassioStyle } from "../../resources/hassio-style";
+import { showConfirmationDialog } from "../../../../src/dialogs/generic/show-dialog-box";
+
+const STAGE_ICON = {
+  stable: "mdi:check-circle",
+  experimental: "mdi:flask",
+  deprecated: "mdi:exclamation-thick",
+};
 
 const PERMIS_DESC = {
+  stage: {
+    title: "Add-on Stage",
+    description: `Add-ons can have one of three stages:\n\n<ha-icon icon='${STAGE_ICON.stable}'></ha-icon>**Stable**: These are add-ons ready to be used in production.\n<ha-icon icon='${STAGE_ICON.experimental}'></ha-icon>**Experimental**: These may contain bugs, and may be unfinished.\n<ha-icon icon='${STAGE_ICON.deprecated}'></ha-icon>**Deprecated**: These add-ons will no longer receive any updates.`,
+  },
   rating: {
     title: "Add-on Security Rating",
     description:
-      "Hass.io provides a security rating to each of the add-ons, which indicates the risks involved when using this add-on. The more access an add-on requires on your system, the lower the score, thus raising the possible security risks.\n\nA score is on a scale from 1 to 6. Where 1 is the lowest score (considered the most insecure and highest risk) and a score of 6 is the highest score (considered the most secure and lowest risk).",
+      "Home Assistant provides a security rating to each of the add-ons, which indicates the risks involved when using this add-on. The more access an add-on requires on your system, the lower the score, thus raising the possible security risks.\n\nA score is on a scale from 1 to 6. Where 1 is the lowest score (considered the most insecure and highest risk) and a score of 6 is the highest score (considered the most secure and lowest risk).",
   },
   host_network: {
     title: "Host Network",
@@ -58,19 +69,19 @@ const PERMIS_DESC = {
       "This add-on is given full access to the hardware of your system, by request of the add-on author. Access is comparable to the privileged mode in Docker. Since this opens up possible security risks, this feature impacts the add-on security score negatively.\n\nThis level of access is not granted automatically and needs to be confirmed by you. To do this, you need to disable the protection mode on the add-on manually. Only disable the protection mode if you know, need AND trust the source of this add-on.",
   },
   hassio_api: {
-    title: "Hass.io API Access",
+    title: "Supervisor API Access",
     description:
-      "The add-on was given access to the Hass.io API, by request of the add-on author. By default, the add-on can access general version information of your system. When the add-on requests 'manager' or 'admin' level access to the API, it will gain access to control multiple parts of your Hass.io system. This permission is indicated by this badge and will impact the security score of the addon negatively.",
+      "The add-on was given access to the Supervisor API, by request of the add-on author. By default, the add-on can access general version information of your system. When the add-on requests 'manager' or 'admin' level access to the API, it will gain access to control multiple parts of your Home Assistant system. This permission is indicated by this badge and will impact the security score of the addon negatively.",
   },
   docker_api: {
     title: "Full Docker Access",
     description:
-      "The add-on author has requested the add-on to have management access to the Docker instance running on your system. This mode gives the add-on full access and control to your entire Hass.io system, which adds security risks, and could damage your system when misused. Therefore, this feature impacts the add-on security score negatively.\n\nThis level of access is not granted automatically and needs to be confirmed by you. To do this, you need to disable the protection mode on the add-on manually. Only disable the protection mode if you know, need AND trust the source of this add-on.",
+      "The add-on author has requested the add-on to have management access to the Docker instance running on your system. This mode gives the add-on full access and control to your entire Home Assistant system, which adds security risks, and could damage your system when misused. Therefore, this feature impacts the add-on security score negatively.\n\nThis level of access is not granted automatically and needs to be confirmed by you. To do this, you need to disable the protection mode on the add-on manually. Only disable the protection mode if you know, need AND trust the source of this add-on.",
   },
   host_pid: {
     title: "Host Processes Namespace",
     description:
-      "Usually, the processes the add-on runs, are isolated from all other system processes. The add-on author has requested the add-on to have access to the system processes running on the host system instance, and allow the add-on to spawn processes on the host system as well. This mode gives the add-on full access and control to your entire Hass.io system, which adds security risks, and could damage your system when misused. Therefore, this feature impacts the add-on security score negatively.\n\nThis level of access is not granted automatically and needs to be confirmed by you. To do this, you need to disable the protection mode on the add-on manually. Only disable the protection mode if you know, need AND trust the source of this add-on.",
+      "Usually, the processes the add-on runs, are isolated from all other system processes. The add-on author has requested the add-on to have access to the system processes running on the host system instance, and allow the add-on to spawn processes on the host system as well. This mode gives the add-on full access and control to your entire Home Assistant system, which adds security risks, and could damage your system when misused. Therefore, this feature impacts the add-on security score negatively.\n\nThis level of access is not granted automatically and needs to be confirmed by you. To do this, you need to disable the protection mode on the add-on manually. Only disable the protection mode if you know, need AND trust the source of this add-on.",
   },
   apparmor: {
     title: "AppArmor",
@@ -91,9 +102,11 @@ const PERMIS_DESC = {
 
 @customElement("hassio-addon-info")
 class HassioAddonInfo extends LitElement {
-  @property() public hass!: HomeAssistant;
+  @property({ type: Boolean }) public narrow!: boolean;
 
-  @property() public addon!: HassioAddonDetails;
+  @property({ attribute: false }) public hass!: HomeAssistant;
+
+  @property({ attribute: false }) public addon!: HassioAddonDetails;
 
   @property() private _error?: string;
 
@@ -158,25 +171,25 @@ class HassioAddonInfo extends LitElement {
       <paper-card>
         <div class="card-content">
           <div class="addon-header">
-            ${this.addon.name}
+            ${!this.narrow ? this.addon.name : ""}
             <div class="addon-version light-color">
               ${this.addon.version
                 ? html`
                     ${this.addon.version}
                     ${this._computeIsRunning
                       ? html`
-                          <iron-icon
+                          <ha-icon
                             title="Add-on is running"
                             class="running"
                             icon="hassio:circle"
-                          ></iron-icon>
+                          ></ha-icon>
                         `
                       : html`
-                          <iron-icon
+                          <ha-icon
                             title="Add-on is stopped"
                             class="stopped"
                             icon="hassio:circle"
-                          ></iron-icon>
+                          ></ha-icon>
                         `}
                   `
                 : html` ${this.addon.version_latest} `}
@@ -185,7 +198,7 @@ class HassioAddonInfo extends LitElement {
           <div class="description light-color">
             ${this.addon.description}.<br />
             Visit
-            <a href="${this.addon.url}" target="_blank" rel="noreferrer">
+            <a href="${this.addon.url!}" target="_blank" rel="noreferrer">
               ${this.addon.name} page</a
             >
             for details.
@@ -193,7 +206,7 @@ class HassioAddonInfo extends LitElement {
           ${this.addon.logo
             ? html`
                 <a
-                  href="${this.addon.url}"
+                  href="${this.addon.url!}"
                   target="_blank"
                   class="logo"
                   rel="noreferrer"
@@ -203,6 +216,18 @@ class HassioAddonInfo extends LitElement {
               `
             : ""}
           <div class="security">
+            <ha-label-badge
+              class=${classMap({
+                green: this.addon.stage === "stable",
+                yellow: this.addon.stage === "experimental",
+                red: this.addon.stage === "deprecated",
+              })}
+              @click=${this._showMoreInfo}
+              id="stage"
+              .icon=${STAGE_ICON[this.addon.stage]}
+              label="stage"
+              description=""
+            ></ha-label-badge>
             <ha-label-badge
               class=${classMap({
                 green: [5, 6].includes(Number(this.addon.rating)),
@@ -362,7 +387,7 @@ class HassioAddonInfo extends LitElement {
                         <div>
                           Protection mode
                           <span>
-                            <iron-icon icon="hassio:information"></iron-icon>
+                            <ha-icon icon="hassio:information"></ha-icon>
                             <paper-tooltip>
                               Grant the add-on elevated system access.
                             </paper-tooltip>
@@ -383,35 +408,21 @@ class HassioAddonInfo extends LitElement {
         <div class="card-actions">
           ${this.addon.version
             ? html`
-                <mwc-button class="warning" @click=${this._uninstallClicked}>
-                  Uninstall
-                </mwc-button>
-                ${this.addon.build
-                  ? html`
-                      <ha-call-api-button
-                        class="warning"
-                        .hass=${this.hass}
-                        .path="hassio/addons/${this.addon.slug}/rebuild"
-                      >
-                        Rebuild
-                      </ha-call-api-button>
-                    `
-                  : ""}
                 ${this._computeIsRunning
                   ? html`
-                      <ha-call-api-button
-                        class="warning"
-                        .hass=${this.hass}
-                        .path="hassio/addons/${this.addon.slug}/restart"
-                      >
-                        Restart
-                      </ha-call-api-button>
                       <ha-call-api-button
                         class="warning"
                         .hass=${this.hass}
                         .path="hassio/addons/${this.addon.slug}/stop"
                       >
                         Stop
+                      </ha-call-api-button>
+                      <ha-call-api-button
+                        class="warning"
+                        .hass=${this.hass}
+                        .path="hassio/addons/${this.addon.slug}/restart"
+                      >
+                        Restart
                       </ha-call-api-button>
                     `
                   : html`
@@ -425,7 +436,7 @@ class HassioAddonInfo extends LitElement {
                 ${this._computeShowWebUI
                   ? html`
                       <a
-                        .href=${this._pathWebui}
+                        href=${this._pathWebui!}
                         tabindex="-1"
                         target="_blank"
                         class="right"
@@ -442,6 +453,23 @@ class HassioAddonInfo extends LitElement {
                       <mwc-button class="right" @click=${this._openIngress}>
                         Open web UI
                       </mwc-button>
+                    `
+                  : ""}
+                <mwc-button
+                  class=" right warning"
+                  @click=${this._uninstallClicked}
+                >
+                  Uninstall
+                </mwc-button>
+                ${this.addon.build
+                  ? html`
+                      <ha-call-api-button
+                        class="warning right"
+                        .hass=${this.hass}
+                        .path="hassio/addons/${this.addon.slug}/rebuild"
+                      >
+                        Rebuild
+                      </ha-call-api-button>
                     `
                   : ""}
               `
@@ -534,7 +562,7 @@ class HassioAddonInfo extends LitElement {
           width: 180px;
           display: inline-block;
         }
-        .state iron-icon {
+        .state ha-icon {
           width: 16px;
           height: 16px;
           color: var(--secondary-text-color);
@@ -542,10 +570,10 @@ class HassioAddonInfo extends LitElement {
         ha-switch {
           display: flex;
         }
-        iron-icon.running {
+        ha-icon.running {
           color: var(--paper-green-400);
         }
-        iron-icon.stopped {
+        ha-icon.stopped {
           color: var(--google-red-300);
         }
         ha-call-api-button {
@@ -590,7 +618,8 @@ class HassioAddonInfo extends LitElement {
         .security ha-label-badge {
           cursor: pointer;
           margin-right: 4px;
-          --iron-icon-height: 45px;
+          --mdc-icon-size: 45px;
+          --ha-label-badge-padding: 8px 0 0 0;
         }
       `,
     ];
@@ -776,9 +805,17 @@ class HassioAddonInfo extends LitElement {
   }
 
   private async _uninstallClicked(): Promise<void> {
-    if (!confirm("Are you sure you want to uninstall this add-on?")) {
+    const confirmed = await showConfirmationDialog(this, {
+      title: this.addon.name,
+      text: "Are you sure you want to uninstall this add-on?",
+      confirmText: "uninstall add-on",
+      dismissText: "no",
+    });
+
+    if (!confirmed) {
       return;
     }
+
     this._error = undefined;
     try {
       await uninstallHassioAddon(this.hass, this.addon.slug);

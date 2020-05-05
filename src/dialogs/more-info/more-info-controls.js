@@ -1,7 +1,7 @@
 import "@material/mwc-button";
 import "@polymer/app-layout/app-toolbar/app-toolbar";
 import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable";
-import "@polymer/paper-icon-button/paper-icon-button";
+import "../../components/ha-icon-button";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 /* eslint-plugin-disable lit */
 import { PolymerElement } from "@polymer/polymer/polymer-element";
@@ -78,27 +78,27 @@ class MoreInfoControls extends LocalizeMixin(EventsMixin(PolymerElement)) {
       </style>
 
       <app-toolbar>
-        <paper-icon-button
+        <ha-icon-button
           aria-label$="[[localize('ui.dialogs.more_info_control.dismiss')]]"
           icon="hass:close"
           dialog-dismiss
-        ></paper-icon-button>
+        ></ha-icon-button>
         <div class="main-title" main-title="" on-click="enlarge">
           [[_computeStateName(stateObj)]]
         </div>
         <template is="dom-if" if="[[_computeConfig(hass)]]">
-          <paper-icon-button
+          <ha-icon-button
             aria-label$="[[localize('ui.dialogs.more_info_control.settings')]]"
             icon="hass:settings"
             on-click="_gotoSettings"
-          ></paper-icon-button>
+          ></ha-icon-button>
         </template>
         <template is="dom-if" if="[[_computeEdit(hass, stateObj)]]">
-          <paper-icon-button
+          <ha-icon-button
             aria-label$="[[localize('ui.dialogs.more_info_control.edit')]]"
             icon="hass:pencil"
             on-click="_gotoEdit"
-          ></paper-icon-button>
+          ></ha-icon-button>
         </template>
       </app-toolbar>
 

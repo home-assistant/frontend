@@ -114,11 +114,11 @@ export class HaConfigAreasDashboard extends LitElement {
         id="area_id"
         hasFab
       >
-        <paper-icon-button
+        <ha-icon-button
           slot="toolbar-icon"
           icon="hass:help-circle"
           @click=${this._showHelp}
-        ></paper-icon-button>
+        ></ha-icon-button>
       </hass-tabs-subpage-data-table>
       <ha-fab
         ?is-wide=${this.isWide}
