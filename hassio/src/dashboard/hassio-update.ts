@@ -162,6 +162,7 @@ export class HassioUpdate extends LitElement {
           --iron-icon-width: 48px;
           float: right;
           margin: 0 0 2px 10px;
+          color: var(--primary-text-color);
         }
         .update-heading {
           font-size: var(--paper-font-subhead_-_font-size);
