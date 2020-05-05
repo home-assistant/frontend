@@ -20,7 +20,7 @@ interface Icons {
 }
 
 interface Chunks {
-  [key: string]: { icons: Promise<Icons>; cached: boolean };
+  [key: string]: Promise<Icons>;
 }
 
 const iconStore = new Store("hass-icon-db", "mdi-icon-store");
@@ -38,6 +38,20 @@ const findIconChunk = (icon): string => {
   return lastChunk!.file;
 };
 
+const debouncedWriteCache = debounce(async () => {
+  const keys = Object.keys(chunks);
+  const iconsSets: Icons[] = await Promise.all(Object.values(chunks));
+  // We do a batch opening the store just once, for (considerable) performance
+  iconStore._withIDBStore("readwrite", (store) => {
+    iconsSets.forEach((icons, idx) => {
+      Object.entries(icons).forEach(([name, path]) => {
+        store.put(path, name);
+      });
+      delete chunks[keys[idx]];
+    });
+  });
+}, 2000);
+
 @customElement("ha-icon")
 export class HaIcon extends LitElement {
   @property() public icon?: string;
@@ -45,23 +59,6 @@ export class HaIcon extends LitElement {
   @property() private _path?: string;
 
   @property() private _noMdi = false;
-
-  private _debouncedWriteCache = debounce(() => {
-    // We do a batch opening the store just once, for (considerable) performance
-    iconStore._withIDBStore("readwrite", async (store) => {
-      for (const part of Object.values(chunks)) {
-        if (part.cached) {
-          continue;
-        }
-        part.cached = true;
-        // eslint-disable-next-line no-await-in-loop
-        const icons = await part.icons;
-        Object.entries(icons).forEach(([name, path]) => {
-          store.put(path, name);
-        });
-      }
-    });
-  }, 2000);
 
   protected updated(changedProps: PropertyValues) {
     if (changedProps.has("icon")) {
@@ -100,18 +97,15 @@ export class HaIcon extends LitElement {
     const chunk = findIconChunk(iconName);
 
     if (chunk in chunks) {
-      this._setPath(chunks[chunk].icons, iconName);
+      this._setPath(chunks[chunk], iconName);
       return;
     }
     const iconPromise = fetch(`/static/mdi/${chunk}.json`).then((response) =>
       response.json()
     );
-    chunks[chunk] = {
-      icons: iconPromise,
-      cached: false,
-    };
+    chunks[chunk] = iconPromise;
     this._setPath(iconPromise, iconName);
-    this._debouncedWriteCache();
+    debouncedWriteCache();
   }
 
   private async _setPath(promise: Promise<Icons>, iconName: string) {
