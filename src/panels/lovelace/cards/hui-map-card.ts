@@ -1,4 +1,4 @@
-import "@polymer/paper-icon-button/paper-icon-button";
+import "../../../components/ha-icon-button";
 import { HassEntity } from "home-assistant-js-websocket";
 import {
   Circle,
@@ -209,12 +209,12 @@ class HuiMapCard extends LitElement implements LovelaceCard {
             id="map"
             class=${classMap({ dark: this._config.dark_mode === true })}
           ></div>
-          <paper-icon-button
+          <ha-icon-button
             @click=${this._fitMap}
             tabindex="0"
             icon="hass:image-filter-center-focus"
             title="Reset focus"
-          ></paper-icon-button>
+          ></ha-icon-button>
         </div>
       </ha-card>
     `;
@@ -666,10 +666,11 @@ class HuiMapCard extends LitElement implements LovelaceCard {
         background: #090909;
       }
 
-      paper-icon-button {
+      ha-icon-button {
         position: absolute;
         top: 75px;
-        left: 7px;
+        left: 3px;
+        outline: none;
       }
 
       #root {

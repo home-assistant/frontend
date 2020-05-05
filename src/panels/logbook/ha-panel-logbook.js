@@ -1,7 +1,7 @@
 import "@polymer/app-layout/app-header-layout/app-header-layout";
 import "@polymer/app-layout/app-header/app-header";
 import "@polymer/app-layout/app-toolbar/app-toolbar";
-import "@polymer/paper-icon-button/paper-icon-button";
+import "../../components/ha-icon-button";
 import "@polymer/paper-input/paper-input";
 import "@polymer/paper-spinner/paper-spinner";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
@@ -122,11 +122,11 @@ class HaPanelLogbook extends LocalizeMixin(PolymerElement) {
               narrow="[[narrow]]"
             ></ha-menu-button>
             <div main-title>[[localize('panel.logbook')]]</div>
-            <paper-icon-button
+            <ha-icon-button
               icon="hass:refresh"
               on-click="refreshLogbook"
               hidden$="[[isLoading]]"
-            ></paper-icon-button>
+            ></ha-icon-button>
           </app-toolbar>
         </app-header>
 

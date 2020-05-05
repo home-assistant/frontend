@@ -1,6 +1,6 @@
 import "@material/mwc-button/mwc-button";
 import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
-import "@polymer/paper-icon-button/paper-icon-button";
+import "../../../components/ha-icon-button";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
 import {
@@ -50,12 +50,12 @@ export class ZHADeviceBindingControl extends LitElement {
       <ha-config-section .isWide="${this.isWide}">
         <div class="header" slot="header">
           <span>Device Binding</span>
-          <paper-icon-button
+          <ha-icon-button
             class="toggle-help-icon"
             @click="${this._onHelpTap}"
             icon="hass:help-circle"
           >
-          </paper-icon-button>
+          </ha-icon-button>
         </div>
         <span slot="introduction">Bind and unbind devices.</span>
 

@@ -1,4 +1,3 @@
-import "@polymer/paper-icon-button/paper-icon-button";
 import {
   css,
   CSSResult,
@@ -10,7 +9,6 @@ import {
   TemplateResult,
 } from "lit-element";
 import { HASSDomEvent } from "../../../common/dom/fire_event";
-import "../../../components/ha-paper-icon-button-arrow-prev";
 import {
   Cluster,
   fetchBindableDevices,

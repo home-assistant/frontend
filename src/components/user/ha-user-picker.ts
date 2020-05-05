@@ -1,5 +1,5 @@
 import "@polymer/paper-dropdown-menu/paper-dropdown-menu-light";
-import "@polymer/paper-icon-button/paper-icon-button";
+import "../ha-icon-button";
 import "@polymer/paper-input/paper-input";
 import "@polymer/paper-item/paper-icon-item";
 import "@polymer/paper-item/paper-item-body";

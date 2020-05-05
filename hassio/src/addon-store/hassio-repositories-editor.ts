@@ -1,4 +1,3 @@
-import "@polymer/iron-icon/iron-icon";
 import "@polymer/paper-card/paper-card";
 import "@polymer/paper-input/paper-input";
 import {
@@ -19,6 +18,7 @@ import { PolymerChangedEvent } from "../../../src/polymer-types";
 import { HomeAssistant } from "../../../src/types";
 import "../components/hassio-card-content";
 import { hassioStyle } from "../resources/hassio-style";
+import "../../../src/components/ha-icon";
 
 @customElement("hassio-repositories-editor")
 class HassioRepositoriesEditor extends LitElement {
@@ -76,7 +76,7 @@ class HassioRepositoriesEditor extends LitElement {
 
           <paper-card>
             <div class="card-content add">
-              <iron-icon icon="hassio:github-circle"></iron-icon>
+              <ha-icon icon="hassio:github-circle"></ha-icon>
               <paper-input
                 label="Add new repository by URL"
                 .value=${this._repoUrl}
@@ -130,7 +130,7 @@ class HassioRepositoriesEditor extends LitElement {
         .add {
           padding: 12px 16px;
         }
-        iron-icon {
+        ha-icon {
           color: var(--secondary-text-color);
           margin-right: 16px;
           display: inline-block;

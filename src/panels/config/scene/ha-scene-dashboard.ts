@@ -1,4 +1,4 @@
-import "@polymer/paper-icon-button/paper-icon-button";
+import "../../../components/ha-icon-button";
 import "@polymer/paper-tooltip/paper-tooltip";
 import {
   css,
@@ -54,14 +54,14 @@ class HaSceneDashboard extends LitElement {
           type: "icon-button",
           template: (_toggle, scene) =>
             html`
-              <paper-icon-button
+              <ha-icon-button
                 .scene=${scene}
                 icon="hass:play"
                 title="${this.hass.localize(
                   "ui.panel.config.scene.picker.activate_scene"
                 )}"
                 @click=${(ev: Event) => this._activateScene(ev)}
-              ></paper-icon-button>
+              ></ha-icon-button>
             `,
         },
         name: {
@@ -77,14 +77,14 @@ class HaSceneDashboard extends LitElement {
           title: "",
           type: "icon-button",
           template: (_info, scene) => html`
-            <paper-icon-button
+            <ha-icon-button
               .scene=${scene}
               @click=${this._showInfo}
               icon="hass:information-outline"
               title="${this.hass.localize(
                 "ui.panel.config.scene.picker.show_info_scene"
               )}"
-            ></paper-icon-button>
+            ></ha-icon-button>
           `,
         },
         edit: {
@@ -98,13 +98,13 @@ class HaSceneDashboard extends LitElement {
                   : undefined
               )}
             >
-              <paper-icon-button
+              <ha-icon-button
                 .icon=${scene.attributes.id ? "hass:pencil" : "hass:pencil-off"}
                 .disabled=${!scene.attributes.id}
                 title="${this.hass.localize(
                   "ui.panel.config.scene.picker.edit_scene"
                 )}"
-              ></paper-icon-button>
+              ></ha-icon-button>
             </a>
             ${!scene.attributes.id
               ? html`
@@ -137,11 +137,11 @@ class HaSceneDashboard extends LitElement {
         )}
         hasFab
       >
-        <paper-icon-button
+        <ha-icon-button
           slot="toolbar-icon"
           icon="hass:help-circle"
           @click=${this._showHelp}
-        ></paper-icon-button>
+        ></ha-icon-button>
       </hass-tabs-subpage-data-table>
       <a href="/config/scene/edit/new">
         <ha-fab

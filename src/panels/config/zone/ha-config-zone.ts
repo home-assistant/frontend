@@ -152,11 +152,11 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
                     </paper-item-body>
                     ${!this.narrow
                       ? html`
-                          <paper-icon-button
+                          <ha-icon-button
                             icon="hass:pencil"
                             .entry=${entry}
                             @click=${this._openEditEntry}
-                          ></paper-icon-button>
+                          ></ha-icon-button>
                         `
                       : ""}
                   </paper-icon-item>
@@ -174,7 +174,7 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
                       ${state.attributes.friendly_name || state.entity_id}
                     </paper-item-body>
                     <div style="display:inline-block">
-                      <paper-icon-button
+                      <ha-icon-button
                         .entityId=${state.entity_id}
                         icon="hass:pencil"
                         @click=${this._openCoreConfig}
@@ -185,7 +185,7 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
                             ? undefined
                             : true
                         )}
-                      ></paper-icon-button>
+                      ></ha-icon-button>
                       <paper-tooltip position="left">
                         ${state.entity_id === "zone.home"
                           ? this.hass.localize(
@@ -474,7 +474,7 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
         overflow: hidden;
       }
       ha-icon,
-      paper-icon-button:not([disabled]) {
+      ha-icon-button:not([disabled]) {
         color: var(--secondary-text-color);
       }
       .empty {

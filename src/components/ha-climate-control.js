@@ -1,5 +1,5 @@
 import "@polymer/iron-flex-layout/iron-flex-layout-classes";
-import "@polymer/paper-icon-button/paper-icon-button";
+import "./ha-icon-button";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 /* eslint-plugin-disable lit */
 import { PolymerElement } from "@polymer/polymer/polymer-element";
@@ -31,9 +31,8 @@ class HaClimateControl extends EventsMixin(PolymerElement) {
           font-size: 200%;
           text-align: right;
         }
-        paper-icon-button {
-          height: 48px;
-          width: 48px;
+        ha-icon-button {
+          --mdc-icon-size: 32px;
         }
       </style>
 
@@ -41,16 +40,16 @@ class HaClimateControl extends EventsMixin(PolymerElement) {
       <div id="target_temperature">[[value]] [[units]]</div>
       <div class="control-buttons">
         <div>
-          <paper-icon-button
+          <ha-icon-button
             icon="hass:chevron-up"
             on-click="incrementValue"
-          ></paper-icon-button>
+          ></ha-icon-button>
         </div>
         <div>
-          <paper-icon-button
+          <ha-icon-button
             icon="hass:chevron-down"
             on-click="decrementValue"
-          ></paper-icon-button>
+          ></ha-icon-button>
         </div>
       </div>
     `;

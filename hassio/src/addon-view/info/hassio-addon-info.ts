@@ -1,5 +1,4 @@
 import "@material/mwc-button";
-import "@polymer/iron-icon/iron-icon";
 import "@polymer/paper-card/paper-card";
 import "@polymer/paper-tooltip/paper-tooltip";
 import {
@@ -20,6 +19,7 @@ import "../../../../src/components/buttons/ha-progress-button";
 import "../../../../src/components/ha-label-badge";
 import "../../../../src/components/ha-markdown";
 import "../../../../src/components/ha-switch";
+import "../../../../src/components/ha-icon";
 import {
   fetchHassioAddonChangelog,
   HassioAddonDetails,
@@ -178,18 +178,18 @@ class HassioAddonInfo extends LitElement {
                     ${this.addon.version}
                     ${this._computeIsRunning
                       ? html`
-                          <iron-icon
+                          <ha-icon
                             title="Add-on is running"
                             class="running"
                             icon="hassio:circle"
-                          ></iron-icon>
+                          ></ha-icon>
                         `
                       : html`
-                          <iron-icon
+                          <ha-icon
                             title="Add-on is stopped"
                             class="stopped"
                             icon="hassio:circle"
-                          ></iron-icon>
+                          ></ha-icon>
                         `}
                   `
                 : html` ${this.addon.version_latest} `}
@@ -387,7 +387,7 @@ class HassioAddonInfo extends LitElement {
                         <div>
                           Protection mode
                           <span>
-                            <iron-icon icon="hassio:information"></iron-icon>
+                            <ha-icon icon="hassio:information"></ha-icon>
                             <paper-tooltip>
                               Grant the add-on elevated system access.
                             </paper-tooltip>
@@ -562,7 +562,7 @@ class HassioAddonInfo extends LitElement {
           width: 180px;
           display: inline-block;
         }
-        .state iron-icon {
+        .state ha-icon {
           width: 16px;
           height: 16px;
           color: var(--secondary-text-color);
@@ -570,10 +570,10 @@ class HassioAddonInfo extends LitElement {
         ha-switch {
           display: flex;
         }
-        iron-icon.running {
+        ha-icon.running {
           color: var(--paper-green-400);
         }
-        iron-icon.stopped {
+        ha-icon.stopped {
           color: var(--google-red-300);
         }
         ha-call-api-button {
@@ -618,7 +618,7 @@ class HassioAddonInfo extends LitElement {
         .security ha-label-badge {
           cursor: pointer;
           margin-right: 4px;
-          --iron-icon-height: 45px;
+          --mdc-icon-size: 45px;
           --ha-label-badge-padding: 8px 0 0 0;
         }
       `,

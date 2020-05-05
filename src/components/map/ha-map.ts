@@ -1,4 +1,4 @@
-import "@polymer/paper-icon-button/paper-icon-button";
+import "../ha-icon-button";
 import { Circle, Layer, Map, Marker } from "leaflet";
 import {
   css,
