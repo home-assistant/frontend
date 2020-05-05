@@ -187,6 +187,7 @@ class HAFullCalendar extends LitElement {
 
         #calendar {
           flex-grow: 1;
+          background-color: var(--card-background-color);
         }
 
         .fc-scrollgrid-section-header td {

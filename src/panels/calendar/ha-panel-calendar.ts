@@ -249,9 +249,6 @@ class PanelCalendar extends LitElement {
     this._start = ev.detail.start;
     this._end = ev.detail.end;
 
-    console.log(ev.detail.start);
-    console.log(ev.detail.end);
-
     this._fetchData();
   }
 
@@ -274,7 +271,7 @@ class PanelCalendar extends LitElement {
           min-width: 170px;
           flex: 0 0 15%;
           overflow: hidden;
-          --mdc-theme-text-primary-on-background: var(--text-primary-color);
+          --mdc-theme-text-primary-on-background: var(--primary-text-color);
         }
 
         .calendar-list > div {
