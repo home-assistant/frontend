@@ -151,15 +151,6 @@ class HuiWeatherEntityRow extends LitElement implements LovelaceRow {
         text-overflow: ellipsis;
       }
 
-      .flex ::slotted(*) {
-        margin-left: 8px;
-        min-width: 0;
-      }
-
-      .flex ::slotted([slot="secondary"]) {
-        margin-left: 0;
-      }
-
       .icon-image {
         display: flex;
         align-items: center;
@@ -181,11 +172,6 @@ class HuiWeatherEntityRow extends LitElement implements LovelaceRow {
         margin-right: 16px;
       }
 
-      :host([rtl]) .flex ::slotted(*) {
-        margin-left: 0;
-        margin-right: 8px;
-      }
-
       .pointer {
         cursor: pointer;
       }
@@ -195,6 +181,7 @@ class HuiWeatherEntityRow extends LitElement implements LovelaceRow {
         flex-direction: column;
         justify-content: center;
         text-align: right;
+        margin-left: 8px;
       }
 
       .secondary {
