@@ -6,7 +6,6 @@ import {
   CSSResult,
   css,
   query,
-  property,
 } from "lit-element";
 import "@material/mwc-button";
 import "@material/mwc-menu";
@@ -19,27 +18,13 @@ import "./ha-icon-button";
 
 @customElement("ha-button-menu")
 export class HaButtonMenu extends LitElement {
-  @property() public icon?: string;
-
-  @property() public text?: string;
-
   @query("mwc-menu") private _menu?: Menu;
 
   protected render(): TemplateResult {
     return html`
-      ${this.icon
-        ? html`
-            <ha-icon-button
-              .icon=${this.icon}
-              @click=${this._handleClick}
-            ></ha-icon-button>
-          `
-        : html`
-            <mwc-button
-              .label=${this.text || ""}
-              @click=${this._handleClick}
-            ></mwc-button>
-          `}
+      <div @click=${this._handleClick}>
+        <slot name="trigger"></slot>
+      </div>
       <mwc-menu>
         <slot></slot>
       </mwc-menu>

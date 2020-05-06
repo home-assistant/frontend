@@ -71,7 +71,11 @@ class PanelCalendar extends LitElement {
               .narrow=${this.narrow}
             ></ha-menu-button>
             <div main-title>${this.hass.localize("panel.calendar")}</div>
-            <ha-button-menu icon="hass:dots-vertical">
+            <ha-button-menu>
+              <ha-icon-button
+                slot="trigger"
+                icon="hass:dots-vertical"
+              ></ha-icon-button>
               <mwc-list-item @click=${this._handleRefresh}
                 >${this.hass.localize("ui.common.refresh")}</mwc-list-item
               >
