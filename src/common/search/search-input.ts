@@ -25,9 +25,6 @@ class SearchInput extends LitElement {
   @property({ type: Boolean })
   public autofocus = false;
 
-  @property({ type: Boolean })
-  public hassio = false;
-
   public focus() {
     this.shadowRoot!.querySelector("paper-input")!.focus();
   }

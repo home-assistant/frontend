@@ -121,7 +121,6 @@ class HassioAddonStore extends LitElement {
           : html`
               <div class="search">
                 <search-input
-                  hassio
                   no-label-float
                   no-underline
                   .filter=${this._filter}
