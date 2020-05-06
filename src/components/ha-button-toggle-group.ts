@@ -23,7 +23,7 @@ export class HaButtonToggleGroup extends LitElement {
     return html`
       <div>
         ${this.buttons.map(
-          (button, idx) => html` <ha-icon-button
+          (button) => html` <ha-icon-button
             .label=${button.label}
             .icon=${button.icon}
             .value=${button.value}
