@@ -96,7 +96,7 @@ class HaPushNotificationsToggle extends EventsMixin(PolymerElement) {
         text: "What should this device be called?",
       });
 
-      if (!name) {
+      if (name === null || !name) {
         this.pushChecked = false;
         return;
       }
