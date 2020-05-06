@@ -116,11 +116,6 @@ export class HaIcon extends LitElement {
   static get styles(): CSSResult {
     return css`
       :host {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        position: relative;
-        vertical-align: middle;
         fill: currentcolor;
       }
     `;

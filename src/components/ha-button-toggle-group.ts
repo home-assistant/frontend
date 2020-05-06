@@ -17,72 +17,63 @@ import type { ToggleButton } from "../types";
 export class HaButtonToggleGroup extends LitElement {
   @property() public buttons!: ToggleButton[];
 
-  public defaultActiveIndex: number | undefined = 0;
+  @property() public active?: string;
 
   protected render(): TemplateResult {
     return html`
-      ${this.buttons.map(
-        (button, idx) => html` <ha-icon-button
-          .label=${button.label}
-          .icon=${button.icon}
-          .value=${button.value}
-          ?active=${this.defaultActiveIndex !== undefined &&
-          idx === this.defaultActiveIndex}
-          @click=${this._handleClick}
-        >
-        </ha-icon-button>`
-      )}
+      <div>
+        ${this.buttons.map(
+          (button, idx) => html` <ha-icon-button
+            .label=${button.label}
+            .icon=${button.icon}
+            .value=${button.value}
+            ?active=${this.active !== undefined && button.value === this.active}
+            @click=${this._handleClick}
+          >
+          </ha-icon-button>`
+        )}
+      </div>
     `;
   }
 
-  protected firstUpdated(): void {
-    if (this.defaultActiveIndex !== undefined) {
-      fireEvent(this, "value-changed", {
-        value: this.buttons[this.defaultActiveIndex].value,
-      });
-      this.defaultActiveIndex = undefined;
-    }
-  }
-
   private _handleClick(ev): void {
-    const buttonPressed = ev.target;
-    const activeButton = this.shadowRoot!.querySelector(
-      "ha-icon-button[active]"
-    );
-
-    if (activeButton) {
-      activeButton.removeAttribute("active");
-    }
-    buttonPressed.setAttribute("active", "");
-
-    fireEvent(this, "value-changed", { value: buttonPressed.value });
+    this.active = ev.target.value;
+    fireEvent(this, "value-changed", { value: this.active });
   }
 
   static get styles(): CSSResult {
     return css`
-      :host {
+      div {
         display: flex;
-        border-radius: 4px;
-        border: 1px solid var(--button-toggle-outline, var(--primary-color));
         --mdc-icon-button-size: var(--button-toggle-size, 36px);
         --mdc-icon-size: var(--button-toggle-icon-size, 20px);
       }
-
-      :host ha-icon-button {
-        color: var(--button-toggle-text-color, var(--primary-color));
-        transition: background-color 0.3s;
+      ha-icon-button {
+        border: 1px solid var(--primary-color);
+        border-right-width: 0px;
+        position: relative;
       }
-
-      :host ha-icon-button[active] {
-        background-color: var(
-          --button-toggle-active-background-color,
-          var(--light-primary-color)
-        );
+      ha-icon-button::before {
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        background-color: currentColor;
+        opacity: 0;
+        pointer-events: none;
+        content: "";
+        transition: opacity 15ms linear, background-color 15ms linear;
       }
-
-      :host ha-icon-button:not(:first-child) {
-        border-left: 1px solid
-          var(--button-toggle-outline, var(--primary-color));
+      ha-icon-button[active]::before {
+        opacity: var(--mdc-icon-button-ripple-opacity, 0.12);
+      }
+      ha-icon-button:first-child {
+        border-radius: 4px 0 0 4px;
+      }
+      ha-icon-button:last-child {
+        border-radius: 0 4px 4px 0;
+        border-right-width: 1px;
       }
     `;
   }

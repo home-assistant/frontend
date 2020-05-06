@@ -58,6 +58,8 @@ class HAFullCalendar extends LitElement {
 
   @property() private calendar?: Calendar;
 
+  @property() private _activeView = "dayGridMonth";
+
   protected render(): TemplateResult {
     return html`
       ${this.calendar
@@ -94,6 +96,7 @@ class HAFullCalendar extends LitElement {
                     </h1>
                     <ha-button-toggle-group
                       .buttons=${viewButtons}
+                      .active=${this._activeView}
                       @value-changed=${this._handleView}
                     ></ha-button-toggle-group>
                   `
@@ -125,6 +128,7 @@ class HAFullCalendar extends LitElement {
                       </div>
                       <ha-button-toggle-group
                         .buttons=${viewButtons}
+                        .active=${this._activeView}
                         @value-changed=${this._handleView}
                       ></ha-button-toggle-group>
                     </div>
@@ -160,6 +164,7 @@ class HAFullCalendar extends LitElement {
     );
 
     this.calendar!.render();
+    this._fireViewChanged();
   }
 
   private _handleNext(): void {
@@ -178,7 +183,8 @@ class HAFullCalendar extends LitElement {
   }
 
   private _handleView(ev): void {
-    this.calendar!.changeView(ev.detail.value);
+    this._activeView = ev.detail.value;
+    this.calendar!.changeView(this._activeView);
     this._fireViewChanged();
   }
 
@@ -237,6 +243,10 @@ class HAFullCalendar extends LitElement {
         .prev,
         .next {
           --mdc-icon-button-size: 32px;
+        }
+
+        ha-button-toggle-group {
+          color: var(--primary-color);
         }
 
         #calendar {

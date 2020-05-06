@@ -42,8 +42,7 @@ export class HaIconButton extends LitElement {
         display: inline-block;
       }
       ha-icon {
-        display: inline-flex;
-        vertical-align: initial;
+        --ha-icon-display: inline;
       }
     `;
   }
