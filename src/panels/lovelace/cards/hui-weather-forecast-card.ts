@@ -22,6 +22,7 @@ import {
   getSecondaryWeatherAttribute,
   getWeatherUnit,
   getWeatherStateIcon,
+  weatherSVGStyles,
 } from "../../../data/weather";
 import type { HomeAssistant, WeatherEntity } from "../../../types";
 import { actionHandler } from "../common/directives/action-handler-directive";
@@ -302,202 +303,205 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
     }
   }
 
-  static get styles(): CSSResult {
-    return css`
-      :host {
-        display: block;
-      }
+  static get styles(): CSSResult[] {
+    return [
+      weatherSVGStyles,
+      css`
+        :host {
+          display: block;
+        }
 
-      ha-card {
-        cursor: pointer;
-        padding: 16px;
-      }
+        ha-card {
+          cursor: pointer;
+          padding: 16px;
+        }
 
-      .content {
-        display: flex;
-        flex-wrap: nowrap;
-        justify-content: space-between;
-        align-items: center;
-      }
+        .content {
+          display: flex;
+          flex-wrap: nowrap;
+          justify-content: space-between;
+          align-items: center;
+        }
 
-      .icon-image {
-        display: flex;
-        align-items: center;
-        min-width: 64px;
-        margin-right: 16px;
-      }
+        .icon-image {
+          display: flex;
+          align-items: center;
+          min-width: 64px;
+          margin-right: 16px;
+        }
 
-      .icon-image > * {
-        flex: 0 0 64px;
-        height: 64px;
-      }
+        .icon-image > * {
+          flex: 0 0 64px;
+          height: 64px;
+        }
 
-      .weather-icon {
-        --mdc-icon-size: 64px;
-      }
+        .weather-icon {
+          --mdc-icon-size: 64px;
+        }
 
-      .info {
-        display: flex;
-        justify-content: space-between;
-        flex-grow: 1;
-        overflow: hidden;
-      }
+        .info {
+          display: flex;
+          justify-content: space-between;
+          flex-grow: 1;
+          overflow: hidden;
+        }
 
-      .temp-attribute {
-        text-align: right;
-      }
+        .temp-attribute {
+          text-align: right;
+        }
 
-      .temp-attribute .temp {
-        position: relative;
-        margin-right: 24px;
-      }
+        .temp-attribute .temp {
+          position: relative;
+          margin-right: 24px;
+        }
 
-      .temp-attribute .temp span {
-        position: absolute;
-        font-size: 24px;
-        top: 1px;
-      }
+        .temp-attribute .temp span {
+          position: absolute;
+          font-size: 24px;
+          top: 1px;
+        }
 
-      .state,
-      .temp-attribute .temp {
-        font-size: 28px;
-        line-height: 1.2;
-      }
+        .name,
+        .temp-attribute .temp {
+          font-size: 28px;
+          line-height: 1.2;
+        }
 
-      .name,
-      .attribute {
-        font-size: 14px;
-        line-height: 1;
-      }
+        .state,
+        .attribute {
+          font-size: 14px;
+          line-height: 1;
+        }
 
-      .name-state {
-        overflow: hidden;
-        padding-right: 12px;
-        width: 100%;
-      }
+        .name-state {
+          overflow: hidden;
+          padding-right: 12px;
+          width: 100%;
+        }
 
-      .name,
-      .state {
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-      }
+        .name,
+        .state {
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+        }
 
-      .attribute {
-        white-space: nowrap;
-      }
+        .attribute {
+          white-space: nowrap;
+        }
 
-      .forecast {
-        display: flex;
-        justify-content: space-around;
-        padding-top: 16px;
-      }
+        .forecast {
+          display: flex;
+          justify-content: space-around;
+          padding-top: 16px;
+        }
 
-      .forecast > div {
-        text-align: center;
-      }
+        .forecast > div {
+          text-align: center;
+        }
 
-      .forecast .icon,
-      .forecast .temp {
-        margin: 4px 0;
-      }
+        .forecast .icon,
+        .forecast .temp {
+          margin: 4px 0;
+        }
 
-      .forecast .temp {
-        font-size: 16px;
-      }
+        .forecast .temp {
+          font-size: 16px;
+        }
 
-      .forecast-image-icon {
-        padding-top: 4px;
-        padding-bottom: 4px;
-        display: flex;
-      }
+        .forecast-image-icon {
+          padding-top: 4px;
+          padding-bottom: 4px;
+          display: flex;
+        }
 
-      .forecast-image-icon > * {
-        width: 40px;
-      }
+        .forecast-image-icon > * {
+          width: 40px;
+        }
 
-      .forecast-icon {
-        --mdc-icon-size: 40px;
-      }
+        .forecast-icon {
+          --mdc-icon-size: 40px;
+        }
 
-      .attribute,
-      .templow,
-      .name {
-        color: var(--secondary-text-color);
-      }
+        .attribute,
+        .templow,
+        .state {
+          color: var(--secondary-text-color);
+        }
 
-      .unavailable {
-        height: 100px;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        font-size: 16px;
-        padding: 10px 20px;
-        text-align: center;
-      }
+        .unavailable {
+          height: 100px;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          font-size: 16px;
+          padding: 10px 20px;
+          text-align: center;
+        }
 
-      /* ============= NARROW ============= */
+        /* ============= NARROW ============= */
 
-      :host([narrow]) .icon-image {
-        min-width: 52px;
-      }
+        :host([narrow]) .icon-image {
+          min-width: 52px;
+        }
 
-      :host([narrow]) .weather-image {
-        flex: 0 0 52px;
-        width: 52px;
-      }
+        :host([narrow]) .weather-image {
+          flex: 0 0 52px;
+          width: 52px;
+        }
 
-      :host([narrow]) .weather-icon {
-        --mdc-icon-size: 52px;
-      }
+        :host([narrow]) .weather-icon {
+          --mdc-icon-size: 52px;
+        }
 
-      :host([narrow]) .state,
-      :host([narrow]) .temp-attribute .temp {
-        font-size: 22px;
-      }
+        :host([narrow]) .name,
+        :host([narrow]) .temp-attribute .temp {
+          font-size: 22px;
+        }
 
-      :host([narrow]) .temp-attribute .temp {
-        margin-right: 16px;
-      }
+        :host([narrow]) .temp-attribute .temp {
+          margin-right: 16px;
+        }
 
-      :host([narrow]) .temp span {
-        top: 1px;
-        font-size: 16px;
-      }
+        :host([narrow]) .temp span {
+          top: 1px;
+          font-size: 16px;
+        }
 
-      /* ============= VERY NARROW ============= */
+        /* ============= VERY NARROW ============= */
 
-      :host([veryNarrow]) .name,
-      :host([veryNarrow]) .attribute {
-        display: none;
-      }
+        :host([veryNarrow]) .state,
+        :host([veryNarrow]) .attribute {
+          display: none;
+        }
 
-      :host([veryNarrow]) .info {
-        flex-direction: column;
-        align-items: flex-start;
-      }
+        :host([veryNarrow]) .info {
+          flex-direction: column;
+          align-items: flex-start;
+        }
 
-      :host([veryNarrow]) .name-state {
-        padding-right: 0;
-      }
+        :host([veryNarrow]) .name-state {
+          padding-right: 0;
+        }
 
-      /* ============= VERY VERY NARROW ============= */
+        /* ============= VERY VERY NARROW ============= */
 
-      :host([veryVeryNarrow]) .info {
-        padding-top: 4px;
-        align-items: center;
-      }
+        :host([veryVeryNarrow]) .info {
+          padding-top: 4px;
+          align-items: center;
+        }
 
-      :host([veryVeryNarrow]) .content {
-        flex-wrap: wrap;
-        justify-content: center;
-        flex-direction: column;
-      }
+        :host([veryVeryNarrow]) .content {
+          flex-wrap: wrap;
+          justify-content: center;
+          flex-direction: column;
+        }
 
-      :host([veryVeryNarrow]) .icon-image {
-        margin-right: 0;
-      }
-    `;
+        :host([veryVeryNarrow]) .icon-image {
+          margin-right: 0;
+        }
+      `,
+    ];
   }
 }
 

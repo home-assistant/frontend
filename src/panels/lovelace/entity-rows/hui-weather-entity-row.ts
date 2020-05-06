@@ -18,6 +18,7 @@ import {
   getSecondaryWeatherAttribute,
   getWeatherUnit,
   getWeatherStateIcon,
+  weatherSVGStyles,
 } from "../../../data/weather";
 import type { HomeAssistant, WeatherEntity } from "../../../types";
 import type { EntitiesCardEntityConfig } from "../cards/types";
@@ -131,63 +132,66 @@ class HuiWeatherEntityRow extends LitElement implements LovelaceRow {
     handleAction(this, this.hass!, this._config!, ev.detail.action!);
   }
 
-  static get styles(): CSSResult {
-    return css`
-      :host {
-        display: flex;
-        align-items: center;
-        flex-direction: row;
-      }
+  static get styles(): CSSResult[] {
+    return [
+      weatherSVGStyles,
+      css`
+        :host {
+          display: flex;
+          align-items: center;
+          flex-direction: row;
+        }
 
-      .info {
-        margin-left: 16px;
-        flex: 1 0 60px;
-      }
+        .info {
+          margin-left: 16px;
+          flex: 1 0 60px;
+        }
 
-      .info,
-      .info > * {
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-      }
+        .info,
+        .info > * {
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
 
-      .icon-image {
-        display: flex;
-        align-items: center;
-        min-width: 40px;
-      }
+        .icon-image {
+          display: flex;
+          align-items: center;
+          min-width: 40px;
+        }
 
-      .icon-image > * {
-        flex: 0 0 40px;
-        height: 40px;
-      }
+        .icon-image > * {
+          flex: 0 0 40px;
+          height: 40px;
+        }
 
-      .weather-icon {
-        --iron-icon-width: 40px;
-        --iron-icon-height: 40px;
-      }
+        .weather-icon {
+          --iron-icon-width: 40px;
+          --iron-icon-height: 40px;
+        }
 
-      :host([rtl]) .flex {
-        margin-left: 0;
-        margin-right: 16px;
-      }
+        :host([rtl]) .flex {
+          margin-left: 0;
+          margin-right: 16px;
+        }
 
-      .pointer {
-        cursor: pointer;
-      }
+        .pointer {
+          cursor: pointer;
+        }
 
-      .attributes {
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        text-align: right;
-        margin-left: 8px;
-      }
+        .attributes {
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          text-align: right;
+          margin-left: 8px;
+        }
 
-      .secondary {
-        color: var(--secondary-text-color);
-      }
-    `;
+        .secondary {
+          color: var(--secondary-text-color);
+        }
+      `,
+    ];
   }
 }
 
