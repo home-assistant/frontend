@@ -23,6 +23,7 @@ import type {
   CalendarViewChanged,
   CalendarEvent,
   ToggleButton,
+  HomeAssistant,
 } from "../../types";
 import { fireEvent } from "../../common/dom/fire_event";
 import { haStyle } from "../../resources/styles";
@@ -48,6 +49,8 @@ const viewButtons: ToggleButton[] = [
 ];
 
 class HAFullCalendar extends LitElement {
+  public hass!: HomeAssistant;
+
   @property() public events: CalendarEvent[] = [];
 
   @property({ type: Boolean, reflect: true })
@@ -67,17 +70,19 @@ class HAFullCalendar extends LitElement {
                         outlined
                         class="today"
                         @click=${this._handleToday}
-                        >Today</mwc-button
+                        >${this.hass.localize(
+                          "ui.panel.calendar.today"
+                        )}</mwc-button
                       >
                       <ha-icon-button
-                        label="Prev"
+                        label=${this.hass.localize("ui.common.previous")}
                         icon="hass:chevron-left"
                         class="prev"
                         @click=${this._handlePrev}
                       >
                       </ha-icon-button>
                       <ha-icon-button
-                        label="Next"
+                        label=${this.hass.localize("ui.common.next")}
                         icon="hass:chevron-right"
                         class="next"
                         @click=${this._handleNext}
@@ -99,17 +104,19 @@ class HAFullCalendar extends LitElement {
                           outlined
                           class="today"
                           @click=${this._handleToday}
-                          >Today</mwc-button
+                          >${this.hass.localize(
+                            "ui.panel.calendar.today"
+                          )}</mwc-button
                         >
                         <ha-icon-button
-                          label="Prev"
+                          label=${this.hass.localize("ui.common.previous")}
                           icon="hass:chevron-left"
                           class="prev"
                           @click=${this._handlePrev}
                         >
                         </ha-icon-button>
                         <ha-icon-button
-                          label="Next"
+                          label=${this.hass.localize("ui.common.next")}
                           icon="hass:chevron-right"
                           class="next"
                           @click=${this._handleNext}

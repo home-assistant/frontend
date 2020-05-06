@@ -73,14 +73,16 @@ class PanelCalendar extends LitElement {
             <div main-title>${this.hass.localize("panel.calendar")}</div>
             <ha-button-menu .icon=${"hass:dots-vertical"}>
               <mwc-list-item @click=${this._handleRefresh}
-                >Refresh</mwc-list-item
+                >${this.hass.localize("ui.common.refresh")}</mwc-list-item
               >
             </ha-button-menu>
           </app-toolbar>
         </app-header>
         <div class="content">
           <div class="calendar-list">
-            <div class="calendar-list-header">My Calendars</div>
+            <div class="calendar-list-header">
+              ${this.hass.localize("ui.panel.calendar.my_calendars")}
+            </div>
             ${this._calendars.map(
               (selCal) =>
                 html`<div>
@@ -101,6 +103,7 @@ class PanelCalendar extends LitElement {
           <ha-full-calendar
             .events=${this._events}
             .narrow=${this.narrow}
+            .hass=${this.hass}
             @view-changed=${this._handleViewChanged}
           ></ha-full-calendar>
         </div>
