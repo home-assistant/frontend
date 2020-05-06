@@ -115,6 +115,7 @@ export interface CalendarEvent {
   backgroundColor?: string;
   borderColor?: string;
   calendar: string;
+  [key: string]: any;
 }
 
 export interface CalendarViewChanged {

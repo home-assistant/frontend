@@ -197,7 +197,20 @@
   "resolutions": {
     "@webcomponents/webcomponentsjs": "^2.2.10",
     "@polymer/polymer": "3.1.0",
-    "lit-html": "^1.1.2"
+    "lit-html": "^1.1.2",
+    "@material/animation": "6.0.0",
+    "@material/base": "6.0.0",
+    "@material/checkbox": "6.0.0",
+    "@material/density": "6.0.0",
+    "@material/dom": "6.0.0",
+    "@material/elevation": "6.0.0",
+    "@material/feature-targeting": "6.0.0",
+    "@material/ripple": "6.0.0",
+    "@material/rtl": "6.0.0",
+    "@material/shape": "6.0.0",
+    "@material/theme": "6.0.0",
+    "@material/touch-target": "6.0.0",
+    "@material/typography": "6.0.0"
   },
   "main": "src/home-assistant.js",
   "husky": {

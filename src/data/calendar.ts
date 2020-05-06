@@ -18,7 +18,10 @@ export const fetchCalendarEvents = async (
 
   calendars.forEach((cal) => {
     promises.push(
-      hass.callApi<any[]>("GET", `calendars/${cal.entity_id}${params}`)
+      hass.callApi<CalendarEvent[]>(
+        "GET",
+        `calendars/${cal.entity_id}${params}`
+      )
     );
   });
 
