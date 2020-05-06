@@ -318,6 +318,11 @@ class HAFullCalendar extends LitElement {
         .fc-day-past .fc-daygrid-day-events {
           opacity: 0.5;
         }
+
+        .fc-icon-x:before {
+          font-family: var(--material-font-family);
+          content: "X";
+        }
       `,
     ];
   }
