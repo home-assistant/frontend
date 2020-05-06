@@ -1,5 +1,5 @@
 import "@polymer/iron-icon/iron-icon";
-import { get, Store } from "idb-keyval";
+import { get, set, clear, Store } from "idb-keyval";
 import {
   customElement,
   LitElement,
@@ -13,7 +13,7 @@ import {
 import "./ha-svg-icon";
 import { debounce } from "../common/util/debounce";
 import { iconMetadata } from "../resources/icon-metadata";
-import { IconMetadata } from "../types";
+import { IconMeta } from "../types";
 
 interface Icons {
   [key: string]: string;
@@ -24,12 +24,23 @@ interface Chunks {
 }
 
 const iconStore = new Store("hass-icon-db", "mdi-icon-store");
+
+get("_version", iconStore).then((version) => {
+  if (!version) {
+    set("_version", iconMetadata.version, iconStore);
+  } else if (version !== iconMetadata.version) {
+    clear(iconStore).then(() =>
+      set("_version", iconMetadata.version, iconStore)
+    );
+  }
+});
+
 const chunks: Chunks = {};
 const MDI_PREFIXES = ["mdi", "hass", "hassio", "hademo"];
 
 const findIconChunk = (icon): string => {
-  let lastChunk: IconMetadata;
-  for (const chunk of iconMetadata) {
+  let lastChunk: IconMeta;
+  for (const chunk of iconMetadata.parts) {
     if (chunk.start !== undefined && icon < chunk.start) {
       break;
     }

@@ -109,7 +109,12 @@ export interface TranslationMetadata {
   };
 }
 
-export interface IconMetadata {
+export interface IconMetaFile {
+  version: string;
+  parts: IconMeta[];
+}
+
+export interface IconMeta {
   start: string;
   file: string;
 }
