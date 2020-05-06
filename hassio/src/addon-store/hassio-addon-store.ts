@@ -12,6 +12,7 @@ import {
   HassioAddonRepository,
   reloadHassioAddons,
 } from "../../../src/data/hassio/addon";
+import "../../../src/components/ha-icon";
 import "../../../src/layouts/loading-screen";
 import "../../../src/layouts/hass-tabs-subpage";
 import { navigate } from "../../../src/common/navigate";
@@ -101,11 +102,11 @@ class HassioAddonStore extends LitElement {
           horizontal-offset="-5"
           slot="toolbar-icon"
         >
-          <paper-icon-button
+          <ha-icon
             icon="hassio:dots-vertical"
             slot="dropdown-trigger"
             alt="menu"
-          ></paper-icon-button>
+          ></ha-icon>
           <paper-listbox slot="dropdown-content" role="listbox">
             <paper-item @tap=${this._manageRepositories}>
               Repositories
@@ -200,6 +201,7 @@ class HassioAddonStore extends LitElement {
       .advanced {
         padding: 12px;
         display: flex;
+        flex-wrap: wrap;
         color: var(--primary-text-color);
       }
       .advanced-link {

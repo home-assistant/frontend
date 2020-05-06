@@ -1,5 +1,4 @@
 import "@material/mwc-button/mwc-button";
-import "@polymer/paper-icon-button/paper-icon-button";
 import "@polymer/paper-input/paper-input";
 import "@polymer/paper-spinner/paper-spinner";
 import type { PaperInputElement } from "@polymer/paper-input/paper-input";
@@ -17,6 +16,7 @@ import {
 } from "lit-element";
 import memoizeOne from "memoize-one";
 import "../../../../src/components/ha-dialog";
+import "../../../../src/components/ha-icon";
 
 import { haStyle, haStyleDialog } from "../../../../src/resources/styles";
 import type { HomeAssistant } from "../../../../src/types";
@@ -84,12 +84,12 @@ class HassioRepositoriesDialog extends LitElement {
                       <div secondary>${repo.maintainer}</div>
                       <div secondary>${repo.url}</div>
                     </paper-item-body>
-                    <paper-icon-button
+                    <ha-icon
                       .slug=${repo.slug}
                       title="Remove"
                       @click=${this._removeRepository}
                       icon="hassio:delete"
-                    ></paper-icon-button>
+                    ></ha-icon>
                   </paper-item>
                 `;
               })
