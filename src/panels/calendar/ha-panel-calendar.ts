@@ -18,7 +18,6 @@ import "@material/mwc-formfield";
 
 import "../../components/ha-menu-button";
 import "../../components/ha-card";
-import "../../components/ha-button-menu";
 import "./ha-full-calendar";
 
 import type {
