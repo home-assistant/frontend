@@ -1,4 +1,4 @@
-import fecha from "fecha";
+import { format } from "fecha";
 import { toLocaleDateStringSupportsOptions } from "./check_options_support";
 
 export const formatDate = toLocaleDateStringSupportsOptions
@@ -8,4 +8,4 @@ export const formatDate = toLocaleDateStringSupportsOptions
         month: "long",
         day: "numeric",
       })
-  : (dateObj: Date) => fecha.format(dateObj, "longDate");
+  : (dateObj: Date) => format(dateObj, "longDate");
