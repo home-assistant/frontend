@@ -71,15 +71,10 @@ class PanelCalendar extends LitElement {
               .narrow=${this.narrow}
             ></ha-menu-button>
             <div main-title>${this.hass.localize("panel.calendar")}</div>
-            <ha-button-menu>
-              <ha-icon-button
-                slot="trigger"
-                icon="hass:dots-vertical"
-              ></ha-icon-button>
-              <mwc-list-item @click=${this._handleRefresh}
-                >${this.hass.localize("ui.common.refresh")}</mwc-list-item
-              >
-            </ha-button-menu>
+            <ha-icon-button
+              icon="hass:sync"
+              @click=${this._handleRefresh}
+            ></ha-icon-button>
           </app-toolbar>
         </app-header>
         <div class="content">
@@ -133,8 +128,8 @@ class PanelCalendar extends LitElement {
     return fetchCalendarEvents(this.hass, start, end, calendars);
   }
 
-  private _handleToggle(ev): void {
-    this._calendars = this._calendars.map((cal) => {
+  private async _handleToggle(ev): Promise<void> {
+    const results = this._calendars.map(async (cal) => {
       if (ev.target.value !== cal.calendar.entity_id) {
         return cal;
       }
@@ -142,11 +137,10 @@ class PanelCalendar extends LitElement {
       const checked = ev.target.checked;
 
       if (checked) {
-        this._fetchEvents(this._start!, this._end!, [cal.calendar]).then(
-          (events) => {
-            this._events = [...this._events, ...events];
-          }
-        );
+        const events = await this._fetchEvents(this._start!, this._end!, [
+          cal.calendar,
+        ]);
+        this._events = [...this._events, ...events];
       } else {
         this._events = this._events.filter(
           (event) => event.calendar !== cal.calendar.entity_id
@@ -156,23 +150,27 @@ class PanelCalendar extends LitElement {
       cal.selected = checked;
       return cal;
     });
+
+    this._calendars = await Promise.all(results);
   }
 
-  private _handleViewChanged(ev: HASSDomEvent<CalendarViewChanged>): void {
+  private async _handleViewChanged(
+    ev: HASSDomEvent<CalendarViewChanged>
+  ): Promise<void> {
     this._start = ev.detail.start;
     this._end = ev.detail.end;
-    this._fetchEvents(this._start, this._end, this._selectedCalendars).then(
-      (events) => {
-        this._events = events;
-      }
+    this._events = await this._fetchEvents(
+      this._start,
+      this._end,
+      this._selectedCalendars
     );
   }
 
-  private _handleRefresh(): void {
-    this._fetchEvents(this._start!, this._end!, this._selectedCalendars).then(
-      (events) => {
-        this._events = events;
-      }
+  private async _handleRefresh(): Promise<void> {
+    this._events = await this._fetchEvents(
+      this._start!,
+      this._end!,
+      this._selectedCalendars
     );
   }
 
