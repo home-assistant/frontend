@@ -75,7 +75,7 @@ gulp.task("gen-icons-json", (done) => {
   if (!fs.existsSync(OUTPUT_DIR)) {
     fs.mkdirSync(OUTPUT_DIR, { recursive: true });
   }
-  const manifest = [];
+  const parts = [];
 
   let lastEnd;
   split.forEach((chunk) => {
@@ -93,7 +93,7 @@ gulp.task("gen-icons-json", (done) => {
       output[icon.name] = icon.path;
     });
     const filename = hash(output);
-    manifest.push({ start: startKey, file: filename });
+    parts.push({ start: startKey, file: filename });
     fs.writeFileSync(
       path.resolve(OUTPUT_DIR, `${filename}.json`),
       JSON.stringify(output)
@@ -105,7 +105,7 @@ gulp.task("gen-icons-json", (done) => {
 
   fs.writeFileSync(
     path.resolve(OUTPUT_DIR, "iconMetadata.json"),
-    JSON.stringify({ version: package.version, parts: manifest })
+    JSON.stringify({ version: package.version, parts })
   );
 
   done();
