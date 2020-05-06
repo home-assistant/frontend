@@ -1,7 +1,7 @@
 import "@polymer/app-layout/app-toolbar/app-toolbar";
 import { PaperDialogElement } from "@polymer/paper-dialog";
 import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable";
-import "@polymer/paper-icon-button/paper-icon-button";
+import "../../../../src/components/ha-icon-button";
 import {
   css,
   CSSResult,
@@ -36,10 +36,10 @@ class HassioMarkdownDialog extends LitElement {
     return html`
       <ha-paper-dialog id="dialog" with-backdrop="">
         <app-toolbar>
-          <paper-icon-button
+          <ha-icon-button
             icon="hassio:close"
             dialog-dismiss=""
-          ></paper-icon-button>
+          ></ha-icon-button>
           <div main-title="">${this.title}</div>
         </app-toolbar>
         <paper-dialog-scrollable>

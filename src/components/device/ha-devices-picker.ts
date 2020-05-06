@@ -1,4 +1,3 @@
-import "@polymer/paper-icon-button/paper-icon-button-light";
 import {
   customElement,
   html,

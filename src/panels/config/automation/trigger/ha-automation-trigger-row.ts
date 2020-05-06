@@ -1,5 +1,5 @@
 import "@polymer/paper-dropdown-menu/paper-dropdown-menu-light";
-import "@polymer/paper-icon-button/paper-icon-button";
+import "../../../../components/ha-icon-button";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
 import type { PaperListboxElement } from "@polymer/paper-listbox/paper-listbox";
@@ -97,10 +97,10 @@ export default class HaAutomationTriggerRow extends LitElement {
               vertical-offset="-5"
               close-on-activate
             >
-              <paper-icon-button
+              <ha-icon-button
                 icon="hass:dots-vertical"
                 slot="dropdown-trigger"
-              ></paper-icon-button>
+              ></ha-icon-button>
               <paper-listbox slot="dropdown-content">
                 <paper-item
                   @tap=${this._switchYamlMode}

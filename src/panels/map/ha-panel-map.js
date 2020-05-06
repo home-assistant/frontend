@@ -34,10 +34,10 @@ class HaPanelMap extends LocalizeMixin(PolymerElement) {
         <ha-menu-button hass="[[hass]]" narrow="[[narrow]]"></ha-menu-button>
         <div main-title>[[localize('panel.map')]]</div>
         <template is="dom-if" if="[[computeShowEditZone(hass)]]">
-          <paper-icon-button
+          <ha-icon-button
             icon="hass:pencil"
             on-click="openZonesEditor"
-          ></paper-icon-button>
+          ></ha-icon-button>
         </template>
       </app-toolbar>
 

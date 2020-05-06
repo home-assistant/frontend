@@ -3,7 +3,7 @@ const gulp = require("gulp");
 
 require("./clean.js");
 require("./translations.js");
-require("./gen-icons.js");
+require("./gen-icons-json.js");
 require("./gather-static.js");
 require("./webpack.js");
 require("./service-worker.js");
@@ -17,7 +17,7 @@ gulp.task(
     },
     "clean-gallery",
     "translations-enable-merge-backend",
-    gulp.parallel("gen-icons-app", "gen-icons-mdi", "build-translations"),
+    gulp.parallel("gen-icons-json", "build-translations"),
     "copy-static-gallery",
     "gen-index-gallery-dev",
     "webpack-dev-server-gallery"
@@ -32,7 +32,7 @@ gulp.task(
     },
     "clean-gallery",
     "translations-enable-merge-backend",
-    gulp.parallel("gen-icons-app", "gen-icons-mdi", "build-translations"),
+    gulp.parallel("gen-icons-json", "build-translations"),
     "copy-static-gallery",
     "webpack-prod-gallery",
     "gen-index-gallery-prod"

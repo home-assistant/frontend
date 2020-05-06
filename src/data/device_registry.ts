@@ -15,6 +15,7 @@ export interface DeviceRegistryEntry {
   via_device_id?: string;
   area_id?: string;
   name_by_user?: string;
+  entry_type: "service" | null;
 }
 
 export interface DeviceEntityLookup {

@@ -1,5 +1,5 @@
-import "@polymer/iron-icon/iron-icon";
-import "@polymer/paper-icon-button/paper-icon-button";
+import "../../../components/ha-icon-button";
+import "../../../components/ha-icon";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
 import {
@@ -122,9 +122,7 @@ class MoreInfoVacuum extends LitElement {
           ? html`
               <div>
                 <span>
-                  <iron-icon
-                    .icon=${stateObj.attributes.battery_icon}
-                  ></iron-icon>
+                  <ha-icon .icon=${stateObj.attributes.battery_icon}></ha-icon>
                   ${stateObj.attributes.battery_level}%
                 </span>
               </div>
@@ -147,14 +145,14 @@ class MoreInfoVacuum extends LitElement {
                 ).map(
                   (item) => html`
                     <div>
-                      <paper-icon-button
+                      <ha-icon-button
                         .icon=${item.icon}
                         .entry=${item}
                         @click=${this.callService}
                         .title=${this.hass!.localize(
                           `ui.dialogs.more_info_control.vacuum.${item.translationKey}`
                         )}
-                      ></paper-icon-button>
+                      ></ha-icon-button>
                     </div>
                   `
                 )}
@@ -190,7 +188,7 @@ class MoreInfoVacuum extends LitElement {
                   style="justify-content: center; align-self: center; padding-top: 1.3em"
                 >
                   <span>
-                    <iron-icon icon="hass:fan"></iron-icon>
+                    <ha-icon icon="hass:fan"></ha-icon>
                     ${stateObj.attributes.fan_speed}
                   </span>
                 </div>

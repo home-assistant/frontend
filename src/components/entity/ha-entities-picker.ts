@@ -1,4 +1,3 @@
-import "@polymer/paper-icon-button/paper-icon-button-light";
 import type { HassEntity } from "home-assistant-js-websocket";
 import {
   customElement,

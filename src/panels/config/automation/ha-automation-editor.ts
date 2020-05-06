@@ -1,6 +1,6 @@
 import "@polymer/app-layout/app-header/app-header";
 import "@polymer/app-layout/app-toolbar/app-toolbar";
-import "@polymer/paper-icon-button/paper-icon-button";
+import "../../../components/ha-icon-button";
 import {
   css,
   CSSResult,
@@ -15,7 +15,6 @@ import { navigate } from "../../../common/navigate";
 import { computeRTL } from "../../../common/util/compute_rtl";
 import "../../../components/ha-card";
 import "../../../components/ha-fab";
-import "../../../components/ha-paper-icon-button-arrow-prev";
 import {
   AutomationConfig,
   AutomationEntity,
@@ -78,14 +77,14 @@ export class HaAutomationEditor extends LitElement {
         ${!this.automationId
           ? ""
           : html`
-              <paper-icon-button
+              <ha-icon-button
                 slot="toolbar-icon"
                 title="${this.hass.localize(
                   "ui.panel.config.automation.picker.delete_automation"
                 )}"
                 icon="hass:delete"
                 @click=${this._deleteConfirm}
-              ></paper-icon-button>
+              ></ha-icon-button>
             `}
         ${this._config
           ? html`

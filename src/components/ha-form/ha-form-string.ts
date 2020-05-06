@@ -1,4 +1,4 @@
-import "@polymer/paper-icon-button/paper-icon-button";
+import "../ha-icon-button";
 import "@polymer/paper-input/paper-input";
 import type { PaperInputElement } from "@polymer/paper-input/paper-input";
 import {
@@ -47,7 +47,7 @@ export class HaFormString extends LitElement implements HaFormElement {
             .autoValidate=${this.schema.required}
             @value-changed=${this._valueChanged}
           >
-            <paper-icon-button
+            <ha-icon-button
               toggles
               .active=${this._unmaskedPassword}
               slot="suffix"
@@ -56,7 +56,7 @@ export class HaFormString extends LitElement implements HaFormElement {
               title="Click to toggle between masked and clear password"
               @click=${this._toggleUnmaskedPassword}
             >
-            </paper-icon-button>
+            </ha-icon-button>
           </paper-input>
         `
       : html`

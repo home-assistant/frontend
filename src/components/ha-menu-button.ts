@@ -1,4 +1,3 @@
-import "@polymer/paper-icon-button/paper-icon-button";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import {
   css,
@@ -13,6 +12,7 @@ import { fireEvent } from "../common/dom/fire_event";
 import { computeDomain } from "../common/entity/compute_domain";
 import { subscribeNotifications } from "../data/persistent_notification";
 import { HomeAssistant } from "../types";
+import "./ha-icon-button";
 
 @customElement("ha-menu-button")
 class HaMenuButton extends LitElement {
@@ -55,11 +55,11 @@ class HaMenuButton extends LitElement {
           (entityId) => computeDomain(entityId) === "configurator"
         ));
     return html`
-      <paper-icon-button
+      <ha-icon-button
         aria-label=${this.hass.localize("ui.sidebar.sidebar_toggle")}
-        .icon=${this.hassio ? "hassio:menu" : "hass:menu"}
+        icon="hass:menu"
         @click=${this._toggleMenu}
-      ></paper-icon-button>
+      ></ha-icon-button>
       ${hasNotifications ? html` <div class="dot"></div> ` : ""}
     `;
   }

@@ -1,5 +1,5 @@
 import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
-import "@polymer/paper-icon-button/paper-icon-button";
+import "../../../components/ha-icon-button";
 import "@polymer/paper-input/paper-input";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
@@ -68,12 +68,12 @@ export class ZHAClusterCommands extends LitElement {
               "ui.panel.config.zha.cluster_commands.header"
             )}
           </span>
-          <paper-icon-button
+          <ha-icon-button
             class="toggle-help-icon"
             @click="${this._onHelpTap}"
             icon="hass:help-circle"
           >
-          </paper-icon-button>
+          </ha-icon-button>
         </div>
         <span slot="introduction">
           ${this.hass!.localize(

@@ -279,11 +279,11 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
           horizontal-offset="-5"
           slot="toolbar-icon"
         >
-          <paper-icon-button
+          <ha-icon-button
             icon="hass:dots-vertical"
             slot="dropdown-trigger"
             alt="menu"
-          ></paper-icon-button>
+          ></ha-icon-button>
           <paper-listbox slot="dropdown-content" role="listbox">
             <paper-item @tap=${this._toggleShowIgnored}>
               ${this.hass.localize(
@@ -618,6 +618,9 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
         }
         .ignored {
           border: 1px solid var(--light-theme-disabled-color);
+        }
+        .ignored img {
+          filter: grayscale(1);
         }
         .ignored .header {
           background: var(--light-theme-disabled-color);

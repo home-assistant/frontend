@@ -1,5 +1,5 @@
 import "@material/mwc-button";
-import "@polymer/paper-icon-button/paper-icon-button";
+import "../../../../components/ha-icon-button";
 import "@polymer/paper-input/paper-input";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-item/paper-item-body";
@@ -65,7 +65,7 @@ class CloudLogin extends LocalizeMixin(
         .flash-msg {
           padding-right: 44px;
         }
-        .flash-msg paper-icon-button {
+        .flash-msg ha-icon-button {
           position: absolute;
           top: 8px;
           right: 8px;
@@ -110,8 +110,8 @@ class CloudLogin extends LocalizeMixin(
             <ha-card hidden$="[[!flashMessage]]">
               <div class="card-content flash-msg">
                 [[flashMessage]]
-                <paper-icon-button icon="hass:close" on-click="_dismissFlash"
-                  >[[localize('ui.panel.config.cloud.login.dismiss')]]</paper-icon-button
+                <ha-icon-button icon="hass:close" on-click="_dismissFlash"
+                  >[[localize('ui.panel.config.cloud.login.dismiss')]]</ha-icon-button
                 >
                 <paper-ripple id="flashRipple" noink=""></paper-ripple>
               </div>

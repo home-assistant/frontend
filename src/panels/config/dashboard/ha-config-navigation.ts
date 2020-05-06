@@ -1,4 +1,3 @@
-import "@polymer/iron-icon/iron-icon";
 import "@polymer/paper-item/paper-icon-item";
 import "@polymer/paper-item/paper-item-body";
 import {

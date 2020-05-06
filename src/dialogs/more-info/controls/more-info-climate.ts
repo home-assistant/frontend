@@ -443,12 +443,6 @@ class MoreInfoClimate extends LitElement {
         color: var(--primary-text-color);
       }
 
-      .container-hvac_modes iron-icon,
-      .container-fan_list iron-icon,
-      .container-swing_list iron-icon {
-        margin: 22px 16px 0 0;
-      }
-
       ha-paper-dropdown-menu {
         width: 100%;
       }

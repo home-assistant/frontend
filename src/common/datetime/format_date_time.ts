@@ -1,4 +1,4 @@
-import fecha from "fecha";
+import { format } from "fecha";
 import { toLocaleStringSupportsOptions } from "./check_options_support";
 
 export const formatDateTime = toLocaleStringSupportsOptions
@@ -10,11 +10,7 @@ export const formatDateTime = toLocaleStringSupportsOptions
         hour: "numeric",
         minute: "2-digit",
       })
-  : (dateObj: Date) =>
-      fecha.format(
-        dateObj,
-        `${fecha.masks.longDate}, ${fecha.masks.shortTime}`
-      );
+  : (dateObj: Date) => format(dateObj, "MMMM D, YYYY, HH:mm");
 
 export const formatDateTimeWithSeconds = toLocaleStringSupportsOptions
   ? (dateObj: Date, locales: string) =>
@@ -26,8 +22,4 @@ export const formatDateTimeWithSeconds = toLocaleStringSupportsOptions
         minute: "2-digit",
         second: "2-digit",
       })
-  : (dateObj: Date) =>
-      fecha.format(
-        dateObj,
-        `${fecha.masks.longDate}, ${fecha.masks.mediumTime}`
-      );
+  : (dateObj: Date) => format(dateObj, "MMMM D, YYYY, HH:mm:ss");

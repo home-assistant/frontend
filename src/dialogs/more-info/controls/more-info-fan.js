@@ -1,5 +1,5 @@
 import "@polymer/iron-flex-layout/iron-flex-layout-classes";
-import "@polymer/paper-icon-button/paper-icon-button";
+import "../../../components/ha-icon-button";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
@@ -78,18 +78,18 @@ class MoreInfoFan extends LocalizeMixin(EventsMixin(PolymerElement)) {
         <div class="container-direction">
           <div class="direction">
             <div>[[localize('ui.card.fan.direction')]]</div>
-            <paper-icon-button
+            <ha-icon-button
               icon="hass:rotate-left"
               on-click="onDirectionReverse"
               title="[[localize('ui.card.fan.reverse')]]"
               disabled="[[computeIsRotatingReverse(stateObj)]]"
-            ></paper-icon-button>
-            <paper-icon-button
+            ></ha-icon-button>
+            <ha-icon-button
               icon="hass:rotate-right"
               on-click="onDirectionForward"
               title="[[localize('ui.card.fan.forward')]]"
               disabled="[[computeIsRotatingForward(stateObj)]]"
-            ></paper-icon-button>
+            ></ha-icon-button>
           </div>
         </div>
       </div>
