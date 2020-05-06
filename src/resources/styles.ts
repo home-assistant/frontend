@@ -227,6 +227,7 @@ export const haStyleDialog = css`
     --mdc-dialog-max-width: 600px;
     --mdc-dialog-heading-ink-color: var(--primary-text-color);
     --mdc-dialog-content-ink-color: var(--primary-text-color);
+    --mdc-theme-surface: var(--primary-background-color);
     --justify-action-buttons: space-between;
   }
 

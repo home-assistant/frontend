@@ -200,6 +200,7 @@ class HassioAddonStore extends LitElement {
       .advanced {
         padding: 12px;
         display: flex;
+        color: var(--primary-text-color);
       }
       .advanced-link {
         color: var(--primary-color);

@@ -79,7 +79,7 @@ class HassioRepositoriesDialog extends LitElement {
             ? repositories.map((repo) => {
                 return html`
                   <paper-item class="option">
-                    <paper-item-body two-line>
+                    <paper-item-body three-line>
                       <div>${repo.name}</div>
                       <div secondary>${repo.maintainer}</div>
                       <div secondary>${repo.url}</div>
