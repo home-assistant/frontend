@@ -15,7 +15,7 @@ export const showRepositoriesDialog = (
     dialogTag: "dialog-hassio-repositories",
     dialogImport: () =>
       import(
-        /* webpackChunkName: "ialog-hassio-repositories" */ "./dialog-hassio-repositories"
+        /* webpackChunkName: "dialog-hassio-repositories" */ "./dialog-hassio-repositories"
       ),
     dialogParams,
   });
