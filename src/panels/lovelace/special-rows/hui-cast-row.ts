@@ -7,6 +7,7 @@ import {
   LitElement,
   property,
   TemplateResult,
+  PropertyValues,
 } from "lit-element";
 import { classMap } from "lit-html/directives/class-map";
 import { CastManager } from "../../../cast/cast_manager";
@@ -20,7 +21,7 @@ import { CastConfig, LovelaceRow } from "../entity-rows/types";
 
 @customElement("hui-cast-row")
 class HuiCastRow extends LitElement implements LovelaceRow {
-  public hass!: HomeAssistant;
+  @property() public hass!: HomeAssistant;
 
   @property() private _config?: CastConfig;
 
@@ -38,6 +39,10 @@ class HuiCastRow extends LitElement implements LovelaceRow {
       name: "Home Assistant Cast",
       ...config,
     };
+  }
+
+  protected shouldUpdate(changedProperties: PropertyValues) {
+    return !(changedProperties.size === 1 && changedProperties.has("hass"));
   }
 
   protected render(): TemplateResult {
