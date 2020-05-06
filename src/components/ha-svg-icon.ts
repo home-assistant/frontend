@@ -27,7 +27,7 @@ export class HaSvgIcon extends LitElement {
   static get styles(): CSSResult {
     return css`
       :host {
-        display: inline-flex;
+        display: var(--ha-icon-display, inline-flex);
         align-items: center;
         justify-content: center;
         position: relative;

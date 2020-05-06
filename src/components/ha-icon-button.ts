@@ -50,8 +50,7 @@ export class HaIconButton extends LitElement {
         --mdc-theme-on-primary: currentColor;
       }
       ha-icon {
-        display: inline-flex;
-        vertical-align: initial;
+        --ha-icon-display: inline;
       }
     `;
   }
