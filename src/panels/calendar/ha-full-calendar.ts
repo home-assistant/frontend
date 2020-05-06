@@ -157,10 +157,12 @@ class HAFullCalendar extends LitElement {
   }
 
   protected firstUpdated(): void {
+    const config = { ...fullCalendarConfig, locale: this.hass.language };
+
     this.calendar = new Calendar(
       this.shadowRoot!.getElementById("calendar")!,
       // @ts-ignore
-      fullCalendarConfig
+      config
     );
 
     this.calendar!.render();
