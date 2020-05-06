@@ -135,13 +135,11 @@ class PanelCalendar extends LitElement {
       const checked = ev.target.checked;
 
       if (checked) {
-        this._fetchEvents(
-          this._start!,
-          this._end!,
-          this._selectedCalendars
-        ).then((events) => {
-          this._events = [...this._events, ...events];
-        });
+        this._fetchEvents(this._start!, this._end!, [cal.calendar]).then(
+          (events) => {
+            this._events = [...this._events, ...events];
+          }
+        );
       } else {
         this._events = this._events.filter(
           (event) => event.calendar !== cal.calendar.entity_id
