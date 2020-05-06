@@ -6,6 +6,7 @@ import {
   html,
   css,
   unsafeCSS,
+  TemplateResult,
 } from "lit-element";
 import { Calendar } from "@fullcalendar/core";
 import dayGridPlugin from "@fullcalendar/daygrid";
@@ -54,7 +55,7 @@ class HAFullCalendar extends LitElement {
 
   @property() private calendar?: Calendar;
 
-  protected render() {
+  protected render(): TemplateResult {
     return html`
       ${this.calendar
         ? html`
@@ -144,7 +145,7 @@ class HAFullCalendar extends LitElement {
     }
   }
 
-  protected firstUpdated() {
+  protected firstUpdated(): void {
     this.calendar = new Calendar(
       this.shadowRoot!.getElementById("calendar")!,
       // @ts-ignore
@@ -154,27 +155,27 @@ class HAFullCalendar extends LitElement {
     this.calendar!.render();
   }
 
-  private _handleNext() {
+  private _handleNext(): void {
     this.calendar!.next();
     this._fireViewChanged();
   }
 
-  private _handlePrev() {
+  private _handlePrev(): void {
     this.calendar!.prev();
     this._fireViewChanged();
   }
 
-  private _handleToday() {
+  private _handleToday(): void {
     this.calendar!.today();
     this._fireViewChanged();
   }
 
-  private _handleView(ev) {
+  private _handleView(ev): void {
     this.calendar!.changeView(ev.detail.value);
     this._fireViewChanged();
   }
 
-  private _fireViewChanged() {
+  private _fireViewChanged(): void {
     fireEvent(this, "view-changed", {
       start: this.calendar!.view.activeStart,
       end: this.calendar!.view.activeEnd,

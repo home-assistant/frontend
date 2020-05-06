@@ -6,6 +6,7 @@ import {
   css,
   TemplateResult,
   html,
+  PropertyValues,
 } from "lit-element";
 import { styleMap } from "lit-html/directives/style-map";
 
@@ -46,7 +47,7 @@ class PanelCalendar extends LitElement {
 
   private _end?: Date;
 
-  protected firstUpdated(changedProps) {
+  protected firstUpdated(changedProps: PropertyValues): void {
     super.firstUpdated(changedProps);
     this._calendars = getCalendars(this.hass).map((calendar) => ({
       selected: true,
@@ -125,7 +126,7 @@ class PanelCalendar extends LitElement {
     return fetchCalendarEvents(this.hass, start, end, calendars);
   }
 
-  private _handleToggle(ev) {
+  private _handleToggle(ev): void {
     this._calendars = this._calendars.map((cal) => {
       if (ev.target.value !== cal.calendar.entity_id) {
         return cal;
@@ -152,7 +153,7 @@ class PanelCalendar extends LitElement {
     });
   }
 
-  private _handleViewChanged(ev: HASSDomEvent<CalendarViewChanged>) {
+  private _handleViewChanged(ev: HASSDomEvent<CalendarViewChanged>): void {
     this._start = ev.detail.start;
     this._end = ev.detail.end;
     this._fetchEvents(this._start, this._end, this._selectedCalendars).then(
