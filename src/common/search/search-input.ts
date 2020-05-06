@@ -50,18 +50,14 @@ class SearchInput extends LitElement {
         @value-changed=${this._filterInputChanged}
         .noLabelFloat=${this.noLabelFloat}
       >
-        <ha-icon
-          icon="${this.hassio ? "hassio" : "hass"}:magnify"
-          slot="prefix"
-          class="prefix"
-        ></ha-icon>
+        <ha-icon icon="hass:magnify" slot="prefix" class="prefix"></ha-icon>
         ${this.filter &&
         html`
           <ha-icon-button
             slot="suffix"
             class="suffix"
             @click=${this._clearSearch}
-            icon="${this.hassio ? "hassio" : "hass"}:close"
+            icon="hass:close"
             alt="Clear"
             title="Clear"
           ></ha-icon-button>
