@@ -27,12 +27,6 @@ module.exports.babelLoaderConfig = ({ latestBuild }) => {
           ],
           // Only support the syntax, Webpack will handle it.
           "@babel/syntax-dynamic-import",
-          [
-            "@babel/transform-react-jsx",
-            {
-              pragma: "h",
-            },
-          ],
           "@babel/plugin-proposal-optional-chaining",
           "@babel/plugin-proposal-nullish-coalescing-operator",
           [
