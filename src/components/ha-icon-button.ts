@@ -18,6 +18,10 @@ export class HaIconButton extends LitElement {
 
   @property({ type: String }) label = "";
 
+  protected createRenderRoot() {
+    return this.attachShadow({ mode: "open", delegatesFocus: true });
+  }
+
   protected render(): TemplateResult {
     return html`
       <mwc-icon-button
@@ -40,6 +44,10 @@ export class HaIconButton extends LitElement {
     return css`
       :host {
         display: inline-block;
+        outline: none;
+      }
+      mwc-icon-button {
+        --mdc-theme-on-primary: currentColor;
       }
       ha-icon {
         display: inline-flex;
