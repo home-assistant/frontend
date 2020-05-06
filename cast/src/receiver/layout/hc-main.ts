@@ -90,15 +90,17 @@ export class HcMain extends HassElement {
     super.firstUpdated(changedProps);
     import("../second-load");
     window.addEventListener("location-changed", () => {
-      if (location.pathname.startsWith("/lovelace/")) {
-        this._lovelacePath = location.pathname.substr(10);
+      const panelPath = `/${this._urlPath || "lovelace"}/`;
+      if (location.pathname.startsWith(panelPath)) {
+        this._lovelacePath = location.pathname.substr(panelPath.length);
         this._sendStatus();
       }
     });
     document.body.addEventListener("click", (ev) => {
+      const panelPath = `/${this._urlPath || "lovelace"}/`;
       const href = isNavigationClick(ev);
-      if (href && href.startsWith("/lovelace/")) {
-        this._lovelacePath = href.substr(10);
+      if (href && href.startsWith(panelPath)) {
+        this._lovelacePath = href.substr(panelPath.length);
         this._sendStatus();
       }
     });
@@ -170,10 +172,10 @@ export class HcMain extends HassElement {
       this._error = "Cannot show Lovelace because we're not connected.";
       return;
     }
+    if (msg.urlPath === "lovelace") {
+      msg.urlPath = null;
+    }
     if (!this._unsubLovelace || this._urlPath !== msg.urlPath) {
-      if (msg.urlPath === "lovelace") {
-        msg.urlPath = null;
-      }
       this._urlPath = msg.urlPath;
       if (this._unsubLovelace) {
         this._unsubLovelace();
