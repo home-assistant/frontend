@@ -153,6 +153,7 @@ class HaInputSelectForm extends LitElement {
   }
 
   private async _removeOption(ev: Event) {
+    const index = (ev.target as any).index;
     if (
       !(await showConfirmationDialog(this, {
         title: "Delete this item?",
@@ -161,7 +162,6 @@ class HaInputSelectForm extends LitElement {
     ) {
       return;
     }
-    const index = (ev.target as any).index;
     const options = [...this._options];
     options.splice(index, 1);
     fireEvent(this, "value-changed", {
