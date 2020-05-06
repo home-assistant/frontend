@@ -1187,6 +1187,7 @@
         "devices": {
           "caption": "Devices",
           "description": "Manage connected devices",
+          "device_info": "Device info",
           "unnamed_device": "Unnamed device",
           "unknown_error": "Unknown error",
           "name": "Name",
@@ -1372,7 +1373,6 @@
             "stop_ignore": "Stop ignoring"
           },
           "config_entry": {
-            "device_info": "Device info",
             "devices": "{count} {count, plural,\n  one {device}\n  other {devices}\n}",
             "entities": "{count} {count, plural,\n  one {entity}\n  other {entities}\n}",
             "rename": "Rename",
