@@ -3,6 +3,7 @@ import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 import { getAppKey } from "../data/notify_html5";
 import { EventsMixin } from "../mixins/events-mixin";
+import { showPromptDialog } from "../dialogs/generic/show-dialog-box";
 import "./ha-switch";
 
 export const pushSupported =
@@ -69,6 +70,8 @@ class HaPushNotificationsToggle extends EventsMixin(PolymerElement) {
     // it to get into a loop and crash the page.
     if (!pushSupported) return;
 
+    this.pushChecked = event.target.checked;
+
     if (event.target.checked) {
       this.subscribePushNotifications();
     } else {
@@ -88,8 +91,12 @@ class HaPushNotificationsToggle extends EventsMixin(PolymerElement) {
         browserName = "chrome";
       }
 
-      const name = prompt("What should this device be called ?");
-      if (name == null) {
+      const name = await showPromptDialog(this, {
+        title: "Name",
+        text: "What should this device be called?",
+      });
+
+      if (!name) {
         this.pushChecked = false;
         return;
       }
