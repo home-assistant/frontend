@@ -275,25 +275,6 @@ gulp.task(taskName, function () {
     .src(fullDir + "/*.json")
     .pipe(
       transform((data, file) => {
-        // HACK to pull in old state translations for cast
-        if (process.env.IS_CAST) {
-          const legacyTranslationsPath = path.join(
-            "cast/src/translations",
-            file.relative
-          );
-          if (fs.existsSync(legacyTranslationsPath)) {
-            const legacyStrings = JSON.parse(
-              fs.readFileSync(legacyTranslationsPath, "utf-8")
-            );
-            // These 2 translations still exist today.
-            if (legacyStrings.state && "default" in legacyStrings.state) {
-              legacyStrings.default.unknown = data.state.default.unknown;
-              legacyStrings.default.unavailable =
-                data.state.default.unavailable;
-            }
-            data.state = legacyStrings.state;
-          }
-        }
         TRANSLATION_FRAGMENTS.forEach((fragment) => {
           delete data.ui.panel[fragment];
         });
