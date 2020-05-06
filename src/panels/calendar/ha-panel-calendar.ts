@@ -48,10 +48,6 @@ class PanelCalendar extends LitElement {
 
   protected firstUpdated(changedProps) {
     super.firstUpdated(changedProps);
-    if (!this.hass) {
-      return;
-    }
-
     this._calendars = getCalendars(this.hass).map((calendar) => ({
       selected: true,
       calendar,
@@ -117,14 +113,16 @@ class PanelCalendar extends LitElement {
       .map((cal) => cal.calendar);
   }
 
-  private async _fetchEvents(start: Date, end: Date, calendars: Calendar[]) {
+  private async _fetchEvents(
+    start: Date,
+    end: Date,
+    calendars: Calendar[]
+  ): Promise<CalendarEvent[]> {
     if (!calendars.length) {
-      return;
+      return [];
     }
 
-    const events = await fetchCalendarEvents(this.hass, start, end, calendars);
-
-    this._events = [...this._events, ...events];
+    return fetchCalendarEvents(this.hass, start, end, calendars);
   }
 
   private _handleToggle(ev) {
@@ -136,86 +134,40 @@ class PanelCalendar extends LitElement {
       const checked = ev.target.checked;
 
       if (checked) {
-        this._fetchEvents(this._start!, this._end!, [cal.calendar]);
+        this._fetchEvents(
+          this._start!,
+          this._end!,
+          this._selectedCalendars
+        ).then((events) => {
+          this._events = [...this._events, ...events];
+        });
       } else {
         this._events = this._events.filter(
           (event) => event.calendar !== cal.calendar.entity_id
         );
       }
 
-      cal.selected = ev.target.checked;
+      cal.selected = checked;
       return cal;
     });
   }
 
   private _handleViewChanged(ev: HASSDomEvent<CalendarViewChanged>) {
-    const viewStart = ev.detail.start;
-    const viewEnd = ev.detail.end;
-
-    if (
-      this._start &&
-      this._end &&
-      this._start <= viewStart &&
-      this._end >= viewEnd
-    ) {
-      return;
-    }
-
-    if (!this._start || !this._end) {
-      this._start = viewStart;
-      this._end = viewEnd;
-      this._fetchEvents(this._start, this._end, this._selectedCalendars);
-      return;
-    }
-
-    // If the date range moved to the left
-    if (viewStart < this._start && viewEnd >= this._start) {
-      this._fetchEvents(viewStart, this._start, this._selectedCalendars);
-
-      this._start = viewStart;
-      const end = new Date(viewStart);
-      this._end = new Date(end.setMonth(end.getMonth() + 1));
-
-      this._filterEventsByDate();
-      return;
-    }
-
-    // If the date range moved to the right
-    if (viewEnd > this._end && viewStart <= this._end) {
-      this._fetchEvents(this._end, viewEnd, this._selectedCalendars);
-
-      this._end = viewEnd;
-      const start = new Date(viewEnd);
-      this._start = new Date(start.setMonth(start.getMonth() - 1));
-
-      this._filterEventsByDate();
-      return;
-    }
-
-    this._events = [];
-    this._start = viewStart;
-    this._end = viewEnd;
-    this._fetchEvents(this._start, this._end, this._selectedCalendars);
-  }
-
-  private _filterEventsByDate(): void {
-    this._events = this._events.filter((event) => {
-      const eventStart = new Date(event.start);
-      const startCondition =
-        eventStart >= this._start! && eventStart <= this._end!;
-      let endCondition = false;
-
-      if (event.end) {
-        const eventEnd = new Date(event.end);
-        endCondition = eventEnd >= this._start! && eventEnd <= this._end!;
+    this._start = ev.detail.start;
+    this._end = ev.detail.end;
+    this._fetchEvents(this._start, this._end, this._selectedCalendars).then(
+      (events) => {
+        this._events = events;
       }
-      return startCondition || endCondition;
-    });
+    );
   }
 
   private _handleRefresh(): void {
-    this._events = [];
-    this._fetchEvents(this._start!, this._end!, this._selectedCalendars);
+    this._fetchEvents(this._start!, this._end!, this._selectedCalendars).then(
+      (events) => {
+        this._events = events;
+      }
+    );
   }
 
   static get styles(): CSSResultArray {
