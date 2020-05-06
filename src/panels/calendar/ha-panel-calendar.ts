@@ -17,6 +17,7 @@ import "@material/mwc-formfield";
 
 import "../../components/ha-menu-button";
 import "../../components/ha-card";
+import "../../components/ha-button-menu";
 import "./ha-full-calendar";
 
 import type {
@@ -73,6 +74,11 @@ class PanelCalendar extends LitElement {
               .narrow=${this.narrow}
             ></ha-menu-button>
             <div main-title>${this.hass.localize("panel.calendar")}</div>
+            <ha-button-menu .icon=${"hass:dots-vertical"}>
+              <mwc-list-item @click=${this._handleRefresh}
+                >Refresh</mwc-list-item
+              >
+            </ha-button-menu>
           </app-toolbar>
         </app-header>
         <div class="content">
@@ -205,6 +211,11 @@ class PanelCalendar extends LitElement {
       }
       return startCondition || endCondition;
     });
+  }
+
+  private _handleRefresh(): void {
+    this._events = [];
+    this._fetchEvents(this._start!, this._end!, this._selectedCalendars);
   }
 
   static get styles(): CSSResultArray {

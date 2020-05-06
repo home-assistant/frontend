@@ -59,36 +59,71 @@ class HAFullCalendar extends LitElement {
       ${this.calendar
         ? html`
             <div class="header">
-              <div class="navigation">
-                <mwc-button outlined class="today" @click=${this._handleToday}
-                  >Today</mwc-button
-                >
-                <ha-icon-button
-                  label="Prev"
-                  icon="hass:chevron-left"
-                  class="prev"
-                  @click=${this._handlePrev}
-                >
-                </ha-icon-button>
-                <ha-icon-button
-                  label="Next"
-                  icon="hass:chevron-right"
-                  class="next"
-                  @click=${this._handleNext}
-                >
-                </ha-icon-button>
-              </div>
-              <h1>
-                ${this.calendar.view.title}
-              </h1>
               ${!this.narrow
                 ? html`
+                    <div class="navigation">
+                      <mwc-button
+                        outlined
+                        class="today"
+                        @click=${this._handleToday}
+                        >Today</mwc-button
+                      >
+                      <ha-icon-button
+                        label="Prev"
+                        icon="hass:chevron-left"
+                        class="prev"
+                        @click=${this._handlePrev}
+                      >
+                      </ha-icon-button>
+                      <ha-icon-button
+                        label="Next"
+                        icon="hass:chevron-right"
+                        class="next"
+                        @click=${this._handleNext}
+                      >
+                      </ha-icon-button>
+                    </div>
+                    <h1>
+                      ${this.calendar.view.title}
+                    </h1>
                     <ha-button-toggle-group
                       .buttons=${viewButtons}
                       @value-changed=${this._handleView}
                     ></ha-button-toggle-group>
                   `
-                : ""}
+                : html`
+                    <div class="controls">
+                      <div class="navigation">
+                        <mwc-button
+                          outlined
+                          class="today"
+                          @click=${this._handleToday}
+                          >Today</mwc-button
+                        >
+                        <ha-icon-button
+                          label="Prev"
+                          icon="hass:chevron-left"
+                          class="prev"
+                          @click=${this._handlePrev}
+                        >
+                        </ha-icon-button>
+                        <ha-icon-button
+                          label="Next"
+                          icon="hass:chevron-right"
+                          class="next"
+                          @click=${this._handleNext}
+                        >
+                        </ha-icon-button>
+                      </div>
+                      <ha-button-toggle-group
+                        .buttons=${viewButtons}
+                        @value-changed=${this._handleView}
+                      ></ha-button-toggle-group>
+                    </div>
+                    <h1>
+                      ${this.calendar.view.title}
+                    </h1>
+                  `}
             </div>
           `
         : ""}
@@ -169,12 +204,22 @@ class HAFullCalendar extends LitElement {
         :host([narrow]) .header {
           padding-right: 8px;
           padding-left: 8px;
+          flex-direction: column;
+          align-items: flex-start;
+          justify-content: initial;
         }
 
         .navigation {
           display: flex;
           align-items: center;
           flex-grow: 0;
+        }
+
+        .controls {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          width: 100%;
         }
 
         .today {
