@@ -27,7 +27,7 @@ export class HaButtonToggleGroup extends LitElement {
             .label=${button.label}
             .icon=${button.icon}
             .value=${button.value}
-            ?active=${this.active !== undefined && button.value === this.active}
+            ?active=${this.active === button.value}
             @click=${this._handleClick}
           >
           </ha-icon-button>`
