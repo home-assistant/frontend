@@ -72,7 +72,7 @@ class PanelCalendar extends LitElement {
             ></ha-menu-button>
             <div main-title>${this.hass.localize("panel.calendar")}</div>
             <ha-icon-button
-              icon="hass:sync"
+              icon="hass:refresh"
               @click=${this._handleRefresh}
             ></ha-icon-button>
           </app-toolbar>
