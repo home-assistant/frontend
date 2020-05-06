@@ -24,72 +24,11 @@ import type {
   SelectedCalendar,
   CalendarEvent,
   CalendarViewChanged,
+  Calendar,
 } from "../../types";
 import { haStyle } from "../../resources/styles";
 import { HASSDomEvent } from "../../common/dom/fire_event";
-import { computeDomain } from "../../common/entity/compute_domain";
-
-const palette = [
-  "ff0029",
-  "66a61e",
-  "377eb8",
-  "984ea3",
-  "00d2d5",
-  "ff7f00",
-  "af8d00",
-  "7f80cd",
-  "b3e900",
-  "c42e60",
-  "a65628",
-  "f781bf",
-  "8dd3c7",
-  "bebada",
-  "fb8072",
-  "80b1d3",
-  "fdb462",
-  "fccde5",
-  "bc80bd",
-  "ffed6f",
-  "c4eaff",
-  "cf8c00",
-  "1b9e77",
-  "d95f02",
-  "e7298a",
-  "e6ab02",
-  "a6761d",
-  "0097ff",
-  "00d067",
-  "f43600",
-  "4ba93b",
-  "5779bb",
-  "927acc",
-  "97ee3f",
-  "bf3947",
-  "9f5b00",
-  "f48758",
-  "8caed6",
-  "f2b94f",
-  "eff26e",
-  "e43872",
-  "d9b100",
-  "9d7a00",
-  "698cff",
-  "d9d9d9",
-  "00d27e",
-  "d06800",
-  "009f82",
-  "c49200",
-  "cbe8ff",
-  "fecddf",
-  "c27eb6",
-  "8cd2ce",
-  "c4b8d9",
-  "f883b0",
-  "a49100",
-  "f48800",
-  "27d0df",
-  "a04a9b",
-];
+import { getCalendars, fetchCalendarEvents } from "../../data/calendar";
 
 @customElement("ha-panel-calendar")
 class PanelCalendar extends LitElement {
@@ -111,14 +50,24 @@ class PanelCalendar extends LitElement {
     if (!this.hass) {
       return;
     }
-    this._fetchCalendars();
+
+    this._calendars = getCalendars(this.hass).map((calendar) => ({
+      selected: true,
+      calendar,
+    }));
+
+    if (!this._start || !this._end) {
+      return;
+    }
+
+    this._fetchEvents(this._start, this._end, this._selectedCalendars);
   }
 
   protected render(): TemplateResult {
     return html`
       <app-header-layout has-scrolling-region>
-        <app-header fixed slot="header"
-          ><app-toolbar>
+        <app-header fixed slot="header">
+          <app-toolbar>
             <ha-menu-button
               .hass=${this.hass}
               .narrow=${this.narrow}
@@ -135,7 +84,8 @@ class PanelCalendar extends LitElement {
                   <mwc-formfield .label=${selCal.calendar.name}>
                     <mwc-checkbox
                       style=${styleMap({
-                        "--mdc-theme-secondary": selCal.backgroundColor,
+                        "--mdc-theme-secondary":
+                          selCal.calendar.backgroundColor,
                       })}
                       .value=${selCal.calendar.entity_id}
                       .checked=${selCal.selected}
@@ -155,104 +105,106 @@ class PanelCalendar extends LitElement {
     `;
   }
 
-  private _fetchCalendars() {
-    this._calendars = Object.keys(this.hass.states)
-      .filter((eid) => computeDomain(eid) === "calendar")
-      .sort()
-      .map((eid, idx) => ({
-        selected: true,
-        calendar: {
-          entity_id: eid,
-          name: this.hass.states[eid].attributes.friendly_name || "",
-        },
-        backgroundColor: `#${palette[idx % palette.length]}`,
-      }));
-
-    this._fetchData();
+  private get _selectedCalendars(): Calendar[] {
+    return this._calendars
+      .filter((selCal) => selCal.selected)
+      .map((cal) => cal.calendar);
   }
 
-  private async _fetchData() {
-    if (!this._start || !this._end || !this._calendars.length) {
+  private async _fetchEvents(start: Date, end: Date, calendars: Calendar[]) {
+    if (!calendars.length) {
       return;
     }
 
-    const start = new Date(this._start);
-    const end = new Date(this._end);
-    const params = encodeURI(
-      `?start=${start.toISOString()}&end=${end.toISOString()}`
-    );
+    const events = await fetchCalendarEvents(this.hass, start, end, calendars);
 
-    const calEvents: CalendarEvent[] = [];
-    const promises: Promise<any>[] = [];
-
-    const selectedCals = this._calendars.filter((selCal) => selCal.selected);
-
-    selectedCals.forEach((selCal) => {
-      promises.push(
-        this.hass.callApi<any[]>(
-          "GET",
-          `calendars/${selCal.calendar.entity_id}${params}`
-        )
-      );
-    });
-
-    const results = await Promise.all(promises);
-
-    results.forEach((result, idx) => {
-      const cal = selectedCals[idx];
-      result.forEach((ev) => {
-        const eventStart = this._getDate(ev.start);
-        if (!eventStart) {
-          return;
-        }
-        const eventEnd = this._getDate(ev.end);
-        const event: CalendarEvent = {
-          start: eventStart,
-          end: eventEnd,
-          title: ev.summary,
-          summary: ev.summary,
-          backgroundColor: cal.backgroundColor,
-          borderColor: cal.backgroundColor,
-        };
-
-        calEvents.push(event);
-      });
-    });
-
-    this._events = calEvents;
-  }
-
-  private _getDate(dateObj: any): string | undefined {
-    if (typeof dateObj === "string") {
-      return dateObj;
-    }
-
-    if (dateObj.dateTime) {
-      return dateObj.dateTime;
-    }
-
-    if (dateObj.date) {
-      return dateObj.date;
-    }
-
-    return undefined;
+    this._events = [...this._events, ...events];
   }
 
   private _handleToggle(ev) {
     this._calendars = this._calendars.map((cal) => {
-      if (ev.target.value === cal.calendar.entity_id) {
-        cal.selected = ev.target.checked;
+      if (ev.target.value !== cal.calendar.entity_id) {
+        return cal;
       }
+
+      const checked = ev.target.checked;
+
+      if (checked) {
+        this._fetchEvents(this._start!, this._end!, [cal.calendar]);
+      } else {
+        this._events = this._events.filter(
+          (event) => event.calendar !== cal.calendar.entity_id
+        );
+      }
+
+      cal.selected = ev.target.checked;
       return cal;
     });
-    this._fetchData();
   }
 
   private _handleViewChanged(ev: HASSDomEvent<CalendarViewChanged>) {
-    this._start = ev.detail.start;
-    this._end = ev.detail.end;
+    const viewStart = ev.detail.start;
+    const viewEnd = ev.detail.end;
 
-    this._fetchData();
+    if (
+      this._start &&
+      this._end &&
+      this._start <= viewStart &&
+      this._end >= viewEnd
+    ) {
+      return;
+    }
+
+    if (!this._start || !this._end) {
+      this._start = viewStart;
+      this._end = viewEnd;
+      this._fetchEvents(this._start, this._end, this._selectedCalendars);
+      return;
+    }
+
+    // If the date range moved to the left
+    if (viewStart < this._start && viewEnd >= this._start) {
+      this._fetchEvents(viewStart, this._start, this._selectedCalendars);
+
+      this._start = viewStart;
+      const end = new Date(viewStart);
+      this._end = new Date(end.setMonth(end.getMonth() + 1));
+
+      this._filterEventsByDate();
+      return;
+    }
+
+    // If the date range moved to the right
+    if (viewEnd > this._end && viewStart <= this._end) {
+      this._fetchEvents(this._end, viewEnd, this._selectedCalendars);
+
+      this._end = viewEnd;
+      const start = new Date(viewEnd);
+      this._start = new Date(start.setMonth(start.getMonth() - 1));
+
+      this._filterEventsByDate();
+      return;
+    }
+
+    this._events = [];
+    this._start = viewStart;
+    this._end = viewEnd;
+    this._fetchEvents(this._start, this._end, this._selectedCalendars);
+  }
+
+  private _filterEventsByDate(): void {
+    this._events = this._events.filter((event) => {
+      const eventStart = new Date(event.start);
+      const startCondition =
+        eventStart >= this._start! && eventStart <= this._end!;
+      let endCondition = false;
+
+      if (event.end) {
+        const eventEnd = new Date(event.end);
+        endCondition = eventEnd >= this._start! && eventEnd <= this._end!;
+      }
+      return startCondition || endCondition;
+    });
   }
 
   static get styles(): CSSResultArray {

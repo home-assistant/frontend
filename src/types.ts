@@ -99,12 +99,12 @@ export interface Panels {
 export interface Calendar {
   entity_id: string;
   name: string;
+  backgroundColor: string;
 }
 
 export interface SelectedCalendar {
   selected: boolean;
   calendar: Calendar;
-  backgroundColor: string;
 }
 
 export interface CalendarEvent {
@@ -114,6 +114,7 @@ export interface CalendarEvent {
   end?: string;
   backgroundColor?: string;
   borderColor?: string;
+  calendar: string;
 }
 
 export interface CalendarViewChanged {
