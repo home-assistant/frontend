@@ -482,7 +482,7 @@ class HaSidebar extends LitElement {
         box-sizing: border-box;
         height: 65px;
         display: flex;
-        padding: 0 12px;
+        padding: 0 8.5px;
         border-bottom: 1px solid transparent;
         white-space: nowrap;
         font-weight: 400;
