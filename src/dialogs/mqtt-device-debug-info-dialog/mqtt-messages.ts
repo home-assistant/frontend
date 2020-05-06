@@ -75,16 +75,15 @@ class MQTTMessages extends LitElement {
 
   private _renderSingleMessage(message): TemplateResult {
     const topic = message.topic;
-    return this._showTopic
-      ? html`
-          <ul class="message-with-topic">
-            <li>Topic: <code>${topic}</code></li>
-            <li>
-              Payload: ${this._renderSinglePayload(message)}
-            </li>
-          </ul>
-        `
-      : this._renderSinglePayload(message);
+    return html`
+      <ul class="message-with-topic">
+        ${this._showTopic ? html` <li>Topic: <code>${topic}</code></li> ` : ""}
+        <li>QoS: ${message.qos}${message.retain ? ", Retained" : ""}</li>
+        <li>
+          Payload: ${this._renderSinglePayload(message)}
+        </li>
+      </ul>
+    `;
   }
 
   private _renderSinglePayload(message): TemplateResult {
