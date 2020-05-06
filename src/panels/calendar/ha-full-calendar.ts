@@ -102,15 +102,25 @@ class HAFullCalendar extends LitElement {
                   `
                 : html`
                     <div class="controls">
-                      <div class="navigation">
-                        <mwc-button
-                          outlined
-                          class="today"
-                          @click=${this._handleToday}
-                          >${this.hass.localize(
-                            "ui.panel.calendar.today"
-                          )}</mwc-button
-                        >
+                      <mwc-button
+                        outlined
+                        class="today"
+                        @click=${this._handleToday}
+                        >${this.hass.localize(
+                          "ui.panel.calendar.today"
+                        )}</mwc-button
+                      >
+                      <ha-button-toggle-group
+                        .buttons=${viewButtons}
+                        .active=${this._activeView}
+                        @value-changed=${this._handleView}
+                      ></ha-button-toggle-group>
+                    </div>
+                    <div class="controls">
+                      <h1>
+                        ${this.calendar.view.title}
+                      </h1>
+                      <div>
                         <ha-icon-button
                           label=${this.hass.localize("ui.common.previous")}
                           icon="hass:chevron-left"
@@ -126,15 +136,7 @@ class HAFullCalendar extends LitElement {
                         >
                         </ha-icon-button>
                       </div>
-                      <ha-button-toggle-group
-                        .buttons=${viewButtons}
-                        .active=${this._activeView}
-                        @value-changed=${this._handleView}
-                      ></ha-button-toggle-group>
                     </div>
-                    <h1>
-                      ${this.calendar.view.title}
-                    </h1>
                   `}
             </div>
           `
