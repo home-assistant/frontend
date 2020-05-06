@@ -88,7 +88,7 @@ export const UNIT_F = "°F";
 /** Entity ID of the default view. */
 export const DEFAULT_VIEW_ENTITY_ID = "group.default_view";
 
-/** Temperature units. */
+/** HA Color Pallete. */
 export const HA_COLOR_PALETTE = [
   "ff0029",
   "66a61e",
