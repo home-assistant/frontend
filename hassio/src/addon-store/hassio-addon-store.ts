@@ -94,7 +94,6 @@ class HassioAddonStore extends LitElement {
         .tabs=${supervisorTabs}
       >
         <span slot="header">Add-on store</span>
-        <<<<<<< HEAD
         <paper-menu-button
           close-on-activate
           no-animations
@@ -116,14 +115,6 @@ class HassioAddonStore extends LitElement {
             </paper-item>
           </paper-listbox>
         </paper-menu-button>
-        =======
-        <ha-icon-button
-          icon="hassio:reload"
-          slot="toolbar-icon"
-          aria-label="Reload add-ons"
-          @click=${this.refreshData}
-        ></ha-icon-button>
-        >>>>>>> 636429ccfa44f3017f9adafe5cd52c6690ea5e6f
         ${repos.length === 0
           ? html`<loading-screen></loading-screen>`
           : html`
