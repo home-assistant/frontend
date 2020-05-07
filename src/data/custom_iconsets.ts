@@ -6,7 +6,7 @@ export interface CustomIconsetsWindow {
 
 const customIconsetsWindow = window as CustomIconsetsWindow;
 
-if (!("customCards" in customIconsetsWindow)) {
+if (!("customIconsets" in customIconsetsWindow)) {
   customIconsetsWindow.customIconsets = new Map();
 }
 
