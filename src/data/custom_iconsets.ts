@@ -1,7 +1,11 @@
 import { Icons } from "../components/ha-icon";
 
+export interface CustomIcons {
+  [key: string]: { path: string; viewBox?: string };
+}
+
 export interface CustomIconsetsWindow {
-  customIconsets?: Map<string, (name: string) => Promise<Icons>>;
+  customIconsets?: Map<string, (name: string) => Promise<CustomIcons>>;
 }
 
 const customIconsetsWindow = window as CustomIconsetsWindow;
