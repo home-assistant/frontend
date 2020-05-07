@@ -1191,6 +1191,7 @@
         "devices": {
           "caption": "Devices",
           "description": "Manage connected devices",
+          "device_info": "Device info",
           "unnamed_device": "Unnamed device",
           "unknown_error": "Unknown error",
           "name": "Name",
