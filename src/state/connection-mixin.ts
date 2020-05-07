@@ -14,7 +14,7 @@ import { forwardHaptic } from "../data/haptics";
 import { DEFAULT_PANEL } from "../data/panel";
 import { subscribePanels } from "../data/ws-panels";
 import { translationMetadata } from "../resources/translations-metadata";
-import { Constructor, ServiceCallResponse } from "../types";
+import { Constructor, ServiceCallResponse, HomeAssistant } from "../types";
 import { fetchWithAuth } from "../util/fetch-with-auth";
 import { getState } from "../util/ha-pref-storage";
 import hassCallApi from "../util/hass-call-api";

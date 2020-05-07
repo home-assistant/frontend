@@ -104,29 +104,37 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
       this._loadFragmentTranslations(hass.language, hass.panelUrl);
     }
 
+    /**
+     * Load translations from the backend
+     * @param language language to fetch
+     * @param category category to fetch
+     * @param integration optional, if having to fetch for specific integration
+     * @param configFlow optional, if having to fetch for all integrations with a config flow
+     * @param force optional, load even if already cached
+     */
     private async _loadHassTranslations(
       language: string,
       category: Parameters<typeof getHassTranslations>[2],
       integration?: Parameters<typeof getHassTranslations>[3],
       configFlow?: Parameters<typeof getHassTranslations>[4],
       force = false
-    ) {
+    ): Promise<HomeAssistant> {
       if (
         __BACKWARDS_COMPAT__ &&
         !atLeastVersion(this.hass!.connection.haVersion, 0, 109)
       ) {
         if (category !== "state") {
-          return;
+          return this.hass!;
         }
         const resources = await getHassTranslationsPre109(this.hass!, language);
 
         // Ignore the repsonse if user switched languages before we got response
         if (this.hass!.language !== language) {
-          return;
+          return this.hass!;
         }
 
         this._updateResources(language, resources);
-        return;
+        return this.hass!;
       }
 
       let alreadyLoaded: LoadedTranslationCategory;
@@ -145,12 +153,12 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
       if (!force) {
         if (integration) {
           if (alreadyLoaded.integrations.includes(integration)) {
-            return;
+            return this.hass!;
           }
         } else if (
           configFlow ? alreadyLoaded.configFlow : alreadyLoaded.setup
         ) {
-          return;
+          return this.hass!;
         }
       }
 
@@ -176,10 +184,11 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
 
       // Ignore the repsonse if user switched languages before we got response
       if (this.hass!.language !== language) {
-        return;
+        return this.hass!;
       }
 
       this._updateResources(language, resources);
+      return this.hass!;
     }
 
     private async _loadFragmentTranslations(
@@ -214,9 +223,7 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
       // multiple fragments.
       const resources = {
         [language]: {
-          ...(this.hass &&
-            this.hass.resources &&
-            this.hass.resources[language]),
+          ...this.hass?.resources?.[language],
           ...data,
         },
       };
