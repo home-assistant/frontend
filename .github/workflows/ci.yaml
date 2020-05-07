@@ -94,7 +94,7 @@ jobs:
       - name: Build Application
         run: ./node_modules/.bin/gulp build-app
         env:
-          TRAVIS: "true"
+          IS_TEST: "true"
   supervisor:
     runs-on: ubuntu-latest
     needs: [lint, test]
@@ -122,4 +122,4 @@ jobs:
       - name: Build Application
         run: ./node_modules/.bin/gulp build-hassio
         env:
-          TRAVIS: "true"
+          IS_TEST: "true"
