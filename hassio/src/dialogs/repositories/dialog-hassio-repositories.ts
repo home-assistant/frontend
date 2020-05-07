@@ -16,7 +16,7 @@ import {
 } from "lit-element";
 import memoizeOne from "memoize-one";
 import "../../../../src/components/ha-dialog";
-import "../../../../src/components/ha-icon";
+import "../../../../src/components/ha-icon-button";
 
 import { haStyle, haStyleDialog } from "../../../../src/resources/styles";
 import type { HomeAssistant } from "../../../../src/types";
@@ -84,12 +84,12 @@ class HassioRepositoriesDialog extends LitElement {
                       <div secondary>${repo.maintainer}</div>
                       <div secondary>${repo.url}</div>
                     </paper-item-body>
-                    <ha-icon
+                    <ha-icon-button
                       .slug=${repo.slug}
                       title="Remove"
                       @click=${this._removeRepository}
                       icon="hassio:delete"
-                    ></ha-icon>
+                    ></ha-icon-button>
                   </paper-item>
                 `;
               })
