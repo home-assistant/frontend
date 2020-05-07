@@ -30,15 +30,6 @@ const createWebpackConfig = ({
           test: /\.css$/,
           use: "raw-loader",
         },
-        {
-          test: /\.(html)$/,
-          use: {
-            loader: "html-loader",
-            options: {
-              exportAsEs6Default: true,
-            },
-          },
-        },
       ],
     },
     externals: {
