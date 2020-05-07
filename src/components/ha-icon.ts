@@ -14,8 +14,9 @@ import "./ha-svg-icon";
 import { debounce } from "../common/util/debounce";
 import { iconMetadata } from "../resources/icon-metadata";
 import { IconMeta } from "../types";
+import { customIconsets } from "../data/custom_iconsets";
 
-interface Icons {
+export interface Icons {
   [key: string]: string;
 }
 
@@ -96,7 +97,7 @@ export class HaIcon extends LitElement {
 
   @property() private _path?: string;
 
-  @property() private _noMdi = false;
+  @property() private _legacy = false;
 
   protected updated(changedProps: PropertyValues) {
     if (changedProps.has("icon")) {
@@ -109,7 +110,7 @@ export class HaIcon extends LitElement {
     if (!this.icon) {
       return html``;
     }
-    if (this._noMdi) {
+    if (this._legacy) {
       return html`<iron-icon .icon=${this.icon}></iron-icon>`;
     }
     return html`<ha-svg-icon .path=${this._path}></ha-svg-icon>`;
@@ -119,15 +120,21 @@ export class HaIcon extends LitElement {
     if (!this.icon) {
       return;
     }
-    const icon = this.icon.split(":", 2);
-    if (!MDI_PREFIXES.includes(icon[0])) {
-      this._noMdi = true;
+    const [iconPrefix, iconName] = this.icon.split(":", 2);
+    if (!MDI_PREFIXES.includes(iconPrefix)) {
+      if (customIconsets.has(iconPrefix)) {
+        const customIconset = customIconsets.get(iconPrefix);
+        if (customIconset) {
+          this._setPath(customIconset(iconName), iconName);
+        }
+        return;
+      }
+      this._legacy = true;
       return;
     }
 
-    this._noMdi = false;
+    this._legacy = false;
 
-    const iconName = icon[1];
     const cachedPath: string = await getIcon(iconName);
     if (cachedPath) {
       this._path = cachedPath;
