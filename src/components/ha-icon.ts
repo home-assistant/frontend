@@ -38,6 +38,33 @@ get("_version", iconStore).then((version) => {
 const chunks: Chunks = {};
 const MDI_PREFIXES = ["mdi", "hass", "hassio", "hademo"];
 
+let toRead: Array<[string, (string) => void]> = [];
+
+// Queue up as many icon fetches in 1 transaction
+const getIcon = (iconName: string) =>
+  new Promise<string>((resolve) => {
+    toRead.push([iconName, resolve]);
+
+    if (toRead.length > 1) {
+      return;
+    }
+
+    const results: Array<[(string) => void, IDBRequest]> = [];
+
+    iconStore
+      ._withIDBStore("readonly", (store) => {
+        for (const [iconName_, resolve_] of toRead) {
+          results.push([resolve_, store.get(iconName_)]);
+        }
+        toRead = [];
+      })
+      .then(() => {
+        for (const [resolve_, request] of results) {
+          resolve_(request.result);
+        }
+      });
+  });
+
 const findIconChunk = (icon): string => {
   let lastChunk: IconMeta;
   for (const chunk of iconMetadata.parts) {
@@ -101,7 +128,7 @@ export class HaIcon extends LitElement {
     this._noMdi = false;
 
     const iconName = icon[1];
-    const cachedPath: string = await get(iconName, iconStore);
+    const cachedPath: string = await getIcon(iconName);
     if (cachedPath) {
       this._path = cachedPath;
       return;
