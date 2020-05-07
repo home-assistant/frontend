@@ -34,7 +34,6 @@ class HaPushNotificationsRow extends LocalizeMixin(PolymerElement) {
         </span>
         <ha-push-notifications-toggle
           hass="[[hass]]"
-          disabled="[[_error]]"
         ></ha-push-notifications-toggle>
       </ha-settings-row>
     `;
@@ -60,11 +59,11 @@ class HaPushNotificationsRow extends LocalizeMixin(PolymerElement) {
   }
 
   _compPlatformLoaded(hass) {
-    return isComponentLoaded(hass, "notify.html5");
+    return !isComponentLoaded(hass, "notify.html5");
   }
 
   _compError(platformLoaded, pushSupported_) {
-    return !platformLoaded || !pushSupported_;
+    return !platformLoaded || pushSupported_;
   }
 
   _description(platformLoaded, pushSupported_) {

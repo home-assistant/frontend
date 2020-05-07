@@ -99,6 +99,7 @@ export class HaSwitch extends MwcSwitch {
   }
 
   private _haChangeHandler(e: Event) {
+    console.log(this.formElement.checked);
     this.mdcFoundation.handleChange(e);
     // catch "click" event and sync properties
     this.checked = this.formElement.checked;

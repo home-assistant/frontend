@@ -1,8 +1,14 @@
-import { html } from "@polymer/polymer/lib/utils/html-tag";
-/* eslint-plugin-disable lit */
-import { PolymerElement } from "@polymer/polymer/polymer-element";
+import {
+  css,
+  CSSResult,
+  customElement,
+  html,
+  LitElement,
+  property,
+  TemplateResult,
+} from "lit-element";
 import { getAppKey } from "../data/notify_html5";
-import { EventsMixin } from "../mixins/events-mixin";
+import { HomeAssistant } from "../types";
 import { showPromptDialog } from "../dialogs/generic/show-dialog-box";
 import "./ha-switch";
 
@@ -13,41 +19,31 @@ export const pushSupported =
     document.location.hostname === "localhost" ||
     document.location.hostname === "127.0.0.1");
 
-/*
- * @appliesMixin EventsMixin
- */
-class HaPushNotificationsToggle extends EventsMixin(PolymerElement) {
-  static get template() {
+@customElement("ha-push-notifications-toggle")
+class HaPushNotificationsToggle extends LitElement {
+  @property({ attribute: false }) public hass!: HomeAssistant;
+
+  @property({ type: Boolean }) public disabled = false;
+
+  @property() private _loading = true;
+
+  @property() private _checked = false;
+
+  protected render(): TemplateResult {
     return html`
       <ha-switch
-        disabled="[[_compDisabled(disabled, loading)]]"
-        checked="{{pushChecked}}"
-        on-change="handlePushChange"
+        .disabled2=${this.disabled || this._loading}
+        .checked=${this._checked}
+        @change=${this._handlePushChange}
       ></ha-switch>
     `;
   }
 
-  static get properties() {
-    return {
-      hass: { type: Object, value: null },
-      disabled: {
-        type: Boolean,
-        value: false,
-      },
-      pushChecked: {
-        type: Boolean,
-        value:
-          "Notification" in window && Notification.permission === "granted",
-      },
-      loading: {
-        type: Boolean,
-        value: true,
-      },
-    };
-  }
-
-  async connectedCallback() {
+  public async connectedCallback() {
     super.connectedCallback();
+
+    this._checked =
+      "Notification" in window && Notification.permission === "granted";
 
     if (!pushSupported) return;
 
@@ -57,22 +53,22 @@ class HaPushNotificationsToggle extends EventsMixin(PolymerElement) {
         return;
       }
       reg.pushManager.getSubscription().then((subscription) => {
-        this.loading = false;
-        this.pushChecked = !!subscription;
+        this._loading = false;
+        this._checked = !!subscription;
       });
     } catch (err) {
       // We don't set loading to `false` so we remain disabled
     }
   }
 
-  handlePushChange(event) {
+  private _handlePushChange(ev: CustomEvent) {
     // Somehow this is triggered on Safari on page load causing
     // it to get into a loop and crash the page.
+    console.log(ev);
     if (!pushSupported) return;
-
-    this.pushChecked = event.target.checked;
-
-    if (event.target.checked) {
+    console.log(ev);
+    console.log(this._checked);
+    if (ev.target.checked) {
       this.subscribePushNotifications();
     } else {
       this.unsubscribePushNotifications();
@@ -81,7 +77,7 @@ class HaPushNotificationsToggle extends EventsMixin(PolymerElement) {
 
   async subscribePushNotifications() {
     const reg = await navigator.serviceWorker.ready;
-    let sub;
+    let sub: PushSubscription;
 
     try {
       let browserName;
@@ -97,16 +93,17 @@ class HaPushNotificationsToggle extends EventsMixin(PolymerElement) {
       });
 
       if (name === null || !name) {
-        this.pushChecked = false;
+        this._checked = false;
         return;
       }
 
-      let applicationServerKey;
+      let applicationServerKey: Uint8Array | null;
       try {
         applicationServerKey = await getAppKey(this.hass);
       } catch (ex) {
         applicationServerKey = null;
       }
+      console.log("Got here!");
 
       if (applicationServerKey) {
         sub = await reg.pushManager.subscribe({
@@ -117,6 +114,8 @@ class HaPushNotificationsToggle extends EventsMixin(PolymerElement) {
         sub = await reg.pushManager.subscribe({ userVisibleOnly: true });
       }
 
+      console.log("Got here!");
+
       await this.hass.callApi("POST", "notify.html5", {
         subscription: sub,
         browser: browserName,
@@ -124,15 +123,16 @@ class HaPushNotificationsToggle extends EventsMixin(PolymerElement) {
       });
     } catch (err) {
       const message = err.message || "Notification registration failed.";
-      if (sub) {
-        await sub.unsubscribe();
+      if (sub!) {
+        await sub!.unsubscribe();
       }
 
       // eslint-disable-next-line
       console.error(err);
 
-      this.fire("hass-notification", { message });
-      this.pushChecked = false;
+      //this.fire("hass-notification", { message });
+      console.log("err Got here!");
+      this._checked = false;
     }
   }
 
@@ -154,16 +154,13 @@ class HaPushNotificationsToggle extends EventsMixin(PolymerElement) {
       console.error("Error in unsub push", err);
 
       this.fire("hass-notification", { message });
-      this.pushChecked = true;
+      this._checked = true;
     }
-  }
-
-  _compDisabled(disabled, loading) {
-    return disabled || loading;
   }
 }
 
-customElements.define(
-  "ha-push-notifications-toggle",
-  HaPushNotificationsToggle
-);
+declare global {
+  interface HTMLElementTagNameMap {
+    "ha-push-notifications-toggle": HaPushNotificationsToggle;
+  }
+}
