@@ -29,7 +29,7 @@ const createWebpackConfig = ({
   }
   return {
     mode: isProdBuild ? "production" : "development",
-    devtool: isProdBuild ? undefined : "inline-cheap-module-source-map",
+    devtool: isProdBuild ? "source-map" : "inline-cheap-module-source-map",
     entry,
     module: {
       rules: [
@@ -54,18 +54,17 @@ const createWebpackConfig = ({
     },
     optimization: {
       minimizer: [
-        // We minify in gulp. Only minify if we look at stats.
-        isStatsBuild &&
-          new TerserPlugin({
-            cache: true,
-            parallel: true,
-            extractComments: true,
-            terserOptions: {
-              safari10: true,
-              ecma: latestBuild ? undefined : 5,
-            },
-          }),
-      ].filter(Boolean),
+        new TerserPlugin({
+          cache: true,
+          parallel: true,
+          extractComments: true,
+          sourceMap: true,
+          terserOptions: {
+            safari10: true,
+            ecma: latestBuild ? undefined : 5,
+          },
+        }),
+      ],
     },
     plugins: [
       new ManifestPlugin(),

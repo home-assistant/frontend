@@ -6,7 +6,6 @@ require("./translations.js");
 require("./gen-icons-json.js");
 require("./gather-static.js");
 require("./webpack.js");
-require("./minify.js");
 require("./service-worker.js");
 require("./entry-html.js");
 
@@ -36,7 +35,6 @@ gulp.task(
     gulp.parallel("gen-icons-json", "build-translations"),
     "copy-static-demo",
     "webpack-prod-demo",
-    "minify-demo",
     "gen-index-demo-prod"
   )
 );

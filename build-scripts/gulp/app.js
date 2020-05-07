@@ -9,7 +9,6 @@ require("./gen-icons-json.js");
 require("./gather-static.js");
 require("./compress.js");
 require("./webpack.js");
-require("./minify.js");
 require("./service-worker.js");
 require("./entry-html.js");
 
@@ -43,7 +42,7 @@ gulp.task(
     "copy-static",
     "webpack-prod-app",
     ...// Don't compress running tests
-    (envVars.isTest() ? [] : ["minify-app", "compress-app"]),
+    (envVars.isTest() ? [] : ["compress-app"]),
     gulp.parallel(
       "gen-pages-prod",
       "gen-index-app-prod",
