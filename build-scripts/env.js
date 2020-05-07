@@ -5,8 +5,8 @@ module.exports = {
   isStatsBuild() {
     return process.env.STATS === "1";
   },
-  isTravis() {
-    return process.env.TRAVIS === "true";
+  isTest() {
+    return process.env.IS_TEST === "true";
   },
   isNetlify() {
     return process.env.NETLIFY === "true";

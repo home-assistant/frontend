@@ -29,6 +29,6 @@ gulp.task(
     "gen-icons-json",
     "webpack-prod-hassio",
     ...// Don't compress running tests
-    (envVars.isTravis() ? [] : ["compress-hassio"])
+    (envVars.isTest() ? [] : ["compress-hassio"])
   )
 );
