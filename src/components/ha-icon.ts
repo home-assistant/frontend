@@ -73,6 +73,7 @@ export class HaIcon extends LitElement {
 
   protected updated(changedProps: PropertyValues) {
     if (changedProps.has("icon")) {
+      this._path = undefined;
       this._loadIcon();
     }
   }
