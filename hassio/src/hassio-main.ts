@@ -94,6 +94,20 @@ class HassioMain extends ProvideHassLitMixin(HassRouterPage) {
       this.hass.themes,
       this.hass.selectedTheme || this.hass.themes.default_theme
     );
+
+    this.style.setProperty(
+      "--app-header-background-color",
+      "var(--sidebar-background-color)"
+    );
+    this.style.setProperty(
+      "--app-header-text-color",
+      "var(--sidebar-text-color)"
+    );
+    this.style.setProperty(
+      "--app-header-border-bottom",
+      "1px solid var(--divider-color)"
+    );
+
     this.addEventListener("hass-api-called", (ev) => this._apiCalled(ev));
     // Paulus - March 17, 2019
     // We went to a single hass-toggle-menu event in HA 0.90. However, the
