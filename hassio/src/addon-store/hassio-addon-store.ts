@@ -12,7 +12,7 @@ import {
   HassioAddonRepository,
   reloadHassioAddons,
 } from "../../../src/data/hassio/addon";
-import "../../../src/components/ha-icon";
+import "../../../src/components/ha-icon-button";
 import "../../../src/layouts/loading-screen";
 import "../../../src/layouts/hass-tabs-subpage";
 import { HomeAssistant, Route } from "../../../src/types";
@@ -101,11 +101,11 @@ class HassioAddonStore extends LitElement {
           horizontal-offset="-5"
           slot="toolbar-icon"
         >
-          <ha-icon
+          <ha-icon-button
             icon="hassio:dots-vertical"
             slot="dropdown-trigger"
             alt="menu"
-          ></ha-icon>
+          ></ha-icon-button>
           <paper-listbox slot="dropdown-content" role="listbox">
             <paper-item @tap=${this._manageRepositories}>
               Repositories
