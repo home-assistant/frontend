@@ -16,7 +16,8 @@ export interface CreateSessionResponse {
 }
 
 export interface SupervisorOptions {
-  channel: "beta" | "dev" | "stable";
+  channel?: "beta" | "dev" | "stable";
+  addons_repositories?: string[];
 }
 
 export const fetchHassioHomeAssistantInfo = async (hass: HomeAssistant) => {
