@@ -4,6 +4,7 @@ module.exports.babelLoaderConfig = ({ latestBuild }) => {
   }
   return {
     test: /\.m?js$|\.tsx?$/,
+    exclude: [require.resolve("@mdi/js/mdi.js"), require.resolve("hls.js")],
     use: {
       loader: "babel-loader",
       options: {
@@ -12,12 +13,7 @@ module.exports.babelLoaderConfig = ({ latestBuild }) => {
             require("@babel/preset-env").default,
             { modules: false },
           ],
-          [
-            require("@babel/preset-typescript").default,
-            {
-              jsxPragma: "h",
-            },
-          ],
+          require("@babel/preset-typescript").default,
         ].filter(Boolean),
         plugins: [
           // Part of ES2018. Converts {...a, b: 2} to Object.assign({}, a, {b: 2})
