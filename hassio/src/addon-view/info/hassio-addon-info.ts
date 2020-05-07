@@ -175,7 +175,6 @@ class HassioAddonInfo extends LitElement {
             <div class="addon-version light-color">
               ${this.addon.version
                 ? html`
-                    ${this.addon.version}
                     ${this._computeIsRunning
                       ? html`
                           <ha-icon
@@ -196,6 +195,19 @@ class HassioAddonInfo extends LitElement {
             </div>
           </div>
           <div class="description light-color">
+            ${this.addon.version
+              ? html`
+                  Current version: ${this.addon.version}
+                  <div class="changelog" @click=${this._openChangelog}>
+                    (<span class="changelog-link">changelog</span>)
+                  </div>
+                `
+              : html`<span class="changelog-link" @click=${this._openChangelog}
+                  >Changelog</span
+                >`}
+          </div>
+
+          <div class="description light-color">
             ${this.addon.description}.<br />
             Visit
             <a href="${this.addon.url!}" target="_blank" rel="noreferrer">
@@ -205,14 +217,10 @@ class HassioAddonInfo extends LitElement {
           </div>
           ${this.addon.logo
             ? html`
-                <a
-                  href="${this.addon.url!}"
-                  target="_blank"
+                <img
                   class="logo"
-                  rel="noreferrer"
-                >
-                  <img src="/api/hassio/addons/${this.addon.slug}/logo" />
-                </a>
+                  src="/api/hassio/addons/${this.addon.slug}/logo"
+                />
               `
             : ""}
           <div class="security">
@@ -549,7 +557,7 @@ class HassioAddonInfo extends LitElement {
         .description {
           margin-bottom: 16px;
         }
-        .logo img {
+        img.logo {
           max-height: 60px;
           margin: 16px 0;
           display: block;
@@ -620,6 +628,14 @@ class HassioAddonInfo extends LitElement {
           margin-right: 4px;
           --mdc-icon-size: 45px;
           --ha-label-badge-padding: 8px 0 0 0;
+        }
+        .changelog {
+          display: contents;
+        }
+        .changelog-link {
+          color: var(--primary-color);
+          text-decoration: underline;
+          cursor: pointer;
         }
       `,
     ];
