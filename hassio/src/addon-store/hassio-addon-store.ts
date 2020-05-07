@@ -15,7 +15,6 @@ import {
 import "../../../src/components/ha-icon";
 import "../../../src/layouts/loading-screen";
 import "../../../src/layouts/hass-tabs-subpage";
-import { navigate } from "../../../src/common/navigate";
 import { HomeAssistant, Route } from "../../../src/types";
 import "../../../src/common/search/search-input";
 import "./hassio-addon-repository";
@@ -134,9 +133,9 @@ class HassioAddonStore extends LitElement {
           ? html`
               <div class="advanced">
                 Missing add-ons? Enable advanced mode on
-                <div class="advanced-link" @click=${this._openProfile}>
+                <a href="/profile" target="_top">
                   your profile page
-                </div>
+                </a>
                 .
               </div>
             `
@@ -179,10 +178,6 @@ class HassioAddonStore extends LitElement {
     this._filter = e.detail.value;
   }
 
-  private _openProfile(): void {
-    navigate(this, "/profile");
-  }
-
   static get styles(): CSSResult {
     return css`
       hassio-addon-repository {
@@ -203,11 +198,9 @@ class HassioAddonStore extends LitElement {
         flex-wrap: wrap;
         color: var(--primary-text-color);
       }
-      .advanced-link {
-        color: var(--primary-color);
-        text-decoration: underline;
-        cursor: pointer;
+      .advanced a {
         margin-left: 0.5em;
+        color: var(--primary-color);
       }
     `;
   }
