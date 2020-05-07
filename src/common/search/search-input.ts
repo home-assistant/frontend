@@ -77,6 +77,10 @@ class SearchInput extends LitElement {
 
   static get styles(): CSSResult {
     return css`
+      ha-icon,
+      ha-icon-button {
+        color: var(--primary-text-color);
+      }
       ha-icon {
         margin: 8px;
       }
