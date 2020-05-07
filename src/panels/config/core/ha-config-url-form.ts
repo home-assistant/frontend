@@ -19,6 +19,8 @@ import type { HomeAssistant } from "../../../types";
 class ConfigUrlForm extends LitElement {
   @property() public hass!: HomeAssistant;
 
+  @property() private _error?: string;
+
   @property() private _working = false;
 
   @property() private _external_url!: string;
@@ -45,7 +47,9 @@ class ConfigUrlForm extends LitElement {
                       </p>
                     `
                   : ""}
-
+                ${this._error
+                  ? html`<div class="error">${this._error}</div>`
+                  : ""}
                 <div class="row">
                   <div class="flex">
                     ${this.hass.localize(
@@ -119,13 +123,14 @@ class ConfigUrlForm extends LitElement {
 
   private async _save() {
     this._working = true;
+    this._error = undefined;
     try {
       await saveCoreConfig(this.hass, {
         external_url: this._external_url || null,
         internal_url: this._internal_url || null,
       });
     } catch (err) {
-      alert("Invalid URLs");
+      this._error = err.message || err;
     } finally {
       this._working = false;
     }
@@ -150,6 +155,9 @@ class ConfigUrlForm extends LitElement {
 
       .row > * {
         margin: 0 8px;
+      }
+      .error {
+        color: var(--error-color);
       }
     `;
   }
