@@ -1,5 +1,3 @@
-import { Icons } from "../components/ha-icon";
-
 export interface CustomIcons {
   [key: string]: { path: string; viewBox?: string };
 }
