@@ -150,9 +150,9 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
 
     let hourly: boolean | undefined;
 
-    if (forecast?.length && forecast?.length > 1) {
-      const date1 = new Date(forecast[0].datetime);
-      const date2 = new Date(forecast[1].datetime);
+    if (forecast?.length && forecast?.length > 2) {
+      const date1 = new Date(forecast[1].datetime);
+      const date2 = new Date(forecast[2].datetime);
       const timeDiff = date2.getTime() - date1.getTime();
 
       hourly = timeDiff < DAY_IN_MILLISECONDS;
