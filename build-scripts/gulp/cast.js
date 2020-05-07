@@ -4,6 +4,7 @@ require("./clean.js");
 require("./translations.js");
 require("./gather-static.js");
 require("./webpack.js");
+require("./minify.js");
 require("./service-worker.js");
 require("./entry-html.js");
 
@@ -12,7 +13,6 @@ gulp.task(
   gulp.series(
     async function setEnv() {
       process.env.NODE_ENV = "development";
-      process.env.IS_CAST = "true";
     },
     "clean-cast",
     "translations-enable-merge-backend",
@@ -33,6 +33,7 @@ gulp.task(
     gulp.parallel("gen-icons-json", "build-translations"),
     "copy-static-cast",
     "webpack-prod-cast",
+    "minify-cast",
     "gen-index-cast-prod"
   )
 );

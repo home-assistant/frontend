@@ -5,7 +5,11 @@ import { PolymerElement } from "@polymer/polymer/polymer-element";
 import { formatDateTime } from "../../common/datetime/format_date_time";
 import "../../components/ha-card";
 import "../../components/ha-icon-button";
-import { showAlertDialog } from "../../dialogs/generic/show-dialog-box";
+import {
+  showAlertDialog,
+  showPromptDialog,
+  showConfirmationDialog,
+} from "../../dialogs/generic/show-dialog-box";
 import { EventsMixin } from "../../mixins/events-mixin";
 import LocalizeMixin from "../../mixins/localize-mixin";
 import "../../resources/ha-style";
@@ -102,9 +106,11 @@ class HaLongLivedTokens extends LocalizeMixin(EventsMixin(PolymerElement)) {
   }
 
   async _handleCreate() {
-    const name = prompt(
-      this.localize("ui.panel.profile.long_lived_access_tokens.prompt_name")
-    );
+    const name = await showPromptDialog(this, {
+      text: this.localize(
+        "ui.panel.profile.long_lived_access_tokens.prompt_name"
+      ),
+    });
     if (!name) return;
     try {
       const token = await this.hass.callWS({
@@ -112,12 +118,13 @@ class HaLongLivedTokens extends LocalizeMixin(EventsMixin(PolymerElement)) {
         lifespan: 3650,
         client_name: name,
       });
-      prompt(
-        this.localize(
+      await showPromptDialog(this, {
+        title: name,
+        text: this.localize(
           "ui.panel.profile.long_lived_access_tokens.prompt_copy_token"
         ),
-        token
-      );
+        defaultValue: token,
+      });
       this.fire("hass-refresh-tokens");
     } catch (err) {
       // eslint-disable-next-line
@@ -131,21 +138,22 @@ class HaLongLivedTokens extends LocalizeMixin(EventsMixin(PolymerElement)) {
   }
 
   async _handleDelete(ev) {
+    const token = ev.model.item;
     if (
-      !confirm(
-        this.localize(
+      !(await showConfirmationDialog(this, {
+        text: this.localize(
           "ui.panel.profile.long_lived_access_tokens.confirm_delete",
           "name",
-          ev.model.item.client_name
-        )
-      )
+          token.client_name
+        ),
+      }))
     ) {
       return;
     }
     try {
       await this.hass.callWS({
         type: "auth/delete_refresh_token",
-        refresh_token_id: ev.model.item.id,
+        refresh_token_id: token.id,
       });
       this.fire("hass-refresh-tokens");
     } catch (err) {

@@ -175,7 +175,6 @@ class HassioAddonInfo extends LitElement {
             <div class="addon-version light-color">
               ${this.addon.version
                 ? html`
-                    ${this.addon.version}
                     ${this._computeIsRunning
                       ? html`
                           <ha-icon
@@ -196,6 +195,19 @@ class HassioAddonInfo extends LitElement {
             </div>
           </div>
           <div class="description light-color">
+            ${this.addon.version
+              ? html`
+                  Current version: ${this.addon.version}
+                  <div class="changelog" @click=${this._openChangelog}>
+                    (<span class="changelog-link">changelog</span>)
+                  </div>
+                `
+              : html`<span class="changelog-link" @click=${this._openChangelog}
+                  >Changelog</span
+                >`}
+          </div>
+
+          <div class="description light-color">
             ${this.addon.description}.<br />
             Visit
             <a href="${this.addon.url!}" target="_blank" rel="noreferrer">
@@ -205,14 +217,10 @@ class HassioAddonInfo extends LitElement {
           </div>
           ${this.addon.logo
             ? html`
-                <a
-                  href="${this.addon.url!}"
-                  target="_blank"
+                <img
                   class="logo"
-                  rel="noreferrer"
-                >
-                  <img src="/api/hassio/addons/${this.addon.slug}/logo" />
-                </a>
+                  src="/api/hassio/addons/${this.addon.slug}/logo"
+                />
               `
             : ""}
           <div class="security">
@@ -352,14 +360,18 @@ class HassioAddonInfo extends LitElement {
                     haptic
                   ></ha-switch>
                 </div>
-                <div class="state">
-                  <div>Auto update</div>
-                  <ha-switch
-                    @change=${this._autoUpdateToggled}
-                    .checked=${this.addon.auto_update}
-                    haptic
-                  ></ha-switch>
-                </div>
+                ${this.addon.auto_update || this.hass.userData?.showAdvanced
+                  ? html`
+                      <div class="state">
+                        <div>Auto update</div>
+                        <ha-switch
+                          @change=${this._autoUpdateToggled}
+                          .checked=${this.addon.auto_update}
+                          haptic
+                        ></ha-switch>
+                      </div>
+                    `
+                  : ""}
                 ${this.addon.ingress
                   ? html`
                       <div class="state">
@@ -534,6 +546,7 @@ class HassioAddonInfo extends LitElement {
           color: var(--secondary-text-color);
         }
         .addon-header {
+          padding-left: 8px;
           font-size: 24px;
           color: var(--paper-card-header-color, --primary-text-color);
         }
@@ -549,7 +562,7 @@ class HassioAddonInfo extends LitElement {
         .description {
           margin-bottom: 16px;
         }
-        .logo img {
+        img.logo {
           max-height: 60px;
           margin: 16px 0;
           display: block;
@@ -618,8 +631,15 @@ class HassioAddonInfo extends LitElement {
         .security ha-label-badge {
           cursor: pointer;
           margin-right: 4px;
-          --mdc-icon-size: 45px;
           --ha-label-badge-padding: 8px 0 0 0;
+        }
+        .changelog {
+          display: contents;
+        }
+        .changelog-link {
+          color: var(--primary-color);
+          text-decoration: underline;
+          cursor: pointer;
         }
       `,
     ];

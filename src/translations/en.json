@@ -231,10 +231,13 @@
       }
     },
     "common": {
+      "previous": "Previous",
       "loading": "Loading",
+      "refresh": "Refresh",
       "cancel": "Cancel",
       "delete": "Delete",
       "close": "Close",
+      "next": "Next",
       "undo": "Undo",
       "save": "Save",
       "yes": "Yes",
@@ -499,6 +502,7 @@
       "sidebar_toggle": "Sidebar Toggle"
     },
     "panel": {
+      "calendar": { "my_calendars": "My Calendars", "today": "Today" },
       "config": {
         "header": "Configure Home Assistant",
         "introduction": "Here it is possible to configure your components and Home Assistant. Not everything is possible to configure from the UI yet, but we're working on it.",
@@ -1187,6 +1191,7 @@
         "devices": {
           "caption": "Devices",
           "description": "Manage connected devices",
+          "device_info": "Device info",
           "unnamed_device": "Unnamed device",
           "unknown_error": "Unknown error",
           "name": "Name",
