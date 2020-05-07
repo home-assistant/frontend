@@ -33,72 +33,73 @@ class ConfigUrlForm extends LitElement {
     );
     const disabled = this._working || !canEdit;
 
-    if (this.hass.userData?.showAdvanced) {
-      return html`
-        <ha-card>
-          <div class="card-content">
-            ${!canEdit
-              ? html`
-                  <p>
-                    ${this.hass.localize(
-                      "ui.panel.config.core.section.core.core_config.edit_requires_storage"
-                    )}
-                  </p>
-                `
-              : ""}
-            ${this._error ? html`<div class="error">${this._error}</div>` : ""}
-            <div class="row">
-              <div class="flex">
-                ${this.hass.localize(
-                  "ui.panel.config.core.section.core.core_config.external_url"
-                )}
-              </div>
-
-              <paper-input
-                class="flex"
-                .label=${this.hass.localize(
-                  "ui.panel.config.core.section.core.core_config.external_url"
-                )}
-                name="external_url"
-                type="url"
-                .disabled=${disabled}
-                .value=${this._externalUrlValue}
-                @value-changed=${this._handleChange}
-              >
-              </paper-input>
-            </div>
-
-            <div class="row">
-              <div class="flex">
-                ${this.hass.localize(
-                  "ui.panel.config.core.section.core.core_config.internal_url"
-                )}
-              </div>
-              <paper-input
-                class="flex"
-                .label=${this.hass.localize(
-                  "ui.panel.config.core.section.core.core_config.internal_url"
-                )}
-                name="internal_url"
-                type="url"
-                .disabled=${disabled}
-                .value=${this._internalUrlValue}
-                @value-changed=${this._handleChange}
-              >
-              </paper-input>
-            </div>
-          </div>
-          <div class="card-actions">
-            <mwc-button @click=${this._save} .disabled=${disabled}>
-              ${this.hass.localize(
-                "ui.panel.config.core.section.core.core_config.save_button"
-              )}
-            </mwc-button>
-          </div>
-        </ha-card>
-      `;
+    if (!this.hass.userData?.showAdvanced) {
+      return html``;
     }
-    return html``;
+
+    return html`
+      <ha-card>
+        <div class="card-content">
+          ${!canEdit
+            ? html`
+                <p>
+                  ${this.hass.localize(
+                    "ui.panel.config.core.section.core.core_config.edit_requires_storage"
+                  )}
+                </p>
+              `
+            : ""}
+          ${this._error ? html`<div class="error">${this._error}</div>` : ""}
+          <div class="row">
+            <div class="flex">
+              ${this.hass.localize(
+                "ui.panel.config.core.section.core.core_config.external_url"
+              )}
+            </div>
+
+            <paper-input
+              class="flex"
+              .label=${this.hass.localize(
+                "ui.panel.config.core.section.core.core_config.external_url"
+              )}
+              name="external_url"
+              type="url"
+              .disabled=${disabled}
+              .value=${this._externalUrlValue}
+              @value-changed=${this._handleChange}
+            >
+            </paper-input>
+          </div>
+
+          <div class="row">
+            <div class="flex">
+              ${this.hass.localize(
+                "ui.panel.config.core.section.core.core_config.internal_url"
+              )}
+            </div>
+            <paper-input
+              class="flex"
+              .label=${this.hass.localize(
+                "ui.panel.config.core.section.core.core_config.internal_url"
+              )}
+              name="internal_url"
+              type="url"
+              .disabled=${disabled}
+              .value=${this._internalUrlValue}
+              @value-changed=${this._handleChange}
+            >
+            </paper-input>
+          </div>
+        </div>
+        <div class="card-actions">
+          <mwc-button @click=${this._save} .disabled=${disabled}>
+            ${this.hass.localize(
+              "ui.panel.config.core.section.core.core_config.save_button"
+            )}
+          </mwc-button>
+        </div>
+      </ha-card>
+    `;
   }
 
   private get _internalUrlValue() {
