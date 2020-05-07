@@ -198,8 +198,7 @@ class HassioAddonInfo extends LitElement {
               ? html`
                   Current version: ${this.addon.version}
                   <div class="changelog" @click=${this._openChangelog}>
-                    <span>(</span><span class="changelog-link">changelog</span
-                    ><span>)</span>
+                    (<span class="changelog-link">changelog</span>)
                   </div>
                 `
               : html`<span class="changelog-link" @click=${this._openChangelog}
