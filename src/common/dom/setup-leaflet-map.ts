@@ -1,4 +1,4 @@
-import { Map } from "leaflet";
+import type { Map } from "leaflet";
 
 // Sets up a Leaflet map on the provided DOM element
 export type LeafletModuleType = typeof import("leaflet");
@@ -13,9 +13,9 @@ export const setupLeafletMap = async (
     throw new Error("Cannot setup Leaflet map on disconnected element");
   }
   // eslint-disable-next-line
-  const Leaflet = (await import(
+  const Leaflet = ((await import(
     /* webpackChunkName: "leaflet" */ "leaflet"
-  )) as LeafletModuleType;
+  )) as any).default as LeafletModuleType;
   Leaflet.Icon.Default.imagePath = "/static/images/leaflet/images/";
 
   if (draw) {
