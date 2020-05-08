@@ -590,7 +590,9 @@
                 "unit_system_metric": "Metric",
                 "imperial_example": "Fahrenheit, pounds",
                 "metric_example": "Celsius, kilograms",
-                "save_button": "Save"
+                "save_button": "Save",
+                "external_url": "External URL",
+                "internal_url": "Internal URL"
               }
             }
           }
