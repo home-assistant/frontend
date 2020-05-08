@@ -11,6 +11,7 @@ import LocalizeMixin from "../../../mixins/localize-mixin";
 import CoverEntity from "../../../util/cover-model";
 
 const FEATURE_CLASS_NAMES = {
+  4: "has-set_position",
   128: "has-set_tilt_position",
 };
 class MoreInfoCover extends LocalizeMixin(PolymerElement) {
@@ -24,6 +25,7 @@ class MoreInfoCover extends LocalizeMixin(PolymerElement) {
           overflow: hidden;
         }
 
+        .has-set_position .current_position,
         .has-current_position .current_position,
         .has-set_tilt_position .tilt,
         .has-current_tilt_position .tilt {
