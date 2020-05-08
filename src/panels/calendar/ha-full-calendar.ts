@@ -10,10 +10,14 @@ import {
 } from "lit-element";
 import { Calendar } from "@fullcalendar/core";
 import dayGridPlugin from "@fullcalendar/daygrid";
+import listPlugin from "@fullcalendar/list";
+import interactionPlugin from "@fullcalendar/interaction";
 // @ts-ignore
 import fullcalendarStyle from "@fullcalendar/core/main.css";
 // @ts-ignore
 import daygridStyle from "@fullcalendar/daygrid/main.css";
+// @ts-ignore
+import listStyle from "@fullcalendar/list/main.css";
 import "@material/mwc-button";
 
 import "../../components/ha-icon-button";
@@ -22,8 +26,9 @@ import "../../components/ha-button-toggle-group";
 import type {
   CalendarViewChanged,
   CalendarEvent,
-  ToggleButton,
+  ToggleViewButton,
   HomeAssistant,
+  FullCalendarView,
 } from "../../types";
 import { fireEvent } from "../../common/dom/fire_event";
 import { haStyle } from "../../resources/styles";
@@ -34,33 +39,43 @@ declare global {
   }
 }
 
-const fullCalendarConfig = {
+const defaultFullCalendarConfig = {
   headerToolbar: false,
-  plugins: [dayGridPlugin],
+  plugins: [dayGridPlugin, listPlugin, interactionPlugin],
   initialView: "dayGridMonth",
   dayMaxEventRows: true,
-  height: "parent",
 };
 
-const viewButtons: ToggleButton[] = [
+const viewButtons: ToggleViewButton[] = [
   { label: "Month View", value: "dayGridMonth", icon: "hass:view-module" },
   { label: "Week View", value: "dayGridWeek", icon: "hass:view-week" },
   { label: "Day View", value: "dayGridDay", icon: "hass:view-day" },
+  { label: "List View", value: "listWeek", icon: "hass:view-agenda" },
 ];
 
 class HAFullCalendar extends LitElement {
   public hass!: HomeAssistant;
 
-  @property() public events: CalendarEvent[] = [];
-
   @property({ type: Boolean, reflect: true })
   public narrow!: boolean;
+
+  @property() public events: CalendarEvent[] = [];
+
+  @property() public views: FullCalendarView[] = [
+    "dayGridMonth",
+    "dayGridWeek",
+    "dayGridDay",
+  ];
 
   @property() private calendar?: Calendar;
 
   @property() private _activeView = "dayGridMonth";
 
   protected render(): TemplateResult {
+    const viewToggleButtons = viewButtons.filter((button) =>
+      this.views.includes(button.value)
+    );
+
     return html`
       ${this.calendar
         ? html`
@@ -95,27 +110,12 @@ class HAFullCalendar extends LitElement {
                       ${this.calendar.view.title}
                     </h1>
                     <ha-button-toggle-group
-                      .buttons=${viewButtons}
+                      .buttons=${viewToggleButtons}
                       .active=${this._activeView}
                       @value-changed=${this._handleView}
                     ></ha-button-toggle-group>
                   `
                 : html`
-                    <div class="controls">
-                      <mwc-button
-                        outlined
-                        class="today"
-                        @click=${this._handleToday}
-                        >${this.hass.localize(
-                          "ui.panel.calendar.today"
-                        )}</mwc-button
-                      >
-                      <ha-button-toggle-group
-                        .buttons=${viewButtons}
-                        .active=${this._activeView}
-                        @value-changed=${this._handleView}
-                      ></ha-button-toggle-group>
-                    </div>
                     <div class="controls">
                       <h1>
                         ${this.calendar.view.title}
@@ -136,6 +136,21 @@ class HAFullCalendar extends LitElement {
                         >
                         </ha-icon-button>
                       </div>
+                    </div>
+                    <div class="controls">
+                      <mwc-button
+                        outlined
+                        class="today"
+                        @click=${this._handleToday}
+                        >${this.hass.localize(
+                          "ui.panel.calendar.today"
+                        )}</mwc-button
+                      >
+                      <ha-button-toggle-group
+                        .buttons=${viewToggleButtons}
+                        .active=${this._activeView}
+                        @value-changed=${this._handleView}
+                      ></ha-button-toggle-group>
                     </div>
                   `}
             </div>
@@ -159,7 +174,24 @@ class HAFullCalendar extends LitElement {
   }
 
   protected firstUpdated(): void {
-    const config = { ...fullCalendarConfig, locale: this.hass.language };
+    const config = {
+      ...defaultFullCalendarConfig,
+      locale: this.hass.language,
+      views: {
+        dayGridMonth: {
+          eventDisplay: "list-item",
+          dayMaxEventRows: 15,
+        },
+      },
+      dateClick: (info) => {
+        if (info.view.type !== "dayGridMonth") {
+          return;
+        }
+        this._activeView = "dayGridDay";
+        this.calendar!.changeView("dayGridDay");
+        this.calendar!.gotoDate(info.dateStr);
+      },
+    };
 
     this.calendar = new Calendar(
       this.shadowRoot!.getElementById("calendar")!,
@@ -206,8 +238,9 @@ class HAFullCalendar extends LitElement {
       css`
         ${unsafeCSS(fullcalendarStyle)}
         ${unsafeCSS(daygridStyle)}
-
-      :host {
+        ${unsafeCSS(listStyle)}
+      
+        :host {
           display: flex;
           flex-direction: column;
         }
@@ -256,6 +289,7 @@ class HAFullCalendar extends LitElement {
         #calendar {
           flex-grow: 1;
           background-color: var(--card-background-color);
+          min-height: 400px;
         }
 
         .fc-scrollgrid-section-header td {
@@ -288,6 +322,10 @@ class HAFullCalendar extends LitElement {
 
         td.fc-day-today {
           background: inherit;
+        }
+
+        td.fc-day-today .fc-daygrid-day-top {
+          padding-top: 4px;
         }
 
         td.fc-day-today .fc-daygrid-day-number {
@@ -330,6 +368,45 @@ class HAFullCalendar extends LitElement {
 
         .fc-popover-header {
           background-color: var(--secondary-background-color) !important;
+        .fc-theme-standard .fc-list-day-frame {
+          background-color: transparent;
+        }
+
+        .fc-list.fc-view,
+        .fc-list-event.fc-event td {
+          border: none;
+        }
+
+        .fc-list-day.fc-day th {
+          border-bottom: none;
+          border-top: 1px solid var(--fc-theme-standard-border-color, #ddd) !important;
+        }
+
+        .fc-list-day-text {
+          font-size: 16px;
+          font-weight: 400;
+        }
+
+        .fc-list-day-side-text {
+          font-weight: 400;
+          font-size: 16px;
+          color: var(--primary-color);
+        }
+
+        .fc-list-table td, .fc-list-day-frame {
+          padding-top: 12px;
+          padding-bottom: 12px;
+        }
+
+        :host([narrow]) .fc-dayGridMonth-view .fc-daygrid-dot-event .fc-event-time, 
+        :host([narrow]) .fc-dayGridMonth-view .fc-daygrid-dot-event .fc-event-title {
+          display: none;
+        }
+
+        :host([narrow]) .fc-dayGridMonth-view .fc-daygrid-day-events {
+          display: flex;
+          min-height: 2em !important;
+          justify-content: center;
         }
       `,
     ];

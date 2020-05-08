@@ -1184,6 +1184,20 @@
   dependencies:
     tslib "^1.9.3"
 
+"@fullcalendar/interaction@5.0.0-beta.2":
+  version "5.0.0-beta.2"
+  resolved "https://registry.yarnpkg.com/@fullcalendar/interaction/-/interaction-5.0.0-beta.2.tgz#3895d7fd25a76fdcacdf979426fd714437fa5266"
+  integrity sha512-io/0fVAssn2BQxcIqcE3lQuljbe5eBwH8M73+Se93ngTHju0abv0YqKAR4EqQml5+tjCxfjdXgQBLknTOwdD4w==
+  dependencies:
+    tslib "^1.9.3"
+
+"@fullcalendar/list@5.0.0-beta.2":
+  version "5.0.0-beta.2"
+  resolved "https://registry.yarnpkg.com/@fullcalendar/list/-/list-5.0.0-beta.2.tgz#f0503c1151980ecdc03e77f8b30b96396a19f81e"
+  integrity sha512-EMneoZPyTPUvXABxFWXTTccgl2/biZSvaUbD/FB4lXNuydwJYk7lwQ7Eop5YyrElzJaQWTDnwrm0XVKBCHf/dg==
+  dependencies:
+    tslib "^1.9.3"
+
 "@gfx/zopfli@^1.0.9":
   version "1.0.11"
   resolved "https://registry.yarnpkg.com/@gfx/zopfli/-/zopfli-1.0.11.tgz#6ced06b4566a5feb0036fe6a1e0262ce6cb1d6c5"

@@ -52,12 +52,6 @@ class PanelCalendar extends LitElement {
       selected: true,
       calendar,
     }));
-
-    if (!this._start || !this._end) {
-      return;
-    }
-
-    this._fetchEvents(this._start, this._end, this._selectedCalendars);
   }
 
   protected render(): TemplateResult {
@@ -87,8 +81,8 @@ class PanelCalendar extends LitElement {
                   <mwc-formfield .label=${selCal.calendar.name}>
                     <mwc-checkbox
                       style=${styleMap({
-                        "--mdc-theme-secondary":
-                          selCal.calendar.backgroundColor,
+                        "--mdc-theme-secondary": selCal.calendar
+                          .backgroundColor!,
                       })}
                       .value=${selCal.calendar.entity_id}
                       .checked=${selCal.selected}

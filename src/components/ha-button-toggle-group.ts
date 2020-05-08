@@ -11,11 +11,11 @@ import {
 import "./ha-icon-button";
 
 import { fireEvent } from "../common/dom/fire_event";
-import type { ToggleButton } from "../types";
+import type { ToggleViewButton } from "../types";
 
 @customElement("ha-button-toggle-group")
 export class HaButtonToggleGroup extends LitElement {
-  @property() public buttons!: ToggleButton[];
+  @property() public buttons!: ToggleViewButton[];
 
   @property() public active?: string;
 
@@ -23,14 +23,16 @@ export class HaButtonToggleGroup extends LitElement {
     return html`
       <div>
         ${this.buttons.map(
-          (button) => html` <ha-icon-button
-            .label=${button.label}
-            .icon=${button.icon}
-            .value=${button.value}
-            ?active=${this.active === button.value}
-            @click=${this._handleClick}
-          >
-          </ha-icon-button>`
+          (button) => html`
+            <ha-icon-button
+              .label=${button.label}
+              .icon=${button.icon}
+              .value=${button.value}
+              ?active=${this.active === button.value}
+              @click=${this._handleClick}
+            >
+            </ha-icon-button>
+          `
         )}
       </div>
     `;
