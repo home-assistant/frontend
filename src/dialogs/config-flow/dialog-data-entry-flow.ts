@@ -339,7 +339,6 @@ class DataEntryFlowDialog extends LitElement {
         ha-icon-button {
           display: inline-block;
           padding: 8px;
-          margin: 16px 16px 0 0;
           float: right;
         }
       `,
