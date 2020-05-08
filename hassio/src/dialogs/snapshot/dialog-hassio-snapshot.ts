@@ -9,7 +9,6 @@ import {
   html,
   LitElement,
   property,
-  query,
   TemplateResult,
 } from "lit-element";
 import { getSignedPath } from "../../../../src/data/auth";
