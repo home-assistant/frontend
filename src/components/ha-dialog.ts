@@ -4,17 +4,19 @@ import { style } from "@material/mwc-dialog/mwc-dialog-css";
 import "./ha-icon-button";
 import { css, CSSResult, customElement, html } from "lit-element";
 import type { Constructor, HomeAssistant } from "../types";
+import { mdiClose } from "@mdi/js";
 
 const MwcDialog = customElements.get("mwc-dialog") as Constructor<Dialog>;
 
 export const createCloseHeading = (hass: HomeAssistant, title: string) => html`
   ${title}
-  <ha-icon-button
+  <mwc-icon-button
     aria-label=${hass.localize("ui.dialogs.generic.close")}
-    icon="hass:close"
     dialogAction="close"
     class="close_button"
-  ></ha-icon-button>
+  >
+    <ha-svg-icon path=${mdiClose}></ha-svg-icon>
+  </mwc-icon-button>
 `;
 
 @customElement("ha-dialog")

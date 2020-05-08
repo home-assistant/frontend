@@ -1,4 +1,3 @@
-import "../../components/ha-icon-button";
 import "@polymer/paper-input/paper-input";
 import {
   css,
@@ -9,8 +8,10 @@ import {
 } from "lit-element";
 import { html, TemplateResult } from "lit-html";
 import { classMap } from "lit-html/directives/class-map";
-import "../../components/ha-icon";
+import "../../components/ha-svg-icon";
 import { fireEvent } from "../dom/fire_event";
+import { mdiMagnify, mdiClose } from "@mdi/js";
+import "@material/mwc-icon-button/mwc-icon-button";
 
 @customElement("search-input")
 class SearchInput extends LitElement {
@@ -47,17 +48,22 @@ class SearchInput extends LitElement {
         @value-changed=${this._filterInputChanged}
         .noLabelFloat=${this.noLabelFloat}
       >
-        <ha-icon icon="hass:magnify" slot="prefix" class="prefix"></ha-icon>
+        <ha-svg-icon
+          path=${mdiMagnify}
+          slot="prefix"
+          class="prefix"
+        ></ha-svg-icon>
         ${this.filter &&
         html`
-          <ha-icon-button
+          <mwc-icon-button
             slot="suffix"
             class="suffix"
             @click=${this._clearSearch}
-            icon="hass:close"
             alt="Clear"
             title="Clear"
-          ></ha-icon-button>
+          >
+            <ha-svg-icon path=${mdiClose}></ha-svg-icon>
+          </mwc-icon-button>
         `}
       </paper-input>
     `;
@@ -77,11 +83,14 @@ class SearchInput extends LitElement {
 
   static get styles(): CSSResult {
     return css`
-      ha-icon,
-      ha-icon-button {
+      ha-svg-icon,
+      mwc-icon-button {
         color: var(--primary-text-color);
       }
-      ha-icon {
+      mwc-icon-button {
+        --mdc-icon-button-size: 24px;
+      }
+      ha-svg-icon.prefix {
         margin: 8px;
       }
     `;

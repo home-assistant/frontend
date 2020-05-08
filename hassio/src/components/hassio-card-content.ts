@@ -8,8 +8,9 @@ import {
   TemplateResult,
 } from "lit-element";
 import "../../../src/components/ha-relative-time";
-import "../../../src/components/ha-icon";
+import "../../../src/components/ha-svg-icon";
 import { HomeAssistant } from "../../../src/types";
+import { mdiHelpCircle } from "@mdi/js";
 
 @customElement("hassio-card-content")
 class HassioCardContent extends LitElement {
@@ -31,7 +32,7 @@ class HassioCardContent extends LitElement {
 
   @property() public iconClass?: string;
 
-  @property() public icon = "hass:help-circle";
+  @property() public icon = mdiHelpCircle;
 
   @property() public iconImage?: string;
 
@@ -48,11 +49,11 @@ class HassioCardContent extends LitElement {
             </div>
           `
         : html`
-            <ha-icon
+            <ha-svg-icon
               class=${this.iconClass}
-              .icon=${this.icon}
+              .path=${this.icon}
               .title=${this.iconTitle}
-            ></ha-icon>
+            ></ha-svg-icon>
           `}
       <div>
         <div class="title">
@@ -78,25 +79,25 @@ class HassioCardContent extends LitElement {
 
   static get styles(): CSSResult {
     return css`
-      ha-icon {
+      ha-svg-icon {
         margin-right: 24px;
         margin-left: 8px;
         margin-top: 12px;
         float: left;
         color: var(--secondary-text-color);
       }
-      ha-icon.update {
+      ha-svg-icon.update {
         color: var(--paper-orange-400);
       }
-      ha-icon.running,
-      ha-icon.installed {
+      ha-svg-icon.running,
+      ha-svg-icon.installed {
         color: var(--paper-green-400);
       }
-      ha-icon.hassupdate,
-      ha-icon.snapshot {
+      ha-svg-icon.hassupdate,
+      ha-svg-icon.snapshot {
         color: var(--paper-item-icon-color);
       }
-      ha-icon.not_available {
+      ha-svg-icon.not_available {
         color: var(--google-red-500);
       }
       .title {

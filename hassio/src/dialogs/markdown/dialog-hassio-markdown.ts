@@ -1,7 +1,3 @@
-import "@polymer/app-layout/app-toolbar/app-toolbar";
-import { PaperDialogElement } from "@polymer/paper-dialog";
-import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable";
-import "../../../../src/components/ha-icon-button";
 import {
   css,
   CSSResult,
@@ -12,41 +8,46 @@ import {
   query,
   TemplateResult,
 } from "lit-element";
-import "../../../../src/components/dialog/ha-paper-dialog";
 import "../../../../src/components/ha-markdown";
 import { haStyleDialog } from "../../../../src/resources/styles";
 import { hassioStyle } from "../../resources/hassio-style";
 import { HassioMarkdownDialogParams } from "./show-dialog-hassio-markdown";
+import { createCloseHeading } from "../../../../src/components/ha-dialog";
+import { HomeAssistant } from "../../../../src/types";
 
 @customElement("dialog-hassio-markdown")
 class HassioMarkdownDialog extends LitElement {
+  @property() public hass!: HomeAssistant;
+
   @property() public title!: string;
 
   @property() public content!: string;
 
-  @query("#dialog") private _dialog!: PaperDialogElement;
+  @property() private _opened = false;
 
   public showDialog(params: HassioMarkdownDialogParams) {
     this.title = params.title;
     this.content = params.content;
-    this._dialog.open();
+    this._opened = true;
   }
 
   protected render(): TemplateResult {
+    if (!this._opened) {
+      return html``;
+    }
     return html`
-      <ha-paper-dialog id="dialog" with-backdrop="">
-        <app-toolbar>
-          <ha-icon-button
-            icon="hassio:close"
-            dialog-dismiss=""
-          ></ha-icon-button>
-          <div main-title="">${this.title}</div>
-        </app-toolbar>
-        <paper-dialog-scrollable>
-          <ha-markdown .content=${this.content || ""}></ha-markdown>
-        </paper-dialog-scrollable>
-      </ha-paper-dialog>
+      <ha-dialog
+        open
+        @closing=${this._closeDialog}
+        .heading=${createCloseHeading(this.hass, this.title)}
+      >
+        <ha-markdown .content=${this.content || ""}></ha-markdown>
+      </ha-dialog>
     `;
+  }
+
+  private _closeDialog(): void {
+    this._opened = false;
   }
 
   static get styles(): CSSResult[] {

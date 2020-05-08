@@ -15,27 +15,28 @@ import "../../src/resources/ha-style";
 import { HomeAssistant, Route } from "../../src/types";
 import "./hassio-panel-router";
 import type { PageNavigation } from "../../src/layouts/hass-tabs-subpage";
+import { mdiViewDashboard, mdiStore, mdiBackupRestore, mdiCogs } from "@mdi/js";
 
 export const supervisorTabs: PageNavigation[] = [
   {
     name: "Dashboard",
     path: `/hassio/dashboard`,
-    icon: "hassio:view-dashboard",
+    iconPath: mdiViewDashboard,
   },
   {
     name: "Add-on store",
     path: `/hassio/store`,
-    icon: "hassio:store",
+    iconPath: mdiStore,
   },
   {
     name: "Snapshots",
     path: `/hassio/snapshots`,
-    icon: "hassio:backup-restore",
+    iconPath: mdiBackupRestore,
   },
   {
     name: "System",
     path: `/hassio/system`,
-    icon: "hassio:cogs",
+    iconPath: mdiCogs,
   },
 ];
 

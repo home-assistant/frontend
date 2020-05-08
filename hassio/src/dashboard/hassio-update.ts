@@ -1,5 +1,4 @@
 import "@material/mwc-button";
-import "@polymer/paper-card/paper-card";
 import {
   css,
   CSSResult,
@@ -16,10 +15,11 @@ import {
   HassioSupervisorInfo,
 } from "../../../src/data/hassio/supervisor";
 import { haStyle } from "../../../src/resources/styles";
-import "../../../src/components/ha-icon";
+import "../../../src/components/ha-svg-icon";
 import { HomeAssistant } from "../../../src/types";
-import "../components/hassio-card-content";
 import { hassioStyle } from "../resources/hassio-style";
+import { mdiHomeAssistant } from "@mdi/js";
+import "../../../src/components/ha-card";
 
 @customElement("hassio-update")
 export class HassioUpdate extends LitElement {
@@ -72,7 +72,7 @@ export class HassioUpdate extends LitElement {
             `https://${
               this.hassInfo.version_latest.includes("b") ? "rc" : "www"
             }.home-assistant.io/latest-release-notes/`,
-            "hassio:home-assistant"
+            mdiHomeAssistant
           )}
           ${this._renderUpdateCard(
             "Supervisor",
@@ -107,12 +107,12 @@ export class HassioUpdate extends LitElement {
       return html``;
     }
     return html`
-      <paper-card>
+      <ha-card>
         <div class="card-content">
           ${icon
             ? html`
                 <div class="icon">
-                  <ha-icon .icon=${icon}></ha-icon>
+                  <ha-svg-icon .path=${icon}></ha-svg-icon>
                 </div>
               `
             : ""}
@@ -133,7 +133,7 @@ export class HassioUpdate extends LitElement {
             Update
           </ha-call-api-button>
         </div>
-      </paper-card>
+      </ha-card>
     `;
   }
 

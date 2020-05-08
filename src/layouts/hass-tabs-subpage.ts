@@ -16,6 +16,7 @@ import { navigate } from "../common/navigate";
 import "../components/ha-menu-button";
 import "../components/ha-icon-button-arrow-prev";
 import { HomeAssistant, Route } from "../types";
+import "../components/ha-svg-icon";
 import "../components/ha-icon";
 
 export interface PageNavigation {
@@ -26,6 +27,7 @@ export interface PageNavigation {
   core?: boolean;
   advancedOnly?: boolean;
   icon?: string;
+  iconPath?: string;
   info?: any;
 }
 
@@ -33,11 +35,11 @@ export interface PageNavigation {
 class HassTabsSubpage extends LitElement {
   @property() public hass!: HomeAssistant;
 
+  @property({ type: Boolean }) public hassio = false;
+
   @property({ type: String, attribute: "back-path" }) public backPath?: string;
 
   @property() public backCallback?: () => void;
-
-  @property({ type: Boolean }) public hassio = false;
 
   @property({ type: Boolean, attribute: "main-page" }) public mainPage = false;
 
@@ -77,7 +79,9 @@ class HassTabsSubpage extends LitElement {
               .path=${page.path}
             >
               ${this.narrow
-                ? html` <ha-icon .icon=${page.icon}></ha-icon> `
+                ? page.iconPath
+                  ? html`<ha-svg-icon .path=${page.iconPath}></ha-svg-icon>`
+                  : html`<ha-icon .icon=${page.icon}></ha-icon>`
                 : ""}
               ${!this.narrow || page === activeTab
                 ? html`
@@ -119,8 +123,8 @@ class HassTabsSubpage extends LitElement {
         ${this.mainPage
           ? html`
               <ha-menu-button
-                .hass=${this.hass}
                 .hassio=${this.hassio}
+                .hass=${this.hass}
                 .narrow=${this.narrow}
               ></ha-menu-button>
             `
@@ -172,6 +176,10 @@ class HassTabsSubpage extends LitElement {
         display: block;
         height: 100%;
         background-color: var(--primary-background-color);
+      }
+
+      ha-menu-button {
+        margin-right: 24px;
       }
 
       .toolbar {

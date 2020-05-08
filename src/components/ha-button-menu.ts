@@ -6,18 +6,19 @@ import {
   CSSResult,
   css,
   query,
+  property,
 } from "lit-element";
 import "@material/mwc-button";
 import "@material/mwc-menu";
 import "@material/mwc-list/mwc-list-item";
-import type { Menu } from "@material/mwc-menu";
-
-import { haStyle } from "../resources/styles";
+import type { Menu, Corner } from "@material/mwc-menu";
 
 import "./ha-icon-button";
 
 @customElement("ha-button-menu")
 export class HaButtonMenu extends LitElement {
+  @property() public corner: Corner = "TOP_START";
+
   @query("mwc-menu") private _menu?: Menu;
 
   protected render(): TemplateResult {
@@ -25,7 +26,7 @@ export class HaButtonMenu extends LitElement {
       <div @click=${this._handleClick}>
         <slot name="trigger"></slot>
       </div>
-      <mwc-menu>
+      <mwc-menu .corner=${this.corner}>
         <slot></slot>
       </mwc-menu>
     `;
@@ -36,15 +37,13 @@ export class HaButtonMenu extends LitElement {
     this._menu!.show();
   }
 
-  static get styles(): CSSResult[] {
-    return [
-      haStyle,
-      css`
-        :host {
-          position: relative;
-        }
-      `,
-    ];
+  static get styles(): CSSResult {
+    return css`
+      :host {
+        display: block;
+        position: relative;
+      }
+    `;
   }
 }
 

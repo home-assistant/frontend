@@ -1,4 +1,3 @@
-import "@polymer/paper-card/paper-card";
 import {
   css,
   CSSResult,
@@ -15,6 +14,8 @@ import { haStyle } from "../../../src/resources/styles";
 import { HomeAssistant } from "../../../src/types";
 import "../components/hassio-card-content";
 import { hassioStyle } from "../resources/hassio-style";
+import "../../../src/components/ha-card";
+import { mdiArrowUpBoldCircle, mdiPuzzle } from "@mdi/js";
 
 @customElement("hassio-addons")
 class HassioAddons extends LitElement {
@@ -29,19 +30,19 @@ class HassioAddons extends LitElement {
         <div class="card-group">
           ${!this.addons
             ? html`
-                <paper-card>
+                <ha-card>
                   <div class="card-content">
                     You don't have any add-ons installed yet. Head over to
                     <a href="#" @click=${this._openStore}>the add-on store</a>
                     to get started!
                   </div>
-                </paper-card>
+                </ha-card>
               `
             : this.addons
                 .sort((a, b) => (a.name > b.name ? 1 : -1))
                 .map(
                   (addon) => html`
-                    <paper-card .addon=${addon} @click=${this._addonTapped}>
+                    <ha-card .addon=${addon} @click=${this._addonTapped}>
                       <div class="card-content">
                         <hassio-card-content
                           .hass=${this.hass}
@@ -51,8 +52,8 @@ class HassioAddons extends LitElement {
                           .showTopbar=${addon.installed !== addon.version}
                           topbarClass="update"
                           .icon=${addon.installed !== addon.version
-                            ? "hassio:arrow-up-bold-circle"
-                            : "hassio:puzzle"}
+                            ? mdiArrowUpBoldCircle
+                            : mdiPuzzle}
                           .iconTitle=${addon.state !== "started"
                             ? "Add-on is stopped"
                             : addon.installed !== addon.version
@@ -75,7 +76,7 @@ class HassioAddons extends LitElement {
                             : undefined}
                         ></hassio-card-content>
                       </div>
-                    </paper-card>
+                    </ha-card>
                   `
                 )}
         </div>
@@ -88,7 +89,7 @@ class HassioAddons extends LitElement {
       haStyle,
       hassioStyle,
       css`
-        paper-card {
+        ha-card {
           cursor: pointer;
         }
       `,

@@ -1,5 +1,5 @@
 import "@material/mwc-button";
-import "@polymer/paper-card/paper-card";
+import "@material/mwc-icon-button";
 import "@polymer/paper-checkbox/paper-checkbox";
 import type { PaperCheckboxElement } from "@polymer/paper-checkbox/paper-checkbox";
 import "@polymer/paper-input/paper-input";
@@ -37,6 +37,9 @@ import { showHassioSnapshotDialog } from "../dialogs/snapshot/show-dialog-hassio
 import { hassioStyle } from "../resources/hassio-style";
 
 import { supervisorTabs } from "../hassio-panel";
+import { mdiPackageVariantClosed, mdiPackageVariant, mdiReload } from "@mdi/js";
+import "../../../src/components/ha-card";
+import "../../../src/components/ha-svg-icon";
 
 interface CheckboxItem {
   slug: string;
@@ -98,12 +101,13 @@ class HassioSnapshots extends LitElement {
       >
         <span slot="header">Snapshots</span>
 
-        <ha-icon-button
-          icon="hassio:reload"
+        <mwc-icon-button
           slot="toolbar-icon"
           aria-label="Reload snapshots"
           @click=${this.refreshData}
-        ></ha-icon-button>
+        >
+          <ha-svg-icon path=${mdiReload}></ha-svg-icon>
+        </mwc-icon-button>
 
         <div class="content">
           <h1>
@@ -114,7 +118,7 @@ class HassioSnapshots extends LitElement {
             Home Assistant instance.
           </p>
           <div class="card-group">
-            <paper-card>
+            <ha-card>
               <div class="card-content">
                 <paper-input
                   autofocus
@@ -195,7 +199,7 @@ class HassioSnapshots extends LitElement {
                   Create
                 </mwc-button>
               </div>
-            </paper-card>
+            </ha-card>
           </div>
 
           <h1>Available snapshots</h1>
@@ -204,15 +208,15 @@ class HassioSnapshots extends LitElement {
               ? undefined
               : this._snapshots.length === 0
               ? html`
-                  <paper-card>
+                  <ha-card>
                     <div class="card-content">
                       You don't have any snapshots yet.
                     </div>
-                  </paper-card>
+                  </ha-card>
                 `
               : this._snapshots.map(
                   (snapshot) => html`
-                    <paper-card
+                    <ha-card
                       class="pointer"
                       .snapshot=${snapshot}
                       @click=${this._snapshotClicked}
@@ -224,12 +228,12 @@ class HassioSnapshots extends LitElement {
                           .description=${this._computeDetails(snapshot)}
                           .datetime=${snapshot.date}
                           .icon=${snapshot.type === "full"
-                            ? "hassio:package-variant-closed"
-                            : "hassio:package-variant"}
+                            ? mdiPackageVariantClosed
+                            : mdiPackageVariant}
                           .icon-class="snapshot"
                         ></hassio-card-content>
                       </div>
-                    </paper-card>
+                    </ha-card>
                   `
                 )}
           </div>

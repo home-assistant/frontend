@@ -26,6 +26,12 @@ import type { PageNavigation } from "../../../src/layouts/hass-tabs-subpage";
 import "../../../src/layouts/hass-tabs-subpage";
 
 import "./hassio-addon-router";
+import {
+  mdiInformationVariant,
+  mdiFileDocument,
+  mdiCogs,
+  mdiMathLog,
+} from "@mdi/js";
 
 @customElement("hassio-addon-dashboard")
 class HassioAddonDashboard extends LitElement {
@@ -59,7 +65,7 @@ class HassioAddonDashboard extends LitElement {
       {
         name: "Info",
         path: `/hassio/addon/${this.addon.slug}/info`,
-        icon: "hassio:information-variant",
+        iconPath: mdiInformationVariant,
       },
     ];
 
@@ -67,7 +73,7 @@ class HassioAddonDashboard extends LitElement {
       addonTabs.push({
         name: "Documentation",
         path: `/hassio/addon/${this.addon.slug}/documentation`,
-        icon: "hassio:file-document",
+        iconPath: mdiFileDocument,
       });
     }
 
@@ -76,12 +82,12 @@ class HassioAddonDashboard extends LitElement {
         {
           name: "Configuration",
           path: `/hassio/addon/${this.addon.slug}/config`,
-          icon: "hassio:cogs",
+          iconPath: mdiCogs,
         },
         {
           name: "Log",
           path: `/hassio/addon/${this.addon.slug}/logs`,
-          icon: "hassio:math-log",
+          iconPath: mdiMathLog,
         }
       );
     }

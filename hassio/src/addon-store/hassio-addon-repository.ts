@@ -1,4 +1,4 @@
-import "@polymer/paper-card/paper-card";
+import { mdiPuzzle, mdiArrowUpBoldCircle } from "@mdi/js";
 import {
   css,
   CSSResultArray,
@@ -18,6 +18,7 @@ import { HomeAssistant } from "../../../src/types";
 import "../components/hassio-card-content";
 import { filterAndSort } from "../components/hassio-filter-addons";
 import { hassioStyle } from "../resources/hassio-style";
+import "../../../src/components/ha-card";
 
 class HassioAddonRepositoryEl extends LitElement {
   @property() public hass!: HomeAssistant;
@@ -66,7 +67,7 @@ class HassioAddonRepositoryEl extends LitElement {
         <div class="card-group">
           ${addons.map(
             (addon) => html`
-              <paper-card
+              <ha-card
                 .addon=${addon}
                 class=${addon.available ? "" : "not_available"}
                 @click=${this._addonTapped}
@@ -78,8 +79,8 @@ class HassioAddonRepositoryEl extends LitElement {
                     .description=${addon.description}
                     .available=${addon.available}
                     .icon=${addon.installed && addon.installed !== addon.version
-                      ? "hassio:arrow-up-bold-circle"
-                      : "hassio:puzzle"}
+                      ? mdiArrowUpBoldCircle
+                      : mdiPuzzle}
                     .iconTitle=${addon.installed
                       ? addon.installed !== addon.version
                         ? "New version available"
@@ -111,7 +112,7 @@ class HassioAddonRepositoryEl extends LitElement {
                       : ""}
                   ></hassio-card-content>
                 </div>
-              </paper-card>
+              </ha-card>
             `
           )}
         </div>
@@ -127,7 +128,7 @@ class HassioAddonRepositoryEl extends LitElement {
     return [
       hassioStyle,
       css`
-        paper-card {
+        ha-card {
           cursor: pointer;
         }
         .not_available {
