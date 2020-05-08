@@ -1,16 +1,27 @@
-import { HaIconButton } from "./ha-icon-button";
+import { LitElement, property, TemplateResult, html } from "lit-element";
+import { mdiArrowLeft, mdiArrowRight } from "@mdi/js";
+import "@material/mwc-icon-button/mwc-icon-button";
+import "./ha-svg-icon";
 
-export class HaIconButtonArrowPrev extends HaIconButton {
+export class HaIconButtonArrowPrev extends LitElement {
+  @property() private _icon = mdiArrowLeft;
+
   public connectedCallback() {
     super.connectedCallback();
 
     // wait to check for direction since otherwise direction is wrong even though top level is RTL
     setTimeout(() => {
-      this.icon =
+      this._icon =
         window.getComputedStyle(this).direction === "ltr"
-          ? "hass:arrow-left"
-          : "hass:arrow-right";
+          ? mdiArrowLeft
+          : mdiArrowRight;
     }, 100);
+  }
+
+  protected render(): TemplateResult {
+    return html`<mwc-icon-button>
+      <ha-svg-icon .path=${this._icon}></ha-svg-icon>
+    </mwc-icon-button> `;
   }
 }
 

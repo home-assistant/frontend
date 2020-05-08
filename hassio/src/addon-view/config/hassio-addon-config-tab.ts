@@ -8,12 +8,10 @@ import {
   property,
   TemplateResult,
 } from "lit-element";
-
-import { HomeAssistant } from "../../../../src/types";
 import { HassioAddonDetails } from "../../../../src/data/hassio/addon";
-import { hassioStyle } from "../../resources/hassio-style";
 import { haStyle } from "../../../../src/resources/styles";
-
+import { HomeAssistant } from "../../../../src/types";
+import { hassioStyle } from "../../resources/hassio-style";
 import "./hassio-addon-audio";
 import "./hassio-addon-config";
 import "./hassio-addon-network";
