@@ -1,5 +1,5 @@
---require test-mocha/testconf.js
 --require jsdom-global/register
+--file test-mocha/testconf.js
 --recursive
 --timeout 10000
 test-mocha/**/*.ts
