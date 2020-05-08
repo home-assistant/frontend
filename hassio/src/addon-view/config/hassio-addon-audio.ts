@@ -1,5 +1,4 @@
 import "@material/mwc-button";
-import "@polymer/paper-card/paper-card";
 import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
@@ -26,6 +25,7 @@ import {
 import { suggestAddonRestart } from "../../dialogs/suggestAddonRestart";
 import { haStyle } from "../../../../src/resources/styles";
 import { HomeAssistant } from "../../../../src/types";
+import "../../../../src/components/ha-card";
 import { hassioStyle } from "../../resources/hassio-style";
 
 @customElement("hassio-addon-audio")
@@ -46,7 +46,7 @@ class HassioAddonAudio extends LitElement {
 
   protected render(): TemplateResult {
     return html`
-      <paper-card heading="Audio">
+      <ha-card heading="Audio">
         <div class="card-content">
           ${this._error ? html` <div class="errors">${this._error}</div> ` : ""}
 
@@ -92,7 +92,7 @@ class HassioAddonAudio extends LitElement {
         <div class="card-actions">
           <mwc-button @click=${this._saveSettings}>Save</mwc-button>
         </div>
-      </paper-card>
+      </ha-card>
     `;
   }
 
@@ -102,7 +102,7 @@ class HassioAddonAudio extends LitElement {
       hassioStyle,
       css`
         :host,
-        paper-card,
+        ha-card,
         paper-dropdown-menu {
           display: block;
         }

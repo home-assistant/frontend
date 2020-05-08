@@ -1,5 +1,4 @@
 import "@material/mwc-button";
-import "@polymer/paper-card/paper-card";
 import {
   css,
   CSSResult,
@@ -16,6 +15,7 @@ import {
 import { haStyle } from "../../../../src/resources/styles";
 import { HomeAssistant } from "../../../../src/types";
 import "../../components/hassio-ansi-to-html";
+import "../../../../src/components/ha-card";
 import { hassioStyle } from "../../resources/hassio-style";
 
 @customElement("hassio-addon-logs")
@@ -36,7 +36,7 @@ class HassioAddonLogs extends LitElement {
   protected render(): TemplateResult {
     return html`
       <h1>${this.addon.name}</h1>
-      <paper-card>
+      <ha-card>
         ${this._error ? html` <div class="errors">${this._error}</div> ` : ""}
         <div class="card-content">
           ${this._content
@@ -48,7 +48,7 @@ class HassioAddonLogs extends LitElement {
         <div class="card-actions">
           <mwc-button @click=${this._refresh}>Refresh</mwc-button>
         </div>
-      </paper-card>
+      </ha-card>
     `;
   }
 
@@ -58,7 +58,7 @@ class HassioAddonLogs extends LitElement {
       hassioStyle,
       css`
         :host,
-        paper-card {
+        ha-card {
           display: block;
         }
         .errors {

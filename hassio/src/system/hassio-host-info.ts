@@ -1,5 +1,4 @@
 import "@material/mwc-button";
-import "@polymer/paper-card/paper-card";
 import {
   css,
   CSSResult,
@@ -42,7 +41,7 @@ class HassioHostInfo extends LitElement {
 
   public render(): TemplateResult | void {
     return html`
-      <paper-card>
+      <ha-card>
         <div class="card-content">
           <h2>Host system</h2>
           <table class="info">
@@ -113,7 +112,7 @@ class HassioHostInfo extends LitElement {
             ? html` <mwc-button @click=${this._updateOS}>Update</mwc-button> `
             : ""}
         </div>
-      </paper-card>
+      </ha-card>
     `;
   }
 
@@ -122,7 +121,7 @@ class HassioHostInfo extends LitElement {
       haStyle,
       hassioStyle,
       css`
-        paper-card {
+        ha-card {
           height: 100%;
           width: 100%;
         }

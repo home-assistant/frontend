@@ -121,7 +121,6 @@ class HassioAddonDashboard extends LitElement {
       css`
         :host {
           color: var(--primary-text-color);
-          --paper-card-header-color: var(--primary-text-color);
         }
         .content {
           padding: 24px 0 32px;

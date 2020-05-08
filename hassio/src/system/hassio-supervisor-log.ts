@@ -2,7 +2,6 @@ import "@material/mwc-button";
 import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
-import "@polymer/paper-card/paper-card";
 import {
   css,
   CSSResult,
@@ -19,6 +18,7 @@ import { fetchHassioLogs } from "../../../src/data/hassio/supervisor";
 
 import "../components/hassio-ansi-to-html";
 import { hassioStyle } from "../resources/hassio-style";
+import "../../../src/components/ha-card";
 import "../../../src/layouts/loading-screen";
 
 interface LogProvider {
@@ -70,7 +70,7 @@ class HassioSupervisorLog extends LitElement {
 
   public render(): TemplateResult | void {
     return html`
-      <paper-card>
+      <ha-card>
         ${this._error ? html` <div class="errors">${this._error}</div> ` : ""}
         ${this.hass.userData?.showAdvanced
           ? html`
@@ -105,7 +105,7 @@ class HassioSupervisorLog extends LitElement {
         <div class="card-actions">
           <mwc-button @click=${this._refresh}>Refresh</mwc-button>
         </div>
-      </paper-card>
+      </ha-card>
     `;
   }
 
@@ -114,7 +114,7 @@ class HassioSupervisorLog extends LitElement {
       haStyle,
       hassioStyle,
       css`
-        paper-card {
+        ha-card {
           width: 100%;
         }
         pre {
