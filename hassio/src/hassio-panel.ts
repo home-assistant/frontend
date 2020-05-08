@@ -1,3 +1,4 @@
+import { mdiBackupRestore, mdiCogs, mdiStore, mdiViewDashboard } from "@mdi/js";
 import {
   customElement,
   html,
@@ -5,17 +6,15 @@ import {
   property,
   TemplateResult,
 } from "lit-element";
-
 import { HassioHassOSInfo, HassioHostInfo } from "../../src/data/hassio/host";
 import {
   HassioHomeAssistantInfo,
   HassioSupervisorInfo,
 } from "../../src/data/hassio/supervisor";
+import type { PageNavigation } from "../../src/layouts/hass-tabs-subpage";
 import "../../src/resources/ha-style";
 import { HomeAssistant, Route } from "../../src/types";
 import "./hassio-panel-router";
-import type { PageNavigation } from "../../src/layouts/hass-tabs-subpage";
-import { mdiViewDashboard, mdiStore, mdiBackupRestore, mdiCogs } from "@mdi/js";
 
 export const supervisorTabs: PageNavigation[] = [
   {

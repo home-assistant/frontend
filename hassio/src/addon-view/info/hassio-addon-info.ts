@@ -1,4 +1,20 @@
 import "@material/mwc-button";
+import {
+  mdiArrowUpBoldCircle,
+  mdiCheckCircle,
+  mdiChip,
+  mdiCircle,
+  mdiCursorDefaultClickOutline,
+  mdiDocker,
+  mdiExclamationThick,
+  mdiFlask,
+  mdiHomeAssistant,
+  mdiInformation,
+  mdiKey,
+  mdiNetwork,
+  mdiPound,
+  mdiShield,
+} from "@mdi/js";
 import "@polymer/paper-tooltip/paper-tooltip";
 import {
   css,
@@ -15,10 +31,11 @@ import { fireEvent } from "../../../../src/common/dom/fire_event";
 import { navigate } from "../../../../src/common/navigate";
 import "../../../../src/components/buttons/ha-call-api-button";
 import "../../../../src/components/buttons/ha-progress-button";
+import "../../../../src/components/ha-card";
 import "../../../../src/components/ha-label-badge";
 import "../../../../src/components/ha-markdown";
-import "../../../../src/components/ha-switch";
 import "../../../../src/components/ha-svg-icon";
+import "../../../../src/components/ha-switch";
 import {
   fetchHassioAddonChangelog,
   HassioAddonDetails,
@@ -29,29 +46,12 @@ import {
   setHassioAddonSecurity,
   uninstallHassioAddon,
 } from "../../../../src/data/hassio/addon";
+import { showConfirmationDialog } from "../../../../src/dialogs/generic/show-dialog-box";
 import { haStyle } from "../../../../src/resources/styles";
 import { HomeAssistant } from "../../../../src/types";
 import "../../components/hassio-card-content";
 import { showHassioMarkdownDialog } from "../../dialogs/markdown/show-dialog-hassio-markdown";
 import { hassioStyle } from "../../resources/hassio-style";
-import { showConfirmationDialog } from "../../../../src/dialogs/generic/show-dialog-box";
-import "../../../../src/components/ha-card";
-import {
-  mdiArrowUpBoldCircle,
-  mdiNetwork,
-  mdiCircle,
-  mdiCheckCircle,
-  mdiFlask,
-  mdiExclamationThick,
-  mdiChip,
-  mdiHomeAssistant,
-  mdiDocker,
-  mdiPound,
-  mdiShield,
-  mdiKey,
-  mdiCursorDefaultClickOutline,
-  mdiInformation,
-} from "@mdi/js";
 
 const STAGE_ICON = {
   stable: mdiCheckCircle,

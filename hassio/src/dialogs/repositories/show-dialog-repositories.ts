@@ -1,6 +1,6 @@
 import { fireEvent } from "../../../../src/common/dom/fire_event";
-import "./dialog-hassio-repositories";
 import { HassioAddonRepository } from "../../../../src/data/hassio/addon";
+import "./dialog-hassio-repositories";
 
 export interface HassioRepositoryDialogParams {
   repos: HassioAddonRepository[];

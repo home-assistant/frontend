@@ -10,16 +10,15 @@ import {
   TemplateResult,
 } from "lit-element";
 import { fireEvent } from "../../../../src/common/dom/fire_event";
+import "../../../../src/components/ha-card";
 import {
   HassioAddonDetails,
   HassioAddonSetOptionParams,
   setHassioAddonOption,
 } from "../../../../src/data/hassio/addon";
-import { suggestAddonRestart } from "../../dialogs/suggestAddonRestart";
-
 import { haStyle } from "../../../../src/resources/styles";
 import { HomeAssistant } from "../../../../src/types";
-import "../../../../src/components/ha-card";
+import { suggestAddonRestart } from "../../dialogs/suggestAddonRestart";
 import { hassioStyle } from "../../resources/hassio-style";
 
 interface NetworkItem {

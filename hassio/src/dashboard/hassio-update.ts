@@ -1,4 +1,5 @@
 import "@material/mwc-button";
+import { mdiHomeAssistant } from "@mdi/js";
 import {
   css,
   CSSResult,
@@ -9,17 +10,16 @@ import {
   TemplateResult,
 } from "lit-element";
 import "../../../src/components/buttons/ha-call-api-button";
+import "../../../src/components/ha-card";
+import "../../../src/components/ha-svg-icon";
 import { HassioHassOSInfo } from "../../../src/data/hassio/host";
 import {
   HassioHomeAssistantInfo,
   HassioSupervisorInfo,
 } from "../../../src/data/hassio/supervisor";
 import { haStyle } from "../../../src/resources/styles";
-import "../../../src/components/ha-svg-icon";
 import { HomeAssistant } from "../../../src/types";
 import { hassioStyle } from "../resources/hassio-style";
-import { mdiHomeAssistant } from "@mdi/js";
-import "../../../src/components/ha-card";
 
 @customElement("hassio-update")
 export class HassioUpdate extends LitElement {

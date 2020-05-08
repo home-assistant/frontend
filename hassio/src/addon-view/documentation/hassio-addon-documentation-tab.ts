@@ -8,16 +8,15 @@ import {
   property,
   TemplateResult,
 } from "lit-element";
-
-import { HomeAssistant } from "../../../../src/types";
-import {
-  HassioAddonDetails,
-  fetchHassioAddonDocumentation,
-} from "../../../../src/data/hassio/addon";
 import "../../../../src/components/ha-markdown";
+import {
+  fetchHassioAddonDocumentation,
+  HassioAddonDetails,
+} from "../../../../src/data/hassio/addon";
 import "../../../../src/layouts/loading-screen";
-import { hassioStyle } from "../../resources/hassio-style";
 import { haStyle } from "../../../../src/resources/styles";
+import { HomeAssistant } from "../../../../src/types";
+import { hassioStyle } from "../../resources/hassio-style";
 
 @customElement("hassio-addon-documentation-tab")
 class HassioAddonDocumentationDashboard extends LitElement {

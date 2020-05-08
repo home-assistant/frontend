@@ -1,3 +1,4 @@
+import { mdiArrowUpBoldCircle, mdiPuzzle } from "@mdi/js";
 import {
   css,
   CSSResult,
@@ -9,13 +10,12 @@ import {
 } from "lit-element";
 import { atLeastVersion } from "../../../src/common/config/version";
 import { navigate } from "../../../src/common/navigate";
+import "../../../src/components/ha-card";
 import { HassioAddonInfo } from "../../../src/data/hassio/addon";
 import { haStyle } from "../../../src/resources/styles";
 import { HomeAssistant } from "../../../src/types";
 import "../components/hassio-card-content";
 import { hassioStyle } from "../resources/hassio-style";
-import "../../../src/components/ha-card";
-import { mdiArrowUpBoldCircle, mdiPuzzle } from "@mdi/js";
 
 @customElement("hassio-addons")
 class HassioAddons extends LitElement {

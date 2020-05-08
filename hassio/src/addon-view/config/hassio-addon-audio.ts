@@ -13,6 +13,7 @@ import {
   TemplateResult,
 } from "lit-element";
 import "web-animations-js/web-animations-next-lite.min";
+import "../../../../src/components/ha-card";
 import {
   HassioAddonDetails,
   HassioAddonSetOptionParams,
@@ -22,10 +23,9 @@ import {
   fetchHassioHardwareAudio,
   HassioHardwareAudioDevice,
 } from "../../../../src/data/hassio/hardware";
-import { suggestAddonRestart } from "../../dialogs/suggestAddonRestart";
 import { haStyle } from "../../../../src/resources/styles";
 import { HomeAssistant } from "../../../../src/types";
-import "../../../../src/components/ha-card";
+import { suggestAddonRestart } from "../../dialogs/suggestAddonRestart";
 import { hassioStyle } from "../../resources/hassio-style";
 
 @customElement("hassio-addon-audio")

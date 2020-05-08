@@ -1,3 +1,6 @@
+import "@material/mwc-icon-button/mwc-icon-button";
+import "@material/mwc-list/mwc-list-item";
+import { mdiDotsVertical } from "@mdi/js";
 import {
   css,
   CSSResult,
@@ -6,26 +9,21 @@ import {
   PropertyValues,
 } from "lit-element";
 import { html, TemplateResult } from "lit-html";
+import "../../../src/common/search/search-input";
+import "../../../src/components/ha-button-menu";
+import "../../../src/components/ha-svg-icon";
 import {
   fetchHassioAddonsInfo,
   HassioAddonInfo,
   HassioAddonRepository,
   reloadHassioAddons,
 } from "../../../src/data/hassio/addon";
-import "../../../src/components/ha-svg-icon";
-import "../../../src/components/ha-button-menu";
-import "../../../src/layouts/loading-screen";
 import "../../../src/layouts/hass-tabs-subpage";
+import "../../../src/layouts/loading-screen";
 import { HomeAssistant, Route } from "../../../src/types";
-import "../../../src/common/search/search-input";
-import "./hassio-addon-repository";
-
-import { supervisorTabs } from "../hassio-panel";
-
 import { showRepositoriesDialog } from "../dialogs/repositories/show-dialog-repositories";
-import { mdiDotsVertical } from "@mdi/js";
-import "@material/mwc-list/mwc-list-item";
-import "@material/mwc-icon-button/mwc-icon-button";
+import { supervisorTabs } from "../hassio-panel";
+import "./hassio-addon-repository";
 
 const sortRepos = (a: HassioAddonRepository, b: HassioAddonRepository) => {
   if (a.slug === "local") {

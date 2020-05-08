@@ -1,5 +1,6 @@
 import "@material/mwc-button";
 import "@material/mwc-icon-button";
+import { mdiPackageVariant, mdiPackageVariantClosed, mdiReload } from "@mdi/js";
 import "@polymer/paper-checkbox/paper-checkbox";
 import type { PaperCheckboxElement } from "@polymer/paper-checkbox/paper-checkbox";
 import "@polymer/paper-input/paper-input";
@@ -18,6 +19,8 @@ import {
   TemplateResult,
 } from "lit-element";
 import { fireEvent } from "../../../src/common/dom/fire_event";
+import "../../../src/components/ha-card";
+import "../../../src/components/ha-svg-icon";
 import {
   createHassioFullSnapshot,
   createHassioPartialSnapshot,
@@ -28,18 +31,14 @@ import {
   reloadHassioSnapshots,
 } from "../../../src/data/hassio/snapshot";
 import { HassioSupervisorInfo } from "../../../src/data/hassio/supervisor";
+import "../../../src/layouts/hass-tabs-subpage";
 import { PolymerChangedEvent } from "../../../src/polymer-types";
 import { haStyle } from "../../../src/resources/styles";
 import { HomeAssistant, Route } from "../../../src/types";
-import "../../../src/layouts/hass-tabs-subpage";
 import "../components/hassio-card-content";
 import { showHassioSnapshotDialog } from "../dialogs/snapshot/show-dialog-hassio-snapshot";
-import { hassioStyle } from "../resources/hassio-style";
-
 import { supervisorTabs } from "../hassio-panel";
-import { mdiPackageVariantClosed, mdiPackageVariant, mdiReload } from "@mdi/js";
-import "../../../src/components/ha-card";
-import "../../../src/components/ha-svg-icon";
+import { hassioStyle } from "../resources/hassio-style";
 
 interface CheckboxItem {
   slug: string;

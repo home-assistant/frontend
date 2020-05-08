@@ -1,6 +1,6 @@
 import "@material/mwc-button";
+import { mdiDelete, mdiDownload, mdiHistory } from "@mdi/js";
 import { PaperCheckboxElement } from "@polymer/paper-checkbox/paper-checkbox";
-import "../../../../src/components/ha-svg-icon";
 import "@polymer/paper-input/paper-input";
 import {
   css,
@@ -11,6 +11,8 @@ import {
   property,
   TemplateResult,
 } from "lit-element";
+import { createCloseHeading } from "../../../../src/components/ha-dialog";
+import "../../../../src/components/ha-svg-icon";
 import { getSignedPath } from "../../../../src/data/auth";
 import {
   fetchHassioSnapshotInfo,
@@ -20,8 +22,6 @@ import { PolymerChangedEvent } from "../../../../src/polymer-types";
 import { haStyleDialog } from "../../../../src/resources/styles";
 import { HomeAssistant } from "../../../../src/types";
 import { HassioSnapshotDialogParams } from "./show-dialog-hassio-snapshot";
-import { createCloseHeading } from "../../../../src/components/ha-dialog";
-import { mdiDownload, mdiHistory, mdiDelete } from "@mdi/js";
 
 const _computeFolders = (folders) => {
   const list: Array<{ slug: string; name: string; checked: boolean }> = [];

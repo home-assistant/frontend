@@ -11,15 +11,13 @@ import {
   property,
   TemplateResult,
 } from "lit-element";
+import "../../../src/components/ha-card";
+import { fetchHassioLogs } from "../../../src/data/hassio/supervisor";
+import "../../../src/layouts/loading-screen";
 import { haStyle } from "../../../src/resources/styles";
 import { HomeAssistant } from "../../../src/types";
-
-import { fetchHassioLogs } from "../../../src/data/hassio/supervisor";
-
 import "../components/hassio-ansi-to-html";
 import { hassioStyle } from "../resources/hassio-style";
-import "../../../src/components/ha-card";
-import "../../../src/layouts/loading-screen";
 
 interface LogProvider {
   key: string;

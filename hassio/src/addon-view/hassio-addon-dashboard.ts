@@ -1,3 +1,9 @@
+import {
+  mdiCogs,
+  mdiFileDocument,
+  mdiInformationVariant,
+  mdiMathLog,
+} from "@mdi/js";
 import "@polymer/paper-spinner/paper-spinner-lite";
 import {
   css,
@@ -13,24 +19,17 @@ import {
   fetchHassioAddonInfo,
   HassioAddonDetails,
 } from "../../../src/data/hassio/addon";
+import "../../../src/layouts/hass-tabs-subpage";
+import type { PageNavigation } from "../../../src/layouts/hass-tabs-subpage";
 import { haStyle } from "../../../src/resources/styles";
 import { HomeAssistant, Route } from "../../../src/types";
 import { hassioStyle } from "../resources/hassio-style";
 import "./config/hassio-addon-audio";
 import "./config/hassio-addon-config";
+import "./config/hassio-addon-network";
+import "./hassio-addon-router";
 import "./info/hassio-addon-info";
 import "./log/hassio-addon-logs";
-import "./config/hassio-addon-network";
-import type { PageNavigation } from "../../../src/layouts/hass-tabs-subpage";
-import "../../../src/layouts/hass-tabs-subpage";
-
-import "./hassio-addon-router";
-import {
-  mdiInformationVariant,
-  mdiFileDocument,
-  mdiCogs,
-  mdiMathLog,
-} from "@mdi/js";
 
 @customElement("hassio-addon-dashboard")
 class HassioAddonDashboard extends LitElement {

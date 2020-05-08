@@ -1,4 +1,4 @@
-import { mdiPuzzle, mdiArrowUpBoldCircle } from "@mdi/js";
+import { mdiArrowUpBoldCircle, mdiPuzzle } from "@mdi/js";
 import {
   css,
   CSSResultArray,
@@ -10,6 +10,7 @@ import {
 import memoizeOne from "memoize-one";
 import { atLeastVersion } from "../../../src/common/config/version";
 import { navigate } from "../../../src/common/navigate";
+import "../../../src/components/ha-card";
 import {
   HassioAddonInfo,
   HassioAddonRepository,
@@ -18,7 +19,6 @@ import { HomeAssistant } from "../../../src/types";
 import "../components/hassio-card-content";
 import { filterAndSort } from "../components/hassio-filter-addons";
 import { hassioStyle } from "../resources/hassio-style";
-import "../../../src/components/ha-card";
 
 class HassioAddonRepositoryEl extends LitElement {
   @property() public hass!: HomeAssistant;

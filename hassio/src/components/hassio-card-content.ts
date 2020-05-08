@@ -1,3 +1,4 @@
+import { mdiHelpCircle } from "@mdi/js";
 import {
   css,
   CSSResult,
@@ -10,7 +11,6 @@ import {
 import "../../../src/components/ha-relative-time";
 import "../../../src/components/ha-svg-icon";
 import { HomeAssistant } from "../../../src/types";
-import { mdiHelpCircle } from "@mdi/js";
 
 @customElement("hassio-card-content")
 class HassioCardContent extends LitElement {

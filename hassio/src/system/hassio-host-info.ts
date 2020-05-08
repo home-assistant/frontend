@@ -11,23 +11,23 @@ import {
 import "../../../src/components/buttons/ha-call-api-button";
 import { fetchHassioHardwareInfo } from "../../../src/data/hassio/hardware";
 import {
+  changeHostOptions,
   fetchHassioHostInfo,
   HassioHassOSInfo,
   HassioHostInfo as HassioHostInfoType,
   rebootHost,
   shutdownHost,
   updateOS,
-  changeHostOptions,
 } from "../../../src/data/hassio/host";
+import {
+  showAlertDialog,
+  showConfirmationDialog,
+  showPromptDialog,
+} from "../../../src/dialogs/generic/show-dialog-box";
 import { haStyle } from "../../../src/resources/styles";
 import { HomeAssistant } from "../../../src/types";
 import { showHassioMarkdownDialog } from "../dialogs/markdown/show-dialog-hassio-markdown";
 import { hassioStyle } from "../resources/hassio-style";
-import {
-  showConfirmationDialog,
-  showAlertDialog,
-  showPromptDialog,
-} from "../../../src/dialogs/generic/show-dialog-box";
 
 @customElement("hassio-host-info")
 class HassioHostInfo extends LitElement {

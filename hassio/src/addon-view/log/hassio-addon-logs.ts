@@ -8,6 +8,7 @@ import {
   property,
   TemplateResult,
 } from "lit-element";
+import "../../../../src/components/ha-card";
 import {
   fetchHassioAddonLogs,
   HassioAddonDetails,
@@ -15,7 +16,6 @@ import {
 import { haStyle } from "../../../../src/resources/styles";
 import { HomeAssistant } from "../../../../src/types";
 import "../../components/hassio-ansi-to-html";
-import "../../../../src/components/ha-card";
 import { hassioStyle } from "../../resources/hassio-style";
 
 @customElement("hassio-addon-logs")

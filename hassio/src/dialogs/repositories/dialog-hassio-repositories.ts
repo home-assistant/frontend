@@ -1,10 +1,11 @@
 import "@material/mwc-button/mwc-button";
 import "@material/mwc-icon-button/mwc-icon-button";
+import { mdiDelete } from "@mdi/js";
 import "@polymer/paper-input/paper-input";
-import "@polymer/paper-spinner/paper-spinner";
 import type { PaperInputElement } from "@polymer/paper-input/paper-input";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-item/paper-item-body";
+import "@polymer/paper-spinner/paper-spinner";
 import {
   css,
   CSSResult,
@@ -18,17 +19,14 @@ import {
 import memoizeOne from "memoize-one";
 import "../../../../src/components/ha-dialog";
 import "../../../../src/components/ha-svg-icon";
-
+import {
+  fetchHassioAddonsInfo,
+  HassioAddonRepository,
+} from "../../../../src/data/hassio/addon";
+import { setSupervisorOption } from "../../../../src/data/hassio/supervisor";
 import { haStyle, haStyleDialog } from "../../../../src/resources/styles";
 import type { HomeAssistant } from "../../../../src/types";
-import {
-  HassioAddonRepository,
-  fetchHassioAddonsInfo,
-} from "../../../../src/data/hassio/addon";
-
-import { setSupervisorOption } from "../../../../src/data/hassio/supervisor";
 import { HassioRepositoryDialogParams } from "./show-dialog-repositories";
-import { mdiDelete } from "@mdi/js";
 
 @customElement("dialog-hassio-repositories")
 class HassioRepositoriesDialog extends LitElement {

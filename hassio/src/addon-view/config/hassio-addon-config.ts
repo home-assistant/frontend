@@ -12,8 +12,8 @@ import {
   TemplateResult,
 } from "lit-element";
 import { fireEvent } from "../../../../src/common/dom/fire_event";
-import "../../../../src/components/ha-yaml-editor";
 import "../../../../src/components/ha-card";
+import "../../../../src/components/ha-yaml-editor";
 import type { HaYamlEditor } from "../../../../src/components/ha-yaml-editor";
 import {
   HassioAddonDetails,
@@ -23,9 +23,8 @@ import {
 import { showConfirmationDialog } from "../../../../src/dialogs/generic/show-dialog-box";
 import { haStyle } from "../../../../src/resources/styles";
 import type { HomeAssistant } from "../../../../src/types";
-import { hassioStyle } from "../../resources/hassio-style";
-
 import { suggestAddonRestart } from "../../dialogs/suggestAddonRestart";
+import { hassioStyle } from "../../resources/hassio-style";
 
 @customElement("hassio-addon-config")
 class HassioAddonConfig extends LitElement {
