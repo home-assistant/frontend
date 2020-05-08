@@ -45,7 +45,7 @@ class HassioAddonConfig extends LitElement {
 
     return html`
       <h1>${this.addon.name}</h1>
-      <ha-card heading="Configuration">
+      <ha-card header="Configuration">
         <div class="card-content">
           <ha-yaml-editor
             @value-changed=${this._configChanged}

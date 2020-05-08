@@ -46,7 +46,7 @@ class HassioAddonAudio extends LitElement {
 
   protected render(): TemplateResult {
     return html`
-      <ha-card heading="Audio">
+      <ha-card header="Audio">
         <div class="card-content">
           ${this._error ? html` <div class="errors">${this._error}</div> ` : ""}
 

@@ -52,7 +52,7 @@ class HassioAddonNetwork extends LitElement {
     }
 
     return html`
-      <ha-card heading="Network">
+      <ha-card header="Network">
         <div class="card-content">
           ${this._error ? html` <div class="errors">${this._error}</div> ` : ""}
 
