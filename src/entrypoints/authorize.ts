@@ -1,5 +1,5 @@
-import "@polymer/polymer/lib/elements/dom-if";
-import "@polymer/polymer/lib/elements/dom-repeat";
+import "@polymer/polymer/lib/elements/dom-if.js";
+import "@polymer/polymer/lib/elements/dom-repeat.js";
 import "../auth/ha-authorize";
 import "../resources/ha-style";
 import "../resources/roboto";

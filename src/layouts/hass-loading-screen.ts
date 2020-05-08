@@ -1,5 +1,5 @@
-import "@polymer/app-layout/app-toolbar/app-toolbar";
-import "@polymer/paper-spinner/paper-spinner-lite";
+import "@polymer/app-layout/app-toolbar/app-toolbar.js";
+import "@polymer/paper-spinner/paper-spinner-lite.js";
 import {
   css,
   CSSResultArray,

@@ -12,7 +12,7 @@ import {
   svg,
   TemplateResult,
 } from "lit-element";
-import { classMap } from "lit-html/directives/class-map";
+import { classMap } from "lit-html/directives/class-map.js";
 import { UNIT_F } from "../../../common/const";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { fireEvent } from "../../../common/dom/fire_event";

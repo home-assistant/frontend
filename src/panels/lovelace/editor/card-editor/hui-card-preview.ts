@@ -1,4 +1,4 @@
-import "@polymer/paper-input/paper-textarea";
+import "@polymer/paper-input/paper-textarea.js";
 import { computeRTL } from "../../../../common/util/compute_rtl";
 import { LovelaceCardConfig } from "../../../../data/lovelace";
 import { HomeAssistant } from "../../../../types";

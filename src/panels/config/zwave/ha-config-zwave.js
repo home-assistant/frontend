@@ -1,13 +1,13 @@
-import "@polymer/app-layout/app-header/app-header";
-import "@polymer/app-layout/app-toolbar/app-toolbar";
-import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
+import "@polymer/app-layout/app-header/app-header.js";
+import "@polymer/app-layout/app-toolbar/app-toolbar.js";
+import "@polymer/paper-dropdown-menu/paper-dropdown-menu.js";
 import "../../../components/ha-icon-button";
-import "@polymer/paper-input/paper-input";
-import "@polymer/paper-item/paper-item";
-import "@polymer/paper-listbox/paper-listbox";
-import { html } from "@polymer/polymer/lib/utils/html-tag";
+import "@polymer/paper-input/paper-input.js";
+import "@polymer/paper-item/paper-item.js";
+import "@polymer/paper-listbox";
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
 /* eslint-plugin-disable lit */
-import { PolymerElement } from "@polymer/polymer/polymer-element";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
 import { computeStateDomain } from "../../../common/entity/compute_state_domain";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import { sortStatesByName } from "../../../common/entity/states_sort_by_name";

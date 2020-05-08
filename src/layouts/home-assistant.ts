@@ -1,4 +1,4 @@
-import "@polymer/app-route/app-location";
+import "@polymer/app-route/app-location.js";
 import { html, property, PropertyValues } from "lit-element";
 import { navigate } from "../common/navigate";
 import { getStorageDefaultPanelUrlPath } from "../data/panel";

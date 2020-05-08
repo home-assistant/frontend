@@ -1,8 +1,8 @@
-import "@material/mwc-button/mwc-button";
-import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
+import "@material/mwc-button";
+import "@polymer/paper-dropdown-menu/paper-dropdown-menu.js";
 import "../../../components/ha-icon-button";
-import "@polymer/paper-item/paper-item";
-import "@polymer/paper-listbox/paper-listbox";
+import "@polymer/paper-item/paper-item.js";
+import "@polymer/paper-listbox";
 import {
   css,
   CSSResult,

@@ -1,9 +1,9 @@
 import "@material/mwc-button";
-import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable";
+import "@polymer/paper-dialog-scrollable";
 import "../../../../components/ha-icon-button";
-import "@polymer/paper-spinner/paper-spinner";
-import "@polymer/paper-tabs/paper-tab";
-import "@polymer/paper-tabs/paper-tabs";
+import "@polymer/paper-spinner/paper-spinner.js";
+import "@polymer/paper-tabs/paper-tab.js";
+import "@polymer/paper-tabs";
 import {
   css,
   CSSResult,

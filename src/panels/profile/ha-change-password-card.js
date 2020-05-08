@@ -1,9 +1,9 @@
 import "@material/mwc-button";
-import "@polymer/paper-dialog/paper-dialog";
-import "@polymer/paper-spinner/paper-spinner";
-import { html } from "@polymer/polymer/lib/utils/html-tag";
+import "@polymer/paper-dialog";
+import "@polymer/paper-spinner/paper-spinner.js";
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
 /* eslint-plugin-disable lit */
-import { PolymerElement } from "@polymer/polymer/polymer-element";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
 import "../../components/ha-card";
 import LocalizeMixin from "../../mixins/localize-mixin";
 import "../../resources/ha-style";

@@ -1,5 +1,5 @@
-import "@polymer/paper-input/paper-input";
-import type { PaperInputElement } from "@polymer/paper-input/paper-input";
+import "@polymer/paper-input/paper-input.js";
+import type { PaperInputElement } from "@polymer/paper-input/paper-input.js";
 import {
   css,
   CSSResult,
@@ -11,7 +11,7 @@ import {
   query,
   TemplateResult,
 } from "lit-element";
-import { classMap } from "lit-html/directives/class-map";
+import { classMap } from "lit-html/directives/class-map.js";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-card";

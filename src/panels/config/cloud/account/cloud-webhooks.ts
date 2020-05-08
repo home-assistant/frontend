@@ -1,6 +1,6 @@
-import "@polymer/paper-item/paper-item";
-import "@polymer/paper-item/paper-item-body";
-import "@polymer/paper-spinner/paper-spinner";
+import "@polymer/paper-item/paper-item.js";
+import "@polymer/paper-item/paper-item-body.js";
+import "@polymer/paper-spinner/paper-spinner.js";
 import { html, LitElement, property, PropertyValues } from "lit-element";
 import "../../../../components/ha-card";
 import "../../../../components/ha-switch";

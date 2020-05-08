@@ -8,7 +8,7 @@ import {
   PropertyValues,
   TemplateResult,
 } from "lit-element";
-import { ifDefined } from "lit-html/directives/if-defined";
+import { ifDefined } from "lit-html/directives/if-defined.js";
 import "../../../components/entity/state-badge";
 import { ActionHandlerEvent } from "../../../data/lovelace";
 import { HomeAssistant } from "../../../types";

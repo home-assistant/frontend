@@ -1,10 +1,10 @@
 import { mdiBell, mdiCellphoneSettingsVariant } from "@mdi/js";
-import "@polymer/app-layout/app-toolbar/app-toolbar";
+import "@polymer/app-layout/app-toolbar/app-toolbar.js";
 import "./ha-icon-button";
-import "@polymer/paper-item/paper-icon-item";
-import type { PaperIconItemElement } from "@polymer/paper-item/paper-icon-item";
-import "@polymer/paper-item/paper-item";
-import "@polymer/paper-listbox/paper-listbox";
+import "@polymer/paper-item/paper-icon-item.js";
+import type { PaperIconItemElement } from "@polymer/paper-item/paper-icon-item.js";
+import "@polymer/paper-item/paper-item.js";
+import "@polymer/paper-listbox";
 import {
   css,
   CSSResult,
@@ -14,7 +14,7 @@ import {
   property,
   PropertyValues,
 } from "lit-element";
-import { classMap } from "lit-html/directives/class-map";
+import { classMap } from "lit-html/directives/class-map.js";
 import { fireEvent } from "../common/dom/fire_event";
 import { computeDomain } from "../common/entity/compute_domain";
 import { compare } from "../common/string/compare";

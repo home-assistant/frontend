@@ -1,9 +1,9 @@
-import "@polymer/paper-dropdown-menu/paper-dropdown-menu-light";
+import "@polymer/paper-dropdown-menu/paper-dropdown-menu-light.js";
 import "../../../../components/ha-icon-button";
-import "@polymer/paper-item/paper-item";
-import "@polymer/paper-listbox/paper-listbox";
-import type { PaperListboxElement } from "@polymer/paper-listbox/paper-listbox";
-import "@polymer/paper-menu-button/paper-menu-button";
+import "@polymer/paper-item/paper-item.js";
+import "@polymer/paper-listbox";
+import type { PaperListboxElement } from "@polymer/paper-listbox";
+import "@polymer/paper-menu-button";
 import {
   css,
   CSSResult,

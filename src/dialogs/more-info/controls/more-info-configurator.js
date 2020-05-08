@@ -1,11 +1,11 @@
 import "@material/mwc-button";
-import "@polymer/iron-flex-layout/iron-flex-layout-classes";
-import "@polymer/iron-input/iron-input";
-import "@polymer/paper-input/paper-input";
-import "@polymer/paper-spinner/paper-spinner";
-import { html } from "@polymer/polymer/lib/utils/html-tag";
+import "@polymer/iron-flex-layout/iron-flex-layout-classes.js";
+import "@polymer/iron-input";
+import "@polymer/paper-input/paper-input.js";
+import "@polymer/paper-spinner/paper-spinner.js";
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
 /* eslint-plugin-disable lit */
-import { PolymerElement } from "@polymer/polymer/polymer-element";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
 import "../../../components/ha-markdown";
 
 class MoreInfoConfigurator extends PolymerElement {

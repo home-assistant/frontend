@@ -1,7 +1,7 @@
-import "@polymer/iron-flex-layout/iron-flex-layout-classes";
-import { html } from "@polymer/polymer/lib/utils/html-tag";
+import "@polymer/iron-flex-layout/iron-flex-layout-classes.js";
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
 /* eslint-plugin-disable lit */
-import { PolymerElement } from "@polymer/polymer/polymer-element";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
 import { attributeClassNames } from "../../../common/entity/attribute_class_names";
 import { featureClassNames } from "../../../common/entity/feature_class_names";
 import "../../../components/ha-cover-tilt-controls";

@@ -1,14 +1,14 @@
-import "@polymer/app-layout/app-header-layout/app-header-layout";
-import "@polymer/app-layout/app-header/app-header";
-import "@polymer/app-layout/app-toolbar/app-toolbar";
-import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
-import "@polymer/paper-input/paper-input";
-import "@polymer/paper-item/paper-item";
-import "@polymer/paper-listbox/paper-listbox";
-import { html } from "@polymer/polymer/lib/utils/html-tag";
+import "@polymer/app-layout/app-header-layout/app-header-layout.js";
+import "@polymer/app-layout/app-header/app-header.js";
+import "@polymer/app-layout/app-toolbar/app-toolbar.js";
+import "@polymer/paper-dropdown-menu/paper-dropdown-menu.js";
+import "@polymer/paper-input/paper-input.js";
+import "@polymer/paper-item/paper-item.js";
+import "@polymer/paper-listbox";
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
 /* eslint-plugin-disable lit */
-import { PolymerElement } from "@polymer/polymer/polymer-element";
-import "@vaadin/vaadin-date-picker/theme/material/vaadin-date-picker";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
+import "@vaadin/vaadin-date-picker/theme/material/vaadin-date-picker.js";
 import { formatDate } from "../../common/datetime/format_date";
 import { computeRTL } from "../../common/util/compute_rtl";
 import "../../components/ha-menu-button";

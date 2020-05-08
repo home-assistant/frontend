@@ -1,6 +1,6 @@
-import "@polymer/iron-flex-layout/iron-flex-layout-classes";
-import "@polymer/paper-item/paper-item";
-import "@polymer/paper-listbox/paper-listbox";
+import "@polymer/iron-flex-layout/iron-flex-layout-classes.js";
+import "@polymer/paper-item/paper-item.js";
+import "@polymer/paper-listbox";
 import {
   css,
   CSSResult,
@@ -10,7 +10,7 @@ import {
   PropertyValues,
   TemplateResult,
 } from "lit-element";
-import { classMap } from "lit-html/directives/class-map";
+import { classMap } from "lit-html/directives/class-map.js";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import { computeRTLDirection } from "../../../common/util/compute_rtl";

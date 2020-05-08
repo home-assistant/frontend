@@ -1,4 +1,4 @@
-import "@polymer/paper-input/paper-input";
+import "@polymer/paper-input/paper-input.js";
 import { customElement, html, LitElement, property } from "lit-element";
 import { MqttTrigger } from "../../../../../data/automation";
 import { HomeAssistant } from "../../../../../types";

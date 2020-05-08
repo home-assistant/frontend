@@ -1,13 +1,13 @@
-import "@polymer/app-layout/app-header-layout/app-header-layout";
-import "@polymer/app-layout/app-header/app-header";
-import "@polymer/app-layout/app-toolbar/app-toolbar";
+import "@polymer/app-layout/app-header-layout/app-header-layout.js";
+import "@polymer/app-layout/app-header/app-header.js";
+import "@polymer/app-layout/app-toolbar/app-toolbar.js";
 import "../../components/ha-icon-button";
-import "@polymer/paper-input/paper-input";
-import "@polymer/paper-spinner/paper-spinner";
-import { html } from "@polymer/polymer/lib/utils/html-tag";
+import "@polymer/paper-input/paper-input.js";
+import "@polymer/paper-spinner/paper-spinner.js";
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
 /* eslint-plugin-disable lit */
-import { PolymerElement } from "@polymer/polymer/polymer-element";
-import "@vaadin/vaadin-date-picker/theme/material/vaadin-date-picker";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
+import "@vaadin/vaadin-date-picker/theme/material/vaadin-date-picker.js";
 import { formatDate } from "../../common/datetime/format_date";
 import { computeRTL } from "../../common/util/compute_rtl";
 import "../../components/entity/ha-entity-picker";

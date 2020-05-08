@@ -1,5 +1,5 @@
 import "@material/mwc-button";
-import "@polymer/paper-spinner/paper-spinner-lite";
+import "@polymer/paper-spinner/paper-spinner-lite.js";
 import { css, CSSResult, html, LitElement, property } from "lit-element";
 import { removeInitSkeleton } from "../util/init-skeleton";
 

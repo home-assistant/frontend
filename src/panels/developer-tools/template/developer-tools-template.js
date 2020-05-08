@@ -1,9 +1,9 @@
-import "@polymer/paper-spinner/paper-spinner";
-import { timeOut } from "@polymer/polymer/lib/utils/async";
-import { Debouncer } from "@polymer/polymer/lib/utils/debounce";
-import { html } from "@polymer/polymer/lib/utils/html-tag";
+import "@polymer/paper-spinner/paper-spinner.js";
+import { timeOut } from "@polymer/polymer/lib/utils/async.js";
+import { Debouncer } from "@polymer/polymer/lib/utils/debounce.js";
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
 /* eslint-plugin-disable lit */
-import { PolymerElement } from "@polymer/polymer/polymer-element";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
 import "../../../components/ha-code-editor";
 import LocalizeMixin from "../../../mixins/localize-mixin";
 import "../../../resources/ha-style";

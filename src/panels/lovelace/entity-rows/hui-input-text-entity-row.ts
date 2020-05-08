@@ -1,4 +1,4 @@
-import { PaperInputElement } from "@polymer/paper-input/paper-input";
+import { PaperInputElement } from "@polymer/paper-input/paper-input.js";
 import {
   customElement,
   html,

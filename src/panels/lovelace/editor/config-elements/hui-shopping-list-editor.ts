@@ -1,4 +1,4 @@
-import "@polymer/paper-input/paper-input";
+import "@polymer/paper-input/paper-input.js";
 import {
   css,
   CSSResult,

@@ -1,6 +1,6 @@
 // @ts-ignore
 import chipStyles from "@material/chips/dist/mdc.chips.min.css";
-import { ripple } from "@material/mwc-ripple/ripple-directive";
+import { ripple } from "@material/mwc-ripple/ripple-directive.js";
 import {
   css,
   CSSResult,

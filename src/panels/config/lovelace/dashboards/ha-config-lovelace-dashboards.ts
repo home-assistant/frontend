@@ -1,4 +1,4 @@
-import "@polymer/paper-tooltip/paper-tooltip";
+import "@polymer/paper-tooltip";
 import {
   css,
   CSSResult,

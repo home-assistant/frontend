@@ -1,9 +1,9 @@
 import "./ha-icon-button";
-import "@polymer/paper-input/paper-input";
-import "@polymer/paper-item/paper-item";
-import "@polymer/paper-item/paper-item-body";
-import "@polymer/paper-listbox/paper-listbox";
-import "@vaadin/vaadin-combo-box/theme/material/vaadin-combo-box-light";
+import "@polymer/paper-input/paper-input.js";
+import "@polymer/paper-item/paper-item.js";
+import "@polymer/paper-item/paper-item-body.js";
+import "@polymer/paper-listbox";
+import "@vaadin/vaadin-combo-box/theme/material/vaadin-combo-box-light.js";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import {
   css,

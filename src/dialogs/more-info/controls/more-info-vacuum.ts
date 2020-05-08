@@ -1,7 +1,7 @@
 import "../../../components/ha-icon-button";
 import "../../../components/ha-icon";
-import "@polymer/paper-item/paper-item";
-import "@polymer/paper-listbox/paper-listbox";
+import "@polymer/paper-item/paper-item.js";
+import "@polymer/paper-listbox";
 import {
   css,
   CSSResult,

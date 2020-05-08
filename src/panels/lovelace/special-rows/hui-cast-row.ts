@@ -1,4 +1,4 @@
-import "@material/mwc-button/mwc-button";
+import "@material/mwc-button";
 import {
   css,
   CSSResult,
@@ -9,7 +9,7 @@ import {
   TemplateResult,
   PropertyValues,
 } from "lit-element";
-import { classMap } from "lit-html/directives/class-map";
+import { classMap } from "lit-html/directives/class-map.js";
 import { CastManager } from "../../../cast/cast_manager";
 import {
   castSendShowLovelaceView,

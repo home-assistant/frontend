@@ -1,7 +1,7 @@
-import "@polymer/paper-item/paper-icon-item";
-import "@polymer/paper-item/paper-item-body";
-import "@polymer/paper-listbox/paper-listbox";
-import "@polymer/paper-tooltip/paper-tooltip";
+import "@polymer/paper-item/paper-icon-item.js";
+import "@polymer/paper-item/paper-item-body.js";
+import "@polymer/paper-listbox";
+import "@polymer/paper-tooltip";
 import { HassEntity, UnsubscribeFunc } from "home-assistant-js-websocket";
 import {
   css,
@@ -14,7 +14,7 @@ import {
   query,
   TemplateResult,
 } from "lit-element";
-import { ifDefined } from "lit-html/directives/if-defined";
+import { ifDefined } from "lit-html/directives/if-defined.js";
 import memoizeOne from "memoize-one";
 import { computeStateDomain } from "../../../common/entity/compute_state_domain";
 import { navigate } from "../../../common/navigate";

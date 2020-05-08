@@ -1,8 +1,8 @@
-import "@polymer/app-layout/app-drawer-layout/app-drawer-layout";
-import type { AppDrawerLayoutElement } from "@polymer/app-layout/app-drawer-layout/app-drawer-layout";
-import "@polymer/app-layout/app-drawer/app-drawer";
-import type { AppDrawerElement } from "@polymer/app-layout/app-drawer/app-drawer";
-import "@polymer/iron-media-query/iron-media-query";
+import "@polymer/app-layout/app-drawer-layout/app-drawer-layout.js";
+import type { AppDrawerLayoutElement } from "@polymer/app-layout/app-drawer-layout/app-drawer-layout.js";
+import "@polymer/app-layout/app-drawer/app-drawer.js";
+import type { AppDrawerElement } from "@polymer/app-layout/app-drawer/app-drawer.js";
+import "@polymer/iron-media-query";
 import {
   css,
   CSSResult,

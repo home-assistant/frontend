@@ -1,5 +1,5 @@
-import "@polymer/paper-item/paper-item";
-import "@polymer/paper-listbox/paper-listbox";
+import "@polymer/paper-item/paper-item.js";
+import "@polymer/paper-listbox";
 import {
   css,
   CSSResult,
@@ -10,8 +10,8 @@ import {
   PropertyValues,
   TemplateResult,
 } from "lit-element";
-import { classMap } from "lit-html/directives/class-map";
-import { ifDefined } from "lit-html/directives/if-defined";
+import { classMap } from "lit-html/directives/class-map.js";
+import { ifDefined } from "lit-html/directives/if-defined.js";
 import { DOMAINS_HIDE_MORE_INFO } from "../../../common/const";
 import { stopPropagation } from "../../../common/dom/stop_propagation";
 import { computeDomain } from "../../../common/entity/compute_domain";

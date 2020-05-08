@@ -1,7 +1,7 @@
 import "../../../components/ha-icon-button";
-import { html } from "@polymer/polymer/lib/utils/html-tag";
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
 /* eslint-plugin-disable lit */
-import { PolymerElement } from "@polymer/polymer/polymer-element";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
 import hassAttributeUtil from "../../../util/hass-attributes-util";
 import "../ha-form-style";
 import "./types/ha-customize-array";

@@ -69,7 +69,7 @@
     "import/extensions": [
       2,
       "ignorePackages",
-      { "ts": "never", "js": "never" }
+      { "ts": "ignorePackages", "js": "ignorePackages" }
     ],
     "no-restricted-syntax": ["error", "LabeledStatement", "WithStatement"],
     "object-curly-newline": 0,

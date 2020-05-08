@@ -1,7 +1,7 @@
-import "@polymer/paper-dropdown-menu/paper-dropdown-menu-light";
-import "@polymer/paper-item/paper-item";
-import "@polymer/paper-listbox/paper-listbox";
-import type { PaperListboxElement } from "@polymer/paper-listbox/paper-listbox";
+import "@polymer/paper-dropdown-menu/paper-dropdown-menu-light.js";
+import "@polymer/paper-item/paper-item.js";
+import "@polymer/paper-listbox";
+import type { PaperListboxElement } from "@polymer/paper-listbox";
 import { customElement, html, LitElement, property } from "lit-element";
 import { dynamicElement } from "../../../../common/dom/dynamic-element-directive";
 import { fireEvent } from "../../../../common/dom/fire_event";

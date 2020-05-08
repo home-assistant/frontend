@@ -1,4 +1,4 @@
-import "@polymer/paper-slider/paper-slider";
+import "@polymer/paper-slider";
 
 /**
  * @polymer

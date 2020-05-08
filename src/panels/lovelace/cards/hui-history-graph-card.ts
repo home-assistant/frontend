@@ -8,7 +8,7 @@ import {
   PropertyValues,
   TemplateResult,
 } from "lit-element";
-import { classMap } from "lit-html/directives/class-map";
+import { classMap } from "lit-html/directives/class-map.js";
 import "../../../components/ha-card";
 import "../../../components/state-history-charts";
 import { CacheConfig, getRecentWithCache } from "../../../data/cached-history";

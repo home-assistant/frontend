@@ -1,8 +1,8 @@
 import "@material/mwc-button";
-import "@polymer/paper-item/paper-item-body";
-import { html } from "@polymer/polymer/lib/utils/html-tag";
+import "@polymer/paper-item/paper-item-body.js";
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
 /* eslint-plugin-disable lit */
-import { PolymerElement } from "@polymer/polymer/polymer-element";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
 import { formatDateTime } from "../../../../common/datetime/format_date_time";
 import "../../../../components/buttons/ha-call-api-button";
 import "../../../../components/ha-card";

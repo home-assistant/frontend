@@ -1,7 +1,7 @@
-import { ripple } from "@material/mwc-ripple/ripple-directive";
+import { ripple } from "@material/mwc-ripple/ripple-directive.js";
 import "@material/mwc-switch";
 import type { Switch } from "@material/mwc-switch";
-import { style } from "@material/mwc-switch/mwc-switch-css";
+import { style } from "@material/mwc-switch/mwc-switch-css.js";
 import {
   css,
   CSSResult,

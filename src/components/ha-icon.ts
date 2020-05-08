@@ -1,4 +1,4 @@
-import "@polymer/iron-icon/iron-icon";
+import "@polymer/iron-icon";
 import { get, set, clear, Store } from "idb-keyval";
 import {
   customElement,

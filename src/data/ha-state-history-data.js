@@ -1,7 +1,7 @@
-import { timeOut } from "@polymer/polymer/lib/utils/async";
-import { Debouncer } from "@polymer/polymer/lib/utils/debounce";
+import { timeOut } from "@polymer/polymer/lib/utils/async.js";
+import { Debouncer } from "@polymer/polymer/lib/utils/debounce.js";
 /* eslint-plugin-disable lit */
-import { PolymerElement } from "@polymer/polymer/polymer-element";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
 import LocalizeMixin from "../mixins/localize-mixin";
 import { getRecent, getRecentWithCache } from "./cached-history";
 import { computeHistory, fetchDate } from "./history";

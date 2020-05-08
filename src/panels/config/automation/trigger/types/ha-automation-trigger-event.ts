@@ -1,4 +1,4 @@
-import "@polymer/paper-input/paper-input";
+import "@polymer/paper-input/paper-input.js";
 import { customElement, LitElement, property } from "lit-element";
 import { html } from "lit-html";
 import "../../../../../components/ha-yaml-editor";

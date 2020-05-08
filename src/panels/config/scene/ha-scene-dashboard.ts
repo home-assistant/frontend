@@ -1,5 +1,5 @@
 import "../../../components/ha-icon-button";
-import "@polymer/paper-tooltip/paper-tooltip";
+import "@polymer/paper-tooltip";
 import {
   css,
   CSSResultArray,
@@ -9,7 +9,7 @@ import {
   property,
   TemplateResult,
 } from "lit-element";
-import { ifDefined } from "lit-html/directives/if-defined";
+import { ifDefined } from "lit-html/directives/if-defined.js";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { computeStateName } from "../../../common/entity/compute_state_name";

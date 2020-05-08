@@ -11,8 +11,8 @@ found at http://polymer.github.io/PATENTS.txt
 /*
   Fixes issue with not using shadow dom properly in iron-overlay-behavior/icon-focusables-helper.js
 */
-import { IronFocusablesHelper } from "@polymer/iron-overlay-behavior/iron-focusables-helper";
-import { dom } from "@polymer/polymer/lib/legacy/polymer.dom";
+import { IronFocusablesHelper } from "@polymer/iron-overlay-behavior/iron-focusables-helper.js";
+import { dom } from "@polymer/polymer/lib/legacy/polymer.dom.js";
 
 export const HaIronFocusablesHelper = {
   /**

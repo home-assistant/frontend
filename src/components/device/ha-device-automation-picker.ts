@@ -1,7 +1,7 @@
-import "@polymer/paper-input/paper-input";
-import "@polymer/paper-item/paper-item";
-import "@polymer/paper-item/paper-item-body";
-import "@polymer/paper-listbox/paper-listbox";
+import "@polymer/paper-input/paper-input.js";
+import "@polymer/paper-item/paper-item.js";
+import "@polymer/paper-item/paper-item-body.js";
+import "@polymer/paper-listbox";
 import {
   css,
   CSSResult,

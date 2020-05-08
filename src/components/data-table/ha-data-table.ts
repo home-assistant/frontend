@@ -10,9 +10,9 @@ import {
   query,
   TemplateResult,
 } from "lit-element";
-import { classMap } from "lit-html/directives/class-map";
-import { ifDefined } from "lit-html/directives/if-defined";
-import { styleMap } from "lit-html/directives/style-map";
+import { classMap } from "lit-html/directives/class-map.js";
+import { ifDefined } from "lit-html/directives/if-defined.js";
+import { styleMap } from "lit-html/directives/style-map.js";
 import { scroll } from "lit-virtualizer";
 // @ts-ignore
 // eslint-disable-next-line import/no-webpack-loader-syntax

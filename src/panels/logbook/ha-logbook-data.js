@@ -1,5 +1,5 @@
 /* eslint-plugin-disable lit */
-import { PolymerElement } from "@polymer/polymer/polymer-element";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
 
 const DATA_CACHE = {};
 const ALL_ENTITIES = "*";

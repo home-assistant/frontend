@@ -1,5 +1,5 @@
-import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable";
-import "@polymer/paper-input/paper-input";
+import "@polymer/paper-dialog-scrollable";
+import "@polymer/paper-input/paper-input.js";
 import {
   css,
   CSSResult,

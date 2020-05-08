@@ -9,10 +9,10 @@ paper-textarea issue: https://github.com/PolymerElements/paper-input/issues/556
 WebKit issue: https://bugs.webkit.org/show_bug.cgi?id=174629
 */
 
-import "@polymer/paper-input/paper-textarea";
-import { html } from "@polymer/polymer/lib/utils/html-tag";
+import "@polymer/paper-input/paper-textarea.js";
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
 /* eslint-plugin-disable lit */
-import { PolymerElement } from "@polymer/polymer/polymer-element";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
 
 class HaTextarea extends PolymerElement {
   static get template() {

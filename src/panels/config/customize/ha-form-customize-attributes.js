@@ -1,7 +1,7 @@
-import { MutableData } from "@polymer/polymer/lib/mixins/mutable-data";
-import { html } from "@polymer/polymer/lib/utils/html-tag";
+import { MutableData } from "@polymer/polymer/lib/mixins/mutable-data.js";
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
 /* eslint-plugin-disable lit */
-import { PolymerElement } from "@polymer/polymer/polymer-element";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
 import "./ha-customize-attribute";
 
 class HaFormCustomizeAttributes extends MutableData(PolymerElement) {

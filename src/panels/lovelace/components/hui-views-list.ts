@@ -1,5 +1,5 @@
-import "@polymer/paper-item/paper-icon-item";
-import "@polymer/paper-listbox/paper-listbox";
+import "@polymer/paper-item/paper-icon-item.js";
+import "@polymer/paper-listbox";
 import {
   css,
   CSSResult,

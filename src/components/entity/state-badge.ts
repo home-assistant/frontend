@@ -9,7 +9,7 @@ import {
   query,
   TemplateResult,
 } from "lit-element";
-import { ifDefined } from "lit-html/directives/if-defined";
+import { ifDefined } from "lit-html/directives/if-defined.js";
 import { computeActiveState } from "../../common/entity/compute_active_state";
 import { computeStateDomain } from "../../common/entity/compute_state_domain";
 import { stateIcon } from "../../common/entity/state_icon";

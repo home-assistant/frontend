@@ -1,9 +1,9 @@
-import "@polymer/paper-checkbox/paper-checkbox";
-import "@polymer/paper-input/paper-input";
-import "@polymer/paper-item/paper-icon-item";
-import "@polymer/paper-listbox/paper-listbox";
-import "@polymer/paper-menu-button/paper-menu-button";
-import "@polymer/paper-ripple/paper-ripple";
+import "@polymer/paper-checkbox";
+import "@polymer/paper-input/paper-input.js";
+import "@polymer/paper-item/paper-icon-item.js";
+import "@polymer/paper-listbox";
+import "@polymer/paper-menu-button";
+import "@polymer/paper-ripple";
 import {
   css,
   CSSResult,

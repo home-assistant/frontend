@@ -1,5 +1,5 @@
 import "../../../components/ha-icon-button";
-import "@polymer/paper-spinner/paper-spinner";
+import "@polymer/paper-spinner/paper-spinner.js";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import {
   css,

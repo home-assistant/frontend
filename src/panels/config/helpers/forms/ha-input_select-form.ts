@@ -1,9 +1,9 @@
-import "@material/mwc-button/mwc-button";
+import "@material/mwc-button";
 import "../../../../components/ha-icon-button";
-import "@polymer/paper-input/paper-input";
-import type { PaperInputElement } from "@polymer/paper-input/paper-input";
-import "@polymer/paper-item/paper-item";
-import "@polymer/paper-item/paper-item-body";
+import "@polymer/paper-input/paper-input.js";
+import type { PaperInputElement } from "@polymer/paper-input/paper-input.js";
+import "@polymer/paper-item/paper-item.js";
+import "@polymer/paper-item/paper-item-body.js";
 import {
   css,
   CSSResult,

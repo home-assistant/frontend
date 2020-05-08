@@ -1,6 +1,6 @@
 import "../ha-icon-button";
-import "@polymer/paper-input/paper-input";
-import type { PaperInputElement } from "@polymer/paper-input/paper-input";
+import "@polymer/paper-input/paper-input.js";
+import type { PaperInputElement } from "@polymer/paper-input/paper-input.js";
 import {
   customElement,
   html,

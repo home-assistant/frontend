@@ -1,7 +1,7 @@
-import "@polymer/polymer/lib/utils/debounce";
-import { html } from "@polymer/polymer/lib/utils/html-tag";
+import "@polymer/polymer/lib/utils/debounce.js";
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
 /* eslint-plugin-disable lit */
-import { PolymerElement } from "@polymer/polymer/polymer-element";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
 import { formatDateTimeWithSeconds } from "../common/datetime/format_date_time";
 import { computeRTL } from "../common/util/compute_rtl";
 import LocalizeMixin from "../mixins/localize-mixin";

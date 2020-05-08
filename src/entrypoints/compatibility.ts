@@ -1,6 +1,6 @@
 import objAssign from "es6-object-assign";
 import "mdn-polyfills/Array.prototype.includes";
-import "regenerator-runtime/runtime";
+import "regenerator-runtime";
 import "unfetch/polyfill";
 
 objAssign.polyfill();

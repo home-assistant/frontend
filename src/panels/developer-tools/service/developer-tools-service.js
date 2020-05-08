@@ -1,7 +1,7 @@
 import "@material/mwc-button";
-import { html } from "@polymer/polymer/lib/utils/html-tag";
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
 /* eslint-plugin-disable lit */
-import { PolymerElement } from "@polymer/polymer/polymer-element";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
 import { safeDump, safeLoad } from "js-yaml";
 import "../../../components/entity/ha-entity-picker";
 import "../../../components/ha-code-editor";

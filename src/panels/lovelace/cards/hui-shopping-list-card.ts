@@ -1,5 +1,5 @@
-import "@polymer/paper-checkbox/paper-checkbox";
-import { PaperInputElement } from "@polymer/paper-input/paper-input";
+import "@polymer/paper-checkbox";
+import { PaperInputElement } from "@polymer/paper-input/paper-input.js";
 import {
   css,
   CSSResult,
@@ -10,8 +10,8 @@ import {
   PropertyValues,
   TemplateResult,
 } from "lit-element";
-import { classMap } from "lit-html/directives/class-map";
-import { repeat } from "lit-html/directives/repeat";
+import { classMap } from "lit-html/directives/class-map.js";
+import { repeat } from "lit-html/directives/repeat.js";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import "../../../components/ha-card";
 import "../../../components/ha-icon";

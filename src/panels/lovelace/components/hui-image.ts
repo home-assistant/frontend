@@ -9,8 +9,8 @@ import {
   query,
   TemplateResult,
 } from "lit-element";
-import { classMap } from "lit-html/directives/class-map";
-import { styleMap } from "lit-html/directives/style-map";
+import { classMap } from "lit-html/directives/class-map.js";
+import { styleMap } from "lit-html/directives/style-map.js";
 import { STATES_OFF } from "../../../common/const";
 import parseAspectRatio from "../../../common/util/parse-aspect-ratio";
 import "../../../components/ha-camera-stream";

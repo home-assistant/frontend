@@ -1,6 +1,6 @@
 import "../../../../components/ha-icon-button";
 import "@polymer/paper-tabs";
-import "@polymer/paper-tabs/paper-tab";
+import "@polymer/paper-tabs/paper-tab.js";
 import {
   css,
   CSSResult,

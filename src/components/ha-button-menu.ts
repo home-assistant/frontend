@@ -9,7 +9,7 @@ import {
 } from "lit-element";
 import "@material/mwc-button";
 import "@material/mwc-menu";
-import "@material/mwc-list/mwc-list-item";
+import "@material/mwc-list/mwc-list-item.js";
 import type { Menu } from "@material/mwc-menu";
 
 import { haStyle } from "../resources/styles";

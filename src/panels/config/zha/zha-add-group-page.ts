@@ -1,7 +1,7 @@
 import "@material/mwc-button";
-import "@polymer/paper-input/paper-input";
-import type { PaperInputElement } from "@polymer/paper-input/paper-input";
-import "@polymer/paper-spinner/paper-spinner";
+import "@polymer/paper-input/paper-input.js";
+import type { PaperInputElement } from "@polymer/paper-input/paper-input.js";
+import "@polymer/paper-spinner/paper-spinner.js";
 import {
   css,
   CSSResult,

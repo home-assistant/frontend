@@ -1,7 +1,7 @@
-import "@polymer/iron-flex-layout/iron-flex-layout-classes";
-import { html } from "@polymer/polymer/lib/utils/html-tag";
+import "@polymer/iron-flex-layout/iron-flex-layout-classes.js";
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
 /* eslint-plugin-disable lit */
-import { PolymerElement } from "@polymer/polymer/polymer-element";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
 import secondsToDuration from "../common/datetime/seconds_to_duration";
 import { timerTimeRemaining } from "../common/entity/timer_time_remaining";
 import "../components/entity/state-info";

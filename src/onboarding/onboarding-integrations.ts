@@ -1,4 +1,4 @@
-import "@material/mwc-button/mwc-button";
+import "@material/mwc-button";
 import { genClientId } from "home-assistant-js-websocket";
 import {
   css,

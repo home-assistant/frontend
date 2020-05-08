@@ -1,9 +1,9 @@
 import "@material/mwc-button";
-import "@polymer/app-layout/app-drawer/app-drawer";
-import "@polymer/app-layout/app-toolbar/app-toolbar";
-import { html } from "@polymer/polymer/lib/utils/html-tag";
+import "@polymer/app-layout/app-drawer/app-drawer.js";
+import "@polymer/app-layout/app-toolbar/app-toolbar.js";
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
 /* eslint-plugin-disable lit */
-import { PolymerElement } from "@polymer/polymer/polymer-element";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
 import { computeDomain } from "../../common/entity/compute_domain";
 import "../../components/ha-icon-button-prev";
 import { subscribeNotifications } from "../../data/persistent_notification";

@@ -1,5 +1,5 @@
-import "@polymer/paper-toast/paper-toast";
-import type { PaperToastElement } from "@polymer/paper-toast/paper-toast";
+import "@polymer/paper-toast";
+import type { PaperToastElement } from "@polymer/paper-toast";
 import type { Constructor } from "../types";
 
 const PaperToast = customElements.get("paper-toast") as Constructor<

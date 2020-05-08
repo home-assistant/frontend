@@ -1,6 +1,6 @@
-import "@material/mwc-button/mwc-button";
-import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable";
-import "@polymer/paper-input/paper-input";
+import "@material/mwc-button";
+import "@polymer/paper-dialog-scrollable";
+import "@polymer/paper-input/paper-input.js";
 import {
   css,
   CSSResult,
@@ -10,7 +10,7 @@ import {
   property,
   TemplateResult,
 } from "lit-element";
-import { classMap } from "lit-html/directives/class-map";
+import { classMap } from "lit-html/directives/class-map.js";
 import "../../components/dialog/ha-paper-dialog";
 import "../../components/ha-switch";
 import { PolymerChangedEvent } from "../../polymer-types";

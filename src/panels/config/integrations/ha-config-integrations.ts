@@ -1,4 +1,4 @@
-import "@polymer/app-route/app-route";
+import "@polymer/app-route/app-route.js";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import {
   css,

@@ -1,8 +1,8 @@
 import "../ha-icon-button";
-import "@polymer/paper-input/paper-input";
-import "@polymer/paper-item/paper-icon-item";
-import "@polymer/paper-item/paper-item-body";
-import "@vaadin/vaadin-combo-box/theme/material/vaadin-combo-box-light";
+import "@polymer/paper-input/paper-input.js";
+import "@polymer/paper-item/paper-icon-item.js";
+import "@polymer/paper-item/paper-item-body.js";
+import "@vaadin/vaadin-combo-box/theme/material/vaadin-combo-box-light.js";
 import { HassEntity } from "home-assistant-js-websocket";
 import {
   css,

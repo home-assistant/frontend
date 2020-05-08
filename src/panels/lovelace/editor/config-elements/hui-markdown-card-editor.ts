@@ -1,5 +1,5 @@
-import "@polymer/paper-input/paper-input";
-import "@polymer/paper-input/paper-textarea";
+import "@polymer/paper-input/paper-input.js";
+import "@polymer/paper-input/paper-textarea.js";
 import {
   customElement,
   html,

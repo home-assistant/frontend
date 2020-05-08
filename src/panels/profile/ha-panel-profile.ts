@@ -1,9 +1,9 @@
 import "@material/mwc-button";
-import "@polymer/app-layout/app-header-layout/app-header-layout";
-import "@polymer/app-layout/app-header/app-header";
-import "@polymer/app-layout/app-toolbar/app-toolbar";
-import "@polymer/paper-item/paper-item";
-import "@polymer/paper-item/paper-item-body";
+import "@polymer/app-layout/app-header-layout/app-header-layout.js";
+import "@polymer/app-layout/app-header/app-header.js";
+import "@polymer/app-layout/app-toolbar/app-toolbar.js";
+import "@polymer/paper-item/paper-item.js";
+import "@polymer/paper-item/paper-item-body.js";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import {
   css,

@@ -1,6 +1,6 @@
-import "@material/mwc-button/mwc-button";
-import "@polymer/paper-item/paper-icon-item";
-import "@polymer/paper-tooltip/paper-tooltip";
+import "@material/mwc-button";
+import "@polymer/paper-item/paper-icon-item.js";
+import "@polymer/paper-tooltip";
 import {
   css,
   CSSResult,
@@ -11,7 +11,7 @@ import {
   query,
   TemplateResult,
 } from "lit-element";
-import { classMap } from "lit-html/directives/class-map";
+import { classMap } from "lit-html/directives/class-map.js";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { dynamicElement } from "../../../common/dom/dynamic-element-directive";
 import { domainIcon } from "../../../common/entity/domain_icon";

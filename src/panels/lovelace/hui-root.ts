@@ -1,14 +1,14 @@
 import "@material/mwc-button";
-import "@polymer/app-layout/app-header-layout/app-header-layout";
-import "@polymer/app-layout/app-header/app-header";
-import "@polymer/app-layout/app-scroll-effects/effects/waterfall";
-import "@polymer/app-layout/app-toolbar/app-toolbar";
+import "@polymer/app-layout/app-header-layout/app-header-layout.js";
+import "@polymer/app-layout/app-header/app-header.js";
+import "@polymer/app-layout/app-scroll-effects/effects/waterfall.js";
+import "@polymer/app-layout/app-toolbar/app-toolbar.js";
 import "../../components/ha-icon-button";
-import "@polymer/paper-item/paper-item";
-import "@polymer/paper-listbox/paper-listbox";
-import "@polymer/paper-menu-button/paper-menu-button";
-import "@polymer/paper-tabs/paper-tab";
-import "@polymer/paper-tabs/paper-tabs";
+import "@polymer/paper-item/paper-item.js";
+import "@polymer/paper-listbox";
+import "@polymer/paper-menu-button";
+import "@polymer/paper-tabs/paper-tab.js";
+import "@polymer/paper-tabs";
 import {
   css,
   CSSResult,
@@ -18,7 +18,7 @@ import {
   PropertyValues,
   TemplateResult,
 } from "lit-element";
-import { classMap } from "lit-html/directives/class-map";
+import { classMap } from "lit-html/directives/class-map.js";
 import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import { fireEvent } from "../../common/dom/fire_event";

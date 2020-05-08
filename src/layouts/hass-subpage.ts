@@ -7,7 +7,7 @@ import {
   property,
   TemplateResult,
 } from "lit-element";
-import { classMap } from "lit-html/directives/class-map";
+import { classMap } from "lit-html/directives/class-map.js";
 import "../components/ha-menu-button";
 import "../components/ha-icon-button-arrow-prev";
 

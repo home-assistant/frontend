@@ -8,11 +8,11 @@ import {
   html,
   PropertyValues,
 } from "lit-element";
-import { styleMap } from "lit-html/directives/style-map";
+import { styleMap } from "lit-html/directives/style-map.js";
 
-import "@polymer/app-layout/app-header-layout/app-header-layout";
-import "@polymer/app-layout/app-header/app-header";
-import "@polymer/app-layout/app-toolbar/app-toolbar";
+import "@polymer/app-layout/app-header-layout/app-header-layout.js";
+import "@polymer/app-layout/app-header/app-header.js";
+import "@polymer/app-layout/app-toolbar/app-toolbar.js";
 import "@material/mwc-checkbox";
 import "@material/mwc-formfield";
 

@@ -1,8 +1,8 @@
-import "@polymer/paper-dialog-behavior/paper-dialog-shared-styles";
-import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable";
-import { html } from "@polymer/polymer/lib/utils/html-tag";
+import "@polymer/paper-dialog-behavior/paper-dialog-shared-styles.js";
+import "@polymer/paper-dialog-scrollable";
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
 /* eslint-plugin-disable lit */
-import { PolymerElement } from "@polymer/polymer/polymer-element";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
 import { computeStateDomain } from "../common/entity/compute_state_domain";
 import DialogMixin from "../mixins/dialog-mixin";
 import "../resources/ha-style";

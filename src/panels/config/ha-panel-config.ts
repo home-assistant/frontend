@@ -1,5 +1,5 @@
-import "@polymer/paper-item/paper-item";
-import "@polymer/paper-item/paper-item-body";
+import "@polymer/paper-item/paper-item.js";
+import "@polymer/paper-item/paper-item-body.js";
 import { PolymerElement } from "@polymer/polymer";
 import { customElement, property, PropertyValues } from "lit-element";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";

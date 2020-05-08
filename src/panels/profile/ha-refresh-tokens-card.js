@@ -1,8 +1,8 @@
 import "../../components/ha-icon-button";
-import "@polymer/paper-tooltip/paper-tooltip";
-import { html } from "@polymer/polymer/lib/utils/html-tag";
+import "@polymer/paper-tooltip";
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
 /* eslint-plugin-disable lit */
-import { PolymerElement } from "@polymer/polymer/polymer-element";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
 import { formatDateTime } from "../../common/datetime/format_date_time";
 import "../../components/ha-card";
 import { EventsMixin } from "../../mixins/events-mixin";
@@ -116,7 +116,7 @@ class HaRefreshTokens extends LocalizeMixin(EventsMixin(PolymerElement)) {
     } catch (err) {
       // eslint-disable-next-line
       console.error(err);
-     showAlertDialog(this, {
+      showAlertDialog(this, {
         text: this.localize("ui.panel.profile.refresh_tokens.delete_failed"),
       });
     }

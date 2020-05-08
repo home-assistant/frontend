@@ -1,11 +1,11 @@
 /* eslint-plugin-disable lit */
-import { IronResizableBehavior } from "@polymer/iron-resizable-behavior/iron-resizable-behavior";
+import { IronResizableBehavior } from "@polymer/iron-resizable-behavior";
 import "../ha-icon-button";
-import { mixinBehaviors } from "@polymer/polymer/lib/legacy/class";
-import { timeOut } from "@polymer/polymer/lib/utils/async";
-import { Debouncer } from "@polymer/polymer/lib/utils/debounce";
-import { html } from "@polymer/polymer/lib/utils/html-tag";
-import { PolymerElement } from "@polymer/polymer/polymer-element";
+import { mixinBehaviors } from "@polymer/polymer/lib/legacy/class.js";
+import { timeOut } from "@polymer/polymer/lib/utils/async.js";
+import { Debouncer } from "@polymer/polymer/lib/utils/debounce.js";
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
 import { formatTime } from "../../common/datetime/format_time";
 
 // eslint-disable-next-line no-unused-vars

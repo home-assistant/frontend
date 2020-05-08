@@ -1,9 +1,9 @@
-import "@polymer/iron-flex-layout/iron-flex-layout-classes";
-import "@polymer/paper-item/paper-item";
-import "@polymer/paper-listbox/paper-listbox";
-import { html } from "@polymer/polymer/lib/utils/html-tag";
+import "@polymer/iron-flex-layout/iron-flex-layout-classes.js";
+import "@polymer/paper-item/paper-item.js";
+import "@polymer/paper-listbox";
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
 /* eslint-plugin-disable lit */
-import { PolymerElement } from "@polymer/polymer/polymer-element";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
 import { featureClassNames } from "../../../common/entity/feature_class_names";
 import "../../../components/ha-attributes";
 import "../../../components/ha-color-picker";

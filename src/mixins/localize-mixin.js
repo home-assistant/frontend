@@ -1,4 +1,4 @@
-import { dedupingMixin } from "@polymer/polymer/lib/utils/mixin";
+import { dedupingMixin } from "@polymer/polymer/lib/utils/mixin.js";
 /**
  * Polymer Mixin to enable a localize function powered by language/resources from hass object.
  *

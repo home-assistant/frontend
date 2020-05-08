@@ -24,6 +24,7 @@ const options = ({ latestBuild }) => ({
   ],
 });
 
+module.exports.options = options;
 module.exports.babelLoaderConfig = ({ latestBuild }) => {
   if (latestBuild === undefined) {
     throw Error("latestBuild not defined for babel loader config");

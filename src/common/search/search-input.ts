@@ -1,5 +1,5 @@
 import "../../components/ha-icon-button";
-import "@polymer/paper-input/paper-input";
+import "@polymer/paper-input/paper-input.js";
 import {
   css,
   CSSResult,
@@ -8,7 +8,7 @@ import {
   property,
 } from "lit-element";
 import { html, TemplateResult } from "lit-html";
-import { classMap } from "lit-html/directives/class-map";
+import { classMap } from "lit-html/directives/class-map.js";
 import "../../components/ha-icon";
 import { fireEvent } from "../dom/fire_event";
 

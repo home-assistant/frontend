@@ -1,4 +1,4 @@
-import { HassEntity } from "home-assistant-js-websocket/dist/types";
+import { HassEntity } from "home-assistant-js-websocket/dist/types.js";
 import {
   css,
   CSSResult,
@@ -9,7 +9,7 @@ import {
   PropertyValues,
   TemplateResult,
 } from "lit-element";
-import { styleMap } from "lit-html/directives/style-map";
+import { styleMap } from "lit-html/directives/style-map.js";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { computeStateName } from "../../../common/entity/compute_state_name";

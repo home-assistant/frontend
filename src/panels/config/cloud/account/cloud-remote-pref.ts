@@ -1,5 +1,5 @@
 import "@material/mwc-button";
-import "@polymer/paper-item/paper-item-body";
+import "@polymer/paper-item/paper-item-body.js";
 import {
   css,
   CSSResult,

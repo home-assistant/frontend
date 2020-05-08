@@ -1,8 +1,8 @@
-import "@material/mwc-button/mwc-button";
-import "@polymer/paper-input/paper-input";
-import type { PaperInputElement } from "@polymer/paper-input/paper-input";
-import "@polymer/paper-radio-button/paper-radio-button";
-import "@polymer/paper-radio-group/paper-radio-group";
+import "@material/mwc-button";
+import "@polymer/paper-input/paper-input.js";
+import type { PaperInputElement } from "@polymer/paper-input/paper-input.js";
+import "@polymer/paper-radio-button";
+import "@polymer/paper-radio-group";
 import {
   css,
   CSSResult,

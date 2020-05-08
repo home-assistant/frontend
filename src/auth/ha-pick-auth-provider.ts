@@ -1,5 +1,5 @@
-import "@polymer/paper-item/paper-item";
-import "@polymer/paper-item/paper-item-body";
+import "@polymer/paper-item/paper-item.js";
+import "@polymer/paper-item/paper-item-body.js";
 import { html, LitElement, property } from "lit-element";
 import { fireEvent } from "../common/dom/fire_event";
 import "../components/ha-icon-next";

@@ -1,6 +1,6 @@
-import "@polymer/paper-input/paper-input";
-import "@polymer/paper-radio-button/paper-radio-button";
-import "@polymer/paper-radio-group/paper-radio-group";
+import "@polymer/paper-input/paper-input.js";
+import "@polymer/paper-radio-button";
+import "@polymer/paper-radio-group";
 import {
   css,
   CSSResult,

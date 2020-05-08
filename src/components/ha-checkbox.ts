@@ -1,6 +1,6 @@
 import "@material/mwc-checkbox";
 import type { Checkbox } from "@material/mwc-checkbox";
-import { style } from "@material/mwc-checkbox/mwc-checkbox-css";
+import { style } from "@material/mwc-checkbox/mwc-checkbox-css.js";
 import { css, CSSResult, customElement } from "lit-element";
 import type { Constructor } from "../types";
 

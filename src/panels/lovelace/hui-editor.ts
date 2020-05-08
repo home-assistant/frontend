@@ -1,9 +1,9 @@
 import "@material/mwc-button";
-import "@polymer/app-layout/app-header-layout/app-header-layout";
-import "@polymer/app-layout/app-header/app-header";
-import "@polymer/app-layout/app-toolbar/app-toolbar";
+import "@polymer/app-layout/app-header-layout/app-header-layout.js";
+import "@polymer/app-layout/app-header/app-header.js";
+import "@polymer/app-layout/app-toolbar/app-toolbar.js";
 import "../../components/ha-icon-button";
-import "@polymer/paper-spinner/paper-spinner";
+import "@polymer/paper-spinner/paper-spinner.js";
 import { safeDump, safeLoad } from "js-yaml";
 import {
   css,
@@ -14,7 +14,7 @@ import {
   property,
   TemplateResult,
 } from "lit-element";
-import { classMap } from "lit-html/directives/class-map";
+import { classMap } from "lit-html/directives/class-map.js";
 import { computeRTL } from "../../common/util/compute_rtl";
 import "../../components/ha-code-editor";
 import type { HaCodeEditor } from "../../components/ha-code-editor";

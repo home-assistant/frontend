@@ -1,6 +1,6 @@
 import "@material/mwc-button";
-import "@polymer/paper-spinner/paper-spinner";
-import "@polymer/paper-tooltip/paper-tooltip";
+import "@polymer/paper-spinner/paper-spinner.js";
+import "@polymer/paper-tooltip";
 import {
   css,
   CSSResultArray,

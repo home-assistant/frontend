@@ -1,6 +1,6 @@
-import "@polymer/paper-item/paper-icon-item";
-import "@polymer/paper-item/paper-item-body";
-import "@polymer/paper-spinner/paper-spinner-lite";
+import "@polymer/paper-item/paper-icon-item.js";
+import "@polymer/paper-item/paper-item-body.js";
+import "@polymer/paper-spinner/paper-spinner-lite.js";
 import * as Fuse from "fuse.js";
 import {
   css,
@@ -11,8 +11,8 @@ import {
   property,
   TemplateResult,
 } from "lit-element";
-import { classMap } from "lit-html/directives/class-map";
-import { styleMap } from "lit-html/directives/style-map";
+import { classMap } from "lit-html/directives/class-map.js";
+import { styleMap } from "lit-html/directives/style-map.js";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../common/dom/fire_event";
 import "../../common/search/search-input";

@@ -1,4 +1,4 @@
-import { dedupingMixin } from "@polymer/polymer/lib/utils/mixin";
+import { dedupingMixin } from "@polymer/polymer/lib/utils/mixin.js";
 import { navigate } from "../common/navigate";
 
 /*

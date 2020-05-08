@@ -1,7 +1,7 @@
 import "@material/mwc-button";
-import { html } from "@polymer/polymer/lib/utils/html-tag";
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
 /* eslint-plugin-disable lit */
-import { PolymerElement } from "@polymer/polymer/polymer-element";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
 import { formatDateTime } from "../../common/datetime/format_date_time";
 import "../../components/ha-card";
 import "../../components/ha-icon-button";

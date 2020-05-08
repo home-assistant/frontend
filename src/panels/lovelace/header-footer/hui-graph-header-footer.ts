@@ -1,4 +1,4 @@
-import "@polymer/paper-spinner/paper-spinner";
+import "@polymer/paper-spinner/paper-spinner.js";
 import { HassEntity } from "home-assistant-js-websocket";
 import {
   css,

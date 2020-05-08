@@ -1,6 +1,6 @@
-import "@polymer/paper-dialog/paper-dialog";
-import type { PaperDialogElement } from "@polymer/paper-dialog/paper-dialog";
-import { mixinBehaviors } from "@polymer/polymer/lib/legacy/class";
+import "@polymer/paper-dialog";
+import type { PaperDialogElement } from "@polymer/paper-dialog";
+import { mixinBehaviors } from "@polymer/polymer/lib/legacy/class.js";
 import type { Constructor } from "../../types";
 import { HaIronFocusablesHelper } from "./ha-iron-focusables-helper";
 

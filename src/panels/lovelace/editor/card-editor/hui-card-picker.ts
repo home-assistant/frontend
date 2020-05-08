@@ -9,8 +9,8 @@ import {
   PropertyValues,
   TemplateResult,
 } from "lit-element";
-import { classMap } from "lit-html/directives/class-map";
-import { until } from "lit-html/directives/until";
+import { classMap } from "lit-html/directives/class-map.js";
+import { until } from "lit-html/directives/until.js";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../common/search/search-input";

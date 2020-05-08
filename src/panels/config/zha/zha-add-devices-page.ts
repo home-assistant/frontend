@@ -1,6 +1,6 @@
 import "@material/mwc-button";
 import "../../../components/ha-icon-button";
-import "@polymer/paper-spinner/paper-spinner";
+import "@polymer/paper-spinner/paper-spinner.js";
 import {
   css,
   CSSResult,

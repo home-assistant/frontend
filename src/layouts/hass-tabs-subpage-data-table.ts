@@ -1,5 +1,5 @@
-import "@material/mwc-button/mwc-button";
-import "@polymer/paper-tooltip/paper-tooltip";
+import "@material/mwc-button";
+import "@polymer/paper-tooltip";
 import {
   css,
   CSSResult,

@@ -1,8 +1,8 @@
 import "@material/mwc-button";
-import "@polymer/iron-flex-layout/iron-flex-layout-classes";
-import { html } from "@polymer/polymer/lib/utils/html-tag";
+import "@polymer/iron-flex-layout/iron-flex-layout-classes.js";
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
 /* eslint-plugin-disable lit */
-import { PolymerElement } from "@polymer/polymer/polymer-element";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
 import { computeStateDisplay } from "../common/entity/compute_state_display";
 import "../components/entity/state-info";
 import LocalizeMixin from "../mixins/localize-mixin";

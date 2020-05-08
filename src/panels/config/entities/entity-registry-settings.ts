@@ -1,5 +1,5 @@
-import "@material/mwc-button/mwc-button";
-import "@polymer/paper-input/paper-input";
+import "@material/mwc-button";
+import "@polymer/paper-input/paper-input.js";
 import { HassEntity } from "home-assistant-js-websocket";
 import {
   css,

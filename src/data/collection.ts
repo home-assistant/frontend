@@ -4,7 +4,7 @@ import {
   getCollection,
   UnsubscribeFunc,
 } from "home-assistant-js-websocket";
-import { Store } from "home-assistant-js-websocket/dist/store";
+import { Store } from "home-assistant-js-websocket/dist/store.js";
 
 interface OptimisticCollection<T> extends Collection<T> {
   save(data: T): Promise<unknown>;

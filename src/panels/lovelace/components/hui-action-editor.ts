@@ -1,7 +1,7 @@
-import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
-import "@polymer/paper-input/paper-textarea";
-import "@polymer/paper-item/paper-item";
-import "@polymer/paper-listbox/paper-listbox";
+import "@polymer/paper-dropdown-menu/paper-dropdown-menu.js";
+import "@polymer/paper-input/paper-textarea.js";
+import "@polymer/paper-item/paper-item.js";
+import "@polymer/paper-listbox";
 import {
   customElement,
   html,

@@ -1,4 +1,4 @@
-import "@polymer/paper-input/paper-input";
+import "@polymer/paper-input/paper-input.js";
 import { customElement, html, LitElement, property } from "lit-element";
 import "../../../../../components/entity/ha-entity-picker";
 import "../../../../../components/ha-service-picker";

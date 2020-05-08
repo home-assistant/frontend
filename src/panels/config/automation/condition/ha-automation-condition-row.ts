@@ -1,6 +1,6 @@
 import "../../../../components/ha-icon-button";
-import "@polymer/paper-item/paper-item";
-import "@polymer/paper-menu-button/paper-menu-button";
+import "@polymer/paper-item/paper-item.js";
+import "@polymer/paper-menu-button";
 import {
   css,
   CSSResult,

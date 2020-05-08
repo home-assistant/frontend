@@ -1,7 +1,7 @@
 import "@material/mwc-button";
-import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable";
-import "@polymer/paper-input/paper-input";
-import type { PaperInputElement } from "@polymer/paper-input/paper-input";
+import "@polymer/paper-dialog-scrollable";
+import "@polymer/paper-input/paper-input.js";
+import type { PaperInputElement } from "@polymer/paper-input/paper-input.js";
 import { css, CSSResult, html, LitElement, property } from "lit-element";
 import "../../../../components/dialog/ha-paper-dialog";
 import type { HaPaperDialog } from "../../../../components/dialog/ha-paper-dialog";

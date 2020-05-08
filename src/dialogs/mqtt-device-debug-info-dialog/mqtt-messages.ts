@@ -8,7 +8,7 @@ import {
   property,
   TemplateResult,
 } from "lit-element";
-import { classMap } from "lit-html/directives/class-map";
+import { classMap } from "lit-html/directives/class-map.js";
 import { formatTimeWithSeconds } from "../../common/datetime/format_time";
 import { HomeAssistant } from "../../types";
 import { MQTTMessage } from "../../data/mqtt";

@@ -1,9 +1,9 @@
-import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
-import "@polymer/paper-item/paper-item";
-import "@polymer/paper-listbox/paper-listbox";
-import { html } from "@polymer/polymer/lib/utils/html-tag";
+import "@polymer/paper-dropdown-menu/paper-dropdown-menu.js";
+import "@polymer/paper-item/paper-item.js";
+import "@polymer/paper-listbox";
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
 /* eslint-plugin-disable lit */
-import { PolymerElement } from "@polymer/polymer/polymer-element";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
 import { computeStateDomain } from "../../../common/entity/compute_state_domain";
 import LocalizeMixin from "../../../mixins/localize-mixin";
 import hassAttributeUtil from "../../../util/hass-attributes-util";

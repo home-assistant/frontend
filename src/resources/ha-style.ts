@@ -1,5 +1,5 @@
-import "@polymer/paper-styles/paper-styles";
-import "@polymer/polymer/lib/elements/custom-style";
+import "@polymer/paper-styles/paper-styles.js";
+import "@polymer/polymer/lib/elements/custom-style.js";
 import { derivedStyles, haStyle, haStyleDialog } from "./styles";
 
 const documentContainer = document.createElement("template");

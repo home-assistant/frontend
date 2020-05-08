@@ -8,7 +8,7 @@ import {
   property,
   TemplateResult,
 } from "lit-element";
-import { until } from "lit-html/directives/until";
+import { until } from "lit-html/directives/until.js";
 import hassAttributeUtil from "../util/hass-attributes-util";
 
 let jsYamlPromise: Promise<typeof import("js-yaml")>;

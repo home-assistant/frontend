@@ -1,6 +1,6 @@
-import { html } from "@polymer/polymer/lib/utils/html-tag";
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
 /* eslint-plugin-disable lit */
-import { PolymerElement } from "@polymer/polymer/polymer-element";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
 import { getAppKey } from "../data/notify_html5";
 import { EventsMixin } from "../mixins/events-mixin";
 import "./ha-switch";

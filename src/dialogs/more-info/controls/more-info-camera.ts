@@ -1,5 +1,5 @@
-import "@polymer/paper-checkbox/paper-checkbox";
-import type { PaperCheckboxElement } from "@polymer/paper-checkbox/paper-checkbox";
+import "@polymer/paper-checkbox";
+import type { PaperCheckboxElement } from "@polymer/paper-checkbox";
 import {
   css,
   CSSResult,

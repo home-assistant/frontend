@@ -6,7 +6,7 @@ import {
   TemplateResult,
 } from "lit-element";
 // This one is for types
-import { classMap } from "lit-html/directives/class-map";
+import { classMap } from "lit-html/directives/class-map.js";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { computeRTL } from "../../../common/util/compute_rtl";
 import "../../../components/entity/ha-state-label-badge";

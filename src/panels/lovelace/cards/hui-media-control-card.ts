@@ -1,6 +1,6 @@
 import "../../../components/ha-icon-button";
-import "@polymer/paper-progress/paper-progress";
-import type { PaperProgressElement } from "@polymer/paper-progress/paper-progress";
+import "@polymer/paper-progress";
+import type { PaperProgressElement } from "@polymer/paper-progress";
 import {
   css,
   CSSResult,
@@ -12,10 +12,10 @@ import {
   query,
   TemplateResult,
 } from "lit-element";
-import { classMap } from "lit-html/directives/class-map";
-import { styleMap } from "lit-html/directives/style-map";
+import { classMap } from "lit-html/directives/class-map.js";
+import { styleMap } from "lit-html/directives/style-map.js";
 import Vibrant from "node-vibrant";
-import { Swatch } from "node-vibrant/lib/color";
+import type { Swatch } from "node-vibrant/lib/color";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { computeStateName } from "../../../common/entity/compute_state_name";

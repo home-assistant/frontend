@@ -1,8 +1,8 @@
-import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable";
-import type { PaperDialogScrollableElement } from "@polymer/paper-dialog-scrollable/paper-dialog-scrollable";
+import "@polymer/paper-dialog-scrollable";
+import type { PaperDialogScrollableElement } from "@polymer/paper-dialog-scrollable";
 import "../../components/ha-icon-button";
-import "@polymer/paper-input/paper-input";
-import type { PaperInputElement } from "@polymer/paper-input/paper-input";
+import "@polymer/paper-input/paper-input.js";
+import type { PaperInputElement } from "@polymer/paper-input/paper-input.js";
 import {
   css,
   CSSResult,
@@ -14,7 +14,7 @@ import {
   query,
   TemplateResult,
 } from "lit-element";
-import { classMap } from "lit-html/directives/class-map";
+import { classMap } from "lit-html/directives/class-map.js";
 import { fireEvent } from "../../common/dom/fire_event";
 import { SpeechRecognition } from "../../common/dom/speech-recognition";
 import { uid } from "../../common/util/uid";

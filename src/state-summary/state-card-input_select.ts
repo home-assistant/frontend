@@ -1,7 +1,7 @@
-import "@polymer/paper-dropdown-menu/paper-dropdown-menu-light";
-import "@polymer/paper-item/paper-item";
-import type { PaperItemElement } from "@polymer/paper-item/paper-item";
-import "@polymer/paper-listbox/paper-listbox";
+import "@polymer/paper-dropdown-menu/paper-dropdown-menu-light.js";
+import "@polymer/paper-item/paper-item.js";
+import type { PaperItemElement } from "@polymer/paper-item/paper-item.js";
+import "@polymer/paper-listbox";
 import {
   css,
   CSSResult,

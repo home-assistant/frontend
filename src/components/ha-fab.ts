@@ -1,8 +1,8 @@
 import "@material/mwc-fab";
 import type { Fab } from "@material/mwc-fab";
-import { ripple } from "@material/mwc-ripple/ripple-directive";
+import { ripple } from "@material/mwc-ripple/ripple-directive.js";
 import { customElement, html, TemplateResult } from "lit-element";
-import { classMap } from "lit-html/directives/class-map";
+import { classMap } from "lit-html/directives/class-map.js";
 import type { Constructor } from "../types";
 import "./ha-icon";
 

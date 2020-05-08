@@ -1,8 +1,8 @@
-import "@polymer/paper-checkbox/paper-checkbox";
-import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
-import "@polymer/paper-item/paper-icon-item";
-import "@polymer/paper-listbox/paper-listbox";
-import "@polymer/paper-tooltip/paper-tooltip";
+import "@polymer/paper-checkbox";
+import "@polymer/paper-dropdown-menu/paper-dropdown-menu.js";
+import "@polymer/paper-item/paper-icon-item.js";
+import "@polymer/paper-listbox";
+import "@polymer/paper-tooltip";
 import {
   css,
   CSSResult,

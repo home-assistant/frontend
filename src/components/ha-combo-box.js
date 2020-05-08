@@ -1,10 +1,10 @@
 import "./ha-icon-button";
-import "@polymer/paper-input/paper-input";
-import "@polymer/paper-item/paper-item";
-import { html } from "@polymer/polymer/lib/utils/html-tag";
+import "@polymer/paper-input/paper-input.js";
+import "@polymer/paper-item/paper-item.js";
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
 /* eslint-plugin-disable lit */
-import { PolymerElement } from "@polymer/polymer/polymer-element";
-import "@vaadin/vaadin-combo-box/theme/material/vaadin-combo-box-light";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
+import "@vaadin/vaadin-combo-box/theme/material/vaadin-combo-box-light.js";
 import { EventsMixin } from "../mixins/events-mixin";
 
 class HaComboBox extends EventsMixin(PolymerElement) {

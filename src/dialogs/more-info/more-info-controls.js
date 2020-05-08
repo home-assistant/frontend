@@ -1,10 +1,10 @@
 import "@material/mwc-button";
-import "@polymer/app-layout/app-toolbar/app-toolbar";
-import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable";
+import "@polymer/app-layout/app-toolbar/app-toolbar.js";
+import "@polymer/paper-dialog-scrollable";
 import "../../components/ha-icon-button";
-import { html } from "@polymer/polymer/lib/utils/html-tag";
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
 /* eslint-plugin-disable lit */
-import { PolymerElement } from "@polymer/polymer/polymer-element";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import { DOMAINS_MORE_INFO_NO_HISTORY } from "../../common/const";
 import { computeStateDomain } from "../../common/entity/compute_state_domain";

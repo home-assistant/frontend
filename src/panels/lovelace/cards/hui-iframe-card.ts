@@ -7,7 +7,7 @@ import {
   property,
   TemplateResult,
 } from "lit-element";
-import { styleMap } from "lit-html/directives/style-map";
+import { styleMap } from "lit-html/directives/style-map.js";
 import parseAspectRatio from "../../../common/util/parse-aspect-ratio";
 import "../../../components/ha-card";
 import { LovelaceCard, LovelaceCardEditor } from "../types";

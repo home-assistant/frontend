@@ -1,12 +1,12 @@
 import "@material/mwc-button";
 import "../../../../components/ha-icon-button";
-import "@polymer/paper-input/paper-input";
-import "@polymer/paper-item/paper-item";
-import "@polymer/paper-item/paper-item-body";
-import "@polymer/paper-ripple/paper-ripple";
-import { html } from "@polymer/polymer/lib/utils/html-tag";
+import "@polymer/paper-input/paper-input.js";
+import "@polymer/paper-item/paper-item.js";
+import "@polymer/paper-item/paper-item-body.js";
+import "@polymer/paper-ripple";
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
 /* eslint-plugin-disable lit */
-import { PolymerElement } from "@polymer/polymer/polymer-element";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
 import "../../../../components/buttons/ha-progress-button";
 import "../../../../components/ha-card";
 import "../../../../components/ha-icon-next";

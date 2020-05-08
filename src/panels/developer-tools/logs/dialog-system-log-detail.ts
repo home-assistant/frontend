@@ -1,4 +1,4 @@
-import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable";
+import "@polymer/paper-dialog-scrollable";
 import {
   css,
   CSSResult,

@@ -1,10 +1,10 @@
-import "@polymer/iron-flex-layout/iron-flex-layout-classes";
+import "@polymer/iron-flex-layout/iron-flex-layout-classes.js";
 import "../../../components/ha-icon-button";
-import "@polymer/paper-item/paper-item";
-import "@polymer/paper-listbox/paper-listbox";
-import { html } from "@polymer/polymer/lib/utils/html-tag";
+import "@polymer/paper-item/paper-item.js";
+import "@polymer/paper-listbox";
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
 /* eslint-plugin-disable lit */
-import { PolymerElement } from "@polymer/polymer/polymer-element";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { attributeClassNames } from "../../../common/entity/attribute_class_names";
 import { computeRTLDirection } from "../../../common/util/compute_rtl";

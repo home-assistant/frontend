@@ -1,4 +1,4 @@
-import "@polymer/paper-spinner/paper-spinner-lite";
+import "@polymer/paper-spinner/paper-spinner-lite.js";
 import {
   css,
   CSSResult,

@@ -1,4 +1,4 @@
-import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
+import "@polymer/paper-dropdown-menu/paper-dropdown-menu.js";
 import { PolymerElement } from "@polymer/polymer";
 import { Constructor } from "../types";
 

@@ -1,8 +1,8 @@
-import "@polymer/app-layout/app-toolbar/app-toolbar";
-import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable";
+import "@polymer/app-layout/app-toolbar/app-toolbar.js";
+import "@polymer/paper-dialog-scrollable";
 import "../../../components/ha-icon-button";
-import "@polymer/paper-tabs/paper-tab";
-import "@polymer/paper-tabs/paper-tabs";
+import "@polymer/paper-tabs/paper-tab.js";
+import "@polymer/paper-tabs";
 import { HassEntity } from "home-assistant-js-websocket";
 import {
   css,
@@ -14,7 +14,7 @@ import {
   query,
   TemplateResult,
 } from "lit-element";
-import { cache } from "lit-html/directives/cache";
+import { cache } from "lit-html/directives/cache.js";
 import { dynamicElement } from "../../../common/dom/dynamic-element-directive";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { computeStateName } from "../../../common/entity/compute_state_name";

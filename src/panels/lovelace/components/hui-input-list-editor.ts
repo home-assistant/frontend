@@ -1,5 +1,5 @@
 import "../../../components/ha-icon-button";
-import "@polymer/paper-input/paper-input";
+import "@polymer/paper-input/paper-input.js";
 import {
   css,
   CSSResult,

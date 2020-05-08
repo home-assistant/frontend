@@ -1,6 +1,6 @@
 import "@material/mwc-button";
-import "@polymer/paper-input/paper-input";
-import "@polymer/paper-tooltip/paper-tooltip";
+import "@polymer/paper-input/paper-input.js";
+import "@polymer/paper-tooltip";
 import {
   css,
   CSSResult,

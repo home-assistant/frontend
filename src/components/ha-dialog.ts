@@ -1,6 +1,6 @@
 import "@material/mwc-dialog";
 import type { Dialog } from "@material/mwc-dialog";
-import { style } from "@material/mwc-dialog/mwc-dialog-css";
+import { style } from "@material/mwc-dialog/mwc-dialog-css.js";
 import "./ha-icon-button";
 import { css, CSSResult, customElement, html } from "lit-element";
 import type { Constructor, HomeAssistant } from "../types";

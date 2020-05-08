@@ -7,7 +7,7 @@ import {
   PropertyValues,
   TemplateResult,
 } from "lit-element";
-import { classMap } from "lit-html/directives/class-map";
+import { classMap } from "lit-html/directives/class-map.js";
 import "./ha-icon";
 
 class HaLabelBadge extends LitElement {

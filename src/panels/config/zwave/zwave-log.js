@@ -1,9 +1,9 @@
 import "@material/mwc-button";
-import "@polymer/paper-checkbox/paper-checkbox";
-import "@polymer/paper-input/paper-input";
-import { html } from "@polymer/polymer/lib/utils/html-tag";
+import "@polymer/paper-checkbox";
+import "@polymer/paper-input/paper-input.js";
+import { html } from "@polymer/polymer/lib/utils/html-tag.js";
 /* eslint-plugin-disable lit */
-import { PolymerElement } from "@polymer/polymer/polymer-element";
+import { PolymerElement } from "@polymer/polymer/polymer-element.js";
 import isPwa from "../../../common/config/is_pwa";
 import "../../../components/ha-card";
 import { EventsMixin } from "../../../mixins/events-mixin";

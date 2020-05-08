@@ -1,4 +1,4 @@
-import { HassEntity } from "home-assistant-js-websocket/dist/types";
+import { HassEntity } from "home-assistant-js-websocket/dist/types.js";
 import { customElement } from "lit-element";
 import { HomeAssistant } from "../../../types";
 import { findEntities } from "../common/find-entites";
