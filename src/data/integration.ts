@@ -22,9 +22,8 @@ export const integrationIssuesUrl = (
   domain: string,
   manifest: IntegrationManifest
 ) =>
-  manifest.is_built_in
-    ? `https://github.com/home-assistant/home-assistant/issues?q=is%3Aissue+is%3Aopen+label%3A%22integration%3A+${domain}%22`
-    : manifest.issue_tracker;
+  manifest.issue_tracker ||
+  `https://github.com/home-assistant/home-assistant/issues?q=is%3Aissue+is%3Aopen+label%3A%22integration%3A+${domain}%22`;
 
 export const domainToName = (localize: LocalizeFunc, domain: string) =>
   localize(`component.${domain}.title`) || domain;
