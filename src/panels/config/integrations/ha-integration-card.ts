@@ -148,7 +148,11 @@ export class HaIntegrationCard extends LitElement {
                         >
                       `
                     : ""}
-                  ${devices.length && entities.length ? "and" : ""}
+                  ${devices.length && entities.length
+                    ? this.hass.localize(
+                        "ui.panel.config.integrations.config_entry.and"
+                      )
+                    : ""}
                   ${entities.length
                     ? html`
                         <a
