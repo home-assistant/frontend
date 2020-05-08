@@ -5,7 +5,6 @@ import {
   html,
   LitElement,
   property,
-  query,
   TemplateResult,
 } from "lit-element";
 import "../../../../src/components/ha-markdown";

@@ -105,7 +105,7 @@ class HassioSnapshotDialog extends LitElement {
       <ha-dialog
         open
         stacked
-        @closing=${this._dialogClosed}
+        @closing=${this._closeDialog}
         .heading=${createCloseHeading(this.hass, this._computeName)}
       >
         <div class="details">
@@ -304,7 +304,7 @@ class HassioSnapshotDialog extends LitElement {
       .then(
         () => {
           alert("Snapshot restored!");
-          this._dialog.close();
+          this._closeDialog();
         },
         (error) => {
           this._error = error.body.message;
@@ -330,7 +330,7 @@ class HassioSnapshotDialog extends LitElement {
       .then(
         () => {
           alert("Snapshot restored!");
-          this._dialog.close();
+          this._closeDialog();
         },
         (error) => {
           this._error = error.body.message;
@@ -348,8 +348,8 @@ class HassioSnapshotDialog extends LitElement {
       .callApi("POST", `hassio/snapshots/${this._snapshot!.slug}/remove`)
       .then(
         () => {
-          this._dialog.close();
           this._dialogParams!.onDelete();
+          this._closeDialog();
         },
         (error) => {
           this._error = error.body.message;
@@ -399,7 +399,7 @@ class HassioSnapshotDialog extends LitElement {
     });
   }
 
-  private _dialogClosed() {
+  private _closeDialog() {
     this._dialogParams = undefined;
     this._snapshot = undefined;
     this._snapshotPassword = "";
