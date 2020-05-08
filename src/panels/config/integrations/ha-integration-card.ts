@@ -148,7 +148,9 @@ export class HaIntegrationCard extends LitElement {
                         >
                       `
                     : ""}
-                  ${devices.length && entities.length ? "and" : ""}
+                  ${devices.length && entities.length
+                    ? this.hass.localize("ui.common.and")
+                    : ""}
                   ${entities.length
                     ? html`
                         <a

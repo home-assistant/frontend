@@ -231,6 +231,7 @@
       }
     },
     "common": {
+      "and": "and",
       "previous": "Previous",
       "loading": "Loading",
       "refresh": "Refresh",
