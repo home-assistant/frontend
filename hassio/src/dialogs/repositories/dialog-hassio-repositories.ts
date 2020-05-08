@@ -195,7 +195,7 @@ class HassioRepositoriesDialog extends LitElement {
   }
 
   private async _removeRepository(ev: Event) {
-    const slug = (ev.target as any).slug;
+    const slug = (ev.currentTarget as any).slug;
     const repositories = this._filteredRepositories(this._repos);
     const repository = repositories.find((repo) => {
       return repo.slug === slug;
