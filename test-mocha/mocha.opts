@@ -1,3 +1,4 @@
+--require ts-node/register 
 --require jsdom-global/register
 --file test-mocha/testconf.js
 --recursive
