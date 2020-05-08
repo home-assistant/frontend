@@ -3,13 +3,13 @@ export interface CustomIcons {
 }
 
 export interface CustomIconsetsWindow {
-  customIconsets?: Map<string, (name: string) => Promise<CustomIcons>>;
+  customIconsets?: { [key: string]: (name: string) => Promise<CustomIcons> };
 }
 
 const customIconsetsWindow = window as CustomIconsetsWindow;
 
 if (!("customIconsets" in customIconsetsWindow)) {
-  customIconsetsWindow.customIconsets = new Map();
+  customIconsetsWindow.customIconsets = {};
 }
 
 export const customIconsets = customIconsetsWindow.customIconsets!;

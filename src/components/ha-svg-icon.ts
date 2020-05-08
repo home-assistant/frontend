@@ -12,12 +12,12 @@ import {
 export class HaSvgIcon extends LitElement {
   @property() public path?: string;
 
-  @property() public viewBox = "0 0 24 24";
+  @property() public viewBox?: string;
 
   protected render(): SVGTemplateResult {
     return svg`
     <svg 
-      viewBox=${this.viewBox}
+      viewBox=${this.viewBox || "0 0 24 24"}
       preserveAspectRatio="xMidYMid meet"
       focusable="false">
       <g>
