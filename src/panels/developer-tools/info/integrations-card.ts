@@ -69,14 +69,18 @@ class IntegrationsCard extends LitElement {
                             ? html`
                                 <td>
                                   <a
-                                    href=${integrationIssuesUrl(domain, manifest)}
+                                    href=${integrationIssuesUrl(
+                                      domain,
+                                      manifest
+                                    )}
                                     target="_blank"
                                     rel="noreferrer"
                                   >
                                     Issues
                                   </a>
                                 </td>
-                              ` : ""}
+                              `
+                            : ""}
                         `}
                   </tr>
                 `;

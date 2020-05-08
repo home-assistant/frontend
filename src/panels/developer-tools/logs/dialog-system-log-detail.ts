@@ -84,14 +84,19 @@ class DialogSystemLogDetail extends LitElement {
                           target="_blank"
                           rel="noreferrer"
                           >documentation</a
-                        >${this._manifest.is_built_in || this._manifest.issue_tracker
-                            ? html`,
+                        >${this._manifest.is_built_in ||
+                        this._manifest.issue_tracker
+                          ? html`,
                               <a
-                                href=${integrationIssuesUrl(integration, this._manifest)}
+                                href=${integrationIssuesUrl(
+                                  integration,
+                                  this._manifest
+                                )}
                                 target="_blank"
                                 rel="noreferrer"
                                 >issues</a
-                              >` : ""})
+                              >`
+                          : ""})
                       `}
                 `
               : ""}
