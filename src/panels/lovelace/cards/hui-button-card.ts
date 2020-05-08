@@ -1,4 +1,4 @@
-import "@material/mwc-ripple";
+import { Ripple } from "@material/mwc-ripple";
 import { HassEntity } from "home-assistant-js-websocket";
 import {
   css,

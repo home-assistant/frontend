@@ -1,4 +1,4 @@
-import "@material/mwc-ripple";
+import { Ripple } from "@material/mwc-ripple";
 import type { Ripple } from "@material/mwc-ripple";
 import { directive, PropertyPart } from "lit-html";
 import { fireEvent } from "../../../../common/dom/fire_event";

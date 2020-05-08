@@ -1,1 +1,1 @@
-global.__BACKWARDS_COMPAT__ = false;
+//global.__BACKWARDS_COMPAT__ = false;
