@@ -30,7 +30,7 @@ import "../ha-config-section";
 import { formatAsPaddedHex } from "./functions";
 import "./zha-device-card";
 import "./zha-device-endpoint-data-table";
-import { ZHADeviceEndpointDataTable } from "./zha-device-endpoint-data-table";
+import type { ZHADeviceEndpointDataTable } from "./zha-device-endpoint-data-table";
 
 @customElement("zha-group-page")
 export class ZHAGroupPage extends LitElement {
