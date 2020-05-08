@@ -20,7 +20,7 @@ import { computeStateDomain } from "../../../common/entity/compute_state_domain"
 import { navigate } from "../../../common/navigate";
 import { compare } from "../../../common/string/compare";
 import "../../../components/ha-card";
-import "../../../components/ha-fab";
+import "@material/mwc-fab";
 import "../../../components/map/ha-locations-editor";
 import type {
   HaLocationsEditor,
@@ -47,6 +47,8 @@ import type { HomeAssistant, Route } from "../../../types";
 import "../ha-config-section";
 import { configSections } from "../ha-panel-config";
 import { showZoneDetailDialog } from "./show-dialog-zone-detail";
+import "../../../components/ha-svg-icon";
+import { mdiPlus } from "@mdi/js";
 
 @customElement("ha-config-zone")
 export class HaConfigZone extends SubscribeMixin(LitElement) {
@@ -244,13 +246,14 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
           : ""}
       </hass-tabs-subpage>
 
-      <ha-fab
+      <mwc-fab
         ?is-wide=${this.isWide}
         ?narrow=${this.narrow}
-        icon="hass:plus"
         title="${hass.localize("ui.panel.config.zone.add_zone")}"
         @click=${this._createZone}
-      ></ha-fab>
+      >
+        <ha-svg-icon slot="icon" path=${mdiPlus}></ha-svg-icon>
+      </mwc-fab>
     `;
   }
 
@@ -526,17 +529,17 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
       ha-card paper-item {
         cursor: pointer;
       }
-      ha-fab {
+      mwc-fab {
         position: fixed;
         bottom: 16px;
         right: 16px;
         z-index: 1;
       }
-      ha-fab[is-wide] {
+      mwc-fab[is-wide] {
         bottom: 24px;
         right: 24px;
       }
-      ha-fab[narrow] {
+      mwc-fab[narrow] {
         bottom: 84px;
       }
     `;

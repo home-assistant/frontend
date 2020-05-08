@@ -15,7 +15,7 @@ import { computeObjectId } from "../../../common/entity/compute_object_id";
 import { navigate } from "../../../common/navigate";
 import { computeRTL } from "../../../common/util/compute_rtl";
 import "../../../components/ha-card";
-import "../../../components/ha-fab";
+import "@material/mwc-fab";
 import {
   Action,
   deleteScript,
@@ -30,6 +30,8 @@ import "../automation/action/ha-automation-action";
 import { HaDeviceAction } from "../automation/action/types/ha-automation-action-device_id";
 import "../ha-config-section";
 import { configSections } from "../ha-panel-config";
+import "../../../components/ha-svg-icon";
+import { mdiContentSave } from "@mdi/js";
 
 export class HaScriptEditor extends LitElement {
   @property() public hass!: HomeAssistant;
@@ -139,17 +141,18 @@ export class HaScriptEditor extends LitElement {
               : ""}
           </div>
         </div>
-        <ha-fab
+        <mwc-fab
           ?is-wide=${this.isWide}
           ?narrow=${this.narrow}
           ?dirty=${this._dirty}
-          icon="hass:content-save"
           .title="${this.hass.localize("ui.common.save")}"
           @click=${this._saveScript}
           class="${classMap({
             rtl: computeRTL(this.hass),
           })}"
-        ></ha-fab>
+        >
+          <ha-svg-icon slot="icon" path=${mdiContentSave}></ha-svg-icon>
+        </mwc-fab>
       </hass-tabs-subpage>
     `;
   }
@@ -300,7 +303,7 @@ export class HaScriptEditor extends LitElement {
         span[slot="introduction"] a {
           color: var(--primary-color);
         }
-        ha-fab {
+        mwc-fab {
           position: fixed;
           bottom: 16px;
           right: 16px;
@@ -309,24 +312,24 @@ export class HaScriptEditor extends LitElement {
           transition: margin-bottom 0.3s;
         }
 
-        ha-fab[is-wide] {
+        mwc-fab[is-wide] {
           bottom: 24px;
           right: 24px;
         }
-        ha-fab[narrow] {
+        mwc-fab[narrow] {
           bottom: 84px;
           margin-bottom: -140px;
         }
-        ha-fab[dirty] {
+        mwc-fab[dirty] {
           margin-bottom: 0;
         }
 
-        ha-fab.rtl {
+        mwc-fab.rtl {
           right: auto;
           left: 16px;
         }
 
-        ha-fab[is-wide].rtl {
+        mwc-fab[is-wide].rtl {
           bottom: 24px;
           right: auto;
           left: 24px;

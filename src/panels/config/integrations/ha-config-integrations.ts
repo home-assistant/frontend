@@ -20,7 +20,7 @@ import {
 } from "../../../common/util/render-status";
 import "../../../components/entity/ha-state-icon";
 import "../../../components/ha-card";
-import "../../../components/ha-fab";
+import "@material/mwc-fab";
 import {
   ConfigEntry,
   deleteConfigEntry,
@@ -58,6 +58,8 @@ import type {
   HaIntegrationCard,
 } from "./ha-integration-card";
 import { HASSDomEvent } from "../../../common/dom/fire_event";
+import "../../../components/ha-svg-icon";
+import { mdiPlus } from "@mdi/js";
 
 interface DataEntryFlowProgressExtended extends DataEntryFlowProgress {
   localized_title?: string;
@@ -452,15 +454,16 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
               `
             : ""}
         </div>
-        <ha-fab
-          icon="hass:plus"
+        <mwc-fab
           aria-label=${this.hass.localize("ui.panel.config.integrations.new")}
           title=${this.hass.localize("ui.panel.config.integrations.new")}
           @click=${this._createFlow}
           ?is-wide=${this.isWide}
           ?narrow=${this.narrow}
           ?rtl=${computeRTL(this.hass!)}
-        ></ha-fab>
+        >
+          <ha-svg-icon slot="icon" path=${mdiPlus}></ha-svg-icon>
+        </mwc-fab>
       </hass-tabs-subpage>
     `;
   }
@@ -680,24 +683,24 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
         h2 {
           margin-top: 0;
         }
-        ha-fab {
+        mwc-fab {
           position: fixed;
           bottom: 16px;
           right: 16px;
           z-index: 1;
         }
-        ha-fab[is-wide] {
+        mwc-fab[is-wide] {
           bottom: 24px;
           right: 24px;
         }
-        ha-fab[narrow] {
+        mwc-fab[narrow] {
           bottom: 84px;
         }
-        ha-fab[rtl] {
+        mwc-fab[rtl] {
           right: auto;
           left: 16px;
         }
-        ha-fab[is-wide].rtl {
+        mwc-fab[is-wide].rtl {
           bottom: 24px;
           left: 24px;
           right: auto;
