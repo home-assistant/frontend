@@ -21,6 +21,7 @@ export const renderMarkdown = (
     whiteListNormal = {
       ...filterXSS.whiteList,
       "ha-icon": ["icon"],
+      "ha-svg-icon": ["path"],
     };
   }
 

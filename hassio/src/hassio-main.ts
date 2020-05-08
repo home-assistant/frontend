@@ -1,4 +1,3 @@
-import "../../src/components/ha-icon-button";
 import { PolymerElement } from "@polymer/polymer";
 import { customElement, property, PropertyValues } from "lit-element";
 import { applyThemesOnElement } from "../../src/common/dom/apply_themes_on_element";
@@ -33,12 +32,6 @@ import "../../src/resources/ha-style";
 import { HomeAssistant } from "../../src/types";
 // Don't codesplit it, that way the dashboard always loads fast.
 import "./hassio-panel";
-
-// The register callback of the IronA11yKeysBehavior inside ha-icon-button
-// is not called, causing _keyBindings to be uninitiliazed for ha-icon-button,
-// causing an exception when added to DOM. When transpiled to ES5, this will
-// break the build.
-customElements.get("ha-icon-button").prototype._keyBindings = {};
 
 @customElement("hassio-main")
 class HassioMain extends ProvideHassLitMixin(HassRouterPage) {

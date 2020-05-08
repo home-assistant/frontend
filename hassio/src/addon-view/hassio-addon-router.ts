@@ -1,15 +1,15 @@
+import { customElement, property } from "lit-element";
+import { HassioAddonDetails } from "../../../src/data/hassio/addon";
 import {
   HassRouterPage,
   RouterOptions,
 } from "../../../src/layouts/hass-router-page";
-import { customElement, property } from "lit-element";
 import { HomeAssistant } from "../../../src/types";
+import "./config/hassio-addon-config-tab";
+import "./documentation/hassio-addon-documentation-tab";
 // Don't codesplit the others, because it breaks the UI when pushed to a Pi
 import "./info/hassio-addon-info-tab";
-import "./config/hassio-addon-config-tab";
 import "./log/hassio-addon-log-tab";
-import "./documentation/hassio-addon-documentation-tab";
-import { HassioAddonDetails } from "../../../src/data/hassio/addon";
 
 @customElement("hassio-addon-router")
 class HassioAddonRouter extends HassRouterPage {
