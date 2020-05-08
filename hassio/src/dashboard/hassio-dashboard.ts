@@ -12,13 +12,12 @@ import {
   HassioHomeAssistantInfo,
   HassioSupervisorInfo,
 } from "../../../src/data/hassio/supervisor";
+import "../../../src/layouts/hass-tabs-subpage";
 import { haStyle } from "../../../src/resources/styles";
 import { HomeAssistant, Route } from "../../../src/types";
-import "../../../src/layouts/hass-tabs-subpage";
+import { supervisorTabs } from "../hassio-panel";
 import "./hassio-addons";
 import "./hassio-update";
-
-import { supervisorTabs } from "../hassio-panel";
 
 @customElement("hassio-dashboard")
 class HassioDashboard extends LitElement {

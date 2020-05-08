@@ -1,3 +1,6 @@
+import "@material/mwc-icon-button/mwc-icon-button";
+import "@material/mwc-list/mwc-list-item";
+import { mdiDotsVertical } from "@mdi/js";
 import {
   css,
   CSSResult,
@@ -6,22 +9,21 @@ import {
   PropertyValues,
 } from "lit-element";
 import { html, TemplateResult } from "lit-html";
+import "../../../src/common/search/search-input";
+import "../../../src/components/ha-button-menu";
+import "../../../src/components/ha-svg-icon";
 import {
   fetchHassioAddonsInfo,
   HassioAddonInfo,
   HassioAddonRepository,
   reloadHassioAddons,
 } from "../../../src/data/hassio/addon";
-import "../../../src/components/ha-icon-button";
-import "../../../src/layouts/loading-screen";
 import "../../../src/layouts/hass-tabs-subpage";
+import "../../../src/layouts/loading-screen";
 import { HomeAssistant, Route } from "../../../src/types";
-import "../../../src/common/search/search-input";
-import "./hassio-addon-repository";
-
-import { supervisorTabs } from "../hassio-panel";
-
 import { showRepositoriesDialog } from "../dialogs/repositories/show-dialog-repositories";
+import { supervisorTabs } from "../hassio-panel";
+import "./hassio-addon-repository";
 
 const sortRepos = (a: HassioAddonRepository, b: HassioAddonRepository) => {
   if (a.slug === "local") {
@@ -94,27 +96,17 @@ class HassioAddonStore extends LitElement {
         .tabs=${supervisorTabs}
       >
         <span slot="header">Add-on store</span>
-        <paper-menu-button
-          close-on-activate
-          no-animations
-          horizontal-align="right"
-          horizontal-offset="-5"
-          slot="toolbar-icon"
-        >
-          <ha-icon-button
-            icon="hassio:dots-vertical"
-            slot="dropdown-trigger"
-            alt="menu"
-          ></ha-icon-button>
-          <paper-listbox slot="dropdown-content" role="listbox">
-            <paper-item @tap=${this._manageRepositories}>
-              Repositories
-            </paper-item>
-            <paper-item @tap=${this.refreshData}>
-              Reload
-            </paper-item>
-          </paper-listbox>
-        </paper-menu-button>
+        <ha-button-menu corner="BOTTOM_START" slot="toolbar-icon">
+          <mwc-icon-button slot="trigger" alt="menu">
+            <ha-svg-icon path=${mdiDotsVertical}></ha-svg-icon>
+          </mwc-icon-button>
+          <mwc-list-item @tap=${this._manageRepositories}>
+            Repositories
+          </mwc-list-item>
+          <mwc-list-item @tap=${this.refreshData}>
+            Reload
+          </mwc-list-item>
+        </ha-button-menu>
         ${repos.length === 0
           ? html`<loading-screen></loading-screen>`
           : html`

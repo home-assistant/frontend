@@ -1,10 +1,6 @@
 import "@material/mwc-button";
-import "@polymer/app-layout/app-toolbar/app-toolbar";
+import { mdiDelete, mdiDownload, mdiHistory } from "@mdi/js";
 import { PaperCheckboxElement } from "@polymer/paper-checkbox/paper-checkbox";
-import { PaperDialogElement } from "@polymer/paper-dialog";
-import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable";
-import "../../../../src/components/ha-icon-button";
-import "../../../../src/components/ha-icon";
 import "@polymer/paper-input/paper-input";
 import {
   css,
@@ -13,10 +9,10 @@ import {
   html,
   LitElement,
   property,
-  query,
   TemplateResult,
 } from "lit-element";
-import "../../../../src/components/dialog/ha-paper-dialog";
+import { createCloseHeading } from "../../../../src/components/ha-dialog";
+import "../../../../src/components/ha-svg-icon";
 import { getSignedPath } from "../../../../src/data/auth";
 import {
   fetchHassioSnapshotInfo,
@@ -76,7 +72,7 @@ class HassioSnapshotDialog extends LitElement {
 
   @property() private _error?: string;
 
-  @property() private snapshot?: HassioSnapshotDetail;
+  @property() private _snapshot?: HassioSnapshotDetail;
 
   @property() private _folders!: FolderItem[];
 
@@ -88,49 +84,35 @@ class HassioSnapshotDialog extends LitElement {
 
   @property() private _restoreHass: boolean | null | undefined = true;
 
-  @query("#dialog") private _dialog!: PaperDialogElement;
-
   public async showDialog(params: HassioSnapshotDialogParams) {
-    this.snapshot = await fetchHassioSnapshotInfo(this.hass, params.slug);
+    this._snapshot = await fetchHassioSnapshotInfo(this.hass, params.slug);
     this._folders = _computeFolders(
-      this.snapshot.folders
+      this._snapshot.folders
     ).sort((a: FolderItem, b: FolderItem) => (a.name > b.name ? 1 : -1));
     this._addons = _computeAddons(
-      this.snapshot.addons
+      this._snapshot.addons
     ).sort((a: AddonItem, b: AddonItem) => (a.name > b.name ? 1 : -1));
 
     this._dialogParams = params;
-
-    try {
-      this._dialog.open();
-    } catch {
-      await this.showDialog(params);
-    }
   }
 
   protected render(): TemplateResult {
-    if (!this.snapshot) {
+    if (!this._dialogParams || !this._snapshot) {
       return html``;
     }
     return html`
-      <ha-paper-dialog
-        id="dialog"
-        with-backdrop=""
-        .on-iron-overlay-closed=${this._dialogClosed}
+      <ha-dialog
+        open
+        stacked
+        @closing=${this._closeDialog}
+        .heading=${createCloseHeading(this.hass, this._computeName)}
       >
-        <app-toolbar>
-          <ha-icon-button
-            icon="hassio:close"
-            dialog-dismiss=""
-          ></ha-icon-button>
-          <div main-title="">${this._computeName}</div>
-        </app-toolbar>
         <div class="details">
-          ${this.snapshot.type === "full"
+          ${this._snapshot.type === "full"
             ? "Full snapshot"
             : "Partial snapshot"}
           (${this._computeSize})<br />
-          ${this._formatDatetime(this.snapshot.date)}
+          ${this._formatDatetime(this._snapshot.date)}
         </div>
         <div>Home Assistant:</div>
         <paper-checkbox
@@ -139,7 +121,7 @@ class HassioSnapshotDialog extends LitElement {
             this._restoreHass = (ev.target as PaperCheckboxElement).checked;
           }}"
         >
-          Home Assistant ${this.snapshot.homeassistant}
+          Home Assistant ${this._snapshot.homeassistant}
         </paper-checkbox>
         ${this._folders.length
           ? html`
@@ -183,7 +165,7 @@ class HassioSnapshotDialog extends LitElement {
               </paper-dialog-scrollable>
             `
           : ""}
-        ${this.snapshot.protected
+        ${this._snapshot.protected
           ? html`
               <paper-input
                 autofocus=""
@@ -197,37 +179,35 @@ class HassioSnapshotDialog extends LitElement {
         ${this._error ? html` <p class="error">Error: ${this._error}</p> ` : ""}
 
         <div>Actions:</div>
-        <ul class="buttons">
-          <li>
-            <mwc-button @click=${this._downloadClicked}>
-              <ha-icon icon="hassio:download" class="icon"></ha-icon>
-              Download Snapshot
-            </mwc-button>
-          </li>
-          <li>
-            <mwc-button @click=${this._partialRestoreClicked}>
-              <ha-icon icon="hassio:history" class="icon"> </ha-icon>
-              Restore Selected
-            </mwc-button>
-          </li>
-          ${this.snapshot.type === "full"
-            ? html`
-                <li>
-                  <mwc-button @click=${this._fullRestoreClicked}>
-                    <ha-icon icon="hassio:history" class="icon"> </ha-icon>
-                    Wipe &amp; restore
-                  </mwc-button>
-                </li>
-              `
-            : ""}
-          <li>
-            <mwc-button @click=${this._deleteClicked}>
-              <ha-icon icon="hassio:delete" class="icon warning"> </ha-icon>
-              <span class="warning">Delete Snapshot</span>
-            </mwc-button>
-          </li>
-        </ul>
-      </ha-paper-dialog>
+
+        <mwc-button @click=${this._downloadClicked} slot="primaryAction">
+          <ha-svg-icon path=${mdiDownload} class="icon"></ha-svg-icon>
+          Download Snapshot
+        </mwc-button>
+
+        <mwc-button
+          @click=${this._partialRestoreClicked}
+          slot="secondaryAction"
+        >
+          <ha-svg-icon path=${mdiHistory} class="icon"></ha-svg-icon>
+          Restore Selected
+        </mwc-button>
+        ${this._snapshot.type === "full"
+          ? html`
+              <mwc-button
+                @click=${this._fullRestoreClicked}
+                slot="secondaryAction"
+              >
+                <ha-svg-icon path=${mdiHistory} class="icon"></ha-svg-icon>
+                Wipe &amp; restore
+              </mwc-button>
+            `
+          : ""}
+        <mwc-button @click=${this._deleteClicked} slot="secondaryAction">
+          <ha-svg-icon path=${mdiDelete} class="icon warning"></ha-svg-icon>
+          <span class="warning">Delete Snapshot</span>
+        </mwc-button>
+      </ha-dialog>
     `;
   }
 
@@ -235,36 +215,9 @@ class HassioSnapshotDialog extends LitElement {
     return [
       haStyleDialog,
       css`
-        ha-paper-dialog {
-          min-width: 350px;
-          font-size: 14px;
-          border-radius: 2px;
-        }
-        app-toolbar {
-          margin: 0;
-          padding: 0 16px;
-          color: var(--primary-text-color);
-          background-color: var(--secondary-background-color);
-        }
-        app-toolbar [main-title] {
-          margin-left: 16px;
-        }
-        ha-paper-dialog-scrollable {
-          margin: 0;
-        }
         paper-checkbox {
           display: block;
           margin: 4px;
-        }
-        @media all and (max-width: 450px), all and (max-height: 500px) {
-          ha-paper-dialog {
-            max-height: 100%;
-            height: 100%;
-          }
-          app-toolbar {
-            color: var(--text-primary-color);
-            background-color: var(--primary-color);
-          }
         }
         .details {
           color: var(--secondary-text-color);
@@ -336,7 +289,7 @@ class HassioSnapshotDialog extends LitElement {
       folders,
     };
 
-    if (this.snapshot!.protected) {
+    if (this._snapshot!.protected) {
       data.password = this._snapshotPassword;
     }
 
@@ -344,13 +297,13 @@ class HassioSnapshotDialog extends LitElement {
       .callApi(
         "POST",
 
-        `hassio/snapshots/${this.snapshot!.slug}/restore/partial`,
+        `hassio/snapshots/${this._snapshot!.slug}/restore/partial`,
         data
       )
       .then(
         () => {
           alert("Snapshot restored!");
-          this._dialog.close();
+          this._closeDialog();
         },
         (error) => {
           this._error = error.body.message;
@@ -363,20 +316,20 @@ class HassioSnapshotDialog extends LitElement {
       return;
     }
 
-    const data = this.snapshot!.protected
+    const data = this._snapshot!.protected
       ? { password: this._snapshotPassword }
       : undefined;
 
     this.hass
       .callApi(
         "POST",
-        `hassio/snapshots/${this.snapshot!.slug}/restore/full`,
+        `hassio/snapshots/${this._snapshot!.slug}/restore/full`,
         data
       )
       .then(
         () => {
           alert("Snapshot restored!");
-          this._dialog.close();
+          this._closeDialog();
         },
         (error) => {
           this._error = error.body.message;
@@ -391,11 +344,11 @@ class HassioSnapshotDialog extends LitElement {
 
     this.hass
 
-      .callApi("POST", `hassio/snapshots/${this.snapshot!.slug}/remove`)
+      .callApi("POST", `hassio/snapshots/${this._snapshot!.slug}/remove`)
       .then(
         () => {
-          this._dialog.close();
           this._dialogParams!.onDelete();
+          this._closeDialog();
         },
         (error) => {
           this._error = error.body.message;
@@ -408,7 +361,7 @@ class HassioSnapshotDialog extends LitElement {
     try {
       signedPath = await getSignedPath(
         this.hass,
-        `/api/hassio/snapshots/${this.snapshot!.slug}/download`
+        `/api/hassio/snapshots/${this._snapshot!.slug}/download`
       );
     } catch (err) {
       alert(`Error: ${err.message}`);
@@ -419,19 +372,19 @@ class HassioSnapshotDialog extends LitElement {
     const a = document.createElement("a");
     a.href = signedPath.path;
     a.download = `Hass_io_${name}.tar`;
-    this._dialog.appendChild(a);
+    this.shadowRoot!.appendChild(a);
     a.click();
-    this._dialog.removeChild(a);
+    this.shadowRoot!.removeChild(a);
   }
 
   private get _computeName() {
-    return this.snapshot
-      ? this.snapshot.name || this.snapshot.slug
+    return this._snapshot
+      ? this._snapshot.name || this._snapshot.slug
       : "Unnamed snapshot";
   }
 
   private get _computeSize() {
-    return Math.ceil(this.snapshot!.size * 10) / 10 + " MB";
+    return Math.ceil(this._snapshot!.size * 10) / 10 + " MB";
   }
 
   private _formatDatetime(datetime) {
@@ -445,9 +398,9 @@ class HassioSnapshotDialog extends LitElement {
     });
   }
 
-  private _dialogClosed() {
+  private _closeDialog() {
     this._dialogParams = undefined;
-    this.snapshot = undefined;
+    this._snapshot = undefined;
     this._snapshotPassword = "";
     this._folders = [];
     this._addons = [];
