@@ -10,7 +10,7 @@ import {
   CSSResult,
 } from "lit-element";
 import "./ha-svg-icon";
-import { customIconsets, CustomIcons } from "../data/custom_iconsets";
+import { customIconsets, CustomIcon } from "../data/custom_iconsets";
 import {
   Chunks,
   MDI_PREFIXES,
@@ -68,7 +68,7 @@ export class HaIcon extends LitElement {
       if (iconPrefix in customIconsets) {
         const customIconset = customIconsets[iconPrefix];
         if (customIconset) {
-          this._setCustomPath(customIconset(iconName), iconName);
+          this._setCustomPath(customIconset(iconName));
         }
         return;
       }
@@ -97,13 +97,10 @@ export class HaIcon extends LitElement {
     debouncedWriteCache();
   }
 
-  private async _setCustomPath(
-    promise: Promise<CustomIcons>,
-    iconName: string
-  ) {
-    const iconPack = await promise;
-    this._path = iconPack[iconName].path;
-    this._viewBox = iconPack[iconName].viewBox;
+  private async _setCustomPath(promise: Promise<CustomIcon>) {
+    const icon = await promise;
+    this._path = icon.path;
+    this._viewBox = icon.viewBox;
   }
 
   private async _setPath(promise: Promise<Icons>, iconName: string) {
