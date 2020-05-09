@@ -178,6 +178,8 @@
             "stopped": "موقف"
         },
         "default": {
+            "off": "مطفئ",
+            "on": "مشغل",
             "unavailable": "غير متوفر",
             "unknown": "غير معروف"
         },
@@ -267,9 +269,19 @@
             "returning": "العودة"
         },
         "weather": {
+            "clear-night": "صافي، ليلا",
             "cloudy": "Bewolkt",
             "fog": "Mist",
-            "sunny": "مشمس"
+            "lightning": "برق",
+            "lightning-rainy": "برق ، ممطر",
+            "partlycloudy": "غائم جزئيا",
+            "pouring": "أمطار غزيرة",
+            "rainy": "ماطر",
+            "snowy": "ثلوج",
+            "snowy-rainy": "ثلوج، ماطر",
+            "sunny": "مشمس",
+            "windy": "عاصف",
+            "windy-variant": "عاصف"
         },
         "zwave": {
             "default": {
@@ -292,7 +304,16 @@
         },
         "card": {
             "alarm_control_panel": {
-                "arm_custom_bypass": "تجاوز مخصص"
+                "arm_away": "تفعيل خارج المنزل",
+                "arm_custom_bypass": "تجاوز مخصص",
+                "arm_home": "تفعيل في المنزل",
+                "clear_code": "مسح",
+                "code": "الرمز",
+                "disarm": "تعطيل"
+            },
+            "automation": {
+                "last_triggered": "آخر تشغيل",
+                "trigger": "تشغيل"
             },
             "camera": {
                 "not_available": "الصورة غير متاحة"
@@ -326,6 +347,12 @@
             "persistent_notification": {
                 "dismiss": "رفض"
             },
+            "scene": {
+                "activate": "تفعيل"
+            },
+            "script": {
+                "execute": "نفذ"
+            },
             "vacuum": {
                 "actions": {
                     "resume_cleaning": "استئناف التنظيف",
@@ -344,8 +371,14 @@
             },
             "weather": {
                 "attributes": {
-                    "precipitation": "ترسب"
+                    "air_pressure": "الضغط الجوي",
+                    "humidity": "الرطوبة",
+                    "precipitation": "ترسب",
+                    "temperature": "الحرارة",
+                    "visibility": "الرؤية",
+                    "wind_speed": "سرعة الرياح"
                 },
+                "forecast": "التوقعات",
                 "high": "عالي",
                 "low": "منخفض"
             }
@@ -354,6 +387,9 @@
             "cancel": "إلغاء",
             "delete": "حذف",
             "loading": "جار التحميل",
+            "next": "التالى",
+            "previous": "السابق",
+            "refresh": "تحديث",
             "successfully_deleted": "تم الحذف بنجاح",
             "undo": "تراجع"
         },
@@ -362,6 +398,10 @@
                 "entity-picker": {
                     "entity": "الجهاز"
                 }
+            },
+            "history_charts": {
+                "loading_history": "جارٍ تحميل سجل الحالات ...",
+                "no_history_found": "لم يتم العثور على سجل الحالات."
             },
             "relative_time": {
                 "never": "Nooit"
@@ -415,7 +455,19 @@
             "password": "كلمه السر",
             "remember": "تذكر"
         },
+        "notification_drawer": {
+            "click_to_configure": "انقر هنا لتعديل {entity}",
+            "empty": "لا إشعارات",
+            "title": "إشعارات"
+        },
+        "notification_toast": {
+            "connection_lost": "انقطع الاتصال. جارٍ إعادة الاتصال ..."
+        },
         "panel": {
+            "calendar": {
+                "my_calendars": "تقاويمي",
+                "today": "اليوم"
+            },
             "config": {
                 "areas": {
                     "data_table": {
@@ -476,6 +528,9 @@
                             "learn_more": "معرفة المزيد عن الشروط",
                             "type_select": "نوع الشرط",
                             "type": {
+                                "not": {
+                                    "label": "ليس"
+                                },
                                 "numeric_state": {
                                     "above": "فوق",
                                     "below": "تحت",
@@ -682,6 +737,7 @@
                     "new": "إعداد تكامل جديد",
                     "no_integrations": "يبدوأن ليس هناك أي integations  بعد. انقر على الزر أدناه لإضافة واحدة!",
                     "none": "لم يتم الإعداد بعد",
+                    "none_found_detail": "اضبط معايير البحث.",
                     "rename_dialog": "تعديل الاسم",
                     "rename_input_label": "الاسم"
                 },
@@ -924,6 +980,7 @@
                     },
                     "save_config": {
                         "cancel": "لا يهم",
+                        "close": "إغلاق",
                         "empty_config": "ابدأ بلوحة معلومات فارغة"
                     },
                     "view": {
@@ -957,6 +1014,7 @@
                 "playback_title": "تشغيل الرسالة"
             },
             "page-authorize": {
+                "abort_intro": "إلغاء الدخول",
                 "form": {
                     "providers": {
                         "command_line": {
@@ -969,13 +1027,17 @@
                                 }
                             }
                         }
-                    }
-                }
+                    },
+                    "working": "الرجاء الانتظار"
+                },
+                "initializing": "جار التهيئة"
             },
             "page-onboarding": {
                 "user": {
                     "data": {
-                        "password_confirm": "تأكيد كلمة السر"
+                        "password": "كلمه السر",
+                        "password_confirm": "تأكيد كلمة السر",
+                        "username": "المستخدم"
                     },
                     "error": {
                         "password_not_match": "كلمة السر غير مطابقة",
