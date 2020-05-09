@@ -170,7 +170,7 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
         <ha-label-badge
           class="${classMap({ [stateObj.state]: true })}"
           .icon="${ICONS[stateObj.state] || "hass:shield-outline"}"
-          .label="${this._stateIconLabel(stateObj.state)}"
+          .label="${this._stateDisplay(stateObj.state)}"
           @click=${this._handleMoreInfo}
         ></ha-label-badge>
         <div id="armActions" class="actions">
@@ -223,15 +223,6 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
             `}
       </ha-card>
     `;
-  }
-
-  private _stateIconLabel(state: string): string {
-    const stateLabel = state.split("_").pop();
-    return stateLabel === "disarmed" ||
-      stateLabel === "triggered" ||
-      !stateLabel
-      ? ""
-      : stateLabel;
   }
 
   private _actionDisplay(state: string): string {
