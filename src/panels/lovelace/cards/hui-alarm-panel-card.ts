@@ -231,7 +231,7 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
       stateLabel === "triggered" ||
       !stateLabel
       ? ""
-      : stateLabel;
+      : this._stateDisplay(state);
   }
 
   private _actionDisplay(state: string): string {
