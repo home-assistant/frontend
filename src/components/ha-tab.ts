@@ -18,9 +18,11 @@ import "./ha-svg-icon";
 import { ifDefined } from "lit-html/directives/if-defined";
 import { fireEvent } from "../common/dom/fire_event";
 
-// for fire event
-interface HASSDomEvents {
-  activated: undefined;
+declare global {
+  // for fire event
+  interface HASSDomEvents {
+    activated: undefined;
+  }
 }
 
 @customElement("ha-tab")
@@ -74,7 +76,7 @@ export class HaTab extends LitElement {
     }
   }
 
-  private _handleClick(ev: MouseEvent): void {
+  private _handleClick(): void {
     fireEvent(this, "activated");
   }
 
