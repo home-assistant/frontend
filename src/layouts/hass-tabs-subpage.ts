@@ -74,7 +74,7 @@ class HassTabsSubpage extends LitElement {
           html`
             <ha-tab
               .hass=${this.hass}
-              @click=${this._tabTapped}
+              @activated=${this._tabTapped}
               .path=${page.path}
               .active=${page === activeTab}
               .narrow=${this.narrow}
@@ -149,7 +149,7 @@ class HassTabsSubpage extends LitElement {
     `;
   }
 
-  private _tabTapped(ev: MouseEvent): void {
+  private _tabTapped(ev: Event): void {
     navigate(this, (ev.currentTarget as any).path, true);
   }
 

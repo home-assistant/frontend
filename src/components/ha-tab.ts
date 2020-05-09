@@ -18,6 +18,11 @@ import "./ha-svg-icon";
 import { ifDefined } from "lit-html/directives/if-defined";
 import { fireEvent } from "../common/dom/fire_event";
 
+// for fire event
+interface HASSDomEvents {
+  activated: undefined;
+}
+
 @customElement("ha-tab")
 export class HaTab extends LitElement {
   @property({ type: Boolean, reflect: true }) public active = false;
@@ -47,6 +52,7 @@ export class HaTab extends LitElement {
         @touchend=${this.handleRippleDeactivate}
         @touchcancel=${this.handleRippleDeactivate}
         @keydown=${this._handleKeyDown}
+        @click=${this._handleClick}
       >
         ${this.narrow ? html`<slot name="icon"></slot>` : ""}
         ${!this.narrow || this.active
@@ -64,8 +70,12 @@ export class HaTab extends LitElement {
 
   private _handleKeyDown(ev: KeyboardEvent): void {
     if (ev.keyCode === 13) {
-      fireEvent(ev.target as HTMLElement, "click");
+      fireEvent(this, "activated");
     }
+  }
+
+  private _handleClick(ev: MouseEvent): void {
+    fireEvent(this, "activated");
   }
 
   @eventOptions({ passive: true })
