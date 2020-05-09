@@ -214,16 +214,6 @@ class HassTabsSubpage extends LitElement {
         justify-content: center;
       }
 
-      #tabbar:not(.bottom-bar) ha-tab[active] {
-        border-bottom: 2px solid var(--primary-color);
-      }
-
-      .bottom-bar ha-tab {
-        padding: 0 16px;
-        width: 20%;
-        min-width: 0;
-      }
-
       :host(:not([narrow])) #toolbar-icon {
         min-width: 40px;
       }

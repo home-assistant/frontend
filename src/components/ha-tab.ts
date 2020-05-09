@@ -15,12 +15,13 @@ import type { Ripple } from "@material/mwc-ripple";
 import { RippleHandlers } from "@material/mwc-ripple/ripple-handlers";
 import "./ha-icon";
 import "./ha-svg-icon";
+import { ifDefined } from "lit-html/directives/if-defined";
 
 @customElement("ha-tab")
 export class HaTab extends LitElement {
   @property({ type: Boolean, reflect: true }) public active = false;
 
-  @property() public narrow = false;
+  @property({ type: Boolean, reflect: true }) public narrow = false;
 
   @property() public name?: string;
 
@@ -31,6 +32,10 @@ export class HaTab extends LitElement {
   protected render(): TemplateResult {
     return html`
       <div
+        tabindex="0"
+        role="tab"
+        aria-selected=${this.active}
+        aria-label=${ifDefined(this.name)}
         @focus=${this.handleRippleFocus}
         @blur=${this.handleRippleBlur}
         @mousedown=${this.handleRippleActivate}
@@ -92,6 +97,8 @@ export class HaTab extends LitElement {
         height: 64px;
         cursor: pointer;
         position: relative;
+        outline: none;
+        box-sizing: border-box;
       }
 
       .name {
@@ -100,6 +107,16 @@ export class HaTab extends LitElement {
 
       :host([active]) {
         color: var(--primary-color);
+      }
+
+      :host(:not([narrow])[active]) div {
+        border-bottom: 2px solid var(--primary-color);
+      }
+
+      :host([narrow]) {
+        padding: 0 16px;
+        width: 20%;
+        min-width: 0;
       }
     `;
   }
