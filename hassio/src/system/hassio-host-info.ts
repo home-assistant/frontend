@@ -1,5 +1,4 @@
 import "@material/mwc-button";
-import "@polymer/paper-card/paper-card";
 import {
   css,
   CSSResult,
@@ -12,23 +11,23 @@ import {
 import "../../../src/components/buttons/ha-call-api-button";
 import { fetchHassioHardwareInfo } from "../../../src/data/hassio/hardware";
 import {
+  changeHostOptions,
   fetchHassioHostInfo,
   HassioHassOSInfo,
   HassioHostInfo as HassioHostInfoType,
   rebootHost,
   shutdownHost,
   updateOS,
-  changeHostOptions,
 } from "../../../src/data/hassio/host";
+import {
+  showAlertDialog,
+  showConfirmationDialog,
+  showPromptDialog,
+} from "../../../src/dialogs/generic/show-dialog-box";
 import { haStyle } from "../../../src/resources/styles";
 import { HomeAssistant } from "../../../src/types";
 import { showHassioMarkdownDialog } from "../dialogs/markdown/show-dialog-hassio-markdown";
 import { hassioStyle } from "../resources/hassio-style";
-import {
-  showConfirmationDialog,
-  showAlertDialog,
-  showPromptDialog,
-} from "../../../src/dialogs/generic/show-dialog-box";
 
 @customElement("hassio-host-info")
 class HassioHostInfo extends LitElement {
@@ -42,7 +41,7 @@ class HassioHostInfo extends LitElement {
 
   public render(): TemplateResult | void {
     return html`
-      <paper-card>
+      <ha-card>
         <div class="card-content">
           <h2>Host system</h2>
           <table class="info">
@@ -113,7 +112,7 @@ class HassioHostInfo extends LitElement {
             ? html` <mwc-button @click=${this._updateOS}>Update</mwc-button> `
             : ""}
         </div>
-      </paper-card>
+      </ha-card>
     `;
   }
 
@@ -122,7 +121,7 @@ class HassioHostInfo extends LitElement {
       haStyle,
       hassioStyle,
       css`
-        paper-card {
+        ha-card {
           height: 100%;
           width: 100%;
         }

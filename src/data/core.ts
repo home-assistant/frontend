@@ -8,6 +8,8 @@ export interface ConfigUpdateValues {
   elevation: number;
   unit_system: "metric" | "imperial";
   time_zone: string;
+  external_url?: string | null;
+  internal_url?: string | null;
 }
 
 export const saveCoreConfig = (

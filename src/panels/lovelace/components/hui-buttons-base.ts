@@ -1,4 +1,3 @@
-import "@material/mwc-ripple";
 import {
   css,
   CSSResult,
@@ -78,7 +77,6 @@ export class HuiButtonsBase extends LitElement {
                 ? entityConf.name || computeStateName(stateObj)
                 : ""}
             </span>
-            <mwc-ripple unbounded></mwc-ripple>
           </div>
         `;
       })}
@@ -108,6 +106,7 @@ export class HuiButtonsBase extends LitElement {
         cursor: pointer;
         align-items: center;
         display: inline-flex;
+        outline: none;
       }
     `;
   }

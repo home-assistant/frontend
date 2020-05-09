@@ -456,15 +456,15 @@ export class HaVoiceCommandDialog extends LitElement {
         }
 
         .bouncer {
-          width: 40px;
-          height: 40px;
+          width: 48px;
+          height: 48px;
           position: absolute;
           top: 0;
         }
         .double-bounce1,
         .double-bounce2 {
-          width: 40px;
-          height: 40px;
+          width: 48px;
+          height: 48px;
           border-radius: 50%;
           background-color: var(--primary-color);
           opacity: 0.2;

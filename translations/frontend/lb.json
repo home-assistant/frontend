@@ -206,6 +206,8 @@
             "stopped": "Gestoppt"
         },
         "default": {
+            "off": "Aus",
+            "on": "Un",
             "unavailable": "Net erreechbar",
             "unknown": "Onbekannt"
         },
@@ -475,7 +477,10 @@
             "close": "Zoumaachen",
             "delete": "Läschen",
             "loading": "Lued",
+            "next": "Nächst",
             "no": "Nee",
+            "previous": "Virdrun",
+            "refresh": "Aktualiséieren",
             "save": "Späicheren",
             "successfully_deleted": "Erfollegräich geläscht.",
             "successfully_saved": "Erfollegräich gespäichert.",
@@ -735,6 +740,10 @@
             "triggered": "{name} ausgeléist"
         },
         "panel": {
+            "calendar": {
+                "my_calendars": "Meng Kalenner",
+                "today": "Haut"
+            },
             "config": {
                 "advanced_mode": {
                     "hint_enable": "Feelen Konfiguratioun's Optiounen? Avancéierte Modus aschalten op",
@@ -836,6 +845,9 @@
                                         "for": "Dauer"
                                     },
                                     "label": "Apparat"
+                                },
+                                "not": {
+                                    "label": "Net"
                                 },
                                 "numeric_state": {
                                     "above": "Iwwert",
@@ -1235,6 +1247,7 @@
                     },
                     "delete": "Läschen",
                     "description": "Verwalt verbonnen Apparater",
+                    "device_info": "Informatioune vum Apparat",
                     "device_not_found": "Apparat net fonnt.",
                     "entities": {
                         "add_entities_lovelace": "Zu Lovelace bäisetzen",
@@ -1397,6 +1410,8 @@
                     "new": "Eng nei Integratioun ariichten",
                     "no_integrations": "Et gesäit suu ass wéi wann nach keng Integratioun ageriicht ass. Klick de Knäppchen hei ënnen fir déi éischt Integratioun anzeriichten.",
                     "none": "Nach näischt konfiguréiert",
+                    "none_found": "Keng Integratioune fonnt",
+                    "none_found_detail": "Siich Kriterien upassen.",
                     "note_about_integrations": "Net all Integratioune könne nach via den Benotzer Interface konfiguréiert ginn.",
                     "note_about_website_reference": "Méi sin der disponibel op der ",
                     "rename_dialog": "Numm vun dësem Objet läschen",

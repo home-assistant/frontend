@@ -3,11 +3,11 @@ import {
   HassioAddonDetails,
   restartHassioAddon,
 } from "../../../src/data/hassio/addon";
-import { HomeAssistant } from "../../../src/types";
 import {
-  showConfirmationDialog,
   showAlertDialog,
+  showConfirmationDialog,
 } from "../../../src/dialogs/generic/show-dialog-box";
+import { HomeAssistant } from "../../../src/types";
 
 export const suggestAddonRestart = async (
   element: LitElement,

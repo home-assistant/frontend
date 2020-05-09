@@ -206,6 +206,8 @@
             "stopped": "Megállítva"
         },
         "default": {
+            "off": "Ki",
+            "on": "Be",
             "unavailable": "Nem elérhető",
             "unknown": "Ismeretlen"
         },
@@ -344,7 +346,7 @@
             },
             "automation": {
                 "last_triggered": "Utoljára aktiválva",
-                "trigger": "Aktivál"
+                "trigger": "Végrehajt"
             },
             "camera": {
                 "not_available": "Kép nem áll rendelkezésre"
@@ -475,7 +477,10 @@
             "close": "Bezárás",
             "delete": "Törlés",
             "loading": "Betöltés",
+            "next": "Tovább",
             "no": "Nem",
+            "previous": "Előző",
+            "refresh": "Frissítés",
             "save": "Mentés",
             "successfully_deleted": "Sikeresen törölve",
             "successfully_saved": "Sikeresen elmentve",
@@ -660,7 +665,7 @@
                 "no_entities": "Nincsenek entitások",
                 "no_triggers": "Nincsenek eseményindítók",
                 "payload_display": "Payload megjelenítése",
-                "recent_messages": "{n} legfrissebb fogadott üzenet",
+                "recent_messages": "{n} legfrissebb fogadott üzenet(ek)",
                 "show_as_yaml": "Megjelenítés YAML-ként",
                 "title": "{device} debug infók",
                 "triggers": "Eseményindítók"
@@ -735,6 +740,10 @@
             "triggered": "Aktiválva {name}"
         },
         "panel": {
+            "calendar": {
+                "my_calendars": "Saját naptáraim",
+                "today": "Ma"
+            },
             "config": {
                 "advanced_mode": {
                     "hint_enable": "Hiányzó konfigurációs beállítások? Kapcsold be a haladó üzemmódot",
@@ -836,6 +845,9 @@
                                         "for": "Időtartam"
                                     },
                                     "label": "Eszköz"
+                                },
+                                "not": {
+                                    "label": "Nem"
                                 },
                                 "numeric_state": {
                                     "above": "Felett",
@@ -1397,6 +1409,8 @@
                     "new": "Új integráció beállítása",
                     "no_integrations": "Úgy tűnik, még nincs beállítva egyetlen integráció sem. Kattints az alábbi gombra az első integráció hozzáadásához!",
                     "none": "Még semmi sincs beállítva",
+                    "none_found": "Nincsenek integrációk",
+                    "none_found_detail": "Módosítsd a keresési feltételeket.",
                     "note_about_integrations": "Még nem minden integráció konfigurálható a felhasználói felületen keresztül.",
                     "note_about_website_reference": "Továbbiak érhetőek el itt: ",
                     "rename_dialog": "A konfigurációs bejegyzés nevének szerkesztése",
@@ -2216,12 +2230,12 @@
                         "close": "Bezárás",
                         "empty_config": "Kezdj egy üres irányítópulttal",
                         "header": "Vedd át az irányítást a Lovelace UI felett",
-                        "para": "Alapértelmezés szerint a Home Assistant kezeli a felhasználói felületet, és frissíti azt, amikor új entitások vagy Lovelace komponensek válnak elérhetővé. Ha átveszed az irányítást, többé nem fogunk automatikusan módosításokat végezni számodra.",
+                        "para": "Ezt az irányítópultot jelenleg a Home Assistant kezeli. Automatikusan frissül, amikor új entitások vagy Lovelace komponensek válnak elérhetővé. Ha átveszed az irányítást, akkor ez az irányítópult nem fog többé automatikusan frissülni. Bármikor létre tudsz hozni egy új irányítópultot a konfigurációban a próbálgatáshoz.",
                         "para_sure": "Biztosan át szeretnéd venni az irányítást a felhasználói felületed felett?",
                         "save": "Irányítás átvétele",
                         "yaml_config": "A kezdéshez itt a jelenlegi konfigurációja ennek az irányítópultnak:",
                         "yaml_control": "Ahhoz, hogy átvedd az irányítást YAML módban, hozz létre egy YAML fájlt az irányítópult konfigurációjában megadott  vagy az alapértelmezett 'ui-lovelace.yaml' névvel.",
-                        "yaml_mode": "YAML módot használsz, ezért nem módosíthatod a Lovelace konfigurációt a felhasználói felületről. Ha mégis onnan szeretnéd, akkor távolítsd el a 'mode: yaml' bejegyzést a Lovelace konfigurációból a 'configuration.yaml' fájlban."
+                        "yaml_mode": "YAML módot használsz ehhez az irányítópulthoz, ezért nem módosíthatod a Lovelace konfigurációt a felhasználói felületről. Ha mégis onnan szeretnéd, akkor távolítsd el a 'mode: yaml' bejegyzést a Lovelace konfigurációból a 'configuration.yaml' fájlban."
                     },
                     "suggest_card": {
                         "add": "Hozzáadás a Lovelace-hez",

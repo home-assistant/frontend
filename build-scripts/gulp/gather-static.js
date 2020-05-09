@@ -80,7 +80,6 @@ gulp.task("copy-translations", (done) => {
 
 gulp.task("copy-static", (done) => {
   const staticDir = paths.static;
-  const staticPath = genStaticPath(paths.static);
   // Basic static files
   fs.copySync(polyPath("public"), paths.root);
 
@@ -90,10 +89,6 @@ gulp.task("copy-static", (done) => {
   copyMdiIcons(staticDir);
 
   // Panel assets
-  copyFileDir(
-    npmPath("react-big-calendar/lib/css/react-big-calendar.css"),
-    staticPath("panels/calendar/")
-  );
   copyMapPanel(staticDir);
   done();
 });

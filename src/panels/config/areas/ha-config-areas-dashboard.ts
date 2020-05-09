@@ -16,7 +16,7 @@ import {
   DataTableColumnContainer,
   RowClickedEvent,
 } from "../../../components/data-table/ha-data-table";
-import "../../../components/ha-fab";
+import "@material/mwc-fab";
 import {
   AreaRegistryEntry,
   createAreaRegistryEntry,
@@ -26,6 +26,8 @@ import {
   devicesInArea,
 } from "../../../data/device_registry";
 import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
+import "../../../components/ha-icon-button";
+import "../../../components/ha-svg-icon";
 import "../../../layouts/hass-loading-screen";
 import "../../../layouts/hass-tabs-subpage-data-table";
 import { HomeAssistant, Route } from "../../../types";
@@ -35,6 +37,7 @@ import {
   loadAreaRegistryDetailDialog,
   showAreaRegistryDetailDialog,
 } from "./show-dialog-area-registry-detail";
+import { mdiPlus } from "@mdi/js";
 
 @customElement("ha-config-areas-dashboard")
 export class HaConfigAreasDashboard extends LitElement {
@@ -120,15 +123,16 @@ export class HaConfigAreasDashboard extends LitElement {
           @click=${this._showHelp}
         ></ha-icon-button>
       </hass-tabs-subpage-data-table>
-      <ha-fab
+      <mwc-fab
         ?is-wide=${this.isWide}
         ?narrow=${this.narrow}
-        icon="hass:plus"
         title="${this.hass.localize(
           "ui.panel.config.areas.picker.create_area"
         )}"
         @click=${this._createArea}
-      ></ha-fab>
+      >
+        <ha-svg-icon slot="icon" path=${mdiPlus}></ha-svg-icon>
+      </mwc-fab>
     `;
   }
 
@@ -177,25 +181,25 @@ export class HaConfigAreasDashboard extends LitElement {
         --app-header-background-color: var(--sidebar-background-color);
         --app-header-text-color: var(--sidebar-text-color);
       }
-      ha-fab {
+      mwc-fab {
         position: fixed;
         bottom: 16px;
         right: 16px;
         z-index: 1;
       }
-      ha-fab[is-wide] {
+      mwc-fab[is-wide] {
         bottom: 24px;
         right: 24px;
       }
-      ha-fab[narrow] {
+      mwc-fab[narrow] {
         bottom: 84px;
       }
-      ha-fab.rtl {
+      mwc-fab.rtl {
         right: auto;
         left: 16px;
       }
 
-      ha-fab[is-wide].rtl {
+      mwc-fab[is-wide].rtl {
         bottom: 24px;
         right: auto;
         left: 24px;
