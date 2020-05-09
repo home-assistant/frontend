@@ -206,6 +206,8 @@
             "stopped": "Parado"
         },
         "default": {
+            "off": "Desligado",
+            "on": "Ligado",
             "unavailable": "Indisponível",
             "unknown": "Desconhecido"
         },
@@ -411,6 +413,9 @@
             "script": {
                 "execute": "Executar"
             },
+            "service": {
+                "run": "Executar"
+            },
             "timer": {
                 "actions": {
                     "cancel": "Cancelar",
@@ -472,7 +477,10 @@
             "close": "Fechar",
             "delete": "Apagar",
             "loading": "A carregar",
+            "next": "Seguinte",
             "no": "Não",
+            "previous": "Anterior",
+            "refresh": "Atualizar",
             "save": "Guardar",
             "successfully_deleted": "Eliminado com sucesso",
             "successfully_saved": "Salva com sucesso",
@@ -483,15 +491,21 @@
             "area-picker": {
                 "add_dialog": {
                     "add": "Adicionar",
-                    "name": "Nome"
+                    "failed_create_area": "Falha ao criar a área.",
+                    "name": "Nome",
+                    "text": "Introduza o nome da nova área.",
+                    "title": "Adicionar nova área"
                 },
+                "add_new": "Adicionar nova área…",
                 "area": "Área",
-                "clear": "Limpar"
+                "clear": "Limpar",
+                "show_areas": "Mostrar áreas"
             },
             "device-picker": {
                 "clear": "Apagar",
                 "device": "Dispositivo",
-                "show_devices": "Mostrar dispositivos"
+                "show_devices": "Mostrar dispositivos",
+                "toggle": "Alternar"
             },
             "entity": {
                 "entity-picker": {
@@ -506,8 +520,14 @@
             },
             "related-items": {
                 "area": "Área",
+                "automation": "Parte das seguintes automações",
                 "device": "Dispositivo",
-                "integration": "Integração"
+                "entity": "Entidades relacionadas",
+                "group": "Parte dos seguintes grupos",
+                "integration": "Integração",
+                "no_related_found": "Nenhum item relacionado encontrado.",
+                "scene": "Parte dos seguintes cenários",
+                "script": "Parte dos seguintes scripts"
             },
             "relative_time": {
                 "duration": {
@@ -539,15 +559,26 @@
                 "control": "Controle",
                 "dismiss": "Fechar",
                 "editor": {
+                    "confirm_delete": "Tem certeza de que deseja apagar esta entrada?",
                     "delete": "Apagar",
+                    "enabled_cause": "Desativado por {cause}.",
+                    "enabled_description": "Entidades desativadas não serão adicionadas ao Home Assistant.",
                     "enabled_label": "Ativar entidade",
+                    "entity_id": "Identificação da entidade",
+                    "icon": "Substituição do ícone",
+                    "icon_error": "Os ícones devem estar no formato 'prefixo:nome do ícone', por exemplo 'mdi:home'.",
+                    "name": "Substituição do nome",
+                    "note": "Nota: isto pode ainda não funcionar com todas as integrações.",
+                    "unavailable": "Esta entidade não está atualmente disponível.",
                     "update": "Atualizar"
                 },
+                "no_unique_id": "Esta entidade não tem uma identificação única, portanto suas configurações não podem ser geridas a partir da IU.",
                 "related": "Relacionadas",
                 "settings": "Definições"
             },
             "generic": {
                 "cancel": "Cancelar",
+                "close": "fechar",
                 "default_confirmation_title": "Tem a certeza?",
                 "ok": "OK"
             },
@@ -564,7 +595,9 @@
                 },
                 "input_number": {
                     "box": "Campo de entrada",
+                    "max": "Valor máximo",
                     "min": "Valor mínimo",
+                    "mode": "Modo de exibição",
                     "step": "Tamanho do passo",
                     "unit_of_measurement": "Unidade de medida"
                 },
@@ -579,12 +612,19 @@
                     "min": "Comprimento mínimo",
                     "mode": "Modo de exibição",
                     "password": "Palavra-passe",
+                    "pattern": "Padrão Regex para validação do lado do cliente",
                     "text": "Texto"
                 },
+                "platform_not_loaded": "A integração {platform} não foi carregada. Por favor, adicione ao  ficheiro configuration.yaml, 'default_config:' ou '{platform}:'.",
+                "required_error_msg": "Este campo é obrigatório",
                 "yaml_not_editable": "As configurações desta entidade não podem ser editadas a partir do IU. Apenas as entidades adiccionadas a partir da IU são configuráveis a partir da IU."
             },
             "more_info_control": {
                 "dismiss": "Descartar diálogo",
+                "edit": "Editar entidade",
+                "person": {
+                    "create_zone": "Criar zona a partir da localização atual"
+                },
                 "restored": {
                     "confirm_remove_text": "Tem a certeza que deseja remover esta entidade?",
                     "confirm_remove_title": "Remover a entidade?",
@@ -606,7 +646,10 @@
                     "title": "Instruções para atualização"
                 },
                 "vacuum": {
+                    "clean_spot": "Limpar ",
+                    "commands": "Comandos do aspirador:",
                     "fan_speed": "Velocidade do ventilador",
+                    "locate": "Localizar",
                     "pause": "Pausa",
                     "start": "Iniciar",
                     "start_pause": "Iniciar / Pausar",
@@ -618,7 +661,11 @@
                 "deserialize": "Tentativa de analisar mensagens MQTT como JSON",
                 "entities": "Entidades",
                 "no_entities": "Sem entidades",
+                "no_triggers": "Sem gatilhos",
+                "payload_display": "Exibição de carga",
+                "recent_messages": "{n} mensagem(s) recebida(s) mais recentemente",
                 "show_as_yaml": "Mostrar como YAML",
+                "title": "{device} Informação de depuração",
                 "triggers": "Gatilhos"
             },
             "options_flow": {
@@ -644,12 +691,15 @@
                     "remove": "Remover Dispositivo",
                     "zigbee_information": "Informação Zigbee"
                 },
+                "confirmations": {
+                    "remove": "Tem a certeza que deseja remover este dispositivo?"
+                },
                 "device_signature": "Assinatura do dispositivo Zigbee",
                 "last_seen": "Visto pela última vez",
                 "manuf": "por {manufacturer}",
                 "no_area": "Nenhuma Área",
                 "power_source": "Fonte de energia",
-                "quirk": "Capricho",
+                "quirk": "Peculiaridade",
                 "services": {
                     "reconfigure": "Reconfigure o dispositivo ZHA (curar dispositivo). Utilize isto se estiver a ter problemas com o dispositivo. Se o dispositivo em questão for um dispositivo alimentado por uma bateria, ao utilizar este serviço certifique-se de que o equipamento está ativo e a aceitar comandos.",
                     "remove": "Remover um dispositivo da rede Zigbee.",
@@ -688,6 +738,10 @@
             "triggered": "Despoletado {name}"
         },
         "panel": {
+            "calendar": {
+                "my_calendars": "Os meus Calendários",
+                "today": "Hoje"
+            },
             "config": {
                 "advanced_mode": {
                     "hint_enable": "Falta de opções de configuração? Ativar o modo avançado em",
@@ -705,7 +759,7 @@
                     },
                     "description": "Visão geral de todas as áreas da sua casa.",
                     "editor": {
-                        "create": "CRIAR",
+                        "create": "Criar",
                         "default_name": "Nova área",
                         "delete": "APAGAR",
                         "update": "ATUALIZAR"
@@ -715,7 +769,8 @@
                         "header": "Áreas",
                         "integrations_page": "Página de Integrações",
                         "introduction": "As áreas são utilizadas para organizar os dispositivos. Essas informações serão utilizadas no Home Assistant para o ajudar a organizar o seu interface, permissões e integrações com outros sistemas.",
-                        "introduction2": "Para colocar dispositivos numa área, use o link abaixo para navegar até a página de integrações e em seguida, clique numa integração configurada para aceder aos cartões de dispositivos."
+                        "introduction2": "Para colocar dispositivos numa área, use o link abaixo para navegar até a página de integrações e em seguida, clique numa integração configurada para aceder aos cartões de dispositivos.",
+                        "no_areas": "Parece que ainda não tem áreas!"
                     }
                 },
                 "automation": {
@@ -789,6 +844,9 @@
                                     },
                                     "label": "Dispositivo"
                                 },
+                                "not": {
+                                    "label": "Não"
+                                },
                                 "numeric_state": {
                                     "above": "Acima",
                                     "below": "Abaixo",
@@ -835,6 +893,7 @@
                         },
                         "edit_ui": "Editar com IU",
                         "edit_yaml": "Editar como YAML",
+                        "enable_disable": "Habilitar/desabilitar automação",
                         "introduction": "Crie automações para dar vida à sua casa",
                         "load_error_not_editable": "Apenas as automações em automations.yaml são editáveis.",
                         "load_error_unknown": "Erro ao carregar a automação ({err_no}).",
@@ -1150,7 +1209,8 @@
                     },
                     "warning": {
                         "include_link": "incluir customize.yaml",
-                        "include_sentence": "Parece que o seu configuration.yaml não está adequadamente"
+                        "include_sentence": "Parece que o seu configuration.yaml não está adequadamente",
+                        "not_applied": "As alterações feitas aqui são gravadas nele, mas não serão aplicadas após o carregamento da configuração, a não ser que a inclusão esteja no lugar."
                     }
                 },
                 "devices": {
@@ -1158,14 +1218,18 @@
                         "actions": {
                             "caption": "Quando alguma coisa é despoletada..."
                         },
+                        "automations": "Automações",
                         "conditions": {
                             "caption": "Só fazer alguma coisa se..."
                         },
+                        "create": "Criar automação com dispositivo",
+                        "no_automations": "Sem automações",
                         "no_device_automations": "Não há automações disponíveis para este dispositivo.",
                         "triggers": {
                             "caption": "Fazer alguma coisa quando..."
                         }
                     },
+                    "cant_edit": "Só pode editar itens que são criados na IU.",
                     "caption": "Dispositivos",
                     "confirm_delete": "Tem a certeza que quer apagar este dispositivo?",
                     "confirm_rename_entity_ids": "Deseja também renomear os id's de entidade de suas entidades?",
@@ -1188,6 +1252,17 @@
                     },
                     "name": "Nome",
                     "no_devices": "Sem dispositivos",
+                    "scene": {
+                        "create": "Criar cena com o dispositivo",
+                        "scenes": "Cenas"
+                    },
+                    "scenes": "Cenas",
+                    "script": {
+                        "create": "Criar script com o dispositivo",
+                        "no_scripts": "Sem scripts",
+                        "scripts": "Scripts"
+                    },
+                    "scripts": "Scripts",
                     "unknown_error": "Erro desconhecido",
                     "unnamed_device": "Dispositivo sem nome",
                     "update": "Atualizar"
@@ -1209,6 +1284,7 @@
                         "filter": {
                             "filter": "Filtro",
                             "show_disabled": "Mostrar entidades desativadas",
+                            "show_readonly": "Mostrar entidades somente de leitura.",
                             "show_unavailable": "Mostrar entidades indisponíveis"
                         },
                         "header": "Entidades",
@@ -1221,12 +1297,16 @@
                         "introduction": "O Home Assistant mantém um registo de todas as entidades que foram alguma vez detetadas e que podem ser identificadas de uma forma única. Cada uma dessas entidades terá um ID de entidade atribuído, que será reservado apenas para essa entidade.",
                         "introduction2": "Use o registo da entidade para substituir o nome, alterar o ID da entidade ou remover a entrada do Home Assistant. Note que a remoção da entrada do registo de entidade não removerá a entidade. Para fazer isso, siga o link abaixo e remova-o da página de integrações.",
                         "remove_selected": {
-                            "confirm_partly_title": "Somente {número} entidades selecionadas podem ser removidas."
+                            "button": "Remover selecionado",
+                            "confirm_partly_text": "Você pode remover apenas {removable} das {selected} entidades selecionadas. As entidades só podem ser removidas quando a integração deixar de suportá-las. Por vezes é necessário reiniciar o Home Assistant antes de poder remover as entidades de uma integração removida. Tem a certeza de que deseja remover as entidades removíveis?",
+                            "confirm_partly_title": "Somente {número} entidades selecionadas podem ser removidas.",
+                            "confirm_title": "Deseja remover {number} entidades?"
                         },
                         "selected": "Selecionou {number}",
                         "status": {
                             "disabled": "Desativado",
                             "ok": "Ok",
+                            "readonly": "Somente leitura",
                             "restored": "Restaurado",
                             "unavailable": "Indisponível"
                         }
@@ -1239,15 +1319,24 @@
                 "header": "Configurar o Home Assistant",
                 "helpers": {
                     "caption": "Auxiliares",
+                    "description": "Elementos que podem ajudar a construir automações.",
                     "dialog": {
+                        "add_helper": "Adicionar auxiliar",
+                        "add_platform": "Adicione {platform}",
                         "create": "Criar"
                     },
                     "picker": {
+                        "add_helper": "Adicionar auxiliar",
                         "headers": {
-                            "entity_id": "ID da entidade"
+                            "editable": "Editável",
+                            "entity_id": "ID da entidade",
+                            "name": "Nome",
+                            "type": "Tipo"
                         }
                     },
                     "types": {
+                        "input_boolean": "Interruptor",
+                        "input_datetime": "Data e/ou hora",
                         "input_number": "Número",
                         "input_text": "Texto"
                     }
@@ -1309,34 +1398,59 @@
                     "integration": "Integração",
                     "integration_not_found": "Integração não encontrada.",
                     "new": "Configurar uma nova integração",
-                    "no_integrations": "Parece que você ainda não possui integrações configuradas. Clique no botão abaixo para adicionar sua primeira integração!",
+                    "no_integrations": "Parece que ainda não possui integrações configuradas. Clique no botão abaixo para adicionar a sua primeira integração!",
                     "none": "Nada configurado ainda",
+                    "none_found": "Integrações não encontradas",
+                    "none_found_detail": "Ajuste os seus critérios de pesquisa.",
                     "note_about_integrations": "De momento nem todas as integrações podem ser configuradas via UI.",
-                    "note_about_website_reference": "Existem mais disponíveis no"
+                    "note_about_website_reference": "Existem mais disponíveis no",
+                    "rename_dialog": "Edite o nome desta entrada de configuração.",
+                    "rename_input_label": "Nome da entrada"
                 },
                 "introduction": "Aqui é possível configurar os seus componentes e o Home Assistant. Nem tudo é possível de ser configurado a partir da Interface Gráfica, mas estamos a trabalhar para isso.",
                 "lovelace": {
+                    "caption": "Painéis Lovelace",
                     "dashboards": {
+                        "cant_edit_default": "O painel padrão não pode ser editado através do IU. Pode escondê-lo se definir outro painel como padrão.",
+                        "cant_edit_yaml": "Os painéis definidos no YAML não podem ser editados a partir da interface do utilizador. Altere-os em configuration.yaml.",
+                        "caption": "Dashboards",
+                        "conf_mode": {
+                            "storage": "Controlado pelo IU",
+                            "yaml": "ficheiro YAML"
+                        },
+                        "confirm_delete": "Tem a certeza que quer apagar este dashboard?",
                         "default_dashboard": "Este é o painel de instrumentos padrão",
                         "detail": {
                             "create": "Criar",
                             "delete": "Apagar",
                             "dismiss": "Fechar",
+                            "edit_dashboard": "Editar painel",
                             "icon": "Ícone",
+                            "new_dashboard": "Adicionar novo painel",
+                            "remove_default": "Remover este dispositivo de painel padrão",
                             "require_admin": "Administrador apenas",
+                            "set_default": "Definir este dispositivo como padrão",
+                            "show_sidebar": "Mostrar na barra lateral",
                             "title": "Título",
                             "title_required": "O título é obrigatório.",
                             "update": "Atualizar",
-                            "url": "Url"
+                            "url": "Url",
+                            "url_error_msg": "A URL deve conter um - e não pode conter espaços ou caracteres especiais, excepto para _ e -"
                         },
                         "picker": {
+                            "add_dashboard": "Adicionar dashboard",
                             "headers": {
+                                "conf_mode": "Método de configuração",
                                 "default": "Predefinição",
+                                "filename": "Nome do ficheiro",
+                                "require_admin": "Administrador apenas",
+                                "sidebar": "Mostrar na barra lateral",
                                 "title": "Título"
                             },
                             "open": "Abrir"
                         }
                     },
+                    "description": "Configure os seus Lovelace Dashboards",
                     "resources": {
                         "cant_edit_yaml": "Você está a usar o Lovelace no modo YAML, portanto, não é possível gerir os seus recursos através do interface do utilizador. Configure-os em configuration.yaml.",
                         "caption": "Recursos",
@@ -1425,7 +1539,7 @@
                         "unsaved_confirm": "Existem alterações não guardadas. Tem a certeza de que quer sair?"
                     },
                     "picker": {
-                        "add_scene": "Adicionar cena",
+                        "add_scene": "Adicionar cenário",
                         "delete_confirm": "Tem certeza de que deseja apagar esta cena?",
                         "delete_scene": "Eliminar cena",
                         "edit_scene": "Editar cena",
@@ -1569,7 +1683,8 @@
                     },
                     "clusters": {
                         "header": "Clusters",
-                        "help_cluster_dropdown": "Selecione um cluster para visualizar atributos e comandos."
+                        "help_cluster_dropdown": "Selecione um cluster para visualizar atributos e comandos.",
+                        "introduction": "Clusters são os blocos de construção para a funcionalidade Zigbee. Eles separam a funcionalidade em unidades lógicas. Existem tipos de cliente e servidor e que são compostos de atributos e comandos."
                     },
                     "common": {
                         "add_devices": "Adicionar dispositivos",
@@ -1579,15 +1694,40 @@
                         "value": "Valor"
                     },
                     "description": "Gestão de rede Zigbee Home Automation",
+                    "devices": {
+                        "header": "Zigbee Home Automation - Dispositivo"
+                    },
+                    "group_binding": {
+                        "bind_button_help": "Vincule o grupo selecionado aos clusters de dispositivos selecionados.",
+                        "bind_button_label": "Vincular grupo",
+                        "unbind_button_help": "Desvincular o grupo selecionado dos clusters de dispositivos selecionados.",
+                        "unbind_button_label": "Desvincular grupo"
+                    },
                     "groups": {
+                        "add_members": "Adicionar membros",
+                        "adding_members": "A Adicionar membros",
+                        "caption": "Grupos",
+                        "create": "Criar grupo",
+                        "create_group": "Zigbee Home Automation - Criar grupo",
+                        "creating_group": "Criação de grupo",
+                        "description": "Criar e modificar grupos Zigbee",
                         "group_id": "ID do grupo",
                         "group_info": "Informações sobre o grupo",
+                        "group_name_placeholder": "Nome do Grupo",
                         "group_not_found": "Grupo não encontrado!",
+                        "group-header": "Zigbee Home Automation - Detalhes do grupo",
                         "groups": "Grupos",
+                        "groups-header": "Zigbee Home Automation - Gestão de Grupos",
+                        "introduction": "Criar e modificar grupos zigbee",
+                        "manage_groups": "Gerir Grupos Zigbee",
                         "members": "Membros",
                         "remove_groups": "Remover grupos",
-                        "removing_groups": "A remover grupos"
+                        "remove_members": "Remover membros",
+                        "removing_groups": "A remover grupos",
+                        "removing_members": "A remover de membros",
+                        "zha_zigbee_groups": "Grupos ZHA Zigbee"
                     },
+                    "header": "Configurar a automação residencial Zigbee",
                     "network_management": {
                         "header": "Gestão ",
                         "introduction": "Comandos que afetam toda a rede"
@@ -1598,25 +1738,36 @@
                         "hint_battery_devices": "Nota: Os dispositivos que entram em modo \"sleep\" (alimentados a bateria) precisam estar activos ao executar comandos sobre eles. Geralmente é possível \"acordar\" um dispositivo em modo\"sleep\" acionando-o.",
                         "hint_wakeup": "Alguns dispositivos, como os sensores Xiaomi, têm um botão de ativação que você pode pressionar em intervalos de ~ 5 segundos para manter os dispositivos acordados enquanto você interage com eles.",
                         "introduction": "Execute comandos ZHA que afetem um único dispositivo. Escolha um dispositivo para ver uma lista de comandos disponíveis."
-                    }
+                    },
+                    "title": "Automação residencial zigbee"
                 },
                 "zone": {
                     "add_zone": "Adicionar zona",
                     "caption": "Zonas",
+                    "configured_in_yaml": "As zonas configuradas via configuration.yaml não podem ser editadas pelo IU.",
+                    "confirm_delete": "Tem certeza de que deseja apagar esta zona?",
                     "create_zone": "Criar zona",
+                    "description": "Gerencie as zonas nas quais deseja rastrear pessoas.",
                     "detail": {
                         "create": "Criar",
+                        "delete": "Eliminar",
                         "icon": "Ícone",
+                        "icon_error_msg": "O ícone deve estar no prefixo do formato: iconname, por exemplo: mdi: home",
                         "latitude": "Latitude",
                         "longitude": "Longitude",
                         "name": "Nome",
+                        "new_zone": "Nova Zona",
                         "passive": "Passivo",
                         "passive_note": "As zonas passivas estão ocultas no frontend e não são usadas como local para rastreadores de dispositivos. Isto é útil se quiser usá-lo apenas para automações.",
                         "radius": "Raio",
-                        "required_error_msg": "Este campo é obrigatório"
+                        "required_error_msg": "Este campo é obrigatório",
+                        "update": "Atualizar"
                     },
                     "edit_home_zone": "O raio da zona casa ainda não pode ser editado a partir do frontend. Arraste o marcador no mapa para mover a zona inicial.",
-                    "edit_home_zone_narrow": "O raio da zona casa ainda não pode ser editado a partir do frontend. A localização pode ser modificada a partir da configuração geral."
+                    "edit_home_zone_narrow": "O raio da zona casa ainda não pode ser editado a partir do frontend. A localização pode ser modificada a partir da configuração geral.",
+                    "go_to_core_config": "Ir para a configuração geral?",
+                    "introduction": "As zonas permitem especificar determinadas regiões da Terra. Quando uma pessoa está dentro de uma zona, o estado assume o nome da zona. As zonas também podem ser usadas como gatilho ou condição nas configurações de automação.",
+                    "no_zones_created_yet": "Parece que você ainda não criou nenhuma zona."
                 },
                 "zwave": {
                     "caption": "Z-Wave",
@@ -1643,11 +1794,11 @@
                     },
                     "node_config": {
                         "config_parameter": "Parâmetro de configuração",
-                        "config_value": "Cofigurar valor",
+                        "config_value": "Valor de Configuração",
                         "false": "Falso",
                         "header": "Configurar opçoes do nó",
                         "seconds": "Segundos",
-                        "set_config_parameter": "Definir o parâmetro de configuração",
+                        "set_config_parameter": "Definir o Parâmetro de Configuração",
                         "set_wakeup": "Definir intervalo de acordar",
                         "true": "Verdadeiro"
                     },
@@ -1739,6 +1890,7 @@
                         "topic": "tópico"
                     },
                     "services": {
+                        "alert_parsing_yaml": "Erro na análise de YAML: {data}",
                         "call_service": "Chamar serviço",
                         "column_description": "Descrição",
                         "column_example": "Exemplo",
@@ -1788,6 +1940,9 @@
                 "showing_entries": "Mostrar valores para"
             },
             "lovelace": {
+                "add_entities": {
+                    "yaml_unsupported": "Você não pode usar esta função ao usar o Lovelace IU no modo YAML."
+                },
                 "cards": {
                     "confirm_delete": "Tem a certeza que quer apagar este cartão?",
                     "empty_state": {
@@ -1807,6 +1962,10 @@
                         "toggle": "Alternar {name}",
                         "url": "Abrir janela para  {url_path}"
                     },
+                    "safe-mode": {
+                        "description": "O Home Assistant teve problemas durante o carregamento da configuração e agora está em execução no modo de segurança. Dê uma vista de olhos no registro de erros para ver o que está errado.",
+                        "header": "Modo de Segurança Ativada"
+                    },
                     "shopping-list": {
                         "add_item": "Adicionar Item",
                         "checked_items": "Itens marcados",
@@ -1825,6 +1984,7 @@
                             "name": "Painel de alarme"
                         },
                         "button": {
+                            "description": "O Cartão de Botões permite-lhe adicionar botões para realizar tarefas.",
                             "name": "Botão"
                         },
                         "conditional": {
@@ -1833,6 +1993,7 @@
                             "condition_explanation": "O cartão será exibido quando TODAS as condições abaixo forem cumpridas.",
                             "conditions": "Condições",
                             "current_state": "atual",
+                            "description": "O cartão Condicional exibe outro cartão com base nos estados da entidade.",
                             "name": "Condicional",
                             "state_equal": "Estado é igual a",
                             "state_not_equal": "Estado não é igual a"
@@ -1842,11 +2003,13 @@
                             "required": "Obrigatório"
                         },
                         "entities": {
+                            "description": "O cartão de entidades é o tipo mais comum de cartão. Ele agrupa itens em listas.",
                             "name": "Entidades",
                             "show_header_toggle": "Show Header Toggle?",
                             "toggle": "Alternar entidades."
                         },
                         "entity-filter": {
+                            "description": "O cartão Filtro de entidade permite definir uma lista de entidades que você deseja rastrear apenas quando num determinado estado.",
                             "name": "Filtro de entidade"
                         },
                         "entity": {
@@ -1854,6 +2017,7 @@
                             "name": "Entidade"
                         },
                         "gauge": {
+                            "description": "O cartão Manómetro é um cartão básico que permite visualizar dados de um sensor em forma de manómetro.",
                             "name": "Manómetro",
                             "severity": {
                                 "define": "Definir gravidade?",
@@ -1891,16 +2055,20 @@
                             "url": "Url"
                         },
                         "glance": {
-                            "columns": "Colunas"
+                            "columns": "Colunas",
+                            "description": "O cartão Glance é útil para agrupar vários sensores numa visão geral compacta."
                         },
                         "history-graph": {
+                            "description": "O cartão Gráfico de histórico permite exibir um gráfico para cada uma das entidades listadas.",
                             "name": "Gráfico de histórico"
                         },
                         "horizontal-stack": {
+                            "description": "O cartão Agrupamento Vertical permite agrupar vários cartões para que estes fiquem sempre na mesma coluna.",
                             "name": "Agrupamento Horizontal"
                         },
                         "iframe": {
-                            "name": ""
+                            "description": "O cartão de página da Web, permite incorporar a sua página da Web favorita diretamente no Home Assistant.",
+                            "name": "Página Web"
                         },
                         "light": {
                             "description": "O cartão Luz permite alterar o brilho da luz.",
@@ -1921,15 +2089,22 @@
                             "name": "Markdown"
                         },
                         "media-control": {
+                            "description": "O cartão Controlo multimédia é usado para exibir entidades leitor de multimédia num interface com comandos fáceis de usar.",
                             "name": "Controlo multimédia"
                         },
                         "picture-elements": {
+                            "description": "O cartão Elementos de Imagem é um dos tipos de cartões mais versáteis. Os cartões permitem que você posicione ícones ou texto e até serviços! Em uma imagem baseada em coordenadas.",
                             "name": "Elementos da imagem"
                         },
                         "picture-entity": {
+                            "description": "A imagem cartão de entidade de imagem exibe uma entidade sob a forma de uma imagem. Em vez de imagens de URL, também pode mostrar a imagem de entidades da câmera.",
                             "name": "Entidade de imagem"
                         },
+                        "picture-glance": {
+                            "description": "O cartão Vista de imagem  mostra uma imagem e os estados das entidades correspondentes como um ícone. As entidades do lado direito permitem alternar ações, outras mostram a opção mais informações."
+                        },
                         "picture": {
+                            "description": "O cartão de imagem permite definir uma imagem a ser usada para navegação em vários pontos na sua interface ou para chamar um serviço.",
                             "name": "Imagem"
                         },
                         "plant-status": {
@@ -1944,6 +2119,7 @@
                         },
                         "shopping-list": {
                             "description": "O cartão Lista de compras permite adicionar, editar, marcar e limpar itens da sua lista de compras.",
+                            "integration_not_loaded": "Este cartão requer que a integração lista de compras seja configurada.",
                             "name": "Lista de compras"
                         },
                         "thermostat": {
@@ -1972,14 +2148,14 @@
                         "move": "Mover para Vista",
                         "options": "Mais opções",
                         "pick_card": "Escolha o cartão que deseja adicionar.",
-                        "pick_card_view_title": "Que cartão você gostaria de adicionar à sua vista {nome}?",
+                        "pick_card_view_title": "Que cartão você gostaria de adicionar à sua vista {name}?",
                         "show_code_editor": "Mostrar Editor de Código",
                         "show_visual_editor": "Mostrar Editor Visual",
                         "toggle_editor": "Alternar Editor"
                     },
                     "edit_lovelace": {
                         "edit_title": "Editar título",
-                        "explanation": "Este título é mostrado acima de todas as vista em Lovelace.",
+                        "explanation": "Este título é mostrado acima de todas as suas vistas na interface Lovelace.",
                         "header": "Título da sua interface do Lovelace"
                     },
                     "edit_view": {
@@ -2010,9 +2186,10 @@
                     },
                     "raw_editor": {
                         "confirm_unsaved_changes": "Existem alterações não guardadas. De certeza de que quer sair?",
-                        "confirm_unsaved_comments": "Sua configuração contém comentário(s), eles não serão salvos. Você quer continuar?",
-                        "error_invalid_config": "Sua configuração não é válida: {error}",
+                        "confirm_unsaved_comments": "A sua configuração contém comentário(s), eles não serão salvos. Deseja continuar?",
+                        "error_invalid_config": "A sua configuração não é válida: {error}",
                         "error_parse_yaml": "Não foi possível analisar o YAML: {error}",
+                        "error_remove": "Não foi possível remover a configuração: {error}",
                         "error_save_yaml": "Não é possível salvar o YAML: {error}",
                         "header": "Editar configuração",
                         "resources_moved": "Os recursos não devem mais ser adicionados ao editor de configuração do código fonte do Lovelace, mas podem ser adicionados no painel de configuração do Lovelace.",
@@ -2028,7 +2205,13 @@
                         "para": "Por omissão o Home Assistant irá manter a sua interface de utilizador, atualizando-a sempre que uma nova entidade ou novos componentes Lovelace fiquem disponíveis. Se assumir o controlo, não faremos mais alterações automáticas por si.",
                         "para_sure": "Tem certeza que deseja assumir o controlo sobre a interface de utilizador?",
                         "save": "Assumir o controlo",
-                        "yaml_control": "Para assumir o controle no modo YAML, crie um ficheiro YAML com o nome que especificou na sua configuração para este painel de controle, ou o padrão 'ui-lovelace.yaml'."
+                        "yaml_config": "Para o ajudar a começar, aqui está a actual configuração deste dashboard:",
+                        "yaml_control": "Para assumir o controle no modo YAML, crie um ficheiro YAML com o nome que especificou na sua configuração para este painel de controle, ou o padrão 'ui-lovelace.yaml'.",
+                        "yaml_mode": "Está a usar o modo YAML para este painel, o que significa que não pode alterar a sua configuração Lovelace a partir da UI. Se quiser alterar este painel a partir da UI, remova 'mode: yaml' da configuração Lovelace em 'configuration.yaml'."
+                    },
+                    "suggest_card": {
+                        "add": "Adicionar à Lovelace UI",
+                        "header": "Criamos uma sugestão para você."
                     },
                     "view": {
                         "panel_mode": {
@@ -2063,6 +2246,7 @@
                 "views": {
                     "confirm_delete": "Eliminar vista?",
                     "confirm_delete_existing_cards": "Eliminar esta vista vai também remover os cartões",
+                    "confirm_delete_existing_cards_text": "Tem certeza de que deseja excluir a sua vista '{name}'? A vista contém {number} cartões que serão excluídos. Essa ação não pode ser desfeita.",
                     "confirm_delete_text": "Tem certeza de que deseja apagar a sua vista '{name}'?"
                 },
                 "warning": {
@@ -2279,6 +2463,8 @@
                     "link_promo": "Ajude na tradução"
                 },
                 "logout": "Sair",
+                "logout_text": "Tem certeza que deseja terminar a sessão?",
+                "logout_title": "Sair?",
                 "long_lived_access_tokens": {
                     "confirm_delete": "Tem certeza de que deseja apagar o token de acesso de {name} ?",
                     "create": "Criar Token",

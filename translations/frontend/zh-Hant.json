@@ -206,6 +206,8 @@
             "stopped": "停止"
         },
         "default": {
+            "off": "關閉",
+            "on": "開啟",
             "unavailable": "不可用",
             "unknown": "未知"
         },
@@ -475,7 +477,10 @@
             "close": "關閉",
             "delete": "刪除",
             "loading": "讀取中",
+            "next": "下一步",
             "no": "否",
+            "previous": "上一步",
+            "refresh": "更新",
             "save": "儲存",
             "successfully_deleted": "成功刪除",
             "successfully_saved": "成功儲存",
@@ -735,6 +740,10 @@
             "triggered": "觸發 {name}"
         },
         "panel": {
+            "calendar": {
+                "my_calendars": "我的行事曆",
+                "today": "今天"
+            },
             "config": {
                 "advanced_mode": {
                     "hint_enable": "找不到設定選項？開啟進階模式",
@@ -836,6 +845,9 @@
                                         "for": "持續時間"
                                     },
                                     "label": "設備"
+                                },
+                                "not": {
+                                    "label": "未"
                                 },
                                 "numeric_state": {
                                     "above": "在...之上",
@@ -1235,6 +1247,7 @@
                     },
                     "delete": "刪除",
                     "description": "管理已連線設備",
+                    "device_info": "設備資訊",
                     "device_not_found": "未找到設備。",
                     "entities": {
                         "add_entities_lovelace": "新增至 Lovelace UI",
@@ -1344,8 +1357,8 @@
                         "delete_button": "刪除 {integration}",
                         "delete_confirm": "確定要刪除此整合？",
                         "device_unavailable": "設備不可用",
-                        "devices": "{count} {count, plural,\n  one {設備}\n  other {設備}\n}",
-                        "entities": "{count} {count, plural,\n  one {物件}\n  other {物件}\n}",
+                        "devices": "{count} {count, plural,\n  one {個設備}\n  other {個設備}\n}",
+                        "entities": "{count} {count, plural,\n  one {個物件}\n  other {個物件}\n}",
                         "entity_unavailable": "物件不可用",
                         "firmware": "韌體：{version}",
                         "hub": "連線：",
@@ -1397,6 +1410,8 @@
                     "new": "設定新整合",
                     "no_integrations": "目前似乎沒有設定任何整合。點選下方新增按鈕以新增第一個整合！",
                     "none": "尚未設定",
+                    "none_found": "找不到相關整合。",
+                    "none_found_detail": "調整搜尋條件。",
                     "note_about_integrations": "目前並非所有整合皆可以透過 UI 進行設定。",
                     "note_about_website_reference": "更多資訊請參閱",
                     "rename_dialog": "編輯設定物件名稱",
