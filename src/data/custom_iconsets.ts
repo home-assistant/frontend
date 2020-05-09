@@ -1,9 +1,10 @@
-export interface CustomIcons {
-  [key: string]: { path: string; viewBox?: string };
+export interface CustomIcon {
+  path: string;
+  viewBox?: string;
 }
 
 export interface CustomIconsetsWindow {
-  customIconsets?: { [key: string]: (name: string) => Promise<CustomIcons> };
+  customIconsets?: { [key: string]: (name: string) => Promise<CustomIcon> };
 }
 
 const customIconsetsWindow = window as CustomIconsetsWindow;
