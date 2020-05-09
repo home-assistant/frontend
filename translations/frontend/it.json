@@ -206,6 +206,8 @@
             "stopped": "Arrestato"
         },
         "default": {
+            "off": "Spento",
+            "on": "Acceso",
             "unavailable": "Non disponibile",
             "unknown": "Sconosciuto"
         },
@@ -475,7 +477,10 @@
             "close": "Chiudi",
             "delete": "Elimina",
             "loading": "Caricamento",
+            "next": "Avanti",
             "no": "No",
+            "previous": "Indietro",
+            "refresh": "Aggiorna",
             "save": "Salva",
             "successfully_deleted": "Cancellato con successo",
             "successfully_saved": "Salvataggio riuscito",
@@ -654,6 +659,17 @@
                     "stop": "Stop"
                 }
             },
+            "mqtt_device_debug_info": {
+                "deserialize": "Tentativo di analizzare i messaggi MQTT come JSON",
+                "entities": "Entità",
+                "no_entities": "Nessuna entità",
+                "no_triggers": "Nessuna attivazione",
+                "payload_display": "Visualizzazione del payload",
+                "recent_messages": "{n} messaggi ricevuti più di recente",
+                "show_as_yaml": "Mostra come YAML",
+                "title": "Informazioni di debug per il dispositivo {device}",
+                "triggers": "Attivazioni"
+            },
             "options_flow": {
                 "form": {
                     "header": "Opzioni"
@@ -724,6 +740,10 @@
             "triggered": "Attivato {name}"
         },
         "panel": {
+            "calendar": {
+                "my_calendars": "Calendari personali",
+                "today": "Oggi"
+            },
             "config": {
                 "advanced_mode": {
                     "hint_enable": "Opzioni di configurazione mancanti? Abilita la modalità avanzata",
@@ -826,6 +846,9 @@
                                     },
                                     "label": "Dispositivo"
                                 },
+                                "not": {
+                                    "label": "Non"
+                                },
                                 "numeric_state": {
                                     "above": "Superiore",
                                     "below": "Inferiore",
@@ -917,8 +940,8 @@
                                 },
                                 "mqtt": {
                                     "label": "MQTT",
-                                    "payload": "Payload (opzionale)",
-                                    "topic": "Argomento"
+                                    "payload": "Messaggio (o Payload) (opzionale)",
+                                    "topic": "Argomento (o Topic)"
                                 },
                                 "numeric_state": {
                                     "above": "Maggiore di",
@@ -1294,6 +1317,10 @@
                         }
                     }
                 },
+                "filtering": {
+                    "clear": "Cancella",
+                    "filtering_by": "Filtraggio per"
+                },
                 "header": "Configura Home Assistant",
                 "helpers": {
                     "caption": "Aiutanti",
@@ -1321,12 +1348,16 @@
                     }
                 },
                 "integrations": {
+                    "add_integration": "Aggiungi integrazione",
                     "caption": "Integrazioni",
                     "config_entry": {
                         "area": "In {area}",
+                        "delete": "Elimina",
                         "delete_button": "Elimina {integration}",
                         "delete_confirm": "Sei sicuro di voler eliminare questa integrazione?",
                         "device_unavailable": "dispositivo non disponibile",
+                        "devices": "{count} {count, plural, \none {dispositivo}\nother {dispositivi}\n}",
+                        "entities": "{count} {count, plural, \none {entità}\nother {entità }\n}",
                         "entity_unavailable": "entità non disponibile",
                         "firmware": "Firmware: {version}",
                         "hub": "Connesso tramite",
@@ -1334,8 +1365,11 @@
                         "no_area": "Nessuna area",
                         "no_device": "Entità senza dispositivi",
                         "no_devices": "Questa integrazione non ha dispositivi.",
+                        "options": "Opzioni",
+                        "rename": "Rinomina",
                         "restart_confirm": "Riavvia Home Assistant per completare la rimozione di questa integrazione",
                         "settings_button": "Modificare le impostazioni per {integration}.",
+                        "system_options": "Opzioni di sistema",
                         "system_options_button": "Opzioni di sistema per {integration}"
                     },
                     "config_flow": {
@@ -1370,11 +1404,17 @@
                         "show_ignored": "Mostra integrazioni ignorate",
                         "stop_ignore": "Smetti di ignorare"
                     },
+                    "integration": "Integrazione",
                     "integration_not_found": "Integrazione non trovata.",
                     "new": "Configura una nuova integrazione",
+                    "no_integrations": "Sembra che tu non abbia ancora alcuna integrazione configurata. Fai clic sul pulsante in basso per aggiungere la tua prima integrazione!",
                     "none": "Non hai ancora configurato niente",
+                    "none_found": "Non sono state trovate integrazioni",
+                    "none_found_detail": "Modifica i criteri di ricerca.",
                     "note_about_integrations": "Non tutte le integrazioni possono ancora essere configurate tramite l'interfaccia utente.",
-                    "note_about_website_reference": "Ulteriori informazioni sono disponibili su "
+                    "note_about_website_reference": "Ulteriori informazioni sono disponibili su ",
+                    "rename_dialog": "Modifica il nome di questa voce di configurazione",
+                    "rename_input_label": "Nome della voce"
                 },
                 "introduction": "Qui è possibile configurare i componenti e Home Assistant. Non è ancora possibile configurare tutto dall'Interfaccia Utente, ma ci stiamo lavorando.",
                 "lovelace": {
@@ -1912,12 +1952,12 @@
             },
             "history": {
                 "period": "Periodo",
-                "showing_entries": "Mostra registrazioni per"
+                "showing_entries": "Visualizzazione delle voci per"
             },
             "logbook": {
                 "entries_not_found": "Non sono state trovate voci nel registro.",
                 "period": "Periodo",
-                "showing_entries": "Mostra registrazioni per"
+                "showing_entries": "Visualizzazione delle voci per"
             },
             "lovelace": {
                 "add_entities": {
@@ -2190,12 +2230,12 @@
                         "close": "Chiudi",
                         "empty_config": "Iniziare con un cruscotto vuoto",
                         "header": "Prendi il controllo della tua interfaccia utente di Lovelace",
-                        "para": "Per impostazione predefinita, Home Assistant gestirà l'Interfaccia Utente, aggiornandola quando nuove entità o componenti dell'IU Lovelace diventano disponibili. Se prendi il controllo non effettueremo più automaticamente le modifiche per te.",
+                        "para": "Questo cruscotto è attualmente gestito da Home Assistant. E' aggiornato automaticamente quando nuove entità o componenti dell'Interfaccia Utente Lovelace diventano disponibili. Se si assume il controllo, questo cruscotto non verrà più aggiornato automaticamente. È sempre possibile creare un nuovo cruscotto in configurazione con cui esperimentare.",
                         "para_sure": "Sei sicuro di voler prendere il controllo della tua interfaccia utente?",
                         "save": "Prendere il controllo",
                         "yaml_config": "Per aiutarti a iniziare qui c'è la configurazione corrente di questo cruscotto:",
                         "yaml_control": "Per assumere il controllo in modalità YAML, creare un file YAML con il nome specificato nella configurazione per questo cruscotto, o il predefinito 'ui-lovelace.yaml'.",
-                        "yaml_mode": "Si sta utilizzando la modalità YAML, il che significa che non è possibile modificare la configurazione Lovelace dall'Interfaccia Utente. Se si desidera modificare Lovelace dall'Interfaccia Utente, rimuovere la riga con 'mode: yaml' dalla configurazione Lovelace in 'configuration.yaml'."
+                        "yaml_mode": "Questo cruscotto sta utilizzando la modalità YAML, il che significa che non è possibile modificare la configurazione di Lovelace dall'Interfaccia Utente. Se volete gestire questo cruscotto dall'Interfaccia Utente, rimuovere 'mode: yaml' dalla configurazione di Lovelace in 'configuration.yaml'."
                     },
                     "suggest_card": {
                         "add": "Aggiungi all'interfaccia utente di Lovelace",
@@ -2241,14 +2281,15 @@
                 "warning": {
                     "attribute_not_found": "Attributo {attribute} non disponibile in: {entity}",
                     "entity_non_numeric": "L'entità non è numerica: {entity}",
-                    "entity_not_found": "Entità non disponibile: {entity}"
+                    "entity_not_found": "Entità non disponibile: {entity}",
+                    "entity_unavailable": "{entity} non è al momento disponibile"
                 }
             },
             "mailbox": {
                 "delete_button": "Elimina",
                 "delete_prompt": "Eliminare questo messaggio?",
                 "empty": "Non hai nessun messaggio",
-                "playback_title": "Riproduci messaggio"
+                "playback_title": "Riproduzione messaggio"
             },
             "page-authorize": {
                 "abort_intro": "Login interrotto",
@@ -2514,7 +2555,7 @@
             },
             "shopping-list": {
                 "add_item": "Aggiungi articolo",
-                "clear_completed": "Pulizia completata",
+                "clear_completed": "Cancellazione completata",
                 "microphone_tip": "Cliccare sul microfono in alto a destra e dire o digitare \"Aggiungi caramelle alla mia lista della spesa\"."
             }
         },

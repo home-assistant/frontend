@@ -1,19 +1,11 @@
 const webpack = require("webpack");
-const fs = require("fs");
 const path = require("path");
 const TerserPlugin = require("terser-webpack-plugin");
 const WorkboxPlugin = require("workbox-webpack-plugin");
 const ManifestPlugin = require("webpack-manifest-plugin");
 const paths = require("./paths.js");
+const env = require("./env.js");
 const { babelLoaderConfig } = require("./babel.js");
-
-let version = fs
-  .readFileSync(path.resolve(paths.polymer_dir, "setup.py"), "utf8")
-  .match(/\d{8}\.\d+/);
-if (!version) {
-  throw Error("Version not found");
-}
-version = version[0];
 
 const createWebpackConfig = ({
   entry,
@@ -37,15 +29,6 @@ const createWebpackConfig = ({
         {
           test: /\.css$/,
           use: "raw-loader",
-        },
-        {
-          test: /\.(html)$/,
-          use: {
-            loader: "html-loader",
-            options: {
-              exportAsEs6Default: true,
-            },
-          },
         },
       ],
     },
@@ -71,7 +54,7 @@ const createWebpackConfig = ({
       new webpack.DefinePlugin({
         __DEV__: !isProdBuild,
         __BUILD__: JSON.stringify(latestBuild ? "latest" : "es5"),
-        __VERSION__: JSON.stringify(version),
+        __VERSION__: JSON.stringify(env.version()),
         __DEMO__: false,
         __BACKWARDS_COMPAT__: false,
         __STATIC_PATH__: "/static/",
@@ -100,14 +83,6 @@ const createWebpackConfig = ({
     ].filter(Boolean),
     resolve: {
       extensions: [".ts", ".js", ".json"],
-      alias: {
-        react: "preact-compat",
-        "react-dom": "preact-compat",
-        // Not necessary unless you consume a module using `createClass`
-        "create-react-class": "preact-compat/lib/create-react-class",
-        // Not necessary unless you consume a module requiring `react-dom-factories`
-        "react-dom-factories": "preact-compat/lib/react-dom-factories",
-      },
     },
     output: {
       filename: ({ chunk }) => {
@@ -201,7 +176,7 @@ const createDemoConfig = ({ isProdBuild, latestBuild, isStatsBuild }) => {
     },
     outputRoot: paths.demo_root,
     defineOverlay: {
-      __VERSION__: JSON.stringify(`DEMO-${version}`),
+      __VERSION__: JSON.stringify(`DEMO-${env.version()}`),
       __DEMO__: true,
     },
     isProdBuild,

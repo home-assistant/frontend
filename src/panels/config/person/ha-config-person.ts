@@ -10,7 +10,7 @@ import {
 } from "lit-element";
 import { compare } from "../../../common/string/compare";
 import "../../../components/ha-card";
-import "../../../components/ha-fab";
+import "@material/mwc-fab";
 import {
   createPerson,
   deletePerson,
@@ -29,6 +29,8 @@ import {
   loadPersonDetailDialog,
   showPersonDetailDialog,
 } from "./show-dialog-person-detail";
+import "../../../components/ha-svg-icon";
+import { mdiPlus } from "@mdi/js";
 
 class HaConfigPerson extends LitElement {
   @property() public hass?: HomeAssistant;
@@ -121,13 +123,14 @@ class HaConfigPerson extends LitElement {
         </ha-config-section>
       </hass-tabs-subpage>
 
-      <ha-fab
+      <mwc-fab
         ?is-wide=${this.isWide}
         ?narrow=${this.narrow}
-        icon="hass:plus"
         title="${hass.localize("ui.panel.config.person.add_person")}"
         @click=${this._createPerson}
-      ></ha-fab>
+      >
+        <ha-svg-icon slot="icon" path=${mdiPlus}></ha-svg-icon>
+      </mwc-fab>
     `;
   }
 
@@ -237,16 +240,16 @@ class HaConfigPerson extends LitElement {
       ha-card.storage paper-item {
         cursor: pointer;
       }
-      ha-fab {
+      mwc-fab {
         position: fixed;
         bottom: 16px;
         right: 16px;
         z-index: 1;
       }
-      ha-fab[narrow] {
+      mwc-fab[narrow] {
         bottom: 84px;
       }
-      ha-fab[is-wide] {
+      mwc-fab[is-wide] {
         bottom: 24px;
         right: 24px;
       }

@@ -1,5 +1,4 @@
 import "@material/mwc-button";
-import "@polymer/paper-card/paper-card";
 import {
   css,
   CSSResult,
@@ -11,15 +10,16 @@ import {
 } from "lit-element";
 import { fireEvent } from "../../../src/common/dom/fire_event";
 import "../../../src/components/buttons/ha-call-api-button";
+import "../../../src/components/ha-card";
 import {
   HassioSupervisorInfo as HassioSupervisorInfoType,
   setSupervisorOption,
   SupervisorOptions,
 } from "../../../src/data/hassio/supervisor";
+import { showConfirmationDialog } from "../../../src/dialogs/generic/show-dialog-box";
 import { haStyle } from "../../../src/resources/styles";
 import { HomeAssistant } from "../../../src/types";
 import { hassioStyle } from "../resources/hassio-style";
-import { showConfirmationDialog } from "../../../src/dialogs/generic/show-dialog-box";
 
 @customElement("hassio-supervisor-info")
 class HassioSupervisorInfo extends LitElement {
@@ -31,7 +31,7 @@ class HassioSupervisorInfo extends LitElement {
 
   public render(): TemplateResult | void {
     return html`
-      <paper-card>
+      <ha-card>
         <div class="card-content">
           <h2>Supervisor</h2>
           <table class="info">
@@ -92,7 +92,7 @@ class HassioSupervisorInfo extends LitElement {
               `
             : ""}
         </div>
-      </paper-card>
+      </ha-card>
     `;
   }
 
@@ -101,7 +101,7 @@ class HassioSupervisorInfo extends LitElement {
       haStyle,
       hassioStyle,
       css`
-        paper-card {
+        ha-card {
           height: 100%;
           width: 100%;
         }

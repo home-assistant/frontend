@@ -18,7 +18,7 @@ import { computeStateName } from "../../../common/entity/compute_state_name";
 import { computeRTL } from "../../../common/util/compute_rtl";
 import { DataTableColumnContainer } from "../../../components/data-table/ha-data-table";
 import "../../../components/entity/ha-entity-toggle";
-import "../../../components/ha-fab";
+import "@material/mwc-fab";
 import {
   AutomationConfig,
   AutomationEntity,
@@ -30,6 +30,8 @@ import { haStyle } from "../../../resources/styles";
 import { HomeAssistant, Route } from "../../../types";
 import { configSections } from "../ha-panel-config";
 import { showThingtalkDialog } from "./show-dialog-thingtalk";
+import "../../../components/ha-svg-icon";
+import { mdiPlus } from "@mdi/js";
 
 @customElement("ha-automation-picker")
 class HaAutomationPicker extends LitElement {
@@ -168,17 +170,18 @@ class HaAutomationPicker extends LitElement {
         hasFab
       >
       </hass-tabs-subpage-data-table>
-      <ha-fab
+      <mwc-fab
         slot="fab"
         ?is-wide=${this.isWide}
         ?narrow=${this.narrow}
-        icon="hass:plus"
         title=${this.hass.localize(
           "ui.panel.config.automation.picker.add_automation"
         )}
         ?rtl=${computeRTL(this.hass)}
         @click=${this._createNew}
-      ></ha-fab>
+      >
+        <ha-svg-icon slot="icon" path=${mdiPlus}></ha-svg-icon>
+      </mwc-fab>
     `;
   }
 
@@ -208,7 +211,7 @@ class HaAutomationPicker extends LitElement {
     return [
       haStyle,
       css`
-        ha-fab {
+        mwc-fab {
           position: fixed;
           bottom: 16px;
           right: 16px;
@@ -216,19 +219,19 @@ class HaAutomationPicker extends LitElement {
           cursor: pointer;
         }
 
-        ha-fab[is-wide] {
+        mwc-fab[is-wide] {
           bottom: 24px;
           right: 24px;
         }
-        ha-fab[narrow] {
+        mwc-fab[narrow] {
           bottom: 84px;
         }
-        ha-fab[rtl] {
+        mwc-fab[rtl] {
           right: auto;
           left: 16px;
         }
 
-        ha-fab[rtl][is-wide] {
+        mwc-fab[rtl][is-wide] {
           bottom: 24px;
           right: auto;
           left: 24px;

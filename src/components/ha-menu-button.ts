@@ -13,6 +13,7 @@ import { computeDomain } from "../common/entity/compute_domain";
 import { subscribeNotifications } from "../data/persistent_notification";
 import { HomeAssistant } from "../types";
 import "./ha-icon-button";
+import { mdiMenu } from "@mdi/js";
 
 @customElement("ha-menu-button")
 class HaMenuButton extends LitElement {
@@ -55,11 +56,12 @@ class HaMenuButton extends LitElement {
           (entityId) => computeDomain(entityId) === "configurator"
         ));
     return html`
-      <ha-icon-button
+      <mwc-icon-button
         aria-label=${this.hass.localize("ui.sidebar.sidebar_toggle")}
-        icon="hass:menu"
         @click=${this._toggleMenu}
-      ></ha-icon-button>
+      >
+        <ha-svg-icon path=${mdiMenu}></ha-svg-icon>
+      </mwc-icon-button>
       ${hasNotifications ? html` <div class="dot"></div> ` : ""}
     `;
   }
@@ -133,8 +135,8 @@ class HaMenuButton extends LitElement {
         background-color: var(--accent-color);
         width: 12px;
         height: 12px;
-        top: 5px;
-        right: 2px;
+        top: 9px;
+        right: 7px;
         border-radius: 50%;
         border: 2px solid var(--app-header-background-color);
       }

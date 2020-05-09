@@ -206,6 +206,8 @@
             "stopped": "Ustavljeno"
         },
         "default": {
+            "off": "Izključen",
+            "on": "Vključen",
             "unavailable": "Ni na voljo",
             "unknown": "Neznano"
         },
@@ -292,7 +294,7 @@
             "error": "Napaka",
             "idle": "V pripravljenosti",
             "off": "Izključen",
-            "on": "Vključen",
+            "on": "Vklopljen",
             "paused": "Zaustavljeno",
             "returning": "Vračam se na postajo"
         },
@@ -654,6 +656,17 @@
                     "stop": "Ustavi"
                 }
             },
+            "mqtt_device_debug_info": {
+                "deserialize": "Poskus razčlenitve sporočil MQTT kot JSON",
+                "entities": "Entitete",
+                "no_entities": "Brez entitet",
+                "no_triggers": "Brez sprožilcev",
+                "payload_display": "Payload display",
+                "recent_messages": "{n} zadnjih prejetih sporočil",
+                "show_as_yaml": "Pokaži kot YAML",
+                "title": "{Device} debug info",
+                "triggers": "Sprožilci"
+            },
             "options_flow": {
                 "form": {
                     "header": "Možnosti"
@@ -825,6 +838,9 @@
                                         "for": "Trajanje"
                                     },
                                     "label": "Naprava"
+                                },
+                                "not": {
+                                    "label": "Ne"
                                 },
                                 "numeric_state": {
                                     "above": "Nad",
@@ -1294,6 +1310,10 @@
                         }
                     }
                 },
+                "filtering": {
+                    "clear": "Počisti",
+                    "filtering_by": "Filtriranje po"
+                },
                 "header": "Konfiguriraj Home Assistant",
                 "helpers": {
                     "caption": "Pomočniki",
@@ -1321,12 +1341,16 @@
                     }
                 },
                 "integrations": {
+                    "add_integration": "Dodaj integracijo",
                     "caption": "Integracije",
                     "config_entry": {
                         "area": "V {area}",
+                        "delete": "Izbriši",
                         "delete_button": "Izbriši {integration}",
                         "delete_confirm": "Ali ste prepričani, da želite izbrisati to integracijo?",
                         "device_unavailable": "naprava ni na voljo",
+                        "devices": "{count} {count, plural,\n  one {naprava}\n  other {naprav}\n}",
+                        "entities": "{count} {count, plural,\n  one {entiteta}\n  other {entitet}\n}",
                         "entity_unavailable": "entiteta ni na voljo",
                         "firmware": "Firmware: {version}",
                         "hub": "Povezan prek",
@@ -1334,8 +1358,11 @@
                         "no_area": "Brez območja",
                         "no_device": "Entitete brez naprav",
                         "no_devices": "Ta integracija je brez naprav.",
+                        "options": "Možnosti",
+                        "rename": "Preimenujte",
                         "restart_confirm": "Znova zaženite Home Assistant-a, da dokončate odstranitev te integracije",
                         "settings_button": "Uredite nastavitve za {integration}",
+                        "system_options": "Sistemske možnosti",
                         "system_options_button": "Sistemske možnosti za {integration}"
                     },
                     "config_flow": {
@@ -1370,11 +1397,17 @@
                         "show_ignored": "Pokaži prezrte integracije",
                         "stop_ignore": "Prenehajte ignorirati"
                     },
+                    "integration": "integracija",
                     "integration_not_found": "Integracije ni mogoče najti.",
                     "new": "Nastavite novo integracijo",
+                    "no_integrations": "Zdi se, da še nimate nobenih konfiguracij. Kliknite na spodnji gumb, da dodate svojo prvo integracijo!",
                     "none": "Nič še ni konfigurirano",
+                    "none_found": "Ni najdenih integracij",
+                    "none_found_detail": "Prilagodite iskalne kriterije.",
                     "note_about_integrations": "Vseh integracij še ni mogoče konfigurirati prek uporabniškega vmesnika.",
-                    "note_about_website_reference": "Več jih je na voljo prek"
+                    "note_about_website_reference": "Več jih je na voljo prek",
+                    "rename_dialog": "Uredite ime tega vnosa konfiguracije",
+                    "rename_input_label": "Ime vnosa"
                 },
                 "introduction": "Tukaj je mogoče konfigurirati vaše komponente in Home Assistanta. Vsega ni mogoče konfigurirati iz uporabniškega vmesnika (vendar delamo na tem).",
                 "lovelace": {
@@ -2190,12 +2223,12 @@
                         "close": "Zapri",
                         "empty_config": "Začnite s prazno nadzorno ploščo",
                         "header": "Prevzemite nadzor nad lovelace vmesnikom",
-                        "para": "Home Assistant bo privzeto vzdrževal vaš uporabniški vmesnik in ga posodabljal, ko bodo na voljo novi subjekti ali komponente Lovelace UI. Če prevzamete nadzor, ne bomo več samodejno spreminjali sprememb za vas.",
+                        "para": "To nadzorno ploščo trenutno vzdržuje Home Assistant. Samodejno se posodobi, ko bodo na voljo novi subjekti ali komponente Lovelace UI. Če prevzamete nadzor, se ta nadzorna plošča ne bo več samodejno posodabljala. Vedno lahko ustvarite novo nadzorno ploščo v konfiguraciji, s katero se lahko igrate.",
                         "para_sure": "Ali ste prepričani, da želite prevzeti nadzor nad vašim vmesnikom?",
                         "save": "Prevzemite nadzor",
                         "yaml_config": "Za pomoč pri zagonu je tukaj trenutna konfiguracija te nadzorne plošče:",
                         "yaml_control": "Če želite prevzeti nadzor v načinu YAML, ustvarite datoteko YAML z imenom, ki ste ga določili v konfiguraciji za to nadzorno ploščo, ali privzeto 'ui-lovelace.yaml'.",
-                        "yaml_mode": "Uporabljate način YAML, kar pomeni, da ne morete spremeniti konfiguracije Lovelace iz uporabniškega vmesnika. Če želite spremeniti Lovelace iz uporabniškega vmesnika, iz konfiguracije Lovelace v 'config.yaml' odstranite 'mode: yaml'."
+                        "yaml_mode": "Za to nadzorno ploščo uporabljate način YAML, kar pomeni, da ne morete spremeniti konfiguracije Lovelace iz uporabniškega vmesnika. Če želite upravljati to nadzorno ploščo iz uporabniškega vmesnika, iz konfiguracije Lovelace v 'config.yaml.' Odstranite 'mode: yaml'."
                     },
                     "suggest_card": {
                         "add": "Dodaj v uporabniški vmesnik Lovelace",
@@ -2241,7 +2274,8 @@
                 "warning": {
                     "attribute_not_found": "Atribut {attribute} ni na voljo v: {entity}",
                     "entity_non_numeric": "Entiteta je neštevilska: {entity}",
-                    "entity_not_found": "Entiteta ni na voljo: {entity}"
+                    "entity_not_found": "Entiteta ni na voljo: {entity}",
+                    "entity_unavailable": "{entity} trenutno ni na voljo"
                 }
             },
             "mailbox": {

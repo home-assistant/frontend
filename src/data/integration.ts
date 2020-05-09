@@ -7,6 +7,7 @@ export interface IntegrationManifest {
   name: string;
   config_flow: boolean;
   documentation: string;
+  issue_tracker?: string;
   dependencies?: string[];
   after_dependencies?: string[];
   codeowners?: string[];

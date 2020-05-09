@@ -7,6 +7,10 @@ import { formatDateTime } from "../../common/datetime/format_date_time";
 import "../../components/ha-card";
 import { EventsMixin } from "../../mixins/events-mixin";
 import LocalizeMixin from "../../mixins/localize-mixin";
+import {
+  showAlertDialog,
+  showConfirmationDialog,
+} from "../../dialogs/generic/show-dialog-box";
 import "./ha-settings-row";
 
 /*
@@ -91,27 +95,30 @@ class HaRefreshTokens extends LocalizeMixin(EventsMixin(PolymerElement)) {
   }
 
   async _handleDelete(ev) {
+    const token = ev.model.item;
     if (
-      !confirm(
-        this.localize(
+      !(await showConfirmationDialog(this, {
+        text: this.localize(
           "ui.panel.profile.refresh_tokens.confirm_delete",
           "name",
-          ev.model.item.client_id
-        )
-      )
+          token.client_id
+        ),
+      }))
     ) {
       return;
     }
     try {
       await this.hass.callWS({
         type: "auth/delete_refresh_token",
-        refresh_token_id: ev.model.item.id,
+        refresh_token_id: token.id,
       });
       this.fire("hass-refresh-tokens");
     } catch (err) {
       // eslint-disable-next-line
       console.error(err);
-      alert(this.localize("ui.panel.profile.refresh_tokens.delete_failed"));
+     showAlertDialog(this, {
+        text: this.localize("ui.panel.profile.refresh_tokens.delete_failed"),
+      });
     }
   }
 }
