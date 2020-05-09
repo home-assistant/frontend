@@ -199,6 +199,8 @@
             "stopped": "Gestop"
         },
         "default": {
+            "off": "Af",
+            "on": "Aan",
             "unavailable": "Nie beskikbaar nie",
             "unknown": "Onbekend"
         },
@@ -1010,8 +1012,10 @@
                     }
                 },
                 "integrations": {
+                    "add_integration": "Stel 'n nuwe integrasie op",
                     "caption": "Integrasies",
                     "config_entry": {
+                        "delete": "Verwyder",
                         "delete_confirm": "Is u seker u wil hierdie integrasie skrap?",
                         "device_unavailable": "toestel nie beskikbaar nie",
                         "entity_unavailable": "entiteit nie beskikbaar nie",
@@ -1021,7 +1025,10 @@
                         "no_area": "Geen Gebied",
                         "no_device": "Entiteite sonder toestelle",
                         "no_devices": "Hierdie integrasie het geen toestelle nie.",
-                        "restart_confirm": "Herbegin Home Assistant om hierdie integrasie te voltooi"
+                        "options": "Opsies",
+                        "rename": "Hernoem",
+                        "restart_confirm": "Herbegin Home Assistant om hierdie integrasie te voltooi",
+                        "system_options": "Stelselopsies"
                     },
                     "config_flow": {
                         "aborted": "Gestaak",
@@ -1055,7 +1062,12 @@
                     },
                     "integration_not_found": "Integrasie nie gevind nie.",
                     "new": "Stel 'n nuwe integrasie op",
-                    "none": "Nog niks is opgestel nie"
+                    "no_integrations": "Lyk asof jy nog nie enige integations gekonfigureer het nie. Klik op die knoppie hieronder om jou eerste integrasie te voeg!",
+                    "none": "Nog niks is opgestel nie",
+                    "none_found": "Geen integrasies gevind nie",
+                    "none_found_detail": "Verstel jou soekkriteria.",
+                    "rename_dialog": "Redigeer die naam van hierdie config-inskrywing",
+                    "rename_input_label": "Inskrywingsnaam"
                 },
                 "introduction": "Hier is dit moontlik om u komponente en Home Assistant op te stel. Tans kan alles in verband met die gebruikerskoppelvlak nog nie hier opgestel word nie, maar ons werk daaraan.",
                 "lovelace": {
@@ -1515,7 +1527,8 @@
                 },
                 "warning": {
                     "entity_non_numeric": "Entiteit is nie-numeriese: {entity}",
-                    "entity_not_found": "Entiteit nie beskikbaar nie: {entity}"
+                    "entity_not_found": "Entiteit nie beskikbaar nie: {entity}",
+                    "entity_unavailable": "{entity} is nie tans beskikbaar nie."
                 }
             },
             "mailbox": {

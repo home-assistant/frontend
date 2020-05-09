@@ -206,6 +206,8 @@
             "stopped": "Gestopt"
         },
         "default": {
+            "off": "Uit",
+            "on": "Aan",
             "unavailable": "Niet beschikbaar",
             "unknown": "Onbekend"
         },
@@ -563,7 +565,7 @@
                     "icon": "Overschrijf pictogram",
                     "icon_error": "Pictogrammen moeten de notatie 'prefix:pictogramnaam' hebben, bijvoorbeeld 'mdi:home'",
                     "name": "Naam overschrijven",
-                    "note": "Nota bene: dit werkt mogelijk nog niet met alle integraties.",
+                    "note": "Opmerking: dit werkt mogelijk nog niet met alle integraties.",
                     "unavailable": "Deze entiteit is momenteel niet beschikbaar.",
                     "update": "Bijwerken"
                 },
@@ -594,7 +596,7 @@
                     "min": "Minimale waarde",
                     "mode": "Weergavemodus",
                     "slider": "Schuifregelaar",
-                    "step": "Stapgrootte van de schuifregelaar",
+                    "step": "Stapgrootte",
                     "unit_of_measurement": "Meeteenheid"
                 },
                 "input_select": {
@@ -655,7 +657,7 @@
                 }
             },
             "mqtt_device_debug_info": {
-                "deserialize": "Probeer MQTT-berichten als JSON te parseren",
+                "deserialize": "Probeer MQTT-berichten als JSON te ontleden",
                 "entities": "Entiteiten",
                 "no_entities": "Geen entiteiten",
                 "no_triggers": "Geen triggers",
@@ -1344,8 +1346,8 @@
                         "delete_button": "Verwijder {integration}.",
                         "delete_confirm": "Weet je zeker dat je deze integratie wilt verwijderen?",
                         "device_unavailable": "apparaat niet beschikbaar",
-                        "devices": "{count} {count, plural,\n  one {device}\n  other {devices}\n}",
-                        "entities": "{count} {count, plural,\n  one {entity}\n  other {entities}\n}",
+                        "devices": "{count} {count, plural,\n  one {apparaat}\n  other {apparaten}\n}",
+                        "entities": "{count} {count, plural,\n  one {entiteit}\n  other {entiteiten}\n}",
                         "entity_unavailable": "entiteit niet beschikbaar",
                         "firmware": "Firmware: {version}",
                         "hub": "Verbonden via",
@@ -1397,10 +1399,12 @@
                     "new": "Stel een nieuwe integratie in",
                     "no_integrations": "Het lijkt erop dat je nog geen integraties hebt geconfigureerd. Klik op de knop hieronder om uw eerste integratie toe te voegen!",
                     "none": "Er is nog niets geconfigureerd",
+                    "none_found": "Geen integraties gevonden",
+                    "none_found_detail": "Pas uw zoekcriteria aan.",
                     "note_about_integrations": "Nog niet alle integraties kunnen via de UI worden geconfigureerd.",
                     "note_about_website_reference": "Meer zijn beschikbaar op de ",
-                    "rename_dialog": "Bewerk de naam van configuratie item",
-                    "rename_input_label": "Vermeldingsnaam"
+                    "rename_dialog": "Bewerk de naam van dit configuratie item",
+                    "rename_input_label": "Invoernaam"
                 },
                 "introduction": "Hier kun je je componenten en Home Assistant configureren. Het is nog niet mogelijk om alles te configureren vanuit de interface, maar we werken er aan.",
                 "lovelace": {
@@ -1410,7 +1414,7 @@
                         "cant_edit_yaml": "Dashboards die zijn gedefinieerd in YAML kunnen niet worden bewerkt vanuit de gebruikersinterface. Wijzig ze in configuration.yaml.",
                         "caption": "Dashboards",
                         "conf_mode": {
-                            "storage": "UI gecontroleerd",
+                            "storage": "Gebruikersinterface gestuurd",
                             "yaml": "YAML-bestand"
                         },
                         "confirm_delete": "Weet je zeker dat je dit dashboard wilt verwijderen?",
@@ -1468,14 +1472,14 @@
                                 "type": "Type",
                                 "url": "Url"
                             },
-                            "no_resources": "Geen Lovelace bronnen"
+                            "no_resources": "Geen bronnen"
                         },
                         "refresh_body": "Je moet de pagina vernieuwen om de verwijdering te voltooien. Wil je nu vernieuwen?",
                         "refresh_header": "Wil je verversen?",
                         "types": {
                             "css": "Stylesheet",
-                            "html": "HTML (afgeschaft)",
-                            "js": "JavaScript-bestand (afgeschaft)",
+                            "html": "HTML (verouderd)",
+                            "js": "JavaScript-bestand (verouderd)",
                             "module": "JavaScript-module"
                         }
                     }
@@ -2148,7 +2152,7 @@
                         }
                     },
                     "cardpicker": {
-                        "custom_card": "Aangepaste UI's:",
+                        "custom_card": "Aangepaste",
                         "no_description": "Er is geen beschrijving beschikbaar"
                     },
                     "edit_card": {
@@ -2179,7 +2183,7 @@
                         "move_left": "Verplaats weergave naar links",
                         "move_right": "Verplaats weergave naar rechts",
                         "tab_badges": "Badges",
-                        "tab_settings": "instellingen",
+                        "tab_settings": "Instellingen",
                         "tab_visibility": "Zichtbaarheid",
                         "visibility": {
                             "select_users": "Selecteer welke gebruikers deze weergave in de navigatie moeten zien"
@@ -2206,7 +2210,7 @@
                         "error_remove": "Kan configuratie niet verwijderen: {error}",
                         "error_save_yaml": "Kan YAML niet opslaan: {error}",
                         "header": "Configuratie bewerken",
-                        "resources_moved": "Bronnen moeten niet langer worden toegevoegd aan de Lovelace-configuratie, maar kunnen worden toegevoegd in het Lovelace-configuratievenster.",
+                        "resources_moved": "Bronnen moeten niet langer worden toegevoegd aan de Lovelace-configuratie, maar kunnen worden toegevoegd in het Lovelace-configuratiepaneel.",
                         "save": "Opslaan",
                         "saved": "Opgeslagen",
                         "unsaved_changes": "Niet-opgeslagen wijzigingen"
@@ -2216,12 +2220,12 @@
                         "close": "Sluiten",
                         "empty_config": "Begin met een leeg dashboard",
                         "header": "Neem de controle over je Lovelace UI",
-                        "para": "Home Assistant onderhoudt je gebruikersinterface en update die met nieuwe entiteiten of Lovelace-onderdelen wanneer deze beschikbaar zijn. Als je het beheer overneemt, zullen we niet langer automatisch wijzigingen aanbrengen.",
+                        "para": "Home Assistant onderhoudt je gebruikersinterface en update die met nieuwe entiteiten of Lovelace-onderdelen wanneer deze beschikbaar zijn. Als je het beheer overneemt, zullen we niet langer automatisch wijzigingen aanbrengen. Je kunt later altijd een nieuw dashboard in de configuratie toevoegen om mee te spelen.",
                         "para_sure": "Weet je zeker dat je de controle wilt over je gebruikersinterface?",
                         "save": "Neem over",
                         "yaml_config": "Om je te helpen te beginnen, hier is de huidige configuratie van dit dashboard:",
                         "yaml_control": "Om de controle over te nemen in de YAML-modus, maak je een YAML-bestand met de naam die je hebt opgegeven in je configuratie voor dit dashboard, of de standaard 'ui-lovelace.yaml'.",
-                        "yaml_mode": "Je gebruikt de YAML-modus, wat betekent dat je jouw Lovelace-configuratie niet vanuit de gebruikersinterface kunt wijzigen. Als je Lovelace vanuit de gebruikersinterface wilt wijzigen, verwijder dan 'mode: yaml' uit de Lovelace-configuratie in 'configuration.yaml.'"
+                        "yaml_mode": "Je gebruikt de YAML-modus, wat betekent dat je jouw Lovelace-configuratie niet vanuit de gebruikersinterface kunt wijzigen. Als je Lovelace vanuit de gebruikersinterface wilt wijzigen, verwijder dan 'mode: yaml' uit de Lovelace-configuratie in 'configuration.yaml'."
                     },
                     "suggest_card": {
                         "add": "Voeg toe aan de Lovelace gebruikersinterface",
@@ -2242,7 +2246,7 @@
                     "exit_edit_mode": "UI-bewerkingsmodus afsluiten",
                     "help": "Help",
                     "refresh": "Vernieuwen",
-                    "reload_resources": "Herlaad Lovelace gegevens"
+                    "reload_resources": "Herlaad bronnen"
                 },
                 "reload_lovelace": "Lovelace herladen",
                 "reload_resources": {

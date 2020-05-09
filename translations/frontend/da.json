@@ -206,6 +206,8 @@
             "stopped": "Stoppet"
         },
         "default": {
+            "off": "Fra",
+            "on": "Til",
             "unavailable": "Utilgængelig",
             "unknown": "Ukendt"
         },
@@ -475,7 +477,10 @@
             "close": "Luk",
             "delete": "Slet",
             "loading": "Indlæser",
+            "next": "Næste",
             "no": "Nej",
+            "previous": "Forrige",
+            "refresh": "Opdater",
             "save": "Gem",
             "successfully_deleted": "Slettet",
             "successfully_saved": "Gemt",
@@ -735,6 +740,10 @@
             "triggered": "Udløste {name}"
         },
         "panel": {
+            "calendar": {
+                "my_calendars": "Mine kalendere",
+                "today": "I dag"
+            },
             "config": {
                 "advanced_mode": {
                     "hint_enable": "Mangler der konfigurationsindstillinger? Aktivér avanceret tilstand",
@@ -836,6 +845,9 @@
                                         "for": "Varighed"
                                     },
                                     "label": "Enhed"
+                                },
+                                "not": {
+                                    "label": "Ikke"
                                 },
                                 "numeric_state": {
                                     "above": "Over",
@@ -1235,6 +1247,7 @@
                     },
                     "delete": "Slet",
                     "description": "Administrer tilsluttede enheder",
+                    "device_info": "Enhedsoplysninger",
                     "device_not_found": "Enhed blev ikke fundet.",
                     "entities": {
                         "add_entities_lovelace": "Tilføj til Lovelace",
@@ -1344,6 +1357,8 @@
                         "delete_button": "Slet {integration}",
                         "delete_confirm": "Er du sikker på, at du vil fjerne denne integration?",
                         "device_unavailable": "entitet utilgængelig",
+                        "devices": "{count} {count, plural,\n  one {enhed}\n  other {enheder}\n}",
+                        "entities": "{count} {count, plural,\n  one {entitet}\n  other {entiteter}\n}",
                         "entity_unavailable": "entitet utilgængelig",
                         "firmware": "Firmware: {version}",
                         "hub": "Forbundet via",
@@ -1395,6 +1410,8 @@
                     "new": "Opret en ny integration",
                     "no_integrations": "Det ser ud til, at du ikke har konfigureret nogen integrationer endnu. Klik på knappen nedenfor for at tilføje din første integration!",
                     "none": "Intet konfigureret endnu",
+                    "none_found": "Ingen integrationer fundet",
+                    "none_found_detail": "Juster dine søgekriterier.",
                     "note_about_integrations": "Ikke alle integrationer kan konfigureres via brugerfladen endnu.",
                     "note_about_website_reference": "Flere er tilgængelige på ",
                     "rename_dialog": "Rediger navnet på denne konfigurationspost",
@@ -2214,12 +2231,12 @@
                         "close": "Luk",
                         "empty_config": "Start med et tomt betjeningspanel",
                         "header": "Tag kontrol over din 'Lovelace'-brugerflade",
-                        "para": "Som standard vil Home Assistant vedligeholde din brugerflade ved at opdatere den, når nye entiteter eller Lovelace-brugerfladekomponenter bliver tilgængelige. Hvis du overtager kontrollen, vil vi ikke længere foretage ændringer automatisk for dig.",
+                        "para": "Dette betjeningspanel vedligeholdes i øjeblikket af Home Assistant. Det opdateres automatisk, når nye entiteter eller Lovelace-brugerfladekomponenter bliver tilgængelige. Hvis du overtager kontrollen, opdateres dette betjeningspanel ikke længere automatisk. Du kan altid oprette et nyt betjeningspanel at lege med i konfigurationen.",
                         "para_sure": "Er du sikker på du ønsker at tage kontrol over din brugerflade?",
                         "save": "Tag kontrol",
                         "yaml_config": "For at hjælpe dig med at starte, er her den aktuelle konfiguration af dette betjeningspanel:",
                         "yaml_control": "For at tage kontrol i YAML-tilstand skal du oprette en YAML-fil med det navn, du har angivet i din konfiguration for dette betjeningspanel, eller standard-'ui-lovelace.yaml'-filen.",
-                        "yaml_mode": "Du bruger YAML-tilstand. Det betyder, at du ikke kan ændre din Lovelace-konfiguration fra brugerfladen. Hvis du vil ændre Lovelace fra brugerfladen, skal du fjerne 'mode: yaml' fra din Lovelace-konfiguration i 'configuration.yaml.'"
+                        "yaml_mode": "Du bruger YAML-tilstand for dette betjeningspanel. Det betyder, at du ikke kan ændre din Lovelace-konfiguration fra brugerfladen. Hvis du vil ændre dette betjeningspanel fra brugerfladen, skal du fjerne 'mode: yaml' fra din Lovelace-konfiguration i 'configuration.yaml.'"
                     },
                     "suggest_card": {
                         "add": "Tilføj til Lovelace-brugerflade",
