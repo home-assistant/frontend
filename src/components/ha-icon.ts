@@ -64,6 +64,11 @@ export class HaIcon extends LitElement {
       return;
     }
     const [iconPrefix, iconName] = this.icon.split(":", 2);
+
+    if (!iconPrefix || !iconName) {
+      return;
+    }
+
     if (!MDI_PREFIXES.includes(iconPrefix)) {
       if (iconPrefix in customIconsets) {
         const customIconset = customIconsets[iconPrefix];
