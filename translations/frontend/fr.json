@@ -206,6 +206,8 @@
             "stopped": "Arrêté"
         },
         "default": {
+            "off": "Off",
+            "on": "On",
             "unavailable": "Indisponible",
             "unknown": "Inconnu"
         },
@@ -471,11 +473,15 @@
             }
         },
         "common": {
+            "and": "et",
             "cancel": "Annuler",
             "close": "Fermer",
             "delete": "Supprimer",
             "loading": "Chargement",
+            "next": "Suivant",
             "no": "Non",
+            "previous": "Précédent",
+            "refresh": "Rafraîchir",
             "save": "Enregistrer",
             "successfully_deleted": "Supprimé avec succès",
             "successfully_saved": "Enregistré avec succès",
@@ -526,11 +532,11 @@
             },
             "relative_time": {
                 "duration": {
-                    "day": "{count} {count, plural,\none {jour}\nother {jours}\n}",
-                    "hour": "{count} {count, plural,\none {heure}\nother {heures}\n}",
-                    "minute": "{count} {count, plural,\none {minute}\nother {minutes}\n}",
-                    "second": "{count} {count, plural,\none {seconde}\nother {secondes}\n}",
-                    "week": "{count} {count, plural,\none {semaine}\nother {semaines}\n}"
+                    "day": "{count} {count, plural,\nzero {jour}\none {jour}\nother {jours}\n}",
+                    "hour": "{count} {count, plural,\nzero {heure}\none {heure}\nother {heures}\n}",
+                    "minute": "{count} {count, plural,\nzero {minute}\none {minute}\nother {minutes}\n}",
+                    "second": "{count} {count, plural,\nzero {seconde}\none {seconde}\nother {secondes}\n}",
+                    "week": "{count} {count, plural,\nzero {semaine}\none {semaine}\nother {semaines}\n}"
                 },
                 "future": "Dans {time}",
                 "never": "Jamais",
@@ -655,8 +661,13 @@
                 }
             },
             "mqtt_device_debug_info": {
+                "deserialize": "Tentative d'analyse des messages MQTT en tant que JSON",
                 "entities": "Entités",
                 "no_entities": "Aucune entité",
+                "no_triggers": "Pas de déclencheur",
+                "payload_display": "Affichage de la charge utile",
+                "recent_messages": "{n} dernier(s) message(s) reçu(s)",
+                "show_as_yaml": "Afficher en tant que YAML",
                 "title": "{device} informations de débogage",
                 "triggers": "Déclencheurs"
             },
@@ -707,11 +718,11 @@
             }
         },
         "duration": {
-            "day": "{count} {count, plural,\none {jour}\nother {jours}\n}",
-            "hour": "{count} {count, plural,\none {heure}\nother {heures}\n}",
-            "minute": "{count} {count, plural,\none {minute}\nother {minutes}\n}",
-            "second": "{count} {count, plural,\none {seconde}\nother {secondes}\n}",
-            "week": "{count} {count, plural,\none {semaine}\nother {semaines}\n}"
+            "day": "{count} {count, plural,\nzero {jour}\none {jour}\nother {jours}\n}",
+            "hour": "{count} {count, plural,\nzero {heure}\none {heure}\nother {heures}\n}",
+            "minute": "{count} {count, plural,\nzero {minute}\none {minute}\nother {minutes}\n}",
+            "second": "{count} {count, plural,\nzero {seconde}\none {seconde}\nother {secondes}\n}",
+            "week": "{count} {count, plural,\nzero {semaine}\none {semaine}\nother {semaines}\n}"
         },
         "login-form": {
             "log_in": "Connexion",
@@ -730,6 +741,10 @@
             "triggered": "{name} déclenché"
         },
         "panel": {
+            "calendar": {
+                "my_calendars": "Mes calendriers",
+                "today": "Aujourd'hui"
+            },
             "config": {
                 "advanced_mode": {
                     "hint_enable": "Options de configuration manquantes? Activer le mode avancé",
@@ -831,6 +846,9 @@
                                         "for": "Durée"
                                     },
                                     "label": "Appareil"
+                                },
+                                "not": {
+                                    "label": "Pas"
                                 },
                                 "numeric_state": {
                                     "above": "Au-Dessus",
@@ -1163,7 +1181,9 @@
                                 "edit_requires_storage": "L'éditeur est désactivé car la configuration est stockée dans configuration.yaml.",
                                 "elevation": "Élévation",
                                 "elevation_meters": "mètres",
+                                "external_url": "URL externe",
                                 "imperial_example": "Fahrenheit, livres",
+                                "internal_url": "URL interne",
                                 "latitude": "Latitude",
                                 "location_name": "Nom de votre installation Home Assistant",
                                 "longitude": "Longitude",
@@ -1230,6 +1250,7 @@
                     },
                     "delete": "Supprimer",
                     "description": "Gérer les appareils connectés",
+                    "device_info": "Informations sur l’appareil",
                     "device_not_found": "Appareil non trouvé.",
                     "entities": {
                         "add_entities_lovelace": "Ajouter à Lovelace",
@@ -1339,6 +1360,8 @@
                         "delete_button": "Supprimer {integration}",
                         "delete_confirm": "Êtes-vous sûr de vouloir supprimer cette intégration?",
                         "device_unavailable": "appareil indisponible",
+                        "devices": "{count} {count, plural,\n  zero {appareil}\n  one {appareil}\n  other {appareils}\n}",
+                        "entities": "{count} {count, plural,\n  zero {entité}\n  one {entité}\n  other {entités}\n}",
                         "entity_unavailable": "entité indisponible",
                         "firmware": "Firmware: {version}",
                         "hub": "Connecté via",
@@ -1388,9 +1411,13 @@
                     "integration": "intégration",
                     "integration_not_found": "Intégration introuvable.",
                     "new": "Configurer une nouvelle intégration",
+                    "no_integrations": "Il semble que vous n'ayez pas encore configuré d'intégrations. Cliquez sur le bouton ci-dessous pour ajouter votre première intégration!",
                     "none": "Rien n'est encore configuré",
+                    "none_found": "Aucune intégration trouvée",
+                    "none_found_detail": "Ajustez vos critères de recherche.",
                     "note_about_integrations": "Toutes les intégrations ne peuvent pas encore être configurées via l'interface utilisateur.",
                     "note_about_website_reference": "D'autres sont disponibles sur le ",
+                    "rename_dialog": "Modifier le nom de cette entrée de configuration",
                     "rename_input_label": "Nom de l'entrée"
                 },
                 "introduction": "Ici, il est possible de configurer vos composants et Home Assistant. Tout n'est pas encore possible de configurer à partir de l'interface utilisateur, mais nous y travaillons.",
@@ -2207,12 +2234,12 @@
                         "close": "Fermer",
                         "empty_config": "Commencez avec un tableau de bord vide",
                         "header": "Prenez le contrôle de votre Interface Lovelace",
-                        "para": "Par défaut, Home Assistant maintient votre interface utilisateur, la met à jour lorsque de nouvelles entités ou de nouveaux composants Lovelace UI sont disponibles. Si vous prenez le contrôle, nous ne ferons plus les changements automatiquement pour vous.",
+                        "para": "Par défaut, Home Assistant maintient votre interface utilisateur et la met à jour lorsque de nouvelles entités ou de nouveaux composants Lovelace UI sont disponibles. Si vous prenez le contrôle, nous ne ferons plus les changements automatiquement pour vous.",
                         "para_sure": "Êtes-vous sûr de vouloir prendre le contrôle de l'interface utilisateur?",
                         "save": "Prenez le contrôle",
                         "yaml_config": "Pour vous aider à démarrer, voici la configuration actuelle de ce tableau de bord:",
                         "yaml_control": "Pour prendre le contrôle en mode YAML, créez un fichier YAML avec le nom que vous avez spécifié dans votre configuration pour ce tableau de bord, ou le 'ui-lovelace.yaml' par défaut.",
-                        "yaml_mode": "Vous utilisez le mode YAML, ce qui signifie que vous ne pouvez pas modifier votre configuration Lovelace depuis l'interface utilisateur. Si vous souhaitez modifier Lovelace de l'interface utilisateur, supprimez «mode: yaml» de votre configuration Lovelace dans «configuration.yaml»."
+                        "yaml_mode": "Vous utilisez le mode YAML pour ce tableau de bord, ce qui signifie que vous ne pouvez pas modifier votre configuration Lovelace depuis l'interface utilisateur. Si vous souhaitez gérer votre tableau de bord via l'interface utilisateur, supprimez «mode: yaml» de votre configuration Lovelace dans «configuration.yaml»."
                     },
                     "suggest_card": {
                         "add": "Ajouter à Lovelace UI",
@@ -2258,7 +2285,8 @@
                 "warning": {
                     "attribute_not_found": "Attribut {attribute} non disponible dans: {entity}",
                     "entity_non_numeric": "L'entité est non numérique: {entity}",
-                    "entity_not_found": "Entité non disponible: {entity}"
+                    "entity_not_found": "Entité non disponible: {entity}",
+                    "entity_unavailable": "{entity} n'est pas disponible actuellement"
                 }
             },
             "mailbox": {
