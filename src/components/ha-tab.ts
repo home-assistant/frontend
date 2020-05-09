@@ -16,7 +16,6 @@ import { RippleHandlers } from "@material/mwc-ripple/ripple-handlers";
 import "./ha-icon";
 import "./ha-svg-icon";
 import { ifDefined } from "lit-html/directives/if-defined";
-import { fireEvent } from "../common/dom/fire_event";
 
 @customElement("ha-tab")
 export class HaTab extends LitElement {
