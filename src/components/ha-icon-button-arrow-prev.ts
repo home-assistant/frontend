@@ -4,6 +4,8 @@ import "@material/mwc-icon-button/mwc-icon-button";
 import "./ha-svg-icon";
 
 export class HaIconButtonArrowPrev extends LitElement {
+  @property({ type: Boolean }) public disabled = false;
+
   @property() private _icon = mdiArrowLeft;
 
   public connectedCallback() {
@@ -19,7 +21,7 @@ export class HaIconButtonArrowPrev extends LitElement {
   }
 
   protected render(): TemplateResult {
-    return html`<mwc-icon-button>
+    return html`<mwc-icon-button .disabled=${this.disabled}>
       <ha-svg-icon .path=${this._icon}></ha-svg-icon>
     </mwc-icon-button> `;
   }

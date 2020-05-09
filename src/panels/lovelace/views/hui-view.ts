@@ -23,6 +23,8 @@ import { createBadgeElement } from "../create-element/create-badge-element";
 import { createCardElement } from "../create-element/create-card-element";
 import { showEditCardDialog } from "../editor/card-editor/show-edit-card-dialog";
 import { Lovelace, LovelaceBadge, LovelaceCard } from "../types";
+import "../../../components/ha-svg-icon";
+import { mdiPlus } from "@mdi/js";
 
 let editCodeLoaded = false;
 
@@ -95,8 +97,7 @@ export class HUIView extends LitElement {
       <div id="columns"></div>
       ${this.lovelace!.editMode
         ? html`
-            <ha-fab
-              icon="hass:plus"
+            <mwc-fab
               title="${this.hass!.localize(
                 "ui.panel.lovelace.editor.edit_card.add"
               )}"
@@ -104,7 +105,9 @@ export class HUIView extends LitElement {
               class="${classMap({
                 rtl: computeRTL(this.hass!),
               })}"
-            ></ha-fab>
+            >
+              <ha-svg-icon slot="icon" path=${mdiPlus}></ha-svg-icon>
+            </mwc-fab>
           `
         : ""}
     `;
@@ -151,7 +154,7 @@ export class HUIView extends LitElement {
           margin: 4px 4px 8px;
         }
 
-        ha-fab {
+        mwc-fab {
           position: sticky;
           float: right;
           bottom: 16px;
@@ -159,7 +162,7 @@ export class HUIView extends LitElement {
           z-index: 1;
         }
 
-        ha-fab.rtl {
+        mwc-fab.rtl {
           float: left;
           right: auto;
           left: 16px;

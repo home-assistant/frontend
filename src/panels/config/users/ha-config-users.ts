@@ -13,7 +13,7 @@ import {
   DataTableColumnContainer,
   RowClickedEvent,
 } from "../../../components/data-table/ha-data-table";
-import "../../../components/ha-fab";
+import "@material/mwc-fab";
 import { deleteUser, fetchUsers, updateUser, User } from "../../../data/user";
 import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
 import "../../../layouts/hass-tabs-subpage-data-table";
@@ -21,6 +21,8 @@ import { HomeAssistant, Route } from "../../../types";
 import { configSections } from "../ha-panel-config";
 import { showAddUserDialog } from "./show-dialog-add-user";
 import { showUserDetailDialog } from "./show-dialog-user-detail";
+import "../../../components/ha-svg-icon";
+import { mdiPlus } from "@mdi/js";
 
 @customElement("ha-config-users")
 export class HaConfigUsers extends LitElement {
@@ -97,14 +99,15 @@ export class HaConfigUsers extends LitElement {
         hasFab
       >
       </hass-tabs-subpage-data-table>
-      <ha-fab
+      <mwc-fab
         ?is-wide=${this.isWide}
         ?narrow=${this.narrow}
-        icon="hass:plus"
         .title=${this.hass.localize("ui.panel.config.users.picker.add_user")}
         @click=${this._addUser}
         ?rtl=${computeRTL(this.hass)}
-      ></ha-fab>
+      >
+        <ha-svg-icon slot="icon" path=${mdiPlus}></ha-svg-icon>
+      </mwc-fab>
     `;
   }
 
@@ -166,24 +169,24 @@ export class HaConfigUsers extends LitElement {
 
   static get styles() {
     return css`
-      ha-fab {
+      mwc-fab {
         position: fixed;
         bottom: 16px;
         right: 16px;
         z-index: 1;
       }
-      ha-fab[is-wide] {
+      mwc-fab[is-wide] {
         bottom: 24px;
         right: 24px;
       }
-      ha-fab[rtl] {
+      mwc-fab[rtl] {
         right: auto;
         left: 16px;
       }
-      ha-fab[narrow] {
+      mwc-fab[narrow] {
         bottom: 84px;
       }
-      ha-fab[rtl][is-wide] {
+      mwc-fab[rtl][is-wide] {
         bottom: 24px;
         right: auto;
         left: 24px;

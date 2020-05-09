@@ -18,6 +18,7 @@ import "../components/ha-icon-button-arrow-prev";
 import { HomeAssistant, Route } from "../types";
 import "../components/ha-svg-icon";
 import "../components/ha-icon";
+import "../components/ha-tab";
 
 export interface PageNavigation {
   path: string;
@@ -71,29 +72,23 @@ class HassTabsSubpage extends LitElement {
       return shownTabs.map(
         (page) =>
           html`
-            <div
-              class="tab ${classMap({
-                active: page === activeTab,
-              })}"
-              @click=${this._tabTapped}
+            <ha-tab
+              .hass=${this.hass}
+              @activated=${this._tabTapped}
               .path=${page.path}
+              .active=${page === activeTab}
+              .narrow=${this.narrow}
+              .name=${page.translationKey
+                ? this.hass.localize(page.translationKey)
+                : page.name}
             >
-              ${this.narrow
-                ? page.iconPath
-                  ? html`<ha-svg-icon .path=${page.iconPath}></ha-svg-icon>`
-                  : html`<ha-icon .icon=${page.icon}></ha-icon>`
-                : ""}
-              ${!this.narrow || page === activeTab
-                ? html`
-                    <span class="name"
-                      >${page.translationKey
-                        ? this.hass.localize(page.translationKey)
-                        : page.name}</span
-                    >
-                  `
-                : ""}
-              <mwc-ripple></mwc-ripple>
-            </div>
+              ${page.iconPath
+                ? html`<ha-svg-icon
+                    slot="icon"
+                    .path=${page.iconPath}
+                  ></ha-svg-icon>`
+                : html`<ha-icon slot="icon" .icon=${page.icon}></ha-icon>`}
+            </ha-tab>
           `
       );
     }
@@ -154,7 +149,7 @@ class HassTabsSubpage extends LitElement {
     `;
   }
 
-  private _tabTapped(ev: MouseEvent): void {
+  private _tabTapped(ev: Event): void {
     navigate(this, (ev.currentTarget as any).path, true);
   }
 
@@ -217,35 +212,6 @@ class HassTabsSubpage extends LitElement {
       #tabbar:not(.bottom-bar) {
         flex: 1;
         justify-content: center;
-      }
-
-      .tab {
-        padding: 0 32px;
-        display: flex;
-        flex-direction: column;
-        text-align: center;
-        align-items: center;
-        justify-content: center;
-        height: 64px;
-        cursor: pointer;
-      }
-
-      .name {
-        white-space: nowrap;
-      }
-
-      .tab.active {
-        color: var(--primary-color);
-      }
-
-      #tabbar:not(.bottom-bar) .tab.active {
-        border-bottom: 2px solid var(--primary-color);
-      }
-
-      .bottom-bar .tab {
-        padding: 0 16px;
-        width: 20%;
-        min-width: 0;
       }
 
       :host(:not([narrow])) #toolbar-icon {

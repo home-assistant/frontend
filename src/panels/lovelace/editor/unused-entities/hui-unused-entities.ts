@@ -1,3 +1,4 @@
+import "@material/mwc-fab";
 import {
   css,
   CSSResult,
@@ -20,7 +21,6 @@ import type {
   SelectionChangedEvent,
 } from "../../../../components/data-table/ha-data-table";
 import "../../../../components/entity/state-badge";
-import "../../../../components/ha-fab";
 import "../../../../components/ha-icon";
 import "../../../../components/ha-relative-time";
 import type { LovelaceConfig } from "../../../../data/lovelace";
@@ -28,6 +28,8 @@ import type { HomeAssistant } from "../../../../types";
 import { computeUnusedEntities } from "../../common/compute-unused-entities";
 import type { Lovelace } from "../../types";
 import { addEntitiesToLovelaceView } from "../add-entities-to-view";
+import "../../../../components/ha-svg-icon";
+import { mdiPlus } from "@mdi/js";
 
 @customElement("hui-unused-entities")
 export class HuiUnusedEntities extends LitElement {
@@ -173,16 +175,17 @@ export class HuiUnusedEntities extends LitElement {
 
       ${this._selectedEntities.length
         ? html`
-            <ha-fab
+            <mwc-fab
               class="${classMap({
                 rtl: computeRTL(this.hass),
               })}"
-              icon="hass:plus"
               .label=${this.hass.localize(
                 "ui.panel.lovelace.editor.edit_card.add"
               )}
               @click=${this._addToLovelaceView}
-            ></ha-fab>
+            >
+              <ha-svg-icon slot="icon" path=${mdiPlus}></ha-svg-icon>
+            </mwc-fab>
           `
         : ""}
     `;
@@ -238,13 +241,13 @@ export class HuiUnusedEntities extends LitElement {
         flex-grow: 1;
         margin-top: -20px;
       }
-      ha-fab {
+      mwc-fab {
         position: absolute;
         right: 16px;
         bottom: 16px;
         z-index: 1;
       }
-      ha-fab.rtl {
+      mwc-fab.rtl {
         left: 16px;
         right: auto;
       }
