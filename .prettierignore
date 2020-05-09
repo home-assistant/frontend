@@ -3,7 +3,6 @@ build-translations/*
 translations/*
 node_modules/*
 hass_frontend/*
-demo/hademo-icons.html
 pip-selfcheck.json
 
 # vscode

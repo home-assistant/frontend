@@ -1,6 +1,5 @@
 import "@material/mwc-button";
 import "@polymer/iron-autogrow-textarea/iron-autogrow-textarea";
-import "@polymer/paper-card/paper-card";
 import {
   css,
   CSSResult,
@@ -13,6 +12,7 @@ import {
   TemplateResult,
 } from "lit-element";
 import { fireEvent } from "../../../../src/common/dom/fire_event";
+import "../../../../src/components/ha-card";
 import "../../../../src/components/ha-yaml-editor";
 import type { HaYamlEditor } from "../../../../src/components/ha-yaml-editor";
 import {
@@ -23,9 +23,8 @@ import {
 import { showConfirmationDialog } from "../../../../src/dialogs/generic/show-dialog-box";
 import { haStyle } from "../../../../src/resources/styles";
 import type { HomeAssistant } from "../../../../src/types";
-import { hassioStyle } from "../../resources/hassio-style";
-
 import { suggestAddonRestart } from "../../dialogs/suggestAddonRestart";
+import { hassioStyle } from "../../resources/hassio-style";
 
 @customElement("hassio-addon-config")
 class HassioAddonConfig extends LitElement {
@@ -46,7 +45,7 @@ class HassioAddonConfig extends LitElement {
 
     return html`
       <h1>${this.addon.name}</h1>
-      <paper-card heading="Configuration">
+      <ha-card header="Configuration">
         <div class="card-content">
           <ha-yaml-editor
             @value-changed=${this._configChanged}
@@ -65,7 +64,7 @@ class HassioAddonConfig extends LitElement {
             Save
           </mwc-button>
         </div>
-      </paper-card>
+      </ha-card>
     `;
   }
 
@@ -77,7 +76,7 @@ class HassioAddonConfig extends LitElement {
         :host {
           display: block;
         }
-        paper-card {
+        ha-card {
           display: block;
         }
         .card-actions {

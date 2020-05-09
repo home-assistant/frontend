@@ -1,5 +1,4 @@
 import "@polymer/iron-icon/iron-icon";
-import { get, Store } from "idb-keyval";
 import {
   customElement,
   LitElement,
@@ -11,46 +10,23 @@ import {
   CSSResult,
 } from "lit-element";
 import "./ha-svg-icon";
+import { customIconsets, CustomIcon } from "../data/custom_iconsets";
+import {
+  Chunks,
+  MDI_PREFIXES,
+  getIcon,
+  findIconChunk,
+  Icons,
+  checkCacheVersion,
+  writeCache,
+} from "../data/iconsets";
 import { debounce } from "../common/util/debounce";
-import { iconMetadata } from "../resources/icon-metadata";
-import { IconMetadata } from "../types";
 
-interface Icons {
-  [key: string]: string;
-}
-
-interface Chunks {
-  [key: string]: Promise<Icons>;
-}
-
-const iconStore = new Store("hass-icon-db", "mdi-icon-store");
 const chunks: Chunks = {};
-const MDI_PREFIXES = ["mdi", "hass", "hassio"];
 
-const findIconChunk = (icon): string => {
-  let lastChunk: IconMetadata;
-  for (const chunk of iconMetadata) {
-    if (chunk.start !== undefined && icon < chunk.start) {
-      break;
-    }
-    lastChunk = chunk;
-  }
-  return lastChunk!.file;
-};
+checkCacheVersion();
 
-const debouncedWriteCache = debounce(async () => {
-  const keys = Object.keys(chunks);
-  const iconsSets: Icons[] = await Promise.all(Object.values(chunks));
-  // We do a batch opening the store just once, for (considerable) performance
-  iconStore._withIDBStore("readwrite", (store) => {
-    iconsSets.forEach((icons, idx) => {
-      Object.entries(icons).forEach(([name, path]) => {
-        store.put(path, name);
-      });
-      delete chunks[keys[idx]];
-    });
-  });
-}, 2000);
+const debouncedWriteCache = debounce(() => writeCache(chunks), 2000);
 
 @customElement("ha-icon")
 export class HaIcon extends LitElement {
@@ -58,10 +34,14 @@ export class HaIcon extends LitElement {
 
   @property() private _path?: string;
 
-  @property() private _noMdi = false;
+  @property() private _viewBox?;
+
+  @property() private _legacy = false;
 
   protected updated(changedProps: PropertyValues) {
     if (changedProps.has("icon")) {
+      this._path = undefined;
+      this._viewBox = undefined;
       this._loadIcon();
     }
   }
@@ -70,26 +50,40 @@ export class HaIcon extends LitElement {
     if (!this.icon) {
       return html``;
     }
-    if (this._noMdi) {
+    if (this._legacy) {
       return html`<iron-icon .icon=${this.icon}></iron-icon>`;
     }
-    return html`<ha-svg-icon .path=${this._path}></ha-svg-icon>`;
+    return html`<ha-svg-icon
+      .path=${this._path}
+      .viewBox=${this._viewBox}
+    ></ha-svg-icon>`;
   }
 
   private async _loadIcon() {
     if (!this.icon) {
       return;
     }
-    const icon = this.icon.split(":", 2);
-    if (!MDI_PREFIXES.includes(icon[0])) {
-      this._noMdi = true;
+    const [iconPrefix, iconName] = this.icon.split(":", 2);
+
+    if (!iconPrefix || !iconName) {
       return;
     }
 
-    this._noMdi = false;
+    if (!MDI_PREFIXES.includes(iconPrefix)) {
+      if (iconPrefix in customIconsets) {
+        const customIconset = customIconsets[iconPrefix];
+        if (customIconset) {
+          this._setCustomPath(customIconset(iconName));
+        }
+        return;
+      }
+      this._legacy = true;
+      return;
+    }
 
-    const iconName = icon[1];
-    const cachedPath: string = await get(iconName, iconStore);
+    this._legacy = false;
+
+    const cachedPath: string = await getIcon(iconName);
     if (cachedPath) {
       this._path = cachedPath;
       return;
@@ -108,6 +102,12 @@ export class HaIcon extends LitElement {
     debouncedWriteCache();
   }
 
+  private async _setCustomPath(promise: Promise<CustomIcon>) {
+    const icon = await promise;
+    this._path = icon.path;
+    this._viewBox = icon.viewBox;
+  }
+
   private async _setPath(promise: Promise<Icons>, iconName: string) {
     const iconPack = await promise;
     this._path = iconPack[iconName];
@@ -116,11 +116,6 @@ export class HaIcon extends LitElement {
   static get styles(): CSSResult {
     return css`
       :host {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        position: relative;
-        vertical-align: middle;
         fill: currentcolor;
       }
     `;

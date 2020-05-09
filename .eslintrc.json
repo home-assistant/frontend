@@ -11,17 +11,12 @@
   "parserOptions": {
     "ecmaVersion": 2020,
     "ecmaFeatures": {
-      "jsx": true,
       "modules": true
     },
     "sourceType": "module",
     "project": "./tsconfig.json"
   },
   "settings": {
-    "react": {
-      "pragma": "h",
-      "version": "15.0"
-    },
     "import/resolver": {
       "webpack": {
         "config": "./webpack.config.js"
@@ -88,13 +83,6 @@
     "@typescript-eslint/no-unused-vars": 0,
     "@typescript-eslint/explicit-function-return-type": 0
   },
-  "plugins": [
-    "disable",
-    "import",
-    "react",
-    "lit",
-    "prettier",
-    "@typescript-eslint"
-  ],
+  "plugins": ["disable", "import", "lit", "prettier", "@typescript-eslint"],
   "processor": "disable/disable"
 }

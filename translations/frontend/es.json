@@ -206,6 +206,8 @@
             "stopped": "Detenido"
         },
         "default": {
+            "off": "Apagado",
+            "on": "Encendido",
             "unavailable": "No disponible",
             "unknown": "Desconocido"
         },
@@ -475,7 +477,10 @@
             "close": "Cerrar",
             "delete": "Eliminar",
             "loading": "Cargando",
+            "next": "Siguiente",
             "no": "No",
+            "previous": "Anterior",
+            "refresh": "Actualizar",
             "save": "Guardar",
             "successfully_deleted": "Eliminado correctamente",
             "successfully_saved": "Guardado correctamente",
@@ -735,6 +740,10 @@
             "triggered": "Activado {name}"
         },
         "panel": {
+            "calendar": {
+                "my_calendars": "Mis Calendarios",
+                "today": "Hoy"
+            },
             "config": {
                 "advanced_mode": {
                     "hint_enable": "¿Faltan opciones de configuración? Activa el modo avanzado",
@@ -836,6 +845,9 @@
                                         "for": "Duración"
                                     },
                                     "label": "Dispositivo"
+                                },
+                                "not": {
+                                    "label": "Negar"
                                 },
                                 "numeric_state": {
                                     "above": "Por encima de",
@@ -1235,6 +1247,7 @@
                     },
                     "delete": "Eliminar",
                     "description": "Administrar dispositivos conectados",
+                    "device_info": "Información del dispositivo",
                     "device_not_found": "Dispositivo no encontrado.",
                     "entities": {
                         "add_entities_lovelace": "Añadir a Lovelace",
@@ -1397,8 +1410,10 @@
                     "new": "Configurar una nueva integración.",
                     "no_integrations": "Parece que todavía no tienes ninguna integración configurada. ¡Pulsa en el botón de abajo para añadir tu primera integración!",
                     "none": "Todavía no hay nada configurado",
+                    "none_found": "No se han encontrado integraciones",
+                    "none_found_detail": "Ajusta tus criterios de búsqueda.",
                     "note_about_integrations": "Todavía no se pueden configurar todas las integraciones a través de la interfaz de usuario.",
-                    "note_about_website_reference": "Más están disponibles en el",
+                    "note_about_website_reference": "Hay más disponibles en el ",
                     "rename_dialog": "Edita el nombre de esta entrada de configuración",
                     "rename_input_label": "Nombre de la entrada"
                 },
@@ -2216,12 +2231,12 @@
                         "close": "Cerrar",
                         "empty_config": "Empezar con un panel de control vacío",
                         "header": "Tomar el control de la interfaz de usuario Lovelace",
-                        "para": "Por defecto Home Assistant se encargará de tu interfaz de usuario, actualizándola cuando haya nuevas entidades o componentes Lovelace disponibles. Si asumes el control, ya no haremos más cambios automáticamente por ti.",
+                        "para": "Este panel de control está siendo mantenido actualmente por Home Assistant. Se actualiza automáticamente cada vez que nuevas entidades o componentes de la IU Lovelace están disponibles. Si asumes el control, este panel de control ya no se actualizará automáticamente. Siempre podrás crear un nuevo panel de control en la configuración con el que jugar.",
                         "para_sure": "¿Estás seguro de que quieres tomar el control de tu interfaz de usuario?",
                         "save": "Tomar el control",
                         "yaml_config": "Para ayudarte a empezar aquí está la configuración actual de este panel:",
                         "yaml_control": "Para tomar el control en modo YAML, crea un archivo YAML con el nombre que especificaste en la configuración para este panel de control, o el valor predeterminado 'ui-lovelace.yaml'.",
-                        "yaml_mode": "Estás utilizando el modo YAML, lo que significa que no puedes cambiar la configuración de Lovelace desde la IU. Si deseas cambiar Lovelace desde la IU, elimina 'mode: yaml' de la configuración de Lovelace en 'configuration.yaml.'"
+                        "yaml_mode": "Estás utilizando el modo YAML para este panel de control, lo que significa que no puedes cambiar la configuración de Lovelace desde la IU. Si quieres gestionar este panel de control desde la IU, elimina 'mode: yaml' de la configuración de Lovelace en 'configuration.yaml.'"
                     },
                     "suggest_card": {
                         "add": "Añadir a la IU Lovelace",

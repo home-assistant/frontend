@@ -206,6 +206,8 @@
             "stopped": "עצור"
         },
         "default": {
+            "off": "מופסק",
+            "on": "מופעל",
             "unavailable": "לא זמין",
             "unknown": "לא ידוע"
         },
@@ -1096,6 +1098,7 @@
                     "caption": "אינטגרציות",
                     "config_entry": {
                         "area": "ב {area}",
+                        "delete": "מחק",
                         "delete_button": "מחק {integration}",
                         "delete_confirm": "האם אתה בטוח שברצונך למחוק אינטגרציה זו?",
                         "device_unavailable": "התקן אינו זמין",
@@ -1106,8 +1109,11 @@
                         "no_area": "ללא אזור",
                         "no_device": "ישויות ללא מכשירים",
                         "no_devices": "לאינטגרציה זו אין התקנים.",
+                        "options": "אפשרויות",
+                        "rename": "שנה שם",
                         "restart_confirm": "הפעל מחדש את Home Assistant כדי להשלים את הסרת האינטגרציה",
                         "settings_button": "ערוך הגדרות עבור {integration}",
+                        "system_options": "אפשרויות מערכת",
                         "system_options_button": "אפשרויות מערכת עבור {integration}"
                     },
                     "config_flow": {
@@ -1132,6 +1138,8 @@
                     "integration_not_found": "האינטגרציה לא נמצאה.",
                     "new": "הגדר אינטגרציה",
                     "none": "כלום אינו הוגדר עדיין",
+                    "none_found": "לא נמצאו אינטגרציות",
+                    "none_found_detail": "התאם את קריטריוני החיפוש שלך.",
                     "note_about_integrations": "קיימות אינטגרציות שלא ניתן עדיין להגדירן ע\"י ממשק המשתמש.",
                     "note_about_website_reference": "מידע נוסף זמין ב:"
                 },
@@ -1751,7 +1759,8 @@
                 },
                 "warning": {
                     "entity_non_numeric": "הישות אינה מספרית: {entity}",
-                    "entity_not_found": "הישות אינה זמינה: {entity}"
+                    "entity_not_found": "הישות אינה זמינה: {entity}",
+                    "entity_unavailable": "כרגע {entity} אינו זמין"
                 }
             },
             "mailbox": {

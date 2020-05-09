@@ -206,6 +206,8 @@
             "stopped": "Durduruldu"
         },
         "default": {
+            "off": "Kapalı",
+            "on": "Açık",
             "unavailable": "Mevcut değil",
             "unknown": "Bilinmeyen"
         },
@@ -601,7 +603,9 @@
                     "password": "Şifre",
                     "text": "Metin"
                 },
-                "required_error_msg": "Bu alan gereklidir"
+                "platform_not_loaded": "{platform} entegrasyonu yüklenmedi. Lütfen 'default_config:' veya '{platform}:' ekleyerek onu yapılandırmanıza dahil edin.",
+                "required_error_msg": "Bu alan gereklidir",
+                "yaml_not_editable": "Bu varlığın ayarları kullanıcı arayüzünden düzenlenemez. Yalnızca kullanıcı arayüzünden tanımlanan varlıklar kullanıcı arayüzünden yapılandırılabilir."
             },
             "more_info_control": {
                 "dismiss": "İletişim kutusunu kapat",
@@ -1355,6 +1359,7 @@
                     },
                     "description": "Lovelace kontrol panellerinizi yapılandırın",
                     "resources": {
+                        "cant_edit_yaml": "Lovelace'ı YAML modunda kullanıyorsunuz, bu nedenle kaynaklarınızı kullanıcı arayüzü üzerinden yönetemezsiniz. Onları configuration.yaml dosyasında yönetin.",
                         "caption": "Kaynaklar",
                         "confirm_delete": "Bu kaynağı silmek istediğinizden emin misiniz?",
                         "detail": {
@@ -2007,7 +2012,8 @@
                         "header": "Lovelace kullanıcı arayüzünü kontrolünüz altına alın",
                         "para": "Home Assistant varsayılan olarak kullanıcı arayüzünüzü yönetecek, yeni Lovelace bileşenleri ya da varlıklar kullanıma sunulduğunda onu güncelleyecektir. Eğer bunu kontrolünüz altına almak istiyorsanız daha sonra biz sizin için bu değişiklikleri otomatik olarak gerçekleştiremeyeceğiz.",
                         "para_sure": "Kullanıcı arayüzünüzü kontrol altına almak istediğinize emin misiniz?",
-                        "save": "Kontrol altına al"
+                        "save": "Kontrol altına al",
+                        "yaml_mode": "Bu gösterge tablosu için YAML modunu kullanıyorsunuz. Bunun anlamı,  Lovelace yapılandırmanızı kullanıcı arayüzünden değiştiremezsiniz. Bu gösterge tablosunu kullanıcı arayüzünden yönetmek istiyorsanız, 'configuration: yaml' içindeki Lovelace yapılandırmanızdan 'mode: yaml' öğesini kaldırın."
                     },
                     "suggest_card": {
                         "add": "Lovelace kullanıcı arayüzüne ekle",

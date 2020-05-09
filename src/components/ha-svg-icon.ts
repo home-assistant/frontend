@@ -12,10 +12,12 @@ import {
 export class HaSvgIcon extends LitElement {
   @property() public path?: string;
 
+  @property() public viewBox?: string;
+
   protected render(): SVGTemplateResult {
     return svg`
     <svg 
-      viewBox="0 0 24 24" 
+      viewBox=${this.viewBox || "0 0 24 24"}
       preserveAspectRatio="xMidYMid meet"
       focusable="false">
       <g>
@@ -27,7 +29,7 @@ export class HaSvgIcon extends LitElement {
   static get styles(): CSSResult {
     return css`
       :host {
-        display: inline-flex;
+        display: var(--ha-icon-display, inline-flex);
         align-items: center;
         justify-content: center;
         position: relative;

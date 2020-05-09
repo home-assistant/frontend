@@ -206,6 +206,8 @@
             "stopped": "Stopped"
         },
         "default": {
+            "off": "Off",
+            "on": "On",
             "unavailable": "Unavailable",
             "unknown": "Unknown"
         },
@@ -471,11 +473,15 @@
             }
         },
         "common": {
+            "and": "and",
             "cancel": "Cancel",
             "close": "Close",
             "delete": "Delete",
             "loading": "Loading",
+            "next": "Next",
             "no": "No",
+            "previous": "Previous",
+            "refresh": "Refresh",
             "save": "Save",
             "successfully_deleted": "Successfully deleted",
             "successfully_saved": "Successfully saved",
@@ -735,6 +741,10 @@
             "triggered": "Triggered {name}"
         },
         "panel": {
+            "calendar": {
+                "my_calendars": "My Calendars",
+                "today": "Today"
+            },
             "config": {
                 "advanced_mode": {
                     "hint_enable": "Missing config options? Enable advanced mode on",
@@ -836,6 +846,9 @@
                                         "for": "Duration"
                                     },
                                     "label": "Device"
+                                },
+                                "not": {
+                                    "label": "Not"
                                 },
                                 "numeric_state": {
                                     "above": "Above",
@@ -1168,7 +1181,9 @@
                                 "edit_requires_storage": "Editor disabled because config stored in configuration.yaml.",
                                 "elevation": "Elevation",
                                 "elevation_meters": "meters",
+                                "external_url": "External URL",
                                 "imperial_example": "Fahrenheit, pounds",
+                                "internal_url": "Internal URL",
                                 "latitude": "Latitude",
                                 "location_name": "Name of your Home Assistant installation",
                                 "longitude": "Longitude",
@@ -1235,6 +1250,7 @@
                     },
                     "delete": "Delete",
                     "description": "Manage connected devices",
+                    "device_info": "Device info",
                     "device_not_found": "Device not found.",
                     "entities": {
                         "add_entities_lovelace": "Add to Lovelace",
@@ -1397,6 +1413,8 @@
                     "new": "Set up a new integration",
                     "no_integrations": "Seems like you don't have any integations configured yet. Click on the button below to add your first integration!",
                     "none": "Nothing configured yet",
+                    "none_found": "No integrations found",
+                    "none_found_detail": "Adjust your search criteria.",
                     "note_about_integrations": "Not all integrations can be configured via the UI yet.",
                     "note_about_website_reference": "More are available on the ",
                     "rename_dialog": "Edit the name of this config entry",

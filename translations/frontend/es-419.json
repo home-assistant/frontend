@@ -52,11 +52,11 @@
     },
     "state_badge": {
         "alarm_control_panel": {
-            "armed": "Activado",
-            "armed_away": "Activado",
-            "armed_custom_bypass": "Activado",
+            "armed": "Armado",
+            "armed_away": "Armado",
+            "armed_custom_bypass": "Armado",
             "armed_home": "Activada",
-            "armed_night": "Activado",
+            "armed_night": "Armado",
             "arming": "Activando",
             "disarmed": "Desactivado",
             "disarming": "Desarmar",
@@ -206,6 +206,8 @@
             "stopped": "Detenido"
         },
         "default": {
+            "off": "Apagado",
+            "on": "Encendido",
             "unavailable": "No disponible",
             "unknown": "Desconocido"
         },
@@ -475,7 +477,10 @@
             "close": "Cerrar",
             "delete": "Eliminar",
             "loading": "Cargando",
+            "next": "Siguiente",
             "no": "No",
+            "previous": "Anterior",
+            "refresh": "Actualizar",
             "save": "Guardar",
             "successfully_deleted": "Eliminado exitosamente",
             "successfully_saved": "Guardado correctamente",
@@ -654,6 +659,17 @@
                     "stop": "Detener"
                 }
             },
+            "mqtt_device_debug_info": {
+                "deserialize": "Intentar analizar mensajes MQTT como JSON",
+                "entities": "Entidades",
+                "no_entities": "No hay entidades",
+                "no_triggers": "Sin disparadores",
+                "payload_display": "Pantalla de carga útil",
+                "recent_messages": "{n} mensajes recibidos más recientemente",
+                "show_as_yaml": "Mostrar como YAML",
+                "title": "{device} información de depuración",
+                "triggers": "Disparadores"
+            },
             "options_flow": {
                 "form": {
                     "header": "Opciones"
@@ -724,6 +740,10 @@
             "triggered": "{name} activado"
         },
         "panel": {
+            "calendar": {
+                "my_calendars": "Mis calendarios",
+                "today": "Hoy"
+            },
             "config": {
                 "advanced_mode": {
                     "hint_enable": "¿Faltan opciones de configuración? Habilitar el modo avanzado en",
@@ -825,6 +845,9 @@
                                         "for": "Duración"
                                     },
                                     "label": "Dispositivo"
+                                },
+                                "not": {
+                                    "label": "No"
                                 },
                                 "numeric_state": {
                                     "above": "Por encima de",
@@ -1294,6 +1317,10 @@
                         }
                     }
                 },
+                "filtering": {
+                    "clear": "Limpiar",
+                    "filtering_by": "Filtrar por"
+                },
                 "header": "Configurar Home Assistant",
                 "helpers": {
                     "caption": "Auxiliares",
@@ -1321,12 +1348,16 @@
                     }
                 },
                 "integrations": {
+                    "add_integration": "Agregar integración",
                     "caption": "Integraciones",
                     "config_entry": {
                         "area": "En {area}",
+                        "delete": "Eliminar",
                         "delete_button": "Eliminar {integration}",
                         "delete_confirm": "¿Estás seguro de que quieres eliminar esta integración?",
                         "device_unavailable": "dispositivo no disponible",
+                        "devices": "{count} {count, plural,\n  one {dispositivo}\n  other {dispositivos}\n}",
+                        "entities": "{count} {count, plural,\n  one {entidad}\n  other {entidades}\n}",
                         "entity_unavailable": "entidad no disponible",
                         "firmware": "Firmware: {version}",
                         "hub": "Conectado a través de",
@@ -1334,8 +1365,11 @@
                         "no_area": "Ninguna área",
                         "no_device": "Entidades sin dispositivos",
                         "no_devices": "Esta integración no tiene dispositivos.",
+                        "options": "Opciones",
+                        "rename": "Renombrar",
                         "restart_confirm": "Reinicie Home Assistant para terminar de eliminar esta integración.",
                         "settings_button": "Editar configuración para {integration}",
+                        "system_options": "Opciones de Sistema",
                         "system_options_button": "Opciones del sistema para {integration}"
                     },
                     "config_flow": {
@@ -1370,11 +1404,17 @@
                         "show_ignored": "Mostrar integraciones ignoradas",
                         "stop_ignore": "Dejar de ignorar"
                     },
+                    "integration": "Integración",
                     "integration_not_found": "Integración no encontrada.",
                     "new": "Configurar una nueva integración.",
+                    "no_integrations": "Al parecer no tienes ninguna integración configurada todavía. Haga click en el botón de abajo para agregar su primera integración",
                     "none": "No hay nada configurado",
+                    "none_found": "No se encontraron integraciones",
+                    "none_found_detail": "Ajuste sus criterios de búsqueda",
                     "note_about_integrations": "No todas las integraciones se pueden configurar a través de la interfaz de usuario.",
-                    "note_about_website_reference": "Hay más disponibles en "
+                    "note_about_website_reference": "Hay más disponibles en ",
+                    "rename_dialog": "Editar el nombre de esta entrada de configuración",
+                    "rename_input_label": "Ingresar Nombre"
                 },
                 "introduction": "Aquí es posible configurar sus componentes y Home Assistant. Todavía no es posible configurar todo desde la interfaz de usuario, pero estamos trabajando en ello.",
                 "lovelace": {
@@ -2195,7 +2235,7 @@
                         "save": "Tomar el control",
                         "yaml_config": "Para ayudarlo a comenzar, aquí está la configuración actual de este tablero:",
                         "yaml_control": "Para tomar el control en modo YAML, cree un archivo YAML con el nombre que especificó en su configuración para este tablero, o el valor predeterminado 'ui-lovelace.yaml'.",
-                        "yaml_mode": "Está utilizando el modo YAML, lo que significa que no puede cambiar su configuración de Lovelace desde la interfaz de usuario. Si desea cambiar Lovelace desde la interfaz de usuario, elimine 'mode: yaml' de su configuración de Lovelace en 'configuration.yaml'."
+                        "yaml_mode": "Está utilizando el modo YAML para este panel, lo que significa que no puede cambiar su configuración de Lovelace desde la interfaz de usuario. Si desea administrar este panel de control desde la interfaz de usuario, elimine 'mode: yaml' de su configuración de Lovelace en 'configuration.yaml.'."
                     },
                     "suggest_card": {
                         "add": "Agregar a Lovelace UI",
@@ -2241,7 +2281,8 @@
                 "warning": {
                     "attribute_not_found": "El atributo {attribute} no está disponible en: {entity}",
                     "entity_non_numeric": "Entidad no es numérica: {entity}",
-                    "entity_not_found": "Entidad no disponible: {entity}"
+                    "entity_not_found": "Entidad no disponible: {entity}",
+                    "entity_unavailable": "{entidad} no se encuentra disponible"
                 }
             },
             "mailbox": {
