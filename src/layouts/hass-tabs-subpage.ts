@@ -18,7 +18,7 @@ import "../components/ha-icon-button-arrow-prev";
 import { HomeAssistant, Route } from "../types";
 import "../components/ha-svg-icon";
 import "../components/ha-icon";
-import "./../components/ha-tab";
+import "../components/ha-tab";
 
 export interface PageNavigation {
   path: string;
