@@ -34,7 +34,11 @@ class IntegrationsCard extends LitElement {
 
   protected render(): TemplateResult {
     return html`
-      <ha-card header="Integrations">
+      <ha-card
+        header=${this.hass.localize(
+          "ui.panel.developer-tools.tabs.info.integrations"
+        )}
+      >
         <table class="card-content">
           <tbody>
             ${this._sortedIntegrations(this.hass!.config.components).map(
@@ -62,7 +66,9 @@ class IntegrationsCard extends LitElement {
                               target="_blank"
                               rel="noreferrer"
                             >
-                              Documentation
+                              ${this.hass.localize(
+                                "ui.panel.developer-tools.tabs.info.documentation"
+                              )}
                             </a>
                           </td>
                           ${!manifest.is_built_in
@@ -74,7 +80,9 @@ class IntegrationsCard extends LitElement {
                                     target="_blank"
                                     rel="noreferrer"
                                   >
-                                    Issues
+                                    ${this.hass.localize(
+                                      "ui.panel.developer-tools.tabs.info.issues"
+                                    )}
                                   </a>
                                 </td>
                               `}
