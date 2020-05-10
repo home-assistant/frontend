@@ -473,6 +473,7 @@
             }
         },
         "common": {
+            "and": "及",
             "cancel": "取消",
             "close": "關閉",
             "delete": "刪除",
@@ -1180,7 +1181,9 @@
                                 "edit_requires_storage": "由於 configuration.yaml 內已儲存設定，編輯功能已關閉。",
                                 "elevation": "海拔",
                                 "elevation_meters": "公尺",
+                                "external_url": "外部 URL",
                                 "imperial_example": "華氏、磅",
+                                "internal_url": "內部 URL",
                                 "latitude": "緯度",
                                 "location_name": "Home Assistant 安裝名稱",
                                 "longitude": "經度",
