@@ -330,8 +330,8 @@
     },
     "ui": {
         "auth_store": {
-            "ask": "Doriți să salvați aceste date de conectare?",
-            "confirm": "Salvați datele de conectare",
+            "ask": "Vrei să rămâi autentificat?",
+            "confirm": "Da",
             "decline": "Nu"
         },
         "card": {
@@ -541,7 +541,7 @@
                 "dismiss": "Ascunde",
                 "editor": {
                     "confirm_delete": "Sigur dorești să ștergi această intrare?",
-                    "delete": "ȘTERGE",
+                    "delete": "Șterge",
                     "enabled_cause": "Dezactivat de către {cause}.",
                     "enabled_description": "Entitățile dezactivate nu vof fi adăugate in Home Assistant",
                     "enabled_label": "Activează entitatea",
@@ -550,7 +550,7 @@
                     "name": "Suprascriere nume",
                     "note": "Notă: este posibil să nu funcționeze încă cu toate integrările.",
                     "unavailable": "Această entitate nu este disponibilă momentan.",
-                    "update": "ACTUALIZARE"
+                    "update": "Actualizare"
                 },
                 "no_unique_id": "Această entitate nu are un ID unic, prin urmare, setările sale nu pot fi gestionate de la interfața cu utilizatorul.",
                 "related": "În legătură cu",
@@ -594,7 +594,9 @@
                     "password": "Parola",
                     "text": "Text"
                 },
-                "required_error_msg": "Acest câmp este obligatoriu"
+                "platform_not_loaded": "Integrarea {platform} nu este încărcată. Vă rugăm să-i adăugați configurația dvs. fie adăugând 'default_config:' sau '{platform}:'.",
+                "required_error_msg": "Acest câmp este obligatoriu",
+                "yaml_not_editable": "Setările acestei entități nu se pot edita din interfața grafica. Numai entitățile configurate in interfața grafica sunt configurabile din interfața grafica."
             },
             "more_info_control": {
                 "dismiss": "Se respinge dialogul",
@@ -723,11 +725,12 @@
                     },
                     "description": "Privire de ansamblu asupra tuturor zonelor din casa ta.",
                     "editor": {
-                        "create": "CREAȚI",
-                        "delete": "ȘTERGEȚI",
-                        "update": "ACTUALIZAȚI"
+                        "create": "Creează",
+                        "delete": "Șterge",
+                        "update": "Actualizare"
                     },
                     "picker": {
+                        "create_area": "Creare zonă",
                         "header": "Zone",
                         "integrations_page": "Pagina de integrari",
                         "introduction": "Zonele sunt folosite pentru a organiza unde sunt dispozitivele. Aceste informații vor fi utilizate de către Home Assistant pentru a vă ajuta să vă organizați interfața, permisiunile și integrarea cu alte sisteme.",
@@ -851,7 +854,7 @@
                         "triggers": {
                             "add": "Adăugați acțiune",
                             "delete": "Ștergeți",
-                            "delete_confirm": "Sigur doriți să ștergeți?",
+                            "delete_confirm": "Sigur dorești să ștergi această intrare?",
                             "duplicate": "Dublura",
                             "header": "Declanșatoare",
                             "introduction": "Declanșatoarele sunt cele ce încep procesarea unei reguli de automatizare. Este posibil să specificați mai multe declanșatoare pentru aceeași regulă. Odată ce începe declanșarea, Home Assistant o să valideze condițiile, dacă este cazul, și va apela acțiunea. \n\n [Aflați mai multe despre declanșatoare.] (https://home-assistant.io/docs/automation/trigger/)",
@@ -1172,7 +1175,7 @@
                     "ignore": {
                         "confirm_delete_ignore": "Acest lucru va face ca integrarea să apară din nou în integrările descoperite atunci când este descoperită. Acest lucru ar putea necesita o repornire sau să dureze ceva timp.",
                         "confirm_delete_ignore_title": "Încetați să ignorați {name} ?",
-                        "confirm_ignore": "Sunteți sigur că nu doriți să configurați această integrare? Puteți anula acest lucru făcând clic pe „Afișați integrări ignorate” din meniul de preaplin din partea dreaptă sus.",
+                        "confirm_ignore": "Sunteți sigur că nu doriți să configurați această integrare? Puteți anula acest lucru făcând clic pe „Afișați integrări ignorate” din meniul overflow din partea dreaptă sus.",
                         "confirm_ignore_title": "Ignorați descoperirea {name} ?",
                         "hide_ignored": "Ascundeți integrările ignorate",
                         "ignore": "Ignora",
@@ -1194,6 +1197,7 @@
                 "lovelace": {
                     "caption": "Panouri de bord Lovelace",
                     "dashboards": {
+                        "cant_edit_default": "Tabloul de bord standard Lovelace nu poate fi editat din UI. Îl puteți ascunde setând un alt tablou de bord ca implicit.",
                         "cant_edit_yaml": "Tablourile de bord definite în YAML nu pot fi editate din UI. Schimbați-le în configuration.yaml.",
                         "caption": "Tablouri de bord",
                         "conf_mode": {
@@ -1207,13 +1211,13 @@
                             "delete": "Șterge",
                             "dismiss": "Închide",
                             "edit_dashboard": "Editează tabloul de bord",
-                            "icon": "Pictograma barei laterale",
+                            "icon": "Pictograma",
                             "new_dashboard": "Adăugați un nou tablou de bord",
                             "remove_default": "Eliminare ca implicit pe acest dispozitiv",
                             "require_admin": "Doar administrator",
                             "set_default": "Setare ca implicită pe acest dispozitiv",
                             "show_sidebar": "Afișați în bara laterală",
-                            "title": "Titlul barei laterale",
+                            "title": "Titlu",
                             "title_required": "Titlul este necesar.",
                             "update": "Actualizare",
                             "url": "Url",
@@ -1229,7 +1233,7 @@
                                 "sidebar": "Afișați în bara laterală",
                                 "title": "Titlu"
                             },
-                            "open": "Deschide tabloul de bord"
+                            "open": "Deschide"
                         }
                     },
                     "resources": {
@@ -1703,6 +1707,9 @@
                         "history-graph": {
                             "description": "Fișa History Graph vă permite să afișați un grafic pentru fiecare dintre entitățile listate."
                         },
+                        "iframe": {
+                            "name": "Pagină web"
+                        },
                         "light": {
                             "description": "Cardul Light vă permite să schimbați luminozitatea luminii."
                         },
@@ -1835,6 +1842,7 @@
                     "title": "Entități neutilizate"
                 },
                 "views": {
+                    "confirm_delete": "Ștergeți vizualizarea?",
                     "confirm_delete_existing_cards": "Ștergerea acestei vizualizări va elimina și cardurile",
                     "confirm_delete_text": "Sigur doriți să ștergeți vizualizarea „{name}”?"
                 },

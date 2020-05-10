@@ -473,6 +473,7 @@
             }
         },
         "common": {
+            "and": "og",
             "cancel": "Annuller",
             "close": "Luk",
             "delete": "Slet",
@@ -1180,7 +1181,9 @@
                                 "edit_requires_storage": "Editor er deaktiveret, fordi config er gemt i 'configuration.yaml'.",
                                 "elevation": "Højde",
                                 "elevation_meters": "meter",
+                                "external_url": "Ekstern webadresse",
                                 "imperial_example": "Fahrenheit, pund",
+                                "internal_url": "Intern webadresse",
                                 "latitude": "Breddegrad",
                                 "location_name": "Navn på din Home Assistant-installation",
                                 "longitude": "Længdegrad",
