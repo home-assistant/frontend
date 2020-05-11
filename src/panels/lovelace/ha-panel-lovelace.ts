@@ -288,7 +288,8 @@ class LovelacePanel extends LitElement {
         this._errorMsg = err.message;
         return;
       }
-      conf = await generateLovelaceConfigFromHass(this.hass!);
+      const localize = await this.hass!.loadBackendTranslation("title");
+      conf = await generateLovelaceConfigFromHass(this.hass!, localize);
       confMode = "generated";
     } finally {
       // Ignore updates for another 2 seconds.
@@ -370,8 +371,9 @@ class LovelacePanel extends LitElement {
         const { config: previousConfig, mode: previousMode } = this.lovelace!;
         try {
           // Optimistic update
+          const localize = await this.hass!.loadBackendTranslation("title");
           this._updateLovelace({
-            config: await generateLovelaceConfigFromHass(this.hass!),
+            config: await generateLovelaceConfigFromHass(this.hass!, localize),
             mode: "generated",
             editMode: false,
           });

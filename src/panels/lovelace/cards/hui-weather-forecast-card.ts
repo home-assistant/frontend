@@ -31,6 +31,7 @@ import { hasConfigOrEntityChanged } from "../common/has-changed";
 import "../components/hui-warning";
 import type { LovelaceCard, LovelaceCardEditor } from "../types";
 import type { WeatherForecastCardConfig } from "./types";
+import { installResizeObserver } from "../common/install-resize-observer";
 
 const DAY_IN_MILLISECONDS = 86400000;
 
@@ -72,7 +73,13 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
 
   public connectedCallback(): void {
     super.connectedCallback();
-    this.updateComplete.then(() => this._measureCard());
+    this.updateComplete.then(() => this._attachObserver());
+  }
+
+  public disconnectedCallback(): void {
+    if (this._resizeObserver) {
+      this._resizeObserver.disconnect();
+    }
   }
 
   public getCardSize(): number {
@@ -196,7 +203,20 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
                 >
               </div>
               <div class="attribute">
-                ${getSecondaryWeatherAttribute(this.hass, stateObj)}
+                ${this._config.secondary_info_attribute !== undefined
+                  ? html`
+                      ${this.hass!.localize(
+                        `ui.card.weather.attributes.${this._config.secondary_info_attribute}`
+                      )}
+                      ${stateObj.attributes[
+                        this._config.secondary_info_attribute
+                      ]}
+                      ${getWeatherUnit(
+                        this.hass,
+                        this._config.secondary_info_attribute
+                      )}
+                    `
+                  : getSecondaryWeatherAttribute(this.hass, stateObj)}
               </div>
             </div>
           </div>
@@ -268,15 +288,8 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
     fireEvent(this, "hass-more-info", { entityId: this._config!.entity });
   }
 
-  private _attachObserver(): void {
-    if (typeof ResizeObserver !== "function") {
-      import("resize-observer").then((modules) => {
-        modules.install();
-        this._attachObserver();
-      });
-      return;
-    }
-
+  private async _attachObserver(): Promise<void> {
+    await installResizeObserver();
     this._resizeObserver = new ResizeObserver(
       debounce(() => this._measureCard(), 250, false)
     );
