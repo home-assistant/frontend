@@ -183,10 +183,7 @@ class LovelacePanel extends LitElement {
   }
 
   private async _regenerateConfig() {
-    const conf = await generateLovelaceConfigFromHass(
-      this.hass!,
-      this.hass!.localize
-    );
+    const conf = await generateLovelaceConfigFromHass(this.hass!);
     this._setLovelaceConfig(conf, "generated");
     this._state = "loaded";
   }

@@ -466,7 +466,7 @@ export const generateLovelaceConfigFromData = async (
 
 export const generateLovelaceConfigFromHass = async (
   hass: HomeAssistant,
-  localize: LocalizeFunc
+  localize?: LocalizeFunc
 ): Promise<LovelaceConfig> => {
   // We want to keep the registry subscriptions alive after generating the UI
   // so that we don't serve up stale data after changing areas.
@@ -489,6 +489,6 @@ export const generateLovelaceConfigFromHass = async (
     deviceEntries,
     entityEntries,
     hass.states,
-    localize
+    localize || hass.localize
   );
 };
