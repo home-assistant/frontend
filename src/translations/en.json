@@ -2186,7 +2186,10 @@
             "icons_by": "Icons by",
             "frontend_version": "Frontend version: {version} - {type}",
             "custom_uis": "Custom UIs:",
-            "system_health_error": "System Health component is not loaded. Add 'system_health:' to configuration.yaml"
+            "system_health_error": "System Health component is not loaded. Add 'system_health:' to configuration.yaml",
+            "integrations": "Integrations",
+            "documentation": "Documentation",
+            "issues": "Issues"
           },
           "logs": {
             "title": "Logs",
