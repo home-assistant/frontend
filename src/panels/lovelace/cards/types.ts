@@ -275,4 +275,5 @@ export interface WeatherForecastCardConfig extends LovelaceCardConfig {
   entity: string;
   name?: string;
   show_forecast?: boolean;
+  secondary_info_attribute?: string;
 }
