@@ -126,7 +126,7 @@ export class ZHADeviceEndpointDataTable extends LitElement {
                             ${entity.name || entity.original_name}
                           </div>`
                       )
-                    : This endpoint has no associated entities}
+                    : "This endpoint has no associated entities"}
                 </div>
               `,
             },
