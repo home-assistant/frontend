@@ -126,11 +126,7 @@ export class ZHADeviceEndpointDataTable extends LitElement {
                             ${entity.name || entity.original_name}
                           </div>`
                       )
-                    : html`
-                        <p>
-                          This endpoint has no associated entities
-                        </p>
-                      `}
+                    : This endpoint has no associated entities}
                 </div>
               `,
             },
