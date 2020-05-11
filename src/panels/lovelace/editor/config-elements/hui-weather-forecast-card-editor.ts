@@ -22,7 +22,7 @@ const cardConfigStruct = struct({
   name: "string?",
   theme: "string?",
   show_forecast: "boolean?",
-  attribute: "string?",
+  secondary_info_attribute: "string?",
 });
 
 const includeDomains = ["weather"];
