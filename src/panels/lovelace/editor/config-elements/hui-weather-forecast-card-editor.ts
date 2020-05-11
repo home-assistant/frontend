@@ -55,8 +55,8 @@ export class HuiWeatherForecastCardEditor extends LitElement
     return this._config!.show_forecast || true;
   }
 
-  get _attribute(): string {
-    return this._config!.attribute || "";
+  get _secondary_info_attribute(): string {
+    return this._config!.secondary_info_attribute || "";
   }
 
   protected render(): TemplateResult {
@@ -101,19 +101,21 @@ export class HuiWeatherForecastCardEditor extends LitElement
         <div class="side-by-side">
           <paper-input
             .label="${this.hass.localize(
-              "ui.panel.lovelace.editor.card.generic.attribute"
+              "ui.panel.lovelace.editor.card.generic.secondary_info_attribute"
             )} (${this.hass.localize(
               "ui.panel.lovelace.editor.card.config.optional"
             )})"
-            .value=${this._attribute}
-            .configValue=${"attribute"}
+            .value=${this._secondary_info_attribute}
+            .configValue=${"secondary_info_attribute"}
             @value-changed=${this._valueChanged}
           ></paper-input>
           <ha-switch
             .checked=${this._config!.show_forecast !== false}
             .configValue=${"show_forecast"}
             @change=${this._valueChanged}
-            >Show forecast</ha-switch
+            >${this.hass.localize(
+              "ui.panel.lovelace.editor.card.weather.show_forecast"
+            )}</ha-switch
           >
         </div>
       </div>

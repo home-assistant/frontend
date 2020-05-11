@@ -200,13 +200,18 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
                 >
               </div>
               <div class="attribute">
-                ${this._config.attribute !== undefined
+                ${this._config.secondary_info_attribute !== undefined
                   ? html`
                       ${this.hass!.localize(
-                        `ui.card.weather.attributes.${this._config.attribute}`
+                        `ui.card.weather.attributes.${this._config.secondary_info_attribute}`
                       )}
-                      ${stateObj.attributes[this._config.attribute]}
-                      ${getWeatherUnit(this.hass, this._config.attribute)}
+                      ${stateObj.attributes[
+                        this._config.secondary_info_attribute
+                      ]}
+                      ${getWeatherUnit(
+                        this.hass,
+                        this._config.secondary_info_attribute
+                      )}
                     `
                   : getSecondaryWeatherAttribute(this.hass, stateObj)}
               </div>
