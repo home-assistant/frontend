@@ -225,7 +225,7 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
 
   public connectedCallback(): void {
     super.connectedCallback();
-    this.updateComplete.then(() => this._measureCard());
+    this.updateComplete.then(() => this._attachObserver());
 
     if (!this.hass || !this._config) {
       return;
@@ -253,6 +253,9 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
     if (this._progressInterval) {
       clearInterval(this._progressInterval);
       this._progressInterval = undefined;
+    }
+    if (this._resizeObserver) {
+      this._resizeObserver.disconnect();
     }
   }
 
@@ -626,19 +629,18 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
     this._cardHeight = card.offsetHeight;
   }
 
-  private _attachObserver(): void {
-    installResizeObserver().then(() => {
-      this._resizeObserver = new ResizeObserver(
-        debounce(() => this._measureCard(), 250, false)
-      );
+  private async _attachObserver(): Promise<void> {
+    await installResizeObserver();
+    this._resizeObserver = new ResizeObserver(
+      debounce(() => this._measureCard(), 250, false)
+    );
 
-      const card = this.shadowRoot!.querySelector("ha-card");
-      // If we show an error or warning there is no ha-card
-      if (!card) {
-        return;
-      }
-      this._resizeObserver.observe(card);
-    });
+    const card = this.shadowRoot!.querySelector("ha-card");
+    // If we show an error or warning there is no ha-card
+    if (!card) {
+      return;
+    }
+    this._resizeObserver.observe(card);
   }
 
   private _handleMoreInfo(): void {

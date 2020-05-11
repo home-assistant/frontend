@@ -73,7 +73,13 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
 
   public connectedCallback(): void {
     super.connectedCallback();
-    this.updateComplete.then(() => this._measureCard());
+    this.updateComplete.then(() => this._attachObserver());
+  }
+
+  public disconnectedCallback(): void {
+    if (this._resizeObserver) {
+      this._resizeObserver.disconnect();
+    }
   }
 
   public getCardSize(): number {
@@ -287,19 +293,18 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
     fireEvent(this, "hass-more-info", { entityId: this._config!.entity });
   }
 
-  private _attachObserver(): void {
-    installResizeObserver().then(() => {
-      this._resizeObserver = new ResizeObserver(
-        debounce(() => this._measureCard(), 250, false)
-      );
+  private async _attachObserver(): Promise<void> {
+    await installResizeObserver();
+    this._resizeObserver = new ResizeObserver(
+      debounce(() => this._measureCard(), 250, false)
+    );
 
-      const card = this.shadowRoot!.querySelector("ha-card");
-      // If we show an error or warning there is no ha-card
-      if (!card) {
-        return;
-      }
-      this._resizeObserver.observe(card);
-    });
+    const card = this.shadowRoot!.querySelector("ha-card");
+    // If we show an error or warning there is no ha-card
+    if (!card) {
+      return;
+    }
+    this._resizeObserver.observe(card);
   }
 
   private _measureCard() {
