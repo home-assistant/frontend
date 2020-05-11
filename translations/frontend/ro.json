@@ -459,17 +459,20 @@
             }
         },
         "common": {
+            "and": "Și",
             "cancel": "Revocare",
             "close": "Închide",
             "delete": "Șterge",
             "loading": "Se încarcă",
             "next": "Următorul",
+            "no": "Nu",
             "previous": "Anterior",
             "refresh": "Reîmprospătare",
             "save": "Salvați",
             "successfully_deleted": "Șters cu succes",
             "successfully_saved": "Opțiunile salvate cu succes.",
-            "undo": "Undo"
+            "undo": "Undo",
+            "yes": "Da"
         },
         "components": {
             "area-picker": {
@@ -536,6 +539,9 @@
                 "title": "Opțiuni de sistem pentru {integration}",
                 "update": "Actualizare"
             },
+            "domain_toggler": {
+                "title": "Comutare domenii"
+            },
             "entity_registry": {
                 "control": "Control",
                 "dismiss": "Ascunde",
@@ -574,6 +580,7 @@
                     "time": "Timp"
                 },
                 "input_number": {
+                    "box": "Introdu textul",
                     "max": "Valoare maximă",
                     "min": "Valoare minimă",
                     "mode": "Mod de afișare",
@@ -592,6 +599,7 @@
                     "min": "Lungime minimă",
                     "mode": "Mod de afișare",
                     "password": "Parola",
+                    "pattern": "Modelul Regex pentru validarea de partea clientului",
                     "text": "Text"
                 },
                 "platform_not_loaded": "Integrarea {platform} nu este încărcată. Vă rugăm să-i adăugați configurația dvs. fie adăugând 'default_config:' sau '{platform}:'.",
@@ -655,6 +663,10 @@
                 }
             },
             "voice_command": {
+                "did_not_hear": "Home Assistant nu a auzit nimic",
+                "error": "Oops, a apărut o eroare",
+                "found": "Am găsit următoarele pentru tine:",
+                "how_can_i_help": "Cu ce vă pot ajuta?",
                 "label": "Scrieți o întrebare și apăsați „Enter”",
                 "label_voice": "Tastați și apăsați „Enter” sau atingeți microfonul pentru a vorbi"
             },
@@ -997,14 +1009,22 @@
                     }
                 },
                 "customize": {
+                    "attributes_customize": "Următoarele atribute sunt deja setate în customize.yaml",
                     "attributes_not_set": "Următoarele atribute nu au fost setate. Setați-le dacă doriți.",
+                    "attributes_outside": "Următoarele atribute sunt personalizate din afara customize.yaml",
                     "attributes_override": "Poți să le suprascrii dacă vrei.",
+                    "attributes_set": "Următoarele atribute ale entității sunt setate programatic.",
                     "caption": "Personalizare",
                     "description": "Personalizați-vă entitățile",
+                    "different_include": "Posibil printr-un domeniu, un glob sau alta includere",
                     "pick_attribute": "Alegeți un atribut pentru suprascriere",
                     "picker": {
                         "header": "Personalizări",
                         "introduction": "Atributele per entitate. Particularizările adăugate/editate vor avea efect imediat. Particularizările eliminate vor avea efect atunci când entitatea este actualizată."
+                    },
+                    "warning": {
+                        "include_link": "include customize.yaml",
+                        "include_sentence": "Se pare că configurația dvs..yaml nu corespunde"
                     }
                 },
                 "devices": {
@@ -1317,6 +1337,7 @@
                         },
                         "learn_more": "Aflați mai multe despre scene",
                         "no_scenes": "Nu am putut găsi nici o scenă editabilă",
+                        "only_editable": "Numai scenele definite în scene.yaml sunt editabile.",
                         "pick_scene": "Alege scena pentru a edita",
                         "show_info_scene": "Afișează informații despre scenă"
                     }
@@ -1551,7 +1572,13 @@
             "developer-tools": {
                 "tabs": {
                     "events": {
+                        "alert_event_type": "Tipul de eveniment este un câmp obligatoriu",
                         "available_events": "Evenimente disponibile",
+                        "fire_event": "Declansare eveniment",
+                        "listening_to": "Ascultand",
+                        "start_listening": "Incepe sa asculti",
+                        "stop_listening": "Nu mai asculta",
+                        "subscribe_to": "Eveniment la care să vă abonați",
                         "title": "Evenimente"
                     },
                     "info": {
