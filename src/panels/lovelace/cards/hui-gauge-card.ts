@@ -10,17 +10,21 @@ import {
   TemplateResult,
 } from "lit-element";
 import { styleMap } from "lit-html/directives/style-map";
+import "@thomasloven/round-slider";
+
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import { isValidEntityId } from "../../../common/entity/valid_entity_id";
 import "../../../components/ha-card";
-import { HomeAssistant } from "../../../types";
+import type { HomeAssistant } from "../../../types";
 import { findEntities } from "../common/find-entites";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
 import "../components/hui-warning";
-import { LovelaceCard, LovelaceCardEditor } from "../types";
-import { GaugeCardConfig } from "./types";
+import type { LovelaceCard, LovelaceCardEditor } from "../types";
+import type { GaugeCardConfig } from "./types";
+import { debounce } from "../../../common/util/debounce";
+import { installResizeObserver } from "../common/install-resize-observer";
 
 export const severityMap = {
   red: "var(--label-badge-red)",
@@ -63,11 +67,20 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
 
   @property() public hass?: HomeAssistant;
 
-  @property() private _baseUnit = "50px";
-
   @property() private _config?: GaugeCardConfig;
 
-  private _updated?: boolean;
+  private _resizeObserver?: ResizeObserver;
+
+  public connectedCallback(): void {
+    super.connectedCallback();
+    this.updateComplete.then(() => this._attachObserver());
+  }
+
+  public disconnectedCallback(): void {
+    if (this._resizeObserver) {
+      this._resizeObserver.disconnect();
+    }
+  }
 
   public getCardSize(): number {
     return 2;
@@ -81,11 +94,6 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
       throw new Error("Invalid Entity");
     }
     this._config = { min: 0, max: 100, ...config };
-  }
-
-  public connectedCallback(): void {
-    super.connectedCallback();
-    this._setBaseUnit();
   }
 
   protected render(): TemplateResult {
@@ -121,33 +129,32 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
       `;
     }
 
+    const sliderBarColor = this._computeSeverity(state);
+
     return html`
       <ha-card
-        @click="${this._handleClick}"
+        @click=${this._handleClick}
         tabindex="0"
         style=${styleMap({
-          "--base-unit": this._baseUnit,
+          "--round-slider-bar-color": sliderBarColor,
         })}
       >
-        <div class="container">
-          <div class="gauge-a"></div>
-          <div
-            class="gauge-c"
-            style=${styleMap({
-              transform: `rotate(${this._translateTurn(state)}turn)`,
-              "background-color": this._computeSeverity(state),
-            })}
-          ></div>
-          <div class="gauge-b"></div>
-        </div>
+        <round-slider
+          readonly
+          arcLength="180"
+          startAngle="180"
+          .value=${state}
+          .min=${this._config.min}
+          .max=${this._config.max}
+        ></round-slider>
         <div class="gauge-data">
-          <div id="percent">
+          <div class="percent">
             ${stateObj.state}
             ${this._config.unit ||
             stateObj.attributes.unit_of_measurement ||
             ""}
           </div>
-          <div id="name">
+          <div class="name">
             ${this._config.name || computeStateName(stateObj)}
           </div>
         </div>
@@ -160,10 +167,7 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
   }
 
   protected firstUpdated(): void {
-    this._updated = true;
-    this._setBaseUnit();
-    // eslint-disable-next-line wc/no-self-class
-    this.classList.add("init");
+    this._attachObserver();
   }
 
   protected updated(changedProps: PropertyValues): void {
@@ -184,16 +188,6 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
       oldConfig.theme !== this._config.theme
     ) {
       applyThemesOnElement(this, this.hass.themes, this._config.theme);
-    }
-  }
-
-  private _setBaseUnit(): void {
-    if (!this.isConnected || !this._updated) {
-      return;
-    }
-    const baseUnit = this._computeBaseUnit();
-    if (baseUnit !== "0px") {
-      this._baseUnit = baseUnit;
     }
   }
 
@@ -229,95 +223,122 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
     return severityMap.normal;
   }
 
-  private _translateTurn(value: number): number {
-    const { min, max } = this._config!;
-    const maxTurnValue = Math.min(Math.max(value, min!), max!);
-    return (5 * (maxTurnValue - min!)) / (max! - min!) / 10;
-  }
-
-  private _computeBaseUnit(): string {
-    return this.clientWidth < 200 ? this.clientWidth / 5 + "px" : "50px";
-  }
-
   private _handleClick(): void {
     fireEvent(this, "hass-more-info", { entityId: this._config!.entity });
+  }
+
+  private async _attachObserver(): Promise<void> {
+    await installResizeObserver();
+
+    this._resizeObserver = new ResizeObserver(
+      debounce(() => this._measureCard(), 250, false)
+    );
+
+    const card = this.shadowRoot!.querySelector("ha-card");
+    // If we show an error or warning there is no ha-card
+    if (!card) {
+      return;
+    }
+    this._resizeObserver.observe(card);
+  }
+
+  private _measureCard() {
+    if (this.offsetWidth < 200) {
+      this.setAttribute("narrow", "");
+    } else {
+      this.removeAttribute("narrow");
+    }
+    if (this.offsetWidth < 150) {
+      this.setAttribute("veryNarrow", "");
+    } else {
+      this.removeAttribute("veryNarrow");
+    }
   }
 
   static get styles(): CSSResult {
     return css`
       ha-card {
         cursor: pointer;
-        padding: 16px 16px 0 16px;
         height: 100%;
+        overflow: hidden;
+        padding: 16px 16px 0 16px;
         display: flex;
+        align-items: center;
+        justify-content: center;
         flex-direction: column;
         box-sizing: border-box;
-        justify-content: center;
-        align-items: center;
       }
+
       ha-card:focus {
         outline: none;
         background: var(--divider-color);
       }
-      .container {
-        width: calc(var(--base-unit) * 4);
-        height: calc(var(--base-unit) * 2);
-        overflow: hidden;
-        position: relative;
+
+      round-slider {
+        max-width: 200px;
+        --round-slider-path-width: 35px;
+        --round-slider-path-color: var(--disabled-text-color);
+        --round-slider-linecap: "butt";
       }
-      .gauge-a {
-        position: absolute;
-        background-color: var(--primary-background-color);
-        width: calc(var(--base-unit) * 4);
-        height: calc(var(--base-unit) * 2);
-        top: 0%;
-        border-radius: calc(var(--base-unit) * 2.5) calc(var(--base-unit) * 2.5)
-          0px 0px;
-      }
-      .gauge-b {
-        position: absolute;
-        background-color: var(--paper-card-background-color);
-        width: calc(var(--base-unit) * 2.5);
-        height: calc(var(--base-unit) * 1.25);
-        top: calc(var(--base-unit) * 0.75);
-        margin-left: calc(var(--base-unit) * 0.75);
-        margin-right: auto;
-        border-radius: calc(var(--base-unit) * 2.5) calc(var(--base-unit) * 2.5)
-          0px 0px;
-      }
-      .gauge-c {
-        position: absolute;
-        background-color: var(--label-badge-blue);
-        width: calc(var(--base-unit) * 4);
-        height: calc(var(--base-unit) * 2);
-        top: calc(var(--base-unit) * 2);
-        margin-left: auto;
-        margin-right: auto;
-        border-radius: 0px 0px calc(var(--base-unit) * 2)
-          calc(var(--base-unit) * 2);
-        transform-origin: center top;
-      }
-      .init .gauge-c {
-        transition: all 1.3s ease-in-out;
-      }
+
       .gauge-data {
+        line-height: 1;
         text-align: center;
-        color: var(--primary-text-color);
-        line-height: calc(var(--base-unit) * 0.3);
-        width: 100%;
         position: relative;
-        top: calc(var(--base-unit) * -0.5);
+        color: var(--primary-text-color);
+        margin-top: -28px;
+        margin-bottom: 14px;
       }
-      .init .gauge-data {
-        transition: all 1s ease-out;
+
+      .gauge-data .percent {
+        font-size: 28px;
       }
-      .gauge-data #percent {
-        font-size: calc(var(--base-unit) * 0.55);
-        line-height: calc(var(--base-unit) * 0.55);
+
+      .gauge-data .name {
+        padding-top: 6px;
+        font-size: 14px;
       }
-      .gauge-data #name {
-        padding-top: calc(var(--base-unit) * 0.15);
-        font-size: calc(var(--base-unit) * 0.3);
+
+      /* ============= NARROW ============= */
+
+      :host([narrow]) round-slider {
+        --round-slider-path-width: 22px;
+      }
+
+      :host([narrow]) .gauge-data {
+        margin-top: -24px;
+        margin-bottom: 12px;
+      }
+
+      :host([narrow]) .gauge-data .percent {
+        font-size: 24px;
+      }
+
+      :host([narrow]) .gauge-data .name {
+        font-size: 12px;
+      }
+
+      /* ============= VERY NARROW ============= */
+
+      :host([veryNarrow]) round-slider {
+        --round-slider-path-width: 15px;
+      }
+
+      :host([veryNarrow]) ha-card {
+        padding-bottom: 16px;
+      }
+
+      :host([veryNarrow]) .gauge-data {
+        margin-top: 0;
+        margin-bottom: 0;
+      }
+
+      :host([veryNarrow]) .gauge-data .percent {
+        font-size: 20px;
+      }
+
+      :host([veryNarrow]) .gauge-data .name {
+        font-size: 10px;
       }
     `;
   }
