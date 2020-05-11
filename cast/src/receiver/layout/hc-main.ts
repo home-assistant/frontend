@@ -197,7 +197,7 @@ export class HcMain extends HassElement {
           "../../../../src/panels/lovelace/common/generate-lovelace-config"
         );
         this._handleNewLovelaceConfig(
-          await generateLovelaceConfigFromHass(this.hass!)
+          await generateLovelaceConfigFromHass(this.hass!, this.hass!.localize)
         );
       }
     }
