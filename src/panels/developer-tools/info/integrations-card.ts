@@ -71,12 +71,14 @@ class IntegrationsCard extends LitElement {
                               )}
                             </a>
                           </td>
-                          ${!manifest.is_built_in
-                            ? ""
-                            : html`
+                          ${manifest.is_built_in || manifest.issue_tracker
+                            ? html`
                                 <td>
                                   <a
-                                    href=${integrationIssuesUrl(domain)}
+                                    href=${integrationIssuesUrl(
+                                      domain,
+                                      manifest
+                                    )}
                                     target="_blank"
                                     rel="noreferrer"
                                   >
@@ -85,7 +87,8 @@ class IntegrationsCard extends LitElement {
                                     )}
                                   </a>
                                 </td>
-                              `}
+                              `
+                            : ""}
                         `}
                   </tr>
                 `;
