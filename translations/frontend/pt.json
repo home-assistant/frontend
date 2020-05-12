@@ -331,8 +331,7 @@
     "ui": {
         "auth_store": {
             "ask": "Deseja continuar com sessão iniciada?",
-            "confirm": "Guardar login",
-            "decline": "Não, obrigado"
+            "decline": "Não"
         },
         "card": {
             "alarm_control_panel": {
@@ -473,6 +472,7 @@
             }
         },
         "common": {
+            "and": "e",
             "cancel": "Cancelar",
             "close": "Fechar",
             "delete": "Apagar",
@@ -761,8 +761,8 @@
                     "editor": {
                         "create": "Criar",
                         "default_name": "Nova área",
-                        "delete": "APAGAR",
-                        "update": "ATUALIZAR"
+                        "delete": "Apagar",
+                        "update": "Atualizar"
                     },
                     "picker": {
                         "create_area": "Criar área",
@@ -1178,7 +1178,9 @@
                                 "edit_requires_storage": "Editor desativado por causa da configuração existente em configuration.yaml.",
                                 "elevation": "Elevação",
                                 "elevation_meters": "metros",
+                                "external_url": "URL externo",
                                 "imperial_example": "Fahrenheit, libras",
+                                "internal_url": "URL interno",
                                 "latitude": "Latitude",
                                 "location_name": "Nome da instalação do seu Home Assistant",
                                 "longitude": "Longitude",
@@ -1204,7 +1206,7 @@
                     "description": "Personalizar as suas entidades",
                     "pick_attribute": "Escolha um atributo para substituir.",
                     "picker": {
-                        "header": "Personalização",
+                        "header": "Personalizações",
                         "introduction": "Ajustar atributos por entidade. Personalizações acrescentadas/editadas terão efeitos imediatos. Remoção de personalizações terão efeito quando a entidade for atualizada."
                     },
                     "warning": {
@@ -1244,6 +1246,7 @@
                     },
                     "delete": "Apagar",
                     "description": "Gerir dispositivos ligados",
+                    "device_info": "Informação do dispositivo",
                     "device_not_found": "Dispositivo não encontrado.",
                     "entities": {
                         "add_entities_lovelace": "Adicionar ao Lovelace",
@@ -1368,6 +1371,7 @@
                         "aborted": "Abortado",
                         "close": "Fechar",
                         "created_config": "Configuração criada para {name}.",
+                        "dismiss": "Descartar diálogo",
                         "error_saving_area": "Erro ao salvar a área: {error}",
                         "external_step": {
                             "description": "Para ser concluída, esta etapa exige que visite um sítio web externo.",
@@ -1592,8 +1596,8 @@
                             "automation": "Recarregar automações",
                             "core": "Recarregar localização e personalizações",
                             "group": "Recarregar grupos",
-                            "heading": "A recarregar configuração",
-                            "introduction": "Algumas partes do Home Assistant podem ser recarregadas sem necessidade de reiniciar. Ao carregar em Recarregar configuração irá descarregar a configuração atual e carregar a nova.",
+                            "heading": "A recarregar a configuração YAML",
+                            "introduction": "Algumas partes do Home Assistant podem ser recarregadas sem a necessidade de reiniciar. Ao carregar em Recarregar a configuração irá descartar a configuração atual e carregar a nova.",
                             "person": "Recarregar pessoas",
                             "scene": "Recarregar cenas",
                             "script": "Recarregar scripts",
@@ -1661,7 +1665,8 @@
                         "spinner": "À procura de dispositivos ZHA Zigbee..."
                     },
                     "add": {
-                        "caption": "Adicionar Dispositivos"
+                        "caption": "Adicionar Dispositivos",
+                        "description": "Adicionar dispositivos à rede Zigbee"
                     },
                     "caption": "ZHA",
                     "cluster_attributes": {
@@ -1709,8 +1714,10 @@
                         "caption": "Grupos",
                         "create": "Criar grupo",
                         "create_group": "Zigbee Home Automation - Criar grupo",
+                        "create_group_details": "Digite os detalhes necessários para criar um novo grupo zigbee",
                         "creating_group": "Criação de grupo",
                         "description": "Criar e modificar grupos Zigbee",
+                        "group_details": "Aqui estão todos os detalhes do grupo Zigbee selecionado.",
                         "group_id": "ID do grupo",
                         "group_info": "Informações sobre o grupo",
                         "group_name_placeholder": "Nome do Grupo",
@@ -1718,6 +1725,7 @@
                         "group-header": "Zigbee Home Automation - Detalhes do grupo",
                         "groups": "Grupos",
                         "groups-header": "Zigbee Home Automation - Gestão de Grupos",
+                        "header": "Zigbee Home Automation - Gestão de Grupos",
                         "introduction": "Criar e modificar grupos zigbee",
                         "manage_groups": "Gerir Grupos Zigbee",
                         "members": "Membros",
@@ -1728,6 +1736,7 @@
                         "zha_zigbee_groups": "Grupos ZHA Zigbee"
                     },
                     "header": "Configurar a automação residencial Zigbee",
+                    "introduction": "Aqui é possível configurar o componente ZHA. Ainda não é possível configurar tudo a partir do IU, mas estamos a trabalhar nisso.",
                     "network_management": {
                         "header": "Gestão ",
                         "introduction": "Comandos que afetam toda a rede"
@@ -1796,7 +1805,7 @@
                         "config_parameter": "Parâmetro de configuração",
                         "config_value": "Valor de Configuração",
                         "false": "Falso",
-                        "header": "Configurar opçoes do nó",
+                        "header": "Opções de configuração de nó",
                         "seconds": "Segundos",
                         "set_config_parameter": "Definir o Parâmetro de Configuração",
                         "set_wakeup": "Definir intervalo de acordar",
@@ -1973,7 +1982,7 @@
                     }
                 },
                 "changed_toast": {
-                    "message": "A configuração do Lovelace foi atualizada, gostaria de atualizar?",
+                    "message": "A configuração do Lovelace foi atualizada para este painel, gostaria de atualizar?",
                     "refresh": "Atualizar"
                 },
                 "editor": {
@@ -2147,7 +2156,7 @@
                         "header": "Configuração do cartão",
                         "move": "Mover para Vista",
                         "options": "Mais opções",
-                        "pick_card": "Escolha o cartão que deseja adicionar.",
+                        "pick_card": "Que cartão gostaria de adicionar?",
                         "pick_card_view_title": "Que cartão você gostaria de adicionar à sua vista {name}?",
                         "show_code_editor": "Mostrar Editor de Código",
                         "show_visual_editor": "Mostrar Editor Visual",
@@ -2185,13 +2194,14 @@
                         "para_no_id": "Este elemento não possui um ID. Por favor adicione um ID a este elemento em 'ui-lovelace.yaml'."
                     },
                     "raw_editor": {
+                        "confirm_remove_config_text": "Iremos gerar automaticamente as suas vistas do Lovelace UI com as suas áreas e dispositivos se você remover a sua configuração do Lovelace UI.",
                         "confirm_unsaved_changes": "Existem alterações não guardadas. De certeza de que quer sair?",
                         "confirm_unsaved_comments": "A sua configuração contém comentário(s), eles não serão salvos. Deseja continuar?",
                         "error_invalid_config": "A sua configuração não é válida: {error}",
                         "error_parse_yaml": "Não foi possível analisar o YAML: {error}",
                         "error_remove": "Não foi possível remover a configuração: {error}",
                         "error_save_yaml": "Não é possível salvar o YAML: {error}",
-                        "header": "Editar configuração",
+                        "header": "Editar Configuração",
                         "resources_moved": "Os recursos não devem mais ser adicionados ao editor de configuração do código fonte do Lovelace, mas podem ser adicionados no painel de configuração do Lovelace.",
                         "save": "Guardar",
                         "saved": "Guardada",
@@ -2229,7 +2239,7 @@
                     "refresh": "Atualizar",
                     "reload_resources": "Recarregar recursos"
                 },
-                "reload_lovelace": "Recarregar Lovelace",
+                "reload_lovelace": "Recarregar UI",
                 "reload_resources": {
                     "refresh_body": "É preciso atualizar a página para concluir o carregamento. Deseja atualizar agora?",
                     "refresh_header": "Deseja atualizar?"
@@ -2392,6 +2402,7 @@
                             "mirror": "Espelho",
                             "patio": "Pátio",
                             "right": "Direita",
+                            "temperature_study": "Estudo da Temperatura",
                             "upstairs": "Andar de cima"
                         },
                         "unit": {

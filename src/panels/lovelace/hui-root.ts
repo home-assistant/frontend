@@ -369,100 +369,6 @@ class HUIRoot extends LitElement {
     `;
   }
 
-  static get styles(): CSSResult[] {
-    return [
-      haStyle,
-      css`
-        :host {
-          --dark-color: #455a64;
-          --text-dark-color: #fff;
-          -ms-user-select: none;
-          -webkit-user-select: none;
-          -moz-user-select: none;
-        }
-
-        ha-app-layout {
-          min-height: 100%;
-        }
-        paper-menu-button {
-          padding: 0;
-        }
-        paper-tabs {
-          margin-left: 12px;
-          --paper-tabs-selection-bar-color: var(--text-primary-color, #fff);
-          text-transform: uppercase;
-        }
-        .edit-mode {
-          background-color: var(--dark-color, #455a64);
-          color: var(--text-dark-color);
-        }
-        .edit-mode div[main-title] {
-          pointer-events: auto;
-        }
-        paper-tab.iron-selected .edit-icon {
-          display: inline-flex;
-        }
-        .edit-icon {
-          color: var(--accent-color);
-          padding-left: 8px;
-          vertical-align: middle;
-          --mdc-theme-text-disabled-on-light: var(--disabled-text-color);
-        }
-        .edit-icon.view {
-          display: none;
-        }
-        #add-view {
-          position: absolute;
-          height: 44px;
-        }
-        #add-view ha-icon {
-          background-color: var(--accent-color);
-          border-radius: 5px;
-          margin-top: 4px;
-        }
-        app-toolbar a {
-          color: var(--text-primary-color, white);
-        }
-        mwc-button.warning:not([disabled]) {
-          color: var(--google-red-500);
-        }
-        #view {
-          min-height: calc(100vh - 112px);
-          /**
-          * Since we only set min-height, if child nodes need percentage
-          * heights they must use absolute positioning so we need relative
-          * positioning here.
-          *
-          * https://www.w3.org/TR/CSS2/visudet.html#the-height-property
-          */
-          position: relative;
-          display: flex;
-        }
-        #view > * {
-          /**
-          * The view could get larger than the window in Firefox
-          * to prevent that we set the max-width to 100%
-          * flex-grow: 1 and flex-basis: 100% should make sure the view
-          * stays full width.
-          *
-          * https://github.com/home-assistant/home-assistant-polymer/pull/3806
-          */
-          flex: 1 1 100%;
-          max-width: 100%;
-        }
-        #view.tabs-hidden {
-          min-height: calc(100vh - 64px);
-        }
-        paper-item {
-          cursor: pointer;
-        }
-        .hide-tab {
-          display: none;
-        }
-      `,
-    ];
-  }
-
   protected updated(changedProperties: PropertyValues): void {
     super.updated(changedProperties);
 
@@ -527,8 +433,10 @@ class HUIRoot extends LitElement {
           navigate(this, `${this.route?.prefix}/${views[0]?.path || 0}`);
           newSelectView = 0;
         }
-        // On edit mode change, recreate the current view from scratch
-        force = true;
+      }
+
+      if (!force) {
+        huiView.lovelace = this.lovelace;
       }
     }
 
@@ -733,6 +641,100 @@ class HUIRoot extends LitElement {
     root.appendChild(view);
     // Recalculate to see if we need to adjust content area for tab bar
     fireEvent(this, "iron-resize");
+  }
+
+  static get styles(): CSSResult[] {
+    return [
+      haStyle,
+      css`
+        :host {
+          --dark-color: #455a64;
+          --text-dark-color: #fff;
+          -ms-user-select: none;
+          -webkit-user-select: none;
+          -moz-user-select: none;
+        }
+
+        ha-app-layout {
+          min-height: 100%;
+        }
+        paper-menu-button {
+          padding: 0;
+        }
+        paper-tabs {
+          margin-left: 12px;
+          --paper-tabs-selection-bar-color: var(--text-primary-color, #fff);
+          text-transform: uppercase;
+        }
+        .edit-mode {
+          background-color: var(--dark-color, #455a64);
+          color: var(--text-dark-color);
+        }
+        .edit-mode div[main-title] {
+          pointer-events: auto;
+        }
+        paper-tab.iron-selected .edit-icon {
+          display: inline-flex;
+        }
+        .edit-icon {
+          color: var(--accent-color);
+          padding-left: 8px;
+          vertical-align: middle;
+          --mdc-theme-text-disabled-on-light: var(--disabled-text-color);
+        }
+        .edit-icon.view {
+          display: none;
+        }
+        #add-view {
+          position: absolute;
+          height: 44px;
+        }
+        #add-view ha-icon {
+          background-color: var(--accent-color);
+          border-radius: 5px;
+          margin-top: 4px;
+        }
+        app-toolbar a {
+          color: var(--text-primary-color, white);
+        }
+        mwc-button.warning:not([disabled]) {
+          color: var(--google-red-500);
+        }
+        #view {
+          min-height: calc(100vh - 112px);
+          /**
+          * Since we only set min-height, if child nodes need percentage
+          * heights they must use absolute positioning so we need relative
+          * positioning here.
+          *
+          * https://www.w3.org/TR/CSS2/visudet.html#the-height-property
+          */
+          position: relative;
+          display: flex;
+        }
+        #view > * {
+          /**
+          * The view could get larger than the window in Firefox
+          * to prevent that we set the max-width to 100%
+          * flex-grow: 1 and flex-basis: 100% should make sure the view
+          * stays full width.
+          *
+          * https://github.com/home-assistant/home-assistant-polymer/pull/3806
+          */
+          flex: 1 1 100%;
+          max-width: 100%;
+        }
+        #view.tabs-hidden {
+          min-height: calc(100vh - 64px);
+        }
+        paper-item {
+          cursor: pointer;
+        }
+        .hide-tab {
+          display: none;
+        }
+      `,
+    ];
   }
 }
 
