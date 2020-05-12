@@ -116,18 +116,16 @@ export class ZHADeviceEndpointDataTable extends LitElement {
               filterable: false,
               width: "50%",
               template: (entities) => html`
-                <div>
-                  ${entities.length
-                    ? entities.map(
-                        (entity) =>
-                          html`<div
-                            class="mdc-data-table__cell table-cell-text"
-                          >
-                            ${entity.name || entity.original_name}
-                          </div>`
-                      )
-                    : "This endpoint has no associated entities"}
-                </div>
+                ${entities.length
+                  ? entities.map(
+                      (entity) =>
+                        html`<div
+                          style="overflow: hidden; text-overflow: ellipsis;"
+                        >
+                          ${entity.name || entity.original_name}
+                        </div>`
+                    )
+                  : "This endpoint has no associated entities"}
               `,
             },
           }
