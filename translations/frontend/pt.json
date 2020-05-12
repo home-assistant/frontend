@@ -331,7 +331,6 @@
     "ui": {
         "auth_store": {
             "ask": "Deseja continuar com sessão iniciada?",
-            "confirm": "Guardar login",
             "decline": "Não"
         },
         "card": {
@@ -1372,6 +1371,7 @@
                         "aborted": "Abortado",
                         "close": "Fechar",
                         "created_config": "Configuração criada para {name}.",
+                        "dismiss": "Descartar diálogo",
                         "error_saving_area": "Erro ao salvar a área: {error}",
                         "external_step": {
                             "description": "Para ser concluída, esta etapa exige que visite um sítio web externo.",
@@ -1665,7 +1665,8 @@
                         "spinner": "À procura de dispositivos ZHA Zigbee..."
                     },
                     "add": {
-                        "caption": "Adicionar Dispositivos"
+                        "caption": "Adicionar Dispositivos",
+                        "description": "Adicionar dispositivos à rede Zigbee"
                     },
                     "caption": "ZHA",
                     "cluster_attributes": {
@@ -1735,6 +1736,7 @@
                         "zha_zigbee_groups": "Grupos ZHA Zigbee"
                     },
                     "header": "Configurar a automação residencial Zigbee",
+                    "introduction": "Aqui é possível configurar o componente ZHA. Ainda não é possível configurar tudo a partir do IU, mas estamos a trabalhar nisso.",
                     "network_management": {
                         "header": "Gestão ",
                         "introduction": "Comandos que afetam toda a rede"
@@ -2192,6 +2194,7 @@
                         "para_no_id": "Este elemento não possui um ID. Por favor adicione um ID a este elemento em 'ui-lovelace.yaml'."
                     },
                     "raw_editor": {
+                        "confirm_remove_config_text": "Iremos gerar automaticamente as suas vistas do Lovelace UI com as suas áreas e dispositivos se você remover a sua configuração do Lovelace UI.",
                         "confirm_unsaved_changes": "Existem alterações não guardadas. De certeza de que quer sair?",
                         "confirm_unsaved_comments": "A sua configuração contém comentário(s), eles não serão salvos. Deseja continuar?",
                         "error_invalid_config": "A sua configuração não é válida: {error}",
