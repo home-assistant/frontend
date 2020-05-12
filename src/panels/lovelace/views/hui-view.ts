@@ -125,6 +125,7 @@ export class HUIView extends LitElement {
     }
 
     const hassChanged = changedProperties.has("hass");
+
     let editModeChanged = false;
     let configChanged = false;
 
@@ -151,7 +152,9 @@ export class HUIView extends LitElement {
       this._switchEditMode();
     } else if (changedProperties.has("columns")) {
       this._recreateColumns();
-    } else if (hassChanged) {
+    }
+
+    if (hassChanged && !configChanged) {
       this._cards.forEach((element) => {
         element.hass = this.hass;
       });
