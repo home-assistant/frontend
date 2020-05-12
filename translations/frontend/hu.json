@@ -473,6 +473,7 @@
             }
         },
         "common": {
+            "and": "És",
             "cancel": "Mégse",
             "close": "Bezárás",
             "delete": "Törlés",
@@ -1180,7 +1181,9 @@
                                 "edit_requires_storage": "A szerkesztő le van tiltva, mert a konfiguráció a configuration.yaml fájlban van tárolva.",
                                 "elevation": "Magasság",
                                 "elevation_meters": "méter",
+                                "external_url": "Externe URL",
                                 "imperial_example": "Fahrenheit, font",
+                                "internal_url": "Érvénytelen URL",
                                 "latitude": "Szélesség",
                                 "location_name": "A Home Assistant rendszered neve",
                                 "longitude": "Hosszúság",
@@ -1247,6 +1250,7 @@
                     },
                     "delete": "Törlés",
                     "description": "Csatlakoztatott eszközök kezelése",
+                    "device_info": "Eszköz információ",
                     "device_not_found": "Eszköz nem található.",
                     "entities": {
                         "add_entities_lovelace": "Hozzáadás a Lovelace-hez",

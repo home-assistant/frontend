@@ -16,14 +16,6 @@ import { RippleHandlers } from "@material/mwc-ripple/ripple-handlers";
 import "./ha-icon";
 import "./ha-svg-icon";
 import { ifDefined } from "lit-html/directives/if-defined";
-import { fireEvent } from "../common/dom/fire_event";
-
-declare global {
-  // for fire event
-  interface HASSDomEvents {
-    activated: undefined;
-  }
-}
 
 @customElement("ha-tab")
 export class HaTab extends LitElement {
@@ -54,11 +46,10 @@ export class HaTab extends LitElement {
         @touchend=${this.handleRippleDeactivate}
         @touchcancel=${this.handleRippleDeactivate}
         @keydown=${this._handleKeyDown}
-        @click=${this._handleClick}
       >
         ${this.narrow ? html`<slot name="icon"></slot>` : ""}
         ${!this.narrow || this.active
-          ? html` <span class="name">${this.name}</span> `
+          ? html`<span class="name">${this.name}</span>`
           : ""}
         ${this._shouldRenderRipple ? html`<mwc-ripple></mwc-ripple>` : ""}
       </div>
@@ -72,12 +63,8 @@ export class HaTab extends LitElement {
 
   private _handleKeyDown(ev: KeyboardEvent): void {
     if (ev.keyCode === 13) {
-      fireEvent(this, "activated");
+      (ev.target as HTMLElement).click();
     }
-  }
-
-  private _handleClick(): void {
-    fireEvent(this, "activated");
   }
 
   @eventOptions({ passive: true })
