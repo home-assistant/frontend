@@ -1878,10 +1878,13 @@
                         "built_using": "Built using",
                         "custom_uis": "Custom UIs:",
                         "developed_by": "Developed by a bunch of awesome people.",
+                        "documentation": "Documentation",
                         "frontend": "frontend-ui",
                         "frontend_version": "Frontend version: {version} - {type}",
                         "home_assistant_logo": "Home Assistant logo",
                         "icons_by": "Icons by",
+                        "integrations": "Integrations",
+                        "issues": "Issues",
                         "license": "Published under the Apache 2.0 license",
                         "path_configuration": "Path to configuration.yaml: {path}",
                         "server": "server",
@@ -2072,6 +2075,7 @@
                             "name": "Name",
                             "no_theme": "No theme",
                             "refresh_interval": "Refresh Interval",
+                            "secondary_info_attribute": "Secondary Info Attribute",
                             "show_icon": "Show Icon?",
                             "show_name": "Show Name?",
                             "show_state": "Show State?",
@@ -2162,7 +2166,8 @@
                         },
                         "weather-forecast": {
                             "description": "The Weather Forecast card displays the weather. Very useful to include on interfaces that people display on the wall.",
-                            "name": "Weather Forecast"
+                            "name": "Weather Forecast",
+                            "show_forecast": "Show Forecast"
                         }
                     },
                     "cardpicker": {

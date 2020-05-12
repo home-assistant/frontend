@@ -1181,6 +1181,7 @@
                                 "edit_requires_storage": "A szerkesztő le van tiltva, mert a konfiguráció a configuration.yaml fájlban van tárolva.",
                                 "elevation": "Magasság",
                                 "elevation_meters": "méter",
+                                "external_url": "Externe URL",
                                 "imperial_example": "Fahrenheit, font",
                                 "internal_url": "Érvénytelen URL",
                                 "latitude": "Szélesség",
