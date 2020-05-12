@@ -374,13 +374,13 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
           top: 1px;
         }
 
-        .name,
+        .state,
         .temp-attribute .temp {
           font-size: 28px;
           line-height: 1.2;
         }
 
-        .state,
+        .name,
         .attribute {
           font-size: 14px;
           line-height: 1;
@@ -438,7 +438,7 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
 
         .attribute,
         .templow,
-        .state {
+        .name {
           color: var(--secondary-text-color);
         }
 
@@ -467,7 +467,7 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
           --mdc-icon-size: 52px;
         }
 
-        :host([narrow]) .name,
+        :host([narrow]) .state,
         :host([narrow]) .temp-attribute .temp {
           font-size: 22px;
         }
@@ -483,7 +483,7 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
 
         /* ============= VERY NARROW ============= */
 
-        :host([veryNarrow]) .state,
+        :host([veryNarrow]) .name,
         :host([veryNarrow]) .attribute {
           display: none;
         }
