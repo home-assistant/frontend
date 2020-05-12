@@ -104,6 +104,9 @@ window.hassConnection.then(({ conn }) => {
 });
 
 window.addEventListener("error", (e) => {
+  if (!__DEV__ && e.message === "ResizeObserver loop limit exceeded") {
+    return;
+  }
   const homeAssistant = document.querySelector("home-assistant") as any;
   if (
     homeAssistant &&
