@@ -473,11 +473,15 @@
             }
         },
         "common": {
+            "and": "och",
             "cancel": "Avbryt",
             "close": "Stäng",
             "delete": "Radera",
             "loading": "Läser in",
+            "next": "Nästa",
             "no": "Nej",
+            "previous": "Föregående",
+            "refresh": "Uppdatera",
             "save": "Spara",
             "successfully_deleted": "Har raderats",
             "successfully_saved": "Inställningar sparades",
@@ -736,6 +740,10 @@
             "triggered": "Utlöst {name}"
         },
         "panel": {
+            "calendar": {
+                "my_calendars": "Mina Kalendrar",
+                "today": "Idag"
+            },
             "config": {
                 "advanced_mode": {
                     "hint_enable": "Saknas konfigurationsalternativ? Aktivera avancerat läge på",
@@ -837,6 +845,9 @@
                                         "for": "Varaktighet"
                                     },
                                     "label": "Enhet"
+                                },
+                                "not": {
+                                    "label": "Inte"
                                 },
                                 "numeric_state": {
                                     "above": "Över",
@@ -1169,7 +1180,9 @@
                                 "edit_requires_storage": "Redigeraren är inaktiverad eftersom konfigurationen lagras i configuration.yaml.",
                                 "elevation": "Höjd över havet",
                                 "elevation_meters": "meter",
+                                "external_url": "Extern URL",
                                 "imperial_example": "Fahrenheit, pounds",
+                                "internal_url": "Intern URL",
                                 "latitude": "Latitud",
                                 "location_name": "Namn på din Home Assistant-installation",
                                 "longitude": "Longitud",
@@ -1236,6 +1249,7 @@
                     },
                     "delete": "Ta bort",
                     "description": "Hantera anslutna enheter",
+                    "device_info": "Enhetsinformation",
                     "device_not_found": "Enheten hittades inte.",
                     "entities": {
                         "add_entities_lovelace": "Lägg till i Lovelace",
@@ -2095,21 +2109,27 @@
                             "name": "Markdown"
                         },
                         "media-control": {
+                            "description": "Mediakontrolkortet används för att visa mediaspelarenheter på ett gränssnitt med lättanvända kontroller.",
                             "name": "Mediaspelare"
                         },
                         "picture-elements": {
+                            "description": "Bildlementkortet är en av de mest mångsidiga typerna av kort. Korten låter dig placera ikoner eller text och till och med tjänster! På en bild baserad på koordinater.",
                             "name": "Bildelement"
                         },
                         "picture-entity": {
+                            "description": "Bildentitetskortet visar en enhet i form av en bild. I stället för bilder från URL kan den också visa bilden av kameraenheter.",
                             "name": "Bildentitet"
                         },
                         "picture-glance": {
+                            "description": "Picture Glance-kortet visar en bild och motsvarande enhetstillstånd som en ikon. Enheterna på höger sida tillåter att växla åtgärder, andra visar dialogrutan för mer information.",
                             "name": "Bildblick"
                         },
                         "picture": {
+                            "description": "Bildkortet låter dig ställa in en bild som ska användas för att navigera till olika banor i ditt gränssnitt eller för att ringa en tjänst.",
                             "name": "Bild"
                         },
                         "plant-status": {
+                            "description": "Plant Status-kortet är för alla de härliga botanikerna där ute.",
                             "name": "Växtstatus"
                         },
                         "sensor": {
@@ -2125,6 +2145,7 @@
                             "name": "Termostat"
                         },
                         "vertical-stack": {
+                            "description": "Med Vertical Stack-kortet kan du gruppera flera kort så att de alltid sitter i samma kolumn.",
                             "name": "Vertikal trave"
                         },
                         "weather-forecast": {

@@ -473,6 +473,7 @@
             }
         },
         "common": {
+            "and": "og",
             "cancel": "Avbryt",
             "close": "Lukk",
             "delete": "Slett",
@@ -1180,7 +1181,9 @@
                                 "edit_requires_storage": "Redigering deaktivert da konfigurasjonen er lagret i configuration.yaml.",
                                 "elevation": "Høyde",
                                 "elevation_meters": "meter",
+                                "external_url": "Ekstern URL",
                                 "imperial_example": "Fahrenheit, pund",
+                                "internal_url": "Intern URL",
                                 "latitude": "Breddegrad",
                                 "location_name": "Navn på installasjonen av Home Assistant",
                                 "longitude": "Lengdegrad",

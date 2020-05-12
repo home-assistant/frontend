@@ -473,6 +473,7 @@
             }
         },
         "common": {
+            "and": "ja",
             "cancel": "Peruuta",
             "close": "Sulje",
             "delete": "Poista",
@@ -1180,7 +1181,9 @@
                                 "edit_requires_storage": "Editori on poistettu käytöstä, koska asetuksia on annettu configuration.yaml:ssa.",
                                 "elevation": "Korkeus merenpinnasta",
                                 "elevation_meters": "metriä",
+                                "external_url": "Ulkoinen URL-osoite",
                                 "imperial_example": "Fahrenheit, paunaa",
+                                "internal_url": "Sisäinen URL-osoite",
                                 "latitude": "Leveysaste",
                                 "location_name": "Home Assistant -järjestelmäsi nimi",
                                 "longitude": "Pituusaste",
@@ -1247,6 +1250,7 @@
                     },
                     "delete": "Poista",
                     "description": "Hallitse yhdistettyjä laitteita.",
+                    "device_info": "Laitteen tiedot",
                     "device_not_found": "Laitetta ei löydy.",
                     "entities": {
                         "add_entities_lovelace": "Lisää Lovelace näkymään",
@@ -1602,7 +1606,7 @@
                             "core": "Lataa ydin uudelleen",
                             "group": "Lataa ryhmät uudelleen",
                             "heading": "Asetusten uudelleenlataus",
-                            "introduction": "Jotkut kotiassistentin osat voidaan ladata uudelleen ilman, että tarvitaan uudelleenkäynnistystä. Painamalla uudelleenlatausta uudet asetukset luetaan yaml tiedostosta.",
+                            "introduction": "Jotkut Home Assistantin osat voidaan ladata uudelleen ilman, että tarvitaan uudelleenkäynnistystä. Painamalla uudelleenlatausta yaml-tiedosto luetaan uudelleen.",
                             "person": "Lataa henkilöt uudelleen",
                             "scene": "Lataa tilanteet uudelleen",
                             "script": "Lataa skriptit uudelleen",
@@ -1612,7 +1616,7 @@
                             "confirm_restart": "Haluatko varmasti käynnistää Home Assistantin uudelleen?",
                             "confirm_stop": "Haluatko varmasti pysäyttää Home Assistantin?",
                             "heading": "Palvelimen hallinta",
-                            "introduction": "Hallitse Home Assistantia... suoraan Home Assistantista",
+                            "introduction": "Hallitse Home Assistantia suoraan käyttöliittymästä.",
                             "restart": "Käynnistä uudelleen",
                             "stop": "Pysäytä"
                         },

@@ -1602,7 +1602,7 @@
                             "automation": "Automatisme nei lueden",
                             "core": "Standuert and Personnalisatioun néi lueden",
                             "group": "Gruppe nei lueden",
-                            "heading": "YAML Konfiguratioun gëtt frësch gelueden",
+                            "heading": "YAML Konfiguratioun frësch lueden",
                             "introduction": "E puer Deeler vum Home Assistant kënne frësch geluede ginn ouni datt een Neistart néideg ass. Klick op nei luede fir di aktuell Konfiguratioun z'entlueden an di nei Konfiguratioun ze lueden.",
                             "person": "Persoune frësch lueden",
                             "scene": "Szeene néi lueden",

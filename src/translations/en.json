@@ -1841,7 +1841,8 @@
               "no_theme": "No theme",
               "unit": "Unit",
               "url": "Url",
-              "state": "State"
+              "state": "State",
+              "secondary_info_attribute": "Secondary Info Attribute"
             },
             "map": {
               "name": "Map",
@@ -1902,7 +1903,8 @@
             },
             "weather-forecast": {
               "name": "Weather Forecast",
-              "description": "The Weather Forecast card displays the weather. Very useful to include on interfaces that people display on the wall."
+              "description": "The Weather Forecast card displays the weather. Very useful to include on interfaces that people display on the wall.",
+              "show_forecast": "Show Forecast"
             }
           },
           "view": {
@@ -2186,7 +2188,10 @@
             "icons_by": "Icons by",
             "frontend_version": "Frontend version: {version} - {type}",
             "custom_uis": "Custom UIs:",
-            "system_health_error": "System Health component is not loaded. Add 'system_health:' to configuration.yaml"
+            "system_health_error": "System Health component is not loaded. Add 'system_health:' to configuration.yaml",
+            "integrations": "Integrations",
+            "documentation": "Documentation",
+            "issues": "Issues"
           },
           "logs": {
             "title": "Logs",

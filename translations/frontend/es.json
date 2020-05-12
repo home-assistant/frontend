@@ -473,6 +473,7 @@
             }
         },
         "common": {
+            "and": "y",
             "cancel": "Cancelar",
             "close": "Cerrar",
             "delete": "Eliminar",
@@ -1180,7 +1181,9 @@
                                 "edit_requires_storage": "Editor deshabilitado debido a la configuración almacenada en configuration.yaml.",
                                 "elevation": "Altitud",
                                 "elevation_meters": "metros",
+                                "external_url": "URL externa",
                                 "imperial_example": "Fahrenheit, libras",
+                                "internal_url": "URL interna",
                                 "latitude": "Latitud",
                                 "location_name": "Nombre de tu instalación de Home Assistant",
                                 "longitude": "Longitud",

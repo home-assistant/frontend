@@ -473,11 +473,15 @@
             }
         },
         "common": {
+            "and": "en",
             "cancel": "Annuleren",
             "close": "Sluiten",
             "delete": "Verwijderen",
             "loading": "Bezig met laden",
+            "next": "Volgende",
             "no": "Nee",
+            "previous": "Vorige",
+            "refresh": "Vernieuwen",
             "save": "Opslaan",
             "successfully_deleted": "Succesvol verwijderd",
             "successfully_saved": "Succesvol opgeslagen",
@@ -737,6 +741,10 @@
             "triggered": "Geactiveerd {name}"
         },
         "panel": {
+            "calendar": {
+                "my_calendars": "Mijn agenda's",
+                "today": "Vandaag"
+            },
             "config": {
                 "advanced_mode": {
                     "hint_enable": "Ontbrekende configuratie-opties? Schakel geavanceerde modus in",
@@ -838,6 +846,9 @@
                                         "for": "Duur"
                                     },
                                     "label": "Apparaat"
+                                },
+                                "not": {
+                                    "label": "Niet"
                                 },
                                 "numeric_state": {
                                     "above": "Boven",
@@ -1170,7 +1181,9 @@
                                 "edit_requires_storage": "Editor uitgeschakeld omdat de configuratie is opgeslagen in configuration.yaml",
                                 "elevation": "Hoogte",
                                 "elevation_meters": "meter",
+                                "external_url": "Externe URL",
                                 "imperial_example": "Fahrenheit, ponden",
+                                "internal_url": "Interne URL",
                                 "latitude": "Breedtegraad",
                                 "location_name": "Naam van Home Assistant installatie",
                                 "longitude": "Lengtegraad",
@@ -1237,6 +1250,7 @@
                     },
                     "delete": "Verwijderen",
                     "description": "Beheer verbonden apparaten",
+                    "device_info": "Apparaat info",
                     "device_not_found": "Apparaat niet gevonden.",
                     "entities": {
                         "add_entities_lovelace": "Voeg toe aan de Lovelace gebruikersinterface",

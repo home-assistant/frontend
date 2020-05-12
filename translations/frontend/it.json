@@ -473,6 +473,7 @@
             }
         },
         "common": {
+            "and": "e",
             "cancel": "Annulla",
             "close": "Chiudi",
             "delete": "Elimina",
@@ -1180,7 +1181,9 @@
                                 "edit_requires_storage": "Editor disabilitato perché la configurazione è memorizzata in configuration.yaml.",
                                 "elevation": "Altitudine",
                                 "elevation_meters": "metri",
+                                "external_url": "URL esterno",
                                 "imperial_example": "Fahrenheit, libbre",
+                                "internal_url": "URL interno",
                                 "latitude": "Latitudine",
                                 "location_name": "Nome della tua installazione di Home Assistant",
                                 "longitude": "Longitudine",
@@ -1247,6 +1250,7 @@
                     },
                     "delete": "Elimina",
                     "description": "Gestisci i dispositivi collegati",
+                    "device_info": "Informazioni sul dispositivo",
                     "device_not_found": "Dispositivo non trovato.",
                     "entities": {
                         "add_entities_lovelace": "Aggiungi a Lovelace",
