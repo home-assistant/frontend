@@ -16,6 +16,7 @@ import "../../../components/data-table/ha-data-table";
 import type {
   DataTableColumnContainer,
   RowClickedEvent,
+  DataTableRowData,
 } from "../../../components/data-table/ha-data-table";
 import "../../../components/ha-card";
 import "../../../components/ha-icon-next";
@@ -27,19 +28,19 @@ import type { HomeAssistant, Route } from "../../../types";
 import "../ha-config-section";
 import { formatAsPaddedHex, sortZHADevices } from "./functions";
 
-export interface DeviceRowData extends ZHADevice {
+export interface DeviceRowData extends DataTableRowData {
   device?: DeviceRowData;
 }
 
 @customElement("zha-config-dashboard")
 class ZHAConfigDashboard extends LitElement {
-  @property() public hass!: HomeAssistant;
+  @property({ type: Object }) public hass!: HomeAssistant;
 
-  @property() public route!: Route;
+  @property({ type: Object }) public route!: Route;
 
-  @property() public narrow!: boolean;
+  @property({ type: Boolean }) public narrow!: boolean;
 
-  @property() public isWide!: boolean;
+  @property({ type: Boolean }) public isWide!: boolean;
 
   @property() private _devices: ZHADevice[] = [];
 
@@ -91,7 +92,7 @@ class ZHAConfigDashboard extends LitElement {
               title: "IEEE",
               sortable: true,
               filterable: true,
-              width: "25%",
+              width: "30%",
             },
           }
   );
