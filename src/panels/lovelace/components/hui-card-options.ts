@@ -10,24 +10,29 @@ import {
   LitElement,
   property,
   TemplateResult,
+  queryAssignedNodes,
 } from "lit-element";
-import { LovelaceCardConfig } from "../../../data/lovelace";
 import { HomeAssistant } from "../../../types";
 import { showEditCardDialog } from "../editor/card-editor/show-edit-card-dialog";
 import { showMoveCardViewDialog } from "../editor/card-editor/show-move-card-view-dialog";
 import { swapCard } from "../editor/config-util";
 import { confDeleteCard } from "../editor/delete-card";
-import { Lovelace } from "../types";
+import { Lovelace, LovelaceCard } from "../types";
+import { computeCardSize } from "../common/compute-card-size";
 
 @customElement("hui-card-options")
 export class HuiCardOptions extends LitElement {
-  public cardConfig?: LovelaceCardConfig;
-
   @property() public hass?: HomeAssistant;
 
   @property() public lovelace?: Lovelace;
 
   @property() public path?: [number, number];
+
+  @queryAssignedNodes() private _assignedNodes?: NodeListOf<LovelaceCard>;
+
+  public getCardSize() {
+    return this._assignedNodes ? computeCardSize(this._assignedNodes[0]) : 1;
+  }
 
   protected render(): TemplateResult {
     return html`
