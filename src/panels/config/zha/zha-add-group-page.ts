@@ -18,31 +18,31 @@ import type { SelectionChangedEvent } from "../../../components/data-table/ha-da
 import {
   addGroup,
   fetchGroupableDevices,
-  ZHADevice,
   ZHAGroup,
+  ZHADeviceEndpoint,
 } from "../../../data/zha";
 import "../../../layouts/hass-error-screen";
 import "../../../layouts/hass-subpage";
 import type { PolymerChangedEvent } from "../../../polymer-types";
 import type { HomeAssistant } from "../../../types";
 import "../ha-config-section";
-import "./zha-devices-data-table";
-import type { ZHADevicesDataTable } from "./zha-devices-data-table";
+import "./zha-device-endpoint-data-table";
+import type { ZHADeviceEndpointDataTable } from "./zha-device-endpoint-data-table";
 
 @customElement("zha-add-group-page")
 export class ZHAAddGroupPage extends LitElement {
-  @property() public hass!: HomeAssistant;
+  @property({ type: Object }) public hass!: HomeAssistant;
 
-  @property() public narrow!: boolean;
+  @property({ type: Boolean }) public narrow!: boolean;
 
-  @property() public devices: ZHADevice[] = [];
+  @property({ type: Array }) public deviceEndpoints: ZHADeviceEndpoint[] = [];
 
   @property() private _processingAdd = false;
 
   @property() private _groupName = "";
 
-  @query("zha-devices-data-table")
-  private _zhaDevicesDataTable!: ZHADevicesDataTable;
+  @query("zha-device-endpoint-data-table")
+  private _zhaDevicesDataTable!: ZHADeviceEndpointDataTable;
 
   private _firstUpdatedCalled = false;
 
@@ -87,14 +87,14 @@ export class ZHAAddGroupPage extends LitElement {
             ${this.hass.localize("ui.panel.config.zha.groups.add_members")}
           </div>
 
-          <zha-devices-data-table
+          <zha-device-endpoint-data-table
             .hass=${this.hass}
-            .devices=${this.devices}
+            .deviceEndpoints=${this.deviceEndpoints}
             .narrow=${this.narrow}
             selectable
             @selection-changed=${this._handleAddSelectionChanged}
           >
-          </zha-devices-data-table>
+          </zha-device-endpoint-data-table>
 
           <div class="paper-dialog-buttons">
             <mwc-button
@@ -121,7 +121,7 @@ export class ZHAAddGroupPage extends LitElement {
   }
 
   private async _fetchData() {
-    this.devices = await fetchGroupableDevices(this.hass!);
+    this.deviceEndpoints = await fetchGroupableDevices(this.hass!);
   }
 
   private _handleAddSelectionChanged(
@@ -132,11 +132,11 @@ export class ZHAAddGroupPage extends LitElement {
 
   private async _createGroup(): Promise<void> {
     this._processingAdd = true;
-    const group: ZHAGroup = await addGroup(
-      this.hass,
-      this._groupName,
-      this._selectedDevicesToAdd
-    );
+    const members = this._selectedDevicesToAdd.map((member) => {
+      const memberParts = member.split("_");
+      return { ieee: memberParts[0], endpoint_id: memberParts[1] };
+    });
+    const group: ZHAGroup = await addGroup(this.hass, this._groupName, members);
     this._selectedDevicesToAdd = [];
     this._processingAdd = false;
     this._groupName = "";
