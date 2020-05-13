@@ -1878,10 +1878,13 @@
                         "built_using": "Zbudowany przy użyciu",
                         "custom_uis": "Niestandardowe interfejsy użytkownika:",
                         "developed_by": "Opracowany przez grono wspaniałych ludzi.",
+                        "documentation": "Dokumentacja",
                         "frontend": "frontend-ui",
                         "frontend_version": "Wersja interfejsu użytkownika: {version} - {type}",
                         "home_assistant_logo": "Logo Home Assistant",
                         "icons_by": "ikon",
+                        "integrations": "Integracje",
+                        "issues": "Problemy",
                         "license": "Opublikowany na licencji Apache 2.0",
                         "path_configuration": "Ścieżka do pliku configuration.yaml: {path}",
                         "server": "serwer",
@@ -2072,6 +2075,7 @@
                             "name": "Nazwa",
                             "no_theme": "Bez motywu",
                             "refresh_interval": "Częstotliwość odświeżania",
+                            "secondary_info_attribute": "Dodatkowy atrybut informacyjny",
                             "show_icon": "Wyświetlanie ikony",
                             "show_name": "Wyświetlanie nazwy",
                             "show_state": "Wyświetlanie stanu",
@@ -2162,7 +2166,8 @@
                         },
                         "weather-forecast": {
                             "description": "Karta prognozy pogody wyświetla pogodę. Bardzo przydatna w przypadku interfejsów wyświetlanych na urządzeniach zawieszonych na ścianie.",
-                            "name": "Prognoza pogody"
+                            "name": "Prognoza pogody",
+                            "show_forecast": "Wyświetlanie prognozy"
                         }
                     },
                     "cardpicker": {

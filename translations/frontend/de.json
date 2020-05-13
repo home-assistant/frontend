@@ -1181,9 +1181,9 @@
                                 "edit_requires_storage": "Editor deaktiviert, da die Konfiguration in configuration.yaml gespeichert ist.",
                                 "elevation": "Höhe",
                                 "elevation_meters": "Meter",
-                                "external_url": "Externe Adresse",
+                                "external_url": "Externe URL",
                                 "imperial_example": "Fahrenheit, Pfund",
-                                "internal_url": "Interne Adresse",
+                                "internal_url": "Interne URL",
                                 "latitude": "Breitengrad",
                                 "location_name": "Name deiner Home Assistant Installation",
                                 "longitude": "Längengrad",
@@ -1878,10 +1878,13 @@
                         "built_using": "Gebaut mit",
                         "custom_uis": "Benutzerdefinierte UIs:",
                         "developed_by": "Entwickelt von einem Haufen toller Leute.",
+                        "documentation": "Dokumentation",
                         "frontend": "Frontend-UI",
                         "frontend_version": "Frontend-Version: {version} - {type}",
                         "home_assistant_logo": "Home Assistant-Logo",
                         "icons_by": "Icons von",
+                        "integrations": "Integrationen",
+                        "issues": "Probleme",
                         "license": "Veröffentlicht unter der Apache 2.0 Lizenz",
                         "path_configuration": "Pfad zu configuration.yaml: {path}",
                         "server": "Server",
@@ -2072,6 +2075,7 @@
                             "name": "Name",
                             "no_theme": "Kein Theme",
                             "refresh_interval": "Aktualisierungsintervall",
+                            "secondary_info_attribute": "Zweites Infoattribut",
                             "show_icon": "Symbol anzeigen?",
                             "show_name": "Namen anzeigen?",
                             "show_state": "Status anzeigen?",
@@ -2162,7 +2166,8 @@
                         },
                         "weather-forecast": {
                             "description": "Die Wettervorhersagekarte zeigt das vorhergesagte Wetter an. Sehr nützlich für wandmontierte Displays.",
-                            "name": "Wettervorhersage"
+                            "name": "Wettervorhersage",
+                            "show_forecast": "Wettervorhersage anzeigen"
                         }
                     },
                     "cardpicker": {

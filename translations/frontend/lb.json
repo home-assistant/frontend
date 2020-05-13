@@ -473,6 +473,7 @@
             }
         },
         "common": {
+            "and": "an",
             "cancel": "Ofbriechen",
             "close": "Zoumaachen",
             "delete": "Läschen",
@@ -1180,7 +1181,9 @@
                                 "edit_requires_storage": "Editeur ass desaktivéiert well d'Konfiguratioun an der configuration.yaml gespäichert ass.",
                                 "elevation": "Héicht",
                                 "elevation_meters": "Meter",
+                                "external_url": "Externe URL",
                                 "imperial_example": "Fahrenheit, Pënner",
+                                "internal_url": "Interne URL",
                                 "latitude": "Breedegrad",
                                 "location_name": "Numm vun der Home Assistant Installatioun",
                                 "longitude": "Längegrad",
@@ -1875,10 +1878,13 @@
                         "built_using": "Gebaut mat",
                         "custom_uis": "Personaliséierte Benotzer Interface:",
                         "developed_by": "Entwéckelt vun enger ganzer Rei fantastesche Leit.",
+                        "documentation": "Dokumentatioun",
                         "frontend": "frontend-ui",
                         "frontend_version": "Frontend Versioun: {version} - {type}",
                         "home_assistant_logo": "Home Assistant logo",
                         "icons_by": "Ikonen vun",
+                        "integrations": "Integratioune",
+                        "issues": "Problemer",
                         "license": "Verëffentlecht ënnert der Apache 2.0 Lizenz",
                         "path_configuration": "Pad zur configuration.yaml: {path}",
                         "server": "server",
@@ -2069,6 +2075,7 @@
                             "name": "Numm",
                             "no_theme": "Kee Thema",
                             "refresh_interval": "Aktualiséierungs Intervall",
+                            "secondary_info_attribute": "Sekundär Informatiouns Attribut",
                             "show_icon": "Ikon uweisen?",
                             "show_name": "Numm uweisen?",
                             "show_state": "Zoustand uweisen?",
@@ -2159,7 +2166,8 @@
                         },
                         "weather-forecast": {
                             "description": "Wieder Previsoune Kaart weist d'Météo un. Immens nëtzlech fir Interfacen déi Benotzer un d'Mauer hänken.",
-                            "name": "Wiederprevisioune"
+                            "name": "Wiederprevisioune",
+                            "show_forecast": "Prévisioun uweisen"
                         }
                     },
                     "cardpicker": {
