@@ -20,7 +20,9 @@ const createWebpackConfig = ({
   }
   return {
     mode: isProdBuild ? "production" : "development",
-    devtool: isProdBuild ? "source-map" : "inline-cheap-module-source-map",
+    devtool: isProdBuild
+      ? "cheap-module-source-map"
+      : "eval-cheap-module-source-map",
     entry,
     module: {
       rules: [
