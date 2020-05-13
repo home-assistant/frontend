@@ -16,10 +16,10 @@ const paths = require("../paths");
 
 const inFrontendDir = "translations/frontend";
 const inBackendDir = "translations/backend";
-const workDir = "build-translations";
-const fullDir = workDir + "/full";
-const coreDir = workDir + "/core";
-const outDir = workDir + "/output";
+const z = "build-translations";
+const fullDir = z + "/full";
+const coreDir = z + "/core";
+const outDir = z + "/output";
 let mergeBackend = false;
 
 gulp.task("translations-enable-merge-backend", (done) => {
@@ -131,19 +131,19 @@ function lokaliseTransform(data, original, file) {
 }
 
 gulp.task("clean-translations", function () {
-  return del([workDir]);
+  return del([z]);
 });
 
 gulp.task("ensure-translations-build-dir", (done) => {
-  if (!fs.existsSync(workDir)) {
-    fs.mkdirSync(workDir);
+  if (!fs.existsSync(z)) {
+    fs.mkdirSync(z);
   }
   done();
 });
 
 gulp.task("create-test-metadata", function (cb) {
   fs.writeFile(
-    workDir + "/testMetadata.json",
+    z + "/testMetadata.json",
     JSON.stringify({
       test: {
         nativeName: "Test",
@@ -164,7 +164,7 @@ gulp.task(
         })
       )
       .pipe(rename("test.json"))
-      .pipe(gulp.dest(workDir));
+      .pipe(gulp.dest(z));
   })
 );
 
@@ -196,12 +196,12 @@ gulp.task("build-master-translation", function () {
         fileName: "translationMaster.json",
       })
     )
-    .pipe(gulp.dest(workDir));
+    .pipe(gulp.dest(z));
 });
 
 gulp.task("build-merged-translations", function () {
   return gulp
-    .src([inFrontendDir + "/*.json", workDir + "/test.json"], {
+    .src([inFrontendDir + "/*.json", z + "/test.json"], {
       allowEmpty: true,
     })
     .pipe(
@@ -220,11 +220,11 @@ gulp.task("build-merged-translations", function () {
         //       than a base translation + region.
         const tr = path.basename(file.history[0], ".json");
         const subtags = tr.split("-");
-        const src = [workDir + "/translationMaster.json"];
+        const src = [z + "/translationMaster.json"];
         for (let i = 1; i <= subtags.length; i++) {
           const lang = subtags.slice(0, i).join("-");
           if (lang === "test") {
-            src.push(workDir + "/test.json");
+            src.push(z + "/test.json");
           } else if (lang !== "en") {
             src.push(inFrontendDir + "/" + lang + ".json");
             if (mergeBackend) {
@@ -263,7 +263,7 @@ TRANSLATION_FRAGMENTS.forEach((fragment) => {
           },
         }))
       )
-      .pipe(gulp.dest(workDir + "/" + fragment));
+      .pipe(gulp.dest(z + "/" + fragment));
   });
   splitTasks.push(taskName);
 });
@@ -291,9 +291,9 @@ gulp.task("build-flattened-translations", function () {
   return gulp
     .src(
       TRANSLATION_FRAGMENTS.map(
-        (fragment) => workDir + "/" + fragment + "/*.json"
+        (fragment) => z + "/" + fragment + "/*.json"
       ).concat(coreDir + "/*.json"),
-      { base: workDir }
+      { base: z }
     )
     .pipe(
       transform(function (data) {
@@ -351,7 +351,7 @@ gulp.task(
     const stream = source("translationFingerprints.json");
     stream.write(JSON.stringify(fingerprints));
     process.nextTick(() => stream.end());
-    return stream.pipe(vinylBuffer()).pipe(gulp.dest(workDir));
+    return stream.pipe(vinylBuffer()).pipe(gulp.dest(z));
   }
 );
 
@@ -371,8 +371,8 @@ gulp.task(
         .src(
           [
             path.join(paths.translations_src, "translationMetadata.json"),
-            workDir + "/testMetadata.json",
-            workDir + "/translationFingerprints.json",
+            z + "/testMetadata.json",
+            z + "/translationFingerprints.json",
           ],
           { allowEmpty: true }
         )
@@ -401,7 +401,7 @@ gulp.task(
           }))
         )
         .pipe(rename("translationMetadata.json"))
-        .pipe(gulp.dest(workDir));
+        .pipe(gulp.dest(z));
     }
   )
 );
