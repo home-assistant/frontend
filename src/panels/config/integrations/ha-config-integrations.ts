@@ -428,7 +428,7 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
                     </p>
                     <mwc-button @click=${this._createFlow} unelevated
                       >${this.hass.localize(
-                        "ui.panel.config.integrations.add"
+                        "ui.panel.config.integrations.add_integration"
                       )}</mwc-button
                     >
                   </div>
