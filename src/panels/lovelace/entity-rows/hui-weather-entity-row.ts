@@ -81,7 +81,7 @@ class HuiWeatherEntityRow extends LitElement implements LovelaceRow {
 
     return html`
       <div
-        class="icon-image${classMap({
+        class="icon-image ${classMap({
           pointer,
         })}"
         @action=${this._handleAction}
@@ -163,6 +163,12 @@ class HuiWeatherEntityRow extends LitElement implements LovelaceRow {
         .icon-image > * {
           flex: 0 0 40px;
           height: 40px;
+        }
+
+        .icon-image:focus {
+          outline: none;
+          background-color: var(--divider-color);
+          border-radius: 50%;
         }
 
         .weather-icon {
