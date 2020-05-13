@@ -75,7 +75,7 @@ export class HuiGraphHeaderFooter extends LitElement
       `;
     }
 
-    if (this._coordinates.length < 1) {
+    if (!this._coordinates.length) {
       return html`
         <div class="container">
           <div class="info">
