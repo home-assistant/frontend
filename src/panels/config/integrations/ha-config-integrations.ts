@@ -14,10 +14,7 @@ import memoizeOne from "memoize-one";
 import * as Fuse from "fuse.js";
 import { caseInsensitiveCompare } from "../../../common/string/compare";
 import { computeRTL } from "../../../common/util/compute_rtl";
-import {
-  afterNextRender,
-  nextRender,
-} from "../../../common/util/render-status";
+import { nextRender } from "../../../common/util/render-status";
 import "../../../components/entity/ha-state-icon";
 import "../../../components/ha-card";
 import "@material/mwc-fab";
@@ -46,6 +43,7 @@ import { domainToName } from "../../../data/integration";
 import { showConfigFlowDialog } from "../../../dialogs/config-flow/show-dialog-config-flow";
 import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
 import "../../../layouts/hass-tabs-subpage";
+import "../../../layouts/hass-loading-screen";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../resources/styles";
 import { HomeAssistant, Route } from "../../../types";
@@ -96,7 +94,7 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
 
   @property() public route!: Route;
 
-  @property() private _configEntries: ConfigEntryExtended[] = [];
+  @property() private _configEntries?: ConfigEntryExtended[];
 
   @property()
   private _configEntriesInProgress: DataEntryFlowProgressExtended[] = [];
@@ -217,32 +215,17 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
     if (
       this._searchParms.has("config_entry") &&
       changed.has("_configEntries") &&
-      !(changed.get("_configEntries") as ConfigEntry[]).length &&
-      this._configEntries.length
+      !changed.get("_configEntries") &&
+      this._configEntries
     ) {
-      afterNextRender(() => {
-        const entryId = this._searchParms.get("config_entry")!;
-        const configEntry = this._configEntries.find(
-          (entry) => entry.entry_id === entryId
-        );
-        if (!configEntry) {
-          return;
-        }
-        const card: HaIntegrationCard = this.shadowRoot!.querySelector(
-          `[data-domain=${configEntry?.domain}]`
-        ) as HaIntegrationCard;
-        if (card) {
-          card.scrollIntoView({
-            block: "center",
-          });
-          card.classList.add("highlight");
-          card.selectedConfigEntryId = entryId;
-        }
-      });
+      this._highlightEntry();
     }
   }
 
   protected render(): TemplateResult {
+    if (!this._configEntries) {
+      return html`<hass-loading-screen></hass-loading-screen>`;
+    }
     const [
       groupedConfigEntries,
       ignoredConfigEntries,
@@ -428,7 +411,7 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
                     </p>
                     <mwc-button @click=${this._createFlow} unelevated
                       >${this.hass.localize(
-                        "ui.panel.config.integrations.add"
+                        "ui.panel.config.integrations.add_integration"
                       )}</mwc-button
                     >
                   </div>
@@ -491,7 +474,7 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
   }
 
   private _handleRemoved(ev: HASSDomEvent<ConfigEntryRemovedEvent>) {
-    this._configEntries = this._configEntries.filter(
+    this._configEntries = this._configEntries!.filter(
       (entry) => entry.entry_id !== ev.detail.entryId
     );
   }
@@ -592,6 +575,27 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
 
   private _onImageError(ev) {
     ev.target.style.visibility = "hidden";
+  }
+
+  private async _highlightEntry() {
+    await nextRender();
+    const entryId = this._searchParms.get("config_entry")!;
+    const configEntry = this._configEntries!.find(
+      (entry) => entry.entry_id === entryId
+    );
+    if (!configEntry) {
+      return;
+    }
+    const card: HaIntegrationCard = this.shadowRoot!.querySelector(
+      `[data-domain=${configEntry?.domain}]`
+    ) as HaIntegrationCard;
+    if (card) {
+      card.scrollIntoView({
+        block: "center",
+      });
+      card.classList.add("highlight");
+      card.selectedConfigEntryId = entryId;
+    }
   }
 
   static get styles(): CSSResult[] {
