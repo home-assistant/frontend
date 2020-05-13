@@ -424,18 +424,24 @@ class HUIRoot extends LitElement {
       }
 
       if (!oldLovelace || oldLovelace.editMode !== this.lovelace!.editMode) {
+        const views = this.config && this.config.views;
+
+        // Adjust for higher header
+        if (!views || views.length < 2) {
+          fireEvent(this, "iron-resize");
+        }
+
         // Leave unused entities when leaving edit mode
         if (
           this.lovelace!.mode === "storage" &&
           viewPath === "hass-unused-entities"
         ) {
-          const views = this.config && this.config.views;
           navigate(this, `${this.route?.prefix}/${views[0]?.path || 0}`);
           newSelectView = 0;
         }
       }
 
-      if (!force) {
+      if (!force && huiView) {
         huiView.lovelace = this.lovelace;
       }
     }
