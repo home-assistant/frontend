@@ -71,6 +71,6 @@ gulp.task("gen-service-worker-app-prod", async () => {
   fs.writeFileSync(swDest, serviceWorkerContent);
 
   // Delete old file from frontend_latest
-  // fs.removeSync(paths.root + manifest["service_worker.js"]);
-  // fs.removeSync(paths.root + manifest["service_worker.js.map"]);
+  fs.removeSync(paths.root + manifest["service_worker.js"]);
+  fs.removeSync(paths.root + manifest["service_worker.js.map"]);
 });
