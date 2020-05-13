@@ -17,6 +17,10 @@ import "../components/hui-timestamp-display";
 import "../components/hui-warning";
 import { LovelaceRow } from "./types";
 import { EntitiesCardEntityConfig } from "../cards/types";
+import { actionHandler } from "../common/directives/action-handler-directive";
+import { hasAction } from "../common/has-action";
+import { ActionHandlerEvent } from "../../../data/lovelace";
+import { handleAction } from "../common/handle-action";
 
 interface SensorEntityConfig extends EntitiesCardEntityConfig {
   format?: "relative" | "date" | "time" | "datetime";
