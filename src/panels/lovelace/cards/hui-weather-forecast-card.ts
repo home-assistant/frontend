@@ -327,6 +327,7 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
         ha-card {
           cursor: pointer;
           padding: 16px;
+          outline: none;
         }
 
         .content {

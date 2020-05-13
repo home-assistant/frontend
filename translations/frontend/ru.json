@@ -1878,10 +1878,13 @@
                         "built_using": "Создано с использованием",
                         "custom_uis": "Кастомные интерфейсы:",
                         "developed_by": "Разработано множеством замечательных людей.",
+                        "documentation": "Документация",
                         "frontend": "пользовательский интерфейс",
                         "frontend_version": "Версия интерфейса: {version} - {type}",
                         "home_assistant_logo": "Логотип Home Assistant",
                         "icons_by": "Значки от",
+                        "integrations": "Интеграции",
+                        "issues": "Вопросы",
                         "license": "Опубликовано под лицензией Apache 2.0",
                         "path_configuration": "Путь к configuration.yaml: {path}",
                         "server": "сервер",
@@ -2072,6 +2075,7 @@
                             "name": "Название",
                             "no_theme": "Нет темы",
                             "refresh_interval": "Интервал обновления",
+                            "secondary_info_attribute": "Дополнительная информация",
                             "show_icon": "Значок",
                             "show_name": "Название",
                             "show_state": "Состояние",
@@ -2162,7 +2166,8 @@
                         },
                         "weather-forecast": {
                             "description": "Отображает погоду. Может быть полезна на устройствах, размещаемых на стене.",
-                            "name": "Прогноз погоды"
+                            "name": "Прогноз погоды",
+                            "show_forecast": "Показывать прогноз"
                         }
                     },
                     "cardpicker": {
