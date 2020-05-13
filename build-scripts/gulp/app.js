@@ -20,7 +20,7 @@ gulp.task(
     },
     "clean",
     gulp.parallel(
-      "gen-service-worker-dev",
+      "gen-service-worker-app-dev",
       "gen-icons-json",
       "gen-pages-dev",
       "gen-index-app-dev",
@@ -46,7 +46,7 @@ gulp.task(
     gulp.parallel(
       "gen-pages-prod",
       "gen-index-app-prod",
-      "gen-service-worker-prod"
+      "gen-service-worker-app-prod"
     )
   )
 );

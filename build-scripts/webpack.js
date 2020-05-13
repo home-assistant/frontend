@@ -1,7 +1,6 @@
 const webpack = require("webpack");
 const path = require("path");
 const TerserPlugin = require("terser-webpack-plugin");
-const WorkboxPlugin = require("workbox-webpack-plugin");
 const ManifestPlugin = require("webpack-manifest-plugin");
 const paths = require("./paths.js");
 const env = require("./env.js");
@@ -107,8 +106,9 @@ const createWebpackConfig = ({
 };
 
 const createAppConfig = ({ isProdBuild, latestBuild, isStatsBuild }) => {
-  const config = createWebpackConfig({
+  return createWebpackConfig({
     entry: {
+      service_worker: "./src/entrypoints/service_worker.ts",
       app: "./src/entrypoints/app.ts",
       authorize: "./src/entrypoints/authorize.ts",
       onboarding: "./src/entrypoints/onboarding.ts",
@@ -121,48 +121,6 @@ const createAppConfig = ({ isProdBuild, latestBuild, isStatsBuild }) => {
     latestBuild,
     isStatsBuild,
   });
-
-  if (latestBuild) {
-    // Create an object mapping browser urls to their paths during build
-    const translationMetadata = require("../build-translations/translationMetadata.json");
-    const workBoxTranslationsTemplatedURLs = {};
-    const englishFilename = `en-${translationMetadata.translations.en.hash}.json`;
-
-    // core
-    workBoxTranslationsTemplatedURLs[
-      `/static/translations/${englishFilename}`
-    ] = `build-translations/output/${englishFilename}`;
-
-    translationMetadata.fragments.forEach((fragment) => {
-      workBoxTranslationsTemplatedURLs[
-        `/static/translations/${fragment}/${englishFilename}`
-      ] = `build-translations/output/${fragment}/${englishFilename}`;
-    });
-
-    config.plugins.push(
-      new WorkboxPlugin.InjectManifest({
-        swSrc: "./src/entrypoints/service-worker-hass.js",
-        swDest: "service_worker.js",
-        importWorkboxFrom: "local",
-        include: [/\.js$/],
-        templatedURLs: {
-          ...workBoxTranslationsTemplatedURLs,
-          "/static/icons/favicon-192x192.png":
-            "public/icons/favicon-192x192.png",
-          "/static/fonts/roboto/Roboto-Light.woff2":
-            "node_modules/roboto-fontface/fonts/roboto/Roboto-Light.woff2",
-          "/static/fonts/roboto/Roboto-Medium.woff2":
-            "node_modules/roboto-fontface/fonts/roboto/Roboto-Medium.woff2",
-          "/static/fonts/roboto/Roboto-Regular.woff2":
-            "node_modules/roboto-fontface/fonts/roboto/Roboto-Regular.woff2",
-          "/static/fonts/roboto/Roboto-Bold.woff2":
-            "node_modules/roboto-fontface/fonts/roboto/Roboto-Bold.woff2",
-        },
-      })
-    );
-  }
-
-  return config;
 };
 
 const createDemoConfig = ({ isProdBuild, latestBuild, isStatsBuild }) => {
