@@ -49,6 +49,11 @@ export class HuiEditView extends LitElement {
 
   @property() public hass?: HomeAssistant;
 
+  @property() public saveCallback?: (
+    viewIndex: number,
+    viewConfig: LovelaceViewConfig
+  ) => void;
+
   @property() private _config?: LovelaceViewConfig;
 
   @property() private _badges?: LovelaceBadgeConfig[];
@@ -290,6 +295,12 @@ export class HuiEditView extends LitElement {
           ? addView(lovelace.config, viewConf)
           : replaceView(lovelace.config, this.viewIndex!, viewConf)
       );
+      if (this.saveCallback) {
+        this.saveCallback(
+          this.viewIndex || lovelace.config.views.length,
+          viewConf
+        );
+      }
       this._closeDialog();
     } catch (err) {
       showAlertDialog(this, {
