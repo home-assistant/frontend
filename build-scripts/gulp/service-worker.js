@@ -19,6 +19,8 @@ gulp.task("gen-service-worker-app-dev", (done) => {
 console.debug('Service worker disabled in development');
 
 self.addEventListener('install', (event) => {
+  // This will activate the dev service worker,
+  // removing any prod service worker the dev might have running
   self.skipWaiting();
 });
   `
@@ -27,6 +29,17 @@ self.addEventListener('install', (event) => {
 });
 
 gulp.task("gen-service-worker-app-prod", async () => {
+  // Read bundled source file
+  const bundleManifest = require(path.resolve(paths.output, "manifest.json"));
+  let serviceWorkerContent = fs.readFileSync(
+    paths.root + bundleManifest["service_worker.js"],
+    "utf-8"
+  );
+
+  // Delete old file from frontend_latest so manifest won't pick it up
+  fs.removeSync(paths.root + bundleManifest["service_worker.js"]);
+  fs.removeSync(paths.root + bundleManifest["service_worker.js.map"]);
+
   const workboxManifest = await workboxBuild.getManifest({
     // Files that mach this pattern will be considered unique and skip revision check
     // ignore JS files + translation files
@@ -37,7 +50,8 @@ gulp.task("gen-service-worker-app-prod", async () => {
       "frontend_latest/*.js",
       // Cache all English translations because we catch them as fallback
       // Using pattern to match hash instead of * to avoid caching en-GB
-      "static/translations/**/en-+([a-f0-9]).json",
+      // 'v' added as valid hash letter because in dev we hash with 'dev'
+      "static/translations/**/en-+([a-fv0-9]).json",
       // Icon shown on splash screen
       "static/icons/favicon-192x192.png",
       "static/icons/favicon.ico",
@@ -53,20 +67,6 @@ gulp.task("gen-service-worker-app-prod", async () => {
     console.warn(warning);
   }
 
-  // Replace `null` with 0 for better compression
-  for (const entry of workboxManifest.manifestEntries) {
-    if (entry.revision === null) {
-      entry.revision = 0;
-    }
-  }
-
-  const manifest = require(path.resolve(paths.output, "manifest.json"));
-
-  // Write bundled source file
-  let serviceWorkerContent = fs.readFileSync(
-    paths.root + manifest["service_worker.js"],
-    "utf-8"
-  );
   // remove source map and add WB manifest
   serviceWorkerContent = sourceMapUrl.removeFrom(serviceWorkerContent);
   serviceWorkerContent = serviceWorkerContent.replace(
@@ -76,8 +76,4 @@ gulp.task("gen-service-worker-app-prod", async () => {
 
   // Write new file to root
   fs.writeFileSync(swDest, serviceWorkerContent);
-
-  // Delete old file from frontend_latest
-  fs.removeSync(paths.root + manifest["service_worker.js"]);
-  fs.removeSync(paths.root + manifest["service_worker.js.map"]);
 });

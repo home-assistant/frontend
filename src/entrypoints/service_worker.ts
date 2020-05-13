@@ -164,10 +164,18 @@ self.addEventListener("install", (event) => {
   event.waitUntil(caches.delete(cacheName));
 });
 
+self.addEventListener("activate", () => {
+  // Attach the service worker to any page of the app
+  // that didn't have a service worker loaded.
+  // Happens the first time they open the app without any
+  // service worker registered.
+  // This will serve code splitted bundles from SW.
+  clients.claim();
+});
+
 self.addEventListener("message", (message) => {
   if (message.data.type === "skipWaiting") {
     self.skipWaiting();
-    clients.claim();
   }
 });
 
