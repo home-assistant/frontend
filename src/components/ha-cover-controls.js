@@ -30,7 +30,7 @@ class HaCoverControls extends PolymerElement {
           icon="hass:stop"
           on-click="onStopTap"
           invisible$="[[!entityObj.supportsStop]]"
-          disabled="[[computStopDisabled(stateObj)]]"
+          disabled="[[computeStopDisabled(stateObj)]]"
         ></ha-icon-button>
         <ha-icon-button
           aria-label="Close cover"
