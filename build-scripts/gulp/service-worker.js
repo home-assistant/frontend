@@ -53,6 +53,13 @@ gulp.task("gen-service-worker-app-prod", async () => {
     console.warn(warning);
   }
 
+  // Replace `null` with 0 for better compression
+  for (const entry of workboxManifest.manifestEntries) {
+    if (entry.revision === null) {
+      entry.revision = 0;
+    }
+  }
+
   const manifest = require(path.resolve(paths.output, "manifest.json"));
 
   // Write bundled source file
