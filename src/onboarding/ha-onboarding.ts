@@ -96,7 +96,7 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
     import(
       /* webpackChunkName: "onboarding-core-config" */ "./onboarding-core-config"
     );
-    registerServiceWorker(false);
+    registerServiceWorker(this, false);
     this.addEventListener("onboarding-step", (ev) => this._handleStepDone(ev));
   }
 
