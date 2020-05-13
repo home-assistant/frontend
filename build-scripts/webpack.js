@@ -74,6 +74,10 @@ const createWebpackConfig = ({
         /@polymer\/font-roboto\/roboto\.js$/,
         path.resolve(paths.polymer_dir, "src/util/empty.js")
       ),
+      new webpack.NormalModuleReplacementPlugin(
+        /@vaadin\/vaadin-material-styles\/font-roboto\.js$/,
+        path.resolve(paths.polymer_dir, "src/util/empty.js")
+      ),
       // Ignore mwc icons pointing at CDN.
       new webpack.NormalModuleReplacementPlugin(
         /@material\/mwc-icon\/mwc-icon-font\.js$/,
