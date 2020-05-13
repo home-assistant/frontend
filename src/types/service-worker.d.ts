@@ -21,7 +21,7 @@
  * e.g. your-service-worker.js, register-service-worker.js
  * e.g. /// <reference path="path/to/serviceworker.d.ts" />
  */
-
+/* eslint-disable */
 // Registration
 
 interface WorkerNavigator {
