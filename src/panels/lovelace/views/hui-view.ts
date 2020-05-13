@@ -224,6 +224,9 @@ export class HUIView extends LitElement {
       });
       this._createColumns(wrappedCards);
     } else {
+      this._cards.forEach((card) => {
+        (card as LovelaceCard).editMode = false;
+      });
       this._createColumns(this._cards);
     }
   }

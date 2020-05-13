@@ -13,15 +13,23 @@ import { HomeAssistant } from "../../../types";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
 import "../components/hui-generic-entity-row";
 import "../components/hui-warning";
-import { EntityConfig, LovelaceRow } from "./types";
+import { LovelaceRow } from "./types";
+import { DOMAINS_HIDE_MORE_INFO } from "../../../common/const";
+import { computeDomain } from "../../../common/entity/compute_domain";
+import { actionHandler } from "../common/directives/action-handler-directive";
+import { hasAction } from "../common/has-action";
+import { ActionHandlerEvent } from "../../../data/lovelace";
+import { handleAction } from "../common/handle-action";
+import { classMap } from "lit-html/directives/class-map";
+import { EntitiesCardEntityConfig } from "../cards/types";
 
 @customElement("hui-text-entity-row")
 class HuiTextEntityRow extends LitElement implements LovelaceRow {
   @property() public hass?: HomeAssistant;
 
-  @property() private _config?: EntityConfig;
+  @property() private _config?: EntitiesCardEntityConfig;
 
-  public setConfig(config: EntityConfig): void {
+  public setConfig(config: EntitiesCardEntityConfig): void {
     if (!config) {
       throw new Error("Configuration error");
     }
@@ -51,9 +59,23 @@ class HuiTextEntityRow extends LitElement implements LovelaceRow {
       `;
     }
 
+    const pointer =
+      (this._config.tap_action && this._config.tap_action.action !== "none") ||
+      (this._config.entity &&
+        !DOMAINS_HIDE_MORE_INFO.includes(computeDomain(this._config.entity)));
+
     return html`
       <hui-generic-entity-row .hass=${this.hass} .config=${this._config}>
-        <div class="text-content">
+        <div
+          class="text-content ${classMap({
+            pointer,
+          })}"
+          @action=${this._handleAction}
+          .actionHandler=${actionHandler({
+            hasHold: hasAction(this._config.hold_action),
+            hasDoubleClick: hasAction(this._config.double_tap_action),
+          })}
+        >
           ${computeStateDisplay(
             this.hass!.localize,
             stateObj,
@@ -64,10 +86,17 @@ class HuiTextEntityRow extends LitElement implements LovelaceRow {
     `;
   }
 
+  private _handleAction(ev: ActionHandlerEvent) {
+    handleAction(this, this.hass!, this._config!, ev.detail.action);
+  }
+
   static get styles(): CSSResult {
     return css`
       div {
         text-align: right;
+      }
+      .pointer {
+        cursor: pointer;
       }
     `;
   }

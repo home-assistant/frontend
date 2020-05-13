@@ -331,6 +331,7 @@
     "ui": {
         "auth_store": {
             "ask": "Deseja continuar com sessão iniciada?",
+            "confirm": "Sim",
             "decline": "Não"
         },
         "card": {
@@ -1863,10 +1864,13 @@
                         "built_using": "Construído com",
                         "custom_uis": "IUs personalizados:",
                         "developed_by": "Desenvolvido por um punhado de pessoas incríveis.",
+                        "documentation": "Documentação",
                         "frontend": "",
                         "frontend_version": "Versão frontend: {version} - {type}",
                         "home_assistant_logo": "Logotipo do Home Assistant",
                         "icons_by": "Ícones por",
+                        "integrations": "Integrações",
+                        "issues": "Problemas",
                         "license": "Publicado sob a licença de Apache 2.0",
                         "path_configuration": "Caminho para configuration.yaml: {path}",
                         "server": "servidor",
@@ -1934,7 +1938,7 @@
                         "editor": "Editor de Templates",
                         "jinja_documentation": "Documentação do template Jinja2",
                         "template_extensions": "Extensões de templates do Home Assistant",
-                        "title": "Modelos",
+                        "title": "Modelo",
                         "unknown_error_template": "Erro desconhecido ao processar o template"
                     }
                 }
@@ -1950,6 +1954,7 @@
             },
             "lovelace": {
                 "add_entities": {
+                    "saving_failed": "Falha ao salvar a configuração da interface Lovelace.",
                     "yaml_unsupported": "Você não pode usar esta função ao usar o Lovelace IU no modo YAML."
                 },
                 "cards": {
@@ -2053,6 +2058,7 @@
                             "name": "Nome",
                             "no_theme": "Nenhum tema",
                             "refresh_interval": "Intervalo entre atualizações",
+                            "secondary_info_attribute": "Atributo de informação secundária",
                             "show_icon": "Mostrar Ícone?",
                             "show_name": "Mostrar nome?",
                             "show_state": "Mostrar Estado?",
@@ -2065,7 +2071,8 @@
                         },
                         "glance": {
                             "columns": "Colunas",
-                            "description": "O cartão Glance é útil para agrupar vários sensores numa visão geral compacta."
+                            "description": "O cartão Glance é útil para agrupar vários sensores numa visão geral compacta.",
+                            "name": "Relance"
                         },
                         "history-graph": {
                             "description": "O cartão Gráfico de histórico permite exibir um gráfico para cada uma das entidades listadas.",
@@ -2141,7 +2148,8 @@
                         },
                         "weather-forecast": {
                             "description": "O cartão Previsão do tempo exibe o tempo. Muito útil para incluir nos interfaces que coloca-mos na parede.",
-                            "name": "Previsão do tempo"
+                            "name": "Previsão do tempo",
+                            "show_forecast": "Mostrar previsão do tempo"
                         }
                     },
                     "cardpicker": {
@@ -2221,6 +2229,7 @@
                     },
                     "suggest_card": {
                         "add": "Adicionar à Lovelace UI",
+                        "create_own": "Escolha um cartão diferente",
                         "header": "Criamos uma sugestão para você."
                     },
                     "view": {
