@@ -1878,10 +1878,13 @@
                         "built_using": "Construit en utilisant",
                         "custom_uis": "Interfaces utilisateur personnalisées :",
                         "developed_by": "Développé par un groupe de personnes formidables.",
+                        "documentation": "Documentation",
                         "frontend": "interface utilisateur",
                         "frontend_version": "Version interface utilisateur : {version} - {type}",
                         "home_assistant_logo": "Logo de Home Assistant",
                         "icons_by": "Icônes par",
+                        "integrations": "Intégrations",
+                        "issues": "Problèmes",
                         "license": "Publié sous la licence Apache 2.0",
                         "path_configuration": "Chemin vers configuration.yaml : {path}",
                         "server": "serveur",
@@ -2072,6 +2075,7 @@
                             "name": "Nom",
                             "no_theme": "Pas de thème",
                             "refresh_interval": "Intervalle de rafraîchissement",
+                            "secondary_info_attribute": "Attribut d'informations secondaires",
                             "show_icon": "Afficher l'icône ?",
                             "show_name": "Afficher le nom ?",
                             "show_state": "Afficher l'état ?",
@@ -2162,7 +2166,8 @@
                         },
                         "weather-forecast": {
                             "description": "La carte Prévisions météorologiques affiche la météo. Très utile pour les écrans placés au mur.",
-                            "name": "Prévisions Météo"
+                            "name": "Prévisions Météo",
+                            "show_forecast": "Afficher les prévisions"
                         }
                     },
                     "cardpicker": {

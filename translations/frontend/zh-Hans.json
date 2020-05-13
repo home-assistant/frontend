@@ -1878,10 +1878,13 @@
                         "built_using": "建于",
                         "custom_uis": "自定义用户界面：",
                         "developed_by": "由一帮很 Awesome~~~ 的人开发。",
+                        "documentation": "文档",
                         "frontend": "前端用户界面",
                         "frontend_version": "前端版本： {version} - {type}",
                         "home_assistant_logo": "Home Assistant logo",
                         "icons_by": "图标来自",
+                        "integrations": "集成",
+                        "issues": "问题",
                         "license": "根据 Apache 2.0 许可发布",
                         "path_configuration": "configuration.yaml 路径：{path}",
                         "server": "服务器",
@@ -2072,6 +2075,7 @@
                             "name": "名称",
                             "no_theme": "没有主题",
                             "refresh_interval": "刷新间隔",
+                            "secondary_info_attribute": "次要信息属性",
                             "show_icon": "显示图标？",
                             "show_name": "显示名称？",
                             "show_state": "显示状态？",
@@ -2162,7 +2166,8 @@
                         },
                         "weather-forecast": {
                             "description": "“天气预报”卡片用于显示天气。对于将界面挂墙显示的情况非常有用。",
-                            "name": "天气预报"
+                            "name": "天气预报",
+                            "show_forecast": "显示预报"
                         }
                     },
                     "cardpicker": {

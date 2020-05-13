@@ -40,7 +40,7 @@
             },
             "preset_mode": {
                 "activity": "Actividad",
-                "away": "Fuera de casa",
+                "away": "Ausente",
                 "boost": "Impulso",
                 "comfort": "Confort",
                 "eco": "Eco",
@@ -52,11 +52,11 @@
     },
     "state_badge": {
         "alarm_control_panel": {
-            "armed": "Armado",
-            "armed_away": "Armado",
-            "armed_custom_bypass": "Armado",
-            "armed_home": "Armado",
-            "armed_night": "Armado",
+            "armed": "Armada",
+            "armed_away": "Armada",
+            "armed_custom_bypass": "Armada",
+            "armed_home": "Armada",
+            "armed_night": "Armada",
             "arming": "Armando",
             "disarmed": "Desarmar",
             "disarming": "Desarmar",
@@ -80,13 +80,13 @@
     },
     "state": {
         "alarm_control_panel": {
-            "armed": "Armado",
-            "armed_away": "Armado fuera de casa",
+            "armed": "Armada",
+            "armed_away": "Armada ausente",
             "armed_custom_bypass": "Armada Zona Específica",
-            "armed_home": "Armado en casa",
-            "armed_night": "Armado noche",
+            "armed_home": "Armada en casa",
+            "armed_night": "Armada noche",
             "arming": "Armando",
-            "disarmed": "Desarmado",
+            "disarmed": "Desarmada",
             "disarming": "Desarmando",
             "pending": "Pendiente",
             "triggered": "Disparada"
@@ -311,7 +311,7 @@
             "rainy": "Lluvioso",
             "snowy": "Nevado",
             "snowy-rainy": "Nevado, lluvioso",
-            "sunny": "Soleado",
+            "sunny": "Despejado",
             "windy": "Ventoso",
             "windy-variant": "Ventoso"
         },
@@ -336,7 +336,7 @@
         },
         "card": {
             "alarm_control_panel": {
-                "arm_away": "Armar fuera de casa",
+                "arm_away": "Armar ausente",
                 "arm_custom_bypass": "Bypass personalizada",
                 "arm_home": "Armar en casa",
                 "arm_night": "Armar noche",
@@ -1878,10 +1878,13 @@
                         "built_using": "Construido usando",
                         "custom_uis": "IU personalizadas:",
                         "developed_by": "Desarrollado por un montón de gente impresionante.",
+                        "documentation": "Documentación",
                         "frontend": "interfaz de usuario",
                         "frontend_version": "Versión del frontend: {version} - {type}",
                         "home_assistant_logo": "Logotipo de Home Assistant",
                         "icons_by": "Iconos por",
+                        "integrations": "Integraciones",
+                        "issues": "Incidencias",
                         "license": "Publicado bajo la licencia Apache 2.0",
                         "path_configuration": "Ruta a configuration.yaml: {path}",
                         "server": "servidor",
@@ -2162,7 +2165,8 @@
                         },
                         "weather-forecast": {
                             "description": "La tarjeta de Pronóstico del tiempo muestra el clima. Muy útil para incluir en las interfaces que las personas muestran en la pared.",
-                            "name": "Pronóstico del tiempo"
+                            "name": "Pronóstico del tiempo",
+                            "show_forecast": "Mostrar pronóstico"
                         }
                     },
                     "cardpicker": {

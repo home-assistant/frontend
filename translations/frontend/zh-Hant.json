@@ -1878,10 +1878,13 @@
                         "built_using": "建置使用",
                         "custom_uis": "自定介面：",
                         "developed_by": "由一群充滿熱情的人們所開發。",
+                        "documentation": "相關文件",
                         "frontend": "frontend-ui",
                         "frontend_version": "Frontend 版本：{version} - {type}",
                         "home_assistant_logo": "Home Assistant logo",
                         "icons_by": "圖示使用",
+                        "integrations": "整合",
+                        "issues": "問題",
                         "license": "依據 Apache 2.0 授權許可發行",
                         "path_configuration": "configuration.yaml 路徑：{path}",
                         "server": "伺服器",
@@ -2072,6 +2075,7 @@
                             "name": "名稱",
                             "no_theme": "沒有主題",
                             "refresh_interval": "更新間隔",
+                            "secondary_info_attribute": "次要資訊屬性",
                             "show_icon": "顯示圖示？",
                             "show_name": "顯示名稱？",
                             "show_state": "顯示狀態？",
@@ -2162,7 +2166,8 @@
                         },
                         "weather-forecast": {
                             "description": "天氣預報面板顯示天氣狀態。對於放置於牆上顯示非常實用。",
-                            "name": "天氣預報面板"
+                            "name": "天氣預報面板",
+                            "show_forecast": "顯示預報"
                         }
                     },
                     "cardpicker": {
