@@ -30,15 +30,26 @@ self.addEventListener('install', (event) => {
 
 gulp.task("gen-service-worker-app-prod", async () => {
   // Read bundled source file
-  const bundleManifest = require(path.resolve(paths.output, "manifest.json"));
+  const bundleManifestLatest = require(path.resolve(
+    paths.output,
+    "manifest.json"
+  ));
   let serviceWorkerContent = fs.readFileSync(
-    paths.root + bundleManifest["service_worker.js"],
+    paths.root + bundleManifestLatest["service_worker.js"],
     "utf-8"
   );
 
   // Delete old file from frontend_latest so manifest won't pick it up
-  fs.removeSync(paths.root + bundleManifest["service_worker.js"]);
-  fs.removeSync(paths.root + bundleManifest["service_worker.js.map"]);
+  fs.removeSync(paths.root + bundleManifestLatest["service_worker.js"]);
+  fs.removeSync(paths.root + bundleManifestLatest["service_worker.js.map"]);
+
+  // Remove ES5
+  const bundleManifestES5 = require(path.resolve(
+    paths.output_es5,
+    "manifest.json"
+  ));
+  fs.removeSync(paths.root + bundleManifestES5["service_worker.js"]);
+  fs.removeSync(paths.root + bundleManifestES5["service_worker.js.map"]);
 
   const workboxManifest = await workboxBuild.getManifest({
     // Files that mach this pattern will be considered unique and skip revision check
