@@ -184,11 +184,6 @@ class HuiGenericEntityRow extends LitElement {
       state-badge {
         flex: 0 0 40px;
       }
-      state-badge:focus {
-        outline: none;
-        background: var(--divider-color);
-        border-radius: 100%;
-      }
       :host([rtl]) .flex {
         margin-left: 0;
         margin-right: 16px;

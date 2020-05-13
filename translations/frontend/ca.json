@@ -1878,10 +1878,13 @@
                         "built_using": "Creat utilitzant",
                         "custom_uis": "Interfícies d'usuari personalitzades:",
                         "developed_by": "Desenvolupat per un munt de gent fantàstica.",
+                        "documentation": "Documentació",
                         "frontend": "frontend-ui",
                         "frontend_version": "Versió de la interfície web d'usuari: {version} - {type}",
                         "home_assistant_logo": "Logotip de Home Assistant",
                         "icons_by": "Icones de",
+                        "integrations": "Integracions",
+                        "issues": "Problemes",
                         "license": "Publicat amb la llicència Apache 2.0",
                         "path_configuration": "Ruta al fitxer configuration.yaml: {path}",
                         "server": "servidor",
@@ -2072,6 +2075,7 @@
                             "name": "Nom",
                             "no_theme": "Sense tema",
                             "refresh_interval": "Interval d'actualització",
+                            "secondary_info_attribute": "Atribut d’informació secundària",
                             "show_icon": "Mostra icona?",
                             "show_name": "Mostra nom?",
                             "show_state": "Mostra estat?",
@@ -2162,7 +2166,8 @@
                         },
                         "weather-forecast": {
                             "description": "La targeta de previsió meteorològica, és molt útil per incloure en interfícies integrades en parets.",
-                            "name": "Previsió meteorològica"
+                            "name": "Previsió meteorològica",
+                            "show_forecast": "Mostra la previsió"
                         }
                     },
                     "cardpicker": {

@@ -1878,10 +1878,13 @@
                         "built_using": "Costruito usando",
                         "custom_uis": "Interfacce Utente personalizzate:",
                         "developed_by": "Sviluppato da un gruppo di persone fantastiche.",
+                        "documentation": "Documentazione",
                         "frontend": "frontend-ui",
                         "frontend_version": "Versione Frontend: {version} - {type}",
                         "home_assistant_logo": "Logo Home Assistant",
                         "icons_by": "Icone di",
+                        "integrations": "integrazioni",
+                        "issues": "Problemi",
                         "license": "Pubblicato sotto la licenza Apache 2.0",
                         "path_configuration": "Percorso del file configuration.yaml: {path}",
                         "server": "server",
@@ -2072,6 +2075,7 @@
                             "name": "Nome",
                             "no_theme": "Nessun tema",
                             "refresh_interval": "Intervallo di aggiornamento",
+                            "secondary_info_attribute": "Attributo informazioni secondarie",
                             "show_icon": "Mostrare l'icona?",
                             "show_name": "Mostrare il nome?",
                             "show_state": "Mostrare lo stato?",
@@ -2162,7 +2166,8 @@
                         },
                         "weather-forecast": {
                             "description": "La scheda Previsioni Meteo mostra le condizioni meteorologiche. Molto utili da includere nelle interfacce che le persone visualizzano sulla parete.",
-                            "name": "Previsioni del tempo"
+                            "name": "Previsioni del tempo",
+                            "show_forecast": "Mostra Previsioni"
                         }
                     },
                     "cardpicker": {
