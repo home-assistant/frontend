@@ -93,7 +93,11 @@ export class HaIntegrationCard extends LitElement {
               html`<paper-item
                 .entryId=${item.entry_id}
                 @click=${this._selectConfigEntry}
-                ><paper-item-body>${item.title}</paper-item-body
+                ><paper-item-body
+                  >${item.title ||
+                  this.hass.localize(
+                    "ui.panel.config.integrations.config_entry.unnamed_entry"
+                  )}</paper-item-body
                 ><ha-icon-next></ha-icon-next
               ></paper-item>`
           )}

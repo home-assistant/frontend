@@ -121,7 +121,7 @@ class HaAuthorize extends litLocalizeLiteMixin(LitElement) {
     const tempA = document.createElement("a");
     tempA.href = this.redirectUri!;
     if (tempA.host === location.host) {
-      registerServiceWorker(false);
+      registerServiceWorker(this, false);
     }
   }
 
