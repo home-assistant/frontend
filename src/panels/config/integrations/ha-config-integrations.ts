@@ -14,10 +14,7 @@ import memoizeOne from "memoize-one";
 import * as Fuse from "fuse.js";
 import { caseInsensitiveCompare } from "../../../common/string/compare";
 import { computeRTL } from "../../../common/util/compute_rtl";
-import {
-  afterNextRender,
-  nextRender,
-} from "../../../common/util/render-status";
+import { nextRender } from "../../../common/util/render-status";
 import "../../../components/entity/ha-state-icon";
 import "../../../components/ha-card";
 import "@material/mwc-fab";
