@@ -146,12 +146,13 @@ export class HuiGraphHeaderFooter extends LitElement
       this._stateHistory!.push(...stateHistory[0]);
     }
 
-    this._coordinates = coordinates(
-      this._stateHistory,
-      this._config!.hours_to_show!,
-      500,
-      this._config!.detail!
-    );
+    this._coordinates =
+      coordinates(
+        this._stateHistory,
+        this._config!.hours_to_show!,
+        500,
+        this._config!.detail!
+      ) || [];
 
     this._date = endTime;
     this._fetching = false;
