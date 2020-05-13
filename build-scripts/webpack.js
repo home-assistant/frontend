@@ -20,7 +20,9 @@ const createWebpackConfig = ({
   }
   return {
     mode: isProdBuild ? "production" : "development",
-    devtool: isProdBuild ? "source-map" : "inline-cheap-module-source-map",
+    devtool: isProdBuild
+      ? "cheap-module-source-map"
+      : "eval-cheap-module-source-map",
     entry,
     module: {
       rules: [
@@ -72,6 +74,10 @@ const createWebpackConfig = ({
       // Ignore roboto pointing at CDN. We use local font-roboto-local.
       new webpack.NormalModuleReplacementPlugin(
         /@polymer\/font-roboto\/roboto\.js$/,
+        path.resolve(paths.polymer_dir, "src/util/empty.js")
+      ),
+      new webpack.NormalModuleReplacementPlugin(
+        /@vaadin\/vaadin-material-styles\/font-roboto\.js$/,
         path.resolve(paths.polymer_dir, "src/util/empty.js")
       ),
       // Ignore mwc icons pointing at CDN.

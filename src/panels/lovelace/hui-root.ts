@@ -31,7 +31,11 @@ import "../../components/ha-icon";
 import "../../components/ha-menu-button";
 import "../../components/ha-icon-button-arrow-next";
 import "../../components/ha-icon-button-arrow-prev";
-import type { LovelaceConfig, LovelacePanelConfig } from "../../data/lovelace";
+import type {
+  LovelaceConfig,
+  LovelacePanelConfig,
+  LovelaceViewConfig,
+} from "../../data/lovelace";
 import {
   showAlertDialog,
   showConfirmationDialog,
@@ -424,18 +428,24 @@ class HUIRoot extends LitElement {
       }
 
       if (!oldLovelace || oldLovelace.editMode !== this.lovelace!.editMode) {
+        const views = this.config && this.config.views;
+
+        // Adjust for higher header
+        if (!views || views.length < 2) {
+          fireEvent(this, "iron-resize");
+        }
+
         // Leave unused entities when leaving edit mode
         if (
           this.lovelace!.mode === "storage" &&
           viewPath === "hass-unused-entities"
         ) {
-          const views = this.config && this.config.views;
           navigate(this, `${this.route?.prefix}/${views[0]?.path || 0}`);
           newSelectView = 0;
         }
       }
 
-      if (!force) {
+      if (!force && huiView) {
         huiView.lovelace = this.lovelace;
       }
     }
@@ -552,6 +562,10 @@ class HUIRoot extends LitElement {
   private _addView() {
     showEditViewDialog(this, {
       lovelace: this.lovelace!,
+      saveCallback: (viewIndex: number, viewConfig: LovelaceViewConfig) => {
+        const path = viewConfig.path || viewIndex;
+        navigate(this, `${this.route?.prefix}/${path}`);
+      },
     });
   }
 

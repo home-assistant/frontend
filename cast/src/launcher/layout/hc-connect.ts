@@ -184,7 +184,7 @@ export class HcConnect extends LitElement {
         this.castManager = null;
       }
     );
-    registerServiceWorker(false);
+    registerServiceWorker(this, false);
   }
 
   private async _handleDemo() {
