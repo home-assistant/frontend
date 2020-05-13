@@ -31,7 +31,7 @@ export class StateBadge extends LitElement {
   @property({ type: Boolean, reflect: true, attribute: "icon" })
   private _showIcon = true;
 
-  @property() private _iconStyle?: Partial<CSSStyleDeclaration>;
+  @property() private _iconStyle: { [name: string]: string } = {};
 
   protected render(): TemplateResult {
     const stateObj = this.stateObj;
@@ -62,11 +62,7 @@ export class StateBadge extends LitElement {
     }
     const stateObj = this.stateObj;
 
-    const iconStyle: Partial<CSSStyleDeclaration> = {
-      color: "",
-      filter: "",
-      display: "",
-    };
+    const iconStyle: { [name: string]: string } = {};
     const hostStyle: Partial<CSSStyleDeclaration> = {
       backgroundImage: "",
     };
