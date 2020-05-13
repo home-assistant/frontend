@@ -15,9 +15,10 @@ import { hasConfigOrEntityChanged } from "../common/has-changed";
 import "../components/hui-generic-entity-row";
 import "../components/hui-timestamp-display";
 import "../components/hui-warning";
-import { EntityConfig, LovelaceRow } from "./types";
+import { LovelaceRow } from "./types";
+import { EntitiesCardEntityConfig } from "../cards/types";
 
-interface SensorEntityConfig extends EntityConfig {
+interface SensorEntityConfig extends EntitiesCardEntityConfig {
   format?: "relative" | "date" | "time" | "datetime";
 }
 
@@ -59,7 +60,14 @@ class HuiSensorEntityRow extends LitElement implements LovelaceRow {
 
     return html`
       <hui-generic-entity-row .hass=${this.hass} .config=${this._config}>
-        <div class="text-content">
+        <div
+          class="text-content"
+          @action=${this._handleAction}
+          .actionHandler=${actionHandler({
+            hasHold: hasAction(this._config.hold_action),
+            hasDoubleClick: hasAction(this._config.double_tap_action),
+          })}
+        >
           ${stateObj.attributes.device_class ===
             SENSOR_DEVICE_CLASS_TIMESTAMP &&
           stateObj.state !== "unavailable" &&
@@ -79,6 +87,10 @@ class HuiSensorEntityRow extends LitElement implements LovelaceRow {
         </div>
       </hui-generic-entity-row>
     `;
+  }
+
+  private _handleAction(ev: ActionHandlerEvent) {
+    handleAction(this, this.hass!, this._config!, ev.detail.action);
   }
 
   static get styles(): CSSResult {
