@@ -46,7 +46,7 @@ export class HomeAssistantAppEl extends HassElement {
   protected firstUpdated(changedProps) {
     super.firstUpdated(changedProps);
     this._initialize();
-    setTimeout(registerServiceWorker, 1000);
+    setTimeout(() => registerServiceWorker(this), 1000);
     /* polyfill for paper-dropdown */
     import(
       /* webpackChunkName: "polyfill-web-animations-next" */ "web-animations-js/web-animations-next-lite.min"
