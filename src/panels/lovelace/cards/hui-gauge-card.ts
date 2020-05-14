@@ -131,6 +131,16 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
 
     const sliderBarColor = this._computeSeverity(state);
 
+    let value: number | undefined;
+
+    if (this._config.max === undefined || isNaN(this._config.max)) {
+      value = undefined;
+    } else if (state < this._config.max) {
+      value = state;
+    } else {
+      value = this._config.max;
+    }
+
     return html`
       <ha-card
         @click=${this._handleClick}
@@ -143,7 +153,7 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
           readonly
           arcLength="180"
           startAngle="180"
-          .value=${state}
+          .value=${value}
           .min=${this._config.min}
           .max=${this._config.max}
         ></round-slider>
@@ -243,6 +253,10 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
   }
 
   private _measureCard() {
+    if (!this.isConnected) {
+      return;
+    }
+
     if (this.offsetWidth < 200) {
       this.setAttribute("narrow", "");
     } else {
@@ -257,6 +271,10 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
 
   static get styles(): CSSResult {
     return css`
+      :host {
+        display: block;
+      }
+
       ha-card {
         cursor: pointer;
         height: 100%;
