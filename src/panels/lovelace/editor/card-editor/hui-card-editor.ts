@@ -27,6 +27,7 @@ export interface ConfigChangedEvent {
   config: LovelaceCardConfig;
   error?: string;
   guiModeAvailable?: boolean;
+  documentationURL?: string;
 }
 
 declare global {

@@ -25,6 +25,7 @@ import type { ConfigChangedEvent, HuiCardEditor } from "./hui-card-editor";
 import "./hui-card-picker";
 import "./hui-card-preview";
 import type { EditCardDialogParams } from "./show-edit-card-dialog";
+import { findCardDocumentationURL } from "../find-card-documentation-url";
 
 declare global {
   // for fire event
@@ -57,6 +58,8 @@ export class HuiDialogEditCard extends LitElement {
 
   @property() private _GUImode = true;
 
+  private _documentationURL?: string;
+
   public async showDialog(params: EditCardDialogParams): Promise<void> {
     this._params = params;
     this._GUImode = true;
@@ -65,6 +68,9 @@ export class HuiDialogEditCard extends LitElement {
     this._viewConfig = params.lovelaceConfig.views[view];
     this._cardConfig =
       card !== undefined ? this._viewConfig.cards![card] : params.cardConfig;
+    if (this._cardConfig && !this._documentationURL) {
+      this._documentationURL = findCardDocumentationURL(this._cardConfig!.type);
+    }
     if (this._cardConfig && !Object.isFrozen(this._cardConfig)) {
       this._cardConfig = deepFreeze(this._cardConfig);
     }
@@ -96,9 +102,20 @@ export class HuiDialogEditCard extends LitElement {
 
     return html`
       <ha-paper-dialog with-backdrop opened modal @keyup=${this._handleKeyUp}>
-        <h2>
-          ${heading}
-        </h2>
+        <div class="header">
+          <h2>
+            ${heading}
+          </h2>
+          ${this._documentationURL !== undefined
+            ? html`
+                <ha-icon-button
+                  icon="hass:help-circle"
+                  .title=${this.hass!.localize("ui.panel.lovelace.menu.help")}
+                  @click=${this._handleHelp}
+                ></ha-icon-button>
+              `
+            : ""}
+        </div>
         <paper-dialog-scrollable>
           ${this._cardConfig === undefined
             ? html`
@@ -274,6 +291,11 @@ export class HuiDialogEditCard extends LitElement {
         .gui-mode-button {
           margin-right: auto;
         }
+        .header {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+        }
       `,
     ];
   }
@@ -289,9 +311,13 @@ export class HuiDialogEditCard extends LitElement {
     }
     this._cardConfig = deepFreeze(config);
     this._error = ev.detail.error;
+    this._documentationURL = ev.detail.documentationURL;
   }
 
   private _handleConfigChanged(ev: HASSDomEvent<ConfigChangedEvent>) {
+    if (this._cardConfig?.type !== ev.detail.config.type) {
+      this._documentationURL = findCardDocumentationURL(ev.detail.config.type);
+    }
     this._cardConfig = deepFreeze(ev.detail.config);
     this._error = ev.detail.error;
     this._guiModeAvailable = ev.detail.guiModeAvailable;
@@ -317,6 +343,11 @@ export class HuiDialogEditCard extends LitElement {
     this._params = undefined;
     this._cardConfig = undefined;
     this._error = undefined;
+    this._documentationURL = undefined;
+  }
+
+  private _handleHelp(): void {
+    window.open(this._documentationURL, "_blank");
   }
 
   private get _canSave(): boolean {

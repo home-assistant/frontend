@@ -30,51 +30,13 @@ import {
 import { createCardElement } from "../../create-element/create-card-element";
 import { LovelaceCard } from "../../types";
 import { getCardStubConfig } from "../get-card-stub-config";
-import { CardPickTarget } from "../types";
-
-interface Card {
-  type: string;
-  name?: string;
-  description?: string;
-  noElement?: boolean;
-  isCustom?: boolean;
-}
+import { CardPickTarget, Card } from "../types";
+import { coreCards } from "../lovelace-cards";
 
 interface CardElement {
   card: Card;
   element: TemplateResult;
 }
-
-const previewCards: string[] = [
-  "alarm-panel",
-  "button",
-  "entities",
-  "entity",
-  "gauge",
-  "glance",
-  "history-graph",
-  "light",
-  "map",
-  "markdown",
-  "media-control",
-  "picture",
-  "picture-elements",
-  "picture-entity",
-  "picture-glance",
-  "plant-status",
-  "sensor",
-  "thermostat",
-  "weather-forecast",
-];
-
-const nonPreviewCards: string[] = [
-  "conditional",
-  "entity-filter",
-  "horizontal-stack",
-  "iframe",
-  "vertical-stack",
-  "shopping-list",
-];
 
 @customElement("hui-card-picker")
 export class HuiCardPicker extends LitElement {
@@ -136,11 +98,7 @@ export class HuiCardPicker extends LitElement {
         )}
       </div>
       <div class="cards-container">
-        <div
-          class="card"
-          @click="${this._cardPicked}"
-          .config="${{ type: "" }}"
-        >
+        <div class="card" @click=${this._cardPicked} .config=${{ type: "" }}>
           <div class="preview description">
             ${this.hass!.localize(
               `ui.panel.lovelace.editor.card.generic.manual_description`
@@ -192,33 +150,22 @@ export class HuiCardPicker extends LitElement {
   }
 
   private _loadCards() {
-    let cards: Card[] = previewCards
-      .map((type: string) => ({
-        type,
-        name: this.hass!.localize(`ui.panel.lovelace.editor.card.${type}.name`),
-        description: this.hass!.localize(
-          `ui.panel.lovelace.editor.card.${type}.description`
-        ),
-      }))
-      .concat(
-        nonPreviewCards.map((type: string) => ({
-          type,
-          name: this.hass!.localize(
-            `ui.panel.lovelace.editor.card.${type}.name`
-          ),
-          description: this.hass!.localize(
-            `ui.panel.lovelace.editor.card.${type}.description`
-          ),
-          noElement: true,
-        }))
-      );
+    let cards: Card[] = coreCards.map((card: Card) => ({
+      name: this.hass!.localize(
+        `ui.panel.lovelace.editor.card.${card.type}.name`
+      ),
+      description: this.hass!.localize(
+        `ui.panel.lovelace.editor.card.${card.type}.description`
+      ),
+      ...card,
+    }));
     if (customCards.length > 0) {
       cards = cards.concat(
         customCards.map((ccard: CustomCardEntry) => ({
           type: ccard.type,
           name: ccard.name,
           description: ccard.description,
-          noElement: true,
+          showElement: ccard.preview,
           isCustom: true,
         }))
       );
@@ -316,10 +263,12 @@ export class HuiCardPicker extends LitElement {
   }
 
   private _cardPicked(ev: Event): void {
-    const config: LovelaceCardConfig = (ev.currentTarget! as CardPickTarget)
-      .config;
+    const target = ev.currentTarget! as CardPickTarget;
 
-    fireEvent(this, "config-changed", { config });
+    fireEvent(this, "config-changed", {
+      config: target.config,
+      documentationURL: target.documentationURL,
+    });
   }
 
   private _createCardElement(cardConfig: LovelaceCardConfig) {
@@ -341,7 +290,7 @@ export class HuiCardPicker extends LitElement {
 
   private async _renderCardElement(card: Card): Promise<TemplateResult> {
     let { type } = card;
-    const { noElement, isCustom, name, description } = card;
+    const { showElement, isCustom, name, description, documentationURL } = card;
     const customCard = isCustom ? getCustomCardEntry(type) : undefined;
     if (isCustom) {
       type = `${CUSTOM_TYPE_PREFIX}${type}`;
@@ -358,7 +307,7 @@ export class HuiCardPicker extends LitElement {
         this._usedEntities!
       );
 
-      if (!noElement || customCard?.preview) {
+      if (showElement) {
         element = this._createCardElement(cardConfig);
       }
     }
@@ -369,6 +318,7 @@ export class HuiCardPicker extends LitElement {
           class="overlay"
           @click=${this._cardPicked}
           .config=${cardConfig}
+          .documentationURL=${documentationURL}
         ></div>
         <div
           class="preview ${classMap({

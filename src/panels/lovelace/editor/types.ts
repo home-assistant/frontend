@@ -54,8 +54,18 @@ export interface EditorTarget extends EventTarget {
   config: ActionConfig;
 }
 
+export interface Card {
+  type: string;
+  name?: string;
+  description?: string;
+  documentationURL?: string;
+  showElement?: boolean;
+  isCustom?: boolean;
+}
+
 export interface CardPickTarget extends EventTarget {
   config: LovelaceCardConfig;
+  documentationURL: string;
 }
 
 export const actionConfigStruct = struct({
