@@ -56,19 +56,19 @@ export class HuiMarkdownCard extends LitElement implements LovelaceCard {
       throw new Error("Invalid Configuration: Content Required");
     }
 
+    if (this._config?.content !== config.content) {
+      this._tryDisconnect();
+    }
     this._config = config;
-    this._disconnect().then(() => {
-      this._connect();
-    });
   }
 
   public connectedCallback() {
     super.connectedCallback();
-    this._connect();
+    this._tryConnect();
   }
 
   public disconnectedCallback() {
-    this._disconnect();
+    this._tryDisconnect();
   }
 
   protected render(): TemplateResult {
@@ -94,6 +94,9 @@ export class HuiMarkdownCard extends LitElement implements LovelaceCard {
     if (!this._config || !this.hass) {
       return;
     }
+
+    this._tryConnect();
+
     const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
     const oldConfig = changedProps.get("_config") as
       | MarkdownCardConfig
@@ -109,7 +112,7 @@ export class HuiMarkdownCard extends LitElement implements LovelaceCard {
     }
   }
 
-  private async _connect(): Promise<void> {
+  private async _tryConnect(): Promise<void> {
     if (
       this._unsubRenderTemplate !== undefined ||
       !this.hass ||
@@ -138,7 +141,7 @@ export class HuiMarkdownCard extends LitElement implements LovelaceCard {
     });
   }
 
-  private async _disconnect(): Promise<void> {
+  private async _tryDisconnect(): Promise<void> {
     if (!this._unsubRenderTemplate) {
       return;
     }
