@@ -48,6 +48,7 @@ export class HaIconButton extends LitElement {
       }
       mwc-icon-button {
         --mdc-theme-on-primary: currentColor;
+        --mdc-theme-text-disabled-on-light: var(--disabled-text-color);
       }
       ha-icon {
         --ha-icon-display: inline;
