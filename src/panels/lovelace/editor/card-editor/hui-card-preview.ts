@@ -6,13 +6,14 @@ import { createCardElement } from "../../create-element/create-card-element";
 import { LovelaceCard } from "../../types";
 import { ConfigError } from "../types";
 import { createErrorCardConfig } from "../../create-element/create-element-base";
+import { property, PropertyValues, UpdatingElement } from "lit-element";
 
-export class HuiCardPreview extends HTMLElement {
-  private _hass?: HomeAssistant;
+export class HuiCardPreview extends UpdatingElement {
+  @property() public hass?: HomeAssistant;
 
-  private _element?: LovelaceCard;
+  @property() public config?: LovelaceCardConfig;
 
-  private _config?: LovelaceCardConfig;
+  @property() private _element?: LovelaceCard;
 
   private get _error() {
     return this._element?.tagName === "HUI-ERROR-CARD";
@@ -22,21 +23,10 @@ export class HuiCardPreview extends HTMLElement {
     super();
     this.addEventListener("ll-rebuild", () => {
       this._cleanup();
-      if (this._config) {
-        this.config = this._config;
+      if (this.config) {
+        this._createCard(this.config);
       }
     });
-  }
-
-  set hass(hass: HomeAssistant) {
-    if (!this._hass || this._hass.language !== hass.language) {
-      this.style.direction = computeRTL(hass) ? "rtl" : "ltr";
-    }
-
-    this._hass = hass;
-    if (this._element) {
-      this._element.hass = hass;
-    }
   }
 
   set error(error: ConfigError) {
@@ -45,36 +35,52 @@ export class HuiCardPreview extends HTMLElement {
     );
   }
 
-  set config(configValue: LovelaceCardConfig) {
-    const curConfig = this._config;
-    this._config = configValue;
+  protected updated(changedProperties: PropertyValues) {
+    if (changedProperties.has("config")) {
+      const oldConfig = changedProperties.get("config") as
+        | undefined
+        | LovelaceCardConfig;
 
-    if (!configValue) {
-      this._cleanup();
-      return;
-    }
-
-    if (!configValue.type) {
-      this._createCard(
-        createErrorCardConfig("No card type found", configValue)
-      );
-      return;
-    }
-
-    if (!this._element) {
-      this._createCard(configValue);
-      return;
-    }
-
-    // in case the element was an error element we always want to recreate it
-    if (!this._error && curConfig && configValue.type === curConfig.type) {
-      try {
-        this._element.setConfig(configValue);
-      } catch (err) {
-        this._createCard(createErrorCardConfig(err.message, configValue));
+      if (!this.config) {
+        this._cleanup();
+        return;
       }
-    } else {
-      this._createCard(configValue);
+
+      if (!this.config.type) {
+        this._createCard(
+          createErrorCardConfig("No card type found", this.config)
+        );
+        return;
+      }
+
+      if (!this._element) {
+        this._createCard(this.config);
+        return;
+      }
+
+      // in case the element was an error element we always want to recreate it
+      if (!this._error && oldConfig && this.config.type === oldConfig.type) {
+        try {
+          this._element.setConfig(this.config);
+        } catch (err) {
+          this._createCard(createErrorCardConfig(err.message, this.config));
+        }
+      } else {
+        this._createCard(this.config);
+      }
+    }
+
+    if (changedProperties.has("hass")) {
+      const oldHass = changedProperties.get("hass") as
+        | HomeAssistant
+        | undefined;
+      if (!oldHass || oldHass.language !== this.hass!.language) {
+        this.style.direction = computeRTL(this.hass!) ? "rtl" : "ltr";
+      }
+
+      if (this._element) {
+        this._element.hass = this.hass;
+      }
     }
   }
 
@@ -82,8 +88,8 @@ export class HuiCardPreview extends HTMLElement {
     this._cleanup();
     this._element = createCardElement(configValue);
 
-    if (this._hass) {
-      this._element!.hass = this._hass;
+    if (this.hass) {
+      this._element!.hass = this.hass;
     }
 
     this.appendChild(this._element!);

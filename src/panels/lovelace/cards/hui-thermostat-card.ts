@@ -248,18 +248,11 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
   }
 
   protected shouldUpdate(changedProps: PropertyValues): boolean {
-    if (changedProps.has("_setTemp")) {
-      return true;
-    }
     return hasConfigOrEntityChanged(this, changedProps);
   }
 
   protected updated(changedProps: PropertyValues): void {
     super.updated(changedProps);
-
-    if (changedProps.has("_setTemp")) {
-      this.rescale_svg();
-    }
 
     if (
       !this._config ||
@@ -283,23 +276,18 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
       applyThemesOnElement(this, this.hass.themes, this._config.theme);
     }
 
-    const stateObj = this.hass!.states[this._config!.entity];
+    const stateObj = this.hass.states[this._config.entity];
     if (!stateObj) {
       return;
     }
-    const newTemp = this._getSetTemp(stateObj);
-    if (
-      Array.isArray(this._setTemp) &&
-      Array.isArray(newTemp) &&
-      (this._setTemp[0] !== newTemp[0] || this._setTemp[1] !== newTemp[1])
-    ) {
-      this._setTemp = newTemp;
-    } else if (this._setTemp !== newTemp) {
-      this._setTemp = newTemp;
+
+    if (!oldHass || oldHass.states[this._config.entity] !== stateObj) {
+      this._setTemp = this._getSetTemp(stateObj);
+      this._rescale_svg();
     }
   }
 
-  private rescale_svg() {
+  private _rescale_svg() {
     // Set the viewbox of the SVG containing the set temperature to perfectly
     // fit the text
     // That way it will auto-scale correctly
