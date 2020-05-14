@@ -187,8 +187,8 @@
             "stopped": "متوقف"
         },
         "default": {
-            "off": "Oprit",
-            "on": "Pornit",
+            "off": "خاموش",
+            "on": "روشن",
             "unavailable": "غیرقابل دسترس",
             "unknown": "نامشخص"
         },
@@ -387,6 +387,7 @@
                 "attributes": {
                     "air_pressure": "فشار هوا",
                     "humidity": "رطوبت",
+                    "precipitation": "بارش",
                     "temperature": "دما",
                     "visibility": "قابل دیدن",
                     "wind_speed": "سرعت باد"
@@ -405,17 +406,24 @@
                     "wnw": "شمال شرقی",
                     "wsw": "جنوب غربی"
                 },
-                "forecast": "پیش بینی"
+                "forecast": "پیش بینی",
+                "high": "بالا",
+                "low": "کم"
             }
         },
         "common": {
+            "and": "و",
             "cancel": "لغو",
             "close": "Inchide",
-            "delete": "Elimina",
+            "delete": "حذف",
             "loading": "در حال بارگذاری",
+            "next": "بعدی",
+            "previous": "قبلی",
+            "refresh": "نوسازی",
             "save": "ذخیره",
-            "successfully_deleted": "Eliminat cu succes",
-            "successfully_saved": "Salvat cu succes"
+            "successfully_deleted": "با موفقیت حذف شد",
+            "successfully_saved": "Salvat cu succes",
+            "undo": "لغو"
         },
         "components": {
             "area-picker": {
@@ -458,6 +466,13 @@
             "domain_toggler": {
                 "title": "Comuta domeniile"
             },
+            "entity_registry": {
+                "editor": {
+                    "delete": "حذف",
+                    "update": "به روز رسانی"
+                },
+                "no_unique_id": "این نهاد شناسه منحصر به فرد ندارد ، بنابراین تنظیمات آن از UI قابل مدیریت نیست."
+            },
             "generic": {
                 "close": "inchide"
             },
@@ -472,6 +487,7 @@
                     "max": "Valoare maxima",
                     "min": "Valoare minima",
                     "mode": "Mod de vizualizare",
+                    "step": "اندازه گام",
                     "unit_of_measurement": "Unitate de masura"
                 },
                 "input_select": {
@@ -481,10 +497,14 @@
                     "options": "Optiuni"
                 },
                 "input_text": {
+                    "max": "حداکثر طول",
+                    "min": "حداقل طول",
                     "mode": "Mod de vizualizare",
                     "password": "Parola",
                     "text": "Text"
-                }
+                },
+                "platform_not_loaded": "ادغام {platform} بارگیری نشده است. لطفاً تنظیمات خود را با اضافه کردن 'default_config:' یا '{platform}:' تنظیمات خود را اضافه کنید.",
+                "yaml_not_editable": "تنظیمات این نهاد نمی تواند از UI ویرایش شود. فقط موجودیت هایی که از UI تنظیم می شوند از UI قابل تنظیم هستند."
             },
             "more_info_control": {
                 "restored": {
@@ -517,26 +537,26 @@
                 }
             },
             "mqtt_device_debug_info": {
-                "deserialize": "Incearca sa analizezi mesajele MQTT ca si JSON",
-                "entities": "Entitati",
-                "no_entities": "Nicio entitate",
-                "no_triggers": "Niciun mecanism de declansare",
-                "payload_display": "Afiseaza incarcatura",
-                "recent_messages": "\n{n} mesaje cele mai recente",
-                "show_as_yaml": "Arata in format YAML",
-                "title": "{dispozitiv} informatii depanare",
-                "triggers": "Mecanism de declansare"
+                "deserialize": "تلاش برای تجزیه MQTT پیام به عنوان JSON",
+                "entities": "موجودیت ها",
+                "no_entities": "هیچ نهاد",
+                "no_triggers": "بدون محرک",
+                "payload_display": "Payload display",
+                "recent_messages": "{n} پیام (های) اخیراً دریافت شده",
+                "show_as_yaml": "نمایش به صورت YAML",
+                "title": "{device} اطلاعات اشکال زدایی",
+                "triggers": "تحریکات"
             },
             "zha_device_info": {
                 "buttons": {
-                    "zigbee_information": "Informatii Zigbee"
+                    "zigbee_information": "اطلاعات zigbee"
                 },
-                "device_signature": "Semnatura dispozitiv Zigbee",
+                "device_signature": "امضای دستگاه Zigbee",
                 "manuf": "de catre {fabricant}",
                 "no_area": "Nicio Zona ",
                 "services": {
                     "remove": "Elimina un dispozitiv din reteaua Zigbee",
-                    "zigbee_information": "Vizualizeaza informatiile Zigbee pentru acest dispozitiv "
+                    "zigbee_information": "مشاهده  اطلاعات Zigbee  دستگاه."
                 },
                 "zha_device_card": {
                     "area_picker_label": "Zona",
@@ -566,12 +586,16 @@
             "service_call_failed": "تماس با سرویس {service} ناموفق بود"
         },
         "panel": {
+            "calendar": {
+                "my_calendars": "تقویم های من",
+                "today": "امروز"
+            },
             "config": {
                 "areas": {
                     "caption": "ثبت نام منطقه",
                     "data_table": {
-                        "area": "Zona",
-                        "devices": "Dispozitive"
+                        "area": "منطقه",
+                        "devices": "دستگاه ها"
                     },
                     "delete": {
                         "confirmation_text": "هیچیک از درستگاه های این ناحیه اختصاص داده نشده اند",
@@ -657,6 +681,9 @@
                                         "for": "Durata"
                                     },
                                     "label": "Dispozitiv"
+                                },
+                                "not": {
+                                    "label": "نه"
                                 },
                                 "numeric_state": {
                                     "above": "بالاتر",
@@ -771,7 +798,7 @@
                         "edit_automation": "Editeaza automatizare",
                         "header": "ویرایشگر اتوماسیون",
                         "headers": {
-                            "name": "Nume"
+                            "name": "نام"
                         },
                         "introduction": "ویرایشگر اتوماسیون اجازه می دهد تا شما را به ایجاد و ویرایش اتوماسیون بپردازید . لطفا پیوند زیر را بخوانید تا دستورالعمل ها را بخواند تا مطمئن شوید که صفحه اصلی دستیار را به درستی پیکربندی کرده اید.",
                         "learn_more": "درباره اتوماسیون بیشتر بدانید",
@@ -859,7 +886,9 @@
                                 "edit_requires_storage": "ویرایشگر غیرفعال شده است چون پیکربندی ذخیره شده در configuration.yaml.",
                                 "elevation": "ارتفاع",
                                 "elevation_meters": "متر",
+                                "external_url": "URL خارجی",
                                 "imperial_example": "فارنهایت، پوند",
+                                "internal_url": "URL داخلی",
                                 "latitude": "طول و عرض جغرافیایی",
                                 "location_name": "نام برای نصب صفحه اصلی دستیار شما",
                                 "longitude": "جغرافیایی",
@@ -901,7 +930,7 @@
                     },
                     "cant_edit": "Puteti edita doar elemente create in Interfata Utilizator",
                     "caption": "Dispozitive",
-                    "confirm_delete": "Esti sigur ca vrei sa elimini acest dispozitiv?",
+                    "confirm_delete": "آیا مطمئنید که می خواهید این دستگاه را حذف کنید ؟",
                     "confirm_rename_entity_ids": "Vrei de asemenea sa redenumesti Entity ID-ul entitatilor tale?",
                     "data_table": {
                         "area": "Zona",
@@ -912,7 +941,8 @@
                         "model": "Model",
                         "no_devices": "دستگاهی وجود ندارد"
                     },
-                    "delete": "Elimina",
+                    "delete": "حذف",
+                    "device_info": "اطلاعات دستگاه",
                     "device_not_found": "Nu s-a descoperit dispozitivul.",
                     "entities": {
                         "add_entities_lovelace": "Adauga la Lovelace",
@@ -920,7 +950,7 @@
                         "none": "Acest dispozitiv nu are nicio entitate"
                     },
                     "name": "Nume",
-                    "no_devices": "Nu exista dispozitive",
+                    "no_devices": "دستگاهی وجود ندارد",
                     "scene": {
                         "create": "Creaza scena cu acest dispozitiv",
                         "no_scenes": "Nu exista scene",
@@ -964,8 +994,8 @@
                     }
                 },
                 "filtering": {
-                    "clear": "Elimina",
-                    "filtering_by": "Filtreaza dupa"
+                    "clear": "پاک کردن",
+                    "filtering_by": "فیلتر کردن با"
                 },
                 "header": "پیکربندی HOME ASSistant",
                 "helpers": {
@@ -980,6 +1010,7 @@
                         "add_helper": "Adauga ajutor",
                         "headers": {
                             "editable": "Editabil",
+                            "entity_id": "شناسه نهاد",
                             "name": "Nume",
                             "type": "Tip"
                         }
@@ -992,10 +1023,10 @@
                     }
                 },
                 "integrations": {
-                    "add_integration": "Adauga integrare",
+                    "add_integration": "اضافه کردن ادغام",
                     "caption": "یکپارچگی",
                     "config_entry": {
-                        "delete": "Sterge",
+                        "delete": "حذف",
                         "device_unavailable": "دستگاه در دسترس نیست",
                         "entity_unavailable": "نهاد در دسترس نیست",
                         "firmware": "سیستم عامل: {version}",
@@ -1004,10 +1035,10 @@
                         "no_area": "بدون منطقه",
                         "no_device": " بدون دستگاه",
                         "no_devices": "این ادغام هیچ دستگاهی ندارد.",
-                        "options": "Optiuni",
-                        "rename": "Redenumeste",
+                        "options": "گزینه ها",
+                        "rename": "تغییر نام",
                         "restart_confirm": "راه اندازی مجدد home assistant به پایان بردن این ادغام",
-                        "system_options": "Optiuni de sistem"
+                        "system_options": "گزینه های سیستم"
                     },
                     "config_flow": {
                         "aborted": "Esuat",
@@ -1032,56 +1063,79 @@
                         "ignored": "Ignorat",
                         "show_ignored": "Afiseaza integrarile ignorate"
                     },
-                    "integration": "integrare",
+                    "integration": "ادغام",
                     "integration_not_found": "Nu s-a gasit integrarea",
                     "new": "تنظیم ادغام جدید",
-                    "no_integrations": "Se pare ca nu ai configurat nicio integrare inca. Apasa pe butonul de mai jos pentru a adauga prima integrare",
+                    "no_integrations": "به نظر می رسد شما هنوز هیچ پیکربندی کاملی ندارید. برای اضافه کردن اولین ادغام خود بر روی دکمه زیر کلیک کنید!",
                     "none": "هیچ چیز پیکربندی نشده است",
-                    "none_found": "Nu s-au gasit integrari",
-                    "none_found_detail": "Ajusteaza criteriul de cautare ",
+                    "none_found": "هیچ یکپارچگی یافت",
+                    "none_found_detail": "معیارهای جستجوی خود را تنظیم کنید.",
                     "note_about_integrations": "Nu toate integrarile pot fi configurate inca folosind interfata utilizator",
                     "note_about_website_reference": "Mai multe sunt disponibile la",
-                    "rename_dialog": "Editeaza numele acestei optiuni de configurare",
-                    "rename_input_label": "Introdu nume"
+                    "rename_dialog": "ویرایش نام این پیکربندی ورود",
+                    "rename_input_label": "ورود نام"
                 },
                 "introduction": "در اینجا می توانید اجزای خود و صفحه اصلی دستیار را پیکربندی کنید. ",
                 "lovelace": {
                     "dashboards": {
+                        "cant_edit_default": "داشبورد استاندارد Lovelace را نمی توان از UI ویرایش کرد. می توانید با تنظیم داشبورد دیگر به عنوان پیش فرض ، آن را مخفی کنید.",
+                        "cant_edit_yaml": "داشبورد های تعریف شده در YAML را نمی توان از UI ویرایش کرد. آنها را در configuration.yaml تغییر دهید.",
                         "default_dashboard": "این داشبورد پیش فرض است",
                         "detail": {
-                            "create": "Creaza",
-                            "delete": "Elimina",
-                            "require_admin": "Doar administratorul",
+                            "create": "ایجاد",
+                            "delete": "حذف",
+                            "dismiss": "بستن",
+                            "edit_dashboard": "ویرایش داشبورد",
+                            "icon": "آیکون",
+                            "new_dashboard": "افزودن داشبورد جدید",
+                            "remove_default": "این دستگاه از حالت پیش فرض خارج شد",
+                            "require_admin": "فقط مدیر",
+                            "set_default": "این دستگاه به صورت پیش فرض تنظیم شد",
+                            "show_sidebar": "نمایش در نوار کناری",
+                            "title": "عنوان",
                             "title_required": "عنوان مورد نیاز است.",
-                            "update": "Actualizeaza",
-                            "url": "URL"
+                            "update": "به روز رسانی",
+                            "url": "آدرس",
+                            "url_error_msg": "URL باید حاوی یک - و نمی تواند شامل فاصله یا کاراکتر های خاص به جز _ و - باشد"
+                        },
+                        "picker": {
+                            "headers": {
+                                "default": "پیش فرض"
+                            },
+                            "open": "باز"
                         }
                     },
                     "resources": {
-                        "caption": "Resurse",
-                        "confirm_delete": "Esti sigur ca vrei sa elimini aceasta resursa?",
+                        "cant_edit_yaml": "شما در حالت YAML از Lovelace استفاده می کنید ، بنابراین نمی توانید منابع خود را از طریق UI مدیریت کنید. آنها را درconfiguration.yaml مدیریت کنید.",
+                        "caption": "منابع",
+                        "confirm_delete": "آیا مطمئنید که می خواهید این منبع را حذف کنید ؟",
                         "detail": {
                             "create": "ایجاد کن",
                             "delete": "پاک کن",
-                            "dismiss": "Inchide",
-                            "new_resource": "Adauga resursa noua",
-                            "type": "Tipul resursei",
+                            "dismiss": "بستن",
+                            "new_resource": "اضافه کردن منبع جدید",
+                            "type": "نوع منبع",
                             "update": "به روز رسانی",
-                            "url": "URL",
-                            "url_error_msg": "URL este un camp necesar",
-                            "warning_header": "Mare atentie!"
+                            "url": "آدرس",
+                            "url_error_msg": "Url یک فیلد ضروری است",
+                            "warning_header": "محتاط باشید!",
+                            "warning_text": "اضافه کردن منابع می تواند خطرناک باشد ، مطمئن شوید که  منابع را می شناسید و به آنها اعتماد دارید. منابع بد به طور جدی می تواند به سیستم شما آسیب برساند."
                         },
                         "picker": {
-                            "add_resource": "Adauga resursa",
+                            "add_resource": "اضافه کردن منبع",
                             "headers": {
-                                "type": "Tip",
-                                "url": "URL"
+                                "type": "نوع",
+                                "url": "آدرس"
                             },
                             "no_resources": "منابعی وجود ندارد"
                         },
-                        "refresh_header": "Vrei sa reimprospatezi? ",
+                        "refresh_body": "شما باید صفحه را به روز کنید تا حذف را کامل کنید ، آیا می خواهید اکنون بازخوانی کنید ؟",
+                        "refresh_header": "آیا می خواهید بروزرسانی کنید ؟",
                         "types": {
-                            "module": "Modul JavaScript"
+                            "css": "شیوه نامه",
+                            "html": "HTML (توصیه نمی شود)",
+                            "js": "فایل جاوا اسکریپت (توصیه نمی شود)",
+                            "module": "ماژول جاوا اسکریپت"
                         }
                     }
                 },
@@ -1122,7 +1176,7 @@
                     "picker": {
                         "header": "Editor de scene",
                         "headers": {
-                            "name": "Nume"
+                            "name": "نام"
                         },
                         "introduction": "Editorul de scene permite crearea si editare de scene. Va rugam folositi link-ul de mai jos pentru a citi instructiunile si a va asigurat ca ati configurat corect Home Assistant",
                         "learn_more": "Invata mai multe despre scene"
@@ -1144,11 +1198,11 @@
                         "edit_script": "Editeaza script",
                         "header": "Editor de scripturi",
                         "headers": {
-                            "name": "Nume"
+                            "name": "نام"
                         },
                         "learn_more": "Afla mai multe despre scripturi",
                         "no_scripts": "Nu s-au gasit scripturi editabile",
-                        "show_info": "Afiseaza informatii despre script",
+                        "show_info": "نمایش اطلاعات در مورد اسکریپت",
                         "trigger_script": "Declanseaza script"
                     }
                 },
@@ -1183,21 +1237,23 @@
                     "description": "مدیریت کاربران",
                     "editor": {
                         "activate_user": "فعال کردن کاربر",
+                        "admin": "مدیر",
                         "caption": "مشاهده کاربر",
                         "change_password": "تغییر رمز عبور",
                         "confirm_user_deletion": "آیا مطمئنید می خواهید {name} را حذف کنید ؟",
                         "deactivate_user": "غیر فعال کردن کاربر",
                         "delete_user": "حذف کاربر",
-                        "name": "Nume",
+                        "name": "نام",
                         "owner": "Proprietar",
+                        "system_generated_users_not_editable": "به روزرسانی کاربران ایجاد شده در سیستم امکان پذیر نیست.",
                         "unnamed_user": "کاربر نامشخص",
-                        "update_user": "Actualizeaza"
+                        "update_user": "به روز رسانی"
                     },
                     "picker": {
                         "headers": {
-                            "group": "Grup",
-                            "name": "Nume",
-                            "system": "Sistem"
+                            "group": "گروه",
+                            "name": "نام",
+                            "system": "سیستم"
                         }
                     }
                 },
@@ -1222,11 +1278,13 @@
                         "add_members": "Adauga membri",
                         "adding_members": "Se adauga membri",
                         "create": "Creaza grup",
+                        "create_group": "Zigbee Home Automation - ایجاد گروه",
                         "creating_group": "Se creaza grup",
                         "group_details": "Acestea sunt toate detaliile pentru grupul Zigbee selectat",
                         "group_info": "Informatii Grup",
                         "group_name_placeholder": "Nume grup",
                         "group_not_found": "Nu s-a gasit grup!",
+                        "header": "Zigbee Home Automation - مدیریت گروه",
                         "introduction": "Creaza si editeaza grupuri zigbee",
                         "members": "Membri",
                         "remove_groups": "Elimina grupuri",
@@ -1251,8 +1309,10 @@
                         "icon": "Iconita",
                         "name": "Nume",
                         "new_zone": "Zona noua",
+                        "passive_note": "مناطق غیرفعال در قسمت جلویی پنهان شده و به عنوان مکانی برای ردیابهای دستگاه استفاده نمی شوند. در صورتی که فقط بخواهید از آن برای اتوماسیون استفاده کنید ، این مفید است.",
                         "radius": "Raza"
                     },
+                    "edit_home_zone": "شعاع منطقه خانه را هنوزنمی توان از پیش زمینه ویرایش کرد.  نشانگر را بر روی نقشه  حرکت دهید",
                     "no_zones_created_yet": "Se pare ca inca nu ai creat nicio zona"
                 },
                 "zwave": {
@@ -1289,8 +1349,11 @@
                     },
                     "info": {
                         "built_using": "Construit cu ajutorul",
+                        "documentation": "مستندات",
                         "home_assistant_logo": "Logo Home Assistant",
                         "icons_by": "آیکون توسط",
+                        "integrations": "یکپارچگی",
+                        "issues": "موضوعات",
                         "server": "سرور",
                         "source": "Sursa:",
                         "title": "اطلاعات"
@@ -1341,6 +1404,11 @@
                 "showing_entries": "نمایش نامه برای"
             },
             "lovelace": {
+                "add_entities": {
+                    "generated_unsupported": "شما فقط می توانید هنگامی که کنترل UI Lovelace را به دست آورده اید ، از این عملکرد استفاده کنید.",
+                    "saving_failed": "ذخیره تنظیمات UI Lovelace انجام نشد.",
+                    "yaml_unsupported": "شما نمی توانید از این عملکرد هنگام استفاده از UI Lovelace در حالت YAML استفاده کنید."
+                },
                 "cards": {
                     "confirm_delete": "Esti sigur ca vrei sa elimini acest card?",
                     "empty_state": {
@@ -1388,17 +1456,20 @@
                             "name": "Filtru entitate"
                         },
                         "entity": {
-                            "name": "Entitate"
+                            "description": "کارت نهاد یک مرور کلی از وضعیت نهاد شما را به شما می دهد.",
+                            "name": "نهاد"
                         },
                         "generic": {
-                            "attribute": "Atribut",
+                            "attribute": "ویژگی",
+                            "double_tap_action": "Double Tap Action",
                             "manual": "دستی",
                             "manual_description": "آیا نیاز به اضافه کردن کارت سفارشی دارید یا فقط می خواهید yaml را به صورت دستی بنویسید؟",
                             "maximum": "بیشترین",
                             "minimum": "کمترین",
                             "name": "نام",
-                            "no_theme": "Nicio tema",
+                            "no_theme": "بدون موضوع",
                             "refresh_interval": "فاصله رفرش",
+                            "secondary_info_attribute": "ویژگی اطلاعات ثانویه",
                             "show_icon": "نمایش آیکون؟",
                             "show_name": "نمایش نام؟",
                             "show_state": "نمایش وضعیت؟",
@@ -1421,6 +1492,7 @@
                             "dark_mode": "حالت تاریک",
                             "default_zoom": "بزرگنمایی پیش فرض",
                             "geo_location_sources": "منابع موقعیت یابی",
+                            "hours_to_show": "زمان های نمایش",
                             "name": "نقشه",
                             "source": "منبع"
                         },
@@ -1434,29 +1506,34 @@
                             "name": "تصویر"
                         },
                         "plant-status": {
-                            "description": "Cardul Plant Status este pentru toti iubitorii de plante"
+                            "description": "The Plant Status card is for all the lovely botanists out there."
                         },
                         "sensor": {
-                            "description": "Cardul Sensor va ofera o viziune rapida a starii senzorilor cu un grafic optional pentru a vizualiza schimbarile produse in timp",
+                            "description": "The Sensor card gives you a quick overview of your sensors state with an optional graph to visualize change over time.",
                             "graph_detail": "نمودار جزئیات",
                             "graph_type": "نوع نمودار",
                             "name": "سنسور"
                         },
                         "shopping-list": {
-                            "description": "Cardul Shopping List va permite sa adaugati, editati, verificati sau eliminati elemente din lista de cumparaturi",
+                            "description": "The Shopping List card allows you to add, edit, check-off, and clear items from your shopping list.",
                             "name": "لیست خرید"
                         },
                         "thermostat": {
-                            "description": "Cardul Thermostat va da control asupra entitatii ce controleaza clima. Acesta permite schimbarea temperaturii si a modului de operare al acestei entitati",
+                            "description": "The Thermostat card gives control of your climate entity. Allowing you to change the temperature and mode of the entity.",
                             "name": "ترموستات"
                         },
                         "vertical-stack": {
-                            "description": "Cardul Vertical Stack va permite gruparea mai multor carduri astfel incat acestea intotdeauna sa stea in aceeasi coloana"
+                            "description": "دسته کارت عمودی به شما امکان می دهد چندین کارت را گروه بندی کنید تا همیشه در همان ستون قرار بگیرند."
                         },
                         "weather-forecast": {
-                            "description": "Cardul Weather Forecast afiseaza vremea. Foarte util a se include in interfate ce vor fi afisate pe perete",
-                            "name": "پیش بینی آب و هوا"
+                            "description": "کارت پیش بینی آب و هوا را نشان می دهد. اضافه کردن آن به  سایر رابط ها بسیار مفید است .",
+                            "name": "پیش بینی آب و هوا",
+                            "show_forecast": "نمایش پیش بینی"
                         }
+                    },
+                    "cardpicker": {
+                        "custom_card": "سفارشی",
+                        "no_description": "توضیحی در دسترس نیست"
                     },
                     "edit_card": {
                         "add": "افزودن کارت",
@@ -1487,6 +1564,9 @@
                         "para_no_id": "این عنصر ID ندارد لطفا یک شناسه را برای این عنصر در ui-lovelace.yaml اضافه کنید."
                     },
                     "raw_editor": {
+                        "confirm_remove_config_text": "اگر پیکربندی UI Lovelace خود را حذف کنید ، به طور خودکار نمایه UI Lovelace را با مناطق و دستگاه های شما تولید خواهیم کرد.",
+                        "confirm_remove_config_title": "آیا مطمئن هستید که می خواهید پیکربندی UI Lovelace خود را حذف کنید؟ ما به طور خودکار نمای UI Lovelace را با مناطق و دستگاه های شما تولید خواهیم کرد.",
+                        "error_remove": "امکان حذف پیکربندی وجود ندارد: {error}",
                         "header": "ویرایش پیکربندی",
                         "save": "ذخیره",
                         "saved": "ذخیره",
@@ -1495,18 +1575,23 @@
                     "save_config": {
                         "cancel": "بیخیال",
                         "close": "ببند",
-                        "empty_config": "Incepe cu un tablou de bord gol",
+                        "empty_config": "شروع با یک داشبورد خالی",
                         "header": "کنترل UI Lovelace خود را بگیرید",
                         "para": "به طور پیش فرض Home Assistant رابط کاربر خود را حفظ می کند، آن را به روز می کند زمانی که موجودیت های جدید و یا اجزای Lovelace در دسترس قرار گیرد. اگر کنترل داشته باشید دیگر تغییرات را برای شما انجام نخواهیم داد.",
                         "para_sure": "آیا مطمئن هستید که میخواهید کنترل رابط کاربری خود را کنترل کنید؟",
-                        "save": "کنترل را به دست گرفتن"
+                        "save": "کنترل را به دست گرفتن",
+                        "yaml_config": "برای کمک به شما در اینجا شروع پیکربندی فعلی این داشبورد است:",
+                        "yaml_control": "برای کنترل در حالت YAML ، یک پرونده YAML با نامی که در پیکربندی خود برای این داشبورد مشخص کرده اید ، یا پیش فرض 'ui-lovelace.yaml' ایجاد کنید.",
+                        "yaml_mode": "شما در حال استفاده از حالت YAML برای این داشبورد هستید ، به این معنی که نمی توانید پیکربندی Lovelace خود را از UI تغییر دهید. اگر می خواهید این داشبورد را از UI مدیریت کنید ، حالت \"yaml\" را از پیکربندی Lovelace خود در \"configuration.yaml\" حذف کنید."
                     },
                     "suggest_card": {
+                        "add": "اضافه کردن به Lovelace UI",
+                        "create_own": "انتخاب کارت مختلف",
                         "header": "Am creat o sugestie pentru tine"
                     },
                     "view": {
                         "panel_mode": {
-                            "warning_multiple_cards": "Aceasta vizualizare contine mai mult de un card, dar un panou de vizualizare poate arata doar un card"
+                            "warning_multiple_cards": "این نما شامل بیش از یک کارت است ، اما پانل نمایش فقط یک کارت را نشان می دهد."
                         }
                     }
                 },
@@ -1538,7 +1623,7 @@
                     "attribute_not_found": "ویژگی {attribute} در دسترس نیست:: {entity}",
                     "entity_non_numeric": "نهاد غیر عددی است: {entity}",
                     "entity_not_found": "نهاد موجود نیست: {entity}",
-                    "entity_unavailable": "{entitate} indisponibila in acest moment"
+                    "entity_unavailable": "{entity} در حال حاضر در دسترس نیست"
                 }
             },
             "mailbox": {
@@ -1670,7 +1755,9 @@
                 },
                 "current_user": "شما در حال حاضر به عنوان {fullName} وارد شده اید.",
                 "dashboard": {
-                    "header": "Tablou de bord"
+                    "description": "یک داشبورد پیش فرض برای این دستگاه انتخاب کنید.",
+                    "dropdown_label": "داشبورد",
+                    "header": "داشبورد"
                 },
                 "logout": "Deconectare",
                 "logout_text": "Esti sigur ca vrei sa te deconectezi?",
