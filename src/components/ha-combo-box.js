@@ -12,8 +12,7 @@ class HaComboBox extends EventsMixin(PolymerElement) {
     return html`
       <style>
         paper-input > ha-icon-button {
-          width: 24px;
-          height: 24px;
+          --mdc-icon-button-size: 24px;
           padding: 2px;
           color: var(--secondary-text-color);
         }

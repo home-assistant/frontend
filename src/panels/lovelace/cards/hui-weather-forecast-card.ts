@@ -303,6 +303,10 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
   }
 
   private _measureCard() {
+    if (!this.isConnected) {
+      return;
+    }
+
     this._narrow = this.offsetWidth < 375;
     if (this.offsetWidth < 300) {
       this.setAttribute("verynarrow", "");

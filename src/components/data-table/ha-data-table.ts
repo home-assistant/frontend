@@ -646,6 +646,11 @@ export class HaDataTable extends LitElement {
         padding: 8px;
       }
 
+      .mdc-data-table__cell--icon-button {
+        color: var(--secondary-text-color);
+        text-overflow: clip;
+      }
+
       .mdc-data-table__header-cell--icon-button:first-child,
       .mdc-data-table__cell--icon-button:first-child {
         width: 64px;
@@ -659,7 +664,7 @@ export class HaDataTable extends LitElement {
       }
 
       .mdc-data-table__cell--icon-button a {
-        color: var(--primary-text-color);
+        color: var(--secondary-text-color);
       }
 
       .mdc-data-table__header-cell {
