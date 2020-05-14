@@ -395,7 +395,7 @@ export class HaIntegrationCard extends LitElement {
         }
         .back-btn {
           position: absolute;
-          background: #ffffffe0;
+          background: rgba(var(--rgb-card-background-color), 0.6);
           border-radius: 50%;
         }
       `,

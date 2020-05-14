@@ -808,10 +808,6 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
         transition-duration: 0.4s;
       }
 
-      .icon {
-        width: 18px;
-      }
-
       .controls {
         padding: 8px 8px 8px 0;
         display: flex;
@@ -829,7 +825,7 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
 
       .controls ha-icon-button {
         --mdc-icon-button-size: 44px;
-        --mdc-icon-size: 22px;
+        --mdc-icon-size: 30px;
       }
 
       ha-icon-button[action="media_play"],
@@ -837,7 +833,7 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
       ha-icon-button[action="turn_on"],
       ha-icon-button[action="turn_off"] {
         --mdc-icon-button-size: 56px;
-        --mdc-icon-size: 28px;
+        --mdc-icon-size: 40px;
       }
 
       .top-info {
@@ -899,14 +895,14 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
 
       .narrow ha-icon-button {
         --mdc-icon-button-size: 40px;
-        --mdc-icon-size: 20px;
+        --mdc-icon-size: 28px;
       }
 
       .narrow ha-icon-button[action="media_play"],
       .narrow ha-icon-button[action="media_play_pause"],
       .narrow ha-icon-button[action="turn_on"] {
         --mdc-icon-button-size: 50px;
-        --mdc-icon-size: 25px;
+        --mdc-icon-size: 36px;
       }
 
       .no-progress.player:not(.no-controls) {
