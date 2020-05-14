@@ -109,7 +109,7 @@ export class HuiMarkdownCard extends LitElement implements LovelaceCard {
     }
   }
 
-  private async _connect() {
+  private async _connect(): Promise<void> {
     if (
       this._unsubRenderTemplate !== undefined ||
       !this.hass ||
@@ -138,7 +138,7 @@ export class HuiMarkdownCard extends LitElement implements LovelaceCard {
     });
   }
 
-  private async _disconnect() {
+  private async _disconnect(): Promise<void> {
     if (!this._unsubRenderTemplate) {
       return;
     }
