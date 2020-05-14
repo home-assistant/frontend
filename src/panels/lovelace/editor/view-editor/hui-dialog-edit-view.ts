@@ -236,7 +236,7 @@ export class HuiDialogEditView extends LitElement {
       ),
       text: this.hass!.localize(
         `ui.panel.lovelace.views.confirm_delete${
-          this._cards?.length ? `_existing_cards` : ""
+          this._cards?.length ? "_existing_cards" : ""
         }_text`,
         "name",
         this._config?.title || "Unnamed view",

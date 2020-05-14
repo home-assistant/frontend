@@ -808,10 +808,6 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
         transition-duration: 0.4s;
       }
 
-      .icon {
-        width: 18px;
-      }
-
       .controls {
         padding: 8px 8px 8px 0;
         display: flex;
