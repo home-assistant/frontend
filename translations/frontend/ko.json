@@ -1878,10 +1878,13 @@
                         "built_using": "다음을 사용하여 제작",
                         "custom_uis": "사용자 UI :",
                         "developed_by": "Home Assistant 는 수많은 멋진 사람들에 의해 개발되었습니다.",
+                        "documentation": "관련문서",
                         "frontend": "프런트엔드-UI",
                         "frontend_version": "프런트엔드 버전: {version} - {type}",
                         "home_assistant_logo": "Home Assistant 로고",
                         "icons_by": "아이콘 출처",
+                        "integrations": "통합 구성요소",
+                        "issues": "이슈",
                         "license": "Apache 2.0 License 에 따라 게시",
                         "path_configuration": "configuration.yaml 의 위치: {path}",
                         "server": "서버",
@@ -2072,6 +2075,7 @@
                             "name": "이름",
                             "no_theme": "테마 없음",
                             "refresh_interval": "새로 고침 간격",
+                            "secondary_info_attribute": "보조 정보 속성",
                             "show_icon": "아이콘 표시",
                             "show_name": "이름 표시",
                             "show_state": "상태 표시",
@@ -2162,7 +2166,8 @@
                         },
                         "weather-forecast": {
                             "description": "날씨 예보 카드는 날씨를 표시합니다. 화면에 날씨를 포함하는 인터페이스를 표시하는데 유용합니다.",
-                            "name": "날씨 예보"
+                            "name": "날씨 예보",
+                            "show_forecast": "일기예보 보기"
                         }
                     },
                     "cardpicker": {
