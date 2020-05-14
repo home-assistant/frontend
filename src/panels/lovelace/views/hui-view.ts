@@ -157,7 +157,7 @@ export class HUIView extends LitElement {
     if (configChanged) {
       this._createCards(lovelace.config.views[this.index!]);
     } else if (editModeChanged || changedProperties.has("columns")) {
-      this._recreateColumns();
+      this._createColumns();
     }
 
     if (hassChanged && !configChanged) {
@@ -215,10 +215,6 @@ export class HUIView extends LitElement {
     });
     this._badges = elements;
     root.style.display = elements.length > 0 ? "block" : "none";
-  }
-
-  private async _recreateColumns() {
-    this._createColumns();
   }
 
   private _createColumns() {
