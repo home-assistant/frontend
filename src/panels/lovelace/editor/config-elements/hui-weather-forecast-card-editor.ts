@@ -114,7 +114,7 @@ export class HuiWeatherForecastCardEditor extends LitElement
             .configValue=${"show_forecast"}
             @change=${this._valueChanged}
             >${this.hass.localize(
-              "ui.panel.lovelace.editor.card.weather.show_forecast"
+              "ui.panel.lovelace.editor.card.weather-forecast.show_forecast"
             )}</ha-switch
           >
         </div>
