@@ -4,7 +4,6 @@ import { LovelaceCardConfig } from "../../../../data/lovelace";
 import { HomeAssistant } from "../../../../types";
 import { createCardElement } from "../../create-element/create-card-element";
 import { LovelaceCard } from "../../types";
-import { ConfigError } from "../types";
 import { createErrorCardConfig } from "../../create-element/create-element-base";
 import { property, PropertyValues, UpdatingElement } from "lit-element";
 
@@ -13,7 +12,7 @@ export class HuiCardPreview extends UpdatingElement {
 
   @property() public config?: LovelaceCardConfig;
 
-  @property() private _element?: LovelaceCard;
+  private _element?: LovelaceCard;
 
   private get _error() {
     return this._element?.tagName === "HUI-ERROR-CARD";
@@ -29,13 +28,9 @@ export class HuiCardPreview extends UpdatingElement {
     });
   }
 
-  set error(error: ConfigError) {
-    this._createCard(
-      createErrorCardConfig(`${error.type}: ${error.message}`, undefined)
-    );
-  }
+  protected update(changedProperties: PropertyValues) {
+    super.update(changedProperties);
 
-  protected updated(changedProperties: PropertyValues) {
     if (changedProperties.has("config")) {
       const oldConfig = changedProperties.get("config") as
         | undefined
