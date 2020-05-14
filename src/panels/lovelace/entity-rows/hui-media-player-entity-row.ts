@@ -25,13 +25,15 @@ import {
   SUPPORT_VOLUME_BUTTONS,
   SUPPORT_VOLUME_MUTE,
   SUPPORT_VOLUME_SET,
+  computeMediaDescription,
 } from "../../../data/media-player";
-import { HomeAssistant } from "../../../types";
+import type { HomeAssistant } from "../../../types";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
 import "../components/hui-generic-entity-row";
 import "../components/hui-warning";
-import { EntityConfig, LovelaceRow } from "./types";
+import type { EntityConfig, LovelaceRow } from "./types";
 import { installResizeObserver } from "../common/install-resize-observer";
+import { computeStateDisplay } from "../../../common/entity/compute_state_display";
 
 @customElement("hui-media-player-entity-row")
 class HuiMediaPlayerEntityRow extends LitElement implements LovelaceRow {
@@ -128,11 +130,14 @@ class HuiMediaPlayerEntityRow extends LitElement implements LovelaceRow {
         : ""}
     `;
 
+    const mediaDescription = computeMediaDescription(stateObj);
+
     return html`
       <hui-generic-entity-row
         .hass=${this.hass}
         .config=${this._config}
-        .secondaryText=${this._computeMediaTitle(stateObj)}
+        .secondaryText=${mediaDescription ||
+        computeStateDisplay(this.hass.localize, stateObj, this.hass.language)}
       >
         <div class="controls">
           ${supportsFeature(stateObj, SUPPORT_TURN_ON) &&
@@ -228,30 +233,6 @@ class HuiMediaPlayerEntityRow extends LitElement implements LovelaceRow {
     return supportsFeature(stateObj, SUPPORT_PAUSE)
       ? "hass:pause"
       : "hass:stop";
-  }
-
-  private _computeMediaTitle(stateObj: HassEntity): string {
-    let prefix;
-    let suffix;
-
-    switch (stateObj.attributes.media_content_type) {
-      case "music":
-        prefix = stateObj.attributes.media_artist;
-        suffix = stateObj.attributes.media_title;
-        break;
-      case "tvshow":
-        prefix = stateObj.attributes.media_series_title;
-        suffix = stateObj.attributes.media_title;
-        break;
-      default:
-        prefix =
-          stateObj.attributes.media_title ||
-          stateObj.attributes.app_name ||
-          stateObj.state;
-        suffix = "";
-    }
-
-    return prefix && suffix ? `${prefix}: ${suffix}` : prefix || suffix || "";
   }
 
   private _togglePower(): void {
