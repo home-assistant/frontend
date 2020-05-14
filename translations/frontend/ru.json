@@ -1086,7 +1086,7 @@
                     },
                     "caption": "Home Assistant Cloud",
                     "description_features": "Управление вдали от дома, интеграция с Alexa и Google Assistant",
-                    "description_login": "Выполнен вход {email}",
+                    "description_login": "{email}",
                     "description_not_login": "Вход не выполнен",
                     "dialog_certificate": {
                         "certificate_expiration_date": "Сертификат действителен до",

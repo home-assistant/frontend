@@ -235,8 +235,8 @@ export class HuiDialogEditCard extends LitElement {
             min-width: 0;
           }
           .content hui-card-preview {
-            padding: 8px 0;
-            margin: auto 10px;
+            padding: 8px 10px;
+            margin: auto 0px;
             max-width: 500px;
           }
         }
@@ -269,6 +269,7 @@ export class HuiDialogEditCard extends LitElement {
           margin-bottom: 4px;
           display: block;
           width: 100%;
+          box-sizing: border-box;
         }
         .gui-mode-button {
           margin-right: auto;
