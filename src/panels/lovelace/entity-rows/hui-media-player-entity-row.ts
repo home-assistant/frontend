@@ -136,13 +136,8 @@ class HuiMediaPlayerEntityRow extends LitElement implements LovelaceRow {
       <hui-generic-entity-row
         .hass=${this.hass}
         .config=${this._config}
-        .secondaryText=${mediaDescription !== ""
-          ? mediaDescription
-          : computeStateDisplay(
-              this.hass.localize,
-              stateObj,
-              this.hass.language
-            )}
+        .secondaryText=${mediaDescription ||
+        computeStateDisplay(this.hass.localize, stateObj, this.hass.language)}
       >
         <div class="controls">
           ${supportsFeature(stateObj, SUPPORT_TURN_ON) &&
