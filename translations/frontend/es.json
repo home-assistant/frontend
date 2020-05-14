@@ -311,7 +311,7 @@
             "rainy": "Lluvioso",
             "snowy": "Nevado",
             "snowy-rainy": "Nevado, lluvioso",
-            "sunny": "Despejado",
+            "sunny": "Soleado",
             "windy": "Ventoso",
             "windy-variant": "Ventoso"
         },
@@ -2075,6 +2075,7 @@
                             "name": "Nombre",
                             "no_theme": "Sin tema",
                             "refresh_interval": "Intervalo de actualización",
+                            "secondary_info_attribute": "Atributo de información secundaria",
                             "show_icon": "¿Mostrar icono?",
                             "show_name": "¿Mostrar nombre?",
                             "show_state": "¿Mostrar estado?",
