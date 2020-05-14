@@ -1878,10 +1878,13 @@
                         "built_using": "Rakennettu käyttäen",
                         "custom_uis": "Mukautetut käyttöliittymät:",
                         "developed_by": "Kehittänyt joukko mahtavia ihmisiä.",
+                        "documentation": "Dokumentointi",
                         "frontend": "frontend-ui",
                         "frontend_version": "Käyttöliittymän versio: {version} - {type}",
                         "home_assistant_logo": "Home Assistant-logo",
                         "icons_by": "Kuvakkeet luonut",
+                        "integrations": "Integraatiot",
+                        "issues": "Ongelmat",
                         "license": "Julkaistu Apache 2.0-lisenssillä",
                         "path_configuration": "Polku configuration.yaml-tiedostoon: {path}",
                         "server": "palvelin",
@@ -2072,6 +2075,7 @@
                             "name": "Nimi",
                             "no_theme": "Ei teemaa",
                             "refresh_interval": "Päivitysväli",
+                            "secondary_info_attribute": "Toissijainen info-attribuutti",
                             "show_icon": "Näytä kuvake?",
                             "show_name": "Näytä nimi?",
                             "show_state": "Näytä tila?",
@@ -2162,7 +2166,8 @@
                         },
                         "weather-forecast": {
                             "description": "Sääennustekortti näyttää säätiedot. Erittäin hyödyllinen sisällyttää käyttöliittymiin, joita ihmiset näkevät seinällä.",
-                            "name": "Sääennuste"
+                            "name": "Sääennuste",
+                            "show_forecast": "Näytä sääennuste"
                         }
                     },
                     "cardpicker": {

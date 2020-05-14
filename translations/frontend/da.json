@@ -1878,10 +1878,13 @@
                         "built_using": "Bygget ved hjælp af",
                         "custom_uis": "Tilpassede brugergrænseflader:",
                         "developed_by": "Udviklet af en masse fantastiske mennesker.",
+                        "documentation": "Dokumentation",
                         "frontend": "brugerflade",
                         "frontend_version": "Brugerfladeversion: {version} - {type}",
                         "home_assistant_logo": "Home Assistant-logo",
                         "icons_by": "Ikoner af",
+                        "integrations": "Integrationer",
+                        "issues": "Problemer",
                         "license": "Udgivet under Apache 2.0-licensen",
                         "path_configuration": "Sti til 'configuration.yaml': {path}",
                         "server": "server",
@@ -2072,6 +2075,7 @@
                             "name": "Navn",
                             "no_theme": "Intet tema",
                             "refresh_interval": "Opdateringsinterval",
+                            "secondary_info_attribute": "Sekundær info-egenskab",
                             "show_icon": "Vis ikon?",
                             "show_name": "Vis navn?",
                             "show_state": "Vis tilstand?",
@@ -2162,7 +2166,8 @@
                         },
                         "weather-forecast": {
                             "description": "Vejrudsigtskortet viser vejret - meget nyttigt at medtage på brugerflader, som folk viser på væggen.",
-                            "name": "Vejrudsigt"
+                            "name": "Vejrudsigt",
+                            "show_forecast": "Vis vejrudsigt"
                         }
                     },
                     "cardpicker": {
