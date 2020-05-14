@@ -88,15 +88,6 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
     this._config = config;
   }
 
-  public connectedCallback(): void {
-    super.connectedCallback();
-    this.rescale_svg();
-  }
-
-  protected firstUpdated(): void {
-    this.rescale_svg();
-  }
-
   protected render(): TemplateResult {
     if (!this.hass || !this._config) {
       return html``;
@@ -165,7 +156,9 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
         <g>
           <text text-anchor="middle" class="set-value">
             ${
-              this._setTemp === undefined || this._setTemp === null
+              stateObj.state === UNAVAILABLE
+                ? this.hass.localize("state.default.unavailable")
+                : this._setTemp === undefined || this._setTemp === null
                 ? ""
                 : Array.isArray(this._setTemp)
                 ? this._stepSize === 1
@@ -255,11 +248,18 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
   }
 
   protected shouldUpdate(changedProps: PropertyValues): boolean {
+    if (changedProps.has("_setTemp")) {
+      return true;
+    }
     return hasConfigOrEntityChanged(this, changedProps);
   }
 
   protected updated(changedProps: PropertyValues): void {
     super.updated(changedProps);
+
+    if (changedProps.has("_setTemp")) {
+      this.rescale_svg();
+    }
 
     if (
       !this._config ||
@@ -287,8 +287,16 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
     if (!stateObj) {
       return;
     }
-    this._setTemp = this._getSetTemp(stateObj);
-    this.rescale_svg();
+    const newTemp = this._getSetTemp(stateObj);
+    if (
+      Array.isArray(this._setTemp) &&
+      Array.isArray(newTemp) &&
+      (this._setTemp[0] !== newTemp[0] || this._setTemp[1] !== newTemp[1])
+    ) {
+      this._setTemp = newTemp;
+    } else if (this._setTemp !== newTemp) {
+      this._setTemp = newTemp;
+    }
   }
 
   private rescale_svg() {
@@ -322,9 +330,11 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
     return this.hass!.config.unit_system.temperature === UNIT_F ? 1 : 0.5;
   }
 
-  private _getSetTemp(stateObj: HassEntity) {
+  private _getSetTemp(
+    stateObj: HassEntity
+  ): undefined | number | [number, number] {
     if (stateObj.state === UNAVAILABLE) {
-      return this.hass!.localize("state.default.unavailable");
+      return undefined;
     }
 
     if (
