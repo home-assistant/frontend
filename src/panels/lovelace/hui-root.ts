@@ -629,6 +629,7 @@ class HUIRoot extends LitElement {
 
     if (!force && this._viewCache![viewIndex]) {
       view = this._viewCache![viewIndex];
+      view.lovelace = this.lovelace;
     } else {
       if (viewConfig.panel && viewConfig.cards && viewConfig.cards.length > 0) {
         view = document.createElement("hui-panel-view");
