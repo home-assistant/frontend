@@ -21,6 +21,8 @@ import { PictureElementsCardConfig } from "./types";
 class HuiPictureElementsCard extends LitElement implements LovelaceCard {
   @property() public hass?: HomeAssistant;
 
+  @property() private _elements?: LovelaceElement[];
+
   public static getStubConfig(
     hass: HomeAssistant,
     entities: string[],
@@ -70,6 +72,14 @@ class HuiPictureElementsCard extends LitElement implements LovelaceCard {
     }
 
     this._config = config;
+
+    this._elements = this._config.elements.map(
+      (elementConfig: LovelaceElementConfig) => {
+        const element = createStyledHuiElement(elementConfig);
+        element.hass = this.hass;
+        return element as LovelaceElement;
+      }
+    );
   }
 
   protected updated(changedProps: PropertyValues): void {
@@ -78,11 +88,8 @@ class HuiPictureElementsCard extends LitElement implements LovelaceCard {
       return;
     }
 
-    if (changedProps.has("hass")) {
-      for (const el of Array.from(
-        this.shadowRoot!.querySelectorAll("#root > *")
-      )) {
-        const element = el as LovelaceElement;
+    if (this._elements && changedProps.has("hass")) {
+      for (const element of this._elements) {
         element.hass = this.hass;
       }
     }
@@ -120,14 +127,7 @@ class HuiPictureElementsCard extends LitElement implements LovelaceCard {
             .entity=${this._config.entity}
             .aspectRatio=${this._config.aspect_ratio}
           ></hui-image>
-          ${this._config.elements.map(
-            (elementConfig: LovelaceElementConfig) => {
-              const element = createStyledHuiElement(elementConfig);
-              element.hass = this.hass;
-
-              return element;
-            }
-          )}
+          ${this._elements}
         </div>
       </ha-card>
     `;

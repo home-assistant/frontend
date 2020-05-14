@@ -633,17 +633,16 @@ class HUIRoot extends LitElement {
       if (viewConfig.panel && viewConfig.cards && viewConfig.cards.length > 0) {
         view = document.createElement("hui-panel-view");
         view.config = viewConfig;
-        view.lovelace = this.lovelace;
         view.index = viewIndex;
       } else {
         view = document.createElement("hui-view");
-        view.lovelace = this.lovelace;
         view.columns = this.columns;
         view.index = viewIndex;
       }
       this._viewCache![viewIndex] = view;
     }
 
+    view.lovelace = this.lovelace;
     view.hass = this.hass;
 
     const configBackground = viewConfig.background || this.config.background;
