@@ -9,6 +9,7 @@ import {
   TemplateResult,
 } from "lit-element";
 import { Calendar } from "@fullcalendar/core";
+import type { OptionsInput } from "@fullcalendar/core";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import listPlugin from "@fullcalendar/list";
 import interactionPlugin from "@fullcalendar/interaction";
@@ -39,11 +40,12 @@ declare global {
   }
 }
 
-const defaultFullCalendarConfig = {
+const defaultFullCalendarConfig: OptionsInput = {
   headerToolbar: false,
   plugins: [dayGridPlugin, listPlugin, interactionPlugin],
   initialView: "dayGridMonth",
   dayMaxEventRows: true,
+  height: "parent",
 };
 
 const viewButtons: ToggleViewButton[] = [
@@ -174,24 +176,27 @@ class HAFullCalendar extends LitElement {
   }
 
   protected firstUpdated(): void {
-    const config = {
+    const config: OptionsInput = {
       ...defaultFullCalendarConfig,
       locale: this.hass.language,
-      views: {
+    };
+
+    if (this.narrow) {
+      config.views = {
         dayGridMonth: {
           eventDisplay: "list-item",
-          dayMaxEventRows: 15,
+          dayMaxEventRows: 999,
         },
-      },
-      dateClick: (info) => {
+      };
+      config.dateClick = (info) => {
         if (info.view.type !== "dayGridMonth") {
           return;
         }
         this._activeView = "dayGridDay";
         this.calendar!.changeView("dayGridDay");
         this.calendar!.gotoDate(info.dateStr);
-      },
-    };
+      };
+    }
 
     this.calendar = new Calendar(
       this.shadowRoot!.getElementById("calendar")!,
@@ -407,6 +412,10 @@ class HAFullCalendar extends LitElement {
           display: flex;
           min-height: 2em !important;
           justify-content: center;
+          flex-wrap: wrap;
+          max-height: 2em;
+          height: 2em;
+          overflow: hidden;
         }
       `,
     ];

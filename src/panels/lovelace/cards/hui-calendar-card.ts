@@ -19,7 +19,7 @@ import type {
   Calendar,
   CalendarViewChanged,
 } from "../../../types";
-import type { LovelaceCard } from "../types";
+import type { LovelaceCard, LovelaceCardEditor } from "../types";
 import type { CalendarCardConfig } from "./types";
 import { findEntities } from "../common/find-entites";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
@@ -32,12 +32,12 @@ import { HA_COLOR_PALETTE } from "../../../common/const";
 
 @customElement("hui-calendar-card")
 export class HuiCalendarCard extends LitElement implements LovelaceCard {
-  // public static async getConfigElement(): Promise<LovelaceCardEditor> {
-  //   await import(
-  //     /* webpackChunkName: "hui-calendar-card-editor" */ "../editor/config-elements/hui-calendar-card-editor"
-  //   );
-  //   return document.createElement("hui-calendar-card-editor");
-  // }
+  public static async getConfigElement(): Promise<LovelaceCardEditor> {
+    await import(
+      /* webpackChunkName: "hui-calendar-card-editor" */ "../editor/config-elements/hui-calendar-card-editor"
+    );
+    return document.createElement("hui-calendar-card-editor");
+  }
 
   public static getStubConfig(
     hass: HomeAssistant,
@@ -89,7 +89,8 @@ export class HuiCalendarCard extends LitElement implements LovelaceCard {
     }
 
     return html`
-      <ha-card .header=${this._config.title}>
+      <ha-card>
+        <div class="header">${this._config.title}</div>
         <ha-full-calendar
           .events=${this._events}
           .narrow=${true}
@@ -156,6 +157,15 @@ export class HuiCalendarCard extends LitElement implements LovelaceCard {
     return css`
       ha-card {
         position: relative;
+      }
+
+      .header {
+        color: var(--ha-card-header-color, --primary-text-color);
+        font-family: var(--ha-card-header-font-family, inherit);
+        font-size: var(--ha-card-header-font-size, 24px);
+        letter-spacing: -0.012em;
+        line-height: 32px;
+        padding: 16px 8px 0;
       }
     `;
   }
