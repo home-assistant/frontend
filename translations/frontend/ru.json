@@ -1374,7 +1374,8 @@
                         "restart_confirm": "Перезапустите Home Assistant, чтобы завершить удаление этой интеграции",
                         "settings_button": "Настройки интеграции {integration}",
                         "system_options": "Настройки интеграции",
-                        "system_options_button": "Системные параметры интеграции {integration}"
+                        "system_options_button": "Системные параметры интеграции {integration}",
+                        "unnamed_entry": "Без названия"
                     },
                     "config_flow": {
                         "aborted": "Отменено",

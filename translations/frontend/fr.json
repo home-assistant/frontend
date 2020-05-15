@@ -1374,7 +1374,8 @@
                         "restart_confirm": "Redémarrer Home Assistant pour terminer la suppression de cette intégration",
                         "settings_button": "Modifier les paramètres pour {integration}",
                         "system_options": "Options système",
-                        "system_options_button": "Options système pour {integration}"
+                        "system_options_button": "Options système pour {integration}",
+                        "unnamed_entry": "Entrée sans nom"
                     },
                     "config_flow": {
                         "aborted": "Abandonné",

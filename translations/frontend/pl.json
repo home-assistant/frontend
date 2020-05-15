@@ -420,7 +420,7 @@
                 "actions": {
                     "cancel": "anuluj",
                     "finish": "koniec",
-                    "pause": "pauza",
+                    "pause": "wstrzymaj",
                     "start": "start"
                 }
             },
@@ -652,10 +652,10 @@
                     "commands": "Polecenia odkurzacza:",
                     "fan_speed": "Prędkość wentylatora",
                     "locate": "Zlokalizuj",
-                    "pause": "Pauza",
+                    "pause": "Wstrzymaj",
                     "return_home": "Powrót do domu",
                     "start": "Start",
-                    "start_pause": "Start/Pauza",
+                    "start_pause": "Start/Wstrzymaj",
                     "status": "Status",
                     "stop": "Zatrzymaj"
                 }
@@ -1374,7 +1374,8 @@
                         "restart_confirm": "Zrestartuj Home Assistant'a, aby zakończyć usuwanie tej integracji",
                         "settings_button": "Edytuj ustawienia dla {integration}",
                         "system_options": "Opcje systemowe",
-                        "system_options_button": "Opcje systemowe dla {integration}"
+                        "system_options_button": "Opcje systemowe dla {integration}",
+                        "unnamed_entry": "Nienazwany wpis"
                     },
                     "config_flow": {
                         "aborted": "Przerwano",
