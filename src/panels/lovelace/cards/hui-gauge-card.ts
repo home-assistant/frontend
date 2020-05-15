@@ -136,7 +136,7 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
     if (this._config.max === null || isNaN(this._config.max!)) {
       value = undefined;
     } else {
-      value = Math.min(this._config.max!);
+      value = Math.min(this._config.max!, state);
     }
 
     return html`
