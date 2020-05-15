@@ -1,4 +1,9 @@
-import { customElement, property, UpdatingElement } from "lit-element";
+import {
+  customElement,
+  property,
+  UpdatingElement,
+  PropertyValues,
+} from "lit-element";
 import { HomeAssistant } from "../../../types";
 import { ConditionalCardConfig } from "../cards/types";
 import {
@@ -40,7 +45,8 @@ export class HuiConditionalBase extends UpdatingElement {
     this._config = config;
   }
 
-  protected update(): void {
+  protected update(changed: PropertyValues): void {
+    super.update(changed);
     if (!this._element || !this.hass || !this._config) {
       return;
     }

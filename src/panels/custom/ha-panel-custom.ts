@@ -43,7 +43,8 @@ export class HaPanelCustom extends UpdatingElement {
     this._cleanupPanel();
   }
 
-  protected updated(changedProps: PropertyValues) {
+  protected update(changedProps: PropertyValues) {
+    super.update(changedProps);
     if (changedProps.has("panel")) {
       // Clean up old things if we had a panel
       if (changedProps.get("panel")) {
