@@ -323,6 +323,14 @@ class HAFullCalendar extends LitElement {
           font-family: var(--material-font-family);
           content: "X";
         }
+
+        .fc-popover {
+          background-color: var(--primary-background-color) !important;
+        }
+
+        .fc-popover-header {
+          background-color: var(--secondary-background-color) !important;
+        }
       `,
     ];
   }
