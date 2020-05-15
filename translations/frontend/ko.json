@@ -1374,7 +1374,8 @@
                         "restart_confirm": "통합 구성요소 제거 완료를 위해 Home Assistant 웹 페이지를 다시 불러옵니다",
                         "settings_button": "{integration} 설정 편집",
                         "system_options": "시스템 옵션",
-                        "system_options_button": "{integration} 시스템 옵션"
+                        "system_options_button": "{integration} 시스템 옵션",
+                        "unnamed_entry": "이름이 없는 항목"
                     },
                     "config_flow": {
                         "aborted": "취소됨",
