@@ -59,7 +59,7 @@ export class HuiDialogEditCard extends LitElement {
 
   @property() private _GUImode = true;
 
-  private _documentationURL?: string;
+  @property() private _documentationURL?: string;
 
   public async showDialog(params: EditCardDialogParams): Promise<void> {
     this._params = params;
@@ -85,7 +85,7 @@ export class HuiDialogEditCard extends LitElement {
 
     const oldConfig = changedProps.get("_cardConfig") as LovelaceCardConfig;
 
-    if (this._cardConfig?.type === oldConfig.type) {
+    if (oldConfig && this._cardConfig!.type === oldConfig.type) {
       return;
     }
 
@@ -125,6 +125,7 @@ export class HuiDialogEditCard extends LitElement {
           ${this._documentationURL !== undefined
             ? html`
                 <a
+                  class="help-icon"
                   href=${this._documentationURL}
                   target="_blank"
                   rel="noreferrer"
@@ -316,6 +317,10 @@ export class HuiDialogEditCard extends LitElement {
           display: flex;
           align-items: center;
           justify-content: space-between;
+        }
+        .help-icon {
+          text-decoration: none;
+          color: inherit;
         }
       `,
     ];
