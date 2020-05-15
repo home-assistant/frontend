@@ -266,9 +266,7 @@ export class HuiCardPicker extends LitElement {
     const config: LovelaceCardConfig = (ev.currentTarget! as CardPickTarget)
       .config;
 
-    fireEvent(this, "config-changed", {
-      config,
-    });
+    fireEvent(this, "config-changed", { config });
   }
 
   private _createCardElement(cardConfig: LovelaceCardConfig) {
