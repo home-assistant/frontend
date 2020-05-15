@@ -992,7 +992,9 @@
                                 "edit_requires_storage": "Editorul a fost dezactivat deoarece configurația a fost stocata în configuration.yaml.",
                                 "elevation": "Altitudine",
                                 "elevation_meters": "metri",
+                                "external_url": "URL extern",
                                 "imperial_example": "Fahrenheit, livre",
+                                "internal_url": "URL intern",
                                 "latitude": "Latitudine",
                                 "location_name": "Numele instalarii Home Assistant",
                                 "longitude": "Longitudine",
@@ -1058,6 +1060,7 @@
                     },
                     "delete": "Șterge",
                     "description": "Gestionați dispozitivele conectate",
+                    "device_info": "Informații despre dispozitiv",
                     "device_not_found": "Dispozitivul nu a fost găsit.",
                     "entities": {
                         "add_entities_lovelace": "Adăugați la Lovelace",
@@ -1170,7 +1173,8 @@
                         "options": "Opțiuni",
                         "rename": "Redenumire",
                         "restart_confirm": "Reporniți Home Assistant pentru a termina eliminarea acestei integrări",
-                        "system_options": "Opțiuni de sistem"
+                        "system_options": "Opțiuni de sistem",
+                        "unnamed_entry": "Intrare anonimă"
                     },
                     "config_flow": {
                         "aborted": "Anulat",
@@ -1574,6 +1578,7 @@
                     "events": {
                         "alert_event_type": "Tipul de eveniment este un câmp obligatoriu",
                         "available_events": "Evenimente disponibile",
+                        "documentation": "Documentarea evenimentelor.",
                         "fire_event": "Declansare eveniment",
                         "listening_to": "Ascultand",
                         "start_listening": "Incepe sa asculti",
@@ -1583,14 +1588,19 @@
                     },
                     "info": {
                         "built_using": "Construit folosind",
+                        "documentation": "Documentație",
                         "frontend": "front-end-ui",
                         "icons_by": "Icoane ca",
+                        "integrations": "Integrări",
+                        "issues": "Probleme",
                         "license": "Publicat sub licenta Apache 2.0",
                         "server": "Server",
                         "source": "Sursă:",
                         "title": "Info"
                     },
                     "logs": {
+                        "clear": "Şterge",
+                        "refresh": "Reîmprospătare",
                         "title": "Jurnale"
                     },
                     "mqtt": {
@@ -1726,6 +1736,7 @@
                             "manual": "Manual",
                             "manual_description": "Trebuie să adăugați un card personalizat sau doriți doar să scrieți manual yaml?",
                             "no_theme": "Nicio temă",
+                            "secondary_info_attribute": "Atribut informații secundare",
                             "state": "Stare"
                         },
                         "glance": {
@@ -1760,7 +1771,8 @@
                             "description": "Cardul Vertical Stack vă permite să grupați mai multe carduri, astfel încât acestea să stea întotdeauna în aceeași coloană."
                         },
                         "weather-forecast": {
-                            "description": "Cardul Prognoza meteo afișează vremea. Foarte util pentru a include pe interfețele pe care oamenii le afișează pe perete."
+                            "description": "Cardul Prognoza meteo afișează vremea. Foarte util pentru a include pe interfețele pe care oamenii le afișează pe perete.",
+                            "show_forecast": "Afișați prognoza"
                         }
                     },
                     "cardpicker": {
