@@ -93,7 +93,7 @@ export class HuiCalendarCard extends LitElement implements LovelaceCard {
         <div class="header">${this._config.title}</div>
         <ha-full-calendar
           .events=${this._events}
-          .narrow=${true}
+          .narrow=${this.offsetWidth < 870}
           .hass=${this.hass}
           .views=${["listWeek", "dayGridMonth"]}
           @view-changed=${this._handleViewChanged}
