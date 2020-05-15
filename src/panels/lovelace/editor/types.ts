@@ -58,7 +58,6 @@ export interface Card {
   type: string;
   name?: string;
   description?: string;
-  documentationURL?: string;
   showElement?: boolean;
   isCustom?: boolean;
 }

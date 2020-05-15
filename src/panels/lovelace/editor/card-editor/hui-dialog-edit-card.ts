@@ -8,6 +8,7 @@ import {
   property,
   query,
   TemplateResult,
+  PropertyValues,
 } from "lit-element";
 import type { HASSDomEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/dialog/ha-paper-dialog";
@@ -25,7 +26,7 @@ import type { ConfigChangedEvent, HuiCardEditor } from "./hui-card-editor";
 import "./hui-card-picker";
 import "./hui-card-preview";
 import type { EditCardDialogParams } from "./show-edit-card-dialog";
-import { findCardDocumentationURL } from "../find-card-documentation-url";
+import { getCardDocumentationURL } from "../get-card-documentation-url";
 
 declare global {
   // for fire event
@@ -68,12 +69,27 @@ export class HuiDialogEditCard extends LitElement {
     this._viewConfig = params.lovelaceConfig.views[view];
     this._cardConfig =
       card !== undefined ? this._viewConfig.cards![card] : params.cardConfig;
-    if (this._cardConfig && !this._documentationURL) {
-      this._documentationURL = findCardDocumentationURL(this._cardConfig!.type);
-    }
     if (this._cardConfig && !Object.isFrozen(this._cardConfig)) {
       this._cardConfig = deepFreeze(this._cardConfig);
     }
+  }
+
+  protected updated(changedProps: PropertyValues): void {
+    if (
+      !this._cardConfig ||
+      this._documentationURL !== undefined ||
+      !changedProps.has("_cardConfig")
+    ) {
+      return;
+    }
+
+    const oldConfig = changedProps.get("_cardConfig") as LovelaceCardConfig;
+
+    if (this._cardConfig?.type === oldConfig.type) {
+      return;
+    }
+
+    this._documentationURL = getCardDocumentationURL(this._cardConfig!.type);
   }
 
   protected render(): TemplateResult {
@@ -108,11 +124,16 @@ export class HuiDialogEditCard extends LitElement {
           </h2>
           ${this._documentationURL !== undefined
             ? html`
-                <ha-icon-button
-                  icon="hass:help-circle"
-                  .title=${this.hass!.localize("ui.panel.lovelace.menu.help")}
-                  @click=${this._handleHelp}
-                ></ha-icon-button>
+                <a
+                  href=${this._documentationURL}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  <ha-icon-button
+                    icon="hass:help-circle"
+                    .title=${this.hass!.localize("ui.panel.lovelace.menu.help")}
+                  ></ha-icon-button>
+                </a>
               `
             : ""}
         </div>
@@ -311,13 +332,9 @@ export class HuiDialogEditCard extends LitElement {
     }
     this._cardConfig = deepFreeze(config);
     this._error = ev.detail.error;
-    this._documentationURL = ev.detail.documentationURL;
   }
 
   private _handleConfigChanged(ev: HASSDomEvent<ConfigChangedEvent>) {
-    if (this._cardConfig?.type !== ev.detail.config.type) {
-      this._documentationURL = findCardDocumentationURL(ev.detail.config.type);
-    }
     this._cardConfig = deepFreeze(ev.detail.config);
     this._error = ev.detail.error;
     this._guiModeAvailable = ev.detail.guiModeAvailable;
@@ -344,10 +361,6 @@ export class HuiDialogEditCard extends LitElement {
     this._cardConfig = undefined;
     this._error = undefined;
     this._documentationURL = undefined;
-  }
-
-  private _handleHelp(): void {
-    window.open(this._documentationURL, "_blank");
   }
 
   private get _canSave(): boolean {

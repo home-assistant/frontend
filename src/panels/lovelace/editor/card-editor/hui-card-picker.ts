@@ -267,7 +267,6 @@ export class HuiCardPicker extends LitElement {
 
     fireEvent(this, "config-changed", {
       config: target.config,
-      documentationURL: target.documentationURL,
     });
   }
 
@@ -290,7 +289,7 @@ export class HuiCardPicker extends LitElement {
 
   private async _renderCardElement(card: Card): Promise<TemplateResult> {
     let { type } = card;
-    const { showElement, isCustom, name, description, documentationURL } = card;
+    const { showElement, isCustom, name, description } = card;
     const customCard = isCustom ? getCustomCardEntry(type) : undefined;
     if (isCustom) {
       type = `${CUSTOM_TYPE_PREFIX}${type}`;
@@ -318,7 +317,6 @@ export class HuiCardPicker extends LitElement {
           class="overlay"
           @click=${this._cardPicked}
           .config=${cardConfig}
-          .documentationURL=${documentationURL}
         ></div>
         <div
           class="preview ${classMap({
