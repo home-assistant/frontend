@@ -25,6 +25,7 @@ import type { ConfigChangedEvent, HuiCardEditor } from "./hui-card-editor";
 import "./hui-card-picker";
 import "./hui-card-preview";
 import type { EditCardDialogParams } from "./show-edit-card-dialog";
+import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable";
 
 declare global {
   // for fire event
