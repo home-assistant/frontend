@@ -862,7 +862,8 @@
                         "rename": "名前を変更",
                         "settings_button": "{integration} の設定を編集",
                         "system_options": "システムオプション",
-                        "system_options_button": "{integration} のシステムオプション"
+                        "system_options_button": "{integration} のシステムオプション",
+                        "unnamed_entry": "名前のないエントリ"
                     },
                     "config_flow": {
                         "aborted": "中止",
@@ -1058,7 +1059,8 @@
                         },
                         "validation": {
                             "check_config": "設定を確認",
-                            "heading": "設定の検証"
+                            "heading": "設定の検証",
+                            "valid": "設定は有効です！"
                         }
                     }
                 },
@@ -1157,6 +1159,7 @@
                     },
                     "info": {
                         "frontend_version": "フロントエンドバージョン: {version} - {type}",
+                        "issues": "問題",
                         "path_configuration": "ディスク上に configuration.yaml へのパス: {path}",
                         "server": "サーバー",
                         "system_health_error": "「システムの正常性」コンポーネントが有効されていません、configuration.yaml に 'system_health:' を追加してください。",
