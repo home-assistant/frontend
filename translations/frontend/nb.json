@@ -1374,7 +1374,8 @@
                         "restart_confirm": "Start Home Assistant på nytt for å fullføre fjerningen av denne integrasjonen",
                         "settings_button": "Rediger innstillinger for {integration}",
                         "system_options": "Systemalternativer",
-                        "system_options_button": "Systemalternativer for {integration}"
+                        "system_options_button": "Systemalternativer for {integration}",
+                        "unnamed_entry": "Ikke navngitt oppføring"
                     },
                     "config_flow": {
                         "aborted": "Avbrutt",
