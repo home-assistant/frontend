@@ -1374,7 +1374,8 @@
                         "restart_confirm": "Reinicia Home Assistant para terminar de eliminar esta integración.",
                         "settings_button": "Editar configuración para {integration}",
                         "system_options": "Opciones del sistema",
-                        "system_options_button": "Opciones del sistema para {integration}"
+                        "system_options_button": "Opciones del sistema para {integration}",
+                        "unnamed_entry": "Entrada sin nombre"
                     },
                     "config_flow": {
                         "aborted": "Abortado",
