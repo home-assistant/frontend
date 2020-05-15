@@ -64,7 +64,6 @@ export interface Card {
 
 export interface CardPickTarget extends EventTarget {
   config: LovelaceCardConfig;
-  documentationURL: string;
 }
 
 export const actionConfigStruct = struct({
