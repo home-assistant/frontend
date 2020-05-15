@@ -86,11 +86,9 @@ export class HuiDialogEditCard extends LitElement {
 
     const oldConfig = changedProps.get("_cardConfig") as LovelaceCardConfig;
 
-    if (oldConfig && this._cardConfig!.type === oldConfig.type) {
-      return;
+    if (oldConfig?.type !== this._cardConfig!.type) {
+      this._documentationURL = getCardDocumentationURL(this._cardConfig!.type);
     }
-
-    this._documentationURL = getCardDocumentationURL(this._cardConfig!.type);
   }
 
   protected render(): TemplateResult {
