@@ -652,6 +652,7 @@
                     "fan_speed": "Velocidade do ventilador",
                     "locate": "Localizar",
                     "pause": "Pausa",
+                    "return_home": "Regresso à base",
                     "start": "Iniciar",
                     "start_pause": "Iniciar / Pausar",
                     "status": "Estado",
@@ -1366,7 +1367,8 @@
                         "restart_confirm": "Reinicie o Home Assistant para concluir a remoção desta integração",
                         "settings_button": "Editar configurações para {integration}",
                         "system_options": "Opções do sistema",
-                        "system_options_button": "Opções do sistema para {integration}"
+                        "system_options_button": "Opções do sistema para {integration}",
+                        "unnamed_entry": "Entrada sem nome"
                     },
                     "config_flow": {
                         "aborted": "Abortado",
@@ -1706,6 +1708,11 @@
                     "group_binding": {
                         "bind_button_help": "Vincule o grupo selecionado aos clusters de dispositivos selecionados.",
                         "bind_button_label": "Vincular grupo",
+                        "cluster_selection_help": "Selecione clusters para vincular ao grupo selecionado.",
+                        "group_picker_help": "Selecione um grupo para emitir um comando de vinculação.",
+                        "group_picker_label": "Grupos vinculáveis",
+                        "header": "Vinculação de Grupos",
+                        "introduction": "Vincule e desvincule grupos.",
                         "unbind_button_help": "Desvincular o grupo selecionado dos clusters de dispositivos selecionados.",
                         "unbind_button_label": "Desvincular grupo"
                     },
@@ -1776,6 +1783,7 @@
                     "edit_home_zone": "O raio da zona casa ainda não pode ser editado a partir do frontend. Arraste o marcador no mapa para mover a zona inicial.",
                     "edit_home_zone_narrow": "O raio da zona casa ainda não pode ser editado a partir do frontend. A localização pode ser modificada a partir da configuração geral.",
                     "go_to_core_config": "Ir para a configuração geral?",
+                    "home_zone_core_config": "A localização da sua zona \"casa\" é editável na página de configuração geral. O raio dessa zona ainda não pode ser editado a partir do frontend. Deseja ir para a configuração geral?",
                     "introduction": "As zonas permitem especificar determinadas regiões da Terra. Quando uma pessoa está dentro de uma zona, o estado assume o nome da zona. As zonas também podem ser usadas como gatilho ou condição nas configurações de automação.",
                     "no_zones_created_yet": "Parece que você ainda não criou nenhuma zona."
                 },
@@ -1954,6 +1962,7 @@
             },
             "lovelace": {
                 "add_entities": {
+                    "generated_unsupported": "Você só pode usar esta função quando tiver assumido o controlo do IU Lovelace.",
                     "saving_failed": "Falha ao salvar a configuração da interface Lovelace.",
                     "yaml_unsupported": "Você não pode usar esta função ao usar o Lovelace IU no modo YAML."
                 },
@@ -2203,6 +2212,7 @@
                     },
                     "raw_editor": {
                         "confirm_remove_config_text": "Iremos gerar automaticamente as suas vistas do Lovelace UI com as suas áreas e dispositivos se você remover a sua configuração do Lovelace UI.",
+                        "confirm_remove_config_title": "Tem a certeza que deseja remover a configuração do interface de utilizador do Lovelace? Iremos gerar automaticamente as suas vistas do IU Lovelace com as suas áreas e dispositivos.",
                         "confirm_unsaved_changes": "Existem alterações não guardadas. De certeza de que quer sair?",
                         "confirm_unsaved_comments": "A sua configuração contém comentário(s), eles não serão salvos. Deseja continuar?",
                         "error_invalid_config": "A sua configuração não é válida: {error}",
@@ -2220,7 +2230,7 @@
                         "close": "Fechar",
                         "empty_config": "Começar com um painel de instrumentos vazio",
                         "header": "Assumir controle sobre a interface do Lovelace",
-                        "para": "Por omissão o Home Assistant irá manter a sua interface de utilizador, atualizando-a sempre que uma nova entidade ou novos componentes Lovelace fiquem disponíveis. Se assumir o controlo, não faremos mais alterações automáticas por si.",
+                        "para": "Por omissão o Home Assistant irá manter a sua interface de utilizador, atualizando-a sempre que uma nova entidade ou novos componentes IU Lovelace fiquem disponíveis. Se assumir o controlo, não faremos mais alterações automáticas por si. Poderá sempre criar um novo dashboard na configuração para fazer testes.",
                         "para_sure": "Tem certeza que deseja assumir o controlo sobre a interface de utilizador?",
                         "save": "Assumir o controlo",
                         "yaml_config": "Para o ajudar a começar, aqui está a actual configuração deste dashboard:",
@@ -2346,7 +2356,7 @@
                                     "data": {
                                         "password": "Palavra-passe para API"
                                     },
-                                    "description": "Por favor, insira a palavra-passe da API na sua configuração http:"
+                                    "description": "Por favor, insira a palavra-passe da API na sua configuração HTTP:"
                                 },
                                 "mfa": {
                                     "data": {
