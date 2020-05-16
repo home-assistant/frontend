@@ -51,6 +51,10 @@ class HaPanelDevEvent extends EventsMixin(LocalizeMixin(PolymerElement)) {
           max-width: 800px;
           margin: 16px auto;
         }
+
+        a {
+          color: var(--dark-primary-color);
+        }
       </style>
 
       <div class$="[[computeFormClasses(narrow)]]">
