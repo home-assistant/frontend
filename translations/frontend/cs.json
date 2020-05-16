@@ -611,7 +611,7 @@
                     "pattern": "Vzor regex pro ověření na straně klienta",
                     "text": "Text"
                 },
-                "platform_not_loaded": "Integrace {platform} není načtena. Přidejte ji do své konfigurace buďto přidáním 'default_config:' nebo '{platform}:'.",
+                "platform_not_loaded": "Integrace {platform} není načtena. Přidejte ji do své konfigurace buďto přidáním 'default_config:' nebo ''{platform}:''.",
                 "required_error_msg": "Toto pole je povinné",
                 "yaml_not_editable": "Nastavení této entity nelze upravovat z uživatelského rozhraní. Pouze entity nastavené z uživatelského rozhraní lze konfigurovat v uživatelském rozhraní."
             },
@@ -2261,8 +2261,8 @@
                 "views": {
                     "confirm_delete": "Odstranit zobrazení?",
                     "confirm_delete_existing_cards": "Odstraněním tohoto pohledu dojde také k odebrání karet",
-                    "confirm_delete_existing_cards_text": "Opravdu chcete smazat pohled '{name}'? Pohled obsahuje {number} karty, které budou smazány. Tuto akci nelze vrátit zpět.",
-                    "confirm_delete_text": "Opravdu chcete smazat pohled '{name}'?"
+                    "confirm_delete_existing_cards_text": "Opravdu chcete smazat pohled ''{name}''? Pohled obsahuje {number} karty, které budou smazány. Tuto akci nelze vrátit zpět.",
+                    "confirm_delete_text": "Opravdu chcete smazat pohled ''{name}''?"
                 },
                 "warning": {
                     "attribute_not_found": "Atribut {attribute} není k dispozici v: {entity}",

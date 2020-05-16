@@ -617,7 +617,7 @@
                     "pattern": "Schema Regex per la validazione lato cliente",
                     "text": "Testo"
                 },
-                "platform_not_loaded": "L'integrazione {platform} non è stata caricata. Si prega di aggiungerla alla propria configurazione, aggiungendo 'default_config:' o '{platform}:'.",
+                "platform_not_loaded": "L'integrazione {platform} non è stata caricata. Si prega di aggiungerla alla propria configurazione, aggiungendo 'default_config:' o ''{platform}:''.",
                 "required_error_msg": "Questo campo è obbligatorio",
                 "yaml_not_editable": "Le impostazioni di questa entità non possono essere modificate dall'Interfaccia Utente. Solo le entità impostate dall'Interfaccia Utente sono configurabili dall'Interfaccia Utente."
             },

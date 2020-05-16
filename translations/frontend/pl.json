@@ -617,7 +617,7 @@
                     "pattern": "Wyrażenie regularne do sprawdzania poprawności po stronie klienta",
                     "text": "Pole tekstowe"
                 },
-                "platform_not_loaded": "Komponent {platform} nie jest załadowany, dodaj go do swojej konfiguracji dodając 'default_config:' lub '{platform}:'.",
+                "platform_not_loaded": "Komponent {platform} nie jest załadowany, dodaj go do swojej konfiguracji dodając 'default_config:' lub ''{platform}:''.",
                 "required_error_msg": "To pole jest wymagane",
                 "yaml_not_editable": "Ustawienia tej encji nie mogą być edytowane z interfejsu użytkownika. Tylko encje dodane z interfejsu użytkownika można konfigurować z poziomu interfejsu użytkownika."
             },
@@ -2285,8 +2285,8 @@
                 "views": {
                     "confirm_delete": "Na pewno chcesz usunąć ten widok?",
                     "confirm_delete_existing_cards": "Usunięcie tego widoku spowoduje również usunięcie kart",
-                    "confirm_delete_existing_cards_text": "Czy na pewno chcesz usunąć widok '{name}'? Widok zawiera {number} kart(ę/y), które zostaną usunięte. Tej akcji nie można cofnąć.",
-                    "confirm_delete_text": "Czy na pewno chcesz usunąć widok '{name}'?"
+                    "confirm_delete_existing_cards_text": "Czy na pewno chcesz usunąć widok ''{name}''? Widok zawiera {number} kart(ę/y), które zostaną usunięte. Tej akcji nie można cofnąć.",
+                    "confirm_delete_text": "Czy na pewno chcesz usunąć widok ''{name}''?"
                 },
                 "warning": {
                     "attribute_not_found": "Atrybut {attribute} jest niedostępny dla: {entity}",

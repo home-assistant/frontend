@@ -617,7 +617,7 @@
                     "pattern": "Regex-malli käyttäjäpuolen validointia varten.",
                     "text": "Teksti"
                 },
-                "platform_not_loaded": "Integrointia {platform} ei ole ladattu. Voit ladata sen llisäämällä \"default_config:\" tai {platform}: konfiguraatiotiedostoon.",
+                "platform_not_loaded": "Integrointia {platform} ei ole ladattu. Voit ladata sen llisäämällä \"default_config:\" tai ''{platform}:'' konfiguraatiotiedostoon.",
                 "required_error_msg": "Tämä kenttä on pakollinen",
                 "yaml_not_editable": "Tämän kohteen asetuksia ei voi muokata käyttöliittymästä. Vain käyttöliittymästä määritetyt kohteet ovat määritettävissä käyttöliittymästä."
             },
@@ -2285,7 +2285,7 @@
                     "confirm_delete": "Oletko varma, että haluat poistaa tämän näkymän?",
                     "confirm_delete_existing_cards": "Tämän näkymän poistaminen poistaa myös kortit",
                     "confirm_delete_existing_cards_text": "Haluatko varmasti poistaa näkymän {name}? Näkymä sisältää {number}-kortteja, jotka poistetaan. Tätä toimintoa ei voi kumota.",
-                    "confirm_delete_text": "Haluatko varmasti poistaa '{name}' -näkymäsi?"
+                    "confirm_delete_text": "Haluatko varmasti poistaa ''{name}'' -näkymäsi?"
                 },
                 "warning": {
                     "attribute_not_found": "Määrite {attribute} ei ole käytettävissä kohteessa {entity}",

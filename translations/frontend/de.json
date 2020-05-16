@@ -617,7 +617,7 @@
                     "pattern": "Regex-Muster für die clientseitige Validierung",
                     "text": "Text"
                 },
-                "platform_not_loaded": "Die {platform} -Komponente ist nicht geladen. Füge sie bitte deiner Konfiguration hinzu. Entweder durch Hinzufügen von 'default_config:' oder '{platform}:'.",
+                "platform_not_loaded": "Die {platform} -Komponente ist nicht geladen. Füge sie bitte deiner Konfiguration hinzu. Entweder durch Hinzufügen von 'default_config:' oder ''{platform}:''.",
                 "required_error_msg": "Dieses Feld ist erforderlich",
                 "yaml_not_editable": "Die Einstellungen dieser Entität können nicht über die Benutzeroberfläche bearbeitet werden. Nur über die Benutzeroberfläche eingerichtete Entitäten können über die Benutzeroberfläche konfiguriert werden."
             },
@@ -1374,7 +1374,8 @@
                         "restart_confirm": "Starte Home Assistant neu, um das Entfernen dieser Integration abzuschließen",
                         "settings_button": "Einstellungen für {integration} bearbeiten",
                         "system_options": "Systemoptionen",
-                        "system_options_button": "Systemoptionen für {integration}"
+                        "system_options_button": "Systemoptionen für {integration}",
+                        "unnamed_entry": "Unbenannter Eintrag"
                     },
                     "config_flow": {
                         "aborted": "Abgebrochen",
@@ -2284,8 +2285,8 @@
                 "views": {
                     "confirm_delete": "Möchten Sie diese Ansicht wirklich löschen?",
                     "confirm_delete_existing_cards": "Durch Löschen dieser Ansicht werden auch die Karten entfernt",
-                    "confirm_delete_existing_cards_text": "Möchtest du deine Ansicht '{name}' wirklich löschen? Die Ansicht enthält {number} Karten, die gelöscht werden. Diese Aktion kann nicht rückgängig gemacht werden.",
-                    "confirm_delete_text": "Möchtest du deine Ansicht '{name}' wirklich löschen?"
+                    "confirm_delete_existing_cards_text": "Möchtest du deine Ansicht ''{name}'' wirklich löschen? Die Ansicht enthält {number} Karten, die gelöscht werden. Diese Aktion kann nicht rückgängig gemacht werden.",
+                    "confirm_delete_text": "Möchtest du deine Ansicht ''{name}'' wirklich löschen?"
                 },
                 "warning": {
                     "attribute_not_found": "Attribut {attribute} nicht verfügbar in: {entity}",
