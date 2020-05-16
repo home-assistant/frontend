@@ -1,3 +1,4 @@
+import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable";
 import deepFreeze from "deep-freeze";
 import {
   css,
@@ -8,6 +9,7 @@ import {
   property,
   query,
   TemplateResult,
+  PropertyValues,
 } from "lit-element";
 import type { HASSDomEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/dialog/ha-paper-dialog";
@@ -25,7 +27,7 @@ import type { ConfigChangedEvent, HuiCardEditor } from "./hui-card-editor";
 import "./hui-card-picker";
 import "./hui-card-preview";
 import type { EditCardDialogParams } from "./show-edit-card-dialog";
-import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable";
+import { getCardDocumentationURL } from "../get-card-documentation-url";
 
 declare global {
   // for fire event
@@ -58,6 +60,8 @@ export class HuiDialogEditCard extends LitElement {
 
   @property() private _GUImode = true;
 
+  @property() private _documentationURL?: string;
+
   public async showDialog(params: EditCardDialogParams): Promise<void> {
     this._params = params;
     this._GUImode = true;
@@ -68,6 +72,22 @@ export class HuiDialogEditCard extends LitElement {
       card !== undefined ? this._viewConfig.cards![card] : params.cardConfig;
     if (this._cardConfig && !Object.isFrozen(this._cardConfig)) {
       this._cardConfig = deepFreeze(this._cardConfig);
+    }
+  }
+
+  protected updated(changedProps: PropertyValues): void {
+    if (
+      !this._cardConfig ||
+      this._documentationURL !== undefined ||
+      !changedProps.has("_cardConfig")
+    ) {
+      return;
+    }
+
+    const oldConfig = changedProps.get("_cardConfig") as LovelaceCardConfig;
+
+    if (oldConfig?.type !== this._cardConfig!.type) {
+      this._documentationURL = getCardDocumentationURL(this._cardConfig!.type);
     }
   }
 
@@ -97,9 +117,26 @@ export class HuiDialogEditCard extends LitElement {
 
     return html`
       <ha-paper-dialog with-backdrop opened modal @keyup=${this._handleKeyUp}>
-        <h2>
-          ${heading}
-        </h2>
+        <div class="header">
+          <h2>
+            ${heading}
+          </h2>
+          ${this._documentationURL !== undefined
+            ? html`
+                <a
+                  class="help-icon"
+                  href=${this._documentationURL}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  <ha-icon-button
+                    icon="hass:help-circle"
+                    .title=${this.hass!.localize("ui.panel.lovelace.menu.help")}
+                  ></ha-icon-button>
+                </a>
+              `
+            : ""}
+        </div>
         <paper-dialog-scrollable>
           ${this._cardConfig === undefined
             ? html`
@@ -275,6 +312,15 @@ export class HuiDialogEditCard extends LitElement {
         .gui-mode-button {
           margin-right: auto;
         }
+        .header {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+        }
+        .help-icon {
+          text-decoration: none;
+          color: inherit;
+        }
       `,
     ];
   }
@@ -318,6 +364,7 @@ export class HuiDialogEditCard extends LitElement {
     this._params = undefined;
     this._cardConfig = undefined;
     this._error = undefined;
+    this._documentationURL = undefined;
   }
 
   private get _canSave(): boolean {
