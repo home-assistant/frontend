@@ -602,7 +602,7 @@
                     "pattern": "Modelul Regex pentru validarea de partea clientului",
                     "text": "Text"
                 },
-                "platform_not_loaded": "Integrarea {platform} nu este încărcată. Vă rugăm să-i adăugați configurația dvs. fie adăugând 'default_config:' sau '{platform}:'.",
+                "platform_not_loaded": "Integrarea {platform} nu este încărcată. Vă rugăm să-i adăugați configurația dvs. fie adăugând 'default_config:' sau ''{platform}:''.",
                 "required_error_msg": "Acest câmp este obligatoriu",
                 "yaml_not_editable": "Setările acestei entități nu se pot edita din interfața grafica. Numai entitățile configurate in interfața grafica sunt configurabile din interfața grafica."
             },

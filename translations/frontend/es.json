@@ -617,7 +617,7 @@
                     "pattern": "Patrón Regex para la validación del lado del cliente",
                     "text": "Texto"
                 },
-                "platform_not_loaded": "La integración {platform} no se ha cargado. Por favor añádela a tu configuración, ya sea agregando 'default_config:' o '{platform}:'.",
+                "platform_not_loaded": "La integración {platform} no se ha cargado. Por favor añádela a tu configuración, ya sea agregando 'default_config:' o ''{platform}:''.",
                 "required_error_msg": "Este campo es obligatorio",
                 "yaml_not_editable": "La configuración de esta entidad no se puede editar desde la IU. Solo las entidades configuradas desde la IU se pueden configurar desde la IU"
             },
@@ -2285,8 +2285,8 @@
                 "views": {
                     "confirm_delete": "¿Eliminar vista?",
                     "confirm_delete_existing_cards": "Al eliminar esta vista también se eliminarán las tarjetas",
-                    "confirm_delete_existing_cards_text": "¿Estás seguro de que deseas eliminar tu vista '{name}'? La vista contiene {number} tarjetas que se eliminarán. Esta acción no se puede deshacer.",
-                    "confirm_delete_text": "¿Estás seguro de que deseas eliminar tu vista '{name}'?"
+                    "confirm_delete_existing_cards_text": "¿Estás seguro de que deseas eliminar tu vista ''{name}''? La vista contiene {number} tarjetas que se eliminarán. Esta acción no se puede deshacer.",
+                    "confirm_delete_text": "¿Estás seguro de que deseas eliminar tu vista ''{name}''?"
                 },
                 "warning": {
                     "attribute_not_found": "El atributo {attribute} no está disponible en: {entity}",
