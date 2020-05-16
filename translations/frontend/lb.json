@@ -617,7 +617,7 @@
                     "pattern": "Regex Muster fir Client-Säiteg Validatioun",
                     "text": "Text"
                 },
-                "platform_not_loaded": "{platform} Integratioun ass net gelueden. Setz et an deng Konfiguration dobäi mat  'default_config:' oder '{platform}:'.",
+                "platform_not_loaded": "{platform} Integratioun ass net gelueden. Setz et an deng Konfiguration dobäi mat  'default_config:' oder ''{platform}:''.",
                 "required_error_msg": "Dëst Feld ass erfuerderlech",
                 "yaml_not_editable": "D'Astellunge vun dëser Entitéit kënnen net vun vum Benotzer Interface as  geännert ginn. Nëmmen Entitéiten déi iwwer den Benotzer Interface aus konfiguréiert sinn kënnen vun do aus geännert ginn."
             },
@@ -1374,7 +1374,8 @@
                         "restart_confirm": "Start Home Assistant nei fir dës Integratioun ze läschen",
                         "settings_button": "Astellungen ännere fir {integration}",
                         "system_options": "System Optiounen",
-                        "system_options_button": "System Optioune fir {integration}"
+                        "system_options_button": "System Optioune fir {integration}",
+                        "unnamed_entry": "Entrée ouni Numm"
                     },
                     "config_flow": {
                         "aborted": "Ofgebrach",
@@ -2284,8 +2285,8 @@
                 "views": {
                     "confirm_delete": "Usiicht läschen?",
                     "confirm_delete_existing_cards": "D'Läschen vun dëser Usiicht läscht och d'Kaarten",
-                    "confirm_delete_existing_cards_text": "Sécher fir d'Usiicht '{name}' ze läsche? Dës Usiicht enthält {number} Kaart(en) déi och geläscht ginn. Dës Aktioun kann net réckgängeg gemaach ginn.",
-                    "confirm_delete_text": "Sécher fir d'Usiicht '{name}' ze läsche?"
+                    "confirm_delete_existing_cards_text": "Sécher fir d'Usiicht ''{name}'' ze läsche? Dës Usiicht enthält {number} Kaart(en) déi och geläscht ginn. Dës Aktioun kann net réckgängeg gemaach ginn.",
+                    "confirm_delete_text": "Sécher fir d'Usiicht ''{name}'' ze läsche?"
                 },
                 "warning": {
                     "attribute_not_found": "Attribut {attribute} net disponibel an: {entity}",

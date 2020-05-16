@@ -617,7 +617,7 @@
                     "pattern": "客戶端驗證模式",
                     "text": "文字"
                 },
-                "platform_not_loaded": "{platform} 元件未載入。請於設定檔進行添加、新增 'default_config:' 或 '{platform}:'。",
+                "platform_not_loaded": "{platform} 元件未載入。請於設定檔進行添加、新增 'default_config:' 或 ''{platform}:''。",
                 "required_error_msg": "必填欄位",
                 "yaml_not_editable": "此物件的設定無法藉由 UI 編輯、僅有透過 UI 設定的物件可於 UI 進行設定。"
             },
@@ -2285,8 +2285,8 @@
                 "views": {
                     "confirm_delete": "刪除視圖？",
                     "confirm_delete_existing_cards": "刪除此視圖同時將移除面板。",
-                    "confirm_delete_existing_cards_text": "確定要刪除「{name}」視圖？視圖內包含 {number} 張面板也同時將被刪除。此動作將無法回復。",
-                    "confirm_delete_text": "確定要刪除「{name}」視圖？"
+                    "confirm_delete_existing_cards_text": "確定要刪除 \"{name}\" 視圖？視圖內包含 {number} 張面板也同時將被刪除。此動作將無法回復。",
+                    "confirm_delete_text": "確定要刪除 \"{name}\"視圖？"
                 },
                 "warning": {
                     "attribute_not_found": "無法使用屬性 {attribute} 之物件：{entity}",

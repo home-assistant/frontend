@@ -400,7 +400,7 @@
                     "max": "Hyd mwyaf",
                     "min": "Hyd lleiaf"
                 },
-                "platform_not_loaded": "Nid yw'r integreiddiad {platform} wedi'i lwytho. Ychwanegwch eich cyfluniad ato naill ai trwy ychwanegu 'default_config:' neu '{platform}:'.",
+                "platform_not_loaded": "Nid yw'r integreiddiad {platform} wedi'i lwytho. Ychwanegwch eich cyfluniad ato naill ai trwy ychwanegu 'default_config:' neu ''{platform}:''.",
                 "yaml_not_editable": "Ni ellir olygu gosodiadau'r endid hwn o'r UI. Dim ond endidau a sefydlwyd o'r UI y gellir eu ffurfweddu o'r UI."
             },
             "more_info_control": {

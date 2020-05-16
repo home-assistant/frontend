@@ -473,6 +473,7 @@
             }
         },
         "common": {
+            "and": "e",
             "cancel": "Cancelar",
             "close": "Fechar",
             "delete": "Eliminar",
@@ -613,7 +614,7 @@
                     "pattern": "Padrão Regex para validação do lado do cliente",
                     "text": "Texto"
                 },
-                "platform_not_loaded": "A integração {platform} não está carregada. Por favor, adicione sua configuração adicionando 'default_config:' ou '{platform}:'.",
+                "platform_not_loaded": "A integração {platform} não está carregada. Por favor, adicione sua configuração adicionando 'default_config:' ou ''{platform}:''.",
                 "required_error_msg": "Este campo é obrigatório",
                 "yaml_not_editable": "As configurações desta entidade não podem ser editadas a partir da interface do usuário. Somente entidades configuradas a partir da interface do usuário são configuráveis a partir da interface do usuário."
             },
@@ -1170,7 +1171,9 @@
                                 "edit_requires_storage": "Editor desativado porque a configuração está armazenada em configuration.yaml.",
                                 "elevation": "Elevação",
                                 "elevation_meters": "metros",
+                                "external_url": "URL externa",
                                 "imperial_example": "Fahrenheit, libras",
+                                "internal_url": "URL interna",
                                 "latitude": "Latitude",
                                 "location_name": "Nome da sua instalação do Home Assistant",
                                 "longitude": "Longitude",
@@ -1237,6 +1240,7 @@
                     },
                     "delete": "Eliminar",
                     "description": "Gerenciar dispositivos conectados",
+                    "device_info": "Informação do dispositivo",
                     "device_not_found": "Dispositivo não encontrado.",
                     "entities": {
                         "add_entities_lovelace": "Adicionar ao Lovelace",
@@ -1360,7 +1364,8 @@
                         "restart_confirm": "Reinicie o Home Assistant para concluir a remoção dessa integração",
                         "settings_button": "Editar configurações para {integration}",
                         "system_options": "Opções do sistema",
-                        "system_options_button": "Opções do sistema para {integration}"
+                        "system_options_button": "Opções do sistema para {integration}",
+                        "unnamed_entry": "Entrada sem nome"
                     },
                     "config_flow": {
                         "aborted": "Abortado",
@@ -1864,10 +1869,13 @@
                         "built_using": "Construído usando",
                         "custom_uis": "UIs personalizadas:",
                         "developed_by": "Desenvolvido por um monte de pessoas incríveis.",
+                        "documentation": "Documentação",
                         "frontend": "frontend-ui",
                         "frontend_version": "Versão do Frontend: {version} - {type}",
                         "home_assistant_logo": "Home Assistant logo",
                         "icons_by": "Ícones por",
+                        "integrations": "Integrações",
+                        "issues": "Problemas",
                         "license": "Publicado sob a licença Apache 2.0",
                         "path_configuration": "Caminho para configuration.yaml: {path}",
                         "server": "servidor",
@@ -2058,6 +2066,7 @@
                             "name": "Nome",
                             "no_theme": "Nenhum tema",
                             "refresh_interval": "Intervalo de atualização",
+                            "secondary_info_attribute": "Atributo de informação secundária",
                             "show_icon": "Mostrar Icone?",
                             "show_name": "Mostrar nome?",
                             "show_state": "Mostrar Estado?",
@@ -2148,7 +2157,8 @@
                         },
                         "weather-forecast": {
                             "description": "O cartão Previsão do tempo exibe o clima. Muito útil para incluir nas interfaces que as pessoas exibem na parede.",
-                            "name": "Previsão do Tempo"
+                            "name": "Previsão do Tempo",
+                            "show_forecast": "Mostrar previsão"
                         }
                     },
                     "cardpicker": {
@@ -2265,8 +2275,8 @@
                 "views": {
                     "confirm_delete": "Excluir visualização",
                     "confirm_delete_existing_cards": "Eliminar esta visualização vai também remover os cartões",
-                    "confirm_delete_existing_cards_text": "Tem certeza de que deseja excluir a visualização '{name}'? Ela contém {number} cartões que serão excluídos. Esta ação não pode ser desfeita.",
-                    "confirm_delete_text": "Tem a certeza que quer apagar a visualização '{name}'?"
+                    "confirm_delete_existing_cards_text": "Tem certeza de que deseja excluir a visualização ''{name}''? Ela contém {number} cartões que serão excluídos. Esta ação não pode ser desfeita.",
+                    "confirm_delete_text": "Tem a certeza que quer apagar a visualização ''{name}''?"
                 },
                 "warning": {
                     "attribute_not_found": "O atributo {attribute} não está disponível em: {entity}",
