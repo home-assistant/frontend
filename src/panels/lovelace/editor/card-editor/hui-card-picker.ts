@@ -98,7 +98,11 @@ export class HuiCardPicker extends LitElement {
         )}
       </div>
       <div class="cards-container">
-        <div class="card" @click=${this._cardPicked} .config=${{ type: "" }}>
+        <div
+          class="card manual"
+          @click=${this._cardPicked}
+          .config=${{ type: "" }}
+        >
           <div class="preview description">
             ${this.hass!.localize(
               `ui.panel.lovelace.editor.card.generic.manual_description`
@@ -257,6 +261,10 @@ export class HuiCardPicker extends LitElement {
           width: 100%;
           height: 100%;
           z-index: 1;
+        }
+
+        .manual {
+          max-width: none;
         }
       `,
     ];
