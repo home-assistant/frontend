@@ -183,6 +183,14 @@ export class HuiMarkdownCard extends LitElement implements LovelaceCard {
       ha-markdown img {
         max-width: 100%;
       }
+      ha-markdown code,
+      pre {
+        background-color: var(--markdown-code-background-color, #f8f8f8);
+      }
+      ha-markdown h2 {
+        font-size: 1.5em;
+        font-weight: bold;
+      }
     `;
   }
 }

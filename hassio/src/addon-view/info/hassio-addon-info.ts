@@ -675,6 +675,33 @@ class HassioAddonInfo extends LitElement {
           text-decoration: underline;
           cursor: pointer;
         }
+        ha-markdown {
+          display: block;
+          padding: 0 16px 16px;
+          -ms-user-select: initial;
+          -webkit-user-select: initial;
+          -moz-user-select: initial;
+        }
+        .markdown.no-header {
+          padding-top: 16px;
+        }
+        ha-markdown > *:first-child {
+          margin-top: 0;
+        }
+        ha-markdown > *:last-child {
+          margin-bottom: 0;
+        }
+        ha-markdown img {
+          max-width: 100%;
+        }
+        ha-markdown code,
+        pre {
+          background-color: var(--markdown-code-background-color, #f8f8f8);
+        }
+        ha-markdown h2 {
+          font-size: 1.5em;
+          font-weight: bold;
+        }
       `,
     ];
   }
