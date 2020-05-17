@@ -165,7 +165,7 @@ class HaPanelDevInfo extends LitElement {
         }
 
         .about a {
-          color: var(--dark-primary-color);
+          color: var(--primary-color);
         }
 
         system-health-card,
