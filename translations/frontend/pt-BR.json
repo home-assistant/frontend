@@ -478,7 +478,10 @@
             "close": "Fechar",
             "delete": "Eliminar",
             "loading": "Carregando",
+            "next": "Próximo",
             "no": "Não",
+            "previous": "Anterior",
+            "refresh": "Atualizar",
             "save": "Salvar",
             "successfully_deleted": "Eliminado com sucesso",
             "successfully_saved": "Salvo com sucesso",
@@ -738,6 +741,10 @@
             "triggered": "{name} disparado"
         },
         "panel": {
+            "calendar": {
+                "my_calendars": "Meus Calendários",
+                "today": "Hoje"
+            },
             "config": {
                 "advanced_mode": {
                     "hint_enable": "Faltam opções de configuração? Ative o modo avançado",
@@ -839,6 +846,9 @@
                                         "for": "Duração"
                                     },
                                     "label": "Dispositivo"
+                                },
+                                "not": {
+                                    "label": "Não"
                                 },
                                 "numeric_state": {
                                     "above": "Acima",

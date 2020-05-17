@@ -1374,7 +1374,8 @@
                         "restart_confirm": "Genstart Home Assistant for at fuldføre fjernelsen af denne integration",
                         "settings_button": "Ret indstillinger for {integration}",
                         "system_options": "Systemindstillinger",
-                        "system_options_button": "Systemindstillinger for {integration}"
+                        "system_options_button": "Systemindstillinger for {integration}",
+                        "unnamed_entry": "Unavngivet post"
                     },
                     "config_flow": {
                         "aborted": "Afbrudt",
