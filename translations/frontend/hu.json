@@ -666,7 +666,7 @@
                 "no_entities": "Nincsenek entitások",
                 "no_triggers": "Nincsenek eseményindítók",
                 "payload_display": "Payload megjelenítése",
-                "recent_messages": "{n} legfrissebb fogadott üzenet(ek)",
+                "recent_messages": "{n} legfrissebb fogadott üzenet",
                 "show_as_yaml": "Megjelenítés YAML-ként",
                 "title": "{device} debug infók",
                 "triggers": "Eseményindítók"
@@ -1181,9 +1181,9 @@
                                 "edit_requires_storage": "A szerkesztő le van tiltva, mert a konfiguráció a configuration.yaml fájlban van tárolva.",
                                 "elevation": "Magasság",
                                 "elevation_meters": "méter",
-                                "external_url": "külső URL",
+                                "external_url": "Külső URL",
                                 "imperial_example": "Fahrenheit, font",
-                                "internal_url": "belsőURL",
+                                "internal_url": "Belső URL",
                                 "latitude": "Szélesség",
                                 "location_name": "A Home Assistant rendszered neve",
                                 "longitude": "Hosszúság",
@@ -1250,7 +1250,7 @@
                     },
                     "delete": "Törlés",
                     "description": "Csatlakoztatott eszközök kezelése",
-                    "device_info": "eszköz információ",
+                    "device_info": "Eszköz információ",
                     "device_not_found": "Eszköz nem található.",
                     "entities": {
                         "add_entities_lovelace": "Hozzáadás a Lovelace-hez",
@@ -1374,7 +1374,8 @@
                         "restart_confirm": "Indítsd újra a Home Assistant-ot az integráció törlésének befejezéséhez",
                         "settings_button": "{integration} beállításainak szerkesztése",
                         "system_options": "Rendszerbeállítások",
-                        "system_options_button": "{integration} rendszerbeállításai"
+                        "system_options_button": "{integration} rendszerbeállításai",
+                        "unnamed_entry": "Névtelen bejegyzés"
                     },
                     "config_flow": {
                         "aborted": "Megszakítva",
@@ -1878,10 +1879,13 @@
                         "built_using": "Buildelve:",
                         "custom_uis": "Egyéni felhasználói felületek:",
                         "developed_by": "Egy csomó fantasztikus ember által kifejlesztve.",
+                        "documentation": "Dokumentáció",
                         "frontend": "frontend-ui",
                         "frontend_version": "Frontend verzió: {version} - {type}",
                         "home_assistant_logo": "Home Assistant logó",
                         "icons_by": "Ikonokat készítette:",
+                        "integrations": "Integrációk",
+                        "issues": "Problémák",
                         "license": "Megjelent az Apache 2.0 licenc alatt",
                         "path_configuration": "A configuration.yaml fájl elérési útja: {path}",
                         "server": "server",
@@ -2072,6 +2076,7 @@
                             "name": "Név",
                             "no_theme": "Nincs téma",
                             "refresh_interval": "Frissítési időköz",
+                            "secondary_info_attribute": "Másodlagos információ attribútum",
                             "show_icon": "Ikon megjelenítése?",
                             "show_name": "Név megjelenítése?",
                             "show_state": "Állapot megjelenítése?",
@@ -2162,7 +2167,8 @@
                         },
                         "weather-forecast": {
                             "description": "Az Időjárás Előrejelzés kártya az időjárást jeleníti meg. Nagyon hasznos hozzáadni a falra felszerelt kezelő interfészek felületéhez.",
-                            "name": "Időjárás előrejelzés"
+                            "name": "Időjárás előrejelzés",
+                            "show_forecast": "Előrejelzés megjelenítése"
                         }
                     },
                     "cardpicker": {
@@ -2280,7 +2286,7 @@
                     "confirm_delete": "Nézet törlése?",
                     "confirm_delete_existing_cards": "A nézet törlésével a kártyák is eltávolításra kerülnek",
                     "confirm_delete_existing_cards_text": "Biztosan törölni szeretnéd a(z) ''{name}'' nézetet? A nézet {number} kártyát tartalmaz, melyek törlődni fognak. Ez a művelet nem vonható vissza.",
-                    "confirm_delete_text": "Biztosan törölni szeretnéd a(z) {name} nézetet?"
+                    "confirm_delete_text": "Biztosan törölni szeretnéd a(z) \"{name}\" nézetet?"
                 },
                 "warning": {
                     "attribute_not_found": "A(z) {attribute} attribútum nem érhető el a(z) {entity} entitásban.",
