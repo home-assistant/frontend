@@ -147,7 +147,7 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
       filter?: string
     ): ConfigEntryExtended[] => {
       if (!filter) {
-        return configEntries;
+        return [...configEntries];
       }
       const options: Fuse.FuseOptions<ConfigEntryExtended> = {
         keys: ["domain", "localized_domain_name", "title"],
@@ -170,11 +170,12 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
         filter
       );
       const ignored: ConfigEntryExtended[] = [];
-      filteredConfigEnties.forEach((item, index) => {
-        if (item.source === "ignore") {
-          ignored.push(filteredConfigEnties.splice(index, 1)[0]);
+      let i = filteredConfigEnties.length;
+      while (i--) {
+        if (filteredConfigEnties[i].source === "ignore") {
+          ignored.push(filteredConfigEnties.splice(i, 1)[0]);
         }
-      });
+      }
       return [groupByIntegration(filteredConfigEnties), ignored];
     }
   );
