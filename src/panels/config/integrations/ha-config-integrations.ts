@@ -170,8 +170,7 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
         filter
       );
       const ignored: ConfigEntryExtended[] = [];
-      let i = filteredConfigEnties.length;
-      while (i--) {
+      for (let i = filteredConfigEnties.length - 1; i >= 0; i--) {
         if (filteredConfigEnties[i].source === "ignore") {
           ignored.push(filteredConfigEnties.splice(i, 1)[0]);
         }
