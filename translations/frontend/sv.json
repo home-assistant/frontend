@@ -617,7 +617,7 @@
                     "pattern": "Regex-mönster för validering på klientsidan",
                     "text": "Text"
                 },
-                "platform_not_loaded": "{platform} integrationen har ej lästs in. Lägg till integrationen genom att lägga till 'default_config:' eller '{platform}:'.",
+                "platform_not_loaded": "{platform} integrationen har ej lästs in. Lägg till integrationen genom att lägga till 'default_config:' eller ''{platform}:''.",
                 "required_error_msg": "Det här fältet krävs",
                 "yaml_not_editable": "Inställningar för denna entitet kan inte ändras från användargränssnittet. Enbart entiteter uppsatta från användargränssnittet är konfigurerbara från användargränssnittet."
             },
@@ -2267,8 +2267,8 @@
                 "views": {
                     "confirm_delete": "Radera vyn?",
                     "confirm_delete_existing_cards": "Om du tar bort den här vyn tas även korten bort",
-                    "confirm_delete_existing_cards_text": "Vill du ta bort vyn '{name}'? Vyn innehåller {number}-kort som ska tas bort. Det går inte att ångra den här åtgärden.",
-                    "confirm_delete_text": "Är du säker på att du vill ta bort vyn '{namn}'?"
+                    "confirm_delete_existing_cards_text": "Vill du ta bort vyn ''{name}''? Vyn innehåller {number}-kort som ska tas bort. Det går inte att ångra den här åtgärden.",
+                    "confirm_delete_text": "Är du säker på att du vill ta bort vyn ''{name}''?"
                 },
                 "warning": {
                     "attribute_not_found": "Attribut {attribute} inte tillgängligt i: {entity}",
