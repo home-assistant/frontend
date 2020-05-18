@@ -47,7 +47,7 @@ import {
   uninstallHassioAddon,
 } from "../../../../src/data/hassio/addon";
 import { showConfirmationDialog } from "../../../../src/dialogs/generic/show-dialog-box";
-import { haStyle } from "../../../../src/resources/styles";
+import { haStyle, haMarkdown } from "../../../../src/resources/styles";
 import { HomeAssistant } from "../../../../src/types";
 import "../../components/hassio-card-content";
 import { showHassioMarkdownDialog } from "../../dialogs/markdown/show-dialog-hassio-markdown";
@@ -550,6 +550,7 @@ class HassioAddonInfo extends LitElement {
   static get styles(): CSSResult[] {
     return [
       haStyle,
+      haMarkdown,
       hassioStyle,
       css`
         :host {
@@ -630,14 +631,10 @@ class HassioAddonInfo extends LitElement {
         .right {
           float: right;
         }
-        ha-markdown img {
-          max-width: 100%;
-        }
         protection-enable mwc-button {
           --mdc-theme-primary: white;
         }
-        .description a,
-        ha-markdown a {
+        .description a {
           color: var(--primary-color);
         }
         .red {
@@ -674,33 +671,6 @@ class HassioAddonInfo extends LitElement {
           color: var(--primary-color);
           text-decoration: underline;
           cursor: pointer;
-        }
-        ha-markdown {
-          display: block;
-          padding: 0 16px 16px;
-          -ms-user-select: initial;
-          -webkit-user-select: initial;
-          -moz-user-select: initial;
-        }
-        .markdown.no-header {
-          padding-top: 16px;
-        }
-        ha-markdown > *:first-child {
-          margin-top: 0;
-        }
-        ha-markdown > *:last-child {
-          margin-bottom: 0;
-        }
-        ha-markdown img {
-          max-width: 100%;
-        }
-        ha-markdown code,
-        pre {
-          background-color: var(--markdown-code-background-color, #f8f8f8);
-        }
-        ha-markdown h2 {
-          font-size: 1.5em;
-          font-weight: bold;
         }
       `,
     ];

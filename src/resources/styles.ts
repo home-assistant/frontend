@@ -254,3 +254,50 @@ export const haStyleDialog = css`
     color: var(--google-red-500);
   }
 `;
+
+export const haMarkdown = css`
+  ha-markdown {
+    display: block;
+    padding: 0 16px 16px;
+    -ms-user-select: initial;
+    -webkit-user-select: initial;
+    -moz-user-select: initial;
+  }
+  .markdown.no-header {
+    padding-top: 16px;
+  }
+  ha-markdown > *:first-child {
+    margin-top: 0;
+  }
+  ha-markdown > *:last-child {
+    margin-bottom: 0;
+  }
+  ha-markdown a {
+    color: var(--primary-color);
+  }
+  ha-markdown img {
+    max-width: 100%;
+  }
+  ha-markdown code,
+  pre {
+    background-color: var(--markdown-code-background-color, #f6f8fa);
+    border-radius: 3px;
+  }
+
+  ha-markdown code {
+    font-size: 85%;
+    margin: 0;
+    padding: 0.2em 0.4em;
+  }
+
+  ha-markdown pre {
+    padding: 16px;
+    overflow: auto;
+    line-height: 1.45;
+  }
+
+  ha-markdown h2 {
+    font-size: 1.5em;
+    font-weight: bold;
+  }
+`;

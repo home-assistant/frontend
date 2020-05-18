@@ -1,6 +1,5 @@
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import {
-  css,
   CSSResult,
   customElement,
   html,
@@ -13,6 +12,7 @@ import { classMap } from "lit-html/directives/class-map";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import "../../../components/ha-card";
 import "../../../components/ha-markdown";
+import { haMarkdown } from "../../../resources/styles";
 import { subscribeRenderTemplate } from "../../../data/ws-templates";
 import type { HomeAssistant } from "../../../types";
 import type { LovelaceCard, LovelaceCardEditor } from "../types";
@@ -160,38 +160,7 @@ export class HuiMarkdownCard extends LitElement implements LovelaceCard {
   }
 
   static get styles(): CSSResult {
-    return css`
-      ha-markdown {
-        display: block;
-        padding: 0 16px 16px;
-        -ms-user-select: initial;
-        -webkit-user-select: initial;
-        -moz-user-select: initial;
-      }
-      .markdown.no-header {
-        padding-top: 16px;
-      }
-      ha-markdown > *:first-child {
-        margin-top: 0;
-      }
-      ha-markdown > *:last-child {
-        margin-bottom: 0;
-      }
-      ha-markdown a {
-        color: var(--primary-color);
-      }
-      ha-markdown img {
-        max-width: 100%;
-      }
-      ha-markdown code,
-      pre {
-        background-color: var(--markdown-code-background-color, #f8f8f8);
-      }
-      ha-markdown h2 {
-        font-size: 1.5em;
-        font-weight: bold;
-      }
-    `;
+    return haMarkdown;
   }
 }
 
