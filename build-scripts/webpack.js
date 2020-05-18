@@ -2,6 +2,7 @@ const webpack = require("webpack");
 const path = require("path");
 const TerserPlugin = require("terser-webpack-plugin");
 const ManifestPlugin = require("webpack-manifest-plugin");
+const WorkerPlugin = require("worker-plugin");
 const paths = require("./paths.js");
 const env = require("./env.js");
 const { babelLoaderConfig } = require("./babel.js");
@@ -51,6 +52,7 @@ const createWebpackConfig = ({
       ],
     },
     plugins: [
+      new WorkerPlugin(),
       new ManifestPlugin(),
       new webpack.DefinePlugin({
         __DEV__: !isProdBuild,
@@ -105,7 +107,7 @@ const createWebpackConfig = ({
         latestBuild ? "frontend_latest" : "frontend_es5"
       ),
       publicPath: latestBuild ? "/frontend_latest/" : "/frontend_es5/",
-      // For workerize loader
+      // To silence warning in worker plugin
       globalObject: "self",
     },
   };
