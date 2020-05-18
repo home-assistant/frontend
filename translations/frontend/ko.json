@@ -591,7 +591,7 @@
                 "input_datetime": {
                     "date": "날짜",
                     "datetime": "날짜와 시간",
-                    "mode": "무엇을 입력하시겠습니까?",
+                    "mode": "입력할 내용",
                     "time": "시간"
                 },
                 "input_number": {
@@ -2043,7 +2043,7 @@
                             "name": "구성요소 필터"
                         },
                         "entity": {
-                            "description": "구성요소 카드는 구성요소의 상태에 대한 빠른 개요를 제공합니다.",
+                            "description": "구성요소 카드는 구성요소의 상태에 대한 빠른 보기를 제공합니다.",
                             "name": "구성요소"
                         },
                         "gauge": {

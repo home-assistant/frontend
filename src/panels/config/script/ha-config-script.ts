@@ -73,7 +73,7 @@ class HaConfigScript extends HassRouterPage {
     if (this.hass) {
       if (!pageEl.scripts || !changedProps) {
         pageEl.scripts = this._getScripts(this.hass.states);
-      } else if (changedProps && changedProps.has("hass")) {
+      } else if (changedProps.has("hass")) {
         this._debouncedUpdateScripts(pageEl);
       }
     }

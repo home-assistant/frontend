@@ -24,7 +24,7 @@ class EventsList extends EventsMixin(LocalizeMixin(PolymerElement)) {
         }
 
         a {
-          color: var(--dark-primary-color);
+          color: var(--primary-color);
         }
       </style>
 
