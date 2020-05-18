@@ -617,7 +617,7 @@
                     "pattern": "Regex-mønster for validering på klientsiden",
                     "text": "Tekst"
                 },
-                "platform_not_loaded": "{platform}-integrasjonen er ikke lastet inn. Legg til konfigurasjonen ved å legge til 'default_config:' eller '{platform}:'.",
+                "platform_not_loaded": "Integrasjonen {platform} er ikke lastet. Legg til konfigurasjonen din enten ved å legge til 'default_config:' eller '' {platform} : ''.",
                 "required_error_msg": "Dette feltet er påkrevd",
                 "yaml_not_editable": "Innstillingene for denne entiteten kan ikke redigeres fra brukergrensesnittet. Bare entiteter som er satt opp fra brukergrensesnittet, kan konfigureres fra brukergrensesnittet."
             },
@@ -2285,8 +2285,8 @@
                 "views": {
                     "confirm_delete": "Slette visning?",
                     "confirm_delete_existing_cards": "Sletting av denne visningen vil også slette kortene",
-                    "confirm_delete_existing_cards_text": "Er du sikker på at du vil slette visningen '{name}'? Visningen inneholder {number} kort som blir slettet. Denne handlingen kan ikke angre.",
-                    "confirm_delete_text": "Er du sikker på at du vil slette visningen '{name}'?"
+                    "confirm_delete_existing_cards_text": "Er du sikker på at du vil slette visningen '' {name} ''? Visningen inneholder {number} kort som blir slettet. Denne handlingen kan ikke angre.",
+                    "confirm_delete_text": "Er du sikker på at du vil slette visningen '' {name} ''?"
                 },
                 "warning": {
                     "attribute_not_found": "Attributtet {attribute} er ikke tilgjengelig i: {entity}",

@@ -2268,8 +2268,8 @@
                 "views": {
                     "confirm_delete": "Želite izbrisati pogled?",
                     "confirm_delete_existing_cards": "Če izbrišete ta pogled, boste odstranili tudi kartice",
-                    "confirm_delete_existing_cards_text": "Ali ste prepričani, da želite izbrisati svoj '{name}' pogled? Pogled vsebuje {number} kartice, ki bodo izbrisane. Tega ukrepa ni mogoče razveljaviti.",
-                    "confirm_delete_text": "Ali ste prepričani, da želite izbrisati pogled '{name}' ?"
+                    "confirm_delete_existing_cards_text": "Ali ste prepričani, da želite izbrisati svoj ''{name}'' pogled? Pogled vsebuje {number} kartice, ki bodo izbrisane. Tega ukrepa ni mogoče razveljaviti.",
+                    "confirm_delete_text": "Ali ste prepričani, da želite izbrisati pogled ''{name}'' ?"
                 },
                 "warning": {
                     "attribute_not_found": "Atribut {attribute} ni na voljo v: {entity}",

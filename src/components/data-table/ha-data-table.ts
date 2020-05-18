@@ -14,9 +14,6 @@ import { classMap } from "lit-html/directives/class-map";
 import { ifDefined } from "lit-html/directives/if-defined";
 import { styleMap } from "lit-html/directives/style-map";
 import { scroll } from "lit-virtualizer";
-// @ts-ignore
-// eslint-disable-next-line import/no-webpack-loader-syntax
-import sortFilterWorker from "workerize-loader!./sort_filter_worker";
 import { fireEvent } from "../../common/dom/fire_event";
 import "../../common/search/search-input";
 import { debounce } from "../../common/util/debounce";
@@ -24,6 +21,7 @@ import { nextRender } from "../../common/util/render-status";
 import "../ha-checkbox";
 import type { HaCheckbox } from "../ha-checkbox";
 import "../ha-icon";
+import { filterSortData } from "./sort-filter";
 
 declare global {
   // for fire event
@@ -117,8 +115,6 @@ export class HaDataTable extends LitElement {
 
   private curRequest = 0;
 
-  private _worker: any | undefined;
-
   private _debounceSearch = debounce(
     (value: string) => {
       this._filter = value;
@@ -138,11 +134,6 @@ export class HaDataTable extends LitElement {
       // Force update of location of rows
       this._filteredData = [...this._filteredData];
     }
-  }
-
-  protected firstUpdated(properties: PropertyValues) {
-    super.firstUpdated(properties);
-    this._worker = sortFilterWorker();
   }
 
   protected updated(properties: PropertyValues) {
@@ -383,7 +374,7 @@ export class HaDataTable extends LitElement {
     this.curRequest++;
     const curRequest = this.curRequest;
 
-    const filterProm = this._worker.filterSortData(
+    const filterProm = filterSortData(
       this.data,
       this._sortColumns,
       this._filter,

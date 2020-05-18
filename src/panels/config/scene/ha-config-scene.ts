@@ -68,7 +68,7 @@ class HaConfigScene extends HassRouterPage {
     if (this.hass) {
       if (!pageEl.scenes || !changedProps) {
         pageEl.scenes = this._getScenes(this.hass.states);
-      } else if (changedProps && changedProps.has("hass")) {
+      } else if (changedProps.has("hass")) {
         this._debouncedUpdateScenes(pageEl);
       }
     }

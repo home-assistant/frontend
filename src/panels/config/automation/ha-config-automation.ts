@@ -76,7 +76,7 @@ class HaConfigAutomation extends HassRouterPage {
     if (this.hass) {
       if (!pageEl.automations || !changedProps) {
         pageEl.automations = this._getAutomations(this.hass.states);
-      } else if (changedProps && changedProps.has("hass")) {
+      } else if (changedProps.has("hass")) {
         this._debouncedUpdateAutomations(pageEl);
       }
     }

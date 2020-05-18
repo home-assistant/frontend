@@ -503,7 +503,7 @@
                     "password": "Parola",
                     "text": "Text"
                 },
-                "platform_not_loaded": "ادغام {platform} بارگیری نشده است. لطفاً تنظیمات خود را با اضافه کردن 'default_config:' یا '{platform}:' تنظیمات خود را اضافه کنید.",
+                "platform_not_loaded": "ادغام {platform} بارگیری نشده است. لطفاً تنظیمات خود را با اضافه کردن 'default_config:' یا ''{platform}:'' تنظیمات خود را اضافه کنید.",
                 "yaml_not_editable": "تنظیمات این نهاد نمی تواند از UI ویرایش شود. فقط موجودیت هایی که از UI تنظیم می شوند از UI قابل تنظیم هستند."
             },
             "more_info_control": {
