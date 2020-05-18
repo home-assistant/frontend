@@ -21,7 +21,8 @@ import { nextRender } from "../../common/util/render-status";
 import "../ha-checkbox";
 import type { HaCheckbox } from "../ha-checkbox";
 import "../ha-icon";
-import { filterSortData } from "./sort-filter";
+import { filterData, sortData } from "./sort-filter";
+import memoizeOne from "memoize-one";
 
 declare global {
   // for fire event
@@ -72,6 +73,10 @@ export interface DataTableRowData {
   selectable?: boolean;
 }
 
+export interface SortableColumnContainer {
+  [key: string]: DataTableSortColumnData;
+}
+
 @customElement("ha-data-table")
 export class HaDataTable extends LitElement {
   @property({ type: Object }) public columns: DataTableColumnContainer = {};
@@ -109,9 +114,7 @@ export class HaDataTable extends LitElement {
 
   private _checkedRows: string[] = [];
 
-  private _sortColumns: {
-    [key: string]: DataTableSortColumnData;
-  } = {};
+  private _sortColumns: SortableColumnContainer = {};
 
   private curRequest = 0;
 
@@ -374,15 +377,20 @@ export class HaDataTable extends LitElement {
     this.curRequest++;
     const curRequest = this.curRequest;
 
-    const filterProm = filterSortData(
-      this.data,
-      this._sortColumns,
-      this._filter,
-      this._sortDirection,
-      this._sortColumn
-    );
+    const filteredData: Promise<DataTableRowData[]> = this._filter
+      ? this._memFilterData(this.data, this._sortColumns, this.filter)
+      : new Promise((resolve) => resolve(this.data));
 
-    const [data] = await Promise.all([filterProm, nextRender]);
+    const prom = this._sortColumn
+      ? sortData(
+          await filteredData,
+          this._sortColumns,
+          this._sortDirection,
+          this._sortColumn
+        )
+      : filteredData;
+
+    const [data] = await Promise.all([prom, nextRender]);
 
     const curTime = new Date().getTime();
     const elapsed = curTime - startTime;
@@ -395,6 +403,19 @@ export class HaDataTable extends LitElement {
     }
     this._filteredData = data;
   }
+
+  private _memFilterData = memoizeOne(
+    async (
+      data: DataTableRowData[],
+      columns: SortableColumnContainer,
+      filter: string
+    ): Promise<DataTableRowData[]> => {
+      if (!filter) {
+        return data;
+      }
+      return filterData(data, columns, filter.toUpperCase());
+    }
+  );
 
   private _handleHeaderClick(ev: Event) {
     const columnId = ((ev.target as HTMLElement).closest(
