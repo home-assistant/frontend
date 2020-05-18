@@ -14,7 +14,6 @@
     "skipLibCheck": true,
     "resolveJsonModule": true,
     "experimentalDecorators": true,
-    "importHelpers": true,
     "plugins": [
       {
         "name": "ts-lit-plugin",
