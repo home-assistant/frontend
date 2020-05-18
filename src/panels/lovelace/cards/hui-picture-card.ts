@@ -38,7 +38,7 @@ export class HuiPictureCard extends LitElement implements LovelaceCard {
     };
   }
 
-  public hass?: HomeAssistant;
+  @property() public hass?: HomeAssistant;
 
   @property() protected _config?: PictureCardConfig;
 
@@ -52,6 +52,13 @@ export class HuiPictureCard extends LitElement implements LovelaceCard {
     }
 
     this._config = config;
+  }
+
+  protected shouldUpdate(changedProps: PropertyValues): boolean {
+    if (changedProps.size === 1 && changedProps.has("hass")) {
+      return !changedProps.get("hass");
+    }
+    return true;
   }
 
   protected updated(changedProps: PropertyValues): void {
