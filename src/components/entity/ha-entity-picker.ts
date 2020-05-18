@@ -38,15 +38,14 @@ const rowRenderer = (
         }
       </style>
       <paper-icon-item>
-        <state-badge state-obj="[[item]]" slot="item-icon"></state-badge>
+        <state-badge slot="item-icon"></state-badge>
         <paper-item-body two-line="">
-          <div class='name'>[[_computeStateName(item)]]</div>
-          <div secondary>[[item.entity_id]]</div>
+          <div class='name'></div>
+          <div secondary></div>
         </paper-item-body>
       </paper-icon-item>
     `;
   }
-
   root.querySelector("state-badge")!.stateObj = model.item;
   root.querySelector(".name")!.textContent = computeStateName(model.item);
   root.querySelector("[secondary]")!.textContent = model.item.entity_id;
@@ -147,6 +146,10 @@ class HaEntityPicker extends LitElement {
       return states;
     }
   );
+
+  protected shouldUpdate(changedProps: PropertyValues) {
+    return !(!changedProps.has("_opened") && this._opened);
+  }
 
   protected updated(changedProps: PropertyValues) {
     if (changedProps.has("_opened") && this._opened) {

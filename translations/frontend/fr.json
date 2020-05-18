@@ -617,7 +617,7 @@
                     "pattern": "Modèle d'expression régulière pour la validation côté client",
                     "text": "Texte"
                 },
-                "platform_not_loaded": "L'intégration {platform} n'est pas chargée. Veuillez l'ajouter à votre configuration en ajoutant 'default_config:' ou '{platform}:'.",
+                "platform_not_loaded": "L'intégration {platform} n'est pas chargée. Veuillez l'ajouter à votre configuration en ajoutant 'default_config:' ou ''{platform}:''.",
                 "required_error_msg": "Ce champ est requis",
                 "yaml_not_editable": "Les paramètres de cette entité ne peuvent pas être modifiés à partir de l'interface utilisateur. Seules les entités configurées à partir de l'interface utilisateur sont configurables à partir de l'interface utilisateur."
             },
@@ -2285,8 +2285,8 @@
                 "views": {
                     "confirm_delete": "Êtes-vous sûr de vouloir supprimer cette vue?",
                     "confirm_delete_existing_cards": "La suppression de cette vue supprimera également les cartes",
-                    "confirm_delete_existing_cards_text": "Voulez-vous vraiment supprimer votre vue '{name}'? La vue contient {number} cartes qui seront supprimées. Cette action ne peut pas être annulée.",
-                    "confirm_delete_text": "Voulez-vous vraiment supprimer votre vue '{name}'?"
+                    "confirm_delete_existing_cards_text": "Voulez-vous vraiment supprimer votre vue ''{name}''? La vue contient {number} cartes qui seront supprimées. Cette action ne peut pas être annulée.",
+                    "confirm_delete_text": "Voulez-vous vraiment supprimer votre vue ''{name}''?"
                 },
                 "warning": {
                     "attribute_not_found": "Attribut {attribute} non disponible dans: {entity}",

@@ -603,7 +603,7 @@
                     "password": "Şifre",
                     "text": "Metin"
                 },
-                "platform_not_loaded": "{platform} entegrasyonu yüklenmedi. Lütfen 'default_config:' veya '{platform}:' ekleyerek onu yapılandırmanıza dahil edin.",
+                "platform_not_loaded": "{platform} entegrasyonu yüklenmedi. Lütfen 'default_config:' veya ''{platform}:'' ekleyerek onu yapılandırmanıza dahil edin.",
                 "required_error_msg": "Bu alan gereklidir",
                 "yaml_not_editable": "Bu varlığın ayarları kullanıcı arayüzünden düzenlenemez. Yalnızca kullanıcı arayüzünden tanımlanan varlıklar kullanıcı arayüzünden yapılandırılabilir."
             },
@@ -2052,8 +2052,8 @@
                 "views": {
                     "confirm_delete": "Görünüm silinsin mi?",
                     "confirm_delete_existing_cards": "Bu görünüm silindiğinde kartlar da kaldırılacak",
-                    "confirm_delete_existing_cards_text": "'{name}' görünümünüzü silmek istediğinizden emin misiniz? Görünüm, silinecek {number} adet kart içeriyor. Bu eylem geri alınamaz.",
-                    "confirm_delete_text": "'{name}' görünümünüzü silmek istediğinizden emin misiniz?"
+                    "confirm_delete_existing_cards_text": "''{name}'' görünümünüzü silmek istediğinizden emin misiniz? Görünüm, silinecek {number} adet kart içeriyor. Bu eylem geri alınamaz.",
+                    "confirm_delete_text": "''{name}'' görünümünüzü silmek istediğinizden emin misiniz?"
                 },
                 "warning": {
                     "attribute_not_found": "Nitelik {attribute} {entity} içinde mevcut değil",

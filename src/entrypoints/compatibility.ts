@@ -2,6 +2,8 @@ import objAssign from "es6-object-assign";
 import "mdn-polyfills/Array.prototype.includes";
 import "regenerator-runtime/runtime";
 import "unfetch/polyfill";
+// To use comlink under ES5
+import "proxy-polyfill";
 
 objAssign.polyfill();
 

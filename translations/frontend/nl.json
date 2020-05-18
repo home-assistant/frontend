@@ -617,7 +617,7 @@
                     "pattern": "Regex-patroon voor clientvalidatie",
                     "text": "Tekst"
                 },
-                "platform_not_loaded": "De {platform} integratie is niet geladen. Voeg het aan je configuratie toe door 'default_config:' of '{platform}:' toe te voegen.",
+                "platform_not_loaded": "De {platform} integratie is niet geladen. Voeg het aan je configuratie toe door 'default_config:' of ''{platform}:'' toe te voegen.",
                 "required_error_msg": "Dit veld is verplicht",
                 "yaml_not_editable": "De instellingen van deze entiteit kunnen niet worden bewerkt vanuit de gebruikersinterface. Alleen entiteiten die zijn ingesteld vanuit de gebruikersinterface, kunnen worden geconfigureerd vanuit de gebruikersinterface."
             },
@@ -2279,8 +2279,8 @@
                 "views": {
                     "confirm_delete": "Weergave verwijderen?",
                     "confirm_delete_existing_cards": "Als u deze weergave verwijdert, worden ook de kaarten verwijderd",
-                    "confirm_delete_existing_cards_text": "Weet u zeker dat u uw weergave '{name}' wilt verwijderen? De weergave bevat {number} kaarten die worden verwijderd. Deze actie kan niet ongedaan gemaakt worden.",
-                    "confirm_delete_text": "Weet u zeker dat u uw '{naam}'-weergave wilt verwijderen?"
+                    "confirm_delete_existing_cards_text": "Weet u zeker dat u uw weergave ''{name}'' wilt verwijderen? De weergave bevat {number} kaarten die worden verwijderd. Deze actie kan niet ongedaan gemaakt worden.",
+                    "confirm_delete_text": "Weet u zeker dat u uw ''{naam}''-weergave wilt verwijderen?"
                 },
                 "warning": {
                     "attribute_not_found": "Kenmerk {attribute} niet beschikbaar in: {entity}",
