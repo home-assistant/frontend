@@ -182,7 +182,7 @@ export class HaDataTable extends LitElement {
       properties.has("_sortColumn") ||
       properties.has("_sortDirection")
     ) {
-      this._filterData();
+      this._sortFilterData();
     }
   }
 
@@ -372,7 +372,7 @@ export class HaDataTable extends LitElement {
     `;
   }
 
-  private async _filterData() {
+  private async _sortFilterData() {
     const startTime = new Date().getTime();
     this.curRequest++;
     const curRequest = this.curRequest;
