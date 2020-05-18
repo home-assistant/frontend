@@ -111,7 +111,9 @@ export abstract class HuiStackCard extends LitElement implements LovelaceCard {
     config: LovelaceCardConfig
   ): void {
     const newCardEl = this._createCardElement(config);
-    cardElToReplace.parentElement!.replaceChild(newCardEl, cardElToReplace);
+    if (cardElToReplace.parentElement) {
+      cardElToReplace.parentElement.replaceChild(newCardEl, cardElToReplace);
+    }
     this._cards = this._cards!.map((curCardEl) =>
       curCardEl === cardElToReplace ? newCardEl : curCardEl
     );
