@@ -1230,7 +1230,9 @@
           "entities": {
             "entities": "Entities",
             "add_entities_lovelace": "Add to Lovelace",
-            "none": "This device has no entities"
+            "none": "This device has no entities",
+            "hide_disabled": "Hide disabled",
+            "disabled_entities": "+{count} {count, plural,\n  one {disabled entity}\n  other {disabled entities}\n}"
           },
           "scripts": "Scripts",
           "scenes": "Scenes",
