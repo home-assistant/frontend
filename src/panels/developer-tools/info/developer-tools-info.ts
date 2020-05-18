@@ -84,7 +84,7 @@ class HaPanelDevInfo extends LitElement {
           <a href="https://www.google.com/design/icons/" target="_blank" rel="noreferrer"
             >Google</a
           >
-          and
+          ${this.hass.localize("ui.common.and")}
           <a href="https://MaterialDesignIcons.com" target="_blank" rel="noreferrer"
             >MaterialDesignIcons.com</a
           >.
