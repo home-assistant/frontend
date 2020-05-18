@@ -29,7 +29,7 @@ class HaPanelDevTemplate extends LocalizeMixin(PolymerElement) {
         }
 
         .edit-pane a {
-          color: var(--dark-primary-color);
+          color: var(--primary-color);
         }
 
         .horizontal .edit-pane {
