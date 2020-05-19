@@ -53,7 +53,7 @@ class HaMarkdown extends UpdatingElement {
         node.rel = "noreferrer noopener";
 
         // Fire a resize event when images loaded to notify content resized
-      } else if (node) {
+      } else if (node instanceof HTMLImageElement) {
         node.addEventListener("load", this._resize);
       }
     }
