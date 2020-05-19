@@ -1,118 +1,80 @@
-import { customElement, property, UpdatingElement } from "lit-element";
-import { fireEvent } from "../common/dom/fire_event";
-import { renderMarkdown } from "../resources/render-markdown";
+import {
+  css,
+  CSSResult,
+  customElement,
+  html,
+  LitElement,
+  property,
+  TemplateResult,
+} from "lit-element";
+
+import "./ha-markdown-element";
 
 @customElement("ha-markdown")
-class HaMarkdown extends UpdatingElement {
+class HaMarkdown extends LitElement {
   @property() public content?;
 
   @property({ type: Boolean }) public allowSvg = false;
 
   @property({ type: Boolean }) public breaks = false;
 
-  constructor() {
-    super();
-    this.attachShadow({ mode: "open" });
-  }
-
-  protected update(changedProps) {
-    super.update(changedProps);
-    if (this.content) {
-      this._render();
+  protected render(): TemplateResult {
+    if (!this.content) {
+      return html``;
     }
+
+    return html`<ha-markdown-element
+      .content=${this.content}
+      .allowSvg=${this.allowSvg}
+      .breaks=${this.breaks}
+    ></ha-markdown-element>`;
   }
 
-  private async _render() {
-    this.shadowRoot!.innerHTML = await renderMarkdown(
-      this.content,
-      {
-        breaks: this.breaks,
-        gfm: true,
-        tables: true,
-      },
-      {
-        allowSvg: this.allowSvg,
-      }
-    );
-
-    this.shadowRoot!.innerHTML += `<style>
+  static get styles(): CSSResult {
+    return css`
       :host {
         display: block;
-        padding: 0 16px 16px;
+      }
+      ha-markdown-element {
         -ms-user-select: text;
         -webkit-user-select: text;
         -moz-user-select: text;
       }
-      *:first-child {
+      ha-markdown-element > *:first-child {
         margin-top: 0;
       }
-      *:last-child {
+      ha-markdown-element > *:last-child {
         margin-bottom: 0;
       }
-      a {
+      ha-markdown-element a {
         color: var(--primary-color);
       }
-      img {
+      ha-markdown-element img {
         max-width: 100%;
       }
-      code, pre {
+      ha-markdown-element code,
+      pre {
         background-color: var(--markdown-code-background-color, #f6f8fa);
         border-radius: 3px;
       }
-
-      code {
+      ha-markdown-element code {
         font-size: 85%;
         padding: 0.2em 0.4em;
       }
-
-      pre code {
+      ha-markdown-element pre code {
         padding: 0;
       }
-
-      pre {
+      ha-markdown-element pre {
         padding: 16px;
         overflow: auto;
         line-height: 1.45;
       }
-
-      h2 {
+      ha-markdown-element h2 {
         font-size: 1.5em !important;
         font-weight: bold !important;
       }
-    </style>`;
-
-    this._resize();
-
-    const walker = document.createTreeWalker(
-      this.shadowRoot!,
-      1 /* SHOW_ELEMENT */,
-      null,
-      false
-    );
-
-    while (walker.nextNode()) {
-      const node = walker.currentNode;
-
-      // Open external links in a new window
-      if (
-        node instanceof HTMLAnchorElement &&
-        node.host !== document.location.host
-      ) {
-        node.target = "_blank";
-        node.rel = "noreferrer";
-
-        // protect referrer on external links and deny window.opener access for security reasons
-        // (see https://mathiasbynens.github.io/rel-noopener/)
-        node.rel = "noreferrer noopener";
-
-        // Fire a resize event when images loaded to notify content resized
-      } else if (node instanceof HTMLImageElement) {
-        node.addEventListener("load", this._resize);
-      }
-    }
+    `;
   }
-
-  private _resize = () => fireEvent(this, "iron-resize");
 }
 
 declare global {

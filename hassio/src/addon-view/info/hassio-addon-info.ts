@@ -671,6 +671,9 @@ class HassioAddonInfo extends LitElement {
           text-decoration: underline;
           cursor: pointer;
         }
+        ha-markdown {
+          padding: 16px;
+        }
       `,
     ];
   }

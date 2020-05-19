@@ -161,6 +161,9 @@ export class HuiMarkdownCard extends LitElement implements LovelaceCard {
 
   static get styles(): CSSResult {
     return css`
+      ha-markdown {
+        padding: 0 16px 16px;
+      }
       ha-markdown.no-header {
         padding-top: 16px;
       }

@@ -90,6 +90,9 @@ class HassioMarkdownDialog extends LitElement {
             color: var(--text-primary-color);
             background-color: var(--primary-color);
           }
+          ha-markdown {
+            padding: 16px;
+          }
         }
       `,
     ];
