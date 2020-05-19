@@ -28,6 +28,8 @@ checkCacheVersion();
 
 const debouncedWriteCache = debounce(() => writeCache(chunks), 2000);
 
+const cachedIcons: { [key: string]: string } = {};
+
 @customElement("ha-icon")
 export class HaIcon extends LitElement {
   @property() public icon?: string;
@@ -83,9 +85,15 @@ export class HaIcon extends LitElement {
 
     this._legacy = false;
 
-    const cachedPath: string = await getIcon(iconName);
-    if (cachedPath) {
-      this._path = cachedPath;
+    if (iconName in cachedIcons) {
+      this._path = cachedIcons[iconName];
+      return;
+    }
+
+    const databaseIcon: string = await getIcon(iconName);
+    if (databaseIcon) {
+      this._path = databaseIcon;
+      cachedIcons[iconName] = databaseIcon;
       return;
     }
     const chunk = findIconChunk(iconName);
@@ -111,6 +119,7 @@ export class HaIcon extends LitElement {
   private async _setPath(promise: Promise<Icons>, iconName: string) {
     const iconPack = await promise;
     this._path = iconPack[iconName];
+    cachedIcons[iconName] = iconPack[iconName];
   }
 
   static get styles(): CSSResult {

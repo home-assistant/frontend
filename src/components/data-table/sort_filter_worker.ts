@@ -5,33 +5,16 @@ import type {
   DataTableSortColumnData,
   DataTableRowData,
   SortingDirection,
-  HaDataTable,
+  SortableColumnContainer,
 } from "./ha-data-table";
-
-type SortableColumnContainer = HaDataTable["_sortColumns"];
-
-const filterSortData = (
-  data: DataTableRowData[],
-  columns: SortableColumnContainer,
-  filter: string,
-  direction: SortingDirection,
-  sortColumn?: string
-) => {
-  const filteredData = filter ? filterData(data, columns, filter) : data;
-
-  if (!sortColumn) {
-    return filteredData;
-  }
-
-  return sortData(filteredData, columns, direction, sortColumn);
-};
 
 const filterData = (
   data: DataTableRowData[],
   columns: SortableColumnContainer,
   filter: string
-) =>
-  data.filter((row) => {
+) => {
+  filter = filter.toUpperCase();
+  return data.filter((row) => {
     return Object.entries(columns).some((columnEntry) => {
       const [key, column] = columnEntry;
       if (column.filterable) {
@@ -46,6 +29,7 @@ const filterData = (
       return false;
     });
   });
+};
 
 const sortData = (
   data: DataTableRowData[],
@@ -85,7 +69,8 @@ const sortData = (
 
 // Export for types
 export const api = {
-  filterSortData,
+  filterData,
+  sortData,
 };
 
 expose(api);
