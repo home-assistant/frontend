@@ -32,7 +32,7 @@
             "armed_custom_bypass": "مفعّل",
             "armed_home": "مفعّل",
             "armed_night": "مفعل",
-            "arming": "جاري التفعيل ",
+            "arming": "جاري التفعيل",
             "disarmed": "غير مفعّل",
             "disarming": "إيقاف الإنذار",
             "pending": "إنتظار",
@@ -411,12 +411,24 @@
             }
         },
         "dialogs": {
+            "generic": {
+                "close": "إغلاق"
+            },
             "helper_settings": {
+                "generic": {
+                    "icon": "أيقونة"
+                },
                 "input_datetime": {
                     "date": "تاريخ",
                     "datetime": "التاريخ والوقت",
                     "mode": "ما الذي تريد إدخاله",
                     "time": "الوقت"
+                },
+                "input_select": {
+                    "add": "إضافة"
+                },
+                "input_text": {
+                    "password": "كلمة المرور"
                 }
             },
             "more_info_control": {
@@ -663,6 +675,10 @@
                     "description": "التحقق من صحة ملف الإعدادات والتحكم بالخادم",
                     "section": {
                         "core": {
+                            "core_config": {
+                                "external_url": "العنوان الخارجي",
+                                "internal_url": "العنوان المحلي"
+                            },
                             "header": "التحكم بالإعدادات و الخادم",
                             "introduction": "تغيير الإعدادات يعتبر عملية مزرية. نحن نعلم ذلك . لذا، سيحاول هذا القسم جعل حياتك أكثر سهولة."
                         }
@@ -678,6 +694,7 @@
                         "no_devices": "لا توجد أجهزة"
                     },
                     "delete": "حذف",
+                    "device_info": "معلومات الجهاز",
                     "no_devices": "لا توجد أجهزة"
                 },
                 "entities": {
@@ -693,10 +710,21 @@
                 },
                 "header": "برمجة نظام مساعد البيت",
                 "helpers": {
+                    "dialog": {
+                        "create": "إضافة"
+                    },
                     "picker": {
                         "headers": {
-                            "entity_id": "معرف الكيان"
+                            "editable": "قابل للتحرير",
+                            "entity_id": "معرف الكيان",
+                            "name": "الاسم",
+                            "type": "النوع"
                         }
+                    },
+                    "types": {
+                        "input_number": "رقم",
+                        "input_select": "القائمه المنسدله",
+                        "input_text": "النص"
                     }
                 },
                 "integrations": {
@@ -730,7 +758,7 @@
                         "confirm_delete_ignore_title": "توقف عن تجاهل {name} ؟",
                         "ignore": "تجاهل",
                         "ignored": "تجاهل",
-                        "show_ignored": "Visa ",
+                        "show_ignored": "أظهر الدمج المتجاهل",
                         "stop_ignore": "توقف عن التجاهل"
                     },
                     "integration": "integration",
