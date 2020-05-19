@@ -1254,7 +1254,9 @@
                     "device_not_found": "Device not found.",
                     "entities": {
                         "add_entities_lovelace": "Add to Lovelace",
+                        "disabled_entities": "+{count} {count, plural,\n  one {disabled entity}\n  other {disabled entities}\n}",
                         "entities": "Entities",
+                        "hide_disabled": "Hide disabled",
                         "none": "This device has no entities"
                     },
                     "name": "Name",
