@@ -442,6 +442,7 @@
                 "attributes": {
                     "air_pressure": "Hava basıncı",
                     "humidity": "Nem",
+                    "precipitation": "Yağış",
                     "temperature": "Sıcaklık",
                     "visibility": "Görünürlük",
                     "wind_speed": "Rüzgar hızı"
@@ -464,7 +465,9 @@
                     "wnw": "BKB",
                     "wsw": "BGB"
                 },
-                "forecast": "Tahmin"
+                "forecast": "Tahmin",
+                "high": "Yüksek",
+                "low": "Düşük"
             }
         },
         "common": {
@@ -472,10 +475,14 @@
             "close": "Kapat",
             "delete": "Sil",
             "loading": "Yükleniyor",
+            "next": "Sonraki",
             "no": "Hayır",
+            "previous": "Önceki",
+            "refresh": "Yenile",
             "save": "Kaydet",
             "successfully_deleted": "Başarıyla silindi",
             "successfully_saved": "Başarıyla kaydedildi",
+            "undo": "Geri al",
             "yes": "Evet"
         },
         "components": {
@@ -645,6 +652,11 @@
                     "stop": "Durdur"
                 }
             },
+            "mqtt_device_debug_info": {
+                "entities": "Varlıklar",
+                "show_as_yaml": "YAML olarak göster",
+                "triggers": "Tetikleyiciler"
+            },
             "options_flow": {
                 "form": {
                     "header": "Seçenekler"
@@ -711,6 +723,10 @@
             "triggered": "Tetiklendi {name}"
         },
         "panel": {
+            "calendar": {
+                "my_calendars": "Takvimlerim",
+                "today": "Bugün"
+            },
             "config": {
                 "advanced_mode": {
                     "hint_enable": "Eksik yapılandırma seçenekleri? Gelişmiş modunu etkinleştir",
@@ -1172,6 +1188,7 @@
                     },
                     "delete": "Sil",
                     "description": "Bağlı cihazları yönet",
+                    "device_info": "Cihaz bilgisi",
                     "device_not_found": "Cihaz bulunamadı.",
                     "entities": {
                         "add_entities_lovelace": "Tüm cihaz varlıklarını Lovelace kullanıcı arayüzüne ekle",
@@ -1235,6 +1252,9 @@
                         }
                     }
                 },
+                "filtering": {
+                    "clear": "Temizle"
+                },
                 "header": "Home Assistant'ı yapılandır",
                 "helpers": {
                     "caption": "Yardımcılar",
@@ -1265,6 +1285,7 @@
                     "caption": "Entegrasyonlar",
                     "config_entry": {
                         "area": "{alan} içinde",
+                        "delete": "Sil",
                         "delete_button": "{Entegrasyon} sil",
                         "delete_confirm": "Bu entegrasyonu silmek istediğinizden emin misiniz?",
                         "device_unavailable": "aygıt kullanılamıyor",
@@ -1275,8 +1296,12 @@
                         "no_area": "Alan Yok",
                         "no_device": "Aygıtsız varlıklar",
                         "no_devices": "Bu entegrasyona ait hiçbir aygıt yok",
+                        "options": "Seçenekler",
+                        "rename": "Yeniden adlandır",
                         "restart_confirm": "Bu entegrasyonu kaldırmaya devam etmek için Home Assistant'ı yeniden başlatın",
-                        "system_options_button": "{integration} için sistem seçenekleri"
+                        "system_options": "Sistem seçenekleri",
+                        "system_options_button": "{integration} için sistem seçenekleri",
+                        "unnamed_entry": "Adsız giriş"
                     },
                     "config_flow": {
                         "aborted": "İptal edildi",
@@ -1311,8 +1336,11 @@
                     "integration_not_found": "Entegrasyon bulunamadı.",
                     "new": "Yeni bir entegrasyon kur",
                     "none": "Henüz hiçbir şey yapılandırılmamış",
+                    "none_found": "Hiçbir entegrasyon bulunamadı",
+                    "none_found_detail": "Arama ölçütlerinizi ayarlayın.",
                     "note_about_integrations": "Tüm entegrasyonlar henüz kullanıcı arayüzü üzerinden yapılandırılmiyor",
-                    "note_about_website_reference": "Daha fazlası için"
+                    "note_about_website_reference": "Daha fazlası için",
+                    "rename_input_label": "Varlık adı"
                 },
                 "introduction": "Buradan bileşenlerinizi ve Home Assistant'ınızı yapılandırabilirsiniz. Herşeyi kullanıcı arayüzü ile ayarlamak henüz mümkün değil fakat üzerinde çalışıyoruz",
                 "lovelace": {
@@ -1712,6 +1740,7 @@
                         "frontend_version": "Ön uç versiyonu: {version} - {type}",
                         "home_assistant_logo": "Home Assistant Logosu",
                         "icons_by": "Simgelerin orijni",
+                        "integrations": "Entegrasyonlar",
                         "license": "Apache 2.0 lisansı altında yayınlandı",
                         "path_configuration": "configuration.yaml lokasyonu: {path}",
                         "server": "sunucu",
@@ -1859,6 +1888,9 @@
                         "entity-filter": {
                             "name": "Varlık Filtresi"
                         },
+                        "entity": {
+                            "name": "Varlık"
+                        },
                         "gauge": {
                             "name": "Ölçü",
                             "severity": {
@@ -1871,6 +1903,7 @@
                             "aspect_ratio": "En boy oranı",
                             "camera_image": "Kamera Varlığı",
                             "camera_view": "Kamera Görünümü",
+                            "double_tap_action": "Çift Dokunma Eylemi",
                             "entities": "Varlıklar",
                             "entity": "Varlık",
                             "hold_action": "Eylemi Tut",
@@ -1913,6 +1946,7 @@
                             "default_zoom": "Varsayılan Zoom",
                             "description": "Varlıkları bir harita üzerinde görüntülemenizi sağlayan Harita kartı.",
                             "geo_location_sources": "Konum Kaynakları",
+                            "hours_to_show": "Gösterilecek Saatler",
                             "name": "Harita",
                             "source": "Kaynak"
                         },
@@ -1951,8 +1985,12 @@
                         },
                         "weather-forecast": {
                             "description": "Hava Durumu kartı hava durumunu gösterir. Duvarda görüntülenen tablet arayüzlerinde kullanışlı olabilir.",
-                            "name": "Hava Durumu tahmini"
+                            "name": "Hava Durumu tahmini",
+                            "show_forecast": "Tahmini Göster"
                         }
+                    },
+                    "cardpicker": {
+                        "no_description": "Açıklama mevcut değil"
                     },
                     "edit_card": {
                         "add": "Kart Ekle",
@@ -2058,7 +2096,8 @@
                 "warning": {
                     "attribute_not_found": "Nitelik {attribute} {entity} içinde mevcut değil",
                     "entity_non_numeric": "Varlık sayısal değil: {entity}",
-                    "entity_not_found": "Varlık mevcut değil: {entity}"
+                    "entity_not_found": "Varlık mevcut değil: {entity}",
+                    "entity_unavailable": "{entity} şu anda kullanılamıyor"
                 }
             },
             "mailbox": {
@@ -2244,6 +2283,10 @@
                     "submit": "Gönder"
                 },
                 "current_user": "{fullName} olarak giriş yaptınız.",
+                "dashboard": {
+                    "dropdown_label": "Gösterge Paneli",
+                    "header": "Gösterge Paneli"
+                },
                 "force_narrow": {
                     "description": "Bu, mobil deneyimi benzer kenar çubuğunu varsayılan olarak gizler.",
                     "header": "Kenar çubuğunu her zaman gizle"
