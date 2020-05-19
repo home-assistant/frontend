@@ -12,7 +12,9 @@ class HaMarkdownElement extends UpdatingElement {
 
   protected update(changedProps) {
     super.update(changedProps);
-    this._render();
+    if (this.content !== undefined) {
+    	this._render();
+    }
   }
 
   private async _render() {
