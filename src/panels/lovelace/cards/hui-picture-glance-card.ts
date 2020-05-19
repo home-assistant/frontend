@@ -250,17 +250,17 @@ class HuiPictureGlanceCard extends LitElement implements LovelaceCard {
             hasAction(entityConf.tap_action) ? "0" : undefined
           )}
           .config=${entityConf}
-          class="${classMap({
+          class=${classMap({
             "state-on": !STATES_OFF.has(stateObj.state),
-          })}"
-          .icon="${entityConf.icon || stateIcon(stateObj)}"
-          title="${`
+          })}
+          .icon=${entityConf.icon || stateIcon(stateObj)}
+          title=${`
             ${computeStateName(stateObj)} : ${computeStateDisplay(
             this.hass!.localize,
             stateObj,
             this.hass!.language
           )}
-          `}"
+          `}
         ></ha-icon>
         ${this._config!.show_state !== true && entityConf.show_state !== true
           ? html` <div class="state"></div> `
@@ -328,18 +328,11 @@ class HuiPictureGlanceCard extends LitElement implements LovelaceCard {
 
       ha-icon {
         cursor: pointer;
-        padding: 8px;
         color: #a9a9a9;
       }
 
       ha-icon.state-on {
         color: white;
-      }
-      ha-icon.show-state {
-        width: 20px;
-        height: 20px;
-        padding-bottom: 4px;
-        padding-top: 4px;
       }
       ha-icon:focus {
         outline: none;
