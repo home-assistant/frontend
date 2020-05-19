@@ -1,26 +1,34 @@
 import { wrap } from "comlink";
 
-type FilterSortDataType = typeof import("./sort_filter_worker").api["filterSortData"];
-type filterSortDataParamTypes = Parameters<FilterSortDataType>;
+type FilterDataType = typeof import("./sort_filter_worker").api["filterData"];
+type FilterDataParamTypes = Parameters<FilterDataType>;
+
+type SortDataType = typeof import("./sort_filter_worker").api["sortData"];
+type SortDataParamTypes = Parameters<SortDataType>;
 
 let worker: any | undefined;
 
-export const filterSortData = async (
-  data: filterSortDataParamTypes[0],
-  columns: filterSortDataParamTypes[1],
-  filter: filterSortDataParamTypes[2],
-  direction: filterSortDataParamTypes[3],
-  sortColumn: filterSortDataParamTypes[4]
-): Promise<ReturnType<FilterSortDataType>> => {
+export const filterData = async (
+  data: FilterDataParamTypes[0],
+  columns: FilterDataParamTypes[1],
+  filter: FilterDataParamTypes[2]
+): Promise<ReturnType<FilterDataType>> => {
   if (!worker) {
     worker = wrap(new Worker("./sort_filter_worker", { type: "module" }));
   }
 
-  return await worker.filterSortData(
-    data,
-    columns,
-    filter,
-    direction,
-    sortColumn
-  );
+  return await worker.filterData(data, columns, filter);
+};
+
+export const sortData = async (
+  data: SortDataParamTypes[0],
+  columns: SortDataParamTypes[1],
+  direction: SortDataParamTypes[2],
+  sortColumn: SortDataParamTypes[3]
+): Promise<ReturnType<SortDataType>> => {
+  if (!worker) {
+    worker = wrap(new Worker("./sort_filter_worker", { type: "module" }));
+  }
+
+  return await worker.sortData(data, columns, direction, sortColumn);
 };

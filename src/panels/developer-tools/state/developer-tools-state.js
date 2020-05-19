@@ -1,4 +1,5 @@
 import "@material/mwc-button";
+import "@material/mwc-icon-button";
 import "@polymer/paper-checkbox/paper-checkbox";
 import "@polymer/paper-input/paper-input";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
@@ -6,11 +7,13 @@ import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 import { safeDump, safeLoad } from "js-yaml";
 import "../../../components/entity/ha-entity-picker";
+import "../../../components/ha-svg-icon";
 import "../../../components/ha-code-editor";
 import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
 import { EventsMixin } from "../../../mixins/events-mixin";
 import LocalizeMixin from "../../../mixins/localize-mixin";
 import "../../../resources/ha-style";
+import { mdiInformationOutline } from "@mdi/js";
 
 const ERROR_SENTINEL = {};
 /*
@@ -56,8 +59,9 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
         .entities td {
           padding: 4px;
         }
-        .entities ha-icon-button {
+        .entities mwc-icon-button {
           --mdc-icon-button-size: 24px;
+          --mdc-icon-size: 20px;
         }
         .entities td:nth-child(3) {
           white-space: pre-wrap;
@@ -149,13 +153,12 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
         <template is="dom-repeat" items="[[_entities]]" as="entity">
           <tr>
             <td>
-              <ha-icon-button
+              <mwc-icon-button
                 on-click="entityMoreInfo"
-                icon="hass:information-outline"
                 alt="[[localize('ui.panel.developer-tools.tabs.states.more_info')]]"
                 title="[[localize('ui.panel.developer-tools.tabs.states.more_info')]]"
-              >
-              </ha-icon-button>
+                ><ha-svg-icon path="[[informationOutlineIcon()]]"></ha-svg-icon>
+              </mwc-icon-button>
               <a href="#" on-click="entitySelected">[[entity.entity_id]]</a>
             </td>
             <td>[[entity.state]]</td>
@@ -270,6 +273,10 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
       state: this._state,
       attributes: this.parsedJSON,
     });
+  }
+
+  informationOutlineIcon() {
+    return mdiInformationOutline;
   }
 
   computeEntities(hass, _entityFilter, _stateFilter, _attributeFilter) {
