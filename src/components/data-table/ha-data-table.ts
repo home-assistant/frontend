@@ -377,13 +377,18 @@ export class HaDataTable extends LitElement {
     this.curRequest++;
     const curRequest = this.curRequest;
 
-    const filteredData: Promise<DataTableRowData[]> = this._filter
-      ? this._memFilterData(this.data, this._sortColumns, this.filter)
-      : new Promise((resolve) => resolve(this.data));
+    let filteredData = this.data;
+    if (this._filter) {
+      filteredData = await this._memFilterData(
+        this.data,
+        this._sortColumns,
+        this.filter
+      );
+    }
 
     const prom = this._sortColumn
       ? sortData(
-          await filteredData,
+          filteredData,
           this._sortColumns,
           this._sortDirection,
           this._sortColumn
@@ -410,10 +415,7 @@ export class HaDataTable extends LitElement {
       columns: SortableColumnContainer,
       filter: string
     ): Promise<DataTableRowData[]> => {
-      if (!filter) {
-        return data;
-      }
-      return filterData(data, columns, filter.toUpperCase());
+      return filterData(data, columns, filter);
     }
   );
 

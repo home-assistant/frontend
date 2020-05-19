@@ -12,8 +12,9 @@ const filterData = (
   data: DataTableRowData[],
   columns: SortableColumnContainer,
   filter: string
-) =>
-  data.filter((row) => {
+) => {
+  filter = filter.toUpperCase();
+  return data.filter((row) => {
     return Object.entries(columns).some((columnEntry) => {
       const [key, column] = columnEntry;
       if (column.filterable) {
@@ -28,6 +29,7 @@ const filterData = (
       return false;
     });
   });
+};
 
 const sortData = (
   data: DataTableRowData[],
