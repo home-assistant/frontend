@@ -1,3 +1,6 @@
+import "@material/mwc-fab";
+import "@material/mwc-icon-button";
+import { mdiPencil, mdiPencilOff, mdiPlus } from "@mdi/js";
 import "@polymer/paper-item/paper-icon-item";
 import "@polymer/paper-item/paper-item-body";
 import "@polymer/paper-listbox/paper-listbox";
@@ -20,7 +23,7 @@ import { computeStateDomain } from "../../../common/entity/compute_state_domain"
 import { navigate } from "../../../common/navigate";
 import { compare } from "../../../common/string/compare";
 import "../../../components/ha-card";
-import "@material/mwc-fab";
+import "../../../components/ha-svg-icon";
 import "../../../components/map/ha-locations-editor";
 import type {
   HaLocationsEditor,
@@ -47,8 +50,6 @@ import type { HomeAssistant, Route } from "../../../types";
 import "../ha-config-section";
 import { configSections } from "../ha-panel-config";
 import { showZoneDetailDialog } from "./show-dialog-zone-detail";
-import "../../../components/ha-svg-icon";
-import { mdiPlus } from "@mdi/js";
 
 @customElement("ha-config-zone")
 export class HaConfigZone extends SubscribeMixin(LitElement) {
@@ -148,17 +149,18 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
                     @click=${this._itemClicked}
                     .entry=${entry}
                   >
-                    <ha-icon .icon=${entry.icon} slot="item-icon"> </ha-icon>
+                    <ha-icon .icon=${entry.icon} slot="item-icon"></ha-icon>
                     <paper-item-body>
                       ${entry.name}
                     </paper-item-body>
                     ${!this.narrow
                       ? html`
-                          <ha-icon-button
-                            icon="hass:pencil"
+                          <mwc-icon-button
                             .entry=${entry}
                             @click=${this._openEditEntry}
-                          ></ha-icon-button>
+                          >
+                            <ha-svg-icon .path=${mdiPencil}></ha-svg-icon>
+                          </mwc-icon-button>
                         `
                       : ""}
                   </paper-icon-item>
@@ -176,9 +178,8 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
                       ${state.attributes.friendly_name || state.entity_id}
                     </paper-item-body>
                     <div style="display:inline-block">
-                      <ha-icon-button
+                      <mwc-icon-button
                         .entityId=${state.entity_id}
-                        icon="hass:pencil"
                         @click=${this._openCoreConfig}
                         disabled=${ifDefined(
                           state.entity_id === "zone.home" &&
@@ -187,7 +188,15 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
                             ? undefined
                             : true
                         )}
-                      ></ha-icon-button>
+                      >
+                        <ha-svg-icon
+                          .path=${state.entity_id === "zone.home" &&
+                          this.narrow &&
+                          this._canEditCore
+                            ? mdiPencil
+                            : mdiPencilOff}
+                        ></ha-svg-icon>
+                      </mwc-icon-button>
                       <paper-tooltip position="left">
                         ${state.entity_id === "zone.home"
                           ? this.hass.localize(
@@ -477,7 +486,7 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
         overflow: hidden;
       }
       ha-icon,
-      ha-icon-button:not([disabled]) {
+      mwc-icon-button:not([disabled]) {
         color: var(--secondary-text-color);
       }
       .empty {
