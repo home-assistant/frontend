@@ -2037,6 +2037,9 @@
         "form": {
           "working": "Please wait",
           "unknown_error": "Something went wrong",
+          "next": "Next",
+          "start_over": "Start over",
+          "error": "Error:",
           "providers": {
             "command_line": {
               "step": {
