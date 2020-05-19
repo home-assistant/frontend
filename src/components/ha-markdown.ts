@@ -39,6 +39,9 @@ class HaMarkdown extends UpdatingElement {
       :host {
         display: block;
         padding: 0 16px 16px;
+        -ms-user-select: text;
+        -webkit-user-select: text;
+        -moz-user-select: text;
       }
       *:first-child {
         margin-top: 0;
@@ -59,8 +62,11 @@ class HaMarkdown extends UpdatingElement {
 
       code {
         font-size: 85%;
-        margin: 0;
         padding: 0.2em 0.4em;
+      }
+
+      pre code {
+        padding: 0;
       }
 
       pre {
