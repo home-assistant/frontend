@@ -4,7 +4,7 @@ import { renderMarkdown } from "../resources/render-markdown";
 
 @customElement("ha-markdown-element")
 class HaMarkdownElement extends UpdatingElement {
-  @property() public content = "";
+  @property() public content?;
 
   @property({ type: Boolean }) public allowSvg = false;
 
