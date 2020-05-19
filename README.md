@@ -6,7 +6,7 @@ This is the repository for the official [Home Assistant](https://home-assistant.
 
 - [View demo of Home Assistant](https://demo.home-assistant.io/)
 - [More information about Home Assistant](https://home-assistant.io)
-- [Frontend development instructions](https://developers.home-assistant.io/docs/frontend/development.html)
+- [Frontend development instructions](https://developers.home-assistant.io/docs/frontend/development/)
 
 ## Development
 
