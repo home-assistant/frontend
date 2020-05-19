@@ -72,6 +72,7 @@ export const fetchRecent = (
   if (significantChangesOnly !== undefined) {
     url += `&significant_changes_only=${Number(significantChangesOnly)}`;
   }
+  url += "&minimal_response";
 
   return hass.callApi("GET", url);
 };
@@ -83,7 +84,7 @@ export const fetchDate = (
 ): Promise<HassEntity[][]> => {
   return hass.callApi(
     "GET",
-    `history/period/${startTime.toISOString()}?end_time=${endTime.toISOString()}`
+    `history/period/${startTime.toISOString()}?end_time=${endTime.toISOString()}&minimal_response`
   );
 };
 
@@ -101,10 +102,18 @@ const processTimelineEntity = (
   states: HassEntity[]
 ): TimelineEntity => {
   const data: TimelineState[] = [];
+  const last_element = states.length - 1;
 
   for (const state of states) {
     if (data.length > 0 && state.state === data[data.length - 1].state) {
       continue;
+    }
+
+    // Copy the data from the last element as its the newest
+    // and is only needed to localize the data
+    if (!state.entity_id) {
+      state.attributes = states[last_element].attributes;
+      state.entity_id = states[last_element].entity_id;
     }
 
     data.push({
@@ -153,6 +162,9 @@ const processLineChartEntities = (
 
       if (
         processedStates.length > 1 &&
+        processedState.attributes &&
+        processedStates[processedStates.length - 1].attributes &&
+        processedStates[processedStates.length - 2].attributes &&
         equalState(
           processedState,
           processedStates[processedStates.length - 1]
@@ -198,7 +210,7 @@ export const computeHistory = (
     }
 
     const stateWithUnit = stateInfo.find(
-      (state) => "unit_of_measurement" in state.attributes
+      (state) => state.attributes && "unit_of_measurement" in state.attributes
     );
 
     let unit: string | undefined;
