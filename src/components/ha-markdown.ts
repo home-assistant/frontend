@@ -4,22 +4,26 @@ import { renderMarkdown } from "../resources/render-markdown";
 
 @customElement("ha-markdown")
 class HaMarkdown extends UpdatingElement {
-  @property() public content = "";
+  @property() public content?;
 
   @property({ type: Boolean }) public allowSvg = false;
 
   @property({ type: Boolean }) public breaks = false;
 
+  constructor() {
+    super();
+    this.attachShadow({ mode: "open" });
+  }
+
   protected update(changedProps) {
     super.update(changedProps);
-    this._render();
+    if (this.content) {
+      this._render();
+    }
   }
 
   private async _render() {
-    this.style.display = "block";
-    this.style.padding = "0 16px 16px";
-
-    this.innerHTML = await renderMarkdown(
+    this.shadowRoot!.innerHTML = await renderMarkdown(
       this.content,
       {
         breaks: this.breaks,
@@ -31,7 +35,11 @@ class HaMarkdown extends UpdatingElement {
       }
     );
 
-    this.innerHTML += `<style>
+    this.shadowRoot!.innerHTML += `<style>
+      :host {
+        display: block;
+        padding: 0 16px 16px;
+      }
       *:first-child {
         margin-top: 0;
       }
@@ -70,7 +78,7 @@ class HaMarkdown extends UpdatingElement {
     this._resize();
 
     const walker = document.createTreeWalker(
-      this,
+      this.shadowRoot!,
       1 /* SHOW_ELEMENT */,
       null,
       false
@@ -92,7 +100,7 @@ class HaMarkdown extends UpdatingElement {
         node.rel = "noreferrer noopener";
 
         // Fire a resize event when images loaded to notify content resized
-      } else if (node) {
+      } else if (node instanceof HTMLImageElement) {
         node.addEventListener("load", this._resize);
       }
     }
