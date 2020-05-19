@@ -9,7 +9,7 @@ import {
 } from "lit-element";
 import { createCloseHeading } from "../../../../src/components/ha-dialog";
 import "../../../../src/components/ha-markdown";
-import { haStyleDialog, haMarkdown } from "../../../../src/resources/styles";
+import { haStyleDialog } from "../../../../src/resources/styles";
 import { HomeAssistant } from "../../../../src/types";
 import { hassioStyle } from "../../resources/hassio-style";
 import { HassioMarkdownDialogParams } from "./show-dialog-hassio-markdown";
@@ -52,7 +52,6 @@ class HassioMarkdownDialog extends LitElement {
   static get styles(): CSSResult[] {
     return [
       haStyleDialog,
-      haMarkdown,
       hassioStyle,
       css`
         ha-paper-dialog {

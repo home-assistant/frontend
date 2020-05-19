@@ -1,5 +1,6 @@
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import {
+  css,
   CSSResult,
   customElement,
   html,
@@ -12,7 +13,6 @@ import { classMap } from "lit-html/directives/class-map";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import "../../../components/ha-card";
 import "../../../components/ha-markdown";
-import { haMarkdown } from "../../../resources/styles";
 import { subscribeRenderTemplate } from "../../../data/ws-templates";
 import type { HomeAssistant } from "../../../types";
 import type { LovelaceCard, LovelaceCardEditor } from "../types";
@@ -80,7 +80,8 @@ export class HuiMarkdownCard extends LitElement implements LovelaceCard {
       <ha-card .header="${this._config.title}">
         <ha-markdown
           breaks
-          class="markdown ${classMap({
+          class="${classMap({
+            markdown: true,
             "no-header": !this._config.title,
           })}"
           .content="${this._content}"
@@ -160,7 +161,11 @@ export class HuiMarkdownCard extends LitElement implements LovelaceCard {
   }
 
   static get styles(): CSSResult {
-    return haMarkdown;
+    return css`
+      .markdown.no-header {
+        padding-top: 16px;
+      }
+    `;
   }
 }
 

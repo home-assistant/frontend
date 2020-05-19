@@ -47,7 +47,7 @@ import {
   uninstallHassioAddon,
 } from "../../../../src/data/hassio/addon";
 import { showConfirmationDialog } from "../../../../src/dialogs/generic/show-dialog-box";
-import { haStyle, haMarkdown } from "../../../../src/resources/styles";
+import { haStyle } from "../../../../src/resources/styles";
 import { HomeAssistant } from "../../../../src/types";
 import "../../components/hassio-card-content";
 import { showHassioMarkdownDialog } from "../../dialogs/markdown/show-dialog-hassio-markdown";
@@ -550,7 +550,6 @@ class HassioAddonInfo extends LitElement {
   static get styles(): CSSResult[] {
     return [
       haStyle,
-      haMarkdown,
       hassioStyle,
       css`
         :host {

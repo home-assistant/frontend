@@ -25,6 +25,8 @@ class HaMarkdown extends UpdatingElement {
   }
 
   private async _render() {
+    this.style.display = "block";
+    this.style.padding = "0 16px 16px";
     this.innerHTML = await worker.renderMarkdown(
       this.content,
       {
@@ -36,6 +38,42 @@ class HaMarkdown extends UpdatingElement {
         allowSvg: this.allowSvg,
       }
     );
+
+    this.innerHTML += `<style>
+      *:first-child {
+        margin-top: 0;
+      }
+      *:last-child {
+        margin-bottom: 0;
+      }
+      a {
+        color: var(--primary-color);
+      }
+      img {
+        max-width: 100%;
+      }
+      code, pre {
+        background-color: var(--markdown-code-background-color, #f6f8fa);
+        border-radius: 3px;
+      }
+
+      code {
+        font-size: 85%;
+        margin: 0;
+        padding: 0.2em 0.4em;
+      }
+
+      pre {
+        padding: 16px;
+        overflow: auto;
+        line-height: 1.45;
+      }
+
+      h2 {
+        font-size: 1.5em !important;
+        font-weight: bold !important;
+      }
+    </style>`;
 
     this._resize();
 

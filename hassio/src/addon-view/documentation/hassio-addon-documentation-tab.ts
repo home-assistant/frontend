@@ -14,7 +14,7 @@ import {
   HassioAddonDetails,
 } from "../../../../src/data/hassio/addon";
 import "../../../../src/layouts/loading-screen";
-import { haStyle, haMarkdown } from "../../../../src/resources/styles";
+import { haStyle } from "../../../../src/resources/styles";
 import { HomeAssistant } from "../../../../src/types";
 import { hassioStyle } from "../../resources/hassio-style";
 
@@ -54,7 +54,6 @@ class HassioAddonDocumentationDashboard extends LitElement {
   static get styles(): CSSResult[] {
     return [
       haStyle,
-      haMarkdown,
       hassioStyle,
       css`
         ha-card {
