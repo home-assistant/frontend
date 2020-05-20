@@ -489,6 +489,9 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
       mwc-icon-button:not([disabled]) {
         color: var(--secondary-text-color);
       }
+      mwc-icon-button {
+        --mdc-theme-text-disabled-on-light: var(--disabled-text-color);
+      }
       .empty {
         text-align: center;
         padding: 8px;
