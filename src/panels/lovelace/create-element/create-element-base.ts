@@ -126,6 +126,7 @@ const _lazyCreate = <T extends keyof CreateElementConfigTypes>(
   ) as CreateElementConfigTypes[T]["element"];
   customElements.whenDefined(tag).then(() => {
     try {
+      customElements.upgrade(element);
       // @ts-ignore
       element.setConfig(config);
     } catch (err) {
