@@ -251,7 +251,6 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
   private _debouncedMeasure = debounce(() => this._measureCard(), 250, true);
 
   private _measureCard() {
-    console.log("meause gauge");
     if (!this.isConnected) {
       return;
     }
