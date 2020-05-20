@@ -1254,7 +1254,9 @@
                     "device_not_found": "Dispositiu no trobat.",
                     "entities": {
                         "add_entities_lovelace": "Afegeix a Lovelace",
+                        "disabled_entities": "+{count} {count, plural,\n  one {entitat desabilitada}\n  other {entitats desabilitades}\n}",
                         "entities": "Entitats",
+                        "hide_disabled": "Amaga desactivades",
                         "none": "Aquest dispositiu no té entitats"
                     },
                     "name": "Nom",
@@ -2286,7 +2288,7 @@
                     "confirm_delete": "Esborrar visualització?",
                     "confirm_delete_existing_cards": "Si elimines aquesta vista, també s'eliminaran les targetes que conté",
                     "confirm_delete_existing_cards_text": "Estàs segur que vols eliminar la vista ''{name}''? La vista conté {number} targetes que també s'eliminaran. Aquesta acció no és reversible.",
-                    "confirm_delete_text": "Estàs segur que vols eliminar la vista '{name}'?"
+                    "confirm_delete_text": "Estàs segur que vols eliminar la vista \"{name}\"?"
                 },
                 "warning": {
                     "attribute_not_found": "L'atribut {attribute} de {entity} no és disponible.",

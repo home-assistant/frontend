@@ -1255,6 +1255,7 @@
                     "entities": {
                         "add_entities_lovelace": "Ajouter à Lovelace",
                         "entities": "Entités",
+                        "hide_disabled": "Masquer désactivé",
                         "none": "Cet appareil n'a pas d'entités"
                     },
                     "name": "Nom",

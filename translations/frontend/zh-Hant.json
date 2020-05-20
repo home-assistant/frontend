@@ -1254,7 +1254,9 @@
                     "device_not_found": "未找到設備。",
                     "entities": {
                         "add_entities_lovelace": "新增至 Lovelace UI",
+                        "disabled_entities": "{count} {count, plural,\n  one {個已關閉物件}\n  other {個已關閉物件}\n}",
                         "entities": "物件列表面板",
+                        "hide_disabled": "隱藏已關閉物件",
                         "none": "此設備沒有物件。"
                     },
                     "name": "名稱",
