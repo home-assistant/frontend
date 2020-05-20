@@ -94,8 +94,11 @@ class HaAuthFlow extends litLocalizeLiteMixin(LitElement) {
       case "error":
         return html`
           <div class="error">
-            ${this.localize("ui.panel.page-authorize.form.error")}
-            ${this._errorMessage}
+            ${this.localize(
+              "ui.panel.page-authorize.form.error",
+              "errorMessage",
+              this._errorMessage
+            )}
           </div>
         `;
       case "loading":
