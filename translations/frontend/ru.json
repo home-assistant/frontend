@@ -1254,7 +1254,9 @@
                     "device_not_found": "Устройство не найдено",
                     "entities": {
                         "add_entities_lovelace": "Добавить объекты в Lovelace UI",
+                        "disabled_entities": "+{count} {count, plural,\n  one {скрытый объект}\n  other {скрытых объектов}\n}",
                         "entities": "Объекты",
+                        "hide_disabled": "Не показывать скрытые",
                         "none": "У этого устройства нет объектов"
                     },
                     "name": "Название",
