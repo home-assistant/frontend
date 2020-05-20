@@ -311,7 +311,6 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
       }
 
       .gauge-data .name {
-        margin-top: 6px;
         font-size: 15px;
       }
 
@@ -348,11 +347,11 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
       }
 
       :host([veryNarrow]) .gauge-data {
-        margin-top: -20px;
+        margin-top: -16px;
       }
 
       :host([veryNarrow]) .gauge-data .percent {
-        font-size: 20px;
+        font-size: 16px;
       }
 
       :host([veryNarrow]) .gauge-data .name {
