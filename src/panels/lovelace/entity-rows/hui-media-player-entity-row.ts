@@ -53,7 +53,7 @@ class HuiMediaPlayerEntityRow extends LitElement implements LovelaceRow {
       this._veryNarrow = (this.clientWidth || 0) < 225;
     },
     250,
-    false
+    true
   );
 
   public setConfig(config: EntityConfig): void {
@@ -216,9 +216,7 @@ class HuiMediaPlayerEntityRow extends LitElement implements LovelaceRow {
 
   private _attachObserver(): void {
     installResizeObserver().then(() => {
-      this._resizeObserver = new ResizeObserver(() =>
-        this._debouncedResizeListener()
-      );
+      this._resizeObserver = new ResizeObserver(this._debouncedResizeListener);
 
       this._resizeObserver.observe(this);
     });
