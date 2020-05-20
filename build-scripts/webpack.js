@@ -53,7 +53,10 @@ const createWebpackConfig = ({
     },
     plugins: [
       new WorkerPlugin(),
-      new ManifestPlugin(),
+      new ManifestPlugin({
+        // Only include the JS of entrypoints
+        filter: (file) => file.isInitial && !file.name.endsWith(".map"),
+      }),
       new webpack.DefinePlugin({
         __DEV__: !isProdBuild,
         __BUILD__: JSON.stringify(latestBuild ? "latest" : "es5"),
