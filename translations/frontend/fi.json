@@ -1254,7 +1254,9 @@
                     "device_not_found": "Laitetta ei löydy.",
                     "entities": {
                         "add_entities_lovelace": "Lisää Lovelace näkymään",
+                        "disabled_entities": "{count} {count, plural,\n  one {kohde}\n  other {kohdetta}\n}",
                         "entities": "Kohteet",
+                        "hide_disabled": "Piilota käytöstä poistetut",
                         "none": "Tällä laitteella ei ole kohteita"
                     },
                     "name": "Nimi",
@@ -1374,7 +1376,8 @@
                         "restart_confirm": "Käynnistä Home Assistant uudellen viimeistelläksesi tämän integraation poistamisen",
                         "settings_button": "Muokkaa {integration}-asetuksia",
                         "system_options": "Järjestelmäasetukset",
-                        "system_options_button": "{integration}-järjestelmän asetukset"
+                        "system_options_button": "{integration}-järjestelmän asetukset",
+                        "unnamed_entry": "Nimeämätön merkintä"
                     },
                     "config_flow": {
                         "aborted": "Keskeytetty",

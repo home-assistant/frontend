@@ -1254,7 +1254,9 @@
                     "device_not_found": "Urządzenie nie zostało znalezione.",
                     "entities": {
                         "add_entities_lovelace": "Dodaj do interfejsu użytkownika Lovelace",
+                        "disabled_entities": "+{count} {count, plural,\n  one {wyłączona encja}\n  few {wyłączone encje}\n  many {wyłączonych encji}\n  other {wyłączonych encji}\n}",
                         "entities": "Encje",
+                        "hide_disabled": "Ukryj wyłączone",
                         "none": "To urządzenie nie ma żadnych encji"
                     },
                     "name": "Nazwa",

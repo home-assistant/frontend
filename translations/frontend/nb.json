@@ -1254,7 +1254,9 @@
                     "device_not_found": "Enhet ikke funnet",
                     "entities": {
                         "add_entities_lovelace": "Legg til i Lovelace",
+                        "disabled_entities": "+{count} {antall, flertall,\n  én {deaktivert enhet}\n  andre {deaktiverte enheter}\n}",
                         "entities": "Enheter",
+                        "hide_disabled": "Skjul deaktiverte",
                         "none": "Denne enheten har ingen enheter"
                     },
                     "name": "Navn",
