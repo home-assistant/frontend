@@ -30,7 +30,7 @@ export class HuiPictureHeaderFooter extends LitElement
     };
   }
 
-  public hass?: HomeAssistant;
+  @property() public hass?: HomeAssistant;
 
   @property() protected _config?: PictureHeaderFooterConfig;
 
@@ -40,6 +40,13 @@ export class HuiPictureHeaderFooter extends LitElement
     }
 
     this._config = config;
+  }
+
+  protected shouldUpdate(changedProps: PropertyValues): boolean {
+    if (changedProps.size === 1 && changedProps.has("hass")) {
+      return !changedProps.get("hass");
+    }
+    return true;
   }
 
   protected render(): TemplateResult {
