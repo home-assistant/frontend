@@ -6,6 +6,7 @@ import {
   LitElement,
   property,
   TemplateResult,
+  PropertyValues,
 } from "lit-element";
 import { classMap } from "lit-html/directives/class-map";
 import { ifDefined } from "lit-html/directives/if-defined";
