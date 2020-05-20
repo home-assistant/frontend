@@ -67,10 +67,11 @@ const sortData = (
     return 0;
   });
 
-// Export for types
-export const api = {
+const api = {
   filterData,
   sortData,
 };
+
+export type api = typeof api;
 
 expose(api);
