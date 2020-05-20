@@ -238,9 +238,7 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
   private async _attachObserver(): Promise<void> {
     await installResizeObserver();
 
-    this._resizeObserver = new ResizeObserver(
-      debounce(() => this._measureCard(), 250, false)
-    );
+    this._resizeObserver = new ResizeObserver(this._debouncedMeasure);
 
     const card = this.shadowRoot!.querySelector("ha-card");
     // If we show an error or warning there is no ha-card
@@ -250,7 +248,10 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
     this._resizeObserver.observe(card);
   }
 
+  private _debouncedMeasure = debounce(() => this._measureCard(), 250, true);
+
   private _measureCard() {
+    console.log("meause gauge");
     if (!this.isConnected) {
       return;
     }
@@ -277,7 +278,7 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
         cursor: pointer;
         height: 100%;
         overflow: hidden;
-        padding: 16px 16px 0 16px;
+        padding: 16px;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -293,37 +294,40 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
       round-slider {
         max-width: 200px;
         --round-slider-path-width: 35px;
-        --round-slider-path-color: var(--disabled-text-color);
+        --round-slider-path-color: var(--primary-background-color);
         --round-slider-linecap: "butt";
       }
 
       .gauge-data {
-        line-height: 1;
         text-align: center;
-        position: relative;
+        line-height: initial;
         color: var(--primary-text-color);
-        margin-top: -28px;
-        margin-bottom: 14px;
+        margin-top: -26px;
+        width: 100%;
       }
 
       .gauge-data .percent {
+        white-space: nowrap;
         font-size: 28px;
       }
 
       .gauge-data .name {
-        padding-top: 6px;
-        font-size: 14px;
+        margin-top: 6px;
+        font-size: 15px;
       }
 
       /* ============= NARROW ============= */
+
+      :host([narrow]) ha-card {
+        padding: 8px;
+      }
 
       :host([narrow]) round-slider {
         --round-slider-path-width: 22px;
       }
 
       :host([narrow]) .gauge-data {
-        margin-top: -24px;
-        margin-bottom: 12px;
+        margin-top: -22px;
       }
 
       :host([narrow]) .gauge-data .percent {
@@ -331,22 +335,21 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
       }
 
       :host([narrow]) .gauge-data .name {
-        font-size: 12px;
+        font-size: 14px;
       }
 
       /* ============= VERY NARROW ============= */
+
+      :host([narrow]) ha-card {
+        padding: 4px;
+      }
 
       :host([veryNarrow]) round-slider {
         --round-slider-path-width: 15px;
       }
 
-      :host([veryNarrow]) ha-card {
-        padding-bottom: 16px;
-      }
-
       :host([veryNarrow]) .gauge-data {
-        margin-top: 0;
-        margin-bottom: 0;
+        margin-top: -20px;
       }
 
       :host([veryNarrow]) .gauge-data .percent {
@@ -354,7 +357,7 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
       }
 
       :host([veryNarrow]) .gauge-data .name {
-        font-size: 10px;
+        font-size: 12px;
       }
     `;
   }
