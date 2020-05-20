@@ -6,6 +6,7 @@ import {
   LitElement,
   property,
   TemplateResult,
+  PropertyValues,
 } from "lit-element";
 import { classMap } from "lit-html/directives/class-map";
 import { ifDefined } from "lit-html/directives/if-defined";
@@ -30,7 +31,7 @@ export class HuiPictureHeaderFooter extends LitElement
     };
   }
 
-  public hass?: HomeAssistant;
+  @property() public hass?: HomeAssistant;
 
   @property() protected _config?: PictureHeaderFooterConfig;
 
@@ -40,6 +41,13 @@ export class HuiPictureHeaderFooter extends LitElement
     }
 
     this._config = config;
+  }
+
+  protected shouldUpdate(changedProps: PropertyValues): boolean {
+    if (changedProps.size === 1 && changedProps.has("hass")) {
+      return !changedProps.get("hass");
+    }
+    return true;
   }
 
   protected render(): TemplateResult {
