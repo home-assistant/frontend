@@ -58,8 +58,12 @@ export abstract class HuiStackCard extends LitElement implements LovelaceCard {
     }
 
     for (const element of this._cards) {
-      element.hass = this.hass;
-      element.editMode = this.editMode;
+      if (this.hass) {
+        element.hass = this.hass;
+      }
+      if (this.editMode) {
+        element.editMode = this.editMode;
+      }
     }
   }
 
