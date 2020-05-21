@@ -41,7 +41,7 @@ export class HuiMarkdownCard extends LitElement implements LovelaceCard {
 
   @property() private _content = "";
 
-  @property() private _unsubRenderTemplate?: Promise<UnsubscribeFunc>;
+  @property() private _unsubRenderTemplate?: UnsubscribeFunc;
 
   public getCardSize(): number {
     return this._config === undefined
@@ -121,24 +121,25 @@ export class HuiMarkdownCard extends LitElement implements LovelaceCard {
       return;
     }
 
-    this._unsubRenderTemplate = subscribeRenderTemplate(
-      this.hass.connection,
-      (result) => {
-        this._content = result;
-      },
-      {
-        template: this._config.content,
-        entity_ids: this._config.entity_id,
-        variables: {
-          config: this._config,
-          user: this.hass.user!.name,
+    try {
+      this._unsubRenderTemplate = await subscribeRenderTemplate(
+        this.hass.connection,
+        (result) => {
+          this._content = result;
         },
-      }
-    );
-    this._unsubRenderTemplate.catch(() => {
+        {
+          template: this._config.content,
+          entity_ids: this._config.entity_id,
+          variables: {
+            config: this._config,
+            user: this.hass.user!.name,
+          },
+        }
+      );
+    } catch {
       this._content = this._config!.content;
       this._unsubRenderTemplate = undefined;
-    });
+    }
   }
 
   private async _tryDisconnect(): Promise<void> {
@@ -147,9 +148,8 @@ export class HuiMarkdownCard extends LitElement implements LovelaceCard {
     }
 
     try {
-      const unsub = await this._unsubRenderTemplate;
+      this._unsubRenderTemplate();
       this._unsubRenderTemplate = undefined;
-      unsub();
     } catch (e) {
       if (e.code === "not_found") {
         // If we get here, the connection was probably already closed. Ignore.

@@ -115,6 +115,7 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
       oldConfig.theme !== this._config.theme
     ) {
       applyThemesOnElement(this, this.hass.themes, this._config.theme);
+      this.requestUpdate();
     }
   }
 
