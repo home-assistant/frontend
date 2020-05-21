@@ -97,6 +97,14 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
     this._config = config;
   }
 
+  protected shouldUpdate(changedProps: PropertyValues): boolean {
+    return hasConfigOrEntityChanged(this, changedProps);
+  }
+
+  protected firstUpdated(): void {
+    this._attachObserver();
+  }
+
   protected updated(changedProps: PropertyValues): void {
     super.updated(changedProps);
     if (!this._config || !this.hass) {
@@ -109,10 +117,10 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
       | undefined;
 
     if (
-      !oldHass ||
-      !oldConfig ||
-      oldHass.themes !== this.hass.themes ||
-      oldConfig.theme !== this._config.theme
+      (changedProps.has("hass") && !oldHass) ||
+      (changedProps.has("_config") && !oldConfig) ||
+      (changedProps.has("hass") && oldHass!.themes !== this.hass.themes) ||
+      (changedProps.has("_config") && oldConfig!.theme !== this._config.theme)
     ) {
       applyThemesOnElement(this, this.hass.themes, this._config.theme);
       this.requestUpdate();
@@ -277,22 +285,15 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
     `;
   }
 
-  protected shouldUpdate(changedProps: PropertyValues): boolean {
-    return hasConfigOrEntityChanged(this, changedProps);
-  }
-
-  protected firstUpdated(): void {
-    this._attachObserver();
-  }
-
   private _handleAction(): void {
     fireEvent(this, "hass-more-info", { entityId: this._config!.entity });
   }
 
   private async _attachObserver(): Promise<void> {
-    await installResizeObserver();
-    this._resizeObserver = new ResizeObserver(this._debouncedMeasure);
-
+    if (!this._resizeObserver) {
+      await installResizeObserver();
+      this._resizeObserver = new ResizeObserver(this._debouncedMeasure);
+    }
     const card = this.shadowRoot!.querySelector("ha-card");
     // If we show an error or warning there is no ha-card
     if (!card) {
