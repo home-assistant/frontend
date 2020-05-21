@@ -743,7 +743,7 @@
         "panel": {
             "calendar": {
                 "my_calendars": "Saját naptáraim",
-                "today": "ma"
+                "today": "Ma"
             },
             "config": {
                 "advanced_mode": {
@@ -848,7 +848,7 @@
                                     "label": "Eszköz"
                                 },
                                 "not": {
-                                    "label": "nem"
+                                    "label": "Nem"
                                 },
                                 "numeric_state": {
                                     "above": "Felett",
@@ -1254,7 +1254,9 @@
                     "device_not_found": "Eszköz nem található.",
                     "entities": {
                         "add_entities_lovelace": "Hozzáadás a Lovelace-hez",
+                        "disabled_entities": "+{count} {count, plural,\n  one {letiltott entitás}\n  other {letiltott entitás}\n}",
                         "entities": "Entitások",
+                        "hide_disabled": "Letiltottak elrejtése",
                         "none": "Ennek az eszköznek nincsenek entitásai"
                     },
                     "name": "Név",

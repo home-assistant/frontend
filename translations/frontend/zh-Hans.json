@@ -1254,7 +1254,9 @@
                     "device_not_found": "未找到设备。",
                     "entities": {
                         "add_entities_lovelace": "添加设备的所有实体到 Lovelace UI",
+                        "disabled_entities": "+{count} {count, plural,\n  one {个已禁用实体}\n  other {个已禁用实体}\n}",
                         "entities": "实体",
+                        "hide_disabled": "隐藏已禁用的实体",
                         "none": "这个设备没有实体"
                     },
                     "name": "名称",
