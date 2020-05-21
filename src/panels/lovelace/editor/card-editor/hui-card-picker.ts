@@ -284,14 +284,21 @@ export class HuiCardPicker extends LitElement {
       "ll-rebuild",
       (ev) => {
         ev.stopPropagation();
-        element.parentElement!.replaceChild(
-          this._createCardElement(cardConfig),
-          element
-        );
+        this._rebuildCard(element, cardConfig);
       },
       { once: true }
     );
     return element;
+  }
+
+  private _rebuildCard(
+    cardElToReplace: LovelaceCard,
+    config: LovelaceCardConfig
+  ): void {
+    const newCardEl = this._createCardElement(config);
+    if (cardElToReplace.parentElement) {
+      cardElToReplace.parentElement!.replaceChild(newCardEl, cardElToReplace);
+    }
   }
 
   private async _renderCardElement(card: Card): Promise<TemplateResult> {
