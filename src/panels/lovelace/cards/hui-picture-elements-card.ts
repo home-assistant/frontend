@@ -76,7 +76,9 @@ class HuiPictureElementsCard extends LitElement implements LovelaceCard {
     this._elements = this._config.elements.map(
       (elementConfig: LovelaceElementConfig) => {
         const element = createStyledHuiElement(elementConfig);
-        element.hass = this.hass;
+        if (this.hass) {
+          element.hass = this.hass;
+        }
         return element as LovelaceElement;
       }
     );
