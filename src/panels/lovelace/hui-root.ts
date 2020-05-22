@@ -183,7 +183,7 @@ class HUIRoot extends LitElement {
                   ${this._conversation(this.hass.config.components)
                     ? html`
                         <ha-icon-button
-                          aria-label="Start conversation"
+                          label="Start conversation"
                           icon="hass:microphone"
                           @click=${this._showVoiceCommandDialog}
                         ></ha-icon-button>

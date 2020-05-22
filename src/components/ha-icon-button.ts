@@ -25,7 +25,7 @@ export class HaIconButton extends LitElement {
   protected render(): TemplateResult {
     return html`
       <mwc-icon-button
-        .label=${this.label || this.icon}
+        .label=${this.label}
         ?disabled=${this.disabled}
         @click=${this._handleClick}
       >
