@@ -1,4 +1,4 @@
-const options = ({ latestBuild }) => ({
+module.exports.options = ({ latestBuild }) => ({
   presets: [
     !latestBuild && [require("@babel/preset-env").default, { modules: false }],
     require("@babel/preset-typescript").default,
@@ -30,10 +30,11 @@ module.exports.babelLoaderConfig = ({ latestBuild }) => {
   }
   return {
     test: /\.m?js$|\.tsx?$/,
+    // Are already ES5, cause warnings when babelified.
     exclude: [require.resolve("@mdi/js/mdi.js"), require.resolve("hls.js")],
     use: {
       loader: "babel-loader",
-      options: options({ latestBuild }),
+      options: module.exports.options({ latestBuild }),
     },
   };
 };
