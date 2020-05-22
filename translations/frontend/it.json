@@ -1254,7 +1254,9 @@
                     "device_not_found": "Dispositivo non trovato.",
                     "entities": {
                         "add_entities_lovelace": "Aggiungi a Lovelace",
+                        "disabled_entities": "+{count} {count, plural,\n  one {entità disabilitata}\n  other {entità disabilitate}\n}",
                         "entities": "Entità",
+                        "hide_disabled": "Nascondi disabilitato",
                         "none": "Questo dispositivo non ha entità"
                     },
                     "name": "Nome",
@@ -1374,7 +1376,8 @@
                         "restart_confirm": "Riavvia Home Assistant per completare la rimozione di questa integrazione",
                         "settings_button": "Modificare le impostazioni per {integration}.",
                         "system_options": "Opzioni di sistema",
-                        "system_options_button": "Opzioni di sistema per {integration}"
+                        "system_options_button": "Opzioni di sistema per {integration}",
+                        "unnamed_entry": "Voce senza nome"
                     },
                     "config_flow": {
                         "aborted": "Interrotto",
@@ -2284,8 +2287,8 @@
                 "views": {
                     "confirm_delete": "Eliminare vista?",
                     "confirm_delete_existing_cards": "L'eliminazione di questa vista rimuoverà anche le schede",
-                    "confirm_delete_existing_cards_text": "Sei sicuro di voler eliminare la tua vista \"{name}\"? La vista contiene {number} schede che sarranno eliminate. Questa azione non può essere annullata.",
-                    "confirm_delete_text": "Sei sicuro di voler eliminare la tua vista \"{name}\"?"
+                    "confirm_delete_existing_cards_text": "Sei sicuro di voler eliminare la tua vista ''{name}''? La vista contiene {number} schede che sarranno eliminate. Questa azione non può essere annullata.",
+                    "confirm_delete_text": "Sei sicuro di voler eliminare la tua vista ''{name}''?"
                 },
                 "warning": {
                     "attribute_not_found": "Attributo {attribute} non disponibile in: {entity}",
