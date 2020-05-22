@@ -9,7 +9,6 @@ import {
   LitElement,
   property,
   PropertyValues,
-  queryAll,
   TemplateResult,
 } from "lit-element";
 import { computeDomain } from "../../../../common/entity/compute_domain";
