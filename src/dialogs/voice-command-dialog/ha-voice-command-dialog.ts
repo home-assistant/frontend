@@ -176,7 +176,6 @@ export class HaVoiceCommandDialog extends LitElement {
                         `
                       : ""}
                     <ha-icon-button
-                      .active=${Boolean(this.results)}
                       icon="hass:microphone"
                       @click=${this._toggleListening}
                     >
