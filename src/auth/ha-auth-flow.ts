@@ -83,12 +83,24 @@ class HaAuthFlow extends litLocalizeLiteMixin(LitElement) {
           ${this._renderStep(this._step)}
           <div class="action">
             <mwc-button raised @click=${this._handleSubmit}
-              >${this._step.type === "form" ? "Next" : "Start over"}</mwc-button
+              >${this._step.type === "form"
+                ? this.localize("ui.panel.page-authorize.form.next")
+                : this.localize(
+                    "ui.panel.page-authorize.form.start_over"
+                  )}</mwc-button
             >
           </div>
         `;
       case "error":
-        return html` <div class="error">Error: ${this._errorMessage}</div> `;
+        return html`
+          <div class="error">
+            ${this.localize(
+              "ui.panel.page-authorize.form.error",
+              "error",
+              this._errorMessage
+            )}
+          </div>
+        `;
       case "loading":
         return html` ${this.localize("ui.panel.page-authorize.form.working")} `;
       default:
