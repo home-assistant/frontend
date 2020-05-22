@@ -19,6 +19,7 @@ import {
   shutdownHost,
   updateOS,
 } from "../../../src/data/hassio/host";
+import { HassioInfo } from "../../../src/data/hassio/supervisor";
 import {
   showAlertDialog,
   showConfirmationDialog,
@@ -34,6 +35,8 @@ class HassioHostInfo extends LitElement {
   @property() public hass!: HomeAssistant;
 
   @property() public hostInfo!: HassioHostInfoType;
+
+  @property({ attribute: false }) public hassioInfo!: HassioInfo;
 
   @property() public hassOsInfo!: HassioHassOSInfo;
 
@@ -53,6 +56,10 @@ class HassioHostInfo extends LitElement {
               <tr>
                 <td>System</td>
                 <td>${this.hostInfo.operating_system}</td>
+              </tr>
+              <tr>
+                <td>Docker version</td>
+                <td>${this.hassioInfo.docker}</td>
               </tr>
               ${this.hostInfo.deployment
                 ? html`

@@ -3,6 +3,7 @@ import { HassioHassOSInfo, HassioHostInfo } from "../../src/data/hassio/host";
 import {
   HassioHomeAssistantInfo,
   HassioSupervisorInfo,
+  HassioInfo,
 } from "../../src/data/hassio/supervisor";
 import {
   HassRouterPage,
@@ -25,6 +26,8 @@ class HassioPanelRouter extends HassRouterPage {
   @property({ type: Boolean }) public narrow!: boolean;
 
   @property({ attribute: false }) public supervisorInfo: HassioSupervisorInfo;
+
+  @property({ attribute: false }) public hassioInfo!: HassioInfo;
 
   @property({ attribute: false }) public hostInfo: HassioHostInfo;
 
@@ -54,6 +57,7 @@ class HassioPanelRouter extends HassRouterPage {
     el.route = this.route;
     el.narrow = this.narrow;
     el.supervisorInfo = this.supervisorInfo;
+    el.hassioInfo = this.hassioInfo;
     el.hostInfo = this.hostInfo;
     el.hassInfo = this.hassInfo;
     el.hassOsInfo = this.hassOsInfo;
