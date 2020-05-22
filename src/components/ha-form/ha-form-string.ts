@@ -49,7 +49,6 @@ export class HaFormString extends LitElement implements HaFormElement {
           >
             <ha-icon-button
               toggles
-              .active=${this._unmaskedPassword}
               slot="suffix"
               .icon=${this._unmaskedPassword ? "hass:eye-off" : "hass:eye"}
               id="iconButton"
@@ -72,8 +71,8 @@ export class HaFormString extends LitElement implements HaFormElement {
         `;
   }
 
-  private _toggleUnmaskedPassword(ev: Event): void {
-    this._unmaskedPassword = (ev.target as any).active;
+  private _toggleUnmaskedPassword(): void {
+    this._unmaskedPassword = !this._unmaskedPassword;
   }
 
   private _valueChanged(ev: Event): void {
