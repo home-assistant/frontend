@@ -93,7 +93,7 @@ export class HaIcon extends LitElement {
     let databaseIcon: string | undefined;
     try {
       databaseIcon = await getIcon(iconName);
-    } catch {
+    } catch (_err) {
       // Firefox in private mode doesn't support IDB
       databaseIcon = undefined;
     }
