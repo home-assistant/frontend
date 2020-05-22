@@ -21,6 +21,7 @@ import { createInputDateTime } from "../../../data/input_datetime";
 import { createInputNumber } from "../../../data/input_number";
 import { createInputSelect } from "../../../data/input_select";
 import { createInputText } from "../../../data/input_text";
+import { createBinarySensor } from "../../../data/binary_sensor";
 import { haStyleDialog } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
 import { Helper } from "./const";
@@ -36,6 +37,7 @@ const HELPERS = {
   input_number: createInputNumber,
   input_datetime: createInputDateTime,
   input_select: createInputSelect,
+  binary_sensor: createBinarySensor,
 };
 
 @customElement("dialog-helper-detail")
