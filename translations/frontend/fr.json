@@ -1254,6 +1254,7 @@
                     "device_not_found": "Appareil non trouvé.",
                     "entities": {
                         "add_entities_lovelace": "Ajouter à Lovelace",
+                        "disabled_entities": "+{count} {count, plural,\none {entité désactivée}\nother {entité désactivée}\n}",
                         "entities": "Entités",
                         "hide_disabled": "Masquer désactivé",
                         "none": "Cet appareil n'a pas d'entités"
