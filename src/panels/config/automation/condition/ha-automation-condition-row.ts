@@ -68,10 +68,10 @@ export default class HaAutomationConditionRow extends LitElement {
               vertical-offset="-5"
               close-on-activate
             >
-              <paper-icon-button
+              <ha-icon-button
                 icon="hass:dots-vertical"
                 slot="dropdown-trigger"
-              ></paper-icon-button>
+              ></ha-icon-button>
               <paper-listbox slot="dropdown-content">
                 <paper-item @tap=${this._switchYamlMode}>
                   ${this._yamlMode
