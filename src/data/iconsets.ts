@@ -14,12 +14,12 @@ export const iconStore = new Store("hass-icon-db", "mdi-icon-store");
 
 export const MDI_PREFIXES = ["mdi", "hass", "hassio", "hademo"];
 
-let toRead: Array<[string, (string) => void]> = [];
+let toRead: Array<[string, (string) => void, () => void]> = [];
 
 // Queue up as many icon fetches in 1 transaction
 export const getIcon = (iconName: string) =>
-  new Promise<string>((resolve) => {
-    toRead.push([iconName, resolve]);
+  new Promise<string>((resolve, reject) => {
+    toRead.push([iconName, resolve, reject]);
 
     if (toRead.length > 1) {
       return;
@@ -38,6 +38,13 @@ export const getIcon = (iconName: string) =>
         for (const [resolve_, request] of results) {
           resolve_(request.result);
         }
+      })
+      .catch(() => {
+        // Firefox in private mode doesn't support IDB
+        for (const [, , reject_] of toRead) {
+          reject_();
+        }
+        toRead = [];
       });
   });
 
