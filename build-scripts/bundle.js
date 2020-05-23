@@ -110,7 +110,7 @@ module.exports.config = {
         compatibility: "./src/entrypoints/compatibility.ts",
         "custom-panel": "./src/entrypoints/custom-panel.ts",
       },
-      outputPath: outputPath(paths.root, latestBuild),
+      outputPath: outputPath(paths.app_output_root, latestBuild),
       publicPath: publicPath(latestBuild),
       isProdBuild,
       latestBuild,
@@ -127,7 +127,7 @@ module.exports.config = {
           "src/entrypoints/compatibility.ts"
         ),
       },
-      outputPath: outputPath(paths.demo_root, latestBuild),
+      outputPath: outputPath(paths.demo_output_root, latestBuild),
       publicPath: publicPath(latestBuild),
       defineOverlay: {
         __VERSION__: JSON.stringify(`DEMO-${env.version()}`),
@@ -153,7 +153,7 @@ module.exports.config = {
 
     return {
       entry,
-      outputPath: outputPath(paths.cast_root, latestBuild),
+      outputPath: outputPath(paths.cast_output_root, latestBuild),
       publicPath: publicPath(latestBuild),
       isProdBuild,
       latestBuild,
@@ -171,7 +171,7 @@ module.exports.config = {
       entry: {
         entrypoint: path.resolve(paths.hassio_dir, "src/entrypoint.ts"),
       },
-      outputPath: paths.hassio_root,
+      outputPath: paths.hassio_output_root,
       publicPath: paths.hassio_publicPath,
       isProdBuild,
       latestBuild,
@@ -184,7 +184,7 @@ module.exports.config = {
       entry: {
         entrypoint: path.resolve(paths.gallery_dir, "src/entrypoint.js"),
       },
-      outputPath: outputPath(paths.gallery_root, latestBuild),
+      outputPath: outputPath(paths.gallery_output_root, latestBuild),
       publicPath: publicPath(latestBuild),
       isProdBuild,
       latestBuild,

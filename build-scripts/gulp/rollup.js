@@ -95,14 +95,14 @@ gulp.task("rollup-watch-hassio", () => {
 
 gulp.task("rollup-dev-server-demo", () => {
   watchRollup(rollupConfig.createDemoConfig, ["demo/src"], {
-    root: paths.demo_root,
+    root: paths.demo_output_root,
     port: 8090,
   });
 });
 
 gulp.task("rollup-dev-server-cast", () => {
   watchRollup(rollupConfig.createCastConfig, ["cast/src"], {
-    root: paths.cast_root,
+    root: paths.cast_output_root,
     port: 8080,
     networkAccess: true,
   });
@@ -110,7 +110,7 @@ gulp.task("rollup-dev-server-cast", () => {
 
 gulp.task("rollup-dev-server-gallery", () => {
   watchRollup(rollupConfig.createGalleryConfig, ["gallery/src"], {
-    root: paths.gallery_root,
+    root: paths.gallery_output_root,
     port: 8100,
   });
 });
