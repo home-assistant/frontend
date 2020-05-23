@@ -4,7 +4,6 @@ const TerserPlugin = require("terser-webpack-plugin");
 const ManifestPlugin = require("webpack-manifest-plugin");
 const WorkerPlugin = require("worker-plugin");
 const paths = require("./paths.js");
-const babel = require("./babel.js");
 const bundle = require("./bundle");
 
 const createWebpackConfig = ({
@@ -20,6 +19,7 @@ const createWebpackConfig = ({
   if (!dontHash) {
     dontHash = new Set();
   }
+  const ignorePackages = bundle.ignorePackages({ latestBuild });
   return {
     mode: isProdBuild ? "production" : "development",
     devtool: isProdBuild
@@ -31,10 +31,10 @@ const createWebpackConfig = ({
       rules: [
         {
           test: /\.js$|\.ts$/,
-          exclude: babel.exclude,
+          exclude: bundle.babelExclude(),
           use: {
             loader: "babel-loader",
-            options: babel.options({ latestBuild }),
+            options: bundle.babelOptions({ latestBuild }),
           },
         },
         {
@@ -84,13 +84,13 @@ const createWebpackConfig = ({
             throw err;
           }
 
-          return bundle.ignorePackages.some((toIgnorePath) =>
+          return ignorePackages.some((toIgnorePath) =>
             fullPath.startsWith(toIgnorePath)
           );
         },
       }),
       new webpack.NormalModuleReplacementPlugin(
-        new RegExp(bundle.emptyPackages.join("|")),
+        new RegExp(bundle.emptyPackages({ latestBuild }).join("|")),
         path.resolve(paths.polymer_dir, "src/util/empty.js")
       ),
     ],

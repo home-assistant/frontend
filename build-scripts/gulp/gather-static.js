@@ -79,14 +79,14 @@ function copyMapPanel(staticDir) {
 }
 
 gulp.task("copy-translations-app", async () => {
-  const staticDir = paths.static;
+  const staticDir = paths.app_output_static;
   copyTranslations(staticDir);
 });
 
 gulp.task("copy-static-app", async () => {
-  const staticDir = paths.static;
+  const staticDir = paths.app_output_static;
   // Basic static files
-  fs.copySync(polyPath("public"), paths.root);
+  fs.copySync(polyPath("public"), paths.app_output_root);
 
   copyLoaderJS(staticDir);
   copyPolyfills(staticDir);
@@ -102,41 +102,44 @@ gulp.task("copy-static-demo", async () => {
   // Copy app static files
   fs.copySync(
     polyPath("public/static"),
-    path.resolve(paths.demo_root, "static")
+    path.resolve(paths.demo_output_root, "static")
   );
   // Copy demo static files
-  fs.copySync(path.resolve(paths.demo_dir, "public"), paths.demo_root);
+  fs.copySync(path.resolve(paths.demo_dir, "public"), paths.demo_output_root);
 
-  copyLoaderJS(paths.demo_static);
-  copyPolyfills(paths.demo_static);
-  copyMapPanel(paths.demo_static);
-  copyFonts(paths.demo_static);
-  copyTranslations(paths.demo_static);
-  copyMdiIcons(paths.demo_static);
+  copyLoaderJS(paths.demo_output_static);
+  copyPolyfills(paths.demo_output_static);
+  copyMapPanel(paths.demo_output_static);
+  copyFonts(paths.demo_output_static);
+  copyTranslations(paths.demo_output_static);
+  copyMdiIcons(paths.demo_output_static);
 });
 
 gulp.task("copy-static-cast", async () => {
   // Copy app static files
-  fs.copySync(polyPath("public/static"), paths.cast_static);
+  fs.copySync(polyPath("public/static"), paths.cast_output_static);
   // Copy cast static files
-  fs.copySync(path.resolve(paths.cast_dir, "public"), paths.cast_root);
+  fs.copySync(path.resolve(paths.cast_dir, "public"), paths.cast_output_root);
 
-  copyLoaderJS(paths.cast_static);
-  copyPolyfills(paths.cast_static);
-  copyMapPanel(paths.cast_static);
-  copyFonts(paths.cast_static);
-  copyTranslations(paths.cast_static);
-  copyMdiIcons(paths.cast_static);
+  copyLoaderJS(paths.cast_output_static);
+  copyPolyfills(paths.cast_output_static);
+  copyMapPanel(paths.cast_output_static);
+  copyFonts(paths.cast_output_static);
+  copyTranslations(paths.cast_output_static);
+  copyMdiIcons(paths.cast_output_static);
 });
 
 gulp.task("copy-static-gallery", async () => {
   // Copy app static files
-  fs.copySync(polyPath("public/static"), paths.gallery_static);
+  fs.copySync(polyPath("public/static"), paths.gallery_output_static);
   // Copy gallery static files
-  fs.copySync(path.resolve(paths.gallery_dir, "public"), paths.gallery_root);
+  fs.copySync(
+    path.resolve(paths.gallery_dir, "public"),
+    paths.gallery_output_root
+  );
 
-  copyMapPanel(paths.gallery_static);
-  copyFonts(paths.gallery_static);
-  copyTranslations(paths.gallery_static);
-  copyMdiIcons(paths.gallery_static);
+  copyMapPanel(paths.gallery_output_static);
+  copyFonts(paths.gallery_output_static);
+  copyTranslations(paths.gallery_output_static);
+  copyMdiIcons(paths.gallery_output_static);
 });
