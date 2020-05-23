@@ -40,6 +40,7 @@ module.exports.terserOptions = (latestBuild) => ({
 });
 
 module.exports.babelOptions = ({ latestBuild }) => ({
+  babelrc: false,
   presets: [
     !latestBuild && [require("@babel/preset-env").default, { modules: false }],
     require("@babel/preset-typescript").default,

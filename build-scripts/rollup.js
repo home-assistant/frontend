@@ -53,7 +53,6 @@ const createRollupConfig = ({
         babel({
           ...bundle.babelOptions({ latestBuild }),
           extensions,
-          babelrc: false,
           exclude: bundle.babelExclude(),
         }),
         string({
