@@ -12,7 +12,6 @@ const manifest = require("./rollup-plugins/manifest-plugin");
 const worker = require("./rollup-plugins/worker-plugin");
 const dontHashPlugin = require("./rollup-plugins/dont-hash-plugin");
 
-const babelConfig = require("./babel");
 const bundle = require("./bundle");
 
 const extensions = [".js", ".ts"];
@@ -52,10 +51,10 @@ const createRollupConfig = ({
         }),
         json(),
         babel({
-          ...babelConfig.options({ latestBuild }),
+          ...bundle.babelOptions({ latestBuild }),
           extensions,
           babelrc: false,
-          exclude: babelConfig.exclude,
+          exclude: bundle.babelExclude(),
         }),
         string({
           // Import certain extensions as strings
