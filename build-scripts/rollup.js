@@ -13,6 +13,7 @@ const worker = require("./rollup-plugins/worker-plugin");
 const dontHashPlugin = require("./rollup-plugins/dont-hash-plugin");
 
 const bundle = require("./bundle");
+const paths = require("./paths");
 
 const extensions = [".js", ".ts"];
 
@@ -44,6 +45,12 @@ const createRollupConfig = ({
         bundle.emptyPackages({ latestBuild }),
       plugins: [
         resolve({ extensions, preferBuiltins: false, browser: true }),
+        resolve({
+          extensions,
+          preferBuiltins: false,
+          browser: true,
+          rootDir: paths.polymer_dir,
+        }),
         commonjs({
           namedExports: {
             "js-yaml": ["safeDump", "safeLoad"],
@@ -57,7 +64,7 @@ const createRollupConfig = ({
         }),
         string({
           // Import certain extensions as strings
-          include: ["**/*.css"],
+          include: [path.join(paths.polymer_dir, "node_modules/**/*.css")],
         }),
         replace(
           bundle.definedVars({ isProdBuild, latestBuild, defineOverlay })
