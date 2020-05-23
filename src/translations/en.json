@@ -385,7 +385,15 @@
         "required_error_msg": "This field is required",
         "generic": {
           "name": "Name",
-          "icon": "Icon"
+          "icon": "Icon",
+          "value": "Value",
+          "device_class": "Device Class"
+        },
+        "binary_sensor": {
+          "availability": "Availability",
+          "entity_picture": "Entity Picture",
+          "delay_on": "Delay On",
+          "delay_off": "Delay Off"
         },
         "input_datetime": {
           "date": "Date",
@@ -554,7 +562,8 @@
             "input_number": "Number",
             "input_select": "Dropdown",
             "input_boolean": "Toggle",
-            "input_datetime": "Date and/or time"
+            "input_datetime": "Date and/or time",
+            "binary_sensor": "Binary Sensor"
           },
           "picker": {
             "headers": {

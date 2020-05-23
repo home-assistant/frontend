@@ -586,15 +586,7 @@
             "helper_settings": {
                 "generic": {
                     "icon": "Icon",
-                    "name": "Name",
-                    "value": "Value",
-                    "device_class": "Device Class"
-                },
-                "binary_sensor": {
-                    "availability": "Availability",
-                    "entity_picture": "Entity Picture",
-                    "delay_on": "Delay On",
-                    "delay_off": "Delay Off"
+                    "name": "Name"
                 },
                 "input_datetime": {
                     "date": "Date",
@@ -1358,8 +1350,7 @@
                         "input_datetime": "Date and/or time",
                         "input_number": "Number",
                         "input_select": "Dropdown",
-                        "input_text": "Text",
-                        "binary_sensor": "Binary Sensor"
+                        "input_text": "Text"
                     }
                 },
                 "integrations": {
