@@ -3,7 +3,7 @@ const env = require("./env.js");
 const paths = require("./paths.js");
 
 // Files from NPM Packages that should not be imported
-module.exports.ignorePackages = [
+module.exports.ignorePackages = ({ latestBuild }) => [
   // Bloats bundle and it's not used.
   path.resolve(require.resolve("moment"), "../locale"),
   // Part of yaml.js and only used for !!js functions that we don't use
@@ -11,7 +11,7 @@ module.exports.ignorePackages = [
 ];
 
 // Files from NPM packages that we should replace with empty file
-module.exports.emptyPackages = [
+module.exports.emptyPackages = ({ latestBuild }) => [
   // Contains all color definitions for all material color sets.
   // We don't use it
   require.resolve("@polymer/paper-styles/color.js"),
@@ -38,6 +38,39 @@ module.exports.terserOptions = (latestBuild) => ({
   ecma: latestBuild ? undefined : 5,
   output: { comments: false },
 });
+
+module.exports.babelOptions = ({ latestBuild }) => ({
+  babelrc: false,
+  presets: [
+    !latestBuild && [require("@babel/preset-env").default, { modules: false }],
+    require("@babel/preset-typescript").default,
+  ].filter(Boolean),
+  plugins: [
+    // Part of ES2018. Converts {...a, b: 2} to Object.assign({}, a, {b: 2})
+    [
+      "@babel/plugin-proposal-object-rest-spread",
+      { loose: true, useBuiltIns: true },
+    ],
+    // Only support the syntax, Webpack will handle it.
+    "@babel/syntax-dynamic-import",
+    "@babel/plugin-proposal-optional-chaining",
+    "@babel/plugin-proposal-nullish-coalescing-operator",
+    [
+      require("@babel/plugin-proposal-decorators").default,
+      { decoratorsBeforeExport: true },
+    ],
+    [
+      require("@babel/plugin-proposal-class-properties").default,
+      { loose: true },
+    ],
+  ],
+});
+
+// Are already ES5, cause warnings when babelified.
+module.exports.babelExclude = () => [
+  require.resolve("@mdi/js/mdi.js"),
+  require.resolve("hls.js"),
+];
 
 const outputPath = (outputRoot, latestBuild) =>
   path.resolve(outputRoot, latestBuild ? "frontend_latest" : "frontend_es5");
@@ -78,7 +111,7 @@ module.exports.config = {
         compatibility: "./src/entrypoints/compatibility.ts",
         "custom-panel": "./src/entrypoints/custom-panel.ts",
       },
-      outputPath: outputPath(paths.root, latestBuild),
+      outputPath: outputPath(paths.app_output_root, latestBuild),
       publicPath: publicPath(latestBuild),
       isProdBuild,
       latestBuild,
@@ -95,7 +128,7 @@ module.exports.config = {
           "src/entrypoints/compatibility.ts"
         ),
       },
-      outputPath: outputPath(paths.demo_root, latestBuild),
+      outputPath: outputPath(paths.demo_output_root, latestBuild),
       publicPath: publicPath(latestBuild),
       defineOverlay: {
         __VERSION__: JSON.stringify(`DEMO-${env.version()}`),
@@ -121,7 +154,7 @@ module.exports.config = {
 
     return {
       entry,
-      outputPath: outputPath(paths.cast_root, latestBuild),
+      outputPath: outputPath(paths.cast_output_root, latestBuild),
       publicPath: publicPath(latestBuild),
       isProdBuild,
       latestBuild,
@@ -139,7 +172,7 @@ module.exports.config = {
       entry: {
         entrypoint: path.resolve(paths.hassio_dir, "src/entrypoint.ts"),
       },
-      outputPath: paths.hassio_root,
+      outputPath: paths.hassio_output_root,
       publicPath: paths.hassio_publicPath,
       isProdBuild,
       latestBuild,
@@ -152,7 +185,7 @@ module.exports.config = {
       entry: {
         entrypoint: path.resolve(paths.gallery_dir, "src/entrypoint.js"),
       },
-      outputPath: outputPath(paths.gallery_root, latestBuild),
+      outputPath: outputPath(paths.gallery_output_root, latestBuild),
       publicPath: publicPath(latestBuild),
       isProdBuild,
       latestBuild,
