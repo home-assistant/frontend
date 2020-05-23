@@ -24,17 +24,8 @@ module.exports.options = ({ latestBuild }) => ({
   ],
 });
 
-module.exports.babelLoaderConfig = ({ latestBuild }) => {
-  if (latestBuild === undefined) {
-    throw Error("latestBuild not defined for babel loader config");
-  }
-  return {
-    test: /\.m?js$|\.tsx?$/,
-    // Are already ES5, cause warnings when babelified.
-    exclude: [require.resolve("@mdi/js/mdi.js"), require.resolve("hls.js")],
-    use: {
-      loader: "babel-loader",
-      options: module.exports.options({ latestBuild }),
-    },
-  };
-};
+// Are already ES5, cause warnings when babelified.
+module.exports.exclude = [
+  require.resolve("@mdi/js/mdi.js"),
+  require.resolve("hls.js"),
+];

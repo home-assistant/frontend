@@ -38,9 +38,9 @@ const runDevServer = ({
 
 const handler = (done) => (err, stats) => {
   if (err) {
-    console.log(err.stack || err);
+    log.error(err.stack || err);
     if (err.details) {
-      console.log(err.details);
+      log.error(err.details);
     }
     return;
   }
@@ -48,7 +48,7 @@ const handler = (done) => (err, stats) => {
   log(`Build done @ ${new Date().toLocaleTimeString()}`);
 
   if (stats.hasErrors() || stats.hasWarnings()) {
-    console.log(stats.toString("minimal"));
+    log.warn(stats.toString("minimal"));
   }
 
   if (done) {
@@ -64,7 +64,7 @@ gulp.task("webpack-watch-app", () => {
   );
   gulp.watch(
     path.join(paths.translations_src, "en.json"),
-    gulp.series("build-translations", "copy-translations")
+    gulp.series("build-translations", "copy-translations-app")
   );
 });
 
