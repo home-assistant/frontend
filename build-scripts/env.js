@@ -3,8 +3,13 @@ const path = require("path");
 const paths = require("./paths.js");
 
 module.exports = {
+  useRollup() {
+    return process.env.ROLLUP === "1";
+  },
   isProdBuild() {
-    return process.env.NODE_ENV === "production";
+    return (
+      process.env.NODE_ENV === "production" || module.exports.isStatsBuild()
+    );
   },
   isStatsBuild() {
     return process.env.STATS === "1";
