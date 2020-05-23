@@ -57,10 +57,12 @@ class HassioHostInfo extends LitElement {
                 <td>System</td>
                 <td>${this.hostInfo.operating_system}</td>
               </tr>
-              <tr>
-                <td>Docker version</td>
-                <td>${this.hassioInfo.docker}</td>
-              </tr>
+              ${!this.hostInfo.features.includes("hassos")
+                ? html`<tr>
+                    <td>Docker version</td>
+                    <td>${this.hassioInfo.docker}</td>
+                  </tr>`
+                : ""}
               ${this.hostInfo.deployment
                 ? html`
                     <tr>
