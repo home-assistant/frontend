@@ -20,6 +20,7 @@ const createWebpackConfig = ({
   if (!dontHash) {
     dontHash = new Set();
   }
+  const ignorePackages = bundle.ignorePackages({ latestBuild });
   return {
     mode: isProdBuild ? "production" : "development",
     devtool: isProdBuild
@@ -84,13 +85,13 @@ const createWebpackConfig = ({
             throw err;
           }
 
-          return bundle.ignorePackages.some((toIgnorePath) =>
+          return ignorePackages.some((toIgnorePath) =>
             fullPath.startsWith(toIgnorePath)
           );
         },
       }),
       new webpack.NormalModuleReplacementPlugin(
-        new RegExp(bundle.emptyPackages.join("|")),
+        new RegExp(bundle.emptyPackages({ latestBuild }).join("|")),
         path.resolve(paths.polymer_dir, "src/util/empty.js")
       ),
     ],

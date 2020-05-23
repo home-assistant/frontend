@@ -3,7 +3,7 @@ const env = require("./env.js");
 const paths = require("./paths.js");
 
 // Files from NPM Packages that should not be imported
-module.exports.ignorePackages = [
+module.exports.ignorePackages = ({ latestBuild }) => [
   // Bloats bundle and it's not used.
   path.resolve(require.resolve("moment"), "../locale"),
   // Part of yaml.js and only used for !!js functions that we don't use
@@ -11,7 +11,7 @@ module.exports.ignorePackages = [
 ];
 
 // Files from NPM packages that we should replace with empty file
-module.exports.emptyPackages = [
+module.exports.emptyPackages = ({ latestBuild }) => [
   // Contains all color definitions for all material color sets.
   // We don't use it
   require.resolve("@polymer/paper-styles/color.js"),

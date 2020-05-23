@@ -40,7 +40,9 @@ const createRollupConfig = ({
       // Some entry points contain no JavaScript. This setting silences a warning about that.
       // https://rollupjs.org/guide/en/#preserveentrysignatures
       preserveEntrySignatures: false,
-      external: bundle.ignorePackages + bundle.emptyPackages,
+      external:
+        bundle.ignorePackages({ latestBuild }) +
+        bundle.emptyPackages({ latestBuild }),
       plugins: [
         resolve({ extensions, preferBuiltins: false, browser: true }),
         commonjs({
