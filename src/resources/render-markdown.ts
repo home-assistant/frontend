@@ -1,6 +1,8 @@
 import { wrap } from "comlink";
 
-type RenderMarkdownType = typeof import("./markdown_worker").api["renderMarkdown"];
+import type { api } from "./markdown_worker";
+
+type RenderMarkdownType = api["renderMarkdown"];
 type renderMarkdownParamTypes = Parameters<RenderMarkdownType>;
 
 let worker: any | undefined;

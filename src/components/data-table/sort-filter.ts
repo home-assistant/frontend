@@ -1,9 +1,11 @@
 import { wrap } from "comlink";
 
-type FilterDataType = typeof import("./sort_filter_worker").api["filterData"];
+import type { api } from "./sort_filter_worker";
+
+type FilterDataType = api["filterData"];
 type FilterDataParamTypes = Parameters<FilterDataType>;
 
-type SortDataType = typeof import("./sort_filter_worker").api["sortData"];
+type SortDataType = api["sortData"];
 type SortDataParamTypes = Parameters<SortDataType>;
 
 let worker: any | undefined;
