@@ -12,7 +12,6 @@ const manifest = require("./rollup-plugins/manifest-plugin");
 const worker = require("./rollup-plugins/worker-plugin");
 const dontHashPlugin = require("./rollup-plugins/dont-hash-plugin");
 
-const babelConfig = require("./babel");
 const bundle = require("./bundle");
 
 const extensions = [".js", ".ts"];
@@ -40,7 +39,9 @@ const createRollupConfig = ({
       // Some entry points contain no JavaScript. This setting silences a warning about that.
       // https://rollupjs.org/guide/en/#preserveentrysignatures
       preserveEntrySignatures: false,
-      external: bundle.ignorePackages + bundle.emptyPackages,
+      external:
+        bundle.ignorePackages({ latestBuild }) +
+        bundle.emptyPackages({ latestBuild }),
       plugins: [
         resolve({ extensions, preferBuiltins: false, browser: true }),
         commonjs({
@@ -50,10 +51,9 @@ const createRollupConfig = ({
         }),
         json(),
         babel({
-          ...babelConfig.options({ latestBuild }),
+          ...bundle.babelOptions({ latestBuild }),
           extensions,
-          babelrc: false,
-          exclude: babelConfig.exclude,
+          exclude: bundle.babelExclude(),
         }),
         string({
           // Import certain extensions as strings
