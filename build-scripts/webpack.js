@@ -4,7 +4,7 @@ const TerserPlugin = require("terser-webpack-plugin");
 const ManifestPlugin = require("webpack-manifest-plugin");
 const WorkerPlugin = require("worker-plugin");
 const paths = require("./paths.js");
-const { babelLoaderConfig } = require("./babel.js");
+const babel = require("./babel.js");
 const bundle = require("./bundle");
 
 const createWebpackConfig = ({
@@ -29,7 +29,14 @@ const createWebpackConfig = ({
     node: false,
     module: {
       rules: [
-        babelLoaderConfig({ latestBuild }),
+        {
+          test: /\.js$|\.ts$/,
+          exclude: babel.exclude,
+          use: {
+            loader: "babel-loader",
+            options: babel.options({ latestBuild }),
+          },
+        },
         {
           test: /\.css$/,
           use: "raw-loader",
