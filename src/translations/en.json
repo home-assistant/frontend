@@ -243,7 +243,8 @@
       "yes": "Yes",
       "no": "No",
       "successfully_saved": "Successfully saved",
-      "successfully_deleted": "Successfully deleted"
+      "successfully_deleted": "Successfully deleted",
+      "back": "Back"
     },
     "components": {
       "entity": {
