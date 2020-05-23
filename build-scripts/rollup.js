@@ -11,8 +11,10 @@ const { terser } = require("rollup-plugin-terser");
 const manifest = require("./rollup-plugins/manifest-plugin");
 const worker = require("./rollup-plugins/worker-plugin");
 const dontHashPlugin = require("./rollup-plugins/dont-hash-plugin");
+const ignore = require("./rollup-plugins/ignore-plugin");
 
 const bundle = require("./bundle");
+const paths = require("./paths");
 
 const extensions = [".js", ".ts"];
 
@@ -39,11 +41,18 @@ const createRollupConfig = ({
       // Some entry points contain no JavaScript. This setting silences a warning about that.
       // https://rollupjs.org/guide/en/#preserveentrysignatures
       preserveEntrySignatures: false,
-      external:
-        bundle.ignorePackages({ latestBuild }) +
-        bundle.emptyPackages({ latestBuild }),
       plugins: [
-        resolve({ extensions, preferBuiltins: false, browser: true }),
+        ignore({
+          files: bundle
+            .ignorePackages({ latestBuild })
+            .concat(bundle.emptyPackages({ latestBuild })),
+        }),
+        resolve({
+          extensions,
+          preferBuiltins: false,
+          browser: true,
+          rootDir: paths.polymer_dir,
+        }),
         commonjs({
           namedExports: {
             "js-yaml": ["safeDump", "safeLoad"],
@@ -57,7 +66,7 @@ const createRollupConfig = ({
         }),
         string({
           // Import certain extensions as strings
-          include: ["**/*.css"],
+          include: [path.join(paths.polymer_dir, "node_modules/**/*.css")],
         }),
         replace(
           bundle.definedVars({ isProdBuild, latestBuild, defineOverlay })
