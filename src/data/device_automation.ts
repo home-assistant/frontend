@@ -65,15 +65,7 @@ export const fetchDeviceTriggerCapabilities = (
     trigger,
   });
 
-const whitelist = [
-  "above",
-  "below",
-  "brightness_pct",
-  "code",
-  "for",
-  "position",
-  "set_brightness",
-];
+const whitelist = ["device_id", "domain", "entity_id", "type"];
 
 export const deviceAutomationsEqual = (
   a: DeviceAutomation,
@@ -84,7 +76,7 @@ export const deviceAutomationsEqual = (
   }
 
   for (const property in a) {
-    if (whitelist.includes(property)) {
+    if (!whitelist.includes(property)) {
       continue;
     }
     if (!Object.is(a[property], b[property])) {
@@ -92,7 +84,7 @@ export const deviceAutomationsEqual = (
     }
   }
   for (const property in b) {
-    if (whitelist.includes(property)) {
+    if (!whitelist.includes(property)) {
       continue;
     }
     if (!Object.is(a[property], b[property])) {
