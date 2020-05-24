@@ -43,9 +43,7 @@ const createRollupConfig = ({
       preserveEntrySignatures: false,
       plugins: [
         ignore({
-          files: bundle
-            .ignorePackages({ latestBuild })
-            .concat(bundle.emptyPackages({ latestBuild })),
+          files: bundle.emptyPackages({ latestBuild }),
         }),
         resolve({
           extensions,
