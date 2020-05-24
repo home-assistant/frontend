@@ -2307,6 +2307,8 @@
                 "abort_intro": "登录中断",
                 "authorizing_client": "您即将授权 {clientId} 访问 Home Assistant 实例。",
                 "form": {
+                    "error": "错误：{error}",
+                    "next": "下一步",
                     "providers": {
                         "command_line": {
                             "abort": {
@@ -2392,6 +2394,7 @@
                             }
                         }
                     },
+                    "start_over": "重新开始",
                     "unknown_error": "出现了一些问题",
                     "working": "请稍候"
                 },

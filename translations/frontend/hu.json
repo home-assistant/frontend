@@ -2307,6 +2307,8 @@
                 "abort_intro": "Bejelentkezés megszakítva",
                 "authorizing_client": "Éppen a {clientId} számára készülsz hozzáférést biztosítani a Home Assistant példányodhoz.",
                 "form": {
+                    "error": "Hiba: {error}",
+                    "next": "Tovább",
                     "providers": {
                         "command_line": {
                             "abort": {
@@ -2392,6 +2394,7 @@
                             }
                         }
                     },
+                    "start_over": "Újrakezdés",
                     "unknown_error": "Valami hiba történt",
                     "working": "Kérlek várj"
                 },

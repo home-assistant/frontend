@@ -1327,7 +1327,7 @@
                     "clear": "Tyhjennä",
                     "filtering_by": "Suodatus"
                 },
-                "header": "Säädä Home Assistanttia",
+                "header": "Säädä Home Assistantia",
                 "helpers": {
                     "caption": "Auttajat",
                     "description": "Elementit, jotka voivat auttaa rakentamaan automaatioita.",
@@ -1399,7 +1399,7 @@
                     "description": "Hallitse liitettyjä laitteita ja palveluita",
                     "details": "Integroinnin yksityiskohdat",
                     "discovered": "Löydetty",
-                    "home_assistant_website": "Home Assistant – sivusto",
+                    "home_assistant_website": "Home Assistant -sivusto",
                     "ignore": {
                         "confirm_delete_ignore": "Tämä saa integroinnin näkymään löydetyissä integroinneissa uudelleen, kun se löydetään. Tämä saattaa vaatia uudelleenkäynnistyksen tai kestää jonkin aikaa.",
                         "confirm_delete_ignore_title": "Lopeta integraation {name} ohittaminen?",
@@ -2513,7 +2513,7 @@
                     "create_failed": "Käyttötunnussanoman luominen epäonnistui.",
                     "created_at": "Luotu {date}",
                     "delete_failed": "Käyttötunnussanoman poistaminen epäonnistui.",
-                    "description": "Luo pitkäikäisiä käyttöoikeustunnuksia, jotta komentosarjasi voivat vuorovaikutttaa Home Assistantin kanssa. Jokainen tunnus on voimassa 10 vuotta luomisesta. Seuraavat pitkäikäiset käyttöoikeustunnukset ovat tällä hetkellä käytössä.",
+                    "description": "Luo pitkäikäisiä käyttöoikeustunnuksia, jotta komentosarjasi voivat vuorovaikuttaa Home Assistantin kanssa. Jokainen tunnus on voimassa 10 vuotta luomisesta. Seuraavat pitkäikäiset käyttöoikeustunnukset ovat tällä hetkellä käytössä.",
                     "empty_state": "Sinulla ei ole vielä pitkäaikaisia käyttötunnussanomia",
                     "header": "Pitkäaikaiset käyttötunnussanomat",
                     "last_used": "Viimeksi käytetty {date} sijainnista {location}",
