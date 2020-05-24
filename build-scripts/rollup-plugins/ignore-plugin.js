@@ -19,6 +19,7 @@ module.exports = function (userOptions = {}) {
       // inside node_module dependencies.
       if (
         importee.endsWith("commonjsHelpers.js") ||
+        importee.endsWith("rollupPluginBabelHelpers.js") ||
         importee.endsWith("?commonjs-proxy") ||
         !importer ||
         !importer.includes("/node_modules/")
