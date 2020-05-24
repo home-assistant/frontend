@@ -1,6 +1,12 @@
 import "@polymer/paper-input/paper-input";
+import "@polymer/paper-input/paper-textarea";
 import "@polymer/paper-radio-button/paper-radio-button";
 import "@polymer/paper-radio-group/paper-radio-group";
+import "@polymer/paper-dropdown-menu/paper-dropdown-menu-light";
+import "@polymer/paper-listbox/paper-listbox";
+import "@polymer/paper-item/paper-item";
+import "../../../../components/ha-combo-box";
+
 import {
   css,
   CSSResult,
@@ -11,9 +17,13 @@ import {
   TemplateResult,
 } from "lit-element";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import { stopPropagation } from "../../../../common/dom/stop_propagation";
 import "../../../../components/ha-icon-input";
 import "../../../../components/ha-switch";
-import { TemplateBinarySensor } from "../../../../data/binary_sensor";
+import {
+  TemplateBinarySensor,
+  DEVICE_CLASSES,
+} from "../../../../data/binary_sensor";
 import { haStyle } from "../../../../resources/styles";
 import { HomeAssistant } from "../../../../types";
 
@@ -102,90 +112,80 @@ class HaBinarySensorForm extends LitElement {
             "ui.dialogs.helper_settings.generic.icon"
           )}
         ></ha-icon-input>
+        <paper-textarea
+          .value=${this._value}
+          .configValue=${"value"}
+          @value-changed=${this._valueChanged}
+          .label=${this.hass!.localize(
+            "ui.dialogs.helper_settings.generic.value"
+          )}
+          .errorMessage="${this.hass!.localize(
+            "ui.dialogs.helper_settings.required_error_msg"
+          )}"
+          .invalid=${valueInvalid}
+          @keydown=${this._preventSubmit}
+        ></paper-textarea>
+        <paper-dropdown-menu-light
+          .label=${this.hass!.localize(
+            "ui.dialogs.helper_settings.generic.device_class"
+          )}
+          .configValue=${"device_class"}
+          .value=${this._device_class}
+          @click=${stopPropagation}
+        >
+          <paper-listbox
+            slot="dropdown-content"
+            @iron-select=${this._valueChanged}
+          >
+            ${DEVICE_CLASSES.map(
+              (option) => html` <paper-item>${option}</paper-item> `
+            )}
+          </paper-listbox>
+        </paper-dropdown-menu-light>
+        ${this.hass.userData?.showAdvanced
+          ? html`
+              <paper-input
+                .value=${this._availability}
+                .configValue=${"availability"}
+                @value-changed=${this._valueChanged}
+                .label=${this.hass!.localize(
+                  "ui.dialogs.helper_settings.binary_sensor.availability"
+                )}
+              ></paper-input>
+              <paper-input
+                .value=${this._entity_picture}
+                .configValue=${"entity_picture"}
+                @value-changed=${this._valueChanged}
+                .label=${this.hass!.localize(
+                  "ui.dialogs.helper_settings.binary_sensor.entity_picture"
+                )}
+              ></paper-input>
+              <paper-input
+                .value=${this._delay_on}
+                .configValue=${"delay_on"}
+                @value-changed=${this._valueChanged}
+                .label=${this.hass!.localize(
+                  "ui.dialogs.helper_settings.binary_sensor.delay_on"
+                )}
+              ></paper-input>
+              <paper-input
+                .value=${this._delay_off}
+                .configValue=${"delay_off"}
+                @value-changed=${this._valueChanged}
+                .label=${this.hass!.localize(
+                  "ui.dialogs.helper_settings.binary_sensor.delay_off"
+                )}
+              ></paper-input>
+            `
+          : ""}
       </div>
     `;
+  }
 
-    // return html`
-    //   <div class="form">
-    //     <paper-input
-    //       .value=${this._name}
-    //       .configValue=${"name"}
-    //       @value-changed=${this._valueChanged}
-    //       .label=${this.hass!.localize(
-    //         "ui.dialogs.helper_settings.generic.name"
-    //       )}
-    //       .errorMessage="${this.hass!.localize(
-    //         "ui.dialogs.helper_settings.required_error_msg"
-    //       )}"
-    //       .invalid=${nameInvalid}
-    //       dialogInitialFocus
-    //     ></paper-input>
-    //     <ha-icon-input
-    //       .value=${this._icon}
-    //       .configValue=${"icon"}
-    //       @value-changed=${this._valueChanged}
-    //       .label=${this.hass!.localize(
-    //         "ui.dialogs.helper_settings.generic.icon"
-    //       )}
-    //     ></ha-icon-input>
-    //     <paper-input
-    //       .value=${this._value}
-    //       .configValue=${"value"}
-    //       @value-changed=${this._valueChanged}
-    //       .label=${this.hass!.localize(
-    //         "ui.dialogs.helper_settings.generic.value"
-    //       )}
-    //       .errorMessage="${this.hass!.localize(
-    //         "ui.dialogs.helper_settings.required_error_msg"
-    //       )}"
-    //       .invalid=${valueInvalid}
-    //     ></paper-input>
-    //     <paper-input
-    //       .value=${this._device_class}
-    //       .configValue=${"device_class"}
-    //       @value-changed=${this._valueChanged}
-    //       .label=${this.hass!.localize(
-    //         "ui.dialogs.helper_settings.generic.device_class"
-    //       )}
-    //     ></paper-input>
-    //     ${this.hass.userData?.showAdvanced
-    //       ? html`
-    //           <paper-input
-    //             .value=${this._availability}
-    //             .configValue=${"availability"}
-    //             @value-changed=${this._valueChanged}
-    //             .label=${this.hass!.localize(
-    //               "ui.dialogs.helper_settings.binary_sensor.availability"
-    //             )}
-    //           ></paper-input>
-    //           <paper-input
-    //             .value=${this._entity_picture}
-    //             .configValue=${"entity_picture"}
-    //             @value-changed=${this._valueChanged}
-    //             .label=${this.hass!.localize(
-    //               "ui.dialogs.helper_settings.binary_sensor.entity_picture"
-    //             )}
-    //           ></paper-input>
-    //           <paper-input
-    //             .value=${this._delay_on}
-    //             .configValue=${"delay_on"}
-    //             @value-changed=${this._valueChanged}
-    //             .label=${this.hass!.localize(
-    //               "ui.dialogs.helper_settings.binary_sensor.delay_on"
-    //             )}
-    //           ></paper-input>
-    //           <paper-input
-    //             .value=${this._delay_off}
-    //             .configValue=${"delay_off"}
-    //             @value-changed=${this._valueChanged}
-    //             .label=${this.hass!.localize(
-    //               "ui.dialogs.helper_settings.binary_sensor.delay_off"
-    //             )}
-    //           ></paper-input>
-    //         `
-    //       : ""}
-    //   </div>
-    // `;
+  private _preventSubmit(ev: KeyboardEvent) {
+    if (ev.keyCode === 13) {
+      ev.stopPropagation();
+    }
   }
 
   private _valueChanged(ev: CustomEvent) {
