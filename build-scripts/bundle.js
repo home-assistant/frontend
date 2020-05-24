@@ -15,6 +15,7 @@ module.exports.emptyPackages = ({ latestBuild }) => [
   // Contains all color definitions for all material color sets.
   // We don't use it
   require.resolve("@polymer/paper-styles/color.js"),
+  require.resolve("@polymer/paper-styles/default-theme.js"),
   // Loads stuff from a CDN
   require.resolve("@polymer/font-roboto/roboto.js"),
   require.resolve("@vaadin/vaadin-material-styles/font-roboto.js"),
