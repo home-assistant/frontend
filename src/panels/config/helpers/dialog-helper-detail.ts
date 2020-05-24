@@ -30,6 +30,7 @@ import "./forms/ha-input_datetime-form";
 import "./forms/ha-input_number-form";
 import "./forms/ha-input_select-form";
 import "./forms/ha-input_text-form";
+import "./forms/ha-binary_sensor-form";
 
 const HELPERS = {
   input_boolean: createInputBoolean,
