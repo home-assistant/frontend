@@ -11,7 +11,7 @@ import {
   TemplateResult,
 } from "lit-element";
 import memoizeOne from "memoize-one";
-import * as Fuse from "fuse.js";
+import Fuse from "fuse.js";
 import { caseInsensitiveCompare } from "../../../common/string/compare";
 import { computeRTL } from "../../../common/util/compute_rtl";
 import { nextRender } from "../../../common/util/render-status";
@@ -149,14 +149,14 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
       if (!filter) {
         return [...configEntries];
       }
-      const options: Fuse.FuseOptions<ConfigEntryExtended> = {
+      const options: Fuse.IFuseOptions<ConfigEntryExtended> = {
         keys: ["domain", "localized_domain_name", "title"],
-        caseSensitive: false,
+        isCaseSensitive: false,
         minMatchCharLength: 2,
         threshold: 0.2,
       };
       const fuse = new Fuse(configEntries, options);
-      return fuse.search(filter);
+      return fuse.search(filter).map((result) => result.item);
     }
   );
 
@@ -193,14 +193,14 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
       if (!filter) {
         return configEntriesInProgress;
       }
-      const options: Fuse.FuseOptions<DataEntryFlowProgressExtended> = {
+      const options: Fuse.IFuseOptions<DataEntryFlowProgressExtended> = {
         keys: ["handler", "localized_title"],
-        caseSensitive: false,
+        isCaseSensitive: false,
         minMatchCharLength: 2,
         threshold: 0.2,
       };
       const fuse = new Fuse(configEntriesInProgress, options);
-      return fuse.search(filter);
+      return fuse.search(filter).map((result) => result.item);
     }
   );
 
