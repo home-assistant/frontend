@@ -3,7 +3,7 @@ import "@polymer/paper-input/paper-textarea";
 import "@polymer/paper-radio-button/paper-radio-button";
 import "@polymer/paper-radio-group/paper-radio-group";
 import "@polymer/paper-dropdown-menu/paper-dropdown-menu-light";
-import "@polymer/paper-listbox/paper-listbox";
+import { PaperListboxElement } from "@polymer/paper-listbox/paper-listbox";
 import "@polymer/paper-item/paper-item";
 import "../../../../components/ha-combo-box";
 
@@ -17,7 +17,6 @@ import {
   TemplateResult,
 } from "lit-element";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import { stopPropagation } from "../../../../common/dom/stop_propagation";
 import "../../../../components/ha-icon-input";
 import "../../../../components/ha-switch";
 import {
@@ -61,7 +60,7 @@ class HaBinarySensorForm extends LitElement {
       this._availability = item.availability || "";
       this._entity_picture = item.entity_picture || "";
       this._delay_on = item.delay_on || "";
-      this._delay_off = item.delay_on || "";
+      this._delay_off = item.delay_off || "";
     } else {
       this._name = "";
       this._icon = "";
@@ -86,6 +85,11 @@ class HaBinarySensorForm extends LitElement {
     if (!this.hass) {
       return html``;
     }
+
+    const selected = this._device_class
+      ? DEVICE_CLASSES.indexOf(this._device_class)
+      : -1;
+
     const nameInvalid = !this._name || this._name.trim() === "";
     const valueInvalid = !this._value || this._value.trim() === "";
 
@@ -129,16 +133,20 @@ class HaBinarySensorForm extends LitElement {
           .label=${this.hass!.localize(
             "ui.dialogs.helper_settings.generic.device_class"
           )}
-          .configValue=${"device_class"}
-          .value=${this._device_class}
-          @click=${stopPropagation}
         >
           <paper-listbox
             slot="dropdown-content"
-            @iron-select=${this._valueChanged}
+            @iron-select=${this._deviceValueChanged}
+            .selected=${selected}
           >
             ${DEVICE_CLASSES.map(
-              (option) => html` <paper-item>${option}</paper-item> `
+              (option) => html`
+                <paper-item .device_class=${option}>
+                  ${this.hass.localize(
+                    `ui.dialogs.helper_settings.binary_sensor.device_class.${option}`
+                  )}
+                </paper-item>
+              `
             )}
           </paper-listbox>
         </paper-dropdown-menu-light>
@@ -186,6 +194,30 @@ class HaBinarySensorForm extends LitElement {
     if (ev.keyCode === 13) {
       ev.stopPropagation();
     }
+  }
+
+  private _deviceValueChanged(ev: CustomEvent) {
+    if (!this.new && !this._item) {
+      return;
+    }
+
+    const device_class = ((ev.target as PaperListboxElement)
+      ?.selectedItem as any)?.device_class;
+
+    if (device_class === this._device_class) {
+      return;
+    }
+
+    const newValue = { ...this._item };
+    if (!device_class) {
+      delete newValue.device_class;
+    } else {
+      newValue.device_class = device_class;
+    }
+
+    fireEvent(this, "value-changed", {
+      value: newValue,
+    });
   }
 
   private _valueChanged(ev: CustomEvent) {
