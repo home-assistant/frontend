@@ -217,7 +217,7 @@ export class HUIView extends LitElement {
     root.style.display = elements.length > 0 ? "block" : "none";
   }
 
-  private _createColumns() {
+  private async _createColumns() {
     this._createColumnsIteration++;
     const iteration = this._createColumnsIteration;
     const root = this.shadowRoot!.getElementById("columns")!;
@@ -226,59 +226,64 @@ export class HUIView extends LitElement {
       root.removeChild(root.lastChild);
     }
 
-    let columns: [number, number][][] = [];
     const columnEntityCount: number[] = [];
+    const columnElements: HTMLDivElement[] = [];
     for (let i = 0; i < this.columns!; i++) {
-      columns.push([]);
-      columnEntityCount.push(0);
-    }
-
-    this._cards.forEach((el, index) => {
-      const cardSize = computeCardSize(
-        (el.tagName === "HUI-CARD-OPTIONS" ? el.firstChild : el) as LovelaceCard
-      );
-      columns[getColumnIndex(columnEntityCount, cardSize)].push([
-        index,
-        cardSize,
-      ]);
-    });
-
-    // Remove empty columns
-    columns = columns.filter((val) => val.length > 0);
-
-    columns.forEach((indexes) => {
       const columnEl = document.createElement("div");
       columnEl.classList.add("column");
-      this._addToColumn(columnEl, indexes, this.lovelace!.editMode, iteration);
       root.appendChild(columnEl);
-    });
-  }
+      columnEntityCount.push(0);
+      columnElements.push(columnEl);
+    }
 
-  private async _addToColumn(columnEl, indexes, editMode, iteration) {
-    let i = 0;
-    for (const [index, cardSize] of indexes) {
-      const card: LovelaceCard = this._cards[index];
-      if (!editMode) {
-        card.editMode = false;
-        columnEl.appendChild(card);
-      } else {
-        const wrapper = document.createElement("hui-card-options");
-        wrapper.hass = this.hass;
-        wrapper.lovelace = this.lovelace;
-        wrapper.path = [this.index!, index];
-        card.editMode = true;
-        wrapper.appendChild(card);
-        columnEl.appendChild(wrapper);
-      }
-      i += cardSize;
-      if (i > 5) {
-        // eslint-disable-next-line no-await-in-loop
-        await nextRender();
+    let cardsAdded = 0;
+
+    for (const [index, el] of this._cards.entries()) {
+      const cardSizeProm = computeCardSize(
+        (el.tagName === "HUI-CARD-OPTIONS" ? el.firstChild : el) as LovelaceCard
+      );
+      let waitProm: Promise<unknown>;
+      if (cardsAdded > 5) {
+        waitProm = nextRender();
         if (iteration !== this._createColumnsIteration) {
           return;
         }
-        i = 0;
+        cardsAdded = 0;
+      } else {
+        waitProm = Promise.resolve();
       }
+      // eslint-disable-next-line no-await-in-loop
+      const [cardSize] = await Promise.all([cardSizeProm, waitProm]);
+      cardsAdded++;
+      const colIndex = getColumnIndex(columnEntityCount, cardSize as number);
+      this._addCardToColumn(
+        columnElements[colIndex],
+        index,
+        this.lovelace!.editMode
+      );
+    }
+
+    // Remove empty columns
+    columnElements.forEach((column) => {
+      if (!column.lastChild) {
+        column.parentElement!.removeChild(column);
+      }
+    });
+  }
+
+  private _addCardToColumn(columnEl, index, editMode) {
+    const card: LovelaceCard = this._cards[index];
+    if (!editMode) {
+      card.editMode = false;
+      columnEl.appendChild(card);
+    } else {
+      const wrapper = document.createElement("hui-card-options");
+      wrapper.hass = this.hass;
+      wrapper.lovelace = this.lovelace;
+      wrapper.path = [this.index!, index];
+      card.editMode = true;
+      wrapper.appendChild(card);
+      columnEl.appendChild(wrapper);
     }
   }
 
@@ -295,7 +300,6 @@ export class HUIView extends LitElement {
     });
 
     this._cards = elements;
-
     this._createColumns();
   }
 

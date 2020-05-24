@@ -75,9 +75,9 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
 
   @query("#alarmCode") private _input?: PaperInputElement;
 
-  public getCardSize(): number {
+  public async getCardSize(): Promise<number> {
     if (!this._config || !this.hass) {
-      return 0;
+      return 3;
     }
 
     const stateObj = this.hass.states[this._config.entity];
