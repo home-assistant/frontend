@@ -2307,6 +2307,8 @@
                 "abort_intro": "Connexion interrompue",
                 "authorizing_client": "Vous êtes sur le point de donner accès à {clientId} à votre instance de Home Assistant.",
                 "form": {
+                    "error": "Erreur: {error}",
+                    "next": "Suivant",
                     "providers": {
                         "command_line": {
                             "abort": {
@@ -2392,6 +2394,7 @@
                             }
                         }
                     },
+                    "start_over": "Recommencer",
                     "unknown_error": "Quelque chose a mal tourné",
                     "working": "Veuillez patienter"
                 },

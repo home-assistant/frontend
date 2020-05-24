@@ -896,7 +896,7 @@
                         },
                         "edit_ui": "Форма ввода",
                         "edit_yaml": "Текстовый редактор",
-                        "enable_disable": "Включение или отключение правила автоматизации",
+                        "enable_disable": "Включить / выключить автоматизацию",
                         "introduction": "Используйте автоматизацию, чтобы оживить Ваш дом.",
                         "load_error_not_editable": "Доступны для редактирования только автоматизации из automations.yaml.",
                         "load_error_unknown": "Ошибка загрузки автоматизации ({err_no}).",
@@ -1362,8 +1362,8 @@
                         "delete_button": "Удалить интеграцию {integration}",
                         "delete_confirm": "Вы уверены, что хотите удалить эту интеграцию?",
                         "device_unavailable": "устройство недоступно",
-                        "devices": "{count} {count, plural,\n  one {device}\n  other {devices}\n}",
-                        "entities": "{count} {count, plural,\n  one {entity}\n  other {entities}\n}",
+                        "devices": "{count} {count, plural,\n  one {устройство}\n  other {устройств}\n}",
+                        "entities": "{count} {count, plural,\n  one {объект}\n  other {объектов}\n}",
                         "entity_unavailable": "объект недоступен",
                         "firmware": "Прошивка: {version}",
                         "hub": "Подключено через",
@@ -2307,6 +2307,8 @@
                 "abort_intro": "Вход прерван",
                 "authorizing_client": "Получение доступа к {clientId}.",
                 "form": {
+                    "error": "Ошибка: {error}",
+                    "next": "Далее",
                     "providers": {
                         "command_line": {
                             "abort": {
@@ -2392,6 +2394,7 @@
                             }
                         }
                     },
+                    "start_over": "Начать сначала",
                     "unknown_error": "Что-то пошло не так",
                     "working": "Пожалуйста, подождите"
                 },

@@ -1215,7 +1215,7 @@
                     },
                     "warning": {
                         "include_link": "incluir customize.yaml",
-                        "include_sentence": "Parece que tu configuration.yaml no es correcto, debe",
+                        "include_sentence": "Parece que tu configuration.yaml no es correcta, debe",
                         "not_applied": "Los cambios realizados aquí se escriben en él, pero no se aplicarán después de una recarga de configuración a menos que la inclusión esté en su lugar."
                     }
                 },
@@ -2307,6 +2307,8 @@
                 "abort_intro": "Inicio de sesión cancelado",
                 "authorizing_client": "Estás a punto de dar acceso a {clientId} a tu instancia de Home Assistant.",
                 "form": {
+                    "error": "Error: {error}",
+                    "next": "Siguiente",
                     "providers": {
                         "command_line": {
                             "abort": {
@@ -2392,6 +2394,7 @@
                             }
                         }
                     },
+                    "start_over": "Empezar de nuevo",
                     "unknown_error": "Algo salió mal",
                     "working": "Por favor, espere"
                 },
