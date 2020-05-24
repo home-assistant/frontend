@@ -245,15 +245,15 @@ export class HUIView extends LitElement {
       let waitProm: Promise<unknown>;
       if (cardsAdded > 5) {
         waitProm = nextRender();
-        if (iteration !== this._createColumnsIteration) {
-          return;
-        }
         cardsAdded = 0;
       } else {
         waitProm = Promise.resolve();
       }
       // eslint-disable-next-line no-await-in-loop
       const [cardSize] = await Promise.all([cardSizeProm, waitProm]);
+      if (iteration !== this._createColumnsIteration) {
+        return;
+      }
       cardsAdded++;
       const colIndex = getColumnIndex(columnEntityCount, cardSize as number);
       this._addCardToColumn(
