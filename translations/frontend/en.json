@@ -2307,6 +2307,8 @@
                 "abort_intro": "Login aborted",
                 "authorizing_client": "You're about to give {clientId} access to your Home Assistant instance.",
                 "form": {
+                    "error": "Error: {error}",
+                    "next": "Next",
                     "providers": {
                         "command_line": {
                             "abort": {
@@ -2392,6 +2394,7 @@
                             }
                         }
                     },
+                    "start_over": "Start over",
                     "unknown_error": "Something went wrong",
                     "working": "Please wait"
                 },

@@ -1254,7 +1254,7 @@
                     "device_not_found": "Enhet ikke funnet",
                     "entities": {
                         "add_entities_lovelace": "Legg til i Lovelace",
-                        "disabled_entities": "+{count} {antall, flertall,\n  én {deaktivert enhet}\n  andre {deaktiverte enheter}\n}",
+                        "disabled_entities": "+{count} {count, plural,\n  one {deaktivert entitet}\n  other {deaktiverte entiteter}\n}",
                         "entities": "Enheter",
                         "hide_disabled": "Skjul deaktiverte",
                         "none": "Denne enheten har ingen enheter"
@@ -1685,9 +1685,9 @@
                         "attributes_of_cluster": "Attributter for den valgte klyngen",
                         "get_zigbee_attribute": "Hent ZigBee-attributt",
                         "header": "Klyngeattributter",
-                        "help_attribute_dropdown": "Velg en attributt for å se eller angi verdien.",
+                        "help_attribute_dropdown": "Velg et attributt for å se eller angi verdien.",
                         "help_get_zigbee_attribute": "Hent verdien for det valgte attributtet.",
-                        "help_set_zigbee_attribute": "Angi attributtverdi for klusteret på den angitte entiteten.",
+                        "help_set_zigbee_attribute": "Angi attributtverdi for den spesifiserte klyngen på den angitte entiteten.",
                         "introduction": "Se og rediger klyngeattributter.",
                         "set_zigbee_attribute": "Angi Zigbee-attributt"
                     },
@@ -1701,7 +1701,7 @@
                     "clusters": {
                         "header": "Klynger",
                         "help_cluster_dropdown": "Velg en klynge for å vise attributter og kommandoer.",
-                        "introduction": "Klynger er byggesteinene for ZigBee-funksjonalitet. De skiller funksjonalitet i logiske enheter. Det finnes klient-og server typer, og som består av attributter og kommandoer."
+                        "introduction": "Klynger er byggesteinene for ZigBee-funksjonalitet. De skiller funksjonalitet i logiske enheter. Det finnes klient og server typer som består av attributter og kommandoer."
                     },
                     "common": {
                         "add_devices": "Legg til enheter",
@@ -2060,7 +2060,7 @@
                         },
                         "generic": {
                             "aspect_ratio": "Størrelsesforholdet",
-                            "attribute": "Attributtet",
+                            "attribute": "Attributt",
                             "camera_image": "Kameraentitet",
                             "camera_view": "Kameravisning",
                             "double_tap_action": "Dobbeltklikk Handling",
@@ -2078,7 +2078,7 @@
                             "name": "Navn",
                             "no_theme": "Ingen tema",
                             "refresh_interval": "Oppdateringsintervall",
-                            "secondary_info_attribute": "Sekundær attribute info",
+                            "secondary_info_attribute": "Sekundær informasjonsattributt",
                             "show_icon": "Vis ikon?",
                             "show_name": "Vis navn?",
                             "show_state": "Vis tilstand?",
@@ -2307,6 +2307,8 @@
                 "abort_intro": "Innlogging avbrutt",
                 "authorizing_client": "Du er i ferd med å gi {clientId} tilgang til din Home Assistant",
                 "form": {
+                    "error": "Feil: {error}",
+                    "next": "Neste",
                     "providers": {
                         "command_line": {
                             "abort": {
@@ -2392,6 +2394,7 @@
                             }
                         }
                     },
+                    "start_over": "Start på nytt",
                     "unknown_error": "Noe gikk galt",
                     "working": "Vennligst vent"
                 },

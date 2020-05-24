@@ -903,7 +903,7 @@
                         "triggers": {
                             "add": "Lägg till händelse",
                             "delete": "Radera",
-                            "delete_confirm": "Säker på att du vill radera?",
+                            "delete_confirm": "Är du säker på att du vill radera detta?",
                             "duplicate": "Duplicera",
                             "header": "Händelse",
                             "introduction": "Triggers är det som startar en automation. Det är möjligt att ange flera triggers för samma regel. När en trigger inträffar kommer Home Assistant att validera eventuella villkor och sedan köra åtgärden.",
@@ -1030,7 +1030,7 @@
                         "connection_status": "Status för molnanslutning",
                         "fetching_subscription": "Hämtar prenumeration...",
                         "google": {
-                            "config_documentation": "Konfigureringsdokumentation",
+                            "config_documentation": "Dokumentation av Inställningar",
                             "devices_pin": "Säkerhetsenheter Pin",
                             "enable_ha_skill": "Aktivera Home Assistant-färdigheten för Google Assistant",
                             "enable_state_reporting": "Aktivera tillståndsrapportering",
@@ -1874,10 +1874,12 @@
                         "built_using": "Byggt med",
                         "custom_uis": "Anpassade användargränssnitt:",
                         "developed_by": "Utvecklad av ett gäng grymma människor.",
+                        "documentation": "Dokumentation",
                         "frontend": "frontend-UI",
                         "frontend_version": "Frontend-version: {version} - {type}",
                         "home_assistant_logo": "Home Assistant logotyp",
                         "icons_by": "Ikoner av",
+                        "issues": "Problem",
                         "license": "Publicerad under Apache 2.0-licensen",
                         "path_configuration": "Sökväg till configuration.yaml: {path}",
                         "server": "server",
@@ -2227,7 +2229,7 @@
                         "save": "Ta kontroll",
                         "yaml_config": "För att hjälpa dig igång, så är här nuvarande inställning för denna instrumentpanel:",
                         "yaml_control": "Om du vill ta kontroll i YAML-läge skapar du en YAML-fil med det namn du angav i konfigurationen för den här instrumentpanelen eller standard \"ui-lovelace.yaml\".",
-                        "yaml_mode": "Du använder YAML-läge, vilket betyder att du inte kan ändra dina Lovelace-inställning från användargränssnittet. Om du vill ändra Lovelace från användargränssnittet, ta bort 'mode: yaml' från dina Lovelaceinställningar i 'configuration.yaml'"
+                        "yaml_mode": "Du använder YAML-läge, vilket betyder att du inte kan ändra dina Lovelace-inställning från användargränssnittet. Om du vill hantera Lovelace från användargränssnittet, ta bort 'mode: yaml' från din Lovelace-inställning i 'configuration.yaml'"
                     },
                     "suggest_card": {
                         "add": "Lägg till i Lovelace-gränsnitt",
@@ -2287,6 +2289,7 @@
                 "abort_intro": "Inloggning avbruten",
                 "authorizing_client": "Du håller på att ge {clientId} behörighet till din Home Assistant.",
                 "form": {
+                    "next": "Nästa",
                     "providers": {
                         "command_line": {
                             "abort": {
@@ -2348,7 +2351,7 @@
                                     "data": {
                                         "password": "API-lösenord"
                                     },
-                                    "description": "Lägg in ett API-lösenord i din http konfig:"
+                                    "description": "Lägg in ett API-lösenord i din HTTP-konfiguration:"
                                 },
                                 "mfa": {
                                     "data": {
@@ -2372,6 +2375,7 @@
                             }
                         }
                     },
+                    "start_over": "Börja om",
                     "unknown_error": "Något gick fel",
                     "working": "Vänligen vänta"
                 },

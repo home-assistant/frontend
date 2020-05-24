@@ -357,7 +357,7 @@
                 "cooling": "{name} refredant",
                 "current_temperature": "Temperatura actual de {name}",
                 "currently": "Actualment",
-                "fan_mode": "Mode ventilació",
+                "fan_mode": "Velocitat ventilador",
                 "heating": "{name} escalfant",
                 "high": "alt",
                 "low": "baix",
@@ -1297,7 +1297,7 @@
                             "show_readonly": "Mostra entitats de només lectura",
                             "show_unavailable": "Mostra entitats no disponibles"
                         },
-                        "header": "Registre d'entitats",
+                        "header": "Entitats",
                         "headers": {
                             "entity_id": "ID de l'entitat",
                             "integration": "Integració",
@@ -1403,7 +1403,7 @@
                     "ignore": {
                         "confirm_delete_ignore": "Això farà que quan la integració es descobreixi torni a aparèixer a les integracions descobertes. Pot ser que tardi una estona o es necessiti reiniciar.",
                         "confirm_delete_ignore_title": "Vols deixar d'ignorar {name}?",
-                        "confirm_ignore": "Estàs segur que no vols per a configurar aquesta integració? Pots desfer-ho fent clic a 'Mostra les integracions ignorades' al menú de la part superior dreta.",
+                        "confirm_ignore": "Estàs segur que no vols configurar aquesta integració? Pots desfer-ho fent clic a 'Mostra les integracions ignorades' al menú de la part superior dreta.",
                         "confirm_ignore_title": "Ignorar descobriment de {name}?",
                         "hide_ignored": "Amaga les integracions ignorades",
                         "ignore": "Ignora",
@@ -1608,7 +1608,7 @@
                             "automation": "Actualitza automatitzacions",
                             "core": "Recarrega ubicacions i automatitzacions",
                             "group": "Actualitza grups",
-                            "heading": "Torna a carregar la configuració",
+                            "heading": "Tornant a carregar la configuració",
                             "introduction": "Algunes parts de la configuració de Home Assistant es poden recarregar sense necessitat de reiniciar. Els botons de sota esborraran la configuració antiga i en carregaran la nova.",
                             "person": "Actualitza persones",
                             "scene": "Actualitza escenes",
@@ -1789,7 +1789,7 @@
                         "required_error_msg": "Aquest camp és obligatori",
                         "update": "Actualitza"
                     },
-                    "edit_home_zone": "La ubicació de casa es pot canviar des de la configuració general.",
+                    "edit_home_zone": "El radi de la zona principal (casa) encara no pot ser editat des del \"frontend\". Arrossega el mercador del mapa per moure la zona principal.",
                     "edit_home_zone_narrow": "El radi de la zona principal (casa) encara no es pot editar des del \"frontend\". Sí que pots canviar-ne la ubicació des de la configuració general.",
                     "go_to_core_config": "Anar a la configuració general?",
                     "home_zone_core_config": "La ubicació de la zona principal (casa) és pot canviar des de la pàgina de configuració general. El radi d'aquesta zona encara no es pot editar des d'aquí. Vols anar a la configuració general?",
@@ -2307,6 +2307,8 @@
                 "abort_intro": "S'ha avortat l'inici de sessió",
                 "authorizing_client": "Esteu a punt de permetre l'accés a la vostra instància de Home Assistant al client {clientId}.",
                 "form": {
+                    "error": "Error: {error}",
+                    "next": "Següent",
                     "providers": {
                         "command_line": {
                             "abort": {
@@ -2392,6 +2394,7 @@
                             }
                         }
                     },
+                    "start_over": "Comença de nou",
                     "unknown_error": "Alguna cosa no ha anat bé",
                     "working": "Si us plau, espereu"
                 },

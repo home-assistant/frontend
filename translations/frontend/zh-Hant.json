@@ -2307,6 +2307,8 @@
                 "abort_intro": "登入中止",
                 "authorizing_client": "即將授與 {clientId} 訪問 Home Assistant 系統權限。",
                 "form": {
+                    "error": "錯誤：{error}",
+                    "next": "下一步",
                     "providers": {
                         "command_line": {
                             "abort": {
@@ -2392,6 +2394,7 @@
                             }
                         }
                     },
+                    "start_over": "重新開始",
                     "unknown_error": "發生錯誤",
                     "working": "請稍候"
                 },
