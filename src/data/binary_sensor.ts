@@ -124,6 +124,9 @@ export interface TemplateBinarySensorMutableParams {
   delay_off?: string;
 }
 
+export const fetchBinarySensor = (hass: HomeAssistant) =>
+  hass.callWS<TemplateBinarySensor[]>({ type: "binary_sensor/list" });
+
 export const createBinarySensor = (
   hass: HomeAssistant,
   values: TemplateBinarySensorMutableParams

@@ -42,6 +42,11 @@ import {
   fetchInputText,
   updateInputText,
 } from "../../../../../data/input_text";
+import {
+  deleteBinarySensor,
+  fetchBinarySensor,
+  updateBinarySensor,
+} from "../../../../../data/binary_sensor";
 import { showConfirmationDialog } from "../../../../../dialogs/generic/show-dialog-box";
 import type { HomeAssistant } from "../../../../../types";
 import type { Helper } from "../../../helpers/const";
@@ -78,6 +83,11 @@ const HELPERS = {
     fetch: fetchInputSelect,
     update: updateInputSelect,
     delete: deleteInputSelect,
+  },
+  binary_sensor: {
+    fetch: fetchBinarySensor,
+    update: updateBinarySensor,
+    delete: deleteBinarySensor,
   },
 };
 
