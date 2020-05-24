@@ -11,15 +11,18 @@ module.exports.ignorePackages = ({ latestBuild }) => [
 ];
 
 // Files from NPM packages that we should replace with empty file
-module.exports.emptyPackages = ({ latestBuild }) => [
-  // Contains all color definitions for all material color sets.
-  // We don't use it
-  require.resolve("@polymer/paper-styles/color.js"),
-  require.resolve("@polymer/paper-styles/default-theme.js"),
-  // Loads stuff from a CDN
-  require.resolve("@polymer/font-roboto/roboto.js"),
-  require.resolve("@vaadin/vaadin-material-styles/font-roboto.js"),
-];
+module.exports.emptyPackages = ({ latestBuild }) =>
+  [
+    // Contains all color definitions for all material color sets.
+    // We don't use it
+    require.resolve("@polymer/paper-styles/color.js"),
+    require.resolve("@polymer/paper-styles/default-theme.js"),
+    // Loads stuff from a CDN
+    require.resolve("@polymer/font-roboto/roboto.js"),
+    require.resolve("@vaadin/vaadin-material-styles/font-roboto.js"),
+    // Polyfill only needed for ES5 workers so filter out in latestBuild
+    latestBuild && require.resolve("proxy-polyfill/src/index.js"),
+  ].filter(Boolean);
 
 module.exports.definedVars = ({ isProdBuild, latestBuild, defineOverlay }) => ({
   __DEV__: !isProdBuild,
