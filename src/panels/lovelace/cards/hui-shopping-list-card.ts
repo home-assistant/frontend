@@ -49,6 +49,8 @@ class HuiShoppingListCard extends LitElement implements LovelaceCard {
 
   private _unsubEvents?: Promise<() => Promise<void>>;
 
+  private _dataFetched = false;
+
   public getCardSize(): number {
     return (this._config ? (this._config.title ? 1 : 0) : 0) + 3;
   }
@@ -57,26 +59,24 @@ class HuiShoppingListCard extends LitElement implements LovelaceCard {
     this._config = config;
     this._uncheckedItems = [];
     this._checkedItems = [];
-    this._fetchData();
   }
 
   public connectedCallback(): void {
     super.connectedCallback();
-
-    if (this.hass) {
-      this._unsubEvents = this.hass.connection.subscribeEvents(
-        () => this._fetchData(),
-        "shopping_list_updated"
-      );
-      this._fetchData();
+    if (!this.hass) {
+      return;
     }
+    this._fetchData();
   }
 
   public disconnectedCallback(): void {
     super.disconnectedCallback();
 
     if (this._unsubEvents) {
-      this._unsubEvents.then((unsub) => unsub());
+      this._unsubEvents.then((unsub) => {
+        unsub();
+        this._unsubEvents = undefined;
+      });
     }
   }
 
@@ -85,16 +85,19 @@ class HuiShoppingListCard extends LitElement implements LovelaceCard {
     if (!this._config || !this.hass) {
       return;
     }
+
+    if (!this._dataFetched) {
+      this._fetchData();
+    }
+
     const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
     const oldConfig = changedProps.get("_config") as
       | SensorCardConfig
       | undefined;
 
     if (
-      !oldHass ||
-      !oldConfig ||
-      oldHass.themes !== this.hass.themes ||
-      oldConfig.theme !== this._config.theme
+      (changedProps.has("hass") && oldHass?.themes !== this.hass.themes) ||
+      (changedProps.has("_config") && oldConfig?.theme !== this._config.theme)
     ) {
       applyThemesOnElement(this, this.hass.themes, this._config.theme);
     }
@@ -259,20 +262,28 @@ class HuiShoppingListCard extends LitElement implements LovelaceCard {
   }
 
   private async _fetchData(): Promise<void> {
-    if (this.hass) {
-      const checkedItems: ShoppingListItem[] = [];
-      const uncheckedItems: ShoppingListItem[] = [];
-      const items = await fetchItems(this.hass);
-      for (const key in items) {
-        if (items[key].complete) {
-          checkedItems.push(items[key]);
-        } else {
-          uncheckedItems.push(items[key]);
-        }
-      }
-      this._checkedItems = checkedItems;
-      this._uncheckedItems = uncheckedItems;
+    if (!this.hass) {
+      return;
     }
+    if (!this._unsubEvents) {
+      this._unsubEvents = this.hass.connection.subscribeEvents(
+        () => this._fetchData(),
+        "shopping_list_updated"
+      );
+    }
+    this._dataFetched = true;
+    const checkedItems: ShoppingListItem[] = [];
+    const uncheckedItems: ShoppingListItem[] = [];
+    const items = await fetchItems(this.hass);
+    for (const key in items) {
+      if (items[key].complete) {
+        checkedItems.push(items[key]);
+      } else {
+        uncheckedItems.push(items[key]);
+      }
+    }
+    this._checkedItems = checkedItems;
+    this._uncheckedItems = uncheckedItems;
   }
 
   private _completeItem(ev): void {
