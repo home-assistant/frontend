@@ -6,7 +6,7 @@ import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 import "../../components/ha-card";
 import LocalizeMixin from "../../mixins/localize-mixin";
-import "../../resources/ha-style";
+import "../../styles/polymer-ha-style";
 
 /*
  * @appliesMixin LocalizeMixin

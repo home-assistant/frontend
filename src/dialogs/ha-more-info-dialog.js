@@ -5,7 +5,7 @@ import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 import { computeStateDomain } from "../common/entity/compute_state_domain";
 import DialogMixin from "../mixins/dialog-mixin";
-import "../resources/ha-style";
+import "../styles/polymer-ha-style-dialog";
 import "./more-info/more-info-controls";
 
 /*

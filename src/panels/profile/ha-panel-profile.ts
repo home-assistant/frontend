@@ -22,7 +22,6 @@ import {
   getOptimisticFrontendUserDataCollection,
 } from "../../data/frontend";
 import { showConfirmationDialog } from "../../dialogs/generic/show-dialog-box";
-import "../../resources/ha-style";
 import { haStyle } from "../../resources/styles";
 import { HomeAssistant } from "../../types";
 import "./ha-advanced-mode-row";
