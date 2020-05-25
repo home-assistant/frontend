@@ -12,6 +12,7 @@ const manifest = require("./rollup-plugins/manifest-plugin");
 const worker = require("./rollup-plugins/worker-plugin");
 const dontHashPlugin = require("./rollup-plugins/dont-hash-plugin");
 const ignore = require("./rollup-plugins/ignore-plugin");
+const sourceMapSimplify = require("./rollup-plugins/source-map-simplify-plugin");
 
 const bundle = require("./bundle");
 const paths = require("./paths");
@@ -75,6 +76,7 @@ const createRollupConfig = ({
         worker(),
         dontHashPlugin({ dontHash }),
         isProdBuild && terser(bundle.terserOptions(latestBuild)),
+        isProdBuild && !isStatsBuild && sourceMapSimplify(),
         isStatsBuild &&
           visualizer({
             // https://github.com/btd/rollup-plugin-visualizer#options
