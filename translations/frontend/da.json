@@ -2307,6 +2307,8 @@
                 "abort_intro": "Login afbrudt",
                 "authorizing_client": "Du er ved at give {clientId} adgang til din Home Assistant-instans.",
                 "form": {
+                    "error": "Fejl: {error}",
+                    "next": "Næste",
                     "providers": {
                         "command_line": {
                             "abort": {
@@ -2392,6 +2394,7 @@
                             }
                         }
                     },
+                    "start_over": "Start forfra",
                     "unknown_error": "Noget gik galt",
                     "working": "Vent venligst"
                 },

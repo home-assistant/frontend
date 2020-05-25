@@ -1255,6 +1255,7 @@
                     "entities": {
                         "add_entities_lovelace": "Zu Lovelace hinzufügen",
                         "entities": "Entitäten",
+                        "hide_disabled": "Ausblenden deaktiviert",
                         "none": "Dieses Gerät hat keine Entitäten"
                     },
                     "name": "Name",
@@ -2305,6 +2306,8 @@
                 "abort_intro": "Anmeldung abgebrochen",
                 "authorizing_client": "Sie sind dabei, {clientId} Zugriff auf Ihre Home Assistant-Instanz zu gewähren.",
                 "form": {
+                    "error": "Fehler",
+                    "next": "Weiter",
                     "providers": {
                         "command_line": {
                             "abort": {
@@ -2390,6 +2393,7 @@
                             }
                         }
                     },
+                    "start_over": "Neu anfangen",
                     "unknown_error": "Etwas lief schief",
                     "working": "Bitte warten"
                 },
