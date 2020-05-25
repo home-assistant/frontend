@@ -7,7 +7,6 @@ export const computeCardSize = async (card: LovelaceCard): Promise<number> => {
   if (customElements.get(card.localName)) {
     return 1;
   }
-  return customElements.whenDefined(card.localName).then(() => {
-    return computeCardSize(card);
-  });
+  await customElements.whenDefined(card.localName);
+  return computeCardSize(card);
 };
