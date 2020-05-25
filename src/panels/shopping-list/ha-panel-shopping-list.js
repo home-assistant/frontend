@@ -17,6 +17,7 @@ import "../../components/ha-card";
 import "../../components/ha-menu-button";
 import { showVoiceCommandDialog } from "../../dialogs/voice-command-dialog/show-ha-voice-command-dialog";
 import LocalizeMixin from "../../mixins/localize-mixin";
+import "../../styles/polymer-ha-style";
 
 /*
  * @appliesMixin LocalizeMixin

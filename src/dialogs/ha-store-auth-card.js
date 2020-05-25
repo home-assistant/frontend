@@ -4,7 +4,7 @@ import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 import { enableWrite } from "../common/auth/token_storage";
 import LocalizeMixin from "../mixins/localize-mixin";
-import "../resources/ha-style";
+import "../styles/polymer-ha-style";
 
 class HaStoreAuth extends LocalizeMixin(PolymerElement) {
   static get template() {

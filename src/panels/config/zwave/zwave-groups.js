@@ -7,6 +7,7 @@ import { PolymerElement } from "@polymer/polymer/polymer-element";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import "../../../components/buttons/ha-call-service-button";
 import "../../../components/ha-card";
+import "../../../styles/polymer-ha-style";
 
 class ZwaveGroups extends PolymerElement {
   static get template() {
