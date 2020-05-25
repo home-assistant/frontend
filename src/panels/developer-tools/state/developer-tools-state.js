@@ -1,5 +1,4 @@
 import "@material/mwc-button";
-import "@material/mwc-icon-button";
 import "@polymer/paper-checkbox/paper-checkbox";
 import "@polymer/paper-input/paper-input";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
@@ -59,9 +58,10 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
         .entities td {
           padding: 4px;
         }
-        .entities mwc-icon-button {
-          --mdc-icon-button-size: 24px;
+        .entities ha-svg-icon {
           --mdc-icon-size: 20px;
+          padding: 4px;
+          cursor: pointer;
         }
         .entities td:nth-child(3) {
           white-space: pre-wrap;
@@ -153,12 +153,12 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
         <template is="dom-repeat" items="[[_entities]]" as="entity">
           <tr>
             <td>
-              <mwc-icon-button
+              <ha-svg-icon
                 on-click="entityMoreInfo"
                 alt="[[localize('ui.panel.developer-tools.tabs.states.more_info')]]"
                 title="[[localize('ui.panel.developer-tools.tabs.states.more_info')]]"
-                ><ha-svg-icon path="[[informationOutlineIcon()]]"></ha-svg-icon>
-              </mwc-icon-button>
+                path="[[informationOutlineIcon()]]"
+              ></ha-svg-icon>
               <a href="#" on-click="entitySelected">[[entity.entity_id]]</a>
             </td>
             <td>[[entity.state]]</td>
