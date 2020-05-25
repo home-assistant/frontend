@@ -781,6 +781,7 @@
               "type": {
                 "device": {
                   "label": "Device",
+                  "trigger": "Trigger",
                   "extra_fields": {
                     "above": "Above",
                     "below": "Below",
@@ -875,6 +876,7 @@
                 },
                 "device": {
                   "label": "Device",
+                  "condition": "Condition",
                   "extra_fields": {
                     "above": "Above",
                     "below": "Below",
@@ -957,6 +959,7 @@
                 },
                 "device_id": {
                   "label": "Device",
+                  "action": "Action",
                   "extra_fields": {
                     "code": "Code"
                   }
