@@ -56,14 +56,16 @@ function watchRollup(createConfig, extraWatchSrc = [], serveOptions) {
     ...inputOptions,
     output: [outputOptions],
     watch: {
-      include: ["src"] + extraWatchSrc,
+      include: ["src/**"] + extraWatchSrc,
     },
   });
 
   let startedHttp = false;
 
   watcher.on("event", (event) => {
-    if (event.code === "ERROR") {
+    if (event.code === "BUNDLE_END") {
+      log(`Build done @ ${new Date().toLocaleTimeString()}`);
+    } else if (event.code === "ERROR") {
       log.error(event.error);
     } else if (event.code === "END") {
       if (startedHttp || !serveOptions) {
@@ -90,18 +92,18 @@ gulp.task("rollup-watch-app", () => {
 });
 
 gulp.task("rollup-watch-hassio", () => {
-  watchRollup(rollupConfig.createHassioConfig, ["hassio/src"]);
+  watchRollup(rollupConfig.createHassioConfig, ["hassio/src/**"]);
 });
 
 gulp.task("rollup-dev-server-demo", () => {
-  watchRollup(rollupConfig.createDemoConfig, ["demo/src"], {
+  watchRollup(rollupConfig.createDemoConfig, ["demo/src/**"], {
     root: paths.demo_output_root,
     port: 8090,
   });
 });
 
 gulp.task("rollup-dev-server-cast", () => {
-  watchRollup(rollupConfig.createCastConfig, ["cast/src"], {
+  watchRollup(rollupConfig.createCastConfig, ["cast/src/**"], {
     root: paths.cast_output_root,
     port: 8080,
     networkAccess: true,
@@ -109,7 +111,7 @@ gulp.task("rollup-dev-server-cast", () => {
 });
 
 gulp.task("rollup-dev-server-gallery", () => {
-  watchRollup(rollupConfig.createGalleryConfig, ["gallery/src"], {
+  watchRollup(rollupConfig.createGalleryConfig, ["gallery/src/**"], {
     root: paths.gallery_output_root,
     port: 8100,
   });
