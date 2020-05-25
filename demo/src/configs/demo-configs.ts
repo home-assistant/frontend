@@ -33,6 +33,7 @@ export const setDemoConfig = async (
   lovelace: Lovelace,
   index: number
 ) => {
+  throw new Error("BAH");
   const confProm = demoConfigs[index]();
   const config = await confProm;
 
