@@ -145,6 +145,11 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
         }
       });
 
+      // If they reconnect during startup we need to reload
+      // when startup is completed
+      conn.subscribeEvents(() => {
+        location.reload();
+      }, "homeassistant_start");
       subscribeEntities(conn, (states) => this._updateHass({ states }));
       subscribeConfig(conn, (config) => this._updateHass({ config }));
       subscribeServices(conn, (services) => this._updateHass({ services }));
