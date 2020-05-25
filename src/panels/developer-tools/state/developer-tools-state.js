@@ -280,7 +280,7 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
   }
 
   computeEntities(hass, _entityFilter, _stateFilter, _attributeFilter) {
-    Object.keys(hass.states)
+    return Object.keys(hass.states)
       .map(function (key) {
         return hass.states[key];
       })
