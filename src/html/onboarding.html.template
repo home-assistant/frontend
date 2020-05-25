@@ -63,12 +63,9 @@
           _ls("/static/polyfills/custom-elements-es5-adapter.js");
           <% if (useRollup) { %>
             _ls("/static/js/s.min.js").onload = function() {
-              System.import("<%= es5Compatibility %>").then(function() {
-                System.import("<%= es5PageJS %>");
-              });
+              System.import("<%= es5PageJS %>");
             }
           <% } else { %>
-            _ls("<%= es5Compatibility %>");
             _ls("<%= es5PageJS %>");
           <% } %>
         }

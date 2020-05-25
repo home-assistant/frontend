@@ -20,7 +20,10 @@ module.exports.emptyPackages = ({ latestBuild }) =>
     // Loads stuff from a CDN
     require.resolve("@polymer/font-roboto/roboto.js"),
     require.resolve("@vaadin/vaadin-material-styles/font-roboto.js"),
-    // Polyfill only needed for ES5 workers so filter out in latestBuild
+    // Compatibility not needed for latest builds
+    latestBuild &&
+      path.resolve(paths.polymer_dir, "src/entrypoints/compatibility.ts"),
+    // This polyfill is loaded in workers to support ES5, filter it out.
     latestBuild && require.resolve("proxy-polyfill/src/index.js"),
   ].filter(Boolean);
 
@@ -112,7 +115,6 @@ module.exports.config = {
         authorize: "./src/entrypoints/authorize.ts",
         onboarding: "./src/entrypoints/onboarding.ts",
         core: "./src/entrypoints/core.ts",
-        compatibility: "./src/entrypoints/compatibility.ts",
         "custom-panel": "./src/entrypoints/custom-panel.ts",
       },
       outputPath: outputPath(paths.app_output_root, latestBuild),
@@ -127,10 +129,6 @@ module.exports.config = {
     return {
       entry: {
         main: path.resolve(paths.demo_dir, "src/entrypoint.ts"),
-        compatibility: path.resolve(
-          paths.polymer_dir,
-          "src/entrypoints/compatibility.ts"
-        ),
       },
       outputPath: outputPath(paths.demo_output_root, latestBuild),
       publicPath: publicPath(latestBuild),
