@@ -47,15 +47,6 @@ class HuiMediaPlayerEntityRow extends LitElement implements LovelaceRow {
 
   private _resizeObserver?: ResizeObserver;
 
-  private _debouncedResizeListener = debounce(
-    () => {
-      this._narrow = (this.clientWidth || 0) < 300;
-      this._veryNarrow = (this.clientWidth || 0) < 225;
-    },
-    250,
-    true
-  );
-
   public setConfig(config: EntityConfig): void {
     if (!config || !config.entity) {
       throw new Error("Invalid Configuration: 'entity' required");
@@ -66,9 +57,7 @@ class HuiMediaPlayerEntityRow extends LitElement implements LovelaceRow {
 
   public connectedCallback(): void {
     super.connectedCallback();
-    if (!this._resizeObserver) {
-      this._attachObserver();
-    }
+    this._attachObserver();
   }
 
   public disconnectedCallback(): void {
@@ -214,12 +203,24 @@ class HuiMediaPlayerEntityRow extends LitElement implements LovelaceRow {
     `;
   }
 
-  private _attachObserver(): void {
-    installResizeObserver().then(() => {
-      this._resizeObserver = new ResizeObserver(this._debouncedResizeListener);
-
-      this._resizeObserver.observe(this);
-    });
+  private async _attachObserver(): Promise<void> {
+    if (!this._resizeObserver) {
+      await installResizeObserver();
+      this._resizeObserver = new ResizeObserver(
+        debounce(
+          () => {
+            if (!this.isConnected) {
+              return;
+            }
+            this._narrow = (this.clientWidth || 0) < 300;
+            this._veryNarrow = (this.clientWidth || 0) < 225;
+          },
+          250,
+          false
+        )
+      );
+    }
+    this._resizeObserver.observe(this);
   }
 
   private _computeControlIcon(stateObj: HassEntity): string {

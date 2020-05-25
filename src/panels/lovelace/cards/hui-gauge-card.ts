@@ -236,10 +236,12 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
   }
 
   private async _attachObserver(): Promise<void> {
-    await installResizeObserver();
-
-    this._resizeObserver = new ResizeObserver(this._debouncedMeasure);
-
+    if (!this._resizeObserver) {
+      await installResizeObserver();
+      this._resizeObserver = new ResizeObserver(
+        debounce(() => this._measureCard(), 250, false)
+      );
+    }
     const card = this.shadowRoot!.querySelector("ha-card");
     // If we show an error or warning there is no ha-card
     if (!card) {
@@ -247,8 +249,6 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
     }
     this._resizeObserver.observe(card);
   }
-
-  private _debouncedMeasure = debounce(() => this._measureCard(), 250, true);
 
   private _measureCard() {
     if (!this.isConnected) {
