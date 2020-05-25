@@ -61,7 +61,7 @@ export class HaDeviceAction extends LitElement {
         @value-changed=${this._deviceActionPicked}
         .hass=${this.hass}
         label=${this.hass.localize(
-          "ui.panel.config.automation.editor.actions.name"
+          "ui.panel.config.automation.editor.actions.type.device_id.action"
         )}
       ></ha-device-action-picker>
       ${extraFieldsData

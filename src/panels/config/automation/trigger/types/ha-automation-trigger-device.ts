@@ -55,7 +55,7 @@ export class HaDeviceTrigger extends LitElement {
         @value-changed=${this._deviceTriggerPicked}
         .hass=${this.hass}
         label=${this.hass.localize(
-          "ui.panel.config.automation.editor.triggers.name"
+          "ui.panel.config.automation.editor.triggers.type.device.trigger"
         )}
       ></ha-device-trigger-picker>
       ${extraFieldsData
