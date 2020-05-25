@@ -1,7 +1,5 @@
 const path = require("path");
 
-const suffix = "?ignore";
-
 module.exports = function (userOptions = {}) {
   // Files need to be absolute paths.
   // This only works if the file has no exports
