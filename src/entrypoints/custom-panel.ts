@@ -21,7 +21,7 @@ window.loadES5Adapter = () => {
       loadJS(
         `${__STATIC_PATH__}polyfills/custom-elements-es5-adapter.js`
       ).catch(),
-      import(/* webpackChunkName: "compat" */ "./compatibility"),
+      import(/* webpackChunkName: "compat" */ "../resources/compatibility"),
     ]);
   }
   return es5Loaded;
