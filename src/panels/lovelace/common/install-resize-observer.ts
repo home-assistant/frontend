@@ -1,6 +1,5 @@
 export const installResizeObserver = async () => {
   if (typeof ResizeObserver !== "function") {
-    const modules = await import("resize-observer");
-    modules.install();
+    window.ResizeObserver = (await import("resize-observer-polyfill")).default;
   }
 };
