@@ -81,14 +81,11 @@
 
           <% if (useRollup) { %>
             _ls("/static/js/s.min.js").onload = function() {
-              System.import("<%= es5Compatibility %>").then(function() {
-                return System.import("<%= es5CoreJS %>");
-              }).then(function() {
+              return System.import("<%= es5CoreJS %>").then(function() {
                 System.import("<%= es5AppJS %>");
               });
             }
           <% } else { %>
-            _ls("<%= es5Compatibility %>");
             _ls("<%= es5CoreJS %>");
             _ls("<%= es5AppJS %>");
           <% } %>
