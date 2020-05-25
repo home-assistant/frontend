@@ -103,23 +103,23 @@ export const DEVICE_CLASSES = [
 
 export interface TemplateBinarySensor {
   id: string;
-  name: string;
-  icon?: string;
+  friendly_name: string;
+  icon_template?: string;
   device_class?: string;
-  value?: string;
-  availability?: string;
-  entity_picture?: string;
+  value_template?: string;
+  availability_template?: string;
+  entity_picture_template?: string;
   delay_on?: string;
   delay_off?: string;
 }
 
 export interface TemplateBinarySensorMutableParams {
-  name: string;
-  icon?: string;
+  friendly_name: string;
+  icon_template?: string;
   device_class?: string;
-  value?: string;
-  availability?: string;
-  entity_picture?: string;
+  value_template?: string;
+  availability_template?: string;
+  entity_picture_template?: string;
   delay_on?: string;
   delay_off?: string;
 }

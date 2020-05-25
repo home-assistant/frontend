@@ -386,12 +386,14 @@
         "generic": {
           "name": "Name",
           "icon": "Icon",
+          "icon_template": "Icon (Template)",
           "value": "Value",
+          "value_template": "Value (Template)",
           "device_class": "Device Class"
         },
         "binary_sensor": {
-          "availability": "Availability",
-          "entity_picture": "Entity Picture",
+          "availability_template": "Availability (Template)",
+          "entity_picture_template": "Entity Picture (Template)",
           "delay_on": "Delay On",
           "delay_off": "Delay Off",
           "device_class": {

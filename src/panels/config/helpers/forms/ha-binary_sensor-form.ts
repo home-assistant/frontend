@@ -34,17 +34,17 @@ class HaBinarySensorForm extends LitElement {
 
   private _item?: TemplateBinarySensor;
 
-  @property() private _name!: string;
+  @property() private _friendly_name!: string;
 
-  @property() private _icon!: string;
+  @property() private _icon_template!: string;
 
   @property() private _device_class?: string;
 
-  @property() private _value?: string;
+  @property() private _value_template?: string;
 
-  @property() private _availability?: string;
+  @property() private _availability_template?: string;
 
-  @property() private _entity_picture?: string;
+  @property() private _entity_picture_template?: string;
 
   @property() private _delay_on?: string;
 
@@ -53,21 +53,21 @@ class HaBinarySensorForm extends LitElement {
   set item(item: TemplateBinarySensor) {
     this._item = item;
     if (item) {
-      this._name = item.name || "";
-      this._icon = item.icon || "";
+      this._friendly_name = item.friendly_name || "";
+      this._icon_template = item.icon_template || "";
       this._device_class = item.device_class || "";
-      this._value = item.value || "";
-      this._availability = item.availability || "";
-      this._entity_picture = item.entity_picture || "";
+      this._value_template = item.value_template || "";
+      this._availability_template = item.availability_template || "";
+      this._entity_picture_template = item.entity_picture_template || "";
       this._delay_on = item.delay_on || "";
       this._delay_off = item.delay_off || "";
     } else {
-      this._name = "";
-      this._icon = "";
+      this._friendly_name = "";
+      this._icon_template = "";
       this._device_class = "";
-      this._value = "";
-      this._availability = "";
-      this._entity_picture = "";
+      this._value_template = "";
+      this._availability_template = "";
+      this._entity_picture_template = "";
       this._delay_on = "";
       this._delay_off = "";
     }
@@ -90,14 +90,16 @@ class HaBinarySensorForm extends LitElement {
       ? DEVICE_CLASSES.indexOf(this._device_class)
       : -1;
 
-    const nameInvalid = !this._name || this._name.trim() === "";
-    const valueInvalid = !this._value || this._value.trim() === "";
+    const nameInvalid =
+      !this._friendly_name || this._friendly_name.trim() === "";
+    const valueInvalid =
+      !this._value_template || this._value_template.trim() === "";
 
     return html`
       <div class="form">
         <paper-input
-          .value=${this._name}
-          .configValue=${"name"}
+          .value=${this._friendly_name}
+          .configValue=${"friendly_name"}
           @value-changed=${this._valueChanged}
           .label=${this.hass!.localize(
             "ui.dialogs.helper_settings.generic.name"
@@ -109,19 +111,19 @@ class HaBinarySensorForm extends LitElement {
           dialogInitialFocus
         ></paper-input>
         <ha-icon-input
-          .value=${this._icon}
-          .configValue=${"icon"}
+          .value=${this._icon_template}
+          .configValue=${"icon_template"}
           @value-changed=${this._valueChanged}
           .label=${this.hass!.localize(
-            "ui.dialogs.helper_settings.generic.icon"
+            "ui.dialogs.helper_settings.generic.icon_template"
           )}
         ></ha-icon-input>
         <paper-textarea
-          .value=${this._value}
-          .configValue=${"value"}
+          .value=${this._value_template}
+          .configValue=${"value_template"}
           @value-changed=${this._valueChanged}
           .label=${this.hass!.localize(
-            "ui.dialogs.helper_settings.generic.value"
+            "ui.dialogs.helper_settings.generic.value_template"
           )}
           .errorMessage="${this.hass!.localize(
             "ui.dialogs.helper_settings.required_error_msg"
@@ -153,19 +155,19 @@ class HaBinarySensorForm extends LitElement {
         ${this.hass.userData?.showAdvanced
           ? html`
               <paper-input
-                .value=${this._availability}
-                .configValue=${"availability"}
+                .value=${this._availability_template}
+                .configValue=${"availability_template"}
                 @value-changed=${this._valueChanged}
                 .label=${this.hass!.localize(
-                  "ui.dialogs.helper_settings.binary_sensor.availability"
+                  "ui.dialogs.helper_settings.binary_sensor.availability_template"
                 )}
               ></paper-input>
               <paper-input
-                .value=${this._entity_picture}
-                .configValue=${"entity_picture"}
+                .value=${this._entity_picture_template}
+                .configValue=${"entity_picture_template"}
                 @value-changed=${this._valueChanged}
                 .label=${this.hass!.localize(
-                  "ui.dialogs.helper_settings.binary_sensor.entity_picture"
+                  "ui.dialogs.helper_settings.binary_sensor.entity_picture_template"
                 )}
               ></paper-input>
               <paper-input
