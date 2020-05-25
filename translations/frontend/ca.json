@@ -751,7 +751,7 @@
                     "link_profile_page": "la teva pàgina de perfil"
                 },
                 "areas": {
-                    "caption": "Registre d'àrees",
+                    "caption": "Àrees",
                     "data_table": {
                         "area": "Àrea",
                         "devices": "Dispositius"
@@ -769,7 +769,7 @@
                     },
                     "picker": {
                         "create_area": "Crea àrea",
-                        "header": "Registre d'àrees",
+                        "header": "Àrees",
                         "integrations_page": "Pàgina d'integracions",
                         "introduction": "Les àrees s'utilitzen per organitzar la situació dels dispositius. Aquesta informació serà utilitzada per Home Assistant per ajudar-te a organitzar millor la teva interfície, els permisos i les integracions amb d'altres sistemes.",
                         "introduction2": "Per col·locar dispositius en una àrea, utilitza l'enllaç de sota per anar a la pàgina d'integracions i, a continuació, fes clic a una integració configurada per accedir a les targetes del dispositiu.",
@@ -831,7 +831,7 @@
                             "delete_confirm": "Segur que vols eliminar-ho?",
                             "duplicate": "Duplica",
                             "header": "Condicions",
-                            "introduction": "Les condicions són part opcional d'una automatització i es poden utilitzar per permetre o evitar que es produeixi una acció quan es dispari l'automatització. Les condicions són similars als activadors però funcionen de forma diferent: un activador analitza els esdeveniments que ocorren en el sistema mentre que una condició només observa com està el sistema en un moment determinat, per exemple, un activador se n'adonarà de quan s'està activant un interruptor mentre que una condició només pot veure si un interruptor està activat o desactivat.",
+                            "introduction": "Les condicions són opcionals i impedeixen que continui l'execució mentre totes elles no es satisfacin.",
                             "learn_more": "Més informació sobre les condicions",
                             "name": "Condició",
                             "type_select": "Tipus de condició",
@@ -1210,7 +1210,7 @@
                     "different_include": "Possiblement a través d'un domini o una altra inclusió diferent.",
                     "pick_attribute": "Selecciona un atribut per substituir-lo",
                     "picker": {
-                        "header": "Personalització",
+                        "header": "Personalitzacions",
                         "introduction": "Personalitza els atributs de les entitats al teu gust. Les personalitzacions afegides/modificades apareixeran immediatament, les que s'hagin eliminat tindran efecte quan l'entitat s'actualitzi."
                     },
                     "warning": {
@@ -1278,7 +1278,7 @@
                     "update": "Actualitza"
                 },
                 "entities": {
-                    "caption": "Registre d'entitats",
+                    "caption": "Entitats",
                     "description": "Visió general de totes les entitats conegudes.",
                     "picker": {
                         "disable_selected": {
@@ -2182,10 +2182,10 @@
                         "delete": "Elimina",
                         "duplicate": "Duplica targeta",
                         "edit": "Editar",
-                        "header": "(configuració de la targeta)",
+                        "header": "Configuració de la targeta",
                         "move": "Moure a la Vista",
                         "options": "Més opcions",
-                        "pick_card": "Tria una targeta que vulguis afegir.",
+                        "pick_card": "Quina targeta vols afegir?",
                         "pick_card_view_title": "Quina targeta vols afegir a la visualització {name}?",
                         "show_code_editor": "Mostra l'editor de codi",
                         "show_visual_editor": "Mostra l'editor visual",
