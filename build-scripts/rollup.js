@@ -96,9 +96,12 @@ const createRollupConfig = ({
       // https://rollupjs.org/guide/en/#outputentryfilenames
       // https://rollupjs.org/guide/en/#outputchunkfilenames
       // https://rollupjs.org/guide/en/#outputassetfilenames
-      entryFileNames: isProdBuild ? "[name]-[hash].js" : "[name].js",
-      chunkFileNames: isProdBuild ? "c.[hash].js" : "[name].js",
-      assetFileNames: isProdBuild ? "a.[hash].js" : "[name].js",
+      entryFileNames:
+        isProdBuild && !isStatsBuild ? "[name]-[hash].js" : "[name].js",
+      chunkFileNames:
+        isProdBuild && !isStatsBuild ? "c.[hash].js" : "[name].js",
+      assetFileNames:
+        isProdBuild && !isStatsBuild ? "a.[hash].js" : "[name].js",
       // https://rollupjs.org/guide/en/#outputsourcemap
       sourcemap: isProdBuild ? true : "inline",
     },
