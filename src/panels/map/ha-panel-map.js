@@ -11,6 +11,7 @@ import "../../components/ha-menu-button";
 import { defaultRadiusColor } from "../../data/zone";
 import LocalizeMixin from "../../mixins/localize-mixin";
 import "./ha-entity-marker";
+import "../../styles/polymer-ha-style";
 
 /*
  * @appliesMixin LocalizeMixin

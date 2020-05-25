@@ -9,7 +9,7 @@ import "../../../components/ha-service-picker";
 import { ENTITY_COMPONENT_DOMAINS } from "../../../data/entity";
 import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
 import LocalizeMixin from "../../../mixins/localize-mixin";
-import "../../../resources/ha-style";
+import "../../../styles/polymer-ha-style";
 import "../../../util/app-localstorage-document";
 
 const ERROR_SENTINEL = {};

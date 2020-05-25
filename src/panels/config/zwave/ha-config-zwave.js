@@ -19,7 +19,7 @@ import "../../../components/ha-service-description";
 import "../../../layouts/ha-app-layout";
 import { EventsMixin } from "../../../mixins/events-mixin";
 import LocalizeMixin from "../../../mixins/localize-mixin";
-import "../../../resources/ha-style";
+import "../../../styles/polymer-ha-style";
 import "../ha-config-section";
 import "../ha-form-style";
 import "./zwave-groups";

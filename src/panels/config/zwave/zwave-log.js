@@ -9,6 +9,7 @@ import "../../../components/ha-card";
 import { EventsMixin } from "../../../mixins/events-mixin";
 import LocalizeMixin from "../../../mixins/localize-mixin";
 import "../ha-config-section";
+import "../../../styles/polymer-ha-style";
 
 let registeredDialog = false;
 

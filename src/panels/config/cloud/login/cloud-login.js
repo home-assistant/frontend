@@ -14,7 +14,7 @@ import "../../../../layouts/hass-subpage";
 import { EventsMixin } from "../../../../mixins/events-mixin";
 import LocalizeMixin from "../../../../mixins/localize-mixin";
 import NavigateMixin from "../../../../mixins/navigate-mixin";
-import "../../../../resources/ha-style";
+import "../../../../styles/polymer-ha-style";
 import "../../ha-config-section";
 
 /*

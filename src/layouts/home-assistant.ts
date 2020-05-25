@@ -3,7 +3,6 @@ import { html, property, PropertyValues } from "lit-element";
 import { navigate } from "../common/navigate";
 import { getStorageDefaultPanelUrlPath } from "../data/panel";
 import "../resources/custom-card-support";
-import "../resources/ha-style";
 import { HassElement } from "../state/hass-element";
 import { HomeAssistant, Route } from "../types";
 import {

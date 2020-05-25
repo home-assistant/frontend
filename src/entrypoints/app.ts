@@ -1,10 +1,8 @@
-// Load polyfill first so HTML imports start resolving
-/* eslint-disable import/first */
-import "@polymer/paper-styles/typography";
 import { setPassiveTouchGestures } from "@polymer/polymer/lib/utils/settings";
+import "../resources/roboto";
+import "../resources/ha-style";
 import "../layouts/home-assistant";
 import "../resources/html-import/polyfill";
-import "../resources/roboto";
 import "../util/legacy-support";
 
 setPassiveTouchGestures(true);
