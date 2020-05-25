@@ -115,6 +115,7 @@ module.exports = function (opts = {}) {
         if (resolvedWorkerFile in refIds) {
           chunkRefId = refIds[resolvedWorkerFile];
         } else {
+          this.addWatchFile(resolvedWorkerFile);
           const source = await getBundledWorker(
             resolvedWorkerFile,
             rollupOptions
