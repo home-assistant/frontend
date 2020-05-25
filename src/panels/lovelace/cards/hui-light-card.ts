@@ -66,7 +66,7 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
   private _brightnessTimout?: number;
 
   public getCardSize(): number {
-    return 2;
+    return 4;
   }
 
   public setConfig(config: LightCardConfig): void {
