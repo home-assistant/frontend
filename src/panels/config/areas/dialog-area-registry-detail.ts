@@ -70,8 +70,8 @@ class DialogAreaDetail extends LitElement {
             <paper-input
               .value=${this._name}
               @value-changed=${this._nameChanged}
-              label=${this.hass.localize("ui.panel.config.areas.editor.name")}
-              error-message=${this.hass.localize(
+              .label=${this.hass.localize("ui.panel.config.areas.editor.name")}
+              .errorMessage=${this.hass.localize(
                 "ui.panel.config.areas.editor.name_required"
               )}
               .invalid=${nameInvalid}
