@@ -12,7 +12,6 @@ import {
   HassioSupervisorInfo,
 } from "../../src/data/hassio/supervisor";
 import type { PageNavigation } from "../../src/layouts/hass-tabs-subpage";
-import "../../src/resources/ha-style";
 import { HomeAssistant, Route } from "../../src/types";
 import "./hassio-panel-router";
 

@@ -12,7 +12,7 @@ import "../../../components/ha-code-editor";
 import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
 import { EventsMixin } from "../../../mixins/events-mixin";
 import LocalizeMixin from "../../../mixins/localize-mixin";
-import "../../../resources/ha-style";
+import "../../../styles/polymer-ha-style";
 import { mdiInformationOutline } from "@mdi/js";
 
 const ERROR_SENTINEL = {};

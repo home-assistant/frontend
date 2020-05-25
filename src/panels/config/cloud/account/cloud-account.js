@@ -10,7 +10,7 @@ import { fetchCloudSubscriptionInfo } from "../../../../data/cloud";
 import "../../../../layouts/hass-subpage";
 import { EventsMixin } from "../../../../mixins/events-mixin";
 import LocalizeMixin from "../../../../mixins/localize-mixin";
-import "../../../../resources/ha-style";
+import "../../../../styles/polymer-ha-style";
 import "../../ha-config-section";
 import "./cloud-alexa-pref";
 import "./cloud-google-pref";
