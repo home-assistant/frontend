@@ -65,6 +65,7 @@ class HuiMediaPlayerEntityRow extends LitElement implements LovelaceRow {
   }
 
   protected firstUpdated(): void {
+    this._measureCard();
     this._attachObserver();
   }
 
@@ -207,20 +208,18 @@ class HuiMediaPlayerEntityRow extends LitElement implements LovelaceRow {
     if (!this._resizeObserver) {
       await installResizeObserver();
       this._resizeObserver = new ResizeObserver(
-        debounce(
-          () => {
-            if (!this.isConnected) {
-              return;
-            }
-            this._narrow = (this.clientWidth || 0) < 300;
-            this._veryNarrow = (this.clientWidth || 0) < 225;
-          },
-          250,
-          false
-        )
+        debounce(() => this._measureCard(), 250, false)
       );
     }
     this._resizeObserver.observe(this);
+  }
+
+  private _measureCard() {
+    if (!this.isConnected) {
+      return;
+    }
+    this._narrow = (this.clientWidth || 0) < 300;
+    this._veryNarrow = (this.clientWidth || 0) < 225;
   }
 
   private _computeControlIcon(stateObj: HassEntity): string {
