@@ -474,6 +474,7 @@
         },
         "common": {
             "and": "and",
+            "back": "Back",
             "cancel": "Cancel",
             "close": "Close",
             "delete": "Delete",
@@ -505,6 +506,7 @@
             "device-picker": {
                 "clear": "Clear",
                 "device": "Device",
+                "no_area": "No area",
                 "show_devices": "Show devices",
                 "toggle": "Toggle"
             },
@@ -762,9 +764,13 @@
                     },
                     "description": "Overview of all areas in your home.",
                     "editor": {
+                        "area_id": "Area ID",
                         "create": "Create",
                         "default_name": "New Area",
                         "delete": "Delete",
+                        "name": "Name",
+                        "name_required": "Name is required",
+                        "unknown_error": "Unknown error",
                         "update": "Update"
                     },
                     "picker": {
@@ -799,6 +805,7 @@
                                     "label": "Delay"
                                 },
                                 "device_id": {
+                                    "action": "Action",
                                     "extra_fields": {
                                         "code": "Code"
                                     },
@@ -840,6 +847,7 @@
                                     "label": "And"
                                 },
                                 "device": {
+                                    "condition": "Condition",
                                     "extra_fields": {
                                         "above": "Above",
                                         "below": "Below",
@@ -918,7 +926,8 @@
                                         "below": "Below",
                                         "for": "Duration"
                                     },
-                                    "label": "Device"
+                                    "label": "Device",
+                                    "trigger": "Trigger"
                                 },
                                 "event": {
                                     "event_data": "Event data",
@@ -1246,6 +1255,7 @@
                         "integration": "Integration",
                         "manufacturer": "Manufacturer",
                         "model": "Model",
+                        "no_area": "No area",
                         "no_devices": "No devices"
                     },
                     "delete": "Delete",

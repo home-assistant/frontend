@@ -363,6 +363,12 @@
                 "target_humidity": "Țintă umiditate",
                 "target_temperature": "Temperatura țintă"
             },
+            "counter": {
+                "actions": {
+                    "decrement": "decrementare",
+                    "increment": "incrementare"
+                }
+            },
             "cover": {
                 "position": "Poziţie",
                 "tilt_position": "Poziție de înclinare"
@@ -553,6 +559,7 @@
                     "enabled_label": "Activează entitatea",
                     "entity_id": "ID-ul entității",
                     "icon": "Înlocuire pictogramă",
+                    "icon_error": "Pictogramele trebuie să fie în formatul \"prefix:iconname\", de ex. \"mdi:home\"",
                     "name": "Suprascriere nume",
                     "note": "Notă: este posibil să nu funcționeze încă cu toate integrările.",
                     "unavailable": "Această entitate nu este disponibilă momentan.",
@@ -772,6 +779,9 @@
                                     "label": "Întârziere"
                                 },
                                 "device_id": {
+                                    "extra_fields": {
+                                        "code": "Cod"
+                                    },
                                     "label": "Dispozitiv"
                                 },
                                 "event": {
@@ -1137,6 +1147,7 @@
                     "description": "Elemente care pot ajuta la construirea automatizărilor.",
                     "dialog": {
                         "add_helper": "Adaugă ajutor",
+                        "add_platform": "Adăugare {platformă}",
                         "create": "Creează"
                     },
                     "picker": {
@@ -1319,6 +1330,7 @@
                         "entities": {
                             "add": "Adăugați o entitate",
                             "delete": "Ștergeți entitatea",
+                            "device_entities": "Dacă adăugați o entitate care aparține unui dispozitiv, dispozitivul va fi adăugat.",
                             "header": "Entități",
                             "introduction": "Entitățile care nu aparțin unui dispozitiv pot fi setate aici.",
                             "without_device": "Entități fără dispozitiv"
@@ -1578,18 +1590,24 @@
                     "events": {
                         "alert_event_type": "Tipul de eveniment este un câmp obligatoriu",
                         "available_events": "Evenimente disponibile",
+                        "data": "Date eveniment (YAML, opțional)",
                         "documentation": "Documentarea evenimentelor.",
+                        "event_fired": "Evenimentul {name} declanșat",
                         "fire_event": "Declansare eveniment",
+                        "listen_to_events": "Ascultă evenimente",
                         "listening_to": "Ascultand",
+                        "notification_event_fired": "Eveniment {tip} reușit!",
                         "start_listening": "Incepe sa asculti",
                         "stop_listening": "Nu mai asculta",
                         "subscribe_to": "Eveniment la care să vă abonați",
-                        "title": "Evenimente"
+                        "title": "Evenimente",
+                        "type": "Tip eveniment"
                     },
                     "info": {
                         "built_using": "Construit folosind",
                         "documentation": "Documentație",
                         "frontend": "front-end-ui",
+                        "home_assistant_logo": "Logo-ul Home Assistant",
                         "icons_by": "Icoane ca",
                         "integrations": "Integrări",
                         "issues": "Probleme",
@@ -1600,6 +1618,10 @@
                     },
                     "logs": {
                         "clear": "Şterge",
+                        "details": "Detalii jurnal ({level})",
+                        "load_full_log": "Încărcare jurnal complet Home Assistant",
+                        "loading_log": "Se încarcă jurnalul de erori...",
+                        "no_errors": "Nu au fost raportate erori.",
                         "refresh": "Reîmprospătare",
                         "title": "Jurnale"
                     },
@@ -1854,6 +1876,8 @@
                     },
                     "view": {
                         "panel_mode": {
+                            "description": "Aceasta redă primul card la lățime completă; alte carduri din această vizualizare nu vor fi redate.",
+                            "title": "Mod Panou?",
                             "warning_multiple_cards": "Această vizualizare conține mai multe carduri, dar un panel view poate afișa doar 1 card"
                         }
                     }
