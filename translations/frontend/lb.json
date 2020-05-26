@@ -1255,6 +1255,7 @@
                     "entities": {
                         "add_entities_lovelace": "Zu Lovelace bäisetzen",
                         "entities": "Entitéiten",
+                        "hide_disabled": "Deaktivéiert net uweisen",
                         "none": "Dësen Appart huet keng Entitéiten."
                     },
                     "name": "Numm",
@@ -1876,7 +1877,7 @@
                         "type": "Typ vun Evenement"
                     },
                     "info": {
-                        "built_using": "Gebaut mat",
+                        "built_using": "Erstallt mat",
                         "custom_uis": "Personaliséierte Benotzer Interface:",
                         "developed_by": "Entwéckelt vun enger ganzer Rei fantastesche Leit.",
                         "documentation": "Dokumentatioun",
@@ -2305,6 +2306,8 @@
                 "abort_intro": "Login ofgebrach",
                 "authorizing_client": "Dir gitt elo {clientId} Zougang zu ärem Home Assistant.",
                 "form": {
+                    "error": "Feeler: {error}",
+                    "next": "Nächst",
                     "providers": {
                         "command_line": {
                             "abort": {
@@ -2390,6 +2393,7 @@
                             }
                         }
                     },
+                    "start_over": "Nei ufänken",
                     "unknown_error": "Eppes ass schifgaange",
                     "working": "W.e.g. waarden"
                 },
