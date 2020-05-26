@@ -41,7 +41,7 @@ export class HuiMarkdownCard extends LitElement implements LovelaceCard {
 
   @property() private _content = "";
 
-  @property() private _unsubRenderTemplate?: UnsubscribeFunc;
+  @property() private _unsubRenderTemplate?: Promise<UnsubscribeFunc>;
 
   public getCardSize(): number {
     return this._config === undefined
@@ -122,7 +122,7 @@ export class HuiMarkdownCard extends LitElement implements LovelaceCard {
     }
 
     try {
-      this._unsubRenderTemplate = await subscribeRenderTemplate(
+      this._unsubRenderTemplate = subscribeRenderTemplate(
         this.hass.connection,
         (result) => {
           this._content = result;
@@ -148,7 +148,8 @@ export class HuiMarkdownCard extends LitElement implements LovelaceCard {
     }
 
     try {
-      this._unsubRenderTemplate();
+      const unsub = await this._unsubRenderTemplate;
+      unsub();
       this._unsubRenderTemplate = undefined;
     } catch (e) {
       if (e.code === "not_found") {
