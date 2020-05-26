@@ -25,9 +25,12 @@ import {
 import { HomeAssistant } from "../../../types";
 import { LovelaceCard, LovelaceCardEditor } from "../types";
 import { SensorCardConfig, ShoppingListCardConfig } from "./types";
+import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
+import { UnsubscribeFunc } from "home-assistant-js-websocket";
 
 @customElement("hui-shopping-list-card")
-class HuiShoppingListCard extends LitElement implements LovelaceCard {
+class HuiShoppingListCard extends SubscribeMixin(LitElement)
+  implements LovelaceCard {
   public static async getConfigElement(): Promise<LovelaceCardEditor> {
     await import(
       /* webpackChunkName: "hui-shopping-list-editor" */ "../editor/config-elements/hui-shopping-list-editor"
@@ -47,8 +50,6 @@ class HuiShoppingListCard extends LitElement implements LovelaceCard {
 
   @property() private _checkedItems?: ShoppingListItem[];
 
-  private _unsubEvents?: Promise<() => Promise<void>>;
-
   public getCardSize(): number {
     return (this._config ? (this._config.title ? 1 : 0) : 0) + 3;
   }
@@ -57,27 +58,16 @@ class HuiShoppingListCard extends LitElement implements LovelaceCard {
     this._config = config;
     this._uncheckedItems = [];
     this._checkedItems = [];
-    this._fetchData();
   }
 
-  public connectedCallback(): void {
-    super.connectedCallback();
-
-    if (this.hass) {
-      this._unsubEvents = this.hass.connection.subscribeEvents(
+  public hassSubscribe(): Promise<UnsubscribeFunc>[] {
+    this._fetchData();
+    return [
+      this.hass!.connection.subscribeEvents(
         () => this._fetchData(),
         "shopping_list_updated"
-      );
-      this._fetchData();
-    }
-  }
-
-  public disconnectedCallback(): void {
-    super.disconnectedCallback();
-
-    if (this._unsubEvents) {
-      this._unsubEvents.then((unsub) => unsub());
-    }
+      ),
+    ];
   }
 
   protected updated(changedProps: PropertyValues): void {
@@ -85,16 +75,15 @@ class HuiShoppingListCard extends LitElement implements LovelaceCard {
     if (!this._config || !this.hass) {
       return;
     }
+
     const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
     const oldConfig = changedProps.get("_config") as
       | SensorCardConfig
       | undefined;
 
     if (
-      !oldHass ||
-      !oldConfig ||
-      oldHass.themes !== this.hass.themes ||
-      oldConfig.theme !== this._config.theme
+      (changedProps.has("hass") && oldHass?.themes !== this.hass.themes) ||
+      (changedProps.has("_config") && oldConfig?.theme !== this._config.theme)
     ) {
       applyThemesOnElement(this, this.hass.themes, this._config.theme);
     }
@@ -199,6 +188,67 @@ class HuiShoppingListCard extends LitElement implements LovelaceCard {
     `;
   }
 
+  private async _fetchData(): Promise<void> {
+    if (!this.hass) {
+      return;
+    }
+    const checkedItems: ShoppingListItem[] = [];
+    const uncheckedItems: ShoppingListItem[] = [];
+    const items = await fetchItems(this.hass);
+    for (const key in items) {
+      if (items[key].complete) {
+        checkedItems.push(items[key]);
+      } else {
+        uncheckedItems.push(items[key]);
+      }
+    }
+    this._checkedItems = checkedItems;
+    this._uncheckedItems = uncheckedItems;
+  }
+
+  private _completeItem(ev): void {
+    updateItem(this.hass!, ev.target.itemId, {
+      complete: ev.target.checked,
+    }).catch(() => this._fetchData());
+  }
+
+  private _saveEdit(ev): void {
+    updateItem(this.hass!, ev.target.itemId, {
+      name: ev.target.value,
+    }).catch(() => this._fetchData());
+
+    ev.target.blur();
+  }
+
+  private _clearItems(): void {
+    if (this.hass) {
+      clearItems(this.hass).catch(() => this._fetchData());
+    }
+  }
+
+  private get _newItem(): PaperInputElement {
+    return this.shadowRoot!.querySelector(".addBox") as PaperInputElement;
+  }
+
+  private _addItem(ev): void {
+    const newItem = this._newItem;
+
+    if (newItem.value!.length > 0) {
+      addItem(this.hass!, newItem.value!).catch(() => this._fetchData());
+    }
+
+    newItem.value = "";
+    if (ev) {
+      newItem.focus();
+    }
+  }
+
+  private _addKeyPress(ev): void {
+    if (ev.keyCode === 13) {
+      this._addItem(null);
+    }
+  }
+
   static get styles(): CSSResult {
     return css`
       ha-card {
@@ -256,66 +306,6 @@ class HuiShoppingListCard extends LitElement implements LovelaceCard {
         cursor: pointer;
       }
     `;
-  }
-
-  private async _fetchData(): Promise<void> {
-    if (this.hass) {
-      const checkedItems: ShoppingListItem[] = [];
-      const uncheckedItems: ShoppingListItem[] = [];
-      const items = await fetchItems(this.hass);
-      for (const key in items) {
-        if (items[key].complete) {
-          checkedItems.push(items[key]);
-        } else {
-          uncheckedItems.push(items[key]);
-        }
-      }
-      this._checkedItems = checkedItems;
-      this._uncheckedItems = uncheckedItems;
-    }
-  }
-
-  private _completeItem(ev): void {
-    updateItem(this.hass!, ev.target.itemId, {
-      complete: ev.target.checked,
-    }).catch(() => this._fetchData());
-  }
-
-  private _saveEdit(ev): void {
-    updateItem(this.hass!, ev.target.itemId, {
-      name: ev.target.value,
-    }).catch(() => this._fetchData());
-
-    ev.target.blur();
-  }
-
-  private _clearItems(): void {
-    if (this.hass) {
-      clearItems(this.hass).catch(() => this._fetchData());
-    }
-  }
-
-  private get _newItem(): PaperInputElement {
-    return this.shadowRoot!.querySelector(".addBox") as PaperInputElement;
-  }
-
-  private _addItem(ev): void {
-    const newItem = this._newItem;
-
-    if (newItem.value!.length > 0) {
-      addItem(this.hass!, newItem.value!).catch(() => this._fetchData());
-    }
-
-    newItem.value = "";
-    if (ev) {
-      newItem.focus();
-    }
-  }
-
-  private _addKeyPress(ev): void {
-    if (ev.keyCode === 13) {
-      this._addItem(null);
-    }
   }
 }
 
