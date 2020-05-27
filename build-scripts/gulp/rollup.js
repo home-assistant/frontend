@@ -92,7 +92,11 @@ gulp.task("rollup-watch-app", () => {
 });
 
 gulp.task("rollup-watch-hassio", () => {
-  watchRollup(rollupConfig.createHassioConfig, ["hassio/src/**"]);
+  watchRollup(
+    // Force latestBuild = false for hassio config.
+    (conf) => rollupConfig.createHassioConfig({ ...conf, latestBuild: false }),
+    ["hassio/src/**"]
+  );
 });
 
 gulp.task("rollup-dev-server-demo", () => {
