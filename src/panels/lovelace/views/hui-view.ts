@@ -162,7 +162,7 @@ export class HUIView extends LitElement {
 
     if (hassChanged && !configChanged) {
       this._cards.forEach((element) => {
-        element.hass = this.hass;
+        element.hass = hass;
       });
     }
 
