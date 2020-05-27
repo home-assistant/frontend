@@ -86,7 +86,10 @@ class HuiEntitiesCard extends LitElement implements LovelaceCard {
       return 0;
     }
     // +1 for the header
-    return (this._config.title ? 1 : 0) + this._config.entities.length;
+    return (
+      (this._config.title || this._showHeaderToggle ? 1 : 0) +
+      this._config.entities.length
+    );
   }
 
   public setConfig(config: EntitiesCardConfig): void {

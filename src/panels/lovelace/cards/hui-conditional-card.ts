@@ -34,8 +34,8 @@ class HuiConditionalCard extends HuiConditionalBase implements LovelaceCard {
     this._element = this._createCardElement(config.card);
   }
 
-  public getCardSize(): number {
-    return computeCardSize(this._element as LovelaceCard);
+  public async getCardSize(): Promise<number> {
+    return await computeCardSize(this._element as LovelaceCard);
   }
 
   private _createCardElement(cardConfig: LovelaceCardConfig) {

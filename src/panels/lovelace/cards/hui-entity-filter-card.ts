@@ -26,7 +26,7 @@ class EntityFilterCard extends UpdatingElement implements LovelaceCard {
 
   private _oldEntities?: EntityFilterEntityConfig[];
 
-  public getCardSize(): number {
+  public getCardSize(): number | Promise<number> {
     return this._element ? computeCardSize(this._element) : 1;
   }
 
