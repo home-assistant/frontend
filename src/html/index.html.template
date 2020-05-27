@@ -2,18 +2,6 @@
 <html>
   <head>
     <link rel="preload" href="<%= latestCoreJS %>" as="script" crossorigin="use-credentials" />
-    <link
-      rel="preload"
-      href="/static/fonts/roboto/Roboto-Regular.woff2"
-      as="font"
-      crossorigin
-    />
-    <link
-      rel="preload"
-      href="/static/fonts/roboto/Roboto-Medium.woff2"
-      as="font"
-      crossorigin
-    />
     <link rel="preload" href="<%= latestAppJS %>" as="script" crossorigin="use-credentials" />
     <%= renderTemplate('_header') %>
     <title>Home Assistant</title>
@@ -62,6 +50,7 @@
     <home-assistant> </home-assistant>
 
     <%= renderTemplate('_js_base') %>
+    <%= renderTemplate('_preload_roboto') %>
 
     <script type="module" crossorigin="use-credentials">
       import "<%= latestCoreJS %>";

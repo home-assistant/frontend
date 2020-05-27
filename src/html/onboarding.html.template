@@ -3,18 +3,6 @@
   <head>
     <title>Home Assistant</title>
     <link rel="preload" href="<%= latestPageJS %>" as="script" crossorigin="use-credentials" />
-    <link
-      rel="preload"
-      href="/static/fonts/roboto/Roboto-Light.woff2"
-      as="font"
-      crossorigin
-    />
-    <link
-      rel="preload"
-      href="/static/fonts/roboto/Roboto-Regular.woff2"
-      as="font"
-      crossorigin
-    />
     <%= renderTemplate('_header') %>
     <style>
       .content {
@@ -48,6 +36,7 @@
     </div>
 
     <%= renderTemplate('_js_base') %>
+    <%= renderTemplate('_preload_roboto') %>
 
     <script type="module" crossorigin="use-credentials">
       import "<%= latestPageJS %>";
