@@ -8,7 +8,7 @@ class HuiVerticalStackCard extends HuiStackCard {
       return 0;
     }
 
-    const promises: Promise<number>[] = [];
+    const promises: Array<Promise<number> | number> = [];
 
     for (const element of this._cards) {
       promises.push(computeCardSize(element));
