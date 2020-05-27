@@ -474,6 +474,7 @@
         },
         "common": {
             "and": "et",
+            "back": "Retour",
             "cancel": "Annuler",
             "close": "Fermer",
             "delete": "Supprimer",
@@ -505,6 +506,7 @@
             "device-picker": {
                 "clear": "Effacer",
                 "device": "Appareil",
+                "no_area": "Pas de zone",
                 "show_devices": "Afficher les appareils",
                 "toggle": "Permuter"
             },
@@ -762,9 +764,13 @@
                     },
                     "description": "Vue d'ensemble de toutes les pièces de votre maison.",
                     "editor": {
+                        "area_id": "ID de la zone",
                         "create": "Créer",
                         "default_name": "Nouvelle Pièce",
                         "delete": "Supprimer",
+                        "name": "Nom",
+                        "name_required": "Le nom est requis",
+                        "unknown_error": "Erreur inconnue",
                         "update": "Mise à jour"
                     },
                     "picker": {
@@ -799,6 +805,7 @@
                                     "label": "Délai"
                                 },
                                 "device_id": {
+                                    "action": "Action",
                                     "extra_fields": {
                                         "code": "Code"
                                     },
@@ -840,6 +847,7 @@
                                     "label": "Et"
                                 },
                                 "device": {
+                                    "condition": "Condition",
                                     "extra_fields": {
                                         "above": "Au-dessus de",
                                         "below": "Au-dessous de",
@@ -918,7 +926,8 @@
                                         "below": "En dessous de",
                                         "for": "Durée"
                                     },
-                                    "label": "Équipements"
+                                    "label": "Équipements",
+                                    "trigger": "Déclencheur"
                                 },
                                 "event": {
                                     "event_data": "Données de l'événement",
@@ -1246,6 +1255,7 @@
                         "integration": "Intégration",
                         "manufacturer": "Fabricant",
                         "model": "Modèle",
+                        "no_area": "Pas de zone",
                         "no_devices": "Aucun appareil"
                     },
                     "delete": "Supprimer",

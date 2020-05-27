@@ -474,6 +474,7 @@
         },
         "common": {
             "and": "i",
+            "back": "Wstecz",
             "cancel": "Anuluj",
             "close": "Zamknij",
             "delete": "Usuń",
@@ -505,6 +506,7 @@
             "device-picker": {
                 "clear": "Wyczyść",
                 "device": "Urządzenie",
+                "no_area": "Brak obszaru",
                 "show_devices": "Pokaż urządzenia",
                 "toggle": "Przełącz"
             },
@@ -700,7 +702,7 @@
                 "device_signature": "Sygnatura urządzenia Zigbee",
                 "last_seen": "Ostatnio widziane",
                 "manuf": "Producent: {manufacturer}",
-                "no_area": "brak",
+                "no_area": "Brak obszaru",
                 "power_source": "Źródło zasilania",
                 "quirk": "Quirk",
                 "services": {
@@ -762,9 +764,13 @@
                     },
                     "description": "Przegląd wszystkich obszarów w twoim domu",
                     "editor": {
+                        "area_id": "Identyfikator obszaru",
                         "create": "UTWÓRZ",
                         "default_name": "Nowy obszar",
                         "delete": "USUŃ",
+                        "name": "Nazwa",
+                        "name_required": "Nazwa jest wymagana",
+                        "unknown_error": "Nieznany błąd",
                         "update": "AKTUALIZUJ"
                     },
                     "picker": {
@@ -799,6 +805,7 @@
                                     "label": "Opóźnienie"
                                 },
                                 "device_id": {
+                                    "action": "Akcja",
                                     "extra_fields": {
                                         "code": "Kod"
                                     },
@@ -840,6 +847,7 @@
                                     "label": "I"
                                 },
                                 "device": {
+                                    "condition": "Warunek",
                                     "extra_fields": {
                                         "above": "Powyżej",
                                         "below": "Poniżej",
@@ -918,7 +926,8 @@
                                         "below": "Poniżej",
                                         "for": "Czas trwania"
                                     },
-                                    "label": "Urządzenie"
+                                    "label": "Urządzenie",
+                                    "trigger": "Wyzwalacz"
                                 },
                                 "event": {
                                     "event_data": "Dane zdarzenia",
@@ -1246,6 +1255,7 @@
                         "integration": "Integracja",
                         "manufacturer": "Producent",
                         "model": "Model",
+                        "no_area": "Brak obszaru",
                         "no_devices": "Brak urządzeń"
                     },
                     "delete": "Usuń",
