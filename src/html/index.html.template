@@ -53,8 +53,8 @@
     <%= renderTemplate('_preload_roboto') %>
 
     <script type="module" crossorigin="use-credentials">
-      import "<%= latestCoreJS %>";
-      import "<%= latestAppJS %>";
+      import("<%= latestCoreJS %>");
+      import("<%= latestAppJS %>");
       window.customPanelJS = "<%= latestCustomPanelJS %>";
     </script>
     {% for extra_module in extra_modules -%}
@@ -71,9 +71,8 @@
 
           <% if (useRollup) { %>
             _ls("/static/js/s.min.js").onload = function() {
-              return System.import("<%= es5CoreJS %>").then(function() {
-                System.import("<%= es5AppJS %>");
-              });
+              System.import("<%= es5CoreJS %>");
+              System.import("<%= es5AppJS %>");
             }
           <% } else { %>
             _ls("<%= es5CoreJS %>");
