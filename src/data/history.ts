@@ -90,7 +90,9 @@ export const fetchDate = (
 
 const equalState = (obj1: LineChartState, obj2: LineChartState) =>
   obj1.state === obj2.state &&
-  // They either both have an attributes object or not
+  // Only compare attributes if both states have an attributes object.
+  // When `minimal_response` is sent, only the first and last state
+  // will have attributes except for domains in DOMAINS_USE_LAST_UPDATED.
   (!obj1.attributes ||
     !obj2.attributes ||
     LINE_ATTRIBUTES_TO_KEEP.every(
