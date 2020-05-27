@@ -474,6 +474,7 @@
         },
         "common": {
             "and": "y",
+            "back": "Volver",
             "cancel": "Cancelar",
             "close": "Cerrar",
             "delete": "Eliminar",
@@ -505,6 +506,7 @@
             "device-picker": {
                 "clear": "Limpiar",
                 "device": "Dispositivo",
+                "no_area": "Ningún área",
                 "show_devices": "Mostrar dispositivos",
                 "toggle": "Alternar"
             },
@@ -762,9 +764,13 @@
                     },
                     "description": "Visión general de todas las áreas de tu casa.",
                     "editor": {
+                        "area_id": "ID de área",
                         "create": "Crear",
                         "default_name": "Área Nueva",
                         "delete": "Eliminar",
+                        "name": "Nombre",
+                        "name_required": "Se requiere el nombre",
+                        "unknown_error": "Error desconocido",
                         "update": "Actualizar"
                     },
                     "picker": {
@@ -799,6 +805,7 @@
                                     "label": "Retardo"
                                 },
                                 "device_id": {
+                                    "action": "Acción",
                                     "extra_fields": {
                                         "code": "Código"
                                     },
@@ -840,6 +847,7 @@
                                     "label": "Y"
                                 },
                                 "device": {
+                                    "condition": "Condición",
                                     "extra_fields": {
                                         "above": "Por encima de",
                                         "below": "Por debajo de",
@@ -918,7 +926,8 @@
                                         "below": "Por debajo de",
                                         "for": "Duración"
                                     },
-                                    "label": "Dispositivo"
+                                    "label": "Dispositivo",
+                                    "trigger": "Desencadenante"
                                 },
                                 "event": {
                                     "event_data": "Datos del evento",
@@ -1246,6 +1255,7 @@
                         "integration": "Integración",
                         "manufacturer": "Fabricante",
                         "model": "Modelo",
+                        "no_area": "Ningún área",
                         "no_devices": "Sin dispositivos"
                     },
                     "delete": "Eliminar",

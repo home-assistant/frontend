@@ -474,6 +474,7 @@
         },
         "common": {
             "and": "并且",
+            "back": "返回",
             "cancel": "取消",
             "close": "关闭",
             "delete": "删除",
@@ -505,6 +506,7 @@
             "device-picker": {
                 "clear": "清除",
                 "device": "设备",
+                "no_area": "没有区域",
                 "show_devices": "显示设备",
                 "toggle": "切换"
             },
@@ -762,9 +764,13 @@
                     },
                     "description": "您家中所有区域的概览。",
                     "editor": {
+                        "area_id": "区域 ID",
                         "create": "创建",
                         "default_name": "新建区域",
                         "delete": "删除",
+                        "name": "名称",
+                        "name_required": "名称为必填项",
+                        "unknown_error": "未知错误",
                         "update": "更新"
                     },
                     "picker": {
@@ -799,6 +805,7 @@
                                     "label": "延迟"
                                 },
                                 "device_id": {
+                                    "action": "动作",
                                     "extra_fields": {
                                         "code": "代码"
                                     },
@@ -840,6 +847,7 @@
                                     "label": "并且"
                                 },
                                 "device": {
+                                    "condition": "环境条件",
                                     "extra_fields": {
                                         "above": "大于",
                                         "below": "小于",
@@ -918,7 +926,8 @@
                                         "below": "小于",
                                         "for": "持续时间"
                                     },
-                                    "label": "设备"
+                                    "label": "设备",
+                                    "trigger": "触发条件"
                                 },
                                 "event": {
                                     "event_data": "事件数据",
@@ -1246,6 +1255,7 @@
                         "integration": "集成",
                         "manufacturer": "制造商",
                         "model": "型号",
+                        "no_area": "没有区域",
                         "no_devices": "没有设备"
                     },
                     "delete": "删除",
