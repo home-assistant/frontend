@@ -152,7 +152,7 @@ export class HaConfigLovelaceDashboards extends LitElement {
       columns.url_path = {
         title: "",
         filterable: true,
-        width: "75px",
+        width: "100px",
         template: (urlPath) =>
           narrow
             ? html`

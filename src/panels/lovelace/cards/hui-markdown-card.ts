@@ -47,7 +47,8 @@ export class HuiMarkdownCard extends LitElement implements LovelaceCard {
     return this._config === undefined
       ? 3
       : this._config.card_size === undefined
-      ? this._config.content.split("\n").length + (this._config.title ? 1 : 0)
+      ? Math.round(this._config.content.split("\n").length / 2) +
+        (this._config.title ? 1 : 0)
       : this._config.card_size;
   }
 
