@@ -252,7 +252,7 @@ export class HUIView extends LitElement {
         });
       }
 
-      let wait = false;
+      let waitProm: Promise<unknown> | undefined;
 
       // We should work for max 16ms (60fps) before allowing a frame to render
       if (start === undefined) {
@@ -260,13 +260,13 @@ export class HUIView extends LitElement {
         start = new Date();
       } else if (new Date().getTime() - start.getTime() > 16) {
         // We are working too long, we will prevent a render, wait to allow for a render
-        wait = true;
+        waitProm = tillNextRender;
       }
 
       const cardSizeProm = computeCardSize(el);
       // @ts-ignore
       // eslint-disable-next-line no-await-in-loop
-      const [cardSize] = await Promise.all([cardSizeProm, tillNextRender]);
+      const [cardSize] = await Promise.all([cardSizeProm, waitProm]);
 
       if (iteration !== this._createColumnsIteration) {
         // An other create columns is started, abort this one
