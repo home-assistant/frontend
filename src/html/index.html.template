@@ -2,18 +2,7 @@
 <html>
   <head>
     <link rel="preload" href="<%= latestCoreJS %>" as="script" crossorigin="use-credentials" />
-    <link
-      rel="preload"
-      href="/static/fonts/roboto/Roboto-Regular.woff2"
-      as="font"
-      crossorigin
-    />
-    <link
-      rel="preload"
-      href="/static/fonts/roboto/Roboto-Medium.woff2"
-      as="font"
-      crossorigin
-    />
+    <link rel="preload" href="<%= latestAppJS %>" as="script" crossorigin="use-credentials" />
     <%= renderTemplate('_header') %>
     <title>Home Assistant</title>
     <link
@@ -61,10 +50,11 @@
     <home-assistant> </home-assistant>
 
     <%= renderTemplate('_js_base') %>
+    <%= renderTemplate('_preload_roboto') %>
 
     <script type="module" crossorigin="use-credentials">
-      import "<%= latestCoreJS %>";
-      import "<%= latestAppJS %>";
+      import("<%= latestCoreJS %>");
+      import("<%= latestAppJS %>");
       window.customPanelJS = "<%= latestCustomPanelJS %>";
     </script>
     {% for extra_module in extra_modules -%}
@@ -81,6 +71,8 @@
 
           <% if (useRollup) { %>
             _ls("/static/js/s.min.js").onload = function() {
+              // Although core and app can load in any order, we need to
+              // force loading core first because it contains polyfills
               return System.import("<%= es5CoreJS %>").then(function() {
                 System.import("<%= es5AppJS %>");
               });
