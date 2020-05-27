@@ -474,6 +474,7 @@
         },
         "common": {
             "and": "i",
+            "back": "Torna",
             "cancel": "Cancel·la",
             "close": "Tanca",
             "delete": "Elimina",
@@ -505,6 +506,7 @@
             "device-picker": {
                 "clear": "Esborra",
                 "device": "Dispositiu",
+                "no_area": "Sense àrees",
                 "show_devices": "Mostra dispositius",
                 "toggle": "Commuta"
             },
@@ -762,9 +764,13 @@
                     },
                     "description": "Visió general de totes les àrees de la casa.",
                     "editor": {
+                        "area_id": "ID d'àrea",
                         "create": "Crea",
                         "default_name": "Nova àrea",
                         "delete": "Elimina",
+                        "name": "Nom",
+                        "name_required": "Nom obligatori",
+                        "unknown_error": "Error desconegut",
                         "update": "Actualitza"
                     },
                     "picker": {
@@ -799,6 +805,7 @@
                                     "label": "Retard"
                                 },
                                 "device_id": {
+                                    "action": "Acció",
                                     "extra_fields": {
                                         "code": "Codi"
                                     },
@@ -840,6 +847,7 @@
                                     "label": "I (AND lògic)"
                                 },
                                 "device": {
+                                    "condition": "Condició",
                                     "extra_fields": {
                                         "above": "A sobre",
                                         "below": "A sota",
@@ -918,7 +926,8 @@
                                         "below": "A sota",
                                         "for": "Durada"
                                     },
-                                    "label": "Dispositiu"
+                                    "label": "Dispositiu",
+                                    "trigger": "Disparador"
                                 },
                                 "event": {
                                     "event_data": "Dades de l'esdeveniment",
@@ -1246,6 +1255,7 @@
                         "integration": "Integració",
                         "manufacturer": "Fabricant",
                         "model": "Model",
+                        "no_area": "Sense àrees",
                         "no_devices": "Sense dispositius"
                     },
                     "delete": "Elimina",

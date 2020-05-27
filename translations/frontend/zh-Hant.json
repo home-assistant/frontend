@@ -474,6 +474,7 @@
         },
         "common": {
             "and": "及",
+            "back": "上一步",
             "cancel": "取消",
             "close": "關閉",
             "delete": "刪除",
@@ -505,6 +506,7 @@
             "device-picker": {
                 "clear": "清除",
                 "device": "設備",
+                "no_area": "無分區",
                 "show_devices": "顯示設備",
                 "toggle": "觸發"
             },
@@ -762,9 +764,13 @@
                     },
                     "description": "家中所有分區概觀",
                     "editor": {
+                        "area_id": "分區 ID",
                         "create": "建立",
                         "default_name": "新分區",
                         "delete": "刪除",
+                        "name": "名稱",
+                        "name_required": "必須輸入名稱",
+                        "unknown_error": "未知錯誤",
                         "update": "更新"
                     },
                     "picker": {
@@ -799,6 +805,7 @@
                                     "label": "延遲"
                                 },
                                 "device_id": {
+                                    "action": "動作",
                                     "extra_fields": {
                                         "code": "碼"
                                     },
@@ -840,6 +847,7 @@
                                     "label": "及"
                                 },
                                 "device": {
+                                    "condition": "判斷式",
                                     "extra_fields": {
                                         "above": "在...之上",
                                         "below": "在...之下",
@@ -918,7 +926,8 @@
                                         "below": "在...之下",
                                         "for": "持續時間"
                                     },
-                                    "label": "設備"
+                                    "label": "設備",
+                                    "trigger": "觸發自動化"
                                 },
                                 "event": {
                                     "event_data": "事件資料",
@@ -1246,6 +1255,7 @@
                         "integration": "整合",
                         "manufacturer": "廠牌",
                         "model": "型號",
+                        "no_area": "無分區",
                         "no_devices": "沒有設備"
                     },
                     "delete": "刪除",
