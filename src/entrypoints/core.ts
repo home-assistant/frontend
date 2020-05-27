@@ -28,6 +28,7 @@ import { HomeAssistant } from "../types";
 declare global {
   interface Window {
     hassConnection: Promise<{ auth: Auth; conn: Connection }>;
+    hassConnectionReady?: (hassConnection: Window["hassConnection"]) => void;
   }
 }
 
@@ -81,6 +82,11 @@ if (__DEV__) {
 window.hassConnection = (authProm() as Promise<Auth | ExternalAuth>).then(
   connProm
 );
+
+// This is set if app was somehow loaded before core.
+if (window.hassConnectionReady) {
+  window.hassConnectionReady(window.hassConnection);
+}
 
 // Start fetching some of the data that we will need.
 window.hassConnection.then(({ conn }) => {
