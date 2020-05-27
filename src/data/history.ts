@@ -72,6 +72,7 @@ export const fetchRecent = (
   if (significantChangesOnly !== undefined) {
     url += `&significant_changes_only=${Number(significantChangesOnly)}`;
   }
+  url += "&minimal_response";
 
   return hass.callApi("GET", url);
 };
@@ -83,14 +84,17 @@ export const fetchDate = (
 ): Promise<HassEntity[][]> => {
   return hass.callApi(
     "GET",
-    `history/period/${startTime.toISOString()}?end_time=${endTime.toISOString()}`
+    `history/period/${startTime.toISOString()}?end_time=${endTime.toISOString()}&minimal_response`
   );
 };
 
 const equalState = (obj1: LineChartState, obj2: LineChartState) =>
   obj1.state === obj2.state &&
-  // They either both have an attributes object or not
+  // Only compare attributes if both states have an attributes object.
+  // When `minimal_response` is sent, only the first and last state
+  // will have attributes except for domains in DOMAINS_USE_LAST_UPDATED.
   (!obj1.attributes ||
+    !obj2.attributes ||
     LINE_ATTRIBUTES_TO_KEEP.every(
       (attr) => obj1.attributes![attr] === obj2.attributes![attr]
     ));
@@ -101,10 +105,18 @@ const processTimelineEntity = (
   states: HassEntity[]
 ): TimelineEntity => {
   const data: TimelineState[] = [];
+  const last_element = states.length - 1;
 
   for (const state of states) {
     if (data.length > 0 && state.state === data[data.length - 1].state) {
       continue;
+    }
+
+    // Copy the data from the last element as its the newest
+    // and is only needed to localize the data
+    if (!state.entity_id) {
+      state.attributes = states[last_element].attributes;
+      state.entity_id = states[last_element].entity_id;
     }
 
     data.push({
@@ -198,7 +210,7 @@ export const computeHistory = (
     }
 
     const stateWithUnit = stateInfo.find(
-      (state) => "unit_of_measurement" in state.attributes
+      (state) => state.attributes && "unit_of_measurement" in state.attributes
     );
 
     let unit: string | undefined;
