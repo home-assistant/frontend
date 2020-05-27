@@ -1,12 +1,15 @@
 import { LovelaceCard } from "../types";
 
-export const computeCardSize = async (card: LovelaceCard): Promise<number> => {
+export const computeCardSize = (
+  card: LovelaceCard
+): number | Promise<number> => {
   if (typeof card.getCardSize === "function") {
     return card.getCardSize();
   }
   if (customElements.get(card.localName)) {
     return 1;
   }
-  await customElements.whenDefined(card.localName);
-  return computeCardSize(card);
+  return customElements
+    .whenDefined(card.localName)
+    .then(() => computeCardSize(card));
 };
