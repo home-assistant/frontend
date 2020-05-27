@@ -77,7 +77,7 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
   @property() private _setTemp?: number | number[];
 
   public getCardSize(): number {
-    return 4;
+    return 5;
   }
 
   public setConfig(config: ThermostatCardConfig): void {
