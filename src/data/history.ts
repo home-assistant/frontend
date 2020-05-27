@@ -92,6 +92,7 @@ const equalState = (obj1: LineChartState, obj2: LineChartState) =>
   obj1.state === obj2.state &&
   // They either both have an attributes object or not
   (!obj1.attributes ||
+    !obj2.attributes ||
     LINE_ATTRIBUTES_TO_KEEP.every(
       (attr) => obj1.attributes![attr] === obj2.attributes![attr]
     ));
@@ -162,9 +163,6 @@ const processLineChartEntities = (
 
       if (
         processedStates.length > 1 &&
-        processedState.attributes &&
-        processedStates[processedStates.length - 1].attributes &&
-        processedStates[processedStates.length - 2].attributes &&
         equalState(
           processedState,
           processedStates[processedStates.length - 1]
