@@ -45,6 +45,7 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
         }
 
         .entities tr {
+          word-break: break-word;
           vertical-align: top;
         }
 
