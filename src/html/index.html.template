@@ -14,6 +14,7 @@
       as="font"
       crossorigin
     />
+    <link rel="preload" href="<%= latestAppJS %>" as="script" crossorigin="use-credentials" />
     <%= renderTemplate('_header') %>
     <title>Home Assistant</title>
     <link
