@@ -22,7 +22,10 @@ module.exports.emptyPackages = ({ latestBuild }) =>
     require.resolve("@vaadin/vaadin-material-styles/font-roboto.js"),
     // Compatibility not needed for latest builds
     latestBuild &&
-      path.resolve(paths.polymer_dir, "src/entrypoints/compatibility.ts"),
+      // wrapped in require.resolve so it blows up if file no longer exists
+      require.resolve(
+        path.resolve(paths.polymer_dir, "src/resources/compatibility.ts")
+      ),
     // This polyfill is loaded in workers to support ES5, filter it out.
     latestBuild && require.resolve("proxy-polyfill/src/index.js"),
   ].filter(Boolean);
