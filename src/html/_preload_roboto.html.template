@@ -1,0 +1,16 @@
+    <script>
+      if (navigator.userAgent.indexOf("Android") === -1 &&
+          navigator.userAgent.indexOf("CrOS") === -1) {
+        function _pf(src, type) {
+          const el = document.createElement("link");
+          el.rel = "preload";
+          el.as = "font";
+          el.type = "font/woff2";
+          el.href = src;
+          el.crossOrigin = "anonymous";
+          document.head.append(el);
+        }
+        _pf("/static/fonts/roboto/Roboto-Regular.woff2");
+        _pf("/static/fonts/roboto/Roboto-Medium.woff2");
+      }
+    </script>

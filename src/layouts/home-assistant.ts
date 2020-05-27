@@ -93,7 +93,18 @@ export class HomeAssistantAppEl extends HassElement {
 
   protected async _initialize() {
     try {
-      const { auth, conn } = await window.hassConnection;
+      let result;
+
+      if (window.hassConnection) {
+        result = await window.hassConnection;
+      } else {
+        // In the edge case that
+        result = await new Promise((resolve) => {
+          window.hassConnectionReady = resolve;
+        });
+      }
+
+      const { auth, conn } = result;
       this._haVersion = conn.haVersion;
       this.initializeHass(auth, conn);
     } catch (err) {
