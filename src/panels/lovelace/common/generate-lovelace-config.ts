@@ -468,6 +468,28 @@ export const generateLovelaceConfigFromHass = async (
   hass: HomeAssistant,
   localize?: LocalizeFunc
 ): Promise<LovelaceConfig> => {
+  if (hass.config.state !== "RUNNING") {
+    return {
+      title: hass.config.location_name,
+      views: [
+        {
+          cards: [{ type: "starting" }],
+        },
+      ],
+    };
+  }
+
+  if (hass.config.safe_mode) {
+    return {
+      title: hass.config.location_name,
+      views: [
+        {
+          cards: [{ type: "safe-mode" }],
+        },
+      ],
+    };
+  }
+
   // We want to keep the registry subscriptions alive after generating the UI
   // so that we don't serve up stale data after changing areas.
   if (!subscribedRegistries) {

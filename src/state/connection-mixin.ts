@@ -6,6 +6,7 @@ import {
   subscribeConfig,
   subscribeEntities,
   subscribeServices,
+  HassConfig,
 } from "home-assistant-js-websocket";
 import { fireEvent } from "../common/dom/fire_event";
 import { broadcastConnectionStatus } from "../data/connection-status";
@@ -156,6 +157,23 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
 
     protected hassReconnected() {
       super.hassReconnected();
+
+      // @ts-ignore
+      this.hass!.callWS({ type: "get_config" }).then((config: HassConfig) => {
+        this._updateHass({ config });
+        if (config.state !== "RUNNING") {
+          const unsubProm = this.hass!.connection.subscribeEvents(() => {
+            this._updateHass({
+              config: { ...this.hass!.config, state: "RUNNING" },
+            });
+            broadcastConnectionStatus("started");
+            unsubProm.then((unsub) => unsub());
+          }, "homeassistant_started");
+        } else {
+          broadcastConnectionStatus("started");
+        }
+      });
+
       this._updateHass({ connected: true });
       broadcastConnectionStatus("connected");
     }

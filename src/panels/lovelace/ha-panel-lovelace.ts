@@ -169,7 +169,10 @@ class LovelacePanel extends LitElement {
     }
     // reload lovelace on reconnect so we are sure we have the latest config
     window.addEventListener("connection-status", (ev) => {
-      if (ev.detail === "connected") {
+      if (
+        (this.lovelace?.mode === "generated" && ev.detail === "started") ||
+        (this.lovelace?.mode !== "generated" && ev.detail === "connected")
+      ) {
         this._fetchConfig(false);
       }
     });

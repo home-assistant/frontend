@@ -1644,6 +1644,10 @@
           "safe-mode": {
             "header": "Safe Mode Activated",
             "description": "Home Assistant ran into trouble while loading your configuration and is now running in safe mode. Take a look at the error log to see what went wrong."
+          },
+          "starting": {
+            "header": "Home Assistant is starting...",
+            "description": "Home Assistant is starting up, please wait."
           }
         },
         "unused_entities": {

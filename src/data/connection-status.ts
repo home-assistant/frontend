@@ -4,7 +4,11 @@
 
 import { fireEvent, HASSDomEvent } from "../common/dom/fire_event";
 
-export type ConnectionStatus = "connected" | "auth-invalid" | "disconnected";
+export type ConnectionStatus =
+  | "connected"
+  | "started"
+  | "auth-invalid"
+  | "disconnected";
 
 declare global {
   // for fire event

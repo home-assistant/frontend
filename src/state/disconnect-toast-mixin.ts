@@ -12,6 +12,31 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
       );
     }
 
+    updated(changedProperties) {
+      super.updated(changedProperties);
+      const oldHass = changedProperties.get("hass");
+      if (
+        !changedProperties.has("hass") ||
+        !oldHass?.config ||
+        oldHass.config.state === this.hass!.config.state
+      ) {
+        return;
+      }
+      if (this.hass!.config.state !== "RUNNING") {
+        showToast(this, {
+          message:
+            "Home Assistant is starting, not everything will be available untill it is finished.",
+          duration: 0,
+          dismissable: false,
+        });
+      } else {
+        showToast(this, {
+          message: "Home Assistant is started!",
+          duration: 5000,
+        });
+      }
+    }
+
     protected hassReconnected() {
       super.hassReconnected();
 

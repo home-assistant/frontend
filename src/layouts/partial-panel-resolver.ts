@@ -84,6 +84,8 @@ class PartialPanelResolver extends HassRouterPage {
 
   @property() public narrow?: boolean;
 
+  private _waitForStart = false;
+
   protected updated(changedProps: PropertyValues) {
     super.updated(changedProps);
 
@@ -127,6 +129,27 @@ class PartialPanelResolver extends HassRouterPage {
 
   private async _updateRoutes(oldPanels?: HomeAssistant["panels"]) {
     this.routerOptions = getRoutes(this.hass.panels);
+
+    if (
+      !this._waitForStart &&
+      this._currentPage &&
+      !this.hass.panels[this._currentPage]
+    ) {
+      if (this.hass.config.state !== "RUNNING") {
+        this._waitForStart = true;
+        window.addEventListener("connection-status", (ev) => {
+          if (ev.detail === "started") {
+            this._waitForStart = false;
+            this.rebuild();
+          }
+        });
+        if (this.lastChild) {
+          this.removeChild(this.lastChild);
+        }
+        this.appendChild(this.createLoadingScreen());
+        return;
+      }
+    }
 
     if (
       !oldPanels ||
