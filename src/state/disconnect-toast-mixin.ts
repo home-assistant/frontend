@@ -1,11 +1,7 @@
 import { Constructor } from "../types";
 import { showToast } from "../util/toast";
 import { HassBaseEl } from "./hass-base-mixin";
-import {
-  STATE_RUNNING,
-  STATE_NOT_RUNNING,
-  STATE_STARTING,
-} from "home-assistant-js-websocket";
+import { STATE_NOT_RUNNING, STATE_STARTING } from "home-assistant-js-websocket";
 
 export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
   class extends superClass {
@@ -27,16 +23,13 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
       ) {
         return;
       }
-      if (
-        this.hass!.config.state === STATE_NOT_RUNNING ||
-        this.hass!.config.state === STATE_STARTING
-      ) {
+      if (this.hass!.config.state === STATE_NOT_RUNNING) {
         showToast(this, {
           message: this.hass!.localize("ui.notification_toast.starting"),
           duration: 0,
           dismissable: false,
         });
-      } else if (this.hass!.config.state === STATE_RUNNING) {
+      } else if (this.hass!.config.state === STATE_STARTING) {
         showToast(this, {
           message: this.hass!.localize("ui.notification_toast.started"),
           duration: 5000,

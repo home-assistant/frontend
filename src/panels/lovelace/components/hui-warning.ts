@@ -7,13 +7,13 @@ import {
   TemplateResult,
 } from "lit-element";
 import { HomeAssistant } from "../../../types";
-import { STATE_RUNNING } from "home-assistant-js-websocket";
+import { STATE_NOT_RUNNING } from "home-assistant-js-websocket";
 
 export const createEntityNotFoundWarning = (
   hass: HomeAssistant,
   entityId: string
 ) => {
-  return hass.config.state === STATE_RUNNING
+  return hass.config.state !== STATE_NOT_RUNNING
     ? hass.localize(
         "ui.panel.lovelace.warning.entity_not_found",
         "entity",

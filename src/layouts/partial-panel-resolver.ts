@@ -8,7 +8,7 @@ import {
   RouteOptions,
   RouterOptions,
 } from "./hass-router-page";
-import { STATE_RUNNING } from "home-assistant-js-websocket";
+import { STATE_STARTING, STATE_NOT_RUNNING } from "home-assistant-js-websocket";
 
 const CACHE_URL_PATHS = ["lovelace", "developer-tools"];
 const COMPONENTS = {
@@ -96,7 +96,11 @@ class PartialPanelResolver extends HassRouterPage {
 
     const oldHass = changedProps.get("hass") as this["hass"];
 
-    if (this._waitForStart && this.hass.config.state === STATE_RUNNING) {
+    if (
+      this._waitForStart &&
+      (this.hass.config.state === STATE_STARTING ||
+        this.hass.config.state === STATE_RUNNING)
+    ) {
       this._waitForStart = false;
       this.rebuild();
     }
@@ -141,7 +145,7 @@ class PartialPanelResolver extends HassRouterPage {
       this._currentPage &&
       !this.hass.panels[this._currentPage]
     ) {
-      if (this.hass.config.state !== STATE_RUNNING) {
+      if (this.hass.config.state !== STATE_NOT_RUNNING) {
         this._waitForStart = true;
         if (this.lastChild) {
           this.removeChild(this.lastChild);
