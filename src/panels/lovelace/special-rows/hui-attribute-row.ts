@@ -11,8 +11,8 @@ import {
 import { HomeAssistant } from "../../../types";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
 import "../components/hui-generic-entity-row";
-import "../components/hui-warning";
 import { AttributeRowConfig, LovelaceRow } from "../entity-rows/types";
+import { createEntityNotFoundWarning } from "../components/hui-warning";
 
 @customElement("hui-attribute-row")
 class HuiAttributeRow extends LitElement implements LovelaceRow {
@@ -47,13 +47,9 @@ class HuiAttributeRow extends LitElement implements LovelaceRow {
 
     if (!stateObj) {
       return html`
-        <hui-warning
-          >${this.hass.localize(
-            "ui.panel.lovelace.warning.entity_not_found",
-            "entity",
-            this._config.entity
-          )}</hui-warning
-        >
+        <hui-warning>
+          ${createEntityNotFoundWarning(this.hass, this._config.entity)}
+        </hui-warning>
       `;
     }
 
