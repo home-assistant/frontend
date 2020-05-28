@@ -42,6 +42,7 @@ import {
 } from "../cards/types";
 import { processEditorEntities } from "../editor/process-editor-entities";
 import { LovelaceRowConfig, WeblinkConfig } from "../entity-rows/types";
+import { STATE_RUNNING } from "home-assistant-js-websocket";
 
 const DEFAULT_VIEW_ENTITY_ID = "group.default_view";
 const DOMAINS_BADGES = [
@@ -468,7 +469,7 @@ export const generateLovelaceConfigFromHass = async (
   hass: HomeAssistant,
   localize?: LocalizeFunc
 ): Promise<LovelaceConfig> => {
-  if (hass.config.state !== "RUNNING") {
+  if (hass.config.state !== STATE_RUNNING) {
     return {
       title: hass.config.location_name,
       views: [

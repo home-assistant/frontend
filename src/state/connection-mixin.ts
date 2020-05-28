@@ -7,6 +7,7 @@ import {
   subscribeEntities,
   subscribeServices,
   HassConfig,
+  STATE_RUNNING,
 } from "home-assistant-js-websocket";
 import { fireEvent } from "../common/dom/fire_event";
 import { broadcastConnectionStatus } from "../data/connection-status";
@@ -15,12 +16,13 @@ import { forwardHaptic } from "../data/haptics";
 import { DEFAULT_PANEL } from "../data/panel";
 import { subscribePanels } from "../data/ws-panels";
 import { translationMetadata } from "../resources/translations-metadata";
-import { Constructor, ServiceCallResponse } from "../types";
+import { Constructor, ServiceCallResponse, HomeAssistant } from "../types";
 import { fetchWithAuth } from "../util/fetch-with-auth";
 import { getState } from "../util/ha-pref-storage";
 import hassCallApi from "../util/hass-call-api";
 import { getLocalLanguage } from "../util/hass-translation";
 import { HassBaseEl } from "./hass-base-mixin";
+import { PropertyValues } from "lit-element";
 
 export const connectionMixin = <T extends Constructor<HassBaseEl>>(
   superClass: T
@@ -161,20 +163,10 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
       this._updateHass({ connected: true });
       broadcastConnectionStatus("connected");
 
+      // on reconnect always fetch config as we might miss an update while we were disconnected
       // @ts-ignore
       this.hass!.callWS({ type: "get_config" }).then((config: HassConfig) => {
         this._updateHass({ config });
-        if (config.state !== "RUNNING") {
-          const unsubProm = this.hass!.connection.subscribeEvents(() => {
-            this._updateHass({
-              config: { ...this.hass!.config, state: "RUNNING" },
-            });
-            broadcastConnectionStatus("started");
-            unsubProm.then((unsub) => unsub());
-          }, "homeassistant_started");
-        } else {
-          broadcastConnectionStatus("started");
-        }
       });
     }
 
@@ -182,5 +174,24 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
       super.hassDisconnected();
       this._updateHass({ connected: false });
       broadcastConnectionStatus("disconnected");
+    }
+
+    protected updated(changedProperties: PropertyValues) {
+      super.updated(changedProperties);
+      if (!changedProperties.has("hass") || !this.hass!.config) {
+        return;
+      }
+
+      const oldHass = changedProperties.get("hass") as
+        | HomeAssistant
+        | undefined;
+
+      if (
+        (!oldHass?.config ||
+          oldHass.config.state !== this.hass!.config.state) &&
+        this.hass!.config.state === STATE_RUNNING
+      ) {
+        broadcastConnectionStatus("started");
+      }
     }
   };
