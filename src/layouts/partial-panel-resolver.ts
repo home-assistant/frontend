@@ -8,7 +8,11 @@ import {
   RouteOptions,
   RouterOptions,
 } from "./hass-router-page";
-import { STATE_STARTING, STATE_NOT_RUNNING } from "home-assistant-js-websocket";
+import {
+  STATE_STARTING,
+  STATE_NOT_RUNNING,
+  STATE_RUNNING,
+} from "home-assistant-js-websocket";
 
 const CACHE_URL_PATHS = ["lovelace", "developer-tools"];
 const COMPONENTS = {
