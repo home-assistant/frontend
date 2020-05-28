@@ -474,6 +474,7 @@
         },
         "common": {
             "and": "og",
+            "back": "Tilbake",
             "cancel": "Avbryt",
             "close": "Lukk",
             "delete": "Slett",
@@ -505,6 +506,7 @@
             "device-picker": {
                 "clear": "Tøm",
                 "device": "Enhet",
+                "no_area": "Ingen område",
                 "show_devices": "Vis enheter",
                 "toggle": "Veksle"
             },
@@ -762,9 +764,13 @@
                     },
                     "description": "Oversikt over alle områder i ditt hjem",
                     "editor": {
+                        "area_id": "Område ID",
                         "create": "Opprett",
                         "default_name": "Nytt område",
                         "delete": "Slett",
+                        "name": "Navn",
+                        "name_required": "Navn er påkrevd",
+                        "unknown_error": "Ukjent feil",
                         "update": "Oppdater"
                     },
                     "picker": {
@@ -799,6 +805,7 @@
                                     "label": "Forsinkelse"
                                 },
                                 "device_id": {
+                                    "action": "Handling",
                                     "extra_fields": {
                                         "code": "Kode"
                                     },
@@ -840,6 +847,7 @@
                                     "label": "Og"
                                 },
                                 "device": {
+                                    "condition": "Betingelse",
                                     "extra_fields": {
                                         "above": "Over",
                                         "below": "Under",
@@ -918,7 +926,8 @@
                                         "below": "Under",
                                         "for": "Varighet"
                                     },
-                                    "label": "Enhet"
+                                    "label": "Enhet",
+                                    "trigger": "Utløser"
                                 },
                                 "event": {
                                     "event_data": "Hendelse data",
@@ -1246,6 +1255,7 @@
                         "integration": "Integrasjon",
                         "manufacturer": "Produsent",
                         "model": "Modell",
+                        "no_area": "Ingen område",
                         "no_devices": "Ingen enheter"
                     },
                     "delete": "Slett",
