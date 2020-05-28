@@ -158,6 +158,9 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
     protected hassReconnected() {
       super.hassReconnected();
 
+      this._updateHass({ connected: true });
+      broadcastConnectionStatus("connected");
+
       // @ts-ignore
       this.hass!.callWS({ type: "get_config" }).then((config: HassConfig) => {
         this._updateHass({ config });
@@ -173,9 +176,6 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
           broadcastConnectionStatus("started");
         }
       });
-
-      this._updateHass({ connected: true });
-      broadcastConnectionStatus("connected");
     }
 
     protected hassDisconnected() {
