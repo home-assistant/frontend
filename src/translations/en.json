@@ -498,6 +498,8 @@
     "notification_toast": {
       "service_call_failed": "Failed to call service {service}.",
       "connection_lost": "Connection lost. Reconnecting…",
+      "started": "Home Assistant is started!",
+      "starting": "Home Assistant is starting, not everything will be available until it is finished.",
       "triggered": "Triggered {name}"
     },
     "sidebar": {

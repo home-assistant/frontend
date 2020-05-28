@@ -24,14 +24,13 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
       }
       if (this.hass!.config.state !== "RUNNING") {
         showToast(this, {
-          message:
-            "Home Assistant is starting, not everything will be available untill it is finished.",
+          message: this.hass!.localize("ui.notification_toast.starting"),
           duration: 0,
           dismissable: false,
         });
       } else {
         showToast(this, {
-          message: "Home Assistant is started!",
+          message: this.hass!.localize("ui.notification_toast.started"),
           duration: 5000,
         });
       }
