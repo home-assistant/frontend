@@ -52,20 +52,19 @@
     <%= renderTemplate('_js_base') %>
     <%= renderTemplate('_preload_roboto') %>
 
-    <script type="module" crossorigin="use-credentials">
+    <script>
       import("<%= latestCoreJS %>");
       import("<%= latestAppJS %>");
       window.customPanelJS = "<%= latestCustomPanelJS %>";
+      window.latestJS = true;
     </script>
     {% for extra_module in extra_modules -%}
     <script type="module" crossorigin="use-credentials" src="{{ extra_module }}"></script>
     {% endfor -%}
 
-
-    <script nomodule>
+    <script>
       (function() {
-        // Safari 10.1 supports type=module but ignores nomodule, so we add this check.
-        if (!isS101) {
+        if (!window.latestJS) {
           window.customPanelJS = "<%= es5CustomPanelJS %>";
           _ls("/static/polyfills/custom-elements-es5-adapter.js");
 
