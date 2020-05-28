@@ -2,6 +2,7 @@ import {
   HassConfig,
   HassEntities,
   HassEntity,
+  STATE_RUNNING,
 } from "home-assistant-js-websocket";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { computeObjectId } from "../../../common/entity/compute_object_id";
@@ -42,7 +43,6 @@ import {
 } from "../cards/types";
 import { processEditorEntities } from "../editor/process-editor-entities";
 import { LovelaceRowConfig, WeblinkConfig } from "../entity-rows/types";
-import { STATE_RUNNING } from "home-assistant-js-websocket";
 
 const DEFAULT_VIEW_ENTITY_ID = "group.default_view";
 const DOMAINS_BADGES = [
