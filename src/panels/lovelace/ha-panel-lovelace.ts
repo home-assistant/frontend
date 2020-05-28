@@ -26,6 +26,7 @@ import { loadLovelaceResources } from "./common/load-resources";
 import { showSaveDialog } from "./editor/show-save-config-dialog";
 import "./hui-root";
 import { Lovelace } from "./types";
+import { STATE_NOT_RUNNING } from "home-assistant-js-websocket";
 
 (window as any).loadCardHelpers = () => import("./custom-card-helpers");
 
@@ -170,8 +171,11 @@ class LovelacePanel extends LitElement {
     // reload lovelace on reconnect so we are sure we have the latest config
     window.addEventListener("connection-status", (ev) => {
       if (
-        (this.lovelace?.mode === "generated" && ev.detail === "started") ||
-        (this.lovelace?.mode !== "generated" && ev.detail === "connected")
+        ev.detail === "connected" &&
+        !(
+          this.lovelace?.mode === "generated" &&
+          this.hass!.config.state === STATE_NOT_RUNNING
+        )
       ) {
         this._fetchConfig(false);
       }
