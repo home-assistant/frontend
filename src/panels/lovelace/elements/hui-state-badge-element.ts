@@ -17,6 +17,7 @@ import { hasAction } from "../common/has-action";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
 import "../components/hui-warning-element";
 import { LovelaceElement, StateBadgeElementConfig } from "./types";
+import { createEntityNotFoundWarning } from "../components/hui-warning";
 
 @customElement("hui-state-badge-element")
 export class HuiStateBadgeElement extends LitElement
@@ -47,11 +48,7 @@ export class HuiStateBadgeElement extends LitElement
     if (!stateObj) {
       return html`
         <hui-warning-element
-          label="${this.hass.localize(
-            "ui.panel.lovelace.warning.entity_not_found",
-            "entity",
-            this._config.entity
-          )}"
+          .label=${createEntityNotFoundWarning(this.hass, this._config.entity)}
         ></hui-warning-element>
       `;
     }

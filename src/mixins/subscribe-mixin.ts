@@ -24,7 +24,11 @@ export const SubscribeMixin = <T extends Constructor<UpdatingElement>>(
       if (this.__unsubs) {
         while (this.__unsubs.length) {
           const unsub = this.__unsubs.pop()!;
-          Promise.resolve(unsub).then((unsubFunc) => unsubFunc());
+          if (unsub instanceof Promise) {
+            unsub.then((unsubFunc) => unsubFunc());
+          } else {
+            unsub();
+          }
         }
         this.__unsubs = undefined;
       }
