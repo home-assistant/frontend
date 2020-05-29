@@ -250,11 +250,12 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
                                 this.hass!.language,
                                 { weekday: "short" }
                               )}
-                              <div class="daynight">
-                                ${item.daytime === undefined || item.daytime
-                                  ? ""
-                                  : "Night"}<br />
-                              </div>
+                              ${item.daytime === undefined || item.daytime
+                                ? ""
+                                : html`<ha-icon
+                                    class="night-icon"
+                                    icon="hass:weather-night"
+                                  ></ha-icon>`}
                             `
                           : hourly
                           ? html`
@@ -465,9 +466,12 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
 
         .attribute,
         .templow,
-        .daynight,
         .name {
           color: var(--secondary-text-color);
+        }
+
+        .night-icon {
+          --mdc-icon-size: 12px;
         }
 
         .unavailable {
