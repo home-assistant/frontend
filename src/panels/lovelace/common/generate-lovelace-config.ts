@@ -2,6 +2,7 @@ import {
   HassConfig,
   HassEntities,
   HassEntity,
+  STATE_NOT_RUNNING,
 } from "home-assistant-js-websocket";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { computeObjectId } from "../../../common/entity/compute_object_id";
@@ -468,6 +469,28 @@ export const generateLovelaceConfigFromHass = async (
   hass: HomeAssistant,
   localize?: LocalizeFunc
 ): Promise<LovelaceConfig> => {
+  if (hass.config.state === STATE_NOT_RUNNING) {
+    return {
+      title: hass.config.location_name,
+      views: [
+        {
+          cards: [{ type: "starting" }],
+        },
+      ],
+    };
+  }
+
+  if (hass.config.safe_mode) {
+    return {
+      title: hass.config.location_name,
+      views: [
+        {
+          cards: [{ type: "safe-mode" }],
+        },
+      ],
+    };
+  }
+
   // We want to keep the registry subscriptions alive after generating the UI
   // so that we don't serve up stale data after changing areas.
   if (!subscribedRegistries) {

@@ -30,6 +30,7 @@ import "../components/hui-image";
 import "../components/hui-warning-element";
 import { LovelaceCard, LovelaceCardEditor } from "../types";
 import { PictureGlanceCardConfig, PictureGlanceEntityConfig } from "./types";
+import { createEntityNotFoundWarning } from "../components/hui-warning";
 
 const STATES_OFF = new Set(["closed", "locked", "not_home", "off"]);
 
@@ -229,11 +230,7 @@ class HuiPictureGlanceCard extends LitElement implements LovelaceCard {
     if (!stateObj) {
       return html`
         <hui-warning-element
-          label=${this.hass!.localize(
-            "ui.panel.lovelace.warning.entity_not_found",
-            "entity",
-            entityConf.entity
-          )}
+          .label=${createEntityNotFoundWarning(this.hass!, entityConf.entity)}
         ></hui-warning-element>
       `;
     }
