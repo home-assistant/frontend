@@ -163,7 +163,7 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
         : undefined;
 
     let hourly: boolean | undefined;
-    let multiday: boolean | undefined;
+    let daynight: boolean | undefined;
 
     if (forecast?.length && forecast?.length > 2) {
       const date1 = new Date(forecast[1].datetime);
@@ -177,7 +177,7 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
         const datelast = new Date(forecast[forecast.length - 1].datetime);
         const dayDiff = datelast.getTime() - date0.getTime();
 
-        multiday = dayDiff > DAY_IN_MILLISECONDS;
+        daynight = dayDiff > DAY_IN_MILLISECONDS;
       }
     }
 
@@ -244,19 +244,17 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
                   (item) => html`
                     <div>
                       <div>
-                        ${multiday
+                        ${daynight
                           ? html`
                               ${new Date(item.datetime).toLocaleDateString(
                                 this.hass!.language,
                                 { weekday: "short" }
                               )}
-                              <br />
-                              ${new Date(item.datetime).toLocaleTimeString(
-                                this.hass!.language,
-                                {
-                                  hour: "numeric",
-                                }
-                              )}
+                              <div class="daynight">
+                                ${new Date(item.datetime).getHours() > 12
+                                  ? "Night"
+                                  : ""}<br />
+                              </div>
                             `
                           : hourly
                           ? html`
@@ -467,6 +465,7 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
 
         .attribute,
         .templow,
+        .daynight,
         .name {
           color: var(--secondary-text-color);
         }
