@@ -474,6 +474,7 @@
         },
         "common": {
             "and": "ja",
+            "back": "Takaisin",
             "cancel": "Peruuta",
             "close": "Sulje",
             "delete": "Poista",
@@ -505,6 +506,7 @@
             "device-picker": {
                 "clear": "Tyhjennä",
                 "device": "Laite",
+                "no_area": "Ei aluetta",
                 "show_devices": "Näytä laitteet",
                 "toggle": "Vaihda"
             },
@@ -762,9 +764,13 @@
                     },
                     "description": "Yleiskuva kaikista kotisi alueista.",
                     "editor": {
+                        "area_id": "Alueen tunnus",
                         "create": "Luo",
                         "default_name": "Uusi alue",
                         "delete": "Poista",
+                        "name": "Nimi",
+                        "name_required": "Nimi on pakollinen",
+                        "unknown_error": "Tuntematon virhe",
                         "update": "Päivitä"
                     },
                     "picker": {
@@ -799,6 +805,7 @@
                                     "label": "Viive"
                                 },
                                 "device_id": {
+                                    "action": "Toiminta",
                                     "extra_fields": {
                                         "code": "Koodi"
                                     },
@@ -840,6 +847,7 @@
                                     "label": "Ja"
                                 },
                                 "device": {
+                                    "condition": "Ehto",
                                     "extra_fields": {
                                         "above": "Yli",
                                         "below": "Alle",
@@ -918,7 +926,8 @@
                                         "below": "Alle",
                                         "for": "Kesto"
                                     },
-                                    "label": "Laite"
+                                    "label": "Laite",
+                                    "trigger": "Laukaisin"
                                 },
                                 "event": {
                                     "event_data": "Tapahtuman tietosisältö",
@@ -1246,6 +1255,7 @@
                         "integration": "Integraatio",
                         "manufacturer": "Valmistaja",
                         "model": "Malli",
+                        "no_area": "Ei aluetta",
                         "no_devices": "Ei laitteita"
                     },
                     "delete": "Poista",
@@ -2287,7 +2297,7 @@
                 "views": {
                     "confirm_delete": "Oletko varma, että haluat poistaa tämän näkymän?",
                     "confirm_delete_existing_cards": "Tämän näkymän poistaminen poistaa myös kortit",
-                    "confirm_delete_existing_cards_text": "Haluatko varmasti poistaa näkymän {name}? Näkymä sisältää {number}-kortteja, jotka poistetaan. Tätä toimintoa ei voi kumota.",
+                    "confirm_delete_existing_cards_text": "Haluatko varmasti poistaa näkymän {name}? Näkymä sisältää {number} korttia, jotka poistetaan. Tätä toimintoa ei voi kumota.",
                     "confirm_delete_text": "Haluatko varmasti poistaa ''{name}'' -näkymäsi?"
                 },
                 "warning": {
@@ -2307,6 +2317,8 @@
                 "abort_intro": "Kirjautuminen on keskeytetty",
                 "authorizing_client": "Olet antamassa pääsyn {clientId} Home Assistant -ympäristöösi.",
                 "form": {
+                    "error": "Virhe: {error}",
+                    "next": "Seuraava",
                     "providers": {
                         "command_line": {
                             "abort": {
@@ -2392,6 +2404,7 @@
                             }
                         }
                     },
+                    "start_over": "Aloita alusta",
                     "unknown_error": "Jotain meni pieleen",
                     "working": "Ole hyvä ja odota"
                 },
