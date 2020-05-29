@@ -33,9 +33,9 @@ class ZwaveNodeProtection extends PolymerElement {
 
     </style>
       <div class="content">
-        <ha-card header="Node protection">
+        <ha-card header="[[localize('ui.panel.config.zwave.node_management.node_protection')]]">
           <div class="device-picker">
-          <paper-dropdown-menu label="Protection" dynamic-align class="flex" placeholder="{{_loadedProtectionValue}}">
+          <paper-dropdown-menu label="[[localize('ui.panel.config.zwave.node_management.protection')]]" dynamic-align class="flex" placeholder="{{_loadedProtectionValue}}">
             <paper-listbox slot="dropdown-content" selected="{{_selectedProtectionParameter}}">
               <template is="dom-repeat" items="[[_protectionOptions]]" as="state">
                 <paper-item>[[state]]</paper-item>
@@ -48,7 +48,7 @@ class ZwaveNodeProtection extends PolymerElement {
               hass="[[hass]]"
               path="[[_nodePath]]"
               data="[[_protectionData]]">
-              Set Protection
+              [[localize('ui.panel.config.zwave.node_management.set_protection')]]
             </ha-call-service-button>
           </div>
         </ha-card>
