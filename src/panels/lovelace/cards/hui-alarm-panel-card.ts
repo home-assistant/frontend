@@ -77,7 +77,7 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
 
   public async getCardSize(): Promise<number> {
     if (!this._config || !this.hass) {
-      return 3;
+      return 5;
     }
 
     const stateObj = this.hass.states[this._config.entity];

@@ -29,6 +29,7 @@ import {
 } from "../types";
 import { HuiErrorCard } from "./hui-error-card";
 import { EntityCardConfig } from "./types";
+import { computeCardSize } from "../common/compute-card-size";
 
 @customElement("hui-entity-card")
 export class HuiEntityCard extends LitElement implements LovelaceCard {
@@ -79,8 +80,13 @@ export class HuiEntityCard extends LitElement implements LovelaceCard {
     }
   }
 
-  public getCardSize(): number {
-    return 1 + (this._config?.footer ? 1 : 0);
+  public async getCardSize(): Promise<number> {
+    let size = 2;
+    if (this._footerElement) {
+      const footerSize = computeCardSize(this._footerElement);
+      size += footerSize instanceof Promise ? await footerSize : footerSize;
+    }
+    return size;
   }
 
   protected render(): TemplateResult {

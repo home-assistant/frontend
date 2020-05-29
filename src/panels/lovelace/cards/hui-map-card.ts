@@ -237,7 +237,9 @@ class HuiMapCard extends LitElement implements LovelaceCard {
 
   protected firstUpdated(changedProps: PropertyValues): void {
     super.firstUpdated(changedProps);
-    this.loadMap();
+    if (this.isConnected) {
+      this.loadMap();
+    }
     const root = this.shadowRoot!.getElementById("root");
 
     if (!this._config || this.isPanel || !root) {
