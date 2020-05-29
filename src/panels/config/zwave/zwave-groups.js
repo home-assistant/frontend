@@ -36,10 +36,17 @@ class ZwaveGroups extends PolymerElement {
           padding-bottom: 12px;
         }
       </style>
-      <ha-card class="content" header="Node group associations">
+      <ha-card
+        class="content"
+        header="[[localize('ui.panel.config.zwave.node_management.node_group_associations')]]"
+      >
         <!-- TODO make api for getting groups and members -->
         <div class="device-picker">
-          <paper-dropdown-menu label="Group" dynamic-align="" class="flex">
+          <paper-dropdown-menu
+            label="[[localize('ui.panel.config.zwave.node_management.group')]]"
+            dynamic-align=""
+            class="flex"
+          >
             <paper-listbox
               slot="dropdown-content"
               selected="{{_selectedGroup}}"
@@ -53,7 +60,7 @@ class ZwaveGroups extends PolymerElement {
         <template is="dom-if" if="[[_computeIsGroupSelected(_selectedGroup)]]">
           <div class="device-picker">
             <paper-dropdown-menu
-              label="Node to control"
+              label="[[localize('ui.panel.config.zwave.node_management.node_to_control')]]"
               dynamic-align=""
               class="flex"
             >
@@ -69,13 +76,18 @@ class ZwaveGroups extends PolymerElement {
           </div>
 
           <div class="help-text">
-            <span>Other Nodes in this group:</span>
+            <span
+              >[[localize('ui.panel.config.zwave.node_management.nodes_in_group')]]</span
+            >
             <template is="dom-repeat" items="[[_otherGroupNodes]]" as="state">
               <div>[[state]]</div>
             </template>
           </div>
           <div class="help-text">
-            <span>Max Associations:</span> <span>[[_maxAssociations]]</span>
+            <span
+              >[[localize('ui.panel.config.zwave.node_management.max_associations')]]</span
+            >
+            <span>[[_maxAssociations]]</span>
           </div>
         </template>
 
@@ -91,7 +103,7 @@ class ZwaveGroups extends PolymerElement {
                 service="change_association"
                 service-data="[[_addAssocServiceData]]"
               >
-                Add To Group
+                [[localize('ui.panel.config.zwave.node_management.add_to_group')]]
               </ha-call-service-button>
             </template>
             <template
@@ -104,7 +116,7 @@ class ZwaveGroups extends PolymerElement {
                 service="change_association"
                 service-data="[[_removeAssocServiceData]]"
               >
-                Remove From Group
+                [[localize('ui.panel.config.zwave.node_management.remove_from_group')]]
               </ha-call-service-button>
             </template>
             <template is="dom-if" if="[[_isBroadcastNodeInGroup]]">
@@ -114,7 +126,7 @@ class ZwaveGroups extends PolymerElement {
                 service="change_association"
                 service-data="[[_removeBroadcastNodeServiceData]]"
               >
-                Remove Broadcast
+                [[localize('ui.panel.config.zwave.node_management.remove_broadcast')]]
               </ha-call-service-button>
             </template>
           </div>
