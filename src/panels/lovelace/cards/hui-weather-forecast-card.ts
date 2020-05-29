@@ -251,7 +251,7 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
                                 { weekday: "short" }
                               )}
                               <div class="daynight">
-                                ${new Date(item.datetime).getHours() > 12
+                                ${new Date(item.datetime).getHours() >= 18
                                   ? "Night"
                                   : ""}<br />
                               </div>
