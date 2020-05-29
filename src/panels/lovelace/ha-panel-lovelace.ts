@@ -26,7 +26,6 @@ import { loadLovelaceResources } from "./common/load-resources";
 import { showSaveDialog } from "./editor/show-save-config-dialog";
 import "./hui-root";
 import { Lovelace } from "./types";
-import { STATE_NOT_RUNNING } from "home-assistant-js-websocket";
 
 (window as any).loadCardHelpers = () => import("./custom-card-helpers");
 
