@@ -20,6 +20,7 @@ import { findEntities } from "../common/find-entites";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
 import { LovelaceCard, LovelaceCardEditor } from "../types";
 import { PlantAttributeTarget, PlantStatusCardConfig } from "./types";
+import { createEntityNotFoundWarning } from "../components/hui-warning";
 
 const SENSORS = {
   moisture: "hass:water",
@@ -105,13 +106,9 @@ class HuiPlantStatusCard extends LitElement implements LovelaceCard {
 
     if (!stateObj) {
       return html`
-        <hui-warning
-          >${this.hass.localize(
-            "ui.panel.lovelace.warning.entity_not_found",
-            "entity",
-            this._config.entity
-          )}</hui-warning
-        >
+        <hui-warning>
+          ${createEntityNotFoundWarning(this.hass, this._config.entity)}
+        </hui-warning>
       `;
     }
 

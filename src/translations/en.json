@@ -498,6 +498,8 @@
     "notification_toast": {
       "service_call_failed": "Failed to call service {service}.",
       "connection_lost": "Connection lost. Reconnecting…",
+      "started": "Home Assistant has started!",
+      "starting": "Home Assistant is starting, not everything will be available until it is finished.",
       "triggered": "Triggered {name}"
     },
     "sidebar": {
@@ -1644,6 +1646,10 @@
           "safe-mode": {
             "header": "Safe Mode Activated",
             "description": "Home Assistant ran into trouble while loading your configuration and is now running in safe mode. Take a look at the error log to see what went wrong."
+          },
+          "starting": {
+            "header": "Home Assistant is starting...",
+            "description": "Home Assistant is starting up, please wait."
           }
         },
         "unused_entities": {
@@ -1936,7 +1942,8 @@
           "attribute_not_found": "Attribute {attribute} not available in: {entity}",
           "entity_not_found": "Entity not available: {entity}",
           "entity_non_numeric": "Entity is non-numeric: {entity}",
-          "entity_unavailable": "{entity} is currently unavailable"
+          "entity_unavailable": "{entity} is currently unavailable",
+          "starting": "Home Assistant is starting, not everything may be available yet"
         },
         "changed_toast": {
           "message": "The Lovelace UI configuration for this dashboard was updated, refresh to see changes?",
