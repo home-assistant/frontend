@@ -1,5 +1,3 @@
-import { HomeAssistant } from "../types";
-
 // Taken from homeassistant.components.binary_sensor
 
 // On means low, Off means normal
@@ -100,55 +98,3 @@ export const DEVICE_CLASSES = [
   DEVICE_CLASS_VIBRATION,
   DEVICE_CLASS_WINDOW,
 ];
-
-export interface TemplateBinarySensor {
-  id: string;
-  friendly_name: string;
-  icon_template?: string;
-  device_class?: string;
-  value_template?: string;
-  availability_template?: string;
-  entity_picture_template?: string;
-  delay_on?: string;
-  delay_off?: string;
-}
-
-export interface TemplateBinarySensorMutableParams {
-  friendly_name: string;
-  icon_template?: string;
-  device_class?: string;
-  value_template?: string;
-  availability_template?: string;
-  entity_picture_template?: string;
-  delay_on?: string;
-  delay_off?: string;
-}
-
-export const fetchBinarySensor = (hass: HomeAssistant) =>
-  hass.callWS<TemplateBinarySensor[]>({ type: "binary_sensor/list" });
-
-export const createBinarySensor = (
-  hass: HomeAssistant,
-  values: TemplateBinarySensorMutableParams
-) =>
-  hass.callWS<TemplateBinarySensor>({
-    type: "binary_sensor/create",
-    ...values,
-  });
-
-export const updateBinarySensor = (
-  hass: HomeAssistant,
-  id: string,
-  updates: Partial<TemplateBinarySensorMutableParams>
-) =>
-  hass.callWS<TemplateBinarySensor>({
-    type: "binary_sensor/update",
-    binary_sensor_id: id,
-    ...updates,
-  });
-
-export const deleteBinarySensor = (hass: HomeAssistant, id: string) =>
-  hass.callWS({
-    type: "binary_sensor/delete",
-    binary_sensor_id: id,
-  });

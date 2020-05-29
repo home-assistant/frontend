@@ -3,7 +3,7 @@ import { InputDateTime } from "../../../data/input_datetime";
 import { InputNumber } from "../../../data/input_number";
 import { InputSelect } from "../../../data/input_select";
 import { InputText } from "../../../data/input_text";
-import { TemplateBinarySensor } from "../../../data/binary_sensor";
+import { TemplateBinarySensor } from "../../../data/template.binary_sensor";
 
 export const HELPER_DOMAINS = [
   "input_boolean",

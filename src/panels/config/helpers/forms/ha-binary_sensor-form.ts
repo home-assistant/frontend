@@ -19,10 +19,8 @@ import {
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-icon-input";
 import "../../../../components/ha-switch";
-import {
-  TemplateBinarySensor,
-  DEVICE_CLASSES,
-} from "../../../../data/binary_sensor";
+import { DEVICE_CLASSES } from "../../../../data/binary_sensor";
+import { TemplateBinarySensor } from "../../../../data/template.binary_sensor";
 import { haStyle } from "../../../../resources/styles";
 import { HomeAssistant } from "../../../../types";
 
