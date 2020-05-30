@@ -130,7 +130,7 @@ export class EntityRegistrySettingsHelper extends LitElement {
     }
     const stateObj = this.hass.states[this.entry.entity_id];
 
-    let disabled: boolean = false;
+    let disabled = false;
 
     switch (this.entry.platform) {
       case "input_boolean":
