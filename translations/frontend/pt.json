@@ -474,6 +474,7 @@
         },
         "common": {
             "and": "e",
+            "back": "Retroceder",
             "cancel": "Cancelar",
             "close": "Fechar",
             "delete": "Apagar",
@@ -764,6 +765,8 @@
                         "create": "Criar",
                         "default_name": "Nova área",
                         "delete": "Apagar",
+                        "name": "Nome",
+                        "unknown_error": "Erro desconhecido",
                         "update": "Atualizar"
                     },
                     "picker": {
@@ -798,6 +801,7 @@
                                     "label": "Atraso"
                                 },
                                 "device_id": {
+                                    "action": "Ação",
                                     "extra_fields": {
                                         "code": "Código"
                                     },
@@ -839,6 +843,7 @@
                                     "label": "E"
                                 },
                                 "device": {
+                                    "condition": "Condição",
                                     "extra_fields": {
                                         "above": "Acima de",
                                         "below": "Abaixo de",
@@ -917,7 +922,8 @@
                                         "below": "Abaixo",
                                         "for": "Duração"
                                     },
-                                    "label": "Dispositivo"
+                                    "label": "Dispositivo",
+                                    "trigger": "Acionador"
                                 },
                                 "event": {
                                     "event_data": "Dados do evento",
