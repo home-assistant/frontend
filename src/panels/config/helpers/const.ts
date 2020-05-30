@@ -11,7 +11,6 @@ export const HELPER_DOMAINS = [
   "input_number",
   "input_datetime",
   "input_select",
-  "binary_sensor",
 ];
 
 export type Helper =
