@@ -2081,8 +2081,8 @@
                             "icon": "Ikona",
                             "icon_height": "Wysokość ikony",
                             "image": "Ścieżka obrazu",
-                            "manual": "Ręczny",
-                            "manual_description": "Chcesz dodać niestandardową kartę lub po prostu chcesz ręcznie napisać yaml?",
+                            "manual": "Manualny edytor konfiguracji",
+                            "manual_description": "Chcesz dodać niestandardową kartę lub po prostu manualnie edytować konfiguracji?",
                             "maximum": "Maksimum",
                             "minimum": "Minimum",
                             "name": "Nazwa",
@@ -2224,7 +2224,7 @@
                     "header": "Edycja interfejsu użytkownika",
                     "menu": {
                         "open": "Otwórz menu interfejsu użytkownika Lovelace",
-                        "raw_editor": "Ręczny edytor konfiguracji"
+                        "raw_editor": "Manualny edytor konfiguracji"
                     },
                     "migrate": {
                         "header": "Konfiguracja niekompatybilna",
