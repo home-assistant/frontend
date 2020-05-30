@@ -4,6 +4,7 @@ import "@polymer/paper-item/paper-icon-item";
 import "@polymer/paper-listbox/paper-listbox";
 import "@polymer/paper-tooltip/paper-tooltip";
 import { HassEntity } from "home-assistant-js-websocket";
+import { fetchTemplateEntities } from "../../../data/template";
 import {
   css,
   CSSResult,
@@ -182,10 +183,16 @@ export class HaConfigHelpers extends LitElement {
     }
   }
 
-  private _getStates(oldHass?: HomeAssistant) {
+  private async _getStates(oldHass?: HomeAssistant) {
     let changed = false;
+
+    const templates = await fetchTemplateEntities(this.hass);
+
     const tempStates = Object.values(this.hass!.states).filter((entity) => {
-      if (!HELPER_DOMAINS.includes(computeStateDomain(entity))) {
+      if (
+        !HELPER_DOMAINS.includes(computeStateDomain(entity)) &&
+        !templates.includes(entity.entity_id)
+      ) {
         return false;
       }
       if (oldHass?.states[entity.entity_id] !== entity) {

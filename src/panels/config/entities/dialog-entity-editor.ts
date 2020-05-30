@@ -3,6 +3,7 @@ import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable";
 import "../../../components/ha-icon-button";
 import "@polymer/paper-tabs/paper-tab";
 import "@polymer/paper-tabs/paper-tabs";
+import "./editor-tabs/settings/entity-settings-helper-tab";
 import { HassEntity } from "home-assistant-js-websocket";
 import {
   css,
@@ -26,6 +27,7 @@ import {
   ExtEntityRegistryEntry,
   getExtendedEntityRegistryEntry,
 } from "../../../data/entity_registry";
+import { fetchTemplateEntities } from "../../../data/template";
 import type { PolymerChangedEvent } from "../../../polymer-types";
 import { haStyleDialog } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
@@ -201,12 +203,21 @@ export class DialogEntityEditor extends LitElement {
     if (!this._entry) {
       return;
     }
+
+    const templates = await fetchTemplateEntities(this.hass);
+
+    if (!templates.includes(this._entry.entity_id)) {
+      this._settingsElementTag = "entity-settings-helper-tab";
+      return;
+    }
+
     if (
       !Object.keys(PLATFORMS_WITH_SETTINGS_TAB).includes(this._entry.platform)
     ) {
       this._settingsElementTag = "entity-registry-settings";
       return;
     }
+
     const tag = PLATFORMS_WITH_SETTINGS_TAB[this._entry.platform];
     await import(`./editor-tabs/settings/${tag}`);
     this._settingsElementTag = tag;
