@@ -471,6 +471,8 @@
             }
         },
         "common": {
+            "and": "Ve",
+            "back": "Geri",
             "cancel": "İptal",
             "close": "Kapat",
             "delete": "Sil",
@@ -502,6 +504,7 @@
             "device-picker": {
                 "clear": "Temiz",
                 "device": "Cihaz",
+                "no_area": "Alan Yok",
                 "show_devices": "Cihazları göster",
                 "toggle": "Geçiş"
             },
@@ -740,8 +743,12 @@
                     },
                     "description": "Evinizdeki tüm alanlara genel bakış.",
                     "editor": {
+                        "area_id": "Alan Kimliği",
                         "create": "OLUŞTUR",
                         "delete": "SİL",
+                        "name": "Ad",
+                        "name_required": "Isim gereklidir",
+                        "unknown_error": "Bilinmeyen hata",
                         "update": "GÜNCELLE"
                     },
                     "picker": {
@@ -772,6 +779,7 @@
                                     "label": "Bekleme"
                                 },
                                 "device_id": {
+                                    "action": "Aksiyon",
                                     "extra_fields": {
                                         "code": "Kod"
                                     },
@@ -813,12 +821,16 @@
                                     "label": "Ve"
                                 },
                                 "device": {
+                                    "condition": "Şart",
                                     "extra_fields": {
                                         "above": "Üzerinde",
                                         "below": "Altında",
                                         "for": "Süre"
                                     },
                                     "label": "Cihaz"
+                                },
+                                "not": {
+                                    "label": "Değil"
                                 },
                                 "numeric_state": {
                                     "above": "Üzerinde",
@@ -888,7 +900,8 @@
                                         "below": "Altında",
                                         "for": "Süre"
                                     },
-                                    "label": "Cihaz"
+                                    "label": "Cihaz",
+                                    "trigger": "tetik"
                                 },
                                 "event": {
                                     "event_data": "Etkinlik Verisi",
@@ -1184,6 +1197,7 @@
                         "integration": "Entegrasyon",
                         "manufacturer": "Üretici",
                         "model": "Model",
+                        "no_area": "Alan Yok",
                         "no_devices": "Cihaz yok"
                     },
                     "delete": "Sil",
@@ -2110,6 +2124,7 @@
                 "abort_intro": "Giriş iptal edildi",
                 "authorizing_client": "{clientId}'ye Home Assistant erişim izni vermek üzeresiniz.",
                 "form": {
+                    "next": "Sonraki",
                     "providers": {
                         "command_line": {
                             "abort": {
@@ -2192,6 +2207,7 @@
                             }
                         }
                     },
+                    "start_over": "Baştan Başla",
                     "unknown_error": "Bir şeyler ters gitti",
                     "working": "Lütfen bekleyin"
                 },

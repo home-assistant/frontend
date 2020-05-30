@@ -740,6 +740,8 @@
         "notification_toast": {
             "connection_lost": "Connection lost. Reconnecting…",
             "service_call_failed": "Failed to call service {service}.",
+            "started": "Home Assistant has started!",
+            "starting": "Home Assistant is starting, not everything will be available until it is finished.",
             "triggered": "Triggered {name}"
         },
         "panel": {
@@ -1839,21 +1841,53 @@
                         "set_wakeup": "Set Wakeup Interval",
                         "true": "True"
                     },
+                    "node_management": {
+                        "add_to_group": "Add To Group",
+                        "entities": "Entities of this node",
+                        "entity_info": "Entity Information",
+                        "exclude_entity": "Exclude this entity from Home Assistant",
+                        "group": "Group",
+                        "header": "Z-Wave Node Management",
+                        "introduction": "Run Z-Wave commands that affect a single node. Pick a node to see a list of available commands.",
+                        "max_associations": "Max Associations:",
+                        "node_group_associations": "Node group associations",
+                        "node_protection": "Node protection",
+                        "node_to_control": "Node to control",
+                        "nodes": "Nodes",
+                        "nodes_hint": "Select node to view per-node options",
+                        "nodes_in_group": "Other Nodes in this group:",
+                        "pooling_intensity": "Polling intensity",
+                        "protection": "Protection",
+                        "remove_broadcast": "Remove Broadcast",
+                        "remove_from_group": "Remove From Group",
+                        "set_protection": "Set Protection"
+                    },
                     "ozw_log": {
                         "header": "OZW Log",
-                        "introduction": "View the log. 0 is the minimum (loads entire log) and 1000 is the maximum. Load will show a static log and tail will auto update with the last specified number of lines of the log."
+                        "introduction": "View the log. 0 is the minimum (loads entire log) and 1000 is the maximum. Load will show a static log and tail will auto update with the last specified number of lines of the log.",
+                        "last_log_lines": "Number of last log lines",
+                        "load": "Load",
+                        "tail": "Tail"
                     },
                     "services": {
                         "add_node": "Add Node",
                         "add_node_secure": "Add Node Secure",
                         "cancel_command": "Cancel Command",
                         "heal_network": "Heal Network",
+                        "heal_node": "Heal Node",
+                        "node_info": "Node Information",
+                        "print_node": "Print Node",
+                        "refresh_entity": "Refresh Entity",
+                        "refresh_node": "Refresh Node",
+                        "remove_failed_node": "Remove Failed Node",
                         "remove_node": "Remove Node",
+                        "replace_failed_node": "Replace Failed Node",
                         "save_config": "Save Configuration",
                         "soft_reset": "Soft Reset",
                         "start_network": "Start Network",
                         "stop_network": "Stop Network",
-                        "test_network": "Test Network"
+                        "test_network": "Test Network",
+                        "test_node": "Test Node"
                     },
                     "values": {
                         "header": "Node Values"
@@ -2012,6 +2046,10 @@
                         "add_item": "Add item",
                         "checked_items": "Checked items",
                         "clear_items": "Clear checked items"
+                    },
+                    "starting": {
+                        "description": "Home Assistant is starting up, please wait.",
+                        "header": "Home Assistant is starting..."
                     }
                 },
                 "changed_toast": {
@@ -2304,7 +2342,8 @@
                     "attribute_not_found": "Attribute {attribute} not available in: {entity}",
                     "entity_non_numeric": "Entity is non-numeric: {entity}",
                     "entity_not_found": "Entity not available: {entity}",
-                    "entity_unavailable": "{entity} is currently unavailable"
+                    "entity_unavailable": "{entity} is currently unavailable",
+                    "starting": "Home Assistant is starting, not everything may be available yet"
                 }
             },
             "mailbox": {

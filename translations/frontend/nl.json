@@ -474,6 +474,7 @@
         },
         "common": {
             "and": "en",
+            "back": "Terug",
             "cancel": "Annuleren",
             "close": "Sluiten",
             "delete": "Verwijderen",
@@ -505,6 +506,7 @@
             "device-picker": {
                 "clear": "Wis",
                 "device": "Apparaat",
+                "no_area": "Geen gebied",
                 "show_devices": "Apparaten weergeven",
                 "toggle": "Omschakelen"
             },
@@ -762,9 +764,13 @@
                     },
                     "description": "Overzicht van alle gebieden in je huis.",
                     "editor": {
+                        "area_id": "Gebieds-ID",
                         "create": "Aanmaken",
                         "default_name": "Nieuw Gebied",
                         "delete": "Verwijderen",
+                        "name": "Naam",
+                        "name_required": "Naam is vereist",
+                        "unknown_error": "Onbekende fout",
                         "update": "Bijwerken"
                     },
                     "picker": {
@@ -799,6 +805,7 @@
                                     "label": "Vertraging"
                                 },
                                 "device_id": {
+                                    "action": "Actie",
                                     "extra_fields": {
                                         "code": "Code"
                                     },
@@ -840,6 +847,7 @@
                                     "label": "En"
                                 },
                                 "device": {
+                                    "condition": "Voorwaarde",
                                     "extra_fields": {
                                         "above": "Boven",
                                         "below": "Onder",
@@ -918,7 +926,8 @@
                                         "below": "Onder",
                                         "for": "Duur"
                                     },
-                                    "label": "Apparaat"
+                                    "label": "Apparaat",
+                                    "trigger": "Trigger"
                                 },
                                 "event": {
                                     "event_data": "Gebeurtenisdata",
@@ -1246,6 +1255,7 @@
                         "integration": "Integratie",
                         "manufacturer": "Fabrikant",
                         "model": "Model",
+                        "no_area": "Geen gebied",
                         "no_devices": "Geen apparaten"
                     },
                     "delete": "Verwijderen",
@@ -2307,6 +2317,8 @@
                 "abort_intro": "Inloggen afgebroken",
                 "authorizing_client": "Je staat op het punt {clientId} toegang te geven tot je Home Assistant-instantie.",
                 "form": {
+                    "error": "Fout: {error}",
+                    "next": "Volgende",
                     "providers": {
                         "command_line": {
                             "abort": {
@@ -2392,6 +2404,7 @@
                             }
                         }
                     },
+                    "start_over": "Begin opnieuw",
                     "unknown_error": "Er ging iets mis",
                     "working": "Een ogenblik geduld"
                 },
