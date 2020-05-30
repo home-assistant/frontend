@@ -1,4 +1,4 @@
 import { HomeAssistant } from "../types";
 
 export const fetchTemplateEntities = (hass: HomeAssistant) =>
-  hass.callWS<String[]>({ type: "template/list" });
+  hass.callWS<string[]>({ type: "template/list" });
