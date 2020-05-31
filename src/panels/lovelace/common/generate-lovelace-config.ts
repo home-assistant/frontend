@@ -37,6 +37,7 @@ import { GroupEntity, HomeAssistant } from "../../../types";
 import {
   AlarmPanelCardConfig,
   EntitiesCardConfig,
+  HumidifierCardConfig,
   LightCardConfig,
   PictureEntityCardConfig,
   ThermostatCardConfig,
@@ -148,6 +149,12 @@ export const computeCards = (
         hours_to_show: stateObj.attributes.hours_to_show,
         title: stateObj.attributes.friendly_name,
         refresh_interval: stateObj.attributes.refresh,
+      };
+      cards.push(cardConfig);
+    } else if (domain === "humidifier") {
+      const cardConfig: HumidifierCardConfig = {
+        type: "humidifier",
+        entity: entityId,
       };
       cards.push(cardConfig);
     } else if (domain === "light" && single) {

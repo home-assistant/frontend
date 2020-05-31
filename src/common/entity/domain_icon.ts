@@ -22,6 +22,7 @@ const fixedIcons = {
   history_graph: "hass:chart-line",
   homeassistant: "hass:home-assistant",
   homekit: "hass:home-automation",
+  humidifier: "hass:air-humidifier",
   image_processing: "hass:image-filter-frames",
   input_boolean: "hass:toggle-switch-outline",
   input_datetime: "hass:calendar-clock",

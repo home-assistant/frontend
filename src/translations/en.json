@@ -44,6 +44,19 @@
         "idle": "Idle",
         "fan": "Fan"
       }
+    },
+    "humidifier": {
+      "mode": {
+        "normal": "Normal",
+        "eco": "Eco",
+        "away": "Away",
+        "boost": "Boost",
+        "comfort": "Comfort",
+        "home": "Home",
+        "sleep": "Sleep",
+        "auto": "Auto",
+        "baby": "Baby"
+      }
     }
   },
   "state_badge": {
@@ -145,6 +158,11 @@
         "direction": "Direction",
         "forward": "Forward",
         "reverse": "Reverse"
+      },
+      "humidifier": {
+        "mode": "Mode",
+        "target_humidity_entity": "{name} target humidity",
+        "on_entity": "{name} on"
       },
       "light": {
         "brightness": "Brightness",
@@ -1855,6 +1873,10 @@
             "horizontal-stack": {
               "name": "Horizontal Stack",
               "description": "The Horizontal Stack card allows you to stack together multiple cards, so they always sit next to each other in the space of one column."
+            },
+            "humidifier": {
+              "name": "Humidifier",
+              "description": "The Humidifier card gives control of your humidifier entity. Allowing you to change the humidity and mode of the entity."
             },
             "iframe": {
               "name": "Webpage",
