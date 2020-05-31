@@ -248,9 +248,7 @@ export class HuiHumidifierCard extends LitElement implements LovelaceCard {
     }
   }
 
-  private _getSetHum(
-    stateObj: HassEntity
-  ): undefined | number | [number, number] {
+  private _getSetHum(stateObj: HassEntity): undefined | number {
     if (stateObj.state === UNAVAILABLE) {
       return undefined;
     }
