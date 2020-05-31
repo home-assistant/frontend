@@ -9,6 +9,7 @@ import { inputDateTimeIcon } from "./input_dateteime_icon";
 import { sensorIcon } from "./sensor_icon";
 
 const domainIcons = {
+  group: binarySensorIcon,
   binary_sensor: binarySensorIcon,
   cover: coverIcon,
   sensor: sensorIcon,

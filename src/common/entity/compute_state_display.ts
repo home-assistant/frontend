@@ -55,14 +55,21 @@ export const computeStateDisplay = (
     return formatDateTime(date, language);
   }
 
+  let forwardedDomain = domain;
+  if (domain === "group" && stateObj.attributes.device_class) {
+    // Forward the localisation lookup to use binary sensor,
+    // as the device class is forwarded from there, too.
+    forwardedDomain = "binary_sensor";
+  }
+
   return (
     // Return device class translation
     (stateObj.attributes.device_class &&
       localize(
-        `component.${domain}.state.${stateObj.attributes.device_class}.${stateObj.state}`
+        `component.${forwardedDomain}.state.${stateObj.attributes.device_class}.${stateObj.state}`
       )) ||
     // Return default translation
-    localize(`component.${domain}.state._.${stateObj.state}`) ||
+    localize(`component.${forwardedDomain}.state._.${stateObj.state}`) ||
     // We don't know! Return the raw state.
     stateObj.state
   );
