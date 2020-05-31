@@ -1,4 +1,5 @@
 import { HomeAssistant } from "../types";
+import { HaFormTimeData } from "../components/ha-form/ha-form";
 
 export interface TemplateBinarySensor {
   id: string;
@@ -8,8 +9,8 @@ export interface TemplateBinarySensor {
   value_template?: string;
   availability_template?: string;
   entity_picture_template?: string;
-  delay_on?: string;
-  delay_off?: string;
+  delay_on?: HaFormTimeData;
+  delay_off?: HaFormTimeData;
 }
 
 export interface TemplateBinarySensorMutableParams {
@@ -19,8 +20,8 @@ export interface TemplateBinarySensorMutableParams {
   value_template?: string;
   availability_template?: string;
   entity_picture_template?: string;
-  delay_on?: string;
-  delay_off?: string;
+  delay_on?: HaFormTimeData;
+  delay_off?: HaFormTimeData;
 }
 
 export const fetchTemplateBinarySensor = (hass: HomeAssistant) =>

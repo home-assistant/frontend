@@ -6,6 +6,7 @@ import "@polymer/paper-dropdown-menu/paper-dropdown-menu-light";
 import { PaperListboxElement } from "@polymer/paper-listbox/paper-listbox";
 import "@polymer/paper-item/paper-item";
 import "../../../../components/ha-combo-box";
+import "../../../../components/ha-form/ha-form-positive_time_period_dict";
 
 import {
   css,
@@ -23,6 +24,7 @@ import { DEVICE_CLASSES } from "../../../../data/binary_sensor";
 import { TemplateBinarySensor } from "../../../../data/template.binary_sensor";
 import { haStyle } from "../../../../resources/styles";
 import { HomeAssistant } from "../../../../types";
+import { HaFormTimeData } from "../../../../components/ha-form/ha-form";
 
 @customElement("ha-binary_sensor-form")
 class HaBinarySensorForm extends LitElement {
@@ -44,9 +46,9 @@ class HaBinarySensorForm extends LitElement {
 
   @property() private _entity_picture_template?: string;
 
-  @property() private _delay_on?: string;
+  @property() private _delay_on!: HaFormTimeData;
 
-  @property() private _delay_off?: string;
+  @property() private _delay_off!: HaFormTimeData;
 
   set item(item: TemplateBinarySensor) {
     this._item = item;
@@ -57,8 +59,8 @@ class HaBinarySensorForm extends LitElement {
       this._value_template = item.value_template || "";
       this._availability_template = item.availability_template || "";
       this._entity_picture_template = item.entity_picture_template || "";
-      this._delay_on = item.delay_on || "";
-      this._delay_off = item.delay_off || "";
+      this._delay_on = item.delay_on || {};
+      this._delay_off = item.delay_off || {};
     } else {
       this._friendly_name = "";
       this._icon_template = "";
@@ -66,8 +68,8 @@ class HaBinarySensorForm extends LitElement {
       this._value_template = "";
       this._availability_template = "";
       this._entity_picture_template = "";
-      this._delay_on = "";
-      this._delay_off = "";
+      this._delay_on = {};
+      this._delay_off = {};
     }
   }
 
@@ -168,22 +170,30 @@ class HaBinarySensorForm extends LitElement {
                   "ui.dialogs.helper_settings.binary_sensor.entity_picture_template"
                 )}
               ></paper-input>
-              <paper-input
-                .value=${this._delay_on}
+              <ha-form-positive_time_period_dict
+                .data=${this._delay_on}
+                .schema=${{
+                  name: "delay_on",
+                  required: false,
+                }}
                 .configValue=${"delay_on"}
                 @value-changed=${this._valueChanged}
                 .label=${this.hass!.localize(
                   "ui.dialogs.helper_settings.binary_sensor.delay_on"
                 )}
-              ></paper-input>
-              <paper-input
-                .value=${this._delay_off}
+              ></ha-form-positive_time_period_dict>
+              <ha-form-positive_time_period_dict
+                .data=${this._delay_off}
+                .schema=${{
+                  name: "delay_off",
+                  required: false,
+                }}
                 .configValue=${"delay_off"}
                 @value-changed=${this._valueChanged}
                 .label=${this.hass!.localize(
                   "ui.dialogs.helper_settings.binary_sensor.delay_off"
                 )}
-              ></paper-input>
+              ></ha-form-positive_time_period_dict>
             `
           : ""}
       </div>
