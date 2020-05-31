@@ -95,7 +95,7 @@ class HaHumidifierControl extends EventsMixin(PolymerElement) {
       this.humidityStateInFlux(true);
     }
     if (newval <= this.max) {
-      // If no initial target_temp
+      // If no initial humidity
       // this forces control to start
       // from the min configured instead of 0
       if (newval <= this.min) {
