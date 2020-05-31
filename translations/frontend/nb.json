@@ -740,6 +740,8 @@
         "notification_toast": {
             "connection_lost": "Forbindelsen ble brutt. Kobler til på nytt...",
             "service_call_failed": "Kunne ikke tilkalle tjenesten: {service}",
+            "started": "Home Assistant har startet!",
+            "starting": "Home Assistant starter, alt er ikke tilgjengelig før starten er fullført.",
             "triggered": "Utløst {name}"
         },
         "panel": {
@@ -1001,7 +1003,7 @@
                             },
                             "unsupported_platform": "Ikke-støttet plattform: {platform}"
                         },
-                        "unsaved_confirm": "Du har endringer som ikke er lagret. Er du sikker på at du vil forlate?"
+                        "unsaved_confirm": "Du har ulagrede endringer. Er du sikker på at du vil lukke?"
                     },
                     "picker": {
                         "add_automation": "Legg til automasjon",
@@ -1839,21 +1841,51 @@
                         "set_wakeup": "Angi vekkeintervall",
                         "true": "Sant"
                     },
+                    "node_management": {
+                        "add_to_group": "Legg til i gruppe",
+                        "entities": "Entiteter fra denne noden",
+                        "entity_info": "Entitetsinformasjon",
+                        "exclude_entity": "Ekskluder denne entiteten fra Home Assistant",
+                        "group": "Gruppe",
+                        "header": "Z-Wave Node-administrasjon",
+                        "introduction": "Kjør Z-Wave-kommandoer som påvirker en enkelt node. Velg en node for å se en liste over tilgjengelige kommandoer.",
+                        "max_associations": "Maks tilknytninger:",
+                        "node_group_associations": "Tilknytninger for nodegruppe",
+                        "node_protection": "Node beskyttelse",
+                        "node_to_control": "Node for å kontrollere",
+                        "nodes": "Noder",
+                        "nodes_hint": "Velg node for å vise alternativer per node",
+                        "nodes_in_group": "Andre noder i denne gruppen:",
+                        "pooling_intensity": "Intensitet for polling",
+                        "protection": "Beskyttelse",
+                        "remove_broadcast": "Fjern kringkasting",
+                        "remove_from_group": "Fjern fra gruppe",
+                        "set_protection": "Angi beskyttelse"
+                    },
                     "ozw_log": {
                         "header": "OZW-logg",
-                        "introduction": "Vis loggen. 0 er minimum (laster hele loggen) og 1000 er maksimum. Load vil vise en statisk logg og halen vil automatisk oppdatere med det siste spesifiserte antall linjer av loggen."
+                        "introduction": "Vis loggen. 0 er minimum (laster hele loggen) og 1000 er maksimum. Load vil vise en statisk logg og halen vil automatisk oppdatere med det siste spesifiserte antall linjer av loggen.",
+                        "last_log_lines": "Antall siste logglinjer",
+                        "load": "Laste"
                     },
                     "services": {
                         "add_node": "Legg til node",
                         "add_node_secure": "Legg til sikker node",
                         "cancel_command": "Avbryt kommando",
                         "heal_network": "Helbrede nettverk",
+                        "heal_node": "Helbrede node",
+                        "node_info": "Nodeinformasjon",
+                        "refresh_entity": "Oppdater entitet",
+                        "refresh_node": "Oppdater node",
+                        "remove_failed_node": "Fjern feilet node",
                         "remove_node": "Fjern node",
+                        "replace_failed_node": "Erstatt feilet node",
                         "save_config": "Lagre konfigurasjon",
                         "soft_reset": "Myk tilbakestilling",
                         "start_network": "Start nettverk",
                         "stop_network": "Stopp nettverk",
-                        "test_network": "Test nettverk"
+                        "test_network": "Test nettverk",
+                        "test_node": "Test node"
                     },
                     "values": {
                         "header": "Nodeverdier"
@@ -2012,6 +2044,10 @@
                         "add_item": "Legg til",
                         "checked_items": "Merkede elementer",
                         "clear_items": "Fjern merkede elementer"
+                    },
+                    "starting": {
+                        "description": "Home Assistant starter, vennligst vent.",
+                        "header": "Home Assistant starter..."
                     }
                 },
                 "changed_toast": {
@@ -2304,7 +2340,8 @@
                     "attribute_not_found": "Attributtet {attribute} er ikke tilgjengelig i: {entity}",
                     "entity_non_numeric": "Entiteten er ikke-numerisk: {entity}",
                     "entity_not_found": "Entitet ikke tilgjengelig: {entity}",
-                    "entity_unavailable": "{entity} er for øyeblikket utilgjengelig"
+                    "entity_unavailable": "{entity} er for øyeblikket utilgjengelig",
+                    "starting": "Home Assistant starter, ikke alt er kanskje tilgjengelig ennå"
                 }
             },
             "mailbox": {

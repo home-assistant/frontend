@@ -740,6 +740,8 @@
         "notification_toast": {
             "connection_lost": "Connexió perduda. Tornant a connectar...",
             "service_call_failed": "Ha fallat la crida al servei {service}.",
+            "started": "Home Assistant s'ha iniciat!",
+            "starting": "Home Assistant està iniciant-se, no estarà tot disponible fins que acabi",
             "triggered": "{name} disparat/ada"
         },
         "panel": {
@@ -1839,21 +1841,50 @@
                         "set_wakeup": "Estableix l'interval en despertar",
                         "true": "Cert"
                     },
+                    "node_management": {
+                        "add_to_group": "Afegeix a grup",
+                        "entities": "Entitats d'aquest node",
+                        "entity_info": "Informació de l'entitat",
+                        "exclude_entity": "Exclou aquesta entitat de Home Assistant",
+                        "group": "Grup",
+                        "header": "Gestió de nodes Z-Wave",
+                        "introduction": "Executa ordres Z-Wave que afecten un sol node. Tria un node per veure la llista d'ordres/comandes disponibles.",
+                        "max_associations": "Associacions màximes:",
+                        "node_protection": "Protecció de node",
+                        "node_to_control": "Node a controlar",
+                        "nodes": "Nodes",
+                        "nodes_hint": "Selecciona un node per visualitzar-ne les seves opcions",
+                        "nodes_in_group": "Altres nodes en aquest grup:",
+                        "pooling_intensity": "Intensitat de sondeig",
+                        "protection": "Protecció",
+                        "remove_broadcast": "Elimina la difusió/broadcast",
+                        "remove_from_group": "Elimina de grup"
+                    },
                     "ozw_log": {
                         "header": "Registre d'OZW",
-                        "introduction": "Consulta el registre. 0 és el mínim (carrega el registre complet) i 1000 és el màxim. La càrrega mostrarà un registre estàtic i la cua s'actualitzarà automàticament amb l'últim número de línies especificat."
+                        "introduction": "Consulta el registre. 0 és el mínim (carrega el registre complet) i 1000 és el màxim. La càrrega mostrarà un registre estàtic i la cua s'actualitzarà automàticament amb l'últim número de línies especificat.",
+                        "last_log_lines": "Nombre d'últimes línies de registre",
+                        "tail": "Cua"
                     },
                     "services": {
                         "add_node": "Afegeix node",
                         "add_node_secure": "Afegeix node amb seguretat",
                         "cancel_command": "Cancel·lar ordre",
                         "heal_network": "Guareix la xarxa",
+                        "heal_node": "Guareix node",
+                        "node_info": "Informació de node",
+                        "print_node": "Imprimeix node",
+                        "refresh_entity": "Actualitza l'entitat",
+                        "refresh_node": "Actualitza node",
+                        "remove_failed_node": "Elimina node fallit",
                         "remove_node": "Elimina node",
+                        "replace_failed_node": "Substitueix node fallit",
                         "save_config": "Desa la configuració",
                         "soft_reset": "Reinici suau",
                         "start_network": "Inicia la xarxa",
                         "stop_network": "Atura la xarxa",
-                        "test_network": "Prova la xarxa"
+                        "test_network": "Prova la xarxa",
+                        "test_node": "Prova node"
                     },
                     "values": {
                         "header": "Valors dels node"
@@ -2012,6 +2043,10 @@
                         "add_item": "Afegir element",
                         "checked_items": "Articles seleccionats",
                         "clear_items": "Esborrar els articles seleccionats"
+                    },
+                    "starting": {
+                        "description": "Home Assistant està iniciant-se, espera un moment.",
+                        "header": "Home Assistant està iniciant-se..."
                     }
                 },
                 "changed_toast": {
@@ -2304,7 +2339,8 @@
                     "attribute_not_found": "L'atribut {attribute} de {entity} no és disponible.",
                     "entity_non_numeric": "Entitat no numèrica: {entity}",
                     "entity_not_found": "Entitat no disponible: {entity}",
-                    "entity_unavailable": "{entity} no està disponible actualment"
+                    "entity_unavailable": "{entity} no està disponible actualment",
+                    "starting": "Home Assistant està iniciant-se, pot ser que encara no estigui tot disponible"
                 }
             },
             "mailbox": {

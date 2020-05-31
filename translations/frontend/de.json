@@ -474,6 +474,7 @@
         },
         "common": {
             "and": "und",
+            "back": "Zurück",
             "cancel": "Abbrechen",
             "close": "Schließen",
             "delete": "Löschen",
@@ -505,6 +506,7 @@
             "device-picker": {
                 "clear": "Löschen",
                 "device": "Gerät",
+                "no_area": "Kein Bereich",
                 "show_devices": "Geräte anzeigen",
                 "toggle": "Umschalten"
             },
@@ -738,6 +740,8 @@
         "notification_toast": {
             "connection_lost": "Verbindung getrennt. Verbinde erneut...",
             "service_call_failed": "Fehler beim Aufrufen des Service {service}.",
+            "started": "Home Assistant ist gestartet!",
+            "starting": "Home Assistant startet, es wird nicht alles verfügbar sein, bis es fertig ist.",
             "triggered": "{name} ausgelöst"
         },
         "panel": {
@@ -762,9 +766,13 @@
                     },
                     "description": "Überblick über alle Bereiche in Deinem Haus.",
                     "editor": {
+                        "area_id": "Bereich-ID",
                         "create": "Erstellen",
                         "default_name": "Neuer Bereich",
                         "delete": "Löschen",
+                        "name": "Name",
+                        "name_required": "Name erforderlich",
+                        "unknown_error": "Unbekannter Fehler",
                         "update": "Aktualisieren"
                     },
                     "picker": {
@@ -799,6 +807,7 @@
                                     "label": "Verzögerung"
                                 },
                                 "device_id": {
+                                    "action": "Aktion",
                                     "extra_fields": {
                                         "code": "Code"
                                     },
@@ -840,6 +849,7 @@
                                     "label": "Und"
                                 },
                                 "device": {
+                                    "condition": "Bedingung",
                                     "extra_fields": {
                                         "above": "Über",
                                         "below": "Unter",
@@ -918,7 +928,8 @@
                                         "below": "Unter",
                                         "for": "Dauer"
                                     },
-                                    "label": "Gerät"
+                                    "label": "Gerät",
+                                    "trigger": "Auslöser"
                                 },
                                 "event": {
                                     "event_data": "Ereignisdaten",
@@ -1246,6 +1257,7 @@
                         "integration": "Integration",
                         "manufacturer": "Hersteller",
                         "model": "Modell",
+                        "no_area": "Kein Bereich",
                         "no_devices": "keine Geräte"
                     },
                     "delete": "Löschen",
@@ -1828,21 +1840,51 @@
                         "set_wakeup": "Aufwachintervall einrichten",
                         "true": "Richtig"
                     },
+                    "node_management": {
+                        "add_to_group": "Zur Gruppe hinzufügen",
+                        "entities": "Entitäten dieses Knotens",
+                        "entity_info": "Entitätsinformationen",
+                        "exclude_entity": "Schließen Sie diese Entität vom Home Assistant aus",
+                        "group": "Gruppe",
+                        "header": "Z-Wave-Knotenverwaltung",
+                        "introduction": "Führen Sie Z-Wave-Befehle aus, die einen einzelnen Knoten betreffen. Wählen Sie einen Knoten aus, um eine Liste der verfügbaren Befehle anzuzeigen.",
+                        "max_associations": "Max Assoziationen:",
+                        "node_group_associations": "Knotengruppenzuordnungen",
+                        "node_protection": "Knotenschutz",
+                        "node_to_control": "Zu steuernder Knoten",
+                        "nodes": "Knoten",
+                        "nodes_hint": "Knoten auswählen, um Optionen pro Knoten anzuzeigen",
+                        "nodes_in_group": "Andere Knoten in dieser Gruppe:",
+                        "pooling_intensity": "Abfragehäufigkeit",
+                        "protection": "Schutz",
+                        "remove_broadcast": "Broadcast entfernen",
+                        "remove_from_group": "Aus der Gruppe entfernen",
+                        "set_protection": "Schutz einstellen"
+                    },
                     "ozw_log": {
                         "header": "OZW Log",
-                        "introduction": "Schauen Sie das Protokoll an. 0 ist das Minimum (lädt das gesamte Protokoll) und 1000 ist das Maximum. Beim Laden wird ein statisches Protokoll angezeigt und das Ende wird automatisch mit der zuletzt angegebenen Anzahl von Zeilen des Protokolls aktualisiert."
+                        "introduction": "Schauen Sie das Protokoll an. 0 ist das Minimum (lädt das gesamte Protokoll) und 1000 ist das Maximum. Beim Laden wird ein statisches Protokoll angezeigt und das Ende wird automatisch mit der zuletzt angegebenen Anzahl von Zeilen des Protokolls aktualisiert.",
+                        "last_log_lines": "Anzahl der letzten Logzeilen"
                     },
                     "services": {
                         "add_node": "Knoten hinzufügen",
                         "add_node_secure": "Knoten verschlüsselt hinzufügen",
                         "cancel_command": "Befehl abbrechen",
                         "heal_network": "Netzwerk heilen",
+                        "heal_node": "Knoten heilen",
+                        "node_info": "Knoteninformationen",
+                        "print_node": "Knoten drucken",
+                        "refresh_entity": "Entität aktualisieren",
+                        "refresh_node": "Knoten aktualisieren",
+                        "remove_failed_node": "Fehlerhaften Knoten entfernen",
                         "remove_node": "Knoten entfernen",
+                        "replace_failed_node": "Ausgefallenen Knoten ersetzen",
                         "save_config": "Konfiguration speichern",
                         "soft_reset": "Soft Reset",
                         "start_network": "Netzwerk starten",
                         "stop_network": "Netzwerk stoppen",
-                        "test_network": "Netzwerk testen"
+                        "test_network": "Netzwerk testen",
+                        "test_node": "Testknoten"
                     },
                     "values": {
                         "header": "Knotenwerte"
@@ -2001,6 +2043,10 @@
                         "add_item": "Artikel hinzufügen",
                         "checked_items": "Markierte Artikel",
                         "clear_items": "Markierte Elemente löschen"
+                    },
+                    "starting": {
+                        "description": "Home Assistant startet, bitte warten Sie.",
+                        "header": "Home Assistant startet ..."
                     }
                 },
                 "changed_toast": {
@@ -2293,7 +2339,8 @@
                     "attribute_not_found": "Attribut {attribute} nicht verfügbar in: {entity}",
                     "entity_non_numeric": "Die Entität ist nicht-numerisch: {entity}",
                     "entity_not_found": "Entität nicht verfügbar: {entity}",
-                    "entity_unavailable": "{entity} ist derzeit nicht verfügbar"
+                    "entity_unavailable": "{entity} ist derzeit nicht verfügbar",
+                    "starting": "Home Assistant beginnt, vielleicht ist noch nicht alles verfügbar"
                 }
             },
             "mailbox": {
