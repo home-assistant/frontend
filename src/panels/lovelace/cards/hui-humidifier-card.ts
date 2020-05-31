@@ -12,8 +12,6 @@ import {
   svg,
   TemplateResult,
 } from "lit-element";
-import { classMap } from "lit-html/directives/class-map";
-import { UNIT_F } from "../../../common/const";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { computeStateName } from "../../../common/entity/compute_state_name";
@@ -22,7 +20,6 @@ import "../../../components/ha-card";
 import { HumidifierEntity } from "../../../data/humidifier";
 import { UNAVAILABLE } from "../../../data/entity";
 import { HomeAssistant } from "../../../types";
-import { actionHandler } from "../common/directives/action-handler-directive";
 import { findEntities } from "../common/find-entites";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
@@ -60,7 +57,7 @@ export class HuiHumidifierCard extends LitElement implements LovelaceCard {
 
   @property() private _config?: HumidifierCardConfig;
 
-  @property() private _setHum?: number | number[];
+  @property() private _setHum?: number;
 
   public getCardSize(): number {
     return 5;
