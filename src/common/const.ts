@@ -37,6 +37,7 @@ export const DOMAINS_WITH_MORE_INFO = [
   "fan",
   "group",
   "history_graph",
+  "humidifier",
   "input_datetime",
   "light",
   "lock",
