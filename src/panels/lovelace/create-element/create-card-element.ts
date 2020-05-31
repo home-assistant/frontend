@@ -6,6 +6,7 @@ import "../cards/hui-entity-card";
 import "../cards/hui-glance-card";
 import "../cards/hui-history-graph-card";
 import "../cards/hui-horizontal-stack-card";
+import "../cards/hui-humidifier-card";
 import "../cards/hui-light-card";
 import "../cards/hui-sensor-card";
 import "../cards/hui-thermostat-card";
@@ -24,6 +25,7 @@ const ALWAYS_LOADED_TYPES = new Set([
   "glance",
   "history-graph",
   "horizontal-stack",
+  "humidifier",
   "light",
   "sensor",
   "thermostat",

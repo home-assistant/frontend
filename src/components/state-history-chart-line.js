@@ -262,6 +262,28 @@ class StateHistoryChartLine extends LocalizeMixin(PolymerElement) {
             pushData(new Date(state.last_changed), series);
           }
         });
+      } else if (domain === "humidifier") {
+        addColumn(
+          `${this.hass.localize(
+            "ui.card.humidifier.target_humidity_entity",
+            "name",
+            name
+          )}`,
+          true
+        );
+        addColumn(
+          `${this.hass.localize("ui.card.humidifier.on_entity", "name", name)}`,
+          true,
+          true
+        );
+
+        states.states.forEach((state) => {
+          if (!state.attributes) return;
+          const target = safeParseFloat(state.attributes.humidity);
+          const series = [target];
+          series.push(state.state === "on" ? target : null);
+          pushData(new Date(state.last_changed), series);
+        });
       } else {
         // Only disable interpolation for sensors
         const isStep = domain === "sensor";
