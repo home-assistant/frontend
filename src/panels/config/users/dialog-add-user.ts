@@ -85,7 +85,9 @@ export class DialogAddUser extends LitElement {
             required
             auto-validate
             autocapitalize="on"
-            error-message="Required"
+            error-message=${this.hass.localize(
+              "ui.panel.config.users.add_user.error_required"
+            )}
             @value-changed=${this._nameChanged}
             @blur=${this._maybePopulateUsername}
           ></paper-input>
@@ -99,7 +101,9 @@ export class DialogAddUser extends LitElement {
             auto-validate
             autocapitalize="none"
             @value-changed=${this._usernameChanged}
-            error-message="Required"
+            error-message=${this.hass.localize(
+              "ui.panel.config.users.add_user.error_required"
+            )}
           ></paper-input>
           <paper-input
             .label=${this.hass.localize(
@@ -110,7 +114,9 @@ export class DialogAddUser extends LitElement {
             required
             auto-validate
             @value-changed=${this._passwordChanged}
-            error-message="Required"
+            error-message=${this.hass.localize(
+              "ui.panel.config.users.add_user.error_required"
+            )}
           ></paper-input>
           <ha-switch .checked=${this._isAdmin} @change=${this._adminChanged}>
             ${this.hass.localize("ui.panel.config.users.editor.admin")}
@@ -118,10 +124,9 @@ export class DialogAddUser extends LitElement {
           ${!this._isAdmin
             ? html`
                 <br />
-                The users group is a work in progress. The user will be unable
-                to administer the instance via the UI. We're still auditing all
-                management API endpoints to ensure that they correctly limit
-                access to administrators.
+                ${this.hass.localize(
+                  "ui.panel.config.users.users_privileges_note"
+                )}
               `
             : ""}
         </div>
