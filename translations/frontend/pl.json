@@ -740,6 +740,8 @@
         "notification_toast": {
             "connection_lost": "Utracono połączenie. Łączę ponownie...",
             "service_call_failed": "Nie udało się wywołać usługi {service}.",
+            "started": "Home Assistant uruchomił się!",
+            "starting": "Home Assistant uruchamia się, nie wszystko będzie dostępne, dopóki uruchamianie się nie zakończy.",
             "triggered": "Wyzwolenie {name}"
         },
         "panel": {
@@ -1794,7 +1796,7 @@
                         "name": "Nazwa",
                         "new_zone": "Nowa strefa",
                         "passive": "Pasywna",
-                        "passive_note": "Strefy pasywne są ukryte w interfejsie użytkownika i nie są używane jako lokalizacje dla trackerów urządzeń. Są przydatne, jeśli chcesz chcesz z nich skorzystać w automatyzacjach.",
+                        "passive_note": "Strefy pasywne nie są widoczne w interfejsie użytkownika i nie są używane jako lokalizacje dla śledzonych urządzeń. Są one przydatne do tworzenia automatyzacji.",
                         "radius": "Promień",
                         "required_error_msg": "To pole jest wymagane",
                         "update": "Aktualizuj"
@@ -1833,27 +1835,59 @@
                         "config_parameter": "Parametr",
                         "config_value": "Wartość",
                         "false": "Fałsz",
-                        "header": "Opcje konfiguracji węzła",
+                        "header": "Parametry konfiguracji węzła",
                         "seconds": "sekundy",
                         "set_config_parameter": "Ustaw parametr",
                         "set_wakeup": "Ustaw częstotliwość wybudzenia",
                         "true": "Prawda"
                     },
+                    "node_management": {
+                        "add_to_group": "Dodaj do grupy",
+                        "entities": "Encje tego węzła",
+                        "entity_info": "Informacje o encji",
+                        "exclude_entity": "Wyklucz tę encję z Home Assistanta",
+                        "group": "Grupa",
+                        "header": "Zarządzanie węzłami Z-Wave",
+                        "introduction": "Uruchom polecenia Z-Wave, które wpływają na pojedynczy węzeł. Wybierz węzeł, aby wyświetlić listę dostępnych poleceń.",
+                        "max_associations": "Maksimum asocjacji:",
+                        "node_group_associations": "Asocjacja grupy węzła",
+                        "node_protection": "Ochrona węzła",
+                        "node_to_control": "Węzeł do kontroli",
+                        "nodes": "Węzły",
+                        "nodes_hint": "Wybierz węzeł, aby wyświetlić jego opcje",
+                        "nodes_in_group": "Inne węzły w tej grupie:",
+                        "pooling_intensity": "Częstotliwość odpytywania",
+                        "protection": "Ochrona",
+                        "remove_broadcast": "Usuń broadcast",
+                        "remove_from_group": "Usuń z grupy",
+                        "set_protection": "Ustaw ochronę"
+                    },
                     "ozw_log": {
                         "header": "Log OpenZWave",
-                        "introduction": "Określ liczbowo długość loga. 0 to minimum (ładuje całość), a 1000 to maksimum. Klawisz Load ładuje i wyświetla log statyczny.\nKlawisz Tail ładuje i wyświetla określoną liczbę ostatnich linii logu."
+                        "introduction": "Określ liczbowo długość loga. 0 to minimum (ładuje całość), a 1000 to maksimum. Klawisz 'Wczytaj cały' ładuje i statycznie wyświetla cały log.\nKlawisz 'Wczytaj końcowe linie' ładuje i dynamicznie wyświetla określoną liczbę ostatnich linii logu.",
+                        "last_log_lines": "Liczba końcowych linii loga",
+                        "load": "Wczytaj cały",
+                        "tail": "Wczytaj końcowe linie"
                     },
                     "services": {
                         "add_node": "Dodaj węzeł",
                         "add_node_secure": "Dodaj bezpieczny węzeł",
                         "cancel_command": "Anuluj polecenie",
                         "heal_network": "Uzdrawiaj sieć",
+                        "heal_node": "Uzdrawiaj węzeł",
+                        "node_info": "Informacje o węźle",
+                        "print_node": "Informacje o węźle",
+                        "refresh_entity": "Odśwież encję",
+                        "refresh_node": "Odśwież węzeł",
+                        "remove_failed_node": "Usuń uszkodzony węzeł",
                         "remove_node": "Usuń węzeł",
+                        "replace_failed_node": "Zastąp uszkodzony węzeł",
                         "save_config": "Zapisz konfigurację",
                         "soft_reset": "Miękki reset",
                         "start_network": "Uruchom sieć",
                         "stop_network": "Zatrzymaj sieć",
-                        "test_network": "Testuj sieć"
+                        "test_network": "Testuj sieć",
+                        "test_node": "Testuj węzeł"
                     },
                     "values": {
                         "header": "Wartości węzła"
@@ -2012,6 +2046,10 @@
                         "add_item": "Dodaj pozycję",
                         "checked_items": "Pozycje zaznaczone",
                         "clear_items": "Wyczyść zaznaczone pozycje"
+                    },
+                    "starting": {
+                        "description": "Home Assistant uruchamia się, proszę czekać.",
+                        "header": "Home Assistant uruchamia się..."
                     }
                 },
                 "changed_toast": {
@@ -2304,7 +2342,8 @@
                     "attribute_not_found": "Atrybut {attribute} jest niedostępny dla: {entity}",
                     "entity_non_numeric": "Encja nie jest numeryczna: {entity}",
                     "entity_not_found": "Encja niedostępna: {entity}",
-                    "entity_unavailable": "{entity} jest obecnie niedostępna"
+                    "entity_unavailable": "{entity} jest obecnie niedostępna",
+                    "starting": "Home Assistant uruchamia się, nie wszystkie możliwości mogą być dostępne"
                 }
             },
             "mailbox": {
