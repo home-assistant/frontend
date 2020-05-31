@@ -474,6 +474,7 @@
         },
         "common": {
             "and": "és",
+            "back": "Vissza",
             "cancel": "Mégse",
             "close": "Bezárás",
             "delete": "Törlés",
@@ -505,6 +506,7 @@
             "device-picker": {
                 "clear": "Törlés",
                 "device": "Eszköz",
+                "no_area": "Nincs terület",
                 "show_devices": "Eszközök megjelenítése",
                 "toggle": "Váltás"
             },
@@ -738,6 +740,8 @@
         "notification_toast": {
             "connection_lost": "A kapcsolat megszakadt. Újracsatlakozás…",
             "service_call_failed": "Nem sikerült meghívni a(z) {service} szolgáltatást.",
+            "started": "A Home Assistant indítása befejeződött!",
+            "starting": "A Home Assistant indítása folyamatban van. Nem lesz minden elérhető, amíg ez be nem fejeződik.",
             "triggered": "Aktiválva {name}"
         },
         "panel": {
@@ -762,9 +766,13 @@
                     },
                     "description": "Az összes otthoni terület áttekintése",
                     "editor": {
+                        "area_id": "Terület ID",
                         "create": "Létrehozás",
                         "default_name": "Új Terület",
                         "delete": "Törlés",
+                        "name": "Név",
+                        "name_required": "Név szükséges",
+                        "unknown_error": "Ismeretlen hiba",
                         "update": "Frissítés"
                     },
                     "picker": {
@@ -799,6 +807,7 @@
                                     "label": "Késleltetés"
                                 },
                                 "device_id": {
+                                    "action": "Művelet",
                                     "extra_fields": {
                                         "code": "Kód"
                                     },
@@ -840,6 +849,7 @@
                                     "label": "És"
                                 },
                                 "device": {
+                                    "condition": "Feltétel",
                                     "extra_fields": {
                                         "above": "Felett",
                                         "below": "Alatt",
@@ -918,7 +928,8 @@
                                         "below": "Alatt",
                                         "for": "Időtartam"
                                     },
-                                    "label": "Eszköz"
+                                    "label": "Eszköz",
+                                    "trigger": "Eseményindító"
                                 },
                                 "event": {
                                     "event_data": "Esemény adatai",
@@ -1246,6 +1257,7 @@
                         "integration": "Integráció",
                         "manufacturer": "Gyártó",
                         "model": "Modell",
+                        "no_area": "Nincs terület",
                         "no_devices": "Nincsenek eszközök"
                     },
                     "delete": "Törlés",
@@ -1829,6 +1841,9 @@
                         "set_wakeup": "Ébresztési időköz beállítása",
                         "true": "Igaz"
                     },
+                    "node_management": {
+                        "nodes": "Csomópontok"
+                    },
                     "ozw_log": {
                         "header": "OZW Log",
                         "introduction": "Napló megtekintése. 0 a minimum (a teljes naplót betölti) és 1000 a maximum. A betöltés statikus naplót jelenít meg, és a vége automatikusan frissül a napló utolsó meghatározott számú sorával."
@@ -2002,6 +2017,10 @@
                         "add_item": "Tétel hozzáadása",
                         "checked_items": "Bejelölt tételek",
                         "clear_items": "Bejelölt tételek törlése"
+                    },
+                    "starting": {
+                        "description": "A Home Assistant indítása folyamatban van, kérlek várj.",
+                        "header": "A Home Assistant indítása folyamatban van..."
                     }
                 },
                 "changed_toast": {
@@ -2294,7 +2313,8 @@
                     "attribute_not_found": "A(z) {attribute} attribútum nem érhető el a(z) {entity} entitásban.",
                     "entity_non_numeric": "Entitás nem numerikus: {entity}",
                     "entity_not_found": "Entitás nem elérhető: {entity}",
-                    "entity_unavailable": "{entity} jelenleg nem elérhető"
+                    "entity_unavailable": "{entity} jelenleg nem elérhető",
+                    "starting": "A Home Assistant indítása folyamatban van, ezért lehet hogy még nem minden érhető el."
                 }
             },
             "mailbox": {

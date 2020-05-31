@@ -740,6 +740,8 @@
         "notification_toast": {
             "connection_lost": "Connexion perdue. Reconnexion en cours ...",
             "service_call_failed": "Échec d'appel du service \"{service}\".",
+            "started": "Home Assistant a démarré !",
+            "starting": "Home Assistant démarre, tout ne sera pas disponible jusqu'à ce qu'il soit terminé.",
             "triggered": "{name} déclenché"
         },
         "panel": {
@@ -1839,21 +1841,39 @@
                         "set_wakeup": "Définir l'intervalle de réveil",
                         "true": "Vrai"
                     },
+                    "node_management": {
+                        "add_to_group": "Ajouter au groupe",
+                        "group": "Groupe",
+                        "header": "Gestion des nœuds Z-Wave",
+                        "max_associations": "Associations Max:",
+                        "node_protection": "Protection des nœuds",
+                        "node_to_control": "Noeud à contrôler",
+                        "nodes_in_group": "Autres nœuds de ce groupe :",
+                        "protection": "Protection",
+                        "set_protection": "Définir la protection"
+                    },
                     "ozw_log": {
                         "header": "Journal OZW",
-                        "introduction": "Afficher le journal. Entrer un nombre de 1 à 1000 lignes pour limiter le nombre de lignes chargées dans le journal, ou entrer 0 pour désactiver la limitation du nombre de lignes affichées (journal complet). \"Load\" affichera un instantané du journal, alors que \"Tail\" affichera le journal en l'actualisant au fur et à mesure que de nouvelles entrées apparaissent."
+                        "introduction": "Afficher le journal. Entrer un nombre de 1 à 1000 lignes pour limiter le nombre de lignes chargées dans le journal, ou entrer 0 pour désactiver la limitation du nombre de lignes affichées (journal complet). \"Load\" affichera un instantané du journal, alors que \"Tail\" affichera le journal en l'actualisant au fur et à mesure que de nouvelles entrées apparaissent.",
+                        "tail": "Queue"
                     },
                     "services": {
                         "add_node": "Ajouter un nœud",
                         "add_node_secure": "Ajouter un nœud sécurisé",
                         "cancel_command": "Annuler la commande",
                         "heal_network": "Soigner le réseau",
+                        "heal_node": "Guérir Nœud",
+                        "node_info": "Informations sur le nœud",
+                        "refresh_entity": "Actualiser l'entité",
+                        "remove_failed_node": "Supprimer le nœud défaillant",
                         "remove_node": "Supprimer un nœud",
+                        "replace_failed_node": "Remplacer le nœud défaillant",
                         "save_config": "Enregistrer la configuration",
                         "soft_reset": "Redémarrage",
                         "start_network": "Démarrer le réseau",
                         "stop_network": "Arrêter le réseau",
-                        "test_network": "Tester le réseau"
+                        "test_network": "Tester le réseau",
+                        "test_node": "Tester Nœud"
                     },
                     "values": {
                         "header": "Valeurs des nœuds"
@@ -2012,6 +2032,10 @@
                         "add_item": "Ajouter un élément",
                         "checked_items": "Éléments cochés",
                         "clear_items": "Effacer les éléments cochés"
+                    },
+                    "starting": {
+                        "description": "Home Assistant démarre, veuillez patienter.",
+                        "header": "Home Assistant démarre ..."
                     }
                 },
                 "changed_toast": {
@@ -2304,7 +2328,8 @@
                     "attribute_not_found": "Attribut {attribute} non disponible dans: {entity}",
                     "entity_non_numeric": "L'entité est non numérique: {entity}",
                     "entity_not_found": "Entité non disponible: {entity}",
-                    "entity_unavailable": "{entity} n'est pas disponible actuellement"
+                    "entity_unavailable": "{entity} n'est pas disponible actuellement",
+                    "starting": "Home Assistant démarre, tout n'est peut-être pas encore disponible"
                 }
             },
             "mailbox": {
