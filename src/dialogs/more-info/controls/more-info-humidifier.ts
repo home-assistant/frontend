@@ -73,7 +73,7 @@ class MoreInfoHumidifier extends LitElement {
 
         ${supportModes
           ? html`
-              <div class="container-preset_modes">
+              <div class="container-modes">
                 <ha-paper-dropdown-menu
                   label-float
                   dynamic-align
