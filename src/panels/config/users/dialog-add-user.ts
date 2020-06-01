@@ -101,7 +101,7 @@ export class DialogAddUser extends LitElement {
             auto-validate
             autocapitalize="none"
             @value-changed=${this._usernameChanged}
-            error-message=${this.hass.localize(
+            .errorMessage=${this.hass.localize(
               "ui.panel.config.users.add_user.error_required"
             )}
           ></paper-input>
