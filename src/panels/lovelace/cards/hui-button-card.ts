@@ -79,7 +79,9 @@ export class HuiButtonCard extends LitElement implements LovelaceCard {
   @internalProperty() private _shouldRenderRipple = false;
 
   public getCardSize(): number {
-    return 2;
+    return (
+      (this._config?.show_icon ? 3 : 0) + (this._config?.show_name ? 1 : 0)
+    );
   }
 
   public setConfig(config: ButtonCardConfig): void {
