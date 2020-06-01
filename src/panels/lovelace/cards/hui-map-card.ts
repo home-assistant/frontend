@@ -581,6 +581,7 @@ class HuiMapCard extends LitElement implements LovelaceCard {
     startTime.setHours(endTime.getHours() - this._config!.hours_to_show!);
     const skipInitialState = false;
     const significantChangesOnly = false;
+    const minimalResponse = false;
 
     const stateHistory = await fetchRecent(
       this.hass,
@@ -588,7 +589,8 @@ class HuiMapCard extends LitElement implements LovelaceCard {
       startTime,
       endTime,
       skipInitialState,
-      significantChangesOnly
+      significantChangesOnly,
+      minimalResponse
     );
 
     if (stateHistory.length < 1) {
