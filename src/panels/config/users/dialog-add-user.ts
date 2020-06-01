@@ -85,7 +85,7 @@ export class DialogAddUser extends LitElement {
             required
             auto-validate
             autocapitalize="on"
-            error-message=${this.hass.localize("ui.common.error_required")}
+            .errorMessage=${this.hass.localize("ui.common.error_required")}
             @value-changed=${this._nameChanged}
             @blur=${this._maybePopulateUsername}
           ></paper-input>
@@ -99,7 +99,7 @@ export class DialogAddUser extends LitElement {
             auto-validate
             autocapitalize="none"
             @value-changed=${this._usernameChanged}
-            error-message=${this.hass.localize("ui.common.error_required")}
+            .errorMessage=${this.hass.localize("ui.common.error_required")}
           ></paper-input>
           <paper-input
             .label=${this.hass.localize(
@@ -110,7 +110,7 @@ export class DialogAddUser extends LitElement {
             required
             auto-validate
             @value-changed=${this._passwordChanged}
-            error-message=${this.hass.localize("ui.common.error_required")}
+            .errorMessage=${this.hass.localize("ui.common.error_required")}
           ></paper-input>
           <ha-switch .checked=${this._isAdmin} @change=${this._adminChanged}>
             ${this.hass.localize("ui.panel.config.users.editor.admin")}
