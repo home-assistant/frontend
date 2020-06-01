@@ -1839,21 +1839,48 @@
                         "set_wakeup": "Aseta herätysväli",
                         "true": "Tosi"
                     },
+                    "node_management": {
+                        "add_to_group": "Lisää ryhmään",
+                        "entities": "Tämän solmun kohteet",
+                        "entity_info": "Kohteen tiedot",
+                        "exclude_entity": "Jätä tämä kohde pois Home Assistantista",
+                        "group": "Ryhmä",
+                        "header": "Z-Wave-solmun hallinta",
+                        "introduction": "Suorita Z-Wave-komennot, jotka vaikuttavat yhteen solmuun. Valitse solmu nähdäksesi luettelon käytettävissä olevista komennoista.",
+                        "node_protection": "Solmujen suojaus",
+                        "node_to_control": "Hallinnoitava solmu",
+                        "nodes": "Solmut",
+                        "nodes_hint": "Valitse solmu tarkastellaksesi solmukohtaisia vaihtoehtoja",
+                        "pooling_intensity": "Kyselyn voimakkuus",
+                        "protection": "Suojaus",
+                        "remove_broadcast": "Poista lähetys",
+                        "remove_from_group": "Poista ryhmästä",
+                        "set_protection": "Aseta suojaus"
+                    },
                     "ozw_log": {
                         "header": "OZW-loki",
-                        "introduction": "Tarkastele lokia. 0 on pienin (lataa koko lokin) ja 1000 on maksimi. Lataus näyttää staattisen lokin ja päivittää automaattisesti viimeisen määritetyn määrän rivejä lokiin."
+                        "introduction": "Tarkastele lokia. 0 on pienin (lataa koko lokin) ja 1000 on maksimi. Lataus näyttää staattisen lokin ja päivittää automaattisesti viimeisen määritetyn määrän rivejä lokiin.",
+                        "last_log_lines": "Viimeisten lokirivien määrä",
+                        "load": "Lataa",
+                        "tail": "Häntä"
                     },
                     "services": {
                         "add_node": "Lisää solmu",
                         "add_node_secure": "Lisää suojattu solmu",
                         "cancel_command": "Peruuta komento",
                         "heal_network": "Paranna verkko",
+                        "heal_node": "Paranna solmu",
+                        "node_info": "Solmun tiedot",
+                        "print_node": "Tulosta solmu",
+                        "refresh_entity": "Päivitä kohde",
+                        "refresh_node": "Päivitä solmu",
                         "remove_node": "Poista solmu",
                         "save_config": "Tallenna asetukset",
                         "soft_reset": "Pehmeä nollaus",
                         "start_network": "Käynnistä verkko",
                         "stop_network": "Pysäytä verkko",
-                        "test_network": "Testaa verkkoyhteys"
+                        "test_network": "Testaa verkkoyhteys",
+                        "test_node": "Testaa solmu"
                     },
                     "values": {
                         "header": "Solmujen arvot"

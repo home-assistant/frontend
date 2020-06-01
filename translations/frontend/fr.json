@@ -1848,8 +1848,11 @@
                         "max_associations": "Associations Max:",
                         "node_protection": "Protection des nœuds",
                         "node_to_control": "Noeud à contrôler",
+                        "nodes": "Noeuds",
                         "nodes_in_group": "Autres nœuds de ce groupe :",
                         "protection": "Protection",
+                        "remove_broadcast": "Supprimer la diffusion",
+                        "remove_from_group": "Supprimer du groupe",
                         "set_protection": "Définir la protection"
                     },
                     "ozw_log": {
@@ -1865,6 +1868,7 @@
                         "heal_node": "Guérir Nœud",
                         "node_info": "Informations sur le nœud",
                         "refresh_entity": "Actualiser l'entité",
+                        "refresh_node": "Actualiser Nœud",
                         "remove_failed_node": "Supprimer le nœud défaillant",
                         "remove_node": "Supprimer un nœud",
                         "replace_failed_node": "Remplacer le nœud défaillant",
