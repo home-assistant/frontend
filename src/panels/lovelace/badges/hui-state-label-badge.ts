@@ -14,7 +14,6 @@ import { HomeAssistant } from "../../../types";
 import { actionHandler } from "../common/directives/action-handler-directive";
 import { handleAction } from "../common/handle-action";
 import { hasAction } from "../common/has-action";
-import "../components/hui-warning-element";
 import { LovelaceBadge } from "../types";
 import { StateLabelBadgeConfig } from "./types";
 

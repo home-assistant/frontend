@@ -14,9 +14,6 @@ import { classMap } from "lit-html/directives/class-map";
 import { ifDefined } from "lit-html/directives/if-defined";
 import { styleMap } from "lit-html/directives/style-map";
 import { scroll } from "lit-virtualizer";
-// @ts-ignore
-// eslint-disable-next-line import/no-webpack-loader-syntax
-import sortFilterWorker from "workerize-loader!./sort_filter_worker";
 import { fireEvent } from "../../common/dom/fire_event";
 import "../../common/search/search-input";
 import { debounce } from "../../common/util/debounce";
@@ -24,6 +21,8 @@ import { nextRender } from "../../common/util/render-status";
 import "../ha-checkbox";
 import type { HaCheckbox } from "../ha-checkbox";
 import "../ha-icon";
+import { filterData, sortData } from "./sort-filter";
+import memoizeOne from "memoize-one";
 
 declare global {
   // for fire event
@@ -74,6 +73,10 @@ export interface DataTableRowData {
   selectable?: boolean;
 }
 
+export interface SortableColumnContainer {
+  [key: string]: DataTableSortColumnData;
+}
+
 @customElement("ha-data-table")
 export class HaDataTable extends LitElement {
   @property({ type: Object }) public columns: DataTableColumnContainer = {};
@@ -111,13 +114,9 @@ export class HaDataTable extends LitElement {
 
   private _checkedRows: string[] = [];
 
-  private _sortColumns: {
-    [key: string]: DataTableSortColumnData;
-  } = {};
+  private _sortColumns: SortableColumnContainer = {};
 
   private curRequest = 0;
-
-  private _worker: any | undefined;
 
   private _debounceSearch = debounce(
     (value: string) => {
@@ -138,11 +137,6 @@ export class HaDataTable extends LitElement {
       // Force update of location of rows
       this._filteredData = [...this._filteredData];
     }
-  }
-
-  protected firstUpdated(properties: PropertyValues) {
-    super.firstUpdated(properties);
-    this._worker = sortFilterWorker();
   }
 
   protected updated(properties: PropertyValues) {
@@ -188,7 +182,7 @@ export class HaDataTable extends LitElement {
       properties.has("_sortColumn") ||
       properties.has("_sortDirection")
     ) {
-      this._filterData();
+      this._sortFilterData();
     }
   }
 
@@ -378,20 +372,30 @@ export class HaDataTable extends LitElement {
     `;
   }
 
-  private async _filterData() {
+  private async _sortFilterData() {
     const startTime = new Date().getTime();
     this.curRequest++;
     const curRequest = this.curRequest;
 
-    const filterProm = this._worker.filterSortData(
-      this.data,
-      this._sortColumns,
-      this._filter,
-      this._sortDirection,
-      this._sortColumn
-    );
+    let filteredData = this.data;
+    if (this._filter) {
+      filteredData = await this._memFilterData(
+        this.data,
+        this._sortColumns,
+        this._filter
+      );
+    }
 
-    const [data] = await Promise.all([filterProm, nextRender]);
+    const prom = this._sortColumn
+      ? sortData(
+          filteredData,
+          this._sortColumns,
+          this._sortDirection,
+          this._sortColumn
+        )
+      : filteredData;
+
+    const [data] = await Promise.all([prom, nextRender]);
 
     const curTime = new Date().getTime();
     const elapsed = curTime - startTime;
@@ -404,6 +408,16 @@ export class HaDataTable extends LitElement {
     }
     this._filteredData = data;
   }
+
+  private _memFilterData = memoizeOne(
+    async (
+      data: DataTableRowData[],
+      columns: SortableColumnContainer,
+      filter: string
+    ): Promise<DataTableRowData[]> => {
+      return filterData(data, columns, filter);
+    }
+  );
 
   private _handleHeaderClick(ev: Event) {
     const columnId = ((ev.target as HTMLElement).closest(
@@ -646,6 +660,11 @@ export class HaDataTable extends LitElement {
         padding: 8px;
       }
 
+      .mdc-data-table__cell--icon-button {
+        color: var(--secondary-text-color);
+        text-overflow: clip;
+      }
+
       .mdc-data-table__header-cell--icon-button:first-child,
       .mdc-data-table__cell--icon-button:first-child {
         width: 64px;
@@ -659,7 +678,7 @@ export class HaDataTable extends LitElement {
       }
 
       .mdc-data-table__cell--icon-button a {
-        color: var(--primary-text-color);
+        color: var(--secondary-text-color);
       }
 
       .mdc-data-table__header-cell {

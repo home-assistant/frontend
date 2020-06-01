@@ -40,6 +40,10 @@ export class HuiGraphHeaderFooter extends LitElement
 
   private _fetching = false;
 
+  public getCardSize(): number {
+    return 2;
+  }
+
   public setConfig(config: GraphHeaderFooterConfig): void {
     if (!config?.entity || config.entity.split(".")[0] !== "sensor") {
       throw new Error(
@@ -75,7 +79,7 @@ export class HuiGraphHeaderFooter extends LitElement
       `;
     }
 
-    if (this._coordinates.length < 1) {
+    if (!this._coordinates.length) {
       return html`
         <div class="container">
           <div class="info">
@@ -146,12 +150,13 @@ export class HuiGraphHeaderFooter extends LitElement
       this._stateHistory!.push(...stateHistory[0]);
     }
 
-    this._coordinates = coordinates(
-      this._stateHistory,
-      this._config!.hours_to_show!,
-      500,
-      this._config!.detail!
-    );
+    this._coordinates =
+      coordinates(
+        this._stateHistory,
+        this._config!.hours_to_show!,
+        500,
+        this._config!.detail!
+      ) || [];
 
     this._date = endTime;
     this._fetching = false;

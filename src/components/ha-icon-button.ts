@@ -25,7 +25,7 @@ export class HaIconButton extends LitElement {
   protected render(): TemplateResult {
     return html`
       <mwc-icon-button
-        .label=${this.label || this.icon}
+        .label=${this.label}
         ?disabled=${this.disabled}
         @click=${this._handleClick}
       >
@@ -48,6 +48,7 @@ export class HaIconButton extends LitElement {
       }
       mwc-icon-button {
         --mdc-theme-on-primary: currentColor;
+        --mdc-theme-text-disabled-on-light: var(--disabled-text-color);
       }
       ha-icon {
         --ha-icon-display: inline;

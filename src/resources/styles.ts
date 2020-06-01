@@ -48,6 +48,8 @@ export const derivedStyles = {
   "material-body-text-color": "var(--primary-text-color)",
   "material-background-color": "var(--card-background-color)",
   "material-secondary-background-color": "var(--secondary-background-color)",
+  "mdc-checkbox-unchecked-color": "rgba(var(--rgb-primary-text-color), 0.54)",
+  "mdc-checkbox-disabled-color": "var(--disabled-text-color)",
 };
 
 export const haStyle = css`

@@ -26,6 +26,7 @@ import { loadLovelaceResources } from "./common/load-resources";
 import { showSaveDialog } from "./editor/show-save-config-dialog";
 import "./hui-root";
 import { Lovelace } from "./types";
+import { STATE_NOT_RUNNING } from "home-assistant-js-websocket";
 
 (window as any).loadCardHelpers = () => import("./custom-card-helpers");
 
@@ -169,7 +170,13 @@ class LovelacePanel extends LitElement {
     }
     // reload lovelace on reconnect so we are sure we have the latest config
     window.addEventListener("connection-status", (ev) => {
-      if (ev.detail === "connected") {
+      if (
+        ev.detail === "connected" &&
+        !(
+          this.lovelace?.mode === "generated" &&
+          this.hass!.config.state === STATE_NOT_RUNNING
+        )
+      ) {
         this._fetchConfig(false);
       }
     });
@@ -288,7 +295,8 @@ class LovelacePanel extends LitElement {
         this._errorMsg = err.message;
         return;
       }
-      conf = await generateLovelaceConfigFromHass(this.hass!);
+      const localize = await this.hass!.loadBackendTranslation("title");
+      conf = await generateLovelaceConfigFromHass(this.hass!, localize);
       confMode = "generated";
     } finally {
       // Ignore updates for another 2 seconds.
@@ -370,8 +378,9 @@ class LovelacePanel extends LitElement {
         const { config: previousConfig, mode: previousMode } = this.lovelace!;
         try {
           // Optimistic update
+          const localize = await this.hass!.loadBackendTranslation("title");
           this._updateLovelace({
-            config: await generateLovelaceConfigFromHass(this.hass!),
+            config: await generateLovelaceConfigFromHass(this.hass!, localize),
             mode: "generated",
             editMode: false,
           });

@@ -1,4 +1,9 @@
 {
+    "config_entry": {
+        "disabled_by": {
+            "integration": "インテグレーション"
+        }
+    },
     "panel": {
         "calendar": "カレンダー",
         "config": "設定",
@@ -151,6 +156,8 @@
             "opening": "扉"
         },
         "default": {
+            "off": "オフ",
+            "on": "オン",
             "unavailable": "利用不可",
             "unknown": "不明"
         },
@@ -373,6 +380,7 @@
                 "no_history_found": "状態履歴がありません。"
             },
             "related-items": {
+                "integration": "インテグレーション",
                 "no_related_found": "関連するアイテムが見つかりませんでした。"
             },
             "relative_time": {
@@ -473,6 +481,10 @@
                     "status": "状態",
                     "stop": "停止"
                 }
+            },
+            "mqtt_device_debug_info": {
+                "show_as_yaml": "YAML として表示",
+                "triggers": "トリガー"
             },
             "voice_command": {
                 "did_not_hear": "Home Assistant は何も聞きませんでした",
@@ -687,12 +699,14 @@
                             "enter_pin_hint": "セキュリティデバイスを使用するには PIN を入力してください",
                             "security_devices": "セキュリティデバイス"
                         },
+                        "integrations": "インテグレーション",
                         "remote": {
                             "info": "Home Assistant Cloud は、自宅の外からインスタンスへの安全なリモート接続を提供します。"
                         },
                         "webhooks": {
                             "disable_hook_error_msg": "ウェブホックを無効にできませんでした：",
-                            "manage": "管理"
+                            "manage": "管理",
+                            "no_hooks_yet_link_integration": "Webhook ベースのインテグレーション"
                         }
                     },
                     "alexa": {
@@ -720,6 +734,8 @@
                         "learn_more_link": "Home Assistant Cloud の情報をもっと見る。"
                     },
                     "register": {
+                        "feature_amazon_alexa": "Amazon Alexa との統合",
+                        "feature_google_home": "Google Assistant との統合",
                         "information2": "試用版では、Home Assistant Cloud すべての特典にアクセスできます、例えば："
                     }
                 },
@@ -799,12 +815,17 @@
                         "header": "エンティティ",
                         "headers": {
                             "entity_id": "エンティティ ID",
+                            "integration": "インテグレーション",
                             "name": "名前"
                         },
                         "status": {
                             "readonly": "読み取り専用"
                         }
                     }
+                },
+                "filtering": {
+                    "clear": "消去",
+                    "filtering_by": "フィルタリング"
                 },
                 "header": "Home Assistant の設定",
                 "helpers": {
@@ -832,14 +853,27 @@
                     }
                 },
                 "integrations": {
+                    "add_integration": "インテグレーションを追加",
                     "config_entry": {
-                        "delete_button": "{integration} を削除"
+                        "delete": "削除",
+                        "delete_button": "{integration} を削除",
+                        "no_area": "エリアなし",
+                        "options": "オプション",
+                        "rename": "名前を変更",
+                        "settings_button": "{integration} の設定を編集",
+                        "system_options": "システムオプション",
+                        "system_options_button": "{integration} のシステムオプション",
+                        "unnamed_entry": "名前のないエントリ"
                     },
                     "config_flow": {
                         "aborted": "中止",
                         "close": "閉じる",
                         "created_config": "{name} の構成が作成しました。",
+                        "dismiss": "ダイアログを閉じる",
                         "error_saving_area": "エリアを保存できません: {error}",
+                        "external_step": {
+                            "description": "この手順を完了するには、外部のウエブサイトにアクセスする必要があります。"
+                        },
                         "finish": "完了",
                         "loading_first_time": "インテグレーションのインストールを完了するまでお待ちください",
                         "submit": "送信"
@@ -847,7 +881,21 @@
                     "description": "インテグレーションの管理とセットアップ",
                     "details": "インテグレーションの詳細",
                     "home_assistant_website": "Home Assistant のウェブサイト",
-                    "integration_not_found": "インテグレーションが見つかりません。"
+                    "ignore": {
+                        "confirm_delete_ignore_title": "{name} の無視を停止しますか？",
+                        "confirm_ignore_title": "{name} の検出を無視しますか？",
+                        "hide_ignored": "無視されたインテグレーションを非表示にする",
+                        "ignore": "無視する",
+                        "ignored": "無視しました",
+                        "show_ignored": "無視されたインテグレーションを表示",
+                        "stop_ignore": "無視を停止する"
+                    },
+                    "integration": "インテグレーション",
+                    "integration_not_found": "インテグレーションが見つかりません。",
+                    "none_found": "インテグレーションが見つかりません。",
+                    "none_found_detail": "別の検索基準をためしてみます。",
+                    "rename_dialog": "このコンフィグレーションエントリーの名前を変更",
+                    "rename_input_label": "エントリー名"
                 },
                 "lovelace": {
                     "caption": "Lovelace ダッシュボード",
@@ -922,6 +970,8 @@
                     "detail": {
                         "create": "作成",
                         "delete": "削除",
+                        "link_integrations_page": "インテグレーションページ",
+                        "link_presence_detection_integrations": "プレゼンス検出のインテグレーション",
                         "update": "更新"
                     },
                     "no_persons_created_yet": "まだ人を作成していませんですね。",
@@ -1009,7 +1059,8 @@
                         },
                         "validation": {
                             "check_config": "設定を確認",
-                            "heading": "設定の検証"
+                            "heading": "設定の検証",
+                            "valid": "設定は有効です！"
                         }
                     }
                 },
@@ -1108,6 +1159,7 @@
                     },
                     "info": {
                         "frontend_version": "フロントエンドバージョン: {version} - {type}",
+                        "issues": "問題",
                         "path_configuration": "ディスク上に configuration.yaml へのパス: {path}",
                         "server": "サーバー",
                         "system_health_error": "「システムの正常性」コンポーネントが有効されていません、configuration.yaml に 'system_health:' を追加してください。",
@@ -1410,6 +1462,9 @@
                 "core-config": {
                     "intro_location": "どこに住んでいるか知りたいです。 この情報は、他の情報の表示および太陽の位置に関する自動化の設定に役立ちます。 これらの情報がインターネットで外部と共有されることがありません。",
                     "location_name_default": "自宅"
+                },
+                "integration": {
+                    "finish": "完了"
                 }
             },
             "profile": {

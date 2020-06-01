@@ -1,5 +1,20 @@
 import "@material/mwc-button";
-import "@polymer/paper-card/paper-card";
+import {
+  mdiArrowUpBoldCircle,
+  mdiCheckCircle,
+  mdiChip,
+  mdiCircle,
+  mdiCursorDefaultClickOutline,
+  mdiDocker,
+  mdiExclamationThick,
+  mdiFlask,
+  mdiHomeAssistant,
+  mdiInformation,
+  mdiKey,
+  mdiNetwork,
+  mdiPound,
+  mdiShield,
+} from "@mdi/js";
 import "@polymer/paper-tooltip/paper-tooltip";
 import {
   css,
@@ -16,10 +31,11 @@ import { fireEvent } from "../../../../src/common/dom/fire_event";
 import { navigate } from "../../../../src/common/navigate";
 import "../../../../src/components/buttons/ha-call-api-button";
 import "../../../../src/components/buttons/ha-progress-button";
+import "../../../../src/components/ha-card";
 import "../../../../src/components/ha-label-badge";
 import "../../../../src/components/ha-markdown";
+import "../../../../src/components/ha-svg-icon";
 import "../../../../src/components/ha-switch";
-import "../../../../src/components/ha-icon";
 import {
   fetchHassioAddonChangelog,
   HassioAddonDetails,
@@ -30,23 +46,23 @@ import {
   setHassioAddonSecurity,
   uninstallHassioAddon,
 } from "../../../../src/data/hassio/addon";
+import { showConfirmationDialog } from "../../../../src/dialogs/generic/show-dialog-box";
 import { haStyle } from "../../../../src/resources/styles";
 import { HomeAssistant } from "../../../../src/types";
 import "../../components/hassio-card-content";
 import { showHassioMarkdownDialog } from "../../dialogs/markdown/show-dialog-hassio-markdown";
 import { hassioStyle } from "../../resources/hassio-style";
-import { showConfirmationDialog } from "../../../../src/dialogs/generic/show-dialog-box";
 
 const STAGE_ICON = {
-  stable: "mdi:check-circle",
-  experimental: "mdi:flask",
-  deprecated: "mdi:exclamation-thick",
+  stable: mdiCheckCircle,
+  experimental: mdiFlask,
+  deprecated: mdiExclamationThick,
 };
 
 const PERMIS_DESC = {
   stage: {
     title: "Add-on Stage",
-    description: `Add-ons can have one of three stages:\n\n<ha-icon icon='${STAGE_ICON.stable}'></ha-icon>**Stable**: These are add-ons ready to be used in production.\n<ha-icon icon='${STAGE_ICON.experimental}'></ha-icon>**Experimental**: These may contain bugs, and may be unfinished.\n<ha-icon icon='${STAGE_ICON.deprecated}'></ha-icon>**Deprecated**: These add-ons will no longer receive any updates.`,
+    description: `Add-ons can have one of three stages:\n\n<ha-svg-icon path='${STAGE_ICON.stable}'></ha-svg-icon> **Stable**: These are add-ons ready to be used in production.\n\n<ha-svg-icon path='${STAGE_ICON.experimental}'></ha-svg-icon> **Experimental**: These may contain bugs, and may be unfinished.\n\n<ha-svg-icon path='${STAGE_ICON.deprecated}'></ha-svg-icon> **Deprecated**: These add-ons will no longer receive any updates.`,
   },
   rating: {
     title: "Add-on Security Rating",
@@ -116,7 +132,7 @@ class HassioAddonInfo extends LitElement {
     return html`
       ${this._computeUpdateAvailable
         ? html`
-            <paper-card heading="Update available! 🎉">
+            <ha-card header="Update available! 🎉">
               <div class="card-content">
                 <hassio-card-content
                   .hass=${this.hass}
@@ -124,7 +140,7 @@ class HassioAddonInfo extends LitElement {
                     .version_latest} is available"
                   .description="You are currently running version ${this.addon
                     .version}"
-                  icon="hassio:arrow-up-bold-circle"
+                  icon=${mdiArrowUpBoldCircle}
                   iconClass="update"
                 ></hassio-card-content>
                 ${!this.addon.available
@@ -151,12 +167,13 @@ class HassioAddonInfo extends LitElement {
                     `
                   : ""}
               </div>
-            </paper-card>
+            </ha-card>
           `
         : ""}
       ${!this.addon.protected
         ? html`
-        <paper-card heading="Warning: Protection mode is disabled!" class="warning">
+        <ha-card class="warning">
+          <div class="card-header">Warning: Protection mode is disabled!</div>
           <div class="card-content">
             Protection mode on this add-on is disabled! This gives the add-on full access to the entire system, which adds security risks, and could damage your system when used incorrectly. Only disable the protection mode if you know, need AND trust the source of this add-on.
           </div>
@@ -164,11 +181,11 @@ class HassioAddonInfo extends LitElement {
               <mwc-button @click=${this._protectionToggled}>Enable Protection mode</mwc-button>
             </div>
           </div>
-        </paper-card>
+        </ha-card>
       `
         : ""}
 
-      <paper-card>
+      <ha-card>
         <div class="card-content">
           <div class="addon-header">
             ${!this.narrow ? this.addon.name : ""}
@@ -177,18 +194,18 @@ class HassioAddonInfo extends LitElement {
                 ? html`
                     ${this._computeIsRunning
                       ? html`
-                          <ha-icon
+                          <ha-svg-icon
                             title="Add-on is running"
                             class="running"
-                            icon="hassio:circle"
-                          ></ha-icon>
+                            path=${mdiCircle}
+                          ></ha-svg-icon>
                         `
                       : html`
-                          <ha-icon
+                          <ha-svg-icon
                             title="Add-on is stopped"
                             class="stopped"
-                            icon="hassio:circle"
-                          ></ha-icon>
+                            path=${mdiCircle}
+                          ></ha-svg-icon>
                         `}
                   `
                 : html` ${this.addon.version_latest} `}
@@ -232,10 +249,11 @@ class HassioAddonInfo extends LitElement {
               })}
               @click=${this._showMoreInfo}
               id="stage"
-              .icon=${STAGE_ICON[this.addon.stage]}
               label="stage"
               description=""
-            ></ha-label-badge>
+            >
+              <ha-svg-icon .path=${STAGE_ICON[this.addon.stage]}></ha-svg-icon>
+            </ha-label-badge>
             <ha-label-badge
               class=${classMap({
                 green: [5, 6].includes(Number(this.addon.rating)),
@@ -253,10 +271,11 @@ class HassioAddonInfo extends LitElement {
                   <ha-label-badge
                     @click=${this._showMoreInfo}
                     id="host_network"
-                    icon="hassio:network"
                     label="host"
                     description=""
-                  ></ha-label-badge>
+                  >
+                    <ha-svg-icon path=${mdiNetwork}></ha-svg-icon>
+                  </ha-label-badge>
                 `
               : ""}
             ${this.addon.full_access
@@ -264,10 +283,11 @@ class HassioAddonInfo extends LitElement {
                   <ha-label-badge
                     @click=${this._showMoreInfo}
                     id="full_access"
-                    icon="hassio:chip"
                     label="hardware"
                     description=""
-                  ></ha-label-badge>
+                  >
+                    <ha-svg-icon path=${mdiChip}></ha-svg-icon>
+                  </ha-label-badge>
                 `
               : ""}
             ${this.addon.homeassistant_api
@@ -275,10 +295,11 @@ class HassioAddonInfo extends LitElement {
                   <ha-label-badge
                     @click=${this._showMoreInfo}
                     id="homeassistant_api"
-                    icon="hassio:home-assistant"
                     label="hass"
                     description=""
-                  ></ha-label-badge>
+                  >
+                    <ha-svg-icon path=${mdiHomeAssistant}></ha-svg-icon>
+                  </ha-label-badge>
                 `
               : ""}
             ${this._computeHassioApi
@@ -286,10 +307,11 @@ class HassioAddonInfo extends LitElement {
                   <ha-label-badge
                     @click=${this._showMoreInfo}
                     id="hassio_api"
-                    icon="hassio:home-assistant"
                     label="hassio"
                     .description=${this.addon.hassio_role}
-                  ></ha-label-badge>
+                  >
+                    <ha-svg-icon path=${mdiHomeAssistant}></ha-svg-icon>
+                  </ha-label-badge>
                 `
               : ""}
             ${this.addon.docker_api
@@ -297,10 +319,11 @@ class HassioAddonInfo extends LitElement {
                   <ha-label-badge
                     @click=${this._showMoreInfo}
                     id="docker_api"
-                    icon="hassio:docker"
                     label="docker"
                     description=""
-                  ></ha-label-badge>
+                  >
+                    <ha-svg-icon path=${mdiDocker}></ha-svg-icon>
+                  </ha-label-badge>
                 `
               : ""}
             ${this.addon.host_pid
@@ -308,10 +331,11 @@ class HassioAddonInfo extends LitElement {
                   <ha-label-badge
                     @click=${this._showMoreInfo}
                     id="host_pid"
-                    icon="hassio:pound"
                     label="host pid"
                     description=""
-                  ></ha-label-badge>
+                  >
+                    <ha-svg-icon path=${mdiPound}></ha-svg-icon>
+                  </ha-label-badge>
                 `
               : ""}
             ${this.addon.apparmor
@@ -320,10 +344,11 @@ class HassioAddonInfo extends LitElement {
                     @click=${this._showMoreInfo}
                     class=${this._computeApparmorClassName}
                     id="apparmor"
-                    icon="hassio:shield"
                     label="apparmor"
                     description=""
-                  ></ha-label-badge>
+                  >
+                    <ha-svg-icon path=${mdiShield}></ha-svg-icon>
+                  </ha-label-badge>
                 `
               : ""}
             ${this.addon.auth_api
@@ -331,10 +356,11 @@ class HassioAddonInfo extends LitElement {
                   <ha-label-badge
                     @click=${this._showMoreInfo}
                     id="auth_api"
-                    icon="hassio:key"
                     label="auth"
                     description=""
-                  ></ha-label-badge>
+                  >
+                    <ha-svg-icon path=${mdiKey}></ha-svg-icon>
+                  </ha-label-badge>
                 `
               : ""}
             ${this.addon.ingress
@@ -342,10 +368,13 @@ class HassioAddonInfo extends LitElement {
                   <ha-label-badge
                     @click=${this._showMoreInfo}
                     id="ingress"
-                    icon="hassio:cursor-default-click-outline"
                     label="ingress"
                     description=""
-                  ></ha-label-badge>
+                  >
+                    <ha-svg-icon
+                      path=${mdiCursorDefaultClickOutline}
+                    ></ha-svg-icon>
+                  </ha-label-badge>
                 `
               : ""}
           </div>
@@ -399,7 +428,7 @@ class HassioAddonInfo extends LitElement {
                         <div>
                           Protection mode
                           <span>
-                            <ha-icon icon="hassio:information"></ha-icon>
+                            <ha-svg-icon path=${mdiInformation}></ha-svg-icon>
                             <paper-tooltip>
                               Grant the add-on elevated system access.
                             </paper-tooltip>
@@ -502,17 +531,17 @@ class HassioAddonInfo extends LitElement {
                 </ha-progress-button>
               `}
         </div>
-      </paper-card>
+      </ha-card>
 
       ${this.addon.long_description
         ? html`
-            <paper-card>
+            <ha-card>
               <div class="card-content">
                 <ha-markdown
                   .content=${this.addon.long_description}
                 ></ha-markdown>
               </div>
-            </paper-card>
+            </ha-card>
           `
         : ""}
     `;
@@ -526,16 +555,21 @@ class HassioAddonInfo extends LitElement {
         :host {
           display: block;
         }
-        paper-card {
+        ha-card {
           display: block;
           margin-bottom: 16px;
         }
-        paper-card.warning {
+        ha-card.warning {
           background-color: var(--google-red-500);
           color: white;
-          --paper-card-header-color: white;
         }
-        paper-card.warning mwc-button {
+        ha-card.warning .card-header {
+          color: white;
+        }
+        ha-card.warning .card-content {
+          color: white;
+        }
+        ha-card.warning mwc-button {
           --mdc-theme-primary: white !important;
         }
         .warning {
@@ -548,7 +582,7 @@ class HassioAddonInfo extends LitElement {
         .addon-header {
           padding-left: 8px;
           font-size: 24px;
-          color: var(--paper-card-header-color, --primary-text-color);
+          color: var(--ha-card-header-color, --primary-text-color);
         }
         .addon-version {
           float: right;
@@ -575,7 +609,7 @@ class HassioAddonInfo extends LitElement {
           width: 180px;
           display: inline-block;
         }
-        .state ha-icon {
+        .state ha-svg-icon {
           width: 16px;
           height: 16px;
           color: var(--secondary-text-color);
@@ -583,10 +617,10 @@ class HassioAddonInfo extends LitElement {
         ha-switch {
           display: flex;
         }
-        ha-icon.running {
+        ha-svg-icon.running {
           color: var(--paper-green-400);
         }
-        ha-icon.stopped {
+        ha-svg-icon.stopped {
           color: var(--google-red-300);
         }
         ha-call-api-button {
@@ -596,14 +630,10 @@ class HassioAddonInfo extends LitElement {
         .right {
           float: right;
         }
-        ha-markdown img {
-          max-width: 100%;
-        }
         protection-enable mwc-button {
           --mdc-theme-primary: white;
         }
-        .description a,
-        ha-markdown a {
+        .description a {
           color: var(--primary-color);
         }
         .red {
@@ -641,6 +671,9 @@ class HassioAddonInfo extends LitElement {
           text-decoration: underline;
           cursor: pointer;
         }
+        ha-markdown {
+          padding: 16px;
+        }
       `,
     ];
   }
@@ -664,7 +697,7 @@ class HassioAddonInfo extends LitElement {
   }
 
   private _showMoreInfo(ev): void {
-    const id = ev.target.getAttribute("id");
+    const id = ev.currentTarget.id;
     showHassioMarkdownDialog(this, {
       title: PERMIS_DESC[id].title,
       content: PERMIS_DESC[id].description,

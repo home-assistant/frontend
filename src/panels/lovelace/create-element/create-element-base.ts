@@ -52,9 +52,10 @@ export const createErrorCardElement = (config: ErrorCardConfig) => {
     el.setConfig(config);
   } else {
     import("../cards/hui-error-card");
-    customElements
-      .whenDefined("hui-error-card")
-      .then(() => el.setConfig(config));
+    customElements.whenDefined("hui-error-card").then(() => {
+      customElements.upgrade(el);
+      el.setConfig(config);
+    });
   }
   return el;
 };
@@ -126,6 +127,7 @@ const _lazyCreate = <T extends keyof CreateElementConfigTypes>(
   ) as CreateElementConfigTypes[T]["element"];
   customElements.whenDefined(tag).then(() => {
     try {
+      customElements.upgrade(element);
       // @ts-ignore
       element.setConfig(config);
     } catch (err) {

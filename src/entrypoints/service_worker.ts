@@ -1,40 +1,51 @@
-/*
-  This file is not run through webpack, but instead is directly manipulated
-  by Workbox Webpack plugin. So we cannot use __DEV__ or other constants.
-*/
-/* global workbox clients */
+/* eslint-disable @typescript-eslint/triple-slash-reference */
+// eslint-disable-next-line spaced-comment
+/// <reference path="../types/service-worker.d.ts" />
+/* eslint-env serviceworker */
+import {
+  CacheFirst,
+  StaleWhileRevalidate,
+  NetworkOnly,
+} from "workbox-strategies";
+import { cleanupOutdatedCaches, precacheAndRoute } from "workbox-precaching";
+import { registerRoute } from "workbox-routing";
+import { cacheNames } from "workbox-core";
+
+// Clean up caches from older workboxes and old service workers.
+// Will help with cleaning up Workbox v4 stuff
+cleanupOutdatedCaches();
 
 function initRouting() {
-  workbox.precaching.precacheAndRoute(self.__precacheManifest || []);
+  precacheAndRoute(
+    // @ts-ignore
+    WB_MANIFEST
+  );
 
   // Cache static content (including translations) on first access.
-  workbox.routing.registerRoute(
+  registerRoute(
     new RegExp(`${location.host}/(static|frontend_latest|frontend_es5)/.+`),
-    new workbox.strategies.CacheFirst()
+    new CacheFirst()
   );
 
   // Get api from network.
-  workbox.routing.registerRoute(
+  registerRoute(
     new RegExp(`${location.host}/(api|auth)/.*`),
-    new workbox.strategies.NetworkOnly()
+    new NetworkOnly()
   );
 
   // Get manifest, service worker, onboarding from network.
-  workbox.routing.registerRoute(
+  registerRoute(
     new RegExp(
       `${location.host}/(service_worker.js|manifest.json|onboarding.html)`
     ),
-    new workbox.strategies.NetworkOnly()
+    new NetworkOnly()
   );
 
   // For rest of the files (on Home Assistant domain only) try both cache and network.
   // This includes the root "/" or "/states" response and user files from "/local".
   // First access might bring stale data from cache, but a single refresh will bring updated
   // file.
-  workbox.routing.registerRoute(
-    new RegExp(`${location.host}/.*`),
-    new workbox.strategies.StaleWhileRevalidate()
-  );
+  registerRoute(new RegExp(`${location.host}/.*`), new StaleWhileRevalidate());
 }
 
 function initPushNotifications() {
@@ -149,19 +160,23 @@ function initPushNotifications() {
 
 self.addEventListener("install", (event) => {
   // Delete all runtime caching, so that index.html has to be refetched.
-  const cacheName = workbox.core.cacheNames.runtime;
+  const cacheName = cacheNames.runtime;
   event.waitUntil(caches.delete(cacheName));
+});
+
+self.addEventListener("activate", () => {
+  // Attach the service worker to any page of the app
+  // that didn't have a service worker loaded.
+  // Happens the first time they open the app without any
+  // service worker registered.
+  // This will serve code splitted bundles from SW.
+  clients.claim();
 });
 
 self.addEventListener("message", (message) => {
   if (message.data.type === "skipWaiting") {
     self.skipWaiting();
-    clients.claim();
   }
-});
-
-workbox.setConfig({
-  debug: false,
 });
 
 initRouting();

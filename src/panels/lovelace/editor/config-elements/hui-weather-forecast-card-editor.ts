@@ -22,6 +22,7 @@ const cardConfigStruct = struct({
   name: "string?",
   theme: "string?",
   show_forecast: "boolean?",
+  secondary_info_attribute: "string?",
 });
 
 const includeDomains = ["weather"];
@@ -52,6 +53,10 @@ export class HuiWeatherForecastCardEditor extends LitElement
 
   get _show_forecast(): boolean {
     return this._config!.show_forecast || true;
+  }
+
+  get _secondary_info_attribute(): string {
+    return this._config!.secondary_info_attribute || "";
   }
 
   protected render(): TemplateResult {
@@ -93,12 +98,26 @@ export class HuiWeatherForecastCardEditor extends LitElement
             @value-changed=${this._valueChanged}
           ></hui-theme-select-editor>
         </div>
-        <ha-switch
-          .checked=${this._config!.show_forecast !== false}
-          .configValue=${"show_forecast"}
-          @change=${this._valueChanged}
-          >Show forecast</ha-switch
-        >
+        <div class="side-by-side">
+          <paper-input
+            .label="${this.hass.localize(
+              "ui.panel.lovelace.editor.card.generic.secondary_info_attribute"
+            )} (${this.hass.localize(
+              "ui.panel.lovelace.editor.card.config.optional"
+            )})"
+            .value=${this._secondary_info_attribute}
+            .configValue=${"secondary_info_attribute"}
+            @value-changed=${this._valueChanged}
+          ></paper-input>
+          <ha-switch
+            .checked=${this._config!.show_forecast !== false}
+            .configValue=${"show_forecast"}
+            @change=${this._valueChanged}
+            >${this.hass.localize(
+              "ui.panel.lovelace.editor.card.weather-forecast.show_forecast"
+            )}</ha-switch
+          >
+        </div>
       </div>
     `;
   }

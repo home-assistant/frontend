@@ -35,6 +35,7 @@ const LAZY_LOAD_TYPES = {
   "alarm-panel": () => import("../cards/hui-alarm-panel-card"),
   error: () => import("../cards/hui-error-card"),
   "empty-state": () => import("../cards/hui-empty-state-card"),
+  starting: () => import("../cards/hui-starting-card"),
   "entity-filter": () => import("../cards/hui-entity-filter-card"),
   "media-control": () => import("../cards/hui-media-control-card"),
   "picture-elements": () => import("../cards/hui-picture-elements-card"),

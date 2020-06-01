@@ -44,8 +44,9 @@ import { findEntities } from "../common/find-entites";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
 import "../components/hui-marquee";
 import type { LovelaceCard, LovelaceCardEditor } from "../types";
-import "../components/hui-warning";
+import { createEntityNotFoundWarning } from "../components/hui-warning";
 import { MediaControlCardConfig } from "./types";
+import { installResizeObserver } from "../common/install-resize-observer";
 
 function getContrastRatio(
   rgb1: [number, number, number],
@@ -223,7 +224,7 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
 
   public connectedCallback(): void {
     super.connectedCallback();
-    this.updateComplete.then(() => this._measureCard());
+    this.updateComplete.then(() => this._attachObserver());
 
     if (!this.hass || !this._config) {
       return;
@@ -252,6 +253,9 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
       clearInterval(this._progressInterval);
       this._progressInterval = undefined;
     }
+    if (this._resizeObserver) {
+      this._resizeObserver.disconnect();
+    }
   }
 
   protected render(): TemplateResult {
@@ -262,13 +266,9 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
 
     if (!stateObj) {
       return html`
-        <hui-warning
-          >${this.hass.localize(
-            "ui.panel.lovelace.warning.entity_not_found",
-            "entity",
-            this._config.entity
-          )}</hui-warning
-        >
+        <hui-warning>
+          ${createEntityNotFoundWarning(this.hass, this._config.entity)}
+        </hui-warning>
       `;
     }
 
@@ -427,6 +427,7 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
   }
 
   protected firstUpdated(): void {
+    this._measureCard();
     this._attachObserver();
   }
 
@@ -624,19 +625,13 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
     this._cardHeight = card.offsetHeight;
   }
 
-  private _attachObserver(): void {
-    if (typeof ResizeObserver !== "function") {
-      import("resize-observer").then((modules) => {
-        modules.install();
-        this._attachObserver();
-      });
-      return;
+  private async _attachObserver(): Promise<void> {
+    if (!this._resizeObserver) {
+      await installResizeObserver();
+      this._resizeObserver = new ResizeObserver(
+        debounce(() => this._measureCard(), 250, false)
+      );
     }
-
-    this._resizeObserver = new ResizeObserver(
-      debounce(() => this._measureCard(), 250, false)
-    );
-
     const card = this.shadowRoot!.querySelector("ha-card");
     // If we show an error or warning there is no ha-card
     if (!card) {
@@ -811,10 +806,6 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
         transition-duration: 0.4s;
       }
 
-      .icon {
-        width: 18px;
-      }
-
       .controls {
         padding: 8px 8px 8px 0;
         display: flex;
@@ -832,7 +823,7 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
 
       .controls ha-icon-button {
         --mdc-icon-button-size: 44px;
-        --mdc-icon-size: 22px;
+        --mdc-icon-size: 30px;
       }
 
       ha-icon-button[action="media_play"],
@@ -840,7 +831,7 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
       ha-icon-button[action="turn_on"],
       ha-icon-button[action="turn_off"] {
         --mdc-icon-button-size: 56px;
-        --mdc-icon-size: 28px;
+        --mdc-icon-size: 40px;
       }
 
       .top-info {
@@ -902,14 +893,14 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
 
       .narrow ha-icon-button {
         --mdc-icon-button-size: 40px;
-        --mdc-icon-size: 20px;
+        --mdc-icon-size: 28px;
       }
 
       .narrow ha-icon-button[action="media_play"],
       .narrow ha-icon-button[action="media_play_pause"],
       .narrow ha-icon-button[action="turn_on"] {
         --mdc-icon-button-size: 50px;
-        --mdc-icon-size: 25px;
+        --mdc-icon-size: 36px;
       }
 
       .no-progress.player:not(.no-controls) {

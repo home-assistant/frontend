@@ -18,10 +18,9 @@ import "../../../components/ha-card";
 import "../../../components/ha-icon";
 import { UNAVAILABLE_STATES } from "../../../data/entity";
 import { HomeAssistant } from "../../../types";
-import { actionHandler } from "../common/directives/action-handler-directive";
 import { findEntities } from "../common/find-entites";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
-import "../components/hui-warning";
+import { createEntityNotFoundWarning } from "../components/hui-warning";
 import { createHeaderFooterElement } from "../create-element/create-header-footer-element";
 import {
   LovelaceCard,
@@ -30,6 +29,7 @@ import {
 } from "../types";
 import { HuiErrorCard } from "./hui-error-card";
 import { EntityCardConfig } from "./types";
+import { computeCardSize } from "../common/compute-card-size";
 
 @customElement("hui-entity-card")
 export class HuiEntityCard extends LitElement implements LovelaceCard {
@@ -80,8 +80,13 @@ export class HuiEntityCard extends LitElement implements LovelaceCard {
     }
   }
 
-  public getCardSize(): number {
-    return 1 + (this._config?.footer ? 1 : 0);
+  public async getCardSize(): Promise<number> {
+    let size = 2;
+    if (this._footerElement) {
+      const footerSize = computeCardSize(this._footerElement);
+      size += footerSize instanceof Promise ? await footerSize : footerSize;
+    }
+    return size;
   }
 
   protected render(): TemplateResult {
@@ -93,13 +98,9 @@ export class HuiEntityCard extends LitElement implements LovelaceCard {
 
     if (!stateObj) {
       return html`
-        <hui-warning
-          >${this.hass.localize(
-            "ui.panel.lovelace.warning.entity_not_found",
-            "entity",
-            this._config.entity
-          )}</hui-warning
-        >
+        <hui-warning>
+          ${createEntityNotFoundWarning(this.hass, this._config.entity)}
+        </hui-warning>
       `;
     }
 
@@ -108,45 +109,39 @@ export class HuiEntityCard extends LitElement implements LovelaceCard {
       : !UNAVAILABLE_STATES.includes(stateObj.state);
 
     return html`
-      <ha-card>
-        <div
-          @action=${this._handleClick}
-          .actionHandler=${actionHandler()}
-          tabindex="0"
-        >
-          <div class="header">
-            <div class="name">
-              ${this._config.name || computeStateName(stateObj)}
-            </div>
-            <div class="icon">
-              <ha-icon
-                .icon=${this._config.icon || stateIcon(stateObj)}
-              ></ha-icon>
-            </div>
+      <ha-card @click=${this._handleClick} tabindex="0">
+        <div class="header">
+          <div class="name">
+            ${this._config.name || computeStateName(stateObj)}
           </div>
-          <div class="info">
-            <span class="value"
-              >${"attribute" in this._config
-                ? stateObj.attributes[this._config.attribute!] ||
-                  this.hass.localize("state.default.unknown")
-                : stateObj.attributes.unit_of_measurement
-                ? stateObj.state
-                : computeStateDisplay(
-                    this.hass.localize,
-                    stateObj,
-                    this.hass.language
-                  )}</span
-            >${showUnit
-              ? html`
-                  <span class="measurement"
-                    >${this._config.unit ||
-                    (this._config.attribute
-                      ? ""
-                      : stateObj.attributes.unit_of_measurement)}</span
-                  >
-                `
-              : ""}
+          <div class="icon">
+            <ha-icon
+              .icon=${this._config.icon || stateIcon(stateObj)}
+            ></ha-icon>
           </div>
+        </div>
+        <div class="info">
+          <span class="value"
+            >${"attribute" in this._config
+              ? stateObj.attributes[this._config.attribute!] ||
+                this.hass.localize("state.default.unknown")
+              : stateObj.attributes.unit_of_measurement
+              ? stateObj.state
+              : computeStateDisplay(
+                  this.hass.localize,
+                  stateObj,
+                  this.hass.language
+                )}</span
+          >${showUnit
+            ? html`
+                <span class="measurement"
+                  >${this._config.unit ||
+                  (this._config.attribute
+                    ? ""
+                    : stateObj.attributes.unit_of_measurement)}</span
+                >
+              `
+            : ""}
         </div>
         ${this._footerElement}
       </ha-card>
@@ -194,9 +189,8 @@ export class HuiEntityCard extends LitElement implements LovelaceCard {
         display: flex;
         flex-direction: column;
         justify-content: space-between;
-      }
-      ha-card > div {
         cursor: pointer;
+        outline: none;
       }
 
       .header {

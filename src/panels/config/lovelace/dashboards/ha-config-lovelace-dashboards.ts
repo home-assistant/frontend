@@ -1,3 +1,4 @@
+import "@material/mwc-fab";
 import "@polymer/paper-tooltip/paper-tooltip";
 import {
   css,
@@ -16,7 +17,6 @@ import {
   DataTableColumnContainer,
   RowClickedEvent,
 } from "../../../../components/data-table/ha-data-table";
-import "../../../../components/ha-fab";
 import "../../../../components/ha-icon";
 import "../../../../components/ha-icon-button";
 import {
@@ -34,6 +34,8 @@ import "../../../../layouts/hass-tabs-subpage-data-table";
 import { HomeAssistant, Route } from "../../../../types";
 import { lovelaceTabs } from "../ha-config-lovelace";
 import { showDashboardDetailDialog } from "./show-dialog-lovelace-dashboard-detail";
+import "../../../../components/ha-svg-icon";
+import { mdiPlus } from "@mdi/js";
 
 @customElement("ha-config-lovelace-dashboards")
 export class HaConfigLovelaceDashboards extends LitElement {
@@ -150,7 +152,7 @@ export class HaConfigLovelaceDashboards extends LitElement {
       columns.url_path = {
         title: "",
         filterable: true,
-        width: "75px",
+        width: "100px",
         template: (urlPath) =>
           narrow
             ? html`
@@ -222,15 +224,16 @@ export class HaConfigLovelaceDashboards extends LitElement {
         hasFab
       >
       </hass-tabs-subpage-data-table>
-      <ha-fab
+      <mwc-fab
         ?is-wide=${this.isWide}
         ?narrow=${this.narrow}
-        icon="hass:plus"
         title="${this.hass.localize(
           "ui.panel.config.lovelace.dashboards.picker.add_dashboard"
         )}"
         @click=${this._addDashboard}
-      ></ha-fab>
+      >
+        <ha-svg-icon slot="icon" path=${mdiPlus}></ha-svg-icon>
+      </mwc-fab>
     `;
   }
 
@@ -308,17 +311,17 @@ export class HaConfigLovelaceDashboards extends LitElement {
 
   static get styles(): CSSResult {
     return css`
-      ha-fab {
+      mwc-fab {
         position: fixed;
         bottom: 16px;
         right: 16px;
         z-index: 1;
       }
-      ha-fab[is-wide] {
+      mwc-fab[is-wide] {
         bottom: 24px;
         right: 24px;
       }
-      ha-fab[narrow] {
+      mwc-fab[narrow] {
         bottom: 84px;
       }
     `;

@@ -2,6 +2,7 @@ import { Connection, createCollection } from "home-assistant-js-websocket";
 import { compare } from "../common/string/compare";
 import { debounce } from "../common/util/debounce";
 import { HomeAssistant } from "../types";
+import { Store } from "home-assistant-js-websocket/dist/store";
 
 export interface AreaRegistryEntry {
   area_id: string;
@@ -38,18 +39,27 @@ export const deleteAreaRegistryEntry = (hass: HomeAssistant, areaId: string) =>
     area_id: areaId,
   });
 
-const fetchAreaRegistry = (conn) =>
+const fetchAreaRegistry = (conn: Connection) =>
   conn
     .sendMessagePromise({
       type: "config/area_registry/list",
     })
-    .then((areas) => areas.sort((ent1, ent2) => compare(ent1.name, ent2.name)));
+    .then((areas) =>
+      (areas as AreaRegistryEntry[]).sort((ent1, ent2) =>
+        compare(ent1.name, ent2.name)
+      )
+    );
 
-const subscribeAreaRegistryUpdates = (conn, store) =>
+const subscribeAreaRegistryUpdates = (
+  conn: Connection,
+  store: Store<AreaRegistryEntry[]>
+) =>
   conn.subscribeEvents(
     debounce(
       () =>
-        fetchAreaRegistry(conn).then((areas) => store.setState(areas, true)),
+        fetchAreaRegistry(conn).then((areas: AreaRegistryEntry[]) =>
+          store.setState(areas, true)
+        ),
       500,
       true
     ),

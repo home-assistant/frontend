@@ -1,6 +1,6 @@
 import "@polymer/paper-styles/paper-styles";
 import "@polymer/polymer/lib/elements/custom-style";
-import { derivedStyles, haStyle, haStyleDialog } from "./styles";
+import { derivedStyles } from "./styles";
 
 const documentContainer = document.createElement("template");
 documentContainer.setAttribute("style", "display: none;");
@@ -92,40 +92,27 @@ documentContainer.innerHTML = `<custom-style>
       --rgb-primary-text-color: 33, 33, 33;
       --rgb-secondary-text-color: 114, 114, 114;
       --rgb-text-primary-color: 255, 255, 255;
+      --rgb-card-background-color: 255, 255, 255;
 
       ${Object.entries(derivedStyles)
         .map(([key, value]) => `--${key}: ${value};`)
         .join("")}
     }
-  </style>
 
-  <style shady-unscoped="">
     /*
       prevent clipping of positioned elements in a small scrollable
       force smooth scrolling if can scroll
       use non-shady selectors so this only targets iOS 9
       conditional mixin set in ha-style-dialog does not work with shadyCSS
     */
-    paper-dialog-scrollable:not(.can-scroll) &gt; .scrollable {
+    paper-dialog-scrollable:not(.can-scroll) > .scrollable {
       -webkit-overflow-scrolling: auto !important;
     }
 
-    paper-dialog-scrollable.can-scroll &gt; .scrollable {
+    paper-dialog-scrollable.can-scroll > .scrollable {
       -webkit-overflow-scrolling: touch !important;
     }
   </style>
-</custom-style><dom-module id="ha-style">
-  <template>
-    <style>
-    ${haStyle.cssText}
-    </style>
-  </template>
-</dom-module><dom-module id="ha-style-dialog">
-  <template>
-    <style>
-      ${haStyleDialog.cssText}
-    </style>
-  </template>
-</dom-module>`;
+</custom-style>`;
 
 document.head.appendChild(documentContainer.content);

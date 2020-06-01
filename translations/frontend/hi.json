@@ -92,6 +92,8 @@
             "off": "बंद"
         },
         "default": {
+            "off": "बंद",
+            "on": "चालू",
             "unavailable": "अनुपलब्ध",
             "unknown": "अनजान"
         },
@@ -153,8 +155,31 @@
         }
     },
     "ui": {
+        "card": {
+            "weather": {
+                "attributes": {
+                    "precipitation": "वर्षण"
+                },
+                "high": "उच्च",
+                "low": "कम"
+            }
+        },
         "common": {
-            "undo": "Undo"
+            "undo": "पूर्ववत करें"
+        },
+        "dialogs": {
+            "mqtt_device_debug_info": {
+                "entities": "संस्थाएं",
+                "no_entities": "कोई संस्थाएं नहीं",
+                "no_triggers": "कोई ट्रिगर नहीं",
+                "show_as_yaml": "YAML के रूप में दिखाएं",
+                "triggers": "ट्रिगर"
+            },
+            "zha_device_info": {
+                "services": {
+                    "zigbee_information": "डिवाइस के लिए Zigbee जानकारी देखें।"
+                }
+            }
         },
         "duration": {
             "day": "{count} {count, plural,\n  one {दिन}\n  other {दिन}\n}",
@@ -170,6 +195,9 @@
                     "editor": {
                         "conditions": {
                             "type": {
+                                "not": {
+                                    "label": "नहीं"
+                                },
                                 "sun": {
                                     "after": "बाद:",
                                     "before": "पहले:",
@@ -203,12 +231,49 @@
                                 }
                             }
                         }
+                    },
+                    "picker": {
+                        "headers": {
+                            "name": "नाम"
+                        }
+                    }
+                },
+                "filtering": {
+                    "clear": "विशद",
+                    "filtering_by": "द्वारा छान रहे हैं"
+                },
+                "integrations": {
+                    "add_integration": "एकीकरण जोड़ें",
+                    "config_entry": {
+                        "delete": "हटाएं",
+                        "rename": "नाम बदलें",
+                        "system_options": "सिस्टम विकल्प"
+                    },
+                    "integration": "एकीकरण",
+                    "no_integrations": "लगता है जैसे आपके पास अभी तक कोई भी पूर्णांक कॉन्फ़िगर नहीं है। अपना पहला एकीकरण जोड़ने के लिए नीचे दिए गए बटन पर क्लिक करें!",
+                    "rename_dialog": "इस कॉन्फ़िगरेशन प्रविष्टि का नाम संपादित करें",
+                    "rename_input_label": "प्रवेश का नाम"
+                },
+                "script": {
+                    "picker": {
+                        "headers": {
+                            "name": "नाम"
+                        }
                     }
                 },
                 "users": {
                     "editor": {
-                        "admin": "admin",
-                        "system_generated_users_not_editable": "ARAVIN"
+                        "admin": "प्रशासक",
+                        "name": "नाम",
+                        "system_generated_users_not_editable": "सिस्टम जनरेट किए गए उपयोगकर्ताओं को अपडेट करने में असमर्थ।",
+                        "update_user": "अपडेट"
+                    },
+                    "picker": {
+                        "headers": {
+                            "group": "समूह",
+                            "name": "नाम",
+                            "system": "सिस्टम"
+                        }
                     }
                 },
                 "zha": {
@@ -248,7 +313,10 @@
                 "editor": {
                     "card": {
                         "entity": {
-                            "description": "KARNATAKA"
+                            "description": "एंटिटी कार्ड आपको अपनी इकाई की स्थिति का त्वरित अवलोकन देता है।"
+                        },
+                        "generic": {
+                            "double_tap_action": "डबल टैप एक्शन"
                         },
                         "map": {
                             "hours_to_show": "hours to show"
@@ -258,6 +326,12 @@
                         "custom_card": "custom_ card",
                         "no_description": "description"
                     }
+                },
+                "reload_resources": {
+                    "refresh_header": "क्या आप रिफ्रेश करना चाहते हैं?"
+                },
+                "warning": {
+                    "entity_unavailable": "{entity} वर्तमान में अनुपलब्ध है"
                 }
             },
             "page-authorize": {
@@ -284,6 +358,11 @@
                 }
             },
             "profile": {
+                "dashboard": {
+                    "description": "इस उपकरण के लिए एक डिफ़ॉल्ट डैशबोर्ड चुनें।",
+                    "dropdown_label": "डैशबोर्ड",
+                    "header": "डैशबोर्ड"
+                },
                 "language": {
                     "link_promo": "अनुवाद करने में सहायता करें"
                 }

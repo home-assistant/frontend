@@ -1,3 +1,4 @@
+import { mdiBackupRestore, mdiCogs, mdiStore, mdiViewDashboard } from "@mdi/js";
 import {
   customElement,
   html,
@@ -5,37 +6,35 @@ import {
   property,
   TemplateResult,
 } from "lit-element";
-
 import { HassioHassOSInfo, HassioHostInfo } from "../../src/data/hassio/host";
 import {
   HassioHomeAssistantInfo,
   HassioSupervisorInfo,
 } from "../../src/data/hassio/supervisor";
-import "../../src/resources/ha-style";
+import type { PageNavigation } from "../../src/layouts/hass-tabs-subpage";
 import { HomeAssistant, Route } from "../../src/types";
 import "./hassio-panel-router";
-import type { PageNavigation } from "../../src/layouts/hass-tabs-subpage";
 
 export const supervisorTabs: PageNavigation[] = [
   {
     name: "Dashboard",
     path: `/hassio/dashboard`,
-    icon: "hassio:view-dashboard",
+    iconPath: mdiViewDashboard,
   },
   {
     name: "Add-on store",
     path: `/hassio/store`,
-    icon: "hassio:store",
+    iconPath: mdiStore,
   },
   {
     name: "Snapshots",
     path: `/hassio/snapshots`,
-    icon: "hassio:backup-restore",
+    iconPath: mdiBackupRestore,
   },
   {
     name: "System",
     path: `/hassio/system`,
-    icon: "hassio:cogs",
+    iconPath: mdiCogs,
   },
 ];
 

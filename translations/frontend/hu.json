@@ -206,6 +206,8 @@
             "stopped": "Megállítva"
         },
         "default": {
+            "off": "Ki",
+            "on": "Be",
             "unavailable": "Nem elérhető",
             "unknown": "Ismeretlen"
         },
@@ -344,7 +346,7 @@
             },
             "automation": {
                 "last_triggered": "Utoljára aktiválva",
-                "trigger": "Aktivál"
+                "trigger": "Végrehajt"
             },
             "camera": {
                 "not_available": "Kép nem áll rendelkezésre"
@@ -471,11 +473,16 @@
             }
         },
         "common": {
+            "and": "és",
+            "back": "Vissza",
             "cancel": "Mégse",
             "close": "Bezárás",
             "delete": "Törlés",
             "loading": "Betöltés",
+            "next": "Tovább",
             "no": "Nem",
+            "previous": "Előző",
+            "refresh": "Frissítés",
             "save": "Mentés",
             "successfully_deleted": "Sikeresen törölve",
             "successfully_saved": "Sikeresen elmentve",
@@ -499,6 +506,7 @@
             "device-picker": {
                 "clear": "Törlés",
                 "device": "Eszköz",
+                "no_area": "Nincs terület",
                 "show_devices": "Eszközök megjelenítése",
                 "toggle": "Váltás"
             },
@@ -611,7 +619,7 @@
                     "pattern": "Regex minta az ügyféloldali érvényesítéshez",
                     "text": "Szöveg"
                 },
-                "platform_not_loaded": "A(z) {platform} integráció nincs betöltve. Add hozzá a konfigurációdhoz a 'default_config:' vagy a(z) '{platform}:' hozzáadásával.",
+                "platform_not_loaded": "A(z) {platform} integráció nincs betöltve. Add hozzá a konfigurációdhoz a 'default_config:' vagy a(z) ''{platform}:'' hozzáadásával.",
                 "required_error_msg": "Ez a mező kötelező",
                 "yaml_not_editable": "Ennek az entitásnak a beállításai nem szerkeszthetők a felhasználói felületről. Csak a felhasználói felületről beállított entitások konfigurálhatók a felhasználói felületről."
             },
@@ -732,9 +740,15 @@
         "notification_toast": {
             "connection_lost": "A kapcsolat megszakadt. Újracsatlakozás…",
             "service_call_failed": "Nem sikerült meghívni a(z) {service} szolgáltatást.",
+            "started": "A Home Assistant indítása befejeződött!",
+            "starting": "A Home Assistant indítása folyamatban van. Nem lesz minden elérhető, amíg ez be nem fejeződik.",
             "triggered": "Aktiválva {name}"
         },
         "panel": {
+            "calendar": {
+                "my_calendars": "Saját naptáraim",
+                "today": "Ma"
+            },
             "config": {
                 "advanced_mode": {
                     "hint_enable": "Hiányzó konfigurációs beállítások? Kapcsold be a haladó üzemmódot",
@@ -752,9 +766,13 @@
                     },
                     "description": "Az összes otthoni terület áttekintése",
                     "editor": {
+                        "area_id": "Terület ID",
                         "create": "Létrehozás",
                         "default_name": "Új Terület",
                         "delete": "Törlés",
+                        "name": "Név",
+                        "name_required": "Név szükséges",
+                        "unknown_error": "Ismeretlen hiba",
                         "update": "Frissítés"
                     },
                     "picker": {
@@ -789,6 +807,7 @@
                                     "label": "Késleltetés"
                                 },
                                 "device_id": {
+                                    "action": "Művelet",
                                     "extra_fields": {
                                         "code": "Kód"
                                     },
@@ -830,12 +849,16 @@
                                     "label": "És"
                                 },
                                 "device": {
+                                    "condition": "Feltétel",
                                     "extra_fields": {
                                         "above": "Felett",
                                         "below": "Alatt",
                                         "for": "Időtartam"
                                     },
                                     "label": "Eszköz"
+                                },
+                                "not": {
+                                    "label": "Nem"
                                 },
                                 "numeric_state": {
                                     "above": "Felett",
@@ -905,7 +928,8 @@
                                         "below": "Alatt",
                                         "for": "Időtartam"
                                     },
-                                    "label": "Eszköz"
+                                    "label": "Eszköz",
+                                    "trigger": "Eseményindító"
                                 },
                                 "event": {
                                     "event_data": "Esemény adatai",
@@ -1168,7 +1192,9 @@
                                 "edit_requires_storage": "A szerkesztő le van tiltva, mert a konfiguráció a configuration.yaml fájlban van tárolva.",
                                 "elevation": "Magasság",
                                 "elevation_meters": "méter",
+                                "external_url": "Külső URL",
                                 "imperial_example": "Fahrenheit, font",
+                                "internal_url": "Belső URL",
                                 "latitude": "Szélesség",
                                 "location_name": "A Home Assistant rendszered neve",
                                 "longitude": "Hosszúság",
@@ -1231,14 +1257,18 @@
                         "integration": "Integráció",
                         "manufacturer": "Gyártó",
                         "model": "Modell",
+                        "no_area": "Nincs terület",
                         "no_devices": "Nincsenek eszközök"
                     },
                     "delete": "Törlés",
                     "description": "Csatlakoztatott eszközök kezelése",
+                    "device_info": "Eszköz információ",
                     "device_not_found": "Eszköz nem található.",
                     "entities": {
                         "add_entities_lovelace": "Hozzáadás a Lovelace-hez",
+                        "disabled_entities": "+{count} {count, plural,\n  one {letiltott entitás}\n  other {letiltott entitás}\n}",
                         "entities": "Entitások",
+                        "hide_disabled": "Letiltottak elrejtése",
                         "none": "Ennek az eszköznek nincsenek entitásai"
                     },
                     "name": "Név",
@@ -1358,7 +1388,8 @@
                         "restart_confirm": "Indítsd újra a Home Assistant-ot az integráció törlésének befejezéséhez",
                         "settings_button": "{integration} beállításainak szerkesztése",
                         "system_options": "Rendszerbeállítások",
-                        "system_options_button": "{integration} rendszerbeállításai"
+                        "system_options_button": "{integration} rendszerbeállításai",
+                        "unnamed_entry": "Névtelen bejegyzés"
                     },
                     "config_flow": {
                         "aborted": "Megszakítva",
@@ -1397,6 +1428,8 @@
                     "new": "Új integráció beállítása",
                     "no_integrations": "Úgy tűnik, még nincs beállítva egyetlen integráció sem. Kattints az alábbi gombra az első integráció hozzáadásához!",
                     "none": "Még semmi sincs beállítva",
+                    "none_found": "Nincsenek integrációk",
+                    "none_found_detail": "Módosítsd a keresési feltételeket.",
                     "note_about_integrations": "Még nem minden integráció konfigurálható a felhasználói felületen keresztül.",
                     "note_about_website_reference": "Továbbiak érhetőek el itt: ",
                     "rename_dialog": "A konfigurációs bejegyzés nevének szerkesztése",
@@ -1808,6 +1841,9 @@
                         "set_wakeup": "Ébresztési időköz beállítása",
                         "true": "Igaz"
                     },
+                    "node_management": {
+                        "nodes": "Csomópontok"
+                    },
                     "ozw_log": {
                         "header": "OZW Log",
                         "introduction": "Napló megtekintése. 0 a minimum (a teljes naplót betölti) és 1000 a maximum. A betöltés statikus naplót jelenít meg, és a vége automatikusan frissül a napló utolsó meghatározott számú sorával."
@@ -1860,10 +1896,13 @@
                         "built_using": "Buildelve:",
                         "custom_uis": "Egyéni felhasználói felületek:",
                         "developed_by": "Egy csomó fantasztikus ember által kifejlesztve.",
+                        "documentation": "Dokumentáció",
                         "frontend": "frontend-ui",
                         "frontend_version": "Frontend verzió: {version} - {type}",
                         "home_assistant_logo": "Home Assistant logó",
                         "icons_by": "Ikonokat készítette:",
+                        "integrations": "Integrációk",
+                        "issues": "Problémák",
                         "license": "Megjelent az Apache 2.0 licenc alatt",
                         "path_configuration": "A configuration.yaml fájl elérési útja: {path}",
                         "server": "server",
@@ -1978,6 +2017,10 @@
                         "add_item": "Tétel hozzáadása",
                         "checked_items": "Bejelölt tételek",
                         "clear_items": "Bejelölt tételek törlése"
+                    },
+                    "starting": {
+                        "description": "A Home Assistant indítása folyamatban van, kérlek várj.",
+                        "header": "A Home Assistant indítása folyamatban van..."
                     }
                 },
                 "changed_toast": {
@@ -2054,6 +2097,7 @@
                             "name": "Név",
                             "no_theme": "Nincs téma",
                             "refresh_interval": "Frissítési időköz",
+                            "secondary_info_attribute": "Másodlagos információ attribútum",
                             "show_icon": "Ikon megjelenítése?",
                             "show_name": "Név megjelenítése?",
                             "show_state": "Állapot megjelenítése?",
@@ -2144,7 +2188,8 @@
                         },
                         "weather-forecast": {
                             "description": "Az Időjárás Előrejelzés kártya az időjárást jeleníti meg. Nagyon hasznos hozzáadni a falra felszerelt kezelő interfészek felületéhez.",
-                            "name": "Időjárás előrejelzés"
+                            "name": "Időjárás előrejelzés",
+                            "show_forecast": "Előrejelzés megjelenítése"
                         }
                     },
                     "cardpicker": {
@@ -2216,12 +2261,12 @@
                         "close": "Bezárás",
                         "empty_config": "Kezdj egy üres irányítópulttal",
                         "header": "Vedd át az irányítást a Lovelace UI felett",
-                        "para": "Alapértelmezés szerint a Home Assistant kezeli a felhasználói felületet, és frissíti azt, amikor új entitások vagy Lovelace komponensek válnak elérhetővé. Ha átveszed az irányítást, többé nem fogunk automatikusan módosításokat végezni számodra.",
+                        "para": "Ezt az irányítópultot jelenleg a Home Assistant kezeli. Automatikusan frissül, amikor új entitások vagy Lovelace komponensek válnak elérhetővé. Ha átveszed az irányítást, akkor ez az irányítópult nem fog többé automatikusan frissülni. Bármikor létre tudsz hozni egy új irányítópultot a konfigurációban a próbálgatáshoz.",
                         "para_sure": "Biztosan át szeretnéd venni az irányítást a felhasználói felületed felett?",
                         "save": "Irányítás átvétele",
                         "yaml_config": "A kezdéshez itt a jelenlegi konfigurációja ennek az irányítópultnak:",
                         "yaml_control": "Ahhoz, hogy átvedd az irányítást YAML módban, hozz létre egy YAML fájlt az irányítópult konfigurációjában megadott  vagy az alapértelmezett 'ui-lovelace.yaml' névvel.",
-                        "yaml_mode": "YAML módot használsz, ezért nem módosíthatod a Lovelace konfigurációt a felhasználói felületről. Ha mégis onnan szeretnéd, akkor távolítsd el a 'mode: yaml' bejegyzést a Lovelace konfigurációból a 'configuration.yaml' fájlban."
+                        "yaml_mode": "YAML módot használsz ehhez az irányítópulthoz, ezért nem módosíthatod a Lovelace konfigurációt a felhasználói felületről. Ha mégis onnan szeretnéd, akkor távolítsd el a 'mode: yaml' bejegyzést a Lovelace konfigurációból a 'configuration.yaml' fájlban."
                     },
                     "suggest_card": {
                         "add": "Hozzáadás a Lovelace-hez",
@@ -2261,14 +2306,15 @@
                 "views": {
                     "confirm_delete": "Nézet törlése?",
                     "confirm_delete_existing_cards": "A nézet törlésével a kártyák is eltávolításra kerülnek",
-                    "confirm_delete_existing_cards_text": "Biztosan törölni szeretnéd a(z) '{name}' nézetet? A nézet {number} kártyát tartalmaz, melyek törlődni fognak. Ez a művelet nem vonható vissza.",
-                    "confirm_delete_text": "Biztosan törölni szeretnéd a(z) {name} nézetet?"
+                    "confirm_delete_existing_cards_text": "Biztosan törölni szeretnéd a(z) ''{name}'' nézetet? A nézet {number} kártyát tartalmaz, melyek törlődni fognak. Ez a művelet nem vonható vissza.",
+                    "confirm_delete_text": "Biztosan törölni szeretnéd a(z) \"{name}\" nézetet?"
                 },
                 "warning": {
                     "attribute_not_found": "A(z) {attribute} attribútum nem érhető el a(z) {entity} entitásban.",
                     "entity_non_numeric": "Entitás nem numerikus: {entity}",
                     "entity_not_found": "Entitás nem elérhető: {entity}",
-                    "entity_unavailable": "{entity} jelenleg nem elérhető"
+                    "entity_unavailable": "{entity} jelenleg nem elérhető",
+                    "starting": "A Home Assistant indítása folyamatban van, ezért lehet hogy még nem minden érhető el."
                 }
             },
             "mailbox": {
@@ -2281,6 +2327,8 @@
                 "abort_intro": "Bejelentkezés megszakítva",
                 "authorizing_client": "Éppen a {clientId} számára készülsz hozzáférést biztosítani a Home Assistant példányodhoz.",
                 "form": {
+                    "error": "Hiba: {error}",
+                    "next": "Tovább",
                     "providers": {
                         "command_line": {
                             "abort": {
@@ -2366,6 +2414,7 @@
                             }
                         }
                     },
+                    "start_over": "Újrakezdés",
                     "unknown_error": "Valami hiba történt",
                     "working": "Kérlek várj"
                 },

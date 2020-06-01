@@ -15,7 +15,7 @@ import "../../components/ha-card";
 import "../../components/ha-menu-button";
 import { EventsMixin } from "../../mixins/events-mixin";
 import LocalizeMixin from "../../mixins/localize-mixin";
-import "../../resources/ha-style";
+import "../../styles/polymer-ha-style";
 
 let registeredDialog = false;
 

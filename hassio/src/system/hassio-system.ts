@@ -13,15 +13,14 @@ import {
   HassioHostInfo,
 } from "../../../src/data/hassio/host";
 import { HassioSupervisorInfo } from "../../../src/data/hassio/supervisor";
-import { haStyle } from "../../../src/resources/styles";
 import "../../../src/layouts/hass-tabs-subpage";
+import { haStyle } from "../../../src/resources/styles";
 import { HomeAssistant, Route } from "../../../src/types";
+import { supervisorTabs } from "../hassio-panel";
 import { hassioStyle } from "../resources/hassio-style";
 import "./hassio-host-info";
 import "./hassio-supervisor-info";
 import "./hassio-supervisor-log";
-
-import { supervisorTabs } from "../hassio-panel";
 
 @customElement("hassio-system")
 class HassioSystem extends LitElement {

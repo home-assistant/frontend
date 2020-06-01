@@ -10,6 +10,7 @@ import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 import "../../src/components/ha-card";
 import "../../src/managers/notification-manager";
+import "../../src/styles/polymer-ha-style";
 
 // eslint-disable-next-line no-undef
 const DEMOS = require.context("./demos", true, /^(.*\.(ts$))[^.]*$/im);

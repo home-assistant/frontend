@@ -206,6 +206,8 @@
             "stopped": "Gestopt"
         },
         "default": {
+            "off": "Uit",
+            "on": "Aan",
             "unavailable": "Niet beschikbaar",
             "unknown": "Onbekend"
         },
@@ -471,11 +473,16 @@
             }
         },
         "common": {
+            "and": "en",
+            "back": "Terug",
             "cancel": "Annuleren",
             "close": "Sluiten",
             "delete": "Verwijderen",
             "loading": "Bezig met laden",
+            "next": "Volgende",
             "no": "Nee",
+            "previous": "Vorige",
+            "refresh": "Vernieuwen",
             "save": "Opslaan",
             "successfully_deleted": "Succesvol verwijderd",
             "successfully_saved": "Succesvol opgeslagen",
@@ -499,6 +506,7 @@
             "device-picker": {
                 "clear": "Wis",
                 "device": "Apparaat",
+                "no_area": "Geen gebied",
                 "show_devices": "Apparaten weergeven",
                 "toggle": "Omschakelen"
             },
@@ -563,7 +571,7 @@
                     "icon": "Overschrijf pictogram",
                     "icon_error": "Pictogrammen moeten de notatie 'prefix:pictogramnaam' hebben, bijvoorbeeld 'mdi:home'",
                     "name": "Naam overschrijven",
-                    "note": "Nota bene: dit werkt mogelijk nog niet met alle integraties.",
+                    "note": "Opmerking: dit werkt mogelijk nog niet met alle integraties.",
                     "unavailable": "Deze entiteit is momenteel niet beschikbaar.",
                     "update": "Bijwerken"
                 },
@@ -594,7 +602,7 @@
                     "min": "Minimale waarde",
                     "mode": "Weergavemodus",
                     "slider": "Schuifregelaar",
-                    "step": "Stapgrootte van de schuifregelaar",
+                    "step": "Stapgrootte",
                     "unit_of_measurement": "Meeteenheid"
                 },
                 "input_select": {
@@ -611,7 +619,7 @@
                     "pattern": "Regex-patroon voor clientvalidatie",
                     "text": "Tekst"
                 },
-                "platform_not_loaded": "De {platform} integratie is niet geladen. Voeg het aan je configuratie toe door 'default_config:' of '{platform}:' toe te voegen.",
+                "platform_not_loaded": "De {platform} integratie is niet geladen. Voeg het aan je configuratie toe door 'default_config:' of ''{platform}:'' toe te voegen.",
                 "required_error_msg": "Dit veld is verplicht",
                 "yaml_not_editable": "De instellingen van deze entiteit kunnen niet worden bewerkt vanuit de gebruikersinterface. Alleen entiteiten die zijn ingesteld vanuit de gebruikersinterface, kunnen worden geconfigureerd vanuit de gebruikersinterface."
             },
@@ -655,7 +663,7 @@
                 }
             },
             "mqtt_device_debug_info": {
-                "deserialize": "Probeer MQTT-berichten als JSON te parseren",
+                "deserialize": "Probeer MQTT-berichten als JSON te ontleden",
                 "entities": "Entiteiten",
                 "no_entities": "Geen entiteiten",
                 "no_triggers": "Geen triggers",
@@ -735,6 +743,10 @@
             "triggered": "Geactiveerd {name}"
         },
         "panel": {
+            "calendar": {
+                "my_calendars": "Mijn agenda's",
+                "today": "Vandaag"
+            },
             "config": {
                 "advanced_mode": {
                     "hint_enable": "Ontbrekende configuratie-opties? Schakel geavanceerde modus in",
@@ -752,9 +764,13 @@
                     },
                     "description": "Overzicht van alle gebieden in je huis.",
                     "editor": {
+                        "area_id": "Gebieds-ID",
                         "create": "Aanmaken",
                         "default_name": "Nieuw Gebied",
                         "delete": "Verwijderen",
+                        "name": "Naam",
+                        "name_required": "Naam is vereist",
+                        "unknown_error": "Onbekende fout",
                         "update": "Bijwerken"
                     },
                     "picker": {
@@ -789,6 +805,7 @@
                                     "label": "Vertraging"
                                 },
                                 "device_id": {
+                                    "action": "Actie",
                                     "extra_fields": {
                                         "code": "Code"
                                     },
@@ -830,12 +847,16 @@
                                     "label": "En"
                                 },
                                 "device": {
+                                    "condition": "Voorwaarde",
                                     "extra_fields": {
                                         "above": "Boven",
                                         "below": "Onder",
                                         "for": "Duur"
                                     },
                                     "label": "Apparaat"
+                                },
+                                "not": {
+                                    "label": "Niet"
                                 },
                                 "numeric_state": {
                                     "above": "Boven",
@@ -905,7 +926,8 @@
                                         "below": "Onder",
                                         "for": "Duur"
                                     },
-                                    "label": "Apparaat"
+                                    "label": "Apparaat",
+                                    "trigger": "Trigger"
                                 },
                                 "event": {
                                     "event_data": "Gebeurtenisdata",
@@ -1168,7 +1190,9 @@
                                 "edit_requires_storage": "Editor uitgeschakeld omdat de configuratie is opgeslagen in configuration.yaml",
                                 "elevation": "Hoogte",
                                 "elevation_meters": "meter",
+                                "external_url": "Externe URL",
                                 "imperial_example": "Fahrenheit, ponden",
+                                "internal_url": "Interne URL",
                                 "latitude": "Breedtegraad",
                                 "location_name": "Naam van Home Assistant installatie",
                                 "longitude": "Lengtegraad",
@@ -1231,14 +1255,18 @@
                         "integration": "Integratie",
                         "manufacturer": "Fabrikant",
                         "model": "Model",
+                        "no_area": "Geen gebied",
                         "no_devices": "Geen apparaten"
                     },
                     "delete": "Verwijderen",
                     "description": "Beheer verbonden apparaten",
+                    "device_info": "Apparaat info",
                     "device_not_found": "Apparaat niet gevonden.",
                     "entities": {
                         "add_entities_lovelace": "Voeg toe aan de Lovelace gebruikersinterface",
+                        "disabled_entities": "+{count} {count, plural,\n  one {uitgeschakelde entiteit}\n  other {uitgeschakelde entiteiten}\n}",
                         "entities": "Entiteiten",
+                        "hide_disabled": "Verberg uitgeschakeld",
                         "none": "Dit apparaat heeft geen entiteiten"
                     },
                     "name": "Naam",
@@ -1344,8 +1372,8 @@
                         "delete_button": "Verwijder {integration}.",
                         "delete_confirm": "Weet je zeker dat je deze integratie wilt verwijderen?",
                         "device_unavailable": "apparaat niet beschikbaar",
-                        "devices": "{count} {count, plural,\n  one {device}\n  other {devices}\n}",
-                        "entities": "{count} {count, plural,\n  one {entity}\n  other {entities}\n}",
+                        "devices": "{count} {count, plural,\n  one {apparaat}\n  other {apparaten}\n}",
+                        "entities": "{count} {count, plural,\n  one {entiteit}\n  other {entiteiten}\n}",
                         "entity_unavailable": "entiteit niet beschikbaar",
                         "firmware": "Firmware: {version}",
                         "hub": "Verbonden via",
@@ -1358,7 +1386,8 @@
                         "restart_confirm": "Herstart Home Assistant om het verwijderen van deze integratie te voltooien",
                         "settings_button": "Instellingen bewerken voor {integration}",
                         "system_options": "Systeeminstellingen",
-                        "system_options_button": "Systeeminstellingen voor {integration}"
+                        "system_options_button": "Systeeminstellingen voor {integration}",
+                        "unnamed_entry": "Naamloze invoer"
                     },
                     "config_flow": {
                         "aborted": "Afgebroken",
@@ -1397,10 +1426,12 @@
                     "new": "Stel een nieuwe integratie in",
                     "no_integrations": "Het lijkt erop dat je nog geen integraties hebt geconfigureerd. Klik op de knop hieronder om uw eerste integratie toe te voegen!",
                     "none": "Er is nog niets geconfigureerd",
+                    "none_found": "Geen integraties gevonden",
+                    "none_found_detail": "Pas uw zoekcriteria aan.",
                     "note_about_integrations": "Nog niet alle integraties kunnen via de UI worden geconfigureerd.",
                     "note_about_website_reference": "Meer zijn beschikbaar op de ",
-                    "rename_dialog": "Bewerk de naam van configuratie item",
-                    "rename_input_label": "Vermeldingsnaam"
+                    "rename_dialog": "Bewerk de naam van dit configuratie item",
+                    "rename_input_label": "Invoernaam"
                 },
                 "introduction": "Hier kun je je componenten en Home Assistant configureren. Het is nog niet mogelijk om alles te configureren vanuit de interface, maar we werken er aan.",
                 "lovelace": {
@@ -1410,7 +1441,7 @@
                         "cant_edit_yaml": "Dashboards die zijn gedefinieerd in YAML kunnen niet worden bewerkt vanuit de gebruikersinterface. Wijzig ze in configuration.yaml.",
                         "caption": "Dashboards",
                         "conf_mode": {
-                            "storage": "UI gecontroleerd",
+                            "storage": "Gebruikersinterface gestuurd",
                             "yaml": "YAML-bestand"
                         },
                         "confirm_delete": "Weet je zeker dat je dit dashboard wilt verwijderen?",
@@ -1468,14 +1499,14 @@
                                 "type": "Type",
                                 "url": "Url"
                             },
-                            "no_resources": "Geen Lovelace bronnen"
+                            "no_resources": "Geen bronnen"
                         },
                         "refresh_body": "Je moet de pagina vernieuwen om de verwijdering te voltooien. Wil je nu vernieuwen?",
                         "refresh_header": "Wil je verversen?",
                         "types": {
                             "css": "Stylesheet",
-                            "html": "HTML (afgeschaft)",
-                            "js": "JavaScript-bestand (afgeschaft)",
+                            "html": "HTML (verouderd)",
+                            "js": "JavaScript-bestand (verouderd)",
                             "module": "JavaScript-module"
                         }
                     }
@@ -1860,10 +1891,13 @@
                         "built_using": "Gebouwd met behulp van",
                         "custom_uis": "Aangepaste UI's:",
                         "developed_by": "Ontwikkeld door een stel geweldige mensen.",
+                        "documentation": "Documentatie",
                         "frontend": "Frontend",
                         "frontend_version": "Frontend-versie: {version} - {type}",
                         "home_assistant_logo": "Home Assistant-logo",
                         "icons_by": "Icons door",
+                        "integrations": "Integraties",
+                        "issues": "Problemen",
                         "license": "Gepubliceerd onder de Apache 2.0-licentie",
                         "path_configuration": "Pad naar configuration.yaml: {path}",
                         "server": "Server",
@@ -2054,6 +2088,7 @@
                             "name": "Naam",
                             "no_theme": "Geen thema",
                             "refresh_interval": "Vernieuwingsinterval",
+                            "secondary_info_attribute": "Secundair Info attribuut",
                             "show_icon": "Pictogram Weergeven?",
                             "show_name": "Naam weergeven?",
                             "show_state": "Staat tonen?",
@@ -2144,11 +2179,12 @@
                         },
                         "weather-forecast": {
                             "description": "De Weather Forecast-kaart geeft het weer weer. Erg handig om op te nemen op interfaces die mensen aan de muur hangen.",
-                            "name": "Weersverwachting"
+                            "name": "Weersverwachting",
+                            "show_forecast": "Toon Weersvoorspelling"
                         }
                     },
                     "cardpicker": {
-                        "custom_card": "Aangepaste UI's:",
+                        "custom_card": "Aangepaste",
                         "no_description": "Er is geen beschrijving beschikbaar"
                     },
                     "edit_card": {
@@ -2179,7 +2215,7 @@
                         "move_left": "Verplaats weergave naar links",
                         "move_right": "Verplaats weergave naar rechts",
                         "tab_badges": "Badges",
-                        "tab_settings": "instellingen",
+                        "tab_settings": "Instellingen",
                         "tab_visibility": "Zichtbaarheid",
                         "visibility": {
                             "select_users": "Selecteer welke gebruikers deze weergave in de navigatie moeten zien"
@@ -2206,7 +2242,7 @@
                         "error_remove": "Kan configuratie niet verwijderen: {error}",
                         "error_save_yaml": "Kan YAML niet opslaan: {error}",
                         "header": "Configuratie bewerken",
-                        "resources_moved": "Bronnen moeten niet langer worden toegevoegd aan de Lovelace-configuratie, maar kunnen worden toegevoegd in het Lovelace-configuratievenster.",
+                        "resources_moved": "Bronnen moeten niet langer worden toegevoegd aan de Lovelace-configuratie, maar kunnen worden toegevoegd in het Lovelace-configuratiepaneel.",
                         "save": "Opslaan",
                         "saved": "Opgeslagen",
                         "unsaved_changes": "Niet-opgeslagen wijzigingen"
@@ -2216,12 +2252,12 @@
                         "close": "Sluiten",
                         "empty_config": "Begin met een leeg dashboard",
                         "header": "Neem de controle over je Lovelace UI",
-                        "para": "Home Assistant onderhoudt je gebruikersinterface en update die met nieuwe entiteiten of Lovelace-onderdelen wanneer deze beschikbaar zijn. Als je het beheer overneemt, zullen we niet langer automatisch wijzigingen aanbrengen.",
+                        "para": "Home Assistant onderhoudt je gebruikersinterface en update die met nieuwe entiteiten of Lovelace-onderdelen wanneer deze beschikbaar zijn. Als je het beheer overneemt, zullen we niet langer automatisch wijzigingen aanbrengen. Je kunt later altijd een nieuw dashboard in de configuratie toevoegen om mee te spelen.",
                         "para_sure": "Weet je zeker dat je de controle wilt over je gebruikersinterface?",
                         "save": "Neem over",
                         "yaml_config": "Om je te helpen te beginnen, hier is de huidige configuratie van dit dashboard:",
                         "yaml_control": "Om de controle over te nemen in de YAML-modus, maak je een YAML-bestand met de naam die je hebt opgegeven in je configuratie voor dit dashboard, of de standaard 'ui-lovelace.yaml'.",
-                        "yaml_mode": "Je gebruikt de YAML-modus, wat betekent dat je jouw Lovelace-configuratie niet vanuit de gebruikersinterface kunt wijzigen. Als je Lovelace vanuit de gebruikersinterface wilt wijzigen, verwijder dan 'mode: yaml' uit de Lovelace-configuratie in 'configuration.yaml.'"
+                        "yaml_mode": "Je gebruikt de YAML-modus, wat betekent dat je jouw Lovelace-configuratie niet vanuit de gebruikersinterface kunt wijzigen. Als je Lovelace vanuit de gebruikersinterface wilt wijzigen, verwijder dan 'mode: yaml' uit de Lovelace-configuratie in 'configuration.yaml'."
                     },
                     "suggest_card": {
                         "add": "Voeg toe aan de Lovelace gebruikersinterface",
@@ -2242,7 +2278,7 @@
                     "exit_edit_mode": "UI-bewerkingsmodus afsluiten",
                     "help": "Help",
                     "refresh": "Vernieuwen",
-                    "reload_resources": "Herlaad Lovelace gegevens"
+                    "reload_resources": "Herlaad bronnen"
                 },
                 "reload_lovelace": "Lovelace herladen",
                 "reload_resources": {
@@ -2261,8 +2297,8 @@
                 "views": {
                     "confirm_delete": "Weergave verwijderen?",
                     "confirm_delete_existing_cards": "Als u deze weergave verwijdert, worden ook de kaarten verwijderd",
-                    "confirm_delete_existing_cards_text": "Weet u zeker dat u uw weergave '{name}' wilt verwijderen? De weergave bevat {number} kaarten die worden verwijderd. Deze actie kan niet ongedaan gemaakt worden.",
-                    "confirm_delete_text": "Weet u zeker dat u uw '{naam}'-weergave wilt verwijderen?"
+                    "confirm_delete_existing_cards_text": "Weet u zeker dat u uw weergave ''{name}'' wilt verwijderen? De weergave bevat {number} kaarten die worden verwijderd. Deze actie kan niet ongedaan gemaakt worden.",
+                    "confirm_delete_text": "Weet u zeker dat u uw ''{name}''-weergave wilt verwijderen?"
                 },
                 "warning": {
                     "attribute_not_found": "Kenmerk {attribute} niet beschikbaar in: {entity}",
@@ -2281,6 +2317,8 @@
                 "abort_intro": "Inloggen afgebroken",
                 "authorizing_client": "Je staat op het punt {clientId} toegang te geven tot je Home Assistant-instantie.",
                 "form": {
+                    "error": "Fout: {error}",
+                    "next": "Volgende",
                     "providers": {
                         "command_line": {
                             "abort": {
@@ -2366,6 +2404,7 @@
                             }
                         }
                     },
+                    "start_over": "Begin opnieuw",
                     "unknown_error": "Er ging iets mis",
                     "working": "Een ogenblik geduld"
                 },

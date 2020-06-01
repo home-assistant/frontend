@@ -11,16 +11,13 @@ import {
   TemplateResult,
 } from "lit-element";
 import memoizeOne from "memoize-one";
-import * as Fuse from "fuse.js";
+import Fuse from "fuse.js";
 import { caseInsensitiveCompare } from "../../../common/string/compare";
 import { computeRTL } from "../../../common/util/compute_rtl";
-import {
-  afterNextRender,
-  nextRender,
-} from "../../../common/util/render-status";
+import { nextRender } from "../../../common/util/render-status";
 import "../../../components/entity/ha-state-icon";
 import "../../../components/ha-card";
-import "../../../components/ha-fab";
+import "@material/mwc-fab";
 import {
   ConfigEntry,
   deleteConfigEntry,
@@ -46,6 +43,7 @@ import { domainToName } from "../../../data/integration";
 import { showConfigFlowDialog } from "../../../dialogs/config-flow/show-dialog-config-flow";
 import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
 import "../../../layouts/hass-tabs-subpage";
+import "../../../layouts/hass-loading-screen";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../resources/styles";
 import { HomeAssistant, Route } from "../../../types";
@@ -58,6 +56,9 @@ import type {
   HaIntegrationCard,
 } from "./ha-integration-card";
 import { HASSDomEvent } from "../../../common/dom/fire_event";
+import "../../../components/ha-svg-icon";
+import { mdiPlus } from "@mdi/js";
+import { LocalizeFunc } from "../../../common/translations/localize";
 
 interface DataEntryFlowProgressExtended extends DataEntryFlowProgress {
   localized_title?: string;
@@ -93,7 +94,7 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
 
   @property() public route!: Route;
 
-  @property() private _configEntries: ConfigEntryExtended[] = [];
+  @property() private _configEntries?: ConfigEntryExtended[];
 
   @property()
   private _configEntriesInProgress: DataEntryFlowProgressExtended[] = [];
@@ -119,7 +120,7 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
         this._deviceRegistryEntries = entries;
       }),
       subscribeConfigFlowInProgress(this.hass, async (flowsInProgress) => {
-        const translationsPromisses: Promise<void>[] = [];
+        const translationsPromisses: Promise<LocalizeFunc>[] = [];
         flowsInProgress.forEach((flow) => {
           // To render title placeholders
           if (flow.context.title_placeholders) {
@@ -146,16 +147,16 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
       filter?: string
     ): ConfigEntryExtended[] => {
       if (!filter) {
-        return configEntries;
+        return [...configEntries];
       }
-      const options: Fuse.FuseOptions<ConfigEntryExtended> = {
+      const options: Fuse.IFuseOptions<ConfigEntryExtended> = {
         keys: ["domain", "localized_domain_name", "title"],
-        caseSensitive: false,
+        isCaseSensitive: false,
         minMatchCharLength: 2,
         threshold: 0.2,
       };
       const fuse = new Fuse(configEntries, options);
-      return fuse.search(filter);
+      return fuse.search(filter).map((result) => result.item);
     }
   );
 
@@ -169,11 +170,11 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
         filter
       );
       const ignored: ConfigEntryExtended[] = [];
-      filteredConfigEnties.forEach((item, index) => {
-        if (item.source === "ignore") {
-          ignored.push(filteredConfigEnties.splice(index, 1)[0]);
+      for (let i = filteredConfigEnties.length - 1; i >= 0; i--) {
+        if (filteredConfigEnties[i].source === "ignore") {
+          ignored.push(filteredConfigEnties.splice(i, 1)[0]);
         }
-      });
+      }
       return [groupByIntegration(filteredConfigEnties), ignored];
     }
   );
@@ -192,14 +193,14 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
       if (!filter) {
         return configEntriesInProgress;
       }
-      const options: Fuse.FuseOptions<DataEntryFlowProgressExtended> = {
+      const options: Fuse.IFuseOptions<DataEntryFlowProgressExtended> = {
         keys: ["handler", "localized_title"],
-        caseSensitive: false,
+        isCaseSensitive: false,
         minMatchCharLength: 2,
         threshold: 0.2,
       };
       const fuse = new Fuse(configEntriesInProgress, options);
-      return fuse.search(filter);
+      return fuse.search(filter).map((result) => result.item);
     }
   );
 
@@ -214,32 +215,17 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
     if (
       this._searchParms.has("config_entry") &&
       changed.has("_configEntries") &&
-      !(changed.get("_configEntries") as ConfigEntry[]).length &&
-      this._configEntries.length
+      !changed.get("_configEntries") &&
+      this._configEntries
     ) {
-      afterNextRender(() => {
-        const entryId = this._searchParms.get("config_entry")!;
-        const configEntry = this._configEntries.find(
-          (entry) => entry.entry_id === entryId
-        );
-        if (!configEntry) {
-          return;
-        }
-        const card: HaIntegrationCard = this.shadowRoot!.querySelector(
-          `[data-domain=${configEntry?.domain}]`
-        ) as HaIntegrationCard;
-        if (card) {
-          card.scrollIntoView({
-            block: "center",
-          });
-          card.classList.add("highlight");
-          card.selectedConfigEntryId = entryId;
-        }
-      });
+      this._highlightEntry();
     }
   }
 
   protected render(): TemplateResult {
+    if (!this._configEntries) {
+      return html`<hass-loading-screen></hass-loading-screen>`;
+    }
     const [
       groupedConfigEntries,
       ignoredConfigEntries,
@@ -425,7 +411,7 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
                     </p>
                     <mwc-button @click=${this._createFlow} unelevated
                       >${this.hass.localize(
-                        "ui.panel.config.integrations.add"
+                        "ui.panel.config.integrations.add_integration"
                       )}</mwc-button
                     >
                   </div>
@@ -452,15 +438,16 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
               `
             : ""}
         </div>
-        <ha-fab
-          icon="hass:plus"
+        <mwc-fab
           aria-label=${this.hass.localize("ui.panel.config.integrations.new")}
           title=${this.hass.localize("ui.panel.config.integrations.new")}
           @click=${this._createFlow}
           ?is-wide=${this.isWide}
           ?narrow=${this.narrow}
           ?rtl=${computeRTL(this.hass!)}
-        ></ha-fab>
+        >
+          <ha-svg-icon slot="icon" path=${mdiPlus}></ha-svg-icon>
+        </mwc-fab>
       </hass-tabs-subpage>
     `;
   }
@@ -487,7 +474,7 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
   }
 
   private _handleRemoved(ev: HASSDomEvent<ConfigEntryRemovedEvent>) {
-    this._configEntries = this._configEntries.filter(
+    this._configEntries = this._configEntries!.filter(
       (entry) => entry.entry_id !== ev.detail.entryId
     );
   }
@@ -590,6 +577,27 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
     ev.target.style.visibility = "hidden";
   }
 
+  private async _highlightEntry() {
+    await nextRender();
+    const entryId = this._searchParms.get("config_entry")!;
+    const configEntry = this._configEntries!.find(
+      (entry) => entry.entry_id === entryId
+    );
+    if (!configEntry) {
+      return;
+    }
+    const card: HaIntegrationCard = this.shadowRoot!.querySelector(
+      `[data-domain=${configEntry?.domain}]`
+    ) as HaIntegrationCard;
+    if (card) {
+      card.scrollIntoView({
+        block: "center",
+      });
+      card.classList.add("highlight");
+      card.selectedConfigEntryId = entryId;
+    }
+  }
+
   static get styles(): CSSResult[] {
     return [
       haStyle,
@@ -680,24 +688,24 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
         h2 {
           margin-top: 0;
         }
-        ha-fab {
+        mwc-fab {
           position: fixed;
           bottom: 16px;
           right: 16px;
           z-index: 1;
         }
-        ha-fab[is-wide] {
+        mwc-fab[is-wide] {
           bottom: 24px;
           right: 24px;
         }
-        ha-fab[narrow] {
+        mwc-fab[narrow] {
           bottom: 84px;
         }
-        ha-fab[rtl] {
+        mwc-fab[rtl] {
           right: auto;
           left: 16px;
         }
-        ha-fab[is-wide].rtl {
+        mwc-fab[is-wide].rtl {
           bottom: 24px;
           left: 24px;
           right: auto;

@@ -25,12 +25,15 @@ import {
   SUPPORT_VOLUME_BUTTONS,
   SUPPORT_VOLUME_MUTE,
   SUPPORT_VOLUME_SET,
+  computeMediaDescription,
 } from "../../../data/media-player";
-import { HomeAssistant } from "../../../types";
+import type { HomeAssistant } from "../../../types";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
 import "../components/hui-generic-entity-row";
-import "../components/hui-warning";
-import { EntityConfig, LovelaceRow } from "./types";
+import { createEntityNotFoundWarning } from "../components/hui-warning";
+import type { EntityConfig, LovelaceRow } from "./types";
+import { installResizeObserver } from "../common/install-resize-observer";
+import { computeStateDisplay } from "../../../common/entity/compute_state_display";
 
 @customElement("hui-media-player-entity-row")
 class HuiMediaPlayerEntityRow extends LitElement implements LovelaceRow {
@@ -44,15 +47,6 @@ class HuiMediaPlayerEntityRow extends LitElement implements LovelaceRow {
 
   private _resizeObserver?: ResizeObserver;
 
-  private _debouncedResizeListener = debounce(
-    () => {
-      this._narrow = (this.clientWidth || 0) < 300;
-      this._veryNarrow = (this.clientWidth || 0) < 225;
-    },
-    250,
-    false
-  );
-
   public setConfig(config: EntityConfig): void {
     if (!config || !config.entity) {
       throw new Error("Invalid Configuration: 'entity' required");
@@ -63,9 +57,7 @@ class HuiMediaPlayerEntityRow extends LitElement implements LovelaceRow {
 
   public connectedCallback(): void {
     super.connectedCallback();
-    if (!this._resizeObserver) {
-      this._attachObserver();
-    }
+    this._attachObserver();
   }
 
   public disconnectedCallback(): void {
@@ -73,6 +65,7 @@ class HuiMediaPlayerEntityRow extends LitElement implements LovelaceRow {
   }
 
   protected firstUpdated(): void {
+    this._measureCard();
     this._attachObserver();
   }
 
@@ -89,13 +82,9 @@ class HuiMediaPlayerEntityRow extends LitElement implements LovelaceRow {
 
     if (!stateObj) {
       return html`
-        <hui-warning
-          >${this.hass.localize(
-            "ui.panel.lovelace.warning.entity_not_found",
-            "entity",
-            this._config.entity
-          )}</hui-warning
-        >
+        <hui-warning>
+          ${createEntityNotFoundWarning(this.hass, this._config.entity)}
+        </hui-warning>
       `;
     }
 
@@ -127,11 +116,14 @@ class HuiMediaPlayerEntityRow extends LitElement implements LovelaceRow {
         : ""}
     `;
 
+    const mediaDescription = computeMediaDescription(stateObj);
+
     return html`
       <hui-generic-entity-row
         .hass=${this.hass}
         .config=${this._config}
-        .secondaryText=${this._computeMediaTitle(stateObj)}
+        .secondaryText=${mediaDescription ||
+        computeStateDisplay(this.hass.localize, stateObj, this.hass.language)}
       >
         <div class="controls">
           ${supportsFeature(stateObj, SUPPORT_TURN_ON) &&
@@ -208,20 +200,22 @@ class HuiMediaPlayerEntityRow extends LitElement implements LovelaceRow {
     `;
   }
 
-  private _attachObserver(): void {
-    if (typeof ResizeObserver !== "function") {
-      import("resize-observer").then((modules) => {
-        modules.install();
-        this._attachObserver();
-      });
+  private async _attachObserver(): Promise<void> {
+    if (!this._resizeObserver) {
+      await installResizeObserver();
+      this._resizeObserver = new ResizeObserver(
+        debounce(() => this._measureCard(), 250, false)
+      );
+    }
+    this._resizeObserver.observe(this);
+  }
+
+  private _measureCard() {
+    if (!this.isConnected) {
       return;
     }
-
-    this._resizeObserver = new ResizeObserver(() =>
-      this._debouncedResizeListener()
-    );
-
-    this._resizeObserver.observe(this);
+    this._narrow = (this.clientWidth || 0) < 300;
+    this._veryNarrow = (this.clientWidth || 0) < 225;
   }
 
   private _computeControlIcon(stateObj: HassEntity): string {
@@ -233,30 +227,6 @@ class HuiMediaPlayerEntityRow extends LitElement implements LovelaceRow {
     return supportsFeature(stateObj, SUPPORT_PAUSE)
       ? "hass:pause"
       : "hass:stop";
-  }
-
-  private _computeMediaTitle(stateObj: HassEntity): string {
-    let prefix;
-    let suffix;
-
-    switch (stateObj.attributes.media_content_type) {
-      case "music":
-        prefix = stateObj.attributes.media_artist;
-        suffix = stateObj.attributes.media_title;
-        break;
-      case "tvshow":
-        prefix = stateObj.attributes.media_series_title;
-        suffix = stateObj.attributes.media_title;
-        break;
-      default:
-        prefix =
-          stateObj.attributes.media_title ||
-          stateObj.attributes.app_name ||
-          stateObj.state;
-        suffix = "";
-    }
-
-    return prefix && suffix ? `${prefix}: ${suffix}` : prefix || suffix || "";
   }
 
   private _togglePower(): void {

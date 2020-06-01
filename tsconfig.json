@@ -3,7 +3,7 @@
     "target": "es2017",
     "module": "esnext",
     "moduleResolution": "node",
-    "lib": ["es2017", "dom", "dom.iterable"],
+    "lib": ["es2017", "dom", "dom.iterable", "WebWorker"],
     "noEmit": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
@@ -14,7 +14,6 @@
     "skipLibCheck": true,
     "resolveJsonModule": true,
     "experimentalDecorators": true,
-    "importHelpers": true,
     "plugins": [
       {
         "name": "ts-lit-plugin",

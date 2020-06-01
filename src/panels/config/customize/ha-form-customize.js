@@ -8,6 +8,8 @@ import { computeStateDomain } from "../../../common/entity/compute_state_domain"
 import LocalizeMixin from "../../../mixins/localize-mixin";
 import hassAttributeUtil from "../../../util/hass-attributes-util";
 import "./ha-form-customize-attributes";
+import "../ha-form-style";
+import "../../../styles/polymer-ha-style";
 
 class HaFormCustomize extends LocalizeMixin(PolymerElement) {
   static get template() {

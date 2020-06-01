@@ -8,21 +8,32 @@ import {
   PropertyValues,
   TemplateResult,
 } from "lit-element";
+import { classMap } from "lit-html/directives/class-map";
+import { ifDefined } from "lit-html/directives/if-defined";
+
 import { computeStateDisplay } from "../../../common/entity/compute_state_display";
 import "../../../components/entity/state-badge";
 import { UNAVAILABLE_STATES } from "../../../data/entity";
 import {
   getSecondaryWeatherAttribute,
   getWeatherUnit,
-  weatherIcons,
-  weatherImages,
+  getWeatherStateIcon,
+  weatherSVGStyles,
 } from "../../../data/weather";
-import { HomeAssistant, WeatherEntity } from "../../../types";
-import { EntitiesCardEntityConfig } from "../cards/types";
+import type { HomeAssistant, WeatherEntity } from "../../../types";
+import type { EntitiesCardEntityConfig } from "../cards/types";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
 import "../components/hui-generic-entity-row";
-import "../components/hui-warning";
-import { LovelaceRow } from "./types";
+import { createEntityNotFoundWarning } from "../components/hui-warning";
+import type { LovelaceRow } from "./types";
+import { DOMAINS_HIDE_MORE_INFO } from "../../../common/const";
+import { computeDomain } from "../../../common/entity/compute_domain";
+import { actionHandler } from "../common/directives/action-handler-directive";
+import { hasAction } from "../common/has-action";
+import { computeStateName } from "../../../common/entity/compute_state_name";
+import { ActionHandlerEvent } from "../../../data/lovelace";
+import { handleAction } from "../common/handle-action";
+import { stateIcon } from "../../../common/entity/state_icon";
 
 @customElement("hui-weather-entity-row")
 class HuiWeatherEntityRow extends LitElement implements LovelaceRow {
@@ -51,58 +62,138 @@ class HuiWeatherEntityRow extends LitElement implements LovelaceRow {
 
     if (!stateObj) {
       return html`
-        <hui-warning
-          >${this.hass.localize(
-            "ui.panel.lovelace.warning.entity_not_found",
-            "entity",
-            this._config.entity
-          )}</hui-warning
-        >
+        <hui-warning>
+          ${createEntityNotFoundWarning(this.hass, this._config.entity)}
+        </hui-warning>
       `;
     }
 
-    const weatherRowConfig = {
-      ...this._config,
-      icon: weatherIcons[stateObj.state],
-      image: weatherImages[stateObj.state],
-    };
+    const pointer =
+      (this._config.tap_action && this._config.tap_action.action !== "none") ||
+      (this._config.entity &&
+        !DOMAINS_HIDE_MORE_INFO.includes(computeDomain(this._config.entity)));
+
+    const weatherStateIcon = getWeatherStateIcon(stateObj.state, this);
 
     return html`
-      <hui-generic-entity-row .hass=${this.hass} .config=${weatherRowConfig}>
-        <div class="attributes">
-          <div>
-            ${UNAVAILABLE_STATES.includes(stateObj.state)
-              ? computeStateDisplay(
-                  this.hass.localize,
-                  stateObj,
-                  this.hass.language
-                )
-              : html`
-                  ${stateObj.attributes.temperature}
-                  ${getWeatherUnit(this.hass, "temperature")}
-                `}
-          </div>
-          <div class="secondary">
-            ${getSecondaryWeatherAttribute(this.hass!, stateObj)}
-          </div>
+      <div
+        class="icon-image ${classMap({
+          pointer,
+        })}"
+        @action=${this._handleAction}
+        .actionHandler=${actionHandler({
+          hasHold: hasAction(this._config!.hold_action),
+          hasDoubleClick: hasAction(this._config!.double_tap_action),
+        })}
+        tabindex=${ifDefined(pointer ? "0" : undefined)}
+      >
+        ${weatherStateIcon ||
+        html`
+          <ha-icon class="weather-icon" .icon=${stateIcon(stateObj)}></ha-icon>
+        `}
+      </div>
+      <div
+        class="info ${classMap({
+          pointer,
+        })}"
+        @action=${this._handleAction}
+        .actionHandler=${actionHandler({
+          hasHold: hasAction(this._config!.hold_action),
+          hasDoubleClick: hasAction(this._config!.double_tap_action),
+        })}
+      >
+        ${this._config.name || computeStateName(stateObj)}
+      </div>
+      <div class="attributes">
+        <div>
+          ${UNAVAILABLE_STATES.includes(stateObj.state)
+            ? computeStateDisplay(
+                this.hass.localize,
+                stateObj,
+                this.hass.language
+              )
+            : html`
+                ${stateObj.attributes.temperature}
+                ${getWeatherUnit(this.hass, "temperature")}
+              `}
         </div>
-      </hui-generic-entity-row>
+        <div class="secondary">
+          ${getSecondaryWeatherAttribute(this.hass!, stateObj)}
+        </div>
+      </div>
     `;
   }
 
-  static get styles(): CSSResult {
-    return css`
-      .attributes {
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        text-align: right;
-      }
+  private _handleAction(ev: ActionHandlerEvent) {
+    handleAction(this, this.hass!, this._config!, ev.detail.action!);
+  }
 
-      .secondary {
-        color: var(--secondary-text-color);
-      }
-    `;
+  static get styles(): CSSResult[] {
+    return [
+      weatherSVGStyles,
+      css`
+        :host {
+          display: flex;
+          align-items: center;
+          flex-direction: row;
+        }
+
+        .info {
+          margin-left: 16px;
+          flex: 1 0 60px;
+        }
+
+        .info,
+        .info > * {
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+
+        .icon-image {
+          display: flex;
+          align-items: center;
+          min-width: 40px;
+        }
+
+        .icon-image > * {
+          flex: 0 0 40px;
+          height: 40px;
+        }
+
+        .icon-image:focus {
+          outline: none;
+          background-color: var(--divider-color);
+          border-radius: 50%;
+        }
+
+        .weather-icon {
+          --iron-icon-width: 40px;
+          --iron-icon-height: 40px;
+        }
+
+        :host([rtl]) .flex {
+          margin-left: 0;
+          margin-right: 16px;
+        }
+
+        .pointer {
+          cursor: pointer;
+        }
+
+        .attributes {
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          text-align: right;
+          margin-left: 8px;
+        }
+
+        .secondary {
+          color: var(--secondary-text-color);
+        }
+      `,
+    ];
   }
 }
 

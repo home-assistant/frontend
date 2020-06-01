@@ -17,7 +17,7 @@ import { computeStateDisplay } from "../../../common/entity/compute_state_displa
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import { stateIcon } from "../../../common/entity/state_icon";
 import "../../../components/ha-card";
-import "../../../components/ha-icon";
+import "../../../components/ha-icon-button";
 import { ActionHandlerEvent } from "../../../data/lovelace";
 import { HomeAssistant } from "../../../types";
 import { actionHandler } from "../common/directives/action-handler-directive";
@@ -30,6 +30,7 @@ import "../components/hui-image";
 import "../components/hui-warning-element";
 import { LovelaceCard, LovelaceCardEditor } from "../types";
 import { PictureGlanceCardConfig, PictureGlanceEntityConfig } from "./types";
+import { createEntityNotFoundWarning } from "../components/hui-warning";
 
 const STATES_OFF = new Set(["closed", "locked", "not_home", "off"]);
 
@@ -229,39 +230,36 @@ class HuiPictureGlanceCard extends LitElement implements LovelaceCard {
     if (!stateObj) {
       return html`
         <hui-warning-element
-          label=${this.hass!.localize(
-            "ui.panel.lovelace.warning.entity_not_found",
-            "entity",
-            entityConf.entity
-          )}
+          .label=${createEntityNotFoundWarning(this.hass!, entityConf.entity)}
         ></hui-warning-element>
       `;
     }
 
     return html`
       <div class="wrapper">
-        <ha-icon
+        <ha-icon-button
           @action=${this._handleAction}
           .actionHandler=${actionHandler({
             hasHold: hasAction(entityConf.hold_action),
             hasDoubleClick: hasAction(entityConf.double_tap_action),
           })}
           tabindex=${ifDefined(
-            hasAction(entityConf.tap_action) ? "0" : undefined
+            !hasAction(entityConf.tap_action) ? "-1" : undefined
           )}
+          .disabled=${!hasAction(entityConf.tap_action)}
           .config=${entityConf}
-          class="${classMap({
+          class=${classMap({
             "state-on": !STATES_OFF.has(stateObj.state),
-          })}"
-          .icon="${entityConf.icon || stateIcon(stateObj)}"
-          title="${`
+          })}
+          .icon=${entityConf.icon || stateIcon(stateObj)}
+          title=${`
             ${computeStateName(stateObj)} : ${computeStateDisplay(
             this.hass!.localize,
             stateObj,
             this.hass!.language
           )}
-          `}"
-        ></ha-icon>
+          `}
+        ></ha-icon-button>
         ${this._config!.show_state !== true && entityConf.show_state !== true
           ? html` <div class="state"></div> `
           : html`
@@ -326,25 +324,14 @@ class HuiPictureGlanceCard extends LitElement implements LovelaceCard {
         margin-left: 8px;
       }
 
-      ha-icon {
-        cursor: pointer;
-        padding: 8px;
+      ha-icon-button {
+        --mdc-icon-button-size: 40px;
+        --disabled-text-color: currentColor;
         color: #a9a9a9;
       }
 
-      ha-icon.state-on {
+      ha-icon-button.state-on {
         color: white;
-      }
-      ha-icon.show-state {
-        width: 20px;
-        height: 20px;
-        padding-bottom: 4px;
-        padding-top: 4px;
-      }
-      ha-icon:focus {
-        outline: none;
-        background: var(--divider-color);
-        border-radius: 100%;
       }
       .state {
         display: block;

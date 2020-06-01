@@ -1,9 +1,11 @@
 import "@material/mwc-button/mwc-button";
+import "@material/mwc-icon-button/mwc-icon-button";
+import { mdiDelete } from "@mdi/js";
 import "@polymer/paper-input/paper-input";
-import "@polymer/paper-spinner/paper-spinner";
 import type { PaperInputElement } from "@polymer/paper-input/paper-input";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-item/paper-item-body";
+import "@polymer/paper-spinner/paper-spinner";
 import {
   css,
   CSSResult,
@@ -16,16 +18,14 @@ import {
 } from "lit-element";
 import memoizeOne from "memoize-one";
 import "../../../../src/components/ha-dialog";
-import "../../../../src/components/ha-icon-button";
-
+import "../../../../src/components/ha-svg-icon";
+import {
+  fetchHassioAddonsInfo,
+  HassioAddonRepository,
+} from "../../../../src/data/hassio/addon";
+import { setSupervisorOption } from "../../../../src/data/hassio/supervisor";
 import { haStyle, haStyleDialog } from "../../../../src/resources/styles";
 import type { HomeAssistant } from "../../../../src/types";
-import {
-  HassioAddonRepository,
-  fetchHassioAddonsInfo,
-} from "../../../../src/data/hassio/addon";
-
-import { setSupervisorOption } from "../../../../src/data/hassio/supervisor";
 import { HassioRepositoryDialogParams } from "./show-dialog-repositories";
 
 @customElement("dialog-hassio-repositories")
@@ -84,12 +84,13 @@ class HassioRepositoriesDialog extends LitElement {
                       <div secondary>${repo.maintainer}</div>
                       <div secondary>${repo.url}</div>
                     </paper-item-body>
-                    <ha-icon-button
+                    <mwc-icon-button
                       .slug=${repo.slug}
                       title="Remove"
                       @click=${this._removeRepository}
-                      icon="hassio:delete"
-                    ></ha-icon-button>
+                    >
+                      <ha-svg-icon path=${mdiDelete}></ha-svg-icon>
+                    </mwc-icon-button>
                   </paper-item>
                 `;
               })
@@ -194,7 +195,7 @@ class HassioRepositoriesDialog extends LitElement {
   }
 
   private async _removeRepository(ev: Event) {
-    const slug = (ev.target as any).slug;
+    const slug = (ev.currentTarget as any).slug;
     const repositories = this._filteredRepositories(this._repos);
     const repository = repositories.find((repo) => {
       return repo.slug === slug;

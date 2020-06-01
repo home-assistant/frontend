@@ -30,6 +30,7 @@ import "../components/hui-warning-element";
 import { LovelaceCard, LovelaceCardEditor } from "../types";
 import "../components/hui-timestamp-display";
 import { GlanceCardConfig, GlanceConfigEntity } from "./types";
+import { createEntityNotFoundWarning } from "../components/hui-warning";
 
 @customElement("hui-glance-card")
 export class HuiGlanceCard extends LitElement implements LovelaceCard {
@@ -67,7 +68,10 @@ export class HuiGlanceCard extends LitElement implements LovelaceCard {
   public getCardSize(): number {
     return (
       (this._config!.title ? 1 : 0) +
-      Math.ceil(this._configEntities!.length / 5)
+      Math.max(
+        Math.ceil(this._configEntities!.length / (this._config!.columns || 5)),
+        1
+      )
     );
   }
 
@@ -212,11 +216,7 @@ export class HuiGlanceCard extends LitElement implements LovelaceCard {
     if (!stateObj) {
       return html`
         <hui-warning-element
-          label=${this.hass!.localize(
-            "ui.panel.lovelace.warning.entity_not_found",
-            "entity",
-            entityConf.entity
-          )}
+          .label=${createEntityNotFoundWarning(this.hass!, entityConf.entity)}
         ></hui-warning-element>
       `;
     }

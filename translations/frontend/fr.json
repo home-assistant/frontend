@@ -206,6 +206,8 @@
             "stopped": "Arrêté"
         },
         "default": {
+            "off": "Off",
+            "on": "On",
             "unavailable": "Indisponible",
             "unknown": "Inconnu"
         },
@@ -471,11 +473,16 @@
             }
         },
         "common": {
+            "and": "et",
+            "back": "Retour",
             "cancel": "Annuler",
             "close": "Fermer",
             "delete": "Supprimer",
             "loading": "Chargement",
+            "next": "Suivant",
             "no": "Non",
+            "previous": "Précédent",
+            "refresh": "Rafraîchir",
             "save": "Enregistrer",
             "successfully_deleted": "Supprimé avec succès",
             "successfully_saved": "Enregistré avec succès",
@@ -499,6 +506,7 @@
             "device-picker": {
                 "clear": "Effacer",
                 "device": "Appareil",
+                "no_area": "Pas de zone",
                 "show_devices": "Afficher les appareils",
                 "toggle": "Permuter"
             },
@@ -526,11 +534,11 @@
             },
             "relative_time": {
                 "duration": {
-                    "day": "{count} {count, plural,\none {jour}\nother {jours}\n}",
-                    "hour": "{count} {count, plural,\none {heure}\nother {heures}\n}",
-                    "minute": "{count} {count, plural,\none {minute}\nother {minutes}\n}",
-                    "second": "{count} {count, plural,\none {seconde}\nother {secondes}\n}",
-                    "week": "{count} {count, plural,\none {semaine}\nother {semaines}\n}"
+                    "day": "{count} {count, plural,\nzero {jour}\none {jour}\nother {jours}\n}",
+                    "hour": "{count} {count, plural,\nzero {heure}\none {heure}\nother {heures}\n}",
+                    "minute": "{count} {count, plural,\nzero {minute}\none {minute}\nother {minutes}\n}",
+                    "second": "{count} {count, plural,\nzero {seconde}\none {seconde}\nother {secondes}\n}",
+                    "week": "{count} {count, plural,\nzero {semaine}\none {semaine}\nother {semaines}\n}"
                 },
                 "future": "Dans {time}",
                 "never": "Jamais",
@@ -611,7 +619,7 @@
                     "pattern": "Modèle d'expression régulière pour la validation côté client",
                     "text": "Texte"
                 },
-                "platform_not_loaded": "L'intégration {platform} n'est pas chargée. Veuillez l'ajouter à votre configuration en ajoutant 'default_config:' ou '{platform}:'.",
+                "platform_not_loaded": "L'intégration {platform} n'est pas chargée. Veuillez l'ajouter à votre configuration en ajoutant 'default_config:' ou ''{platform}:''.",
                 "required_error_msg": "Ce champ est requis",
                 "yaml_not_editable": "Les paramètres de cette entité ne peuvent pas être modifiés à partir de l'interface utilisateur. Seules les entités configurées à partir de l'interface utilisateur sont configurables à partir de l'interface utilisateur."
             },
@@ -655,8 +663,13 @@
                 }
             },
             "mqtt_device_debug_info": {
+                "deserialize": "Tentative d'analyse des messages MQTT en tant que JSON",
                 "entities": "Entités",
                 "no_entities": "Aucune entité",
+                "no_triggers": "Pas de déclencheur",
+                "payload_display": "Affichage de la charge utile",
+                "recent_messages": "{n} dernier(s) message(s) reçu(s)",
+                "show_as_yaml": "Afficher en tant que YAML",
                 "title": "{device} informations de débogage",
                 "triggers": "Déclencheurs"
             },
@@ -707,11 +720,11 @@
             }
         },
         "duration": {
-            "day": "{count} {count, plural,\none {jour}\nother {jours}\n}",
-            "hour": "{count} {count, plural,\none {heure}\nother {heures}\n}",
-            "minute": "{count} {count, plural,\none {minute}\nother {minutes}\n}",
-            "second": "{count} {count, plural,\none {seconde}\nother {secondes}\n}",
-            "week": "{count} {count, plural,\none {semaine}\nother {semaines}\n}"
+            "day": "{count} {count, plural,\nzero {jour}\none {jour}\nother {jours}\n}",
+            "hour": "{count} {count, plural,\nzero {heure}\none {heure}\nother {heures}\n}",
+            "minute": "{count} {count, plural,\nzero {minute}\none {minute}\nother {minutes}\n}",
+            "second": "{count} {count, plural,\nzero {seconde}\none {seconde}\nother {secondes}\n}",
+            "week": "{count} {count, plural,\nzero {semaine}\none {semaine}\nother {semaines}\n}"
         },
         "login-form": {
             "log_in": "Connexion",
@@ -727,9 +740,15 @@
         "notification_toast": {
             "connection_lost": "Connexion perdue. Reconnexion en cours ...",
             "service_call_failed": "Échec d'appel du service \"{service}\".",
+            "started": "Home Assistant a démarré !",
+            "starting": "Home Assistant démarre, tout ne sera pas disponible jusqu'à ce qu'il soit terminé.",
             "triggered": "{name} déclenché"
         },
         "panel": {
+            "calendar": {
+                "my_calendars": "Mes calendriers",
+                "today": "Aujourd'hui"
+            },
             "config": {
                 "advanced_mode": {
                     "hint_enable": "Options de configuration manquantes? Activer le mode avancé",
@@ -747,9 +766,13 @@
                     },
                     "description": "Vue d'ensemble de toutes les pièces de votre maison.",
                     "editor": {
+                        "area_id": "ID de la zone",
                         "create": "Créer",
                         "default_name": "Nouvelle Pièce",
                         "delete": "Supprimer",
+                        "name": "Nom",
+                        "name_required": "Le nom est requis",
+                        "unknown_error": "Erreur inconnue",
                         "update": "Mise à jour"
                     },
                     "picker": {
@@ -784,6 +807,7 @@
                                     "label": "Délai"
                                 },
                                 "device_id": {
+                                    "action": "Action",
                                     "extra_fields": {
                                         "code": "Code"
                                     },
@@ -825,12 +849,16 @@
                                     "label": "Et"
                                 },
                                 "device": {
+                                    "condition": "Condition",
                                     "extra_fields": {
                                         "above": "Au-dessus de",
                                         "below": "Au-dessous de",
                                         "for": "Durée"
                                     },
                                     "label": "Appareil"
+                                },
+                                "not": {
+                                    "label": "Pas"
                                 },
                                 "numeric_state": {
                                     "above": "Au-Dessus",
@@ -900,7 +928,8 @@
                                         "below": "En dessous de",
                                         "for": "Durée"
                                     },
-                                    "label": "Équipements"
+                                    "label": "Équipements",
+                                    "trigger": "Déclencheur"
                                 },
                                 "event": {
                                     "event_data": "Données de l'événement",
@@ -1163,7 +1192,9 @@
                                 "edit_requires_storage": "L'éditeur est désactivé car la configuration est stockée dans configuration.yaml.",
                                 "elevation": "Élévation",
                                 "elevation_meters": "mètres",
+                                "external_url": "URL externe",
                                 "imperial_example": "Fahrenheit, livres",
+                                "internal_url": "URL interne",
                                 "latitude": "Latitude",
                                 "location_name": "Nom de votre installation Home Assistant",
                                 "longitude": "Longitude",
@@ -1226,14 +1257,18 @@
                         "integration": "Intégration",
                         "manufacturer": "Fabricant",
                         "model": "Modèle",
+                        "no_area": "Pas de zone",
                         "no_devices": "Aucun appareil"
                     },
                     "delete": "Supprimer",
                     "description": "Gérer les appareils connectés",
+                    "device_info": "Informations sur l’appareil",
                     "device_not_found": "Appareil non trouvé.",
                     "entities": {
                         "add_entities_lovelace": "Ajouter à Lovelace",
+                        "disabled_entities": "+{count} {count, plural,\none {entité désactivée}\nother {entité désactivée}\n}",
                         "entities": "Entités",
+                        "hide_disabled": "Masquer désactivé",
                         "none": "Cet appareil n'a pas d'entités"
                     },
                     "name": "Nom",
@@ -1339,6 +1374,8 @@
                         "delete_button": "Supprimer {integration}",
                         "delete_confirm": "Êtes-vous sûr de vouloir supprimer cette intégration?",
                         "device_unavailable": "appareil indisponible",
+                        "devices": "{count} {count, plural,\n  zero {appareil}\n  one {appareil}\n  other {appareils}\n}",
+                        "entities": "{count} {count, plural,\n  zero {entité}\n  one {entité}\n  other {entités}\n}",
                         "entity_unavailable": "entité indisponible",
                         "firmware": "Firmware: {version}",
                         "hub": "Connecté via",
@@ -1351,7 +1388,8 @@
                         "restart_confirm": "Redémarrer Home Assistant pour terminer la suppression de cette intégration",
                         "settings_button": "Modifier les paramètres pour {integration}",
                         "system_options": "Options système",
-                        "system_options_button": "Options système pour {integration}"
+                        "system_options_button": "Options système pour {integration}",
+                        "unnamed_entry": "Entrée sans nom"
                     },
                     "config_flow": {
                         "aborted": "Abandonné",
@@ -1388,9 +1426,13 @@
                     "integration": "intégration",
                     "integration_not_found": "Intégration introuvable.",
                     "new": "Configurer une nouvelle intégration",
+                    "no_integrations": "Il semble que vous n'ayez pas encore configuré d'intégrations. Cliquez sur le bouton ci-dessous pour ajouter votre première intégration!",
                     "none": "Rien n'est encore configuré",
+                    "none_found": "Aucune intégration trouvée",
+                    "none_found_detail": "Ajustez vos critères de recherche.",
                     "note_about_integrations": "Toutes les intégrations ne peuvent pas encore être configurées via l'interface utilisateur.",
                     "note_about_website_reference": "D'autres sont disponibles sur le ",
+                    "rename_dialog": "Modifier le nom de cette entrée de configuration",
                     "rename_input_label": "Nom de l'entrée"
                 },
                 "introduction": "Ici, il est possible de configurer vos composants et Home Assistant. Tout n'est pas encore possible de configurer à partir de l'interface utilisateur, mais nous y travaillons.",
@@ -1799,21 +1841,43 @@
                         "set_wakeup": "Définir l'intervalle de réveil",
                         "true": "Vrai"
                     },
+                    "node_management": {
+                        "add_to_group": "Ajouter au groupe",
+                        "group": "Groupe",
+                        "header": "Gestion des nœuds Z-Wave",
+                        "max_associations": "Associations Max:",
+                        "node_protection": "Protection des nœuds",
+                        "node_to_control": "Noeud à contrôler",
+                        "nodes": "Noeuds",
+                        "nodes_in_group": "Autres nœuds de ce groupe :",
+                        "protection": "Protection",
+                        "remove_broadcast": "Supprimer la diffusion",
+                        "remove_from_group": "Supprimer du groupe",
+                        "set_protection": "Définir la protection"
+                    },
                     "ozw_log": {
                         "header": "Journal OZW",
-                        "introduction": "Afficher le journal. Entrer un nombre de 1 à 1000 lignes pour limiter le nombre de lignes chargées dans le journal, ou entrer 0 pour désactiver la limitation du nombre de lignes affichées (journal complet). \"Load\" affichera un instantané du journal, alors que \"Tail\" affichera le journal en l'actualisant au fur et à mesure que de nouvelles entrées apparaissent."
+                        "introduction": "Afficher le journal. Entrer un nombre de 1 à 1000 lignes pour limiter le nombre de lignes chargées dans le journal, ou entrer 0 pour désactiver la limitation du nombre de lignes affichées (journal complet). \"Load\" affichera un instantané du journal, alors que \"Tail\" affichera le journal en l'actualisant au fur et à mesure que de nouvelles entrées apparaissent.",
+                        "tail": "Queue"
                     },
                     "services": {
                         "add_node": "Ajouter un nœud",
                         "add_node_secure": "Ajouter un nœud sécurisé",
                         "cancel_command": "Annuler la commande",
                         "heal_network": "Soigner le réseau",
+                        "heal_node": "Guérir Nœud",
+                        "node_info": "Informations sur le nœud",
+                        "refresh_entity": "Actualiser l'entité",
+                        "refresh_node": "Actualiser Nœud",
+                        "remove_failed_node": "Supprimer le nœud défaillant",
                         "remove_node": "Supprimer un nœud",
+                        "replace_failed_node": "Remplacer le nœud défaillant",
                         "save_config": "Enregistrer la configuration",
                         "soft_reset": "Redémarrage",
                         "start_network": "Démarrer le réseau",
                         "stop_network": "Arrêter le réseau",
-                        "test_network": "Tester le réseau"
+                        "test_network": "Tester le réseau",
+                        "test_node": "Tester Nœud"
                     },
                     "values": {
                         "header": "Valeurs des nœuds"
@@ -1851,10 +1915,13 @@
                         "built_using": "Construit en utilisant",
                         "custom_uis": "Interfaces utilisateur personnalisées :",
                         "developed_by": "Développé par un groupe de personnes formidables.",
+                        "documentation": "Documentation",
                         "frontend": "interface utilisateur",
                         "frontend_version": "Version interface utilisateur : {version} - {type}",
                         "home_assistant_logo": "Logo de Home Assistant",
                         "icons_by": "Icônes par",
+                        "integrations": "Intégrations",
+                        "issues": "Problèmes",
                         "license": "Publié sous la licence Apache 2.0",
                         "path_configuration": "Chemin vers configuration.yaml : {path}",
                         "server": "serveur",
@@ -1969,6 +2036,10 @@
                         "add_item": "Ajouter un élément",
                         "checked_items": "Éléments cochés",
                         "clear_items": "Effacer les éléments cochés"
+                    },
+                    "starting": {
+                        "description": "Home Assistant démarre, veuillez patienter.",
+                        "header": "Home Assistant démarre ..."
                     }
                 },
                 "changed_toast": {
@@ -2045,6 +2116,7 @@
                             "name": "Nom",
                             "no_theme": "Pas de thème",
                             "refresh_interval": "Intervalle de rafraîchissement",
+                            "secondary_info_attribute": "Attribut d'informations secondaires",
                             "show_icon": "Afficher l'icône ?",
                             "show_name": "Afficher le nom ?",
                             "show_state": "Afficher l'état ?",
@@ -2135,7 +2207,8 @@
                         },
                         "weather-forecast": {
                             "description": "La carte Prévisions météorologiques affiche la météo. Très utile pour les écrans placés au mur.",
-                            "name": "Prévisions Météo"
+                            "name": "Prévisions Météo",
+                            "show_forecast": "Afficher les prévisions"
                         }
                     },
                     "cardpicker": {
@@ -2207,12 +2280,12 @@
                         "close": "Fermer",
                         "empty_config": "Commencez avec un tableau de bord vide",
                         "header": "Prenez le contrôle de votre Interface Lovelace",
-                        "para": "Par défaut, Home Assistant maintient votre interface utilisateur, la met à jour lorsque de nouvelles entités ou de nouveaux composants Lovelace UI sont disponibles. Si vous prenez le contrôle, nous ne ferons plus les changements automatiquement pour vous.",
+                        "para": "Par défaut, Home Assistant maintient votre interface utilisateur et la met à jour lorsque de nouvelles entités ou de nouveaux composants Lovelace UI sont disponibles. Si vous prenez le contrôle, nous ne ferons plus les changements automatiquement pour vous.",
                         "para_sure": "Êtes-vous sûr de vouloir prendre le contrôle de l'interface utilisateur?",
                         "save": "Prenez le contrôle",
                         "yaml_config": "Pour vous aider à démarrer, voici la configuration actuelle de ce tableau de bord:",
                         "yaml_control": "Pour prendre le contrôle en mode YAML, créez un fichier YAML avec le nom que vous avez spécifié dans votre configuration pour ce tableau de bord, ou le 'ui-lovelace.yaml' par défaut.",
-                        "yaml_mode": "Vous utilisez le mode YAML, ce qui signifie que vous ne pouvez pas modifier votre configuration Lovelace depuis l'interface utilisateur. Si vous souhaitez modifier Lovelace de l'interface utilisateur, supprimez «mode: yaml» de votre configuration Lovelace dans «configuration.yaml»."
+                        "yaml_mode": "Vous utilisez le mode YAML pour ce tableau de bord, ce qui signifie que vous ne pouvez pas modifier votre configuration Lovelace depuis l'interface utilisateur. Si vous souhaitez gérer votre tableau de bord via l'interface utilisateur, supprimez «mode: yaml» de votre configuration Lovelace dans «configuration.yaml»."
                     },
                     "suggest_card": {
                         "add": "Ajouter à Lovelace UI",
@@ -2252,13 +2325,15 @@
                 "views": {
                     "confirm_delete": "Êtes-vous sûr de vouloir supprimer cette vue?",
                     "confirm_delete_existing_cards": "La suppression de cette vue supprimera également les cartes",
-                    "confirm_delete_existing_cards_text": "Voulez-vous vraiment supprimer votre vue '{name}'? La vue contient {number} cartes qui seront supprimées. Cette action ne peut pas être annulée.",
-                    "confirm_delete_text": "Voulez-vous vraiment supprimer votre vue '{name}'?"
+                    "confirm_delete_existing_cards_text": "Voulez-vous vraiment supprimer votre vue ''{name}''? La vue contient {number} cartes qui seront supprimées. Cette action ne peut pas être annulée.",
+                    "confirm_delete_text": "Voulez-vous vraiment supprimer votre vue ''{name}''?"
                 },
                 "warning": {
                     "attribute_not_found": "Attribut {attribute} non disponible dans: {entity}",
                     "entity_non_numeric": "L'entité est non numérique: {entity}",
-                    "entity_not_found": "Entité non disponible: {entity}"
+                    "entity_not_found": "Entité non disponible: {entity}",
+                    "entity_unavailable": "{entity} n'est pas disponible actuellement",
+                    "starting": "Home Assistant démarre, tout n'est peut-être pas encore disponible"
                 }
             },
             "mailbox": {
@@ -2271,6 +2346,8 @@
                 "abort_intro": "Connexion interrompue",
                 "authorizing_client": "Vous êtes sur le point de donner accès à {clientId} à votre instance de Home Assistant.",
                 "form": {
+                    "error": "Erreur: {error}",
+                    "next": "Suivant",
                     "providers": {
                         "command_line": {
                             "abort": {
@@ -2356,6 +2433,7 @@
                             }
                         }
                     },
+                    "start_over": "Recommencer",
                     "unknown_error": "Quelque chose a mal tourné",
                     "working": "Veuillez patienter"
                 },

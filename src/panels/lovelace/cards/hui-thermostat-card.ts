@@ -29,7 +29,7 @@ import { HomeAssistant } from "../../../types";
 import { actionHandler } from "../common/directives/action-handler-directive";
 import { findEntities } from "../common/find-entites";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
-import "../components/hui-warning";
+import { createEntityNotFoundWarning } from "../components/hui-warning";
 import { LovelaceCard, LovelaceCardEditor } from "../types";
 import { ThermostatCardConfig } from "./types";
 
@@ -77,7 +77,7 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
   @property() private _setTemp?: number | number[];
 
   public getCardSize(): number {
-    return 4;
+    return 5;
   }
 
   public setConfig(config: ThermostatCardConfig): void {
@@ -88,15 +88,6 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
     this._config = config;
   }
 
-  public connectedCallback(): void {
-    super.connectedCallback();
-    this.rescale_svg();
-  }
-
-  protected firstUpdated(): void {
-    this.rescale_svg();
-  }
-
   protected render(): TemplateResult {
     if (!this.hass || !this._config) {
       return html``;
@@ -105,13 +96,9 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
 
     if (!stateObj) {
       return html`
-        <hui-warning
-          >${this.hass.localize(
-            "ui.panel.lovelace.warning.entity_not_found",
-            "entity",
-            this._config.entity
-          )}</hui-warning
-        >
+        <hui-warning>
+          ${createEntityNotFoundWarning(this.hass, this._config.entity)}
+        </hui-warning>
       `;
     }
 
@@ -165,7 +152,9 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
         <g>
           <text text-anchor="middle" class="set-value">
             ${
-              this._setTemp === undefined || this._setTemp === null
+              stateObj.state === UNAVAILABLE
+                ? this.hass.localize("state.default.unavailable")
+                : this._setTemp === undefined || this._setTemp === null
                 ? ""
                 : Array.isArray(this._setTemp)
                 ? this._stepSize === 1
@@ -283,15 +272,18 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
       applyThemesOnElement(this, this.hass.themes, this._config.theme);
     }
 
-    const stateObj = this.hass!.states[this._config!.entity];
+    const stateObj = this.hass.states[this._config.entity];
     if (!stateObj) {
       return;
     }
-    this._setTemp = this._getSetTemp(stateObj);
-    this.rescale_svg();
+
+    if (!oldHass || oldHass.states[this._config.entity] !== stateObj) {
+      this._setTemp = this._getSetTemp(stateObj);
+      this._rescale_svg();
+    }
   }
 
-  private rescale_svg() {
+  private _rescale_svg() {
     // Set the viewbox of the SVG containing the set temperature to perfectly
     // fit the text
     // That way it will auto-scale correctly
@@ -322,9 +314,11 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
     return this.hass!.config.unit_system.temperature === UNIT_F ? 1 : 0.5;
   }
 
-  private _getSetTemp(stateObj: HassEntity) {
+  private _getSetTemp(
+    stateObj: HassEntity
+  ): undefined | number | [number, number] {
     if (stateObj.state === UNAVAILABLE) {
-      return this.hass!.localize("state.default.unavailable");
+      return undefined;
     }
 
     if (

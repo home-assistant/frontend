@@ -9,7 +9,7 @@ import "../../../components/ha-code-editor";
 import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
 import { EventsMixin } from "../../../mixins/events-mixin";
 import LocalizeMixin from "../../../mixins/localize-mixin";
-import "../../../resources/ha-style";
+import "../../../styles/polymer-ha-style";
 import "./event-subscribe-card";
 import "./events-list";
 
@@ -50,6 +50,10 @@ class HaPanelDevEvent extends EventsMixin(LocalizeMixin(PolymerElement)) {
           display: block;
           max-width: 800px;
           margin: 16px auto;
+        }
+
+        a {
+          color: var(--primary-color);
         }
       </style>
 

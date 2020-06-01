@@ -6,7 +6,7 @@ import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 import "../../../components/ha-code-editor";
 import LocalizeMixin from "../../../mixins/localize-mixin";
-import "../../../resources/ha-style";
+import "../../../styles/polymer-ha-style";
 
 class HaPanelDevTemplate extends LocalizeMixin(PolymerElement) {
   static get template() {
@@ -29,7 +29,7 @@ class HaPanelDevTemplate extends LocalizeMixin(PolymerElement) {
         }
 
         .edit-pane a {
-          color: var(--dark-primary-color);
+          color: var(--primary-color);
         }
 
         .horizontal .edit-pane {

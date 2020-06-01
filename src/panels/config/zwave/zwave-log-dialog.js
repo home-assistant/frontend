@@ -4,7 +4,7 @@ import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 import "../../../components/dialog/ha-paper-dialog";
 import { EventsMixin } from "../../../mixins/events-mixin";
-import "../../../resources/ha-style";
+import "../../../styles/polymer-ha-style-dialog";
 
 class ZwaveLogDialog extends EventsMixin(PolymerElement) {
   static get template() {

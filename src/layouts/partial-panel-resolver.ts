@@ -8,6 +8,11 @@ import {
   RouteOptions,
   RouterOptions,
 } from "./hass-router-page";
+import {
+  STATE_STARTING,
+  STATE_NOT_RUNNING,
+  STATE_RUNNING,
+} from "home-assistant-js-websocket";
 
 const CACHE_URL_PATHS = ["lovelace", "developer-tools"];
 const COMPONENTS = {
@@ -84,6 +89,8 @@ class PartialPanelResolver extends HassRouterPage {
 
   @property() public narrow?: boolean;
 
+  private _waitForStart = false;
+
   protected updated(changedProps: PropertyValues) {
     super.updated(changedProps);
 
@@ -92,6 +99,15 @@ class PartialPanelResolver extends HassRouterPage {
     }
 
     const oldHass = changedProps.get("hass") as this["hass"];
+
+    if (
+      this._waitForStart &&
+      (this.hass.config.state === STATE_STARTING ||
+        this.hass.config.state === STATE_RUNNING)
+    ) {
+      this._waitForStart = false;
+      this.rebuild();
+    }
 
     if (this.hass.panels && (!oldHass || oldHass.panels !== this.hass.panels)) {
       this._updateRoutes(oldHass?.panels);
@@ -127,6 +143,21 @@ class PartialPanelResolver extends HassRouterPage {
 
   private async _updateRoutes(oldPanels?: HomeAssistant["panels"]) {
     this.routerOptions = getRoutes(this.hass.panels);
+
+    if (
+      !this._waitForStart &&
+      this._currentPage &&
+      !this.hass.panels[this._currentPage]
+    ) {
+      if (this.hass.config.state !== STATE_NOT_RUNNING) {
+        this._waitForStart = true;
+        if (this.lastChild) {
+          this.removeChild(this.lastChild);
+        }
+        this.appendChild(this.createLoadingScreen());
+        return;
+      }
+    }
 
     if (
       !oldPanels ||

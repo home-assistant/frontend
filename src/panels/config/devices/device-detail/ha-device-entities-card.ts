@@ -9,7 +9,6 @@ import {
   LitElement,
   property,
   PropertyValues,
-  queryAll,
   TemplateResult,
 } from "lit-element";
 import { computeDomain } from "../../../../common/entity/compute_domain";
@@ -23,6 +22,7 @@ import { addEntitiesToLovelaceView } from "../../../lovelace/editor/add-entities
 import { LovelaceRow } from "../../../lovelace/entity-rows/types";
 import { showEntityEditorDialog } from "../../entities/show-dialog-entity-editor";
 import { EntityRegistryStateEntry } from "../ha-config-device-page";
+import { HuiErrorCard } from "../../../lovelace/cards/hui-error-card";
 
 @customElement("ha-device-entities-card")
 export class HaDeviceEntitiesCard extends LitElement {
@@ -32,20 +32,21 @@ export class HaDeviceEntitiesCard extends LitElement {
 
   @property() private _showDisabled = false;
 
-  @queryAll("#entities > *") private _entityRows?: LovelaceRow[];
+  private _entityRows: Array<LovelaceRow | HuiErrorCard> = [];
 
   protected shouldUpdate(changedProps: PropertyValues) {
-    if (changedProps.has("hass")) {
-      this._entityRows?.forEach((element) => {
+    if (changedProps.has("hass") && changedProps.size === 1) {
+      this._entityRows.forEach((element) => {
         element.hass = this.hass;
       });
-      return changedProps.size > 1;
+      return false;
     }
     return true;
   }
 
   protected render(): TemplateResult {
     const disabledEntities: EntityRegistryStateEntry[] = [];
+    this._entityRows = [];
     return html`
       <ha-card
         .header=${this.hass.localize(
@@ -54,7 +55,7 @@ export class HaDeviceEntitiesCard extends LitElement {
       >
         ${this.entities.length
           ? html`
-              <div id="entities">
+              <div id="entities" @hass-more-info=${this._overrideMoreInfo}>
                 ${this.entities.map((entry: EntityRegistryStateEntry) => {
                   if (entry.disabled_by) {
                     disabledEntities.push(entry);
@@ -72,7 +73,11 @@ export class HaDeviceEntitiesCard extends LitElement {
                         class="show-more"
                         @click=${this._toggleShowDisabled}
                       >
-                        +${disabledEntities.length} disabled entities
+                        ${this.hass.localize(
+                          "ui.panel.config.devices.entities.disabled_entities",
+                          "count",
+                          disabledEntities.length
+                        )}
                       </button>
                     `
                   : html`
@@ -83,7 +88,9 @@ export class HaDeviceEntitiesCard extends LitElement {
                         class="show-more"
                         @click=${this._toggleShowDisabled}
                       >
-                        Hide disabled
+                        ${this.hass.localize(
+                          "ui.panel.config.devices.entities.hide_disabled"
+                        )}
                       </button>
                     `
                 : ""}
@@ -121,8 +128,7 @@ export class HaDeviceEntitiesCard extends LitElement {
     }
     // @ts-ignore
     element.entry = entry;
-    element.addEventListener("hass-more-info", (ev) => this._openEditEntry(ev));
-
+    this._entityRows.push(element);
     return html` <div>${element}</div> `;
   }
 
@@ -142,8 +148,16 @@ export class HaDeviceEntitiesCard extends LitElement {
     `;
   }
 
-  private _openEditEntry(ev: Event): void {
+  private _overrideMoreInfo(ev: Event): void {
     ev.stopPropagation();
+    const entry = (ev.target! as any).entry;
+    showEntityEditorDialog(this, {
+      entry,
+      entity_id: entry.entity_id,
+    });
+  }
+
+  private _openEditEntry(ev: Event): void {
     const entry = (ev.currentTarget! as any).entry;
     showEntityEditorDialog(this, {
       entry,
@@ -167,7 +181,7 @@ export class HaDeviceEntitiesCard extends LitElement {
         display: block;
       }
       ha-icon {
-        width: 40px;
+        margin-left: 8px;
       }
       .entity-id {
         color: var(--secondary-text-color);

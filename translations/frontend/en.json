@@ -206,6 +206,8 @@
             "stopped": "Stopped"
         },
         "default": {
+            "off": "Off",
+            "on": "On",
             "unavailable": "Unavailable",
             "unknown": "Unknown"
         },
@@ -471,11 +473,16 @@
             }
         },
         "common": {
+            "and": "and",
+            "back": "Back",
             "cancel": "Cancel",
             "close": "Close",
             "delete": "Delete",
             "loading": "Loading",
+            "next": "Next",
             "no": "No",
+            "previous": "Previous",
+            "refresh": "Refresh",
             "save": "Save",
             "successfully_deleted": "Successfully deleted",
             "successfully_saved": "Successfully saved",
@@ -499,6 +506,7 @@
             "device-picker": {
                 "clear": "Clear",
                 "device": "Device",
+                "no_area": "No area",
                 "show_devices": "Show devices",
                 "toggle": "Toggle"
             },
@@ -611,7 +619,7 @@
                     "pattern": "Regex pattern for client-side validation",
                     "text": "Text"
                 },
-                "platform_not_loaded": "The {platform} integration is not loaded. Please add it your configuration either by adding 'default_config:' or '{platform}:'.",
+                "platform_not_loaded": "The {platform} integration is not loaded. Please add it your configuration either by adding 'default_config:' or ''{platform}:''.",
                 "required_error_msg": "This field is required",
                 "yaml_not_editable": "The settings of this entity cannot be edited from the UI. Only entities set up from the UI are configurable from the UI."
             },
@@ -732,9 +740,15 @@
         "notification_toast": {
             "connection_lost": "Connection lost. Reconnecting…",
             "service_call_failed": "Failed to call service {service}.",
+            "started": "Home Assistant has started!",
+            "starting": "Home Assistant is starting, not everything will be available until it is finished.",
             "triggered": "Triggered {name}"
         },
         "panel": {
+            "calendar": {
+                "my_calendars": "My Calendars",
+                "today": "Today"
+            },
             "config": {
                 "advanced_mode": {
                     "hint_enable": "Missing config options? Enable advanced mode on",
@@ -752,9 +766,13 @@
                     },
                     "description": "Overview of all areas in your home.",
                     "editor": {
+                        "area_id": "Area ID",
                         "create": "Create",
                         "default_name": "New Area",
                         "delete": "Delete",
+                        "name": "Name",
+                        "name_required": "Name is required",
+                        "unknown_error": "Unknown error",
                         "update": "Update"
                     },
                     "picker": {
@@ -789,6 +807,7 @@
                                     "label": "Delay"
                                 },
                                 "device_id": {
+                                    "action": "Action",
                                     "extra_fields": {
                                         "code": "Code"
                                     },
@@ -830,12 +849,16 @@
                                     "label": "And"
                                 },
                                 "device": {
+                                    "condition": "Condition",
                                     "extra_fields": {
                                         "above": "Above",
                                         "below": "Below",
                                         "for": "Duration"
                                     },
                                     "label": "Device"
+                                },
+                                "not": {
+                                    "label": "Not"
                                 },
                                 "numeric_state": {
                                     "above": "Above",
@@ -905,7 +928,8 @@
                                         "below": "Below",
                                         "for": "Duration"
                                     },
-                                    "label": "Device"
+                                    "label": "Device",
+                                    "trigger": "Trigger"
                                 },
                                 "event": {
                                     "event_data": "Event data",
@@ -1168,7 +1192,9 @@
                                 "edit_requires_storage": "Editor disabled because config stored in configuration.yaml.",
                                 "elevation": "Elevation",
                                 "elevation_meters": "meters",
+                                "external_url": "External URL",
                                 "imperial_example": "Fahrenheit, pounds",
+                                "internal_url": "Internal URL",
                                 "latitude": "Latitude",
                                 "location_name": "Name of your Home Assistant installation",
                                 "longitude": "Longitude",
@@ -1231,14 +1257,18 @@
                         "integration": "Integration",
                         "manufacturer": "Manufacturer",
                         "model": "Model",
+                        "no_area": "No area",
                         "no_devices": "No devices"
                     },
                     "delete": "Delete",
                     "description": "Manage connected devices",
+                    "device_info": "Device info",
                     "device_not_found": "Device not found.",
                     "entities": {
                         "add_entities_lovelace": "Add to Lovelace",
+                        "disabled_entities": "+{count} {count, plural,\n  one {disabled entity}\n  other {disabled entities}\n}",
                         "entities": "Entities",
+                        "hide_disabled": "Hide disabled",
                         "none": "This device has no entities"
                     },
                     "name": "Name",
@@ -1358,7 +1388,8 @@
                         "restart_confirm": "Restart Home Assistant to finish removing this integration",
                         "settings_button": "Edit settings for {integration}",
                         "system_options": "System options",
-                        "system_options_button": "System options for {integration}"
+                        "system_options_button": "System options for {integration}",
+                        "unnamed_entry": "Unnamed entry"
                     },
                     "config_flow": {
                         "aborted": "Aborted",
@@ -1397,6 +1428,8 @@
                     "new": "Set up a new integration",
                     "no_integrations": "Seems like you don't have any integations configured yet. Click on the button below to add your first integration!",
                     "none": "Nothing configured yet",
+                    "none_found": "No integrations found",
+                    "none_found_detail": "Adjust your search criteria.",
                     "note_about_integrations": "Not all integrations can be configured via the UI yet.",
                     "note_about_website_reference": "More are available on the ",
                     "rename_dialog": "Edit the name of this config entry",
@@ -1808,21 +1841,53 @@
                         "set_wakeup": "Set Wakeup Interval",
                         "true": "True"
                     },
+                    "node_management": {
+                        "add_to_group": "Add To Group",
+                        "entities": "Entities of this node",
+                        "entity_info": "Entity Information",
+                        "exclude_entity": "Exclude this entity from Home Assistant",
+                        "group": "Group",
+                        "header": "Z-Wave Node Management",
+                        "introduction": "Run Z-Wave commands that affect a single node. Pick a node to see a list of available commands.",
+                        "max_associations": "Max Associations:",
+                        "node_group_associations": "Node group associations",
+                        "node_protection": "Node protection",
+                        "node_to_control": "Node to control",
+                        "nodes": "Nodes",
+                        "nodes_hint": "Select node to view per-node options",
+                        "nodes_in_group": "Other Nodes in this group:",
+                        "pooling_intensity": "Polling intensity",
+                        "protection": "Protection",
+                        "remove_broadcast": "Remove Broadcast",
+                        "remove_from_group": "Remove From Group",
+                        "set_protection": "Set Protection"
+                    },
                     "ozw_log": {
                         "header": "OZW Log",
-                        "introduction": "View the log. 0 is the minimum (loads entire log) and 1000 is the maximum. Load will show a static log and tail will auto update with the last specified number of lines of the log."
+                        "introduction": "View the log. 0 is the minimum (loads entire log) and 1000 is the maximum. Load will show a static log and tail will auto update with the last specified number of lines of the log.",
+                        "last_log_lines": "Number of last log lines",
+                        "load": "Load",
+                        "tail": "Tail"
                     },
                     "services": {
                         "add_node": "Add Node",
                         "add_node_secure": "Add Node Secure",
                         "cancel_command": "Cancel Command",
                         "heal_network": "Heal Network",
+                        "heal_node": "Heal Node",
+                        "node_info": "Node Information",
+                        "print_node": "Print Node",
+                        "refresh_entity": "Refresh Entity",
+                        "refresh_node": "Refresh Node",
+                        "remove_failed_node": "Remove Failed Node",
                         "remove_node": "Remove Node",
+                        "replace_failed_node": "Replace Failed Node",
                         "save_config": "Save Configuration",
                         "soft_reset": "Soft Reset",
                         "start_network": "Start Network",
                         "stop_network": "Stop Network",
-                        "test_network": "Test Network"
+                        "test_network": "Test Network",
+                        "test_node": "Test Node"
                     },
                     "values": {
                         "header": "Node Values"
@@ -1860,10 +1925,13 @@
                         "built_using": "Built using",
                         "custom_uis": "Custom UIs:",
                         "developed_by": "Developed by a bunch of awesome people.",
+                        "documentation": "Documentation",
                         "frontend": "frontend-ui",
                         "frontend_version": "Frontend version: {version} - {type}",
                         "home_assistant_logo": "Home Assistant logo",
                         "icons_by": "Icons by",
+                        "integrations": "Integrations",
+                        "issues": "Issues",
                         "license": "Published under the Apache 2.0 license",
                         "path_configuration": "Path to configuration.yaml: {path}",
                         "server": "server",
@@ -1978,6 +2046,10 @@
                         "add_item": "Add item",
                         "checked_items": "Checked items",
                         "clear_items": "Clear checked items"
+                    },
+                    "starting": {
+                        "description": "Home Assistant is starting up, please wait.",
+                        "header": "Home Assistant is starting..."
                     }
                 },
                 "changed_toast": {
@@ -2054,6 +2126,7 @@
                             "name": "Name",
                             "no_theme": "No theme",
                             "refresh_interval": "Refresh Interval",
+                            "secondary_info_attribute": "Secondary Info Attribute",
                             "show_icon": "Show Icon?",
                             "show_name": "Show Name?",
                             "show_state": "Show State?",
@@ -2144,7 +2217,8 @@
                         },
                         "weather-forecast": {
                             "description": "The Weather Forecast card displays the weather. Very useful to include on interfaces that people display on the wall.",
-                            "name": "Weather Forecast"
+                            "name": "Weather Forecast",
+                            "show_forecast": "Show Forecast"
                         }
                     },
                     "cardpicker": {
@@ -2261,14 +2335,15 @@
                 "views": {
                     "confirm_delete": "Delete view?",
                     "confirm_delete_existing_cards": "Deleting this view will also remove the cards",
-                    "confirm_delete_existing_cards_text": "Are you sure you want to delete your '{name}' view? The view contains {number} cards that will be deleted. This action cannot be undone.",
-                    "confirm_delete_text": "Are you sure you want to delete your '{name}' view?"
+                    "confirm_delete_existing_cards_text": "Are you sure you want to delete your ''{name}'' view? The view contains {number} cards that will be deleted. This action cannot be undone.",
+                    "confirm_delete_text": "Are you sure you want to delete your ''{name}'' view?"
                 },
                 "warning": {
                     "attribute_not_found": "Attribute {attribute} not available in: {entity}",
                     "entity_non_numeric": "Entity is non-numeric: {entity}",
                     "entity_not_found": "Entity not available: {entity}",
-                    "entity_unavailable": "{entity} is currently unavailable"
+                    "entity_unavailable": "{entity} is currently unavailable",
+                    "starting": "Home Assistant is starting, not everything may be available yet"
                 }
             },
             "mailbox": {
@@ -2281,6 +2356,8 @@
                 "abort_intro": "Login aborted",
                 "authorizing_client": "You're about to give {clientId} access to your Home Assistant instance.",
                 "form": {
+                    "error": "Error: {error}",
+                    "next": "Next",
                     "providers": {
                         "command_line": {
                             "abort": {
@@ -2366,6 +2443,7 @@
                             }
                         }
                     },
+                    "start_over": "Start over",
                     "unknown_error": "Something went wrong",
                     "working": "Please wait"
                 },

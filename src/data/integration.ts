@@ -7,6 +7,7 @@ export interface IntegrationManifest {
   name: string;
   config_flow: boolean;
   documentation: string;
+  issue_tracker?: string;
   dependencies?: string[];
   after_dependencies?: string[];
   codeowners?: string[];
@@ -17,7 +18,11 @@ export interface IntegrationManifest {
   quality_scale?: string;
 }
 
-export const integrationIssuesUrl = (domain: string) =>
+export const integrationIssuesUrl = (
+  domain: string,
+  manifest: IntegrationManifest
+) =>
+  manifest.issue_tracker ||
   `https://github.com/home-assistant/home-assistant/issues?q=is%3Aissue+is%3Aopen+label%3A%22integration%3A+${domain}%22`;
 
 export const domainToName = (localize: LocalizeFunc, domain: string) =>

@@ -31,7 +31,7 @@ class HaCoverTiltControls extends PolymerElement {
         icon="hass:stop"
         on-click="onStopTiltTap"
         invisible$="[[!entityObj.supportsStopTilt]]"
-        disabled="[[computStopDisabled(stateObj)]]"
+        disabled="[[computeStopDisabled(stateObj)]]"
         title="Stop tilt"
       ></ha-icon-button>
       <ha-icon-button

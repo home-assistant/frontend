@@ -51,14 +51,18 @@ export class HaDeviceAction extends LitElement {
         .value=${deviceId}
         @value-changed=${this._devicePicked}
         .hass=${this.hass}
-        label="Device"
+        label=${this.hass.localize(
+          "ui.panel.config.automation.editor.actions.type.device_id.label"
+        )}
       ></ha-device-picker>
       <ha-device-action-picker
         .value=${this.action}
         .deviceId=${deviceId}
         @value-changed=${this._deviceActionPicked}
         .hass=${this.hass}
-        label="Action"
+        label=${this.hass.localize(
+          "ui.panel.config.automation.editor.actions.type.device_id.action"
+        )}
       ></ha-device-action-picker>
       ${extraFieldsData
         ? html`
@@ -125,7 +129,7 @@ export class HaDeviceAction extends LitElement {
     // Returns a callback for ha-form to calculate labels per schema object
     return (schema) =>
       localize(
-        `ui.panel.config.automation.editor.actions.type.device.extra_fields.${schema.name}`
+        `ui.panel.config.automation.editor.actions.type.device_id.extra_fields.${schema.name}`
       ) || schema.name;
   }
 }

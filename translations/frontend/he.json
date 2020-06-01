@@ -206,6 +206,8 @@
             "stopped": "עצור"
         },
         "default": {
+            "off": "מופסק",
+            "on": "מופעל",
             "unavailable": "לא זמין",
             "unknown": "לא ידוע"
         },
@@ -439,6 +441,7 @@
                 "attributes": {
                     "air_pressure": "לחץ אוויר",
                     "humidity": "לחות",
+                    "precipitation": "משקעים",
                     "temperature": "טמפרטורה",
                     "visibility": "ראות",
                     "wind_speed": "מהירות הרוח"
@@ -461,15 +464,24 @@
                     "wnw": "צפון מערב",
                     "wsw": "דרום מערב"
                 },
-                "forecast": "תחזית"
+                "forecast": "תחזית",
+                "high": "גבוה",
+                "low": "נמוך"
             }
         },
         "common": {
+            "and": "וגם",
             "cancel": "ביטול",
+            "delete": "מחיקה",
             "loading": "טוען",
+            "next": "הבא",
             "no": "לא",
+            "previous": "הקודם",
+            "refresh": "רענן",
             "save": "שמור",
+            "successfully_deleted": "נמחק בהצלחה",
             "successfully_saved": "נשמר בהצלחה",
+            "undo": "בטל",
             "yes": "כן"
         },
         "components": {
@@ -514,6 +526,22 @@
             "domain_toggler": {
                 "title": "החלף דומיינים"
             },
+            "generic": {
+                "close": "סגור"
+            },
+            "helper_settings": {
+                "input_datetime": {
+                    "date": "תאריך",
+                    "datetime": "תאריך ושעה",
+                    "time": "זמן"
+                },
+                "input_select": {
+                    "add": "הוסף",
+                    "add_option": "הוסף אפשרות",
+                    "no_options": "אין עדיין אפשרויות.",
+                    "options": "אפשרויות"
+                }
+            },
             "more_info_control": {
                 "dismiss": "סגור",
                 "script": {
@@ -528,6 +556,16 @@
                 "updater": {
                     "title": "הוראות עדכון"
                 }
+            },
+            "mqtt_device_debug_info": {
+                "entities": "ישויות",
+                "no_entities": "אין ישויות",
+                "no_triggers": "אין טריגרים",
+                "payload_display": "הצג Payload",
+                "recent_messages": "{n} ההודעות שהתקבלו לאחרונה",
+                "show_as_yaml": "הצג כ־YAML",
+                "title": "{device} פרטי איתור באגים",
+                "triggers": "טריגרים"
             },
             "options_flow": {
                 "form": {
@@ -549,7 +587,8 @@
                 "buttons": {
                     "add": "הוסף מכשירים",
                     "reconfigure": "הגדר מחדש את המכשיר",
-                    "remove": "הסר מכשיר"
+                    "remove": "הסר מכשיר",
+                    "zigbee_information": "מידע על Zigbee"
                 },
                 "last_seen": "נראה לאחרונה",
                 "manuf": "לפי {manufacturer}",
@@ -593,6 +632,10 @@
             "triggered": "הופעל {שם}"
         },
         "panel": {
+            "calendar": {
+                "my_calendars": "לוחות השנה שלי",
+                "today": "היום"
+            },
             "config": {
                 "advanced_mode": {
                     "hint_enable": "חסרים אפשרויות תצורה? אפשר מצב מתקדם פועל",
@@ -600,6 +643,10 @@
                 },
                 "areas": {
                     "caption": "מאגר האזורים",
+                    "data_table": {
+                        "area": "אזור",
+                        "devices": "התקנים"
+                    },
                     "delete": {
                         "confirmation_text": "כל ההתקנים באזור זה לא יהיו מוקצים.",
                         "confirmation_title": "האם אתה בטוח שברצונך למחוק אזור זה?"
@@ -687,6 +734,9 @@
                                         "for": "משך הזמן"
                                     },
                                     "label": "התקן"
+                                },
+                                "not": {
+                                    "label": "לא"
                                 },
                                 "numeric_state": {
                                     "above": "מעל",
@@ -837,6 +887,9 @@
                         "delete_confirm": "האם אתה בטוח שברצונך למחוק אוטומציה זו?",
                         "edit_automation": "ערוך אוטומציה",
                         "header": "עורך אוטומציה",
+                        "headers": {
+                            "name": "שם"
+                        },
                         "introduction": "עורך אוטומציה מאפשר לך ליצור ולערוך אוטומציות. אנא עקוב אחר הקישור למטה וקרא את ההוראות כדי לוודא שהגדרת את ה - Home Assistant כהלכה.",
                         "learn_more": "למד עוד על אוטומציות",
                         "no_automations": "לא הצלחנו למצוא שום אוטומציה הניתנת לעריכה",
@@ -1014,7 +1067,9 @@
                                 "edit_requires_storage": "עורך מושבת משום שתצורה מאוחסנת ב- configuration.yaml.",
                                 "elevation": "גובה",
                                 "elevation_meters": "מטר",
+                                "external_url": "כתובת URL חיצונית",
                                 "imperial_example": "פרנהייט, פאונד",
+                                "internal_url": "כתובת URL פנימית",
                                 "latitude": "קו רוחב",
                                 "location_name": "שם ההתקנה של הבית שלך",
                                 "longitude": "קו אורך",
@@ -1063,6 +1118,7 @@
                         }
                     },
                     "caption": "התקנים",
+                    "confirm_delete": "האם אתה בטוח שברצונך למחוק התקן זו?",
                     "confirm_rename_entity_ids": "האם אתה רוצה גם לשנות את המזהים של הישויות שלך?",
                     "data_table": {
                         "area": "אזור",
@@ -1070,10 +1126,14 @@
                         "device": "התקן",
                         "integration": "אינטגרציה",
                         "manufacturer": "יצרן",
-                        "model": "מודל"
+                        "model": "מודל",
+                        "no_devices": "אין התקנים"
                     },
+                    "delete": "מחיקה",
                     "description": "ניהול התקנים מחוברים",
+                    "device_info": "פרטי התקן",
                     "device_not_found": "ההתקן לא נמצא.",
+                    "no_devices": "אין התקנים",
                     "unknown_error": "שגיאה לא ידועה",
                     "unnamed_device": "התקן ללא שם"
                 },
@@ -1088,14 +1148,45 @@
                             "name": "שם"
                         },
                         "introduction": "Home Assistant מנהל רישום של כל ישות שנראתה אי פעם ואשר ניתנת לזיהוי ייחודי. לכל אחד מישויות אלו יהיה מזהה ישות שהוקצה ואשר יהה שמור רק עבור ישות זו.",
-                        "introduction2": "השתמש במאגר הישויות בכדי לשנות את השם, מזהה הישות או להסיר את הערך מ- Home Assistant. שים לב, הסרת הישות ממאגר זה לא תסיר את הישות. לשם כך, פעל לפי הקישור שלהלן והסר אותו מדף האינטגרציות."
+                        "introduction2": "השתמש במאגר הישויות בכדי לשנות את השם, מזהה הישות או להסיר את הערך מ- Home Assistant. שים לב, הסרת הישות ממאגר זה לא תסיר את הישות. לשם כך, פעל לפי הקישור שלהלן והסר אותו מדף האינטגרציות.",
+                        "remove_selected": {
+                            "confirm_partly_title": "ניתן להסיר רק {number} ישויות שנבחרו."
+                        },
+                        "status": {
+                            "restored": "שוחזר"
+                        }
                     }
                 },
+                "filtering": {
+                    "clear": "נקה",
+                    "filtering_by": "סינון לפי"
+                },
                 "header": "הגדר את Home Assistant",
+                "helpers": {
+                    "dialog": {
+                        "add_platform": "הוסף {platform}",
+                        "create": "צור"
+                    },
+                    "picker": {
+                        "headers": {
+                            "editable": "ניתן לעריכה",
+                            "entity_id": "מזהה ישות",
+                            "name": "שם",
+                            "type": "סוג"
+                        }
+                    },
+                    "types": {
+                        "input_datetime": "תאריך ו/או שעה",
+                        "input_number": "מספר",
+                        "input_text": "טקסט"
+                    }
+                },
                 "integrations": {
+                    "add_integration": "הוסף אינטגרציה",
                     "caption": "אינטגרציות",
                     "config_entry": {
                         "area": "ב {area}",
+                        "delete": "מחק",
                         "delete_button": "מחק {integration}",
                         "delete_confirm": "האם אתה בטוח שברצונך למחוק אינטגרציה זו?",
                         "device_unavailable": "התקן אינו זמין",
@@ -1106,8 +1197,11 @@
                         "no_area": "ללא אזור",
                         "no_device": "ישויות ללא מכשירים",
                         "no_devices": "לאינטגרציה זו אין התקנים.",
+                        "options": "אפשרויות",
+                        "rename": "שנה שם",
                         "restart_confirm": "הפעל מחדש את Home Assistant כדי להשלים את הסרת האינטגרציה",
                         "settings_button": "ערוך הגדרות עבור {integration}",
+                        "system_options": "אפשרויות מערכת",
                         "system_options_button": "אפשרויות מערכת עבור {integration}"
                     },
                     "config_flow": {
@@ -1120,6 +1214,7 @@
                             "open_site": "פתח אתר"
                         },
                         "finish": "סיום",
+                        "loading_first_time": "אנא המתן בזמן שהאינטגרציה מותקנת",
                         "not_all_required_fields": "לא כל שדות החובה מולאו.",
                         "submit": "שלח"
                     },
@@ -1129,13 +1224,86 @@
                     "details": "פרטי האינטגרציה",
                     "discovered": "זוהו",
                     "home_assistant_website": "אתר Home Assistant",
+                    "integration": "אינטגרציה",
                     "integration_not_found": "האינטגרציה לא נמצאה.",
                     "new": "הגדר אינטגרציה",
+                    "no_integrations": "נראה שעדיין אין לך אינטגציות. לחץ על הכפתור למטה כדי להוסיף את האינטגרציה הראשונה שלך!",
                     "none": "כלום אינו הוגדר עדיין",
+                    "none_found": "לא נמצאו אינטגרציות",
+                    "none_found_detail": "התאם את קריטריוני החיפוש שלך.",
                     "note_about_integrations": "קיימות אינטגרציות שלא ניתן עדיין להגדירן ע\"י ממשק המשתמש.",
-                    "note_about_website_reference": "מידע נוסף זמין ב:"
+                    "note_about_website_reference": "מידע נוסף זמין ב:",
+                    "rename_dialog": "ערוך את שם ישות התצורה הזו",
+                    "rename_input_label": "שם ישות"
                 },
                 "introduction": "כאן ניתן להגדיר את הרכיבים ואת ה Home Assistant. לא הכל ניתן להגדיר את ממשק המשתמש עדיין, אבל אנחנו עובדים על זה.",
+                "lovelace": {
+                    "dashboards": {
+                        "caption": "לוחות בקרה",
+                        "conf_mode": {
+                            "storage": "ממשק המשתמש נשלט",
+                            "yaml": "קובץ YAML"
+                        },
+                        "confirm_delete": "האם אתה בטוח שברצונך למחוק את לוח הבקרה הזה?",
+                        "default_dashboard": "זהו לוח הבקרה ברירת המחדל",
+                        "detail": {
+                            "create": "צור",
+                            "delete": "מחק",
+                            "dismiss": "סגור",
+                            "edit_dashboard": "ערוך לוח בקרה",
+                            "icon": "סמל",
+                            "new_dashboard": "הוסף לוח בקרה חדש",
+                            "remove_default": "הסר כברירת מחדל בהתקן זה",
+                            "require_admin": "מנהל בלבד",
+                            "set_default": "הגדר כברירת מחדל בהתקן זה",
+                            "show_sidebar": "הצג בסרגל הצד",
+                            "title": "כותרת",
+                            "title_required": "הכותרת נדרשת.",
+                            "update": "עדכן",
+                            "url": "URL"
+                        },
+                        "picker": {
+                            "add_dashboard": "הוסף לוח בקרה חדש",
+                            "headers": {
+                                "default": "ברירת מחדל",
+                                "filename": "שם קובץ",
+                                "require_admin": "מנהל בלבד",
+                                "sidebar": "הצג בסרגל הצד",
+                                "title": "כותרת"
+                            },
+                            "open": "פתוח"
+                        }
+                    },
+                    "resources": {
+                        "caption": "משאבים",
+                        "confirm_delete": "האם אתה בטוח שברצונך למחוק את המשאב הזה?",
+                        "detail": {
+                            "create": "צור",
+                            "delete": "מחק",
+                            "dismiss": "סגור",
+                            "type": "סוג המשאב",
+                            "update": "עדכן",
+                            "url": "URL",
+                            "url_error_msg": "כתובת URL היא שדה נדרש",
+                            "warning_header": "היה זהיר!"
+                        },
+                        "picker": {
+                            "add_resource": "הוסף משאב",
+                            "headers": {
+                                "type": "סוג",
+                                "url": "URL"
+                            },
+                            "no_resources": "אין משאבים"
+                        },
+                        "refresh_header": "האם אתה רוצה לרענן?",
+                        "types": {
+                            "css": "סגנון עיצוב",
+                            "html": "HTML (הוצא משימוש)",
+                            "js": "קובץ JavaScript (הוצא משימוש)",
+                            "module": "JavaScript Module"
+                        }
+                    }
+                },
                 "person": {
                     "add_person": "הוסף אדם",
                     "caption": "אנשים",
@@ -1195,6 +1363,9 @@
                         "delete_scene": "מחק סצנה",
                         "edit_scene": "ערוך סצנה",
                         "header": "עורך סצינות",
+                        "headers": {
+                            "name": "שם"
+                        },
                         "introduction": "עורך הסצנות מאפשר לך ליצור ולערוך סצינות. אנא עקוב אחר הקישור למטה כדי לקרוא את ההוראות בכדי לוודא שהגדרת נכון את Home Assistant.",
                         "learn_more": "למידע נוסף על סצינות",
                         "no_scenes": "לא מצאנו סצינות הניתנות לעריכה",
@@ -1221,9 +1392,13 @@
                         "add_script": "הוסף סקריפט",
                         "edit_script": "ערוך סקריפט",
                         "header": "עורך סקריפטים",
+                        "headers": {
+                            "name": "שם"
+                        },
                         "introduction": "עורך הסקריפטים מאפשר לך ליצור ולערוך סקריפטים. נא כנס לקישור שלמטה כדי לקרוא את ההוראות בכדי לוודא שקבעת את תצורת Home Assistant כהלה.",
                         "learn_more": "למד עוד אודות קבצי סקריפטים",
                         "no_scripts": "לא מצאנו סקריפטים הניתנים לעריכה",
+                        "show_info": "הצג מידע על התסריט",
                         "trigger_script": "הפעל סקריפט"
                     }
                 },
@@ -1270,6 +1445,7 @@
                     "editor": {
                         "activate_user": "הפעל משתמש",
                         "active": "פעיל",
+                        "admin": "מנהל",
                         "caption": "הצג משתמש",
                         "change_password": "שינוי סיסמה",
                         "confirm_user_deletion": "האם הינך בטוח/ה שברצונך למחוק את {name} ?",
@@ -1277,10 +1453,20 @@
                         "delete_user": "מחיקת משתמש",
                         "group": "קבוצה",
                         "id": "מזהה",
+                        "name": "שם",
                         "owner": "בעלים",
                         "system_generated": "נוצר ע\"י המערכת",
+                        "system_generated_users_not_editable": "לא ניתן לעדכן משתמשים שנוצרו על ידי המערכת.",
                         "system_generated_users_not_removable": "לא ניתן להסיר משתמשים שנוצרו על ידי המערכת.",
-                        "unnamed_user": "משתמש ללא שם"
+                        "unnamed_user": "משתמש ללא שם",
+                        "update_user": "עדכון"
+                    },
+                    "picker": {
+                        "headers": {
+                            "group": "קְבוּצָה",
+                            "name": "שם",
+                            "system": "מערכת"
+                        }
                     }
                 },
                 "zha": {
@@ -1416,10 +1602,13 @@
                         "built_using": "נבנה באמצעות",
                         "custom_uis": "ממשקי משתמש מותאמים אישית:",
                         "developed_by": "פותח על ידי חבורה של אנשים מדהימים.",
+                        "documentation": "תיעוד",
                         "frontend": "frontend-ui",
                         "frontend_version": "גרסת ממשק המשתמש: {version} - {type}",
                         "home_assistant_logo": "לוגו Home Assistant",
                         "icons_by": "סמלים מאת",
+                        "integrations": "אינטגרציות",
+                        "issues": "בעיות",
                         "license": "פורסם תחת רישיון Apache 2.0",
                         "path_configuration": "נתיב ל - configuration.yaml: {path}",
                         "server": "שרת",
@@ -1534,20 +1723,37 @@
                             "available_states": "מצבים זמינים",
                             "name": "לוח אזעקה"
                         },
+                        "button": {
+                            "description": "כרטיס ה־Button מאפשר להוסיף כפתורים לביצוע משימות."
+                        },
                         "conditional": {
-                            "name": "מותנה"
+                            "card": "כרטיס",
+                            "change_type": "שנה סוג",
+                            "condition_explanation": "הכרטיס יוצג כאשר מתקיימים *כל* התנאים להלן.",
+                            "conditions": "תנאים",
+                            "current_state": "נוכחי",
+                            "description": "הכרטיס ה־Conditional מציג כרטיס אחר המבוסס על מצבי ישוית (States).",
+                            "name": "מותנה",
+                            "state_equal": "כאשר המצב (State)שווה ל",
+                            "state_not_equal": "כאשר המצב (State) אינו שווה ל"
                         },
                         "config": {
                             "optional": "אופציונאלי",
                             "required": "חובה"
                         },
                         "entities": {
+                            "description": "כרטיס היישויות הוא סוג הכרטיס הנפוץ ביותר. הוא מקבץ ישויות יחד לרשימות.",
                             "name": "ישויות",
                             "show_header_toggle": "הצג שינוי מצב כותרת?",
                             "toggle": "החלף מצב ישויות."
                         },
                         "entity-filter": {
+                            "description": "כרטיס ה־Entity Filter מאפשר לך להגדיר רשימה של ישויות שאתה רוצה לעקוב אחריהן רק במצב מסוים.",
                             "name": "Entity Filter"
+                        },
+                        "entity": {
+                            "description": "כרטיס היישות מעניק לך סקירה מהירה של מצב היישות שלך.",
+                            "name": "ישות"
                         },
                         "gauge": {
                             "description": "כרטיס ה Gauge הוא כרטיס בסיסי המאפשר לראות חזותית נתוני חיישן.",
@@ -1561,8 +1767,10 @@
                         },
                         "generic": {
                             "aspect_ratio": "יחס תצוגה",
+                            "attribute": "שדה",
                             "camera_image": "ישות מצלמה",
                             "camera_view": "תצוגת מצלמה",
+                            "double_tap_action": "פעולת הקשה כפולה",
                             "entities": "ישויות",
                             "entity": "ישות",
                             "hold_action": "פעולת החזקה",
@@ -1575,7 +1783,9 @@
                             "maximum": "מקסימום",
                             "minimum": "מינימום",
                             "name": "שם",
+                            "no_theme": "אין ערכת נושא",
                             "refresh_interval": "מרווח זמן לרענון",
+                            "secondary_info_attribute": "שדה מידע משני",
                             "show_icon": "הצג סמל?",
                             "show_name": "להציג שם?",
                             "show_state": "הצג מצב?",
@@ -1588,6 +1798,7 @@
                         },
                         "glance": {
                             "columns": "עמודות",
+                            "description": "כרטיס ה־Glance שימושי עבור קיבוץ מספר חיישנים לסקירה קומפקטית.",
                             "name": "Glance"
                         },
                         "history-graph": {
@@ -1611,6 +1822,7 @@
                             "default_zoom": "זום התחלתי",
                             "description": "כרטיס המפה המאפשר להציג ישויות במפה.",
                             "geo_location_sources": "מקורות מיקום גאוגרפי",
+                            "hours_to_show": "שעות להצגה",
                             "name": "מפה",
                             "source": "מקור"
                         },
@@ -1663,12 +1875,18 @@
                         },
                         "weather-forecast": {
                             "description": "כרטיס תחזית מזג האוויר מציג את מזג האוויר. מאוד שימושי לכלול בממשקים שאנשים מציגים על הקיר.",
-                            "name": "תחזית מזג האוויר"
+                            "name": "תחזית מזג האוויר",
+                            "show_forecast": "הצג תחזית"
                         }
+                    },
+                    "cardpicker": {
+                        "custom_card": "מותאם אישית",
+                        "no_description": "אין תיאור זמין"
                     },
                     "edit_card": {
                         "add": "הוסף כרטיסייה",
                         "delete": "מחק",
+                        "duplicate": "שכפול כרטיס",
                         "edit": "ערוך",
                         "header": "הגדרות כרטיסייה",
                         "move": "הזז",
@@ -1691,7 +1909,10 @@
                         "header": "הצג הגדרות",
                         "header_name": "{name} הצג את תצורת",
                         "move_left": "הזז את התצוגה שמאלה",
-                        "move_right": "הזז את התצוגה ימינה"
+                        "move_right": "הזז את התצוגה ימינה",
+                        "visibility": {
+                            "select_users": "בחר אילו משתמשים צריכים לראות תצוגה זו בתפריט"
+                        }
                     },
                     "header": "ערוך UI",
                     "menu": {
@@ -1717,6 +1938,8 @@
                     },
                     "save_config": {
                         "cancel": "לא משנה",
+                        "close": "סגור",
+                        "empty_config": "התחל עם לוח בקרה ריק",
                         "header": "קח שליטה על Lovelace ממשק המשתמש שלך",
                         "para": "כברירת מחדל Home Assistant יתחזק את ממשק המשתמש שלך , יעדכן אותו כאשר קומפוננטות או ישויות חדשות יהפכו לזמינות. אם תקח שליטה אנו לא נוכל לבצע שינויים בצורה אוטומטית בשבילך.",
                         "para_sure": "האם אתה בטוח שאתה רוצה לקחת שליטה על ממשק המשתמש?",
@@ -1725,7 +1948,8 @@
                     "view": {
                         "panel_mode": {
                             "description": "מציג את הכרטיס הראשון ברוחב המלא; כרטיסים אחרים בתצוגה זו לא יוצגו.",
-                            "title": "מצב לוח?"
+                            "title": "מצב לוח?",
+                            "warning_multiple_cards": "תצוגה זו מכילה יותר מכרטיס אחד, אך בתצוגת פאנל ניתן להציג כרטיס אחד בלבד."
                         }
                     }
                 },
@@ -1734,9 +1958,14 @@
                     "configure_ui": "הגדר UI",
                     "exit_edit_mode": "צא ממצב עריכה של ממשק המשתמש",
                     "help": "עזרה",
-                    "refresh": "רענן"
+                    "refresh": "רענן",
+                    "reload_resources": "רענן משאבים"
                 },
                 "reload_lovelace": "טען מחדש את Lovelace",
+                "reload_resources": {
+                    "refresh_body": "אתה צריך לרענן כדי להשלים את הטעינה מחדש, האם אתה רוצה לרענן עכשיו?",
+                    "refresh_header": "האם אתה רוצה לרענן?"
+                },
                 "unused_entities": {
                     "available_entities": "אלה הן הישויות הזמינות, אך עדיין אינן בממשק המשתמש של Lovelace.",
                     "domain": "תחום",
@@ -1747,11 +1976,15 @@
                     "title": "ישויות שאינן בשימוש"
                 },
                 "views": {
-                    "confirm_delete": "האם אתה בטוח שברצונך למחוק תצוגה זו?"
+                    "confirm_delete": "האם אתה בטוח שברצונך למחוק תצוגה זו?",
+                    "confirm_delete_existing_cards": "מחיקת תצוגה זו תסיר גם את הכרטיסים",
+                    "confirm_delete_text": "האם אתה בטוח שברצונך למחוק את התצוגה \"{name}\"?"
                 },
                 "warning": {
+                    "attribute_not_found": "השדה {attribute} אינו זמין ב־{entity}",
                     "entity_non_numeric": "הישות אינה מספרית: {entity}",
-                    "entity_not_found": "הישות אינה זמינה: {entity}"
+                    "entity_not_found": "הישות אינה זמינה: {entity}",
+                    "entity_unavailable": "כרגע {entity} אינו זמין"
                 }
             },
             "mailbox": {
@@ -1945,6 +2178,11 @@
                     "submit": "שלח"
                 },
                 "current_user": "אתה מחובר כעת כ- {fullName} .",
+                "dashboard": {
+                    "description": "בחר לוח בקרה ברירת מחדל עבור מכשיר זה.",
+                    "dropdown_label": "לוח בקרה",
+                    "header": "לוח בקרה"
+                },
                 "force_narrow": {
                     "description": "פעולה זו תסתיר את הסרגל הצדדי כברירת מחדל, בדומה לחוויה בנייד.",
                     "header": "הסתר תמיד את הסרגל הצידי"

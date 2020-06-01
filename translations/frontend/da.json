@@ -206,6 +206,8 @@
             "stopped": "Stoppet"
         },
         "default": {
+            "off": "Fra",
+            "on": "Til",
             "unavailable": "Utilgængelig",
             "unknown": "Ukendt"
         },
@@ -471,11 +473,15 @@
             }
         },
         "common": {
+            "and": "og",
             "cancel": "Annuller",
             "close": "Luk",
             "delete": "Slet",
             "loading": "Indlæser",
+            "next": "Næste",
             "no": "Nej",
+            "previous": "Forrige",
+            "refresh": "Opdater",
             "save": "Gem",
             "successfully_deleted": "Slettet",
             "successfully_saved": "Gemt",
@@ -611,7 +617,7 @@
                     "pattern": "Regex-mønster til validering på klientsiden",
                     "text": "Tekst"
                 },
-                "platform_not_loaded": "{platform}-integrationen er ikke indlæst. Tilføj den til din konfiguration. Enten ved at tilføje 'default_config:' eller '{platform}:'.",
+                "platform_not_loaded": "{platform}-integrationen er ikke indlæst. Tilføj den til din konfiguration. Enten ved at tilføje 'default_config:' eller ''{platform}:''.",
                 "required_error_msg": "Dette felt er påkrævet",
                 "yaml_not_editable": "Indstillingerne for denne entitet kan ikke redigeres fra brugerfladen. Det er kun entiteter, der er konfigureret fra brugerfladen, der kan konfigureres herfra."
             },
@@ -735,6 +741,10 @@
             "triggered": "Udløste {name}"
         },
         "panel": {
+            "calendar": {
+                "my_calendars": "Mine kalendere",
+                "today": "I dag"
+            },
             "config": {
                 "advanced_mode": {
                     "hint_enable": "Mangler der konfigurationsindstillinger? Aktivér avanceret tilstand",
@@ -836,6 +846,9 @@
                                         "for": "Varighed"
                                     },
                                     "label": "Enhed"
+                                },
+                                "not": {
+                                    "label": "Ikke"
                                 },
                                 "numeric_state": {
                                     "above": "Over",
@@ -1168,7 +1181,9 @@
                                 "edit_requires_storage": "Editor er deaktiveret, fordi config er gemt i 'configuration.yaml'.",
                                 "elevation": "Højde",
                                 "elevation_meters": "meter",
+                                "external_url": "Ekstern webadresse",
                                 "imperial_example": "Fahrenheit, pund",
+                                "internal_url": "Intern webadresse",
                                 "latitude": "Breddegrad",
                                 "location_name": "Navn på din Home Assistant-installation",
                                 "longitude": "Længdegrad",
@@ -1235,10 +1250,13 @@
                     },
                     "delete": "Slet",
                     "description": "Administrer tilsluttede enheder",
+                    "device_info": "Enhedsoplysninger",
                     "device_not_found": "Enhed blev ikke fundet.",
                     "entities": {
                         "add_entities_lovelace": "Tilføj til Lovelace",
+                        "disabled_entities": "+{count} {count, plural,\n  one {deaktiveret entitet}\n  other {deaktiverede entiteter}\n}",
                         "entities": "Entiteter",
+                        "hide_disabled": "Skjul deaktiverede",
                         "none": "Denne enhed har ingen entiteter"
                     },
                     "name": "Navn",
@@ -1344,6 +1362,8 @@
                         "delete_button": "Slet {integration}",
                         "delete_confirm": "Er du sikker på, at du vil fjerne denne integration?",
                         "device_unavailable": "entitet utilgængelig",
+                        "devices": "{count} {count, plural,\n  one {enhed}\n  other {enheder}\n}",
+                        "entities": "{count} {count, plural,\n  one {entitet}\n  other {entiteter}\n}",
                         "entity_unavailable": "entitet utilgængelig",
                         "firmware": "Firmware: {version}",
                         "hub": "Forbundet via",
@@ -1356,7 +1376,8 @@
                         "restart_confirm": "Genstart Home Assistant for at fuldføre fjernelsen af denne integration",
                         "settings_button": "Ret indstillinger for {integration}",
                         "system_options": "Systemindstillinger",
-                        "system_options_button": "Systemindstillinger for {integration}"
+                        "system_options_button": "Systemindstillinger for {integration}",
+                        "unnamed_entry": "Unavngivet post"
                     },
                     "config_flow": {
                         "aborted": "Afbrudt",
@@ -1395,6 +1416,8 @@
                     "new": "Opret en ny integration",
                     "no_integrations": "Det ser ud til, at du ikke har konfigureret nogen integrationer endnu. Klik på knappen nedenfor for at tilføje din første integration!",
                     "none": "Intet konfigureret endnu",
+                    "none_found": "Ingen integrationer fundet",
+                    "none_found_detail": "Juster dine søgekriterier.",
                     "note_about_integrations": "Ikke alle integrationer kan konfigureres via brugerfladen endnu.",
                     "note_about_website_reference": "Flere er tilgængelige på ",
                     "rename_dialog": "Rediger navnet på denne konfigurationspost",
@@ -1858,10 +1881,13 @@
                         "built_using": "Bygget ved hjælp af",
                         "custom_uis": "Tilpassede brugergrænseflader:",
                         "developed_by": "Udviklet af en masse fantastiske mennesker.",
+                        "documentation": "Dokumentation",
                         "frontend": "brugerflade",
                         "frontend_version": "Brugerfladeversion: {version} - {type}",
                         "home_assistant_logo": "Home Assistant-logo",
                         "icons_by": "Ikoner af",
+                        "integrations": "Integrationer",
+                        "issues": "Problemer",
                         "license": "Udgivet under Apache 2.0-licensen",
                         "path_configuration": "Sti til 'configuration.yaml': {path}",
                         "server": "server",
@@ -2052,6 +2078,7 @@
                             "name": "Navn",
                             "no_theme": "Intet tema",
                             "refresh_interval": "Opdateringsinterval",
+                            "secondary_info_attribute": "Sekundær info-egenskab",
                             "show_icon": "Vis ikon?",
                             "show_name": "Vis navn?",
                             "show_state": "Vis tilstand?",
@@ -2142,7 +2169,8 @@
                         },
                         "weather-forecast": {
                             "description": "Vejrudsigtskortet viser vejret - meget nyttigt at medtage på brugerflader, som folk viser på væggen.",
-                            "name": "Vejrudsigt"
+                            "name": "Vejrudsigt",
+                            "show_forecast": "Vis vejrudsigt"
                         }
                     },
                     "cardpicker": {
@@ -2214,12 +2242,12 @@
                         "close": "Luk",
                         "empty_config": "Start med et tomt betjeningspanel",
                         "header": "Tag kontrol over din 'Lovelace'-brugerflade",
-                        "para": "Som standard vil Home Assistant vedligeholde din brugerflade ved at opdatere den, når nye entiteter eller Lovelace-brugerfladekomponenter bliver tilgængelige. Hvis du overtager kontrollen, vil vi ikke længere foretage ændringer automatisk for dig.",
+                        "para": "Dette betjeningspanel vedligeholdes i øjeblikket af Home Assistant. Det opdateres automatisk, når nye entiteter eller Lovelace-brugerfladekomponenter bliver tilgængelige. Hvis du overtager kontrollen, opdateres dette betjeningspanel ikke længere automatisk. Du kan altid oprette et nyt betjeningspanel at lege med i konfigurationen.",
                         "para_sure": "Er du sikker på du ønsker at tage kontrol over din brugerflade?",
                         "save": "Tag kontrol",
                         "yaml_config": "For at hjælpe dig med at starte, er her den aktuelle konfiguration af dette betjeningspanel:",
                         "yaml_control": "For at tage kontrol i YAML-tilstand skal du oprette en YAML-fil med det navn, du har angivet i din konfiguration for dette betjeningspanel, eller standard-'ui-lovelace.yaml'-filen.",
-                        "yaml_mode": "Du bruger YAML-tilstand. Det betyder, at du ikke kan ændre din Lovelace-konfiguration fra brugerfladen. Hvis du vil ændre Lovelace fra brugerfladen, skal du fjerne 'mode: yaml' fra din Lovelace-konfiguration i 'configuration.yaml.'"
+                        "yaml_mode": "Du bruger YAML-tilstand for dette betjeningspanel. Det betyder, at du ikke kan ændre din Lovelace-konfiguration fra brugerfladen. Hvis du vil ændre dette betjeningspanel fra brugerfladen, skal du fjerne 'mode: yaml' fra din Lovelace-konfiguration i 'configuration.yaml.'"
                     },
                     "suggest_card": {
                         "add": "Tilføj til Lovelace-brugerflade",
@@ -2259,8 +2287,8 @@
                 "views": {
                     "confirm_delete": "Slet visning?",
                     "confirm_delete_existing_cards": "Sletning af denne visning fjerner også kortene",
-                    "confirm_delete_existing_cards_text": "Er du sikker på, at du vil slette visningen '{name}'? Visningen indeholder {number} kort, der vil blive slettet. Denne handling kan ikke fortrydes.",
-                    "confirm_delete_text": "Er du sikker på, at du vil slette visningen '{name}'?"
+                    "confirm_delete_existing_cards_text": "Er du sikker på, at du vil slette visningen ''{name}''? Visningen indeholder {number} kort, der vil blive slettet. Denne handling kan ikke fortrydes.",
+                    "confirm_delete_text": "Er du sikker på, at du vil slette visningen ''{name}''?"
                 },
                 "warning": {
                     "attribute_not_found": "Egenskaben {attribute} er ikke tilgængelig i: {entity}",
@@ -2279,6 +2307,8 @@
                 "abort_intro": "Login afbrudt",
                 "authorizing_client": "Du er ved at give {clientId} adgang til din Home Assistant-instans.",
                 "form": {
+                    "error": "Fejl: {error}",
+                    "next": "Næste",
                     "providers": {
                         "command_line": {
                             "abort": {
@@ -2364,6 +2394,7 @@
                             }
                         }
                     },
+                    "start_over": "Start forfra",
                     "unknown_error": "Noget gik galt",
                     "working": "Vent venligst"
                 },
