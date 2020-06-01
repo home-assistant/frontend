@@ -740,6 +740,8 @@
         "notification_toast": {
             "connection_lost": "Conexión perdida. Reconectando...",
             "service_call_failed": "Error al llamar al servicio {service}.",
+            "started": "¡Home Assistant se ha iniciado!",
+            "starting": "Home Assistant se está iniciando, no estará todo disponible hasta que finalice.",
             "triggered": "Activado {name}"
         },
         "panel": {
@@ -1848,6 +1850,7 @@
                         "add_node_secure": "Añadir nodo seguro",
                         "cancel_command": "Cancelar comando",
                         "heal_network": "Sanar red",
+                        "refresh_entity": "Actualizar Entidad",
                         "remove_node": "Eliminar nodo",
                         "save_config": "Guardar configuración",
                         "soft_reset": "Reinicio suave",
@@ -2012,6 +2015,10 @@
                         "add_item": "Añadir artículo",
                         "checked_items": "Elementos marcados",
                         "clear_items": "Borrar elementos marcados"
+                    },
+                    "starting": {
+                        "description": "Home Assistant se está iniciando, espera por favor.",
+                        "header": "Home Assistant se está iniciando..."
                     }
                 },
                 "changed_toast": {
@@ -2304,7 +2311,8 @@
                     "attribute_not_found": "El atributo {attribute} no está disponible en: {entity}",
                     "entity_non_numeric": "La entidad no es numérica: {entity}",
                     "entity_not_found": "La entidad no está disponible: {entity}",
-                    "entity_unavailable": "{entity} no está disponible actualmente"
+                    "entity_unavailable": "{entity} no está disponible actualmente",
+                    "starting": "Home Assistant se está iniciando, puede que no todo esté disponible todavía"
                 }
             },
             "mailbox": {

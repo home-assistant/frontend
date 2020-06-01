@@ -740,6 +740,8 @@
         "notification_toast": {
             "connection_lost": "连接中断。正在重新连接...",
             "service_call_failed": "调用服务 {service} 失败。",
+            "started": "Home Assistant 已启动！",
+            "starting": "Home Assistant 正在启动。在启动完成前，部分功能暂不可用。",
             "triggered": "已触发 {name}"
         },
         "panel": {
@@ -1839,21 +1841,53 @@
                         "set_wakeup": "设置唤醒间隔",
                         "true": "True"
                     },
+                    "node_management": {
+                        "add_to_group": "添加到群组",
+                        "entities": "该节点的实体",
+                        "entity_info": "实体信息",
+                        "exclude_entity": "从 Home Assistant 中排除该实体",
+                        "group": "群组",
+                        "header": "Z-Wave 节点管理",
+                        "introduction": "运行影响单个设备的 Z-Wave 命令。选择节点以查看可用命令列表。",
+                        "max_associations": "最大关联数量：",
+                        "node_group_associations": "节点分组",
+                        "node_protection": "节点保护",
+                        "node_to_control": "要控制的节点",
+                        "nodes": "节点",
+                        "nodes_hint": "选择节点以查看每个节点的选项",
+                        "nodes_in_group": "该群组中的其他节点：",
+                        "pooling_intensity": "轮询频率",
+                        "protection": "保护",
+                        "remove_broadcast": "删除广播",
+                        "remove_from_group": "从群组中删除",
+                        "set_protection": "设置保护"
+                    },
                     "ozw_log": {
                         "header": "OZW日志",
-                        "introduction": "查看日志。最小值为0（加载整个日志），最大值为1000。加载将显示静态日志，并且尾部将使用日志的最后指定的行数自动更新。"
+                        "introduction": "查看日志。最小值为0（加载整个日志），最大值为1000。加载将显示静态日志，并且尾部将使用日志的最后指定的行数自动更新。",
+                        "last_log_lines": "最后日志行数",
+                        "load": "加载",
+                        "tail": "末尾"
                     },
                     "services": {
                         "add_node": "添加节点",
                         "add_node_secure": "添加节点安全",
                         "cancel_command": "取消命令",
                         "heal_network": "修复网络",
+                        "heal_node": "修复节点",
+                        "node_info": "节点信息",
+                        "print_node": "打印节点",
+                        "refresh_entity": "刷新实体",
+                        "refresh_node": "刷新节点",
+                        "remove_failed_node": "删除故障节点",
                         "remove_node": "删除节点",
+                        "replace_failed_node": "替换故障节点",
                         "save_config": "保存配置",
                         "soft_reset": "软复位",
                         "start_network": "启动网络",
                         "stop_network": "停止网络",
-                        "test_network": "测试网络"
+                        "test_network": "测试网络",
+                        "test_node": "测试节点"
                     },
                     "values": {
                         "header": "节点值"
@@ -2012,6 +2046,10 @@
                         "add_item": "新增项目",
                         "checked_items": "已完成项目",
                         "clear_items": "清除已完成项目"
+                    },
+                    "starting": {
+                        "description": "Home Assistant 正在启动，请稍候。",
+                        "header": "Home Assistant 正在启动......"
                     }
                 },
                 "changed_toast": {
@@ -2304,7 +2342,8 @@
                     "attribute_not_found": "属性 {attribute} 对 {entity} 不可用",
                     "entity_non_numeric": "实体 {entity} 非数值",
                     "entity_not_found": "实体 {entity} 不可用",
-                    "entity_unavailable": "{entity} 当前不可用"
+                    "entity_unavailable": "{entity} 当前不可用",
+                    "starting": "Home Assistant 正在启动，部分功能暂不可用"
                 }
             },
             "mailbox": {
