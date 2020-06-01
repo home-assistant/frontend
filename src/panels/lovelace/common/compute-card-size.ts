@@ -1,7 +1,7 @@
-import { LovelaceCard } from "../types";
+import { LovelaceCard, LovelaceHeaderFooter } from "../types";
 
 export const computeCardSize = (
-  card: LovelaceCard
+  card: LovelaceCard | LovelaceHeaderFooter
 ): number | Promise<number> => {
   if (typeof card.getCardSize === "function") {
     return card.getCardSize();
