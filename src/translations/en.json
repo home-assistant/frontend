@@ -243,7 +243,8 @@
       "yes": "Yes",
       "no": "No",
       "successfully_saved": "Successfully saved",
-      "successfully_deleted": "Successfully deleted"
+      "successfully_deleted": "Successfully deleted",
+      "error_required": "Required"
     },
     "components": {
       "entity": {
@@ -1440,8 +1441,7 @@
             "name": "Name",
             "username": "Username",
             "password": "Password",
-            "create": "Create",
-            "error_required": "Required"
+            "create": "Create"
           }
         },
         "zha": {
