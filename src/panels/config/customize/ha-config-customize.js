@@ -37,7 +37,7 @@ class HaConfigCustomize extends LocalizeMixin(PolymerElement) {
             </span>
             <ha-entity-config
               hass="[[hass]]"
-              label="Entity"
+              label="[[localize('ui.panel.config.customize.picker.entity')]]"
               entities="[[entities]]"
               config="[[entityConfig]]"
             >
