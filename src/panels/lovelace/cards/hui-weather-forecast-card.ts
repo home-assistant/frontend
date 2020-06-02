@@ -276,7 +276,11 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
                       ${item.condition !== undefined && item.condition !== null
                         ? html`
                             <div class="forecast-image-icon">
-                              ${getWeatherStateIcon(item.condition, this)}
+                              ${getWeatherStateIcon(
+                                item.condition,
+                                this,
+                                item.daytime
+                              )}
                             </div>
                           `
                         : ""}
