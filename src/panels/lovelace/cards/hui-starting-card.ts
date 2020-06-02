@@ -15,7 +15,7 @@ import { LovelaceCard } from "../types";
 import { LovelaceCardConfig } from "../../../data/lovelace";
 import "@polymer/paper-spinner/paper-spinner-lite";
 import { fireEvent } from "../../../common/dom/fire_event";
-import { STATE_STARTING, STATE_RUNNING } from "home-assistant-js-websocket";
+import { STATE_NOT_RUNNING } from "home-assistant-js-websocket";
 
 @customElement("hui-starting-card")
 export class HuiStartingCard extends LitElement implements LovelaceCard {
@@ -35,13 +35,7 @@ export class HuiStartingCard extends LitElement implements LovelaceCard {
       return;
     }
 
-    const oldHass = changedProperties.get("hass") as HomeAssistant | undefined;
-
-    if (
-      (!oldHass?.config || oldHass.config.state !== this.hass!.config.state) &&
-      (this.hass!.config.state === STATE_STARTING ||
-        this.hass!.config.state === STATE_RUNNING)
-    ) {
+    if (this.hass!.config.state !== STATE_NOT_RUNNING) {
       fireEvent(this, "config-refresh");
     }
   }
