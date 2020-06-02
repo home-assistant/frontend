@@ -471,6 +471,8 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
         }
 
         .night-icon {
+          position: relative;
+          top: -2px;
           --mdc-icon-size: 12px;
         }
 
