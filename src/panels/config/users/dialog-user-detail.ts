@@ -109,10 +109,9 @@ class DialogUserDetail extends LitElement {
             ${!this._isAdmin
               ? html`
                   <br />
-                  The users group is a work in progress. The user will be unable
-                  to administer the instance via the UI. We're still auditing
-                  all management API endpoints to ensure that they correctly
-                  limit access to administrators.
+                  ${this.hass.localize(
+                    "ui.panel.config.users.users_privileges_note"
+                  )}
                 `
               : ""}
           </div>
