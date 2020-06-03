@@ -1,4 +1,4 @@
-import * as Fuse from "fuse.js";
+import Fuse from "fuse.js";
 import {
   css,
   CSSResult,
@@ -60,14 +60,14 @@ export class HuiCardPicker extends LitElement {
         let cards = cardElements.map(
           (cardElement: CardElement) => cardElement.card
         );
-        const options: Fuse.FuseOptions<Card> = {
+        const options: Fuse.IFuseOptions<Card> = {
           keys: ["type", "name", "description"],
-          caseSensitive: false,
+          isCaseSensitive: false,
           minMatchCharLength: 2,
           threshold: 0.2,
         };
         const fuse = new Fuse(cards, options);
-        cards = fuse.search(filter);
+        cards = fuse.search(filter).map((result) => result.item);
         cardElements = cardElements.filter((cardElement: CardElement) =>
           cards.includes(cardElement.card)
         );

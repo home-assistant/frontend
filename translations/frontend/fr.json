@@ -474,6 +474,7 @@
         },
         "common": {
             "and": "et",
+            "back": "Retour",
             "cancel": "Annuler",
             "close": "Fermer",
             "delete": "Supprimer",
@@ -505,6 +506,7 @@
             "device-picker": {
                 "clear": "Effacer",
                 "device": "Appareil",
+                "no_area": "Pas de zone",
                 "show_devices": "Afficher les appareils",
                 "toggle": "Permuter"
             },
@@ -738,6 +740,8 @@
         "notification_toast": {
             "connection_lost": "Connexion perdue. Reconnexion en cours ...",
             "service_call_failed": "Échec d'appel du service \"{service}\".",
+            "started": "Home Assistant a démarré !",
+            "starting": "Home Assistant démarre, tout ne sera pas disponible jusqu'à ce qu'il soit terminé.",
             "triggered": "{name} déclenché"
         },
         "panel": {
@@ -762,9 +766,13 @@
                     },
                     "description": "Vue d'ensemble de toutes les pièces de votre maison.",
                     "editor": {
+                        "area_id": "ID de la zone",
                         "create": "Créer",
                         "default_name": "Nouvelle Pièce",
                         "delete": "Supprimer",
+                        "name": "Nom",
+                        "name_required": "Le nom est requis",
+                        "unknown_error": "Erreur inconnue",
                         "update": "Mise à jour"
                     },
                     "picker": {
@@ -799,6 +807,7 @@
                                     "label": "Délai"
                                 },
                                 "device_id": {
+                                    "action": "Action",
                                     "extra_fields": {
                                         "code": "Code"
                                     },
@@ -840,6 +849,7 @@
                                     "label": "Et"
                                 },
                                 "device": {
+                                    "condition": "Condition",
                                     "extra_fields": {
                                         "above": "Au-dessus de",
                                         "below": "Au-dessous de",
@@ -918,7 +928,8 @@
                                         "below": "En dessous de",
                                         "for": "Durée"
                                     },
-                                    "label": "Équipements"
+                                    "label": "Équipements",
+                                    "trigger": "Déclencheur"
                                 },
                                 "event": {
                                     "event_data": "Données de l'événement",
@@ -1246,6 +1257,7 @@
                         "integration": "Intégration",
                         "manufacturer": "Fabricant",
                         "model": "Modèle",
+                        "no_area": "Pas de zone",
                         "no_devices": "Aucun appareil"
                     },
                     "delete": "Supprimer",
@@ -1254,7 +1266,9 @@
                     "device_not_found": "Appareil non trouvé.",
                     "entities": {
                         "add_entities_lovelace": "Ajouter à Lovelace",
+                        "disabled_entities": "+{count} {count, plural,\none {entité désactivée}\nother {entité désactivée}\n}",
                         "entities": "Entités",
+                        "hide_disabled": "Masquer désactivé",
                         "none": "Cet appareil n'a pas d'entités"
                     },
                     "name": "Nom",
@@ -1827,21 +1841,43 @@
                         "set_wakeup": "Définir l'intervalle de réveil",
                         "true": "Vrai"
                     },
+                    "node_management": {
+                        "add_to_group": "Ajouter au groupe",
+                        "group": "Groupe",
+                        "header": "Gestion des nœuds Z-Wave",
+                        "max_associations": "Associations Max:",
+                        "node_protection": "Protection des nœuds",
+                        "node_to_control": "Noeud à contrôler",
+                        "nodes": "Noeuds",
+                        "nodes_in_group": "Autres nœuds de ce groupe :",
+                        "protection": "Protection",
+                        "remove_broadcast": "Supprimer la diffusion",
+                        "remove_from_group": "Supprimer du groupe",
+                        "set_protection": "Définir la protection"
+                    },
                     "ozw_log": {
                         "header": "Journal OZW",
-                        "introduction": "Afficher le journal. Entrer un nombre de 1 à 1000 lignes pour limiter le nombre de lignes chargées dans le journal, ou entrer 0 pour désactiver la limitation du nombre de lignes affichées (journal complet). \"Load\" affichera un instantané du journal, alors que \"Tail\" affichera le journal en l'actualisant au fur et à mesure que de nouvelles entrées apparaissent."
+                        "introduction": "Afficher le journal. Entrer un nombre de 1 à 1000 lignes pour limiter le nombre de lignes chargées dans le journal, ou entrer 0 pour désactiver la limitation du nombre de lignes affichées (journal complet). \"Load\" affichera un instantané du journal, alors que \"Tail\" affichera le journal en l'actualisant au fur et à mesure que de nouvelles entrées apparaissent.",
+                        "tail": "Queue"
                     },
                     "services": {
                         "add_node": "Ajouter un nœud",
                         "add_node_secure": "Ajouter un nœud sécurisé",
                         "cancel_command": "Annuler la commande",
                         "heal_network": "Soigner le réseau",
+                        "heal_node": "Guérir Nœud",
+                        "node_info": "Informations sur le nœud",
+                        "refresh_entity": "Actualiser l'entité",
+                        "refresh_node": "Actualiser Nœud",
+                        "remove_failed_node": "Supprimer le nœud défaillant",
                         "remove_node": "Supprimer un nœud",
+                        "replace_failed_node": "Remplacer le nœud défaillant",
                         "save_config": "Enregistrer la configuration",
                         "soft_reset": "Redémarrage",
                         "start_network": "Démarrer le réseau",
                         "stop_network": "Arrêter le réseau",
-                        "test_network": "Tester le réseau"
+                        "test_network": "Tester le réseau",
+                        "test_node": "Tester Nœud"
                     },
                     "values": {
                         "header": "Valeurs des nœuds"
@@ -2000,6 +2036,10 @@
                         "add_item": "Ajouter un élément",
                         "checked_items": "Éléments cochés",
                         "clear_items": "Effacer les éléments cochés"
+                    },
+                    "starting": {
+                        "description": "Home Assistant démarre, veuillez patienter.",
+                        "header": "Home Assistant démarre ..."
                     }
                 },
                 "changed_toast": {
@@ -2292,7 +2332,8 @@
                     "attribute_not_found": "Attribut {attribute} non disponible dans: {entity}",
                     "entity_non_numeric": "L'entité est non numérique: {entity}",
                     "entity_not_found": "Entité non disponible: {entity}",
-                    "entity_unavailable": "{entity} n'est pas disponible actuellement"
+                    "entity_unavailable": "{entity} n'est pas disponible actuellement",
+                    "starting": "Home Assistant démarre, tout n'est peut-être pas encore disponible"
                 }
             },
             "mailbox": {
@@ -2305,6 +2346,8 @@
                 "abort_intro": "Connexion interrompue",
                 "authorizing_client": "Vous êtes sur le point de donner accès à {clientId} à votre instance de Home Assistant.",
                 "form": {
+                    "error": "Erreur: {error}",
+                    "next": "Suivant",
                     "providers": {
                         "command_line": {
                             "abort": {
@@ -2390,6 +2433,7 @@
                             }
                         }
                     },
+                    "start_over": "Recommencer",
                     "unknown_error": "Quelque chose a mal tourné",
                     "working": "Veuillez patienter"
                 },

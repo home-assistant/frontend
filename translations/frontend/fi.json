@@ -474,6 +474,7 @@
         },
         "common": {
             "and": "ja",
+            "back": "Takaisin",
             "cancel": "Peruuta",
             "close": "Sulje",
             "delete": "Poista",
@@ -505,6 +506,7 @@
             "device-picker": {
                 "clear": "Tyhjennä",
                 "device": "Laite",
+                "no_area": "Ei aluetta",
                 "show_devices": "Näytä laitteet",
                 "toggle": "Vaihda"
             },
@@ -762,9 +764,13 @@
                     },
                     "description": "Yleiskuva kaikista kotisi alueista.",
                     "editor": {
+                        "area_id": "Alueen tunnus",
                         "create": "Luo",
                         "default_name": "Uusi alue",
                         "delete": "Poista",
+                        "name": "Nimi",
+                        "name_required": "Nimi on pakollinen",
+                        "unknown_error": "Tuntematon virhe",
                         "update": "Päivitä"
                     },
                     "picker": {
@@ -799,6 +805,7 @@
                                     "label": "Viive"
                                 },
                                 "device_id": {
+                                    "action": "Toiminta",
                                     "extra_fields": {
                                         "code": "Koodi"
                                     },
@@ -840,6 +847,7 @@
                                     "label": "Ja"
                                 },
                                 "device": {
+                                    "condition": "Ehto",
                                     "extra_fields": {
                                         "above": "Yli",
                                         "below": "Alle",
@@ -918,7 +926,8 @@
                                         "below": "Alle",
                                         "for": "Kesto"
                                     },
-                                    "label": "Laite"
+                                    "label": "Laite",
+                                    "trigger": "Laukaisin"
                                 },
                                 "event": {
                                     "event_data": "Tapahtuman tietosisältö",
@@ -1246,6 +1255,7 @@
                         "integration": "Integraatio",
                         "manufacturer": "Valmistaja",
                         "model": "Malli",
+                        "no_area": "Ei aluetta",
                         "no_devices": "Ei laitteita"
                     },
                     "delete": "Poista",
@@ -1254,7 +1264,9 @@
                     "device_not_found": "Laitetta ei löydy.",
                     "entities": {
                         "add_entities_lovelace": "Lisää Lovelace näkymään",
+                        "disabled_entities": "{count} {count, plural,\n  one {kohde}\n  other {kohdetta}\n}",
                         "entities": "Kohteet",
+                        "hide_disabled": "Piilota käytöstä poistetut",
                         "none": "Tällä laitteella ei ole kohteita"
                     },
                     "name": "Nimi",
@@ -1325,7 +1337,7 @@
                     "clear": "Tyhjennä",
                     "filtering_by": "Suodatus"
                 },
-                "header": "Säädä Home Assistanttia",
+                "header": "Säädä Home Assistantia",
                 "helpers": {
                     "caption": "Auttajat",
                     "description": "Elementit, jotka voivat auttaa rakentamaan automaatioita.",
@@ -1374,7 +1386,8 @@
                         "restart_confirm": "Käynnistä Home Assistant uudellen viimeistelläksesi tämän integraation poistamisen",
                         "settings_button": "Muokkaa {integration}-asetuksia",
                         "system_options": "Järjestelmäasetukset",
-                        "system_options_button": "{integration}-järjestelmän asetukset"
+                        "system_options_button": "{integration}-järjestelmän asetukset",
+                        "unnamed_entry": "Nimeämätön merkintä"
                     },
                     "config_flow": {
                         "aborted": "Keskeytetty",
@@ -1396,7 +1409,7 @@
                     "description": "Hallitse liitettyjä laitteita ja palveluita",
                     "details": "Integroinnin yksityiskohdat",
                     "discovered": "Löydetty",
-                    "home_assistant_website": "Home Assistant – sivusto",
+                    "home_assistant_website": "Home Assistant -sivusto",
                     "ignore": {
                         "confirm_delete_ignore": "Tämä saa integroinnin näkymään löydetyissä integroinneissa uudelleen, kun se löydetään. Tämä saattaa vaatia uudelleenkäynnistyksen tai kestää jonkin aikaa.",
                         "confirm_delete_ignore_title": "Lopeta integraation {name} ohittaminen?",
@@ -1826,21 +1839,48 @@
                         "set_wakeup": "Aseta herätysväli",
                         "true": "Tosi"
                     },
+                    "node_management": {
+                        "add_to_group": "Lisää ryhmään",
+                        "entities": "Tämän solmun kohteet",
+                        "entity_info": "Kohteen tiedot",
+                        "exclude_entity": "Jätä tämä kohde pois Home Assistantista",
+                        "group": "Ryhmä",
+                        "header": "Z-Wave-solmun hallinta",
+                        "introduction": "Suorita Z-Wave-komennot, jotka vaikuttavat yhteen solmuun. Valitse solmu nähdäksesi luettelon käytettävissä olevista komennoista.",
+                        "node_protection": "Solmujen suojaus",
+                        "node_to_control": "Hallinnoitava solmu",
+                        "nodes": "Solmut",
+                        "nodes_hint": "Valitse solmu tarkastellaksesi solmukohtaisia vaihtoehtoja",
+                        "pooling_intensity": "Kyselyn voimakkuus",
+                        "protection": "Suojaus",
+                        "remove_broadcast": "Poista lähetys",
+                        "remove_from_group": "Poista ryhmästä",
+                        "set_protection": "Aseta suojaus"
+                    },
                     "ozw_log": {
                         "header": "OZW-loki",
-                        "introduction": "Tarkastele lokia. 0 on pienin (lataa koko lokin) ja 1000 on maksimi. Lataus näyttää staattisen lokin ja päivittää automaattisesti viimeisen määritetyn määrän rivejä lokiin."
+                        "introduction": "Tarkastele lokia. 0 on pienin (lataa koko lokin) ja 1000 on maksimi. Lataus näyttää staattisen lokin ja päivittää automaattisesti viimeisen määritetyn määrän rivejä lokiin.",
+                        "last_log_lines": "Viimeisten lokirivien määrä",
+                        "load": "Lataa",
+                        "tail": "Häntä"
                     },
                     "services": {
                         "add_node": "Lisää solmu",
                         "add_node_secure": "Lisää suojattu solmu",
                         "cancel_command": "Peruuta komento",
                         "heal_network": "Paranna verkko",
+                        "heal_node": "Paranna solmu",
+                        "node_info": "Solmun tiedot",
+                        "print_node": "Tulosta solmu",
+                        "refresh_entity": "Päivitä kohde",
+                        "refresh_node": "Päivitä solmu",
                         "remove_node": "Poista solmu",
                         "save_config": "Tallenna asetukset",
                         "soft_reset": "Pehmeä nollaus",
                         "start_network": "Käynnistä verkko",
                         "stop_network": "Pysäytä verkko",
-                        "test_network": "Testaa verkkoyhteys"
+                        "test_network": "Testaa verkkoyhteys",
+                        "test_node": "Testaa solmu"
                     },
                     "values": {
                         "header": "Solmujen arvot"
@@ -2284,7 +2324,7 @@
                 "views": {
                     "confirm_delete": "Oletko varma, että haluat poistaa tämän näkymän?",
                     "confirm_delete_existing_cards": "Tämän näkymän poistaminen poistaa myös kortit",
-                    "confirm_delete_existing_cards_text": "Haluatko varmasti poistaa näkymän {name}? Näkymä sisältää {number}-kortteja, jotka poistetaan. Tätä toimintoa ei voi kumota.",
+                    "confirm_delete_existing_cards_text": "Haluatko varmasti poistaa näkymän {name}? Näkymä sisältää {number} korttia, jotka poistetaan. Tätä toimintoa ei voi kumota.",
                     "confirm_delete_text": "Haluatko varmasti poistaa ''{name}'' -näkymäsi?"
                 },
                 "warning": {
@@ -2304,6 +2344,8 @@
                 "abort_intro": "Kirjautuminen on keskeytetty",
                 "authorizing_client": "Olet antamassa pääsyn {clientId} Home Assistant -ympäristöösi.",
                 "form": {
+                    "error": "Virhe: {error}",
+                    "next": "Seuraava",
                     "providers": {
                         "command_line": {
                             "abort": {
@@ -2389,6 +2431,7 @@
                             }
                         }
                     },
+                    "start_over": "Aloita alusta",
                     "unknown_error": "Jotain meni pieleen",
                     "working": "Ole hyvä ja odota"
                 },
@@ -2510,7 +2553,7 @@
                     "create_failed": "Käyttötunnussanoman luominen epäonnistui.",
                     "created_at": "Luotu {date}",
                     "delete_failed": "Käyttötunnussanoman poistaminen epäonnistui.",
-                    "description": "Luo pitkäikäisiä käyttöoikeustunnuksia, jotta komentosarjasi voivat vuorovaikutttaa Home Assistantin kanssa. Jokainen tunnus on voimassa 10 vuotta luomisesta. Seuraavat pitkäikäiset käyttöoikeustunnukset ovat tällä hetkellä käytössä.",
+                    "description": "Luo pitkäikäisiä käyttöoikeustunnuksia, jotta komentosarjasi voivat vuorovaikuttaa Home Assistantin kanssa. Jokainen tunnus on voimassa 10 vuotta luomisesta. Seuraavat pitkäikäiset käyttöoikeustunnukset ovat tällä hetkellä käytössä.",
                     "empty_state": "Sinulla ei ole vielä pitkäaikaisia käyttötunnussanomia",
                     "header": "Pitkäaikaiset käyttötunnussanomat",
                     "last_used": "Viimeksi käytetty {date} sijainnista {location}",

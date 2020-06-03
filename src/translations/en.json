@@ -244,7 +244,9 @@
       "yes": "Yes",
       "no": "No",
       "successfully_saved": "Successfully saved",
-      "successfully_deleted": "Successfully deleted"
+      "successfully_deleted": "Successfully deleted",
+      "back": "Back",
+      "error_required": "Required"
     },
     "components": {
       "entity": {
@@ -258,7 +260,8 @@
         "clear": "Clear",
         "toggle": "Toggle",
         "show_devices": "Show devices",
-        "device": "Device"
+        "device": "Device",
+        "no_area": "No area"
       },
       "area-picker": {
         "clear": "Clear",
@@ -496,6 +499,8 @@
     "notification_toast": {
       "service_call_failed": "Failed to call service {service}.",
       "connection_lost": "Connection lost. Reconnecting…",
+      "started": "Home Assistant has started!",
+      "starting": "Home Assistant is starting, not everything will be available until it is finished.",
       "triggered": "Triggered {name}"
     },
     "sidebar": {
@@ -539,7 +544,11 @@
             "default_name": "New Area",
             "delete": "Delete",
             "update": "Update",
-            "create": "Create"
+            "create": "Create",
+            "name": "Name",
+            "name_required": "Name is required",
+            "area_id": "Area ID",
+            "unknown_error": "Unknown error"
           },
           "delete": {
             "confirmation_title": "Are you sure you want to delete this area?",
@@ -712,7 +721,8 @@
           "description": "Customize your entities",
           "picker": {
             "header": "Customizations",
-            "introduction": "Tweak per-entity attributes. Added/edited customizations will take effect immediately. Removed customizations will take effect when the entity is updated."
+            "introduction": "Tweak per-entity attributes. Added/edited customizations will take effect immediately. Removed customizations will take effect when the entity is updated.",
+            "entity": "Entity"
           },
           "warning": {
             "include_sentence": "It seems that your configuration.yaml doesn't properly",
@@ -775,6 +785,7 @@
               "type": {
                 "device": {
                   "label": "Device",
+                  "trigger": "Trigger",
                   "extra_fields": {
                     "above": "Above",
                     "below": "Below",
@@ -869,6 +880,7 @@
                 },
                 "device": {
                   "label": "Device",
+                  "condition": "Condition",
                   "extra_fields": {
                     "above": "Above",
                     "below": "Below",
@@ -951,6 +963,7 @@
                 },
                 "device_id": {
                   "label": "Device",
+                  "action": "Action",
                   "extra_fields": {
                     "code": "Code"
                   }
@@ -1244,7 +1257,8 @@
             "area": "Area",
             "integration": "Integration",
             "battery": "Battery",
-            "no_devices": "No devices"
+            "no_devices": "No devices",
+            "no_area": "No area"
           },
           "delete": "Delete",
           "confirm_delete": "Are you sure you want to delete this device?"
@@ -1418,6 +1432,7 @@
         "users": {
           "caption": "Users",
           "description": "Manage users",
+          "users_privileges_note": "The users group is a work in progress. The user will be unable to administer the instance via the UI. We're still auditing all management API endpoints to ensure that they correctly limit access to administrators.",
           "picker": {
             "headers": { "name": "Name", "group": "Group", "system": "System" }
           },
@@ -1558,9 +1573,33 @@
             "header": "Z-Wave Network Management",
             "introduction": "Run commands that affect the Z-Wave network. You won't get feedback on whether most commands succeeded, but you can check the OZW Log to try to find out."
           },
+          "node_management": {
+            "header": "Z-Wave Node Management",
+            "introduction": "Run Z-Wave commands that affect a single node. Pick a node to see a list of available commands.",
+            "nodes": "Nodes",
+            "nodes_hint": "Select node to view per-node options",
+            "entities": "Entities of this node",
+            "entity_info": "Entity Information",
+            "exclude_entity": "Exclude this entity from Home Assistant",
+            "pooling_intensity": "Polling intensity",
+            "node_protection": "Node protection",
+            "protection": "Protection",
+            "set_protection": "Set Protection",
+            "node_group_associations": "Node group associations",
+            "group": "Group",
+            "node_to_control": "Node to control",
+            "nodes_in_group": "Other Nodes in this group:",
+            "max_associations": "Max Associations:",
+            "add_to_group": "Add To Group",
+            "remove_from_group": "Remove From Group",
+            "remove_broadcast": "Remove Broadcast"
+          },
           "ozw_log": {
             "header": "OZW Log",
-            "introduction": "View the log. 0 is the minimum (loads entire log) and 1000 is the maximum. Load will show a static log and tail will auto update with the last specified number of lines of the log."
+            "introduction": "View the log. 0 is the minimum (loads entire log) and 1000 is the maximum. Load will show a static log and tail will auto update with the last specified number of lines of the log.",
+            "last_log_lines": "Number of last log lines",
+            "load": "Load",
+            "tail": "Tail"
           },
           "network_status": {
             "network_stopped": "Z-Wave Network Stopped",
@@ -1593,7 +1632,15 @@
             "add_node_secure": "Add Node Secure",
             "add_node": "Add Node",
             "remove_node": "Remove Node",
-            "cancel_command": "Cancel Command"
+            "cancel_command": "Cancel Command",
+            "refresh_node": "Refresh Node",
+            "remove_failed_node": "Remove Failed Node",
+            "replace_failed_node": "Replace Failed Node",
+            "print_node": "Print Node",
+            "heal_node": "Heal Node",
+            "test_node": "Test Node",
+            "node_info": "Node Information",
+            "refresh_entity": "Refresh Entity"
           }
         }
       },
@@ -1634,6 +1681,9 @@
           "safe-mode": {
             "header": "Safe Mode Activated",
             "description": "Home Assistant ran into trouble while loading your configuration and is now running in safe mode. Take a look at the error log to see what went wrong."
+          },
+          "starting": {
+            "description": "Home Assistant is starting, please wait..."
           }
         },
         "unused_entities": {
@@ -1926,7 +1976,8 @@
           "attribute_not_found": "Attribute {attribute} not available in: {entity}",
           "entity_not_found": "Entity not available: {entity}",
           "entity_non_numeric": "Entity is non-numeric: {entity}",
-          "entity_unavailable": "{entity} is currently unavailable"
+          "entity_unavailable": "{entity} is currently unavailable",
+          "starting": "Home Assistant is starting, not everything may be available yet"
         },
         "changed_toast": {
           "message": "The Lovelace UI configuration for this dashboard was updated, refresh to see changes?",
@@ -2045,6 +2096,9 @@
         "form": {
           "working": "Please wait",
           "unknown_error": "Something went wrong",
+          "next": "Next",
+          "start_over": "Start over",
+          "error": "Error: {error}",
           "providers": {
             "command_line": {
               "step": {

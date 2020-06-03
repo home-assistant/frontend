@@ -14,7 +14,7 @@ import "../../components/entity/ha-entity-picker";
 import "../../components/ha-menu-button";
 import LocalizeMixin from "../../mixins/localize-mixin";
 import "../../resources/ha-date-picker-style";
-import "../../resources/ha-style";
+import "../../styles/polymer-ha-style";
 import "./ha-logbook";
 import "./ha-logbook-data";
 

@@ -33,7 +33,7 @@ export abstract class HuiStackCard extends LitElement implements LovelaceCard {
 
   @property() private _config?: StackCardConfig;
 
-  public getCardSize(): number {
+  public getCardSize(): number | Promise<number> {
     return 1;
   }
 

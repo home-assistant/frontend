@@ -474,6 +474,7 @@
         },
         "common": {
             "and": "og",
+            "back": "Tilbake",
             "cancel": "Avbryt",
             "close": "Lukk",
             "delete": "Slett",
@@ -505,6 +506,7 @@
             "device-picker": {
                 "clear": "Tøm",
                 "device": "Enhet",
+                "no_area": "Ingen område",
                 "show_devices": "Vis enheter",
                 "toggle": "Veksle"
             },
@@ -738,6 +740,8 @@
         "notification_toast": {
             "connection_lost": "Forbindelsen ble brutt. Kobler til på nytt...",
             "service_call_failed": "Kunne ikke tilkalle tjenesten: {service}",
+            "started": "Home Assistant har startet!",
+            "starting": "Home Assistant starter, alt er ikke tilgjengelig før starten er fullført.",
             "triggered": "Utløst {name}"
         },
         "panel": {
@@ -762,9 +766,13 @@
                     },
                     "description": "Oversikt over alle områder i ditt hjem",
                     "editor": {
+                        "area_id": "Område ID",
                         "create": "Opprett",
                         "default_name": "Nytt område",
                         "delete": "Slett",
+                        "name": "Navn",
+                        "name_required": "Navn er påkrevd",
+                        "unknown_error": "Ukjent feil",
                         "update": "Oppdater"
                     },
                     "picker": {
@@ -799,6 +807,7 @@
                                     "label": "Forsinkelse"
                                 },
                                 "device_id": {
+                                    "action": "Handling",
                                     "extra_fields": {
                                         "code": "Kode"
                                     },
@@ -840,6 +849,7 @@
                                     "label": "Og"
                                 },
                                 "device": {
+                                    "condition": "Betingelse",
                                     "extra_fields": {
                                         "above": "Over",
                                         "below": "Under",
@@ -918,7 +928,8 @@
                                         "below": "Under",
                                         "for": "Varighet"
                                     },
-                                    "label": "Enhet"
+                                    "label": "Enhet",
+                                    "trigger": "Utløser"
                                 },
                                 "event": {
                                     "event_data": "Hendelse data",
@@ -992,7 +1003,7 @@
                             },
                             "unsupported_platform": "Ikke-støttet plattform: {platform}"
                         },
-                        "unsaved_confirm": "Du har endringer som ikke er lagret. Er du sikker på at du vil forlate?"
+                        "unsaved_confirm": "Du har ulagrede endringer. Er du sikker på at du vil lukke?"
                     },
                     "picker": {
                         "add_automation": "Legg til automasjon",
@@ -1246,6 +1257,7 @@
                         "integration": "Integrasjon",
                         "manufacturer": "Produsent",
                         "model": "Modell",
+                        "no_area": "Ingen område",
                         "no_devices": "Ingen enheter"
                     },
                     "delete": "Slett",
@@ -1254,7 +1266,9 @@
                     "device_not_found": "Enhet ikke funnet",
                     "entities": {
                         "add_entities_lovelace": "Legg til i Lovelace",
+                        "disabled_entities": "+{count} {count, plural,\n  one {deaktivert entitet}\n  other {deaktiverte entiteter}\n}",
                         "entities": "Enheter",
+                        "hide_disabled": "Skjul deaktiverte",
                         "none": "Denne enheten har ingen enheter"
                     },
                     "name": "Navn",
@@ -1683,9 +1697,9 @@
                         "attributes_of_cluster": "Attributter for den valgte klyngen",
                         "get_zigbee_attribute": "Hent ZigBee-attributt",
                         "header": "Klyngeattributter",
-                        "help_attribute_dropdown": "Velg en attributt for å se eller angi verdien.",
+                        "help_attribute_dropdown": "Velg et attributt for å se eller angi verdien.",
                         "help_get_zigbee_attribute": "Hent verdien for det valgte attributtet.",
-                        "help_set_zigbee_attribute": "Angi attributtverdi for klusteret på den angitte entiteten.",
+                        "help_set_zigbee_attribute": "Angi attributtverdi for den spesifiserte klyngen på den angitte entiteten.",
                         "introduction": "Se og rediger klyngeattributter.",
                         "set_zigbee_attribute": "Angi Zigbee-attributt"
                     },
@@ -1699,7 +1713,7 @@
                     "clusters": {
                         "header": "Klynger",
                         "help_cluster_dropdown": "Velg en klynge for å vise attributter og kommandoer.",
-                        "introduction": "Klynger er byggesteinene for ZigBee-funksjonalitet. De skiller funksjonalitet i logiske enheter. Det finnes klient-og server typer, og som består av attributter og kommandoer."
+                        "introduction": "Klynger er byggesteinene for ZigBee-funksjonalitet. De skiller funksjonalitet i logiske enheter. Det finnes klient og server typer som består av attributter og kommandoer."
                     },
                     "common": {
                         "add_devices": "Legg til enheter",
@@ -1827,21 +1841,51 @@
                         "set_wakeup": "Angi vekkeintervall",
                         "true": "Sant"
                     },
+                    "node_management": {
+                        "add_to_group": "Legg til i gruppe",
+                        "entities": "Entiteter fra denne noden",
+                        "entity_info": "Entitetsinformasjon",
+                        "exclude_entity": "Ekskluder denne entiteten fra Home Assistant",
+                        "group": "Gruppe",
+                        "header": "Z-Wave Node-administrasjon",
+                        "introduction": "Kjør Z-Wave-kommandoer som påvirker en enkelt node. Velg en node for å se en liste over tilgjengelige kommandoer.",
+                        "max_associations": "Maks tilknytninger:",
+                        "node_group_associations": "Tilknytninger for nodegruppe",
+                        "node_protection": "Node beskyttelse",
+                        "node_to_control": "Node for å kontrollere",
+                        "nodes": "Noder",
+                        "nodes_hint": "Velg node for å vise alternativer per node",
+                        "nodes_in_group": "Andre noder i denne gruppen:",
+                        "pooling_intensity": "Intensitet for polling",
+                        "protection": "Beskyttelse",
+                        "remove_broadcast": "Fjern kringkasting",
+                        "remove_from_group": "Fjern fra gruppe",
+                        "set_protection": "Angi beskyttelse"
+                    },
                     "ozw_log": {
                         "header": "OZW-logg",
-                        "introduction": "Vis loggen. 0 er minimum (laster hele loggen) og 1000 er maksimum. Load vil vise en statisk logg og halen vil automatisk oppdatere med det siste spesifiserte antall linjer av loggen."
+                        "introduction": "Vis loggen. 0 er minimum (laster hele loggen) og 1000 er maksimum. Load vil vise en statisk logg og halen vil automatisk oppdatere med det siste spesifiserte antall linjer av loggen.",
+                        "last_log_lines": "Antall siste logglinjer",
+                        "load": "Laste"
                     },
                     "services": {
                         "add_node": "Legg til node",
                         "add_node_secure": "Legg til sikker node",
                         "cancel_command": "Avbryt kommando",
                         "heal_network": "Helbrede nettverk",
+                        "heal_node": "Helbrede node",
+                        "node_info": "Nodeinformasjon",
+                        "refresh_entity": "Oppdater entitet",
+                        "refresh_node": "Oppdater node",
+                        "remove_failed_node": "Fjern feilet node",
                         "remove_node": "Fjern node",
+                        "replace_failed_node": "Erstatt feilet node",
                         "save_config": "Lagre konfigurasjon",
                         "soft_reset": "Myk tilbakestilling",
                         "start_network": "Start nettverk",
                         "stop_network": "Stopp nettverk",
-                        "test_network": "Test nettverk"
+                        "test_network": "Test nettverk",
+                        "test_node": "Test node"
                     },
                     "values": {
                         "header": "Nodeverdier"
@@ -1880,17 +1924,17 @@
                         "custom_uis": "Tilpassede brukergrensesnitt:",
                         "developed_by": "Utviklet av en gjeng med fantastiske mennesker.",
                         "documentation": "Dokumentasjon",
-                        "frontend": "",
+                        "frontend": "frontend",
                         "frontend_version": "Brukergrensesnittet-versjon: {version} - {type}",
-                        "home_assistant_logo": "Logo for Home Assistant",
-                        "icons_by": "Ikoner av",
+                        "home_assistant_logo": "",
+                        "icons_by": "Ikoner fra",
                         "integrations": "Integrasjoner",
                         "issues": "Problemer",
                         "license": "Publisert under Apache 2.0-lisensen",
                         "path_configuration": "Sti til configurasjon.yaml: {path}",
-                        "server": "Server",
-                        "source": "Kilde:",
-                        "system_health_error": "System Health-komponenten er ikke lastet. Legg til 'system_health:' til configurasjon.yaml",
+                        "server": "core",
+                        "source": "Kilder:",
+                        "system_health_error": "System tilstand komponenten er ikke lastet inn. Legg til 'system_health:' i configuration.yaml",
                         "title": "Informasjon"
                     },
                     "logs": {
@@ -2000,6 +2044,10 @@
                         "add_item": "Legg til",
                         "checked_items": "Merkede elementer",
                         "clear_items": "Fjern merkede elementer"
+                    },
+                    "starting": {
+                        "description": "Home Assistant starter, vennligst vent.",
+                        "header": "Home Assistant starter..."
                     }
                 },
                 "changed_toast": {
@@ -2058,7 +2106,7 @@
                         },
                         "generic": {
                             "aspect_ratio": "Størrelsesforholdet",
-                            "attribute": "Attributtet",
+                            "attribute": "Attributt",
                             "camera_image": "Kameraentitet",
                             "camera_view": "Kameravisning",
                             "double_tap_action": "Dobbeltklikk Handling",
@@ -2076,7 +2124,7 @@
                             "name": "Navn",
                             "no_theme": "Ingen tema",
                             "refresh_interval": "Oppdateringsintervall",
-                            "secondary_info_attribute": "Sekundær attribute info",
+                            "secondary_info_attribute": "Sekundær informasjonsattributt",
                             "show_icon": "Vis ikon?",
                             "show_name": "Vis navn?",
                             "show_state": "Vis tilstand?",
@@ -2292,7 +2340,8 @@
                     "attribute_not_found": "Attributtet {attribute} er ikke tilgjengelig i: {entity}",
                     "entity_non_numeric": "Entiteten er ikke-numerisk: {entity}",
                     "entity_not_found": "Entitet ikke tilgjengelig: {entity}",
-                    "entity_unavailable": "{entity} er for øyeblikket utilgjengelig"
+                    "entity_unavailable": "{entity} er for øyeblikket utilgjengelig",
+                    "starting": "Home Assistant starter, ikke alt er kanskje tilgjengelig ennå"
                 }
             },
             "mailbox": {
@@ -2305,6 +2354,8 @@
                 "abort_intro": "Innlogging avbrutt",
                 "authorizing_client": "Du er i ferd med å gi {clientId} tilgang til din Home Assistant",
                 "form": {
+                    "error": "Feil: {error}",
+                    "next": "Neste",
                     "providers": {
                         "command_line": {
                             "abort": {
@@ -2390,6 +2441,7 @@
                             }
                         }
                     },
+                    "start_over": "Start på nytt",
                     "unknown_error": "Noe gikk galt",
                     "working": "Vennligst vent"
                 },

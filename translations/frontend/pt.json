@@ -474,6 +474,7 @@
         },
         "common": {
             "and": "e",
+            "back": "Retroceder",
             "cancel": "Cancelar",
             "close": "Fechar",
             "delete": "Apagar",
@@ -764,6 +765,8 @@
                         "create": "Criar",
                         "default_name": "Nova área",
                         "delete": "Apagar",
+                        "name": "Nome",
+                        "unknown_error": "Erro desconhecido",
                         "update": "Atualizar"
                     },
                     "picker": {
@@ -798,6 +801,7 @@
                                     "label": "Atraso"
                                 },
                                 "device_id": {
+                                    "action": "Ação",
                                     "extra_fields": {
                                         "code": "Código"
                                     },
@@ -839,6 +843,7 @@
                                     "label": "E"
                                 },
                                 "device": {
+                                    "condition": "Condição",
                                     "extra_fields": {
                                         "above": "Acima de",
                                         "below": "Abaixo de",
@@ -917,7 +922,8 @@
                                         "below": "Abaixo",
                                         "for": "Duração"
                                     },
-                                    "label": "Dispositivo"
+                                    "label": "Dispositivo",
+                                    "trigger": "Acionador"
                                 },
                                 "event": {
                                     "event_data": "Dados do evento",
@@ -1253,6 +1259,7 @@
                     "entities": {
                         "add_entities_lovelace": "Adicionar ao Lovelace",
                         "entities": "Entidades",
+                        "hide_disabled": "Mostrar entidades desativadas",
                         "none": "Este dispositivo não possui entidades"
                     },
                     "name": "Nome",
@@ -2168,7 +2175,7 @@
                     "edit_card": {
                         "add": "Adicionar Cartão",
                         "delete": "Apagar Cartão",
-                        "duplicate": "Cartão duplicado",
+                        "duplicate": "Duplicar cartão",
                         "edit": "Editar",
                         "header": "Configuração do cartão",
                         "move": "Mover para Vista",
@@ -2295,6 +2302,8 @@
                 "abort_intro": "Início de sessão cancelado",
                 "authorizing_client": "Está prestes a dar acesso a {clientId} à sua instância do Home Assistant.",
                 "form": {
+                    "error": "Erro: {error}",
+                    "next": "Seguinte",
                     "providers": {
                         "command_line": {
                             "abort": {
@@ -2380,6 +2389,7 @@
                             }
                         }
                     },
+                    "start_over": "Iniciar novamente",
                     "unknown_error": "Algo correu mal",
                     "working": "Por favor, aguarde"
                 },

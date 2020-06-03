@@ -3,7 +3,7 @@ import { html } from "@polymer/polymer/lib/utils/html-tag";
 /* eslint-plugin-disable lit */
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 import "../../components/ha-menu-button";
-import "../../resources/ha-style";
+import "../../styles/polymer-ha-style";
 
 class HaPanelIframe extends PolymerElement {
   static get template() {

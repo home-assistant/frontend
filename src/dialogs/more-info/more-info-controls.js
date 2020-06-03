@@ -17,7 +17,7 @@ import "../../data/ha-state-history-data";
 import { EventsMixin } from "../../mixins/events-mixin";
 import LocalizeMixin from "../../mixins/localize-mixin";
 import { showEntityEditorDialog } from "../../panels/config/entities/show-dialog-entity-editor";
-import "../../resources/ha-style";
+import "../../styles/polymer-ha-style-dialog";
 import "../../state-summary/state-card-content";
 import { showConfirmationDialog } from "../generic/show-dialog-box";
 import "./controls/more-info-content";

@@ -474,6 +474,7 @@
         },
         "common": {
             "and": "그리고",
+            "back": "뒤로가기",
             "cancel": "취소",
             "close": "닫기",
             "delete": "삭제",
@@ -505,6 +506,7 @@
             "device-picker": {
                 "clear": "지우기",
                 "device": "기기",
+                "no_area": "영역 없음",
                 "show_devices": "기기 표시",
                 "toggle": "토글"
             },
@@ -738,6 +740,8 @@
         "notification_toast": {
             "connection_lost": "서버와 연결이 끊어졌습니다. 다시 연결 중...",
             "service_call_failed": "{service} 서비스를 호출하지 못했습니다.",
+            "started": "Home Assistant 가 시작되었습니다!",
+            "starting": "Home Assistant 가 시작됩니다. 완료될 때까지 모든 기능을 사용할 수 있는 것은 아닙니다.",
             "triggered": "{name} 트리거됨"
         },
         "panel": {
@@ -762,9 +766,13 @@
                     },
                     "description": "영역을 만들고 편집합니다",
                     "editor": {
+                        "area_id": "영역 ID",
                         "create": "만들기",
                         "default_name": "새로운 영역",
                         "delete": "삭제",
+                        "name": "이름",
+                        "name_required": "이름은 필수 요소입니다",
+                        "unknown_error": "알 수 없는 오류",
                         "update": "업데이트"
                     },
                     "picker": {
@@ -799,6 +807,7 @@
                                     "label": "지연"
                                 },
                                 "device_id": {
+                                    "action": "동작",
                                     "extra_fields": {
                                         "code": "코드"
                                     },
@@ -840,6 +849,7 @@
                                     "label": "다중조건 (And)"
                                 },
                                 "device": {
+                                    "condition": "조건",
                                     "extra_fields": {
                                         "above": "이상",
                                         "below": "이하",
@@ -918,7 +928,8 @@
                                         "below": "이하",
                                         "for": "동안"
                                     },
-                                    "label": "기기"
+                                    "label": "기기",
+                                    "trigger": "트리거"
                                 },
                                 "event": {
                                     "event_data": "이벤트 데이터",
@@ -1246,6 +1257,7 @@
                         "integration": "통합 구성요소",
                         "manufacturer": "제조사",
                         "model": "모델",
+                        "no_area": "영역 없음",
                         "no_devices": "기기 없음"
                     },
                     "delete": "삭제",
@@ -1254,7 +1266,9 @@
                     "device_not_found": "기기를 찾을 수 없습니다.",
                     "entities": {
                         "add_entities_lovelace": "Lovelace 에 추가",
+                        "disabled_entities": "+{count} {count, plural,\n  one {비활성화 된 구성요소}\n  other {비활성화 된 구성요소}\n}",
                         "entities": "구성요소",
+                        "hide_disabled": "비활성화 된 구성요소 숨김",
                         "none": "이 기기는 구성요소가 없습니다"
                     },
                     "name": "이름",
@@ -1827,21 +1841,53 @@
                         "set_wakeup": "절전모드 해제 간격 설정",
                         "true": "참"
                     },
+                    "node_management": {
+                        "add_to_group": "그룹에 추가",
+                        "entities": "이 노드의 구성요소",
+                        "entity_info": "구성요소 정보",
+                        "exclude_entity": "Home Assistant 에서 이 구성요소 제외",
+                        "group": "그룹",
+                        "header": "Z-Wave 노드 관리",
+                        "introduction": "단일 노드에 영향을 주는 Z-Wave 명령을 실행합니다. 사용 가능한 명령 목록을 보려면 노드를 선택해주세요.",
+                        "max_associations": "최대 관련요소:",
+                        "node_group_associations": "노드 그룹 관련요소",
+                        "node_protection": "노드 보호",
+                        "node_to_control": "제어할 노드",
+                        "nodes": "노드",
+                        "nodes_hint": "노드별 옵션을 보려면 노드를 선택해주세요.",
+                        "nodes_in_group": "이 그룹의 다른 노드:",
+                        "pooling_intensity": "폴링 강도",
+                        "protection": "보호",
+                        "remove_broadcast": "송출 제거",
+                        "remove_from_group": "그룹에서 제거",
+                        "set_protection": "보호 설정"
+                    },
                     "ozw_log": {
                         "header": "OZW 로그",
-                        "introduction": "로그를 봐주세요. 최소값은 0(전체 로그를 불러올 때)이고 최대값은 1000 입니다. 로드된 로그는 정적 로그를 보여주며 로그의 끝 부분은 최근 기록된 로그로 자동으로 업데이트됩니다."
+                        "introduction": "로그를 봐주세요. 최소값은 0(전체 로그를 불러올 때)이고 최대값은 1000 입니다. 로드된 로그는 정적 로그를 보여주며 로그의 끝 부분은 최근 기록된 로그로 자동으로 업데이트됩니다.",
+                        "last_log_lines": "최근 기록된 로그 수",
+                        "load": "로드",
+                        "tail": "로그의 끝 부분"
                     },
                     "services": {
                         "add_node": "노드 추가",
                         "add_node_secure": "노드 보안 추가",
                         "cancel_command": "명령 취소",
-                        "heal_network": "네트워크 새로고침",
+                        "heal_network": "네트워크 복구",
+                        "heal_node": "노드 복구",
+                        "node_info": "노드 정보",
+                        "print_node": "노드 출력",
+                        "refresh_entity": "구성요소 새로고침",
+                        "refresh_node": "노드 새로고침",
+                        "remove_failed_node": "실패한 노드 제거",
                         "remove_node": "노드 제거",
+                        "replace_failed_node": "실패한 노드 교체",
                         "save_config": "구성 저장",
                         "soft_reset": "소프트 리셋",
                         "start_network": "네트워크 시작",
                         "stop_network": "네트워크 중지",
-                        "test_network": "네트워크 테스트"
+                        "test_network": "네트워크 테스트",
+                        "test_node": "노드 테스트"
                     },
                     "values": {
                         "header": "노드 값"
@@ -2000,6 +2046,10 @@
                         "add_item": "항목 추가",
                         "checked_items": "선택한 항목",
                         "clear_items": "선택한 항목 삭제"
+                    },
+                    "starting": {
+                        "description": "Home Assistant 가 시작 중입니다. 잠시만 기다려주세요.",
+                        "header": "Home Assistant 시작 중 ..."
                     }
                 },
                 "changed_toast": {
@@ -2292,7 +2342,8 @@
                     "attribute_not_found": "{attribute} 속성을 사용할 수 없습니다: {entity}",
                     "entity_non_numeric": "구성요소가 숫자형식이 아닙니다: {entity}",
                     "entity_not_found": "구성요소를 사용할 수 없습니다: {entity}",
-                    "entity_unavailable": "{entity} 은(는) 현재 사용할 수 없습니다"
+                    "entity_unavailable": "{entity} 은(는) 현재 사용할 수 없습니다",
+                    "starting": "Home Assistant 가 시작됩니다. 완료될 때까지 모든 기능을 사용할 수 있는 것은 아닙니다."
                 }
             },
             "mailbox": {
@@ -2305,6 +2356,8 @@
                 "abort_intro": "로그인이 중단되었습니다",
                 "authorizing_client": "{clientId} 에 Home Assistant 구성요소에 대한 액세스 권한을 부여하려고 합니다.",
                 "form": {
+                    "error": "오류: {error}",
+                    "next": "다음",
                     "providers": {
                         "command_line": {
                             "abort": {
@@ -2390,6 +2443,7 @@
                             }
                         }
                     },
+                    "start_over": "다시 시작",
                     "unknown_error": "문제가 발생했습니다",
                     "working": "잠시 기다려주세요"
                 },
@@ -2515,7 +2569,7 @@
                     "empty_state": "장기 액세스 토큰이 없습니다.",
                     "header": "장기 액세스 토큰",
                     "last_used": "{date} 에  {location} 에서 마지막으로 사용됨",
-                    "learn_auth_requests": "인증 요청을 생성하는 방법에 대해 알아 보세요.",
+                    "learn_auth_requests": "인증 요청을 생성하는 방법에 대해 알아보세요.",
                     "not_used": "사용된 적이 없음",
                     "prompt_copy_token": "Ctrl + C 를 눌러 액세스 토큰을 복사하세요. 이 안내는 다시 표시되지 않습니다.",
                     "prompt_name": "토큰 이름을 지어주세요."
@@ -2546,7 +2600,7 @@
                     "created_at": "{date} 에 생성 됨",
                     "current_token_tooltip": "현재 리프레시 토큰을 삭제할 수 없음",
                     "delete_failed": "리프레시 토큰을 삭제할 수 없습니다.",
-                    "description": "각 리프레시 토큰은 로그인 세션을 나타냅니다. 로그아웃을 클릭하면 리프레시 토큰은 자동으로 제거됩니다. 다음의 리프레시 토큰이 현재 접속한 계정에 대해 활성화 되어 있습니다.",
+                    "description": "각 리프레시 토큰은 로그인 세션을 나타냅니다. 로그아웃을 클릭하면 리프레시 토큰은 자동으로 제거됩니다. 다음의 리프레시 토큰이 현재 접속한 계정에 대해 활성화되어 있습니다.",
                     "header": "리프레시 토큰",
                     "last_used": "{date} 에  {location} 에서 마지막으로 사용됨",
                     "not_used": "사용된 적이 없음",

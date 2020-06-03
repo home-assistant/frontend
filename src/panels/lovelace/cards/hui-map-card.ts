@@ -237,7 +237,9 @@ class HuiMapCard extends LitElement implements LovelaceCard {
 
   protected firstUpdated(changedProps: PropertyValues): void {
     super.firstUpdated(changedProps);
-    this.loadMap();
+    if (this.isConnected) {
+      this.loadMap();
+    }
     const root = this.shadowRoot!.getElementById("root");
 
     if (!this._config || this.isPanel || !root) {
@@ -581,6 +583,7 @@ class HuiMapCard extends LitElement implements LovelaceCard {
     startTime.setHours(endTime.getHours() - this._config!.hours_to_show!);
     const skipInitialState = false;
     const significantChangesOnly = false;
+    const minimalResponse = false;
 
     const stateHistory = await fetchRecent(
       this.hass,
@@ -588,7 +591,8 @@ class HuiMapCard extends LitElement implements LovelaceCard {
       startTime,
       endTime,
       skipInitialState,
-      significantChangesOnly
+      significantChangesOnly,
+      minimalResponse
     );
 
     if (stateHistory.length < 1) {

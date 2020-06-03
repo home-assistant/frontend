@@ -82,6 +82,7 @@ export class HcMain extends HassElement {
         .hass=${this.hass}
         .lovelaceConfig=${this._lovelaceConfig}
         .viewPath=${this._lovelacePath}
+        @config-refresh=${this._generateLovelaceConfig}
       ></hc-lovelace>
     `;
   }
@@ -193,12 +194,7 @@ export class HcMain extends HassElement {
       } catch (err) {
         // Generate a Lovelace config.
         this._unsubLovelace = () => undefined;
-        const { generateLovelaceConfigFromHass } = await import(
-          "../../../../src/panels/lovelace/common/generate-lovelace-config"
-        );
-        this._handleNewLovelaceConfig(
-          await generateLovelaceConfigFromHass(this.hass!)
-        );
+        await this._generateLovelaceConfig();
       }
     }
     if (!resourcesLoaded) {
@@ -216,6 +212,15 @@ export class HcMain extends HassElement {
       this._breakFree();
     }
     this._sendStatus();
+  }
+
+  private async _generateLovelaceConfig() {
+    const { generateLovelaceConfigFromHass } = await import(
+      "../../../../src/panels/lovelace/common/generate-lovelace-config"
+    );
+    this._handleNewLovelaceConfig(
+      await generateLovelaceConfigFromHass(this.hass!)
+    );
   }
 
   private _handleNewLovelaceConfig(lovelaceConfig: LovelaceConfig) {

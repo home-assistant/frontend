@@ -7,7 +7,7 @@ import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import "../../../components/buttons/ha-call-service-button";
 import "../../../components/ha-card";
 import LocalizeMixin from "../../../mixins/localize-mixin";
-import "../../../resources/ha-style";
+import "../../../styles/polymer-ha-style";
 import "../ha-config-section";
 import "./ha-config-core-form";
 import "./ha-config-name-form";

@@ -1,6 +1,8 @@
 // Run demo develop mode
 const gulp = require("gulp");
 
+const env = require("../env");
+
 require("./clean.js");
 require("./translations.js");
 require("./gen-icons-json.js");
@@ -8,6 +10,7 @@ require("./gather-static.js");
 require("./webpack.js");
 require("./service-worker.js");
 require("./entry-html.js");
+require("./rollup.js");
 
 gulp.task(
   "develop-gallery",
@@ -20,7 +23,7 @@ gulp.task(
     gulp.parallel("gen-icons-json", "build-translations"),
     "copy-static-gallery",
     "gen-index-gallery-dev",
-    "webpack-dev-server-gallery"
+    env.useRollup() ? "rollup-dev-server-gallery" : "webpack-dev-server-gallery"
   )
 );
 
@@ -34,7 +37,7 @@ gulp.task(
     "translations-enable-merge-backend",
     gulp.parallel("gen-icons-json", "build-translations"),
     "copy-static-gallery",
-    "webpack-prod-gallery",
+    env.useRollup() ? "rollup-prod-gallery" : "webpack-prod-gallery",
     "gen-index-gallery-prod"
   )
 );

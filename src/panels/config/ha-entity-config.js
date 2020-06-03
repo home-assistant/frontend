@@ -8,6 +8,7 @@ import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 import { computeStateName } from "../../common/entity/compute_state_name";
 import "../../components/ha-card";
+import "../../styles/polymer-ha-style";
 
 class HaEntityConfig extends PolymerElement {
   static get template() {

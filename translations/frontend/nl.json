@@ -474,6 +474,7 @@
         },
         "common": {
             "and": "en",
+            "back": "Terug",
             "cancel": "Annuleren",
             "close": "Sluiten",
             "delete": "Verwijderen",
@@ -505,6 +506,7 @@
             "device-picker": {
                 "clear": "Wis",
                 "device": "Apparaat",
+                "no_area": "Geen gebied",
                 "show_devices": "Apparaten weergeven",
                 "toggle": "Omschakelen"
             },
@@ -762,9 +764,13 @@
                     },
                     "description": "Overzicht van alle gebieden in je huis.",
                     "editor": {
+                        "area_id": "Gebieds-ID",
                         "create": "Aanmaken",
                         "default_name": "Nieuw Gebied",
                         "delete": "Verwijderen",
+                        "name": "Naam",
+                        "name_required": "Naam is vereist",
+                        "unknown_error": "Onbekende fout",
                         "update": "Bijwerken"
                     },
                     "picker": {
@@ -799,6 +805,7 @@
                                     "label": "Vertraging"
                                 },
                                 "device_id": {
+                                    "action": "Actie",
                                     "extra_fields": {
                                         "code": "Code"
                                     },
@@ -840,6 +847,7 @@
                                     "label": "En"
                                 },
                                 "device": {
+                                    "condition": "Voorwaarde",
                                     "extra_fields": {
                                         "above": "Boven",
                                         "below": "Onder",
@@ -918,7 +926,8 @@
                                         "below": "Onder",
                                         "for": "Duur"
                                     },
-                                    "label": "Apparaat"
+                                    "label": "Apparaat",
+                                    "trigger": "Trigger"
                                 },
                                 "event": {
                                     "event_data": "Gebeurtenisdata",
@@ -1246,6 +1255,7 @@
                         "integration": "Integratie",
                         "manufacturer": "Fabrikant",
                         "model": "Model",
+                        "no_area": "Geen gebied",
                         "no_devices": "Geen apparaten"
                     },
                     "delete": "Verwijderen",
@@ -1254,7 +1264,9 @@
                     "device_not_found": "Apparaat niet gevonden.",
                     "entities": {
                         "add_entities_lovelace": "Voeg toe aan de Lovelace gebruikersinterface",
+                        "disabled_entities": "+{count} {count, plural,\n  one {uitgeschakelde entiteit}\n  other {uitgeschakelde entiteiten}\n}",
                         "entities": "Entiteiten",
+                        "hide_disabled": "Verberg uitgeschakeld",
                         "none": "Dit apparaat heeft geen entiteiten"
                     },
                     "name": "Naam",
@@ -1374,7 +1386,8 @@
                         "restart_confirm": "Herstart Home Assistant om het verwijderen van deze integratie te voltooien",
                         "settings_button": "Instellingen bewerken voor {integration}",
                         "system_options": "Systeeminstellingen",
-                        "system_options_button": "Systeeminstellingen voor {integration}"
+                        "system_options_button": "Systeeminstellingen voor {integration}",
+                        "unnamed_entry": "Naamloze invoer"
                     },
                     "config_flow": {
                         "aborted": "Afgebroken",
@@ -1878,10 +1891,13 @@
                         "built_using": "Gebouwd met behulp van",
                         "custom_uis": "Aangepaste UI's:",
                         "developed_by": "Ontwikkeld door een stel geweldige mensen.",
+                        "documentation": "Documentatie",
                         "frontend": "Frontend",
                         "frontend_version": "Frontend-versie: {version} - {type}",
                         "home_assistant_logo": "Home Assistant-logo",
                         "icons_by": "Icons door",
+                        "integrations": "Integraties",
+                        "issues": "Problemen",
                         "license": "Gepubliceerd onder de Apache 2.0-licentie",
                         "path_configuration": "Pad naar configuration.yaml: {path}",
                         "server": "Server",
@@ -2072,6 +2088,7 @@
                             "name": "Naam",
                             "no_theme": "Geen thema",
                             "refresh_interval": "Vernieuwingsinterval",
+                            "secondary_info_attribute": "Secundair Info attribuut",
                             "show_icon": "Pictogram Weergeven?",
                             "show_name": "Naam weergeven?",
                             "show_state": "Staat tonen?",
@@ -2162,7 +2179,8 @@
                         },
                         "weather-forecast": {
                             "description": "De Weather Forecast-kaart geeft het weer weer. Erg handig om op te nemen op interfaces die mensen aan de muur hangen.",
-                            "name": "Weersverwachting"
+                            "name": "Weersverwachting",
+                            "show_forecast": "Toon Weersvoorspelling"
                         }
                     },
                     "cardpicker": {
@@ -2280,7 +2298,7 @@
                     "confirm_delete": "Weergave verwijderen?",
                     "confirm_delete_existing_cards": "Als u deze weergave verwijdert, worden ook de kaarten verwijderd",
                     "confirm_delete_existing_cards_text": "Weet u zeker dat u uw weergave ''{name}'' wilt verwijderen? De weergave bevat {number} kaarten die worden verwijderd. Deze actie kan niet ongedaan gemaakt worden.",
-                    "confirm_delete_text": "Weet u zeker dat u uw ''{naam}''-weergave wilt verwijderen?"
+                    "confirm_delete_text": "Weet u zeker dat u uw ''{name}''-weergave wilt verwijderen?"
                 },
                 "warning": {
                     "attribute_not_found": "Kenmerk {attribute} niet beschikbaar in: {entity}",
@@ -2299,6 +2317,8 @@
                 "abort_intro": "Inloggen afgebroken",
                 "authorizing_client": "Je staat op het punt {clientId} toegang te geven tot je Home Assistant-instantie.",
                 "form": {
+                    "error": "Fout: {error}",
+                    "next": "Volgende",
                     "providers": {
                         "command_line": {
                             "abort": {
@@ -2384,6 +2404,7 @@
                             }
                         }
                     },
+                    "start_over": "Begin opnieuw",
                     "unknown_error": "Er ging iets mis",
                     "working": "Een ogenblik geduld"
                 },

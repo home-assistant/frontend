@@ -64,6 +64,9 @@ class HassioAddonDocumentationDashboard extends LitElement {
           padding: 8px;
           max-width: 1024px;
         }
+        ha-markdown {
+          padding: 16px;
+        }
       `,
     ];
   }

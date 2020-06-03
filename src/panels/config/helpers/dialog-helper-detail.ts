@@ -108,7 +108,7 @@ export class DialogHelperDetail extends LitElement {
                 @click="${this._goBack}"
                 .disabled=${this._submitting}
               >
-                Back
+                ${this.hass!.localize("ui.common.back")}
               </mwc-button>
             `
           : html`

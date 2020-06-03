@@ -630,14 +630,10 @@ class HassioAddonInfo extends LitElement {
         .right {
           float: right;
         }
-        ha-markdown img {
-          max-width: 100%;
-        }
         protection-enable mwc-button {
           --mdc-theme-primary: white;
         }
-        .description a,
-        ha-markdown a {
+        .description a {
           color: var(--primary-color);
         }
         .red {
@@ -674,6 +670,9 @@ class HassioAddonInfo extends LitElement {
           color: var(--primary-color);
           text-decoration: underline;
           cursor: pointer;
+        }
+        ha-markdown {
+          padding: 16px;
         }
       `,
     ];
