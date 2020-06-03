@@ -9,7 +9,6 @@ import {
   TemplateResult,
 } from "lit-element";
 import "../../../components/entity/ha-entity-humidifier";
-import { UNAVAILABLE_STATES } from "../../../data/entity";
 import { HomeAssistant } from "../../../types";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
 import "../components/hui-generic-entity-row";
