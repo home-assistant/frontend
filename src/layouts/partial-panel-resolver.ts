@@ -131,13 +131,13 @@ class PartialPanelResolver extends HassRouterPage {
         hass: this.hass,
         narrow: this.narrow,
         route: this.routeTail,
-        panel: hass.panels[hass.panelUrl],
+        panel: hass.panels[this._currentPage],
       });
     } else {
       el.hass = hass;
       el.narrow = this.narrow;
       el.route = this.routeTail;
-      el.panel = hass.panels[hass.panelUrl];
+      el.panel = hass.panels[this._currentPage];
     }
   }
 
