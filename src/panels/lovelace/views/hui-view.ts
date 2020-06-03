@@ -30,20 +30,20 @@ import { nextRender } from "../../../common/util/render-status";
 
 let editCodeLoaded = false;
 
-// Find column with < 5 entities, else column with lowest count
-const getColumnIndex = (columnEntityCount: number[], size: number) => {
+// Find column with < 5 size, else smallest column
+const getColumnIndex = (columnSizes: number[], size: number) => {
   let minIndex = 0;
-  for (let i = 0; i < columnEntityCount.length; i++) {
-    if (columnEntityCount[i] < 5) {
+  for (let i = 0; i < columnSizes.length; i++) {
+    if (columnSizes[i] < 5) {
       minIndex = i;
       break;
     }
-    if (columnEntityCount[i] < columnEntityCount[minIndex]) {
+    if (columnSizes[i] < columnSizes[minIndex]) {
       minIndex = i;
     }
   }
 
-  columnEntityCount[minIndex] += size;
+  columnSizes[minIndex] += size;
 
   return minIndex;
 };
@@ -162,7 +162,7 @@ export class HUIView extends LitElement {
 
     if (hassChanged && !configChanged) {
       this._cards.forEach((element) => {
-        element.hass = this.hass;
+        element.hass = hass;
       });
     }
 
@@ -217,68 +217,90 @@ export class HUIView extends LitElement {
     root.style.display = elements.length > 0 ? "block" : "none";
   }
 
-  private _createColumns() {
+  private async _createColumns() {
     this._createColumnsIteration++;
     const iteration = this._createColumnsIteration;
     const root = this.shadowRoot!.getElementById("columns")!;
 
+    // Remove old columns
     while (root.lastChild) {
       root.removeChild(root.lastChild);
     }
 
-    let columns: [number, number][][] = [];
-    const columnEntityCount: number[] = [];
-    for (let i = 0; i < this.columns!; i++) {
-      columns.push([]);
-      columnEntityCount.push(0);
-    }
-
-    this._cards.forEach((el, index) => {
-      const cardSize = computeCardSize(
-        (el.tagName === "HUI-CARD-OPTIONS" ? el.firstChild : el) as LovelaceCard
-      );
-      columns[getColumnIndex(columnEntityCount, cardSize)].push([
-        index,
-        cardSize,
-      ]);
-    });
-
-    // Remove empty columns
-    columns = columns.filter((val) => val.length > 0);
-
-    columns.forEach((indexes) => {
+    // Track the total height of cards in a columns
+    const columnSizes: number[] = [];
+    const columnElements: HTMLDivElement[] = [];
+    // Add columns to DOM, limit number of columns to the number of cards
+    for (let i = 0; i < Math.min(this.columns!, this._cards.length); i++) {
       const columnEl = document.createElement("div");
       columnEl.classList.add("column");
-      this._addToColumn(columnEl, indexes, this.lovelace!.editMode, iteration);
       root.appendChild(columnEl);
+      columnSizes.push(0);
+      columnElements.push(columnEl);
+    }
+
+    let tillNextRender: Promise<unknown> | undefined;
+    let start: Date | undefined;
+
+    // Calculate the size of every card and determine in what column it should go
+    for (const [index, el] of this._cards.entries()) {
+      if (tillNextRender === undefined) {
+        // eslint-disable-next-line no-loop-func
+        tillNextRender = nextRender().then(() => {
+          tillNextRender = undefined;
+          start = undefined;
+        });
+      }
+
+      let waitProm: Promise<unknown> | undefined;
+
+      // We should work for max 16ms (60fps) before allowing a frame to render
+      if (start === undefined) {
+        // Save the time we start for this frame, no need to wait yet
+        start = new Date();
+      } else if (new Date().getTime() - start.getTime() > 16) {
+        // We are working too long, we will prevent a render, wait to allow for a render
+        waitProm = tillNextRender;
+      }
+
+      const cardSizeProm = computeCardSize(el);
+      // @ts-ignore
+      // eslint-disable-next-line no-await-in-loop
+      const [cardSize] = await Promise.all([cardSizeProm, waitProm]);
+
+      if (iteration !== this._createColumnsIteration) {
+        // An other create columns is started, abort this one
+        return;
+      }
+      // Calculate in wich column the card should go based on the size and the cards already in there
+      this._addCardToColumn(
+        columnElements[getColumnIndex(columnSizes, cardSize as number)],
+        index,
+        this.lovelace!.editMode
+      );
+    }
+
+    // Remove empty columns
+    columnElements.forEach((column) => {
+      if (!column.lastChild) {
+        column.parentElement!.removeChild(column);
+      }
     });
   }
 
-  private async _addToColumn(columnEl, indexes, editMode, iteration) {
-    let i = 0;
-    for (const [index, cardSize] of indexes) {
-      const card: LovelaceCard = this._cards[index];
-      if (!editMode) {
-        card.editMode = false;
-        columnEl.appendChild(card);
-      } else {
-        const wrapper = document.createElement("hui-card-options");
-        wrapper.hass = this.hass;
-        wrapper.lovelace = this.lovelace;
-        wrapper.path = [this.index!, index];
-        card.editMode = true;
-        wrapper.appendChild(card);
-        columnEl.appendChild(wrapper);
-      }
-      i += cardSize;
-      if (i > 5) {
-        // eslint-disable-next-line no-await-in-loop
-        await nextRender();
-        if (iteration !== this._createColumnsIteration) {
-          return;
-        }
-        i = 0;
-      }
+  private _addCardToColumn(columnEl, index, editMode) {
+    const card: LovelaceCard = this._cards[index];
+    if (!editMode) {
+      card.editMode = false;
+      columnEl.appendChild(card);
+    } else {
+      const wrapper = document.createElement("hui-card-options");
+      wrapper.hass = this.hass;
+      wrapper.lovelace = this.lovelace;
+      wrapper.path = [this.index!, index];
+      card.editMode = true;
+      wrapper.appendChild(card);
+      columnEl.appendChild(wrapper);
     }
   }
 
@@ -295,7 +317,6 @@ export class HUIView extends LitElement {
     });
 
     this._cards = elements;
-
     this._createColumns();
   }
 

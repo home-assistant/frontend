@@ -460,6 +460,7 @@
             }
         },
         "common": {
+            "back": "Tilbake",
             "cancel": "Atcelt",
             "loading": "Ielāde",
             "no": "Nē",
@@ -631,6 +632,7 @@
                     "editor": {
                         "create": "IZVEIDOT",
                         "delete": "DZĒST",
+                        "name": "Navn",
                         "update": "ATJAUNINĀT"
                     },
                     "picker": {
@@ -1522,6 +1524,7 @@
                 "abort_intro": "Pieteikšanās priekšlaikus pārtraukta",
                 "authorizing_client": "Jūs gatavojaties piešķirt {clientId} piekļuvi jūsu Home Assistant.",
                 "form": {
+                    "next": "Neste",
                     "providers": {
                         "command_line": {
                             "abort": {

@@ -28,7 +28,7 @@ import { findEntities } from "../common/find-entites";
 import { handleAction } from "../common/handle-action";
 import { hasAction } from "../common/has-action";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
-import "../components/hui-warning";
+import { createEntityNotFoundWarning } from "../components/hui-warning";
 import { LovelaceCard, LovelaceCardEditor } from "../types";
 import { LightCardConfig } from "./types";
 
@@ -66,7 +66,7 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
   private _brightnessTimout?: number;
 
   public getCardSize(): number {
-    return 2;
+    return 4;
   }
 
   public setConfig(config: LightCardConfig): void {
@@ -89,13 +89,9 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
 
     if (!stateObj) {
       return html`
-        <hui-warning
-          >${this.hass.localize(
-            "ui.panel.lovelace.warning.entity_not_found",
-            "entity",
-            this._config.entity
-          )}</hui-warning
-        >
+        <hui-warning>
+          ${createEntityNotFoundWarning(this.hass, this._config.entity)}
+        </hui-warning>
       `;
     }
 

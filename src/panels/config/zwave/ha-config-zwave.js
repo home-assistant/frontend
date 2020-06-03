@@ -19,7 +19,7 @@ import "../../../components/ha-service-description";
 import "../../../layouts/ha-app-layout";
 import { EventsMixin } from "../../../mixins/events-mixin";
 import LocalizeMixin from "../../../mixins/localize-mixin";
-import "../../../resources/ha-style";
+import "../../../styles/polymer-ha-style";
 import "../ha-config-section";
 import "../ha-form-style";
 import "./zwave-groups";
@@ -106,7 +106,9 @@ class HaConfigZwave extends LocalizeMixin(EventsMixin(PolymerElement)) {
         <!-- Node card -->
         <ha-config-section is-wide="[[isWide]]">
           <div class="sectionHeader" slot="header">
-            <span>Z-Wave Node Management</span>
+            <span
+              >[[localize('ui.panel.config.zwave.node_management.header')]]</span
+            >
             <ha-icon-button
               class="toggle-help-icon"
               on-click="toggleHelp"
@@ -114,13 +116,16 @@ class HaConfigZwave extends LocalizeMixin(EventsMixin(PolymerElement)) {
             ></ha-icon-button>
           </div>
           <span slot="introduction">
-            Run Z-Wave commands that affect a single node. Pick a node to see a
-            list of available commands.
+            [[localize('ui.panel.config.zwave.node_management.introduction')]]
           </span>
 
           <ha-card class="content">
             <div class="device-picker">
-              <paper-dropdown-menu dynamic-align="" label="Nodes" class="flex">
+              <paper-dropdown-menu
+                dynamic-align=""
+                label="[[localize('ui.panel.config.zwave.node_management.nodes')]]"
+                class="flex"
+              >
                 <paper-listbox
                   slot="dropdown-content"
                   selected="{{selectedNode}}"
@@ -134,7 +139,7 @@ class HaConfigZwave extends LocalizeMixin(EventsMixin(PolymerElement)) {
             <template is="dom-if" if="[[!computeIsNodeSelected(selectedNode)]]">
               <template is="dom-if" if="[[showHelp]]">
                 <div style="color: grey; padding: 12px">
-                  Select node to view per-node options
+                  [[localize('ui.panel.config.zwave.node_management.introduction')]]
                 </div>
               </template>
             </template>
@@ -147,7 +152,7 @@ class HaConfigZwave extends LocalizeMixin(EventsMixin(PolymerElement)) {
                   service="refresh_node"
                   service-data="[[computeNodeServiceData(selectedNode)]]"
                 >
-                  Refresh Node
+                  [[localize('ui.panel.config.zwave.services.refresh_node')]]
                 </ha-call-service-button>
                 <ha-service-description
                   hass="[[hass]]"
@@ -164,7 +169,7 @@ class HaConfigZwave extends LocalizeMixin(EventsMixin(PolymerElement)) {
                     service="remove_failed_node"
                     service-data="[[computeNodeServiceData(selectedNode)]]"
                   >
-                    Remove Failed Node
+                    [[localize('ui.panel.config.zwave.services.remove_failed_node')]]
                   </ha-call-service-button>
                   <ha-service-description
                     hass="[[hass]]"
@@ -180,7 +185,7 @@ class HaConfigZwave extends LocalizeMixin(EventsMixin(PolymerElement)) {
                     service="replace_failed_node"
                     service-data="[[computeNodeServiceData(selectedNode)]]"
                   >
-                    Replace Failed Node
+                    [[localize('ui.panel.config.zwave.services.replace_failed_node')]]
                   </ha-call-service-button>
                   <ha-service-description
                     hass="[[hass]]"
@@ -197,7 +202,7 @@ class HaConfigZwave extends LocalizeMixin(EventsMixin(PolymerElement)) {
                   service="print_node"
                   service-data="[[computeNodeServiceData(selectedNode)]]"
                 >
-                  Print Node
+                  [[localize('ui.panel.config.zwave.services.print_node')]]
                 </ha-call-service-button>
                 <ha-service-description
                   hass="[[hass]]"
@@ -213,7 +218,7 @@ class HaConfigZwave extends LocalizeMixin(EventsMixin(PolymerElement)) {
                   service="heal_node"
                   service-data="[[computeHealNodeServiceData(selectedNode)]]"
                 >
-                  Heal Node
+                  [[localize('ui.panel.config.zwave.services.heal_node')]]
                 </ha-call-service-button>
                 <ha-service-description
                   hass="[[hass]]"
@@ -229,7 +234,7 @@ class HaConfigZwave extends LocalizeMixin(EventsMixin(PolymerElement)) {
                   service="test_node"
                   service-data="[[computeNodeServiceData(selectedNode)]]"
                 >
-                  Test Node
+                  [[localize('ui.panel.config.zwave.services.test_node')]]
                 </ha-call-service-button>
                 <ha-service-description
                   hass="[[hass]]"
@@ -239,13 +244,13 @@ class HaConfigZwave extends LocalizeMixin(EventsMixin(PolymerElement)) {
                 >
                 </ha-service-description>
                 <mwc-button on-click="_nodeMoreInfo"
-                  >Node Information</mwc-button
+                  >[[localize('ui.panel.config.zwave.services.node_info')]]</mwc-button
                 >
               </div>
 
               <div class="device-picker">
                 <paper-dropdown-menu
-                  label="Entities of this node"
+                  label="[[localize('ui.panel.config.zwave.node_management.entities')]]"
                   dynamic-align=""
                   class="flex"
                 >
@@ -270,7 +275,7 @@ class HaConfigZwave extends LocalizeMixin(EventsMixin(PolymerElement)) {
                     service="refresh_entity"
                     service-data="[[computeRefreshEntityServiceData(selectedEntity)]]"
                   >
-                    Refresh Entity
+                    [[localize('ui.panel.config.zwave.services.refresh_entity')]]
                   </ha-call-service-button>
                   <ha-service-description
                     hass="[[hass]]"
@@ -280,7 +285,7 @@ class HaConfigZwave extends LocalizeMixin(EventsMixin(PolymerElement)) {
                   >
                   </ha-service-description>
                   <mwc-button on-click="_entityMoreInfo"
-                    >Entity Information</mwc-button
+                    >[[localize('ui.panel.config.zwave.node_management.entity_info')]]</mwc-button
                   >
                 </div>
                 <div class="form-group">
@@ -288,11 +293,11 @@ class HaConfigZwave extends LocalizeMixin(EventsMixin(PolymerElement)) {
                     checked="{{entityIgnored}}"
                     class="form-control"
                   >
-                    Exclude this entity from Home Assistant
+                    [[localize('ui.panel.config.zwave.node_management.exclude_entity')]]
                   </paper-checkbox>
                   <paper-input
                     disabled="{{entityIgnored}}"
-                    label="Polling intensity"
+                    label="[[localize('ui.panel.config.zwave.node_management.pooling_intensity')]]"
                     type="number"
                     min="0"
                     value="{{entityPollingIntensity}}"
@@ -306,7 +311,7 @@ class HaConfigZwave extends LocalizeMixin(EventsMixin(PolymerElement)) {
                     service="set_poll_intensity"
                     service-data="[[computePollIntensityServiceData(entityPollingIntensity)]]"
                   >
-                    Save
+                    [[localize('ui.common.save')]]
                   </ha-call-service-button>
                 </div>
               </template>

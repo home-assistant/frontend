@@ -8,36 +8,36 @@ const paths = require("../paths");
 
 gulp.task("compress-app", function compressApp() {
   const jsLatest = gulp
-    .src(path.resolve(paths.output, "**/*.js"))
+    .src(path.resolve(paths.app_output_latest, "**/*.js"))
     .pipe(zopfli({ threshold: 150 }))
-    .pipe(gulp.dest(paths.output));
+    .pipe(gulp.dest(paths.app_output_latest));
 
   const jsEs5 = gulp
-    .src(path.resolve(paths.output_es5, "**/*.js"))
+    .src(path.resolve(paths.app_output_es5, "**/*.js"))
     .pipe(zopfli({ threshold: 150 }))
-    .pipe(gulp.dest(paths.output_es5));
+    .pipe(gulp.dest(paths.app_output_es5));
 
   const polyfills = gulp
-    .src(path.resolve(paths.static, "polyfills/*.js"))
+    .src(path.resolve(paths.app_output_static, "polyfills/*.js"))
     .pipe(zopfli({ threshold: 150 }))
-    .pipe(gulp.dest(path.resolve(paths.static, "polyfills")));
+    .pipe(gulp.dest(path.resolve(paths.app_output_static, "polyfills")));
 
   const translations = gulp
-    .src(path.resolve(paths.static, "translations/**/*.json"))
+    .src(path.resolve(paths.app_output_static, "translations/**/*.json"))
     .pipe(zopfli({ threshold: 150 }))
-    .pipe(gulp.dest(path.resolve(paths.static, "translations")));
+    .pipe(gulp.dest(path.resolve(paths.app_output_static, "translations")));
 
   const icons = gulp
-    .src(path.resolve(paths.static, "mdi/*.json"))
+    .src(path.resolve(paths.app_output_static, "mdi/*.json"))
     .pipe(zopfli({ threshold: 150 }))
-    .pipe(gulp.dest(path.resolve(paths.static, "mdi")));
+    .pipe(gulp.dest(path.resolve(paths.app_output_static, "mdi")));
 
   return merge(jsLatest, jsEs5, polyfills, translations, icons);
 });
 
 gulp.task("compress-hassio", function compressApp() {
   return gulp
-    .src(path.resolve(paths.hassio_root, "**/*.js"))
+    .src(path.resolve(paths.hassio_output_root, "**/*.js"))
     .pipe(zopfli())
-    .pipe(gulp.dest(paths.hassio_root));
+    .pipe(gulp.dest(paths.hassio_output_root));
 });

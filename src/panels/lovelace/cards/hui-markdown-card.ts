@@ -47,7 +47,8 @@ export class HuiMarkdownCard extends LitElement implements LovelaceCard {
     return this._config === undefined
       ? 3
       : this._config.card_size === undefined
-      ? this._config.content.split("\n").length + (this._config.title ? 1 : 0)
+      ? Math.round(this._config.content.split("\n").length / 2) +
+        (this._config.title ? 1 : 0)
       : this._config.card_size;
   }
 
@@ -80,9 +81,9 @@ export class HuiMarkdownCard extends LitElement implements LovelaceCard {
       <ha-card .header="${this._config.title}">
         <ha-markdown
           breaks
-          class="markdown ${classMap({
+          class=${classMap({
             "no-header": !this._config.title,
-          })}"
+          })}
           .content="${this._content}"
         ></ha-markdown>
       </ha-card>
@@ -163,26 +164,10 @@ export class HuiMarkdownCard extends LitElement implements LovelaceCard {
   static get styles(): CSSResult {
     return css`
       ha-markdown {
-        display: block;
         padding: 0 16px 16px;
-        -ms-user-select: initial;
-        -webkit-user-select: initial;
-        -moz-user-select: initial;
       }
-      .markdown.no-header {
+      ha-markdown.no-header {
         padding-top: 16px;
-      }
-      ha-markdown > *:first-child {
-        margin-top: 0;
-      }
-      ha-markdown > *:last-child {
-        margin-bottom: 0;
-      }
-      ha-markdown a {
-        color: var(--primary-color);
-      }
-      ha-markdown img {
-        max-width: 100%;
       }
     `;
   }

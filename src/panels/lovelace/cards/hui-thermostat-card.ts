@@ -29,7 +29,7 @@ import { HomeAssistant } from "../../../types";
 import { actionHandler } from "../common/directives/action-handler-directive";
 import { findEntities } from "../common/find-entites";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
-import "../components/hui-warning";
+import { createEntityNotFoundWarning } from "../components/hui-warning";
 import { LovelaceCard, LovelaceCardEditor } from "../types";
 import { ThermostatCardConfig } from "./types";
 
@@ -77,7 +77,7 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
   @property() private _setTemp?: number | number[];
 
   public getCardSize(): number {
-    return 4;
+    return 5;
   }
 
   public setConfig(config: ThermostatCardConfig): void {
@@ -96,13 +96,9 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
 
     if (!stateObj) {
       return html`
-        <hui-warning
-          >${this.hass.localize(
-            "ui.panel.lovelace.warning.entity_not_found",
-            "entity",
-            this._config.entity
-          )}</hui-warning
-        >
+        <hui-warning>
+          ${createEntityNotFoundWarning(this.hass, this._config.entity)}
+        </hui-warning>
       `;
     }
 

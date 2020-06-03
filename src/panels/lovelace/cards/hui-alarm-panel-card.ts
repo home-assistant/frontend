@@ -22,7 +22,7 @@ import {
 } from "../../../data/alarm_control_panel";
 import type { HomeAssistant } from "../../../types";
 import { findEntities } from "../common/find-entites";
-import "../components/hui-warning";
+import { createEntityNotFoundWarning } from "../components/hui-warning";
 import type { LovelaceCard } from "../types";
 import { AlarmPanelCardConfig } from "./types";
 
@@ -75,9 +75,9 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
 
   @query("#alarmCode") private _input?: PaperInputElement;
 
-  public getCardSize(): number {
+  public async getCardSize(): Promise<number> {
     if (!this._config || !this.hass) {
-      return 0;
+      return 5;
     }
 
     const stateObj = this.hass.states[this._config.entity];
@@ -151,13 +151,9 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
 
     if (!stateObj) {
       return html`
-        <hui-warning
-          >${this.hass.localize(
-            "ui.panel.lovelace.warning.entity_not_found",
-            "entity",
-            this._config.entity
-          )}</hui-warning
-        >
+        <hui-warning>
+          ${createEntityNotFoundWarning(this.hass, this._config.entity)}
+        </hui-warning>
       `;
     }
 

@@ -1,65 +1,80 @@
-import { customElement, property, UpdatingElement } from "lit-element";
-import { fireEvent } from "../common/dom/fire_event";
-import { renderMarkdown } from "../resources/render-markdown";
+import {
+  css,
+  CSSResult,
+  customElement,
+  html,
+  LitElement,
+  property,
+  TemplateResult,
+} from "lit-element";
+
+import "./ha-markdown-element";
 
 @customElement("ha-markdown")
-class HaMarkdown extends UpdatingElement {
-  @property() public content = "";
+class HaMarkdown extends LitElement {
+  @property() public content?;
 
   @property({ type: Boolean }) public allowSvg = false;
 
   @property({ type: Boolean }) public breaks = false;
 
-  protected update(changedProps) {
-    super.update(changedProps);
-    this._render();
-  }
-
-  private async _render() {
-    this.innerHTML = await renderMarkdown(
-      this.content,
-      {
-        breaks: this.breaks,
-        gfm: true,
-        tables: true,
-      },
-      {
-        allowSvg: this.allowSvg,
-      }
-    );
-
-    this._resize();
-
-    const walker = document.createTreeWalker(
-      this,
-      1 /* SHOW_ELEMENT */,
-      null,
-      false
-    );
-
-    while (walker.nextNode()) {
-      const node = walker.currentNode;
-
-      // Open external links in a new window
-      if (
-        node instanceof HTMLAnchorElement &&
-        node.host !== document.location.host
-      ) {
-        node.target = "_blank";
-        node.rel = "noreferrer";
-
-        // protect referrer on external links and deny window.opener access for security reasons
-        // (see https://mathiasbynens.github.io/rel-noopener/)
-        node.rel = "noreferrer noopener";
-
-        // Fire a resize event when images loaded to notify content resized
-      } else if (node instanceof HTMLImageElement) {
-        node.addEventListener("load", this._resize);
-      }
+  protected render(): TemplateResult {
+    if (!this.content) {
+      return html``;
     }
+
+    return html`<ha-markdown-element
+      .content=${this.content}
+      .allowSvg=${this.allowSvg}
+      .breaks=${this.breaks}
+    ></ha-markdown-element>`;
   }
 
-  private _resize = () => fireEvent(this, "iron-resize");
+  static get styles(): CSSResult {
+    return css`
+      :host {
+        display: block;
+      }
+      ha-markdown-element {
+        -ms-user-select: text;
+        -webkit-user-select: text;
+        -moz-user-select: text;
+      }
+      ha-markdown-element > *:first-child {
+        margin-top: 0;
+      }
+      ha-markdown-element > *:last-child {
+        margin-bottom: 0;
+      }
+      ha-markdown-element a {
+        color: var(--primary-color);
+      }
+      ha-markdown-element img {
+        max-width: 100%;
+      }
+      ha-markdown-element code,
+      pre {
+        background-color: var(--markdown-code-background-color, #f6f8fa);
+        border-radius: 3px;
+      }
+      ha-markdown-element code {
+        font-size: 85%;
+        padding: 0.2em 0.4em;
+      }
+      ha-markdown-element pre code {
+        padding: 0;
+      }
+      ha-markdown-element pre {
+        padding: 16px;
+        overflow: auto;
+        line-height: 1.45;
+      }
+      ha-markdown-element h2 {
+        font-size: 1.5em !important;
+        font-weight: bold !important;
+      }
+    `;
+  }
 }
 
 declare global {

@@ -20,7 +20,7 @@ import { UNAVAILABLE_STATES } from "../../../data/entity";
 import { HomeAssistant } from "../../../types";
 import { findEntities } from "../common/find-entites";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
-import "../components/hui-warning";
+import { createEntityNotFoundWarning } from "../components/hui-warning";
 import { createHeaderFooterElement } from "../create-element/create-header-footer-element";
 import {
   LovelaceCard,
@@ -29,6 +29,7 @@ import {
 } from "../types";
 import { HuiErrorCard } from "./hui-error-card";
 import { EntityCardConfig } from "./types";
+import { computeCardSize } from "../common/compute-card-size";
 
 @customElement("hui-entity-card")
 export class HuiEntityCard extends LitElement implements LovelaceCard {
@@ -79,8 +80,13 @@ export class HuiEntityCard extends LitElement implements LovelaceCard {
     }
   }
 
-  public getCardSize(): number {
-    return 1 + (this._config?.footer ? 1 : 0);
+  public async getCardSize(): Promise<number> {
+    let size = 2;
+    if (this._footerElement) {
+      const footerSize = computeCardSize(this._footerElement);
+      size += footerSize instanceof Promise ? await footerSize : footerSize;
+    }
+    return size;
   }
 
   protected render(): TemplateResult {
@@ -92,13 +98,9 @@ export class HuiEntityCard extends LitElement implements LovelaceCard {
 
     if (!stateObj) {
       return html`
-        <hui-warning
-          >${this.hass.localize(
-            "ui.panel.lovelace.warning.entity_not_found",
-            "entity",
-            this._config.entity
-          )}</hui-warning
-        >
+        <hui-warning>
+          ${createEntityNotFoundWarning(this.hass, this._config.entity)}
+        </hui-warning>
       `;
     }
 

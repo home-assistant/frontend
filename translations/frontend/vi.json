@@ -549,8 +549,10 @@
                     },
                     "description": "Tổng quan tất cả các khu vực trong nhà bạn.",
                     "editor": {
+                        "area_id": "ID Khu vực",
                         "create": "TẠO",
                         "delete": "XÓA",
+                        "unknown_error": "Lỗi không xác định",
                         "update": "CẬP NHẬT"
                     },
                     "picker": {
@@ -583,6 +585,9 @@
                                     "delay": "Hoãn",
                                     "label": "Chậm trễ"
                                 },
+                                "device_id": {
+                                    "action": "Hành động"
+                                },
                                 "event": {
                                     "event": "Sự kiện:",
                                     "label": "Kích hoạt Sự kiện",
@@ -611,6 +616,9 @@
                             "learn_more": "Tìm hiểu thêm về Điều kiện",
                             "type_select": "Loại điều kiện",
                             "type": {
+                                "device": {
+                                    "condition": "Điều kiện"
+                                },
                                 "numeric_state": {
                                     "above": "Ở trên",
                                     "below": "Bên dưới",
@@ -662,6 +670,9 @@
                             "learn_more": "Tìm hiểu thêm về Kích hoạt",
                             "type_select": "Loại Bộ khởi động",
                             "type": {
+                                "device": {
+                                    "trigger": "Kích hoạt"
+                                },
                                 "event": {
                                     "event_data": "Dữ liệu sự kiện",
                                     "event_type": "Loại sự kiện",
@@ -801,6 +812,7 @@
                         "integration": "Tích hợp",
                         "manufacturer": "Nhà sản xuất",
                         "model": "Dòng sản phẩm",
+                        "no_area": "Không có khu vực",
                         "no_devices": "Không có thiết bị nào"
                     },
                     "delete": "Xóa",

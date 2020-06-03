@@ -6,31 +6,36 @@ const fs = require("fs-extra");
 const path = require("path");
 const template = require("lodash.template");
 const minify = require("html-minifier").minify;
-const config = require("../paths.js");
+const paths = require("../paths.js");
+const env = require("../env.js");
 
 const templatePath = (tpl) =>
-  path.resolve(config.polymer_dir, "src/html/", `${tpl}.html.template`);
+  path.resolve(paths.polymer_dir, "src/html/", `${tpl}.html.template`);
 
 const readFile = (pth) => fs.readFileSync(pth).toString();
 
 const renderTemplate = (pth, data = {}, pathFunc = templatePath) => {
   const compiled = template(readFile(pathFunc(pth)));
-  return compiled({ ...data, renderTemplate });
+  return compiled({
+    ...data,
+    useRollup: env.useRollup(),
+    renderTemplate,
+  });
 };
 
 const renderDemoTemplate = (pth, data = {}) =>
   renderTemplate(pth, data, (tpl) =>
-    path.resolve(config.demo_dir, "src/html/", `${tpl}.html.template`)
+    path.resolve(paths.demo_dir, "src/html/", `${tpl}.html.template`)
   );
 
 const renderCastTemplate = (pth, data = {}) =>
   renderTemplate(pth, data, (tpl) =>
-    path.resolve(config.cast_dir, "src/html/", `${tpl}.html.template`)
+    path.resolve(paths.cast_dir, "src/html/", `${tpl}.html.template`)
   );
 
 const renderGalleryTemplate = (pth, data = {}) =>
   renderTemplate(pth, data, (tpl) =>
-    path.resolve(config.gallery_dir, "src/html/", `${tpl}.html.template`)
+    path.resolve(paths.gallery_dir, "src/html/", `${tpl}.html.template`)
   );
 
 const minifyHtml = (content) =>
@@ -48,29 +53,36 @@ gulp.task("gen-pages-dev", (done) => {
     const content = renderTemplate(page, {
       latestPageJS: `/frontend_latest/${page}.js`,
 
-      es5Compatibility: "/frontend_es5/compatibility.js",
       es5PageJS: `/frontend_es5/${page}.js`,
     });
 
-    fs.outputFileSync(path.resolve(config.root, `${page}.html`), content);
+    fs.outputFileSync(
+      path.resolve(paths.app_output_root, `${page}.html`),
+      content
+    );
   }
   done();
 });
 
 gulp.task("gen-pages-prod", (done) => {
-  const latestManifest = require(path.resolve(config.output, "manifest.json"));
-  const es5Manifest = require(path.resolve(config.output_es5, "manifest.json"));
+  const latestManifest = require(path.resolve(
+    paths.app_output_latest,
+    "manifest.json"
+  ));
+  const es5Manifest = require(path.resolve(
+    paths.app_output_es5,
+    "manifest.json"
+  ));
 
   for (const page of PAGES) {
     const content = renderTemplate(page, {
       latestPageJS: latestManifest[`${page}.js`],
 
-      es5Compatibility: es5Manifest["compatibility.js"],
       es5PageJS: es5Manifest[`${page}.js`],
     });
 
     fs.outputFileSync(
-      path.resolve(config.root, `${page}.html`),
+      path.resolve(paths.app_output_root, `${page}.html`),
       minifyHtml(content)
     );
   }
@@ -85,32 +97,39 @@ gulp.task("gen-index-app-dev", (done) => {
     latestCoreJS: "/frontend_latest/core.js",
     latestCustomPanelJS: "/frontend_latest/custom-panel.js",
 
-    es5Compatibility: "/frontend_es5/compatibility.js",
     es5AppJS: "/frontend_es5/app.js",
     es5CoreJS: "/frontend_es5/core.js",
     es5CustomPanelJS: "/frontend_es5/custom-panel.js",
   }).replace(/#THEMEC/g, "{{ theme_color }}");
 
-  fs.outputFileSync(path.resolve(config.root, "index.html"), content);
+  fs.outputFileSync(path.resolve(paths.app_output_root, "index.html"), content);
   done();
 });
 
 gulp.task("gen-index-app-prod", (done) => {
-  const latestManifest = require(path.resolve(config.output, "manifest.json"));
-  const es5Manifest = require(path.resolve(config.output_es5, "manifest.json"));
+  const latestManifest = require(path.resolve(
+    paths.app_output_latest,
+    "manifest.json"
+  ));
+  const es5Manifest = require(path.resolve(
+    paths.app_output_es5,
+    "manifest.json"
+  ));
   const content = renderTemplate("index", {
     latestAppJS: latestManifest["app.js"],
     latestCoreJS: latestManifest["core.js"],
     latestCustomPanelJS: latestManifest["custom-panel.js"],
 
-    es5Compatibility: es5Manifest["compatibility.js"],
     es5AppJS: es5Manifest["app.js"],
     es5CoreJS: es5Manifest["core.js"],
     es5CustomPanelJS: es5Manifest["custom-panel.js"],
   });
   const minified = minifyHtml(content).replace(/#THEMEC/g, "{{ theme_color }}");
 
-  fs.outputFileSync(path.resolve(config.root, "index.html"), minified);
+  fs.outputFileSync(
+    path.resolve(paths.app_output_root, "index.html"),
+    minified
+  );
   done();
 });
 
@@ -119,7 +138,7 @@ gulp.task("gen-index-cast-dev", (done) => {
     latestReceiverJS: "/frontend_latest/receiver.js",
   });
   fs.outputFileSync(
-    path.resolve(config.cast_root, "receiver.html"),
+    path.resolve(paths.cast_output_root, "receiver.html"),
     contentReceiver
   );
 
@@ -127,14 +146,17 @@ gulp.task("gen-index-cast-dev", (done) => {
     latestLauncherJS: "/frontend_latest/launcher.js",
     es5LauncherJS: "/frontend_es5/launcher.js",
   });
-  fs.outputFileSync(path.resolve(config.cast_root, "faq.html"), contentFAQ);
+  fs.outputFileSync(
+    path.resolve(paths.cast_output_root, "faq.html"),
+    contentFAQ
+  );
 
   const contentLauncher = renderCastTemplate("launcher", {
     latestLauncherJS: "/frontend_latest/launcher.js",
     es5LauncherJS: "/frontend_es5/launcher.js",
   });
   fs.outputFileSync(
-    path.resolve(config.cast_root, "index.html"),
+    path.resolve(paths.cast_output_root, "index.html"),
     contentLauncher
   );
   done();
@@ -142,11 +164,11 @@ gulp.task("gen-index-cast-dev", (done) => {
 
 gulp.task("gen-index-cast-prod", (done) => {
   const latestManifest = require(path.resolve(
-    config.cast_output,
+    paths.cast_output_latest,
     "manifest.json"
   ));
   const es5Manifest = require(path.resolve(
-    config.cast_output_es5,
+    paths.cast_output_es5,
     "manifest.json"
   ));
 
@@ -154,7 +176,7 @@ gulp.task("gen-index-cast-prod", (done) => {
     latestReceiverJS: latestManifest["receiver.js"],
   });
   fs.outputFileSync(
-    path.resolve(config.cast_root, "receiver.html"),
+    path.resolve(paths.cast_output_root, "receiver.html"),
     contentReceiver
   );
 
@@ -162,14 +184,17 @@ gulp.task("gen-index-cast-prod", (done) => {
     latestLauncherJS: latestManifest["launcher.js"],
     es5LauncherJS: es5Manifest["launcher.js"],
   });
-  fs.outputFileSync(path.resolve(config.cast_root, "faq.html"), contentFAQ);
+  fs.outputFileSync(
+    path.resolve(paths.cast_output_root, "faq.html"),
+    contentFAQ
+  );
 
   const contentLauncher = renderCastTemplate("launcher", {
     latestLauncherJS: latestManifest["launcher.js"],
     es5LauncherJS: es5Manifest["launcher.js"],
   });
   fs.outputFileSync(
-    path.resolve(config.cast_root, "index.html"),
+    path.resolve(paths.cast_output_root, "index.html"),
     contentLauncher
   );
   done();
@@ -181,32 +206,36 @@ gulp.task("gen-index-demo-dev", (done) => {
   const content = renderDemoTemplate("index", {
     latestDemoJS: "/frontend_latest/main.js",
 
-    es5Compatibility: "/frontend_es5/compatibility.js",
     es5DemoJS: "/frontend_es5/main.js",
   });
 
-  fs.outputFileSync(path.resolve(config.demo_root, "index.html"), content);
+  fs.outputFileSync(
+    path.resolve(paths.demo_output_root, "index.html"),
+    content
+  );
   done();
 });
 
 gulp.task("gen-index-demo-prod", (done) => {
   const latestManifest = require(path.resolve(
-    config.demo_output,
+    paths.demo_output_latest,
     "manifest.json"
   ));
   const es5Manifest = require(path.resolve(
-    config.demo_output_es5,
+    paths.demo_output_es5,
     "manifest.json"
   ));
   const content = renderDemoTemplate("index", {
     latestDemoJS: latestManifest["main.js"],
 
-    es5Compatibility: es5Manifest["compatibility.js"],
     es5DemoJS: es5Manifest["main.js"],
   });
   const minified = minifyHtml(content);
 
-  fs.outputFileSync(path.resolve(config.demo_root, "index.html"), minified);
+  fs.outputFileSync(
+    path.resolve(paths.demo_output_root, "index.html"),
+    minified
+  );
   done();
 });
 
@@ -217,13 +246,16 @@ gulp.task("gen-index-gallery-dev", (done) => {
     latestGalleryJS: "./frontend_latest/entrypoint.js",
   });
 
-  fs.outputFileSync(path.resolve(config.gallery_root, "index.html"), content);
+  fs.outputFileSync(
+    path.resolve(paths.gallery_output_root, "index.html"),
+    content
+  );
   done();
 });
 
 gulp.task("gen-index-gallery-prod", (done) => {
   const latestManifest = require(path.resolve(
-    config.gallery_output,
+    paths.gallery_output_latest,
     "manifest.json"
   ));
   const content = renderGalleryTemplate("index", {
@@ -231,6 +263,9 @@ gulp.task("gen-index-gallery-prod", (done) => {
   });
   const minified = minifyHtml(content);
 
-  fs.outputFileSync(path.resolve(config.gallery_root, "index.html"), minified);
+  fs.outputFileSync(
+    path.resolve(paths.gallery_output_root, "index.html"),
+    minified
+  );
   done();
 });

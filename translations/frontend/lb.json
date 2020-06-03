@@ -474,6 +474,7 @@
         },
         "common": {
             "and": "an",
+            "back": "Zeréck",
             "cancel": "Ofbriechen",
             "close": "Zoumaachen",
             "delete": "Läschen",
@@ -505,6 +506,7 @@
             "device-picker": {
                 "clear": "Läschen",
                 "device": "Apparat",
+                "no_area": "Kee Beräich",
                 "show_devices": "Apparater uweisen",
                 "toggle": "Ëmschalten"
             },
@@ -762,9 +764,13 @@
                     },
                     "description": "Iwwersiicht vun de Beräicher am Haus",
                     "editor": {
+                        "area_id": "Area ID",
                         "create": "Erstellen",
                         "default_name": "Neie Beräich",
                         "delete": "Läschen",
+                        "name": "Numm",
+                        "name_required": "Numm ass obligatoresch",
+                        "unknown_error": "Onbekannten Feeler",
                         "update": "Aktualiséieren"
                     },
                     "picker": {
@@ -799,6 +805,7 @@
                                     "label": "Delai"
                                 },
                                 "device_id": {
+                                    "action": "Aktioun",
                                     "extra_fields": {
                                         "code": "Code"
                                     },
@@ -840,6 +847,7 @@
                                     "label": "An"
                                 },
                                 "device": {
+                                    "condition": "Konditioun",
                                     "extra_fields": {
                                         "above": "Iwwert",
                                         "below": "Ënnert",
@@ -918,7 +926,8 @@
                                         "below": "Ënnert",
                                         "for": "Dauer"
                                     },
-                                    "label": "Apparat"
+                                    "label": "Apparat",
+                                    "trigger": "Ausléiser"
                                 },
                                 "event": {
                                     "event_data": "Evenement Donnée",
@@ -1246,6 +1255,7 @@
                         "integration": "Integratioun",
                         "manufacturer": "Hiersteller",
                         "model": "Modell",
+                        "no_area": "Kee Beräich",
                         "no_devices": "Keng Apparater"
                     },
                     "delete": "Läschen",
@@ -1254,7 +1264,9 @@
                     "device_not_found": "Apparat net fonnt.",
                     "entities": {
                         "add_entities_lovelace": "Zu Lovelace bäisetzen",
+                        "disabled_entities": "+{count} {count, plural,\n  one {Déaktivéiert Entitéit}\n  other {Déaktivéiert Entitéiten}\n}",
                         "entities": "Entitéiten",
+                        "hide_disabled": "Deaktivéiert net uweisen",
                         "none": "Dësen Appart huet keng Entitéiten."
                     },
                     "name": "Numm",
@@ -1360,8 +1372,8 @@
                         "delete_button": "{integration} läschen",
                         "delete_confirm": "Sécher fir dës Integratioun ze läsche?",
                         "device_unavailable": "Apparat net erreechbar",
-                        "devices": "{count} {count, plural,\n  een {device}\n méi {devices}\n}",
-                        "entities": "{count} {count, plural,\n  eng {entity}\n  méi {entities}\n}",
+                        "devices": "{count} {count, plural,\n  one {Apparat}\n  other {Apparaten}\n}",
+                        "entities": "{count} {count, plural,\n  one {Entitéit}\n  other {Entitéiten}\n}",
                         "entity_unavailable": "Entitéit net erreechbar",
                         "firmware": "Firmware: {version}",
                         "hub": "Verbonnen via",
@@ -1860,7 +1872,7 @@
                     "events": {
                         "alert_event_type": "Type vun Evenement ass obligatorescht",
                         "available_events": "Verfügbar Evenementer",
-                        "count_listeners": " ({count} gelauschtert)",
+                        "count_listeners": " ({count} nolauschterer)",
                         "data": "Evenement Donnéeë (YAML, fakultativ)",
                         "description": "Een Evenement um Evenement Bus starten",
                         "documentation": "Dokumentatioun iwwert d'Evenementer",
@@ -1876,7 +1888,7 @@
                         "type": "Typ vun Evenement"
                     },
                     "info": {
-                        "built_using": "Gebaut mat",
+                        "built_using": "Erstallt mat",
                         "custom_uis": "Personaliséierte Benotzer Interface:",
                         "developed_by": "Entwéckelt vun enger ganzer Rei fantastesche Leit.",
                         "documentation": "Dokumentatioun",
@@ -2305,6 +2317,8 @@
                 "abort_intro": "Login ofgebrach",
                 "authorizing_client": "Dir gitt elo {clientId} Zougang zu ärem Home Assistant.",
                 "form": {
+                    "error": "Feeler: {error}",
+                    "next": "Nächst",
                     "providers": {
                         "command_line": {
                             "abort": {
@@ -2390,6 +2404,7 @@
                             }
                         }
                     },
+                    "start_over": "Nei ufänken",
                     "unknown_error": "Eppes ass schifgaange",
                     "working": "W.e.g. waarden"
                 },

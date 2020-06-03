@@ -16,7 +16,7 @@ import "../../components/state-history-charts";
 import "../../data/ha-state-history-data";
 import LocalizeMixin from "../../mixins/localize-mixin";
 import "../../resources/ha-date-picker-style";
-import "../../resources/ha-style";
+import "../../styles/polymer-ha-style";
 
 /*
  * @appliesMixin LocalizeMixin

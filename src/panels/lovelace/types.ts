@@ -34,7 +34,7 @@ export interface LovelaceCard extends HTMLElement {
   hass?: HomeAssistant;
   isPanel?: boolean;
   editMode?: boolean;
-  getCardSize(): number;
+  getCardSize(): number | Promise<number>;
   setConfig(config: LovelaceCardConfig): void;
 }
 
@@ -49,6 +49,7 @@ export interface LovelaceCardConstructor extends Constructor<LovelaceCard> {
 
 export interface LovelaceHeaderFooter extends HTMLElement {
   hass?: HomeAssistant;
+  getCardSize(): number | Promise<number>;
   setConfig(config: LovelaceHeaderFooterConfig): void;
 }
 

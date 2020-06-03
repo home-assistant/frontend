@@ -35,6 +35,10 @@ export class HuiPictureHeaderFooter extends LitElement
 
   @property() protected _config?: PictureHeaderFooterConfig;
 
+  public getCardSize(): number {
+    return 3;
+  }
+
   public setConfig(config: PictureHeaderFooterConfig): void {
     if (!config || !config.image) {
       throw new Error("Invalid Configuration: 'image' required");

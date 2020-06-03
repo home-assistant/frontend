@@ -474,6 +474,7 @@
         },
         "common": {
             "and": "и",
+            "back": "Назад",
             "cancel": "Отменить",
             "close": "Закрыть",
             "delete": "Удалить",
@@ -505,6 +506,7 @@
             "device-picker": {
                 "clear": "Очистить",
                 "device": "Устройство",
+                "no_area": "Не указано",
                 "show_devices": "Показать устройства",
                 "toggle": "Переключить"
             },
@@ -738,6 +740,8 @@
         "notification_toast": {
             "connection_lost": "Соединение потеряно. Повторное подключение ...",
             "service_call_failed": "Не удалось вызвать службу {service}.",
+            "started": "Home Assistant работает!",
+            "starting": "Home Assistant запускается, пока что не всё может быть доступно.",
             "triggered": "Сработало от {name}"
         },
         "panel": {
@@ -762,9 +766,13 @@
                     },
                     "description": "Управляйте помещениями в Вашем доме",
                     "editor": {
+                        "area_id": "ID помещения",
                         "create": "Добавить",
                         "default_name": "Новое помещение",
                         "delete": "Удалить",
+                        "name": "Название",
+                        "name_required": "Укажите название помещения",
+                        "unknown_error": "Неизвестная ошибка.",
                         "update": "Обновить"
                     },
                     "picker": {
@@ -799,6 +807,7 @@
                                     "label": "Задержка"
                                 },
                                 "device_id": {
+                                    "action": "Действие",
                                     "extra_fields": {
                                         "code": "Код"
                                     },
@@ -840,6 +849,7 @@
                                     "label": "И"
                                 },
                                 "device": {
+                                    "condition": "Условие",
                                     "extra_fields": {
                                         "above": "Выше",
                                         "below": "Ниже",
@@ -896,7 +906,7 @@
                         },
                         "edit_ui": "Форма ввода",
                         "edit_yaml": "Текстовый редактор",
-                        "enable_disable": "Включение или отключение правила автоматизации",
+                        "enable_disable": "Включить / выключить автоматизацию",
                         "introduction": "Используйте автоматизацию, чтобы оживить Ваш дом.",
                         "load_error_not_editable": "Доступны для редактирования только автоматизации из automations.yaml.",
                         "load_error_unknown": "Ошибка загрузки автоматизации ({err_no}).",
@@ -918,7 +928,8 @@
                                         "below": "Ниже",
                                         "for": "Продолжительность"
                                     },
-                                    "label": "Устройство"
+                                    "label": "Устройство",
+                                    "trigger": "Триггер"
                                 },
                                 "event": {
                                     "event_data": "Данные события",
@@ -1067,7 +1078,7 @@
                         "webhooks": {
                             "disable_hook_error_msg": "Не удалось отключить Webhook",
                             "info": "Всему, что настроено на срабатывание через Webhook, может быть предоставлен общедоступный URL-адрес. Это позволяет отправлять данные в Home Assistant откуда угодно, не выставляя свой сервер в Интернете.",
-                            "link_learn_more": "Узнайте больше о создании автоматизаций на базе Webhook.",
+                            "link_learn_more": "Узнайте больше о создании автоматизации на базе Webhook.",
                             "loading": "Загрузка ...",
                             "manage": "Управление",
                             "no_hooks_yet": "У Вас еще нет добавленных Webhook. Начните с настройки ",
@@ -1246,6 +1257,7 @@
                         "integration": "Интеграция",
                         "manufacturer": "Производитель",
                         "model": "Модель",
+                        "no_area": "Не указано",
                         "no_devices": "Нет устройств"
                     },
                     "delete": "Удалить",
@@ -1254,7 +1266,9 @@
                     "device_not_found": "Устройство не найдено",
                     "entities": {
                         "add_entities_lovelace": "Добавить объекты в Lovelace UI",
+                        "disabled_entities": "+{count} {count, plural,\n  one {скрытый объект}\n  other {скрытых объектов}\n}",
                         "entities": "Объекты",
+                        "hide_disabled": "Не показывать скрытые",
                         "none": "У этого устройства нет объектов"
                     },
                     "name": "Название",
@@ -1360,8 +1374,8 @@
                         "delete_button": "Удалить интеграцию {integration}",
                         "delete_confirm": "Вы уверены, что хотите удалить эту интеграцию?",
                         "device_unavailable": "устройство недоступно",
-                        "devices": "{count} {count, plural,\n  one {device}\n  other {devices}\n}",
-                        "entities": "{count} {count, plural,\n  one {entity}\n  other {entities}\n}",
+                        "devices": "{count} {count, plural,\n  one {устройство}\n  other {устройств}\n}",
+                        "entities": "{count} {count, plural,\n  one {объект}\n  other {объектов}\n}",
                         "entity_unavailable": "объект недоступен",
                         "firmware": "Прошивка: {version}",
                         "hub": "Подключено через",
@@ -1827,21 +1841,53 @@
                         "set_wakeup": "Установить интервал пробуждения",
                         "true": "Истина"
                     },
+                    "node_management": {
+                        "add_to_group": "Добавить в группу",
+                        "entities": "Объекты этого узла",
+                        "entity_info": "Информация об объекте",
+                        "exclude_entity": "Исключить этот объект из Home Assistant",
+                        "group": "Группа",
+                        "header": "Управление узлами Z-Wave",
+                        "introduction": "Команды Z-Wave, которые влияют на один узел. Выберите узел, чтобы увидеть список доступных команд.",
+                        "max_associations": "Максимум ассоциаций:",
+                        "node_group_associations": "Ассоциации групп узлов",
+                        "node_protection": "Защита узла",
+                        "node_to_control": "Узел для управления",
+                        "nodes": "Узлы",
+                        "nodes_hint": "Выберите узел для просмотра индивидуальных параметров.",
+                        "nodes_in_group": "Другие узлы в этой группе:",
+                        "pooling_intensity": "Интенсивность опроса",
+                        "protection": "Защита",
+                        "remove_broadcast": "Удалить трансляцию",
+                        "remove_from_group": "Удалить из группы",
+                        "set_protection": "Установить защиту"
+                    },
                     "ozw_log": {
                         "header": "Журнал OZW",
-                        "introduction": "Просмотр журнала событий. 0 - минимум (загружает весь журнал), 1000 - максимум. Журнал обновляется автоматически."
+                        "introduction": "Просмотр журнала событий. 0 - минимум (загружает весь журнал), 1000 - максимум. Журнал обновляется автоматически.",
+                        "last_log_lines": "Количество последних строк журнала",
+                        "load": "Загрузить",
+                        "tail": "Конец"
                     },
                     "services": {
                         "add_node": "Добавить узел",
                         "add_node_secure": "Добавить защищенный узел",
                         "cancel_command": "Отменить команду",
                         "heal_network": "Исправить сеть",
+                        "heal_node": "Исправить узел",
+                        "node_info": "Информация об узле",
+                        "print_node": "Показать узел",
+                        "refresh_entity": "Обновить объект",
+                        "refresh_node": "Обновить узел",
+                        "remove_failed_node": "Удалить неисправный узел",
                         "remove_node": "Удалить узел",
+                        "replace_failed_node": "Заменить неисправный узел",
                         "save_config": "Сохранить конфигурацию",
                         "soft_reset": "Сброс",
                         "start_network": "Включить",
                         "stop_network": "Отключить",
-                        "test_network": "Тестировать"
+                        "test_network": "Тестировать",
+                        "test_node": "Тестировать узел"
                     },
                     "values": {
                         "header": "Значения узлов"
@@ -2000,6 +2046,10 @@
                         "add_item": "Добавить элемент",
                         "checked_items": "Отмеченные элементы",
                         "clear_items": "Очистить отмеченные элементы"
+                    },
+                    "starting": {
+                        "description": "Home Assistant запускается, пожалуйста, подождите.",
+                        "header": "Запуск Home Assistant..."
                     }
                 },
                 "changed_toast": {
@@ -2292,7 +2342,8 @@
                     "attribute_not_found": "Атрибут {attribute} недоступен в {entity}",
                     "entity_non_numeric": "Объект не является числом: {entity}",
                     "entity_not_found": "Объект {entity} недоступен.",
-                    "entity_unavailable": "Объект \"{entity}\" сейчас недоступен"
+                    "entity_unavailable": "Объект \"{entity}\" сейчас недоступен",
+                    "starting": "Home Assistant запускается, пока что не всё может быть доступно"
                 }
             },
             "mailbox": {
@@ -2305,6 +2356,8 @@
                 "abort_intro": "Вход прерван",
                 "authorizing_client": "Получение доступа к {clientId}.",
                 "form": {
+                    "error": "Ошибка: {error}",
+                    "next": "Далее",
                     "providers": {
                         "command_line": {
                             "abort": {
@@ -2390,6 +2443,7 @@
                             }
                         }
                     },
+                    "start_over": "Начать сначала",
                     "unknown_error": "Что-то пошло не так",
                     "working": "Пожалуйста, подождите"
                 },

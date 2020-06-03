@@ -52,7 +52,7 @@ const rowRenderer = (root: HTMLElement, _owner, model: { item: Device }) => {
       }
     </style>
     <paper-item>
-      <paper-item-body two-line="">    
+      <paper-item-body two-line="">
         <div class='name'>[[item.name]]</div>
         <div secondary>[[item.area]]</div>
       </paper-item-body>
@@ -188,7 +188,9 @@ export class HaDevicePicker extends SubscribeMixin(LitElement) {
             this.hass,
             deviceEntityLookup[device.id]
           ),
-          area: device.area_id ? areaLookup[device.area_id].name : "No area",
+          area: device.area_id
+            ? areaLookup[device.area_id].name
+            : this.hass.localize("ui.components.device-picker.no_area"),
         };
       });
       if (outputDevices.length === 1) {

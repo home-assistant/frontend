@@ -8,7 +8,7 @@ import "../../components/ha-card";
 import { EventsMixin } from "../../mixins/events-mixin";
 import LocalizeMixin from "../../mixins/localize-mixin";
 import { showConfirmationDialog } from "../../dialogs/generic/show-dialog-box";
-import "../../resources/ha-style";
+import "../../styles/polymer-ha-style";
 
 let registeredDialog = false;
 

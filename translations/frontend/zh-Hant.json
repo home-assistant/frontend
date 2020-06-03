@@ -474,6 +474,7 @@
         },
         "common": {
             "and": "及",
+            "back": "上一步",
             "cancel": "取消",
             "close": "關閉",
             "delete": "刪除",
@@ -505,6 +506,7 @@
             "device-picker": {
                 "clear": "清除",
                 "device": "設備",
+                "no_area": "無分區",
                 "show_devices": "顯示設備",
                 "toggle": "觸發"
             },
@@ -738,6 +740,8 @@
         "notification_toast": {
             "connection_lost": "連線中斷。重新連線中...",
             "service_call_failed": "服務 {service} 執行失敗。",
+            "started": "Home Assistant 已啟動！",
+            "starting": "Home Assistant 正在啟動，在完成載入前、可能無法顯示所有功能。",
             "triggered": "觸發 {name}"
         },
         "panel": {
@@ -762,9 +766,13 @@
                     },
                     "description": "家中所有分區概觀",
                     "editor": {
+                        "area_id": "分區 ID",
                         "create": "建立",
                         "default_name": "新分區",
                         "delete": "刪除",
+                        "name": "名稱",
+                        "name_required": "必須輸入名稱",
+                        "unknown_error": "未知錯誤",
                         "update": "更新"
                     },
                     "picker": {
@@ -799,6 +807,7 @@
                                     "label": "延遲"
                                 },
                                 "device_id": {
+                                    "action": "動作",
                                     "extra_fields": {
                                         "code": "碼"
                                     },
@@ -840,6 +849,7 @@
                                     "label": "及"
                                 },
                                 "device": {
+                                    "condition": "判斷式",
                                     "extra_fields": {
                                         "above": "在...之上",
                                         "below": "在...之下",
@@ -918,7 +928,8 @@
                                         "below": "在...之下",
                                         "for": "持續時間"
                                     },
-                                    "label": "設備"
+                                    "label": "設備",
+                                    "trigger": "觸發自動化"
                                 },
                                 "event": {
                                     "event_data": "事件資料",
@@ -1246,6 +1257,7 @@
                         "integration": "整合",
                         "manufacturer": "廠牌",
                         "model": "型號",
+                        "no_area": "無分區",
                         "no_devices": "沒有設備"
                     },
                     "delete": "刪除",
@@ -1254,7 +1266,9 @@
                     "device_not_found": "未找到設備。",
                     "entities": {
                         "add_entities_lovelace": "新增至 Lovelace UI",
+                        "disabled_entities": "{count} {count, plural,\n  one {個已關閉物件}\n  other {個已關閉物件}\n}",
                         "entities": "物件列表面板",
+                        "hide_disabled": "隱藏已關閉物件",
                         "none": "此設備沒有物件。"
                     },
                     "name": "名稱",
@@ -1827,21 +1841,53 @@
                         "set_wakeup": "設定喚醒間隔",
                         "true": "True"
                     },
+                    "node_management": {
+                        "add_to_group": "新增至群組",
+                        "entities": "此節點之物件",
+                        "entity_info": "物件資訊",
+                        "exclude_entity": "從 Home Assistant 排除此物件",
+                        "group": "群組",
+                        "header": "Z-Wave 節點管理",
+                        "introduction": "執行 Z-Wave 命令將影響單一節點。選擇節點以檢視該節點可使用之命令。",
+                        "max_associations": "最大關聯數：",
+                        "node_group_associations": "節點群組關聯",
+                        "node_protection": "節點保護",
+                        "node_to_control": "控制節點",
+                        "nodes": "節點",
+                        "nodes_hint": "選擇要查看節點選項之節點",
+                        "nodes_in_group": "此群組其他節點：",
+                        "pooling_intensity": "輪詢頻率",
+                        "protection": "保護",
+                        "remove_broadcast": "刪除廣播",
+                        "remove_from_group": "從群組移除",
+                        "set_protection": "設定保護"
+                    },
                     "ozw_log": {
                         "header": "OZW 紀錄",
-                        "introduction": "檢視紀錄。最小值為 0（載入所有紀錄）、最大值為 1000。將顯示靜態紀錄、後段將依據紀錄最後指定行數自動更新。"
+                        "introduction": "檢視紀錄。最小值為 0（載入所有紀錄）、最大值為 1000。將顯示靜態紀錄、後段將依據紀錄最後指定行數自動更新。",
+                        "last_log_lines": "最後日誌行數",
+                        "load": "載入",
+                        "tail": "跟蹤"
                     },
                     "services": {
                         "add_node": "新增節點",
                         "add_node_secure": "新增節點來源",
                         "cancel_command": "取消命令",
                         "heal_network": "修復網路",
+                        "heal_node": "修復節點",
+                        "node_info": "節點資訊",
+                        "print_node": "列印節點",
+                        "refresh_entity": "更新物件",
+                        "refresh_node": "更新節點",
+                        "remove_failed_node": "移除失效節點",
                         "remove_node": "移除節點",
+                        "replace_failed_node": "取代失效節點",
                         "save_config": "儲存設定",
                         "soft_reset": "重開機",
                         "start_network": "啟用網路",
                         "stop_network": "停止網路",
-                        "test_network": "測試網路"
+                        "test_network": "測試網路",
+                        "test_node": "測試節點"
                     },
                     "values": {
                         "header": "節點數值"
@@ -2000,6 +2046,10 @@
                         "add_item": "新增項目",
                         "checked_items": "已選取項目",
                         "clear_items": "清除已選取項目"
+                    },
+                    "starting": {
+                        "description": "Home Assistant 正在啟動，請稍候。",
+                        "header": "Home Assistant 正在啟動..."
                     }
                 },
                 "changed_toast": {
@@ -2292,7 +2342,8 @@
                     "attribute_not_found": "無法使用屬性 {attribute} 之物件：{entity}",
                     "entity_non_numeric": "物件為非數字：{entity}",
                     "entity_not_found": "物件不可用：{entity}",
-                    "entity_unavailable": "{entity} 目前不可用"
+                    "entity_unavailable": "{entity} 目前不可用",
+                    "starting": "Home Assistant 正在啟動，可能無法顯示所有功能。"
                 }
             },
             "mailbox": {
@@ -2305,6 +2356,8 @@
                 "abort_intro": "登入中止",
                 "authorizing_client": "即將授與 {clientId} 訪問 Home Assistant 系統權限。",
                 "form": {
+                    "error": "錯誤：{error}",
+                    "next": "下一步",
                     "providers": {
                         "command_line": {
                             "abort": {
@@ -2390,6 +2443,7 @@
                             }
                         }
                     },
+                    "start_over": "重新開始",
                     "unknown_error": "發生錯誤",
                     "working": "請稍候"
                 },

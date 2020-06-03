@@ -7,6 +7,7 @@ import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 import "../../../components/buttons/ha-call-service-button";
 import "../../../components/ha-card";
+import "../../../styles/polymer-ha-style";
 
 class ZwaveUsercodes extends PolymerElement {
   static get template() {

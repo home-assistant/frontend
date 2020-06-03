@@ -1,7 +1,7 @@
 import "@polymer/paper-item/paper-icon-item";
 import "@polymer/paper-item/paper-item-body";
 import "@polymer/paper-spinner/paper-spinner-lite";
-import * as Fuse from "fuse.js";
+import Fuse from "fuse.js";
 import {
   css,
   CSSResult,
@@ -52,14 +52,14 @@ class StepFlowPickHandler extends LitElement {
       });
 
       if (filter) {
-        const options: Fuse.FuseOptions<HandlerObj> = {
+        const options: Fuse.IFuseOptions<HandlerObj> = {
           keys: ["name", "slug"],
-          caseSensitive: false,
+          isCaseSensitive: false,
           minMatchCharLength: 2,
           threshold: 0.2,
         };
         const fuse = new Fuse(handlers, options);
-        return fuse.search(filter);
+        return fuse.search(filter).map((result) => result.item);
       }
       return handlers.sort((a, b) =>
         a.name.toUpperCase() < b.name.toUpperCase() ? -1 : 1

@@ -21,7 +21,7 @@
         "map": "Harita",
         "profile": "Profil",
         "shopping_list": "Alışveriş listesi",
-        "states": "Genel durum"
+        "states": "Durumlar"
     },
     "state_attributes": {
         "climate": {
@@ -471,6 +471,8 @@
             }
         },
         "common": {
+            "and": "Ve",
+            "back": "Geri",
             "cancel": "İptal",
             "close": "Kapat",
             "delete": "Sil",
@@ -502,6 +504,7 @@
             "device-picker": {
                 "clear": "Temiz",
                 "device": "Cihaz",
+                "no_area": "Alan Yok",
                 "show_devices": "Cihazları göster",
                 "toggle": "Geçiş"
             },
@@ -654,6 +657,8 @@
             },
             "mqtt_device_debug_info": {
                 "entities": "Varlıklar",
+                "no_entities": "Varlık yok",
+                "no_triggers": "Tetikleyici yok",
                 "show_as_yaml": "YAML olarak göster",
                 "triggers": "Tetikleyiciler"
             },
@@ -677,7 +682,8 @@
                 "buttons": {
                     "add": "Cihaz Ekle",
                     "reconfigure": "Cihazı Yeniden Yapılandır",
-                    "remove": "Cihazı Kaldır"
+                    "remove": "Cihazı Kaldır",
+                    "zigbee_information": "Zigbee Bilgileri"
                 },
                 "confirmations": {
                     "remove": "Cihazı kaldırmak istediğinize emin misiniz?"
@@ -734,19 +740,30 @@
                 },
                 "areas": {
                     "caption": "Alanları",
+                    "data_table": {
+                        "area": "Alan",
+                        "devices": "Cihazlar"
+                    },
                     "delete": {
                         "confirmation_text": "Bu alana ait tüm cihazlar atanmamış olur.",
                         "confirmation_title": "Bu alanı silmek istediğinizden emin misiniz?"
                     },
                     "description": "Evinizdeki tüm alanlara genel bakış.",
                     "editor": {
-                        "create": "OLUŞTUR",
-                        "delete": "SİL",
-                        "update": "GÜNCELLE"
+                        "area_id": "Alan Kimliği",
+                        "create": "Oluştur",
+                        "default_name": "Alan Ekle",
+                        "delete": "Sil",
+                        "name": "Ad",
+                        "name_required": "Isim gereklidir",
+                        "unknown_error": "Bilinmeyen hata",
+                        "update": "Güncelle"
                     },
                     "picker": {
+                        "create_area": "Alan Oluştur",
                         "header": "Alanlar",
-                        "integrations_page": "Entegrasyon sayfası"
+                        "integrations_page": "Entegrasyon sayfası",
+                        "no_areas": "Henüz hiçbir alan yok gibi görünüyor."
                     }
                 },
                 "automation": {
@@ -772,6 +789,7 @@
                                     "label": "Bekleme"
                                 },
                                 "device_id": {
+                                    "action": "Aksiyon",
                                     "extra_fields": {
                                         "code": "Kod"
                                     },
@@ -813,12 +831,16 @@
                                     "label": "Ve"
                                 },
                                 "device": {
+                                    "condition": "Şart",
                                     "extra_fields": {
                                         "above": "Üzerinde",
                                         "below": "Altında",
                                         "for": "Süre"
                                     },
                                     "label": "Cihaz"
+                                },
+                                "not": {
+                                    "label": "Değil"
                                 },
                                 "numeric_state": {
                                     "above": "Üzerinde",
@@ -888,7 +910,8 @@
                                         "below": "Altında",
                                         "for": "Süre"
                                     },
-                                    "label": "Cihaz"
+                                    "label": "Cihaz",
+                                    "trigger": "tetik"
                                 },
                                 "event": {
                                     "event_data": "Etkinlik Verisi",
@@ -970,6 +993,9 @@
                         "delete_confirm": "Bu otomasyonu silmek istediğinizden emin misin?",
                         "edit_automation": "Otomasyonu düzenle",
                         "header": "Otomasyon Düzenleyici",
+                        "headers": {
+                            "name": "Ad"
+                        },
                         "introduction": "Otomasyon editörü, otomasyonlar oluşturmanıza ve düzenlemenize izin verir. Home Assistant'ı doğru yapılandırdığınızdan emin olmak için lütfen aşağıdaki bağlantıyı takip edin.",
                         "learn_more": "Otomasyonlar hakkında daha fazla bilgi edinin",
                         "no_automations": "Düzenlenebilir otomasyon bulamadık",
@@ -989,6 +1015,7 @@
                             "info": "Home Assistant Cloud için Alexa entegrasyonu ile, tüm Home Assistant cihazlarınızı herhangi bir Alexa özellikli cihaz üzerinden kontrol edebilirsiniz.",
                             "info_state_reporting": "Durum raporlamayı etkinleştirirseniz, Home Assistant sergilenmis varlıkların tüm durum değişikliklerini Amazon'a gönderir. Bu, Alexa uygulamasında her zaman en son durumları görmenizi ve rutin oluşturmak için durum değişikliklerini kullanmanızı sağlar.",
                             "manage_entities": "Varlıkları Yönetin",
+                            "state_reporting_error": "Durum {enable_disable} rapor edilemidi.",
                             "sync_entities": "Varlıkları Senkronize Et",
                             "sync_entities_error": "Varlıklar senkronize edilemedi:",
                             "title": "Alexa"
@@ -1129,6 +1156,7 @@
                                 "elevation": "Yükseklik",
                                 "elevation_meters": "metre",
                                 "imperial_example": "Fahrenheit, pound",
+                                "internal_url": "Dahili bağlantı URL'si",
                                 "latitude": "Enlem",
                                 "location_name": "Home Assistant kurulumunuzun adı",
                                 "longitude": "Boylam",
@@ -1184,6 +1212,7 @@
                         "integration": "Entegrasyon",
                         "manufacturer": "Üretici",
                         "model": "Model",
+                        "no_area": "Alan Yok",
                         "no_devices": "Cihaz yok"
                     },
                     "delete": "Sil",
@@ -1196,6 +1225,7 @@
                         "none": "Bu cihazın varlığı yok"
                     },
                     "name": "Ad",
+                    "no_devices": "Cihaz yok",
                     "scene": {
                         "create": "Aygıtla sahne oluşturma",
                         "no_scenes": "Sahne yok",
@@ -1475,6 +1505,9 @@
                         "delete_scene": "Sahneyi sil",
                         "edit_scene": "Sahneyi düzenle",
                         "header": "Sahne Düzenleyicisi",
+                        "headers": {
+                            "name": "Ad"
+                        },
                         "introduction": "Sahne düzenleyici, sahneler oluşturmanıza ve düzenlemenize olanak sağlar. Home Assistant'ı doğru yapılandırdığınızdan emin olmak ve talimatları okumak için lütfen aşağıdaki bağlantıyı izleyin.",
                         "learn_more": "Sahneler hakkında daha fazla bilgi edinin",
                         "no_scenes": "Düzenlenebilir sahne bulamadık",
@@ -1497,6 +1530,9 @@
                         "add_script": "Komut dosyası ekle",
                         "edit_script": "Komut dosyasını düzenle",
                         "header": "Komut Dosyası Düzenleyicisi",
+                        "headers": {
+                            "name": "Ad"
+                        },
                         "trigger_script": "Komut dosyası tetikle"
                     }
                 },
@@ -1545,6 +1581,7 @@
                     "editor": {
                         "activate_user": "Kullanıcıyı etkinleştir",
                         "active": "Aktif",
+                        "admin": "Yönetici",
                         "caption": "Kullanıcıyı görüntüle",
                         "change_password": "Parolayı değiştir",
                         "confirm_user_deletion": "{name} silmek istediğinizden emin misiniz?",
@@ -1552,10 +1589,19 @@
                         "delete_user": "Kullanıcıyı sil",
                         "group": "grup",
                         "id": "İD",
+                        "name": "Ad",
                         "owner": "Sahibi",
                         "system_generated": "Sistem tarafından oluşturuldu",
                         "system_generated_users_not_removable": "Sistem tarafından oluşturulan kullanıcılar kaldırılamıyor.",
-                        "unnamed_user": "Adsız Kullanıcı"
+                        "unnamed_user": "Adsız Kullanıcı",
+                        "update_user": "Güncelle"
+                    },
+                    "picker": {
+                        "headers": {
+                            "group": "Grup",
+                            "name": "Ad",
+                            "system": "Sistem"
+                        }
                     }
                 },
                 "zha": {
@@ -1691,6 +1737,11 @@
                         "set_wakeup": "Uyandırma Aralığı Ayarla",
                         "true": "Doğru"
                     },
+                    "node_management": {
+                        "add_to_group": "Gruba ekle",
+                        "group": "Grup",
+                        "protection": "Koruma"
+                    },
                     "services": {
                         "add_node": "Düğüm Ekle",
                         "add_node_secure": "Güvenli Düğüm Ekle",
@@ -1736,11 +1787,13 @@
                         "built_using": "Kullanılan oluşturma",
                         "custom_uis": "Özel kullanıcı arayüzleri:",
                         "developed_by": "Bir sürü harika insan tarafından geliştirildi.",
+                        "documentation": "Belgeleri",
                         "frontend": "ön uç-ui",
                         "frontend_version": "Ön uç versiyonu: {version} - {type}",
                         "home_assistant_logo": "Home Assistant Logosu",
                         "icons_by": "Simgelerin orijni",
                         "integrations": "Entegrasyonlar",
+                        "issues": "Sorunlar",
                         "license": "Apache 2.0 lisansı altında yayınlandı",
                         "path_configuration": "configuration.yaml lokasyonu: {path}",
                         "server": "sunucu",
@@ -2015,6 +2068,7 @@
                         "header": "Ayarları görüntüle",
                         "move_left": "Görünümü sola taşı",
                         "move_right": "Görünümü sağa taşı",
+                        "tab_badges": "Rozetler",
                         "tab_settings": "Ayarlar",
                         "tab_visibility": "Görünürlük",
                         "visibility": {
@@ -2047,6 +2101,7 @@
                     "save_config": {
                         "cancel": "Boşver",
                         "close": "Kapat",
+                        "empty_config": "Boş bir gösterge tablosuyla başla",
                         "header": "Lovelace kullanıcı arayüzünü kontrolünüz altına alın",
                         "para": "Home Assistant varsayılan olarak kullanıcı arayüzünüzü yönetecek, yeni Lovelace bileşenleri ya da varlıklar kullanıma sunulduğunda onu güncelleyecektir. Eğer bunu kontrolünüz altına almak istiyorsanız daha sonra biz sizin için bu değişiklikleri otomatik olarak gerçekleştiremeyeceğiz.",
                         "para_sure": "Kullanıcı arayüzünüzü kontrol altına almak istediğinize emin misiniz?",
@@ -2110,6 +2165,8 @@
                 "abort_intro": "Giriş iptal edildi",
                 "authorizing_client": "{clientId}'ye Home Assistant erişim izni vermek üzeresiniz.",
                 "form": {
+                    "error": "Hata: {error}",
+                    "next": "Sonraki",
                     "providers": {
                         "command_line": {
                             "abort": {
@@ -2192,6 +2249,7 @@
                             }
                         }
                     },
+                    "start_over": "Baştan Başla",
                     "unknown_error": "Bir şeyler ters gitti",
                     "working": "Lütfen bekleyin"
                 },
@@ -2284,6 +2342,7 @@
                 },
                 "current_user": "{fullName} olarak giriş yaptınız.",
                 "dashboard": {
+                    "description": "Bu cihaz için varsayılan bir gösterge tablosu seçin.",
                     "dropdown_label": "Gösterge Paneli",
                     "header": "Gösterge Paneli"
                 },

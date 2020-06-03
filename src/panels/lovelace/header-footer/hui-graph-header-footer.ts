@@ -40,6 +40,10 @@ export class HuiGraphHeaderFooter extends LitElement
 
   private _fetching = false;
 
+  public getCardSize(): number {
+    return 2;
+  }
+
   public setConfig(config: GraphHeaderFooterConfig): void {
     if (!config?.entity || config.entity.split(".")[0] !== "sensor") {
       throw new Error(
