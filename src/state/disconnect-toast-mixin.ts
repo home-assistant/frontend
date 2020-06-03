@@ -22,18 +22,20 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
       const oldHass = changedProperties.get("hass");
       if (
         !changedProperties.has("hass") ||
-        !oldHass?.config ||
-        oldHass.config.state === this.hass!.config.state
+        oldHass?.config?.state === this.hass!.config.state
       ) {
         return;
       }
       if (this.hass!.config.state === STATE_NOT_RUNNING) {
         showToast(this, {
-          message: this.hass!.localize("ui.notification_toast.starting"),
+          message:
+            this.hass!.localize("ui.notification_toast.starting") ||
+            "Home Assistant is starting, not everything will be available until it is finished.",
           duration: 0,
           dismissable: false,
         });
       } else if (
+        oldHass?.config &&
         oldHass.config.state === STATE_NOT_RUNNING &&
         (this.hass!.config.state === STATE_STARTING ||
           this.hass!.config.state === STATE_RUNNING)
@@ -47,7 +49,6 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
 
     protected hassReconnected() {
       super.hassReconnected();
-
       showToast(this, {
         message: "",
         duration: 1,
