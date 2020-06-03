@@ -1,4 +1,3 @@
-import "../resources/compatibility";
 import { PolymerElement } from "@polymer/polymer";
 import { fireEvent } from "../common/dom/fire_event";
 import { loadJS } from "../common/dom/load_resource";
@@ -18,9 +17,12 @@ let es5Loaded: Promise<unknown> | undefined;
 
 window.loadES5Adapter = () => {
   if (!es5Loaded) {
-    es5Loaded = loadJS(
-      `${__STATIC_PATH__}polyfills/custom-elements-es5-adapter.js`
-    ).catch(); // Swallow errors as it raises errors on old browsers.
+    es5Loaded = Promise.all([
+      loadJS(
+        `${__STATIC_PATH__}polyfills/custom-elements-es5-adapter.js`
+      ).catch(),
+      import(/* webpackChunkName: "compat" */ "./compatibility"),
+    ]);
   }
   return es5Loaded;
 };

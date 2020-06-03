@@ -53,6 +53,7 @@ gulp.task("gen-pages-dev", (done) => {
     const content = renderTemplate(page, {
       latestPageJS: `/frontend_latest/${page}.js`,
 
+      es5Compatibility: "/frontend_es5/compatibility.js",
       es5PageJS: `/frontend_es5/${page}.js`,
     });
 
@@ -78,6 +79,7 @@ gulp.task("gen-pages-prod", (done) => {
     const content = renderTemplate(page, {
       latestPageJS: latestManifest[`${page}.js`],
 
+      es5Compatibility: es5Manifest["compatibility.js"],
       es5PageJS: es5Manifest[`${page}.js`],
     });
 
@@ -97,6 +99,7 @@ gulp.task("gen-index-app-dev", (done) => {
     latestCoreJS: "/frontend_latest/core.js",
     latestCustomPanelJS: "/frontend_latest/custom-panel.js",
 
+    es5Compatibility: "/frontend_es5/compatibility.js",
     es5AppJS: "/frontend_es5/app.js",
     es5CoreJS: "/frontend_es5/core.js",
     es5CustomPanelJS: "/frontend_es5/custom-panel.js",
@@ -120,6 +123,7 @@ gulp.task("gen-index-app-prod", (done) => {
     latestCoreJS: latestManifest["core.js"],
     latestCustomPanelJS: latestManifest["custom-panel.js"],
 
+    es5Compatibility: es5Manifest["compatibility.js"],
     es5AppJS: es5Manifest["app.js"],
     es5CoreJS: es5Manifest["core.js"],
     es5CustomPanelJS: es5Manifest["custom-panel.js"],
@@ -206,6 +210,7 @@ gulp.task("gen-index-demo-dev", (done) => {
   const content = renderDemoTemplate("index", {
     latestDemoJS: "/frontend_latest/main.js",
 
+    es5Compatibility: "/frontend_es5/compatibility.js",
     es5DemoJS: "/frontend_es5/main.js",
   });
 
@@ -228,6 +233,7 @@ gulp.task("gen-index-demo-prod", (done) => {
   const content = renderDemoTemplate("index", {
     latestDemoJS: latestManifest["main.js"],
 
+    es5Compatibility: es5Manifest["compatibility.js"],
     es5DemoJS: es5Manifest["main.js"],
   });
   const minified = minifyHtml(content);
