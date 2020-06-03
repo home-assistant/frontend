@@ -80,6 +80,7 @@ export const DOMAINS_TOGGLE = new Set([
   "switch",
   "group",
   "automation",
+  "humidifier",
 ]);
 
 /** Temperature units. */
