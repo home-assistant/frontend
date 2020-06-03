@@ -14,7 +14,6 @@ import { classMap } from "lit-html/directives/class-map";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import { computeRTLDirection } from "../../../common/util/compute_rtl";
-import "../../../components/ha-humidifier-control";
 import "../../../components/ha-paper-dropdown-menu";
 import "../../../components/ha-paper-slider";
 import "../../../components/ha-switch";

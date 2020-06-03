@@ -8,7 +8,8 @@ import {
   PropertyValues,
   TemplateResult,
 } from "lit-element";
-import "../../../components/ha-humidifier-state";
+import "../../../components/entity/ha-entity-humidifier";
+import { UNAVAILABLE_STATES } from "../../../data/entity";
 import { HomeAssistant } from "../../../types";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
 import "../components/hui-generic-entity-row";
@@ -50,10 +51,10 @@ class HuiHumidifierEntityRow extends LitElement implements LovelaceRow {
 
     return html`
       <hui-generic-entity-row .hass=${this.hass} .config=${this._config}>
-        <ha-humidifier-state
+        <ha-entity-humidifier
           .hass=${this.hass}
           .stateObj=${stateObj}
-        ></ha-humidifier-state>
+        ></ha-entity-humidifier>
       </hui-generic-entity-row>
     `;
   }
