@@ -1,3 +1,5 @@
+import "../../src/resources/compatibility";
+
 window.loadES5Adapter().then(() => {
   // eslint-disable-next-line
   import(/* webpackChunkName: "roboto" */ "../../src/resources/roboto");
