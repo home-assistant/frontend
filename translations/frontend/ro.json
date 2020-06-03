@@ -363,6 +363,12 @@
                 "target_humidity": "Țintă umiditate",
                 "target_temperature": "Temperatura țintă"
             },
+            "counter": {
+                "actions": {
+                    "decrement": "decrementare",
+                    "increment": "incrementare"
+                }
+            },
             "cover": {
                 "position": "Poziţie",
                 "tilt_position": "Poziție de înclinare"
@@ -553,6 +559,7 @@
                     "enabled_label": "Activează entitatea",
                     "entity_id": "ID-ul entității",
                     "icon": "Înlocuire pictogramă",
+                    "icon_error": "Pictogramele trebuie să fie în formatul \"prefix:iconname\", de ex. \"mdi:home\"",
                     "name": "Suprascriere nume",
                     "note": "Notă: este posibil să nu funcționeze încă cu toate integrările.",
                     "unavailable": "Această entitate nu este disponibilă momentan.",
@@ -772,6 +779,9 @@
                                     "label": "Întârziere"
                                 },
                                 "device_id": {
+                                    "extra_fields": {
+                                        "code": "Cod"
+                                    },
                                     "label": "Dispozitiv"
                                 },
                                 "event": {
@@ -1137,6 +1147,7 @@
                     "description": "Elemente care pot ajuta la construirea automatizărilor.",
                     "dialog": {
                         "add_helper": "Adaugă ajutor",
+                        "add_platform": "Adăugare {platformă}",
                         "create": "Creează"
                     },
                     "picker": {
@@ -1319,6 +1330,7 @@
                         "entities": {
                             "add": "Adăugați o entitate",
                             "delete": "Ștergeți entitatea",
+                            "device_entities": "Dacă adăugați o entitate care aparține unui dispozitiv, dispozitivul va fi adăugat.",
                             "header": "Entități",
                             "introduction": "Entitățile care nu aparțin unui dispozitiv pot fi setate aici.",
                             "without_device": "Entități fără dispozitiv"
@@ -1413,6 +1425,7 @@
                         "admin": "Administrator",
                         "caption": "Vizualizați utilizatorul",
                         "change_password": "Schimbaţi parola",
+                        "confirm_user_deletion": "Sigur doriți să ștergeți {name} ?",
                         "deactivate_user": "Dezactivați utilizatorul",
                         "delete_user": "Ștergeți utilizatorul",
                         "name": "Nume",
@@ -1431,6 +1444,7 @@
                     "add_device_page": {
                         "discovery_text": "Dispozitivele descoperite vor apărea aici. Urmați instrucțiunile pentru dispozitiv (e) și așezați dispozitivul (ele) în modul de împerechere.",
                         "header": "Zigbee Home Automation - Adăugați dispozitive",
+                        "search_again": "Caută din nou",
                         "spinner": "Căutarea dispozitivelor ZHA Zigbee ..."
                     },
                     "add": {
@@ -1438,9 +1452,31 @@
                         "description": "Adaugă dispozitive la rețeaua Zigbee"
                     },
                     "caption": "ZHA",
+                    "cluster_attributes": {
+                        "attributes_of_cluster": "Atributele clusterului selectat",
+                        "get_zigbee_attribute": "Obțineți atributul Zigbee",
+                        "header": "Atributele clusterului",
+                        "help_attribute_dropdown": "Selectați un atribut pentru a-l vizualiza sau seta valoarea acestuia.",
+                        "help_get_zigbee_attribute": "Obțineți valoarea pentru atributul selectat.",
+                        "help_set_zigbee_attribute": "Setați valoarea atributului pentru clusterul specificat pe entitatea specificată.",
+                        "introduction": "Vizualizați și editați atributele clusterului.",
+                        "set_zigbee_attribute": "Setați atributul Zigbee"
+                    },
+                    "cluster_commands": {
+                        "header": "Comenzi de cluster",
+                        "introduction": "Vizualizați și emiteți comenzi de cluster."
+                    },
                     "clusters": {
                         "header": "Clustere",
+                        "help_cluster_dropdown": "Selectați un cluster pentru a vizualiza atributele și comenzile.",
                         "introduction": "Clusterele sunt blocurile pentru funcționalitatea Zigbee. Ele separă funcționalitatea în unități logice. Există tipuri client și server și sunt alcătuite din atribute și comenzi."
+                    },
+                    "common": {
+                        "add_devices": "Adaugă dispozitive",
+                        "clusters": "Clustere",
+                        "devices": "Dispozitivele",
+                        "manufacturer_code_override": "Suprascriere cod producător",
+                        "value": "Valoare"
                     },
                     "description": "Managementul rețelei Zigbee Home Automation",
                     "devices": {
@@ -1486,6 +1522,13 @@
                     },
                     "header": "Configurați automatizarea Zigbee Home",
                     "introduction": "Aici este posibil să configurați componenta ZHA. Nu totul este posibil pentru a configura de la UI încă, dar lucrăm la ea.",
+                    "network_management": {
+                        "header": "Administrare rețea",
+                        "introduction": "Comenzi care afectează întreaga rețea"
+                    },
+                    "node_management": {
+                        "header": "Gestionare dispozitive"
+                    },
                     "title": "Automatizare Zigbee Home"
                 },
                 "zone": {
@@ -1578,18 +1621,24 @@
                     "events": {
                         "alert_event_type": "Tipul de eveniment este un câmp obligatoriu",
                         "available_events": "Evenimente disponibile",
+                        "data": "Date eveniment (YAML, opțional)",
                         "documentation": "Documentarea evenimentelor.",
+                        "event_fired": "Evenimentul {name} declanșat",
                         "fire_event": "Declansare eveniment",
+                        "listen_to_events": "Ascultă evenimente",
                         "listening_to": "Ascultand",
+                        "notification_event_fired": "Eveniment {tip} reușit!",
                         "start_listening": "Incepe sa asculti",
                         "stop_listening": "Nu mai asculta",
                         "subscribe_to": "Eveniment la care să vă abonați",
-                        "title": "Evenimente"
+                        "title": "Evenimente",
+                        "type": "Tip eveniment"
                     },
                     "info": {
                         "built_using": "Construit folosind",
                         "documentation": "Documentație",
                         "frontend": "front-end-ui",
+                        "home_assistant_logo": "Logo-ul Home Assistant",
                         "icons_by": "Icoane ca",
                         "integrations": "Integrări",
                         "issues": "Probleme",
@@ -1600,6 +1649,10 @@
                     },
                     "logs": {
                         "clear": "Şterge",
+                        "details": "Detalii jurnal ({level})",
+                        "load_full_log": "Încărcare jurnal complet Home Assistant",
+                        "loading_log": "Se încarcă jurnalul de erori...",
+                        "no_errors": "Nu au fost raportate erori.",
                         "refresh": "Reîmprospătare",
                         "title": "Jurnale"
                     },
@@ -1721,7 +1774,11 @@
                         },
                         "entities": {
                             "description": "Cardul Entities este cel mai comun tip de card. Acesta grupează elementele împreună în liste.",
+                            "name": "Entități",
                             "toggle": "Schimbati entitatile"
+                        },
+                        "entity-filter": {
+                            "name": "Filtru entitate"
                         },
                         "entity": {
                             "description": "Cardul Entity vă oferă o imagine de ansamblu rapidă asupra stării entității",
@@ -1740,25 +1797,49 @@
                             "state": "Stare"
                         },
                         "glance": {
-                            "description": "Cardul Glance este util pentru a grupa mai mulți senzori într-o imagine de ansamblu compactă."
+                            "description": "Cardul Glance este util pentru a grupa mai mulți senzori într-o imagine de ansamblu compactă.",
+                            "name": "Privire rapida"
                         },
                         "history-graph": {
-                            "description": "Fișa History Graph vă permite să afișați un grafic pentru fiecare dintre entitățile listate."
+                            "description": "Fișa History Graph vă permite să afișați un grafic pentru fiecare dintre entitățile listate.",
+                            "name": "Grafic istoric"
+                        },
+                        "horizontal-stack": {
+                            "name": "Stivă orizontală"
                         },
                         "iframe": {
                             "name": "Pagină web"
                         },
                         "light": {
-                            "description": "Cardul Light vă permite să schimbați luminozitatea luminii."
+                            "description": "Cardul Light vă permite să schimbați luminozitatea luminii.",
+                            "name": "Lumina"
                         },
                         "map": {
-                            "hours_to_show": "Ore de afisat"
+                            "hours_to_show": "Ore de afisat",
+                            "name": "Hartă"
+                        },
+                        "media-control": {
+                            "name": "Control media"
+                        },
+                        "picture-elements": {
+                            "name": "Elemente de imagine"
+                        },
+                        "picture-entity": {
+                            "name": "Entitate imagine"
+                        },
+                        "picture-glance": {
+                            "name": "Privire imagine"
+                        },
+                        "picture": {
+                            "name": "Imagine"
                         },
                         "plant-status": {
-                            "description": "Cardul de Stare al Plantelor este destinat tuturor botanistilor"
+                            "description": "Cardul de Stare al Plantelor este destinat tuturor botanistilor",
+                            "name": "Starea plantei"
                         },
                         "sensor": {
-                            "description": "Cardul Senzor vă oferă o imagine de ansamblu rapidă a stării senzorilor cu un grafic opțional pentru a vizualiza schimbarea în timp."
+                            "description": "Cardul Senzor vă oferă o imagine de ansamblu rapidă a stării senzorilor cu un grafic opțional pentru a vizualiza schimbarea în timp.",
+                            "name": "Senzor"
                         },
                         "shopping-list": {
                             "description": "Cardul Listă cumpărături vă permite să adăugați, să editați, să verificați și să ștergeți elemente din lista de cumpărături.",
@@ -1854,6 +1935,8 @@
                     },
                     "view": {
                         "panel_mode": {
+                            "description": "Aceasta redă primul card la lățime completă; alte carduri din această vizualizare nu vor fi redate.",
+                            "title": "Mod Panou?",
                             "warning_multiple_cards": "Această vizualizare conține mai multe carduri, dar un panel view poate afișa doar 1 card"
                         }
                     }

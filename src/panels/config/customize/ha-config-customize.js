@@ -6,7 +6,7 @@ import { computeStateName } from "../../../common/entity/compute_state_name";
 import { sortStatesByName } from "../../../common/entity/states_sort_by_name";
 import "../../../layouts/hass-tabs-subpage";
 import LocalizeMixin from "../../../mixins/localize-mixin";
-import "../../../resources/ha-style";
+import "../../../styles/polymer-ha-style";
 import "../ha-config-section";
 import "../ha-entity-config";
 import { configSections } from "../ha-panel-config";
@@ -37,7 +37,7 @@ class HaConfigCustomize extends LocalizeMixin(PolymerElement) {
             </span>
             <ha-entity-config
               hass="[[hass]]"
-              label="Entity"
+              label="[[localize('ui.panel.config.customize.picker.entity')]]"
               entities="[[entities]]"
               config="[[entityConfig]]"
             >

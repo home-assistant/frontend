@@ -473,11 +473,16 @@
             }
         },
         "common": {
+            "and": "in",
+            "back": "Nazaj",
             "cancel": "Prekliči",
             "close": "Zapri",
             "delete": "Izbriši",
             "loading": "Nalaganje",
+            "next": "Naslednji",
             "no": "Ne",
+            "previous": "Prejšnji",
+            "refresh": "Osveži",
             "save": "Shrani",
             "successfully_deleted": "Uspešno odstranjeno",
             "successfully_saved": "Shranjeno",
@@ -501,6 +506,7 @@
             "device-picker": {
                 "clear": "Počisti",
                 "device": "Naprava",
+                "no_area": "Brez območja",
                 "show_devices": "Pokažite naprave",
                 "toggle": "Preklopite"
             },
@@ -613,7 +619,7 @@
                     "pattern": "Vzorec Regex za validacijo na strani odjemalca",
                     "text": "Besedilo"
                 },
-                "platform_not_loaded": "Integracija {platform} ni naložena. Dodajte svojo konfiguracijo tako, da dodate »default_config: 'ali' {platform}: '.",
+                "platform_not_loaded": "Integracija {platform} ni naložena. Dodajte svojo konfiguracijo bodisi tako, da dodate 'default_config:' 'ali \"{platform} :\".",
                 "required_error_msg": "To polje je obvezno",
                 "yaml_not_editable": "Nastavitev te entitete ni mogoče urejati iz uporabniškega vmesnika. Od tam se lahko konfigurirajo samo entitete, nastavljene iz uporabniškega vmesnika."
             },
@@ -737,6 +743,10 @@
             "triggered": "Sproženo {name}"
         },
         "panel": {
+            "calendar": {
+                "my_calendars": "Moji koledarji",
+                "today": "Danes"
+            },
             "config": {
                 "advanced_mode": {
                     "hint_enable": "Ali manjkajo možnosti konfiguracije? Vključi napredni način",
@@ -754,9 +764,13 @@
                     },
                     "description": "Pregled vseh območij v vašem domu.",
                     "editor": {
+                        "area_id": "ID območja",
                         "create": "Ustvari",
                         "default_name": "Novo območje",
                         "delete": "Izbriši",
+                        "name": "Ime",
+                        "name_required": "Ime je obvezno",
+                        "unknown_error": "Neznana napaka",
                         "update": "Posodobi"
                     },
                     "picker": {
@@ -791,6 +805,7 @@
                                     "label": "Zamik"
                                 },
                                 "device_id": {
+                                    "action": "Akcija",
                                     "extra_fields": {
                                         "code": "Koda"
                                     },
@@ -832,6 +847,7 @@
                                     "label": "In"
                                 },
                                 "device": {
+                                    "condition": "Stanje",
                                     "extra_fields": {
                                         "above": "Nad",
                                         "below": "Pod",
@@ -910,7 +926,8 @@
                                         "below": "Pod",
                                         "for": "Trajanje"
                                     },
-                                    "label": "Naprava"
+                                    "label": "Naprava",
+                                    "trigger": "Sprožilec"
                                 },
                                 "event": {
                                     "event_data": "Podatki o dogodku",
@@ -1173,7 +1190,9 @@
                                 "edit_requires_storage": "Urejevalnik je onemogočen, ker je konfiguracija shranjena v configuration.yaml.",
                                 "elevation": "Nadmorska višina",
                                 "elevation_meters": "metrov",
+                                "external_url": "Zunanji URL",
                                 "imperial_example": "Fahrenheit, funtov",
+                                "internal_url": "Notranji URL",
                                 "latitude": "Zemljepisna širina",
                                 "location_name": "Ime vašega instalacije vašega Home Assistant-a.",
                                 "longitude": "Zemljepisna dolžina",
@@ -1236,14 +1255,18 @@
                         "integration": "Integracija",
                         "manufacturer": "Proizvajalec",
                         "model": "Model",
+                        "no_area": "Brez območja",
                         "no_devices": "Brez naprav"
                     },
                     "delete": "Izbriši",
                     "description": "Upravljajte povezane naprave",
+                    "device_info": "Informacije o napravi",
                     "device_not_found": "Naprave ni bilo mogoče najti",
                     "entities": {
                         "add_entities_lovelace": "Dodaj v Lovelace",
+                        "disabled_entities": "+{count} {count, plural,\n  one {Onemogočena entiteta}\n  other {onemogočene entitete}\n}",
                         "entities": "Entitete",
+                        "hide_disabled": "Skrij onemogočene",
                         "none": "Ta naprava nima entitet"
                     },
                     "name": "Ime",
@@ -1363,7 +1386,8 @@
                         "restart_confirm": "Znova zaženite Home Assistant-a, da dokončate odstranitev te integracije",
                         "settings_button": "Uredite nastavitve za {integration}",
                         "system_options": "Sistemske možnosti",
-                        "system_options_button": "Sistemske možnosti za {integration}"
+                        "system_options_button": "Sistemske možnosti za {integration}",
+                        "unnamed_entry": "Neimenovani vnos"
                     },
                     "config_flow": {
                         "aborted": "Prekinjeno",
@@ -1867,10 +1891,13 @@
                         "built_using": "Zgrajen z uporabo",
                         "custom_uis": "Uporabniški vmesniki po meri:",
                         "developed_by": "Razvija ga kup osupljivih ljudi.",
+                        "documentation": "Dokumentacija",
                         "frontend": "frontend-ui",
                         "frontend_version": "Frontend različica: {version} - {type}",
                         "home_assistant_logo": "Home Assistant logotip",
                         "icons_by": "Ikone ustvarili z",
+                        "integrations": "Integracije",
+                        "issues": "Težave",
                         "license": "Objavljeno pod licenco Apache 2.0",
                         "path_configuration": "Pot do configuration.yaml: {path}",
                         "server": "strežnik",
@@ -2061,6 +2088,7 @@
                             "name": "Ime",
                             "no_theme": "Brez teme",
                             "refresh_interval": "Interval osveževanja",
+                            "secondary_info_attribute": "Atributi sekundarnih informacij",
                             "show_icon": "Prikaži ikono?",
                             "show_name": "Prikaži ime?",
                             "show_state": "Prikaži stanje?",
@@ -2151,7 +2179,8 @@
                         },
                         "weather-forecast": {
                             "description": "Kartica Weather Forecast prikazuje vreme. Zelo koristno za vključiti na vmesnike, ki jih ljudje prikažejo na steni.",
-                            "name": "Vremenska napoved"
+                            "name": "Vremenska napoved",
+                            "show_forecast": "Pokaži napoved"
                         }
                     },
                     "cardpicker": {
@@ -2288,6 +2317,8 @@
                 "abort_intro": "Prijava prekinjena",
                 "authorizing_client": "Dali boste {clientId} dostop do vašega Home Assistanta.",
                 "form": {
+                    "error": "Napaka: {error}",
+                    "next": "Naslednji",
                     "providers": {
                         "command_line": {
                             "abort": {
@@ -2373,6 +2404,7 @@
                             }
                         }
                     },
+                    "start_over": "Začeti znova",
                     "unknown_error": "Nekaj ​​je šlo narobe",
                     "working": "Prosimo počakajte"
                 },

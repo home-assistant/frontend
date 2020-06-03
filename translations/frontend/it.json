@@ -474,6 +474,7 @@
         },
         "common": {
             "and": "e",
+            "back": "Indietro",
             "cancel": "Annulla",
             "close": "Chiudi",
             "delete": "Elimina",
@@ -505,6 +506,7 @@
             "device-picker": {
                 "clear": "Cancella",
                 "device": "Dispositivo",
+                "no_area": "Nessuna area",
                 "show_devices": "Mostra dispositivi",
                 "toggle": "Azionare"
             },
@@ -762,9 +764,13 @@
                     },
                     "description": "Panoramica di tutte le aree della tua casa.",
                     "editor": {
+                        "area_id": "Area ID",
                         "create": "Crea",
                         "default_name": "Nuova area",
                         "delete": "Elimina",
+                        "name": "Nome",
+                        "name_required": "Il nome è obbligatorio",
+                        "unknown_error": "Errore sconosciuto",
                         "update": "Aggiorna"
                     },
                     "picker": {
@@ -799,6 +805,7 @@
                                     "label": "Ritardo"
                                 },
                                 "device_id": {
+                                    "action": "Azione",
                                     "extra_fields": {
                                         "code": "Codice"
                                     },
@@ -840,6 +847,7 @@
                                     "label": "E"
                                 },
                                 "device": {
+                                    "condition": "Condizione",
                                     "extra_fields": {
                                         "above": "Maggiore di",
                                         "below": "Minore di",
@@ -918,7 +926,8 @@
                                         "below": "Minore di",
                                         "for": "Durata"
                                     },
-                                    "label": "Dispositivo"
+                                    "label": "Dispositivo",
+                                    "trigger": "Attivazione"
                                 },
                                 "event": {
                                     "event_data": "Dati dell'Evento",
@@ -1246,6 +1255,7 @@
                         "integration": "Integrazione",
                         "manufacturer": "Produttore",
                         "model": "Modello",
+                        "no_area": "Nessuna area",
                         "no_devices": "Nessun dispositivo"
                     },
                     "delete": "Elimina",
@@ -1254,7 +1264,9 @@
                     "device_not_found": "Dispositivo non trovato.",
                     "entities": {
                         "add_entities_lovelace": "Aggiungi a Lovelace",
+                        "disabled_entities": "+{count} {count, plural,\n  one {entità disabilitata}\n  other {entità disabilitate}\n}",
                         "entities": "Entità",
+                        "hide_disabled": "Nascondi disabilitato",
                         "none": "Questo dispositivo non ha entità"
                     },
                     "name": "Nome",
@@ -1374,7 +1386,8 @@
                         "restart_confirm": "Riavvia Home Assistant per completare la rimozione di questa integrazione",
                         "settings_button": "Modificare le impostazioni per {integration}.",
                         "system_options": "Opzioni di sistema",
-                        "system_options_button": "Opzioni di sistema per {integration}"
+                        "system_options_button": "Opzioni di sistema per {integration}",
+                        "unnamed_entry": "Voce senza nome"
                     },
                     "config_flow": {
                         "aborted": "Interrotto",
@@ -2284,8 +2297,8 @@
                 "views": {
                     "confirm_delete": "Eliminare vista?",
                     "confirm_delete_existing_cards": "L'eliminazione di questa vista rimuoverà anche le schede",
-                    "confirm_delete_existing_cards_text": "Sei sicuro di voler eliminare la tua vista \"{name}\"? La vista contiene {number} schede che sarranno eliminate. Questa azione non può essere annullata.",
-                    "confirm_delete_text": "Sei sicuro di voler eliminare la tua vista \"{name}\"?"
+                    "confirm_delete_existing_cards_text": "Sei sicuro di voler eliminare la tua vista ''{name}''? La vista contiene {number} schede che sarranno eliminate. Questa azione non può essere annullata.",
+                    "confirm_delete_text": "Sei sicuro di voler eliminare la tua vista ''{name}''?"
                 },
                 "warning": {
                     "attribute_not_found": "Attributo {attribute} non disponibile in: {entity}",
@@ -2304,6 +2317,8 @@
                 "abort_intro": "Login interrotto",
                 "authorizing_client": "Stai per dare a {clientId} accesso alla tua istanza di Home Assistant.",
                 "form": {
+                    "error": "Errore: {error}",
+                    "next": "Avanti",
                     "providers": {
                         "command_line": {
                             "abort": {
@@ -2389,6 +2404,7 @@
                             }
                         }
                     },
+                    "start_over": "Ricomincia",
                     "unknown_error": "Qualcosa è andato storto",
                     "working": "Attendere prego"
                 },

@@ -3,18 +3,6 @@
   <head>
     <title>Home Assistant</title>
     <link rel="preload" href="<%= latestPageJS %>" as="script" crossorigin="use-credentials" />
-    <link
-      rel="preload"
-      href="/static/fonts/roboto/Roboto-Light.woff2"
-      as="font"
-      crossorigin
-    />
-    <link
-      rel="preload"
-      href="/static/fonts/roboto/Roboto-Regular.woff2"
-      as="font"
-      crossorigin
-    />
     <%= renderTemplate('_header') %>
     <style>
       .content {
@@ -46,6 +34,7 @@
     </div>
 
     <%= renderTemplate('_js_base') %>
+    <%= renderTemplate('_preload_roboto') %>
 
     <script type="module" crossorigin="use-credentials">
       import "<%= latestPageJS %>";
@@ -59,8 +48,13 @@
         // Safari 10.1 supports type=module but ignores nomodule, so we add this check.
         if (!isS101) {
           _ls("/static/polyfills/custom-elements-es5-adapter.js");
-          _ls("<%= es5Compatibility %>");
-          _ls("<%= es5PageJS %>");
+          <% if (useRollup) { %>
+            _ls("/static/js/s.min.js").onload = function() {
+              System.import("<%= es5PageJS %>");
+            }
+          <% } else { %>
+            _ls("<%= es5PageJS %>");
+          <% } %>
         }
       })();
     </script>

@@ -33,7 +33,7 @@ import { actionHandler } from "../common/directives/action-handler-directive";
 import { findEntities } from "../common/find-entites";
 import { handleAction } from "../common/handle-action";
 import { hasAction } from "../common/has-action";
-import "../components/hui-warning";
+import { createEntityNotFoundWarning } from "../components/hui-warning";
 import { LovelaceCard, LovelaceCardEditor } from "../types";
 import { ButtonCardConfig } from "./types";
 
@@ -79,7 +79,9 @@ export class HuiButtonCard extends LitElement implements LovelaceCard {
   @internalProperty() private _shouldRenderRipple = false;
 
   public getCardSize(): number {
-    return 2;
+    return (
+      (this._config?.show_icon ? 3 : 0) + (this._config?.show_name ? 1 : 0)
+    );
   }
 
   public setConfig(config: ButtonCardConfig): void {
@@ -145,13 +147,9 @@ export class HuiButtonCard extends LitElement implements LovelaceCard {
 
     if (this._config.entity && !stateObj) {
       return html`
-        <hui-warning
-          >${this.hass.localize(
-            "ui.panel.lovelace.warning.entity_not_found",
-            "entity",
-            this._config.entity
-          )}</hui-warning
-        >
+        <hui-warning>
+          ${createEntityNotFoundWarning(this.hass, this._config.entity)}
+        </hui-warning>
       `;
     }
 

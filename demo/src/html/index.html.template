@@ -6,18 +6,6 @@
     <link rel="icon" href="/static/icons/favicon.ico" />
     <link rel="mask-icon" href="/static/icons/mask-icon.svg" color="#03a9f4" />
     <link
-      rel="preload"
-      href="/static/fonts/roboto/Roboto-Regular.woff2"
-      as="font"
-      crossorigin
-    />
-    <link
-      rel="preload"
-      href="/static/fonts/roboto/Roboto-Medium.woff2"
-      as="font"
-      crossorigin
-    />
-    <link
       rel="apple-touch-icon"
       sizes="180x180"
       href="/static/icons/favicon-apple-180x180.png"
@@ -96,6 +84,7 @@
     <div id="ha-init-skeleton"></div>
     <ha-demo></ha-demo>
     <%= renderTemplate('_js_base') %>
+    <%= renderTemplate('_preload_roboto') %>
 
     <script type="module" src="<%= latestDemoJS %>"></script>
 
@@ -104,8 +93,13 @@
         // // Safari 10.1 supports type=module but ignores nomodule, so we add this check.
         if (!isS101) {
           _ls("/static/polyfills/custom-elements-es5-adapter.js");
-          _ls("<%= es5Compatibility %>");
-          _ls("<%= es5DemoJS %>");
+          <% if (useRollup) { %>
+            _ls("/static/js/s.min.js").onload = function() {
+              System.import("<%= es5DemoJS %>");
+            };
+          <% } else { %>
+            _ls("<%= es5DemoJS %>");
+          <% } %>
         }
       })();
     </script>

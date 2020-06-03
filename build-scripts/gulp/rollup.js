@@ -1,0 +1,155 @@
+// Tasks to run Rollup
+const path = require("path");
+const gulp = require("gulp");
+const rollup = require("rollup");
+const handler = require("serve-handler");
+const http = require("http");
+const log = require("fancy-log");
+const rollupConfig = require("../rollup");
+const paths = require("../paths");
+const open = require("open");
+
+const bothBuilds = (createConfigFunc, params) =>
+  gulp.series(
+    async function buildLatest() {
+      await buildRollup(
+        createConfigFunc({
+          ...params,
+          latestBuild: true,
+        })
+      );
+    },
+    async function buildES5() {
+      await buildRollup(
+        createConfigFunc({
+          ...params,
+          latestBuild: false,
+        })
+      );
+    }
+  );
+
+function createServer(serveOptions) {
+  const server = http.createServer((request, response) => {
+    return handler(request, response, {
+      public: serveOptions.root,
+    });
+  });
+
+  server.listen(
+    serveOptions.port,
+    serveOptions.networkAccess ? "0.0.0.0" : undefined,
+    () => {
+      log.info(`Available at http://localhost:${serveOptions.port}`);
+      open(`http://localhost:${serveOptions.port}`);
+    }
+  );
+}
+
+function watchRollup(createConfig, extraWatchSrc = [], serveOptions) {
+  const { inputOptions, outputOptions } = createConfig({
+    isProdBuild: false,
+    latestBuild: true,
+  });
+
+  const watcher = rollup.watch({
+    ...inputOptions,
+    output: [outputOptions],
+    watch: {
+      include: ["src/**"] + extraWatchSrc,
+    },
+  });
+
+  let startedHttp = false;
+
+  watcher.on("event", (event) => {
+    if (event.code === "BUNDLE_END") {
+      log(`Build done @ ${new Date().toLocaleTimeString()}`);
+    } else if (event.code === "ERROR") {
+      log.error(event.error);
+    } else if (event.code === "END") {
+      if (startedHttp || !serveOptions) {
+        return;
+      }
+      startedHttp = true;
+      createServer(serveOptions);
+    }
+  });
+
+  gulp.watch(
+    path.join(paths.translations_src, "en.json"),
+    gulp.series("build-translations", "copy-translations-app")
+  );
+}
+
+async function buildRollup(config) {
+  const bundle = await rollup.rollup(config.inputOptions);
+  await bundle.write(config.outputOptions);
+}
+
+gulp.task("rollup-watch-app", () => {
+  watchRollup(rollupConfig.createAppConfig);
+});
+
+gulp.task("rollup-watch-hassio", () => {
+  watchRollup(
+    // Force latestBuild = false for hassio config.
+    (conf) => rollupConfig.createHassioConfig({ ...conf, latestBuild: false }),
+    ["hassio/src/**"]
+  );
+});
+
+gulp.task("rollup-dev-server-demo", () => {
+  watchRollup(rollupConfig.createDemoConfig, ["demo/src/**"], {
+    root: paths.demo_output_root,
+    port: 8090,
+  });
+});
+
+gulp.task("rollup-dev-server-cast", () => {
+  watchRollup(rollupConfig.createCastConfig, ["cast/src/**"], {
+    root: paths.cast_output_root,
+    port: 8080,
+    networkAccess: true,
+  });
+});
+
+gulp.task("rollup-dev-server-gallery", () => {
+  watchRollup(rollupConfig.createGalleryConfig, ["gallery/src/**"], {
+    root: paths.gallery_output_root,
+    port: 8100,
+  });
+});
+
+gulp.task(
+  "rollup-prod-app",
+  bothBuilds(rollupConfig.createAppConfig, { isProdBuild: true })
+);
+
+gulp.task(
+  "rollup-prod-demo",
+  bothBuilds(rollupConfig.createDemoConfig, { isProdBuild: true })
+);
+
+gulp.task(
+  "rollup-prod-cast",
+  bothBuilds(rollupConfig.createCastConfig, { isProdBuild: true })
+);
+
+gulp.task("rollup-prod-hassio", () =>
+  buildRollup(
+    rollupConfig.createHassioConfig({
+      isProdBuild: true,
+      latestBuild: false,
+    })
+  )
+);
+
+gulp.task("rollup-prod-gallery", () =>
+  buildRollup(
+    rollupConfig.createGalleryConfig({
+      isProdBuild: true,
+      latestBuild: true,
+    })
+  )
+);

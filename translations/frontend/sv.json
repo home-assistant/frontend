@@ -474,6 +474,7 @@
         },
         "common": {
             "and": "och",
+            "back": "Tillbaka",
             "cancel": "Avbryt",
             "close": "Stäng",
             "delete": "Radera",
@@ -505,6 +506,7 @@
             "device-picker": {
                 "clear": "Rensa",
                 "device": "Enhet",
+                "no_area": "Inget område",
                 "show_devices": "Visa enheter",
                 "toggle": "Växla"
             },
@@ -665,6 +667,7 @@
                 "entities": "Entiteter",
                 "no_entities": "Inga entiteter",
                 "no_triggers": "Inga utlösare",
+                "payload_display": "Visning av nyttolast",
                 "recent_messages": "{n} senast mottagna meddelande(n)",
                 "show_as_yaml": "Visa som YAML",
                 "title": "{device} felsökningsinformation",
@@ -737,6 +740,8 @@
         "notification_toast": {
             "connection_lost": "Anslutning tappad. Ansluter igen...",
             "service_call_failed": "Misslyckades med att anropa tjänsten {service}.",
+            "started": "Home Assistant har startat!",
+            "starting": "Home Assistant startar, allt är inte tillgängligt tills uppstarten är klar.",
             "triggered": "Utlöst {name}"
         },
         "panel": {
@@ -761,9 +766,13 @@
                     },
                     "description": "Oversikt över alla områden i ditt hem",
                     "editor": {
+                        "area_id": "Områdes-ID",
                         "create": "Skapa",
                         "default_name": "Nytt område",
                         "delete": "Radera",
+                        "name": "Namn",
+                        "name_required": "Namn krävs",
+                        "unknown_error": "Okänt fel",
                         "update": "Uppdatera"
                     },
                     "picker": {
@@ -798,6 +807,7 @@
                                     "label": "Paus"
                                 },
                                 "device_id": {
+                                    "action": "Åtgärd",
                                     "extra_fields": {
                                         "code": "Kod"
                                     },
@@ -839,6 +849,7 @@
                                     "label": "Och"
                                 },
                                 "device": {
+                                    "condition": "Villkor",
                                     "extra_fields": {
                                         "above": "Över",
                                         "below": "Under",
@@ -903,7 +914,7 @@
                         "triggers": {
                             "add": "Lägg till händelse",
                             "delete": "Radera",
-                            "delete_confirm": "Säker på att du vill radera?",
+                            "delete_confirm": "Är du säker på att du vill radera detta?",
                             "duplicate": "Duplicera",
                             "header": "Händelse",
                             "introduction": "Triggers är det som startar en automation. Det är möjligt att ange flera triggers för samma regel. När en trigger inträffar kommer Home Assistant att validera eventuella villkor och sedan köra åtgärden.",
@@ -917,7 +928,8 @@
                                         "below": "Under",
                                         "for": "Varaktighet"
                                     },
-                                    "label": "Enhet"
+                                    "label": "Enhet",
+                                    "trigger": "Utlösare"
                                 },
                                 "event": {
                                     "event_data": "Händelsedata",
@@ -1030,7 +1042,7 @@
                         "connection_status": "Status för molnanslutning",
                         "fetching_subscription": "Hämtar prenumeration...",
                         "google": {
-                            "config_documentation": "Konfigureringsdokumentation",
+                            "config_documentation": "Dokumentation av Inställningar",
                             "devices_pin": "Säkerhetsenheter Pin",
                             "enable_ha_skill": "Aktivera Home Assistant-färdigheten för Google Assistant",
                             "enable_state_reporting": "Aktivera tillståndsrapportering",
@@ -1245,6 +1257,7 @@
                         "integration": "Integration",
                         "manufacturer": "Tillverkare",
                         "model": "Modell",
+                        "no_area": "Inget område",
                         "no_devices": "Inga enheter"
                     },
                     "delete": "Ta bort",
@@ -1254,6 +1267,7 @@
                     "entities": {
                         "add_entities_lovelace": "Lägg till i Lovelace",
                         "entities": "Entiteter",
+                        "hide_disabled": "Dölj inaktiverad",
                         "none": "Den här enheten har inga entiteter"
                     },
                     "name": "Namn",
@@ -1305,6 +1319,7 @@
                         "introduction2": "Använd entitetsregistret för att överskida namnet, ändra entitets-ID eller ta bort posten från Home Assistant.",
                         "remove_selected": {
                             "button": "Ta bort valda",
+                            "confirm_partly_text": "Du kan bara ta bort {removable} av de valda {selected} enheterna. Enheter kan endast tas bort när integrationen inte längre tillhandahåller enheterna. Ibland måste du starta om Home Assistant innan du kan ta bort enheterna för en borttagen integration. Är du säker på att du vill ta bort de flyttbara enheterna?",
                             "confirm_partly_title": "Endast {number} valda entiteter kan tas bort.",
                             "confirm_text": "Entiteter kan endast tas bort när integrationen inte längre tillhandahåller entiteterna.",
                             "confirm_title": "Vill du ta bort {number} entiteter?"
@@ -1370,7 +1385,8 @@
                         "restart_confirm": "Starta om Home Assistant för att slutföra borttagningen av denna integration",
                         "settings_button": "Redigera inställningar för {integration}",
                         "system_options": "Systemalternativ",
-                        "system_options_button": "Systeminställningar för {integration}"
+                        "system_options_button": "Systeminställningar för {integration}",
+                        "unnamed_entry": "Namnlös post"
                     },
                     "config_flow": {
                         "aborted": "Avbruten",
@@ -1822,21 +1838,52 @@
                         "set_wakeup": "Ställ in uppvakningsintervall",
                         "true": "Sant"
                     },
+                    "node_management": {
+                        "add_to_group": "Lägg till i Gruppen",
+                        "entities": "Enheter av denna nod",
+                        "entity_info": "Enhetsinformation",
+                        "exclude_entity": "Uteslut den här enheten från Home Assistant",
+                        "group": "Grupp",
+                        "header": "Z-Wave nodhantering",
+                        "max_associations": "Max antal assosiationer:",
+                        "node_group_associations": "Nodgruppsassociationer",
+                        "node_protection": "Nodskydd",
+                        "node_to_control": "Nod att styra",
+                        "nodes": "Noder",
+                        "nodes_hint": "Välj nod för att visa per-nod alternativ",
+                        "nodes_in_group": "Andra Noder i denna grupp:",
+                        "pooling_intensity": "Uppdateringshastighet",
+                        "protection": "Skydd",
+                        "remove_broadcast": "Ta bort Sändning",
+                        "remove_from_group": "Ta Bort Från Grupp",
+                        "set_protection": "Ange skydd"
+                    },
                     "ozw_log": {
                         "header": "OZW-logg",
-                        "introduction": "Visa loggen. 0 är det minsta (laddar hela loggen) och 1000 är det maximala. Ladda visar en statisk logg och svansen uppdateras automatiskt med det sist angivna antalet rader i loggen."
+                        "introduction": "Visa loggen. 0 är det minsta (laddar hela loggen) och 1000 är det maximala. Ladda visar en statisk logg och svansen uppdateras automatiskt med det sist angivna antalet rader i loggen.",
+                        "last_log_lines": "Antal sista loggrader",
+                        "load": "Ladda",
+                        "tail": "Svans"
                     },
                     "services": {
                         "add_node": "Lägg till nod",
                         "add_node_secure": "Lägg till nod med säkerhet",
                         "cancel_command": "Avbryt kommandot",
                         "heal_network": "Reparera nätverk",
+                        "heal_node": "Läka nod",
+                        "node_info": "Nodinformation",
+                        "print_node": "Skriv ut nod",
+                        "refresh_entity": "Uppdatera entitet",
+                        "refresh_node": "Uppdatera nod",
+                        "remove_failed_node": "Ta bort misslyckad nod",
                         "remove_node": "Ta bort nod",
+                        "replace_failed_node": "Ersätt misslyckad nod",
                         "save_config": "Spara konfiguration",
                         "soft_reset": "Mjuk återställning",
                         "start_network": "Starta Nätverket",
                         "stop_network": "Stoppa nätverket",
-                        "test_network": "Testa nätverk"
+                        "test_network": "Testa nätverk",
+                        "test_node": "Testnod"
                     },
                     "values": {
                         "header": "Nodvärden"
@@ -1874,10 +1921,13 @@
                         "built_using": "Byggt med",
                         "custom_uis": "Anpassade användargränssnitt:",
                         "developed_by": "Utvecklad av ett gäng grymma människor.",
+                        "documentation": "Dokumentation",
                         "frontend": "frontend-UI",
                         "frontend_version": "Frontend-version: {version} - {type}",
                         "home_assistant_logo": "Home Assistant logotyp",
                         "icons_by": "Ikoner av",
+                        "integrations": "Integrationer",
+                        "issues": "Problem",
                         "license": "Publicerad under Apache 2.0-licensen",
                         "path_configuration": "Sökväg till configuration.yaml: {path}",
                         "server": "server",
@@ -1992,6 +2042,10 @@
                         "add_item": "Lägg till objekt",
                         "checked_items": "Markerade objekt",
                         "clear_items": "Rensa markerade objekt"
+                    },
+                    "starting": {
+                        "description": "Home Assistant startar, var god vänta",
+                        "header": "Home Assistant startar..."
                     }
                 },
                 "changed_toast": {
@@ -2031,6 +2085,7 @@
                             "toggle": "Växla entiteter."
                         },
                         "entity-filter": {
+                            "description": "Med enhetsfilter kortet kan du definiera en lista över enheter som du vill följa endast när de är i ett visst läge.",
                             "name": "Enhetsfilter"
                         },
                         "entity": {
@@ -2038,6 +2093,7 @@
                             "name": "Entitet"
                         },
                         "gauge": {
+                            "description": "Mätarkortet är ett grundläggande kort som möjliggör visuell visning av sensordata.",
                             "name": "Mätare",
                             "severity": {
                                 "define": "Definiera allvarlighetsgrad?",
@@ -2065,6 +2121,7 @@
                             "name": "Namn",
                             "no_theme": "Inget tema",
                             "refresh_interval": "Uppdateringsintervall",
+                            "secondary_info_attribute": "Sekundär informationsattribut",
                             "show_icon": "Visa ikon?",
                             "show_name": "Visa namn?",
                             "show_state": "Visa tillstånd?",
@@ -2142,6 +2199,7 @@
                             "name": "Inköpslista"
                         },
                         "thermostat": {
+                            "description": "Termostatkortet kontrollerar din klimatenhet. Så att du kan ändra temperaturen och läge.",
                             "name": "Termostat"
                         },
                         "vertical-stack": {
@@ -2150,7 +2208,8 @@
                         },
                         "weather-forecast": {
                             "description": "Kortet Väderprognos visar vädret. Mycket användbart att inkludera på gränssnitt som man visar på väggen.",
-                            "name": "Väderprognos"
+                            "name": "Väderprognos",
+                            "show_forecast": "Visa prognos"
                         }
                     },
                     "cardpicker": {
@@ -2227,7 +2286,7 @@
                         "save": "Ta kontroll",
                         "yaml_config": "För att hjälpa dig igång, så är här nuvarande inställning för denna instrumentpanel:",
                         "yaml_control": "Om du vill ta kontroll i YAML-läge skapar du en YAML-fil med det namn du angav i konfigurationen för den här instrumentpanelen eller standard \"ui-lovelace.yaml\".",
-                        "yaml_mode": "Du använder YAML-läge, vilket betyder att du inte kan ändra dina Lovelace-inställning från användargränssnittet. Om du vill ändra Lovelace från användargränssnittet, ta bort 'mode: yaml' från dina Lovelaceinställningar i 'configuration.yaml'"
+                        "yaml_mode": "Du använder YAML-läge, vilket betyder att du inte kan ändra dina Lovelace-inställning från användargränssnittet. Om du vill hantera Lovelace från användargränssnittet, ta bort 'mode: yaml' från din Lovelace-inställning i 'configuration.yaml'"
                     },
                     "suggest_card": {
                         "add": "Lägg till i Lovelace-gränsnitt",
@@ -2274,7 +2333,8 @@
                     "attribute_not_found": "Attribut {attribute} inte tillgängligt i: {entity}",
                     "entity_non_numeric": "Enheten är icke-numerisk: {entity}",
                     "entity_not_found": "Enheten är ej tillgänglig: {entity}",
-                    "entity_unavailable": "{entity} är otillgänglig"
+                    "entity_unavailable": "{entity} är otillgänglig",
+                    "starting": "Home Assistant startar, allt är kanske är tillgängligt ännu"
                 }
             },
             "mailbox": {
@@ -2287,6 +2347,8 @@
                 "abort_intro": "Inloggning avbruten",
                 "authorizing_client": "Du håller på att ge {clientId} behörighet till din Home Assistant.",
                 "form": {
+                    "error": "Fel: {error}",
+                    "next": "Nästa",
                     "providers": {
                         "command_line": {
                             "abort": {
@@ -2348,7 +2410,7 @@
                                     "data": {
                                         "password": "API-lösenord"
                                     },
-                                    "description": "Lägg in ett API-lösenord i din http konfig:"
+                                    "description": "Lägg in ett API-lösenord i din HTTP-konfiguration:"
                                 },
                                 "mfa": {
                                     "data": {
@@ -2372,6 +2434,7 @@
                             }
                         }
                     },
+                    "start_over": "Börja om",
                     "unknown_error": "Något gick fel",
                     "working": "Vänligen vänta"
                 },

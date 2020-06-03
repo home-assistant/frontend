@@ -28,7 +28,6 @@ import {
   subscribeDeviceRegistry,
 } from "../../data/device_registry";
 import { PolymerChangedEvent } from "../../polymer-types";
-import "../../resources/ha-style";
 import { haStyleDialog } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
 import { DataEntryFlowDialogParams } from "./show-dialog-data-entry-flow";

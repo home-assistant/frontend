@@ -26,7 +26,7 @@ class EntityFilterCard extends UpdatingElement implements LovelaceCard {
 
   private _oldEntities?: EntityFilterEntityConfig[];
 
-  public getCardSize(): number {
+  public getCardSize(): number | Promise<number> {
     return this._element ? computeCardSize(this._element) : 1;
   }
 
@@ -57,8 +57,9 @@ class EntityFilterCard extends UpdatingElement implements LovelaceCard {
 
     if (this.lastChild) {
       this.removeChild(this.lastChild);
-      this._element = undefined;
     }
+
+    this._element = this._createCardElement(this._baseCardConfig);
   }
 
   protected shouldUpdate(changedProps: PropertyValues): boolean {
@@ -81,7 +82,12 @@ class EntityFilterCard extends UpdatingElement implements LovelaceCard {
 
   protected update(changedProps: PropertyValues) {
     super.update(changedProps);
-    if (!this.hass || !this._config || !this._configEntities) {
+    if (
+      !this.hass ||
+      !this._config ||
+      !this._configEntities ||
+      !this._element
+    ) {
       return;
     }
 
@@ -114,8 +120,8 @@ class EntityFilterCard extends UpdatingElement implements LovelaceCard {
       return;
     }
 
-    if (!this._element) {
-      this._element = this._createCardElement({
+    if (!this.lastChild) {
+      this._element.setConfig({
         ...this._baseCardConfig!,
         entities: entitiesList,
       });

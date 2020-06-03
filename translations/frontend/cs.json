@@ -467,15 +467,22 @@
                     "wnw": "ZSZ",
                     "wsw": "ZJZ"
                 },
-                "forecast": "Předpověď"
+                "forecast": "Předpověď",
+                "high": "Vysoká",
+                "low": "Nízká"
             }
         },
         "common": {
+            "and": "a",
+            "back": "Zpět",
             "cancel": "Zrušit",
             "close": "Zavřít",
             "delete": "Smazat",
             "loading": "Načítání",
+            "next": "Další",
             "no": "Ne",
+            "previous": "Předchozí",
+            "refresh": "Obnovit",
             "save": "Uložit",
             "successfully_deleted": "Úspěšně smazáno",
             "successfully_saved": "Úspěšně uloženo",
@@ -499,6 +506,7 @@
             "device-picker": {
                 "clear": "Zrušit",
                 "device": "Zařízení",
+                "no_area": "Žádná oblast",
                 "show_devices": "Zobrazit zařízení",
                 "toggle": "Přepnout"
             },
@@ -732,9 +740,15 @@
         "notification_toast": {
             "connection_lost": "Připojení bylo ztraceno. Připojuji se znovu...",
             "service_call_failed": "Službu {service} se nepodařilo zavolat.",
+            "started": "Home Assistant je spuštěn!",
+            "starting": "Home Assistant se spouští, ne všechno bude k dispozici, dokud nebude spuštění dokončeno.",
             "triggered": "Spuštěno {name}"
         },
         "panel": {
+            "calendar": {
+                "my_calendars": "Moje kalendáře",
+                "today": "Dnes"
+            },
             "config": {
                 "advanced_mode": {
                     "hint_enable": "Chybí vám možnosti konfigurace? Zapněte rozšířený režim",
@@ -752,9 +766,13 @@
                     },
                     "description": "Přehled všech oblastí ve vaší domácnosti.",
                     "editor": {
+                        "area_id": "ID oblasti",
                         "create": "VYTVOŘIT",
                         "default_name": "Nová oblast",
                         "delete": "Odstranit",
+                        "name": "Název",
+                        "name_required": "Název je povinný",
+                        "unknown_error": "Neznámá chyba",
                         "update": "UPRAVIT"
                     },
                     "picker": {
@@ -789,6 +807,7 @@
                                     "label": "Zpoždění"
                                 },
                                 "device_id": {
+                                    "action": "Akce",
                                     "extra_fields": {
                                         "code": "Kód"
                                     },
@@ -830,12 +849,16 @@
                                     "label": "A"
                                 },
                                 "device": {
+                                    "condition": "Podmínka",
                                     "extra_fields": {
                                         "above": "Větší než",
                                         "below": "Menší než",
                                         "for": "Doba trvání"
                                     },
                                     "label": "Zařízení"
+                                },
+                                "not": {
+                                    "label": "Ne"
                                 },
                                 "numeric_state": {
                                     "above": "Větší než",
@@ -905,7 +928,8 @@
                                         "below": "Menší než",
                                         "for": "Doba trvání"
                                     },
-                                    "label": "Zařízení"
+                                    "label": "Zařízení",
+                                    "trigger": "Spouštěč"
                                 },
                                 "event": {
                                     "event_data": "Data události",
@@ -1168,7 +1192,9 @@
                                 "edit_requires_storage": "Editor je zakázán, protože konfigurace je uložena v configuration.yaml.",
                                 "elevation": "Nadmořská výška",
                                 "elevation_meters": "metrů",
+                                "external_url": "Externí adresa URL",
                                 "imperial_example": "Stupně Fahrenheita, libry",
+                                "internal_url": "Interní adresa URL",
                                 "latitude": "Zeměpisná šířka",
                                 "location_name": "Název instalace Home Assistant",
                                 "longitude": "Zeměpisná délka",
@@ -1231,14 +1257,17 @@
                         "integration": "Integrace",
                         "manufacturer": "Výrobce",
                         "model": "Model",
+                        "no_area": "Žádná oblast",
                         "no_devices": "Žádná zařízení"
                     },
                     "delete": "Odstranit",
                     "description": "Správa připojených zařízení",
+                    "device_info": "Informace o zařízení",
                     "device_not_found": "Zařízení nebylo nalezeno.",
                     "entities": {
                         "add_entities_lovelace": "Přidat všechny entity zařízení do Lovelace",
                         "entities": "Entity",
+                        "hide_disabled": "Skrýt zakázané",
                         "none": "Toto zařízení nemá žádné entity"
                     },
                     "name": "Jméno",
@@ -1356,7 +1385,8 @@
                         "restart_confirm": "Restartujte Home Assistant pro odstranění této integrace",
                         "settings_button": "Upravit nastavení pro {integration}",
                         "system_options": "Systémové možnosti pro {integration}",
-                        "system_options_button": "Systémové možnosti pro {integration}"
+                        "system_options_button": "Systémové možnosti pro {integration}",
+                        "unnamed_entry": "Nepojmenovaný záznam"
                     },
                     "config_flow": {
                         "aborted": "Přerušeno",
@@ -1808,21 +1838,51 @@
                         "set_wakeup": "Nastavit interval probuzení",
                         "true": "True"
                     },
+                    "node_management": {
+                        "add_to_group": "Přidat do skupiny",
+                        "entities": "Entity tohoto uzlu",
+                        "entity_info": "Informace o entitě",
+                        "exclude_entity": "Vyloučit tuto entitu z Home Assistant",
+                        "group": "Skupina",
+                        "header": "Správa uzlů Z-Wave",
+                        "introduction": "Spusťte příkazy Z-Wave, které ovlivňují jediný uzel. Vyberte uzel pro zobrazení seznamu dostupných příkazů.",
+                        "max_associations": "Maximální počet asociací:",
+                        "node_group_associations": "Přidružení skupiny uzlů",
+                        "node_protection": "Ochrana uzlu",
+                        "node_to_control": "Uzel k řízení",
+                        "nodes": "Uzly",
+                        "nodes_hint": "Vyberte uzel pro zobrazení možností daného uzlu",
+                        "nodes_in_group": "Další uzly v této skupině:",
+                        "pooling_intensity": "Intenzita dotazování",
+                        "protection": "Ochrana",
+                        "remove_broadcast": "Odebrat vysílání",
+                        "remove_from_group": "Odebrat ze skupiny",
+                        "set_protection": "Nastavit ochranu"
+                    },
                     "ozw_log": {
                         "header": "Protokol OZW",
-                        "introduction": "Zobrazit protokol. 0 je minimum (načte celý protokol) a 1000 je maximum. Načíst zobrazí statický protokol a tail automaticky aktualizuje protokol s naposledy zvoleným počtem řádků."
+                        "introduction": "Zobrazit protokol. 0 je minimum (načte celý protokol) a 1000 je maximum. Načíst zobrazí statický protokol a tail automaticky aktualizuje protokol s naposledy zvoleným počtem řádků.",
+                        "last_log_lines": "Počet řádků posledního protokolu",
+                        "load": "Načíst"
                     },
                     "services": {
                         "add_node": "Přidat uzel",
                         "add_node_secure": "Přidat zabezpečený uzel",
                         "cancel_command": "Zrušit příkaz",
                         "heal_network": "Vyléčit síť",
+                        "heal_node": "Uzdravit uzel",
+                        "node_info": "Informace o uzlu",
+                        "refresh_entity": "Znovu načíst Entitu",
+                        "refresh_node": "Obnovit uzel",
+                        "remove_failed_node": "Odebrat selhaný uzel",
                         "remove_node": "Odebrat uzel",
+                        "replace_failed_node": "Nahradit selhaný uzel",
                         "save_config": "Uložit konfiguraci",
                         "soft_reset": "Měkký reset",
                         "start_network": "Spustit síť",
                         "stop_network": "Zastavit síť",
-                        "test_network": "Testovat síť"
+                        "test_network": "Testovat síť",
+                        "test_node": "Otestovat uzel"
                     },
                     "values": {
                         "header": "Hodnoty uzlu"
@@ -1860,10 +1920,13 @@
                         "built_using": "Sestaveno pomocí",
                         "custom_uis": "Vlastní uživatelská rozhraní:",
                         "developed_by": "Vyvinuto partou úžasných lidí.",
+                        "documentation": "Dokumentace",
                         "frontend": "frontend-ui",
                         "frontend_version": "Verze rozhraní frontend: {version} - {type}",
                         "home_assistant_logo": "Home Assistant logo",
                         "icons_by": "Ikony od",
+                        "integrations": "Integrace",
+                        "issues": "Problémy",
                         "license": "Publikováno pod licencí Apache 2.0",
                         "path_configuration": "Cesta k souboru configuration.yaml: {path}",
                         "server": "server",
@@ -1978,6 +2041,10 @@
                         "add_item": "Přidat položku",
                         "checked_items": "Označené položky",
                         "clear_items": "Vymazat označené položky"
+                    },
+                    "starting": {
+                        "description": "Home Assistant se spouští, čekejte prosím.",
+                        "header": "Home Assistant se spouští..."
                     }
                 },
                 "changed_toast": {
@@ -2054,6 +2121,7 @@
                             "name": "Název",
                             "no_theme": "Žádný motiv",
                             "refresh_interval": "Interval obnovení",
+                            "secondary_info_attribute": "Sekundární informační atribut",
                             "show_icon": "Zobrazit ikonu?",
                             "show_name": "Zobrazit název?",
                             "show_state": "Zobrazit stav?",
@@ -2144,7 +2212,8 @@
                         },
                         "weather-forecast": {
                             "description": "Karta Předpověď počasí zobrazuje počasí. Velmi užitečná pro použití v rozhraní, které lidé zobrazují na zdi.",
-                            "name": "Předpověď počasí"
+                            "name": "Předpověď počasí",
+                            "show_forecast": "Zobrazit předpověď"
                         }
                     },
                     "cardpicker": {
@@ -2268,7 +2337,8 @@
                     "attribute_not_found": "Atribut {attribute} není k dispozici v: {entity}",
                     "entity_non_numeric": "Entita není číselná: {entity}",
                     "entity_not_found": "Entita není k dispozici: {entity}",
-                    "entity_unavailable": "Entita {entity} není aktuálně k dispozici."
+                    "entity_unavailable": "Entita {entity} není aktuálně k dispozici.",
+                    "starting": "Home Assistant se spouští, vše ještě nemusí být dostupné"
                 }
             },
             "mailbox": {
@@ -2281,6 +2351,8 @@
                 "abort_intro": "Přihlášení bylo zrušeno",
                 "authorizing_client": "Chystáte se dát {clientId} práva pro instanci Home Assistant.",
                 "form": {
+                    "error": "Chyba: {error}",
+                    "next": "Další",
                     "providers": {
                         "command_line": {
                             "abort": {
@@ -2366,6 +2438,7 @@
                             }
                         }
                     },
+                    "start_over": "Začít znovu",
                     "unknown_error": "Něco se pokazilo",
                     "working": "Počkejte prosím"
                 },

@@ -28,7 +28,7 @@ import type { HomeAssistant, WeatherEntity } from "../../../types";
 import { actionHandler } from "../common/directives/action-handler-directive";
 import { findEntities } from "../common/find-entites";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
-import "../components/hui-warning";
+import { createEntityNotFoundWarning } from "../components/hui-warning";
 import type { LovelaceCard, LovelaceCardEditor } from "../types";
 import type { WeatherForecastCardConfig } from "./types";
 import { installResizeObserver } from "../common/install-resize-observer";
@@ -66,8 +66,8 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
 
   @property() private _config?: WeatherForecastCardConfig;
 
-  @property({ type: Boolean, reflect: true, attribute: "narrow" })
-  private _narrow = false;
+  @property({ type: Boolean, reflect: true, attribute: "veryverynarrow" })
+  private _veryVeryNarrow = false;
 
   private _resizeObserver?: ResizeObserver;
 
@@ -137,13 +137,9 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
 
     if (!stateObj) {
       return html`
-        <hui-warning
-          >${this.hass.localize(
-            "ui.panel.lovelace.warning.entity_not_found",
-            "entity",
-            this._config.entity
-          )}</hui-warning
-        >
+        <hui-warning>
+          ${createEntityNotFoundWarning(this.hass, this._config.entity)}
+        </hui-warning>
       `;
     }
 
@@ -162,7 +158,7 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
     const forecast =
       this._config?.show_forecast !== false &&
       stateObj.attributes.forecast?.length
-        ? stateObj.attributes.forecast.slice(0, this._narrow ? 3 : 5)
+        ? stateObj.attributes.forecast.slice(0, this._veryVeryNarrow ? 3 : 5)
         : undefined;
 
     let hourly: boolean | undefined;
@@ -310,17 +306,17 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
       return;
     }
 
-    this._narrow = this.offsetWidth < 375;
+    if (this.offsetWidth < 375) {
+      this.setAttribute("narrow", "");
+    } else {
+      this.removeAttribute("narrow");
+    }
     if (this.offsetWidth < 300) {
       this.setAttribute("verynarrow", "");
     } else {
       this.removeAttribute("verynarrow");
     }
-    if (this.offsetWidth < 225) {
-      this.setAttribute("veryverynarrow", "");
-    } else {
-      this.removeAttribute("veryverynarrow");
-    }
+    this._veryVeryNarrow = this.offsetWidth < 245;
   }
 
   static get styles(): CSSResult[] {

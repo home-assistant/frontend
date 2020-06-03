@@ -9,7 +9,7 @@ const workboxBuild = require("workbox-build");
 const sourceMapUrl = require("source-map-url");
 const paths = require("../paths.js");
 
-const swDest = path.resolve(paths.root, "service_worker.js");
+const swDest = path.resolve(paths.app_output_root, "service_worker.js");
 
 const writeSW = (content) => fs.outputFileSync(swDest, content.trim() + "\n");
 
@@ -31,32 +31,38 @@ self.addEventListener('install', (event) => {
 gulp.task("gen-service-worker-app-prod", async () => {
   // Read bundled source file
   const bundleManifestLatest = require(path.resolve(
-    paths.output,
+    paths.app_output_latest,
     "manifest.json"
   ));
   let serviceWorkerContent = fs.readFileSync(
-    paths.root + bundleManifestLatest["service_worker.js"],
+    paths.app_output_root + bundleManifestLatest["service_worker.js"],
     "utf-8"
   );
 
   // Delete old file from frontend_latest so manifest won't pick it up
-  fs.removeSync(paths.root + bundleManifestLatest["service_worker.js"]);
-  fs.removeSync(paths.root + bundleManifestLatest["service_worker.js.map"]);
+  fs.removeSync(
+    paths.app_output_root + bundleManifestLatest["service_worker.js"]
+  );
+  fs.removeSync(
+    paths.app_output_root + bundleManifestLatest["service_worker.js.map"]
+  );
 
   // Remove ES5
   const bundleManifestES5 = require(path.resolve(
-    paths.output_es5,
+    paths.app_output_es5,
     "manifest.json"
   ));
-  fs.removeSync(paths.root + bundleManifestES5["service_worker.js"]);
-  fs.removeSync(paths.root + bundleManifestES5["service_worker.js.map"]);
+  fs.removeSync(paths.app_output_root + bundleManifestES5["service_worker.js"]);
+  fs.removeSync(
+    paths.app_output_root + bundleManifestES5["service_worker.js.map"]
+  );
 
   const workboxManifest = await workboxBuild.getManifest({
     // Files that mach this pattern will be considered unique and skip revision check
     // ignore JS files + translation files
     dontCacheBustURLsMatching: /(frontend_latest\/.+|static\/translations\/.+)/,
 
-    globDirectory: paths.root,
+    globDirectory: paths.app_output_root,
     globPatterns: [
       "frontend_latest/*.js",
       // Cache all English translations because we catch them as fallback

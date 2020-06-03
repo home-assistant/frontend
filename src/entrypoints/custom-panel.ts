@@ -1,3 +1,4 @@
+import "../resources/compatibility";
 import { PolymerElement } from "@polymer/polymer";
 import { fireEvent } from "../common/dom/fire_event";
 import { loadJS } from "../common/dom/load_resource";
@@ -17,12 +18,9 @@ let es5Loaded: Promise<unknown> | undefined;
 
 window.loadES5Adapter = () => {
   if (!es5Loaded) {
-    es5Loaded = Promise.all([
-      loadJS(
-        `${__STATIC_PATH__}polyfills/custom-elements-es5-adapter.js`
-      ).catch(),
-      import(/* webpackChunkName: "compat" */ "./compatibility"),
-    ]);
+    es5Loaded = loadJS(
+      `${__STATIC_PATH__}polyfills/custom-elements-es5-adapter.js`
+    ).catch(); // Swallow errors as it raises errors on old browsers.
   }
   return es5Loaded;
 };
@@ -51,7 +49,6 @@ function initialize(panel: CustomPanelInfo, properties: {}) {
   }
 
   if (__BUILD__ === "es5") {
-    // Load ES5 adapter. Swallow errors as it raises errors on old browsers.
     start = start.then(() => window.loadES5Adapter());
   }
 

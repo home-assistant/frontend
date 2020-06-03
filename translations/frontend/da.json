@@ -474,6 +474,7 @@
         },
         "common": {
             "and": "og",
+            "back": "Tilbage",
             "cancel": "Annuller",
             "close": "Luk",
             "delete": "Slet",
@@ -505,6 +506,7 @@
             "device-picker": {
                 "clear": "Ryd",
                 "device": "Enhed",
+                "no_area": "Intet område",
                 "show_devices": "Vis enheder",
                 "toggle": "Til/fra"
             },
@@ -738,6 +740,8 @@
         "notification_toast": {
             "connection_lost": "Forbindelse afbrudt. Opretter forbindelse igen...",
             "service_call_failed": "Kunne ikke kalde tjenesten {service}.",
+            "started": "Home Assistant er startet!",
+            "starting": "Home Assistant starter. Nogle funktioner er måske ikke tilgængelige før opstarten er færdig.",
             "triggered": "Udløste {name}"
         },
         "panel": {
@@ -762,9 +766,13 @@
                     },
                     "description": "Oversigt over alle områder i dit hjem.",
                     "editor": {
+                        "area_id": "Område-id",
                         "create": "Opret",
                         "default_name": "Nyt område",
                         "delete": "Slet",
+                        "name": "Navn",
+                        "name_required": "Navn er påkrævet",
+                        "unknown_error": "Ukendt fejl",
                         "update": "Opdater"
                     },
                     "picker": {
@@ -799,6 +807,7 @@
                                     "label": "Forsinkelse"
                                 },
                                 "device_id": {
+                                    "action": "Handling",
                                     "extra_fields": {
                                         "code": "Kode"
                                     },
@@ -840,6 +849,7 @@
                                     "label": "Og"
                                 },
                                 "device": {
+                                    "condition": "Betingelse",
                                     "extra_fields": {
                                         "above": "Over",
                                         "below": "Under",
@@ -918,7 +928,8 @@
                                         "below": "Under",
                                         "for": "Varighed"
                                     },
-                                    "label": "Enhed"
+                                    "label": "Enhed",
+                                    "trigger": "Udløser"
                                 },
                                 "event": {
                                     "event_data": "Hændelsesdata",
@@ -1246,6 +1257,7 @@
                         "integration": "Integration",
                         "manufacturer": "Producent",
                         "model": "Model",
+                        "no_area": "Intet område",
                         "no_devices": "Ingen enheder"
                     },
                     "delete": "Slet",
@@ -1254,7 +1266,9 @@
                     "device_not_found": "Enhed blev ikke fundet.",
                     "entities": {
                         "add_entities_lovelace": "Tilføj til Lovelace",
+                        "disabled_entities": "+{count} {count, plural,\n  one {deaktiveret entitet}\n  other {deaktiverede entiteter}\n}",
                         "entities": "Entiteter",
+                        "hide_disabled": "Skjul deaktiverede",
                         "none": "Denne enhed har ingen entiteter"
                     },
                     "name": "Navn",
@@ -2000,6 +2014,10 @@
                         "add_item": "Tilføj element",
                         "checked_items": "Markerede elementer",
                         "clear_items": "Ryd markerede elementer"
+                    },
+                    "starting": {
+                        "description": "Home Assistant starter. Vent venligst.",
+                        "header": "Home Assistant starter..."
                     }
                 },
                 "changed_toast": {
@@ -2292,7 +2310,8 @@
                     "attribute_not_found": "Egenskaben {attribute} er ikke tilgængelig i: {entity}",
                     "entity_non_numeric": "Entitet er ikke-numerisk: {entity}",
                     "entity_not_found": "Entitet ikke tilgængelig: {entity}",
-                    "entity_unavailable": "{entity} er ikke tilgængelig i øjeblikket"
+                    "entity_unavailable": "{entity} er ikke tilgængelig i øjeblikket",
+                    "starting": "Home Assistant starter. Nogle funktioner er måske ikke tilgængelige endnu."
                 }
             },
             "mailbox": {
@@ -2305,6 +2324,8 @@
                 "abort_intro": "Login afbrudt",
                 "authorizing_client": "Du er ved at give {clientId} adgang til din Home Assistant-instans.",
                 "form": {
+                    "error": "Fejl: {error}",
+                    "next": "Næste",
                     "providers": {
                         "command_line": {
                             "abort": {
@@ -2390,6 +2411,7 @@
                             }
                         }
                     },
+                    "start_over": "Start forfra",
                     "unknown_error": "Noget gik galt",
                     "working": "Vent venligst"
                 },

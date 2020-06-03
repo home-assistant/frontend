@@ -16,7 +16,6 @@ import "../../components/ha-form/ha-form";
 import type { HaFormSchema } from "../../components/ha-form/ha-form";
 import "../../components/ha-markdown";
 import type { DataEntryFlowStepForm } from "../../data/data_entry_flow";
-import "../../resources/ha-style";
 import type { HomeAssistant } from "../../types";
 import type { FlowConfig } from "./show-dialog-data-entry-flow";
 import { configFlowContentStyles } from "./styles";

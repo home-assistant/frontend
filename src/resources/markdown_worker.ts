@@ -49,9 +49,10 @@ const renderMarkdown = (
   });
 };
 
-// Export for types
-export const api = {
+const api = {
   renderMarkdown,
 };
+
+export type api = typeof api;
 
 expose(api);

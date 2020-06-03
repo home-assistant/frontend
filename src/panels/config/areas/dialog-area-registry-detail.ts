@@ -56,13 +56,24 @@ class DialogAreaDetail extends LitElement {
         <paper-dialog-scrollable>
           ${this._error ? html` <div class="error">${this._error}</div> ` : ""}
           <div class="form">
-            ${entry ? html` <div>Area ID: ${entry.area_id}</div> ` : ""}
+            ${entry
+              ? html`
+                  <div>
+                    ${this.hass.localize(
+                      "ui.panel.config.areas.editor.area_id"
+                    )}:
+                    ${entry.area_id}
+                  </div>
+                `
+              : ""}
 
             <paper-input
               .value=${this._name}
               @value-changed=${this._nameChanged}
-              label="Name"
-              error-message="Name is required"
+              .label=${this.hass.localize("ui.panel.config.areas.editor.name")}
+              .errorMessage=${this.hass.localize(
+                "ui.panel.config.areas.editor.name_required"
+              )}
               .invalid=${nameInvalid}
             ></paper-input>
           </div>
@@ -110,7 +121,9 @@ class DialogAreaDetail extends LitElement {
       }
       this._params = undefined;
     } catch (err) {
-      this._error = err.message || "Unknown error";
+      this._error =
+        err.message ||
+        this.hass.localize("ui.panel.config.areas.editor.unknown_error");
     } finally {
       this._submitting = false;
     }

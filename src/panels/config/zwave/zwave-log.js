@@ -9,6 +9,7 @@ import "../../../components/ha-card";
 import { EventsMixin } from "../../../mixins/events-mixin";
 import LocalizeMixin from "../../../mixins/localize-mixin";
 import "../ha-config-section";
+import "../../../styles/polymer-ha-style";
 
 let registeredDialog = false;
 
@@ -41,12 +42,12 @@ class OzwLog extends LocalizeMixin(EventsMixin(PolymerElement)) {
       </span>
       <ha-card class="content">
         <div class="device-picker">
-          <paper-input label="Number of last log lines." type="number" min="0" max="1000" step="10" value="{{numLogLines}}">
+          <paper-input label="[[localize('ui.panel.config.zwave.ozw_log.last_log_lines')]]" type="number" min="0" max="1000" step="10" value="{{numLogLines}}">
           </paper-input>
         </div>
         <div class="card-actions">
-          <mwc-button raised="true" on-click="_openLogWindow">Load</mwc-button>
-          <mwc-button raised="true" on-click="_tailLog" disabled="{{_completeLog}}">Tail</mwc-button>
+          <mwc-button raised="true" on-click="_openLogWindow">[[localize('ui.panel.config.zwave.ozw_log.load')]]</mwc-button>
+          <mwc-button raised="true" on-click="_tailLog" disabled="{{_completeLog}}">[[localize('ui.panel.config.zwave.ozw_log.tail')]]</mwc-button>
       </ha-card>
     </ha-config-section>
 `;

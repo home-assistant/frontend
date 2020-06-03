@@ -1,6 +1,6 @@
 {
   "background_color": "#FFFFFF",
-  "description": "Open-source home automation platform running on Python 3.",
+  "description": "Home automation platform that puts local control and privacy first.",
   "dir": "ltr",
   "display": "standalone",
   "icons": [
@@ -31,7 +31,7 @@
   ],
   "lang": "en-US",
   "name": "Home Assistant Demo",
-  "short_name": "Demo",
+  "short_name": "HA Demo",
   "start_url": "/?homescreen=1",
   "theme_color": "#03A9F4"
 }

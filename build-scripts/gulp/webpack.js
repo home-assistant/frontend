@@ -38,9 +38,9 @@ const runDevServer = ({
 
 const handler = (done) => (err, stats) => {
   if (err) {
-    console.log(err.stack || err);
+    log.error(err.stack || err);
     if (err.details) {
-      console.log(err.details);
+      log.error(err.details);
     }
     return;
   }
@@ -48,7 +48,7 @@ const handler = (done) => (err, stats) => {
   log(`Build done @ ${new Date().toLocaleTimeString()}`);
 
   if (stats.hasErrors() || stats.hasWarnings()) {
-    console.log(stats.toString("minimal"));
+    log.warn(stats.toString("minimal"));
   }
 
   if (done) {
@@ -64,7 +64,7 @@ gulp.task("webpack-watch-app", () => {
   );
   gulp.watch(
     path.join(paths.translations_src, "en.json"),
-    gulp.series("build-translations", "copy-translations")
+    gulp.series("build-translations", "copy-translations-app")
   );
 });
 
@@ -82,7 +82,7 @@ gulp.task(
 gulp.task("webpack-dev-server-demo", () => {
   runDevServer({
     compiler: webpack(bothBuilds(createDemoConfig, { isProdBuild: false })),
-    contentBase: paths.demo_root,
+    contentBase: paths.demo_output_root,
     port: 8090,
   });
 });
@@ -103,7 +103,7 @@ gulp.task(
 gulp.task("webpack-dev-server-cast", () => {
   runDevServer({
     compiler: webpack(bothBuilds(createCastConfig, { isProdBuild: false })),
-    contentBase: paths.cast_root,
+    contentBase: paths.cast_output_root,
     port: 8080,
     // Accessible from the network, because that's how Cast hits it.
     listenHost: "0.0.0.0",
@@ -152,7 +152,7 @@ gulp.task("webpack-dev-server-gallery", () => {
   runDevServer({
     // We don't use the es5 build, but the dev server will fuck up the publicPath if we don't
     compiler: webpack(bothBuilds(createGalleryConfig, { isProdBuild: false })),
-    contentBase: paths.gallery_root,
+    contentBase: paths.gallery_output_root,
     port: 8100,
   });
 });

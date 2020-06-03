@@ -1,4 +1,3 @@
-import "@polymer/paper-styles/typography";
 import "@polymer/polymer/lib/elements/dom-if";
 import "@polymer/polymer/lib/elements/dom-repeat";
 import "../../src/resources/ha-style";
