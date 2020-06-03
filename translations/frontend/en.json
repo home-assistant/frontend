@@ -478,6 +478,7 @@
             "cancel": "Cancel",
             "close": "Close",
             "delete": "Delete",
+            "error_required": "Required",
             "loading": "Loading",
             "next": "Next",
             "no": "No",
@@ -1221,6 +1222,7 @@
                     "different_include": "Possibly via a domain, a glob or a different include.",
                     "pick_attribute": "Pick an attribute to override",
                     "picker": {
+                        "entity": "Entity",
                         "header": "Customizations",
                         "introduction": "Tweak per-entity attributes. Added/edited customizations will take effect immediately. Removed customizations will take effect when the entity is updated."
                     },
@@ -1679,7 +1681,8 @@
                             "name": "Name",
                             "system": "System"
                         }
-                    }
+                    },
+                    "users_privileges_note": "The users group is a work in progress. The user will be unable to administer the instance via the UI. We're still auditing all management API endpoints to ensure that they correctly limit access to administrators."
                 },
                 "zha": {
                     "add_device_page": {
@@ -2048,7 +2051,7 @@
                         "clear_items": "Clear checked items"
                     },
                     "starting": {
-                        "description": "Home Assistant is starting up, please wait.",
+                        "description": "Home Assistant is starting, please wait...",
                         "header": "Home Assistant is starting..."
                     }
                 },
