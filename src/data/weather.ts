@@ -211,7 +211,7 @@ export const weatherSVGStyles = css`
 
 export const getWeatherStateSVG = (
   state: string,
-  daytime?: boolean
+  nighttime?: boolean
 ): SVGTemplateResult => {
   return svg`
   <svg
@@ -239,17 +239,17 @@ export const getWeatherStateSVG = (
       : ""
   }
   ${
-    state === "partlycloudy" && (daytime === undefined || daytime)
-      ? svg`
-          <path
-            class="sun"
-            d="m14.981 4.2112c0 1.9244-1.56 3.4844-3.484 3.4844-1.9244 0-3.4844-1.56-3.4844-3.4844s1.56-3.484 3.4844-3.484c1.924 0 3.484 1.5596 3.484 3.484"
-          />
-        `
-      : state === "partlycloudy" && !daytime
+    state === "partlycloudy" && nighttime
       ? svg`
           <path
             class="moon"
+            d="m14.981 4.2112c0 1.9244-1.56 3.4844-3.484 3.4844-1.9244 0-3.4844-1.56-3.4844-3.4844s1.56-3.484 3.4844-3.484c1.924 0 3.484 1.5596 3.484 3.484"
+          />
+        `
+      : state === "partlycloudy"
+      ? svg`
+          <path
+            class="sun"
             d="m14.981 4.2112c0 1.9244-1.56 3.4844-3.484 3.4844-1.9244 0-3.4844-1.56-3.4844-3.4844s1.56-3.484 3.4844-3.484c1.924 0 3.484 1.5596 3.484 3.484"
           />
         `
@@ -353,7 +353,7 @@ export const getWeatherStateSVG = (
 export const getWeatherStateIcon = (
   state: string,
   element: HTMLElement,
-  daytime?: boolean
+  nighttime?: boolean
 ): TemplateResult | undefined => {
   const userDefinedIcon = getComputedStyle(element).getPropertyValue(
     `--weather-icon-${state}`
@@ -370,7 +370,7 @@ export const getWeatherStateIcon = (
   }
 
   if (weatherSVGs.has(state)) {
-    return html`${getWeatherStateSVG(state, daytime)}`;
+    return html`${getWeatherStateSVG(state, nighttime)}`;
   }
 
   if (state in weatherIcons) {
