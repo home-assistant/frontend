@@ -53,6 +53,7 @@ class HaEntityHumidifier extends HaEntityToggle {
         display: inline-block;
         direction: ltr;
       }
+
       ${super.styles}
     `;
   }
