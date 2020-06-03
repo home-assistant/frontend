@@ -57,8 +57,11 @@ export const iconColorCSS = css`
     0% {
       opacity: 1;
     }
-    100% {
+    50% {
       opacity: 0;
+    }
+    100% {
+      opacity: 1;
     }
   }
 
