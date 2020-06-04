@@ -478,6 +478,7 @@
             "cancel": "取消",
             "close": "關閉",
             "delete": "刪除",
+            "error_required": "必填",
             "loading": "讀取中",
             "next": "下一步",
             "no": "否",
@@ -1221,6 +1222,7 @@
                     "different_include": "可能透過區域、全局或不同的包含。",
                     "pick_attribute": "選擇欲覆寫屬性",
                     "picker": {
+                        "entity": "物件",
                         "header": "自訂化",
                         "introduction": "調整每個物件屬性。新增/編輯自訂化將可以立即生效，移除自訂化則必須等到物件更新時、方能生效。"
                     },
@@ -1679,7 +1681,8 @@
                             "name": "名稱",
                             "system": "系統"
                         }
-                    }
+                    },
+                    "users_privileges_note": "使用者群組功能進行中。將無法透過 UI 進行使用者管理，仍在檢視所有管理  API Endpoint 以確保能夠正確符合管理員存取需求。"
                 },
                 "zha": {
                     "add_device_page": {
@@ -2048,7 +2051,7 @@
                         "clear_items": "清除已選取項目"
                     },
                     "starting": {
-                        "description": "Home Assistant 正在啟動，請稍候。",
+                        "description": "Home Assistant 正在啟動，請稍候...",
                         "header": "Home Assistant 正在啟動..."
                     }
                 },

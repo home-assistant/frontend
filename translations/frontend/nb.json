@@ -478,6 +478,7 @@
             "cancel": "Avbryt",
             "close": "Lukk",
             "delete": "Slett",
+            "error_required": "Nødvendig",
             "loading": "Laster",
             "next": "Neste",
             "no": "Nei",
@@ -1221,6 +1222,7 @@
                     "different_include": "Muligens via et domene, en glob eller noe annent som er inkluderet",
                     "pick_attribute": "Velg et attributt som skal overstyres",
                     "picker": {
+                        "entity": "Entitet",
                         "header": "Tilpasninger",
                         "introduction": "Justér attributter per entitet. Lagt til eller redigerte tilpasninger trer i kraft umiddelbart. Fjernede tilpasninger trer i kraft når entiteten blir oppdatert."
                     },
@@ -1679,7 +1681,8 @@
                             "name": "Navn",
                             "system": ""
                         }
-                    }
+                    },
+                    "users_privileges_note": "Brukere-gruppen er et pågående arbeid. Brukeren kan ikke administrere forekomsten via brukergrensesnittet. Vi overvåker fortsatt alle API-endepunkter for administrasjonsadministrasjon for å sikre at de begrenser tilgangen til administratorer på riktig måte."
                 },
                 "zha": {
                     "add_device_page": {
@@ -1866,7 +1869,8 @@
                         "header": "OZW-logg",
                         "introduction": "Vis loggen. 0 er minimum (laster hele loggen) og 1000 er maksimum. Load vil vise en statisk logg og halen vil automatisk oppdatere med det siste spesifiserte antall linjer av loggen.",
                         "last_log_lines": "Antall siste logglinjer",
-                        "load": "Laste"
+                        "load": "Laste",
+                        "tail": "Tail"
                     },
                     "services": {
                         "add_node": "Legg til node",
@@ -1875,6 +1879,7 @@
                         "heal_network": "Helbrede nettverk",
                         "heal_node": "Helbrede node",
                         "node_info": "Nodeinformasjon",
+                        "print_node": "Skrive ut node",
                         "refresh_entity": "Oppdater entitet",
                         "refresh_node": "Oppdater node",
                         "remove_failed_node": "Fjern feilet node",
@@ -2046,7 +2051,7 @@
                         "clear_items": "Fjern merkede elementer"
                     },
                     "starting": {
-                        "description": "Home Assistant starter, vennligst vent.",
+                        "description": "Home Assistant starter, vennligst vent...",
                         "header": "Home Assistant starter..."
                     }
                 },

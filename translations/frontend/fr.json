@@ -238,8 +238,8 @@
             "on": "Actif"
         },
         "light": {
-            "off": "Inactif",
-            "on": "Actif"
+            "off": "Éteint",
+            "on": "Allumé"
         },
         "lock": {
             "locked": "Verrouillé",
@@ -478,6 +478,7 @@
             "cancel": "Annuler",
             "close": "Fermer",
             "delete": "Supprimer",
+            "error_required": "Obligatoire",
             "loading": "Chargement",
             "next": "Suivant",
             "no": "Non",
@@ -1221,6 +1222,7 @@
                     "different_include": "Peut-être via un domaine, un glob ou un autre include.",
                     "pick_attribute": "Sélectionnez un attribut à remplacer",
                     "picker": {
+                        "entity": "Entité",
                         "header": "Personnalisations",
                         "introduction": "Ajuster les attributs par entité. Les personnalisations ajoutées / modifiées prendront effet immédiatement. Les personnalisations supprimées prendront effet lors de la mise à jour de l'entité."
                     },
@@ -1456,7 +1458,7 @@
                             "icon": "Icône",
                             "new_dashboard": "Ajouter un nouveau tableau de bord",
                             "remove_default": "Supprimer par défaut sur cet appareil",
-                            "require_admin": "Admin uniquement",
+                            "require_admin": "Administrateur uniquement",
                             "set_default": "Définir par défaut sur cet appareil",
                             "show_sidebar": "Afficher dans la barre latérale",
                             "title": "Titre",
@@ -1679,7 +1681,8 @@
                             "name": "Nom",
                             "system": "Système"
                         }
-                    }
+                    },
+                    "users_privileges_note": "Le groupe d'utilisateurs est en cours de développement. L'utilisateur ne pourra pas gérer l'instance via l'interface. Nous vérifions les entrées de l'interface de gestion pour assurer que les accès soient limités aux administrateurs."
                 },
                 "zha": {
                     "add_device_page": {
@@ -1843,13 +1846,20 @@
                     },
                     "node_management": {
                         "add_to_group": "Ajouter au groupe",
+                        "entities": "Entités du nœud",
+                        "entity_info": "Informations sur l'entité",
+                        "exclude_entity": "Exclure cette entité de Home Assistant",
                         "group": "Groupe",
                         "header": "Gestion des nœuds Z-Wave",
+                        "introduction": "Exécute des commandes Z-Wave affectant individuellement un nœud. Sélectionnez un nœud pour voir une liste des commandes disponibles.",
                         "max_associations": "Associations Max:",
+                        "node_group_associations": "Associations aux groupes de nœuds",
                         "node_protection": "Protection des nœuds",
-                        "node_to_control": "Noeud à contrôler",
-                        "nodes": "Noeuds",
+                        "node_to_control": "Nœud à contrôler",
+                        "nodes": "Nœuds",
+                        "nodes_hint": "Sélectionnez le nœud pour afficher les options par nœud",
                         "nodes_in_group": "Autres nœuds de ce groupe :",
+                        "pooling_intensity": "Intensité  polling",
                         "protection": "Protection",
                         "remove_broadcast": "Supprimer la diffusion",
                         "remove_from_group": "Supprimer du groupe",
@@ -1858,6 +1868,8 @@
                     "ozw_log": {
                         "header": "Journal OZW",
                         "introduction": "Afficher le journal. Entrer un nombre de 1 à 1000 lignes pour limiter le nombre de lignes chargées dans le journal, ou entrer 0 pour désactiver la limitation du nombre de lignes affichées (journal complet). \"Load\" affichera un instantané du journal, alors que \"Tail\" affichera le journal en l'actualisant au fur et à mesure que de nouvelles entrées apparaissent.",
+                        "last_log_lines": "Nombre de dernières lignes de journal",
+                        "load": "Charge",
                         "tail": "Queue"
                     },
                     "services": {
@@ -1867,6 +1879,7 @@
                         "heal_network": "Soigner le réseau",
                         "heal_node": "Guérir Nœud",
                         "node_info": "Informations sur le nœud",
+                        "print_node": "Imprimer le nœud",
                         "refresh_entity": "Actualiser l'entité",
                         "refresh_node": "Actualiser Nœud",
                         "remove_failed_node": "Supprimer le nœud défaillant",
@@ -2054,7 +2067,7 @@
                             "name": "Panneau d'alarme"
                         },
                         "button": {
-                            "description": "La carte Button vous permet d'ajouter des boutons pour effectuer des tâches.",
+                            "description": "La carte Bouton vous permet d'ajouter des boutons pour effectuer des tâches.",
                             "name": "Bouton"
                         },
                         "conditional": {
@@ -2129,7 +2142,7 @@
                         },
                         "glance": {
                             "columns": "Colonnes",
-                            "description": "La carte Coup d'oeil est utile pour regrouper plusieurs capteurs dans une vue d'ensemble compacte.",
+                            "description": "La carte Coup d'œil est utile pour regrouper plusieurs capteurs dans une vue d'ensemble compacte.",
                             "name": "Coup d'œil"
                         },
                         "history-graph": {
@@ -2163,7 +2176,7 @@
                             "name": "Markdown"
                         },
                         "media-control": {
-                            "description": "La carte Control des médias est utilisée pour afficher les entités du lecteur multimédia sur une interface avec des commandes faciles à utiliser.",
+                            "description": "La carte Contrôle des médias est utilisée pour afficher les entités du lecteur multimédia sur une interface avec des commandes faciles à utiliser.",
                             "name": "Contrôle des médias"
                         },
                         "picture-elements": {
@@ -2175,7 +2188,7 @@
                             "name": "Entité image"
                         },
                         "picture-glance": {
-                            "description": "La carte Picture Glance affiche une image et les états d'entité correspondants sous forme d'icône. Les entités sur le côté droit permettent de basculer entre les actions, d'autres affichent la boîte de dialogue plus d'informations.",
+                            "description": "La carte Coup d'œil affiche une image et les états d'entité correspondants sous forme d'icône. Les entités sur le côté droit permettent de basculer entre les actions, d'autres affichent la boîte de dialogue plus d'informations.",
                             "name": "Coup d'œil en image"
                         },
                         "picture": {
@@ -2187,7 +2200,7 @@
                             "name": "Statut de la plante"
                         },
                         "sensor": {
-                            "description": "La carte Capteur vous donne un aperçu rapide de l'état de vos sensors avec un graphique en option pour visualiser les changements au fil du temps.",
+                            "description": "La carte Capteur vous donne un aperçu rapide de l'état de vos capteurs avec un graphique en option pour visualiser les changements au fil du temps.",
                             "graph_detail": "Détail du graphique",
                             "graph_type": "Type de graphique",
                             "name": "Capteur"
@@ -2198,7 +2211,7 @@
                             "name": "Liste de courses"
                         },
                         "thermostat": {
-                            "description": "La carte Thermostat permet de contrôler votre entité climate. Vous permettant de changer la température et le mode de l'entité.",
+                            "description": "La carte Thermostat permet de contrôler votre entité de chauffage. Permettant de changer la température et le mode de l'entité.",
                             "name": "Thermostat"
                         },
                         "vertical-stack": {
@@ -2278,7 +2291,7 @@
                     "save_config": {
                         "cancel": "Oublie ce que j'ai dit, c'est pas grave.",
                         "close": "Fermer",
-                        "empty_config": "Commencez avec un tableau de bord vide",
+                        "empty_config": "Commencer avec un tableau de bord vide",
                         "header": "Prenez le contrôle de votre Interface Lovelace",
                         "para": "Par défaut, Home Assistant maintient votre interface utilisateur et la met à jour lorsque de nouvelles entités ou de nouveaux composants Lovelace UI sont disponibles. Si vous prenez le contrôle, nous ne ferons plus les changements automatiquement pour vous.",
                         "para_sure": "Êtes-vous sûr de vouloir prendre le contrôle de l'interface utilisateur?",
@@ -2325,7 +2338,7 @@
                 "views": {
                     "confirm_delete": "Êtes-vous sûr de vouloir supprimer cette vue?",
                     "confirm_delete_existing_cards": "La suppression de cette vue supprimera également les cartes",
-                    "confirm_delete_existing_cards_text": "Voulez-vous vraiment supprimer votre vue ''{name}''? La vue contient {number} cartes qui seront supprimées. Cette action ne peut pas être annulée.",
+                    "confirm_delete_existing_cards_text": "Voulez-vous vraiment supprimer votre vue ''{name}'' ? La vue contient {number} cartes qui seront supprimées. Cette action ne peut pas être annulée.",
                     "confirm_delete_text": "Voulez-vous vraiment supprimer votre vue ''{name}''?"
                 },
                 "warning": {
