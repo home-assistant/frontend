@@ -740,6 +740,8 @@
         "notification_toast": {
             "connection_lost": "Ei yhteyttä. Yritetään muodostaa yhteys uudelleen...",
             "service_call_failed": "Palvelua {service} ei onnistuttu kutsumaan.",
+            "started": "Home Assistant on käynnistynyt!",
+            "starting": "Home Assistant käynnistyy, kaikki ei ole vielä valmista.",
             "triggered": "Laukaisi kohteen {name}"
         },
         "panel": {
@@ -2039,6 +2041,9 @@
                         "add_item": "Lisää",
                         "checked_items": "Valitut kohteet",
                         "clear_items": "Tyhjää valitut kohteet"
+                    },
+                    "starting": {
+                        "header": "Home Assistant käynnistyy..."
                     }
                 },
                 "changed_toast": {

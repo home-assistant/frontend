@@ -478,6 +478,7 @@
             "cancel": "Cancelar",
             "close": "Cerrar",
             "delete": "Eliminar",
+            "error_required": "Obligatorio",
             "loading": "Cargando",
             "next": "Siguiente",
             "no": "No",
@@ -1221,6 +1222,7 @@
                     "different_include": "Posiblemente a través de un dominio, un glob o un include diferente.",
                     "pick_attribute": "Selecciona un atributo para anular",
                     "picker": {
+                        "entity": "Entidad",
                         "header": "Personalizaciones",
                         "introduction": "Ajustar los atributos de cada entidad. Las personalizaciones añadidas/editadas tendrán efecto inmediatamente. Las personalizaciones eliminadas tendrán efecto cuando la entidad se actualice."
                     },
@@ -1679,7 +1681,8 @@
                             "name": "Nombre",
                             "system": "Sistema"
                         }
-                    }
+                    },
+                    "users_privileges_note": "El grupo de usuarios es un trabajo en progreso. El usuario no podrá administrar la instancia a través de la interfaz de usuario. Todavía estamos auditando todos los endpoints de la API de administración para garantizar que se limita correctamente el acceso sólo a los administradores."
                 },
                 "zha": {
                     "add_device_page": {
@@ -2048,7 +2051,7 @@
                         "clear_items": "Borrar elementos marcados"
                     },
                     "starting": {
-                        "description": "Home Assistant se está iniciando, espera por favor.",
+                        "description": "Home Assistant está iniciando, espera por favor...",
                         "header": "Home Assistant se está iniciando..."
                     }
                 },

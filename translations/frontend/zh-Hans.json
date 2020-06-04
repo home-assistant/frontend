@@ -478,6 +478,7 @@
             "cancel": "取消",
             "close": "关闭",
             "delete": "删除",
+            "error_required": "必填",
             "loading": "加载中",
             "next": "下一步",
             "no": "否",
@@ -1221,6 +1222,7 @@
                     "different_include": "可能是通过域、全局或其他引用。",
                     "pick_attribute": "选择要覆盖的属性",
                     "picker": {
+                        "entity": "实体",
                         "header": "自定义",
                         "introduction": "调整每个实体的属性。添加/编辑的自定义设置将立即生效，删除的自定义设置将在实体更新时生效。"
                     },
@@ -1679,7 +1681,8 @@
                             "name": "名称",
                             "system": "系统"
                         }
-                    }
+                    },
+                    "users_privileges_note": "用户组功能正在开发中。该功能使普通用户无法通过 UI 进行管理操作。我们正在审计所有管理 API，确保其仅限管理员访问。"
                 },
                 "zha": {
                     "add_device_page": {

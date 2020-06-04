@@ -356,7 +356,7 @@
                 "away_mode": "Mode absent",
                 "cooling": "{name} refredant",
                 "current_temperature": "Temperatura actual de {name}",
-                "currently": "Actualment",
+                "currently": "Actual",
                 "fan_mode": "Velocitat ventilador",
                 "heating": "{name} escalfant",
                 "high": "alt",
@@ -478,6 +478,7 @@
             "cancel": "Cancel·la",
             "close": "Tanca",
             "delete": "Elimina",
+            "error_required": "Obligatori",
             "loading": "Carregant",
             "next": "Següent",
             "no": "No",
@@ -1221,6 +1222,7 @@
                     "different_include": "Possiblement a través d'un domini o una altra inclusió diferent.",
                     "pick_attribute": "Selecciona un atribut per substituir-lo",
                     "picker": {
+                        "entity": "Entitat",
                         "header": "Personalitzacions",
                         "introduction": "Personalitza els atributs de les entitats al teu gust. Les personalitzacions afegides/modificades apareixeran immediatament, les que s'hagin eliminat tindran efecte quan l'entitat s'actualitzi."
                     },
@@ -1679,7 +1681,8 @@
                             "name": "Nom",
                             "system": "Sistema"
                         }
-                    }
+                    },
+                    "users_privileges_note": "El grup d'usuaris encara no està del tot acabat. L'usuari no podrà administrar la instància a través de la interfície d'usuari. Encara estem verificant tots els punts de l'API de gestió per assegurar-nos que limiten correctament l'accés als administradors."
                 },
                 "zha": {
                     "add_device_page": {
@@ -2048,7 +2051,7 @@
                         "clear_items": "Esborrar els articles seleccionats"
                     },
                     "starting": {
-                        "description": "Home Assistant està iniciant-se, espera un moment.",
+                        "description": "Home Assistant s'està iniciant, espera un moment...",
                         "header": "Home Assistant està iniciant-se..."
                     }
                 },
@@ -2565,7 +2568,7 @@
                     "create_failed": "No s'ha pogut crear el token d'autenticació d'accés.",
                     "created_at": "Creat el {date}",
                     "delete_failed": "No s'ha pogut eliminar el token d'autenticació d'accés.",
-                    "description": "Crea tokens d'autenticació d'accés de llarga durada per permetre als teus programes (scripts) interactuar amb la instància de Home Assistant. Cada token d'autenticació serà vàlid durant deu anys després de la seva creació. Els següents tokens d'autenticació d'accés de llarga durada estan actius actualment.",
+                    "description": "Crea tokens d'autenticació d'accés de llarga durada per permetre als teus programes/scripts interactuar amb la instància de Home Assistant. Cada token és vàlid durant deu anys després de la seva creació. Els següents tokens d'autenticació d'accés de llarga durada estan actius actualment.",
                     "empty_state": "Encara no tens tokens d'autenticaciós d'accés de llarga durada.",
                     "header": "Tokens d'autenticació d'accés de llarga durada",
                     "last_used": "Darrer ús el {date} des de {location}",

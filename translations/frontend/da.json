@@ -478,6 +478,7 @@
             "cancel": "Annuller",
             "close": "Luk",
             "delete": "Slet",
+            "error_required": "Påkrævet",
             "loading": "Indlæser",
             "next": "Næste",
             "no": "Nej",
@@ -1221,6 +1222,7 @@
                     "different_include": "Eventuelt via et domæne, et glob eller et andet include.",
                     "pick_attribute": "Vælg en egenskab, du vil tilsidesætte",
                     "picker": {
+                        "entity": "Entitet",
                         "header": "Tilpasninger",
                         "introduction": "Tilpas entitetsegenskaber. Tilføjede/redigerede tilpasninger træder i kraft med det samme. Fjernede tilpasninger træder i kraft når entiteten opdateres."
                     },
@@ -1679,7 +1681,8 @@
                             "name": "Navn",
                             "system": "System"
                         }
-                    }
+                    },
+                    "users_privileges_note": "Bruger-gruppen stadig under udvikling. Brugeren vil ikke være i stand til at administrere instansen via brugerfladen. Vi kigger stadig alle administrations-API-slutpunkter igennem for at sikre, at de korrekt begrænser adgangen til administratorer."
                 },
                 "zha": {
                     "add_device_page": {
