@@ -279,7 +279,7 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
                               ${getWeatherStateIcon(
                                 item.condition,
                                 this,
-                                !item.daytime
+                                !(item.daytime || item.daytime === undefined)
                               )}
                             </div>
                           `
