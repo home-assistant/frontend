@@ -478,6 +478,7 @@
             "cancel": "Anuluj",
             "close": "Zamknij",
             "delete": "Usuń",
+            "error_required": "To pole jest wymagane",
             "loading": "Ładowanie",
             "next": "Dalej",
             "no": "Nie",
@@ -1221,6 +1222,7 @@
                     "different_include": "Możliwe poprzez domenę, globalnie lub inny plik.",
                     "pick_attribute": "Wybierz atrybut do nadpisania",
                     "picker": {
+                        "entity": "Encja",
                         "header": "Dostosowywanie",
                         "introduction": "Dostosuj atrybuty encji. Dodawane/edytowane dostosowywania zostaną wprowadzone natychmiast. Usunięte dostosowania zostaną uwzględnione, gdy encja zostanie zaktualizowana."
                     },
@@ -1460,7 +1462,7 @@
                             "set_default": "Ustaw jako domyślny na tym urządzeniu",
                             "show_sidebar": "Wyświetlanie na pasku bocznym",
                             "title": "Tytuł w pasku bocznym",
-                            "title_required": "Tytuł jest wymagany.",
+                            "title_required": "Tytuł jest wymagany",
                             "update": "Aktualizuj",
                             "url": "URL",
                             "url_error_msg": "Adres URL nie może zawierać spacji ani znaków specjalnych, z wyjątkiem _ i -"
@@ -1679,7 +1681,8 @@
                             "name": "Nazwa",
                             "system": "System"
                         }
-                    }
+                    },
+                    "users_privileges_note": "Prace nad grupami użytkowników trwają. Użytkownik nie może administrować instancją za pomocą interfejsu użytkownika. Nadal kontrolujemy wszystkie punkty końcowe interfejsu API zarządzania, aby upewnić się, że poprawnie ograniczają dostęp tylko dla administratorów."
                 },
                 "zha": {
                     "add_device_page": {
@@ -1743,7 +1746,7 @@
                         "caption": "Grupy",
                         "create": "Utwórz grupę",
                         "create_group": "Zigbee Home Automation - utwórz grupę",
-                        "create_group_details": "Wprowadź wymagane dane, aby utworzyć nową grupę zigbee",
+                        "create_group_details": "Wprowadź wymagane dane, aby utworzyć nową grupę Zigbee",
                         "creating_group": "Tworzenie grupy",
                         "description": "Twórz i modyfikuj grupy Zigbee",
                         "group_details": "Oto wszystkie szczegóły dotyczące zaznaczonej grupy Zigbee.",
