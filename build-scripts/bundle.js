@@ -170,15 +170,12 @@ module.exports.config = {
   },
 
   hassio({ isProdBuild, latestBuild }) {
-    if (latestBuild) {
-      throw new Error("Hass.io does not support latest build!");
-    }
     return {
       entry: {
         entrypoint: path.resolve(paths.hassio_dir, "src/entrypoint.ts"),
       },
-      outputPath: paths.hassio_output_root,
-      publicPath: paths.hassio_publicPath,
+      outputPath: outputPath(paths.hassio_output_root, latestBuild),
+      publicPath: publicPath(latestBuild, paths.hassio_publicPath),
       isProdBuild,
       latestBuild,
       dontHash: new Set(["entrypoint"]),

@@ -129,7 +129,7 @@ gulp.task("webpack-watch-hassio", () => {
   webpack(
     createHassioConfig({
       isProdBuild: false,
-      latestBuild: false,
+      latestBuild: true,
     })
   ).watch({}, handler());
 });
@@ -139,9 +139,8 @@ gulp.task(
   () =>
     new Promise((resolve) =>
       webpack(
-        createHassioConfig({
+        bothBuilds(createHassioConfig, {
           isProdBuild: true,
-          latestBuild: false,
         }),
         handler(resolve)
       )
