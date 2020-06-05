@@ -1,11 +1,8 @@
 const { createCastConfig } = require("../build-scripts/webpack.js");
-const { isProdBuild } = require("../build-scripts/env.js");
-
-// File just used for stats builds
-
-const latestBuild = true;
+const { isProdBuild, isStatsBuild } = require("../build-scripts/env.js");
 
 module.exports = createCastConfig({
   isProdBuild: isProdBuild(),
-  latestBuild,
+  isStatsBuild: isStatsBuild(),
+  latestBuild: true,
 });

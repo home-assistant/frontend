@@ -1,11 +1,6 @@
 import "../../src/resources/compatibility";
-
-window.loadES5Adapter().then(() => {
-  // eslint-disable-next-line
-  import(/* webpackChunkName: "roboto" */ "../../src/resources/roboto");
-  // eslint-disable-next-line
-  import(/* webpackChunkName: "hassio-main" */ "./hassio-main");
-});
+import "../../src/resources/roboto";
+import "./hassio-main";
 
 const styleEl = document.createElement("style");
 styleEl.innerHTML = `
