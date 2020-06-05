@@ -22,6 +22,7 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
       const oldHass = changedProperties.get("hass");
       if (
         !changedProperties.has("hass") ||
+        !this.hass!.config ||
         oldHass?.config?.state === this.hass!.config.state
       ) {
         return;
