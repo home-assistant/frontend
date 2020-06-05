@@ -69,14 +69,24 @@ export class HuiGlanceCard extends LitElement implements LovelaceCard {
     return (
       (this._config!.title ? 1 : 0) +
       Math.max(
-        Math.ceil(this._configEntities!.length / (this._config!.columns || 5)),
+        ((this._config!.show_icon ? 1 : 0) +
+          (this._config!.show_name && this._config!.show_state ? 1 : 0)) *
+          Math.ceil(
+            this._configEntities!.length / (this._config!.columns || 5)
+          ),
         1
       )
     );
   }
 
   public setConfig(config: GlanceCardConfig): void {
-    this._config = { state_color: true, ...config };
+    this._config = {
+      show_name: true,
+      show_state: true,
+      show_icon: true,
+      state_color: true,
+      ...config,
+    };
     const entities = processConfigEntities<GlanceConfigEntity>(config.entities);
 
     for (const entity of entities) {
@@ -234,7 +244,7 @@ export class HuiGlanceCard extends LitElement implements LovelaceCard {
           hasAction(entityConf.tap_action) ? "0" : undefined
         )}
       >
-        ${this._config!.show_name !== false
+        ${this._config!.show_name
           ? html`
               <div class="name">
                 ${"name" in entityConf
@@ -243,7 +253,7 @@ export class HuiGlanceCard extends LitElement implements LovelaceCard {
               </div>
             `
           : ""}
-        ${this._config!.show_icon !== false
+        ${this._config!.show_icon
           ? html`
               <state-badge
                 .hass=${this.hass}
@@ -256,7 +266,7 @@ export class HuiGlanceCard extends LitElement implements LovelaceCard {
               ></state-badge>
             `
           : ""}
-        ${this._config!.show_state !== false && entityConf.show_state !== false
+        ${this._config!.show_state && entityConf.show_state !== false
           ? html`
               <div>
                 ${computeDomain(entityConf.entity) === "sensor" &&
