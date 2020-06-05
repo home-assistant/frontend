@@ -92,7 +92,6 @@
       (function() {
         // // Safari 10.1 supports type=module but ignores nomodule, so we add this check.
         if (!isS101) {
-          _ls("/static/polyfills/custom-elements-es5-adapter.js");
           <% if (useRollup) { %>
             _ls("/static/js/s.min.js").onload = function() {
               System.import("<%= es5DemoJS %>");

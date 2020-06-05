@@ -36,11 +36,13 @@ function copyMdiIcons(staticDir) {
 function copyPolyfills(staticDir) {
   const staticPath = genStaticPath(staticDir);
 
-  // Web Component polyfills and adapters
+  // For custom panels using ES5 builds that don't use Babel 7+
   copyFileDir(
     npmPath("@webcomponents/webcomponentsjs/custom-elements-es5-adapter.js"),
     staticPath("polyfills/")
   );
+
+  // Web Component polyfills and adapters
   copyFileDir(
     npmPath("@webcomponents/webcomponentsjs/webcomponents-bundle.js"),
     staticPath("polyfills/")
