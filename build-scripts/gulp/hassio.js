@@ -13,7 +13,7 @@ require("./rollup.js");
 
 async function writeEntrypointJS() {
   // We ship two builds and we need to do feature detection on what version to load.
-  fs.mkdirSync(paths.hassio_output_root);
+  fs.mkdirSync(paths.hassio_output_root, { recursive: true });
   fs.writeFileSync(
     path.resolve(paths.hassio_output_root, "entrypoint.js"),
     `
