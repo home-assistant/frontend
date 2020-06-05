@@ -68,14 +68,9 @@ export class HuiGlanceCard extends LitElement implements LovelaceCard {
   public getCardSize(): number {
     return (
       (this._config!.title ? 1 : 0) +
-      Math.max(
-        ((this._config!.show_icon ? 1 : 0) +
-          (this._config!.show_name && this._config!.show_state ? 1 : 0)) *
-          Math.ceil(
-            this._configEntities!.length / (this._config!.columns || 5)
-          ),
-        1
-      )
+      ((this._config!.show_icon ? 1 : 0) +
+        (this._config!.show_name && this._config!.show_state ? 1 : 0) || 1) *
+        Math.ceil(this._configEntities!.length / (this._config!.columns || 5))
     );
   }
 
