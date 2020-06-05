@@ -478,6 +478,7 @@
             "cancel": "Ofbriechen",
             "close": "Zoumaachen",
             "delete": "Läschen",
+            "error_required": "Erfuerderlech",
             "loading": "Lued",
             "next": "Nächst",
             "no": "Nee",
@@ -1219,6 +1220,7 @@
                     "different_include": "Eventuell iwwer e Domän, e Glob oder eng aner Include Method.",
                     "pick_attribute": "Wielt een Attribut aus fir z'iwwerschreiwen",
                     "picker": {
+                        "entity": "Entitéit",
                         "header": "Personaliséieren",
                         "introduction": "Manipulatioun vun den Attributen pro Entitéit. Nei/geännert Personlisatiounen sinn direkt effektiv. Geläschte Personalisatioune ginn effektiv wann d'Entitéit sech aktualiséiert."
                     },
@@ -1677,7 +1679,8 @@
                             "name": "Numm",
                             "system": "System"
                         }
-                    }
+                    },
+                    "users_privileges_note": "Benotzer Gruppp ass nach \"Work in progress\". De Benotzer kann d'Instanz net via UI verwalten. MIr sin mat engem Audit am gaang vun all Management API Endpunkt fir sécher ze stellen dass déi den accès richteg op Administrateuren limitéieren."
                 },
                 "zha": {
                     "add_device_page": {
@@ -1839,21 +1842,38 @@
                         "set_wakeup": "Intervall fir z'erwächen définéieren",
                         "true": "Richteg"
                     },
+                    "node_management": {
+                        "add_to_group": "Zum Grupp dobäisetzen",
+                        "group": "Grupp",
+                        "max_associations": "Max. Assoziatiounen:",
+                        "remove_broadcast": "Broadcast läschen",
+                        "remove_from_group": "Aus dem Grupp läschen"
+                    },
                     "ozw_log": {
                         "header": "OZW Log",
-                        "introduction": "Logbicher kucken. 0 ass de minimum (luet de ganze Log) an 1000 ass de maximum. Luede weist ee statesche Log an \"tail\" aktualiséiert de Log automatesch mat de leschten Zeile vum Log."
+                        "introduction": "Logbicher kucken. 0 ass de minimum (luet de ganze Log) an 1000 ass de maximum. Luede weist ee statesche Log an \"tail\" aktualiséiert de Log automatesch mat de leschten Zeile vum Log.",
+                        "last_log_lines": "Unzuel vun läschte Log Zeilen",
+                        "load": "Lueden"
                     },
                     "services": {
                         "add_node": "Apparat dobäisetzen",
                         "add_node_secure": "Sëcheren Apparat dobäisetzen",
                         "cancel_command": "Commande ofbriechen",
                         "heal_network": "Netzwierk heelen",
+                        "heal_node": "Node heelen",
+                        "node_info": "Informatioun zum Node",
+                        "print_node": "Node drécken",
+                        "refresh_entity": "Entitéit aktualiséieren",
+                        "refresh_node": "Node aktualiséieren",
+                        "remove_failed_node": "Feelerhaften Node läschen",
                         "remove_node": "Apparat läschen",
+                        "replace_failed_node": "Feelerhaften Node ersetzen",
                         "save_config": "Konfiguratioun späicheren",
                         "soft_reset": "Soft Reset",
                         "start_network": "Netzwierk starten",
                         "stop_network": "Netzwierk stoppen",
-                        "test_network": "Netzwierk testen"
+                        "test_network": "Netzwierk testen",
+                        "test_node": "Node testen"
                     },
                     "values": {
                         "header": "Wäerter vum Apparat"
@@ -2012,6 +2032,10 @@
                         "add_item": "Element dobäisetzen",
                         "checked_items": "Markéiert Elementer",
                         "clear_items": "Markéiert Elementer läschen"
+                    },
+                    "starting": {
+                        "description": "Home Assistant start, waart w.e.g...",
+                        "header": "Home Assistant start...."
                     }
                 },
                 "changed_toast": {
@@ -2304,7 +2328,8 @@
                     "attribute_not_found": "Attribut {attribute} net disponibel an: {entity}",
                     "entity_non_numeric": "Entitéit ass net numerescher Natur: {entity}",
                     "entity_not_found": "Entitéit net erreechbar: {entity}",
-                    "entity_unavailable": "{entity} ass fir de Moment net erreechbar"
+                    "entity_unavailable": "{entity} ass fir de Moment net erreechbar",
+                    "starting": "Home Assistant start, et wäert nach net alles prett sinn"
                 }
             },
             "mailbox": {
