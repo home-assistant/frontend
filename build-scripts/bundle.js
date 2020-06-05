@@ -85,8 +85,8 @@ module.exports.babelExclude = () => [
 const outputPath = (outputRoot, latestBuild) =>
   path.resolve(outputRoot, latestBuild ? "frontend_latest" : "frontend_es5");
 
-const publicPath = (latestBuild) =>
-  latestBuild ? "/frontend_latest/" : "/frontend_es5/";
+const publicPath = (latestBuild, root = "") =>
+  latestBuild ? `${root}/frontend_latest/` : `${root}/frontend_es5/`;
 
 /*
 BundleConfig {
