@@ -742,7 +742,7 @@
             "connection_lost": "Connexion perdue. Reconnexion en cours ...",
             "service_call_failed": "Échec d'appel du service \"{service}\".",
             "started": "Home Assistant a démarré !",
-            "starting": "Home Assistant démarre, tout ne sera pas disponible jusqu'à ce qu'il soit terminé.",
+            "starting": "Home Assistant est en cours de démarrage, tout ne sera pas disponible tant qu’il n’aura pas terminé.",
             "triggered": "{name} déclenché"
         },
         "panel": {

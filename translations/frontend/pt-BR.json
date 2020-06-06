@@ -477,6 +477,7 @@
             "cancel": "Cancelar",
             "close": "Fechar",
             "delete": "Eliminar",
+            "error_required": "Obrigatório",
             "loading": "Carregando",
             "next": "Próximo",
             "no": "Não",
@@ -935,7 +936,6 @@
                                 },
                                 "homeassistant": {
                                     "event": "Evento:",
-                                    "label": "",
                                     "shutdown": "Desligar",
                                     "start": "Iniciar"
                                 },
@@ -1795,7 +1795,6 @@
                     "no_zones_created_yet": "Parece que você ainda não criou nenhuma zona."
                 },
                 "zwave": {
-                    "caption": "",
                     "common": {
                         "index": "Índice",
                         "instance": "Instância",
@@ -1841,7 +1840,8 @@
                         "soft_reset": "Soft Reset",
                         "start_network": "Iniciar Rede",
                         "stop_network": "Parar Rede",
-                        "test_network": "Teste de rede"
+                        "test_network": "Teste de rede",
+                        "test_node": "Testar Nó"
                     },
                     "values": {
                         "header": "Valores de nó"
@@ -1914,7 +1914,6 @@
                         "start_listening": "Começar a ouvir",
                         "stop_listening": "Parar de ouvir",
                         "subscribe_to": "Evento para se inscrever",
-                        "title": "",
                         "topic": "tópico"
                     },
                     "services": {
@@ -2000,6 +1999,10 @@
                         "add_item": "Adicionar item",
                         "checked_items": "Itens marcados",
                         "clear_items": "Limpar itens marcados"
+                    },
+                    "starting": {
+                        "description": "Home Assistant está iniciando, por favor aguarde...",
+                        "header": "Home Assistant está iniciando..."
                     }
                 },
                 "changed_toast": {
@@ -2292,7 +2295,8 @@
                     "attribute_not_found": "O atributo {attribute} não está disponível em: {entity}",
                     "entity_non_numeric": "Entidade não é numérica: {entity}",
                     "entity_not_found": "Entidade não disponível: {entity}",
-                    "entity_unavailable": "{entity} não está disponível"
+                    "entity_unavailable": "{entity} não está disponível",
+                    "starting": "Home Assistant está iniciando, algumas funcionalidades podem estar indisponíveis"
                 }
             },
             "mailbox": {

@@ -741,6 +741,8 @@
         "notification_toast": {
             "connection_lost": "Verbindung verluer. Verbindung gëtt nees opgebaut...",
             "service_call_failed": "Feeler beim opruffen vun {service}",
+            "started": "Home Assistant ass gestart!",
+            "starting": "Home Assistant start, et wäert nach net alles prett sinn bis et fäerdeg gestart ass.",
             "triggered": "{name} ausgeléist"
         },
         "panel": {
@@ -1844,10 +1846,24 @@
                     },
                     "node_management": {
                         "add_to_group": "Zum Grupp dobäisetzen",
+                        "entities": "Entitéiten vun dësem Node",
+                        "entity_info": "Informatiounen vun der Entitéit",
+                        "exclude_entity": "Dës Entitéit aus Home Assistant ausschléissen",
                         "group": "Grupp",
+                        "header": "Z-Wave Node Management",
+                        "introduction": "Z-Wave Kommandoe ausféieren déi nëmmen ee Node betreffen. Wiel ee Node aus fir seng Lëscht vun verfügbare Kommandoe ze gesinn.",
                         "max_associations": "Max. Assoziatiounen:",
+                        "node_group_associations": "Node Grupp Assoziatiounen",
+                        "node_protection": "Protektioun vum Node",
+                        "node_to_control": "Node fir ze steieren",
+                        "nodes": "Nodes",
+                        "nodes_hint": "Node auswielen fir d'Optioune ze gesinn",
+                        "nodes_in_group": "Aner Nodes an dësem Grupp:",
+                        "pooling_intensity": "Polling Intensitéit",
+                        "protection": "Protektioun",
                         "remove_broadcast": "Broadcast läschen",
-                        "remove_from_group": "Aus dem Grupp läschen"
+                        "remove_from_group": "Aus dem Grupp läschen",
+                        "set_protection": "Protektioun setzen"
                     },
                     "ozw_log": {
                         "header": "OZW Log",
@@ -2276,12 +2292,12 @@
                         "close": "Zoumaachen",
                         "empty_config": "Mat engem eidelen Tableau de Bord ufänken",
                         "header": "Kontroll iwwert Loveloce UI iwwerhuelen",
-                        "para": "Standardméisseg verwalt Home Assistant de Benotzer Interface an aktualiséiert en soubal nei Entitéiten oder Lovelace-Komponenten disponibel sinn. Wann dir d'Kontrolle iwwerhuelt, kënne mir keng automatesch Ännerung méi fir iech maachen.",
+                        "para": "Dësen Tableau de Bord gëtt vum Home Assistant verwalt. Et gëtt automatesch aktualiséiert soubal nei Entitéiten oder Lovelace-Komponenten disponibel sinn. Wanns Du d'Kontrolle iwwerhëlls, kann dësen Tableau de Bord net méi automatesch aktualiséiertginn. Du kanns ëmmer ee neien Tableau de Bord erstellen fir domatt ze testen.",
                         "para_sure": "Sécher fir d'Kontrolle iwwert de Benotzer Interface z'iwwerhuelen?",
                         "save": "Kontroll iwwerhuelen",
                         "yaml_config": "Fir de Start ze vereinfachen, hei ass déi aktuell Konfiguratioun vun dësem Tableau de Bord:",
                         "yaml_control": "Fir d'Kontroll am YAML Modus z'iwwerhuelen, erstell ee YAML Fichier mam Numm deen an der Konfiguratioun vun dësem Tableau de Bord uginn ass, oder de Standard 'ui-lovelace.yaml'",
-                        "yaml_mode": "Du benotz de YAML Modus, dëst bedeit dass du d'Lovelace Konfiguratioun net kanns aus dem Benotzer Interface änneren. Wann's du Lovelace vum Benotzer Interface aus wëlls änneren, läsch de 'mode: yaml' aus denger Lovelace Konfiguratioun am 'configuration.yaml'"
+                        "yaml_mode": "Du benotz de YAML Modus fir dësen Tableau de Bord, dëst bedeit dass du d'Lovelace Konfiguratioun net kanns aus dem Benotzer Interface änneren. Wann's du Lovelace vum Benotzer Interface aus wëlls änneren, läsch de 'mode: yaml' aus denger Lovelace Konfiguratioun am 'configuration.yaml'"
                     },
                     "suggest_card": {
                         "add": "Zu Lovelace bäisetzen",
