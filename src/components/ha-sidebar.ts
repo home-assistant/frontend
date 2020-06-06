@@ -181,7 +181,8 @@ class HaSidebar extends LitElement {
           this._renderPanel(
             panel.url_path,
             panel.icon,
-            hass.localize(`panel.${panel.title}`) || panel.title
+            hass.localize(`panel.${panel.title}`) || panel.title,
+            panel.config
           )
         )}
         <div class="spacer" disabled></div>
@@ -190,7 +191,8 @@ class HaSidebar extends LitElement {
           this._renderPanel(
             panel.url_path,
             panel.icon,
-            hass.localize(`panel.${panel.title}`) || panel.title
+            hass.localize(`panel.${panel.title}`) || panel.title,
+            panel.config
           )
         )}
         ${this._externalConfig && this._externalConfig.hasSettingsScreen
@@ -443,11 +445,15 @@ class HaSidebar extends LitElement {
     fireEvent(this, "hass-toggle-menu");
   }
 
-  private _renderPanel(urlPath, icon, title) {
+  private _renderPanel(urlPath, icon, title, config) {
+    let url = `/${urlPath}`;
+    if (config && config.url) {
+      url = config.url;
+    }
     return html`
       <a
         aria-role="option"
-        href="${`/${urlPath}`}"
+        href="${url}"
         data-panel="${urlPath}"
         tabindex="-1"
         @mouseenter=${this._itemMouseEnter}
