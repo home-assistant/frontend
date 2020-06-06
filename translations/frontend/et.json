@@ -875,10 +875,6 @@
                                     "at": "Kell",
                                     "label": "Aeg"
                                 },
-                                "webhook": {
-                                    "label": "",
-                                    "webhook_id": ""
-                                },
                                 "zone": {
                                     "enter": "Sisenemine",
                                     "entity": "Asukohaga olem",
