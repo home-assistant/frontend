@@ -524,7 +524,7 @@
             },
             "related-items": {
                 "area": "Pièce",
-                "automation": "Partie des automations suivantes",
+                "automation": "Partie des automatisations suivantes",
                 "device": "Appareil",
                 "entity": "Entités liées",
                 "group": "Partie des groupes suivants",
@@ -786,8 +786,8 @@
                     }
                 },
                 "automation": {
-                    "caption": "Automations",
-                    "description": "Créer et modifier des automations.",
+                    "caption": "Automatisations",
+                    "description": "Créer et modifier des automatisations",
                     "editor": {
                         "actions": {
                             "add": "Ajouter une action",
@@ -795,7 +795,7 @@
                             "delete_confirm": "Voulez-vous vraiment effacer ?",
                             "duplicate": "Dupliquer",
                             "header": "Actions",
-                            "introduction": "Les actions sont ce que Home Assistant fera quand une automation est déclenchée.",
+                            "introduction": "Les actions sont ce que Home Assistant fera quand une automatisation est déclenchée.",
                             "learn_more": "En savoir plus sur les actions",
                             "name": "Action",
                             "type_select": "Type d'action",
@@ -900,17 +900,17 @@
                             },
                             "unsupported_condition": "Condition non supportée: {condition}"
                         },
-                        "default_name": "Nouvelle automation",
+                        "default_name": "Nouvelle automatisation",
                         "description": {
                             "label": "Description",
                             "placeholder": "Description optionnelle"
                         },
                         "edit_ui": "Modifier avec l'interface utilisateur",
                         "edit_yaml": "Modifier en tant que YAML",
-                        "enable_disable": "Activer/Désactiver l'automation",
-                        "introduction": "Utilisez les automations pour donner vie à votre maison",
-                        "load_error_not_editable": "Seules les automations dans automations.yaml sont modifiables.",
-                        "load_error_unknown": "Erreur lors du chargement de l'automation ( {err_no} ).",
+                        "enable_disable": "Activer/Désactiver l'automatisation",
+                        "introduction": "Utilisez les automatisations pour donner vie à votre maison",
+                        "load_error_not_editable": "Seules les automatisations dans automations.yaml sont modifiables.",
+                        "load_error_unknown": "Erreur lors du chargement de l'automatisation ( {err_no} ).",
                         "save": "Sauvegarder",
                         "triggers": {
                             "add": "Ajouter un déclencheur",
@@ -918,7 +918,7 @@
                             "delete_confirm": "Voulez-vous effacer ?",
                             "duplicate": "Dupliquer",
                             "header": "Déclencheurs",
-                            "introduction": "Les déclencheurs sont ce qui lance le traitement d'une règle d'automation. Il est possible de spécifier plusieurs déclencheurs pour une même règle. Dès qu'un déclencheur est activé, Home Assistant validera les conditions, s'il y en a, et appellera l'action.\n\n[En apprendre plus sur les déclencheurs.](https://home-assistant.io/docs/automation/trigger/)",
+                            "introduction": "Les déclencheurs sont ce qui lance le traitement d'une règle d'automatisation. Il est possible de spécifier plusieurs déclencheurs pour une même règle. Dès qu'un déclencheur est activé, Home Assistant validera les conditions, s'il y en a, et appellera l'action.\n\n[En apprendre plus sur les déclencheurs.](https://home-assistant.io/docs/automation/trigger/)",
                             "learn_more": "En savoir plus sur les déclencheurs",
                             "name": "Déclencheur",
                             "type_select": "Type de déclencheur",
@@ -1007,20 +1007,20 @@
                         "unsaved_confirm": "Vous avez des changements non enregistrés. Êtes-vous sûr de vouloir quitter?"
                     },
                     "picker": {
-                        "add_automation": "Ajouter une automation",
-                        "delete_automation": "Supprimer l'automation",
-                        "delete_confirm": "Voulez-vous vraiment supprimer cette automation ?",
-                        "edit_automation": "Modifier l'automation",
-                        "header": "Éditeur d'automation",
+                        "add_automation": "Ajouter une automatisation",
+                        "delete_automation": "Supprimer l'automatisation",
+                        "delete_confirm": "Voulez-vous vraiment supprimer cette automatisation ?",
+                        "edit_automation": "Modifier l'automatisation",
+                        "header": "Éditeur d'automatisation",
                         "headers": {
                             "name": "Nom"
                         },
-                        "introduction": "L'éditeur d'automations vous permet de créer et modifier des automations. Veuillez lire les instructions ci-dessous pour vous assurer d'avoir configuré Home Assistant correctement.",
-                        "learn_more": "En savoir plus sur les automations",
-                        "no_automations": "Il n'y a aucune automation modifiable.",
-                        "only_editable": "Seules les automations définies dans automations.yaml sont modifiables.",
-                        "pick_automation": "Choisissez l'automation à modifier",
-                        "show_info_automation": "Afficher des informations sur l'automation"
+                        "introduction": "L'éditeur d'automatisation vous permet de créer et éditer des automatisations. Veuillez lire les instructions ci-dessous pour vous assurer d'avoir configuré Home-Assistant correctement.",
+                        "learn_more": "En savoir plus sur les automatisations",
+                        "no_automations": "Il n'y a aucune automatisation modifiable",
+                        "only_editable": "Seules les automatisations définies dans automations.yaml sont modifiables.",
+                        "pick_automation": "Choisissez l'automatisation à modifier",
+                        "show_info_automation": "Afficher des informations sur l'automatisation"
                     }
                 },
                 "cloud": {
@@ -1079,7 +1079,7 @@
                         "webhooks": {
                             "disable_hook_error_msg": "Impossible de désactiver le Webhook:",
                             "info": "Tout ce qui est configuré pour être déclenché par un Webhook peut recevoir une URL accessible publiquement pour vous permettre de renvoyer des données à Home Assistant de n’importe où, sans exposer votre instance à Internet.",
-                            "link_learn_more": "En savoir plus sur la création d'automations basées sur Webhook.",
+                            "link_learn_more": "En savoir plus sur la création d'automatisations basées sur Webhook.",
                             "loading": "Chargement ...",
                             "manage": "Gérer",
                             "no_hooks_yet": "Il semble que vous n'ayez pas encore de Webhooks. Commencez en configurer un ",
@@ -1237,13 +1237,13 @@
                         "actions": {
                             "caption": "Quand quelque chose est déclenché ..."
                         },
-                        "automations": "Automations",
+                        "automations": "Automatisations",
                         "conditions": {
                             "caption": "Ne faire quelque chose que si ..."
                         },
-                        "create": "Créer une automation avec l'appareil",
-                        "no_automations": "Aucune automation",
-                        "no_device_automations": "Aucune automation n'est disponible pour cet appareil.",
+                        "create": "Créer une automatisation avec l'appareil",
+                        "no_automations": "Aucune automatisation",
+                        "no_device_automations": "Aucune automatisation n'est disponible pour cet appareil.",
                         "triggers": {
                             "caption": "Faire quelque chose quand ..."
                         }
@@ -1344,7 +1344,7 @@
                 "header": "Configurer Home Assistant",
                 "helpers": {
                     "caption": "Entrées",
-                    "description": "Éléments pouvant aider à construire des automations.",
+                    "description": "Éléments pouvant aider à construire des automatisations.",
                     "dialog": {
                         "add_helper": "Ajouter une entrée",
                         "add_platform": "Ajouter {platform}",
@@ -1619,7 +1619,7 @@
                     "description": "Redémarrer et arrêter le serveur Home Assistant",
                     "section": {
                         "reloading": {
-                            "automation": "Recharger les automations",
+                            "automation": "Recharger les automatisations",
                             "core": "Recharger l'emplacement et les personnalisations",
                             "group": "Recharger les groupes",
                             "heading": "Rechargement de la configuration",
@@ -1799,7 +1799,7 @@
                         "name": "Nom",
                         "new_zone": "Nouvelle zone",
                         "passive": "Passif",
-                        "passive_note": "Les zones passives sont cachées dans l'interface utilisateur et ne sont pas utilisées comme emplacement pour les appareils suivis. Elles sont utiles si vous voulez les utiliser pour des automations.",
+                        "passive_note": "Les zones passives sont cachées dans l'interface utilisateur et ne sont pas utilisées comme emplacement pour les appareils suivis. Elles sont utiles si vous voulez les utiliser pour des automatisations.",
                         "radius": "Rayon",
                         "required_error_msg": "Ce champ est requis",
                         "update": "Mettre à jour"
@@ -1808,7 +1808,7 @@
                     "edit_home_zone_narrow": "Le rayon de la zone d'habitation ne peut pas encore être modifié depuis le frontend. L'emplacement peut être modifié par rapport à la configuration générale.",
                     "go_to_core_config": "Aller à la configuration générale ?",
                     "home_zone_core_config": "L'emplacement de votre zone d'habitation est modifiable à partir de la page de configuration générale. Le rayon de la zone d'habitation ne peut pas encore être modifié depuis le frontend. Voulez-vous passer à la configuration générale ?",
-                    "introduction": "Les zones vous permettent de spécifier certaines régions sur la terre. Lorsqu'une personne se trouve dans une zone, l'état prend le nom de la zone. Les zones peuvent également être utilisées comme déclencheur ou condition dans les configurations d'automation.",
+                    "introduction": "Les zones vous permettent de spécifier certaines régions sur la terre. Lorsqu'une personne se trouve dans une zone, l'état prend le nom de la zone. Les zones peuvent également être utilisées comme déclencheur ou condition dans les configurations d'automatisation.",
                     "no_zones_created_yet": "Il semble que vous n'ayez pas encore créé de zones."
                 },
                 "zwave": {
