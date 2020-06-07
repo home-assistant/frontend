@@ -478,6 +478,7 @@
             "cancel": "Abbrechen",
             "close": "Schließen",
             "delete": "Löschen",
+            "error_required": "Benötigt",
             "loading": "Laden",
             "next": "Weiter",
             "no": "Nein",
@@ -1221,6 +1222,7 @@
                     "different_include": "Möglich über eine Domain, einen Glob oder einen anderen Include.",
                     "pick_attribute": "Wähle ein Attribut zum Überschreiben aus.",
                     "picker": {
+                        "entity": "Entität",
                         "header": "Anpassungen",
                         "introduction": "Optimieren Sie die Entitätenattribute. Hinzugefügte/bearbeitete Anpassungen werden sofort wirksam. Entfernte Anpassungen werden wirksam, wenn die Entität aktualisiert wird."
                     },
@@ -1864,7 +1866,8 @@
                     "ozw_log": {
                         "header": "OZW Log",
                         "introduction": "Schauen Sie das Protokoll an. 0 ist das Minimum (lädt das gesamte Protokoll) und 1000 ist das Maximum. Beim Laden wird ein statisches Protokoll angezeigt und das Ende wird automatisch mit der zuletzt angegebenen Anzahl von Zeilen des Protokolls aktualisiert.",
-                        "last_log_lines": "Anzahl der letzten Logzeilen"
+                        "last_log_lines": "Anzahl der letzten Logzeilen",
+                        "load": "Laden"
                     },
                     "services": {
                         "add_node": "Knoten hinzufügen",
@@ -2045,7 +2048,7 @@
                         "clear_items": "Markierte Elemente löschen"
                     },
                     "starting": {
-                        "description": "Home Assistant startet, bitte warten Sie.",
+                        "description": "Home Assistant startet, bitte warten Sie..",
                         "header": "Home Assistant startet ..."
                     }
                 },
