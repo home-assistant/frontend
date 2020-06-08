@@ -29,13 +29,6 @@ class ZHAConfigDashboardRouter extends HassRouterPage {
             /* webpackChunkName: "zha-config-dashboard" */ "./zha-config-dashboard"
           ),
       },
-      device: {
-        tag: "zha-device-page",
-        load: () =>
-          import(
-            /* webpackChunkName: "zha-devices-page" */ "./zha-device-page"
-          ),
-      },
       add: {
         tag: "zha-add-devices-page",
         load: () =>
@@ -78,8 +71,6 @@ class ZHAConfigDashboardRouter extends HassRouterPage {
     }
 
     const searchParams = new URLSearchParams(window.location.search);
-    console.log("route", this.route);
-    console.log("routeTail", this.routeTail);
     if (this._configEntry && !searchParams.has("config_entry")) {
       searchParams.append("config_entry", this._configEntry);
       navigate(

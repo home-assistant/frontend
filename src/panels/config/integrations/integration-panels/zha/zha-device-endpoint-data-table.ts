@@ -20,7 +20,6 @@ import type {
   ZHADeviceEndpoint,
   ZHAEntityReference,
 } from "../../../../../data/zha";
-import { showZHADeviceInfoDialog } from "../../../../../dialogs/zha-device-info-dialog/show-dialog-zha-device-info";
 import type { HomeAssistant } from "../../../../../types";
 
 export interface DeviceEndpointRowData extends DataTableRowData {
@@ -58,6 +57,7 @@ export class ZHADeviceEndpointDataTable extends LitElement {
           ieee: deviceEndpoint.device.ieee,
           endpoint_id: deviceEndpoint.endpoint_id,
           entities: deviceEndpoint.entities,
+          dev_id: deviceEndpoint.device.device_reg_id,
         });
       });
 
@@ -75,14 +75,10 @@ export class ZHADeviceEndpointDataTable extends LitElement {
               filterable: true,
               direction: "asc",
               grows: true,
-              template: (name) => html`
-                <div
-                  class="mdc-data-table__cell table-cell-text"
-                  @click=${this._handleClicked}
-                  style="cursor: pointer;"
-                >
+              template: (name, device) => html`
+                <a href="${`/config/devices/device/${device.dev_id}`}">
                   ${name}
-                </div>
+                </a>
               `,
             },
             endpoint_id: {
@@ -98,14 +94,10 @@ export class ZHADeviceEndpointDataTable extends LitElement {
               filterable: true,
               direction: "asc",
               grows: true,
-              template: (name) => html`
-                <div
-                  class="mdc-data-table__cell table-cell-text"
-                  @click=${this._handleClicked}
-                  style="cursor: pointer;"
-                >
+              template: (name, device) => html`
+                <a href="${`/config/devices/device/${device.dev_id}`}">
                   ${name}
-                </div>
+                </a>
               `,
             },
             endpoint_id: {
@@ -157,14 +149,6 @@ export class ZHADeviceEndpointDataTable extends LitElement {
         auto-height
       ></ha-data-table>
     `;
-  }
-
-  private async _handleClicked(ev: CustomEvent) {
-    const rowId = ((ev.target as HTMLElement).closest(
-      ".mdc-data-table__row"
-    ) as any).rowId;
-    const ieee = rowId.substring(0, rowId.indexOf("_"));
-    showZHADeviceInfoDialog(this, { ieee });
   }
 
   static get styles(): CSSResult[] {

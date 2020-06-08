@@ -122,25 +122,26 @@ export class ZHAGroupPage extends LitElement {
           <div class="header">
             ${this.hass.localize("ui.panel.config.zha.groups.members")}
           </div>
-
-          ${this.group.members.length
-            ? this.group.members.map(
-                (member) => html`
-                  <zha-device-card
-                    class="card"
-                    .hass=${this.hass}
-                    .device=${member.device}
-                    .narrow=${this.narrow}
-                    .showActions=${false}
-                    .showEditableInfo=${false}
-                  ></zha-device-card>
-                `
-              )
-            : html`
-                <p>
-                  This group has no members
-                </p>
-              `}
+          <ha-card>
+            ${this.group.members.length
+              ? this.group.members.map(
+                  (member) =>
+                    html`<a
+                      href="/config/devices/device/${member.device
+                        .device_reg_id}"
+                    >
+                      <paper-item
+                        >${member.device.user_given_name ||
+                        member.device.name}</paper-item
+                      >
+                    </a>`
+                )
+              : html`
+                  <paper-item>
+                    This group has no members
+                  </paper-item>
+                `}
+          </ha-card>
           ${this.group.members.length
             ? html`
                 <div class="header">
@@ -300,12 +301,13 @@ export class ZHAGroupPage extends LitElement {
           opacity: var(--dark-primary-opacity);
         }
 
-        ha-config-section *:last-child {
-          padding-bottom: 24px;
-        }
-
         .button {
           float: right;
+        }
+
+        a {
+          color: var(--primary-color);
+          text-decoration: none;
         }
 
         mwc-button paper-spinner {
