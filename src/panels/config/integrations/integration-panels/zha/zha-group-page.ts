@@ -28,7 +28,6 @@ import "../../../../../layouts/hass-subpage";
 import { HomeAssistant } from "../../../../../types";
 import "../../../ha-config-section";
 import { formatAsPaddedHex } from "./functions";
-import "./zha-device-card";
 import "./zha-device-endpoint-data-table";
 import type { ZHADeviceEndpointDataTable } from "./zha-device-endpoint-data-table";
 

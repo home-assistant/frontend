@@ -23,6 +23,8 @@ import { zhaTabs } from "./zha-config-dashboard";
 class ZHAAddDevicesPage extends LitElement {
   @property() public hass!: HomeAssistant;
 
+  @property() public narrow?: boolean;
+
   @property() public isWide?: boolean;
 
   @property() public route?: Route;
@@ -120,10 +122,8 @@ class ZHAAddDevicesPage extends LitElement {
                       class="card"
                       .hass=${this.hass}
                       .device=${device}
-                      .narrow=${!this.isWide}
+                      .narrow=${this.narrow}
                       .showHelp=${this._showHelp}
-                      .showActions=${!this._active}
-                      .showEntityDetail=${false}
                     ></zha-device-card>
                   `
                 )}
