@@ -478,6 +478,7 @@
             "cancel": "Cancelar",
             "close": "Fechar",
             "delete": "Apagar",
+            "error_required": "Obrigatório",
             "loading": "A carregar",
             "next": "Seguinte",
             "no": "Não",
@@ -506,6 +507,7 @@
             "device-picker": {
                 "clear": "Apagar",
                 "device": "Dispositivo",
+                "no_area": "Sem área",
                 "show_devices": "Mostrar dispositivos",
                 "toggle": "Alternar"
             },
@@ -738,6 +740,8 @@
         "notification_toast": {
             "connection_lost": "Ligação perdida. A ligar de novo...",
             "service_call_failed": "Falha ao chamar o serviço {service}.",
+            "started": "Home Assistant já iniciou",
+            "starting": "Home Assistant está a inicializar, nem tudo estará disponivel até o processo concluir.",
             "triggered": "Despoletado {name}"
         },
         "panel": {
@@ -762,10 +766,12 @@
                     },
                     "description": "Visão geral de todas as áreas da sua casa.",
                     "editor": {
+                        "area_id": "ID da área",
                         "create": "Criar",
                         "default_name": "Nova área",
                         "delete": "Apagar",
                         "name": "Nome",
+                        "name_required": "Nome é obrigatório",
                         "unknown_error": "Erro desconhecido",
                         "update": "Atualizar"
                     },
@@ -1209,6 +1215,7 @@
                     "description": "Personalizar as suas entidades",
                     "pick_attribute": "Escolha um atributo para substituir.",
                     "picker": {
+                        "entity": "Entidade",
                         "header": "Personalizações",
                         "introduction": "Ajustar atributos por entidade. Personalizações acrescentadas/editadas terão efeitos imediatos. Remoção de personalizações terão efeito quando a entidade for atualizada."
                     },
@@ -1245,6 +1252,7 @@
                         "integration": "Integração",
                         "manufacturer": "Fabricante",
                         "model": "Modelo",
+                        "no_area": "Sem área",
                         "no_devices": "Sem dispositivos"
                     },
                     "delete": "Apagar",
@@ -1253,6 +1261,7 @@
                     "device_not_found": "Dispositivo não encontrado.",
                     "entities": {
                         "add_entities_lovelace": "Adicionar ao Lovelace",
+                        "disabled_entities": "+{count} {count, plural,\n uma {entity}\n outras {entities}\n}",
                         "entities": "Entidades",
                         "hide_disabled": "Mostrar entidades desativadas",
                         "none": "Este dispositivo não possui entidades"
@@ -1357,6 +1366,8 @@
                         "delete_button": "Apagar {integration}",
                         "delete_confirm": "Tem a certeza que pretende apagar esta integração?",
                         "device_unavailable": "Dispositivo indisponível",
+                        "devices": "{count} {count, plural,\n um {entity}\n outros {entities}\n}",
+                        "entities": "{count} {count, plural,\n uma {entity}\n outras {entities}\n}",
                         "entity_unavailable": "Entidade indisponível",
                         "firmware": "Firmware: {version}",
                         "hub": "Conectado via",
@@ -1822,6 +1833,9 @@
                         "set_wakeup": "Definir intervalo de acordar",
                         "true": "Verdadeiro"
                     },
+                    "node_management": {
+                        "exclude_entity": "Excluir esta entidade do Home Assistant"
+                    },
                     "ozw_log": {
                         "header": "Log OZW",
                         "introduction": "Veja o log. 0 é o mínimo (carrega o log inteiro) e 1000 é o máximo. Ao carregar irá ser mostrado um log estático e a cauda será atualizada automaticamente com o último número especificado de linhas do log."
@@ -1831,6 +1845,7 @@
                         "add_node_secure": "Adicionar nó seguro",
                         "cancel_command": "Cancelar comando",
                         "heal_network": "Curar a Rede",
+                        "refresh_entity": "Actualizar entidade",
                         "remove_node": "Remover nó",
                         "save_config": "Guardar configuração",
                         "soft_reset": "Reinicio suave",
@@ -1994,6 +2009,10 @@
                         "add_item": "Adicionar Item",
                         "checked_items": "Itens marcados",
                         "clear_items": "Limpar itens marcados"
+                    },
+                    "starting": {
+                        "description": "Home Assistant está a inicializar, por favor aguarde...",
+                        "header": "Home Assistant está a inicializar..."
                     }
                 },
                 "changed_toast": {
@@ -2283,7 +2302,8 @@
                     "attribute_not_found": "Atributo {attribute} não disponível em: {entity}",
                     "entity_non_numeric": "A entidade é não numérica: {entity}",
                     "entity_not_found": "Entidade não disponível: {entity}",
-                    "entity_unavailable": "{entity} está indisponível no momento"
+                    "entity_unavailable": "{entity} está indisponível no momento",
+                    "starting": "Home Assistant está a inicializar, nem tudo está já disponivel"
                 }
             },
             "mailbox": {

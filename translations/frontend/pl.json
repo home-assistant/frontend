@@ -1321,7 +1321,7 @@
                         "introduction": "Home Assistant prowadzi rejestr każdej encji, jaką kiedykolwiek widział i którą można jednoznacznie zidentyfikować. Każda z tych encji będzie miała przypisany unikalny identyfikator, który będzie zarezerwowany tylko dla niej.",
                         "introduction2": "Użyj rejestru encji, aby nadpisać jej nazwę, zmienić jej identyfikator lub usunąć ją z Home Assistant'a. Uwaga: usunięcie wpisu rejestru encji nie spowoduje usunięcia encji. Aby to zrobić, kliknij poniższy link i usuń integracje encji.",
                         "remove_selected": {
-                            "button": "Usuń zaznaczone",
+                            "button": "Usuń wybrane",
                             "confirm_partly_text": "Można usunąć tylko {removable} z wybranych {selected} encji. Encje można usunąć tylko wtedy, gdy integracja wspiera taka możliwość. Czasami trzeba ponownie uruchomić Home Assistanta, zanim będzie można usunąć encje usuniętej integracji. Czy na pewno chcesz usunąć usuwalne encje?",
                             "confirm_partly_title": "Tylko {number} wybrane encje można usunąć.",
                             "confirm_text": "Encje mogą zostać usunięte tylko wtedy, gdy ich integracja na to zezwala.",
