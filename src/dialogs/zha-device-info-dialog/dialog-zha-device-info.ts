@@ -11,7 +11,7 @@ import {
 import "../../components/dialog/ha-paper-dialog";
 import type { HaPaperDialog } from "../../components/dialog/ha-paper-dialog";
 import { fetchZHADevice, ZHADevice } from "../../data/zha";
-import "../../panels/config/zha/zha-device-card";
+import "../../panels/config/integrations/integration-panels/zha/zha-device-card";
 import type { PolymerChangedEvent } from "../../polymer-types";
 import { haStyleDialog } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";

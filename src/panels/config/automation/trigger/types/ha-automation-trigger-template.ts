@@ -1,5 +1,5 @@
 import { customElement, html, LitElement, property } from "lit-element";
-import "../../../../../components/ha-textarea";
+import "@polymer/paper-input/paper-textarea";
 import { TemplateTrigger } from "../../../../../data/automation";
 import { HomeAssistant } from "../../../../../types";
 import { handleChangeEvent } from "../ha-automation-trigger-row";
@@ -17,7 +17,7 @@ export class HaTemplateTrigger extends LitElement {
   protected render() {
     const { value_template } = this.trigger;
     return html`
-      <ha-textarea
+      <paper-textarea
         .label=${this.hass.localize(
           "ui.panel.config.automation.editor.triggers.type.template.value_template"
         )}
@@ -25,7 +25,7 @@ export class HaTemplateTrigger extends LitElement {
         .value=${value_template}
         @value-changed=${this._valueChanged}
         dir="ltr"
-      ></ha-textarea>
+      ></paper-textarea>
     `;
   }
 

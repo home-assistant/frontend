@@ -439,10 +439,10 @@
         "no_area": "No Area",
         "device_signature": "Zigbee device signature",
         "buttons": {
-          "add": "Add Devices",
+          "add": "Add Devices via this device",
           "remove": "Remove Device",
           "reconfigure": "Reconfigure Device",
-          "zigbee_information": "Zigbee Information"
+          "zigbee_information": "Zigbee device signature"
         },
         "services": {
           "reconfigure": "Reconfigure ZHA device (heal device). Use this if you are having issues with the device. If the device in question is a battery powered device please ensure it is awake and accepting commands when you use this service.",
@@ -1464,6 +1464,7 @@
           }
         },
         "zha": {
+          "button": "Configure",
           "header": "Configure Zigbee Home Automation",
           "introduction": "Here it is possible to configure the ZHA component. Not everything is possible to configure from the UI yet, but we're working on it.",
           "description": "Zigbee Home Automation network management",
@@ -1475,9 +1476,10 @@
             "value": "Value"
           },
           "add_device_page": {
-            "header": "Zigbee Home Automation - Add Devices",
             "spinner": "Searching for ZHA Zigbee devices...",
-            "discovery_text": "Discovered devices will show up here. Follow the instructions for your device(s) and place the device(s) in pairing mode.",
+            "pairing_mode": "Make sure your devices are in pairing mode. Check the instructions of your device on how to do this.",
+            "discovered_text": "Devices will show up here once discovered.",
+            "no_devices_found": "No devices where found, make sure they are in paring mode and keep them awake while discovering is running.",
             "search_again": "Search Again"
           },
           "network_management": {
@@ -1560,6 +1562,7 @@
           }
         },
         "zwave": {
+          "button": "Configure",
           "description": "Manage your Z-Wave network",
           "learn_more": "Learn more about Z-Wave",
           "common": {
