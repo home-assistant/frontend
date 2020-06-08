@@ -203,6 +203,7 @@ class ZHAAddDevicesPage extends LitElement {
           display: flex;
           flex-wrap: wrap;
           padding: 4px;
+          justify-content: center;
         }
         .error {
           color: var(--google-red-500);
@@ -217,10 +218,7 @@ class ZHAAddDevicesPage extends LitElement {
           align-items: center;
         }
         .card {
-          margin-left: 16px;
-          margin-right: 16px;
-          margin-bottom: 0px;
-          margin-top: 10px;
+          margin: 8px;
         }
         .log {
           padding: 16px;
