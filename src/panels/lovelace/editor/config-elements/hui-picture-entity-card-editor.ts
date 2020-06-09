@@ -11,6 +11,7 @@ import {
 } from "lit-element";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-switch";
+import "../../../../components/ha-formfield";
 import { ActionConfig } from "../../../../data/lovelace";
 import { HomeAssistant } from "../../../../types";
 import { PictureEntityCardConfig } from "../../cards/types";
@@ -187,22 +188,28 @@ export class HuiPictureEntityCardEditor extends LitElement
           ></paper-input>
         </div>
         <div class="side-by-side">
-          <ha-switch
-            .checked="${this._config!.show_name !== false}"
-            .configValue="${"show_name"}"
-            @change="${this._valueChanged}"
-            >${this.hass.localize(
+          <ha-formfield
+            .label=${this.hass.localize(
               "ui.panel.lovelace.editor.card.generic.show_name"
-            )}</ha-switch
+            )}
           >
-          <ha-switch
-            .checked="${this._config!.show_state !== false}"
-            .configValue="${"show_state"}"
-            @change="${this._valueChanged}"
-            >${this.hass.localize(
+            <ha-switch
+              .checked="${this._config!.show_name !== false}"
+              .configValue="${"show_name"}"
+              @change="${this._valueChanged}"
+            ></ha-switch
+          ></ha-formfield>
+          <ha-formfield
+            .label=${this.hass.localize(
               "ui.panel.lovelace.editor.card.generic.show_state"
-            )}</ha-switch
+            )}
           >
+            <ha-switch
+              .checked="${this._config!.show_state !== false}"
+              .configValue="${"show_state"}"
+              @change="${this._valueChanged}"
+            ></ha-switch
+          ></ha-formfield>
         </div>
         <div class="side-by-side">
           <hui-action-editor

@@ -38,6 +38,7 @@ import "../../../../layouts/hass-loading-screen";
 import "../../../../layouts/hass-subpage";
 import type { HomeAssistant } from "../../../../types";
 import { showToast } from "../../../../util/toast";
+import "../../../../components/ha-formfield";
 
 const DEFAULT_CONFIG_EXPOSE = true;
 
@@ -127,14 +128,19 @@ class CloudGoogleAssistant extends LitElement {
                 .map((trait) => trait.substr(trait.lastIndexOf(".") + 1))
                 .join(", ")}
             </state-info>
-            <ha-switch
-              .entityId=${entity.entity_id}
-              .disabled=${!emptyFilter}
-              .checked=${isExposed}
-              @change=${this._exposeChanged}
+            <ha-formfield
+              .label=${this.hass!.localize(
+                "ui.panel.config.cloud.google.expose"
+              )}
             >
-              ${this.hass!.localize("ui.panel.config.cloud.google.expose")}
-            </ha-switch>
+              <ha-switch
+                .entityId=${entity.entity_id}
+                .disabled=${!emptyFilter}
+                .checked=${isExposed}
+                @change=${this._exposeChanged}
+              >
+              </ha-switch>
+            </ha-formfield>
             ${entity.might_2fa
               ? html`
                   <ha-switch

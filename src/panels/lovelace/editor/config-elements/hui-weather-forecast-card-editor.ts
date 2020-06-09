@@ -8,6 +8,7 @@ import {
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/entity/ha-entity-picker";
 import "../../../../components/ha-switch";
+import "../../../../components/ha-formfield";
 import { HomeAssistant } from "../../../../types";
 import { WeatherForecastCardConfig } from "../../cards/types";
 import { struct } from "../../common/structs/struct";
@@ -109,14 +110,17 @@ export class HuiWeatherForecastCardEditor extends LitElement
             .configValue=${"secondary_info_attribute"}
             @value-changed=${this._valueChanged}
           ></paper-input>
-          <ha-switch
-            .checked=${this._config!.show_forecast !== false}
-            .configValue=${"show_forecast"}
-            @change=${this._valueChanged}
-            >${this.hass.localize(
+          <ha-formfield
+            .label=${this.hass.localize(
               "ui.panel.lovelace.editor.card.weather-forecast.show_forecast"
-            )}</ha-switch
+            )}
           >
+            <ha-switch
+              .checked=${this._config!.show_forecast !== false}
+              .configValue=${"show_forecast"}
+              @change=${this._valueChanged}
+            ></ha-switch
+          ></ha-formfield>
         </div>
       </div>
     `;

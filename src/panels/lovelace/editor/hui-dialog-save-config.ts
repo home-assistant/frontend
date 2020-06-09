@@ -15,6 +15,7 @@ import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/dialog/ha-paper-dialog";
 import type { HaPaperDialog } from "../../../components/dialog/ha-paper-dialog";
 import "../../../components/ha-switch";
+import "../../../components/ha-formfield";
 import "../../../components/ha-yaml-editor";
 import type { PolymerChangedEvent } from "../../../polymer-types";
 import { haStyleDialog } from "../../../resources/styles";
@@ -72,13 +73,16 @@ export class HuiSaveConfig extends LitElement {
                     "ui.panel.lovelace.editor.save_config.para_sure"
                   )}
                 </p>
-                <ha-switch
-                  .checked=${this._emptyConfig}
-                  @change=${this._emptyConfigChanged}
-                  >${this.hass!.localize(
+                <ha-formfield
+                  .label=${this.hass!.localize(
                     "ui.panel.lovelace.editor.save_config.empty_config"
-                  )}</ha-switch
+                  )}
                 >
+                  <ha-switch
+                    .checked=${this._emptyConfig}
+                    @change=${this._emptyConfigChanged}
+                  ></ha-switch
+                ></ha-formfield>
               `
             : html`
                 <p>

@@ -11,6 +11,7 @@ import {
 import { computeStateName } from "../../common/entity/compute_state_name";
 import "../../components/ha-dialog";
 import "../../components/ha-switch";
+import "../../components/ha-formfield";
 import type { HaSwitch } from "../../components/ha-switch";
 import { computeDeviceName } from "../../data/device_registry";
 import { fetchMQTTDebugInfo, MQTTDeviceDebugInfo } from "../../data/mqtt";
@@ -61,22 +62,28 @@ class DialogMQTTDeviceDebugInfo extends LitElement {
             "ui.dialogs.mqtt_device_debug_info.payload_display"
           )}
         </h4>
-        <ha-switch
-          .checked=${this._showDeserialized}
-          @change=${this._showDeserializedChanged}
-        >
-          ${this.hass!.localize(
+        <ha-formfield
+          .label=${this.hass!.localize(
             "ui.dialogs.mqtt_device_debug_info.deserialize"
           )}
-        </ha-switch>
-        <ha-switch
-          .checked=${this._showAsYaml}
-          @change=${this._showAsYamlChanged}
         >
-          ${this.hass!.localize(
+          <ha-switch
+            .checked=${this._showDeserialized}
+            @change=${this._showDeserializedChanged}
+          >
+          </ha-switch>
+        </ha-formfield>
+        <ha-formfield
+          .label=${this.hass!.localize(
             "ui.dialogs.mqtt_device_debug_info.show_as_yaml"
           )}
-        </ha-switch>
+        >
+          <ha-switch
+            .checked=${this._showAsYaml}
+            @change=${this._showAsYamlChanged}
+          >
+          </ha-switch>
+        </ha-formfield>
         <h4>
           ${this.hass!.localize("ui.dialogs.mqtt_device_debug_info.entities")}
         </h4>

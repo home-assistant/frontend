@@ -33,6 +33,7 @@ import { showDomainTogglerDialog } from "../../../../dialogs/domain-toggler/show
 import "../../../../layouts/hass-loading-screen";
 import "../../../../layouts/hass-subpage";
 import type { HomeAssistant } from "../../../../types";
+import "../../../../components/ha-formfield";
 
 const DEFAULT_CONFIG_EXPOSE = true;
 const IGNORE_INTERFACES = ["Alexa.EndpointHealth"];
@@ -127,14 +128,19 @@ class CloudAlexa extends LitElement {
                 )
                 .join(", ")}
             </state-info>
-            <ha-switch
-              .entityId=${entity.entity_id}
-              .disabled=${!emptyFilter}
-              .checked=${isExposed}
-              @change=${this._exposeChanged}
+            <ha-formfield
+              .label=${this.hass!.localize(
+                "ui.panel.config.cloud.alexa.expose"
+              )}
             >
-              ${this.hass!.localize("ui.panel.config.cloud.alexa.expose")}
-            </ha-switch>
+              <ha-switch
+                .entityId=${entity.entity_id}
+                .disabled=${!emptyFilter}
+                .checked=${isExposed}
+                @change=${this._exposeChanged}
+              >
+              </ha-switch>
+            </ha-formfield>
           </div>
         </ha-card>
       `);
