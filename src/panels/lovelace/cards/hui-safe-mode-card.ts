@@ -10,7 +10,7 @@ import {
 } from "lit-element";
 import "../../../components/ha-card";
 import { HomeAssistant } from "../../../types";
-import "../../developer-tools/logs/error-log-card";
+import "../../config/logs/error-log-card";
 import { LovelaceCard } from "../types";
 
 @customElement("hui-safe-mode-card")

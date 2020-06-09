@@ -54,9 +54,7 @@ export class SystemLogCard extends LitElement {
                 ${this._items.length === 0
                   ? html`
                       <div class="card-content">
-                        ${this.hass.localize(
-                          "ui.panel.developer-tools.tabs.logs.no_issues"
-                        )}
+                        ${this.hass.localize("ui.panel.config.logs.no_issues")}
                       </div>
                     `
                   : this._items.map(
@@ -83,7 +81,7 @@ export class SystemLogCard extends LitElement {
                                 ? html`
                                     -
                                     ${this.hass.localize(
-                                      "ui.panel.developer-tools.tabs.logs.multiple_messages",
+                                      "ui.panel.config.logs.multiple_messages",
                                       "time",
                                       formatSystemLogTime(
                                         item.first_occurred,
@@ -106,12 +104,12 @@ export class SystemLogCard extends LitElement {
                     domain="system_log"
                     service="clear"
                     >${this.hass.localize(
-                      "ui.panel.developer-tools.tabs.logs.clear"
+                      "ui.panel.config.logs.clear"
                     )}</ha-call-service-button
                   >
                   <ha-progress-button @click=${this.fetchData}
                     >${this.hass.localize(
-                      "ui.panel.developer-tools.tabs.logs.refresh"
+                      "ui.panel.config.logs.refresh"
                     )}</ha-progress-button
                   >
                 </div>
