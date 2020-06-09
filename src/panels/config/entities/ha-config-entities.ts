@@ -1,3 +1,4 @@
+import "@material/mwc-list/mwc-list-item";
 import "@polymer/paper-checkbox/paper-checkbox";
 import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
 import "@polymer/paper-item/paper-icon-item";
@@ -31,6 +32,7 @@ import type {
   RowClickedEvent,
   SelectionChangedEvent,
 } from "../../../components/data-table/ha-data-table";
+import "../../../components/ha-button-menu";
 import "../../../components/ha-icon";
 import { ConfigEntry, getConfigEntries } from "../../../data/config_entries";
 import {
@@ -53,6 +55,7 @@ import {
   loadEntityEditorDialog,
   showEntityEditorDialog,
 } from "./show-dialog-entity-editor";
+import { mdiFilterVariant } from "@mdi/js";
 
 export interface StateEntity extends EntityRegistryEntry {
   readonly?: boolean;
@@ -442,47 +445,55 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
                 >
               </div>`
             : ""}
-          <paper-menu-button no-animations horizontal-align="right">
-            <ha-icon-button
-              aria-label=${this.hass!.localize(
+          <ha-button-menu corner="BOTTOM_START">
+            <mwc-icon-button
+              slot="trigger"
+              .label=${this.hass!.localize(
                 "ui.panel.config.entities.picker.filter.filter"
               )}
-              title="${this.hass!.localize(
+              .title=${this.hass!.localize(
                 "ui.panel.config.entities.picker.filter.filter"
-              )}"
-              icon="hass:filter-variant"
-              slot="dropdown-trigger"
-            ></ha-icon-button>
-            <paper-listbox slot="dropdown-content">
-              <paper-icon-item @tap="${this._showDisabledChanged}">
-                <paper-checkbox
-                  .checked=${this._showDisabled}
-                  slot="item-icon"
-                ></paper-checkbox>
-                ${this.hass!.localize(
-                  "ui.panel.config.entities.picker.filter.show_disabled"
-                )}
-              </paper-icon-item>
-              <paper-icon-item @tap="${this._showRestoredChanged}">
-                <paper-checkbox
-                  .checked=${this._showUnavailable}
-                  slot="item-icon"
-                ></paper-checkbox>
-                ${this.hass!.localize(
-                  "ui.panel.config.entities.picker.filter.show_unavailable"
-                )}
-              </paper-icon-item>
-              <paper-icon-item @tap="${this._showReadOnlyChanged}">
-                <paper-checkbox
-                  .checked=${this._showReadOnly}
-                  slot="item-icon"
-                ></paper-checkbox>
-                ${this.hass!.localize(
-                  "ui.panel.config.entities.picker.filter.show_readonly"
-                )}
-              </paper-icon-item>
-            </paper-listbox>
-          </paper-menu-button>
+              )}
+            >
+              <ha-svg-icon path=${mdiFilterVariant}></ha-svg-icon>
+            </mwc-icon-button>
+            <mwc-list-item
+              @click="${this._showDisabledChanged}"
+              graphic="control"
+            >
+              <ha-checkbox
+                slot="graphic"
+                .checked=${this._showDisabled}
+              ></ha-checkbox>
+              ${this.hass!.localize(
+                "ui.panel.config.entities.picker.filter.show_disabled"
+              )}
+            </mwc-list-item>
+            <mwc-list-item
+              @click="${this._showRestoredChanged}"
+              graphic="control"
+            >
+              <ha-checkbox
+                slot="graphic"
+                .checked=${this._showUnavailable}
+              ></ha-checkbox>
+              ${this.hass!.localize(
+                "ui.panel.config.entities.picker.filter.show_unavailable"
+              )}
+            </mwc-list-item>
+            <mwc-list-item
+              @click="${this._showReadOnlyChanged}"
+              graphic="control"
+            >
+              <ha-checkbox
+                slot="graphic"
+                .checked=${this._showReadOnly}
+              ></ha-checkbox>
+              ${this.hass!.localize(
+                "ui.panel.config.entities.picker.filter.show_readonly"
+              )}
+            </mwc-list-item>
+          </ha-button-menu>
         `;
 
     return html`
@@ -732,6 +743,9 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
       }
       ha-switch {
         margin-top: 16px;
+      }
+      ha-button-menu {
+        margin-right: 8px;
       }
       .table-header {
         display: flex;

@@ -40,7 +40,7 @@ export class HaButtonMenu extends LitElement {
   static get styles(): CSSResult {
     return css`
       :host {
-        display: block;
+        display: inline-block;
         position: relative;
       }
     `;
