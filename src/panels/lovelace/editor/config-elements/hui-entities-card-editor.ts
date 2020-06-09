@@ -13,6 +13,7 @@ import "../../../../components/entity/state-badge";
 import "../../../../components/ha-card";
 import "../../../../components/ha-icon";
 import "../../../../components/ha-switch";
+import "../../../../components/ha-formfield";
 import { HomeAssistant } from "../../../../types";
 import {
   EntitiesCardConfig,
@@ -88,14 +89,17 @@ export class HuiEntitiesCardEditor extends LitElement
           .configValue="${"theme"}"
           @value-changed="${this._valueChanged}"
         ></hui-theme-select-editor>
-        <ha-switch
-          .checked="${this._config!.show_header_toggle !== false}"
-          .configValue="${"show_header_toggle"}"
-          @change="${this._valueChanged}"
-          >${this.hass.localize(
+        <ha-formfield
+          .label=${this.hass.localize(
             "ui.panel.lovelace.editor.card.entities.show_header_toggle"
-          )}</ha-switch
+          )}
         >
+          <ha-switch
+            .checked="${this._config!.show_header_toggle !== false}"
+            .configValue="${"show_header_toggle"}"
+            @change="${this._valueChanged}"
+          ></ha-switch>
+        </ha-formfield>
       </div>
       <hui-entity-editor
         .hass=${this.hass}
