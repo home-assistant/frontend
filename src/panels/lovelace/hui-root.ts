@@ -475,10 +475,6 @@ class HUIRoot extends LitElement {
     navigate(this, `${this.route?.prefix}/hass-unused-entities`);
   }
 
-  private _deselect(ev): void {
-    ev.target.selected = null;
-  }
-
   private _showVoiceCommandDialog(): void {
     showVoiceCommandDialog(this);
   }
