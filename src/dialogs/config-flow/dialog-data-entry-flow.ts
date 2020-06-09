@@ -15,7 +15,6 @@ import {
   TemplateResult,
 } from "lit-element";
 import "../../components/ha-dialog";
-import type { HaPaperDialog } from "../../components/dialog/ha-paper-dialog";
 import "../../components/ha-form/ha-form";
 import "../../components/ha-markdown";
 import {
