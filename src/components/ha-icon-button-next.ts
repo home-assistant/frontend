@@ -6,7 +6,7 @@ import {
   customElement,
 } from "lit-element";
 import { mdiChevronRight, mdiChevronLeft } from "@mdi/js";
-import "@material/mwc-icon-button/mwc-icon-button";
+import "@material/mwc-icon-button";
 import "./ha-svg-icon";
 
 @customElement("ha-icon-button-next")
