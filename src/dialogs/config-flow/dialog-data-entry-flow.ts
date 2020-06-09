@@ -90,7 +90,6 @@ class DataEntryFlowDialog extends LitElement {
       // We only load the handlers once
       if (this._handlers === undefined) {
         this._loading = true;
-        this.updateComplete.then(() => this._scheduleCenterDialog());
         try {
           this._handlers = await params.flowConfig.getFlowHandlers(this.hass);
         } finally {
@@ -98,7 +97,6 @@ class DataEntryFlowDialog extends LitElement {
         }
       }
       await this.updateComplete;
-      this._scheduleCenterDialog();
       return;
     }
 
@@ -115,9 +113,6 @@ class DataEntryFlowDialog extends LitElement {
 
     this._processStep(step);
     this._loading = false;
-    // When the flow changes, center the dialog.
-    // Don't do it on each step or else the dialog keeps bouncing.
-    this._scheduleCenterDialog();
   }
 
   protected render(): TemplateResult {
@@ -229,14 +224,6 @@ class DataEntryFlowDialog extends LitElement {
         this._areas = [];
       }
     }
-
-    if (changedProps.has("_devices") && this._dialog) {
-      this._scheduleCenterDialog();
-    }
-  }
-
-  private _scheduleCenterDialog() {
-    setTimeout(() => this._dialog.center(), 0);
   }
 
   private get _dialog(): HaPaperDialog {
