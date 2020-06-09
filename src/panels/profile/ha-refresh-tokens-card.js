@@ -116,7 +116,7 @@ class HaRefreshTokens extends LocalizeMixin(EventsMixin(PolymerElement)) {
     } catch (err) {
       // eslint-disable-next-line
       console.error(err);
-     showAlertDialog(this, {
+      showAlertDialog(this, {
         text: this.localize("ui.panel.profile.refresh_tokens.delete_failed"),
       });
     }
