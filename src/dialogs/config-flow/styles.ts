@@ -2,8 +2,21 @@ import { css } from "lit-element";
 
 export const configFlowContentStyles = css`
   h2 {
-    margin-top: 24px;
+    margin: 24px 0 0;
     padding: 0 24px;
+    -moz-osx-font-smoothing: grayscale;
+    -webkit-font-smoothing: antialiased;
+    font-family: var(
+      --mdc-typography-headline6-font-family,
+      var(--mdc-typography-font-family, Roboto, sans-serif)
+    );
+    font-size: var(--mdc-typography-headline6-font-size, 1.25rem);
+    line-height: var(--mdc-typography-headline6-line-height, 2rem);
+    font-weight: var(--mdc-typography-headline6-font-weight, 500);
+    letter-spacing: var(--mdc-typography-headline6-letter-spacing, 0.0125em);
+    text-decoration: var(--mdc-typography-headline6-text-decoration, inherit);
+    text-transform: var(--mdc-typography-headline6-text-transform, inherit);
+    box-sizing: border-box;
   }
 
   .content {
