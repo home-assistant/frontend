@@ -35,6 +35,9 @@ export class HaDialog extends MwcDialog {
           display: block;
           height: 20px;
         }
+        .mdc-dialog__content {
+          padding: var(--dialog-content-padding, 20px 24px);
+        }
         .header_button {
           position: absolute;
           right: 16px;
