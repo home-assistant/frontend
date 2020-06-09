@@ -1,6 +1,8 @@
 import "../../../../components/ha-icon-button";
 import "@polymer/paper-item/paper-item";
-import "@polymer/paper-menu-button/paper-menu-button";
+import "@material/mwc-list/mwc-list-item";
+import "../../../../components/ha-button-menu";
+import { mdiDotsVertical } from "@mdi/js";
 import {
   css,
   CSSResult,
@@ -61,39 +63,33 @@ export default class HaAutomationConditionRow extends LitElement {
       <ha-card>
         <div class="card-content">
           <div class="card-menu">
-            <paper-menu-button
-              no-animations
-              horizontal-align="right"
-              horizontal-offset="-5"
-              vertical-offset="-5"
-              close-on-activate
-            >
-              <ha-icon-button
-                icon="hass:dots-vertical"
-                slot="dropdown-trigger"
-              ></ha-icon-button>
-              <paper-listbox slot="dropdown-content">
-                <paper-item @tap=${this._switchYamlMode}>
-                  ${this._yamlMode
-                    ? this.hass.localize(
-                        "ui.panel.config.automation.editor.edit_ui"
-                      )
-                    : this.hass.localize(
-                        "ui.panel.config.automation.editor.edit_yaml"
-                      )}
-                </paper-item>
-                <paper-item disabled>
-                  ${this.hass.localize(
-                    "ui.panel.config.automation.editor.conditions.duplicate"
-                  )}
-                </paper-item>
-                <paper-item @tap=${this._onDelete}>
-                  ${this.hass.localize(
-                    "ui.panel.config.automation.editor.conditions.delete"
-                  )}
-                </paper-item>
-              </paper-listbox>
-            </paper-menu-button>
+            <ha-button-menu corner="BOTTOM_START">
+              <mwc-icon-button
+                .title=${this.hass.localize("ui.common.menu")}
+                .label=${this.hass.localize("ui.common.overflow_menu")}
+                slot="trigger"
+                ><ha-svg-icon path=${mdiDotsVertical}></ha-svg-icon
+              ></mwc-icon-button>
+              <mwc-list-item @tap=${this._switchYamlMode}>
+                ${this._yamlMode
+                  ? this.hass.localize(
+                      "ui.panel.config.automation.editor.edit_ui"
+                    )
+                  : this.hass.localize(
+                      "ui.panel.config.automation.editor.edit_yaml"
+                    )}
+              </mwc-list-item>
+              <mwc-list-item disabled>
+                ${this.hass.localize(
+                  "ui.panel.config.automation.editor.actions.duplicate"
+                )}
+              </mwc-list-item>
+              <mwc-list-item @tap=${this._onDelete}>
+                ${this.hass.localize(
+                  "ui.panel.config.automation.editor.actions.delete"
+                )}
+              </mwc-list-item>
+            </ha-button-menu>
           </div>
           <ha-automation-condition-editor
             .yamlMode=${this._yamlMode}
@@ -129,14 +125,17 @@ export default class HaAutomationConditionRow extends LitElement {
         top: 0;
         right: 0;
         z-index: 3;
-        color: var(--primary-text-color);
+        --mdc-theme-text-primary-on-background: var(--primary-text-color);
       }
       .rtl .card-menu {
         right: auto;
         left: 0;
       }
-      .card-menu paper-item {
-        cursor: pointer;
+      ha-button-menu {
+        margin: 8px;
+      }
+      mwc-list-item[disabled] {
+        --mdc-theme-text-primary-on-background: var(--disabled-text-color);
       }
     `;
   }
