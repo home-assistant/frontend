@@ -17,14 +17,11 @@ import "../../../../../components/buttons/ha-call-service-button";
 import "../../../../../components/entity/state-badge";
 import "../../../../../components/ha-card";
 import "../../../../../components/ha-service-description";
-import {
-  DeviceRegistryEntryMutableParams,
-  updateDeviceRegistryEntry,
-} from "../../../../../data/device_registry";
+import { updateDeviceRegistryEntry } from "../../../../../data/device_registry";
 import { ZHADevice } from "../../../../../data/zha";
 import { haStyle } from "../../../../../resources/styles";
 import { HomeAssistant } from "../../../../../types";
-import "./../../../../../components/ha-area-picker";
+import "../../../../../components/ha-area-picker";
 import { showAlertDialog } from "../../../../../dialogs/generic/show-dialog-box";
 
 declare global {
