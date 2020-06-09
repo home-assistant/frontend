@@ -88,31 +88,31 @@ export class HaEntityRegistryBasicEditor extends LitElement {
           .checked=${!this._disabledBy}
           @change=${this._disabledByChanged}
         >
-          <div>
-            <div>
-              ${this.hass.localize(
-                "ui.dialogs.entity_registry.editor.enabled_label"
-              )}
-            </div>
-            <div class="secondary">
-              ${this._disabledBy && this._disabledBy !== "user"
-                ? this.hass.localize(
-                    "ui.dialogs.entity_registry.editor.enabled_cause",
-                    "cause",
-                    this.hass.localize(
-                      `config_entry.disabled_by.${this._disabledBy}`
-                    )
-                  )
-                : ""}
-              ${this.hass.localize(
-                "ui.dialogs.entity_registry.editor.enabled_description"
-              )}
-              <br />${this.hass.localize(
-                "ui.dialogs.entity_registry.editor.note"
-              )}
-            </div>
-          </div>
         </ha-switch>
+        <div>
+          <div>
+            ${this.hass.localize(
+              "ui.dialogs.entity_registry.editor.enabled_label"
+            )}
+          </div>
+          <div class="secondary">
+            ${this._disabledBy && this._disabledBy !== "user"
+              ? this.hass.localize(
+                  "ui.dialogs.entity_registry.editor.enabled_cause",
+                  "cause",
+                  this.hass.localize(
+                    `config_entry.disabled_by.${this._disabledBy}`
+                  )
+                )
+              : ""}
+            ${this.hass.localize(
+              "ui.dialogs.entity_registry.editor.enabled_description"
+            )}
+            <br />${this.hass.localize(
+              "ui.dialogs.entity_registry.editor.note"
+            )}
+          </div>
+        </div>
       </div>
     `;
   }
@@ -127,9 +127,14 @@ export class HaEntityRegistryBasicEditor extends LitElement {
 
   static get styles() {
     return css`
+      ha-switch {
+        margin-right: 16px;
+      }
       .row {
         margin-top: 8px;
         color: var(--primary-text-color);
+        display: flex;
+        align-items: center;
       }
       .secondary {
         color: var(--secondary-text-color);

@@ -730,9 +730,6 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
         height: calc(100vh - 65px);
         display: block;
       }
-      ha-switch {
-        margin-top: 16px;
-      }
       .table-header {
         display: flex;
         justify-content: space-between;
