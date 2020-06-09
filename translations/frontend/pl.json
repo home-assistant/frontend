@@ -35,7 +35,7 @@
                 "drying": "osuszanie",
                 "fan": "wentylator",
                 "heating": "grzanie",
-                "idle": "nieaktywny",
+                "idle": "Bezczynny",
                 "off": "wyłączony"
             },
             "preset_mode": {
@@ -324,22 +324,22 @@
             },
             "query_stage": {
                 "dead": "martwy ({query_stage})",
-                "initializing": "inicjalizacja ({query_stage})"
+                "initializing": "Inicjowanie ({query_stage})"
             }
         }
     },
     "ui": {
         "auth_store": {
-            "ask": "Czy chcesz zapamiętać dane logowania?",
-            "confirm": "Zapamiętaj",
-            "decline": "Nie, dziękuję"
+            "ask": "Czy chcesz pozostać zalogowany?",
+            "confirm": "Potwierdź",
+            "decline": "Rezygnuj"
         },
         "card": {
             "alarm_control_panel": {
-                "arm_away": "uzbrojenie (nieobecny)",
+                "arm_away": "Uzbrojenie pod nieobecność",
                 "arm_custom_bypass": "Niestandardowy bypass",
                 "arm_home": "uzbrojenie (w domu)",
-                "arm_night": "uzbrojenie (noc)",
+                "arm_night": "Uzbrojenie na noc",
                 "clear_code": "Wyczyść",
                 "code": "Kod",
                 "disarm": "rozbrojenie"
@@ -352,12 +352,12 @@
                 "not_available": "Obraz niedostępny"
             },
             "climate": {
-                "aux_heat": "Dodatkowe źródło ciepła",
+                "aux_heat": "Zewnętrznie podłączone źródło",
                 "away_mode": "Tryb poza domem",
                 "cooling": "{name} chłodzenie",
                 "current_temperature": "{name} aktualna temperatura",
                 "currently": "Obecnie",
-                "fan_mode": "Tryb pracy wentylatora",
+                "fan_mode": "Tryb nawiewu",
                 "heating": "{name} grzanie",
                 "high": "wysoka",
                 "low": "niska",
@@ -392,7 +392,7 @@
                 "brightness": "Jasność",
                 "color_temperature": "Temperatura barwy",
                 "effect": "Efekt",
-                "white_value": "Biel"
+                "white_value": "Wartość bieli"
             },
             "lock": {
                 "code": "Kod",
@@ -427,7 +427,7 @@
             "vacuum": {
                 "actions": {
                     "resume_cleaning": "Wznów sprzątanie",
-                    "return_to_base": "Wróć do stacji dokującej",
+                    "return_to_base": "Powrót do stacji dokującej",
                     "start_cleaning": "Rozpocznij sprzątanie",
                     "turn_off": "Wyłącz",
                     "turn_on": "Włącz"
@@ -442,8 +442,8 @@
             },
             "weather": {
                 "attributes": {
-                    "air_pressure": "Ciśnienie",
-                    "humidity": "Wilgotność",
+                    "air_pressure": "Ciśnienie atmosferyczne",
+                    "humidity": "Wilgotność powietrza",
                     "precipitation": "Opady",
                     "temperature": "Temperatura",
                     "visibility": "Widoczność",
@@ -551,7 +551,7 @@
         },
         "dialogs": {
             "config_entry_system_options": {
-                "enable_new_entities_description": "Jeśli wyłączone, nowo wykryte encje nie będą automatycznie dodawane do Home Assistant'a.",
+                "enable_new_entities_description": "Jeśli wyłączone, nowo wykryte encje integracji {integration} nie będą automatycznie dodawane do Home Assistanta.",
                 "enable_new_entities_label": "Włącz dodawanie nowych encji.",
                 "title": "Opcje systemowe dla {integration}",
                 "update": "Aktualizuj"
@@ -841,7 +841,7 @@
                             "delete_confirm": "Czy chcesz usunąć?",
                             "duplicate": "Duplikuj",
                             "header": "Warunki",
-                            "introduction": "Warunki są opcjonalną częścią automatyzacji i można ich użyć, aby zapobiec działaniom po uruchomieniu. Warunki wyglądają bardzo podobnie do wyzwalaczy, ale są bardzo różne. Wyzwalacz będzie analizował zdarzenia zachodzące w systemie, a warunek będzie dotyczył tylko tego, jak wygląda teraz system. Wyzwalacz może zaobserwować, że przełącznik jest przełączany. Warunek może tylko sprawdzić, czy przełącznik jest aktualnie włączony lub wyłączony.",
+                            "introduction": "Warunki nie są wymagane w automatyzacji, ale zastosowanie ich wykluczy jej potencjalnie niechciane uruchomienia, póki logika każdego z nich przyjmuje wartość pozytywną.",
                             "learn_more": "Dowiedz się więcej o warunkach",
                             "name": "Warunek",
                             "type_select": "Typ warunku",
@@ -1324,7 +1324,7 @@
                             "button": "Usuń wybrane",
                             "confirm_partly_text": "Można usunąć tylko {removable} z wybranych {selected} encji. Encje można usunąć tylko wtedy, gdy integracja wspiera taka możliwość. Czasami trzeba ponownie uruchomić Home Assistanta, zanim będzie można usunąć encje usuniętej integracji. Czy na pewno chcesz usunąć usuwalne encje?",
                             "confirm_partly_title": "Tylko {number} wybrane encje można usunąć.",
-                            "confirm_text": "Encje mogą zostać usunięte tylko wtedy, gdy ich integracja na to zezwala.",
+                            "confirm_text": "Powinieneś uprzednio usunąć integrację z automatyzacji i konfiguracji Lovelace, jeśli encje w niej występują.",
                             "confirm_title": "Czy chcesz usunąć {number} encj(ę/e/i)?"
                         },
                         "selected": "wybrano {number}",

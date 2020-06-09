@@ -1869,7 +1869,8 @@
                         "header": "OZW Log",
                         "introduction": "Logbicher kucken. 0 ass de minimum (luet de ganze Log) an 1000 ass de maximum. Luede weist ee statesche Log an \"tail\" aktualiséiert de Log automatesch mat de leschten Zeile vum Log.",
                         "last_log_lines": "Unzuel vun läschte Log Zeilen",
-                        "load": "Lueden"
+                        "load": "Lueden",
+                        "tail": "ogon,ślad"
                     },
                     "services": {
                         "add_node": "Apparat dobäisetzen",
