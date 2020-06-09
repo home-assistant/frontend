@@ -11,6 +11,7 @@ import {
 import { addDistanceToCoord } from "../../../common/location/add_distance_to_coord";
 import { createCloseHeading } from "../../../components/ha-dialog";
 import "../../../components/ha-switch";
+import "../../../components/ha-formfield";
 import "../../../components/map/ha-location-editor";
 import {
   defaultRadiusColor,
@@ -181,11 +182,16 @@ class DialogZoneDetail extends LitElement {
             <p>
               ${this.hass!.localize("ui.panel.config.zone.detail.passive_note")}
             </p>
-            <ha-switch .checked=${this._passive} @change=${this._passiveChanged}
-              >${this.hass!.localize(
+            <ha-formfield
+              .label=${this.hass!.localize(
                 "ui.panel.config.zone.detail.passive"
-              )}</ha-switch
+              )}
             >
+              <ha-switch
+                .checked=${this._passive}
+                @change=${this._passiveChanged}
+              ></ha-switch>
+            </ha-formfield>
           </div>
         </div>
         ${this._params.entry

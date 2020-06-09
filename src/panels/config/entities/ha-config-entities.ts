@@ -741,9 +741,6 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
         height: calc(100vh - 65px);
         display: block;
       }
-      ha-switch {
-        margin-top: 16px;
-      }
       ha-button-menu {
         margin-right: 8px;
       }

@@ -12,7 +12,6 @@ import {
 } from "lit-element";
 import { fireEvent, HASSDomEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/entity/ha-entity-picker";
-import "../../../../components/ha-switch";
 import { LovelaceConfig } from "../../../../data/lovelace";
 import { HomeAssistant } from "../../../../types";
 import { ConditionalCardConfig } from "../../cards/types";

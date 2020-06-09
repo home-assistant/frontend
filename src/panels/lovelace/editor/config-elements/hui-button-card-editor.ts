@@ -23,6 +23,7 @@ import {
   EntitiesEditorEvent,
 } from "../types";
 import "../../../../components/ha-switch";
+import "../../../../components/ha-formfield";
 import { configElementStyle } from "./config-elements-style";
 
 const cardConfigStruct = struct({
@@ -143,22 +144,25 @@ export class HuiButtonCardEditor extends LitElement
           ></ha-icon-input>
         </div>
         <div class="side-by-side">
-          <ha-switch
+        <ha-formfield .label=${this.hass.localize(
+          "ui.panel.lovelace.editor.card.generic.show_name"
+        )}>  
+        <ha-switch
             .checked="${this._config!.show_name !== false}"
             .configValue="${"show_name"}"
             @change="${this._valueChanged}"
-            >${this.hass.localize(
-              "ui.panel.lovelace.editor.card.generic.show_name"
-            )}</ha-switch
+            ></ha-switch
           >
-          <ha-switch
+        </ha-formfield>
+        <ha-formfield .label=${this.hass.localize(
+          "ui.panel.lovelace.editor.card.generic.show_icon"
+        )}>  
+        <ha-switch
             .checked="${this._config!.show_icon !== false}"
             .configValue="${"show_icon"}"
             @change="${this._valueChanged}"
-            >${this.hass.localize(
-              "ui.panel.lovelace.editor.card.generic.show_icon"
-            )}</ha-switch
-          >
+            ></ha-switch
+          ></ha-formfield>
         </div>
         <div class="side-by-side">
           <paper-input
