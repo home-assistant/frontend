@@ -474,6 +474,7 @@
         },
         "common": {
             "and": "e",
+            "back": "Voltar",
             "cancel": "Cancelar",
             "close": "Fechar",
             "delete": "Eliminar",
@@ -506,6 +507,7 @@
             "device-picker": {
                 "clear": "Limpar",
                 "device": "Dispositivo",
+                "no_area": "Sem área",
                 "show_devices": "Mostrar dispositivos",
                 "toggle": "Alternar"
             },
@@ -739,6 +741,8 @@
         "notification_toast": {
             "connection_lost": "Conexão perdida. Reconectando…",
             "service_call_failed": "Falha ao chamar o serviço {service}.",
+            "started": "Home Assistant foi iniciado!",
+            "starting": "Home Assistant está iniciando, algumas funcionalidades podem estar indisponíveis até que esteja iniciado.",
             "triggered": "{name} disparado"
         },
         "panel": {
@@ -766,6 +770,9 @@
                         "create": "Criar",
                         "default_name": "Nova Zona",
                         "delete": "Excluir",
+                        "name": "Nome",
+                        "name_required": "Nome é obrigatório",
+                        "unknown_error": "Erro desconhecido",
                         "update": "Atualizar"
                     },
                     "picker": {
@@ -800,6 +807,7 @@
                                     "label": "Atraso"
                                 },
                                 "device_id": {
+                                    "action": "Açao",
                                     "extra_fields": {
                                         "code": "Código"
                                     },
@@ -841,6 +849,7 @@
                                     "label": "E"
                                 },
                                 "device": {
+                                    "condition": "Condição",
                                     "extra_fields": {
                                         "above": "Acima",
                                         "below": "Abaixo",
@@ -919,7 +928,8 @@
                                         "below": "Abaixo",
                                         "for": "Duração"
                                     },
-                                    "label": "Dispositivo"
+                                    "label": "Dispositivo",
+                                    "trigger": "Gatilho"
                                 },
                                 "event": {
                                     "event_data": "Dados de evento",
@@ -936,6 +946,7 @@
                                 },
                                 "homeassistant": {
                                     "event": "Evento:",
+                                    "label": "",
                                     "shutdown": "Desligar",
                                     "start": "Iniciar"
                                 },
@@ -1210,6 +1221,7 @@
                     "different_include": "Possivelmente por meio de um domínio, um glob ou uma inclusão diferente.",
                     "pick_attribute": "Escolha um atributo para sobrescrever",
                     "picker": {
+                        "entity": "Entidade",
                         "header": "Personalizações",
                         "introduction": "Ajustar atributos por entidade. As personalizações adicionadas / editadas entrarão em vigor imediatamente. As personalizações removidas entrarão em vigor quando a entidade for atualizada."
                     },
@@ -1246,6 +1258,7 @@
                         "integration": "Integração",
                         "manufacturer": "Fabricante",
                         "model": "Modelo",
+                        "no_area": "Sem área",
                         "no_devices": "Nenhum dispositivo"
                     },
                     "delete": "Eliminar",
@@ -1254,7 +1267,9 @@
                     "device_not_found": "Dispositivo não encontrado.",
                     "entities": {
                         "add_entities_lovelace": "Adicionar ao Lovelace",
+                        "disabled_entities": "+{count} {count, plural,\n  one {disabled entity}\n  other {disabled entities}\n}",
                         "entities": "Entidades",
+                        "hide_disabled": "Ocultar desativado(s)",
                         "none": "Este dispositivo não possui entidades"
                     },
                     "name": "Nome",
@@ -1795,6 +1810,7 @@
                     "no_zones_created_yet": "Parece que você ainda não criou nenhuma zona."
                 },
                 "zwave": {
+                    "caption": "",
                     "common": {
                         "index": "Índice",
                         "instance": "Instância",
@@ -1826,15 +1842,27 @@
                         "set_wakeup": "Definir intervalo de ativação",
                         "true": "Verdadeiro"
                     },
+                    "node_management": {
+                        "add_to_group": "Adicionar ao grupo",
+                        "group": "Grupo",
+                        "node_group_associations": "Associações de grupos de nós",
+                        "node_protection": "Proteção dos nós",
+                        "nodes": "Nós",
+                        "protection": "Proteção",
+                        "set_protection": "Definir proteção"
+                    },
                     "ozw_log": {
                         "header": "OZW Log",
-                        "introduction": "Veja o log. 0 é o mínimo (carrega o log inteiro) e 1000 é o máximo. A carga mostrará um log estático e tail será atualizada automaticamente com o último número especificado de linhas do log."
+                        "introduction": "Veja o log. 0 é o mínimo (carrega o log inteiro) e 1000 é o máximo. A carga mostrará um log estático e tail será atualizada automaticamente com o último número especificado de linhas do log.",
+                        "load": "Carregar"
                     },
                     "services": {
                         "add_node": "Adicionar Nó",
                         "add_node_secure": "Adicionar Nó Seguro",
                         "cancel_command": "Cancelar Comando",
                         "heal_network": "Reparar rede",
+                        "node_info": "Informações do Nó",
+                        "refresh_entity": "Atualizar Entidade",
                         "remove_node": "Remover Nó",
                         "save_config": "Salvar Configuração",
                         "soft_reset": "Soft Reset",
@@ -1914,6 +1942,7 @@
                         "start_listening": "Começar a ouvir",
                         "stop_listening": "Parar de ouvir",
                         "subscribe_to": "Evento para se inscrever",
+                        "title": "",
                         "topic": "tópico"
                     },
                     "services": {
@@ -2309,6 +2338,8 @@
                 "abort_intro": "Login cancelado",
                 "authorizing_client": "Você está prestes a dar acesso pra {clientId} à sua instância do Home Assistant.",
                 "form": {
+                    "error": "Erro: {error}",
+                    "next": "Próximo",
                     "providers": {
                         "command_line": {
                             "abort": {
@@ -2394,6 +2425,7 @@
                             }
                         }
                     },
+                    "start_over": "Recomeçar",
                     "unknown_error": "Alguma coisa saiu errada",
                     "working": "Aguarde"
                 },
