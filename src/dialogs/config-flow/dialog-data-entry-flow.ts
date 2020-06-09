@@ -27,7 +27,6 @@ import {
   DeviceRegistryEntry,
   subscribeDeviceRegistry,
 } from "../../data/device_registry";
-import { PolymerChangedEvent } from "../../polymer-types";
 import { haStyleDialog } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
 import { DataEntryFlowDialogParams } from "./show-dialog-data-entry-flow";
@@ -224,10 +223,6 @@ class DataEntryFlowDialog extends LitElement {
         this._areas = [];
       }
     }
-  }
-
-  private get _dialog(): HaPaperDialog {
-    return this.shadowRoot!.querySelector("ha-paper-dialog")!;
   }
 
   private async _fetchDevices(configEntryId) {
