@@ -1,9 +1,11 @@
 import "@polymer/paper-dropdown-menu/paper-dropdown-menu-light";
+import "@material/mwc-list/mwc-list-item";
+import "../../../../components/ha-button-menu";
+import { mdiDotsVertical } from "@mdi/js";
 import "../../../../components/ha-icon-button";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
 import type { PaperListboxElement } from "@polymer/paper-listbox/paper-listbox";
-import "@polymer/paper-menu-button/paper-menu-button";
 import {
   css,
   CSSResult,
@@ -110,42 +112,33 @@ export default class HaAutomationActionRow extends LitElement {
                   ></ha-icon-button>
                 `
               : ""}
-            <paper-menu-button
-              no-animations
-              horizontal-align="right"
-              horizontal-offset="-5"
-              vertical-offset="-5"
-              close-on-activate
-            >
-              <ha-icon-button
-                icon="hass:dots-vertical"
-                slot="dropdown-trigger"
-              ></ha-icon-button>
-              <paper-listbox slot="dropdown-content">
-                <paper-item
-                  @tap=${this._switchYamlMode}
-                  .disabled=${selected === -1}
-                >
-                  ${yamlMode
-                    ? this.hass.localize(
-                        "ui.panel.config.automation.editor.edit_ui"
-                      )
-                    : this.hass.localize(
-                        "ui.panel.config.automation.editor.edit_yaml"
-                      )}
-                </paper-item>
-                <paper-item disabled>
-                  ${this.hass.localize(
-                    "ui.panel.config.automation.editor.actions.duplicate"
-                  )}
-                </paper-item>
-                <paper-item @tap=${this._onDelete}>
-                  ${this.hass.localize(
-                    "ui.panel.config.automation.editor.actions.delete"
-                  )}
-                </paper-item>
-              </paper-listbox>
-            </paper-menu-button>
+            <ha-button-menu corner="BOTTOM_START">
+              <mwc-icon-button slot="trigger"
+                ><ha-svg-icon path=${mdiDotsVertical}></ha-svg-icon
+              ></mwc-icon-button>
+              <mwc-list-item
+                @tap=${this._switchYamlMode}
+                .disabled=${selected === -1}
+              >
+                ${yamlMode
+                  ? this.hass.localize(
+                      "ui.panel.config.automation.editor.edit_ui"
+                    )
+                  : this.hass.localize(
+                      "ui.panel.config.automation.editor.edit_yaml"
+                    )}
+              </mwc-list-item>
+              <mwc-list-item disabled>
+                ${this.hass.localize(
+                  "ui.panel.config.automation.editor.actions.duplicate"
+                )}
+              </mwc-list-item>
+              <mwc-list-item @tap=${this._onDelete}>
+                ${this.hass.localize(
+                  "ui.panel.config.automation.editor.actions.delete"
+                )}
+              </mwc-list-item>
+            </ha-button-menu>
           </div>
           ${yamlMode
             ? html`
@@ -259,14 +252,17 @@ export default class HaAutomationActionRow extends LitElement {
         top: 0;
         right: 0;
         z-index: 3;
-        color: var(--primary-text-color);
+        --mdc-theme-text-primary-on-background: var(--primary-text-color);
       }
       .rtl .card-menu {
         right: auto;
         left: 0;
       }
-      .card-menu paper-item {
-        cursor: pointer;
+      ha-button-menu {
+        margin: 8px;
+      }
+      mwc-list-item[disabled] {
+        --mdc-theme-text-primary-on-background: var(--disabled-text-color);
       }
     `;
   }

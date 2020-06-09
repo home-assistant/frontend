@@ -1,12 +1,10 @@
 import "@material/mwc-button";
+import "@material/mwc-list/mwc-list-item";
+import { mdiDotsVertical } from "@mdi/js";
 import "@polymer/app-layout/app-header-layout/app-header-layout";
 import "@polymer/app-layout/app-header/app-header";
 import "@polymer/app-layout/app-scroll-effects/effects/waterfall";
 import "@polymer/app-layout/app-toolbar/app-toolbar";
-import "../../components/ha-icon-button";
-import "@polymer/paper-item/paper-item";
-import "@polymer/paper-listbox/paper-listbox";
-import "@polymer/paper-menu-button/paper-menu-button";
 import "@polymer/paper-tabs/paper-tab";
 import "@polymer/paper-tabs/paper-tabs";
 import {
@@ -27,10 +25,12 @@ import { navigate } from "../../common/navigate";
 import { computeRTLDirection } from "../../common/util/compute_rtl";
 import { debounce } from "../../common/util/debounce";
 import { afterNextRender } from "../../common/util/render-status";
+import "../../components/ha-button-menu";
 import "../../components/ha-icon";
-import "../../components/ha-menu-button";
+import "../../components/ha-icon-button";
 import "../../components/ha-icon-button-arrow-next";
 import "../../components/ha-icon-button-arrow-prev";
+import "../../components/ha-menu-button";
 import type {
   LovelaceConfig,
   LovelacePanelConfig,
@@ -131,46 +131,30 @@ class HUIRoot extends LitElement {
                     )}"
                     @click="${this._handleHelp}"
                   ></ha-icon-button>
-                  <paper-menu-button
-                    no-animations
-                    horizontal-align="right"
-                    horizontal-offset="-5"
-                  >
-                    <ha-icon-button
-                      aria-label=${this.hass!.localize(
-                        "ui.panel.lovelace.editor.menu.open"
+                  <ha-button-menu corner="BOTTOM_START">
+                    <mwc-icon-button slot="trigger" alt="menu">
+                      <ha-svg-icon path=${mdiDotsVertical}></ha-svg-icon>
+                    </mwc-icon-button>
+                    ${__DEMO__ /* No unused entities available in the demo */
+                      ? ""
+                      : html`
+                          <mwc-list-item
+                            aria-label=${this.hass!.localize(
+                              "ui.panel.lovelace.unused_entities.title"
+                            )}
+                            @tap="${this._handleUnusedEntities}"
+                          >
+                            ${this.hass!.localize(
+                              "ui.panel.lovelace.unused_entities.title"
+                            )}
+                          </mwc-list-item>
+                        `}
+                    <mwc-list-item @tap="${this.lovelace!.enableFullEditMode}">
+                      ${this.hass!.localize(
+                        "ui.panel.lovelace.editor.menu.raw_editor"
                       )}
-                      title="${this.hass!.localize(
-                        "ui.panel.lovelace.editor.menu.open"
-                      )}"
-                      icon="hass:dots-vertical"
-                      slot="dropdown-trigger"
-                    ></ha-icon-button>
-                    <paper-listbox
-                      @iron-select="${this._deselect}"
-                      slot="dropdown-content"
-                    >
-                      ${__DEMO__ /* No unused entities available in the demo */
-                        ? ""
-                        : html`
-                            <paper-item
-                              aria-label=${this.hass!.localize(
-                                "ui.panel.lovelace.unused_entities.title"
-                              )}
-                              @tap="${this._handleUnusedEntities}"
-                            >
-                              ${this.hass!.localize(
-                                "ui.panel.lovelace.unused_entities.title"
-                              )}
-                            </paper-item>
-                          `}
-                      <paper-item @tap="${this.lovelace!.enableFullEditMode}">
-                        ${this.hass!.localize(
-                          "ui.panel.lovelace.editor.menu.raw_editor"
-                        )}
-                      </paper-item>
-                    </paper-listbox>
-                  </paper-menu-button>
+                    </mwc-list-item>
+                  </ha-button-menu>
                 </app-toolbar>
               `
             : html`
@@ -189,89 +173,80 @@ class HUIRoot extends LitElement {
                         ></ha-icon-button>
                       `
                     : ""}
-                  <paper-menu-button
-                    no-animations
-                    horizontal-align="right"
-                    horizontal-offset="-5"
-                  >
-                    <ha-icon-button
+                  <ha-button-menu corner="BOTTOM_START">
+                    <mwc-icon-button
+                      slot="trigger"
                       aria-label=${this.hass!.localize(
                         "ui.panel.lovelace.editor.menu.open"
                       )}
                       title="${this.hass!.localize(
                         "ui.panel.lovelace.editor.menu.open"
                       )}"
-                      icon="hass:dots-vertical"
-                      slot="dropdown-trigger"
-                    ></ha-icon-button>
-                    <paper-listbox
-                      @iron-select="${this._deselect}"
-                      slot="dropdown-content"
                     >
-                      ${this._yamlMode
-                        ? html`
-                            <paper-item
-                              aria-label=${this.hass!.localize(
-                                "ui.panel.lovelace.menu.refresh"
-                              )}
-                              @tap="${this._handleRefresh}"
-                            >
-                              ${this.hass!.localize(
-                                "ui.panel.lovelace.menu.refresh"
-                              )}
-                            </paper-item>
-                            <paper-item
-                              aria-label=${this.hass!.localize(
-                                "ui.panel.lovelace.unused_entities.title"
-                              )}
-                              @tap="${this._handleUnusedEntities}"
-                            >
-                              ${this.hass!.localize(
-                                "ui.panel.lovelace.unused_entities.title"
-                              )}
-                            </paper-item>
-                          `
-                        : ""}
-                      ${(this.hass.panels.lovelace
-                        ?.config as LovelacePanelConfig)?.mode === "yaml"
-                        ? html`
-                            <paper-item
-                              aria-label=${this.hass!.localize(
-                                "ui.panel.lovelace.menu.reload_resources"
-                              )}
-                              @tap="${this._handleReloadResources}"
-                            >
-                              ${this.hass!.localize(
-                                "ui.panel.lovelace.menu.reload_resources"
-                              )}
-                            </paper-item>
-                          `
-                        : ""}
-                      ${this.hass!.user!.is_admin &&
-                      !this.hass!.config.safe_mode
-                        ? html`
-                            <paper-item
-                              aria-label=${this.hass!.localize(
-                                "ui.panel.lovelace.menu.configure_ui"
-                              )}
-                              @tap="${this._editModeEnable}"
-                            >
-                              ${this.hass!.localize(
-                                "ui.panel.lovelace.menu.configure_ui"
-                              )}
-                            </paper-item>
-                          `
-                        : ""}
-                      <paper-item
-                        aria-label=${this.hass!.localize(
-                          "ui.panel.lovelace.menu.help"
-                        )}
-                        @tap="${this._handleHelp}"
-                      >
-                        ${this.hass!.localize("ui.panel.lovelace.menu.help")}
-                      </paper-item>
-                    </paper-listbox>
-                  </paper-menu-button>
+                      <ha-svg-icon path=${mdiDotsVertical}></ha-svg-icon>
+                    </mwc-icon-button>
+                    ${this._yamlMode
+                      ? html`
+                          <mwc-list-item
+                            aria-label=${this.hass!.localize(
+                              "ui.panel.lovelace.menu.refresh"
+                            )}
+                            @tap="${this._handleRefresh}"
+                          >
+                            ${this.hass!.localize(
+                              "ui.panel.lovelace.menu.refresh"
+                            )}
+                          </mwc-list-item>
+                          <mwc-list-item
+                            aria-label=${this.hass!.localize(
+                              "ui.panel.lovelace.unused_entities.title"
+                            )}
+                            @tap="${this._handleUnusedEntities}"
+                          >
+                            ${this.hass!.localize(
+                              "ui.panel.lovelace.unused_entities.title"
+                            )}
+                          </mwc-list-item>
+                        `
+                      : ""}
+                    ${(this.hass.panels.lovelace?.config as LovelacePanelConfig)
+                      ?.mode === "yaml"
+                      ? html`
+                          <mwc-list-item
+                            aria-label=${this.hass!.localize(
+                              "ui.panel.lovelace.menu.reload_resources"
+                            )}
+                            @tap="${this._handleReloadResources}"
+                          >
+                            ${this.hass!.localize(
+                              "ui.panel.lovelace.menu.reload_resources"
+                            )}
+                          </mwc-list-item>
+                        `
+                      : ""}
+                    ${this.hass!.user!.is_admin && !this.hass!.config.safe_mode
+                      ? html`
+                          <mwc-list-item
+                            aria-label=${this.hass!.localize(
+                              "ui.panel.lovelace.menu.configure_ui"
+                            )}
+                            @tap="${this._editModeEnable}"
+                          >
+                            ${this.hass!.localize(
+                              "ui.panel.lovelace.menu.configure_ui"
+                            )}
+                          </mwc-list-item>
+                        `
+                      : ""}
+                    <mwc-list-item
+                      aria-label=${this.hass!.localize(
+                        "ui.panel.lovelace.menu.help"
+                      )}
+                      @tap="${this._handleHelp}"
+                    >
+                      ${this.hass!.localize("ui.panel.lovelace.menu.help")}
+                    </mwc-list-item>
+                  </ha-button-menu>
                 </app-toolbar>
               `}
           ${this.lovelace!.config.views.length > 1 || this._editMode
@@ -671,9 +646,6 @@ class HUIRoot extends LitElement {
         ha-app-layout {
           min-height: 100%;
         }
-        paper-menu-button {
-          padding: 0;
-        }
         paper-tabs {
           margin-left: 12px;
           --paper-tabs-selection-bar-color: var(--text-primary-color, #fff);
@@ -739,9 +711,6 @@ class HUIRoot extends LitElement {
         }
         #view.tabs-hidden {
           min-height: calc(100vh - 64px);
-        }
-        paper-item {
-          cursor: pointer;
         }
         .hide-tab {
           display: none;

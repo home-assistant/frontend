@@ -1,4 +1,3 @@
-import "@polymer/paper-menu-button/paper-menu-button";
 import {
   css,
   CSSResult,
