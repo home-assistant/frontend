@@ -13,9 +13,15 @@
     },
     "panel": {
         "calendar": "Calendario",
+        "config": "",
         "developer_tools": "Herramientas para desarrolladores",
+        "history": "",
+        "logbook": "",
+        "mailbox": "",
+        "map": "",
         "profile": "Perfil",
-        "shopping_list": "Lista de compras"
+        "shopping_list": "Lista de compras",
+        "states": ""
     },
     "state_attributes": {
         "climate": {
@@ -1788,6 +1794,7 @@
                     "no_zones_created_yet": "Parece que todavía no ha creado ninguna zona."
                 },
                 "zwave": {
+                    "caption": "",
                     "common": {
                         "index": "Índice",
                         "instance": "Instancia",
@@ -1906,6 +1913,7 @@
                         "start_listening": "Comenzar a escuchar",
                         "stop_listening": "Deja de escuchar",
                         "subscribe_to": "Tema para suscribirse",
+                        "title": "",
                         "topic": "tema"
                     },
                     "services": {
