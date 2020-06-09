@@ -13,7 +13,7 @@ export const createCloseHeading = (hass: HomeAssistant, title: string) => html`
   <mwc-icon-button
     aria-label=${hass.localize("ui.dialogs.generic.close")}
     dialogAction="close"
-    class="close_button"
+    class="header_button"
   >
     <ha-svg-icon path=${mdiClose}></ha-svg-icon>
   </mwc-icon-button>
@@ -35,10 +35,15 @@ export class HaDialog extends MwcDialog {
           display: block;
           height: 20px;
         }
-        .close_button {
+        .mdc-dialog__content {
+          padding: var(--dialog-content-padding, 20px 24px);
+        }
+        .header_button {
           position: absolute;
           right: 16px;
           top: 12px;
+          text-decoration: none;
+          color: inherit;
         }
       `,
     ];
