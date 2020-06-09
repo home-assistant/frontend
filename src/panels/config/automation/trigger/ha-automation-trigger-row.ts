@@ -93,7 +93,10 @@ export default class HaAutomationTriggerRow extends LitElement {
         <div class="card-content">
           <div class="card-menu">
             <ha-button-menu corner="BOTTOM_START">
-              <mwc-icon-button slot="trigger"
+              <mwc-icon-button
+                slot="trigger"
+                .title=${this.hass.localize("ui.common.menu")}
+                .label=${this.hass.localize("ui.common.overflow_menu")}
                 ><ha-svg-icon path=${mdiDotsVertical}></ha-svg-icon
               ></mwc-icon-button>
               <mwc-list-item

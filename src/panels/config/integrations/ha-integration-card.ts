@@ -190,7 +190,11 @@ export class HaIntegrationCard extends LitElement {
               : ""}
           </div>
           <ha-button-menu corner="BOTTOM_START">
-            <mwc-icon-button alt="menu" slot="trigger">
+            <mwc-icon-button
+              .title=${this.hass.localize("ui.common.menu")}
+              .label=${this.hass.localize("ui.common.overflow_menu")}
+              slot="trigger"
+            >
               <ha-svg-icon path=${mdiDotsVertical}></ha-svg-icon>
             </mwc-icon-button>
             <mwc-list-item @click=${this._showSystemOptions}>

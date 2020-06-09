@@ -446,7 +446,15 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
               </div>`
             : ""}
           <ha-button-menu corner="BOTTOM_START">
-            <mwc-icon-button slot="trigger">
+            <mwc-icon-button
+              slot="trigger"
+              .label=${this.hass!.localize(
+                "ui.panel.config.entities.picker.filter.filter"
+              )}
+              .title=${this.hass!.localize(
+                "ui.panel.config.entities.picker.filter.filter"
+              )}
+            >
               <ha-svg-icon path=${mdiFilterVariant}></ha-svg-icon>
             </mwc-icon-button>
             <mwc-list-item

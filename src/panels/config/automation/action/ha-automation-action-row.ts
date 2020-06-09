@@ -1,8 +1,9 @@
 import "@polymer/paper-dropdown-menu/paper-dropdown-menu-light";
 import "@material/mwc-list/mwc-list-item";
+import "@material/mwc-icon-button";
 import "../../../../components/ha-button-menu";
-import { mdiDotsVertical } from "@mdi/js";
-import "../../../../components/ha-icon-button";
+import "../../../../components/ha-svg-icon";
+import { mdiDotsVertical, mdiArrowUp, mdiArrowDown } from "@mdi/js";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
 import type { PaperListboxElement } from "@polymer/paper-listbox/paper-listbox";
@@ -98,24 +99,41 @@ export default class HaAutomationActionRow extends LitElement {
           <div class="card-menu">
             ${this.index !== 0
               ? html`
-                  <ha-icon-button
-                    icon="hass:arrow-up"
+                  <mwc-icon-button
+                    .title=${this.hass.localize(
+                      "ui.panel.config.automation.editor.move_up"
+                    )}
+                    .label=${this.hass.localize(
+                      "ui.panel.config.automation.editor.move_up"
+                    )}
                     @click=${this._moveUp}
-                  ></ha-icon-button>
+                  >
+                    <ha-svg-icon path=${mdiArrowUp}></ha-svg-icon>
+                  </mwc-icon-button>
                 `
               : ""}
             ${this.index !== this.totalActions - 1
               ? html`
-                  <ha-icon-button
-                    icon="hass:arrow-down"
+                  <mwc-icon-button
+                    .title=${this.hass.localize(
+                      "ui.panel.config.automation.editor.move_down"
+                    )}
+                    .label=${this.hass.localize(
+                      "ui.panel.config.automation.editor.move_down"
+                    )}
                     @click=${this._moveDown}
-                  ></ha-icon-button>
+                  >
+                    <ha-svg-icon path=${mdiArrowDown}></ha-svg-icon>
+                  </mwc-icon-button>
                 `
               : ""}
             <ha-button-menu corner="BOTTOM_START">
-              <mwc-icon-button slot="trigger"
-                ><ha-svg-icon path=${mdiDotsVertical}></ha-svg-icon
-              ></mwc-icon-button>
+              <mwc-icon-button
+                slot="trigger"
+                .title=${this.hass.localize("ui.common.menu")}
+                .label=${this.hass.localize("ui.common.overflow_menu")}
+                ><ha-svg-icon path=${mdiDotsVertical}></ha-svg-icon>
+              </mwc-icon-button>
               <mwc-list-item
                 @tap=${this._switchYamlMode}
                 .disabled=${selected === -1}

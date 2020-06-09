@@ -86,7 +86,7 @@ class HaPanelShoppingList extends LocalizeMixin(PolymerElement) {
             <ha-button-menu corner="BOTTOM_START">
               <ha-icon-button
                 icon="hass:dots-vertical"
-                alt="menu"
+                label="Menu"
                 slot="trigger"
               >
               </ha-icon-button>

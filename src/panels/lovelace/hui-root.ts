@@ -1,6 +1,13 @@
 import "@material/mwc-button";
 import "@material/mwc-list/mwc-list-item";
-import { mdiDotsVertical } from "@mdi/js";
+import {
+  mdiDotsVertical,
+  mdiMicrophone,
+  mdiPlus,
+  mdiClose,
+  mdiPencil,
+  mdiHelpCircle,
+} from "@mdi/js";
 import "@polymer/app-layout/app-header-layout/app-header-layout";
 import "@polymer/app-layout/app-header/app-header";
 import "@polymer/app-layout/app-scroll-effects/effects/waterfall";
@@ -27,7 +34,7 @@ import { debounce } from "../../common/util/debounce";
 import { afterNextRender } from "../../common/util/render-status";
 import "../../components/ha-button-menu";
 import "../../components/ha-icon";
-import "../../components/ha-icon-button";
+import "../../components/ha-svg-icon";
 import "../../components/ha-icon-button-arrow-next";
 import "../../components/ha-icon-button-arrow-prev";
 import "../../components/ha-menu-button";
@@ -99,40 +106,51 @@ class HUIRoot extends LitElement {
           ${this._editMode
             ? html`
                 <app-toolbar class="edit-mode">
-                  <ha-icon-button
-                    aria-label="${this.hass!.localize(
+                  <mwc-icon-button
+                    .label="${this.hass!.localize(
                       "ui.panel.lovelace.menu.exit_edit_mode"
                     )}"
                     title="${this.hass!.localize(
                       "ui.panel.lovelace.menu.close"
                     )}"
-                    icon="hass:close"
                     @click="${this._editModeDisable}"
-                  ></ha-icon-button>
+                  >
+                    <ha-svg-icon path=${mdiClose}></ha-svg-icon>
+                  </mwc-icon-button>
                   <div main-title>
                     ${this.config.title ||
                     this.hass!.localize("ui.panel.lovelace.editor.header")}
-                    <ha-icon-button
+                    <mwc-icon-button
                       aria-label="${this.hass!.localize(
                         "ui.panel.lovelace.editor.edit_lovelace.edit_title"
                       )}"
                       title="${this.hass!.localize(
                         "ui.panel.lovelace.editor.edit_lovelace.edit_title"
                       )}"
-                      icon="hass:pencil"
                       class="edit-icon"
                       @click="${this._editLovelace}"
-                    ></ha-icon-button>
+                    >
+                      <ha-svg-icon path=${mdiPencil}></ha-svg-icon>
+                    </mwc-icon-button>
                   </div>
-                  <ha-icon-button
-                    icon="hass:help-circle"
+                  <mwc-icon-button
                     title="${this.hass!.localize(
                       "ui.panel.lovelace.menu.help"
                     )}"
                     @click="${this._handleHelp}"
-                  ></ha-icon-button>
+                  >
+                    <ha-svg-icon path=${mdiHelpCircle}></ha-svg-icon>
+                  </mwc-icon-button>
                   <ha-button-menu corner="BOTTOM_START">
-                    <mwc-icon-button slot="trigger" alt="menu">
+                    <mwc-icon-button
+                      slot="trigger"
+                      .title="${this.hass!.localize(
+                        "ui.panel.lovelace.editor.menu.open"
+                      )}"
+                      .label=${this.hass!.localize(
+                        "ui.panel.lovelace.editor.menu.open"
+                      )}
+                    >
                       <ha-svg-icon path=${mdiDotsVertical}></ha-svg-icon>
                     </mwc-icon-button>
                     ${__DEMO__ /* No unused entities available in the demo */
@@ -166,20 +184,21 @@ class HUIRoot extends LitElement {
                   <div main-title>${this.config.title || "Home Assistant"}</div>
                   ${this._conversation(this.hass.config.components)
                     ? html`
-                        <ha-icon-button
+                        <mwc-icon-button
                           label="Start conversation"
-                          icon="hass:microphone"
                           @click=${this._showVoiceCommandDialog}
-                        ></ha-icon-button>
+                        >
+                          <ha-svg-icon path=${mdiMicrophone}></ha-svg-icon>
+                        </mwc-icon-button>
                       `
                     : ""}
                   <ha-button-menu corner="BOTTOM_START">
                     <mwc-icon-button
                       slot="trigger"
-                      aria-label=${this.hass!.localize(
+                      .label=${this.hass!.localize(
                         "ui.panel.lovelace.editor.menu.open"
                       )}
-                      title="${this.hass!.localize(
+                      .title="${this.hass!.localize(
                         "ui.panel.lovelace.editor.menu.open"
                       )}"
                     >
@@ -296,14 +315,14 @@ class HUIRoot extends LitElement {
                             : view.title || "Unnamed view"}
                           ${this._editMode
                             ? html`
-                                <ha-icon
+                                <ha-svg-icon
                                   title="${this.hass!.localize(
                                     "ui.panel.lovelace.editor.edit_view.edit"
                                   )}"
                                   class="edit-icon view"
-                                  icon="hass:pencil"
+                                  path=${mdiPencil}
                                   @click="${this._editView}"
-                                ></ha-icon>
+                                ></ha-svg-icon>
                                 <ha-icon-button-arrow-next
                                   title="${this.hass!.localize(
                                     "ui.panel.lovelace.editor.edit_view.move_right"
@@ -321,14 +340,15 @@ class HUIRoot extends LitElement {
                     )}
                     ${this._editMode
                       ? html`
-                          <ha-icon-button
+                          <mwc-icon-button
                             id="add-view"
                             @click="${this._addView}"
                             title="${this.hass!.localize(
                               "ui.panel.lovelace.editor.edit_view.add"
                             )}"
-                            icon="hass:plus"
-                          ></ha-icon-button>
+                          >
+                            <ha-svg-icon path=${mdiPlus}></ha-svg-icon>
+                          </mwc-icon-button>
                         `
                       : ""}
                   </paper-tabs>
@@ -670,10 +690,9 @@ class HUIRoot extends LitElement {
           position: absolute;
           height: 44px;
         }
-        #add-view ha-icon {
+        #add-view ha-svg-icon {
           background-color: var(--accent-color);
-          border-radius: 5px;
-          margin-top: 4px;
+          border-radius: 4px;
         }
         app-toolbar a {
           color: var(--text-primary-color, white);
