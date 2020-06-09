@@ -14,7 +14,7 @@ import {
   PropertyValues,
   TemplateResult,
 } from "lit-element";
-import "../../components/dialog/ha-paper-dialog";
+import "../../components/ha-dialog";
 import type { HaPaperDialog } from "../../components/dialog/ha-paper-dialog";
 import "../../components/ha-form/ha-form";
 import "../../components/ha-markdown";
@@ -126,80 +126,84 @@ class DataEntryFlowDialog extends LitElement {
     }
 
     return html`
-      <ha-paper-dialog
-        with-backdrop
-        opened
-        modal
-        @opened-changed=${this._openedChanged}
+      <ha-dialog
+        open
+        @closing=${this._close}
+        scrimClickAction
+        escapeKeyAction
+        hideActions
       >
-        ${this._loading || (this._step === null && this._handlers === undefined)
-          ? html`
-              <step-flow-loading
-                .label=${this.hass.localize(
-                  "ui.panel.config.integrations.config_flow.loading_first_time"
-                )}
-              ></step-flow-loading>
-            `
-          : this._step === undefined
-          ? // When we are going to next step, we render 1 round of empty
-            // to reset the element.
-            ""
-          : html`
-              <ha-icon-button
-                aria-label=${this.hass.localize(
-                  "ui.panel.config.integrations.config_flow.dismiss"
-                )}
-                icon="hass:close"
-                dialog-dismiss
-              ></ha-icon-button>
-              ${this._step === null
-                ? // Show handler picker
-                  html`
-                    <step-flow-pick-handler
-                      .flowConfig=${this._params.flowConfig}
-                      .hass=${this.hass}
-                      .handlers=${this._handlers}
-                      .showAdvanced=${this._params.showAdvanced}
-                    ></step-flow-pick-handler>
-                  `
-                : this._step.type === "form"
-                ? html`
-                    <step-flow-form
-                      .flowConfig=${this._params.flowConfig}
-                      .step=${this._step}
-                      .hass=${this.hass}
-                    ></step-flow-form>
-                  `
-                : this._step.type === "external"
-                ? html`
-                    <step-flow-external
-                      .flowConfig=${this._params.flowConfig}
-                      .step=${this._step}
-                      .hass=${this.hass}
-                    ></step-flow-external>
-                  `
-                : this._step.type === "abort"
-                ? html`
-                    <step-flow-abort
-                      .flowConfig=${this._params.flowConfig}
-                      .step=${this._step}
-                      .hass=${this.hass}
-                    ></step-flow-abort>
-                  `
-                : this._devices === undefined || this._areas === undefined
-                ? // When it's a create entry result, we will fetch device & area registry
-                  html` <step-flow-loading></step-flow-loading> `
-                : html`
-                    <step-flow-create-entry
-                      .flowConfig=${this._params.flowConfig}
-                      .step=${this._step}
-                      .hass=${this.hass}
-                      .devices=${this._devices}
-                      .areas=${this._areas}
-                    ></step-flow-create-entry>
-                  `}
-            `}
-      </ha-paper-dialog>
+        <div>
+          ${this._loading ||
+          (this._step === null && this._handlers === undefined)
+            ? html`
+                <step-flow-loading
+                  .label=${this.hass.localize(
+                    "ui.panel.config.integrations.config_flow.loading_first_time"
+                  )}
+                ></step-flow-loading>
+              `
+            : this._step === undefined
+            ? // When we are going to next step, we render 1 round of empty
+              // to reset the element.
+              ""
+            : html`
+                <ha-icon-button
+                  aria-label=${this.hass.localize(
+                    "ui.panel.config.integrations.config_flow.dismiss"
+                  )}
+                  icon="hass:close"
+                  dialogAction="close"
+                ></ha-icon-button>
+                ${this._step === null
+                  ? // Show handler picker
+                    html`
+                      <step-flow-pick-handler
+                        .flowConfig=${this._params.flowConfig}
+                        .hass=${this.hass}
+                        .handlers=${this._handlers}
+                        .showAdvanced=${this._params.showAdvanced}
+                      ></step-flow-pick-handler>
+                    `
+                  : this._step.type === "form"
+                  ? html`
+                      <step-flow-form
+                        .flowConfig=${this._params.flowConfig}
+                        .step=${this._step}
+                        .hass=${this.hass}
+                      ></step-flow-form>
+                    `
+                  : this._step.type === "external"
+                  ? html`
+                      <step-flow-external
+                        .flowConfig=${this._params.flowConfig}
+                        .step=${this._step}
+                        .hass=${this.hass}
+                      ></step-flow-external>
+                    `
+                  : this._step.type === "abort"
+                  ? html`
+                      <step-flow-abort
+                        .flowConfig=${this._params.flowConfig}
+                        .step=${this._step}
+                        .hass=${this.hass}
+                      ></step-flow-abort>
+                    `
+                  : this._devices === undefined || this._areas === undefined
+                  ? // When it's a create entry result, we will fetch device & area registry
+                    html` <step-flow-loading></step-flow-loading> `
+                  : html`
+                      <step-flow-create-entry
+                        .flowConfig=${this._params.flowConfig}
+                        .step=${this._step}
+                        .hass=${this.hass}
+                        .devices=${this._devices}
+                        .areas=${this._areas}
+                      ></step-flow-create-entry>
+                    `}
+              `}
+        </div>
+      </ha-dialog>
     `;
   }
 
@@ -310,16 +314,13 @@ class DataEntryFlowDialog extends LitElement {
     }
   }
 
-  private _openedChanged(ev: PolymerChangedEvent<boolean>): void {
-    // Closed dialog by clicking on the overlay
-    if (!ev.detail.value) {
-      if (this._step) {
-        this._flowDone();
-      } else if (this._step === null) {
-        // Flow aborted during picking flow
-        this._step = undefined;
-        this._params = undefined;
-      }
+  private _close(): void {
+    if (this._step) {
+      this._flowDone();
+    } else if (this._step === null) {
+      // Flow aborted during picking flow
+      this._step = undefined;
+      this._params = undefined;
     }
   }
 
@@ -327,18 +328,14 @@ class DataEntryFlowDialog extends LitElement {
     return [
       haStyleDialog,
       css`
-        ha-paper-dialog {
-          max-width: 600px;
-        }
-        ha-paper-dialog > * {
-          margin: 0;
-          display: block;
-          padding: 0;
+        ha-dialog {
+          --dialog-content-padding: 0;
         }
         ha-icon-button {
-          display: inline-block;
-          padding: 8px;
-          float: right;
+          padding: 16px;
+          position: absolute;
+          top: 0;
+          right: 0;
         }
       `,
     ];
