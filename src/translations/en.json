@@ -243,6 +243,8 @@
       "save": "Save",
       "yes": "Yes",
       "no": "No",
+      "menu": "Menu",
+      "overflow_menu": "Overflow menu",
       "successfully_saved": "Successfully saved",
       "successfully_deleted": "Successfully deleted",
       "back": "Back",
@@ -765,6 +767,8 @@
             "save": "Save",
             "unsaved_confirm": "You have unsaved changes. Are you sure you want to leave?",
             "alias": "Name",
+            "move_up": "Move up",
+            "move_down": "Move down",
             "description": {
               "label": "Description",
               "placeholder": "Optional description"
