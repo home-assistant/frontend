@@ -38,7 +38,7 @@ import "../../../../layouts/hass-loading-screen";
 import "../../../../layouts/hass-subpage";
 import type { HomeAssistant } from "../../../../types";
 import { showToast } from "../../../../util/toast";
-import "./../../../../components/ha-formfield";
+import "../../../../components/ha-formfield";
 
 const DEFAULT_CONFIG_EXPOSE = true;
 
