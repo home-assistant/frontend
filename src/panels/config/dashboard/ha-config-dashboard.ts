@@ -21,6 +21,7 @@ import "../ha-config-section";
 import { configSections } from "../ha-panel-config";
 import "./ha-config-navigation";
 import { mdiCloudLock } from "@mdi/js";
+
 @customElement("ha-config-dashboard")
 class HaConfigDashboard extends LitElement {
   @property() public hass!: HomeAssistant;
