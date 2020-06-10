@@ -176,10 +176,6 @@ class HaCameraStream extends LitElement {
     Hls: HLSModule,
     url: string
   ) {
-    var config = {
-        liveSyncDurationCount: 1,
-        liveBackBufferLength: 60
-    };
     const hls = new Hls({
         liveSyncDurationCount: 1,
         liveBackBufferLength: 60
