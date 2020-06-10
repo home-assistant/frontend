@@ -35,9 +35,7 @@ class IntegrationsCard extends LitElement {
   protected render(): TemplateResult {
     return html`
       <ha-card
-        .header=${this.hass.localize(
-          "ui.panel.developer-tools.tabs.info.integrations"
-        )}
+        .header=${this.hass.localize("ui.panel.config.info.integrations")}
       >
         <table class="card-content">
           <tbody>
@@ -67,7 +65,7 @@ class IntegrationsCard extends LitElement {
                               rel="noreferrer"
                             >
                               ${this.hass.localize(
-                                "ui.panel.developer-tools.tabs.info.documentation"
+                                "ui.panel.config.info.documentation"
                               )}
                             </a>
                           </td>
@@ -83,7 +81,7 @@ class IntegrationsCard extends LitElement {
                                     rel="noreferrer"
                                   >
                                     ${this.hass.localize(
-                                      "ui.panel.developer-tools.tabs.info.issues"
+                                      "ui.panel.config.info.issues"
                                     )}
                                   </a>
                                 </td>

@@ -97,9 +97,7 @@ class SystemHealthCard extends LitElement {
     } catch (err) {
       this._info = {
         system_health: {
-          error: this.hass.localize(
-            "ui.panel.developer-tools.tabs.info.system_health_error"
-          ),
+          error: this.hass.localize("ui.panel.config.info.system_health_error"),
         },
       };
     }
