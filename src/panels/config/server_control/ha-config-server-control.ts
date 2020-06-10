@@ -19,6 +19,8 @@ import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import "../../../components/buttons/ha-call-service-button";
 import "../../../components/ha-card";
 import "../ha-config-section";
+import { haStyle } from "../../../resources/styles";
+import { checkCoreConfig } from "../../../data/core";
 
 const reloadableDomains = [
   "group",
@@ -75,100 +77,65 @@ export class HaConfigServerControl extends LitElement {
           >
 
           ${this.showAdvanced
-            ? html`
-                <ha-card
-                  header=${this.hass.localize(
-                    "ui.panel.config.server_control.section.validation.heading"
+            ? html` <ha-card
+                header=${this.hass.localize(
+                  "ui.panel.config.server_control.section.validation.heading"
+                )}
+              >
+                <div class="card-content">
+                  ${this.hass.localize(
+                    "ui.panel.config.server_control.section.validation.introduction"
                   )}
-                >
-                  <div class="card-content">
-                    ${this.hass.localize(
-                      "ui.panel.config.server_control.section.validation.introduction"
-                    )}
-                    ${!this._validateLog
-                      ? html`
-                          <div class="validate-container">
-                            ${!this._validating
-                              ? html`
-                                  ${this._isValid
-                                    ? html` <div
-                                        class="validate-result"
-                                        id="result"
-                                      >
-                                        ${this.hass.localize(
-                                          "ui.panel.config.server_control.section.validation.valid"
-                                        )}
-                                      </div>`
-                                    : ""}
-                                  <mwc-button
-                                    raised
-                                    @click=${this._validateConfig}
-                                  >
-                                    ${this.hass.localize(
-                                      "ui.panel.config.server_control.section.validation.check_config"
-                                    )}
-                                  </mwc-button>
-                                `
-                              : html` <paper-spinner active></paper-spinner> `}
-                          </div>
-                        `
-                      : html`
-                          <div class="config-invalid">
-                            <span class="text">
-                              ${this.hass.localize(
-                                "ui.panel.config.server_control.section.validation.invalid"
-                              )}
-                            </span>
-                            <mwc-button raised @click=${this._validateConfig}>
-                              ${this.hass.localize(
-                                "ui.panel.config.server_control.section.validation.check_config"
-                              )}
-                            </mwc-button>
-                          </div>
-                          <div id="configLog" class="validate-log">
-                            ${this._validateLog}
-                          </div>
-                        `}
-                  </div>
-                </ha-card>
-
-                <ha-card
-                  header=${this.hass.localize(
-                    "ui.panel.config.server_control.section.reloading.heading"
-                  )}
-                >
-                  <div class="card-content">
-                    ${this.hass.localize(
-                      "ui.panel.config.server_control.section.reloading.introduction"
-                    )}
-                  </div>
-                  <div class="card-actions">
-                    <ha-call-service-button
-                      .hass=${this.hass}
-                      domain="homeassistant"
-                      service="reload_core_config"
-                      >${this.hass.localize(
-                        "ui.panel.config.server_control.section.reloading.core"
-                      )}
-                    </ha-call-service-button>
-                  </div>
-                  ${reloadableDomains.map((domain) =>
-                    isComponentLoaded(this.hass, domain)
-                      ? html`<div class="card-actions">
-                          <ha-call-service-button
-                            .hass=${this.hass}
-                            .domain=${domain}
-                            service="reload"
-                            >${this.hass.localize(
-                              `ui.panel.config.server_control.section.reloading.${domain}`
+                  ${!this._validateLog
+                    ? html`
+                        <div
+                          class="validate-container layout vertical center-center"
+                        >
+                          ${!this._validating
+                            ? html`
+                                ${this._isValid
+                                  ? html` <div
+                                      class="validate-result"
+                                      id="result"
+                                    >
+                                      ${this.hass.localize(
+                                        "ui.panel.config.server_control.section.validation.valid"
+                                      )}
+                                    </div>`
+                                  : ""}
+                                <mwc-button
+                                  raised
+                                  @click=${this._validateConfig}
+                                >
+                                  ${this.hass.localize(
+                                    "ui.panel.config.server_control.section.validation.check_config"
+                                  )}
+                                </mwc-button>
+                              `
+                            : html` <paper-spinner active></paper-spinner> `}
+                        </div>
+                      `
+                    : html`
+                        <div class="config-invalid">
+                          <span class="text">
+                            ${this.hass.localize(
+                              "ui.panel.config.server_control.section.validation.invalid"
                             )}
-                          </ha-call-service-button>
-                        </div>`
-                      : ""
-                  )}
-                </ha-card>
-              `
+                          </span>
+                          <mwc-button raised @click=${this._validateConfig}>
+                            ${this.hass.localize(
+                              "ui.panel.config.server_control.section.validation.check_config"
+                            )}
+                          </mwc-button>
+                        </div>
+                        <div id="configLog" class="validate-log">
+                          ${this._validateLog}
+                        </div>
+                      `}
+                </div>
+              </ha-card>`
             : ""}
+
           <ha-card
             header=${this.hass.localize(
               "ui.panel.config.server_control.section.server_management.heading"
@@ -206,6 +173,46 @@ export class HaConfigServerControl extends LitElement {
               </ha-call-service-button>
             </div>
           </ha-card>
+
+          ${this.showAdvanced
+            ? html`
+                <ha-card
+                  header=${this.hass.localize(
+                    "ui.panel.config.server_control.section.reloading.heading"
+                  )}
+                >
+                  <div class="card-content">
+                    ${this.hass.localize(
+                      "ui.panel.config.server_control.section.reloading.introduction"
+                    )}
+                  </div>
+                  <div class="card-actions">
+                    <ha-call-service-button
+                      .hass=${this.hass}
+                      domain="homeassistant"
+                      service="reload_core_config"
+                      >${this.hass.localize(
+                        "ui.panel.config.server_control.section.reloading.core"
+                      )}
+                    </ha-call-service-button>
+                  </div>
+                  ${reloadableDomains.map((domain) =>
+                    isComponentLoaded(this.hass, domain)
+                      ? html`<div class="card-actions">
+                          <ha-call-service-button
+                            .hass=${this.hass}
+                            .domain=${domain}
+                            service="reload"
+                            >${this.hass.localize(
+                              `ui.panel.config.server_control.section.reloading.${domain}`
+                            )}
+                          </ha-call-service-button>
+                        </div>`
+                      : ""
+                  )}
+                </ha-card>
+              `
+            : ""}
         </ha-config-section>
       </hass-tabs-subpage>
     `;
@@ -216,48 +223,47 @@ export class HaConfigServerControl extends LitElement {
     this._validateLog = "";
     this._isValid = null;
 
-    const result = await this.hass.callApi("POST", "config/core/check_config");
+    const configCheck = await checkCoreConfig(this.hass);
     this._validating = false;
-    this._isValid = result.result === "valid";
+    this._isValid = configCheck.result === "valid";
 
-    if (!this._isValid) {
-      this._validateLog = result.errors;
+    if (configCheck.errors) {
+      this._validateLog = configCheck.errors;
     }
   }
 
-  static get styles(): CSSResult {
-    return css`
-      .validate-container {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        height: 140px;
-      }
+  static get styles(): CSSResult[] {
+    return [
+      haStyle,
+      css`
+        .validate-container {
+          height: 140px;
+        }
 
-      .validate-result {
-        color: var(--google-green-500);
-        font-weight: 500;
-        margin-bottom: 1em;
-      }
+        .validate-result {
+          color: var(--google-green-500);
+          font-weight: 500;
+          margin-bottom: 1em;
+        }
 
-      .config-invalid {
-        margin: 1em 0;
-      }
+        .config-invalid {
+          margin: 1em 0;
+        }
 
-      .config-invalid .text {
-        color: var(--google-red-500);
-        font-weight: 500;
-      }
+        .config-invalid .text {
+          color: var(--google-red-500);
+          font-weight: 500;
+        }
 
-      .config-invalid mwc-button {
-        float: right;
-      }
+        .config-invalid mwc-button {
+          float: right;
+        }
 
-      .validate-log {
-        white-space: pre-wrap;
-        direction: ltr;
-      }
-    `;
+        .validate-log {
+          white-space: pre-wrap;
+          direction: ltr;
+        }
+      `,
+    ];
   }
 }
