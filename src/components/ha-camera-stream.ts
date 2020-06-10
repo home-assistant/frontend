@@ -180,7 +180,10 @@ class HaCameraStream extends LitElement {
         liveSyncDurationCount: 1,
         liveBackBufferLength: 60
     };
-    const hls = new Hls(config);
+    const hls = new Hls({
+        liveSyncDurationCount: 1,
+        liveBackBufferLength: 60
+    });
     this._hlsPolyfillInstance = hls;
     hls.attachMedia(videoEl);
     hls.on(Hls.Events.MEDIA_ATTACHED, () => {
