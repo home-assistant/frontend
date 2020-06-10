@@ -299,7 +299,7 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
           ${this._showIgnored
             ? ignoredConfigEntries.map(
                 (item: ConfigEntryExtended) => html`
-                  <ha-card class="ignored">
+                  <ha-card outlined class="ignored">
                     <div class="header">
                       ${this.hass.localize(
                         "ui.panel.config.integrations.ignore.ignored"
@@ -335,7 +335,7 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
           ${configEntriesInProgress.length
             ? configEntriesInProgress.map(
                 (flow: DataEntryFlowProgressExtended) => html`
-                  <ha-card class="discovered">
+                  <ha-card outlined class="discovered">
                     <div class="header">
                       ${this.hass.localize(
                         "ui.panel.config.integrations.discovered"
@@ -396,7 +396,7 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
               )
             : !this._configEntries.length
             ? html`
-                <ha-card>
+                <ha-card outlined>
                   <div class="card-content">
                     <h1>
                       ${this.hass.localize("ui.panel.config.integrations.none")}
@@ -613,7 +613,7 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
           justify-content: space-between;
         }
         .discovered {
-          border: 1px solid var(--primary-color);
+          --ha-card-border-color: var(--primary-color);
         }
         .discovered .header {
           background: var(--primary-color);
@@ -622,7 +622,7 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
           text-align: center;
         }
         .ignored {
-          border: 1px solid var(--light-theme-disabled-color);
+          --ha-card-border-color: var(--light-theme-disabled-color);
         }
         .ignored img {
           filter: grayscale(1);
