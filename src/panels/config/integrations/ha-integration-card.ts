@@ -76,7 +76,7 @@ export class HaIntegrationCard extends LitElement {
 
   private _renderGroupedIntegration(): TemplateResult {
     return html`
-      <ha-card class="group">
+      <ha-card outlined class="group">
         <div class="group-header">
           <img
             src="https://brands.home-assistant.io/${this.domain}/icon.png"
@@ -112,6 +112,7 @@ export class HaIntegrationCard extends LitElement {
     const entities = this._getEntities(item);
     return html`
       <ha-card
+        outlined
         class="single integration"
         .configEntry=${item}
         .id=${item.entry_id}
