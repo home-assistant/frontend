@@ -62,9 +62,6 @@ class PanelDeveloperTools extends LitElement {
                 "ui.panel.developer-tools.tabs.services.title"
               )}
             </paper-tab>
-            <paper-tab page-name="logs">
-              ${this.hass.localize("ui.panel.developer-tools.tabs.logs.title")}
-            </paper-tab>
             <paper-tab page-name="template">
               ${this.hass.localize(
                 "ui.panel.developer-tools.tabs.templates.title"
@@ -84,9 +81,6 @@ class PanelDeveloperTools extends LitElement {
                   </paper-tab>
                 `
               : ""}
-            <paper-tab page-name="info">
-              ${this.hass.localize("ui.panel.developer-tools.tabs.info.title")}
-            </paper-tab>
           </paper-tabs>
         </app-header>
         <developer-tools-router

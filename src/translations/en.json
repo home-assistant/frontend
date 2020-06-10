@@ -609,6 +609,37 @@
             }
           }
         },
+        "info": {
+          "caption": "Info",
+          "description": "Info about your Home Assistant installation",
+          "home_assistant_logo": "Home Assistant logo",
+          "path_configuration": "Path to configuration.yaml: {path}",
+          "developed_by": "Developed by a bunch of awesome people.",
+          "license": "Published under the Apache 2.0 license",
+          "source": "Source:",
+          "server": "server",
+          "frontend": "frontend-ui",
+          "built_using": "Built using",
+          "icons_by": "Icons by",
+          "frontend_version": "Frontend version: {version} - {type}",
+          "custom_uis": "Custom UIs:",
+          "system_health_error": "System Health component is not loaded. Add 'system_health:' to configuration.yaml",
+          "integrations": "Integrations",
+          "documentation": "Documentation",
+          "issues": "Issues"
+        },
+        "logs": {
+          "caption": "Logs",
+          "description": "View the Home Assistant logs",
+          "details": "Log Details ({level})",
+          "load_full_log": "Load Full Home Assistant Log",
+          "loading_log": "Loading error log…",
+          "no_errors": "No errors have been reported.",
+          "no_issues": "There are no new issues!",
+          "clear": "Clear",
+          "refresh": "Refresh",
+          "multiple_messages": "message first occurred at {time} and shows up {counter} times"
+        },
         "lovelace": {
           "caption": "Lovelace Dashboards",
           "description": "Configure your Lovelace Dashboards",
@@ -2236,35 +2267,6 @@
       },
       "developer-tools": {
         "tabs": {
-          "info": {
-            "title": "Info",
-            "home_assistant_logo": "Home Assistant logo",
-            "path_configuration": "Path to configuration.yaml: {path}",
-            "developed_by": "Developed by a bunch of awesome people.",
-            "license": "Published under the Apache 2.0 license",
-            "source": "Source:",
-            "server": "server",
-            "frontend": "frontend-ui",
-            "built_using": "Built using",
-            "icons_by": "Icons by",
-            "frontend_version": "Frontend version: {version} - {type}",
-            "custom_uis": "Custom UIs:",
-            "system_health_error": "System Health component is not loaded. Add 'system_health:' to configuration.yaml",
-            "integrations": "Integrations",
-            "documentation": "Documentation",
-            "issues": "Issues"
-          },
-          "logs": {
-            "title": "Logs",
-            "details": "Log Details ({level})",
-            "load_full_log": "Load Full Home Assistant Log",
-            "loading_log": "Loading error log…",
-            "no_errors": "No errors have been reported.",
-            "no_issues": "There are no new issues!",
-            "clear": "Clear",
-            "refresh": "Refresh",
-            "multiple_messages": "message first occurred at {time} and shows up {counter} times"
-          },
           "events": {
             "title": "Events",
             "description": "Fire an event on the event bus.",
