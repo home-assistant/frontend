@@ -37,6 +37,7 @@ hassAttributeUtil.DOMAIN_DEVICE_CLASS = {
     "shutter",
     "window",
   ],
+  humidifier: ["dehumidifier", "humidifier"],
   sensor: [
     "battery",
     "humidity",
