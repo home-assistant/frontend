@@ -737,7 +737,12 @@
               "script": "Reload scripts",
               "scene": "Reload scenes",
               "person": "Reload persons",
-              "zone": "Reload zones"
+              "zone": "Reload zones",
+              "input_boolean": "Reload input booleans",
+              "input_text": "Reload input texts",
+              "input_number": "Reload input numbers",
+              "input_datetime": "Reload input date times",
+              "input_select": "Reload input selects"
             },
             "server_management": {
               "heading": "Server management",
