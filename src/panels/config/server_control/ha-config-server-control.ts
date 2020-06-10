@@ -27,6 +27,11 @@ const reloadableDomains = [
   "scene",
   "person",
   "zone",
+  "input_boolean",
+  "input_text",
+  "input_number",
+  "input_datetime",
+  "input_select",
 ];
 
 @customElement("ha-config-server-control")
