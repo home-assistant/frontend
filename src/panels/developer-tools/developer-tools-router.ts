@@ -14,7 +14,7 @@ class DeveloperToolsRouter extends HassRouterPage {
     beforeRender: (page) => {
       if (!page || page === "not_found") {
         // If we can, we are going to restore the last visited page.
-        return this._currentPage ? this._currentPage : "info";
+        return this._currentPage ? this._currentPage : "state";
       }
       return undefined;
     },
@@ -24,14 +24,6 @@ class DeveloperToolsRouter extends HassRouterPage {
       event: {
         tag: "developer-tools-event",
         load: () => import("./event/developer-tools-event"),
-      },
-      info: {
-        tag: "developer-tools-info",
-        load: () => import("./info/developer-tools-info"),
-      },
-      logs: {
-        tag: "developer-tools-logs",
-        load: () => import("./logs/developer-tools-logs"),
       },
       mqtt: {
         tag: "developer-tools-mqtt",

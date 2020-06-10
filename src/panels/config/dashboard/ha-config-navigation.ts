@@ -38,7 +38,10 @@ class HaConfigNavigation extends LitElement {
                 tabindex="-1"
               >
                 <paper-icon-item>
-                  <ha-icon .icon=${page.icon} slot="item-icon"></ha-icon>
+                  <ha-svg-icon
+                    .path=${page.iconPath}
+                    slot="item-icon"
+                  ></ha-svg-icon>
                   <paper-item-body two-line>
                     ${this.hass.localize(
                       page.translationKey ||
@@ -88,7 +91,7 @@ class HaConfigNavigation extends LitElement {
         display: block;
         outline: 0;
       }
-      ha-icon,
+      ha-svg-icon,
       ha-icon-next {
         color: var(--secondary-text-color);
       }

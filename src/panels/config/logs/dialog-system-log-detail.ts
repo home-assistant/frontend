@@ -61,7 +61,7 @@ class DialogSystemLogDetail extends LitElement {
       >
         <h2>
           ${this.hass.localize(
-            "ui.panel.developer-tools.tabs.logs.details",
+            "ui.panel.config.logs.details",
             "level",
             item.level
           )}

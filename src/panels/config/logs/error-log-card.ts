@@ -28,9 +28,7 @@ class ErrorLogCard extends LitElement {
             `
           : html`
               <mwc-button raised @click=${this._refreshErrorLog}>
-                ${this.hass.localize(
-                  "ui.panel.developer-tools.tabs.logs.load_full_log"
-                )}
+                ${this.hass.localize("ui.panel.config.logs.load_full_log")}
               </mwc-button>
             `}
       </p>
@@ -67,12 +65,10 @@ class ErrorLogCard extends LitElement {
   }
 
   private async _refreshErrorLog(): Promise<void> {
-    this._errorLog = this.hass.localize(
-      "ui.panel.developer-tools.tabs.logs.loading_log"
-    );
+    this._errorLog = this.hass.localize("ui.panel.config.logs.loading_log");
     const log = await fetchErrorLog(this.hass!);
     this._errorLog =
-      log || this.hass.localize("ui.panel.developer-tools.tabs.logs.no_errors");
+      log || this.hass.localize("ui.panel.config.logs.no_errors");
   }
 }
 
