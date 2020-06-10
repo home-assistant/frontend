@@ -125,19 +125,23 @@ class HaCameraStream extends LitElement {
   }
 
   private async _startHls(): Promise<void> {
-    // eslint-disable-next-line
-    const Hls = ((await import(
-      /* webpackChunkName: "hls.js" */ "hls.js"
-    )) as any).default as HLSModule;
-    let hlsSupported = Hls.isSupported();
     const videoEl = this._videoEl;
 
-    if (!hlsSupported) {
-      hlsSupported =
-        videoEl.canPlayType("application/vnd.apple.mpegurl") !== "";
+    const nativeHlsSupported =
+      !!videoEl.canPlayType &&
+      (videoEl.canPlayType("application/vnd.apple.mpegURL") !== "" ||
+        videoEl.canPlayType("audio/mpegurl") !== "");
+
+    let hlsSupported = false;
+    let Hls: HLSModule | undefined;
+
+    if (!nativeHlsSupported) {
+      Hls = ((await import(/* webpackChunkName: "hls.js" */ "hls.js")) as any)
+        .default as HLSModule;
+      hlsSupported = Hls.isSupported();
     }
 
-    if (!hlsSupported) {
+    if (!nativeHlsSupported && !hlsSupported) {
       this._forceMJPEG = this.stateObj!.entity_id;
       return;
     }
@@ -148,10 +152,10 @@ class HaCameraStream extends LitElement {
         this.stateObj!.entity_id
       );
 
-      if (Hls.isSupported()) {
-        this._renderHLSPolyfill(videoEl, Hls, url);
-      } else {
+      if (nativeHlsSupported) {
         this._renderHLSNative(videoEl, url);
+      } else {
+        this._renderHLSPolyfill(videoEl, Hls!, url);
       }
       return;
     } catch (err) {
@@ -176,7 +180,11 @@ class HaCameraStream extends LitElement {
     Hls: HLSModule,
     url: string
   ) {
-    const hls = new Hls();
+    const hls = new Hls({
+      liveSyncDurationCount: 3,
+      liveBackBufferLength: 0,
+      liveDurationInfinity: true,
+    });
     this._hlsPolyfillInstance = hls;
     hls.attachMedia(videoEl);
     hls.on(Hls.Events.MEDIA_ATTACHED, () => {
