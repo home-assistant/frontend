@@ -478,6 +478,7 @@
             "cancel": "취소",
             "close": "닫기",
             "delete": "삭제",
+            "error_required": "필수 요소",
             "loading": "읽는 중",
             "next": "다음",
             "no": "아니오",
@@ -1221,6 +1222,7 @@
                     "different_include": "도메인, 글로브 혹은 다른 포함 구성을 통해 가능할 수 있습니다.",
                     "pick_attribute": "재정의 할 속성 선택",
                     "picker": {
+                        "entity": "구성요소",
                         "header": "사용자화",
                         "introduction": "구성요소의 속성값을 입맛에 맞게 변경할 수 있습니다. 추가 혹은 수정된 사용자 정의 내용은 즉시 적용되지만, 제거된 내용은 구성요소가 업데이트 될 때 적용됩니다."
                     },
@@ -1679,7 +1681,8 @@
                             "name": "이름",
                             "system": "시스템"
                         }
-                    }
+                    },
+                    "users_privileges_note": "사용자 그룹은 현재 작업 중이며, 사용자는 UI 를 통해 인스턴스를 관리할 수 없습니다. 모든 사용자 관리 API 엔드포인트가 관리자에 대한 액세스를 올바르게 제한하는지를 확인하는 중입니다."
                 },
                 "zha": {
                     "add_device_page": {
@@ -2048,7 +2051,7 @@
                         "clear_items": "선택한 항목 삭제"
                     },
                     "starting": {
-                        "description": "Home Assistant 가 시작 중입니다. 잠시만 기다려주세요.",
+                        "description": "Home Assistant 가 시작 중입니다. 잠시만 기다려주세요...",
                         "header": "Home Assistant 시작 중 ..."
                     }
                 },
