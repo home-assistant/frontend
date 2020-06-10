@@ -478,6 +478,7 @@
             "cancel": "Peruuta",
             "close": "Sulje",
             "delete": "Poista",
+            "error_required": "Pakollinen",
             "loading": "Ladataan",
             "next": "Seuraava",
             "no": "Ei",
@@ -1221,6 +1222,7 @@
                     "different_include": "Mahdollisesti verkkotunnuksen, glob-kaavan tai muun sisällön kautta.",
                     "pick_attribute": "Valitse yliajettava määrite",
                     "picker": {
+                        "entity": "Kohde",
                         "header": "Räätälöinti",
                         "introduction": "Muotoile ominaisuuksia olemuskohtaisesti. Lisäykset/muokkaukset tulevat välittömästi voimaan. Poistetut mukautukset tulevat voimaan, kun olemus päivitetään."
                     },
@@ -1679,7 +1681,8 @@
                             "name": "Nimi",
                             "system": "Järjestelmä"
                         }
-                    }
+                    },
+                    "users_privileges_note": "Käyttäjät-ryhmä on vielä kesken. Käyttäjä ei voi hallita Home Assistantia käyttöliittymän kautta. Auditoimme edelleen kaikkia hallinta-API-päätepisteitä varmistaaksemme, että ne rajoittavat pääsyn oikein."
                 },
                 "zha": {
                     "add_device_page": {
@@ -1849,10 +1852,13 @@
                         "group": "Ryhmä",
                         "header": "Z-Wave-solmun hallinta",
                         "introduction": "Suorita Z-Wave-komennot, jotka vaikuttavat yhteen solmuun. Valitse solmu nähdäksesi luettelon käytettävissä olevista komennoista.",
+                        "max_associations": "Maksimiyhdistykset:",
+                        "node_group_associations": "Solmujen ryhmäyhdistykset",
                         "node_protection": "Solmujen suojaus",
                         "node_to_control": "Hallinnoitava solmu",
                         "nodes": "Solmut",
                         "nodes_hint": "Valitse solmu tarkastellaksesi solmukohtaisia vaihtoehtoja",
+                        "nodes_in_group": "Muut tämän ryhmän solmut:",
                         "pooling_intensity": "Kyselyn voimakkuus",
                         "protection": "Suojaus",
                         "remove_broadcast": "Poista lähetys",
@@ -1876,7 +1882,9 @@
                         "print_node": "Tulosta solmu",
                         "refresh_entity": "Päivitä kohde",
                         "refresh_node": "Päivitä solmu",
+                        "remove_failed_node": "Poista epäonnistunut solmu",
                         "remove_node": "Poista solmu",
+                        "replace_failed_node": "Korvaa epäonnistunut solmu",
                         "save_config": "Tallenna asetukset",
                         "soft_reset": "Pehmeä nollaus",
                         "start_network": "Käynnistä verkko",
@@ -2043,6 +2051,7 @@
                         "clear_items": "Tyhjää valitut kohteet"
                     },
                     "starting": {
+                        "description": "Home Assistant käynnistyy...",
                         "header": "Home Assistant käynnistyy..."
                     }
                 },
@@ -2336,7 +2345,8 @@
                     "attribute_not_found": "Määrite {attribute} ei ole käytettävissä kohteessa {entity}",
                     "entity_non_numeric": "Yksikkö ei ole numeerinen: {entity}",
                     "entity_not_found": "Yksikkö ei ole käytettävissä: {entity}",
-                    "entity_unavailable": "{entity} ei ole tällä hetkellä käytettävissä"
+                    "entity_unavailable": "{entity} ei ole tällä hetkellä käytettävissä",
+                    "starting": "Home Assistant käynnistyy. Kaikki palvelut eivät  välttämättä ole vielä saatavilla."
                 }
             },
             "mailbox": {
