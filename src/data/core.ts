@@ -12,6 +12,11 @@ export interface ConfigUpdateValues {
   internal_url?: string | null;
 }
 
+export interface CheckConfigResult {
+  result: "valid" | "invalid";
+  errors: string | null;
+}
+
 export const saveCoreConfig = (
   hass: HomeAssistant,
   values: Partial<ConfigUpdateValues>
@@ -25,3 +30,6 @@ export const detectCoreConfig = (hass: HomeAssistant) =>
   hass.callWS<Partial<ConfigUpdateValues>>({
     type: "config/core/detect",
   });
+
+export const checkCoreConfig = (hass: HomeAssistant) =>
+  hass.callApi<CheckConfigResult>("POST", "config/core/check_config");
