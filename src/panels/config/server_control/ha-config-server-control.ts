@@ -20,6 +20,15 @@ import "../../../components/buttons/ha-call-service-button";
 import "../../../components/ha-card";
 import "../ha-config-section";
 
+const reloadableDomains = [
+  "group",
+  "automation",
+  "scripts",
+  "scene",
+  "person",
+  "zone",
+];
+
 @customElement("ha-config-server-control")
 export class HaConfigServerControl extends LitElement {
   @property() public hass!: HomeAssistant;
@@ -138,87 +147,20 @@ export class HaConfigServerControl extends LitElement {
                       )}
                     </ha-call-service-button>
                   </div>
-
-                  ${isComponentLoaded(this.hass, "group")
-                    ? html`
-                        <div class="card-actions">
+                  ${reloadableDomains.map((domain) =>
+                    isComponentLoaded(this.hass, domain)
+                      ? html`<div class="card-actions">
                           <ha-call-service-button
                             .hass=${this.hass}
-                            domain="group"
+                            .domain=${domain}
                             service="reload"
                             >${this.hass.localize(
-                              "ui.panel.config.server_control.section.reloading.group"
+                              `ui.panel.config.server_control.section.reloading.${domain}`
                             )}
                           </ha-call-service-button>
-                        </div>
-                      `
-                    : ""}
-                  ${isComponentLoaded(this.hass, "automation")
-                    ? html` <div class="card-actions">
-                        <ha-call-service-button
-                          .hass=${this.hass}
-                          domain="automation"
-                          service="reload"
-                          >${this.hass.localize(
-                            "ui.panel.config.server_control.section.reloading.automation"
-                          )}
-                        </ha-call-service-button>
-                      </div>`
-                    : ""}
-                  ${isComponentLoaded(this.hass, "script")
-                    ? html`
-                        <div class="card-actions">
-                          <ha-call-service-button
-                            .hass=${this.hass}
-                            domain="script"
-                            service="reload"
-                            >${this.hass.localize(
-                              "ui.panel.config.server_control.section.reloading.script"
-                            )}
-                          </ha-call-service-button>
-                        </div>
-                      `
-                    : ""}
-                  ${isComponentLoaded(this.hass, "scene")
-                    ? html`
-                        <div class="card-actions">
-                          <ha-call-service-button
-                            .hass=${this.hass}
-                            domain="scene"
-                            service="reload"
-                            >${this.hass.localize(
-                              "ui.panel.config.server_control.section.reloading.scene"
-                            )}
-                          </ha-call-service-button>
-                        </div>
-                      `
-                    : ""}
-                  ${isComponentLoaded(this.hass, "person")
-                    ? html`
-                        <div class="card-actions">
-                          <ha-call-service-button
-                            .hass=${this.hass}
-                            domain="person"
-                            service="reload"
-                            >${this.hass.localize(
-                              "ui.panel.config.server_control.section.reloading.person"
-                            )}
-                          </ha-call-service-button>
-                        </div>
-                      `
-                    : ""}
-                  ${isComponentLoaded(this.hass, "zone")
-                    ? html` <div class="card-actions">
-                        <ha-call-service-button
-                          .hass=${this.hass}
-                          domain="zone"
-                          service="reload"
-                          >${this.hass.localize(
-                            "ui.panel.config.server_control.section.reloading.zone"
-                          )}
-                        </ha-call-service-button>
-                      </div>`
-                    : ""}
+                        </div>`
+                      : ""
+                  )}
                 </ha-card>
               `
             : ""}
