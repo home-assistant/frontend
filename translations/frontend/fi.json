@@ -480,6 +480,7 @@
             "delete": "Poista",
             "error_required": "Pakollinen",
             "loading": "Ladataan",
+            "menu": "Valikko",
             "next": "Seuraava",
             "no": "Ei",
             "previous": "Edellinen",
@@ -1367,6 +1368,24 @@
                         "input_text": "Teksti"
                     }
                 },
+                "info": {
+                    "built_using": "Rakennettu käyttäen",
+                    "custom_uis": "Mukautetut käyttöliittymät:",
+                    "developed_by": "Kehittänyt joukko mahtavia ihmisiä.",
+                    "documentation": "Dokumentointi",
+                    "frontend": "frontend-ui",
+                    "frontend_version": "Käyttöliittymän versio: {version} - {type}",
+                    "home_assistant_logo": "Home Assistant-logo",
+                    "icons_by": "Kuvakkeet luonut",
+                    "integrations": "Integraatiot",
+                    "issues": "Ongelmat",
+                    "license": "Julkaistu Apache 2.0-lisenssillä",
+                    "path_configuration": "Polku configuration.yaml-tiedostoon: {path}",
+                    "server": "palvelin",
+                    "source": "Lähde:",
+                    "system_health_error": "Järjestelmän kunto-komponenttia ei ole ladattu. Lisää 'system_health:' kohteeseen configuration.yaml",
+                    "title": "Tiedot"
+                },
                 "integrations": {
                     "add_integration": "Lisää integraatio",
                     "caption": "Integraatiot",
@@ -1438,6 +1457,17 @@
                     "rename_input_label": "Merkinnän nimi"
                 },
                 "introduction": "Täällä voit säätää Home Assistanttia ja sen komponentteja. Huomioithan, ettei kaikkea voi vielä säätää käyttöliittymän kautta, mutta teemme jatkuvasti töitä sen mahdollistamiseksi.",
+                "logs": {
+                    "clear": "Tyhjennä",
+                    "details": "Lokitiedot ( {level} )",
+                    "load_full_log": "Lataa Home Assistantin koko loki",
+                    "loading_log": "Ladataan virhelokia...",
+                    "multiple_messages": "Viesti esiintyi ensimmäisen kerran {time} ja tämän jälkeen {counter} kertaa",
+                    "no_errors": "Virheitä ei ole ilmoitettu.",
+                    "no_issues": "Ei uusia aiheita!",
+                    "refresh": "Päivitä",
+                    "title": "Lokit"
+                },
                 "lovelace": {
                     "caption": "Lovelace-kojelaudat",
                     "dashboards": {
@@ -1923,35 +1953,6 @@
                         "subscribe_to": "Tilaa tapahtuma",
                         "title": "Tapahtumat",
                         "type": "Tapahtumatyyppi"
-                    },
-                    "info": {
-                        "built_using": "Rakennettu käyttäen",
-                        "custom_uis": "Mukautetut käyttöliittymät:",
-                        "developed_by": "Kehittänyt joukko mahtavia ihmisiä.",
-                        "documentation": "Dokumentointi",
-                        "frontend": "frontend-ui",
-                        "frontend_version": "Käyttöliittymän versio: {version} - {type}",
-                        "home_assistant_logo": "Home Assistant-logo",
-                        "icons_by": "Kuvakkeet luonut",
-                        "integrations": "Integraatiot",
-                        "issues": "Ongelmat",
-                        "license": "Julkaistu Apache 2.0-lisenssillä",
-                        "path_configuration": "Polku configuration.yaml-tiedostoon: {path}",
-                        "server": "palvelin",
-                        "source": "Lähde:",
-                        "system_health_error": "Järjestelmän kunto-komponenttia ei ole ladattu. Lisää 'system_health:' kohteeseen configuration.yaml",
-                        "title": "Tiedot"
-                    },
-                    "logs": {
-                        "clear": "Tyhjennä",
-                        "details": "Lokitiedot ( {level} )",
-                        "load_full_log": "Lataa Home Assistantin koko loki",
-                        "loading_log": "Ladataan virhelokia...",
-                        "multiple_messages": "Viesti esiintyi ensimmäisen kerran {time} ja tämän jälkeen {counter} kertaa",
-                        "no_errors": "Virheitä ei ole ilmoitettu.",
-                        "no_issues": "Ei uusia aiheita!",
-                        "refresh": "Päivitä",
-                        "title": "Lokit"
                     },
                     "mqtt": {
                         "description_listen": "Kuuntele aihetta",

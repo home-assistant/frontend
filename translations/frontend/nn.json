@@ -962,6 +962,12 @@
                     "filtering_by": "Filtrerer etter"
                 },
                 "header": "Konfigurer Home Assistant",
+                "info": {
+                    "documentation": "Dokumentasjon ",
+                    "integrations": "Integrasjonar",
+                    "issues": "Problem ",
+                    "title": "Info"
+                },
                 "integrations": {
                     "add_integration": "Legg til integrasjon ",
                     "caption": "Integrasjoner",
@@ -1008,6 +1014,9 @@
                     "rename_input_label": "Oppføringsnavn"
                 },
                 "introduction": "Her er det mogleg å konfigurere dine komponenter og Home Assistant. Ikkje alt er mogleg å konfigurere frå brukarsnittet endå, men vi jobbar med saka.",
+                "logs": {
+                    "title": "Loggar"
+                },
                 "person": {
                     "caption": "Personar",
                     "description": "Administrer personane Home Assistant sporer.",
@@ -1228,15 +1237,6 @@
                 "tabs": {
                     "events": {
                         "title": "Hendingar"
-                    },
-                    "info": {
-                        "documentation": "Dokumentasjon ",
-                        "integrations": "Integrasjonar",
-                        "issues": "Problem ",
-                        "title": "Info"
-                    },
-                    "logs": {
-                        "title": "Loggar"
                     },
                     "mqtt": {
                         "title": "MQTT"

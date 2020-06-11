@@ -1008,6 +1008,14 @@
                     }
                 },
                 "header": "Konfigurirajte Home Assistant",
+                "info": {
+                    "frontend_version": "Verzija sučelja: {version} - {type}",
+                    "home_assistant_logo": "Logotip Home Assistanta",
+                    "license": "Objavljeno pod licencom Apache 2.0",
+                    "path_configuration": "Put do configuration.yaml: {path}",
+                    "source": "Izvorni kod:",
+                    "title": "Informacije"
+                },
                 "integrations": {
                     "caption": "Integracije",
                     "config_entry": {
@@ -1045,6 +1053,9 @@
                     "none": "Još ništa nije konfigurirano"
                 },
                 "introduction": "Ovdje možete konfigurirati vaše komponente i Home Assistant. Nije moguće baš sve konfigurirati koristeći UI zasada, ali radimo na tome.",
+                "logs": {
+                    "title": "Logovi"
+                },
                 "person": {
                     "caption": "Osobe",
                     "description": "Upravljajte osobama koje Home Assistant prati.",
@@ -1286,17 +1297,6 @@
                 "tabs": {
                     "events": {
                         "title": "Događaji"
-                    },
-                    "info": {
-                        "frontend_version": "Verzija sučelja: {version} - {type}",
-                        "home_assistant_logo": "Logotip Home Assistanta",
-                        "license": "Objavljeno pod licencom Apache 2.0",
-                        "path_configuration": "Put do configuration.yaml: {path}",
-                        "source": "Izvorni kod:",
-                        "title": "Informacije"
-                    },
-                    "logs": {
-                        "title": "Logovi"
                     },
                     "mqtt": {
                         "title": "MQTT"

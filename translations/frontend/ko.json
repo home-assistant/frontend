@@ -1367,6 +1367,24 @@
                         "input_text": "텍스트"
                     }
                 },
+                "info": {
+                    "built_using": "다음을 사용하여 제작",
+                    "custom_uis": "사용자 UI :",
+                    "developed_by": "Home Assistant 는 수많은 멋진 사람들에 의해 개발되었습니다.",
+                    "documentation": "관련문서",
+                    "frontend": "프런트엔드-UI",
+                    "frontend_version": "프런트엔드 버전: {version} - {type}",
+                    "home_assistant_logo": "Home Assistant 로고",
+                    "icons_by": "아이콘 출처",
+                    "integrations": "통합 구성요소",
+                    "issues": "이슈",
+                    "license": "Apache 2.0 License 에 따라 게시",
+                    "path_configuration": "configuration.yaml 의 위치: {path}",
+                    "server": "서버",
+                    "source": "소스:",
+                    "system_health_error": "시스템 상태보기 구성요소가 로드되지 않았습니다. configuration.yaml 에 'system_health:' 를 추가해주세요.",
+                    "title": "정보"
+                },
                 "integrations": {
                     "add_integration": "통합 구성요소 추가",
                     "caption": "통합 구성요소",
@@ -1438,6 +1456,17 @@
                     "rename_input_label": "구성 항목의 이름"
                 },
                 "introduction": "여기에서 구성요소와  Home Assistant 를 설정할 수 있습니다. 아직 여기서 모두 설정할 수는 없지만, 모든 내용을 설정할 수 있도록 작업 중입니다.",
+                "logs": {
+                    "clear": "지우기",
+                    "details": "로그 상세정보 ({level})",
+                    "load_full_log": "Home Assistant 로그 전부 불러오기",
+                    "loading_log": "오류 로그를 읽는 중...",
+                    "multiple_messages": "{time} 에 처음 발생했으며, {counter} 번 발생했습니다.",
+                    "no_errors": "보고된 오류가 없습니다.",
+                    "no_issues": "새롭게 보고된 문제가 없습니다!",
+                    "refresh": "새로고침",
+                    "title": "로그"
+                },
                 "lovelace": {
                     "caption": "Lovelace 대시보드",
                     "dashboards": {
@@ -1923,35 +1952,6 @@
                         "subscribe_to": "청취할 이벤트",
                         "title": "이벤트",
                         "type": "이벤트 유형"
-                    },
-                    "info": {
-                        "built_using": "다음을 사용하여 제작",
-                        "custom_uis": "사용자 UI :",
-                        "developed_by": "Home Assistant 는 수많은 멋진 사람들에 의해 개발되었습니다.",
-                        "documentation": "관련문서",
-                        "frontend": "프런트엔드-UI",
-                        "frontend_version": "프런트엔드 버전: {version} - {type}",
-                        "home_assistant_logo": "Home Assistant 로고",
-                        "icons_by": "아이콘 출처",
-                        "integrations": "통합 구성요소",
-                        "issues": "이슈",
-                        "license": "Apache 2.0 License 에 따라 게시",
-                        "path_configuration": "configuration.yaml 의 위치: {path}",
-                        "server": "서버",
-                        "source": "소스:",
-                        "system_health_error": "시스템 상태보기 구성요소가 로드되지 않았습니다. configuration.yaml 에 'system_health:' 를 추가해주세요.",
-                        "title": "정보"
-                    },
-                    "logs": {
-                        "clear": "지우기",
-                        "details": "로그 상세정보 ({level})",
-                        "load_full_log": "Home Assistant 로그 전부 불러오기",
-                        "loading_log": "오류 로그를 읽는 중...",
-                        "multiple_messages": "{time} 에 처음 발생했으며, {counter} 번 발생했습니다.",
-                        "no_errors": "보고된 오류가 없습니다.",
-                        "no_issues": "새롭게 보고된 문제가 없습니다!",
-                        "refresh": "새로고침",
-                        "title": "로그"
                     },
                     "mqtt": {
                         "description_listen": "토픽 내용 들어보기",

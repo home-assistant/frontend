@@ -480,8 +480,10 @@
             "delete": "Eliminar",
             "error_required": "Obligatorio",
             "loading": "Cargando",
+            "menu": "Menú",
             "next": "Siguiente",
             "no": "No",
+            "overflow_menu": "Menú de desbordamiento",
             "previous": "Anterior",
             "refresh": "Actualizar",
             "save": "Guardar",
@@ -911,6 +913,8 @@
                         "introduction": "Utiliza automatizaciones para darle vida a tu hogar.",
                         "load_error_not_editable": "Solo las automatizaciones en automations.yaml son editables.",
                         "load_error_unknown": "Error al cargar la automatización ({err_no}).",
+                        "move_down": "Mover hacia abajo",
+                        "move_up": "Mover hacia arriba",
                         "save": "Guardar",
                         "triggers": {
                             "add": "Añadir desencadenante",
@@ -1367,6 +1371,24 @@
                         "input_text": "Texto"
                     }
                 },
+                "info": {
+                    "built_using": "Construido usando",
+                    "custom_uis": "IU personalizadas:",
+                    "developed_by": "Desarrollado por un montón de gente impresionante.",
+                    "documentation": "Documentación",
+                    "frontend": "interfaz de usuario",
+                    "frontend_version": "Versión del frontend: {version} - {type}",
+                    "home_assistant_logo": "Logotipo de Home Assistant",
+                    "icons_by": "Iconos por",
+                    "integrations": "Integraciones",
+                    "issues": "Incidencias",
+                    "license": "Publicado bajo la licencia Apache 2.0",
+                    "path_configuration": "Ruta a configuration.yaml: {path}",
+                    "server": "servidor",
+                    "source": "Fuente:",
+                    "system_health_error": "El componente Estado del Sistema no está cargado. Añade 'system_health:' a configuration.yaml",
+                    "title": "Información"
+                },
                 "integrations": {
                     "add_integration": "Añadir integración",
                     "caption": "Integraciones",
@@ -1438,6 +1460,17 @@
                     "rename_input_label": "Nombre de la entrada"
                 },
                 "introduction": "Aquí puedes configurar tus componentes y Home Assistant. Aún no es posible configurar todo desde la interfaz de usuario, pero estamos trabajando en ello.",
+                "logs": {
+                    "clear": "Limpiar",
+                    "details": "Detalles de registro ({level})",
+                    "load_full_log": "Cargar registro completo de Home Assistant",
+                    "loading_log": "Cargando registro de errores...",
+                    "multiple_messages": "el mensaje se produjo por primera vez a las {time} y aparece {counter} veces",
+                    "no_errors": "No se han reportado errores.",
+                    "no_issues": "¡No hay nuevos problemas!",
+                    "refresh": "Actualizar",
+                    "title": "Registros"
+                },
                 "lovelace": {
                     "caption": "Paneles de Control Lovelace",
                     "dashboards": {
@@ -1923,35 +1956,6 @@
                         "subscribe_to": "Evento al que suscribirse",
                         "title": "Eventos",
                         "type": "Tipo de evento"
-                    },
-                    "info": {
-                        "built_using": "Construido usando",
-                        "custom_uis": "IU personalizadas:",
-                        "developed_by": "Desarrollado por un montón de gente impresionante.",
-                        "documentation": "Documentación",
-                        "frontend": "interfaz de usuario",
-                        "frontend_version": "Versión del frontend: {version} - {type}",
-                        "home_assistant_logo": "Logotipo de Home Assistant",
-                        "icons_by": "Iconos por",
-                        "integrations": "Integraciones",
-                        "issues": "Incidencias",
-                        "license": "Publicado bajo la licencia Apache 2.0",
-                        "path_configuration": "Ruta a configuration.yaml: {path}",
-                        "server": "servidor",
-                        "source": "Fuente:",
-                        "system_health_error": "El componente Estado del Sistema no está cargado. Añade 'system_health:' a configuration.yaml",
-                        "title": "Información"
-                    },
-                    "logs": {
-                        "clear": "Limpiar",
-                        "details": "Detalles de registro ({level})",
-                        "load_full_log": "Cargar registro completo de Home Assistant",
-                        "loading_log": "Cargando registro de errores...",
-                        "multiple_messages": "el mensaje se produjo por primera vez a las {time} y aparece {counter} veces",
-                        "no_errors": "No se han reportado errores.",
-                        "no_issues": "¡No hay nuevos problemas!",
-                        "refresh": "Actualizar",
-                        "title": "Registros"
                     },
                     "mqtt": {
                         "description_listen": "Escuchar un tema",
