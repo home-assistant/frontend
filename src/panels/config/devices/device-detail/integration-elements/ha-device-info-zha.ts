@@ -12,10 +12,7 @@ import { DeviceRegistryEntry } from "../../../../../data/device_registry";
 import { haStyle } from "../../../../../resources/styles";
 import { HomeAssistant } from "../../../../../types";
 import { ZHADevice, fetchZHADevice } from "../../../../../data/zha";
-import {
-  formatAsPaddedHex,
-  getIeeeTail,
-} from "../../../integrations/integration-panels/zha/functions";
+import { formatAsPaddedHex } from "../../../integrations/integration-panels/zha/functions";
 
 @customElement("ha-device-info-zha")
 export class HaDeviceActionsZha extends LitElement {
@@ -35,7 +32,6 @@ export class HaDeviceActionsZha extends LitElement {
       }
       fetchZHADevice(this.hass, zigbeeConnection[1]).then((device) => {
         this._zhaDevice = device;
-        const ieeeTail = getIeeeTail(device.ieee);
       });
     }
   }

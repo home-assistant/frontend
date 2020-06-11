@@ -44,7 +44,7 @@ import "./device-detail/ha-device-info-card";
 import { showDeviceAutomationDialog } from "./device-detail/show-dialog-device-automation";
 
 export interface EntityRegistryStateEntry extends EntityRegistryEntry {
-  stateName?: string;
+  stateName?: string | null;
 }
 
 @customElement("ha-config-device-page")
