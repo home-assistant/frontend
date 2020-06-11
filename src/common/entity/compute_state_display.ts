@@ -53,6 +53,10 @@ export const computeStateDisplay = (
       stateObj.attributes.minute
     );
     return formatDateTime(date, language);
+  } else if (domain === "humidifier") {
+    if (stateObj.state === "on" && stateObj.attributes.humidity) {
+      return `${stateObj.attributes.humidity} %`;
+    }
   }
 
   return (
