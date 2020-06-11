@@ -1367,6 +1367,24 @@
                         "input_text": "Text"
                     }
                 },
+                "info": {
+                    "built_using": "Erstallt mat",
+                    "custom_uis": "Personaliséierte Benotzer Interface:",
+                    "developed_by": "Entwéckelt vun enger ganzer Rei fantastesche Leit.",
+                    "documentation": "Dokumentatioun",
+                    "frontend": "frontend-ui",
+                    "frontend_version": "Frontend Versioun: {version} - {type}",
+                    "home_assistant_logo": "Home Assistant logo",
+                    "icons_by": "Ikonen vun",
+                    "integrations": "Integratioune",
+                    "issues": "Problemer",
+                    "license": "Verëffentlecht ënnert der Apache 2.0 Lizenz",
+                    "path_configuration": "Pad zur configuration.yaml: {path}",
+                    "server": "server",
+                    "source": "Quell:",
+                    "system_health_error": "System Gesondheet Komponent net gelueden. Setz 'system_health:' zur configuration.yaml dobäi",
+                    "title": "Info"
+                },
                 "integrations": {
                     "add_integration": "Integratioun dobäisetzen",
                     "caption": "Integratiounen",
@@ -1438,6 +1456,17 @@
                     "rename_input_label": "Numm"
                 },
                 "introduction": "Hei ass et méiglech är Komponenten vum Home Assistant ze konfiguréieren. Net alles ass méiglech fir iwwert den Interface anzestellen, mee mir schaffen drun.",
+                "logs": {
+                    "clear": "Läschen",
+                    "details": "Detailler vum Log ({level})",
+                    "load_full_log": "Kompletten Home Assistant Log lueden",
+                    "loading_log": "Feeler Log gëtt gelueden...",
+                    "multiple_messages": "Noriicht als éischt opgetrueden um {time} a säit deem {counter} mol opgetrueden",
+                    "no_errors": "Et gouf kee Feeler gemellt.",
+                    "no_issues": "Keng nei Problemer!",
+                    "refresh": "Aktualiséieren",
+                    "title": "Logbicher"
+                },
                 "lovelace": {
                     "caption": "Lovelace Tableau de Bord",
                     "dashboards": {
@@ -1923,35 +1952,6 @@
                         "subscribe_to": "Evenement fir unzemellen",
                         "title": "Evenementer",
                         "type": "Typ vun Evenement"
-                    },
-                    "info": {
-                        "built_using": "Erstallt mat",
-                        "custom_uis": "Personaliséierte Benotzer Interface:",
-                        "developed_by": "Entwéckelt vun enger ganzer Rei fantastesche Leit.",
-                        "documentation": "Dokumentatioun",
-                        "frontend": "frontend-ui",
-                        "frontend_version": "Frontend Versioun: {version} - {type}",
-                        "home_assistant_logo": "Home Assistant logo",
-                        "icons_by": "Ikonen vun",
-                        "integrations": "Integratioune",
-                        "issues": "Problemer",
-                        "license": "Verëffentlecht ënnert der Apache 2.0 Lizenz",
-                        "path_configuration": "Pad zur configuration.yaml: {path}",
-                        "server": "server",
-                        "source": "Quell:",
-                        "system_health_error": "System Gesondheet Komponent net gelueden. Setz 'system_health:' zur configuration.yaml dobäi",
-                        "title": "Info"
-                    },
-                    "logs": {
-                        "clear": "Läschen",
-                        "details": "Detailler vum Log ({level})",
-                        "load_full_log": "Kompletten Home Assistant Log lueden",
-                        "loading_log": "Feeler Log gëtt gelueden...",
-                        "multiple_messages": "Noriicht als éischt opgetrueden um {time} a säit deem {counter} mol opgetrueden",
-                        "no_errors": "Et gouf kee Feeler gemellt.",
-                        "no_issues": "Keng nei Problemer!",
-                        "refresh": "Aktualiséieren",
-                        "title": "Logbicher"
                     },
                     "mqtt": {
                         "description_listen": "Sujet lauschteren",

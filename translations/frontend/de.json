@@ -1366,6 +1366,24 @@
                         "input_text": "Text"
                     }
                 },
+                "info": {
+                    "built_using": "Gebaut mit",
+                    "custom_uis": "Benutzerdefinierte UIs:",
+                    "developed_by": "Entwickelt von einem Haufen toller Leute.",
+                    "documentation": "Dokumentation",
+                    "frontend": "Frontend-UI",
+                    "frontend_version": "Frontend-Version: {version} - {type}",
+                    "home_assistant_logo": "Home Assistant-Logo",
+                    "icons_by": "Icons von",
+                    "integrations": "Integrationen",
+                    "issues": "Probleme",
+                    "license": "Veröffentlicht unter der Apache 2.0 Lizenz",
+                    "path_configuration": "Pfad zu configuration.yaml: {path}",
+                    "server": "Server",
+                    "source": "Quelle:",
+                    "system_health_error": "System Health-Komponente wird nicht geladen. Füge 'system_health:' zu configuration.yaml hinzu",
+                    "title": "Info"
+                },
                 "integrations": {
                     "add_integration": "Integration hinzufügen",
                     "caption": "Integrationen",
@@ -1437,6 +1455,17 @@
                     "rename_input_label": "Eintragsname"
                 },
                 "introduction": "Hier ist es möglich, deine Komponenten und Home Assistant zu konfigurieren. Noch ist nicht alles über die GUI einstellbar, aber wir arbeiten daran.",
+                "logs": {
+                    "clear": "Leeren",
+                    "details": "Protokolldetails ( {level} )",
+                    "load_full_log": "Vollständiges Home Assistant-Protokoll laden",
+                    "loading_log": "Fehlerprotokoll wird geladen...",
+                    "multiple_messages": "Die Nachricht ist zum ersten Mal um {time} aufgetreten und erscheint {counter} mal",
+                    "no_errors": "Es wurden keine Fehler gemeldet.",
+                    "no_issues": "Es gibt keine neuen Probleme!",
+                    "refresh": "Aktualisieren",
+                    "title": "Logs"
+                },
                 "lovelace": {
                     "caption": "Lovelace Dashboards",
                     "dashboards": {
@@ -1920,35 +1949,6 @@
                         "subscribe_to": "Ereignis, welches abboniert werden soll",
                         "title": "Ereignisse",
                         "type": "Ereignistyp"
-                    },
-                    "info": {
-                        "built_using": "Gebaut mit",
-                        "custom_uis": "Benutzerdefinierte UIs:",
-                        "developed_by": "Entwickelt von einem Haufen toller Leute.",
-                        "documentation": "Dokumentation",
-                        "frontend": "Frontend-UI",
-                        "frontend_version": "Frontend-Version: {version} - {type}",
-                        "home_assistant_logo": "Home Assistant-Logo",
-                        "icons_by": "Icons von",
-                        "integrations": "Integrationen",
-                        "issues": "Probleme",
-                        "license": "Veröffentlicht unter der Apache 2.0 Lizenz",
-                        "path_configuration": "Pfad zu configuration.yaml: {path}",
-                        "server": "Server",
-                        "source": "Quelle:",
-                        "system_health_error": "System Health-Komponente wird nicht geladen. Füge 'system_health:' zu configuration.yaml hinzu",
-                        "title": "Info"
-                    },
-                    "logs": {
-                        "clear": "Leeren",
-                        "details": "Protokolldetails ( {level} )",
-                        "load_full_log": "Vollständiges Home Assistant-Protokoll laden",
-                        "loading_log": "Fehlerprotokoll wird geladen...",
-                        "multiple_messages": "Die Nachricht ist zum ersten Mal um {time} aufgetreten und erscheint {counter} mal",
-                        "no_errors": "Es wurden keine Fehler gemeldet.",
-                        "no_issues": "Es gibt keine neuen Probleme!",
-                        "refresh": "Aktualisieren",
-                        "title": "Logs"
                     },
                     "mqtt": {
                         "description_listen": "Auf einen Topic hören",

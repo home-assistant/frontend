@@ -1367,6 +1367,24 @@
                         "input_text": "文本"
                     }
                 },
+                "info": {
+                    "built_using": "建于",
+                    "custom_uis": "自定义用户界面：",
+                    "developed_by": "由一帮很 Awesome~~~ 的人开发。",
+                    "documentation": "文档",
+                    "frontend": "前端用户界面",
+                    "frontend_version": "前端版本： {version} - {type}",
+                    "home_assistant_logo": "Home Assistant logo",
+                    "icons_by": "图标来自",
+                    "integrations": "集成",
+                    "issues": "问题",
+                    "license": "根据 Apache 2.0 许可发布",
+                    "path_configuration": "configuration.yaml 路径：{path}",
+                    "server": "服务器",
+                    "source": "源：",
+                    "system_health_error": "未加载系统健康组件。请将 'system_health:' 添加到 configuration.yaml",
+                    "title": "信息"
+                },
                 "integrations": {
                     "add_integration": "添加集成",
                     "caption": "集成",
@@ -1438,6 +1456,17 @@
                     "rename_input_label": "条目名称"
                 },
                 "introduction": "您可以在此配置 Home Assistant 及组件。目前并非所有配置都能通过前端 UI 完成，但是我们在努力实现中。",
+                "logs": {
+                    "clear": "清除",
+                    "details": "日志详细信息（ {level} ）",
+                    "load_full_log": "加载完整 Home Assistant 日志",
+                    "loading_log": "正在加载错误日志...",
+                    "multiple_messages": "消息首次出现在 {time}，显示了 {counter} 次",
+                    "no_errors": "未报告任何错误。",
+                    "no_issues": "没有新问题！",
+                    "refresh": "刷新",
+                    "title": "日志"
+                },
                 "lovelace": {
                     "caption": "Lovelace 仪表盘",
                     "dashboards": {
@@ -1923,35 +1952,6 @@
                         "subscribe_to": "订阅事件",
                         "title": "事件",
                         "type": "事件类型"
-                    },
-                    "info": {
-                        "built_using": "建于",
-                        "custom_uis": "自定义用户界面：",
-                        "developed_by": "由一帮很 Awesome~~~ 的人开发。",
-                        "documentation": "文档",
-                        "frontend": "前端用户界面",
-                        "frontend_version": "前端版本： {version} - {type}",
-                        "home_assistant_logo": "Home Assistant logo",
-                        "icons_by": "图标来自",
-                        "integrations": "集成",
-                        "issues": "问题",
-                        "license": "根据 Apache 2.0 许可发布",
-                        "path_configuration": "configuration.yaml 路径：{path}",
-                        "server": "服务器",
-                        "source": "源：",
-                        "system_health_error": "未加载系统健康组件。请将 'system_health:' 添加到 configuration.yaml",
-                        "title": "信息"
-                    },
-                    "logs": {
-                        "clear": "清除",
-                        "details": "日志详细信息（ {level} ）",
-                        "load_full_log": "加载完整 Home Assistant 日志",
-                        "loading_log": "正在加载错误日志...",
-                        "multiple_messages": "消息首次出现在 {time}，显示了 {counter} 次",
-                        "no_errors": "未报告任何错误。",
-                        "no_issues": "没有新问题！",
-                        "refresh": "刷新",
-                        "title": "日志"
                     },
                     "mqtt": {
                         "description_listen": "监听一个主题(Topic)",

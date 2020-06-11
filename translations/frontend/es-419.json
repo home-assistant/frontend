@@ -1351,6 +1351,24 @@
                         "input_text": "Texto"
                     }
                 },
+                "info": {
+                    "built_using": "Construido usando",
+                    "custom_uis": "Interfaces de usuario personalizadas:",
+                    "developed_by": "Desarrollado por un grupo de personas increíbles.",
+                    "documentation": "Documentación",
+                    "frontend": "frontend-ui",
+                    "frontend_version": "Versión de la interfaz: {version} - {type}",
+                    "home_assistant_logo": "Logotipo de Home Assistant",
+                    "icons_by": "Iconos por",
+                    "integrations": "Integraciones",
+                    "issues": "Problemas",
+                    "license": "Publicado bajo la licencia Apache 2.0",
+                    "path_configuration": "Ruta de acceso a configuration.yaml: {path}",
+                    "server": "servidor",
+                    "source": "Fuente:",
+                    "system_health_error": "El componente de mantenimiento del sistema no está cargado. Agregue 'system_health:' a configuration.yaml",
+                    "title": "Información"
+                },
                 "integrations": {
                     "add_integration": "Agregar integración",
                     "caption": "Integraciones",
@@ -1421,6 +1439,17 @@
                     "rename_input_label": "Ingresar Nombre"
                 },
                 "introduction": "Aquí es posible configurar sus componentes y Home Assistant. Todavía no es posible configurar todo desde la interfaz de usuario, pero estamos trabajando en ello.",
+                "logs": {
+                    "clear": "Limpiar",
+                    "details": "Detalles del registro ({level})",
+                    "load_full_log": "Cargar registro completo de Home Assistant",
+                    "loading_log": "Cargando registro de errores ...",
+                    "multiple_messages": "el mensaje se produjo por primera vez a las {time} y aparece {counter} veces",
+                    "no_errors": "No se han reportado errores.",
+                    "no_issues": "¡No hay nuevos problemas!",
+                    "refresh": "Refrescar",
+                    "title": "Registros"
+                },
                 "lovelace": {
                     "caption": "Tableros de Lovelace",
                     "dashboards": {
@@ -1873,35 +1902,6 @@
                         "subscribe_to": "Evento para suscribirse",
                         "title": "Eventos",
                         "type": "Tipo de evento"
-                    },
-                    "info": {
-                        "built_using": "Construido usando",
-                        "custom_uis": "Interfaces de usuario personalizadas:",
-                        "developed_by": "Desarrollado por un grupo de personas increíbles.",
-                        "documentation": "Documentación",
-                        "frontend": "frontend-ui",
-                        "frontend_version": "Versión de la interfaz: {version} - {type}",
-                        "home_assistant_logo": "Logotipo de Home Assistant",
-                        "icons_by": "Iconos por",
-                        "integrations": "Integraciones",
-                        "issues": "Problemas",
-                        "license": "Publicado bajo la licencia Apache 2.0",
-                        "path_configuration": "Ruta de acceso a configuration.yaml: {path}",
-                        "server": "servidor",
-                        "source": "Fuente:",
-                        "system_health_error": "El componente de mantenimiento del sistema no está cargado. Agregue 'system_health:' a configuration.yaml",
-                        "title": "Información"
-                    },
-                    "logs": {
-                        "clear": "Limpiar",
-                        "details": "Detalles del registro ({level})",
-                        "load_full_log": "Cargar registro completo de Home Assistant",
-                        "loading_log": "Cargando registro de errores ...",
-                        "multiple_messages": "el mensaje se produjo por primera vez a las {time} y aparece {counter} veces",
-                        "no_errors": "No se han reportado errores.",
-                        "no_issues": "¡No hay nuevos problemas!",
-                        "refresh": "Refrescar",
-                        "title": "Registros"
                     },
                     "mqtt": {
                         "description_listen": "Escuchar un tema",

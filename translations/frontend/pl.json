@@ -1367,6 +1367,24 @@
                         "input_text": "Tekst"
                     }
                 },
+                "info": {
+                    "built_using": "Zbudowany przy użyciu",
+                    "custom_uis": "Niestandardowe interfejsy użytkownika:",
+                    "developed_by": "Opracowany przez grono wspaniałych ludzi.",
+                    "documentation": "Dokumentacja",
+                    "frontend": "frontend-ui",
+                    "frontend_version": "Wersja interfejsu użytkownika: {version} - {type}",
+                    "home_assistant_logo": "Logo Home Assistant",
+                    "icons_by": "ikon",
+                    "integrations": "Integracje",
+                    "issues": "Problemy",
+                    "license": "Opublikowany na licencji Apache 2.0",
+                    "path_configuration": "Ścieżka do pliku configuration.yaml: {path}",
+                    "server": "serwer",
+                    "source": "Źródło:",
+                    "system_health_error": "Komponent kondycji systemu nie jest załadowany. Dodaj 'system_health:' do pliku configuration.yaml",
+                    "title": "Informacje"
+                },
                 "integrations": {
                     "add_integration": "Dodaj integrację",
                     "caption": "Integracje",
@@ -1438,6 +1456,17 @@
                     "rename_input_label": "Nazwa wpisu"
                 },
                 "introduction": "Tutaj możesz skonfigurować Home Assistanta i jego komponenty. Nie wszystkie opcje można konfigurować z interfejsu użytkownika, ale pracujemy nad tym.",
+                "logs": {
+                    "clear": "Wyczyść",
+                    "details": "Szczegóły loga ({level})",
+                    "load_full_log": "Załaduj cały log Home Assistanta",
+                    "loading_log": "Ładowanie loga błędów…",
+                    "multiple_messages": "wiadomość pojawiła się po raz pierwszy o godzinie {time} i powtarzała się {counter} razy",
+                    "no_errors": "Nie zgłoszono żadnych błędów.",
+                    "no_issues": "Nie ma nowych problemów!",
+                    "refresh": "Odśwież",
+                    "title": "Logi"
+                },
                 "lovelace": {
                     "caption": "Dashboardy",
                     "dashboards": {
@@ -1923,35 +1952,6 @@
                         "subscribe_to": "Zdarzenie do zasubskrybowania",
                         "title": "Zdarzenia",
                         "type": "Typ zdarzenia"
-                    },
-                    "info": {
-                        "built_using": "Zbudowany przy użyciu",
-                        "custom_uis": "Niestandardowe interfejsy użytkownika:",
-                        "developed_by": "Opracowany przez grono wspaniałych ludzi.",
-                        "documentation": "Dokumentacja",
-                        "frontend": "frontend-ui",
-                        "frontend_version": "Wersja interfejsu użytkownika: {version} - {type}",
-                        "home_assistant_logo": "Logo Home Assistant",
-                        "icons_by": "ikon",
-                        "integrations": "Integracje",
-                        "issues": "Problemy",
-                        "license": "Opublikowany na licencji Apache 2.0",
-                        "path_configuration": "Ścieżka do pliku configuration.yaml: {path}",
-                        "server": "serwer",
-                        "source": "Źródło:",
-                        "system_health_error": "Komponent kondycji systemu nie jest załadowany. Dodaj 'system_health:' do pliku configuration.yaml",
-                        "title": "Informacje"
-                    },
-                    "logs": {
-                        "clear": "Wyczyść",
-                        "details": "Szczegóły loga ({level})",
-                        "load_full_log": "Załaduj cały log Home Assistanta",
-                        "loading_log": "Ładowanie loga błędów…",
-                        "multiple_messages": "wiadomość pojawiła się po raz pierwszy o godzinie {time} i powtarzała się {counter} razy",
-                        "no_errors": "Nie zgłoszono żadnych błędów.",
-                        "no_issues": "Nie ma nowych problemów!",
-                        "refresh": "Odśwież",
-                        "title": "Logi"
                     },
                     "mqtt": {
                         "description_listen": "Nasłuch tematu",

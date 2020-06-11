@@ -1171,6 +1171,19 @@
                         "input_text": "Text"
                     }
                 },
+                "info": {
+                    "built_using": "Construit folosind",
+                    "documentation": "Documentație",
+                    "frontend": "front-end-ui",
+                    "home_assistant_logo": "Logo-ul Home Assistant",
+                    "icons_by": "Icoane ca",
+                    "integrations": "Integrări",
+                    "issues": "Probleme",
+                    "license": "Publicat sub licenta Apache 2.0",
+                    "server": "Server",
+                    "source": "Sursă:",
+                    "title": "Info"
+                },
                 "integrations": {
                     "add_integration": "Adăugați integrare",
                     "caption": "Integrări",
@@ -1233,6 +1246,15 @@
                     "rename_input_label": "Introdu nume"
                 },
                 "introduction": "Aici este posibil să vă configurați componentele și Home Assistant. Nu este posibilă configurarea de la UI, dar lucrăm la asta.",
+                "logs": {
+                    "clear": "Şterge",
+                    "details": "Detalii jurnal ({level})",
+                    "load_full_log": "Încărcare jurnal complet Home Assistant",
+                    "loading_log": "Se încarcă jurnalul de erori...",
+                    "no_errors": "Nu au fost raportate erori.",
+                    "refresh": "Reîmprospătare",
+                    "title": "Jurnale"
+                },
                 "lovelace": {
                     "caption": "Panouri de bord Lovelace",
                     "dashboards": {
@@ -1664,28 +1686,6 @@
                         "subscribe_to": "Eveniment la care să vă abonați",
                         "title": "Evenimente",
                         "type": "Tip eveniment"
-                    },
-                    "info": {
-                        "built_using": "Construit folosind",
-                        "documentation": "Documentație",
-                        "frontend": "front-end-ui",
-                        "home_assistant_logo": "Logo-ul Home Assistant",
-                        "icons_by": "Icoane ca",
-                        "integrations": "Integrări",
-                        "issues": "Probleme",
-                        "license": "Publicat sub licenta Apache 2.0",
-                        "server": "Server",
-                        "source": "Sursă:",
-                        "title": "Info"
-                    },
-                    "logs": {
-                        "clear": "Şterge",
-                        "details": "Detalii jurnal ({level})",
-                        "load_full_log": "Încărcare jurnal complet Home Assistant",
-                        "loading_log": "Se încarcă jurnalul de erori...",
-                        "no_errors": "Nu au fost raportate erori.",
-                        "refresh": "Reîmprospătare",
-                        "title": "Jurnale"
                     },
                     "mqtt": {
                         "description_listen": "Ascultă un subiect",

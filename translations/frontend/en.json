@@ -1371,6 +1371,26 @@
                         "input_text": "Text"
                     }
                 },
+                "info": {
+                    "built_using": "Built using",
+                    "caption": "Info",
+                    "custom_uis": "Custom UIs:",
+                    "description": "Info about your Home Assistant installation",
+                    "developed_by": "Developed by a bunch of awesome people.",
+                    "documentation": "Documentation",
+                    "frontend": "frontend-ui",
+                    "frontend_version": "Frontend version: {version} - {type}",
+                    "home_assistant_logo": "Home Assistant logo",
+                    "icons_by": "Icons by",
+                    "integrations": "Integrations",
+                    "issues": "Issues",
+                    "license": "Published under the Apache 2.0 license",
+                    "path_configuration": "Path to configuration.yaml: {path}",
+                    "server": "server",
+                    "source": "Source:",
+                    "system_health_error": "System Health component is not loaded. Add 'system_health:' to configuration.yaml",
+                    "title": "Info"
+                },
                 "integrations": {
                     "add_integration": "Add integration",
                     "caption": "Integrations",
@@ -1442,6 +1462,19 @@
                     "rename_input_label": "Entry name"
                 },
                 "introduction": "Here it is possible to configure your components and Home Assistant. Not everything is possible to configure from the UI yet, but we're working on it.",
+                "logs": {
+                    "caption": "Logs",
+                    "clear": "Clear",
+                    "description": "View the Home Assistant logs",
+                    "details": "Log Details ({level})",
+                    "load_full_log": "Load Full Home Assistant Log",
+                    "loading_log": "Loading error log…",
+                    "multiple_messages": "message first occurred at {time} and shows up {counter} times",
+                    "no_errors": "No errors have been reported.",
+                    "no_issues": "There are no new issues!",
+                    "refresh": "Refresh",
+                    "title": "Logs"
+                },
                 "lovelace": {
                     "caption": "Lovelace Dashboards",
                     "dashboards": {
@@ -1627,6 +1660,11 @@
                             "core": "Reload location & customizations",
                             "group": "Reload groups",
                             "heading": "YAML configuration reloading",
+                            "input_boolean": "Reload input booleans",
+                            "input_datetime": "Reload input date times",
+                            "input_number": "Reload input numbers",
+                            "input_select": "Reload input selects",
+                            "input_text": "Reload input texts",
                             "introduction": "Some parts of Home Assistant can reload without requiring a restart. Hitting reload will unload their current YAML configuration and load the new one.",
                             "person": "Reload persons",
                             "scene": "Reload scenes",
@@ -1927,35 +1965,6 @@
                         "subscribe_to": "Event to subscribe to",
                         "title": "Events",
                         "type": "Event Type"
-                    },
-                    "info": {
-                        "built_using": "Built using",
-                        "custom_uis": "Custom UIs:",
-                        "developed_by": "Developed by a bunch of awesome people.",
-                        "documentation": "Documentation",
-                        "frontend": "frontend-ui",
-                        "frontend_version": "Frontend version: {version} - {type}",
-                        "home_assistant_logo": "Home Assistant logo",
-                        "icons_by": "Icons by",
-                        "integrations": "Integrations",
-                        "issues": "Issues",
-                        "license": "Published under the Apache 2.0 license",
-                        "path_configuration": "Path to configuration.yaml: {path}",
-                        "server": "server",
-                        "source": "Source:",
-                        "system_health_error": "System Health component is not loaded. Add 'system_health:' to configuration.yaml",
-                        "title": "Info"
-                    },
-                    "logs": {
-                        "clear": "Clear",
-                        "details": "Log Details ({level})",
-                        "load_full_log": "Load Full Home Assistant Log",
-                        "loading_log": "Loading error log…",
-                        "multiple_messages": "message first occurred at {time} and shows up {counter} times",
-                        "no_errors": "No errors have been reported.",
-                        "no_issues": "There are no new issues!",
-                        "refresh": "Refresh",
-                        "title": "Logs"
                     },
                     "mqtt": {
                         "description_listen": "Listen to a topic",

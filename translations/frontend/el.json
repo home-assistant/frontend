@@ -1216,6 +1216,21 @@
                         "input_text": "Κείμενο"
                     }
                 },
+                "info": {
+                    "built_using": "Κατασκευάστηκε με χρήση",
+                    "custom_uis": "Προσαρμοσμένα περιβάλλοντα χρήστη:",
+                    "developed_by": "Αναπτύχθηκε από ένα μάτσο απίθανων ανθρώπων.",
+                    "frontend": "Τελική επιφάνεια εργασίας χρήστη",
+                    "frontend_version": "Έκδοση Frontend: {version} - {type}",
+                    "home_assistant_logo": "Λογότυπο του Home Assistant",
+                    "icons_by": "Εικόνες από",
+                    "license": "Δημοσιεύτηκε κάτω από την άδεια χρήσης Apache 2.0",
+                    "path_configuration": "Διαδρομή στo configuration.yaml: {path}",
+                    "server": "Διακομιστής",
+                    "source": "Πηγή",
+                    "system_health_error": "Το στοιχείο Υγεία Συστήματος δεν έχει φορτωθεί. Προσθέστε 'system_health:' στη ρύθμιση παραμέτρων configuration.yaml",
+                    "title": "Πληροφορίες"
+                },
                 "integrations": {
                     "caption": "Ενσωματώσεις",
                     "config_entry": {
@@ -1272,6 +1287,17 @@
                     "note_about_website_reference": "Περισσότερα είναι διαθέσιμα στο"
                 },
                 "introduction": "Εδώ είναι δυνατή η διαμόρφωση του Home Assistant και των εξαρτημάτων. Δεν είναι δυνατή η διαμόρφωση όλων από την διεπαφή χρήστη (UI) αλλά εργαζόμαστε πάνω σε αυτό.",
+                "logs": {
+                    "clear": "Καθαρισμός",
+                    "details": "Λεπτομέρειες καταγραφής ({level})",
+                    "load_full_log": "Φόρτωση ολόκληρου του αρχείου καταγραφής του Home Assistant.",
+                    "loading_log": "Φόρτωση αρχείου καταγραφής σφαλμάτων…",
+                    "multiple_messages": "μήνυμα παρουσιάστηκε για πρώτη φορά στο {time} και εμφανίζεται {counter} φορές",
+                    "no_errors": "Δεν έχουν αναφερθεί σφάλματα.",
+                    "no_issues": "Δεν υπάρχουν νέα θέματα!",
+                    "refresh": "Ανανέωση",
+                    "title": "Αρχεία καταγραφής"
+                },
                 "lovelace": {
                     "dashboards": {
                         "caption": "Επισκόπηση",
@@ -1624,32 +1650,6 @@
                         "subscribe_to": "Συμβάν για να εγγραφείτε",
                         "title": "Γεγονότα",
                         "type": "Τύπος συμβάντος"
-                    },
-                    "info": {
-                        "built_using": "Κατασκευάστηκε με χρήση",
-                        "custom_uis": "Προσαρμοσμένα περιβάλλοντα χρήστη:",
-                        "developed_by": "Αναπτύχθηκε από ένα μάτσο απίθανων ανθρώπων.",
-                        "frontend": "Τελική επιφάνεια εργασίας χρήστη",
-                        "frontend_version": "Έκδοση Frontend: {version} - {type}",
-                        "home_assistant_logo": "Λογότυπο του Home Assistant",
-                        "icons_by": "Εικόνες από",
-                        "license": "Δημοσιεύτηκε κάτω από την άδεια χρήσης Apache 2.0",
-                        "path_configuration": "Διαδρομή στo configuration.yaml: {path}",
-                        "server": "Διακομιστής",
-                        "source": "Πηγή",
-                        "system_health_error": "Το στοιχείο Υγεία Συστήματος δεν έχει φορτωθεί. Προσθέστε 'system_health:' στη ρύθμιση παραμέτρων configuration.yaml",
-                        "title": "Πληροφορίες"
-                    },
-                    "logs": {
-                        "clear": "Καθαρισμός",
-                        "details": "Λεπτομέρειες καταγραφής ({level})",
-                        "load_full_log": "Φόρτωση ολόκληρου του αρχείου καταγραφής του Home Assistant.",
-                        "loading_log": "Φόρτωση αρχείου καταγραφής σφαλμάτων…",
-                        "multiple_messages": "μήνυμα παρουσιάστηκε για πρώτη φορά στο {time} και εμφανίζεται {counter} φορές",
-                        "no_errors": "Δεν έχουν αναφερθεί σφάλματα.",
-                        "no_issues": "Δεν υπάρχουν νέα θέματα!",
-                        "refresh": "Ανανέωση",
-                        "title": "Αρχεία καταγραφής"
                     },
                     "mqtt": {
                         "description_listen": "Ακούστε ένα θέμα",
