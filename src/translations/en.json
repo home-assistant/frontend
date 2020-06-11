@@ -458,9 +458,7 @@
         "power_source": "Power Source",
         "unknown": "Unknown",
         "zha_device_card": {
-          "device_name_placeholder": "User given name",
-          "area_picker_label": "Area",
-          "update_name_button": "Update Name"
+          "device_name_placeholder": "Change device name"
         }
       },
       "domain_toggler": {
@@ -1521,6 +1519,9 @@
             "commands_of_cluster": "Commands of the selected cluster",
             "issue_zigbee_command": "Issue Zigbee Command",
             "help_command_dropdown": "Select a command to interact with."
+          },
+          "network": {
+            "caption": "Network"
           },
           "groups": {
             "caption": "Groups",

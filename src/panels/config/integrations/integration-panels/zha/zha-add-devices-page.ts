@@ -9,6 +9,7 @@ import {
   LitElement,
   property,
   TemplateResult,
+  PropertyValues,
 } from "lit-element";
 import "../../../../../components/ha-service-description";
 import "@polymer/paper-input/paper-textarea";
@@ -18,6 +19,7 @@ import { haStyle } from "../../../../../resources/styles";
 import { HomeAssistant, Route } from "../../../../../types";
 import "./zha-device-card";
 import { zhaTabs } from "./zha-config-dashboard";
+import { IronAutogrowTextareaElement } from "@polymer/iron-autogrow-textarea";
 
 @customElement("zha-add-devices-page")
 class ZHAAddDevicesPage extends LitElement {
@@ -63,6 +65,17 @@ class ZHAAddDevicesPage extends LitElement {
     this._error = undefined;
     this._discoveredDevices = [];
     this._formattedEvents = "";
+  }
+
+  protected updated(changedProps: PropertyValues) {
+    super.updated(changedProps);
+    if (
+      changedProps.has("hass") &&
+      !this._active &&
+      !changedProps.get("hass")
+    ) {
+      this._subscribe();
+    }
   }
 
   protected render(): TemplateResult {
@@ -150,8 +163,10 @@ class ZHAAddDevicesPage extends LitElement {
     if (message.type === "log_output") {
       this._formattedEvents += message.log_entry.message + "\n";
       if (this.shadowRoot) {
-        const textArea = this.shadowRoot.querySelector("paper-textarea");
-        if (textArea) {
+        const paperTextArea = this.shadowRoot.querySelector("paper-textarea");
+        if (paperTextArea) {
+          const textArea = (paperTextArea.inputElement as IronAutogrowTextareaElement)
+            .textarea;
           textArea.scrollTop = textArea.scrollHeight;
         }
       }
@@ -173,15 +188,18 @@ class ZHAAddDevicesPage extends LitElement {
   }
 
   private _subscribe(): void {
+    if (!this.hass) {
+      return;
+    }
+    this._active = true;
     const data: any = { type: "zha/devices/permit" };
     if (this._ieeeAddress) {
       data.ieee = this._ieeeAddress;
     }
-    this._subscribed = this.hass!.connection.subscribeMessage(
+    this._subscribed = this.hass.connection.subscribeMessage(
       (message) => this._handleMessage(message),
       data
     );
-    this._active = true;
     this._addDevicesTimeoutHandle = setTimeout(
       () => this._unsubscribe(),
       120000

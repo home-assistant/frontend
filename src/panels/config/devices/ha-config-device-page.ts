@@ -430,7 +430,7 @@ export class HaConfigDevicePage extends LitElement {
       </hass-tabs-subpage>    `;
   }
 
-  private _computeEntityName(entity) {
+  private _computeEntityName(entity: EntityRegistryEntry) {
     if (entity.name) {
       return entity.name;
     }

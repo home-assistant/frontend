@@ -1,6 +1,6 @@
 import "@polymer/paper-input/paper-input";
 import "@polymer/paper-listbox/paper-listbox";
-import { HassEvent, UnsubscribeFunc } from "home-assistant-js-websocket";
+import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import {
   css,
   CSSResult,
@@ -8,7 +8,6 @@ import {
   html,
   LitElement,
   property,
-  PropertyValues,
   TemplateResult,
 } from "lit-element";
 import { fireEvent } from "../../../../../common/dom/fire_event";
@@ -18,101 +17,88 @@ import "../../../../../components/entity/state-badge";
 import "../../../../../components/ha-card";
 import "../../../../../components/ha-service-description";
 import { updateDeviceRegistryEntry } from "../../../../../data/device_registry";
-import { ZHADevice, ZHAEntityReference } from "../../../../../data/zha";
+import { ZHADevice } from "../../../../../data/zha";
 import { haStyle } from "../../../../../resources/styles";
 import { HomeAssistant } from "../../../../../types";
 import "../../../../../components/ha-area-picker";
 import { showAlertDialog } from "../../../../../dialogs/generic/show-dialog-box";
-
-declare global {
-  // for fire event
-  interface HASSDomEvents {
-    "zha-device-removed": {
-      device?: ZHADevice;
-    };
-  }
-}
+import { SubscribeMixin } from "../../../../../mixins/subscribe-mixin";
+import {
+  subscribeEntityRegistry,
+  EntityRegistryEntry,
+  updateEntityRegistryEntry,
+} from "../../../../../data/entity_registry";
+import { createValidEntityId } from "../../../../../common/entity/valid_entity_id";
+import memoizeOne from "memoize-one";
+import { EntityRegistryStateEntry } from "../../../devices/ha-config-device-page";
+import { compare } from "../../../../../common/string/compare";
+import { getIeeeTail } from "./functions";
 
 @customElement("zha-device-card")
-class ZHADeviceCard extends LitElement {
+class ZHADeviceCard extends SubscribeMixin(LitElement) {
   @property() public hass!: HomeAssistant;
 
   @property() public device?: ZHADevice;
 
   @property({ type: Boolean }) public narrow?: boolean;
 
-  @property() private _userGivenName?: string;
+  @property() private _entities: EntityRegistryEntry[] = [];
 
-  private _unsubEntities?: UnsubscribeFunc;
+  private _deviceEntities = memoizeOne(
+    (
+      deviceId: string,
+      entities: EntityRegistryEntry[]
+    ): EntityRegistryStateEntry[] =>
+      entities
+        .filter((entity) => entity.device_id === deviceId)
+        .map((entity) => {
+          return { ...entity, stateName: this._computeEntityName(entity) };
+        })
+        .sort((ent1, ent2) =>
+          compare(
+            ent1.stateName || `zzz${ent1.entity_id}`,
+            ent2.stateName || `zzz${ent2.entity_id}`
+          )
+        )
+  );
 
-  public disconnectedCallback() {
-    super.disconnectedCallback();
-    if (this._unsubEntities) {
-      this._unsubEntities();
-    }
-  }
-
-  public connectedCallback() {
-    super.connectedCallback();
-    this.hass.connection
-      .subscribeEvents((event: HassEvent) => {
-        if (this.device) {
-          this.device!.entities.forEach((deviceEntity) => {
-            if (event.data.old_entity_id === deviceEntity.entity_id) {
-              deviceEntity.entity_id = event.data.entity_id;
-            }
-          });
-        }
-      }, "entity_registry_updated")
-      .then((unsub) => {
-        this._unsubEntities = unsub;
-      });
-  }
-
-  protected firstUpdated(changedProperties: PropertyValues): void {
-    super.firstUpdated(changedProperties);
-    this.addEventListener("hass-service-called", (ev) =>
-      this.serviceCalled(ev)
-    );
-  }
-
-  protected updated(changedProperties: PropertyValues): void {
-    if (changedProperties.has("device")) {
-      this._userGivenName = this.device!.user_given_name;
-    }
-    super.update(changedProperties);
-  }
-
-  protected serviceCalled(ev): void {
-    // Check if this is for us
-    if (ev.detail.success && ev.detail.service === "remove") {
-      fireEvent(this, "zha-device-removed", {
-        device: this.device,
-      });
-    }
+  public hassSubscribe(): UnsubscribeFunc[] {
+    return [
+      subscribeEntityRegistry(this.hass.connection, (entities) => {
+        this._entities = entities;
+      }),
+    ];
   }
 
   protected render(): TemplateResult {
+    if (!this.hass || !this.device) {
+      return html``;
+    }
+    const entities = this._deviceEntities(
+      this.device.device_reg_id,
+      this._entities
+    );
+
     return html`
-      <ha-card .header=${this.device!.name}>
+      <ha-card .header=${this.device.user_given_name || this.device.name}>
         <div class="card-content">
           <div class="info">
-            <div class="model">${this.device!.model}</div>
+            <div class="model">${this.device.model}</div>
             <div class="manuf">
-              ${this.hass!.localize(
+              ${this.hass.localize(
                 "ui.dialogs.zha_device_info.manuf",
                 "manufacturer",
-                this.device!.manufacturer
+                this.device.manufacturer
               )}
             </div>
           </div>
 
           <div class="device-entities">
-            ${this.device!.entities.map(
+            ${entities.map(
               (entity) => html`
                 <state-badge
                   @click="${this._openMoreInfo}"
-                  title=${this._computeEntityName(entity)}
+                  .title=${entity.stateName!}
                   .stateObj="${this.hass!.states[entity.entity_id]}"
                   slot="item-icon"
                 ></state-badge>
@@ -121,15 +107,15 @@ class ZHADeviceCard extends LitElement {
           </div>
           <paper-input
             type="string"
-            @change=${this._saveCustomName}
-            .value=${this._userGivenName || this.device!.name}
-            .label=${this.hass!.localize(
+            @change=${this._rename}
+            .value=${this.device.user_given_name || this.device.name}
+            .label=${this.hass.localize(
               "ui.dialogs.zha_device_info.zha_device_card.device_name_placeholder"
             )}
           ></paper-input>
           <ha-area-picker
             .hass=${this.hass}
-            .device=${this.device!.device_reg_id}
+            .device=${this.device.device_reg_id}
             @value-changed=${this._areaPicked}
           ></ha-area-picker>
         </div>
@@ -137,13 +123,51 @@ class ZHADeviceCard extends LitElement {
     `;
   }
 
-  private async _saveCustomName(event): Promise<void> {
-    if (this.hass) {
-      await updateDeviceRegistryEntry(this.hass, this.device!.device_reg_id, {
-        name_by_user: event.target.value,
-      });
-      this.device!.user_given_name = event.target.value;
+  private async _rename(event): Promise<void> {
+    if (!this.hass || !this.device) {
+      return;
     }
+    const device = this.device;
+
+    const oldDeviceName = device.user_given_name || device.name;
+    const newDeviceName = event.target.value;
+    this.device.user_given_name = newDeviceName;
+    await updateDeviceRegistryEntry(this.hass, device.device_reg_id, {
+      name_by_user: newDeviceName,
+    });
+
+    if (!oldDeviceName || !newDeviceName || oldDeviceName === newDeviceName) {
+      return;
+    }
+    const entities = this._deviceEntities(device.device_reg_id, this._entities);
+
+    const oldDeviceEntityId = createValidEntityId(oldDeviceName);
+    const newDeviceEntityId = createValidEntityId(newDeviceName);
+    const ieeeTail = getIeeeTail(device.ieee);
+
+    const updateProms = entities.map((entity) => {
+      const name = entity.name || entity.stateName;
+      let newEntityId: string | null = null;
+      let newName: string | null = null;
+
+      if (name && name.includes(oldDeviceName)) {
+        newName = name.replace(` ${ieeeTail}`, "");
+        newName = newName.replace(oldDeviceName, newDeviceName);
+        newEntityId = entity.entity_id.replace(`_${ieeeTail}`, "");
+        newEntityId = newEntityId.replace(oldDeviceEntityId, newDeviceEntityId);
+      }
+
+      if (!newName && !newEntityId) {
+        return new Promise((resolve) => resolve());
+      }
+
+      return updateEntityRegistryEntry(this.hass!, entity.entity_id, {
+        name: newName || name,
+        disabled_by: entity.disabled_by,
+        new_entity_id: newEntityId || entity.entity_id,
+      });
+    });
+    await Promise.all(updateProms);
   }
 
   private _openMoreInfo(ev: MouseEvent): void {
@@ -152,7 +176,7 @@ class ZHADeviceCard extends LitElement {
     });
   }
 
-  private _computeEntityName(entity: ZHAEntityReference): string {
+  private _computeEntityName(entity: EntityRegistryEntry): string {
     if (this.hass.states[entity.entity_id]) {
       return computeStateName(this.hass.states[entity.entity_id]);
     }
@@ -203,6 +227,9 @@ class ZHADeviceCard extends LitElement {
         }
         .extra-info {
           margin-top: 8px;
+        }
+        state-badge {
+          cursor: pointer;
         }
       `,
     ];

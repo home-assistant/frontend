@@ -22,12 +22,12 @@ import { computeRTL } from "../../../../../common/util/compute_rtl";
 
 export const zhaTabs: PageNavigation[] = [
   {
-    name: "Network",
+    translationKey: "ui.panel.config.zha.network.caption",
     path: `/config/zha/dashboard`,
     iconPath: mdiNetwork,
   },
   {
-    name: "Groups",
+    translationKey: "ui.panel.config.zha.groups.caption",
     path: `/config/zha/groups`,
     iconPath: mdiFolderMultipleOutline,
   },
