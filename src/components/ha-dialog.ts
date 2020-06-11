@@ -25,6 +25,9 @@ export class HaDialog extends MwcDialog {
     return [
       style,
       css`
+        .mdc-dialog {
+          z-index: var(--dialog-z-index, 7);
+        }
         .mdc-dialog__actions {
           justify-content: var(--justify-action-buttons, flex-end);
         }
