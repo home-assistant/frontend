@@ -1017,6 +1017,11 @@
                         "input_text": "Teksts"
                     }
                 },
+                "info": {
+                    "server": "serveris",
+                    "source": "Avots:",
+                    "title": "Informācija"
+                },
                 "integrations": {
                     "caption": "Integrācijas",
                     "config_entry": {
@@ -1073,6 +1078,10 @@
                     "note_about_website_reference": "Vairāk informācijas vietnē "
                 },
                 "introduction": "Šeit iespējams konfigurēt Jūsu komponentus un pašu Home Assistant. Pagaidām ne visu ir iespējams konfigurēt no lietotāja saskarnes, bet mēs strādājam pie tā.",
+                "logs": {
+                    "clear": "Notīrīt",
+                    "refresh": "Atsvaidzināt"
+                },
                 "person": {
                     "add_person": "Pievienot personu",
                     "caption": "Personas",
@@ -1345,15 +1354,6 @@
                 "tabs": {
                     "events": {
                         "title": "Notikumi"
-                    },
-                    "info": {
-                        "server": "serveris",
-                        "source": "Avots:",
-                        "title": "Informācija"
-                    },
-                    "logs": {
-                        "clear": "Notīrīt",
-                        "refresh": "Atsvaidzināt"
                     },
                     "mqtt": {
                         "publish": "Publicēt",

@@ -480,8 +480,10 @@
             "delete": "Supprimer",
             "error_required": "Obligatoire",
             "loading": "Chargement",
+            "menu": "Menu",
             "next": "Suivant",
             "no": "Non",
+            "overflow_menu": "Menu de débordement",
             "previous": "Précédent",
             "refresh": "Rafraîchir",
             "save": "Enregistrer",
@@ -911,6 +913,8 @@
                         "introduction": "Utilisez les automatisations pour donner vie à votre maison",
                         "load_error_not_editable": "Seules les automatisations dans automations.yaml sont modifiables.",
                         "load_error_unknown": "Erreur lors du chargement de l'automatisation ( {err_no} ).",
+                        "move_down": "Déplacer vers le bas",
+                        "move_up": "Déplacer vers le haut",
                         "save": "Sauvegarder",
                         "triggers": {
                             "add": "Ajouter un déclencheur",
@@ -1367,6 +1371,24 @@
                         "input_text": "Texte"
                     }
                 },
+                "info": {
+                    "built_using": "Construit en utilisant",
+                    "custom_uis": "Interfaces utilisateur personnalisées :",
+                    "developed_by": "Développé par un groupe de personnes formidables.",
+                    "documentation": "Documentation",
+                    "frontend": "interface utilisateur",
+                    "frontend_version": "Version interface utilisateur : {version} - {type}",
+                    "home_assistant_logo": "Logo de Home Assistant",
+                    "icons_by": "Icônes par",
+                    "integrations": "Intégrations",
+                    "issues": "Problèmes",
+                    "license": "Publié sous la licence Apache 2.0",
+                    "path_configuration": "Chemin vers configuration.yaml : {path}",
+                    "server": "serveur",
+                    "source": "Source:",
+                    "system_health_error": "Le composant System Health n'est pas chargé. Ajouter 'system_health:' à configuration.yaml",
+                    "title": "Info"
+                },
                 "integrations": {
                     "add_integration": "Ajouter l'intégration",
                     "caption": "Intégrations",
@@ -1438,6 +1460,17 @@
                     "rename_input_label": "Nom de l'entrée"
                 },
                 "introduction": "Ici, il est possible de configurer vos composants et Home Assistant. Tout n'est pas encore possible de configurer à partir de l'interface utilisateur, mais nous y travaillons.",
+                "logs": {
+                    "clear": "Nettoyer",
+                    "details": "Détails du journal ( {level} )",
+                    "load_full_log": "Charger le journal complet de Home Assistant",
+                    "loading_log": "Chargement du journal des erreurs…",
+                    "multiple_messages": "message survenu pour la première fois à {time} et apparu {counter} fois.",
+                    "no_errors": "Aucune erreur n'a été signalée.",
+                    "no_issues": "Il n'y a pas de nouveaux problèmes!",
+                    "refresh": "Rafraîchir",
+                    "title": "Journaux"
+                },
                 "lovelace": {
                     "caption": "Tableaux de bord Lovelace",
                     "dashboards": {
@@ -1923,35 +1956,6 @@
                         "subscribe_to": "Évènement auquel s'abonner",
                         "title": "Événements",
                         "type": "Type d'événement"
-                    },
-                    "info": {
-                        "built_using": "Construit en utilisant",
-                        "custom_uis": "Interfaces utilisateur personnalisées :",
-                        "developed_by": "Développé par un groupe de personnes formidables.",
-                        "documentation": "Documentation",
-                        "frontend": "interface utilisateur",
-                        "frontend_version": "Version interface utilisateur : {version} - {type}",
-                        "home_assistant_logo": "Logo de Home Assistant",
-                        "icons_by": "Icônes par",
-                        "integrations": "Intégrations",
-                        "issues": "Problèmes",
-                        "license": "Publié sous la licence Apache 2.0",
-                        "path_configuration": "Chemin vers configuration.yaml : {path}",
-                        "server": "serveur",
-                        "source": "Source:",
-                        "system_health_error": "Le composant System Health n'est pas chargé. Ajouter 'system_health:' à configuration.yaml",
-                        "title": "Info"
-                    },
-                    "logs": {
-                        "clear": "Nettoyer",
-                        "details": "Détails du journal ( {level} )",
-                        "load_full_log": "Charger le journal complet de Home Assistant",
-                        "loading_log": "Chargement du journal des erreurs…",
-                        "multiple_messages": "message survenu pour la première fois à {time} et apparu {counter} fois.",
-                        "no_errors": "Aucune erreur n'a été signalée.",
-                        "no_issues": "Il n'y a pas de nouveaux problèmes!",
-                        "refresh": "Rafraîchir",
-                        "title": "Journaux"
                     },
                     "mqtt": {
                         "description_listen": "Écouter un sujet",

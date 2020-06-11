@@ -1367,6 +1367,24 @@
                         "input_text": "Текст"
                     }
                 },
+                "info": {
+                    "built_using": "Создано с использованием",
+                    "custom_uis": "Кастомные интерфейсы:",
+                    "developed_by": "Разработано множеством замечательных людей.",
+                    "documentation": "Документация",
+                    "frontend": "пользовательский интерфейс",
+                    "frontend_version": "Версия интерфейса: {version} - {type}",
+                    "home_assistant_logo": "Логотип Home Assistant",
+                    "icons_by": "Значки от",
+                    "integrations": "Интеграции",
+                    "issues": "Вопросы",
+                    "license": "Опубликовано под лицензией Apache 2.0",
+                    "path_configuration": "Путь к configuration.yaml: {path}",
+                    "server": "сервер",
+                    "source": "Исходный код:",
+                    "system_health_error": "Компонент System Health не загружен. Добавьте 'system_health:' в файл configuration.yaml.",
+                    "title": "О системе"
+                },
                 "integrations": {
                     "add_integration": "Добавить интеграцию",
                     "caption": "Интеграции",
@@ -1438,6 +1456,17 @@
                     "rename_input_label": "Название"
                 },
                 "introduction": "Здесь можно настроить Home Assistant. Пока что не все настройки доступны из интерфейса, но мы работаем над этим.",
+                "logs": {
+                    "clear": "Очистить",
+                    "details": "Уровень: {level}",
+                    "load_full_log": "Показать весь журнал",
+                    "loading_log": "Загрузка журнала…",
+                    "multiple_messages": "первое сообщение получено {time} и повторялось {counter} раз",
+                    "no_errors": "Нет сообщений об ошибках.",
+                    "no_issues": "Нет сообщений о проблемах.",
+                    "refresh": "Обновить",
+                    "title": "Лог"
+                },
                 "lovelace": {
                     "caption": "Панели Lovelace",
                     "dashboards": {
@@ -1923,35 +1952,6 @@
                         "subscribe_to": "Событие",
                         "title": "События",
                         "type": "Событие"
-                    },
-                    "info": {
-                        "built_using": "Создано с использованием",
-                        "custom_uis": "Кастомные интерфейсы:",
-                        "developed_by": "Разработано множеством замечательных людей.",
-                        "documentation": "Документация",
-                        "frontend": "пользовательский интерфейс",
-                        "frontend_version": "Версия интерфейса: {version} - {type}",
-                        "home_assistant_logo": "Логотип Home Assistant",
-                        "icons_by": "Значки от",
-                        "integrations": "Интеграции",
-                        "issues": "Вопросы",
-                        "license": "Опубликовано под лицензией Apache 2.0",
-                        "path_configuration": "Путь к configuration.yaml: {path}",
-                        "server": "сервер",
-                        "source": "Исходный код:",
-                        "system_health_error": "Компонент System Health не загружен. Добавьте 'system_health:' в файл configuration.yaml.",
-                        "title": "О системе"
-                    },
-                    "logs": {
-                        "clear": "Очистить",
-                        "details": "Уровень: {level}",
-                        "load_full_log": "Показать весь журнал",
-                        "loading_log": "Загрузка журнала…",
-                        "multiple_messages": "первое сообщение получено {time} и повторялось {counter} раз",
-                        "no_errors": "Нет сообщений об ошибках.",
-                        "no_issues": "Нет сообщений о проблемах.",
-                        "refresh": "Обновить",
-                        "title": "Лог"
                     },
                     "mqtt": {
                         "description_listen": "Подписаться на топик",

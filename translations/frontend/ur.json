@@ -46,6 +46,9 @@
                     "caption": "آلات",
                     "description": "منسلک آلات کا نظم کریں۔"
                 },
+                "logs": {
+                    "title": "نوشتہ جات"
+                },
                 "server_control": {
                     "caption": "سرور کنٹرول۔",
                     "section": {
@@ -58,13 +61,6 @@
                 "zwave": {
                     "node_config": {
                         "seconds": "سیکنڈ"
-                    }
-                }
-            },
-            "developer-tools": {
-                "tabs": {
-                    "logs": {
-                        "title": "نوشتہ جات"
                     }
                 }
             }

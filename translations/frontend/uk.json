@@ -1227,6 +1227,21 @@
                         "input_datetime": "Дата та/або час"
                     }
                 },
+                "info": {
+                    "built_using": "Побудований за допомогою",
+                    "custom_uis": "Спеціальні інтерфейси користувача:",
+                    "developed_by": "Розроблена купою дивовижних людей.",
+                    "frontend": "інтерфейс користувача",
+                    "frontend_version": "Версія Frontend: {version} - {type}",
+                    "home_assistant_logo": "Логотип Home Assistant",
+                    "icons_by": "Ікони від",
+                    "license": "Опубліковано під ліцензією Apache 2.0",
+                    "path_configuration": "Шлях до config.yaml: {path}",
+                    "server": "сервер",
+                    "source": "Джерело:",
+                    "system_health_error": "Компонент системи здоров'я не завантажено. Додайте 'system_health:' у configuration.yaml",
+                    "title": "Інформація"
+                },
                 "integrations": {
                     "add_integration": "Додати інтеграцію",
                     "caption": "Інтеграція",
@@ -1293,6 +1308,17 @@
                     "rename_input_label": "Ім'я запису"
                 },
                 "introduction": "Тут можна налаштувати свої компоненти та Home Assistant. Не все можна налаштувати з інтерфейсу користувача, але ми працюємо над цим.",
+                "logs": {
+                    "clear": "Очистити",
+                    "details": "Деталі журналу ({level})",
+                    "load_full_log": "Завантажте повний журнал Home Assistant",
+                    "loading_log": "Завантаження журналу помилок...",
+                    "multiple_messages": "повідомлення вперше виникло в {time} і показується {counter} раз",
+                    "no_errors": "Про помилки не повідомлялося.",
+                    "no_issues": "Нових проблем немає!",
+                    "refresh": "Оновити",
+                    "title": "Лог"
+                },
                 "lovelace": {
                     "dashboards": {
                         "conf_mode": {
@@ -1664,32 +1690,6 @@
                         "subscribe_to": "Подія, на яку підписатися",
                         "title": "Події",
                         "type": "Тип події"
-                    },
-                    "info": {
-                        "built_using": "Побудований за допомогою",
-                        "custom_uis": "Спеціальні інтерфейси користувача:",
-                        "developed_by": "Розроблена купою дивовижних людей.",
-                        "frontend": "інтерфейс користувача",
-                        "frontend_version": "Версія Frontend: {version} - {type}",
-                        "home_assistant_logo": "Логотип Home Assistant",
-                        "icons_by": "Ікони від",
-                        "license": "Опубліковано під ліцензією Apache 2.0",
-                        "path_configuration": "Шлях до config.yaml: {path}",
-                        "server": "сервер",
-                        "source": "Джерело:",
-                        "system_health_error": "Компонент системи здоров'я не завантажено. Додайте 'system_health:' у configuration.yaml",
-                        "title": "Інформація"
-                    },
-                    "logs": {
-                        "clear": "Очистити",
-                        "details": "Деталі журналу ({level})",
-                        "load_full_log": "Завантажте повний журнал Home Assistant",
-                        "loading_log": "Завантаження журналу помилок...",
-                        "multiple_messages": "повідомлення вперше виникло в {time} і показується {counter} раз",
-                        "no_errors": "Про помилки не повідомлялося.",
-                        "no_issues": "Нових проблем немає!",
-                        "refresh": "Оновити",
-                        "title": "Лог"
                     },
                     "mqtt": {
                         "description_listen": "Слухати тему",

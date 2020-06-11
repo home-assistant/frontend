@@ -805,6 +805,9 @@
                     }
                 },
                 "header": "การตั้งค่า Home Assistant",
+                "info": {
+                    "title": "ข้อมูล"
+                },
                 "integrations": {
                     "caption": "การทำงานร่วมกัน",
                     "config_entry": {
@@ -929,9 +932,6 @@
                 "tabs": {
                     "events": {
                         "title": "เหตุการณ์"
-                    },
-                    "info": {
-                        "title": "ข้อมูล"
                     },
                     "mqtt": {
                         "title": "MQTT"

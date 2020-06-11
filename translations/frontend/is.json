@@ -1073,6 +1073,12 @@
                         "input_text": "Texti"
                     }
                 },
+                "info": {
+                    "documentation": "Skjölun",
+                    "icons_by": "Smátákn eftir",
+                    "integrations": "Samþættingar",
+                    "title": "Upplýsingar"
+                },
                 "integrations": {
                     "add_integration": "Bæta við samþættingu",
                     "caption": "Samþættingar",
@@ -1120,6 +1126,9 @@
                     "none": "Ekkert skilgreint sem stendur"
                 },
                 "introduction": "Hér er mögulegt að stilla af íhluti og Home Assistant. Því miður er ekki hægt að breyta öllu í gegnum viðmótið ennþá, en við erum að vinna í því.",
+                "logs": {
+                    "clear": "Hreinsa"
+                },
                 "lovelace": {
                     "caption": "Lovelace mælaborð",
                     "dashboards": {
@@ -1391,15 +1400,6 @@
                 "tabs": {
                     "events": {
                         "title": "Viðburðir"
-                    },
-                    "info": {
-                        "documentation": "Skjölun",
-                        "icons_by": "Smátákn eftir",
-                        "integrations": "Samþættingar",
-                        "title": "Upplýsingar"
-                    },
-                    "logs": {
-                        "clear": "Hreinsa"
                     },
                     "mqtt": {
                         "title": "MQTT"

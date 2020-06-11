@@ -1011,6 +1011,9 @@
                         "input_text": "Teks"
                     }
                 },
+                "info": {
+                    "title": "Inligting"
+                },
                 "integrations": {
                     "add_integration": "Stel 'n nuwe integrasie op",
                     "caption": "Integrasies",
@@ -1373,9 +1376,6 @@
                 "tabs": {
                     "events": {
                         "title": "Gebeure"
-                    },
-                    "info": {
-                        "title": "Inligting"
                     },
                     "mqtt": {
                         "title": "MQTT"

@@ -1362,6 +1362,24 @@
                         "input_text": "Texto"
                     }
                 },
+                "info": {
+                    "built_using": "Construído com",
+                    "custom_uis": "IUs personalizados:",
+                    "developed_by": "Desenvolvido por um punhado de pessoas incríveis.",
+                    "documentation": "Documentação",
+                    "frontend": "",
+                    "frontend_version": "Versão frontend: {version} - {type}",
+                    "home_assistant_logo": "Logotipo do Home Assistant",
+                    "icons_by": "Ícones por",
+                    "integrations": "Integrações",
+                    "issues": "Problemas",
+                    "license": "Publicado sob a licença de Apache 2.0",
+                    "path_configuration": "Caminho para configuration.yaml: {path}",
+                    "server": "servidor",
+                    "source": "Fonte:",
+                    "system_health_error": "O componente System Health não está carregado. Adicione 'system_health:' ao configuration.yaml",
+                    "title": "Informações"
+                },
                 "integrations": {
                     "add_integration": "Adicionar integração",
                     "caption": "Integrações",
@@ -1433,6 +1451,17 @@
                     "rename_input_label": "Nome da entrada"
                 },
                 "introduction": "Aqui é possível configurar os seus componentes e o Home Assistant. Nem tudo é possível de ser configurado a partir da Interface Gráfica, mas estamos a trabalhar para isso.",
+                "logs": {
+                    "clear": "Limpar",
+                    "details": "Detalhes do log ( {level} )",
+                    "load_full_log": "Carregar log completo do Home Assistant",
+                    "loading_log": "A carregar o log de erros...",
+                    "multiple_messages": "mensagem ocorreu primeiro em {time} e repetiu-se {counter} vezes",
+                    "no_errors": "Nenhum erro foi reportado.",
+                    "no_issues": "Não há novos problemas!",
+                    "refresh": "Atualizar",
+                    "title": "Logs"
+                },
                 "lovelace": {
                     "caption": "Painéis Lovelace",
                     "dashboards": {
@@ -1889,35 +1918,6 @@
                         "subscribe_to": "Evento a subscrever",
                         "title": "Eventos",
                         "type": "Tipo de Evento"
-                    },
-                    "info": {
-                        "built_using": "Construído com",
-                        "custom_uis": "IUs personalizados:",
-                        "developed_by": "Desenvolvido por um punhado de pessoas incríveis.",
-                        "documentation": "Documentação",
-                        "frontend": "",
-                        "frontend_version": "Versão frontend: {version} - {type}",
-                        "home_assistant_logo": "Logotipo do Home Assistant",
-                        "icons_by": "Ícones por",
-                        "integrations": "Integrações",
-                        "issues": "Problemas",
-                        "license": "Publicado sob a licença de Apache 2.0",
-                        "path_configuration": "Caminho para configuration.yaml: {path}",
-                        "server": "servidor",
-                        "source": "Fonte:",
-                        "system_health_error": "O componente System Health não está carregado. Adicione 'system_health:' ao configuration.yaml",
-                        "title": "Informações"
-                    },
-                    "logs": {
-                        "clear": "Limpar",
-                        "details": "Detalhes do log ( {level} )",
-                        "load_full_log": "Carregar log completo do Home Assistant",
-                        "loading_log": "A carregar o log de erros...",
-                        "multiple_messages": "mensagem ocorreu primeiro em {time} e repetiu-se {counter} vezes",
-                        "no_errors": "Nenhum erro foi reportado.",
-                        "no_issues": "Não há novos problemas!",
-                        "refresh": "Atualizar",
-                        "title": "Logs"
                     },
                     "mqtt": {
                         "description_listen": "Ouvir um tópico",

@@ -480,8 +480,10 @@
             "delete": "Elimina",
             "error_required": "Necessario",
             "loading": "Caricamento",
+            "menu": "Menù",
             "next": "Avanti",
             "no": "No",
+            "overflow_menu": "Menù di Overflow",
             "previous": "Indietro",
             "refresh": "Aggiorna",
             "save": "Salva",
@@ -741,8 +743,8 @@
         "notification_toast": {
             "connection_lost": "Connessione persa. Riconnessione…",
             "service_call_failed": "Fallita chiamata a servizio {service} .",
-            "started": "Home Assistant è avviato!",
-            "starting": "Home Assistant sta iniziando, non tutto sarà disponibile fino a quando non avrà finito l'avvio.",
+            "started": "Home Assistant si è avviato!",
+            "starting": "Home Assistant si sta avviando, non tutto sarà disponibile fino a quando non avrà completato l'avvio.",
             "triggered": "Attivato {name}"
         },
         "panel": {
@@ -911,6 +913,8 @@
                         "introduction": "Usa le automazioni per dare vita alla tua casa.",
                         "load_error_not_editable": "Solo le Automazioni in automations.yaml sono modificabili.",
                         "load_error_unknown": "Errore durante il caricamento dell'Automazione ({err_no}).",
+                        "move_down": "Sposta sotto",
+                        "move_up": "Sposta sopra",
                         "save": "Salva",
                         "triggers": {
                             "add": "Aggiungi Attivazione",
@@ -1367,6 +1371,24 @@
                         "input_text": "Testo"
                     }
                 },
+                "info": {
+                    "built_using": "Costruito usando",
+                    "custom_uis": "Interfacce Utente personalizzate:",
+                    "developed_by": "Sviluppato da un gruppo di persone fantastiche.",
+                    "documentation": "Documentazione",
+                    "frontend": "frontend-ui",
+                    "frontend_version": "Versione Frontend: {version} - {type}",
+                    "home_assistant_logo": "Logo Home Assistant",
+                    "icons_by": "Icone di",
+                    "integrations": "integrazioni",
+                    "issues": "Problemi",
+                    "license": "Pubblicato sotto la licenza Apache 2.0",
+                    "path_configuration": "Percorso del file configuration.yaml: {path}",
+                    "server": "server",
+                    "source": "Sorgenti:",
+                    "system_health_error": "Il componente System Health non è caricato. Aggiungere 'system_health:' a configuration.yaml",
+                    "title": "Informazioni"
+                },
                 "integrations": {
                     "add_integration": "Aggiungi integrazione",
                     "caption": "Integrazioni",
@@ -1438,6 +1460,17 @@
                     "rename_input_label": "Nome della voce"
                 },
                 "introduction": "Qui è possibile configurare i componenti e Home Assistant. Non è ancora possibile configurare tutto dall'Interfaccia Utente, ma ci stiamo lavorando.",
+                "logs": {
+                    "clear": "Pulisci",
+                    "details": "Dettagli registro ({level})",
+                    "load_full_log": "Carica il registro completo di Home Assistant",
+                    "loading_log": "Caricamento del registro errori...",
+                    "multiple_messages": "il messaggio si è verificato per la prima volta alle {time} e compare {counter} volte",
+                    "no_errors": "Non sono stati segnalati errori.",
+                    "no_issues": "Non ci sono nuovi problemi!",
+                    "refresh": "Aggiorna",
+                    "title": "Registri"
+                },
                 "lovelace": {
                     "caption": "Cruscotti Lovelace",
                     "dashboards": {
@@ -1923,35 +1956,6 @@
                         "subscribe_to": "Evento a cui iscriversi",
                         "title": "Eventi",
                         "type": "Tipo di Evento"
-                    },
-                    "info": {
-                        "built_using": "Costruito usando",
-                        "custom_uis": "Interfacce Utente personalizzate:",
-                        "developed_by": "Sviluppato da un gruppo di persone fantastiche.",
-                        "documentation": "Documentazione",
-                        "frontend": "frontend-ui",
-                        "frontend_version": "Versione Frontend: {version} - {type}",
-                        "home_assistant_logo": "Logo Home Assistant",
-                        "icons_by": "Icone di",
-                        "integrations": "integrazioni",
-                        "issues": "Problemi",
-                        "license": "Pubblicato sotto la licenza Apache 2.0",
-                        "path_configuration": "Percorso del file configuration.yaml: {path}",
-                        "server": "server",
-                        "source": "Sorgenti:",
-                        "system_health_error": "Il componente System Health non è caricato. Aggiungere 'system_health:' a configuration.yaml",
-                        "title": "Informazioni"
-                    },
-                    "logs": {
-                        "clear": "Pulisci",
-                        "details": "Dettagli registro ({level})",
-                        "load_full_log": "Carica il registro completo di Home Assistant",
-                        "loading_log": "Caricamento del registro errori...",
-                        "multiple_messages": "il messaggio si è verificato per la prima volta alle {time} e compare {counter} volte",
-                        "no_errors": "Non sono stati segnalati errori.",
-                        "no_issues": "Non ci sono nuovi problemi!",
-                        "refresh": "Aggiorna",
-                        "title": "Registri"
                     },
                     "mqtt": {
                         "description_listen": "Ascoltare un argomento",

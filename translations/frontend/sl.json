@@ -1367,6 +1367,24 @@
                         "input_text": "Besedilo"
                     }
                 },
+                "info": {
+                    "built_using": "Zgrajen z uporabo",
+                    "custom_uis": "Uporabniški vmesniki po meri:",
+                    "developed_by": "Razvija ga kup osupljivih ljudi.",
+                    "documentation": "Dokumentacija",
+                    "frontend": "frontend-ui",
+                    "frontend_version": "Frontend različica: {version} - {type}",
+                    "home_assistant_logo": "Home Assistant logotip",
+                    "icons_by": "Ikone ustvarili z",
+                    "integrations": "Integracije",
+                    "issues": "Težave",
+                    "license": "Objavljeno pod licenco Apache 2.0",
+                    "path_configuration": "Pot do configuration.yaml: {path}",
+                    "server": "strežnik",
+                    "source": "Vir:",
+                    "system_health_error": "Komponenta \"system health\" ni naložena. Dodajte \"system_health:\" v svoj configuration.yaml",
+                    "title": "Info"
+                },
                 "integrations": {
                     "add_integration": "Dodaj integracijo",
                     "caption": "Integracije",
@@ -1438,6 +1456,17 @@
                     "rename_input_label": "Ime vnosa"
                 },
                 "introduction": "Tukaj je mogoče konfigurirati vaše komponente in Home Assistanta. Vsega ni mogoče konfigurirati iz uporabniškega vmesnika (vendar delamo na tem).",
+                "logs": {
+                    "clear": "Počisti",
+                    "details": "Podrobnosti dnevnika ({level})",
+                    "load_full_log": "Naloži celoten dnevnik Home Assistant-a",
+                    "loading_log": "Nalaganje dnevnika napak ...",
+                    "multiple_messages": "sporočilo se je prvič pojavilo ob {time} in se prikaže {counter} krat",
+                    "no_errors": "Ni prijavljenih napak.",
+                    "no_issues": "Ni novih težav!",
+                    "refresh": "Osveži",
+                    "title": "Dnevniki"
+                },
                 "lovelace": {
                     "caption": "Nadzorne plošče Lovelace",
                     "dashboards": {
@@ -1923,35 +1952,6 @@
                         "subscribe_to": "Dogodek, na katerega se lahko naročite",
                         "title": "Dogodki",
                         "type": "Vrsta dogodka"
-                    },
-                    "info": {
-                        "built_using": "Zgrajen z uporabo",
-                        "custom_uis": "Uporabniški vmesniki po meri:",
-                        "developed_by": "Razvija ga kup osupljivih ljudi.",
-                        "documentation": "Dokumentacija",
-                        "frontend": "frontend-ui",
-                        "frontend_version": "Frontend različica: {version} - {type}",
-                        "home_assistant_logo": "Home Assistant logotip",
-                        "icons_by": "Ikone ustvarili z",
-                        "integrations": "Integracije",
-                        "issues": "Težave",
-                        "license": "Objavljeno pod licenco Apache 2.0",
-                        "path_configuration": "Pot do configuration.yaml: {path}",
-                        "server": "strežnik",
-                        "source": "Vir:",
-                        "system_health_error": "Komponenta \"system health\" ni naložena. Dodajte \"system_health:\" v svoj configuration.yaml",
-                        "title": "Info"
-                    },
-                    "logs": {
-                        "clear": "Počisti",
-                        "details": "Podrobnosti dnevnika ({level})",
-                        "load_full_log": "Naloži celoten dnevnik Home Assistant-a",
-                        "loading_log": "Nalaganje dnevnika napak ...",
-                        "multiple_messages": "sporočilo se je prvič pojavilo ob {time} in se prikaže {counter} krat",
-                        "no_errors": "Ni prijavljenih napak.",
-                        "no_issues": "Ni novih težav!",
-                        "refresh": "Osveži",
-                        "title": "Dnevniki"
                     },
                     "mqtt": {
                         "description_listen": "Poslušajte temi",

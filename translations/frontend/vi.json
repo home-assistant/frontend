@@ -835,6 +835,9 @@
                     }
                 },
                 "header": "Cấu hình Home Assistant",
+                "info": {
+                    "title": "Thông tin"
+                },
                 "integrations": {
                     "caption": "Các bộ tích hợp",
                     "config_entry": {
@@ -1019,9 +1022,6 @@
                 "tabs": {
                     "events": {
                         "title": "Sự kiện"
-                    },
-                    "info": {
-                        "title": "Thông tin"
                     },
                     "mqtt": {
                         "title": "MQTT"

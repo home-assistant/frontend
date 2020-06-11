@@ -1284,6 +1284,21 @@
                         "input_text": "Text"
                     }
                 },
+                "info": {
+                    "built_using": "Postavené pomocou",
+                    "custom_uis": "Vlastné používateľské rozhrania:",
+                    "developed_by": "Vyvinuté partiou úžasných ľudí.",
+                    "frontend": "frontend-ui",
+                    "frontend_version": "Verzia frontendu: {version} - {type}",
+                    "home_assistant_logo": "Home Assistant logo",
+                    "icons_by": "Ikony od",
+                    "license": "Publikované pod licenciou Apache 2.0",
+                    "path_configuration": "Cesta k configuration.yaml: {path}",
+                    "server": "server",
+                    "source": "Zdroj:",
+                    "system_health_error": "Súčasť System Health nie je načítaná. Pridajte 'system_health:' do súboru configuration.yaml",
+                    "title": "Info"
+                },
                 "integrations": {
                     "add_integration": "Pridať integráciu",
                     "caption": "Integrácie",
@@ -1345,6 +1360,17 @@
                     "note_about_website_reference": "Viac informácií je k dispozícii na"
                 },
                 "introduction": "Tu je možné konfigurovať vaše komponenty a Home Assistant. Aktuálne sa z používateľského rozhrania nedá konfigurovať všetko, ale pracujeme na tom.",
+                "logs": {
+                    "clear": "Vyčistiť",
+                    "details": "Podrobnosti denníka ( {level} )",
+                    "load_full_log": "Načítať celý denník denníka asistenta",
+                    "loading_log": "Načítava sa denník chýb...",
+                    "multiple_messages": "správa sa prvýkrát vyskytla o {time} a opakuje sa {counter} krát",
+                    "no_errors": "Neboli hlásené žiadne chyby.",
+                    "no_issues": "Žiadne nové chyby!",
+                    "refresh": "Obnoviť",
+                    "title": "Logy"
+                },
                 "lovelace": {
                     "caption": "Lovelace dashboardy",
                     "dashboards": {
@@ -1764,32 +1790,6 @@
                         "subscribe_to": "Udalosť na ktorú čakať",
                         "title": "Udalosti",
                         "type": "Typ udalosti"
-                    },
-                    "info": {
-                        "built_using": "Postavené pomocou",
-                        "custom_uis": "Vlastné používateľské rozhrania:",
-                        "developed_by": "Vyvinuté partiou úžasných ľudí.",
-                        "frontend": "frontend-ui",
-                        "frontend_version": "Verzia frontendu: {version} - {type}",
-                        "home_assistant_logo": "Home Assistant logo",
-                        "icons_by": "Ikony od",
-                        "license": "Publikované pod licenciou Apache 2.0",
-                        "path_configuration": "Cesta k configuration.yaml: {path}",
-                        "server": "server",
-                        "source": "Zdroj:",
-                        "system_health_error": "Súčasť System Health nie je načítaná. Pridajte 'system_health:' do súboru configuration.yaml",
-                        "title": "Info"
-                    },
-                    "logs": {
-                        "clear": "Vyčistiť",
-                        "details": "Podrobnosti denníka ( {level} )",
-                        "load_full_log": "Načítať celý denník denníka asistenta",
-                        "loading_log": "Načítava sa denník chýb...",
-                        "multiple_messages": "správa sa prvýkrát vyskytla o {time} a opakuje sa {counter} krát",
-                        "no_errors": "Neboli hlásené žiadne chyby.",
-                        "no_issues": "Žiadne nové chyby!",
-                        "refresh": "Obnoviť",
-                        "title": "Logy"
                     },
                     "mqtt": {
                         "description_listen": "Počúvať tému",
