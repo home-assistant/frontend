@@ -91,6 +91,20 @@ class PartialPanelResolver extends HassRouterPage {
 
   private _waitForStart = false;
 
+  private _disconnectedPanel?: ChildNode;
+
+  private _hiddenTimeout?: number;
+
+  protected firstUpdated(changedProps: PropertyValues) {
+    super.firstUpdated(changedProps);
+
+    document.addEventListener(
+      "visibilitychange",
+      () => this._handleVisibilityChange(),
+      false
+    );
+  }
+
   protected updated(changedProps: PropertyValues) {
     super.updated(changedProps);
 
@@ -138,6 +152,27 @@ class PartialPanelResolver extends HassRouterPage {
       el.narrow = this.narrow;
       el.route = this.routeTail;
       el.panel = hass.panels[this._currentPage];
+    }
+  }
+
+  private _handleVisibilityChange() {
+    if (document.hidden) {
+      this._hiddenTimeout = window.setTimeout(() => {
+        this._hiddenTimeout = undefined;
+        if (this.lastChild) {
+          this._disconnectedPanel = this.lastChild;
+          this.removeChild(this.lastChild);
+        }
+      }, 300000);
+    } else {
+      if (this._hiddenTimeout) {
+        clearTimeout(this._hiddenTimeout);
+        this._hiddenTimeout = undefined;
+      }
+      if (this._disconnectedPanel) {
+        this.appendChild(this._disconnectedPanel);
+        this._disconnectedPanel = undefined;
+      }
     }
   }
 
