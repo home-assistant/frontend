@@ -45,6 +45,17 @@ declare global {
   }
 }
 
+const integrationsWithPanel = {
+  zha: {
+    buttonLocalizeKey: "ui.panel.config.zha.button",
+    path: "/config/zha/dashboard",
+  },
+  zwave: {
+    buttonLocalizeKey: "ui.panel.config.zwave.button",
+    path: "/config/zwave",
+  },
+};
+
 @customElement("ha-integration-card")
 export class HaIntegrationCard extends LitElement {
   @property() public hass!: HomeAssistant;
@@ -180,13 +191,24 @@ export class HaIntegrationCard extends LitElement {
                 "ui.panel.config.integrations.config_entry.rename"
               )}</mwc-button
             >
-            ${item.supports_options
+            ${item.domain in integrationsWithPanel
+              ? html`<a
+                  href=${`${
+                    integrationsWithPanel[item.domain].path
+                  }?config_entry=${item.entry_id}`}
+                  ><mwc-button>
+                    ${this.hass.localize(
+                      integrationsWithPanel[item.domain].buttonLocalizeKey
+                    )}
+                  </mwc-button></a
+                >`
+              : item.supports_options
               ? html`
-                  <mwc-button @click=${this._showOptions}
-                    >${this.hass.localize(
+                  <mwc-button @click=${this._showOptions}>
+                    ${this.hass.localize(
                       "ui.panel.config.integrations.config_entry.options"
-                    )}</mwc-button
-                  >
+                    )}
+                  </mwc-button>
                 `
               : ""}
           </div>
