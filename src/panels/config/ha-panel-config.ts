@@ -163,20 +163,6 @@ export const configSections: { [name: string]: PageNavigation[] } = {
       advancedOnly: true,
     },
   ],
-  other: [
-    {
-      component: "zha",
-      path: "/config/zha",
-      translationKey: "component.zha.title",
-      icon: "hass:zigbee",
-    },
-    {
-      component: "zwave",
-      path: "/config/zwave",
-      translationKey: "component.zwave.title",
-      icon: "hass:z-wave",
-    },
-  ],
 };
 
 @customElement("ha-panel-config")
@@ -327,14 +313,14 @@ class HaPanelConfig extends HassRouterPage {
         tag: "zha-config-dashboard-router",
         load: () =>
           import(
-            /* webpackChunkName: "panel-config-zha" */ "./zha/zha-config-dashboard-router"
+            /* webpackChunkName: "panel-config-zha" */ "./integrations/integration-panels/zha/zha-config-dashboard-router"
           ),
       },
       zwave: {
         tag: "ha-config-zwave",
         load: () =>
           import(
-            /* webpackChunkName: "panel-config-zwave" */ "./zwave/ha-config-zwave"
+            /* webpackChunkName: "panel-config-zwave" */ "./integrations/integration-panels/zwave/ha-config-zwave"
           ),
       },
     },

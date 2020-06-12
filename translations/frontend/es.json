@@ -511,7 +511,7 @@
                 "device": "Dispositivo",
                 "no_area": "Ningún área",
                 "show_devices": "Mostrar dispositivos",
-                "toggle": "Alternar"
+                "toggle": "Interruptor"
             },
             "entity": {
                 "entity-picker": {
@@ -1373,7 +1373,9 @@
                 },
                 "info": {
                     "built_using": "Construido usando",
+                    "caption": "Información",
                     "custom_uis": "IU personalizadas:",
+                    "description": "Información sobre tu instalación de Home Assistant",
                     "developed_by": "Desarrollado por un montón de gente impresionante.",
                     "documentation": "Documentación",
                     "frontend": "interfaz de usuario",
@@ -1461,7 +1463,9 @@
                 },
                 "introduction": "Aquí puedes configurar tus componentes y Home Assistant. Aún no es posible configurar todo desde la interfaz de usuario, pero estamos trabajando en ello.",
                 "logs": {
+                    "caption": "Registros",
                     "clear": "Limpiar",
+                    "description": "Ver los registros de Home Assistant",
                     "details": "Detalles de registro ({level})",
                     "load_full_log": "Cargar registro completo de Home Assistant",
                     "loading_log": "Cargando registro de errores...",
@@ -1656,6 +1660,11 @@
                             "core": "Recargar ubicación y personalizaciones",
                             "group": "Recargar grupos",
                             "heading": "Recargando la configuración YAML",
+                            "input_boolean": "Recargar los campos booleanos",
+                            "input_datetime": "Recargar los campos de fecha y hora",
+                            "input_number": "Recargar los campos numéricos",
+                            "input_select": "Recargar los campos desplegables",
+                            "input_text": "Recargar los campos de texto",
                             "introduction": "Algunas partes de Home Assistant pueden recargarse sin necesidad de reiniciar. Al pulsar en recargar se descartará la configuración YAML actual y se cargará la nueva.",
                             "person": "Recargar personas",
                             "scene": "Recargar escenas",
