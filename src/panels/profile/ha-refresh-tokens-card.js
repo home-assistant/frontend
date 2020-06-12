@@ -96,6 +96,9 @@ class HaRefreshTokens extends LocalizeMixin(EventsMixin(PolymerElement)) {
 
   async _handleDelete(ev) {
     const token = ev.model.item;
+    if (token.is_current) {
+      return;
+    }
     if (
       !(await showConfirmationDialog(this, {
         text: this.localize(
