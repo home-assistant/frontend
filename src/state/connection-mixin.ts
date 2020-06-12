@@ -176,7 +176,7 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
         // We close the connection to Home Assistant after being hidden for 5 minutes
         this.__hiddenTimeout = window.setTimeout(() => {
           this.__hiddenTimeout = undefined;
-          this.hass!.connection.close();
+          this.hass!.connection.suspend();
         }, 300000);
       } else {
         // Clear timer to close the connection
