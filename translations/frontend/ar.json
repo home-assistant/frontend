@@ -353,6 +353,9 @@
             "script": {
                 "execute": "نفذ"
             },
+            "service": {
+                "run": "تشغيل"
+            },
             "vacuum": {
                 "actions": {
                     "resume_cleaning": "استئناف التنظيف",
@@ -384,16 +387,37 @@
             }
         },
         "common": {
+            "and": "و",
+            "back": "عودة",
             "cancel": "إلغاء",
             "delete": "حذف",
+            "error_required": "مطلوب",
             "loading": "جار التحميل",
+            "menu": "القائمه",
             "next": "التالى",
+            "overflow_menu": "قائمة تجاوز السعة",
             "previous": "السابق",
             "refresh": "تحديث",
             "successfully_deleted": "تم الحذف بنجاح",
             "undo": "تراجع"
         },
         "components": {
+            "area-picker": {
+                "add_dialog": {
+                    "add": "إضافة",
+                    "name": "الاسم",
+                    "text": "أدخل اسم المنطقة الجديدة.",
+                    "title": "أضف منطقة جديدة"
+                },
+                "add_new": "إضافة منطقة جديدة ...",
+                "area": "المنطقة",
+                "clear": "مسح",
+                "show_areas": "إظهار المناطق"
+            },
+            "device-picker": {
+                "no_area": "لا مجال",
+                "toggle": "تبديل"
+            },
             "entity": {
                 "entity-picker": {
                     "entity": "الجهاز"
@@ -411,8 +435,21 @@
             }
         },
         "dialogs": {
+            "config_entry_system_options": {
+                "update": "تحديث"
+            },
+            "entity_registry": {
+                "editor": {
+                    "confirm_delete": "هل أنت متأكد أنك تريد حذف هذا الإدخال؟",
+                    "delete": "حذف",
+                    "update": "تحديث"
+                }
+            },
             "generic": {
-                "close": "إغلاق"
+                "cancel": "إلغاء الأمر",
+                "close": "إغلاق",
+                "default_confirmation_title": "هل أنت متأكد؟",
+                "ok": "موافق"
             },
             "helper_settings": {
                 "generic": {
@@ -434,6 +471,15 @@
             "more_info_control": {
                 "sun": {
                     "setting": "ضبط"
+                },
+                "vacuum": {
+                    "fan_speed": "سرعة المروحة",
+                    "pause": "إيقاف مؤقت",
+                    "return_home": "العودة للرئيسية",
+                    "start": "بدء",
+                    "start_pause": "بدء/إيقاف مؤقت",
+                    "status": "الحالة",
+                    "stop": "توقف"
                 }
             },
             "mqtt_device_debug_info": {
@@ -473,7 +519,9 @@
             "title": "إشعارات"
         },
         "notification_toast": {
-            "connection_lost": "انقطع الاتصال. جارٍ إعادة الاتصال ..."
+            "connection_lost": "انقطع الاتصال. جارٍ إعادة الاتصال ...",
+            "started": "Home Assistant بدأ!",
+            "starting": "يبدأ برنامج Home Assistant ، ولن يكون كل شيء متاحًا حتى الانتهاء."
         },
         "panel": {
             "calendar": {
@@ -489,6 +537,12 @@
                     "delete": {
                         "confirmation_text": "سيتم إلغاء تعيين جميع الأجهزة في هذه المنطقة.",
                         "confirmation_title": "هل أنت متأكد أنك تريد حذف هذه المنطقة؟"
+                    },
+                    "editor": {
+                        "area_id": "المنطقة",
+                        "name": "اسم",
+                        "name_required": "الاسم مطلوب",
+                        "unknown_error": "خطأ غير معروف"
                     }
                 },
                 "automation": {
@@ -511,6 +565,9 @@
                                 "delay": {
                                     "delay": "تأخير",
                                     "label": "التأخير"
+                                },
+                                "device_id": {
+                                    "action": "أضف إجراء"
                                 },
                                 "event": {
                                     "event": "الحدث",
@@ -540,6 +597,9 @@
                             "learn_more": "معرفة المزيد عن الشروط",
                             "type_select": "نوع الشرط",
                             "type": {
+                                "device": {
+                                    "condition": "الشرط"
+                                },
                                 "not": {
                                     "label": "ليس"
                                 },
@@ -580,7 +640,10 @@
                             "unsupported_condition": "شرط غير مدعوم: {condition}"
                         },
                         "default_name": "متحكم آلي جديد",
+                        "enable_disable": "تمكين/تعطيل التنفيذ التلقائي",
                         "introduction": "استخدم المتحكمات الآلية لتجعل منزلك ينبض بالحياة",
+                        "move_down": "تحرك لأسفل",
+                        "move_up": "تحريك لأعلى",
                         "save": "حفظ",
                         "triggers": {
                             "add": "أضف مشغل",
@@ -592,6 +655,9 @@
                             "learn_more": "معرفة المزيد عن المشغلات",
                             "type_select": "نوع المشغل",
                             "type": {
+                                "device": {
+                                    "trigger": "نوع المشغل"
+                                },
                                 "event": {
                                     "event_data": "بيانات الحدث",
                                     "event_type": "نوع الحدث",
@@ -686,19 +752,31 @@
                 },
                 "customize": {
                     "caption": "التخصيص",
-                    "description": "تخصيص الكيانات الخاصة بك"
+                    "description": "تخصيص الكيانات الخاصة بك",
+                    "picker": {
+                        "entity": "الكيان"
+                    }
                 },
                 "devices": {
                     "confirm_delete": "هل أنت متأكد أنك تريد حذف هذا الجهاز؟",
                     "data_table": {
+                        "no_area": "لا مجال",
                         "no_devices": "لا توجد أجهزة"
                     },
                     "delete": "حذف",
                     "device_info": "معلومات الجهاز",
+                    "entities": {
+                        "disabled_entities": "{count} {count, plural,\n  one {كيان}\n  other {كيانات}\n}",
+                        "hide_disabled": "إخفاء معطل"
+                    },
                     "no_devices": "لا توجد أجهزة"
                 },
                 "entities": {
                     "picker": {
+                        "remove_selected": {
+                            "confirm_partly_text": "يمكنك فقط إزالة {removable} من الكيانات {selected} . لا يمكن إزالة الكيانات إلا عندما يتوقف التكامل عن توفير الكيانات. في بعض الأحيان ، يتعين عليك إعادة تشغيل Home Assistant قبل أن تتمكن من إزالة كيانات التكامل الذي تمت إزالته. هل أنت متأكد من أنك تريد إزالة الكيانات القابلة للإزالة؟",
+                            "confirm_partly_title": "يمكن فقط إزالة {number} الكيانات المحددة."
+                        },
                         "status": {
                             "restored": "مستعاد"
                         }
@@ -727,6 +805,13 @@
                         "input_text": "النص"
                     }
                 },
+                "info": {
+                    "caption": "معلومات",
+                    "description": "معلومات حول تثبيت Home Assistant",
+                    "documentation": "الوثائق",
+                    "integrations": "تكاملات",
+                    "issues": "الاعطال"
+                },
                 "integrations": {
                     "add_integration": "أضف integration",
                     "caption": "تكاملات",
@@ -745,7 +830,8 @@
                         "options": "خيارات",
                         "rename": "إعادة تسمية",
                         "restart_confirm": "اعادة تشغيل هوم اسيستينت لإنهاء حذف هذه التكامل",
-                        "system_options": "خيارات النظام"
+                        "system_options": "خيارات النظام",
+                        "unnamed_entry": "إدخال بدون اسم"
                     },
                     "config_flow": {
                         "loading_first_time": "يرجى الانتظار بينما يتم تثبيت الـintegration"
@@ -765,27 +851,52 @@
                     "new": "إعداد تكامل جديد",
                     "no_integrations": "يبدوأن ليس هناك أي integations  بعد. انقر على الزر أدناه لإضافة واحدة!",
                     "none": "لم يتم الإعداد بعد",
+                    "none_found": "لم يتم العثور على عمليات تكامل",
                     "none_found_detail": "اضبط معايير البحث.",
                     "rename_dialog": "تعديل الاسم",
                     "rename_input_label": "الاسم"
                 },
                 "introduction": "يمكنك هنا برمجة المكونات الخاصة بك و إعداد نظام مساعد البيت. ليس كل شيء متاح للبرمجة من خلال واجهة المستخدم حتى الآن، ولكننا نعمل على ذلك.",
+                "logs": {
+                    "caption": "السجلات",
+                    "description": "عرض سجلات Home Assistant"
+                },
                 "lovelace": {
                     "dashboards": {
                         "cant_edit_default": "لا يمكن تعديل لوحة تحكم لوفليس القياسية من واجهة المستخدم. يمكنك إخفائه عن طريق تعيين لوحة تحكم أخرى كإعداد افتراضي.",
+                        "caption": "لوحات التحكم",
+                        "confirm_delete": "هل أنت متأكد أنك تريد حذف لوحة التحكم ؟",
                         "default_dashboard": "هذه هي لوحة المعلومات الافتراضية",
                         "detail": {
+                            "create": "إضافة",
+                            "delete": "حذف",
+                            "dismiss": "اغلاق",
+                            "edit_dashboard": "تعديل لوحة التحكم",
+                            "icon": "أيقونة",
+                            "new_dashboard": "أضف لوحة تحكم جديدة",
                             "remove_default": "إزالة كإعداد افتراضي على هذا الجهاز",
+                            "require_admin": "المسؤول فقط",
                             "set_default": "تعيين إعداد افتراضي على هذا الجهاز",
-                            "title_required": "العنوان مطلوب."
+                            "show_sidebar": "إظهار في الشريط الجانبي",
+                            "title": "عنوان",
+                            "title_required": "العنوان مطلوب.",
+                            "update": "تحديث",
+                            "url": "عنوان Url"
                         },
                         "picker": {
+                            "add_dashboard": "أضافة لوحة تحكم جديدة",
                             "headers": {
-                                "default": "الافتراضي"
-                            }
+                                "default": "الافتراضي",
+                                "filename": "اسم الملف",
+                                "require_admin": "المسؤول فقط",
+                                "sidebar": "إظهار في الشريط الجانبي",
+                                "title": "عنوان"
+                            },
+                            "open": "فتح"
                         }
                     },
                     "resources": {
+                        "confirm_delete": "هل أنت متأكد أنك تريد حذف هذا المورد؟",
                         "detail": {
                             "create": "إنشاء",
                             "delete": "حذف",
@@ -796,7 +907,16 @@
                             "url_error_msg": "عنوان URL هو حقل مطلوب"
                         },
                         "picker": {
+                            "add_resource": "إضافة مورد",
+                            "headers": {
+                                "type": "النوع",
+                                "url": "عنوان Url"
+                            },
                             "no_resources": "لا توجد موارد"
+                        },
+                        "refresh_header": "هل تريد التحديث؟",
+                        "types": {
+                            "module": "وحدة جافا سكريبت"
                         }
                     }
                 },
@@ -823,6 +943,17 @@
                             "name": "الاسم"
                         },
                         "show_info": "عرض معلومات حول السكربت"
+                    }
+                },
+                "server_control": {
+                    "section": {
+                        "reloading": {
+                            "input_boolean": "إعادة تحميل مدخلات منطقية",
+                            "input_datetime": "إعادة تحميل أوقات تاريخ الإدخال",
+                            "input_number": "إعادة تحميل أرقام الإدخال",
+                            "input_select": "إعادة تحميل تحديدات الإدخال",
+                            "input_text": "إعادة تحميل النصوص المدخلة"
+                        }
                     }
                 },
                 "users": {
@@ -852,6 +983,17 @@
                             "name": "الاسم",
                             "system": "نظام"
                         }
+                    },
+                    "users_privileges_note": "مجموعة المستخدمين هي عمل قيد التقدم. لن يتمكن المستخدم من إدارة المثيل عبر واجهة المستخدم. ما زلنا نقوم بتدقيق جميع نقاط نهاية واجهة برمجة تطبيقات الإدارة للتأكد من أنها تحد من الوصول إلى المسؤولين بشكل صحيح."
+                },
+                "zone": {
+                    "detail": {
+                        "create": "إضافة",
+                        "delete": "حذف",
+                        "icon": "أيقونة",
+                        "name": "الاسم",
+                        "required_error_msg": "العنوان مطلوب.",
+                        "update": "تحديث"
                     }
                 },
                 "zwave": {
@@ -859,6 +1001,42 @@
                     "description": "إدارة شبكة Z-Wave",
                     "node_config": {
                         "set_config_parameter": "تعيين معلمة التكوين"
+                    },
+                    "node_management": {
+                        "add_to_group": "إضافة إلى المجموعة",
+                        "entities": "كيانات هذه العقدة",
+                        "entity_info": "معلومات الكيان",
+                        "exclude_entity": "تحكم بسيرفر Home Assistant ... من Home Assistant.",
+                        "group": "مجموعة",
+                        "header": "إدارة العقدة Z-Wave",
+                        "introduction": "قم بتشغيل أوامر Z-Wave التي تؤثر على عقدة واحدة. اختر عقدة لترى قائمة بالأوامر المتاحة.",
+                        "max_associations": "اعلى رقم للجمعيات:",
+                        "node_group_associations": "ارتباطات مجموعة العقدة",
+                        "node_protection": "حماية العقدة",
+                        "node_to_control": "تحكم للعقدة",
+                        "nodes": "العقد",
+                        "nodes_hint": "تحديد عقدة لعرض خيارات كل عقدة",
+                        "nodes_in_group": "العقد الأخرى في هذه المجموعة:",
+                        "pooling_intensity": "كثافة الاقتراع",
+                        "protection": "الحماية",
+                        "remove_broadcast": "إزالة البث",
+                        "remove_from_group": "إزالة من المجموعة",
+                        "set_protection": "تعيين الحماية"
+                    },
+                    "ozw_log": {
+                        "last_log_lines": "عدد أسطر السجل الأخيرة",
+                        "load": "حمل",
+                        "tail": "الذيل"
+                    },
+                    "services": {
+                        "heal_node": "اختبار عقدة",
+                        "node_info": "معلومات العقدة",
+                        "print_node": "طباعة عقدة",
+                        "refresh_entity": "تحديث الكيان",
+                        "refresh_node": "تحديث العقدة",
+                        "remove_failed_node": "إزالة العقدة الفاشلة",
+                        "replace_failed_node": "استبدال العقدة الفاشلة",
+                        "test_node": "اختبار عقدة"
                     }
                 }
             },
@@ -889,13 +1067,20 @@
                 "showing_entries": "عرض الأحداث لـ"
             },
             "lovelace": {
+                "cards": {
+                    "starting": {
+                        "description": "Home Assistant يبدأ، يرجى الانتظار...",
+                        "header": "يبدأ مساعد المنزل ..."
+                    }
+                },
                 "editor": {
                     "card": {
                         "alarm-panel": {
                             "description": "تسمح لك بطاقة لوحة الإنذار بتفعيل وتعطيل لوحة التحكم الخاصة بالانذار ."
                         },
                         "button": {
-                            "description": "تتيح لك بطاقة الأزرار إضافة أزرار لأداء المهام."
+                            "description": "تتيح لك بطاقة الأزرار إضافة أزرار لأداء المهام.",
+                            "name": "زر"
                         },
                         "conditional": {
                             "card": "بطاقة",
@@ -926,6 +1111,7 @@
                             "manual": "يدويا",
                             "manual_description": "هل تريد إضافة بطاقة مخصصة أو ترغب فقط في كتابة yaml يدويًا؟",
                             "no_theme": "لا توجد تصاميم متاحة",
+                            "secondary_info_attribute": "سمة المعلومات الثانوية",
                             "state": "الحالة"
                         },
                         "glance": {
@@ -981,7 +1167,8 @@
                             "description": "تسمح لك بطاقة التكديس الرأسي بتجميع بطاقات متعددة بحيث تكون دائمًا في نفس العمود."
                         },
                         "weather-forecast": {
-                            "description": "تعرض بطاقة توقعات الطقس حالة الطقس. من المفيد جدًا تضمينه في الواجهات التي يعرضها الأشخاص على الحائط."
+                            "description": "تعرض بطاقة توقعات الطقس حالة الطقس. من المفيد جدًا تضمينه في الواجهات التي يعرضها الأشخاص على الحائط.",
+                            "show_forecast": "التوقعات"
                         }
                     },
                     "cardpicker": {
@@ -1009,7 +1196,8 @@
                     "save_config": {
                         "cancel": "لا يهم",
                         "close": "إغلاق",
-                        "empty_config": "ابدأ بلوحة معلومات فارغة"
+                        "empty_config": "ابدأ بلوحة معلومات فارغة",
+                        "yaml_mode": "أنت تستخدم وضع YAML للوحة البيانات هذه ، مما يعني أنه لا يمكنك تغيير تكوين Lovelace من واجهة المستخدم. إذا كنت تريد إدارة لوحة التحكم هذه من واجهة المستخدم ، فقم بإزالة \"الوضع: yaml\" من تكوين Lovelace في \"config.yaml.\"."
                     },
                     "view": {
                         "panel_mode": {
@@ -1032,7 +1220,8 @@
                 "warning": {
                     "attribute_not_found": "السمة {attribute} غير متاحة في: {entity}",
                     "entity_not_found": "الجهاز غير متوفر: {entity}",
-                    "entity_unavailable": "العنصر غير متوفر"
+                    "entity_unavailable": "العنصر غير متوفر",
+                    "starting": "يبدأ مساعد المنزل ، قد لا يكون كل شيء متاح حتى الآن"
                 }
             },
             "mailbox": {
@@ -1044,6 +1233,8 @@
             "page-authorize": {
                 "abort_intro": "إلغاء الدخول",
                 "form": {
+                    "error": "خطأ: {error}",
+                    "next": "التالى",
                     "providers": {
                         "command_line": {
                             "step": {
@@ -1056,6 +1247,7 @@
                             }
                         }
                     },
+                    "start_over": "البدء من جديد",
                     "working": "الرجاء الانتظار"
                 },
                 "initializing": "جار التهيئة"
@@ -1074,6 +1266,9 @@
                 }
             },
             "profile": {
+                "advanced_mode": {
+                    "link_promo": "معرفة المزيد"
+                },
                 "change_password": {
                     "confirm_new_password": "تأكيد كلمة السر الجديدة",
                     "current_password": "كلمة السر الحالية",
