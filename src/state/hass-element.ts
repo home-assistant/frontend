@@ -12,6 +12,7 @@ import SidebarMixin from "./sidebar-mixin";
 import ThemesMixin from "./themes-mixin";
 import TranslationsMixin from "./translations-mixin";
 import { urlSyncMixin } from "./url-sync-mixin";
+import { suspendMixin } from "./suspend-mixin";
 
 const ext = <T extends Constructor>(baseClass: T, mixins): T =>
   mixins.reduceRight((base, mixin) => mixin(base), baseClass);
@@ -24,6 +25,7 @@ export class HassElement extends ext(HassBaseEl, [
   SidebarMixin,
   DisconnectToastMixin,
   connectionMixin,
+  suspendMixin,
   NotificationMixin,
   dialogManagerMixin,
   urlSyncMixin,
