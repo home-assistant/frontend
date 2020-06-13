@@ -132,15 +132,6 @@ class DialogBox extends LitElement {
           pointer-events: initial !important;
           cursor: initial !important;
         }
-        ha-paper-dialog {
-          min-width: 400px;
-          max-width: 500px;
-        }
-        @media (max-width: 400px) {
-          ha-paper-dialog {
-            min-width: initial;
-          }
-        }
         a {
           color: var(--primary-color);
         }
@@ -155,6 +146,10 @@ class DialogBox extends LitElement {
         }
         .secondary {
           color: var(--secondary-text-color);
+        }
+        ha-dialog {
+          /* Place above other dialogs */
+          --dialog-z-index: 104;
         }
       `,
     ];
