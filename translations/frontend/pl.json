@@ -1561,7 +1561,7 @@
                         "link_presence_detection_integrations": "Integracje wykrywania obecności",
                         "linked_user": "Połączony użytkownik",
                         "name": "Imię",
-                        "name_error_msg": "Nazwa jest wymagana",
+                        "name_error_msg": "Imię jest wymagane",
                         "new_person": "Nowa osoba",
                         "no_device_tracker_available_intro": "Jeśli masz urządzenia wskazujące obecność osoby, możesz tutaj przypisać ją do tej osoby. Możesz dodać swoje pierwsze urządzenie, dodając integrację wykrywania obecności ze strony integracji.",
                         "update": "Aktualizuj"

@@ -543,7 +543,7 @@
                     "second": "{count} {count, plural,\n  one {sekund}\n  other {sekunder}\n}",
                     "week": "{count} {count, plural,\none {vecka}\nother {veckor}\n}"
                 },
-                "future": "Om {time}",
+                "future": "{time} sedan",
                 "never": "Aldrig",
                 "past": "{time} sedan"
             },
@@ -1656,6 +1656,7 @@
                             "core": "Ladda om plats & anpassningar",
                             "group": "Ladda om grupper",
                             "heading": "YAML-konfiguration laddas om",
+                            "input_datetime": "Ladda om inmatningsdatum/tid",
                             "introduction": "Vissa delar av Home Assistant kan laddas om utan att en omstart krävs. Att trycka på \"ladda om\" innebär att den nuvarande konfiguration inaktiveras och den nya laddas.",
                             "person": "Ladda om personer",
                             "scene": "Ladda om scenarier",
