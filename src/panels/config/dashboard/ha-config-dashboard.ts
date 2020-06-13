@@ -85,6 +85,34 @@ class HaConfigDashboard extends LitElement {
               </ha-card>
             `
           )}
+          ${isComponentLoaded(this.hass, "zha")
+            ? html`
+                <div class="promo-advanced">
+                  ${this.hass.localize(
+                    "ui.panel.config.integration_panel_move.missing_zha"
+                  )}
+                  <a href="/config/integrations"
+                    >${this.hass.localize(
+                      "ui.panel.config.integration_panel_move.link_integration_page"
+                    )}</a
+                  >.
+                </div>
+              `
+            : ""}
+          ${isComponentLoaded(this.hass, "zwave")
+            ? html`
+                <div class="promo-advanced">
+                  ${this.hass.localize(
+                    "ui.panel.config.integration_panel_move.missing_zwave"
+                  )}
+                  <a href="/config/integrations"
+                    >${this.hass.localize(
+                      "ui.panel.config.integration_panel_move.link_integration_page"
+                    )}</a
+                  >.
+                </div>
+              `
+            : ""}
           ${!this.showAdvanced
             ? html`
                 <div class="promo-advanced">
