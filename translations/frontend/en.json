@@ -480,8 +480,10 @@
             "delete": "Delete",
             "error_required": "Required",
             "loading": "Loading",
+            "menu": "Menu",
             "next": "Next",
             "no": "No",
+            "overflow_menu": "Overflow menu",
             "previous": "Previous",
             "refresh": "Refresh",
             "save": "Save",
@@ -692,10 +694,10 @@
             },
             "zha_device_info": {
                 "buttons": {
-                    "add": "Add Devices",
+                    "add": "Add Devices via this device",
                     "reconfigure": "Reconfigure Device",
                     "remove": "Remove Device",
-                    "zigbee_information": "Zigbee Information"
+                    "zigbee_information": "Zigbee device signature"
                 },
                 "confirmations": {
                     "remove": "Are you sure that you want to remove the device?"
@@ -715,7 +717,7 @@
                 "unknown": "Unknown",
                 "zha_device_card": {
                     "area_picker_label": "Area",
-                    "device_name_placeholder": "User given name",
+                    "device_name_placeholder": "Change device name",
                     "update_name_button": "Update Name"
                 }
             }
@@ -911,6 +913,8 @@
                         "introduction": "Use automations to bring your home alive.",
                         "load_error_not_editable": "Only automations in automations.yaml are editable.",
                         "load_error_unknown": "Error loading automation ({err_no}).",
+                        "move_down": "Move down",
+                        "move_up": "Move up",
                         "save": "Save",
                         "triggers": {
                             "add": "Add trigger",
@@ -1367,6 +1371,26 @@
                         "input_text": "Text"
                     }
                 },
+                "info": {
+                    "built_using": "Built using",
+                    "caption": "Info",
+                    "custom_uis": "Custom UIs:",
+                    "description": "Info about your Home Assistant installation",
+                    "developed_by": "Developed by a bunch of awesome people.",
+                    "documentation": "Documentation",
+                    "frontend": "frontend-ui",
+                    "frontend_version": "Frontend version: {version} - {type}",
+                    "home_assistant_logo": "Home Assistant logo",
+                    "icons_by": "Icons by",
+                    "integrations": "Integrations",
+                    "issues": "Issues",
+                    "license": "Published under the Apache 2.0 license",
+                    "path_configuration": "Path to configuration.yaml: {path}",
+                    "server": "server",
+                    "source": "Source:",
+                    "system_health_error": "System Health component is not loaded. Add 'system_health:' to configuration.yaml",
+                    "title": "Info"
+                },
                 "integrations": {
                     "add_integration": "Add integration",
                     "caption": "Integrations",
@@ -1438,6 +1462,19 @@
                     "rename_input_label": "Entry name"
                 },
                 "introduction": "Here it is possible to configure your components and Home Assistant. Not everything is possible to configure from the UI yet, but we're working on it.",
+                "logs": {
+                    "caption": "Logs",
+                    "clear": "Clear",
+                    "description": "View the Home Assistant logs",
+                    "details": "Log Details ({level})",
+                    "load_full_log": "Load Full Home Assistant Log",
+                    "loading_log": "Loading error log…",
+                    "multiple_messages": "message first occurred at {time} and shows up {counter} times",
+                    "no_errors": "No errors have been reported.",
+                    "no_issues": "There are no new issues!",
+                    "refresh": "Refresh",
+                    "title": "Logs"
+                },
                 "lovelace": {
                     "caption": "Lovelace Dashboards",
                     "dashboards": {
@@ -1623,6 +1660,11 @@
                             "core": "Reload location & customizations",
                             "group": "Reload groups",
                             "heading": "YAML configuration reloading",
+                            "input_boolean": "Reload input booleans",
+                            "input_datetime": "Reload input date times",
+                            "input_number": "Reload input numbers",
+                            "input_select": "Reload input selects",
+                            "input_text": "Reload input texts",
                             "introduction": "Some parts of Home Assistant can reload without requiring a restart. Hitting reload will unload their current YAML configuration and load the new one.",
                             "person": "Reload persons",
                             "scene": "Reload scenes",
@@ -1686,8 +1728,11 @@
                 },
                 "zha": {
                     "add_device_page": {
+                        "discovered_text": "Devices will show up here once discovered.",
                         "discovery_text": "Discovered devices will show up here. Follow the instructions for your device(s) and place the device(s) in pairing mode.",
                         "header": "Zigbee Home Automation - Add Devices",
+                        "no_devices_found": "No devices where found, make sure they are in paring mode and keep them awake while discovering is running.",
+                        "pairing_mode": "Make sure your devices are in pairing mode. Check the instructions of your device on how to do this.",
                         "search_again": "Search Again",
                         "spinner": "Searching for ZHA Zigbee devices..."
                     },
@@ -1695,6 +1740,7 @@
                         "caption": "Add Devices",
                         "description": "Add devices to the Zigbee network"
                     },
+                    "button": "Configure",
                     "caption": "ZHA",
                     "cluster_attributes": {
                         "attributes_of_cluster": "Attributes of the selected cluster",
@@ -1773,6 +1819,9 @@
                         "header": "Network Management",
                         "introduction": "Commands that affect the entire network"
                     },
+                    "network": {
+                        "caption": "Network"
+                    },
                     "node_management": {
                         "header": "Device Management",
                         "help_node_dropdown": "Select a device to view per-device options.",
@@ -1812,6 +1861,7 @@
                     "no_zones_created_yet": "Looks like you have not created any zones yet."
                 },
                 "zwave": {
+                    "button": "Configure",
                     "caption": "Z-Wave",
                     "common": {
                         "index": "Index",
@@ -1923,35 +1973,6 @@
                         "subscribe_to": "Event to subscribe to",
                         "title": "Events",
                         "type": "Event Type"
-                    },
-                    "info": {
-                        "built_using": "Built using",
-                        "custom_uis": "Custom UIs:",
-                        "developed_by": "Developed by a bunch of awesome people.",
-                        "documentation": "Documentation",
-                        "frontend": "frontend-ui",
-                        "frontend_version": "Frontend version: {version} - {type}",
-                        "home_assistant_logo": "Home Assistant logo",
-                        "icons_by": "Icons by",
-                        "integrations": "Integrations",
-                        "issues": "Issues",
-                        "license": "Published under the Apache 2.0 license",
-                        "path_configuration": "Path to configuration.yaml: {path}",
-                        "server": "server",
-                        "source": "Source:",
-                        "system_health_error": "System Health component is not loaded. Add 'system_health:' to configuration.yaml",
-                        "title": "Info"
-                    },
-                    "logs": {
-                        "clear": "Clear",
-                        "details": "Log Details ({level})",
-                        "load_full_log": "Load Full Home Assistant Log",
-                        "loading_log": "Loading error log…",
-                        "multiple_messages": "message first occurred at {time} and shows up {counter} times",
-                        "no_errors": "No errors have been reported.",
-                        "no_issues": "There are no new issues!",
-                        "refresh": "Refresh",
-                        "title": "Logs"
                     },
                     "mqtt": {
                         "description_listen": "Listen to a topic",

@@ -478,9 +478,12 @@
             "cancel": "Mégse",
             "close": "Bezárás",
             "delete": "Törlés",
+            "error_required": "Szükséges",
             "loading": "Betöltés",
+            "menu": "Menü",
             "next": "Tovább",
             "no": "Nem",
+            "overflow_menu": "Lebegő menü",
             "previous": "Előző",
             "refresh": "Frissítés",
             "save": "Mentés",
@@ -910,6 +913,8 @@
                         "introduction": "Használj automatizálásokat otthonod életre keltéséhez",
                         "load_error_not_editable": "Csak az automations.yaml fájlban megadott automatizálások szerkeszthetők.",
                         "load_error_unknown": "Hiba az automatizálás betöltésekor ({err_no}).",
+                        "move_down": "Le",
+                        "move_up": "Fel",
                         "save": "Mentés",
                         "triggers": {
                             "add": "Trigger hozzáadása",
@@ -1221,6 +1226,7 @@
                     "different_include": "Lehet domainnel, globbal vagy egy másik include fájllal.",
                     "pick_attribute": "Válassz egy attribútumot a felülbíráláshoz",
                     "picker": {
+                        "entity": "Entitás",
                         "header": "Testreszabások",
                         "introduction": "Szabd testre az entitások attribútumait. A hozzáadott, szerkesztett testreszabások azonnal érvényesülnek. A testreszabások eltávolítása akkor lép életbe, amikor az entitás frissül."
                     },
@@ -1365,6 +1371,24 @@
                         "input_text": "Szöveg"
                     }
                 },
+                "info": {
+                    "built_using": "Buildelve:",
+                    "custom_uis": "Egyéni felhasználói felületek:",
+                    "developed_by": "Egy csomó fantasztikus ember által kifejlesztve.",
+                    "documentation": "Dokumentáció",
+                    "frontend": "frontend-ui",
+                    "frontend_version": "Frontend verzió: {version} - {type}",
+                    "home_assistant_logo": "Home Assistant logó",
+                    "icons_by": "Ikonokat készítette:",
+                    "integrations": "Integrációk",
+                    "issues": "Problémák",
+                    "license": "Megjelent az Apache 2.0 licenc alatt",
+                    "path_configuration": "A configuration.yaml fájl elérési útja: {path}",
+                    "server": "server",
+                    "source": "Forrás:",
+                    "system_health_error": "A rendszerállapot összetevő nincs betöltve. Add hozzá a 'system_health:' sort a configuration.yaml fájlhoz.",
+                    "title": "Infó"
+                },
                 "integrations": {
                     "add_integration": "Integráció hozzáadása",
                     "caption": "Integrációk",
@@ -1436,6 +1460,17 @@
                     "rename_input_label": "Bejegyzés neve"
                 },
                 "introduction": "Itt a komponenseket és a Home Assistant szervert lehet beállítani. Még nem lehet mindent a felületről, de dolgozunk rajta.",
+                "logs": {
+                    "clear": "Törlés",
+                    "details": "Naplózás részletessége ({level})",
+                    "load_full_log": "Teljes Home Assistant napló betöltése",
+                    "loading_log": "Hibanapló betöltése...",
+                    "multiple_messages": "az üzenet először a következő időpontban fordult elő: {time}, majd később {counter} alkalommal ismétlődött",
+                    "no_errors": "Nem jelentettek hibát.",
+                    "no_issues": "Nincsenek új bejegyzések!",
+                    "refresh": "Frissítés",
+                    "title": "Napló"
+                },
                 "lovelace": {
                     "caption": "Lovelace Irányítópultok",
                     "dashboards": {
@@ -1853,12 +1888,15 @@
                         "add_node_secure": "Biztonságos csomópont hozzáadása",
                         "cancel_command": "Parancs megszakítása",
                         "heal_network": "Hálózati struktúra feltérképezése",
+                        "node_info": "Node információ",
+                        "refresh_entity": "Entitás frissítése",
                         "remove_node": "Csomópont eltávolítása",
                         "save_config": "Konfiguráció mentése",
                         "soft_reset": "Soft Reset",
                         "start_network": "Hálózat indítása",
                         "stop_network": "Hálózat leállítása",
-                        "test_network": "Hálózat tesztelése"
+                        "test_network": "Hálózat tesztelése",
+                        "test_node": "Teszt Node"
                     },
                     "values": {
                         "header": "Csomópont értékek"
@@ -1891,35 +1929,6 @@
                         "subscribe_to": "Feliratkozás erre az eseményre",
                         "title": "Események",
                         "type": "Esemény típusa"
-                    },
-                    "info": {
-                        "built_using": "Buildelve:",
-                        "custom_uis": "Egyéni felhasználói felületek:",
-                        "developed_by": "Egy csomó fantasztikus ember által kifejlesztve.",
-                        "documentation": "Dokumentáció",
-                        "frontend": "frontend-ui",
-                        "frontend_version": "Frontend verzió: {version} - {type}",
-                        "home_assistant_logo": "Home Assistant logó",
-                        "icons_by": "Ikonokat készítette:",
-                        "integrations": "Integrációk",
-                        "issues": "Problémák",
-                        "license": "Megjelent az Apache 2.0 licenc alatt",
-                        "path_configuration": "A configuration.yaml fájl elérési útja: {path}",
-                        "server": "server",
-                        "source": "Forrás:",
-                        "system_health_error": "A rendszerállapot összetevő nincs betöltve. Add hozzá a 'system_health:' sort a configuration.yaml fájlhoz.",
-                        "title": "Infó"
-                    },
-                    "logs": {
-                        "clear": "Törlés",
-                        "details": "Naplózás részletessége ({level})",
-                        "load_full_log": "Teljes Home Assistant napló betöltése",
-                        "loading_log": "Hibanapló betöltése...",
-                        "multiple_messages": "az üzenet először a következő időpontban fordult elő: {time}, majd később {counter} alkalommal ismétlődött",
-                        "no_errors": "Nem jelentettek hibát.",
-                        "no_issues": "Nincsenek új bejegyzések!",
-                        "refresh": "Frissítés",
-                        "title": "Napló"
                     },
                     "mqtt": {
                         "description_listen": "Téma figyelése",

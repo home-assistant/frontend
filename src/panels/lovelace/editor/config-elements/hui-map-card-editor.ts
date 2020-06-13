@@ -24,6 +24,7 @@ import {
   EntitiesEditorEvent,
 } from "../types";
 import "../../../../components/ha-switch";
+import "../../../../components/ha-formfield";
 import { configElementStyle } from "./config-elements-style";
 
 const cardConfigStruct = struct({
@@ -119,14 +120,17 @@ export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
           ></paper-input>
         </div>
         <div class="side-by-side">
-          <ha-switch
-            .checked="${this._dark_mode}"
-            .configValue="${"dark_mode"}"
-            @change="${this._valueChanged}"
-            >${this.hass.localize(
+          <ha-formfield
+            .label=${this.hass.localize(
               "ui.panel.lovelace.editor.card.map.dark_mode"
-            )}</ha-switch
+            )}
           >
+            <ha-switch
+              .checked="${this._dark_mode}"
+              .configValue="${"dark_mode"}"
+              @change="${this._valueChanged}"
+            ></ha-switch
+          ></ha-formfield>
           <paper-input
             .label="${this.hass.localize(
               "ui.panel.lovelace.editor.card.map.hours_to_show"

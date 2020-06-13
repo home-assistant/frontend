@@ -1363,6 +1363,24 @@
                         "input_text": "Tekst"
                     }
                 },
+                "info": {
+                    "built_using": "Gebouwd met behulp van",
+                    "custom_uis": "Aangepaste UI's:",
+                    "developed_by": "Ontwikkeld door een stel geweldige mensen.",
+                    "documentation": "Documentatie",
+                    "frontend": "Frontend",
+                    "frontend_version": "Frontend-versie: {version} - {type}",
+                    "home_assistant_logo": "Home Assistant-logo",
+                    "icons_by": "Icons door",
+                    "integrations": "Integraties",
+                    "issues": "Problemen",
+                    "license": "Gepubliceerd onder de Apache 2.0-licentie",
+                    "path_configuration": "Pad naar configuration.yaml: {path}",
+                    "server": "Server",
+                    "source": "Bron:",
+                    "system_health_error": "De systeemstatus component is niet geladen. Voeg ' system_health: ' toe aan het configuratiebestand.",
+                    "title": "Info"
+                },
                 "integrations": {
                     "add_integration": "Integratie toevoegen",
                     "caption": "Integraties",
@@ -1434,6 +1452,17 @@
                     "rename_input_label": "Invoernaam"
                 },
                 "introduction": "Hier kun je je componenten en Home Assistant configureren. Het is nog niet mogelijk om alles te configureren vanuit de interface, maar we werken er aan.",
+                "logs": {
+                    "clear": "Wis",
+                    "details": "Logboekdetails ({level})",
+                    "load_full_log": "Laad volledige Home Assistant logboek",
+                    "loading_log": "Foutenlogboek laden ...",
+                    "multiple_messages": "bericht kwam voor het eerst om {time} en verschijnt {counter} malen",
+                    "no_errors": "Er zijn geen fouten gerapporteerd.",
+                    "no_issues": "Er zijn geen problemen!",
+                    "refresh": "Vernieuwen",
+                    "title": "Logboek"
+                },
                 "lovelace": {
                     "caption": "Lovelace-dashboards",
                     "dashboards": {
@@ -1886,35 +1915,6 @@
                         "subscribe_to": "Gebeurtenis om op te abonneren",
                         "title": "Gebeurtenissen",
                         "type": "Type gebeurtenis"
-                    },
-                    "info": {
-                        "built_using": "Gebouwd met behulp van",
-                        "custom_uis": "Aangepaste UI's:",
-                        "developed_by": "Ontwikkeld door een stel geweldige mensen.",
-                        "documentation": "Documentatie",
-                        "frontend": "Frontend",
-                        "frontend_version": "Frontend-versie: {version} - {type}",
-                        "home_assistant_logo": "Home Assistant-logo",
-                        "icons_by": "Icons door",
-                        "integrations": "Integraties",
-                        "issues": "Problemen",
-                        "license": "Gepubliceerd onder de Apache 2.0-licentie",
-                        "path_configuration": "Pad naar configuration.yaml: {path}",
-                        "server": "Server",
-                        "source": "Bron:",
-                        "system_health_error": "De systeemstatus component is niet geladen. Voeg ' system_health: ' toe aan het configuratiebestand.",
-                        "title": "Info"
-                    },
-                    "logs": {
-                        "clear": "Wis",
-                        "details": "Logboekdetails ({level})",
-                        "load_full_log": "Laad volledige Home Assistant logboek",
-                        "loading_log": "Foutenlogboek laden ...",
-                        "multiple_messages": "bericht kwam voor het eerst om {time} en verschijnt {counter} malen",
-                        "no_errors": "Er zijn geen fouten gerapporteerd.",
-                        "no_issues": "Er zijn geen problemen!",
-                        "refresh": "Vernieuwen",
-                        "title": "Logboek"
                     },
                     "mqtt": {
                         "description_listen": "Luisteren naar onderwerp",

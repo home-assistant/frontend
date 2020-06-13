@@ -619,6 +619,11 @@ export class HaDataTable extends LitElement {
         text-transform: inherit;
       }
 
+      .mdc-data-table__cell a {
+        color: inherit;
+        text-decoration: none;
+      }
+
       .mdc-data-table__cell--numeric {
         text-align: right;
       }

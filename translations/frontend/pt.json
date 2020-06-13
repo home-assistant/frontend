@@ -478,7 +478,9 @@
             "cancel": "Cancelar",
             "close": "Fechar",
             "delete": "Apagar",
+            "error_required": "Obrigatório",
             "loading": "A carregar",
+            "menu": "Menu",
             "next": "Seguinte",
             "no": "Não",
             "previous": "Anterior",
@@ -506,6 +508,7 @@
             "device-picker": {
                 "clear": "Apagar",
                 "device": "Dispositivo",
+                "no_area": "Sem área",
                 "show_devices": "Mostrar dispositivos",
                 "toggle": "Alternar"
             },
@@ -738,6 +741,8 @@
         "notification_toast": {
             "connection_lost": "Ligação perdida. A ligar de novo...",
             "service_call_failed": "Falha ao chamar o serviço {service}.",
+            "started": "Home Assistant já iniciou",
+            "starting": "Home Assistant está a inicializar, nem tudo estará disponivel até o processo concluir.",
             "triggered": "Despoletado {name}"
         },
         "panel": {
@@ -762,10 +767,12 @@
                     },
                     "description": "Visão geral de todas as áreas da sua casa.",
                     "editor": {
+                        "area_id": "ID da área",
                         "create": "Criar",
                         "default_name": "Nova área",
                         "delete": "Apagar",
                         "name": "Nome",
+                        "name_required": "Nome é obrigatório",
                         "unknown_error": "Erro desconhecido",
                         "update": "Atualizar"
                     },
@@ -904,6 +911,8 @@
                         "introduction": "Crie automações para dar vida à sua casa",
                         "load_error_not_editable": "Apenas as automações em automations.yaml são editáveis.",
                         "load_error_unknown": "Erro ao carregar a automação ({err_no}).",
+                        "move_down": "Mover para baixo",
+                        "move_up": "Mover para cima",
                         "save": "Guardar",
                         "triggers": {
                             "add": "Acrescentar acionador",
@@ -1214,6 +1223,7 @@
                     "description": "Personalizar as suas entidades",
                     "pick_attribute": "Escolha um atributo para substituir.",
                     "picker": {
+                        "entity": "Entidade",
                         "header": "Personalizações",
                         "introduction": "Ajustar atributos por entidade. Personalizações acrescentadas/editadas terão efeitos imediatos. Remoção de personalizações terão efeito quando a entidade for atualizada."
                     },
@@ -1250,6 +1260,7 @@
                         "integration": "Integração",
                         "manufacturer": "Fabricante",
                         "model": "Modelo",
+                        "no_area": "Sem área",
                         "no_devices": "Sem dispositivos"
                     },
                     "delete": "Apagar",
@@ -1258,6 +1269,7 @@
                     "device_not_found": "Dispositivo não encontrado.",
                     "entities": {
                         "add_entities_lovelace": "Adicionar ao Lovelace",
+                        "disabled_entities": "+{count} {count, plural,\n uma {entity}\n outras {entities}\n}",
                         "entities": "Entidades",
                         "hide_disabled": "Mostrar entidades desativadas",
                         "none": "Este dispositivo não possui entidades"
@@ -1353,6 +1365,24 @@
                         "input_text": "Texto"
                     }
                 },
+                "info": {
+                    "built_using": "Construído com",
+                    "custom_uis": "IUs personalizados:",
+                    "developed_by": "Desenvolvido por um punhado de pessoas incríveis.",
+                    "documentation": "Documentação",
+                    "frontend": "",
+                    "frontend_version": "Versão frontend: {version} - {type}",
+                    "home_assistant_logo": "Logotipo do Home Assistant",
+                    "icons_by": "Ícones por",
+                    "integrations": "Integrações",
+                    "issues": "Problemas",
+                    "license": "Publicado sob a licença de Apache 2.0",
+                    "path_configuration": "Caminho para configuration.yaml: {path}",
+                    "server": "servidor",
+                    "source": "Fonte:",
+                    "system_health_error": "O componente System Health não está carregado. Adicione 'system_health:' ao configuration.yaml",
+                    "title": "Informações"
+                },
                 "integrations": {
                     "add_integration": "Adicionar integração",
                     "caption": "Integrações",
@@ -1362,6 +1392,8 @@
                         "delete_button": "Apagar {integration}",
                         "delete_confirm": "Tem a certeza que pretende apagar esta integração?",
                         "device_unavailable": "Dispositivo indisponível",
+                        "devices": "{count} {count, plural,\n um {entity}\n outros {entities}\n}",
+                        "entities": "{count} {count, plural,\n uma {entity}\n outras {entities}\n}",
                         "entity_unavailable": "Entidade indisponível",
                         "firmware": "Firmware: {version}",
                         "hub": "Conectado via",
@@ -1422,6 +1454,17 @@
                     "rename_input_label": "Nome da entrada"
                 },
                 "introduction": "Aqui é possível configurar os seus componentes e o Home Assistant. Nem tudo é possível de ser configurado a partir da Interface Gráfica, mas estamos a trabalhar para isso.",
+                "logs": {
+                    "clear": "Limpar",
+                    "details": "Detalhes do log ( {level} )",
+                    "load_full_log": "Carregar log completo do Home Assistant",
+                    "loading_log": "A carregar o log de erros...",
+                    "multiple_messages": "mensagem ocorreu primeiro em {time} e repetiu-se {counter} vezes",
+                    "no_errors": "Nenhum erro foi reportado.",
+                    "no_issues": "Não há novos problemas!",
+                    "refresh": "Atualizar",
+                    "title": "Logs"
+                },
                 "lovelace": {
                     "caption": "Painéis Lovelace",
                     "dashboards": {
@@ -1607,6 +1650,8 @@
                             "core": "Recarregar localização e personalizações",
                             "group": "Recarregar grupos",
                             "heading": "A recarregar a configuração YAML",
+                            "input_datetime": "Recarregar input date times",
+                            "input_select": "Recarregar da",
                             "introduction": "Algumas partes do Home Assistant podem ser recarregadas sem a necessidade de reiniciar. Ao carregar em Recarregar a configuração irá descartar a configuração atual e carregar a nova.",
                             "person": "Recarregar pessoas",
                             "scene": "Recarregar cenas",
@@ -1827,6 +1872,9 @@
                         "set_wakeup": "Definir intervalo de acordar",
                         "true": "Verdadeiro"
                     },
+                    "node_management": {
+                        "exclude_entity": "Excluir esta entidade do Home Assistant"
+                    },
                     "ozw_log": {
                         "header": "Log OZW",
                         "introduction": "Veja o log. 0 é o mínimo (carrega o log inteiro) e 1000 é o máximo. Ao carregar irá ser mostrado um log estático e a cauda será atualizada automaticamente com o último número especificado de linhas do log."
@@ -1836,6 +1884,8 @@
                         "add_node_secure": "Adicionar nó seguro",
                         "cancel_command": "Cancelar comando",
                         "heal_network": "Curar a Rede",
+                        "node_info": "Informação do Nó",
+                        "refresh_entity": "Actualizar entidade",
                         "remove_node": "Remover nó",
                         "save_config": "Guardar configuração",
                         "soft_reset": "Reinicio suave",
@@ -1874,35 +1924,6 @@
                         "subscribe_to": "Evento a subscrever",
                         "title": "Eventos",
                         "type": "Tipo de Evento"
-                    },
-                    "info": {
-                        "built_using": "Construído com",
-                        "custom_uis": "IUs personalizados:",
-                        "developed_by": "Desenvolvido por um punhado de pessoas incríveis.",
-                        "documentation": "Documentação",
-                        "frontend": "",
-                        "frontend_version": "Versão frontend: {version} - {type}",
-                        "home_assistant_logo": "Logotipo do Home Assistant",
-                        "icons_by": "Ícones por",
-                        "integrations": "Integrações",
-                        "issues": "Problemas",
-                        "license": "Publicado sob a licença de Apache 2.0",
-                        "path_configuration": "Caminho para configuration.yaml: {path}",
-                        "server": "servidor",
-                        "source": "Fonte:",
-                        "system_health_error": "O componente System Health não está carregado. Adicione 'system_health:' ao configuration.yaml",
-                        "title": "Informações"
-                    },
-                    "logs": {
-                        "clear": "Limpar",
-                        "details": "Detalhes do log ( {level} )",
-                        "load_full_log": "Carregar log completo do Home Assistant",
-                        "loading_log": "A carregar o log de erros...",
-                        "multiple_messages": "mensagem ocorreu primeiro em {time} e repetiu-se {counter} vezes",
-                        "no_errors": "Nenhum erro foi reportado.",
-                        "no_issues": "Não há novos problemas!",
-                        "refresh": "Atualizar",
-                        "title": "Logs"
                     },
                     "mqtt": {
                         "description_listen": "Ouvir um tópico",
@@ -2000,6 +2021,10 @@
                         "add_item": "Adicionar Item",
                         "checked_items": "Itens marcados",
                         "clear_items": "Limpar itens marcados"
+                    },
+                    "starting": {
+                        "description": "Home Assistant está a inicializar, por favor aguarde...",
+                        "header": "Home Assistant está a inicializar..."
                     }
                 },
                 "changed_toast": {
@@ -2289,7 +2314,8 @@
                     "attribute_not_found": "Atributo {attribute} não disponível em: {entity}",
                     "entity_non_numeric": "A entidade é não numérica: {entity}",
                     "entity_not_found": "Entidade não disponível: {entity}",
-                    "entity_unavailable": "{entity} está indisponível no momento"
+                    "entity_unavailable": "{entity} está indisponível no momento",
+                    "starting": "Home Assistant está a inicializar, nem tudo está já disponivel"
                 }
             },
             "mailbox": {

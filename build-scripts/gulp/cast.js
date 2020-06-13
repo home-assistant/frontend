@@ -20,6 +20,7 @@ gulp.task(
     "translations-enable-merge-backend",
     gulp.parallel("gen-icons-json", "build-translations"),
     "copy-static-cast",
+    "gen-index-cast-dev",
     env.useRollup() ? "rollup-dev-server-cast" : "webpack-dev-server-cast"
   )
 );

@@ -478,9 +478,12 @@
             "cancel": "Annulla",
             "close": "Chiudi",
             "delete": "Elimina",
+            "error_required": "Necessario",
             "loading": "Caricamento",
+            "menu": "Menù",
             "next": "Avanti",
             "no": "No",
+            "overflow_menu": "Menù di Overflow",
             "previous": "Indietro",
             "refresh": "Aggiorna",
             "save": "Salva",
@@ -740,6 +743,8 @@
         "notification_toast": {
             "connection_lost": "Connessione persa. Riconnessione…",
             "service_call_failed": "Fallita chiamata a servizio {service} .",
+            "started": "Home Assistant si è avviato!",
+            "starting": "Home Assistant si sta avviando, non tutto sarà disponibile fino a quando non avrà completato l'avvio.",
             "triggered": "Attivato {name}"
         },
         "panel": {
@@ -908,6 +913,8 @@
                         "introduction": "Usa le automazioni per dare vita alla tua casa.",
                         "load_error_not_editable": "Solo le Automazioni in automations.yaml sono modificabili.",
                         "load_error_unknown": "Errore durante il caricamento dell'Automazione ({err_no}).",
+                        "move_down": "Sposta sotto",
+                        "move_up": "Sposta sopra",
                         "save": "Salva",
                         "triggers": {
                             "add": "Aggiungi Attivazione",
@@ -1219,6 +1226,7 @@
                     "different_include": "Possibilmente tramite un dominio, un glob o un'altra inclusione.",
                     "pick_attribute": "Scegli un attributo da sovrascrivere",
                     "picker": {
+                        "entity": "Entità",
                         "header": "Personalizzazioni",
                         "introduction": "Modificare gli attributi per entità. Le personalizzazioni aggiunte / modificate avranno effetto immediato. Le personalizzazioni rimosse avranno effetto quando l'entità viene aggiornata."
                     },
@@ -1363,6 +1371,26 @@
                         "input_text": "Testo"
                     }
                 },
+                "info": {
+                    "built_using": "Costruito usando",
+                    "caption": "Informazioni",
+                    "custom_uis": "Interfacce Utente personalizzate:",
+                    "description": "Informazioni sulla tua installazione di Home Assistant",
+                    "developed_by": "Sviluppato da un gruppo di persone fantastiche.",
+                    "documentation": "Documentazione",
+                    "frontend": "frontend-ui",
+                    "frontend_version": "Versione Frontend: {version} - {type}",
+                    "home_assistant_logo": "Logo Home Assistant",
+                    "icons_by": "Icone di",
+                    "integrations": "integrazioni",
+                    "issues": "Problemi",
+                    "license": "Pubblicato sotto la licenza Apache 2.0",
+                    "path_configuration": "Percorso del file configuration.yaml: {path}",
+                    "server": "server",
+                    "source": "Sorgenti:",
+                    "system_health_error": "Il componente System Health non è caricato. Aggiungere 'system_health:' a configuration.yaml",
+                    "title": "Informazioni"
+                },
                 "integrations": {
                     "add_integration": "Aggiungi integrazione",
                     "caption": "Integrazioni",
@@ -1434,6 +1462,19 @@
                     "rename_input_label": "Nome della voce"
                 },
                 "introduction": "Qui è possibile configurare i componenti e Home Assistant. Non è ancora possibile configurare tutto dall'Interfaccia Utente, ma ci stiamo lavorando.",
+                "logs": {
+                    "caption": "Logs",
+                    "clear": "Pulisci",
+                    "description": "Vedi i logs di Home Assistant",
+                    "details": "Dettagli registro ({level})",
+                    "load_full_log": "Carica il registro completo di Home Assistant",
+                    "loading_log": "Caricamento del registro errori...",
+                    "multiple_messages": "il messaggio si è verificato per la prima volta alle {time} e compare {counter} volte",
+                    "no_errors": "Non sono stati segnalati errori.",
+                    "no_issues": "Non ci sono nuovi problemi!",
+                    "refresh": "Aggiorna",
+                    "title": "Registri"
+                },
                 "lovelace": {
                     "caption": "Cruscotti Lovelace",
                     "dashboards": {
@@ -1619,6 +1660,11 @@
                             "core": "Ricarica la Posizione e le Personalizzazioni",
                             "group": "Ricarica i Gruppi",
                             "heading": "Ricarica Configurazione YAML",
+                            "input_boolean": "Ricarica input booleani",
+                            "input_datetime": "Ricarica input data e/o tempo",
+                            "input_number": "Ricarica input numerici",
+                            "input_select": "Ricarica input a discesa",
+                            "input_text": "Ricarica input testuali",
                             "introduction": "Alcune parti di Home Assistant possono essere ricaricate senza richiedere un riavvio. Premendo su Ricarica si rimuoverà la loro Configurazione YAML  attuale e si caricherà la versione aggiornata.",
                             "person": "Ricarica persone",
                             "scene": "Ricarica le Scene",
@@ -1677,7 +1723,8 @@
                             "name": "Nome",
                             "system": "Sistema"
                         }
-                    }
+                    },
+                    "users_privileges_note": "Il gruppo di utenti è in fase di elaborazione. L'utente non sarà in grado di amministrare l'istanza tramite l'interfaccia utente. Stiamo ancora verificando tutti gli endpoint dell'API di gestione per garantire che limitino correttamente l'accesso agli amministratori."
                 },
                 "zha": {
                     "add_device_page": {
@@ -1839,21 +1886,53 @@
                         "set_wakeup": "Imposta intervallo di riattivazione",
                         "true": "Vero"
                     },
+                    "node_management": {
+                        "add_to_group": "Aggiungi al Gruppo",
+                        "entities": "Entità di questo nodo",
+                        "entity_info": "Informazioni sull'Entità",
+                        "exclude_entity": "Escludere questa entità da Home Assistant",
+                        "group": "Gruppo",
+                        "header": "Gestione dei nodi Z-Wave",
+                        "introduction": "Esegui i comandi Z-Wave che riguardano un singolo nodo. Scegli un nodo per visualizzare un elenco di comandi disponibili.",
+                        "max_associations": "Numero massimo di Associazioni:",
+                        "node_group_associations": "Associazioni ai gruppi di nodi",
+                        "node_protection": "Protezione del Nodo",
+                        "node_to_control": "Nodo da controllare",
+                        "nodes": "Nodi",
+                        "nodes_hint": "Selezionare il nodo per visualizzare le opzioni per nodo",
+                        "nodes_in_group": "Altri Nodi di questo Gruppo:",
+                        "pooling_intensity": "Intensità di interrogazione ciclica",
+                        "protection": "Protezione",
+                        "remove_broadcast": "Rimuovi Trasmissione",
+                        "remove_from_group": "Rimuovi dal Gruppo",
+                        "set_protection": "Imposta Protezione"
+                    },
                     "ozw_log": {
                         "header": "Registro OZW",
-                        "introduction": "Guarda il registro. 0 è il minimo (carica l'intero log) e 1000 è il massimo. Load mostrerà un log statico e la coda si aggiornerà automaticamente con l'ultimo numero di righe specificato del log."
+                        "introduction": "Guarda il registro. 0 è il minimo (carica l'intero log) e 1000 è il massimo. Load mostrerà un log statico e la coda si aggiornerà automaticamente con l'ultimo numero di righe specificato del log.",
+                        "last_log_lines": "Numero delle ultime righe del registro",
+                        "load": "Carica",
+                        "tail": "Coda"
                     },
                     "services": {
                         "add_node": "Aggiungi Nodo",
                         "add_node_secure": "Aggiungi nodo sicuro",
                         "cancel_command": "Annulla Comando",
                         "heal_network": "Testa la rete",
+                        "heal_node": "Resuscita Nodo",
+                        "node_info": "Informazioni sul Nodo",
+                        "print_node": "Stampa Nodo",
+                        "refresh_entity": "Aggiorna Entità",
+                        "refresh_node": "Aggiorna Nodo",
+                        "remove_failed_node": "Rimuovi Nodo Difettoso",
                         "remove_node": "Rimuovi nodo",
+                        "replace_failed_node": "Sostituisci Nodo Difettoso",
                         "save_config": "Salva Configurazione",
                         "soft_reset": "Soft Reset",
                         "start_network": "Avvia la rete",
                         "stop_network": "Ferma la rete",
-                        "test_network": "Testa la rete"
+                        "test_network": "Testa la rete",
+                        "test_node": "Test Nodo"
                     },
                     "values": {
                         "header": "Valori del nodo"
@@ -1886,35 +1965,6 @@
                         "subscribe_to": "Evento a cui iscriversi",
                         "title": "Eventi",
                         "type": "Tipo di Evento"
-                    },
-                    "info": {
-                        "built_using": "Costruito usando",
-                        "custom_uis": "Interfacce Utente personalizzate:",
-                        "developed_by": "Sviluppato da un gruppo di persone fantastiche.",
-                        "documentation": "Documentazione",
-                        "frontend": "frontend-ui",
-                        "frontend_version": "Versione Frontend: {version} - {type}",
-                        "home_assistant_logo": "Logo Home Assistant",
-                        "icons_by": "Icone di",
-                        "integrations": "integrazioni",
-                        "issues": "Problemi",
-                        "license": "Pubblicato sotto la licenza Apache 2.0",
-                        "path_configuration": "Percorso del file configuration.yaml: {path}",
-                        "server": "server",
-                        "source": "Sorgenti:",
-                        "system_health_error": "Il componente System Health non è caricato. Aggiungere 'system_health:' a configuration.yaml",
-                        "title": "Informazioni"
-                    },
-                    "logs": {
-                        "clear": "Pulisci",
-                        "details": "Dettagli registro ({level})",
-                        "load_full_log": "Carica il registro completo di Home Assistant",
-                        "loading_log": "Caricamento del registro errori...",
-                        "multiple_messages": "il messaggio si è verificato per la prima volta alle {time} e compare {counter} volte",
-                        "no_errors": "Non sono stati segnalati errori.",
-                        "no_issues": "Non ci sono nuovi problemi!",
-                        "refresh": "Aggiorna",
-                        "title": "Registri"
                     },
                     "mqtt": {
                         "description_listen": "Ascoltare un argomento",
@@ -2012,6 +2062,10 @@
                         "add_item": "Aggiungi elemento",
                         "checked_items": "Elementi selezionati",
                         "clear_items": "Cancella gli elementi selezionati"
+                    },
+                    "starting": {
+                        "description": "Home Assistant sta per avviarsi, attendere prego...",
+                        "header": "Home Assistant si sta avviando..."
                     }
                 },
                 "changed_toast": {
@@ -2304,7 +2358,8 @@
                     "attribute_not_found": "Attributo {attribute} non disponibile in: {entity}",
                     "entity_non_numeric": "L'entità non è numerica: {entity}",
                     "entity_not_found": "Entità non disponibile: {entity}",
-                    "entity_unavailable": "{entity} non è al momento disponibile"
+                    "entity_unavailable": "{entity} non è al momento disponibile",
+                    "starting": "Home Assistant si sta avviando, non tutto potrebbe essere subito disponibile"
                 }
             },
             "mailbox": {

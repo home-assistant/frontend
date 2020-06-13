@@ -10,7 +10,9 @@ import {
 } from "lit-element";
 import { createCloseHeading } from "../../../../components/ha-dialog";
 import "../../../../components/ha-icon-input";
-import { HaSwitch } from "../../../../components/ha-switch";
+import type { HaSwitch } from "../../../../components/ha-switch";
+import "../../../../components/ha-switch";
+import "../../../../components/ha-formfield";
 import { slugify } from "../../../../common/string/slugify";
 import {
   LovelaceDashboard,
@@ -141,20 +143,28 @@ export class DialogLovelaceDashboardDetail extends LitElement {
                         ></paper-input>
                       `
                     : ""}
-                  <ha-switch
-                    .checked=${this._showInSidebar}
-                    @change=${this._showSidebarChanged}
-                    >${this.hass.localize(
+                  <ha-formfield
+                    .label=${this.hass.localize(
                       "ui.panel.config.lovelace.dashboards.detail.show_sidebar"
                     )}
-                  </ha-switch>
-                  <ha-switch
-                    .checked=${this._requireAdmin}
-                    @change=${this._requireAdminChanged}
-                    >${this.hass.localize(
+                  >
+                    <ha-switch
+                      .checked=${this._showInSidebar}
+                      @change=${this._showSidebarChanged}
+                    >
+                    </ha-switch>
+                  </ha-formfield>
+                  <ha-formfield
+                    .label=${this.hass.localize(
                       "ui.panel.config.lovelace.dashboards.detail.require_admin"
                     )}
-                  </ha-switch>
+                  >
+                    <ha-switch
+                      .checked=${this._requireAdmin}
+                      @change=${this._requireAdminChanged}
+                    >
+                    </ha-switch>
+                  </ha-formfield>
                 </div>
               `}
         </div>

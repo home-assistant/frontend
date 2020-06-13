@@ -118,6 +118,20 @@
                     "unknown_error": "Nekonata eraro",
                     "unnamed_device": "Nenomita aparato"
                 },
+                "info": {
+                    "built_using": "Konstruita uzante",
+                    "custom_uis": "Propraj UIoj:",
+                    "developed_by": "Disvolvita de amaso da mojosaj homoj.",
+                    "frontend": "frontend-ui",
+                    "frontend_version": "Frontendversio: {version} - {type}",
+                    "home_assistant_logo": "Logo de Home Assistant",
+                    "icons_by": "Ikonoj de",
+                    "license": "Publikigita sub la permesilo Apache 2.0",
+                    "path_configuration": "Pado al configuration.yaml: {path}",
+                    "server": "servilo",
+                    "source": "Fonto:",
+                    "system_health_error": "Komponento pri Sistema Sano ne estas ŝarĝita. Aldonu 'system_health:' al configuration.yaml"
+                },
                 "integrations": {
                     "config_entry": {
                         "area": "En {area}",
@@ -147,6 +161,16 @@
                         "stop_ignore": "Halti ignori"
                     },
                     "integration_not_found": "Integriĝo ne trovita."
+                },
+                "logs": {
+                    "clear": "Klarigi",
+                    "details": "Logaj Detaloj ({level})",
+                    "load_full_log": "Ŝargi Plena Home Assistant Protokolo",
+                    "loading_log": "Ŝarĝante eraran protokolon ...",
+                    "multiple_messages": "mesaĝo unuafoje okazis je {time} kaj aperas {counter} fojojn",
+                    "no_errors": "Neniuj eraroj estis raportitaj.",
+                    "no_issues": "Ne estas novaj aferoj!",
+                    "refresh": "Refreŝigi"
                 },
                 "scene": {
                     "activated": "Aktivigita sceno {name}.",
@@ -291,30 +315,6 @@
                         "stop_listening": "Halti aŭskulti",
                         "subscribe_to": "Evento por aboni",
                         "type": "Eventa Tipo"
-                    },
-                    "info": {
-                        "built_using": "Konstruita uzante",
-                        "custom_uis": "Propraj UIoj:",
-                        "developed_by": "Disvolvita de amaso da mojosaj homoj.",
-                        "frontend": "frontend-ui",
-                        "frontend_version": "Frontendversio: {version} - {type}",
-                        "home_assistant_logo": "Logo de Home Assistant",
-                        "icons_by": "Ikonoj de",
-                        "license": "Publikigita sub la permesilo Apache 2.0",
-                        "path_configuration": "Pado al configuration.yaml: {path}",
-                        "server": "servilo",
-                        "source": "Fonto:",
-                        "system_health_error": "Komponento pri Sistema Sano ne estas ŝarĝita. Aldonu 'system_health:' al configuration.yaml"
-                    },
-                    "logs": {
-                        "clear": "Klarigi",
-                        "details": "Logaj Detaloj ({level})",
-                        "load_full_log": "Ŝargi Plena Home Assistant Protokolo",
-                        "loading_log": "Ŝarĝante eraran protokolon ...",
-                        "multiple_messages": "mesaĝo unuafoje okazis je {time} kaj aperas {counter} fojojn",
-                        "no_errors": "Neniuj eraroj estis raportitaj.",
-                        "no_issues": "Ne estas novaj aferoj!",
-                        "refresh": "Refreŝigi"
                     },
                     "mqtt": {
                         "description_listen": "Aŭskulti temon",

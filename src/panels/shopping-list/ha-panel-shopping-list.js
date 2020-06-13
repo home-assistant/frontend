@@ -8,7 +8,8 @@ import "@polymer/paper-item/paper-icon-item";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-item/paper-item-body";
 import "@polymer/paper-listbox/paper-listbox";
-import "@polymer/paper-menu-button/paper-menu-button";
+import "@material/mwc-list/mwc-list-item";
+import "../../components/ha-button-menu";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 /* eslint-plugin-disable lit */
 import { PolymerElement } from "@polymer/polymer/polymer-element";
@@ -18,6 +19,7 @@ import "../../components/ha-menu-button";
 import { showVoiceCommandDialog } from "../../dialogs/voice-command-dialog/show-ha-voice-command-dialog";
 import LocalizeMixin from "../../mixins/localize-mixin";
 import "../../styles/polymer-ha-style";
+import { mdiDotsVertical } from "@mdi/js";
 
 /*
  * @appliesMixin LocalizeMixin
@@ -81,22 +83,17 @@ class HaPanelShoppingList extends LocalizeMixin(PolymerElement) {
               icon="hass:microphone"
               on-click="_showVoiceCommandDialog"
             ></ha-icon-button>
-
-            <paper-menu-button
-              horizontal-align="right"
-              horizontal-offset="-5"
-              vertical-offset="-5"
-            >
+            <ha-button-menu corner="BOTTOM_START">
               <ha-icon-button
                 icon="hass:dots-vertical"
-                slot="dropdown-trigger"
-              ></ha-icon-button>
-              <paper-listbox slot="dropdown-content">
-                <paper-item on-click="_clearCompleted"
-                  >[[localize('ui.panel.shopping-list.clear_completed')]]</paper-item
-                >
-              </paper-listbox>
-            </paper-menu-button>
+                label="Menu"
+                slot="trigger"
+              >
+              </ha-icon-button>
+              <mwc-list-item on-click="_clearCompleted">
+                [[localize('ui.panel.shopping-list.clear_completed')]]
+              </mwc-list-item>
+            </ha-button-menu>
           </app-toolbar>
         </app-header>
 

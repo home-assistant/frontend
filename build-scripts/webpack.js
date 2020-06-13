@@ -70,7 +70,9 @@ const createWebpackConfig = ({
           if (
             !context.includes("/node_modules/") ||
             // calling define.amd will call require("!!webpack amd options")
-            resource.startsWith("!!webpack")
+            resource.startsWith("!!webpack") ||
+            // loaded by webpack dev server but doesn't exist.
+            resource === "webpack/hot"
           ) {
             return false;
           }
@@ -80,7 +82,11 @@ const createWebpackConfig = ({
               ? path.resolve(context, resource)
               : require.resolve(resource);
           } catch (err) {
-            console.error("Error in ignore plugin", resource, context);
+            console.error(
+              "Error in Home Assistant ignore plugin",
+              resource,
+              context
+            );
             throw err;
           }
 

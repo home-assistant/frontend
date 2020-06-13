@@ -1149,6 +1149,20 @@
                     }
                 },
                 "header": "Home Assistant'i seadistamine",
+                "info": {
+                    "built_using": "Ehitatud kasutades",
+                    "custom_uis": "Kohandatud kasutajaliidesed:",
+                    "developed_by": "Tehtud paljude lahedate inimeste poolt.",
+                    "frontend": "frontend-ui",
+                    "frontend_version": "Frontend versioon: {version} - {type}",
+                    "home_assistant_logo": "Home Assistant'i logo",
+                    "icons_by": "Ikoonide autorid",
+                    "license": "Avaldatud Apache 2.0 litsentsi alusel",
+                    "path_configuration": "configuration.yaml asukoht: {path}",
+                    "server": "server",
+                    "source": "Allikas:",
+                    "title": "Info"
+                },
                 "integrations": {
                     "caption": "Sidumised",
                     "config_entry": {
@@ -1199,6 +1213,16 @@
                     "note_about_website_reference": "Rohkem on saadaval "
                 },
                 "introduction": "Siin saab seadistada oma komponente ja Home Assistant'i. Mitte kõike ei saa veel kasutajaliidese kaudu seadistada, kuid me töötame selle nimel.",
+                "logs": {
+                    "clear": "Puhasta",
+                    "details": "Logi üksikasjad ({level})",
+                    "load_full_log": "Lae kogu Home Assistant'i logi",
+                    "loading_log": "Laadin vigade logi...",
+                    "no_errors": "Vigadest pole teatatud.",
+                    "no_issues": "Uusi probleeme pole!",
+                    "refresh": "Värskenda",
+                    "title": "Logid"
+                },
                 "person": {
                     "add_person": "Lisa isik",
                     "caption": "Isikud",
@@ -1509,30 +1533,6 @@
                         "subscribe_to": "Sündmus, mida tellida",
                         "title": "Sündmused",
                         "type": "Sündmuse tüüp"
-                    },
-                    "info": {
-                        "built_using": "Ehitatud kasutades",
-                        "custom_uis": "Kohandatud kasutajaliidesed:",
-                        "developed_by": "Tehtud paljude lahedate inimeste poolt.",
-                        "frontend": "frontend-ui",
-                        "frontend_version": "Frontend versioon: {version} - {type}",
-                        "home_assistant_logo": "Home Assistant'i logo",
-                        "icons_by": "Ikoonide autorid",
-                        "license": "Avaldatud Apache 2.0 litsentsi alusel",
-                        "path_configuration": "configuration.yaml asukoht: {path}",
-                        "server": "server",
-                        "source": "Allikas:",
-                        "title": "Info"
-                    },
-                    "logs": {
-                        "clear": "Puhasta",
-                        "details": "Logi üksikasjad ({level})",
-                        "load_full_log": "Lae kogu Home Assistant'i logi",
-                        "loading_log": "Laadin vigade logi...",
-                        "no_errors": "Vigadest pole teatatud.",
-                        "no_issues": "Uusi probleeme pole!",
-                        "refresh": "Värskenda",
-                        "title": "Logid"
                     },
                     "mqtt": {
                         "description_listen": "Kuula teemat",

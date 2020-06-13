@@ -1266,6 +1266,7 @@
                     "device_not_found": "Zařízení nebylo nalezeno.",
                     "entities": {
                         "add_entities_lovelace": "Přidat všechny entity zařízení do Lovelace",
+                        "disabled_entities": "+{count} {count, plural,\n  one {zakázaná entita}\n  other {zakázaných entit}\n}",
                         "entities": "Entity",
                         "hide_disabled": "Skrýt zakázané",
                         "none": "Toto zařízení nemá žádné entity"
@@ -1364,6 +1365,24 @@
                         "input_text": "Text"
                     }
                 },
+                "info": {
+                    "built_using": "Sestaveno pomocí",
+                    "custom_uis": "Vlastní uživatelská rozhraní:",
+                    "developed_by": "Vyvinuto partou úžasných lidí.",
+                    "documentation": "Dokumentace",
+                    "frontend": "frontend-ui",
+                    "frontend_version": "Verze rozhraní frontend: {version} - {type}",
+                    "home_assistant_logo": "Home Assistant logo",
+                    "icons_by": "Ikony od",
+                    "integrations": "Integrace",
+                    "issues": "Problémy",
+                    "license": "Publikováno pod licencí Apache 2.0",
+                    "path_configuration": "Cesta k souboru configuration.yaml: {path}",
+                    "server": "server",
+                    "source": "Zdroj:",
+                    "system_health_error": "Součást System Health není načtena. Přidejte 'system_health:' do configuration.yaml",
+                    "title": "Informace"
+                },
                 "integrations": {
                     "add_integration": "Přidat integraci",
                     "caption": "Integrace",
@@ -1373,6 +1392,7 @@
                         "delete_button": "Smazat {integration}",
                         "delete_confirm": "Opravdu chcete odstranit tuto integraci?",
                         "device_unavailable": "zařízení není k dispozici",
+                        "entities": "{count} {count, plural,\n  one {entita}\n  other {entit}\n}",
                         "entity_unavailable": "entita není k dispozici",
                         "firmware": "Firmware: {version}",
                         "hub": "Připojeno přes",
@@ -1384,7 +1404,7 @@
                         "rename": "Přejmenovat",
                         "restart_confirm": "Restartujte Home Assistant pro odstranění této integrace",
                         "settings_button": "Upravit nastavení pro {integration}",
-                        "system_options": "Systémové možnosti pro {integration}",
+                        "system_options": "Více možností",
                         "system_options_button": "Systémové možnosti pro {integration}",
                         "unnamed_entry": "Nepojmenovaný záznam"
                     },
@@ -1433,6 +1453,17 @@
                     "rename_input_label": "Název položky"
                 },
                 "introduction": "Zde je možné konfigurovat vaše komponenty a Home Assistant.\nZ uživatelského rozhraní sice zatím není možné konfigurovat vše, ale pracujeme na tom.",
+                "logs": {
+                    "clear": "Zrušit",
+                    "details": "Detaily protokolu ({level})",
+                    "load_full_log": "Načíst úplný protokol Home Assistanta",
+                    "loading_log": "Načítání protokolu chyb...",
+                    "multiple_messages": "zpráva se poprvé objevila v {time} a zobrazuje se {counter} krát",
+                    "no_errors": "Nebyly hlášeny žádné chyby.",
+                    "no_issues": "Nejsou žádné nové problémy!",
+                    "refresh": "Obnovit",
+                    "title": "Logy"
+                },
                 "lovelace": {
                     "caption": "Lovelace Dashboardy",
                     "dashboards": {
@@ -1915,35 +1946,6 @@
                         "subscribe_to": "Téma k odběru",
                         "title": "Události",
                         "type": "Typ události"
-                    },
-                    "info": {
-                        "built_using": "Sestaveno pomocí",
-                        "custom_uis": "Vlastní uživatelská rozhraní:",
-                        "developed_by": "Vyvinuto partou úžasných lidí.",
-                        "documentation": "Dokumentace",
-                        "frontend": "frontend-ui",
-                        "frontend_version": "Verze rozhraní frontend: {version} - {type}",
-                        "home_assistant_logo": "Home Assistant logo",
-                        "icons_by": "Ikony od",
-                        "integrations": "Integrace",
-                        "issues": "Problémy",
-                        "license": "Publikováno pod licencí Apache 2.0",
-                        "path_configuration": "Cesta k souboru configuration.yaml: {path}",
-                        "server": "server",
-                        "source": "Zdroj:",
-                        "system_health_error": "Součást System Health není načtena. Přidejte 'system_health:' do configuration.yaml",
-                        "title": "Informace"
-                    },
-                    "logs": {
-                        "clear": "Zrušit",
-                        "details": "Detaily protokolu ({level})",
-                        "load_full_log": "Načíst úplný protokol Home Assistanta",
-                        "loading_log": "Načítání protokolu chyb...",
-                        "multiple_messages": "zpráva se poprvé objevila v {time} a zobrazuje se {counter} krát",
-                        "no_errors": "Nebyly hlášeny žádné chyby.",
-                        "no_issues": "Nejsou žádné nové problémy!",
-                        "refresh": "Obnovit",
-                        "title": "Logy"
                     },
                     "mqtt": {
                         "description_listen": "Naslouchat tématu",

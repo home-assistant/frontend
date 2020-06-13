@@ -75,6 +75,7 @@ export class HaDeviceCard extends LitElement {
             : ""}
           <slot></slot>
         </div>
+        <slot name="actions"></slot>
       </ha-card>
     `;
   }
@@ -100,7 +101,6 @@ export class HaDeviceCard extends LitElement {
       }
       ha-card {
         flex: 1 0 100%;
-        padding-bottom: 10px;
         min-width: 0;
       }
       .device {

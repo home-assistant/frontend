@@ -1,5 +1,6 @@
 import "@polymer/app-layout/app-header/app-header";
 import "@polymer/app-layout/app-toolbar/app-toolbar";
+import "@polymer/paper-input/paper-textarea";
 import "../../../components/ha-icon-button";
 import {
   css,
@@ -117,7 +118,7 @@ export class HaAutomationEditor extends LitElement {
                         @value-changed=${this._valueChanged}
                       >
                       </paper-input>
-                      <ha-textarea
+                      <paper-textarea
                         .label=${this.hass.localize(
                           "ui.panel.config.automation.editor.description.label"
                         )}
@@ -127,7 +128,7 @@ export class HaAutomationEditor extends LitElement {
                         name="description"
                         .value=${this._config.description}
                         @value-changed=${this._valueChanged}
-                      ></ha-textarea>
+                      ></paper-textarea>
                     </div>
                     ${stateObj
                       ? html`

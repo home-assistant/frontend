@@ -478,9 +478,12 @@
             "cancel": "Avbryt",
             "close": "Lukk",
             "delete": "Slett",
+            "error_required": "Nødvendig",
             "loading": "Laster",
+            "menu": "Meny",
             "next": "Neste",
             "no": "Nei",
+            "overflow_menu": "Overløpsmeny",
             "previous": "Forrige",
             "refresh": "Oppdater",
             "save": "Lagre",
@@ -910,6 +913,8 @@
                         "introduction": "Bruk automasjon for å få liv i hjemmet ditt",
                         "load_error_not_editable": "Kun automasjoner i automations.yaml kan redigeres.",
                         "load_error_unknown": "Feil ved lasting av automasjon ({err_no}).",
+                        "move_down": "Flytt ned",
+                        "move_up": "Flytt opp",
                         "save": "Lagre",
                         "triggers": {
                             "add": "Legg til utløser",
@@ -1221,6 +1226,7 @@
                     "different_include": "Muligens via et domene, en glob eller noe annent som er inkluderet",
                     "pick_attribute": "Velg et attributt som skal overstyres",
                     "picker": {
+                        "entity": "Entitet",
                         "header": "Tilpasninger",
                         "introduction": "Justér attributter per entitet. Lagt til eller redigerte tilpasninger trer i kraft umiddelbart. Fjernede tilpasninger trer i kraft når entiteten blir oppdatert."
                     },
@@ -1365,6 +1371,26 @@
                         "input_text": "Tekst"
                     }
                 },
+                "info": {
+                    "built_using": "Bygget med",
+                    "caption": "Informasjon",
+                    "custom_uis": "Tilpassede brukergrensesnitt:",
+                    "description": "Informasjon om din Home Assistant-installasjon",
+                    "developed_by": "Utviklet av en gjeng med fantastiske mennesker.",
+                    "documentation": "Dokumentasjon",
+                    "frontend": "frontend",
+                    "frontend_version": "Brukergrensesnittet-versjon: {version} - {type}",
+                    "home_assistant_logo": "",
+                    "icons_by": "Ikoner fra",
+                    "integrations": "Integrasjoner",
+                    "issues": "Problemer",
+                    "license": "Publisert under Apache 2.0-lisensen",
+                    "path_configuration": "Sti til configurasjon.yaml: {path}",
+                    "server": "core",
+                    "source": "Kilder:",
+                    "system_health_error": "System tilstand komponenten er ikke lastet inn. Legg til 'system_health:' i configuration.yaml",
+                    "title": "Informasjon"
+                },
                 "integrations": {
                     "add_integration": "Legg til integrasjon",
                     "caption": "Integrasjoner",
@@ -1436,6 +1462,19 @@
                     "rename_input_label": "Navn på oppføring"
                 },
                 "introduction": "Her er det mulig å konfigurere dine komponenter og Home Assistant. Ikke alt er mulig å konfigurere fra brukergrensesnittet enda, men vi jobber med det.",
+                "logs": {
+                    "caption": "Logger",
+                    "clear": "Tøm",
+                    "description": "Vis Home Assistant loggene",
+                    "details": "Loggdetaljer ({level})",
+                    "load_full_log": "Last inn fullstendig Home Assistant logg",
+                    "loading_log": "Laster inn feillogg ...",
+                    "multiple_messages": "meldingen oppstod først ved {time} og vist {counter} ganger",
+                    "no_errors": "Ingen feil er rapportert.",
+                    "no_issues": "Det er ingen nye problemer!",
+                    "refresh": "Oppdater",
+                    "title": "Logger"
+                },
                 "lovelace": {
                     "caption": "Lovelace instrumentbord",
                     "dashboards": {
@@ -1621,6 +1660,11 @@
                             "core": "Last inn lokasjon og spesialtilpassinger på nytt",
                             "group": "Last inn grupper på nytt",
                             "heading": "YAML -Konfigurasjon lastes på nytt",
+                            "input_boolean": "Last input booleans på nytt",
+                            "input_datetime": "Last input date på nytt",
+                            "input_number": "Las input numbers på nytt",
+                            "input_select": "Last input selects på nytt ",
+                            "input_text": "Last input texts på nytt",
                             "introduction": "Noen deler av Home Assistant kan laste inn uten å kreve omstart. Hvis du trykker last på nytt, vil du bytte den nåværende konfigurasjonen med den nye.",
                             "person": "Last inn personer på nytt",
                             "scene": "Last inn scener på nytt",
@@ -1679,7 +1723,8 @@
                             "name": "Navn",
                             "system": ""
                         }
-                    }
+                    },
+                    "users_privileges_note": "Brukere-gruppen er et pågående arbeid. Brukeren kan ikke administrere forekomsten via brukergrensesnittet. Vi overvåker fortsatt alle API-endepunkter for administrasjonsadministrasjon for å sikre at de begrenser tilgangen til administratorer på riktig måte."
                 },
                 "zha": {
                     "add_device_page": {
@@ -1866,7 +1911,8 @@
                         "header": "OZW-logg",
                         "introduction": "Vis loggen. 0 er minimum (laster hele loggen) og 1000 er maksimum. Load vil vise en statisk logg og halen vil automatisk oppdatere med det siste spesifiserte antall linjer av loggen.",
                         "last_log_lines": "Antall siste logglinjer",
-                        "load": "Laste"
+                        "load": "Laste",
+                        "tail": "Tail"
                     },
                     "services": {
                         "add_node": "Legg til node",
@@ -1875,6 +1921,7 @@
                         "heal_network": "Helbrede nettverk",
                         "heal_node": "Helbrede node",
                         "node_info": "Nodeinformasjon",
+                        "print_node": "Skrive ut node",
                         "refresh_entity": "Oppdater entitet",
                         "refresh_node": "Oppdater node",
                         "remove_failed_node": "Fjern feilet node",
@@ -1918,35 +1965,6 @@
                         "subscribe_to": "Hendelse for å abonnere på",
                         "title": "Hendelser",
                         "type": "Type hendelse"
-                    },
-                    "info": {
-                        "built_using": "Bygget med",
-                        "custom_uis": "Tilpassede brukergrensesnitt:",
-                        "developed_by": "Utviklet av en gjeng med fantastiske mennesker.",
-                        "documentation": "Dokumentasjon",
-                        "frontend": "frontend",
-                        "frontend_version": "Brukergrensesnittet-versjon: {version} - {type}",
-                        "home_assistant_logo": "",
-                        "icons_by": "Ikoner fra",
-                        "integrations": "Integrasjoner",
-                        "issues": "Problemer",
-                        "license": "Publisert under Apache 2.0-lisensen",
-                        "path_configuration": "Sti til configurasjon.yaml: {path}",
-                        "server": "core",
-                        "source": "Kilder:",
-                        "system_health_error": "System tilstand komponenten er ikke lastet inn. Legg til 'system_health:' i configuration.yaml",
-                        "title": "Informasjon"
-                    },
-                    "logs": {
-                        "clear": "Tøm",
-                        "details": "Loggdetaljer ({level})",
-                        "load_full_log": "Last inn fullstendig Home Assistant logg",
-                        "loading_log": "Laster inn feillogg ...",
-                        "multiple_messages": "meldingen oppstod først ved {time} og vist {counter} ganger",
-                        "no_errors": "Ingen feil er rapportert.",
-                        "no_issues": "Det er ingen nye problemer!",
-                        "refresh": "Oppdater",
-                        "title": "Logger"
                     },
                     "mqtt": {
                         "description_listen": "Lytt til et emne",
@@ -2046,7 +2064,7 @@
                         "clear_items": "Fjern merkede elementer"
                     },
                     "starting": {
-                        "description": "Home Assistant starter, vennligst vent.",
+                        "description": "Home Assistant starter, vennligst vent...",
                         "header": "Home Assistant starter..."
                     }
                 },
@@ -2341,7 +2359,7 @@
                     "entity_non_numeric": "Entiteten er ikke-numerisk: {entity}",
                     "entity_not_found": "Entitet ikke tilgjengelig: {entity}",
                     "entity_unavailable": "{entity} er for øyeblikket utilgjengelig",
-                    "starting": "Home Assistant starter, ikke alt er kanskje tilgjengelig ennå"
+                    "starting": "Home Assistant starter, kanskje ikke alt er tilgjengelig ennå"
                 }
             },
             "mailbox": {

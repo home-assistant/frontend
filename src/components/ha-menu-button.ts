@@ -1,3 +1,5 @@
+import "@material/mwc-icon-button";
+import { mdiMenu } from "@mdi/js";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import {
   css,
@@ -12,8 +14,7 @@ import { fireEvent } from "../common/dom/fire_event";
 import { computeDomain } from "../common/entity/compute_domain";
 import { subscribeNotifications } from "../data/persistent_notification";
 import { HomeAssistant } from "../types";
-import "./ha-icon-button";
-import { mdiMenu } from "@mdi/js";
+import "./ha-svg-icon";
 
 @customElement("ha-menu-button")
 class HaMenuButton extends LitElement {

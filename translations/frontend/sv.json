@@ -331,8 +331,8 @@
     "ui": {
         "auth_store": {
             "ask": "Vill du fortsätta vara inloggad?",
-            "confirm": "Spara inloggning",
-            "decline": "Nej tack"
+            "confirm": "Ja",
+            "decline": "Nej"
         },
         "card": {
             "alarm_control_panel": {
@@ -478,9 +478,12 @@
             "cancel": "Avbryt",
             "close": "Stäng",
             "delete": "Radera",
+            "error_required": "Krävs",
             "loading": "Läser in",
+            "menu": "Meny",
             "next": "Nästa",
             "no": "Nej",
+            "overflow_menu": "Överflödesmeny",
             "previous": "Föregående",
             "refresh": "Uppdatera",
             "save": "Spara",
@@ -540,7 +543,7 @@
                     "second": "{count} {count, plural,\n  one {sekund}\n  other {sekunder}\n}",
                     "week": "{count} {count, plural,\none {vecka}\nother {veckor}\n}"
                 },
-                "future": "Om {time}",
+                "future": "{time} sedan",
                 "never": "Aldrig",
                 "past": "{time} sedan"
             },
@@ -910,6 +913,8 @@
                         "introduction": "Använd automatiseringar för väcka liv i ditt hem",
                         "load_error_not_editable": "Endast automatiseringar i automations.yaml kan redigeras.",
                         "load_error_unknown": "Fel vid inläsning av automatisering ({err_no}).",
+                        "move_down": "Flytta nedåt",
+                        "move_up": "Flytta uppåt",
                         "save": "Spara",
                         "triggers": {
                             "add": "Lägg till händelse",
@@ -1221,6 +1226,7 @@
                     "different_include": "Möjligen via en domain, en glob eller en annan include.",
                     "pick_attribute": "Välj ett attribut att anpassa",
                     "picker": {
+                        "entity": "Entitet",
                         "header": "Anpassningar",
                         "introduction": "Justera attribut per enhet. Tillagda och redigerade anpassningar kommer att tillträda omedelbart. Borttagna anpassningar kommer att träda i kraft när enheten är uppdaterad."
                     },
@@ -1266,6 +1272,7 @@
                     "device_not_found": "Enheten hittades inte.",
                     "entities": {
                         "add_entities_lovelace": "Lägg till i Lovelace",
+                        "disabled_entities": "+{count} {count, plural,\n  one {avaktiverad entitet}\n  other {avaktiverade entiteter}\n}",
                         "entities": "Entiteter",
                         "hide_disabled": "Dölj inaktiverad",
                         "none": "Den här enheten har inga entiteter"
@@ -1321,7 +1328,7 @@
                             "button": "Ta bort valda",
                             "confirm_partly_text": "Du kan bara ta bort {removable} av de valda {selected} enheterna. Enheter kan endast tas bort när integrationen inte längre tillhandahåller enheterna. Ibland måste du starta om Home Assistant innan du kan ta bort enheterna för en borttagen integration. Är du säker på att du vill ta bort de flyttbara enheterna?",
                             "confirm_partly_title": "Endast {number} valda entiteter kan tas bort.",
-                            "confirm_text": "Entiteter kan endast tas bort när integrationen inte längre tillhandahåller entiteterna.",
+                            "confirm_text": "Du bör ta bort dem från din Lovelace-konfiguration och automatisering om de innehåller dessa entiteter.",
                             "confirm_title": "Vill du ta bort {number} entiteter?"
                         },
                         "selected": "{number} valda",
@@ -1364,6 +1371,24 @@
                         "input_text": "Text"
                     }
                 },
+                "info": {
+                    "built_using": "Byggt med",
+                    "custom_uis": "Anpassade användargränssnitt:",
+                    "developed_by": "Utvecklad av ett gäng grymma människor.",
+                    "documentation": "Dokumentation",
+                    "frontend": "frontend-UI",
+                    "frontend_version": "Frontend-version: {version} - {type}",
+                    "home_assistant_logo": "Home Assistant logotyp",
+                    "icons_by": "Ikoner av",
+                    "integrations": "Integrationer",
+                    "issues": "Problem",
+                    "license": "Publicerad under Apache 2.0-licensen",
+                    "path_configuration": "Sökväg till configuration.yaml: {path}",
+                    "server": "server",
+                    "source": "Källkod:",
+                    "system_health_error": "Systemhälsokomponenten har inte lästs in. Lägg till 'system_health:' i configuration.yaml",
+                    "title": "Info"
+                },
                 "integrations": {
                     "add_integration": "Lägg till integration",
                     "caption": "Integrationer",
@@ -1373,6 +1398,8 @@
                         "delete_button": "Ta bort {integration}",
                         "delete_confirm": "Är du säker på att du vill radera denna integration?",
                         "device_unavailable": "enhet otillgänglig",
+                        "devices": "{count} {count, plural,\n  one {enhet}\n  other {enheter}\n}",
+                        "entities": "{count} {count, plural,\n  one {entitet}\n  other {entiteter}\n}",
                         "entity_unavailable": "entitet otillgänglig",
                         "firmware": "Firmware: {version}",
                         "hub": "Ansluten via",
@@ -1433,6 +1460,17 @@
                     "rename_input_label": "Ange namn"
                 },
                 "introduction": "Här går det att konfigurera dina komponenter och Home Assistant. Det är inte möjligt att ställa in allt från användargränssnittet ännu, men vi jobbar på det.",
+                "logs": {
+                    "clear": "Rensa",
+                    "details": "Logginformation ({level})",
+                    "load_full_log": "Ladda hela Home Assistant-loggen",
+                    "loading_log": "Läser in fellogg ...",
+                    "multiple_messages": "Meddelandet inträffade först {time} och har hänt {counter} gånger",
+                    "no_errors": "Inga fel har rapporterats.",
+                    "no_issues": "Det finns inga nya problem!",
+                    "refresh": "Uppdatera",
+                    "title": "Loggar"
+                },
                 "lovelace": {
                     "caption": "Lovelace kontrollpaneler",
                     "dashboards": {
@@ -1450,13 +1488,13 @@
                             "delete": "Ta bort",
                             "dismiss": "Stäng",
                             "edit_dashboard": "Redigera instrumentpanel",
-                            "icon": "Ikon för sidofältet",
+                            "icon": "Ikon",
                             "new_dashboard": "Lägg till instrumentpanel",
                             "remove_default": "Ta bort som standard på den här enheten",
                             "require_admin": "Endast admin",
                             "set_default": "Ange som standard på den här enheten",
                             "show_sidebar": "Visa i sidofältet",
-                            "title": "Sidofältets titel",
+                            "title": "Titel",
                             "title_required": "Titel krävs.",
                             "update": "Uppdatera",
                             "url": "URL",
@@ -1618,6 +1656,7 @@
                             "core": "Ladda om plats & anpassningar",
                             "group": "Ladda om grupper",
                             "heading": "YAML-konfiguration laddas om",
+                            "input_datetime": "Ladda om inmatningsdatum/tid",
                             "introduction": "Vissa delar av Home Assistant kan laddas om utan att en omstart krävs. Att trycka på \"ladda om\" innebär att den nuvarande konfiguration inaktiveras och den nya laddas.",
                             "person": "Ladda om personer",
                             "scene": "Ladda om scenarier",
@@ -1676,7 +1715,8 @@
                             "name": "Namn",
                             "system": "System"
                         }
-                    }
+                    },
+                    "users_privileges_note": "Denna användaren är under konstruktion. Denna använder kommer inte kunna administrera instansen via användargränssnittet. Vi granskar fortfarande alla API-slutpunkter för att försäkra att de korrekt begränsar åtkomst till administratörer."
                 },
                 "zha": {
                     "add_device_page": {
@@ -1829,7 +1869,7 @@
                         "network_stopped": "Z-Wave-nätverk stoppat"
                     },
                     "node_config": {
-                        "config_parameter": "Konfigurera parameter",
+                        "config_parameter": "Konfigurationsparameter",
                         "config_value": "Konfigurera värde",
                         "false": "Falskt",
                         "header": "Alternativ för nodkonfiguration",
@@ -1845,6 +1885,7 @@
                         "exclude_entity": "Uteslut den här enheten från Home Assistant",
                         "group": "Grupp",
                         "header": "Z-Wave nodhantering",
+                        "introduction": "Kör Z-Wave-kommandon som påverkar en enda nod. Välj en nod för att se en lista över tillgängliga kommandon.",
                         "max_associations": "Max antal assosiationer:",
                         "node_group_associations": "Nodgruppsassociationer",
                         "node_protection": "Nodskydd",
@@ -1916,35 +1957,6 @@
                         "subscribe_to": "Ämne att prenumerera på",
                         "title": "Händelser",
                         "type": "Händelsetyp"
-                    },
-                    "info": {
-                        "built_using": "Byggt med",
-                        "custom_uis": "Anpassade användargränssnitt:",
-                        "developed_by": "Utvecklad av ett gäng grymma människor.",
-                        "documentation": "Dokumentation",
-                        "frontend": "frontend-UI",
-                        "frontend_version": "Frontend-version: {version} - {type}",
-                        "home_assistant_logo": "Home Assistant logotyp",
-                        "icons_by": "Ikoner av",
-                        "integrations": "Integrationer",
-                        "issues": "Problem",
-                        "license": "Publicerad under Apache 2.0-licensen",
-                        "path_configuration": "Sökväg till configuration.yaml: {path}",
-                        "server": "server",
-                        "source": "Källkod:",
-                        "system_health_error": "Systemhälsokomponenten har inte lästs in. Lägg till 'system_health:' i configuration.yaml",
-                        "title": "Info"
-                    },
-                    "logs": {
-                        "clear": "Rensa",
-                        "details": "Logginformation ({level})",
-                        "load_full_log": "Ladda hela Home Assistant-loggen",
-                        "loading_log": "Läser in fellogg ...",
-                        "multiple_messages": "Meddelandet inträffade först {time} och har hänt {counter} gånger",
-                        "no_errors": "Inga fel har rapporterats.",
-                        "no_issues": "Det finns inga nya problem!",
-                        "refresh": "Uppdatera",
-                        "title": "Loggar"
                     },
                     "mqtt": {
                         "description_listen": "Lyssna på ett ämne",
@@ -2044,7 +2056,7 @@
                         "clear_items": "Rensa markerade objekt"
                     },
                     "starting": {
-                        "description": "Home Assistant startar, var god vänta",
+                        "description": "Home Assistant startar, var god vänta...",
                         "header": "Home Assistant startar..."
                     }
                 },
@@ -2116,6 +2128,7 @@
                             "icon_height": "Ikonhöjd",
                             "image": "Bildsökväg",
                             "manual": "Manuell",
+                            "manual_description": "Behöver du lägga till ett anpassat kort eller vill du bara skriva yaml manuellt?",
                             "maximum": "",
                             "minimum": "",
                             "name": "Namn",
@@ -2134,6 +2147,7 @@
                         },
                         "glance": {
                             "columns": "Kolumner",
+                            "description": "Glance-kortet är användbart för att gruppera flera sensorer i en kompakt översikt.",
                             "name": "Blick"
                         },
                         "history-graph": {
@@ -2141,6 +2155,7 @@
                             "name": "Historikdiagram"
                         },
                         "horizontal-stack": {
+                            "description": "Med Horizontal Stack-kortet kan du stapla ihop flera kort, så att de alltid sitter bredvid varandra i utrymmet av en kolumn.",
                             "name": "Vågrät trave"
                         },
                         "iframe": {
@@ -2190,11 +2205,13 @@
                             "name": "Växtstatus"
                         },
                         "sensor": {
+                            "description": "Sensorkortet ger dig en snabb överblick över dina sensortillstånd med en valfri graf för att visualisera förändring över tid.",
                             "graph_detail": "Detalj på kurva",
                             "graph_type": "Typ av kurva",
                             "name": "Sensor"
                         },
                         "shopping-list": {
+                            "description": "Shopping List-kortet gör att du kan lägga till, redigera, checka av och rensa objekt från din inköpslista.",
                             "integration_not_loaded": "Detta kort kräver att \"shopping_list\" -integrationen konfigureras.",
                             "name": "Inköpslista"
                         },
@@ -2258,7 +2275,7 @@
                     "migrate": {
                         "header": "Ogiltig konfiguration",
                         "migrate": "Migrera konfiguration",
-                        "para_migrate": "Home Assistant kan automatiskt lägga till ID till alla dina kort och vyer genom att du klickar på \"Migrera konfiguration\".",
+                        "para_migrate": "Home Assistant kan automatiskt lägga till ID:n till alla dina kort och vyer genom att du klickar på \"Migrera konfiguration\".",
                         "para_no_id": "Det här elementet har inget ID. Lägg till ett ID till det här elementet i \"ui-lovelace.yaml\"."
                     },
                     "raw_editor": {
@@ -2281,7 +2298,7 @@
                         "close": "Stäng",
                         "empty_config": "Börja med en tom instrumentpanel",
                         "header": "Ta kontroll över Lovelace UI",
-                        "para": "Home Assistant kommer som standard att behålla ditt användargränssnitt, uppdatera det när nya enheter eller Lovelace-komponenter blir tillgängliga. Om du tar kontroll kommer vi inte längre göra ändringar automatiskt för dig.",
+                        "para": "Denna skärm underhålls för närvarande av Home Assistant. Den uppdateras automatiskt när nya enheter eller Lovelace UI-komponenter blir tillgängliga. Om du tar kontrollen kommer denna instrumentpanel inte längre att uppdateras automatiskt. Du kan alltid skapa en ny instrumentpanel i konfigurationen att leka runt med.",
                         "para_sure": "Är du säker på att du vill ta kontroll över ditt användargränssnitt?",
                         "save": "Ta kontroll",
                         "yaml_config": "För att hjälpa dig igång, så är här nuvarande inställning för denna instrumentpanel:",
