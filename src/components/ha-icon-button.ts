@@ -24,20 +24,10 @@ export class HaIconButton extends LitElement {
 
   protected render(): TemplateResult {
     return html`
-      <mwc-icon-button
-        .label=${this.label}
-        ?disabled=${this.disabled}
-        @click=${this._handleClick}
-      >
+      <mwc-icon-button .label=${this.label} .disabled=${this.disabled}>
         <ha-icon .icon=${this.icon}></ha-icon>
       </mwc-icon-button>
     `;
-  }
-
-  private _handleClick(ev) {
-    if (this.disabled) {
-      ev.stopPropagation();
-    }
   }
 
   static get styles(): CSSResult {
@@ -45,6 +35,9 @@ export class HaIconButton extends LitElement {
       :host {
         display: inline-block;
         outline: none;
+      }
+      :host([disabled]) {
+        pointer-events: none;
       }
       mwc-icon-button {
         --mdc-theme-on-primary: currentColor;
