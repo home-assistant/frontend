@@ -852,6 +852,14 @@
                         "input_text": "テキスト"
                     }
                 },
+                "info": {
+                    "frontend_version": "フロントエンドバージョン: {version} - {type}",
+                    "issues": "問題",
+                    "path_configuration": "ディスク上に configuration.yaml へのパス: {path}",
+                    "server": "サーバー",
+                    "system_health_error": "「システムの正常性」コンポーネントが有効されていません、configuration.yaml に 'system_health:' を追加してください。",
+                    "title": "情報"
+                },
                 "integrations": {
                     "add_integration": "インテグレーションを追加",
                     "config_entry": {
@@ -896,6 +904,15 @@
                     "none_found_detail": "別の検索基準をためしてみます。",
                     "rename_dialog": "このコンフィグレーションエントリーの名前を変更",
                     "rename_input_label": "エントリー名"
+                },
+                "logs": {
+                    "clear": "消去",
+                    "load_full_log": "完全な Home Assistant ログを読み込む",
+                    "loading_log": "エラーログを読み込んでいます…",
+                    "no_errors": "エラーは報告されていません。",
+                    "no_issues": "新しい問題はありません！",
+                    "refresh": "更新",
+                    "title": "ログ"
                 },
                 "lovelace": {
                     "caption": "Lovelace ダッシュボード",
@@ -1156,23 +1173,6 @@
                         "subscribe_to": "サブスクライブするイベント",
                         "title": "イベント",
                         "type": "イベントの種類"
-                    },
-                    "info": {
-                        "frontend_version": "フロントエンドバージョン: {version} - {type}",
-                        "issues": "問題",
-                        "path_configuration": "ディスク上に configuration.yaml へのパス: {path}",
-                        "server": "サーバー",
-                        "system_health_error": "「システムの正常性」コンポーネントが有効されていません、configuration.yaml に 'system_health:' を追加してください。",
-                        "title": "情報"
-                    },
-                    "logs": {
-                        "clear": "消去",
-                        "load_full_log": "完全な Home Assistant ログを読み込む",
-                        "loading_log": "エラーログを読み込んでいます…",
-                        "no_errors": "エラーは報告されていません。",
-                        "no_issues": "新しい問題はありません！",
-                        "refresh": "更新",
-                        "title": "ログ"
                     },
                     "mqtt": {
                         "description_listen": "トピックをリッスン",

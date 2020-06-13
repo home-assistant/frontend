@@ -309,10 +309,13 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
 
       @keyframes pulse {
         0% {
-          --ha-label-badge-color: var(--alarm-state-color);
+          opacity: 1;
+        }
+        50% {
+          opacity: 0;
         }
         100% {
-          --ha-label-badge-color: rgba(255, 153, 0, 0.3);
+          opacity: 1;
         }
       }
 

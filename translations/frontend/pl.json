@@ -35,7 +35,7 @@
                 "drying": "osuszanie",
                 "fan": "wentylator",
                 "heating": "grzanie",
-                "idle": "nieaktywny",
+                "idle": "Bezczynny",
                 "off": "wyłączony"
             },
             "preset_mode": {
@@ -324,22 +324,22 @@
             },
             "query_stage": {
                 "dead": "martwy ({query_stage})",
-                "initializing": "inicjalizacja ({query_stage})"
+                "initializing": "Inicjowanie ({query_stage})"
             }
         }
     },
     "ui": {
         "auth_store": {
-            "ask": "Czy chcesz zapamiętać dane logowania?",
-            "confirm": "Zapamiętaj",
-            "decline": "Nie, dziękuję"
+            "ask": "Czy chcesz pozostać zalogowany?",
+            "confirm": "Potwierdź",
+            "decline": "Rezygnuj"
         },
         "card": {
             "alarm_control_panel": {
-                "arm_away": "uzbrojenie (nieobecny)",
+                "arm_away": "Uzbrojenie pod nieobecność",
                 "arm_custom_bypass": "Niestandardowy bypass",
                 "arm_home": "uzbrojenie (w domu)",
-                "arm_night": "uzbrojenie (noc)",
+                "arm_night": "Uzbrojenie na noc",
                 "clear_code": "Wyczyść",
                 "code": "Kod",
                 "disarm": "rozbrojenie"
@@ -352,12 +352,12 @@
                 "not_available": "Obraz niedostępny"
             },
             "climate": {
-                "aux_heat": "Dodatkowe źródło ciepła",
+                "aux_heat": "Zewnętrznie podłączone źródło",
                 "away_mode": "Tryb poza domem",
                 "cooling": "{name} chłodzenie",
                 "current_temperature": "{name} aktualna temperatura",
                 "currently": "Obecnie",
-                "fan_mode": "Tryb pracy wentylatora",
+                "fan_mode": "Tryb nawiewu",
                 "heating": "{name} grzanie",
                 "high": "wysoka",
                 "low": "niska",
@@ -392,7 +392,7 @@
                 "brightness": "Jasność",
                 "color_temperature": "Temperatura barwy",
                 "effect": "Efekt",
-                "white_value": "Biel"
+                "white_value": "Wartość bieli"
             },
             "lock": {
                 "code": "Kod",
@@ -427,7 +427,7 @@
             "vacuum": {
                 "actions": {
                     "resume_cleaning": "Wznów sprzątanie",
-                    "return_to_base": "Wróć do stacji dokującej",
+                    "return_to_base": "Powrót do stacji dokującej",
                     "start_cleaning": "Rozpocznij sprzątanie",
                     "turn_off": "Wyłącz",
                     "turn_on": "Włącz"
@@ -442,8 +442,8 @@
             },
             "weather": {
                 "attributes": {
-                    "air_pressure": "Ciśnienie",
-                    "humidity": "Wilgotność",
+                    "air_pressure": "Ciśnienie atmosferyczne",
+                    "humidity": "Wilgotność powietrza",
                     "precipitation": "Opady",
                     "temperature": "Temperatura",
                     "visibility": "Widoczność",
@@ -478,6 +478,7 @@
             "cancel": "Anuluj",
             "close": "Zamknij",
             "delete": "Usuń",
+            "error_required": "To pole jest wymagane",
             "loading": "Ładowanie",
             "next": "Dalej",
             "no": "Nie",
@@ -550,7 +551,7 @@
         },
         "dialogs": {
             "config_entry_system_options": {
-                "enable_new_entities_description": "Jeśli wyłączone, nowo wykryte encje nie będą automatycznie dodawane do Home Assistant'a.",
+                "enable_new_entities_description": "Jeśli wyłączone, nowo wykryte encje integracji {integration} nie będą automatycznie dodawane do Home Assistanta.",
                 "enable_new_entities_label": "Włącz dodawanie nowych encji.",
                 "title": "Opcje systemowe dla {integration}",
                 "update": "Aktualizuj"
@@ -565,7 +566,7 @@
                     "confirm_delete": "Czy na pewno chcesz usunąć ten wpis?",
                     "delete": "USUŃ",
                     "enabled_cause": "Wyłączone przez {cause}.",
-                    "enabled_description": "Wyłączone encje nie zostaną dodane do Home Assistanta.",
+                    "enabled_description": "Wyłączone encje nie będą dostępne w Home Assistancie.",
                     "enabled_label": "Włącz encję",
                     "entity_id": "Identyfikator encji",
                     "icon": "Nadpisanie ikony",
@@ -840,7 +841,7 @@
                             "delete_confirm": "Czy chcesz usunąć?",
                             "duplicate": "Duplikuj",
                             "header": "Warunki",
-                            "introduction": "Warunki są opcjonalną częścią automatyzacji i można ich użyć, aby zapobiec działaniom po uruchomieniu. Warunki wyglądają bardzo podobnie do wyzwalaczy, ale są bardzo różne. Wyzwalacz będzie analizował zdarzenia zachodzące w systemie, a warunek będzie dotyczył tylko tego, jak wygląda teraz system. Wyzwalacz może zaobserwować, że przełącznik jest przełączany. Warunek może tylko sprawdzić, czy przełącznik jest aktualnie włączony lub wyłączony.",
+                            "introduction": "Warunki nie są wymagane w automatyzacji, ale zastosowanie ich wykluczy jej potencjalnie niechciane uruchomienia, póki logika każdego z nich przyjmuje wartość pozytywną.",
                             "learn_more": "Dowiedz się więcej o warunkach",
                             "name": "Warunek",
                             "type_select": "Typ warunku",
@@ -1221,6 +1222,7 @@
                     "different_include": "Możliwe poprzez domenę, globalnie lub inny plik.",
                     "pick_attribute": "Wybierz atrybut do nadpisania",
                     "picker": {
+                        "entity": "Encja",
                         "header": "Dostosowywanie",
                         "introduction": "Dostosuj atrybuty encji. Dodawane/edytowane dostosowywania zostaną wprowadzone natychmiast. Usunięte dostosowania zostaną uwzględnione, gdy encja zostanie zaktualizowana."
                     },
@@ -1295,13 +1297,13 @@
                     "picker": {
                         "disable_selected": {
                             "button": "Wyłącz wybrane",
-                            "confirm_text": "Wyłączone encje nie zostaną dodane do Home Assistanta.",
-                            "confirm_title": "Czy chcesz wyłączyć {number} encj(ę/e/i)?"
+                            "confirm_text": "Wyłączone encje nie będą dostępne w Home Assistancie.",
+                            "confirm_title": "Czy chcesz wyłączyć encje: {number}?"
                         },
                         "enable_selected": {
                             "button": "Włącz wybrane",
                             "confirm_text": "Dzięki temu będą ponownie dostępne w Home Assistant, jeśli są teraz wyłączone.",
-                            "confirm_title": "Czy chcesz włączyć {number} encj(ę/e/i)?"
+                            "confirm_title": "Czy chcesz włączyć encje: {number}?"
                         },
                         "filter": {
                             "filter": "Filtr",
@@ -1319,11 +1321,11 @@
                         "introduction": "Home Assistant prowadzi rejestr każdej encji, jaką kiedykolwiek widział i którą można jednoznacznie zidentyfikować. Każda z tych encji będzie miała przypisany unikalny identyfikator, który będzie zarezerwowany tylko dla niej.",
                         "introduction2": "Użyj rejestru encji, aby nadpisać jej nazwę, zmienić jej identyfikator lub usunąć ją z Home Assistant'a. Uwaga: usunięcie wpisu rejestru encji nie spowoduje usunięcia encji. Aby to zrobić, kliknij poniższy link i usuń integracje encji.",
                         "remove_selected": {
-                            "button": "Usuń zaznaczone",
+                            "button": "Usuń wybrane",
                             "confirm_partly_text": "Można usunąć tylko {removable} z wybranych {selected} encji. Encje można usunąć tylko wtedy, gdy integracja wspiera taka możliwość. Czasami trzeba ponownie uruchomić Home Assistanta, zanim będzie można usunąć encje usuniętej integracji. Czy na pewno chcesz usunąć usuwalne encje?",
                             "confirm_partly_title": "Tylko {number} wybrane encje można usunąć.",
-                            "confirm_text": "Encje mogą zostać usunięte tylko wtedy, gdy ich integracja na to zezwala.",
-                            "confirm_title": "Czy chcesz usunąć {number} encj(ę/e/i)?"
+                            "confirm_text": "Powinieneś uprzednio usunąć integrację z automatyzacji i konfiguracji Lovelace, jeśli encje w niej występują.",
+                            "confirm_title": "Czy chcesz usunąć encje: {number}?"
                         },
                         "selected": "wybrano {number}",
                         "status": {
@@ -1364,6 +1366,24 @@
                         "input_select": "Pole wyboru",
                         "input_text": "Tekst"
                     }
+                },
+                "info": {
+                    "built_using": "Zbudowany przy użyciu",
+                    "custom_uis": "Niestandardowe interfejsy użytkownika:",
+                    "developed_by": "Opracowany przez grono wspaniałych ludzi.",
+                    "documentation": "Dokumentacja",
+                    "frontend": "frontend-ui",
+                    "frontend_version": "Wersja interfejsu użytkownika: {version} - {type}",
+                    "home_assistant_logo": "Logo Home Assistant",
+                    "icons_by": "ikon",
+                    "integrations": "Integracje",
+                    "issues": "Problemy",
+                    "license": "Opublikowany na licencji Apache 2.0",
+                    "path_configuration": "Ścieżka do pliku configuration.yaml: {path}",
+                    "server": "serwer",
+                    "source": "Źródło:",
+                    "system_health_error": "Komponent kondycji systemu nie jest załadowany. Dodaj 'system_health:' do pliku configuration.yaml",
+                    "title": "Informacje"
                 },
                 "integrations": {
                     "add_integration": "Dodaj integrację",
@@ -1436,6 +1456,17 @@
                     "rename_input_label": "Nazwa wpisu"
                 },
                 "introduction": "Tutaj możesz skonfigurować Home Assistanta i jego komponenty. Nie wszystkie opcje można konfigurować z interfejsu użytkownika, ale pracujemy nad tym.",
+                "logs": {
+                    "clear": "Wyczyść",
+                    "details": "Szczegóły loga ({level})",
+                    "load_full_log": "Załaduj cały log Home Assistanta",
+                    "loading_log": "Ładowanie loga błędów…",
+                    "multiple_messages": "wiadomość pojawiła się po raz pierwszy o godzinie {time} i powtarzała się {counter} razy",
+                    "no_errors": "Nie zgłoszono żadnych błędów.",
+                    "no_issues": "Nie ma nowych problemów!",
+                    "refresh": "Odśwież",
+                    "title": "Logi"
+                },
                 "lovelace": {
                     "caption": "Dashboardy",
                     "dashboards": {
@@ -1460,7 +1491,7 @@
                             "set_default": "Ustaw jako domyślny na tym urządzeniu",
                             "show_sidebar": "Wyświetlanie na pasku bocznym",
                             "title": "Tytuł w pasku bocznym",
-                            "title_required": "Tytuł jest wymagany.",
+                            "title_required": "Tytuł jest wymagany",
                             "update": "Aktualizuj",
                             "url": "URL",
                             "url_error_msg": "Adres URL nie może zawierać spacji ani znaków specjalnych, z wyjątkiem _ i -"
@@ -1530,7 +1561,7 @@
                         "link_presence_detection_integrations": "Integracje wykrywania obecności",
                         "linked_user": "Połączony użytkownik",
                         "name": "Imię",
-                        "name_error_msg": "Nazwa jest wymagana",
+                        "name_error_msg": "Imię jest wymagane",
                         "new_person": "Nowa osoba",
                         "no_device_tracker_available_intro": "Jeśli masz urządzenia wskazujące obecność osoby, możesz tutaj przypisać ją do tej osoby. Możesz dodać swoje pierwsze urządzenie, dodając integrację wykrywania obecności ze strony integracji.",
                         "update": "Aktualizuj"
@@ -1679,7 +1710,8 @@
                             "name": "Nazwa",
                             "system": "System"
                         }
-                    }
+                    },
+                    "users_privileges_note": "Prace nad grupami użytkowników trwają. Użytkownik nie może administrować instancją za pomocą interfejsu użytkownika. Nadal kontrolujemy wszystkie punkty końcowe interfejsu API zarządzania, aby upewnić się, że poprawnie ograniczają dostęp tylko dla administratorów."
                 },
                 "zha": {
                     "add_device_page": {
@@ -1743,7 +1775,7 @@
                         "caption": "Grupy",
                         "create": "Utwórz grupę",
                         "create_group": "Zigbee Home Automation - utwórz grupę",
-                        "create_group_details": "Wprowadź wymagane dane, aby utworzyć nową grupę zigbee",
+                        "create_group_details": "Wprowadź wymagane dane, aby utworzyć nową grupę Zigbee",
                         "creating_group": "Tworzenie grupy",
                         "description": "Twórz i modyfikuj grupy Zigbee",
                         "group_details": "Oto wszystkie szczegóły dotyczące zaznaczonej grupy Zigbee.",
@@ -1920,35 +1952,6 @@
                         "subscribe_to": "Zdarzenie do zasubskrybowania",
                         "title": "Zdarzenia",
                         "type": "Typ zdarzenia"
-                    },
-                    "info": {
-                        "built_using": "Zbudowany przy użyciu",
-                        "custom_uis": "Niestandardowe interfejsy użytkownika:",
-                        "developed_by": "Opracowany przez grono wspaniałych ludzi.",
-                        "documentation": "Dokumentacja",
-                        "frontend": "frontend-ui",
-                        "frontend_version": "Wersja interfejsu użytkownika: {version} - {type}",
-                        "home_assistant_logo": "Logo Home Assistant",
-                        "icons_by": "ikon",
-                        "integrations": "Integracje",
-                        "issues": "Problemy",
-                        "license": "Opublikowany na licencji Apache 2.0",
-                        "path_configuration": "Ścieżka do pliku configuration.yaml: {path}",
-                        "server": "serwer",
-                        "source": "Źródło:",
-                        "system_health_error": "Komponent kondycji systemu nie jest załadowany. Dodaj 'system_health:' do pliku configuration.yaml",
-                        "title": "Informacje"
-                    },
-                    "logs": {
-                        "clear": "Wyczyść",
-                        "details": "Szczegóły loga ({level})",
-                        "load_full_log": "Załaduj cały log Home Assistanta",
-                        "loading_log": "Ładowanie loga błędów…",
-                        "multiple_messages": "wiadomość pojawiła się po raz pierwszy o godzinie {time} i powtarzała się {counter} razy",
-                        "no_errors": "Nie zgłoszono żadnych błędów.",
-                        "no_issues": "Nie ma nowych problemów!",
-                        "refresh": "Odśwież",
-                        "title": "Logi"
                     },
                     "mqtt": {
                         "description_listen": "Nasłuch tematu",

@@ -356,7 +356,7 @@
                 "away_mode": "Mode absent",
                 "cooling": "{name} refredant",
                 "current_temperature": "Temperatura actual de {name}",
-                "currently": "Actualment",
+                "currently": "Actual",
                 "fan_mode": "Velocitat ventilador",
                 "heating": "{name} escalfant",
                 "high": "alt",
@@ -478,9 +478,12 @@
             "cancel": "Cancel·la",
             "close": "Tanca",
             "delete": "Elimina",
+            "error_required": "Obligatori",
             "loading": "Carregant",
+            "menu": "Menú",
             "next": "Següent",
             "no": "No",
+            "overflow_menu": "Menú de desbordament",
             "previous": "Anterior",
             "refresh": "Actualitza",
             "save": "Desa",
@@ -910,6 +913,8 @@
                         "introduction": "Utilitza les automatitzacions per donar més vida a la teva casa",
                         "load_error_not_editable": "Només es poden editar les automatitzacions de l'arxiu automations.yaml.",
                         "load_error_unknown": "Error en carregar l'automatització ({err_no}).",
+                        "move_down": "Mou avall",
+                        "move_up": "Mou amunt",
                         "save": "Desa",
                         "triggers": {
                             "add": "Afegeix disparador",
@@ -1221,6 +1226,7 @@
                     "different_include": "Possiblement a través d'un domini o una altra inclusió diferent.",
                     "pick_attribute": "Selecciona un atribut per substituir-lo",
                     "picker": {
+                        "entity": "Entitat",
                         "header": "Personalitzacions",
                         "introduction": "Personalitza els atributs de les entitats al teu gust. Les personalitzacions afegides/modificades apareixeran immediatament, les que s'hagin eliminat tindran efecte quan l'entitat s'actualitzi."
                     },
@@ -1365,6 +1371,26 @@
                         "input_text": "Text"
                     }
                 },
+                "info": {
+                    "built_using": "Creat utilitzant",
+                    "caption": "Informació",
+                    "custom_uis": "Interfícies d'usuari personalitzades:",
+                    "description": "Informació sobre la instal·lació de Home Assistant",
+                    "developed_by": "Desenvolupat per un munt de gent fantàstica.",
+                    "documentation": "Documentació",
+                    "frontend": "frontend-ui",
+                    "frontend_version": "Versió de la interfície web d'usuari: {version} - {type}",
+                    "home_assistant_logo": "Logotip de Home Assistant",
+                    "icons_by": "Icones de",
+                    "integrations": "Integracions",
+                    "issues": "Problemes",
+                    "license": "Publicat amb la llicència Apache 2.0",
+                    "path_configuration": "Ruta al fitxer configuration.yaml: {path}",
+                    "server": "servidor",
+                    "source": "Font:",
+                    "system_health_error": "El component Estat del Sistema no està configurat. Afegeix 'system_health:' a configuration.yaml",
+                    "title": "Informació"
+                },
                 "integrations": {
                     "add_integration": "Afegeix integració",
                     "caption": "Integracions",
@@ -1436,6 +1462,19 @@
                     "rename_input_label": "Nom de l'entrada"
                 },
                 "introduction": "Aquí pots configurar Home Assistant i els seus components. Encara no és possible configurar-ho tot des de la interfície d'usuari, però hi estem treballant.",
+                "logs": {
+                    "caption": "Registres",
+                    "clear": "Esborra",
+                    "description": "Consulta els registres de Home Assistant",
+                    "details": "Detalls del registre ({level})",
+                    "load_full_log": "Carrega el registre complet de Home Assistant",
+                    "loading_log": "Carregant el registre d'errors...",
+                    "multiple_messages": "missatge produit per primera vegada a les {time}, apareix {counter} vegades",
+                    "no_errors": "No s'ha informat de cap error.",
+                    "no_issues": "No hi ha registres nous!",
+                    "refresh": "Actualitza",
+                    "title": "Registres"
+                },
                 "lovelace": {
                     "caption": "Panells Lovelace",
                     "dashboards": {
@@ -1621,6 +1660,11 @@
                             "core": "Actualitza ubicació i personalitzacions",
                             "group": "Actualitza grups",
                             "heading": "Tornant a carregar la configuració",
+                            "input_boolean": "Torna a carregar booleans d’entrada",
+                            "input_datetime": "Torna a carregar les hores de la data d'entrada",
+                            "input_number": "Recarregar números d'entrada",
+                            "input_select": "Actualitza l'entrada selecciona",
+                            "input_text": "Recarregar textos d'entrada",
                             "introduction": "Algunes parts de Home Assistant es poden actualitzar sense necessitat reiniciar-lo. Si prems actualitza s'esborrarà la configuració YAML actual i se'n carregarà la nova.",
                             "person": "Actualitza persones",
                             "scene": "Actualitza escenes",
@@ -1679,7 +1723,8 @@
                             "name": "Nom",
                             "system": "Sistema"
                         }
-                    }
+                    },
+                    "users_privileges_note": "El grup d'usuaris encara no està del tot acabat. L'usuari no podrà administrar la instància a través de la interfície d'usuari. Encara estem verificant tots els punts de l'API de gestió per assegurar-nos que limiten correctament l'accés als administradors."
                 },
                 "zha": {
                     "add_device_page": {
@@ -1921,35 +1966,6 @@
                         "title": "Esdeveniments",
                         "type": "Tipus d'esdeveniment"
                     },
-                    "info": {
-                        "built_using": "Creat utilitzant",
-                        "custom_uis": "Interfícies d'usuari personalitzades:",
-                        "developed_by": "Desenvolupat per un munt de gent fantàstica.",
-                        "documentation": "Documentació",
-                        "frontend": "frontend-ui",
-                        "frontend_version": "Versió de la interfície web d'usuari: {version} - {type}",
-                        "home_assistant_logo": "Logotip de Home Assistant",
-                        "icons_by": "Icones de",
-                        "integrations": "Integracions",
-                        "issues": "Problemes",
-                        "license": "Publicat amb la llicència Apache 2.0",
-                        "path_configuration": "Ruta al fitxer configuration.yaml: {path}",
-                        "server": "servidor",
-                        "source": "Font:",
-                        "system_health_error": "El component Estat del Sistema no està configurat. Afegeix 'system_health:' a configuration.yaml",
-                        "title": "Informació"
-                    },
-                    "logs": {
-                        "clear": "Esborra",
-                        "details": "Detalls del registre ({level})",
-                        "load_full_log": "Carrega el registre complet de Home Assistant",
-                        "loading_log": "Carregant el registre d'errors...",
-                        "multiple_messages": "missatge produit per primera vegada a les {time}, apareix {counter} vegades",
-                        "no_errors": "No s'ha informat de cap error.",
-                        "no_issues": "No hi ha registres nous!",
-                        "refresh": "Actualitza",
-                        "title": "Registres"
-                    },
                     "mqtt": {
                         "description_listen": "Escolta d'un tòpic",
                         "description_publish": "Publicació d'un paquet",
@@ -2048,7 +2064,7 @@
                         "clear_items": "Esborrar els articles seleccionats"
                     },
                     "starting": {
-                        "description": "Home Assistant està iniciant-se, espera un moment.",
+                        "description": "Home Assistant s'està iniciant, espera un moment...",
                         "header": "Home Assistant està iniciant-se..."
                     }
                 },
@@ -2565,7 +2581,7 @@
                     "create_failed": "No s'ha pogut crear el token d'autenticació d'accés.",
                     "created_at": "Creat el {date}",
                     "delete_failed": "No s'ha pogut eliminar el token d'autenticació d'accés.",
-                    "description": "Crea tokens d'autenticació d'accés de llarga durada per permetre als teus programes (scripts) interactuar amb la instància de Home Assistant. Cada token d'autenticació serà vàlid durant deu anys després de la seva creació. Els següents tokens d'autenticació d'accés de llarga durada estan actius actualment.",
+                    "description": "Crea tokens d'autenticació d'accés de llarga durada per permetre als teus programes/scripts interactuar amb la instància de Home Assistant. Cada token és vàlid durant deu anys després de la seva creació. Els següents tokens d'autenticació d'accés de llarga durada estan actius actualment.",
                     "empty_state": "Encara no tens tokens d'autenticaciós d'accés de llarga durada.",
                     "header": "Tokens d'autenticació d'accés de llarga durada",
                     "last_used": "Darrer ús el {date} des de {location}",

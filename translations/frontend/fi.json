@@ -478,7 +478,9 @@
             "cancel": "Peruuta",
             "close": "Sulje",
             "delete": "Poista",
+            "error_required": "Pakollinen",
             "loading": "Ladataan",
+            "menu": "Valikko",
             "next": "Seuraava",
             "no": "Ei",
             "previous": "Edellinen",
@@ -740,6 +742,8 @@
         "notification_toast": {
             "connection_lost": "Ei yhteyttä. Yritetään muodostaa yhteys uudelleen...",
             "service_call_failed": "Palvelua {service} ei onnistuttu kutsumaan.",
+            "started": "Home Assistant on käynnistynyt!",
+            "starting": "Home Assistant käynnistyy, kaikki ei ole vielä valmista.",
             "triggered": "Laukaisi kohteen {name}"
         },
         "panel": {
@@ -1219,6 +1223,7 @@
                     "different_include": "Mahdollisesti verkkotunnuksen, glob-kaavan tai muun sisällön kautta.",
                     "pick_attribute": "Valitse yliajettava määrite",
                     "picker": {
+                        "entity": "Kohde",
                         "header": "Räätälöinti",
                         "introduction": "Muotoile ominaisuuksia olemuskohtaisesti. Lisäykset/muokkaukset tulevat välittömästi voimaan. Poistetut mukautukset tulevat voimaan, kun olemus päivitetään."
                     },
@@ -1363,6 +1368,24 @@
                         "input_text": "Teksti"
                     }
                 },
+                "info": {
+                    "built_using": "Rakennettu käyttäen",
+                    "custom_uis": "Mukautetut käyttöliittymät:",
+                    "developed_by": "Kehittänyt joukko mahtavia ihmisiä.",
+                    "documentation": "Dokumentointi",
+                    "frontend": "frontend-ui",
+                    "frontend_version": "Käyttöliittymän versio: {version} - {type}",
+                    "home_assistant_logo": "Home Assistant-logo",
+                    "icons_by": "Kuvakkeet luonut",
+                    "integrations": "Integraatiot",
+                    "issues": "Ongelmat",
+                    "license": "Julkaistu Apache 2.0-lisenssillä",
+                    "path_configuration": "Polku configuration.yaml-tiedostoon: {path}",
+                    "server": "palvelin",
+                    "source": "Lähde:",
+                    "system_health_error": "Järjestelmän kunto-komponenttia ei ole ladattu. Lisää 'system_health:' kohteeseen configuration.yaml",
+                    "title": "Tiedot"
+                },
                 "integrations": {
                     "add_integration": "Lisää integraatio",
                     "caption": "Integraatiot",
@@ -1434,6 +1457,17 @@
                     "rename_input_label": "Merkinnän nimi"
                 },
                 "introduction": "Täällä voit säätää Home Assistanttia ja sen komponentteja. Huomioithan, ettei kaikkea voi vielä säätää käyttöliittymän kautta, mutta teemme jatkuvasti töitä sen mahdollistamiseksi.",
+                "logs": {
+                    "clear": "Tyhjennä",
+                    "details": "Lokitiedot ( {level} )",
+                    "load_full_log": "Lataa Home Assistantin koko loki",
+                    "loading_log": "Ladataan virhelokia...",
+                    "multiple_messages": "Viesti esiintyi ensimmäisen kerran {time} ja tämän jälkeen {counter} kertaa",
+                    "no_errors": "Virheitä ei ole ilmoitettu.",
+                    "no_issues": "Ei uusia aiheita!",
+                    "refresh": "Päivitä",
+                    "title": "Lokit"
+                },
                 "lovelace": {
                     "caption": "Lovelace-kojelaudat",
                     "dashboards": {
@@ -1677,7 +1711,8 @@
                             "name": "Nimi",
                             "system": "Järjestelmä"
                         }
-                    }
+                    },
+                    "users_privileges_note": "Käyttäjät-ryhmä on vielä kesken. Käyttäjä ei voi hallita Home Assistantia käyttöliittymän kautta. Auditoimme edelleen kaikkia hallinta-API-päätepisteitä varmistaaksemme, että ne rajoittavat pääsyn oikein."
                 },
                 "zha": {
                     "add_device_page": {
@@ -1847,10 +1882,13 @@
                         "group": "Ryhmä",
                         "header": "Z-Wave-solmun hallinta",
                         "introduction": "Suorita Z-Wave-komennot, jotka vaikuttavat yhteen solmuun. Valitse solmu nähdäksesi luettelon käytettävissä olevista komennoista.",
+                        "max_associations": "Maksimiyhdistykset:",
+                        "node_group_associations": "Solmujen ryhmäyhdistykset",
                         "node_protection": "Solmujen suojaus",
                         "node_to_control": "Hallinnoitava solmu",
                         "nodes": "Solmut",
                         "nodes_hint": "Valitse solmu tarkastellaksesi solmukohtaisia vaihtoehtoja",
+                        "nodes_in_group": "Muut tämän ryhmän solmut:",
                         "pooling_intensity": "Kyselyn voimakkuus",
                         "protection": "Suojaus",
                         "remove_broadcast": "Poista lähetys",
@@ -1874,7 +1912,9 @@
                         "print_node": "Tulosta solmu",
                         "refresh_entity": "Päivitä kohde",
                         "refresh_node": "Päivitä solmu",
+                        "remove_failed_node": "Poista epäonnistunut solmu",
                         "remove_node": "Poista solmu",
+                        "replace_failed_node": "Korvaa epäonnistunut solmu",
                         "save_config": "Tallenna asetukset",
                         "soft_reset": "Pehmeä nollaus",
                         "start_network": "Käynnistä verkko",
@@ -1913,35 +1953,6 @@
                         "subscribe_to": "Tilaa tapahtuma",
                         "title": "Tapahtumat",
                         "type": "Tapahtumatyyppi"
-                    },
-                    "info": {
-                        "built_using": "Rakennettu käyttäen",
-                        "custom_uis": "Mukautetut käyttöliittymät:",
-                        "developed_by": "Kehittänyt joukko mahtavia ihmisiä.",
-                        "documentation": "Dokumentointi",
-                        "frontend": "frontend-ui",
-                        "frontend_version": "Käyttöliittymän versio: {version} - {type}",
-                        "home_assistant_logo": "Home Assistant-logo",
-                        "icons_by": "Kuvakkeet luonut",
-                        "integrations": "Integraatiot",
-                        "issues": "Ongelmat",
-                        "license": "Julkaistu Apache 2.0-lisenssillä",
-                        "path_configuration": "Polku configuration.yaml-tiedostoon: {path}",
-                        "server": "palvelin",
-                        "source": "Lähde:",
-                        "system_health_error": "Järjestelmän kunto-komponenttia ei ole ladattu. Lisää 'system_health:' kohteeseen configuration.yaml",
-                        "title": "Tiedot"
-                    },
-                    "logs": {
-                        "clear": "Tyhjennä",
-                        "details": "Lokitiedot ( {level} )",
-                        "load_full_log": "Lataa Home Assistantin koko loki",
-                        "loading_log": "Ladataan virhelokia...",
-                        "multiple_messages": "Viesti esiintyi ensimmäisen kerran {time} ja tämän jälkeen {counter} kertaa",
-                        "no_errors": "Virheitä ei ole ilmoitettu.",
-                        "no_issues": "Ei uusia aiheita!",
-                        "refresh": "Päivitä",
-                        "title": "Lokit"
                     },
                     "mqtt": {
                         "description_listen": "Kuuntele aihetta",
@@ -2039,6 +2050,10 @@
                         "add_item": "Lisää",
                         "checked_items": "Valitut kohteet",
                         "clear_items": "Tyhjää valitut kohteet"
+                    },
+                    "starting": {
+                        "description": "Home Assistant käynnistyy...",
+                        "header": "Home Assistant käynnistyy..."
                     }
                 },
                 "changed_toast": {
@@ -2331,7 +2346,8 @@
                     "attribute_not_found": "Määrite {attribute} ei ole käytettävissä kohteessa {entity}",
                     "entity_non_numeric": "Yksikkö ei ole numeerinen: {entity}",
                     "entity_not_found": "Yksikkö ei ole käytettävissä: {entity}",
-                    "entity_unavailable": "{entity} ei ole tällä hetkellä käytettävissä"
+                    "entity_unavailable": "{entity} ei ole tällä hetkellä käytettävissä",
+                    "starting": "Home Assistant käynnistyy. Kaikki palvelut eivät  välttämättä ole vielä saatavilla."
                 }
             },
             "mailbox": {

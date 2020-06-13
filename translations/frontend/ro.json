@@ -466,9 +466,11 @@
         },
         "common": {
             "and": "Și",
+            "back": "Înapoi",
             "cancel": "Revocare",
             "close": "Închide",
             "delete": "Șterge",
+            "error_required": "Necesar",
             "loading": "Se încarcă",
             "next": "Următorul",
             "no": "Nu",
@@ -497,6 +499,7 @@
             "device-picker": {
                 "clear": "Şterge",
                 "device": "Dispozitiv",
+                "no_area": "Nicio zonă",
                 "show_devices": "Arata dispozitivele",
                 "toggle": "Comută"
             },
@@ -1031,6 +1034,7 @@
                     "different_include": "Posibil printr-un domeniu, un glob sau alta includere",
                     "pick_attribute": "Alegeți un atribut pentru suprascriere",
                     "picker": {
+                        "entity": "Entitate",
                         "header": "Personalizări",
                         "introduction": "Atributele per entitate. Particularizările adăugate/editate vor avea efect imediat. Particularizările eliminate vor avea efect atunci când entitatea este actualizată."
                     },
@@ -1167,6 +1171,19 @@
                         "input_text": "Text"
                     }
                 },
+                "info": {
+                    "built_using": "Construit folosind",
+                    "documentation": "Documentație",
+                    "frontend": "front-end-ui",
+                    "home_assistant_logo": "Logo-ul Home Assistant",
+                    "icons_by": "Icoane ca",
+                    "integrations": "Integrări",
+                    "issues": "Probleme",
+                    "license": "Publicat sub licenta Apache 2.0",
+                    "server": "Server",
+                    "source": "Sursă:",
+                    "title": "Info"
+                },
                 "integrations": {
                     "add_integration": "Adăugați integrare",
                     "caption": "Integrări",
@@ -1229,6 +1246,15 @@
                     "rename_input_label": "Introdu nume"
                 },
                 "introduction": "Aici este posibil să vă configurați componentele și Home Assistant. Nu este posibilă configurarea de la UI, dar lucrăm la asta.",
+                "logs": {
+                    "clear": "Şterge",
+                    "details": "Detalii jurnal ({level})",
+                    "load_full_log": "Încărcare jurnal complet Home Assistant",
+                    "loading_log": "Se încarcă jurnalul de erori...",
+                    "no_errors": "Nu au fost raportate erori.",
+                    "refresh": "Reîmprospătare",
+                    "title": "Jurnale"
+                },
                 "lovelace": {
                     "caption": "Panouri de bord Lovelace",
                     "dashboards": {
@@ -1592,17 +1618,44 @@
                         "set_wakeup": "Setați interval de trezire",
                         "true": "Adevărat"
                     },
+                    "node_management": {
+                        "add_to_group": "Adăugare la grup",
+                        "exclude_entity": "Excludeți această entitate din Home Assistant",
+                        "group": "Grup",
+                        "max_associations": "Asociații maxime:",
+                        "node_group_associations": "Asociații de grupuri de noduri",
+                        "node_protection": "Protecție nod",
+                        "node_to_control": "Nod de controlat",
+                        "nodes_in_group": "Alte noduri din acest grup:",
+                        "protection": "Protecţie",
+                        "remove_broadcast": "Eliminare difuzare",
+                        "remove_from_group": "Eliminare din grup",
+                        "set_protection": "Setare protecție"
+                    },
+                    "ozw_log": {
+                        "last_log_lines": "Numărul ultimelor linii de jurnal",
+                        "load": "Sarcină",
+                        "tail": "Coadă"
+                    },
                     "services": {
                         "add_node": "Adăugare nod",
                         "add_node_secure": "Adăugare nod securizat",
                         "cancel_command": "Anulați comanda",
                         "heal_network": "Heal Network",
+                        "heal_node": "Repara nod",
+                        "node_info": "Informații nod",
+                        "print_node": "Imprimare nod",
+                        "refresh_entity": "Actualizare entitate",
+                        "refresh_node": "Actualizare nod",
+                        "remove_failed_node": "Eliminare nod eșuat",
                         "remove_node": "Eliminare nod",
+                        "replace_failed_node": "Înlocuiți nod eșuat",
                         "save_config": "Salvați configurația",
                         "soft_reset": "Resetare soft",
                         "start_network": "Porniți rețeaua",
                         "stop_network": "Opriți rețeaua",
-                        "test_network": "Testati Reteaua"
+                        "test_network": "Testati Reteaua",
+                        "test_node": "Testare nod"
                     },
                     "values": {
                         "header": "Valoare nod"
@@ -1633,28 +1686,6 @@
                         "subscribe_to": "Eveniment la care să vă abonați",
                         "title": "Evenimente",
                         "type": "Tip eveniment"
-                    },
-                    "info": {
-                        "built_using": "Construit folosind",
-                        "documentation": "Documentație",
-                        "frontend": "front-end-ui",
-                        "home_assistant_logo": "Logo-ul Home Assistant",
-                        "icons_by": "Icoane ca",
-                        "integrations": "Integrări",
-                        "issues": "Probleme",
-                        "license": "Publicat sub licenta Apache 2.0",
-                        "server": "Server",
-                        "source": "Sursă:",
-                        "title": "Info"
-                    },
-                    "logs": {
-                        "clear": "Şterge",
-                        "details": "Detalii jurnal ({level})",
-                        "load_full_log": "Încărcare jurnal complet Home Assistant",
-                        "loading_log": "Se încarcă jurnalul de erori...",
-                        "no_errors": "Nu au fost raportate erori.",
-                        "refresh": "Reîmprospătare",
-                        "title": "Jurnale"
                     },
                     "mqtt": {
                         "description_listen": "Ascultă un subiect",
@@ -1750,6 +1781,10 @@
                         "add_item": "Adaugare element",
                         "checked_items": "Elementele selectate",
                         "clear_items": "Ștergeți elementele selectate"
+                    },
+                    "starting": {
+                        "description": "Home Assistant pornește, vă rugăm să așteptați...",
+                        "header": "Home Assistant pornește..."
                     }
                 },
                 "changed_toast": {
@@ -1815,8 +1850,12 @@
                             "name": "Lumina"
                         },
                         "map": {
+                            "description": "Cardul Map care vă permite să afișați entități pe o hartă.",
                             "hours_to_show": "Ore de afisat",
                             "name": "Hartă"
+                        },
+                        "markdown": {
+                            "description": "Cardul Markdown este utilizat pentru a reda Markdown."
                         },
                         "media-control": {
                             "name": "Control media"
@@ -1971,7 +2010,8 @@
                 "warning": {
                     "entity_non_numeric": "Entitatea este non-numerică: {entity}",
                     "entity_not_found": "Entitatea nu este disponibilă: {entity}",
-                    "entity_unavailable": "{entity} este momentan indisponibilă"
+                    "entity_unavailable": "{entity} este momentan indisponibilă",
+                    "starting": "Home Assistant pornește, nu totul poate fi disponibil încă"
                 }
             },
             "mailbox": {
@@ -1984,6 +2024,7 @@
                 "abort_intro": "Conectare intrerupta",
                 "authorizing_client": "Sunteți pe punctul de a da {clientId} accesul la instanța dumneavoastra de Home Assistant",
                 "form": {
+                    "next": "Următorul",
                     "providers": {
                         "command_line": {
                             "abort": {
@@ -2069,6 +2110,7 @@
                             }
                         }
                     },
+                    "start_over": "Ia-o de la capăt",
                     "unknown_error": "Ceva n-a mers bine",
                     "working": "Te rog așteaptă"
                 },
@@ -2153,7 +2195,8 @@
             "profile": {
                 "advanced_mode": {
                     "description": "Deblochează funcțiile avansate.",
-                    "link_promo": "Află mai multe"
+                    "link_promo": "Află mai multe",
+                    "title": "Mod avansat"
                 },
                 "change_password": {
                     "confirm_new_password": "Confirmați Noua Parolă",

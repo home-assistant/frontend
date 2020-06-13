@@ -27,6 +27,7 @@ import {
 import { haStyle } from "../../../resources/styles";
 import "../../../components/ha-icon-next";
 import { fireEvent } from "../../../common/dom/fire_event";
+import { mdiDotsVertical } from "@mdi/js";
 
 export interface ConfigEntryUpdatedEvent {
   entry: ConfigEntry;
@@ -43,6 +44,17 @@ declare global {
     "entry-removed": ConfigEntryRemovedEvent;
   }
 }
+
+const integrationsWithPanel = {
+  zha: {
+    buttonLocalizeKey: "ui.panel.config.zha.button",
+    path: "/config/zha/dashboard",
+  },
+  zwave: {
+    buttonLocalizeKey: "ui.panel.config.zwave.button",
+    path: "/config/zwave",
+  },
+};
 
 @customElement("ha-integration-card")
 export class HaIntegrationCard extends LitElement {
@@ -75,7 +87,7 @@ export class HaIntegrationCard extends LitElement {
 
   private _renderGroupedIntegration(): TemplateResult {
     return html`
-      <ha-card class="group">
+      <ha-card outlined class="group">
         <div class="group-header">
           <img
             src="https://brands.home-assistant.io/${this.domain}/icon.png"
@@ -111,6 +123,7 @@ export class HaIntegrationCard extends LitElement {
     const entities = this._getEntities(item);
     return html`
       <ha-card
+        outlined
         class="single integration"
         .configEntry=${item}
         .id=${item.entry_id}
@@ -178,42 +191,46 @@ export class HaIntegrationCard extends LitElement {
                 "ui.panel.config.integrations.config_entry.rename"
               )}</mwc-button
             >
-            ${item.supports_options
+            ${item.domain in integrationsWithPanel
+              ? html`<a
+                  href=${`${
+                    integrationsWithPanel[item.domain].path
+                  }?config_entry=${item.entry_id}`}
+                  ><mwc-button>
+                    ${this.hass.localize(
+                      integrationsWithPanel[item.domain].buttonLocalizeKey
+                    )}
+                  </mwc-button></a
+                >`
+              : item.supports_options
               ? html`
-                  <mwc-button @click=${this._showOptions}
-                    >${this.hass.localize(
+                  <mwc-button @click=${this._showOptions}>
+                    ${this.hass.localize(
                       "ui.panel.config.integrations.config_entry.options"
-                    )}</mwc-button
-                  >
+                    )}
+                  </mwc-button>
                 `
               : ""}
           </div>
-          <paper-menu-button
-            horizontal-align="right"
-            vertical-align="top"
-            vertical-offset="40"
-            close-on-activate
-          >
-            <ha-icon-button
-              icon="hass:dots-vertical"
-              slot="dropdown-trigger"
-              aria-label=${this.hass!.localize(
-                "ui.panel.lovelace.editor.edit_card.options"
+          <ha-button-menu corner="BOTTOM_START">
+            <mwc-icon-button
+              .title=${this.hass.localize("ui.common.menu")}
+              .label=${this.hass.localize("ui.common.overflow_menu")}
+              slot="trigger"
+            >
+              <ha-svg-icon path=${mdiDotsVertical}></ha-svg-icon>
+            </mwc-icon-button>
+            <mwc-list-item @click=${this._showSystemOptions}>
+              ${this.hass.localize(
+                "ui.panel.config.integrations.config_entry.system_options"
               )}
-            ></ha-icon-button>
-            <paper-listbox slot="dropdown-content">
-              <paper-item @tap=${this._showSystemOptions}>
-                ${this.hass.localize(
-                  "ui.panel.config.integrations.config_entry.system_options"
-                )}</paper-item
-              >
-              <paper-item class="warning" @tap=${this._removeIntegration}>
-                ${this.hass.localize(
-                  "ui.panel.config.integrations.config_entry.delete"
-                )}</paper-item
-              >
-            </paper-listbox>
-          </paper-menu-button>
+            </mwc-list-item>
+            <mwc-list-item class="warning" @click=${this._removeIntegration}>
+              ${this.hass.localize(
+                "ui.panel.config.integrations.config_entry.delete"
+              )}
+            </mwc-list-item>
+          </ha-button-menu>
         </div>
       </ha-card>
     `;
@@ -379,9 +396,8 @@ export class HaIntegrationCard extends LitElement {
           margin-top: 0;
           min-height: 24px;
         }
-        paper-menu-button {
+        ha-button-menu {
           color: var(--secondary-text-color);
-          padding: 0;
         }
         @media (min-width: 563px) {
           paper-listbox {

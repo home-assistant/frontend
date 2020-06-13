@@ -2,7 +2,7 @@ import "@polymer/paper-input/paper-input";
 import { customElement, html, LitElement, property } from "lit-element";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import "../../../../../components/entity/ha-entity-picker";
-import "../../../../../components/ha-textarea";
+import "@polymer/paper-input/paper-textarea";
 import { NumericStateCondition } from "../../../../../data/automation";
 import { HomeAssistant } from "../../../../../types";
 import { handleChangeEvent } from "../ha-automation-condition-row";
@@ -45,7 +45,7 @@ export default class HaNumericStateCondition extends LitElement {
         .value=${below}
         @value-changed=${this._valueChanged}
       ></paper-input>
-      <ha-textarea
+      <paper-textarea
         .label=${this.hass.localize(
           "ui.panel.config.automation.editor.conditions.type.numeric_state.value_template"
         )}
@@ -53,7 +53,7 @@ export default class HaNumericStateCondition extends LitElement {
         .value=${value_template}
         @value-changed=${this._valueChanged}
         dir="ltr"
-      ></ha-textarea>
+      ></paper-textarea>
     `;
   }
 

@@ -478,9 +478,12 @@
             "cancel": "取消",
             "close": "关闭",
             "delete": "删除",
+            "error_required": "必填",
             "loading": "加载中",
+            "menu": "菜单",
             "next": "下一步",
             "no": "否",
+            "overflow_menu": "Overflow 菜单",
             "previous": "上一步",
             "refresh": "刷新",
             "save": "保存",
@@ -910,6 +913,8 @@
                         "introduction": "使用自动化让你的家聪明起来",
                         "load_error_not_editable": "只能编辑 automations.yaml 中的自动化。",
                         "load_error_unknown": "加载自动化错误 ({err_no})。",
+                        "move_down": "下移",
+                        "move_up": "上移",
                         "save": "保存",
                         "triggers": {
                             "add": "添加触发条件",
@@ -1221,6 +1226,7 @@
                     "different_include": "可能是通过域、全局或其他引用。",
                     "pick_attribute": "选择要覆盖的属性",
                     "picker": {
+                        "entity": "实体",
                         "header": "自定义",
                         "introduction": "调整每个实体的属性。添加/编辑的自定义设置将立即生效，删除的自定义设置将在实体更新时生效。"
                     },
@@ -1365,6 +1371,26 @@
                         "input_text": "文本"
                     }
                 },
+                "info": {
+                    "built_using": "建于",
+                    "caption": "信息",
+                    "custom_uis": "自定义用户界面：",
+                    "description": "关于您的 Home Assistant 安装的信息",
+                    "developed_by": "由一帮很 Awesome~~~ 的人开发。",
+                    "documentation": "文档",
+                    "frontend": "前端用户界面",
+                    "frontend_version": "前端版本： {version} - {type}",
+                    "home_assistant_logo": "Home Assistant logo",
+                    "icons_by": "图标来自",
+                    "integrations": "集成",
+                    "issues": "问题",
+                    "license": "根据 Apache 2.0 许可发布",
+                    "path_configuration": "configuration.yaml 路径：{path}",
+                    "server": "服务器",
+                    "source": "源：",
+                    "system_health_error": "未加载系统健康组件。请将 'system_health:' 添加到 configuration.yaml",
+                    "title": "信息"
+                },
                 "integrations": {
                     "add_integration": "添加集成",
                     "caption": "集成",
@@ -1436,6 +1462,19 @@
                     "rename_input_label": "条目名称"
                 },
                 "introduction": "您可以在此配置 Home Assistant 及组件。目前并非所有配置都能通过前端 UI 完成，但是我们在努力实现中。",
+                "logs": {
+                    "caption": "日志",
+                    "clear": "清除",
+                    "description": "查看 Home Assistant 日志",
+                    "details": "日志详细信息（ {level} ）",
+                    "load_full_log": "加载完整 Home Assistant 日志",
+                    "loading_log": "正在加载错误日志...",
+                    "multiple_messages": "消息首次出现在 {time}，显示了 {counter} 次",
+                    "no_errors": "未报告任何错误。",
+                    "no_issues": "没有新问题！",
+                    "refresh": "刷新",
+                    "title": "日志"
+                },
                 "lovelace": {
                     "caption": "Lovelace 仪表盘",
                     "dashboards": {
@@ -1621,6 +1660,11 @@
                             "core": "重载位置和自定义",
                             "group": "重载分组",
                             "heading": "配置重载",
+                            "input_boolean": "重载二元选择器",
+                            "input_datetime": "重载日期选择器",
+                            "input_number": "重载数值选择器",
+                            "input_select": "重载多项选择器",
+                            "input_text": "重载文字输入",
                             "introduction": "Home Assistant 中的部分配置可以直接重载，而无需重启服务。点击重载按钮将重新载入新的配置。",
                             "person": "重载人员",
                             "scene": "重载场景",
@@ -1679,7 +1723,8 @@
                             "name": "名称",
                             "system": "系统"
                         }
-                    }
+                    },
+                    "users_privileges_note": "用户组功能正在开发中。该功能使普通用户无法通过 UI 进行管理操作。我们正在审计所有管理 API，确保其仅限管理员访问。"
                 },
                 "zha": {
                     "add_device_page": {
@@ -1920,35 +1965,6 @@
                         "subscribe_to": "订阅事件",
                         "title": "事件",
                         "type": "事件类型"
-                    },
-                    "info": {
-                        "built_using": "建于",
-                        "custom_uis": "自定义用户界面：",
-                        "developed_by": "由一帮很 Awesome~~~ 的人开发。",
-                        "documentation": "文档",
-                        "frontend": "前端用户界面",
-                        "frontend_version": "前端版本： {version} - {type}",
-                        "home_assistant_logo": "Home Assistant logo",
-                        "icons_by": "图标来自",
-                        "integrations": "集成",
-                        "issues": "问题",
-                        "license": "根据 Apache 2.0 许可发布",
-                        "path_configuration": "configuration.yaml 路径：{path}",
-                        "server": "服务器",
-                        "source": "源：",
-                        "system_health_error": "未加载系统健康组件。请将 'system_health:' 添加到 configuration.yaml",
-                        "title": "信息"
-                    },
-                    "logs": {
-                        "clear": "清除",
-                        "details": "日志详细信息（ {level} ）",
-                        "load_full_log": "加载完整 Home Assistant 日志",
-                        "loading_log": "正在加载错误日志...",
-                        "multiple_messages": "消息首次出现在 {time}，显示了 {counter} 次",
-                        "no_errors": "未报告任何错误。",
-                        "no_issues": "没有新问题！",
-                        "refresh": "刷新",
-                        "title": "日志"
                     },
                     "mqtt": {
                         "description_listen": "监听一个主题(Topic)",

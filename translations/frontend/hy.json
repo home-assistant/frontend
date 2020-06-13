@@ -806,6 +806,9 @@
                     }
                 },
                 "header": "Կարգավորել Home Assistant-ը",
+                "info": {
+                    "title": "Ինֆորմացիա"
+                },
                 "integrations": {
                     "caption": "Ինտեգրում",
                     "config_entry": {
@@ -834,6 +837,9 @@
                     "none": "Ոչինչ  տրամադրված  չէ"
                 },
                 "introduction": "Այստեղ հնարավոր է կարգավորել ձեր բաղադրիչները և Home Assistant:Դեռ ամեն ինչ հնարավոր չէ կազմաձևել UI- ից, բայց մենք աշխատում ենք այդ ուղղությամբ",
+                "logs": {
+                    "title": "log-եր"
+                },
                 "person": {
                     "caption": "Անձինք",
                     "description": "Կառավարել  այն անձանց, որոնք հետապնդում են Home Assistant-ին:",
@@ -958,12 +964,6 @@
                 "tabs": {
                     "events": {
                         "title": "Իրադարձություններ"
-                    },
-                    "info": {
-                        "title": "Ինֆորմացիա"
-                    },
-                    "logs": {
-                        "title": "log-եր"
                     },
                     "mqtt": {
                         "title": "MQTT"

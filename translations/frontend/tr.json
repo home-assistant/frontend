@@ -1311,6 +1311,24 @@
                         "input_text": "Metin"
                     }
                 },
+                "info": {
+                    "built_using": "Kullanılan oluşturma",
+                    "custom_uis": "Özel kullanıcı arayüzleri:",
+                    "developed_by": "Bir sürü harika insan tarafından geliştirildi.",
+                    "documentation": "Belgeleri",
+                    "frontend": "ön uç-ui",
+                    "frontend_version": "Ön uç versiyonu: {version} - {type}",
+                    "home_assistant_logo": "Home Assistant Logosu",
+                    "icons_by": "Simgelerin orijni",
+                    "integrations": "Entegrasyonlar",
+                    "issues": "Sorunlar",
+                    "license": "Apache 2.0 lisansı altında yayınlandı",
+                    "path_configuration": "configuration.yaml lokasyonu: {path}",
+                    "server": "sunucu",
+                    "source": "Kaynak:",
+                    "system_health_error": "Sistem Sağlığı bileşeni yüklü değil. configuration.yaml içine 'system_health:' ekleyin",
+                    "title": "Bilgi"
+                },
                 "integrations": {
                     "caption": "Entegrasyonlar",
                     "config_entry": {
@@ -1373,6 +1391,17 @@
                     "rename_input_label": "Varlık adı"
                 },
                 "introduction": "Buradan bileşenlerinizi ve Home Assistant'ınızı yapılandırabilirsiniz. Herşeyi kullanıcı arayüzü ile ayarlamak henüz mümkün değil fakat üzerinde çalışıyoruz",
+                "logs": {
+                    "clear": "Temizle",
+                    "details": "Günlük Ayrıntıları ( {level} )",
+                    "load_full_log": "Tam Home Assistant Günlüğünü Yükle",
+                    "loading_log": "Hata günlüğü yükleniyor ...",
+                    "multiple_messages": "ileti ilk önce {time} meydana geldi ve {counter} kez gösterildi",
+                    "no_errors": "Herhangi bir hata rapor edilmiştir.",
+                    "no_issues": "Yeni bir sorun yok!",
+                    "refresh": "Yenile",
+                    "title": "Günlük"
+                },
                 "lovelace": {
                     "caption": "Lovelace Kontrol Panelleri",
                     "dashboards": {
@@ -1782,35 +1811,6 @@
                         "stop_listening": "Dinlemeyi bırak",
                         "title": "Olaylar",
                         "type": "Olay Türü"
-                    },
-                    "info": {
-                        "built_using": "Kullanılan oluşturma",
-                        "custom_uis": "Özel kullanıcı arayüzleri:",
-                        "developed_by": "Bir sürü harika insan tarafından geliştirildi.",
-                        "documentation": "Belgeleri",
-                        "frontend": "ön uç-ui",
-                        "frontend_version": "Ön uç versiyonu: {version} - {type}",
-                        "home_assistant_logo": "Home Assistant Logosu",
-                        "icons_by": "Simgelerin orijni",
-                        "integrations": "Entegrasyonlar",
-                        "issues": "Sorunlar",
-                        "license": "Apache 2.0 lisansı altında yayınlandı",
-                        "path_configuration": "configuration.yaml lokasyonu: {path}",
-                        "server": "sunucu",
-                        "source": "Kaynak:",
-                        "system_health_error": "Sistem Sağlığı bileşeni yüklü değil. configuration.yaml içine 'system_health:' ekleyin",
-                        "title": "Bilgi"
-                    },
-                    "logs": {
-                        "clear": "Temizle",
-                        "details": "Günlük Ayrıntıları ( {level} )",
-                        "load_full_log": "Tam Home Assistant Günlüğünü Yükle",
-                        "loading_log": "Hata günlüğü yükleniyor ...",
-                        "multiple_messages": "ileti ilk önce {time} meydana geldi ve {counter} kez gösterildi",
-                        "no_errors": "Herhangi bir hata rapor edilmiştir.",
-                        "no_issues": "Yeni bir sorun yok!",
-                        "refresh": "Yenile",
-                        "title": "Günlük"
                     },
                     "mqtt": {
                         "description_listen": "Bir konuyu dinle",

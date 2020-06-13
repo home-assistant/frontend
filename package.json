@@ -17,9 +17,7 @@
     "lint": "npm run lint:eslint && npm run lint:prettier && npm run lint:types",
     "format": "npm run format:eslint && npm run format:prettier",
     "mocha": "node_modules/.bin/ts-mocha -p test-mocha/tsconfig.test.json --opts test-mocha/mocha.opts",
-    "test": "npm run lint && npm run mocha",
-    "docker_build": "sh ./script/docker_run.sh build $npm_package_version",
-    "bash": "sh ./script/docker_run.sh bash $npm_package_version"
+    "test": "npm run lint && npm run mocha"
   },
   "author": "Paulus Schoutsen <Paulus@PaulusSchoutsen.nl> (http://paulusschoutsen.nl)",
   "license": "Apache-2.0",
@@ -89,7 +87,7 @@
     "fuse.js": "^6.0.0",
     "google-timezones-json": "^1.0.2",
     "hls.js": "^0.12.4",
-    "home-assistant-js-websocket": "^5.2.1",
+    "home-assistant-js-websocket": "^5.3.0",
     "idb-keyval": "^3.2.0",
     "intl-messageformat": "^8.3.9",
     "js-yaml": "^3.13.1",

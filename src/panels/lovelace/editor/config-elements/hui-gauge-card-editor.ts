@@ -10,6 +10,7 @@ import {
 } from "lit-element";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-switch";
+import "../../../../components/ha-formfield";
 import { HomeAssistant } from "../../../../types";
 import { GaugeCardConfig, SeverityConfig } from "../../cards/types";
 import { struct } from "../../common/structs/struct";
@@ -141,13 +142,16 @@ export class HuiGaugeCardEditor extends LitElement
           .configValue=${"max"}
           @value-changed="${this._valueChanged}"
         ></paper-input>
-        <ha-switch
-          .checked="${this._config!.severity !== undefined}"
-          @change="${this._toggleSeverity}"
-          >${this.hass.localize(
+        <ha-formfield
+          .label=${this.hass.localize(
             "ui.panel.lovelace.editor.card.gauge.severity.define"
-          )}</ha-switch
+          )}
         >
+          <ha-switch
+            .checked="${this._config!.severity !== undefined}"
+            @change="${this._toggleSeverity}"
+          ></ha-switch
+        ></ha-formfield>
         ${this._config!.severity !== undefined
           ? html`
               <paper-input

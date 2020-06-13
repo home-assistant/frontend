@@ -12,6 +12,7 @@ import {
 } from "lit-element";
 import { createCloseHeading } from "../../../components/ha-dialog";
 import "../../../components/ha-switch";
+import "../../../components/ha-formfield";
 import {
   SYSTEM_GROUP_ID_ADMIN,
   SYSTEM_GROUP_ID_USER,
@@ -99,13 +100,16 @@ class DialogUserDetail extends LitElement {
                 "ui.panel.config.users.editor.name"
               )}"
             ></paper-input>
-            <ha-switch
-              .disabled=${user.system_generated}
-              .checked=${this._isAdmin}
-              @change=${this._adminChanged}
+            <ha-formfield
+              .label=${this.hass.localize("ui.panel.config.users.editor.admin")}
             >
-              ${this.hass.localize("ui.panel.config.users.editor.admin")}
-            </ha-switch>
+              <ha-switch
+                .disabled=${user.system_generated}
+                .checked=${this._isAdmin}
+                @change=${this._adminChanged}
+              >
+              </ha-switch>
+            </ha-formfield>
             ${!this._isAdmin
               ? html`
                   <br />

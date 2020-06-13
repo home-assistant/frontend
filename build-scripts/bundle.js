@@ -85,8 +85,8 @@ module.exports.babelExclude = () => [
 const outputPath = (outputRoot, latestBuild) =>
   path.resolve(outputRoot, latestBuild ? "frontend_latest" : "frontend_es5");
 
-const publicPath = (latestBuild) =>
-  latestBuild ? "/frontend_latest/" : "/frontend_es5/";
+const publicPath = (latestBuild, root = "") =>
+  latestBuild ? `${root}/frontend_latest/` : `${root}/frontend_es5/`;
 
 /*
 BundleConfig {
@@ -170,15 +170,12 @@ module.exports.config = {
   },
 
   hassio({ isProdBuild, latestBuild }) {
-    if (latestBuild) {
-      throw new Error("Hass.io does not support latest build!");
-    }
     return {
       entry: {
         entrypoint: path.resolve(paths.hassio_dir, "src/entrypoint.ts"),
       },
-      outputPath: paths.hassio_output_root,
-      publicPath: paths.hassio_publicPath,
+      outputPath: outputPath(paths.hassio_output_root, latestBuild),
+      publicPath: publicPath(latestBuild, paths.hassio_publicPath),
       isProdBuild,
       latestBuild,
       dontHash: new Set(["entrypoint"]),

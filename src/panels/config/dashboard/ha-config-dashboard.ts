@@ -20,6 +20,7 @@ import { HomeAssistant } from "../../../types";
 import "../ha-config-section";
 import { configSections } from "../ha-panel-config";
 import "./ha-config-navigation";
+import { mdiCloudLock } from "@mdi/js";
 
 @customElement("ha-config-dashboard")
 class HaConfigDashboard extends LitElement {
@@ -66,7 +67,7 @@ class HaConfigDashboard extends LitElement {
                         path: "/config/cloud",
                         translationKey: "ui.panel.config.cloud.caption",
                         info: this.cloudStatus,
-                        icon: "hass:cloud-lock",
+                        iconPath: mdiCloudLock,
                       },
                     ]}
                   ></ha-config-navigation>

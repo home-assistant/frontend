@@ -1,5 +1,4 @@
 import "@material/mwc-button/mwc-button";
-import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable";
 import "@polymer/paper-input/paper-input";
 import {
   css,
@@ -11,7 +10,7 @@ import {
   TemplateResult,
 } from "lit-element";
 import { classMap } from "lit-html/directives/class-map";
-import "../../components/dialog/ha-paper-dialog";
+import "../../components/ha-dialog";
 import "../../components/ha-switch";
 import { PolymerChangedEvent } from "../../polymer-types";
 import { haStyleDialog } from "../../resources/styles";
@@ -41,21 +40,17 @@ class DialogBox extends LitElement {
     const confirmPrompt = this._params.confirmation || this._params.prompt;
 
     return html`
-      <ha-paper-dialog
-        with-backdrop
-        opened
-        modal
-        @opened-changed="${this._openedChanged}"
+      <ha-dialog
+        open
+        scrimClickAction
+        escapeKeyAction
+        @close=${this._close}
+        .heading=${this._params.title
+          ? this._params.title
+          : this._params.confirmation &&
+            this.hass.localize("ui.dialogs.generic.default_confirmation_title")}
       >
-        <h2>
-          ${this._params.title
-            ? this._params.title
-            : this._params.confirmation &&
-              this.hass.localize(
-                "ui.dialogs.generic.default_confirmation_title"
-              )}
-        </h2>
-        <paper-dialog-scrollable>
+        <div>
           ${this._params.text
             ? html`
                 <p
@@ -83,23 +78,21 @@ class DialogBox extends LitElement {
                 ></paper-input>
               `
             : ""}
-        </paper-dialog-scrollable>
-        <div class="paper-dialog-buttons">
-          ${confirmPrompt &&
-          html`
-            <mwc-button @click="${this._dismiss}">
-              ${this._params.dismissText
-                ? this._params.dismissText
-                : this.hass.localize("ui.dialogs.generic.cancel")}
-            </mwc-button>
-          `}
-          <mwc-button @click="${this._confirm}">
-            ${this._params.confirmText
-              ? this._params.confirmText
-              : this.hass.localize("ui.dialogs.generic.ok")}
-          </mwc-button>
         </div>
-      </ha-paper-dialog>
+        ${confirmPrompt &&
+        html`
+          <mwc-button @click=${this._dismiss} slot="secondaryAction">
+            ${this._params.dismissText
+              ? this._params.dismissText
+              : this.hass.localize("ui.dialogs.generic.cancel")}
+          </mwc-button>
+        `}
+        <mwc-button @click=${this._confirm} slot="primaryAction">
+          ${this._params.confirmText
+            ? this._params.confirmText
+            : this.hass.localize("ui.dialogs.generic.ok")}
+        </mwc-button>
+      </ha-dialog>
     `;
   }
 
@@ -127,10 +120,8 @@ class DialogBox extends LitElement {
     this._dismiss();
   }
 
-  private _openedChanged(ev: PolymerChangedEvent<boolean>): void {
-    if (!(ev.detail as any).value) {
-      this._params = undefined;
-    }
+  private _close(): void {
+    this._params = undefined;
   }
 
   static get styles(): CSSResult[] {
@@ -140,15 +131,6 @@ class DialogBox extends LitElement {
         :host([inert]) {
           pointer-events: initial !important;
           cursor: initial !important;
-        }
-        ha-paper-dialog {
-          min-width: 400px;
-          max-width: 500px;
-        }
-        @media (max-width: 400px) {
-          ha-paper-dialog {
-            min-width: initial;
-          }
         }
         a {
           color: var(--primary-color);
@@ -164,6 +146,10 @@ class DialogBox extends LitElement {
         }
         .secondary {
           color: var(--secondary-text-color);
+        }
+        ha-dialog {
+          /* Place above other dialogs */
+          --dialog-z-index: 104;
         }
       `,
     ];

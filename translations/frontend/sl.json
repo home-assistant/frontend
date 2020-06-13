@@ -478,6 +478,7 @@
             "cancel": "Prekliči",
             "close": "Zapri",
             "delete": "Izbriši",
+            "error_required": "Zahtevano",
             "loading": "Nalaganje",
             "next": "Naslednji",
             "no": "Ne",
@@ -740,6 +741,8 @@
         "notification_toast": {
             "connection_lost": "Povezava prekinjena. Vnovično vzpostavljanje povezave...",
             "service_call_failed": "Storitve ni bilo mogoče poklicati {service}.",
+            "started": "Home Assistant se je zagnal!",
+            "starting": "Home Assistant se zaganja, vse ne bo na voljo, dokler se zagon ne konča.",
             "triggered": "Sproženo {name}"
         },
         "panel": {
@@ -1219,6 +1222,7 @@
                     "different_include": "Mogoče prek domene, globusa ali drugačne vsebovanosti.",
                     "pick_attribute": "Izberite atribut, ki ga želite preglasiti",
                     "picker": {
+                        "entity": "Subjekt",
                         "header": "Prilagoditve",
                         "introduction": "Prilagajanja atributov na entiteti. Dodane/spremenjene prilagoditve začnejo veljati takoj. Odstranjene pa po posodobitvi entitete."
                     },
@@ -1363,6 +1367,24 @@
                         "input_text": "Besedilo"
                     }
                 },
+                "info": {
+                    "built_using": "Zgrajen z uporabo",
+                    "custom_uis": "Uporabniški vmesniki po meri:",
+                    "developed_by": "Razvija ga kup osupljivih ljudi.",
+                    "documentation": "Dokumentacija",
+                    "frontend": "frontend-ui",
+                    "frontend_version": "Frontend različica: {version} - {type}",
+                    "home_assistant_logo": "Home Assistant logotip",
+                    "icons_by": "Ikone ustvarili z",
+                    "integrations": "Integracije",
+                    "issues": "Težave",
+                    "license": "Objavljeno pod licenco Apache 2.0",
+                    "path_configuration": "Pot do configuration.yaml: {path}",
+                    "server": "strežnik",
+                    "source": "Vir:",
+                    "system_health_error": "Komponenta \"system health\" ni naložena. Dodajte \"system_health:\" v svoj configuration.yaml",
+                    "title": "Info"
+                },
                 "integrations": {
                     "add_integration": "Dodaj integracijo",
                     "caption": "Integracije",
@@ -1434,6 +1456,17 @@
                     "rename_input_label": "Ime vnosa"
                 },
                 "introduction": "Tukaj je mogoče konfigurirati vaše komponente in Home Assistanta. Vsega ni mogoče konfigurirati iz uporabniškega vmesnika (vendar delamo na tem).",
+                "logs": {
+                    "clear": "Počisti",
+                    "details": "Podrobnosti dnevnika ({level})",
+                    "load_full_log": "Naloži celoten dnevnik Home Assistant-a",
+                    "loading_log": "Nalaganje dnevnika napak ...",
+                    "multiple_messages": "sporočilo se je prvič pojavilo ob {time} in se prikaže {counter} krat",
+                    "no_errors": "Ni prijavljenih napak.",
+                    "no_issues": "Ni novih težav!",
+                    "refresh": "Osveži",
+                    "title": "Dnevniki"
+                },
                 "lovelace": {
                     "caption": "Nadzorne plošče Lovelace",
                     "dashboards": {
@@ -1677,7 +1710,8 @@
                             "name": "Ime",
                             "system": "Sistem"
                         }
-                    }
+                    },
+                    "users_privileges_note": "Skupine uporabnikov je delo v teku. Uporabnik ne bo mogel upravljati primerka prek uporabniškega vmesnika. Še vedno poteka revidiranje vseh končnih točk API-ja za upravljanje, da zagotovimo pravilno omejevanje dostopa do administratorjev."
                 },
                 "zha": {
                     "add_device_page": {
@@ -1839,21 +1873,53 @@
                         "set_wakeup": "Nastavite Interval bujenja",
                         "true": "Prav"
                     },
+                    "node_management": {
+                        "add_to_group": "Dodaj v skupino",
+                        "entities": "Subjekti tega vozlišča",
+                        "entity_info": "Podatki o subjektu",
+                        "exclude_entity": "Izključite to entiteto iz Home Assistant-a",
+                        "group": "Skupina",
+                        "header": "Upravljanje Z-Wave vozlišč",
+                        "introduction": "Poženite ukaze Z-Wave, ki vplivajo na posamezno vozlišče. Izberite vozlišče in si oglejte seznam razpoložljivih ukazov.",
+                        "max_associations": "Max združenja:",
+                        "node_group_associations": "Združenja skupin vozlišč",
+                        "node_protection": "Zaščita vozlišča",
+                        "node_to_control": "Vozlišče za nadzor",
+                        "nodes": "Vozlišča",
+                        "nodes_hint": "Izberite vozlišče za ogled njegovih možnosti",
+                        "nodes_in_group": "Druga vozlišča v tej skupini:",
+                        "pooling_intensity": "Intenzivnost osveževanja",
+                        "protection": "Zaščita",
+                        "remove_broadcast": "Odstrani oddajanje",
+                        "remove_from_group": "Odstrani iz skupine",
+                        "set_protection": "Nastavite zaščito"
+                    },
                     "ozw_log": {
                         "header": "OZW dnevnik",
-                        "introduction": "Oglejte si dnevnik. 0 je minimum (naloži celoten dnevnik), 1000 pa največ. Prikazan bo statični dnevnik, konec pa se bo samodejno posodobil z zadnjim določenim številom vrstic dnevnika."
+                        "introduction": "Oglejte si dnevnik. 0 je minimum (naloži celoten dnevnik), 1000 pa največ. Prikazan bo statični dnevnik, konec pa se bo samodejno posodobil z zadnjim določenim številom vrstic dnevnika.",
+                        "last_log_lines": "Število zadnjih vrstic dnevnika",
+                        "load": "Obremenitev",
+                        "tail": "Rep"
                     },
                     "services": {
                         "add_node": "Dodaj vozlišče",
                         "add_node_secure": "Dodaj vozlišče varno",
                         "cancel_command": "Prekliči ukaz",
                         "heal_network": "Pozdravite omrežje",
+                        "heal_node": "Pozdravi Vozlišče",
+                        "node_info": "Informacije o vozlišču",
+                        "print_node": "Podatki o vozlišču",
+                        "refresh_entity": "Osveži subjekt",
+                        "refresh_node": "Osveži vozlišče",
+                        "remove_failed_node": "Odstranite neuspešno vozlišče",
                         "remove_node": "Odstrani vozlišče",
+                        "replace_failed_node": "Zamenjaj neuspešno vozlišče",
                         "save_config": "Shrani konfiguracijo",
                         "soft_reset": "Resetiraj",
                         "start_network": "Zaženite omrežje",
                         "stop_network": "Ustavite omrežje",
-                        "test_network": "Preizkusite omrežje"
+                        "test_network": "Preizkusite omrežje",
+                        "test_node": "Preizkusi vozlišče"
                     },
                     "values": {
                         "header": "Vrednosti vozlišča"
@@ -1886,35 +1952,6 @@
                         "subscribe_to": "Dogodek, na katerega se lahko naročite",
                         "title": "Dogodki",
                         "type": "Vrsta dogodka"
-                    },
-                    "info": {
-                        "built_using": "Zgrajen z uporabo",
-                        "custom_uis": "Uporabniški vmesniki po meri:",
-                        "developed_by": "Razvija ga kup osupljivih ljudi.",
-                        "documentation": "Dokumentacija",
-                        "frontend": "frontend-ui",
-                        "frontend_version": "Frontend različica: {version} - {type}",
-                        "home_assistant_logo": "Home Assistant logotip",
-                        "icons_by": "Ikone ustvarili z",
-                        "integrations": "Integracije",
-                        "issues": "Težave",
-                        "license": "Objavljeno pod licenco Apache 2.0",
-                        "path_configuration": "Pot do configuration.yaml: {path}",
-                        "server": "strežnik",
-                        "source": "Vir:",
-                        "system_health_error": "Komponenta \"system health\" ni naložena. Dodajte \"system_health:\" v svoj configuration.yaml",
-                        "title": "Info"
-                    },
-                    "logs": {
-                        "clear": "Počisti",
-                        "details": "Podrobnosti dnevnika ({level})",
-                        "load_full_log": "Naloži celoten dnevnik Home Assistant-a",
-                        "loading_log": "Nalaganje dnevnika napak ...",
-                        "multiple_messages": "sporočilo se je prvič pojavilo ob {time} in se prikaže {counter} krat",
-                        "no_errors": "Ni prijavljenih napak.",
-                        "no_issues": "Ni novih težav!",
-                        "refresh": "Osveži",
-                        "title": "Dnevniki"
                     },
                     "mqtt": {
                         "description_listen": "Poslušajte temi",
@@ -2012,6 +2049,10 @@
                         "add_item": "Dodaj element",
                         "checked_items": "Označeni predmeti",
                         "clear_items": "Počisti označene elemente"
+                    },
+                    "starting": {
+                        "description": "Home Assistant se zaganja, prosimo počakajte ...",
+                        "header": "Home Assistant se zaganja ..."
                     }
                 },
                 "changed_toast": {
@@ -2304,7 +2345,8 @@
                     "attribute_not_found": "Atribut {attribute} ni na voljo v: {entity}",
                     "entity_non_numeric": "Entiteta je neštevilska: {entity}",
                     "entity_not_found": "Entiteta ni na voljo: {entity}",
-                    "entity_unavailable": "{entity} trenutno ni na voljo"
+                    "entity_unavailable": "{entity} trenutno ni na voljo",
+                    "starting": "Home Assistant se zaganja, morda še ni vse na voljo"
                 }
             },
             "mailbox": {

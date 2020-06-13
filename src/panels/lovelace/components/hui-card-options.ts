@@ -1,7 +1,7 @@
 import "@material/mwc-button";
-import "../../../components/ha-icon-button";
-import "@polymer/paper-listbox/paper-listbox";
-import "@polymer/paper-menu-button/paper-menu-button";
+import "@material/mwc-list/mwc-list-item";
+import "@material/mwc-icon-button";
+import "../../../components/ha-button-menu";
 import {
   css,
   CSSResult,
@@ -19,6 +19,7 @@ import { swapCard } from "../editor/config-util";
 import { confDeleteCard } from "../editor/delete-card";
 import { Lovelace, LovelaceCard } from "../types";
 import { computeCardSize } from "../common/compute-card-size";
+import { mdiDotsVertical, mdiArrowDown, mdiArrowUp } from "@mdi/js";
 
 @customElement("hui-card-options")
 export class HuiCardOptions extends LitElement {
@@ -47,53 +48,52 @@ export class HuiCardOptions extends LitElement {
             >
           </div>
           <div class="secondary-actions">
-            <ha-icon-button
+            <mwc-icon-button
               title="Move card down"
               class="move-arrow"
-              icon="hass:arrow-down"
               @click=${this._cardDown}
               ?disabled=${this.lovelace!.config.views[this.path![0]].cards!
                 .length ===
               this.path![1] + 1}
-            ></ha-icon-button>
-            <ha-icon-button
+            >
+              <ha-svg-icon path=${mdiArrowDown}></ha-svg-icon>
+            </mwc-icon-button>
+            <mwc-icon-button
               title="Move card up"
               class="move-arrow"
-              icon="hass:arrow-up"
               @click=${this._cardUp}
               ?disabled=${this.path![1] === 0}
-            ></ha-icon-button>
-            <paper-menu-button
-              horizontal-align="right"
-              vertical-align="bottom"
-              vertical-offset="40"
-              close-on-activate
-            >
-              <ha-icon-button
-                icon="hass:dots-vertical"
-                slot="dropdown-trigger"
+              ><ha-svg-icon path=${mdiArrowUp}></ha-svg-icon
+            ></mwc-icon-button>
+            <ha-button-menu corner="BOTTOM_START">
+              <mwc-icon-button
+                slot="trigger"
                 aria-label=${this.hass!.localize(
                   "ui.panel.lovelace.editor.edit_card.options"
                 )}
-              ></ha-icon-button>
-              <paper-listbox slot="dropdown-content">
-                <paper-item @tap=${this._moveCard}>
-                  ${this.hass!.localize(
-                    "ui.panel.lovelace.editor.edit_card.move"
-                  )}</paper-item
-                >
-                <paper-item @tap=${this._duplicateCard}
-                  >${this.hass!.localize(
-                    "ui.panel.lovelace.editor.edit_card.duplicate"
-                  )}</paper-item
-                >
-                <paper-item class="delete-item" @tap=${this._deleteCard}>
-                  ${this.hass!.localize(
-                    "ui.panel.lovelace.editor.edit_card.delete"
-                  )}</paper-item
-                >
-              </paper-listbox>
-            </paper-menu-button>
+                title="${this.hass!.localize(
+                  "ui.panel.lovelace.editor.edit_card.options"
+                )}"
+              >
+                <ha-svg-icon path=${mdiDotsVertical}></ha-svg-icon>
+              </mwc-icon-button>
+
+              <mwc-list-item @tap=${this._moveCard}>
+                ${this.hass!.localize(
+                  "ui.panel.lovelace.editor.edit_card.move"
+                )}</mwc-list-item
+              >
+              <mwc-list-item @tap=${this._duplicateCard}
+                >${this.hass!.localize(
+                  "ui.panel.lovelace.editor.edit_card.duplicate"
+                )}</mwc-list-item
+              >
+              <mwc-list-item class="delete-item" @tap=${this._deleteCard}>
+                ${this.hass!.localize(
+                  "ui.panel.lovelace.editor.edit_card.delete"
+                )}</mwc-list-item
+              >
+            </ha-button-menu>
           </div>
         </div>
       </ha-card>
@@ -103,16 +103,12 @@ export class HuiCardOptions extends LitElement {
   static get styles(): CSSResult {
     return css`
       :host(:hover) {
-        overflow: hidden;
         outline: 2px solid var(--primary-color);
       }
 
       ha-card {
         border-top-right-radius: 0;
         border-top-left-radius: 0;
-        box-shadow: rgba(0, 0, 0, 0.14) 0px 2px 2px 0px,
-          rgba(0, 0, 0, 0.12) 0px 1px 5px -4px,
-          rgba(0, 0, 0, 0.2) 0px 3px 1px -2px;
       }
 
       div.options {
@@ -132,21 +128,12 @@ export class HuiCardOptions extends LitElement {
         text-align: right;
       }
 
-      ha-icon-button {
+      mwc-icon-button {
         color: var(--primary-text-color);
       }
 
-      ha-icon-button.move-arrow[disabled] {
+      mwc-icon-button.move-arrow[disabled] {
         color: var(--disabled-text-color);
-      }
-
-      paper-menu-button {
-        color: var(--secondary-text-color);
-        padding: 0;
-      }
-
-      paper-listbox {
-        padding: 0;
       }
 
       paper-item.header {

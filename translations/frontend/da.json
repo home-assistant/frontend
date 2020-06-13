@@ -478,9 +478,12 @@
             "cancel": "Annuller",
             "close": "Luk",
             "delete": "Slet",
+            "error_required": "Påkrævet",
             "loading": "Indlæser",
+            "menu": "Menu",
             "next": "Næste",
             "no": "Nej",
+            "overflow_menu": "Overløbsmenu",
             "previous": "Forrige",
             "refresh": "Opdater",
             "save": "Gem",
@@ -910,6 +913,8 @@
                         "introduction": "Brug automatiseringer til at vække dit hjem til live.",
                         "load_error_not_editable": "Kun automatiseringer i 'automations.yaml' kan redigeres.",
                         "load_error_unknown": "Fejl ved indlæsning af automatisering ({err_no}).",
+                        "move_down": "Flyt ned",
+                        "move_up": "Flyt op",
                         "save": "Gem",
                         "triggers": {
                             "add": "Tilføj udløser",
@@ -1221,6 +1226,7 @@
                     "different_include": "Eventuelt via et domæne, et glob eller et andet include.",
                     "pick_attribute": "Vælg en egenskab, du vil tilsidesætte",
                     "picker": {
+                        "entity": "Entitet",
                         "header": "Tilpasninger",
                         "introduction": "Tilpas entitetsegenskaber. Tilføjede/redigerede tilpasninger træder i kraft med det samme. Fjernede tilpasninger træder i kraft når entiteten opdateres."
                     },
@@ -1365,6 +1371,24 @@
                         "input_text": "Tekst"
                     }
                 },
+                "info": {
+                    "built_using": "Bygget ved hjælp af",
+                    "custom_uis": "Tilpassede brugergrænseflader:",
+                    "developed_by": "Udviklet af en masse fantastiske mennesker.",
+                    "documentation": "Dokumentation",
+                    "frontend": "brugerflade",
+                    "frontend_version": "Brugerfladeversion: {version} - {type}",
+                    "home_assistant_logo": "Home Assistant-logo",
+                    "icons_by": "Ikoner af",
+                    "integrations": "Integrationer",
+                    "issues": "Problemer",
+                    "license": "Udgivet under Apache 2.0-licensen",
+                    "path_configuration": "Sti til 'configuration.yaml': {path}",
+                    "server": "server",
+                    "source": "Kilde:",
+                    "system_health_error": "System Health-komponenten er ikke indlæst. Føj 'system_health:' til 'config.yaml'",
+                    "title": "Info"
+                },
                 "integrations": {
                     "add_integration": "Tilføj integration",
                     "caption": "Integrationer",
@@ -1436,6 +1460,17 @@
                     "rename_input_label": "Navn på post"
                 },
                 "introduction": "Her er det muligt at konfigurere dine komponenter og Home Assistant. Ikke alt er muligt at konfigurere fra brugerfladen endnu, men vi arbejder på det.",
+                "logs": {
+                    "clear": "Ryd",
+                    "details": "Logdetaljer ({level})",
+                    "load_full_log": "Indlæs fuld Home Assistant-log",
+                    "loading_log": "Indlæser fejllog...",
+                    "multiple_messages": "beskeden forekom først kl. {time} og ses {counter} gange",
+                    "no_errors": "Der er ikke rapporteret nogen fejl.",
+                    "no_issues": "Der er ingen nye problemer!",
+                    "refresh": "Opdater",
+                    "title": "Logs"
+                },
                 "lovelace": {
                     "caption": "Lovelace-betjeningspaneler",
                     "dashboards": {
@@ -1679,7 +1714,8 @@
                             "name": "Navn",
                             "system": "System"
                         }
-                    }
+                    },
+                    "users_privileges_note": "Bruger-gruppen stadig under udvikling. Brugeren vil ikke være i stand til at administrere instansen via brugerfladen. Vi kigger stadig alle administrations-API-slutpunkter igennem for at sikre, at de korrekt begrænser adgangen til administratorer."
                 },
                 "zha": {
                     "add_device_page": {
@@ -1888,35 +1924,6 @@
                         "subscribe_to": "Hændelse at abonnere på",
                         "title": "Hændelser",
                         "type": "Hændelsestype"
-                    },
-                    "info": {
-                        "built_using": "Bygget ved hjælp af",
-                        "custom_uis": "Tilpassede brugergrænseflader:",
-                        "developed_by": "Udviklet af en masse fantastiske mennesker.",
-                        "documentation": "Dokumentation",
-                        "frontend": "brugerflade",
-                        "frontend_version": "Brugerfladeversion: {version} - {type}",
-                        "home_assistant_logo": "Home Assistant-logo",
-                        "icons_by": "Ikoner af",
-                        "integrations": "Integrationer",
-                        "issues": "Problemer",
-                        "license": "Udgivet under Apache 2.0-licensen",
-                        "path_configuration": "Sti til 'configuration.yaml': {path}",
-                        "server": "server",
-                        "source": "Kilde:",
-                        "system_health_error": "System Health-komponenten er ikke indlæst. Føj 'system_health:' til 'config.yaml'",
-                        "title": "Info"
-                    },
-                    "logs": {
-                        "clear": "Ryd",
-                        "details": "Logdetaljer ({level})",
-                        "load_full_log": "Indlæs fuld Home Assistant-log",
-                        "loading_log": "Indlæser fejllog...",
-                        "multiple_messages": "beskeden forekom først kl. {time} og ses {counter} gange",
-                        "no_errors": "Der er ikke rapporteret nogen fejl.",
-                        "no_issues": "Der er ingen nye problemer!",
-                        "refresh": "Opdater",
-                        "title": "Logs"
                     },
                     "mqtt": {
                         "description_listen": "Lyt til et emne",

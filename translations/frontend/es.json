@@ -478,9 +478,12 @@
             "cancel": "Cancelar",
             "close": "Cerrar",
             "delete": "Eliminar",
+            "error_required": "Obligatorio",
             "loading": "Cargando",
+            "menu": "Menú",
             "next": "Siguiente",
             "no": "No",
+            "overflow_menu": "Menú de desbordamiento",
             "previous": "Anterior",
             "refresh": "Actualizar",
             "save": "Guardar",
@@ -508,7 +511,7 @@
                 "device": "Dispositivo",
                 "no_area": "Ningún área",
                 "show_devices": "Mostrar dispositivos",
-                "toggle": "Alternar"
+                "toggle": "Interruptor"
             },
             "entity": {
                 "entity-picker": {
@@ -910,6 +913,8 @@
                         "introduction": "Utiliza automatizaciones para darle vida a tu hogar.",
                         "load_error_not_editable": "Solo las automatizaciones en automations.yaml son editables.",
                         "load_error_unknown": "Error al cargar la automatización ({err_no}).",
+                        "move_down": "Mover hacia abajo",
+                        "move_up": "Mover hacia arriba",
                         "save": "Guardar",
                         "triggers": {
                             "add": "Añadir desencadenante",
@@ -1221,6 +1226,7 @@
                     "different_include": "Posiblemente a través de un dominio, un glob o un include diferente.",
                     "pick_attribute": "Selecciona un atributo para anular",
                     "picker": {
+                        "entity": "Entidad",
                         "header": "Personalizaciones",
                         "introduction": "Ajustar los atributos de cada entidad. Las personalizaciones añadidas/editadas tendrán efecto inmediatamente. Las personalizaciones eliminadas tendrán efecto cuando la entidad se actualice."
                     },
@@ -1365,6 +1371,26 @@
                         "input_text": "Texto"
                     }
                 },
+                "info": {
+                    "built_using": "Construido usando",
+                    "caption": "Información",
+                    "custom_uis": "IU personalizadas:",
+                    "description": "Información sobre tu instalación de Home Assistant",
+                    "developed_by": "Desarrollado por un montón de gente impresionante.",
+                    "documentation": "Documentación",
+                    "frontend": "interfaz de usuario",
+                    "frontend_version": "Versión del frontend: {version} - {type}",
+                    "home_assistant_logo": "Logotipo de Home Assistant",
+                    "icons_by": "Iconos por",
+                    "integrations": "Integraciones",
+                    "issues": "Incidencias",
+                    "license": "Publicado bajo la licencia Apache 2.0",
+                    "path_configuration": "Ruta a configuration.yaml: {path}",
+                    "server": "servidor",
+                    "source": "Fuente:",
+                    "system_health_error": "El componente Estado del Sistema no está cargado. Añade 'system_health:' a configuration.yaml",
+                    "title": "Información"
+                },
                 "integrations": {
                     "add_integration": "Añadir integración",
                     "caption": "Integraciones",
@@ -1436,6 +1462,19 @@
                     "rename_input_label": "Nombre de la entrada"
                 },
                 "introduction": "Aquí puedes configurar tus componentes y Home Assistant. Aún no es posible configurar todo desde la interfaz de usuario, pero estamos trabajando en ello.",
+                "logs": {
+                    "caption": "Registros",
+                    "clear": "Limpiar",
+                    "description": "Ver los registros de Home Assistant",
+                    "details": "Detalles de registro ({level})",
+                    "load_full_log": "Cargar registro completo de Home Assistant",
+                    "loading_log": "Cargando registro de errores...",
+                    "multiple_messages": "el mensaje se produjo por primera vez a las {time} y aparece {counter} veces",
+                    "no_errors": "No se han reportado errores.",
+                    "no_issues": "¡No hay nuevos problemas!",
+                    "refresh": "Actualizar",
+                    "title": "Registros"
+                },
                 "lovelace": {
                     "caption": "Paneles de Control Lovelace",
                     "dashboards": {
@@ -1621,6 +1660,11 @@
                             "core": "Recargar ubicación y personalizaciones",
                             "group": "Recargar grupos",
                             "heading": "Recargando la configuración YAML",
+                            "input_boolean": "Recargar los campos booleanos",
+                            "input_datetime": "Recargar los campos de fecha y hora",
+                            "input_number": "Recargar los campos numéricos",
+                            "input_select": "Recargar los campos desplegables",
+                            "input_text": "Recargar los campos de texto",
                             "introduction": "Algunas partes de Home Assistant pueden recargarse sin necesidad de reiniciar. Al pulsar en recargar se descartará la configuración YAML actual y se cargará la nueva.",
                             "person": "Recargar personas",
                             "scene": "Recargar escenas",
@@ -1679,7 +1723,8 @@
                             "name": "Nombre",
                             "system": "Sistema"
                         }
-                    }
+                    },
+                    "users_privileges_note": "El grupo de usuarios es un trabajo en progreso. El usuario no podrá administrar la instancia a través de la interfaz de usuario. Todavía estamos auditando todos los endpoints de la API de administración para garantizar que se limita correctamente el acceso sólo a los administradores."
                 },
                 "zha": {
                     "add_device_page": {
@@ -1921,35 +1966,6 @@
                         "title": "Eventos",
                         "type": "Tipo de evento"
                     },
-                    "info": {
-                        "built_using": "Construido usando",
-                        "custom_uis": "IU personalizadas:",
-                        "developed_by": "Desarrollado por un montón de gente impresionante.",
-                        "documentation": "Documentación",
-                        "frontend": "interfaz de usuario",
-                        "frontend_version": "Versión del frontend: {version} - {type}",
-                        "home_assistant_logo": "Logotipo de Home Assistant",
-                        "icons_by": "Iconos por",
-                        "integrations": "Integraciones",
-                        "issues": "Incidencias",
-                        "license": "Publicado bajo la licencia Apache 2.0",
-                        "path_configuration": "Ruta a configuration.yaml: {path}",
-                        "server": "servidor",
-                        "source": "Fuente:",
-                        "system_health_error": "El componente Estado del Sistema no está cargado. Añade 'system_health:' a configuration.yaml",
-                        "title": "Información"
-                    },
-                    "logs": {
-                        "clear": "Limpiar",
-                        "details": "Detalles de registro ({level})",
-                        "load_full_log": "Cargar registro completo de Home Assistant",
-                        "loading_log": "Cargando registro de errores...",
-                        "multiple_messages": "el mensaje se produjo por primera vez a las {time} y aparece {counter} veces",
-                        "no_errors": "No se han reportado errores.",
-                        "no_issues": "¡No hay nuevos problemas!",
-                        "refresh": "Actualizar",
-                        "title": "Registros"
-                    },
                     "mqtt": {
                         "description_listen": "Escuchar un tema",
                         "description_publish": "Publicar un paquete",
@@ -2048,7 +2064,7 @@
                         "clear_items": "Borrar elementos marcados"
                     },
                     "starting": {
-                        "description": "Home Assistant se está iniciando, espera por favor.",
+                        "description": "Home Assistant está iniciando, espera por favor...",
                         "header": "Home Assistant se está iniciando..."
                     }
                 },

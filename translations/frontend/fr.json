@@ -238,8 +238,8 @@
             "on": "Actif"
         },
         "light": {
-            "off": "Inactif",
-            "on": "Actif"
+            "off": "Éteint",
+            "on": "Allumé"
         },
         "lock": {
             "locked": "Verrouillé",
@@ -478,9 +478,12 @@
             "cancel": "Annuler",
             "close": "Fermer",
             "delete": "Supprimer",
+            "error_required": "Obligatoire",
             "loading": "Chargement",
+            "menu": "Menu",
             "next": "Suivant",
             "no": "Non",
+            "overflow_menu": "Menu de débordement",
             "previous": "Précédent",
             "refresh": "Rafraîchir",
             "save": "Enregistrer",
@@ -523,7 +526,7 @@
             },
             "related-items": {
                 "area": "Pièce",
-                "automation": "Partie des automations suivantes",
+                "automation": "Partie des automatisations suivantes",
                 "device": "Appareil",
                 "entity": "Entités liées",
                 "group": "Partie des groupes suivants",
@@ -741,7 +744,7 @@
             "connection_lost": "Connexion perdue. Reconnexion en cours ...",
             "service_call_failed": "Échec d'appel du service \"{service}\".",
             "started": "Home Assistant a démarré !",
-            "starting": "Home Assistant démarre, tout ne sera pas disponible jusqu'à ce qu'il soit terminé.",
+            "starting": "Home Assistant est en cours de démarrage, tout ne sera pas disponible tant qu’il n’aura pas terminé.",
             "triggered": "{name} déclenché"
         },
         "panel": {
@@ -785,8 +788,8 @@
                     }
                 },
                 "automation": {
-                    "caption": "Automations",
-                    "description": "Créer et modifier des automations.",
+                    "caption": "Automatisations",
+                    "description": "Créer et modifier des automatisations",
                     "editor": {
                         "actions": {
                             "add": "Ajouter une action",
@@ -794,7 +797,7 @@
                             "delete_confirm": "Voulez-vous vraiment effacer ?",
                             "duplicate": "Dupliquer",
                             "header": "Actions",
-                            "introduction": "Les actions sont ce que Home Assistant fera quand une automation est déclenchée.",
+                            "introduction": "Les actions sont ce que Home Assistant fera quand une automatisation est déclenchée.",
                             "learn_more": "En savoir plus sur les actions",
                             "name": "Action",
                             "type_select": "Type d'action",
@@ -899,17 +902,19 @@
                             },
                             "unsupported_condition": "Condition non supportée: {condition}"
                         },
-                        "default_name": "Nouvelle automation",
+                        "default_name": "Nouvelle automatisation",
                         "description": {
                             "label": "Description",
                             "placeholder": "Description optionnelle"
                         },
                         "edit_ui": "Modifier avec l'interface utilisateur",
                         "edit_yaml": "Modifier en tant que YAML",
-                        "enable_disable": "Activer/Désactiver l'automation",
-                        "introduction": "Utilisez les automations pour donner vie à votre maison",
-                        "load_error_not_editable": "Seules les automations dans automations.yaml sont modifiables.",
-                        "load_error_unknown": "Erreur lors du chargement de l'automation ( {err_no} ).",
+                        "enable_disable": "Activer/Désactiver l'automatisation",
+                        "introduction": "Utilisez les automatisations pour donner vie à votre maison",
+                        "load_error_not_editable": "Seules les automatisations dans automations.yaml sont modifiables.",
+                        "load_error_unknown": "Erreur lors du chargement de l'automatisation ( {err_no} ).",
+                        "move_down": "Déplacer vers le bas",
+                        "move_up": "Déplacer vers le haut",
                         "save": "Sauvegarder",
                         "triggers": {
                             "add": "Ajouter un déclencheur",
@@ -917,7 +922,7 @@
                             "delete_confirm": "Voulez-vous effacer ?",
                             "duplicate": "Dupliquer",
                             "header": "Déclencheurs",
-                            "introduction": "Les déclencheurs sont ce qui lance le traitement d'une règle d'automation. Il est possible de spécifier plusieurs déclencheurs pour une même règle. Dès qu'un déclencheur est activé, Home Assistant validera les conditions, s'il y en a, et appellera l'action.\n\n[En apprendre plus sur les déclencheurs.](https://home-assistant.io/docs/automation/trigger/)",
+                            "introduction": "Les déclencheurs sont ce qui lance le traitement d'une règle d'automatisation. Il est possible de spécifier plusieurs déclencheurs pour une même règle. Dès qu'un déclencheur est activé, Home Assistant validera les conditions, s'il y en a, et appellera l'action.\n\n[En apprendre plus sur les déclencheurs.](https://home-assistant.io/docs/automation/trigger/)",
                             "learn_more": "En savoir plus sur les déclencheurs",
                             "name": "Déclencheur",
                             "type_select": "Type de déclencheur",
@@ -1006,20 +1011,20 @@
                         "unsaved_confirm": "Vous avez des changements non enregistrés. Êtes-vous sûr de vouloir quitter?"
                     },
                     "picker": {
-                        "add_automation": "Ajouter une automation",
-                        "delete_automation": "Supprimer l'automation",
-                        "delete_confirm": "Voulez-vous vraiment supprimer cette automation ?",
-                        "edit_automation": "Modifier l'automation",
-                        "header": "Éditeur d'automation",
+                        "add_automation": "Ajouter une automatisation",
+                        "delete_automation": "Supprimer l'automatisation",
+                        "delete_confirm": "Voulez-vous vraiment supprimer cette automatisation ?",
+                        "edit_automation": "Modifier l'automatisation",
+                        "header": "Éditeur d'automatisation",
                         "headers": {
                             "name": "Nom"
                         },
-                        "introduction": "L'éditeur d'automations vous permet de créer et modifier des automations. Veuillez lire les instructions ci-dessous pour vous assurer d'avoir configuré Home Assistant correctement.",
-                        "learn_more": "En savoir plus sur les automations",
-                        "no_automations": "Il n'y a aucune automation modifiable.",
-                        "only_editable": "Seules les automations définies dans automations.yaml sont modifiables.",
-                        "pick_automation": "Choisissez l'automation à modifier",
-                        "show_info_automation": "Afficher des informations sur l'automation"
+                        "introduction": "L'éditeur d'automatisation vous permet de créer et éditer des automatisations. Veuillez lire les instructions ci-dessous pour vous assurer d'avoir configuré Home-Assistant correctement.",
+                        "learn_more": "En savoir plus sur les automatisations",
+                        "no_automations": "Il n'y a aucune automatisation modifiable",
+                        "only_editable": "Seules les automatisations définies dans automations.yaml sont modifiables.",
+                        "pick_automation": "Choisissez l'automatisation à modifier",
+                        "show_info_automation": "Afficher des informations sur l'automatisation"
                     }
                 },
                 "cloud": {
@@ -1078,7 +1083,7 @@
                         "webhooks": {
                             "disable_hook_error_msg": "Impossible de désactiver le Webhook:",
                             "info": "Tout ce qui est configuré pour être déclenché par un Webhook peut recevoir une URL accessible publiquement pour vous permettre de renvoyer des données à Home Assistant de n’importe où, sans exposer votre instance à Internet.",
-                            "link_learn_more": "En savoir plus sur la création d'automations basées sur Webhook.",
+                            "link_learn_more": "En savoir plus sur la création d'automatisations basées sur Webhook.",
                             "loading": "Chargement ...",
                             "manage": "Gérer",
                             "no_hooks_yet": "Il semble que vous n'ayez pas encore de Webhooks. Commencez en configurer un ",
@@ -1221,6 +1226,7 @@
                     "different_include": "Peut-être via un domaine, un glob ou un autre include.",
                     "pick_attribute": "Sélectionnez un attribut à remplacer",
                     "picker": {
+                        "entity": "Entité",
                         "header": "Personnalisations",
                         "introduction": "Ajuster les attributs par entité. Les personnalisations ajoutées / modifiées prendront effet immédiatement. Les personnalisations supprimées prendront effet lors de la mise à jour de l'entité."
                     },
@@ -1235,13 +1241,13 @@
                         "actions": {
                             "caption": "Quand quelque chose est déclenché ..."
                         },
-                        "automations": "Automations",
+                        "automations": "Automatisations",
                         "conditions": {
                             "caption": "Ne faire quelque chose que si ..."
                         },
-                        "create": "Créer une automation avec l'appareil",
-                        "no_automations": "Aucune automation",
-                        "no_device_automations": "Aucune automation n'est disponible pour cet appareil.",
+                        "create": "Créer une automatisation avec l'appareil",
+                        "no_automations": "Aucune automatisation",
+                        "no_device_automations": "Aucune automatisation n'est disponible pour cet appareil.",
                         "triggers": {
                             "caption": "Faire quelque chose quand ..."
                         }
@@ -1342,7 +1348,7 @@
                 "header": "Configurer Home Assistant",
                 "helpers": {
                     "caption": "Entrées",
-                    "description": "Éléments pouvant aider à construire des automations.",
+                    "description": "Éléments pouvant aider à construire des automatisations.",
                     "dialog": {
                         "add_helper": "Ajouter une entrée",
                         "add_platform": "Ajouter {platform}",
@@ -1364,6 +1370,26 @@
                         "input_select": "Liste déroulante",
                         "input_text": "Texte"
                     }
+                },
+                "info": {
+                    "built_using": "Construit en utilisant",
+                    "caption": "Info",
+                    "custom_uis": "Interfaces utilisateur personnalisées :",
+                    "description": "Informations sur votre installation Home Assistant",
+                    "developed_by": "Développé par un groupe de personnes formidables.",
+                    "documentation": "Documentation",
+                    "frontend": "interface utilisateur",
+                    "frontend_version": "Version interface utilisateur : {version} - {type}",
+                    "home_assistant_logo": "Logo de Home Assistant",
+                    "icons_by": "Icônes par",
+                    "integrations": "Intégrations",
+                    "issues": "Problèmes",
+                    "license": "Publié sous la licence Apache 2.0",
+                    "path_configuration": "Chemin vers configuration.yaml : {path}",
+                    "server": "serveur",
+                    "source": "Source:",
+                    "system_health_error": "Le composant System Health n'est pas chargé. Ajouter 'system_health:' à configuration.yaml",
+                    "title": "Info"
                 },
                 "integrations": {
                     "add_integration": "Ajouter l'intégration",
@@ -1436,6 +1462,19 @@
                     "rename_input_label": "Nom de l'entrée"
                 },
                 "introduction": "Ici, il est possible de configurer vos composants et Home Assistant. Tout n'est pas encore possible de configurer à partir de l'interface utilisateur, mais nous y travaillons.",
+                "logs": {
+                    "caption": "Journaux",
+                    "clear": "Nettoyer",
+                    "description": "Afficher les journaux de Home Assistant",
+                    "details": "Détails du journal ( {level} )",
+                    "load_full_log": "Charger le journal complet de Home Assistant",
+                    "loading_log": "Chargement du journal des erreurs…",
+                    "multiple_messages": "message survenu pour la première fois à {time} et apparu {counter} fois.",
+                    "no_errors": "Aucune erreur n'a été signalée.",
+                    "no_issues": "Il n'y a pas de nouveaux problèmes!",
+                    "refresh": "Rafraîchir",
+                    "title": "Journaux"
+                },
                 "lovelace": {
                     "caption": "Tableaux de bord Lovelace",
                     "dashboards": {
@@ -1456,7 +1495,7 @@
                             "icon": "Icône",
                             "new_dashboard": "Ajouter un nouveau tableau de bord",
                             "remove_default": "Supprimer par défaut sur cet appareil",
-                            "require_admin": "Admin uniquement",
+                            "require_admin": "Administrateur uniquement",
                             "set_default": "Définir par défaut sur cet appareil",
                             "show_sidebar": "Afficher dans la barre latérale",
                             "title": "Titre",
@@ -1617,10 +1656,15 @@
                     "description": "Redémarrer et arrêter le serveur Home Assistant",
                     "section": {
                         "reloading": {
-                            "automation": "Recharger les automations",
+                            "automation": "Recharger les automatisations",
                             "core": "Recharger l'emplacement et les personnalisations",
                             "group": "Recharger les groupes",
                             "heading": "Rechargement de la configuration",
+                            "input_boolean": "Recharger les booléens d'entrée",
+                            "input_datetime": "Recharger les heures de date d'entrée",
+                            "input_number": "Recharger les numéros d'entrée",
+                            "input_select": "Recharger les sélections d'entrée",
+                            "input_text": "Recharger les textes d'entrée",
                             "introduction": "Certaines parties de Home Assistant peuvent être rechargées sans nécessiter de redémarrage. Le fait de cliquer sur recharger déchargera leur configuration actuelle et chargera la nouvelle.",
                             "person": "Recharger les personnes",
                             "scene": "Recharger les scènes",
@@ -1679,7 +1723,8 @@
                             "name": "Nom",
                             "system": "Système"
                         }
-                    }
+                    },
+                    "users_privileges_note": "Le groupe d'utilisateurs est en cours de développement. L'utilisateur ne pourra pas gérer l'instance via l'interface. Nous vérifions les entrées de l'interface de gestion pour assurer que les accès soient limités aux administrateurs."
                 },
                 "zha": {
                     "add_device_page": {
@@ -1796,7 +1841,7 @@
                         "name": "Nom",
                         "new_zone": "Nouvelle zone",
                         "passive": "Passif",
-                        "passive_note": "Les zones passives sont cachées dans l'interface utilisateur et ne sont pas utilisées comme emplacement pour les appareils suivis. Elles sont utiles si vous voulez les utiliser pour des automations.",
+                        "passive_note": "Les zones passives sont cachées dans l'interface utilisateur et ne sont pas utilisées comme emplacement pour les appareils suivis. Elles sont utiles si vous voulez les utiliser pour des automatisations.",
                         "radius": "Rayon",
                         "required_error_msg": "Ce champ est requis",
                         "update": "Mettre à jour"
@@ -1805,7 +1850,7 @@
                     "edit_home_zone_narrow": "Le rayon de la zone d'habitation ne peut pas encore être modifié depuis le frontend. L'emplacement peut être modifié par rapport à la configuration générale.",
                     "go_to_core_config": "Aller à la configuration générale ?",
                     "home_zone_core_config": "L'emplacement de votre zone d'habitation est modifiable à partir de la page de configuration générale. Le rayon de la zone d'habitation ne peut pas encore être modifié depuis le frontend. Voulez-vous passer à la configuration générale ?",
-                    "introduction": "Les zones vous permettent de spécifier certaines régions sur la terre. Lorsqu'une personne se trouve dans une zone, l'état prend le nom de la zone. Les zones peuvent également être utilisées comme déclencheur ou condition dans les configurations d'automation.",
+                    "introduction": "Les zones vous permettent de spécifier certaines régions sur la terre. Lorsqu'une personne se trouve dans une zone, l'état prend le nom de la zone. Les zones peuvent également être utilisées comme déclencheur ou condition dans les configurations d'automatisation.",
                     "no_zones_created_yet": "Il semble que vous n'ayez pas encore créé de zones."
                 },
                 "zwave": {
@@ -1843,13 +1888,20 @@
                     },
                     "node_management": {
                         "add_to_group": "Ajouter au groupe",
+                        "entities": "Entités du nœud",
+                        "entity_info": "Informations sur l'entité",
+                        "exclude_entity": "Exclure cette entité de Home Assistant",
                         "group": "Groupe",
                         "header": "Gestion des nœuds Z-Wave",
+                        "introduction": "Exécute des commandes Z-Wave affectant individuellement un nœud. Sélectionnez un nœud pour voir une liste des commandes disponibles.",
                         "max_associations": "Associations Max:",
+                        "node_group_associations": "Associations aux groupes de nœuds",
                         "node_protection": "Protection des nœuds",
-                        "node_to_control": "Noeud à contrôler",
-                        "nodes": "Noeuds",
+                        "node_to_control": "Nœud à contrôler",
+                        "nodes": "Nœuds",
+                        "nodes_hint": "Sélectionnez le nœud pour afficher les options par nœud",
                         "nodes_in_group": "Autres nœuds de ce groupe :",
+                        "pooling_intensity": "Intensité  polling",
                         "protection": "Protection",
                         "remove_broadcast": "Supprimer la diffusion",
                         "remove_from_group": "Supprimer du groupe",
@@ -1858,6 +1910,8 @@
                     "ozw_log": {
                         "header": "Journal OZW",
                         "introduction": "Afficher le journal. Entrer un nombre de 1 à 1000 lignes pour limiter le nombre de lignes chargées dans le journal, ou entrer 0 pour désactiver la limitation du nombre de lignes affichées (journal complet). \"Load\" affichera un instantané du journal, alors que \"Tail\" affichera le journal en l'actualisant au fur et à mesure que de nouvelles entrées apparaissent.",
+                        "last_log_lines": "Nombre de dernières lignes de journal",
+                        "load": "Charge",
                         "tail": "Queue"
                     },
                     "services": {
@@ -1867,6 +1921,7 @@
                         "heal_network": "Soigner le réseau",
                         "heal_node": "Guérir Nœud",
                         "node_info": "Informations sur le nœud",
+                        "print_node": "Imprimer le nœud",
                         "refresh_entity": "Actualiser l'entité",
                         "refresh_node": "Actualiser Nœud",
                         "remove_failed_node": "Supprimer le nœud défaillant",
@@ -1910,35 +1965,6 @@
                         "subscribe_to": "Évènement auquel s'abonner",
                         "title": "Événements",
                         "type": "Type d'événement"
-                    },
-                    "info": {
-                        "built_using": "Construit en utilisant",
-                        "custom_uis": "Interfaces utilisateur personnalisées :",
-                        "developed_by": "Développé par un groupe de personnes formidables.",
-                        "documentation": "Documentation",
-                        "frontend": "interface utilisateur",
-                        "frontend_version": "Version interface utilisateur : {version} - {type}",
-                        "home_assistant_logo": "Logo de Home Assistant",
-                        "icons_by": "Icônes par",
-                        "integrations": "Intégrations",
-                        "issues": "Problèmes",
-                        "license": "Publié sous la licence Apache 2.0",
-                        "path_configuration": "Chemin vers configuration.yaml : {path}",
-                        "server": "serveur",
-                        "source": "Source:",
-                        "system_health_error": "Le composant System Health n'est pas chargé. Ajouter 'system_health:' à configuration.yaml",
-                        "title": "Info"
-                    },
-                    "logs": {
-                        "clear": "Nettoyer",
-                        "details": "Détails du journal ( {level} )",
-                        "load_full_log": "Charger le journal complet de Home Assistant",
-                        "loading_log": "Chargement du journal des erreurs…",
-                        "multiple_messages": "message survenu pour la première fois à {time} et apparu {counter} fois.",
-                        "no_errors": "Aucune erreur n'a été signalée.",
-                        "no_issues": "Il n'y a pas de nouveaux problèmes!",
-                        "refresh": "Rafraîchir",
-                        "title": "Journaux"
                     },
                     "mqtt": {
                         "description_listen": "Écouter un sujet",
@@ -2054,7 +2080,7 @@
                             "name": "Panneau d'alarme"
                         },
                         "button": {
-                            "description": "La carte Button vous permet d'ajouter des boutons pour effectuer des tâches.",
+                            "description": "La carte Bouton vous permet d'ajouter des boutons pour effectuer des tâches.",
                             "name": "Bouton"
                         },
                         "conditional": {
@@ -2129,7 +2155,7 @@
                         },
                         "glance": {
                             "columns": "Colonnes",
-                            "description": "La carte Coup d'oeil est utile pour regrouper plusieurs capteurs dans une vue d'ensemble compacte.",
+                            "description": "La carte Coup d'œil est utile pour regrouper plusieurs capteurs dans une vue d'ensemble compacte.",
                             "name": "Coup d'œil"
                         },
                         "history-graph": {
@@ -2163,7 +2189,7 @@
                             "name": "Markdown"
                         },
                         "media-control": {
-                            "description": "La carte Control des médias est utilisée pour afficher les entités du lecteur multimédia sur une interface avec des commandes faciles à utiliser.",
+                            "description": "La carte Contrôle des médias est utilisée pour afficher les entités du lecteur multimédia sur une interface avec des commandes faciles à utiliser.",
                             "name": "Contrôle des médias"
                         },
                         "picture-elements": {
@@ -2175,7 +2201,7 @@
                             "name": "Entité image"
                         },
                         "picture-glance": {
-                            "description": "La carte Picture Glance affiche une image et les états d'entité correspondants sous forme d'icône. Les entités sur le côté droit permettent de basculer entre les actions, d'autres affichent la boîte de dialogue plus d'informations.",
+                            "description": "La carte Coup d'œil affiche une image et les états d'entité correspondants sous forme d'icône. Les entités sur le côté droit permettent de basculer entre les actions, d'autres affichent la boîte de dialogue plus d'informations.",
                             "name": "Coup d'œil en image"
                         },
                         "picture": {
@@ -2187,7 +2213,7 @@
                             "name": "Statut de la plante"
                         },
                         "sensor": {
-                            "description": "La carte Capteur vous donne un aperçu rapide de l'état de vos sensors avec un graphique en option pour visualiser les changements au fil du temps.",
+                            "description": "La carte Capteur vous donne un aperçu rapide de l'état de vos capteurs avec un graphique en option pour visualiser les changements au fil du temps.",
                             "graph_detail": "Détail du graphique",
                             "graph_type": "Type de graphique",
                             "name": "Capteur"
@@ -2198,7 +2224,7 @@
                             "name": "Liste de courses"
                         },
                         "thermostat": {
-                            "description": "La carte Thermostat permet de contrôler votre entité climate. Vous permettant de changer la température et le mode de l'entité.",
+                            "description": "La carte Thermostat permet de contrôler votre entité de chauffage. Permettant de changer la température et le mode de l'entité.",
                             "name": "Thermostat"
                         },
                         "vertical-stack": {
@@ -2278,7 +2304,7 @@
                     "save_config": {
                         "cancel": "Oublie ce que j'ai dit, c'est pas grave.",
                         "close": "Fermer",
-                        "empty_config": "Commencez avec un tableau de bord vide",
+                        "empty_config": "Commencer avec un tableau de bord vide",
                         "header": "Prenez le contrôle de votre Interface Lovelace",
                         "para": "Par défaut, Home Assistant maintient votre interface utilisateur et la met à jour lorsque de nouvelles entités ou de nouveaux composants Lovelace UI sont disponibles. Si vous prenez le contrôle, nous ne ferons plus les changements automatiquement pour vous.",
                         "para_sure": "Êtes-vous sûr de vouloir prendre le contrôle de l'interface utilisateur?",
@@ -2325,7 +2351,7 @@
                 "views": {
                     "confirm_delete": "Êtes-vous sûr de vouloir supprimer cette vue?",
                     "confirm_delete_existing_cards": "La suppression de cette vue supprimera également les cartes",
-                    "confirm_delete_existing_cards_text": "Voulez-vous vraiment supprimer votre vue ''{name}''? La vue contient {number} cartes qui seront supprimées. Cette action ne peut pas être annulée.",
+                    "confirm_delete_existing_cards_text": "Voulez-vous vraiment supprimer votre vue ''{name}'' ? La vue contient {number} cartes qui seront supprimées. Cette action ne peut pas être annulée.",
                     "confirm_delete_text": "Voulez-vous vraiment supprimer votre vue ''{name}''?"
                 },
                 "warning": {

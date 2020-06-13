@@ -187,7 +187,6 @@ export class HuiCardEditor extends LitElement {
         // Refresh code editor when switching to yaml mode
         this._refreshYamlEditor(true);
       }
-      fireEvent(this as HTMLElement, "iron-resize");
     }
 
     if (this._configElement && changedProperties.has("hass")) {
@@ -207,7 +206,6 @@ export class HuiCardEditor extends LitElement {
           this._yamlEditor.codemirror.focus();
         }
       }
-      fireEvent(this as HTMLElement, "iron-resize");
     }, 1);
   }
 
@@ -279,7 +277,6 @@ export class HuiCardEditor extends LitElement {
       this.GUImode = false;
     } finally {
       this._loading = false;
-      fireEvent(this, "iron-resize");
     }
   }
 

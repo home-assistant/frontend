@@ -1,8 +1,15 @@
-import { LitElement, property, TemplateResult, html } from "lit-element";
+import {
+  LitElement,
+  property,
+  TemplateResult,
+  html,
+  customElement,
+} from "lit-element";
 import { mdiArrowLeft, mdiArrowRight } from "@mdi/js";
 import "@material/mwc-icon-button/mwc-icon-button";
 import "./ha-svg-icon";
 
+@customElement("ha-icon-button-arrow-prev")
 export class HaIconButtonArrowPrev extends LitElement {
   @property({ type: Boolean }) public disabled = false;
 
@@ -32,5 +39,3 @@ declare global {
     "ha-icon-button-arrow-prev": HaIconButtonArrowPrev;
   }
 }
-
-customElements.define("ha-icon-button-arrow-prev", HaIconButtonArrowPrev);

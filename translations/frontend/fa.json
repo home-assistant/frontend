@@ -1022,6 +1022,17 @@
                         "input_text": "Text"
                     }
                 },
+                "info": {
+                    "built_using": "Construit cu ajutorul",
+                    "documentation": "مستندات",
+                    "home_assistant_logo": "Logo Home Assistant",
+                    "icons_by": "آیکون توسط",
+                    "integrations": "یکپارچگی",
+                    "issues": "موضوعات",
+                    "server": "سرور",
+                    "source": "Sursa:",
+                    "title": "اطلاعات"
+                },
                 "integrations": {
                     "add_integration": "اضافه کردن ادغام",
                     "caption": "یکپارچگی",
@@ -1076,6 +1087,10 @@
                     "rename_input_label": "ورود نام"
                 },
                 "introduction": "در اینجا می توانید اجزای خود و صفحه اصلی دستیار را پیکربندی کنید. ",
+                "logs": {
+                    "refresh": "تازه کن",
+                    "title": "وقایع"
+                },
                 "lovelace": {
                     "dashboards": {
                         "cant_edit_default": "داشبورد استاندارد Lovelace را نمی توان از UI ویرایش کرد. می توانید با تنظیم داشبورد دیگر به عنوان پیش فرض ، آن را مخفی کنید.",
@@ -1346,21 +1361,6 @@
                 "tabs": {
                     "events": {
                         "title": "رویدادها"
-                    },
-                    "info": {
-                        "built_using": "Construit cu ajutorul",
-                        "documentation": "مستندات",
-                        "home_assistant_logo": "Logo Home Assistant",
-                        "icons_by": "آیکون توسط",
-                        "integrations": "یکپارچگی",
-                        "issues": "موضوعات",
-                        "server": "سرور",
-                        "source": "Sursa:",
-                        "title": "اطلاعات"
-                    },
-                    "logs": {
-                        "refresh": "تازه کن",
-                        "title": "وقایع"
                     },
                     "mqtt": {
                         "publish": "Publica",
