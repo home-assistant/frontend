@@ -41,6 +41,7 @@ class StepFlowPickHandler extends LitElement {
   @property() private filter?: string;
 
   private _width?: number;
+
   private _height?: number;
 
   private _getHandlers = memoizeOne(
