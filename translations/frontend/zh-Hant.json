@@ -694,10 +694,10 @@
             },
             "zha_device_info": {
                 "buttons": {
-                    "add": "新增設備",
+                    "add": "透過此設備新增設備",
                     "reconfigure": "重新設定設備",
                     "remove": "移除設備",
-                    "zigbee_information": "Zigbee 資訊"
+                    "zigbee_information": "Zigbee 設備簽章"
                 },
                 "confirmations": {
                     "remove": "確定要移除此設備？"
@@ -717,7 +717,7 @@
                 "unknown": "未知",
                 "zha_device_card": {
                     "area_picker_label": "分區",
-                    "device_name_placeholder": "設備命名",
+                    "device_name_placeholder": "變更設備名稱",
                     "update_name_button": "更新名稱"
                 }
             }
@@ -1728,8 +1728,11 @@
                 },
                 "zha": {
                     "add_device_page": {
+                        "discovered_text": "於探索到設備後將顯示於此處。",
                         "discovery_text": "所發現的設備將會顯示於此。跟隨設備的指示並將其設定為配對模式。",
                         "header": "Zigbee 家庭自動化 - 新增設備",
+                        "no_devices_found": "找不到設備，請確定設備處於配對模式、並於探索時保成喚醒狀態。",
+                        "pairing_mode": "請確定設備處於配對模式中，參閱設備的手冊以了解如何進行操作。",
                         "search_again": "再次搜尋",
                         "spinner": "正在搜尋 ZHA Zigbee 設備..."
                     },
@@ -1737,6 +1740,7 @@
                         "caption": "新增設備",
                         "description": "新增設備至 Zigbee 網路"
                     },
+                    "button": "設定",
                     "caption": "ZHA",
                     "cluster_attributes": {
                         "attributes_of_cluster": "獲取所選叢集屬性。",
@@ -1815,6 +1819,9 @@
                         "header": "網路管理",
                         "introduction": "命令影響整個網路"
                     },
+                    "network": {
+                        "caption": "網路"
+                    },
                     "node_management": {
                         "header": "設備管理",
                         "help_node_dropdown": "選擇設備以檢視該設備選項。",
@@ -1854,6 +1861,7 @@
                     "no_zones_created_yet": "看起來您還沒有新增任何區域。"
                 },
                 "zwave": {
+                    "button": "設定",
                     "caption": "Z-Wave",
                     "common": {
                         "index": "指數",
