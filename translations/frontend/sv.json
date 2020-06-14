@@ -694,7 +694,7 @@
             },
             "zha_device_info": {
                 "buttons": {
-                    "add": "Lägg till enheter",
+                    "add": "Lägg till enheter via den här enheten",
                     "reconfigure": "Konfigurera om enheten",
                     "remove": "Ta bort enhet",
                     "zigbee_information": "Zigbee-information"
@@ -717,7 +717,7 @@
                 "unknown": "Okänd",
                 "zha_device_card": {
                     "area_picker_label": "Område",
-                    "device_name_placeholder": "Användarnamn",
+                    "device_name_placeholder": "Ändra enhetsnamn",
                     "update_name_button": "Uppdatera namn"
                 }
             }
@@ -744,7 +744,7 @@
             "connection_lost": "Anslutning tappad. Ansluter igen...",
             "service_call_failed": "Misslyckades med att anropa tjänsten {service}.",
             "started": "Home Assistant har startat!",
-            "starting": "Home Assistant startar, allt är inte tillgängligt tills uppstarten är klar.",
+            "starting": "Home Assistant startar, allt är inte tillgängligt förrän uppstarten är klar.",
             "triggered": "Utlöst {name}"
         },
         "panel": {
@@ -1013,7 +1013,7 @@
                     "picker": {
                         "add_automation": "Lägg till automatisering",
                         "delete_automation": "Radera automation",
-                        "delete_confirm": "Är du säker på att du vill radera denna automatiseringen?",
+                        "delete_confirm": "Är du säker på att du vill radera denna automatisering?",
                         "edit_automation": "Redigera automation",
                         "header": "Automatiseringseditor",
                         "headers": {
@@ -1373,7 +1373,9 @@
                 },
                 "info": {
                     "built_using": "Byggt med",
+                    "caption": "Info",
                     "custom_uis": "Anpassade användargränssnitt:",
+                    "description": "Info om din Home Assistant installation",
                     "developed_by": "Utvecklad av ett gäng grymma människor.",
                     "documentation": "Dokumentation",
                     "frontend": "frontend-UI",
@@ -1461,7 +1463,9 @@
                 },
                 "introduction": "Här går det att konfigurera dina komponenter och Home Assistant. Det är inte möjligt att ställa in allt från användargränssnittet ännu, men vi jobbar på det.",
                 "logs": {
+                    "caption": "Loggar",
                     "clear": "Rensa",
+                    "description": "Visa Home Assistant loggarna",
                     "details": "Logginformation ({level})",
                     "load_full_log": "Ladda hela Home Assistant-loggen",
                     "loading_log": "Läser in fellogg ...",
@@ -1656,7 +1660,11 @@
                             "core": "Ladda om plats & anpassningar",
                             "group": "Ladda om grupper",
                             "heading": "YAML-konfiguration laddas om",
+                            "input_boolean": "Ladda om inmatning av booleska värden",
                             "input_datetime": "Ladda om inmatningsdatum/tid",
+                            "input_number": "Ladda om inmatningsnummer",
+                            "input_select": "Ladda om inmatningsväljare",
+                            "input_text": "Ladda om inmatningstext",
                             "introduction": "Vissa delar av Home Assistant kan laddas om utan att en omstart krävs. Att trycka på \"ladda om\" innebär att den nuvarande konfiguration inaktiveras och den nya laddas.",
                             "person": "Ladda om personer",
                             "scene": "Ladda om scenarier",
@@ -1716,12 +1724,15 @@
                             "system": "System"
                         }
                     },
-                    "users_privileges_note": "Denna användaren är under konstruktion. Denna använder kommer inte kunna administrera instansen via användargränssnittet. Vi granskar fortfarande alla API-slutpunkter för att försäkra att de korrekt begränsar åtkomst till administratörer."
+                    "users_privileges_note": "Användar gruppen är under konstruktion. Användaren kommer inte att kunna administrera instansen via användargränssnittet. Vi granskar fortfarande alla API-slutpunkter för att försäkra att de korrekt begränsar åtkomst till endast administratörer."
                 },
                 "zha": {
                     "add_device_page": {
+                        "discovered_text": "Enheterna kommer att dyka upp här när de upptäckts.",
                         "discovery_text": "Upptäckta enheter kommer dyka upp här. Följ instruktionerna för dina enheter och sätt dem i parningsläge.",
                         "header": "Zigbee Home Automation - Lägg till enheter",
+                        "no_devices_found": "Inga enheter hittade, se till att dom är i parningsläge och håll dom aktiva medans sökning sker.",
+                        "pairing_mode": "Se till att dina enheter är i parningsläge. Kontrollera instruktionerna för din enhet om hur du gör det.",
                         "search_again": "Sök Igen",
                         "spinner": "Söker efter ZHA Zigbee-enheter ..."
                     },
@@ -1729,6 +1740,7 @@
                         "caption": "Lägg till enheter",
                         "description": "Lägg till enheter till Zigbee-nätverket"
                     },
+                    "button": "Konfigurera",
                     "caption": "ZHA",
                     "cluster_attributes": {
                         "attributes_of_cluster": "Attribut för det valda klustret",
@@ -1807,6 +1819,9 @@
                         "header": "Nätverkshantering",
                         "introduction": "Kommandon som påverkar hela nätverket"
                     },
+                    "network": {
+                        "caption": "Nätverk"
+                    },
                     "node_management": {
                         "header": "Enhetshantering",
                         "help_node_dropdown": "Välj en enhet för att visa alternativ per enhet.",
@@ -1846,6 +1861,7 @@
                     "no_zones_created_yet": "Det verkar som om du inte har skapat några zoner ännu."
                 },
                 "zwave": {
+                    "button": "Konfigurera",
                     "caption": "Z-Wave",
                     "common": {
                         "index": "Index",
@@ -1886,7 +1902,7 @@
                         "group": "Grupp",
                         "header": "Z-Wave nodhantering",
                         "introduction": "Kör Z-Wave-kommandon som påverkar en enda nod. Välj en nod för att se en lista över tillgängliga kommandon.",
-                        "max_associations": "Max antal assosiationer:",
+                        "max_associations": "Max antal associationer:",
                         "node_group_associations": "Nodgruppsassociationer",
                         "node_protection": "Nodskydd",
                         "node_to_control": "Nod att styra",
@@ -1911,7 +1927,7 @@
                         "add_node_secure": "Lägg till nod med säkerhet",
                         "cancel_command": "Avbryt kommandot",
                         "heal_network": "Reparera nätverk",
-                        "heal_node": "Läka nod",
+                        "heal_node": "Läke nod",
                         "node_info": "Nodinformation",
                         "print_node": "Skriv ut nod",
                         "refresh_entity": "Uppdatera entitet",
@@ -2351,7 +2367,7 @@
                     "entity_non_numeric": "Enheten är icke-numerisk: {entity}",
                     "entity_not_found": "Enheten är ej tillgänglig: {entity}",
                     "entity_unavailable": "{entity} är otillgänglig",
-                    "starting": "Home Assistant startar, allt är kanske är tillgängligt ännu"
+                    "starting": "Home Assistant startar, allt är kanske inte tillgängligt ännu"
                 }
             },
             "mailbox": {
