@@ -23,7 +23,7 @@ class HaLogbook extends LitElement {
   @property() public hass!: HomeAssistant;
 
   @property({ attribute: false })
-  public _userid_to_name = {};
+  private _userid_to_name = {};
 
   @property() public entries: LogbookEntry[] = [];
 
