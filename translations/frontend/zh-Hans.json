@@ -694,10 +694,10 @@
             },
             "zha_device_info": {
                 "buttons": {
-                    "add": "添加设备",
+                    "add": "通过此设备添加设备",
                     "reconfigure": "重新配置设备",
                     "remove": "删除设备",
-                    "zigbee_information": "Zigbee 信息"
+                    "zigbee_information": "Zigbee 设备签名"
                 },
                 "confirmations": {
                     "remove": "您确定要删除此设备吗？"
@@ -717,7 +717,7 @@
                 "unknown": "未知",
                 "zha_device_card": {
                     "area_picker_label": "区域",
-                    "device_name_placeholder": "用户指定的名称",
+                    "device_name_placeholder": "更改设备名称",
                     "update_name_button": "更新名称"
                 }
             }
@@ -1728,8 +1728,11 @@
                 },
                 "zha": {
                     "add_device_page": {
+                        "discovered_text": "发现的设备会立即显示在这里。",
                         "discovery_text": "发现的设备将显示在此处。按照设备的说明进行操作，并将设备置于配对模式。",
                         "header": "Zigbee 家庭自动化 - 添加设备",
+                        "no_devices_found": "未发现设备。请确保设备处于配对模式，并且在搜索设备时保持唤醒。",
+                        "pairing_mode": "请确保您的设备处于配对模式。有关如何进入配对模式，请查阅设备说明书。",
                         "search_again": "再次搜索",
                         "spinner": "正在寻找ZHA Zigbee设备......"
                     },
@@ -1737,6 +1740,7 @@
                         "caption": "添加设备",
                         "description": "将设备添加到Zigbee网络"
                     },
+                    "button": "配置",
                     "caption": "ZHA",
                     "cluster_attributes": {
                         "attributes_of_cluster": "所选集群的属性",
@@ -1815,6 +1819,9 @@
                         "header": "网络管理",
                         "introduction": "影响整个网络的命令"
                     },
+                    "network": {
+                        "caption": "网络"
+                    },
                     "node_management": {
                         "header": "设备管理",
                         "help_node_dropdown": "选择一个设备以查看每个设备的选项。",
@@ -1854,6 +1861,7 @@
                     "no_zones_created_yet": "您还没有建立地点。"
                 },
                 "zwave": {
+                    "button": "配置",
                     "caption": "Z-Wave",
                     "common": {
                         "index": "指数",

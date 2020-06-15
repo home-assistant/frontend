@@ -1737,6 +1737,7 @@
                         "caption": "Añadir dispositivos",
                         "description": "Añadir dispositivos a la red Zigbee"
                     },
+                    "button": "Configurar",
                     "caption": "ZHA",
                     "cluster_attributes": {
                         "attributes_of_cluster": "Atributos del clúster seleccionado",
@@ -1815,6 +1816,9 @@
                         "header": "Administración de la red",
                         "introduction": "Comandos que afectan a toda la red."
                     },
+                    "network": {
+                        "caption": "Red"
+                    },
                     "node_management": {
                         "header": "Administración de dispositivos",
                         "help_node_dropdown": "Selecciona un dispositivo para ver las opciones por dispositivo.",
@@ -1854,6 +1858,7 @@
                     "no_zones_created_yet": "Parece que aún no has creado ninguna zona."
                 },
                 "zwave": {
+                    "button": "Configurar",
                     "caption": "Z-Wave",
                     "common": {
                         "index": "Índice",
