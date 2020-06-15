@@ -64,8 +64,8 @@ class HaLogbook extends LitElement {
 
   private async _fetchUsers() {
     const users = await fetchUsers(this.hass);
-    users.forEach(user => {
-    	this._userid_to_name[user.id] = user.name
+    users.forEach((user) => {
+      this._userid_to_name[user.id] = user.name;
     });
   }
 
@@ -84,9 +84,7 @@ class HaLogbook extends LitElement {
     const previous = this.entries[index - 1];
     const state = item.entity_id ? this.hass.states[item.entity_id] : undefined;
     const item_username =
-      item.context_user_id && item.context_user_id in this._userid_to_name
-        ? this._userid_to_name[item.context_user_id]
-        : undefined;
+      item.context_user_id && this._userid_to_name[item.context_user_id];
     return html`
       <div>
         ${index === 0 ||
