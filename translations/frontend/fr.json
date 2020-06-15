@@ -1657,7 +1657,7 @@
                     "section": {
                         "reloading": {
                             "automation": "Recharger les automatisations",
-                            "core": "Recharger l'emplacement et les personnalisations",
+                            "core": "Recharger les emplacements et personnalisations",
                             "group": "Recharger les groupes",
                             "heading": "Rechargement de la configuration",
                             "input_boolean": "Recharger les booléens d'entrée",
@@ -2342,7 +2342,7 @@
                     "refresh": "Actualiser",
                     "reload_resources": "Recharger les ressources"
                 },
-                "reload_lovelace": "Recharger Lovelace UI",
+                "reload_lovelace": "Recharger UI",
                 "reload_resources": {
                     "refresh_body": "Vous devez actualiser la page pour terminer le rechargement, voulez-vous actualiser maintenant?",
                     "refresh_header": "Voulez-vous vous rafraîchir ?"
