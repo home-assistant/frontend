@@ -119,8 +119,8 @@ export class HuiDialogEditCard extends LitElement {
       <ha-dialog
         open
         scrimClickAction
-        escapeKeyAction
-        @keyup=${this._handleKeyUp}
+        @keydown=${this._ignoreKeydown}
+        @closed=${this._close}
         .heading=${html`${heading}
         ${this._documentationURL !== undefined
           ? html`
@@ -156,6 +156,7 @@ export class HuiDialogEditCard extends LitElement {
                       .value=${this._cardConfig}
                       @config-changed=${this._handleConfigChanged}
                       @GUImode-changed=${this._handleGUIModeChanged}
+                      @editor-save=${this._save}
                     ></hui-card-editor>
                   </div>
                   <div class="element-preview">
@@ -192,24 +193,31 @@ export class HuiDialogEditCard extends LitElement {
               </mwc-button>
             `
           : ""}
-        <mwc-button slot="primaryAction" @click=${this._close}>
-          ${this.hass!.localize("ui.common.cancel")}
-        </mwc-button>
-        ${this._cardConfig !== undefined
-          ? html`
-              <mwc-button
-                slot="primaryAction"
-                ?disabled=${!this._canSave || this._saving}
-                @click=${this._save}
-              >
-                ${this._saving
-                  ? html` <paper-spinner active alt="Saving"></paper-spinner> `
-                  : this.hass!.localize("ui.common.save")}
-              </mwc-button>
-            `
-          : ``}
+        <div slot="primaryAction" @click=${this._save}>
+          <mwc-button @click=${this._close}>
+            ${this.hass!.localize("ui.common.cancel")}
+          </mwc-button>
+          ${this._cardConfig !== undefined
+            ? html`
+                <mwc-button
+                  ?disabled=${!this._canSave || this._saving}
+                  @click=${this._save}
+                >
+                  ${this._saving
+                    ? html`
+                        <paper-spinner active alt="Saving"></paper-spinner>
+                      `
+                    : this.hass!.localize("ui.common.save")}
+                </mwc-button>
+              `
+            : ``}
+        </div>
       </ha-dialog>
     `;
+  }
+
+  private _ignoreKeydown(ev: KeyboardEvent) {
+    ev.stopPropagation();
   }
 
   static get styles(): CSSResultArray {
@@ -339,12 +347,6 @@ export class HuiDialogEditCard extends LitElement {
     this._guiModeAvailable = ev.detail.guiModeAvailable;
   }
 
-  private _handleKeyUp(ev: KeyboardEvent) {
-    if (ev.keyCode === 27) {
-      this._close();
-    }
-  }
-
   private _handleGUIModeChanged(ev: HASSDomEvent<GUIModeChangedEvent>): void {
     ev.stopPropagation();
     this._GUImode = ev.detail.guiMode;
@@ -376,6 +378,9 @@ export class HuiDialogEditCard extends LitElement {
   }
 
   private async _save(): Promise<void> {
+    if (!this._canSave || this._saving) {
+      return;
+    }
     this._saving = true;
     await this._params!.saveConfig(
       this._params!.path.length === 1
