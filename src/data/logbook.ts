@@ -4,4 +4,5 @@ export interface LogbookEntry {
   message: string;
   entity_id?: string;
   domain: string;
+  context_user_id?: string;
 }
