@@ -694,10 +694,10 @@
             },
             "zha_device_info": {
                 "buttons": {
-                    "add": "Aggiungi dispositivi",
+                    "add": "Aggiungi dispositivi tramite questo dispositivo",
                     "reconfigure": "Riconfigura dispositivo",
                     "remove": "Rimuovi dispositivo",
-                    "zigbee_information": "Informazioni Zigbee"
+                    "zigbee_information": "Firma del dispositivo Zigbee"
                 },
                 "confirmations": {
                     "remove": "Sei sicuro di voler rimuovere il dispositivo?"
@@ -717,7 +717,7 @@
                 "unknown": "Sconosciuto",
                 "zha_device_card": {
                     "area_picker_label": "Area",
-                    "device_name_placeholder": "Nome assegnato dall'utente",
+                    "device_name_placeholder": "Cambia il nome del dispositivo",
                     "update_name_button": "Aggiorna nome"
                 }
             }
@@ -1728,8 +1728,11 @@
                 },
                 "zha": {
                     "add_device_page": {
+                        "discovered_text": "I dispositivi verranno visualizzati qui una volta scoperti.",
                         "discovery_text": "I dispositivi rilevati verranno visualizzati qui. Seguire le istruzioni per il / i dispositivo / i e posizionare il / i dispositivo / i in modalità accoppiamento.",
                         "header": "Zigbee Home Automation - Aggiungi dispositivi",
+                        "no_devices_found": "Nessun dispositivo trovato, assicurati che siano in modalità di associazione e tienili svegli mentre la scansione è in esecuzione.",
+                        "pairing_mode": "Assicurati che i tuoi dispositivi siano in modalità di associazione. Controlla le istruzioni del tuo dispositivo su come eseguire questa operazione.",
                         "search_again": "Cerca di nuovo",
                         "spinner": "Ricerca di dispositivi ZHA Zigbee ..."
                     },
@@ -1737,6 +1740,7 @@
                         "caption": "Aggiungi dispositivi",
                         "description": "Aggiungi dispositivi alla rete Zigbee"
                     },
+                    "button": "Configura",
                     "caption": "ZHA",
                     "cluster_attributes": {
                         "attributes_of_cluster": "Attributi del cluster selezionato",
@@ -1815,6 +1819,9 @@
                         "header": "Gestione della rete",
                         "introduction": "Comandi che influiscono sull'intera rete"
                     },
+                    "network": {
+                        "caption": "Rete"
+                    },
                     "node_management": {
                         "header": "Gestione dei dispositivi",
                         "help_node_dropdown": "Selezionare un dispositivo per visualizzare le opzioni per dispositivo.",
@@ -1854,6 +1861,7 @@
                     "no_zones_created_yet": "Sembra che tu non abbia ancora creato nessuna zona."
                 },
                 "zwave": {
+                    "button": "Configura",
                     "caption": "Z-Wave",
                     "common": {
                         "index": "Indice",
