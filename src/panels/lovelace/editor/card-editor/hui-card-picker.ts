@@ -32,6 +32,7 @@ import { LovelaceCard } from "../../types";
 import { getCardStubConfig } from "../get-card-stub-config";
 import { CardPickTarget, Card } from "../types";
 import { coreCards } from "../lovelace-cards";
+import { styleMap } from "lit-html/directives/style-map";
 
 interface CardElement {
   card: Card;
@@ -53,6 +54,10 @@ export class HuiCardPicker extends LitElement {
   private _unusedEntities?: string[];
 
   private _usedEntities?: string[];
+
+  private _width?: number;
+
+  private _height?: number;
 
   private _filterCards = memoizeOne(
     (cardElements: CardElement[], filter?: string): CardElement[] => {
@@ -92,26 +97,33 @@ export class HuiCardPicker extends LitElement {
         no-label-float
         @value-changed=${this._handleSearchChange}
       ></search-input>
-      <div class="cards-container">
-        ${this._filterCards(this._cards, this._filter).map(
-          (cardElement: CardElement) => cardElement.element
-        )}
-      </div>
-      <div class="cards-container">
-        <div
-          class="card manual"
-          @click=${this._cardPicked}
-          .config=${{ type: "" }}
-        >
-          <div class="preview description">
-            ${this.hass!.localize(
-              `ui.panel.lovelace.editor.card.generic.manual_description`
-            )}
-          </div>
-          <div class="card-header">
-            ${this.hass!.localize(
-              `ui.panel.lovelace.editor.card.generic.manual`
-            )}
+      <div
+        style=${styleMap({
+          width: `${this._width}px`,
+          height: `${this._height}px`,
+        })}
+      >
+        <div class="cards-container">
+          ${this._filterCards(this._cards, this._filter).map(
+            (cardElement: CardElement) => cardElement.element
+          )}
+        </div>
+        <div class="cards-container">
+          <div
+            class="card manual"
+            @click=${this._cardPicked}
+            .config=${{ type: "" }}
+          >
+            <div class="preview description">
+              ${this.hass!.localize(
+                `ui.panel.lovelace.editor.card.generic.manual_description`
+              )}
+            </div>
+            <div class="card-header">
+              ${this.hass!.localize(
+                `ui.panel.lovelace.editor.card.generic.manual`
+              )}
+            </div>
           </div>
         </div>
       </div>
@@ -151,6 +163,24 @@ export class HuiCardPicker extends LitElement {
     );
 
     this._loadCards();
+  }
+
+  protected updated(changedProps) {
+    super.updated(changedProps);
+    // Store the width and height so that when we search, box doesn't jump
+    const div = this.shadowRoot!.querySelector("div")!;
+    if (!this._width) {
+      const width = div.clientWidth;
+      if (width) {
+        this._width = width;
+      }
+    }
+    if (!this._height) {
+      const height = div.clientHeight;
+      if (height) {
+        this._height = height;
+      }
+    }
   }
 
   private _loadCards() {
