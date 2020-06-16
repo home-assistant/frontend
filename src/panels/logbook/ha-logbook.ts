@@ -64,9 +64,11 @@ class HaLogbook extends LitElement {
 
   private async _fetchUsers() {
     const users = await fetchUsers(this.hass);
+    const userid_to_name = {};
     users.forEach((user) => {
-      this._userid_to_name[user.id] = user.name;
+      userid_to_name[user.id] = user.name;
     });
+    this._userid_to_name = userid_to_name;
   }
 
   protected firstUpdated(changedProperties: PropertyValues) {
