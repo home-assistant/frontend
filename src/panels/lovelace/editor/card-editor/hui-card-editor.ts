@@ -158,6 +158,7 @@ export class HuiCardEditor extends LitElement {
                   .error=${this._error}
                   .rtl=${computeRTL(this.hass)}
                   @value-changed=${this._handleYAMLChanged}
+                  @keydown=${this._ignoreKeydown}
                 ></ha-code-editor>
               </div>
             `}
@@ -278,6 +279,10 @@ export class HuiCardEditor extends LitElement {
     } finally {
       this._loading = false;
     }
+  }
+
+  private _ignoreKeydown(ev: KeyboardEvent) {
+    ev.stopPropagation();
   }
 
   static get styles(): CSSResult {
