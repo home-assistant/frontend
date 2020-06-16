@@ -54,7 +54,7 @@ class HaMarkdown extends LitElement {
       }
       ha-markdown-element code,
       pre {
-        background-color: var(--markdown-code-background-color, #f6f8fa);
+        background-color: var(--markdown-code-background-color, none);
         border-radius: 3px;
       }
       ha-markdown-element code {

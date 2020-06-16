@@ -8,6 +8,9 @@ class HaProgressButton extends PolymerElement {
   static get template() {
     return html`
       <style>
+        :host {
+          outline: none;
+        }
         .container {
           position: relative;
           display: inline-block;
