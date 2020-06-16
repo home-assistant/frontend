@@ -521,8 +521,8 @@
           "link_profile_page": "your profile page"
         },
         "integration_panel_move": {
-          "missing_zha": "Missing the ZHA config panel? It was moved to the ZHA entry on the",
-          "missing_zwave": "Missing the Z-Wave config panel? It was moved to the Z-Wave entry on the",
+          "missing_zha": "Missing the ZHA config panel? It was moved to the ZHA entry on the {integrations_page}.",
+          "missing_zwave": "Missing the Z-Wave config panel? It was moved to the Z-Wave entry on the {integrations_page}.",
           "link_integration_page": "integrations page"
         },
         "common": {

@@ -89,13 +89,14 @@ class HaConfigDashboard extends LitElement {
             ? html`
                 <div class="promo-advanced">
                   ${this.hass.localize(
-                    "ui.panel.config.integration_panel_move.missing_zha"
+                    "ui.panel.config.integration_panel_move.missing_zha",
+                    "integrations_page",
+                    html`<a href="/config/integrations">
+                      ${this.hass.localize(
+                        "ui.panel.config.integration_panel_move.link_integration_page"
+                      )}
+                    </a>`
                   )}
-                  <a href="/config/integrations"
-                    >${this.hass.localize(
-                      "ui.panel.config.integration_panel_move.link_integration_page"
-                    )}</a
-                  >.
                 </div>
               `
             : ""}
@@ -103,13 +104,14 @@ class HaConfigDashboard extends LitElement {
             ? html`
                 <div class="promo-advanced">
                   ${this.hass.localize(
-                    "ui.panel.config.integration_panel_move.missing_zwave"
+                    "ui.panel.config.integration_panel_move.missing_zwave",
+                    "integrations_page",
+                    html`<a href="/config/integrations">
+                      ${this.hass.localize(
+                        "ui.panel.config.integration_panel_move.link_integration_page"
+                      )}
+                    </a>`
                   )}
-                  <a href="/config/integrations"
-                    >${this.hass.localize(
-                      "ui.panel.config.integration_panel_move.link_integration_page"
-                    )}</a
-                  >.
                 </div>
               `
             : ""}
