@@ -478,9 +478,12 @@
             "cancel": "Annuleren",
             "close": "Sluiten",
             "delete": "Verwijderen",
+            "error_required": "Verplicht",
             "loading": "Bezig met laden",
+            "menu": "Menu",
             "next": "Volgende",
             "no": "Nee",
+            "overflow_menu": "Overloopmenu",
             "previous": "Vorige",
             "refresh": "Vernieuwen",
             "save": "Opslaan",
@@ -691,10 +694,10 @@
             },
             "zha_device_info": {
                 "buttons": {
-                    "add": "Apparaten toevoegen",
+                    "add": "Apparaten toevoegen via dit apparaat",
                     "reconfigure": "Apparaat opnieuw configureren",
                     "remove": "Verwijder apparaat",
-                    "zigbee_information": "Zigbee Informatie"
+                    "zigbee_information": "Zigbee-apparaathandtekening"
                 },
                 "confirmations": {
                     "remove": "Weet je zeker dat je het apparaat wilt verwijderen?"
@@ -714,7 +717,7 @@
                 "unknown": "Onbekend",
                 "zha_device_card": {
                     "area_picker_label": "Gebied",
-                    "device_name_placeholder": "Door gebruiker ingegeven naam",
+                    "device_name_placeholder": "Wijzig apparaatnaam",
                     "update_name_button": "Naam bijwerken"
                 }
             }
@@ -740,6 +743,8 @@
         "notification_toast": {
             "connection_lost": "Verbinding verbroken. Opnieuw verbinden...",
             "service_call_failed": "Kan service {service} niet aanroepen",
+            "started": "Home Assistant is gestart!",
+            "starting": "Home Assistant is aan het opstarten, nog niet alles is beschikbaar tot dit is voltooid.",
             "triggered": "Geactiveerd {name}"
         },
         "panel": {
@@ -908,6 +913,8 @@
                         "introduction": "Gebruik automatiseringen om je huis tot leven te brengen.",
                         "load_error_not_editable": "Alleen automatiseringen in automations.yaml kunnen worden bewerkt.",
                         "load_error_unknown": "Fout bij laden van automatisering ({err_no}).",
+                        "move_down": "Verplaats omlaag",
+                        "move_up": "Verplaats omhoog",
                         "save": "Opslaan",
                         "triggers": {
                             "add": "Trigger toevoegen",
@@ -1219,6 +1226,7 @@
                     "different_include": "Mogelijk via een domein, een glob of een andere include.",
                     "pick_attribute": "Kies een attribuut om te overschrijven",
                     "picker": {
+                        "entity": "Entiteit",
                         "header": "Aanpassingen",
                         "introduction": "Pas attributen per entiteit aan. Toegevoegde/gewijzigde aanpassingen worden onmiddellijk van kracht. Verwijderde aanpassingen worden van kracht wanneer de entiteit wordt bijgewerkt."
                     },
@@ -1365,7 +1373,9 @@
                 },
                 "info": {
                     "built_using": "Gebouwd met behulp van",
+                    "caption": "Info",
                     "custom_uis": "Aangepaste UI's:",
+                    "description": "Informatie over je Home Assistant installatie",
                     "developed_by": "Ontwikkeld door een stel geweldige mensen.",
                     "documentation": "Documentatie",
                     "frontend": "Frontend",
@@ -1453,7 +1463,9 @@
                 },
                 "introduction": "Hier kun je je componenten en Home Assistant configureren. Het is nog niet mogelijk om alles te configureren vanuit de interface, maar we werken er aan.",
                 "logs": {
+                    "caption": "Logboek",
                     "clear": "Wis",
+                    "description": "Home Assistant logboek bekijken",
                     "details": "Logboekdetails ({level})",
                     "load_full_log": "Laad volledige Home Assistant logboek",
                     "loading_log": "Foutenlogboek laden ...",
@@ -1706,10 +1718,12 @@
                             "name": "Naam",
                             "system": "Systeem"
                         }
-                    }
+                    },
+                    "users_privileges_note": "Gebruikersgroepen zijn nog werk in uitvoering. De gebruiker kan de instantie niet beheren via de interface. We zijn bezig met het uitvoeren van een audit om verzekerd te zijn dat de management API-eindpunten toegang voor beheerders correct beperken."
                 },
                 "zha": {
                     "add_device_page": {
+                        "discovered_text": "Apparaten zullen hier verschijnen zodra ze zijn ontdekt.",
                         "discovery_text": "Gevonden apparaten worden hier weergegeven. Volg de instructies voor je apparaat of apparaten en plaats het apparaat of de apparaten in de koppelingsmodus.",
                         "header": "Zigbee Home Automation - Apparaten toevoegen",
                         "search_again": "Opnieuw zoeken",
@@ -1719,6 +1733,7 @@
                         "caption": "Apparaten toevoegen",
                         "description": "Voeg apparaten toe aan het Zigbee netwerk"
                     },
+                    "button": "Configureer",
                     "caption": "ZHA",
                     "cluster_attributes": {
                         "attributes_of_cluster": "Attributen van het geselecteerde cluster",
@@ -1797,6 +1812,9 @@
                         "header": "Netwerkbeheer",
                         "introduction": "Commando's die het hele netwerk beïnvloeden"
                     },
+                    "network": {
+                        "caption": "Netwerk"
+                    },
                     "node_management": {
                         "header": "Apparaatbeheer",
                         "help_node_dropdown": "Selecteer een apparaat om de opties per apparaat te bekijken.",
@@ -1836,6 +1854,7 @@
                     "no_zones_created_yet": "Het lijkt erop dat je nog geen zones hebt aangemaakt."
                 },
                 "zwave": {
+                    "button": "Configureer",
                     "caption": "Z-Wave",
                     "common": {
                         "index": "Index",
@@ -1868,6 +1887,15 @@
                         "set_wakeup": "Activeringsinterval instellen",
                         "true": "Waar"
                     },
+                    "node_management": {
+                        "add_to_group": "Toevoegen aan groep",
+                        "entity_info": "Entiteitsinformatie",
+                        "exclude_entity": "Sluit deze entiteit uit van Home Assistant",
+                        "group": "Groep",
+                        "protection": "Bescherming",
+                        "remove_from_group": "Verwijderen uit groep",
+                        "set_protection": "Bescherming instellen"
+                    },
                     "ozw_log": {
                         "header": "OZW-logboek",
                         "introduction": "Bekijk het logboek. 0 is het minimum (laadt het gehele logboek) en 1000 is het maximum. Laad toont een statisch logboek en staart wordt automatisch bijgewerkt met het laatst opgegeven aantal regels van het logboek."
@@ -1877,6 +1905,7 @@
                         "add_node_secure": "Secure Node toevoegen",
                         "cancel_command": "Opdracht annuleren",
                         "heal_network": "Herstel Netwerk",
+                        "refresh_entity": "Entiteit vernieuwen",
                         "remove_node": "Node verwijderen",
                         "save_config": "Configuratie Opslaan",
                         "soft_reset": "Soft Reset",
@@ -2012,6 +2041,10 @@
                         "add_item": "Item toevoegen",
                         "checked_items": "Geselecteerde items",
                         "clear_items": "Geselecteerde items wissen"
+                    },
+                    "starting": {
+                        "description": "Home Assistant is aan het opstarten, even geduld...",
+                        "header": "Home Assistant is aan het opstarten..."
                     }
                 },
                 "changed_toast": {
@@ -2304,7 +2337,8 @@
                     "attribute_not_found": "Kenmerk {attribute} niet beschikbaar in: {entity}",
                     "entity_non_numeric": "Entiteit is niet-numeriek: {entity}",
                     "entity_not_found": "Entiteit niet beschikbaar: {entity}",
-                    "entity_unavailable": "{entity} is momenteel niet beschikbaar"
+                    "entity_unavailable": "{entity} is momenteel niet beschikbaar",
+                    "starting": "Home Assistant is aan het opstarten, wellicht is nog niet alles beschikbaar"
                 }
             },
             "mailbox": {

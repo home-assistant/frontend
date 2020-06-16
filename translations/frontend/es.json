@@ -1728,8 +1728,11 @@
                 },
                 "zha": {
                     "add_device_page": {
+                        "discovered_text": "Los dispositivos aparecerán aquí una vez descubiertos.",
                         "discovery_text": "Los dispositivos detectados aparecerán aquí. Ponlos en modo emparejamiento siguiendo sus instrucciones.",
                         "header": "Domótica Zigbee - Añadir dispositivos",
+                        "no_devices_found": "No se encontraron dispositivos, asegúrate de que están en modo de emparejamiento y mantenlos despiertos mientras el descubrimiento se está ejecutando.",
+                        "pairing_mode": "Asegúrate de que tus dispositivos están en modo de emparejamiento. Consulta las instrucciones de tu dispositivo sobre cómo hacerlo.",
                         "search_again": "Buscar de nuevo",
                         "spinner": "Buscando dispositivos ZHA Zigbee...."
                     },
