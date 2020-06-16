@@ -35,7 +35,7 @@ class HaCard extends LitElement {
       }
 
       :host([outlined]) {
-        box-shadow: 0 0 0 0;
+        box-shadow: none;
         border-width: 1px;
         border-style: solid;
         border-color: var(
