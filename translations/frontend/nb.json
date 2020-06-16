@@ -694,10 +694,10 @@
             },
             "zha_device_info": {
                 "buttons": {
-                    "add": "Legg til enheter",
+                    "add": "Legg til enheter via denne enheten",
                     "reconfigure": "Rekonfigurer enhet",
                     "remove": "Fjern enhet",
-                    "zigbee_information": "Zigbee informasjon"
+                    "zigbee_information": "Zigbee-enhetssignatur"
                 },
                 "confirmations": {
                     "remove": "Er du sikker på at du vil fjerne enheten?"
@@ -717,7 +717,7 @@
                 "unknown": "Ukjent",
                 "zha_device_card": {
                     "area_picker_label": "Område",
-                    "device_name_placeholder": "Brukers navn",
+                    "device_name_placeholder": "Endre enhetsnavn",
                     "update_name_button": "Oppdater navn"
                 }
             }
@@ -1728,8 +1728,11 @@
                 },
                 "zha": {
                     "add_device_page": {
+                        "discovered_text": "Enheter vises her når de er oppdaget.",
                         "discovery_text": "Oppdagede enheter vises her. Følg instruksjonene for enheten(e) og sett enheten(e) i paringsmodus.",
                         "header": "Zigbee Home Automation - Legg til enheter",
+                        "no_devices_found": "Ingen enheter er funnet, sørg for at de er i paringsmodus og holde dem våken mens du oppdager kjører.",
+                        "pairing_mode": "Kontroller at enhetene er i paringsmodus. Sjekk instruksjonene til enheten om hvordan du gjør dette.",
                         "search_again": "Søk på nytt",
                         "spinner": "Søker etter ZHA Zigbee-enheter..."
                     },
@@ -1737,6 +1740,7 @@
                         "caption": "Legg til enheter",
                         "description": "Legg til enheter i Zigbee-nettverket"
                     },
+                    "button": "Konfigurer",
                     "caption": "",
                     "cluster_attributes": {
                         "attributes_of_cluster": "Attributter for den valgte klyngen",
@@ -1815,6 +1819,9 @@
                         "header": "Nettverksadministrasjon",
                         "introduction": "Kommandoer som påvirker hele nettverket"
                     },
+                    "network": {
+                        "caption": "Nettverk"
+                    },
                     "node_management": {
                         "header": "Enhetshåndtering",
                         "help_node_dropdown": "Velg en enhet for å vise alternativer per enhet.",
@@ -1854,6 +1861,7 @@
                     "no_zones_created_yet": "Det ser ikke ut som du har opprettet noen soner enda"
                 },
                 "zwave": {
+                    "button": "Konfigurer",
                     "caption": "Z-Wave",
                     "common": {
                         "index": "Indeks",

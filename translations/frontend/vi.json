@@ -199,6 +199,8 @@
             "stopped": "Đã dừng"
         },
         "default": {
+            "off": "Tắt",
+            "on": "Bật",
             "unavailable": "Không có sẵn",
             "unknown": "Chưa biết"
         },
@@ -387,6 +389,9 @@
             "script": {
                 "execute": "Thi hành"
             },
+            "service": {
+                "run": "Chạy"
+            },
             "vacuum": {
                 "actions": {
                     "resume_cleaning": "Tiếp tục làm sạch",
@@ -435,16 +440,40 @@
             }
         },
         "common": {
+            "and": "và",
+            "back": "Trở lại",
             "cancel": "Hủy bỏ",
+            "close": "Đóng",
             "delete": "Xóa",
+            "error_required": "Cần thiết",
             "loading": "Đang tải",
+            "menu": "Menu",
+            "next": "Kế tiếp",
+            "overflow_menu": "Menu tràn",
+            "previous": "Trước đó",
+            "refresh": "Làm mới",
             "save": "Lưu",
             "successfully_deleted": "Xóa thành công",
             "undo": "Hoàn tác"
         },
         "components": {
+            "area-picker": {
+                "add_dialog": {
+                    "add": "Thêm",
+                    "failed_create_area": "Không thể tạo khu vực.",
+                    "name": "Tên",
+                    "text": "Nhập tên của khu vực mới.",
+                    "title": "Thêm khu vực mới"
+                },
+                "add_new": "Thêm khu vực mới...",
+                "area": "Khu vực",
+                "clear": "Xoá",
+                "show_areas": "Hiển thị các khu vực"
+            },
             "device-picker": {
-                "show_devices": "Hiện các thiết bị"
+                "no_area": "Không có khu vực",
+                "show_devices": "Hiện các thiết bị",
+                "toggle": "Chuyển đổi"
             },
             "entity": {
                 "entity-picker": {
@@ -454,6 +483,17 @@
             "history_charts": {
                 "loading_history": "Đang tải lịch sử trạng thái ...",
                 "no_history_found": "Không tìm thấy lịch sử trạng thái."
+            },
+            "related-items": {
+                "area": "Khu vực",
+                "automation": "Một phần của các tự động hóa sau",
+                "device": "Thiết bị",
+                "entity": "Các thực thể liên quan",
+                "group": "Một phần của các nhóm sau",
+                "integration": "Tích hợp",
+                "no_related_found": "Không tìm thấy mục nào liên quan.",
+                "scene": "Một phần của các ngữ cảnh sau",
+                "script": "Một phần của các kịch bản sau"
             },
             "relative_time": {
                 "duration": {
@@ -472,27 +512,86 @@
             }
         },
         "dialogs": {
+            "config_entry_system_options": {
+                "update": "Cập nhật"
+            },
             "entity_registry": {
+                "control": "Điều khiển",
                 "editor": {
+                    "confirm_delete": "Bạn có chắc bạn muốn xoá bỏ mục này không?",
                     "delete": "Xóa",
+                    "enabled_cause": "Vô hiệu hoá do {cause}.",
+                    "enabled_description": "Các thực thể bị vô hiệu hóa sẽ không được thêm vào Home Assistant.",
+                    "enabled_label": "Kích hoạt thực thể",
+                    "entity_id": "Mã định danh Thực thể",
+                    "icon_error": "Các biểu tượng phải ở định dạng 'tiền tố:tên biểu tượng', ví dụ như 'mdi:home'",
+                    "name": "Ghi đè Tên",
+                    "note": "Lưu ý: điều này có thể không hoạt động với tất cả các tích hợp.",
+                    "unavailable": "Thực thể này hiện không có sẵn.",
                     "update": "Cập nhật"
-                }
+                },
+                "no_unique_id": "Thực thể này không có mã định danh duy nhất, do vậy không thể quản lý cài đặt của nó từ giao diện người dùng.",
+                "related": "Liên quan",
+                "settings": "Cài đặt"
+            },
+            "generic": {
+                "cancel": "Hủy bỏ",
+                "close": "đóng",
+                "default_confirmation_title": "Bạn có chắc không?",
+                "ok": "Đồng ý"
             },
             "helper_settings": {
+                "generic": {
+                    "icon": "Biểu tượng",
+                    "name": "Tên"
+                },
                 "input_datetime": {
                     "date": "Ngày",
                     "datetime": "Ngày và giờ",
                     "mode": "Bạn muốn nhập gì",
                     "time": "Thời gian"
                 },
+                "input_number": {
+                    "box": "Trường nhập liệu",
+                    "max": "Giá trị tối đa",
+                    "min": "Giá trị tối thiểu",
+                    "mode": "Chế độ hiển thị",
+                    "slider": "Thanh trượt",
+                    "step": "Cỡ bước",
+                    "unit_of_measurement": "Đơn vị đo lường"
+                },
+                "input_select": {
+                    "add": "Thêm tuỳ chọn",
+                    "add_option": "Thêm tùy chọn",
+                    "no_options": "Chưa có lựa chọn nào.",
+                    "options": "Tùy Chọn"
+                },
                 "input_text": {
                     "max": "Độ dài tối đa",
-                    "min": "Độ dài tối thiểu"
-                }
+                    "min": "Độ dài tối thiểu",
+                    "mode": "Chế độ hiển thị",
+                    "password": "Mật khẩu",
+                    "pattern": "Mẫu Regex để xác thực giá trị ở phía client",
+                    "text": "Văn bản"
+                },
+                "platform_not_loaded": "Tích hợp {platform} không được nạp. Hãy thêm nó vào cấu hình của bạn bằng cách thêm 'default_config:' hoặc ''{platform}:''.",
+                "required_error_msg": "Trường này là cần thiết"
             },
             "more_info_control": {
+                "edit": "Chỉnh sửa thực thể",
+                "person": {
+                    "create_zone": "Tạo vùng từ vị trí hiện tại"
+                },
+                "restored": {
+                    "confirm_remove_text": "Bạn có chắc bạn muốn loại bỏ thực thể này không?",
+                    "confirm_remove_title": "Loại bỏ thực thể?",
+                    "not_provided": "Thực thể này hiện không khả dụng và thuộc về một tích hợp hay thiết bị đã bị loại bỏ, thay đổi hoặc rối loạn chức năng.",
+                    "remove_action": "Loại bỏ thực thể",
+                    "remove_intro": "Nếu thực thể không còn được sử dụng, bạn có thể dọn dẹp bằng cách loại bỏ nó."
+                },
                 "script": {
-                    "last_action": "Hành động cuối"
+                    "last_action": "Hành động cuối",
+                    "last_triggered": "Lần kích hoạt cuối"
                 },
                 "sun": {
                     "elevation": "Độ cao",
@@ -501,17 +600,42 @@
                 },
                 "updater": {
                     "title": "Hướng dẫn cập nhật"
+                },
+                "vacuum": {
+                    "clean_spot": "Làm sạch một vùng nhỏ",
+                    "commands": "Các lệnh điều khiển máy hút bụi:",
+                    "fan_speed": "Tốc độ quạt",
+                    "locate": "Định vị",
+                    "pause": "Tạm dừng",
+                    "return_home": "Trở lại bệ sạc",
+                    "start": "Bắt đầu",
+                    "start_pause": "Bắt Đầu/Tạm Dừng",
+                    "status": "Trạng thái",
+                    "stop": "Dừng"
                 }
             },
             "mqtt_device_debug_info": {
-                "show_as_yaml": "Hiển thị dưới dạng YAML"
+                "deserialize": "Cố gắng phân tích các thông điệp MQTT dưới dạng JSON",
+                "entities": "Các thực thể",
+                "no_entities": "Không có thực thể",
+                "no_triggers": "Không có kích hoạt",
+                "payload_display": "Hiển thị nội dung",
+                "recent_messages": "{n} thông điệp nhận được gần đây nhất",
+                "show_as_yaml": "Hiển thị dưới dạng YAML",
+                "title": "{device} thông tin sửa lỗi",
+                "triggers": "Các kích hoạt"
             },
             "voice_command": {
                 "label": "Nhập câu hỏi và nhấn 'Enter'"
             },
             "zha_device_info": {
                 "buttons": {
-                    "add": "Thêm thiết bị"
+                    "add": "Thêm thiết bị",
+                    "zigbee_information": "Chữ ký thiết bị ZigBee"
+                },
+                "device_signature": "Chữ ký thiết bị ZigBee",
+                "services": {
+                    "zigbee_information": "Xem thông tin Zigbee của thiết bị."
                 }
             }
         },
@@ -534,10 +658,19 @@
         },
         "notification_toast": {
             "connection_lost": "Kết nối bị mất. Đang kết nối lại…",
-            "service_call_failed": "Không thể gọi dịch vụ {service} ."
+            "service_call_failed": "Không thể gọi dịch vụ {service} .",
+            "started": "Home Assistant đã khởi động xong!",
+            "starting": "Home Assistant đang khởi động, không phải tất cả mọi thứ đều đã sẵn sàng cho đến khi khởi động hoàn tất."
         },
         "panel": {
+            "calendar": {
+                "my_calendars": "Các Lịch của tôi",
+                "today": "Hôm nay"
+            },
             "config": {
+                "advanced_mode": {
+                    "link_profile_page": "trang hồ sơ của bạn"
+                },
                 "areas": {
                     "caption": "Đăng ký Khu vực",
                     "data_table": {
@@ -545,6 +678,7 @@
                         "devices": "Thiết bị"
                     },
                     "delete": {
+                        "confirmation_text": "Tất cả các thiết bị trong khu vực này sẽ trở thành chưa được phân khu vực.",
                         "confirmation_title": "Bạn có chắc chắn muốn xóa khu vực này?"
                     },
                     "description": "Tổng quan tất cả các khu vực trong nhà bạn.",
@@ -552,6 +686,8 @@
                         "area_id": "ID Khu vực",
                         "create": "TẠO",
                         "delete": "XÓA",
+                        "name": "Tên",
+                        "name_required": "Tên là bắt buộc",
                         "unknown_error": "Lỗi không xác định",
                         "update": "CẬP NHẬT"
                     },
@@ -619,6 +755,9 @@
                                 "device": {
                                     "condition": "Điều kiện"
                                 },
+                                "not": {
+                                    "label": "Không"
+                                },
                                 "numeric_state": {
                                     "above": "Ở trên",
                                     "below": "Bên dưới",
@@ -656,9 +795,12 @@
                             "unsupported_condition": "Điều kiện không được hỗ trợ: {condition}"
                         },
                         "default_name": "Thêm Tự động hóa",
+                        "enable_disable": "Bật/Tắt tự động hóa",
                         "introduction": "Sử dụng tự động hóa để mang sự sống cho nhà bạn",
                         "load_error_not_editable": "Chỉ tự động hóa trong automations.yaml là có thể chỉnh sửa.",
                         "load_error_unknown": "Lỗi tải tự động hóa ({err_no}).",
+                        "move_down": "Chuyển xuống",
+                        "move_up": "Chuyển lên",
                         "save": "Lưu",
                         "triggers": {
                             "add": "Thêm Bộ khởi động",
@@ -749,6 +891,9 @@
                     },
                     "picker": {
                         "add_automation": "Thêm Tự động hóa",
+                        "delete_automation": "Xóa tự động hóa",
+                        "delete_confirm": "Bạn có chắc bạn muốn xoá tự động hoá này không?",
+                        "edit_automation": "Chỉnh sửa tự động hóa",
                         "header": "Trình biên tập tự động hóa",
                         "headers": {
                             "name": "Tên"
@@ -756,10 +901,17 @@
                         "introduction": "Trình soạn thảo tự động hóa cho phép bạn tạo và chỉnh sửa tự động. Vui lòng đọc [hướng dẫn] (https://home-assistant.io/docs/automation/editor/) để đảm bảo rằng bạn đã cấu hình chính xác Home Assistant.",
                         "learn_more": "Tìm hiểu thêm về Tự động hóa",
                         "no_automations": "Chúng tôi không thể tìm thấy tự động hóa nào có thể chỉnh sửa",
-                        "pick_automation": "Chọn tự động hóa để chỉnh sửa"
+                        "only_editable": "Chỉ các tự động hóa trong automations.yaml là có thể chỉnh sửa.",
+                        "pick_automation": "Chọn tự động hóa để chỉnh sửa",
+                        "show_info_automation": "Hiển thị thông tin về tự động hóa"
                     }
                 },
                 "cloud": {
+                    "account": {
+                        "google": {
+                            "sync_entities_404_message": "Thất bị khi đồng bộ các thực thể của bạn với Google, yêu cầu Google 'Hey Google, sync my devices' để thực hiện đồng bộ hoá."
+                        }
+                    },
                     "caption": "Home Assistant Cloud",
                     "description_login": "Đã đăng nhập với tên {email}",
                     "description_not_login": "Chưa đăng nhập"
@@ -773,6 +925,7 @@
                                 "edit_requires_storage": "Trình chỉnh sửa bị vô hiệu hóa do cấu hình được lưu trữ trong configuration.yaml.",
                                 "elevation": "Độ cao",
                                 "elevation_meters": "mét",
+                                "external_url": "URL bên ngoài",
                                 "imperial_example": "Độ F, pound",
                                 "latitude": "Vĩ độ",
                                 "location_name": "Tên cài đặt Home Assistant của bạn",
@@ -790,21 +943,34 @@
                     }
                 },
                 "customize": {
+                    "attributes_not_set": "Các thuộc tính sau chưa được thiết lập. Thiết lập chúng nếu muốn.",
+                    "attributes_outside": "Các thuộc tính sau được tùy chỉnh từ bên ngoài customize.yaml",
+                    "attributes_override": "Bạn có thể ghi đè chúng nếu muốn.",
+                    "attributes_set": "Các thuộc tính sau của thực thể được thiếp lập bởi chương trình.",
                     "caption": "Tùy chỉnh",
                     "description": "Tùy chỉnh các thực thể của bạn",
+                    "different_include": "Có thể qua một miền, một đường dẫn hoặc một bao gồm khác.",
+                    "pick_attribute": "Chọn một thuộc tính để ghi đè",
                     "picker": {
+                        "entity": "Thực thể",
                         "header": "Tùy chỉnh",
                         "introduction": "Tinh chỉnh thuộc tính mỗi thực thể. Các tùy chỉnh được thêm / chỉnh sửa sẽ có hiệu lực ngay lập tức. Các tùy chỉnh bị xóa sẽ có hiệu lực khi thực thể được cập nhật."
                     }
                 },
                 "devices": {
                     "automation": {
+                        "automations": "Tự động hóa",
+                        "create": "Tạo tự động hóa với thiết bị",
+                        "no_automations": "Không có tự động hoá",
+                        "no_device_automations": "Không có tự động hoá nào khả dụng cho thiết bị này.",
                         "triggers": {
                             "caption": "Làm gì đó khi ..."
                         }
                     },
+                    "cant_edit": "Bạn chỉ có thể chỉnh sửa các mục được tạo trong UI.",
                     "caption": "Thiết bị",
                     "confirm_delete": "Bạn có chắc bạn muốn xóa bỏ thiết bị này không?",
+                    "confirm_rename_entity_ids": "Bạn cũng muốn đổi mã định danh của các thực thể?",
                     "data_table": {
                         "area": "Khu vực",
                         "battery": "Pin",
@@ -816,12 +982,30 @@
                         "no_devices": "Không có thiết bị nào"
                     },
                     "delete": "Xóa",
+                    "device_info": "Thông tin thiết bị",
                     "device_not_found": "Không tìm thấy thiết bị.",
                     "entities": {
-                        "add_entities_lovelace": "Thêm vào Lovelace"
+                        "add_entities_lovelace": "Thêm vào Lovelace",
+                        "disabled_entities": "+{count} {count, plural,\n  one {thực thể bị vô hiệu hoá}\n  other {các thực thể bị vô hiệu hoá}\n}",
+                        "entities": "Các thực thể",
+                        "hide_disabled": "Ẩn các thiết bị bị vô hiệu hoá",
+                        "none": "Thiết bị này không có thực thể nào"
                     },
                     "name": "Tên",
                     "no_devices": "Không có thiết bị nào",
+                    "scene": {
+                        "create": "Tạo ngữ cảnh với thiết bị",
+                        "no_scenes": "Không có ngữ cảnh",
+                        "scenes": "Các ngữ cảnh"
+                    },
+                    "scenes": "Các ngữ cảnh",
+                    "script": {
+                        "create": "Tạo kịch bản với thiết bị",
+                        "no_scripts": "Không có kịch bản",
+                        "scripts": "Các kịch bản"
+                    },
+                    "scripts": "Các kịch bản",
+                    "unknown_error": "Lỗi không xác định",
                     "unnamed_device": "Thiết bị không tên",
                     "update": "Cập nhật"
                 },
@@ -829,21 +1013,86 @@
                     "caption": "Đăng ký thực thể",
                     "description": "Tổng quan tất cả các thực thể đã biết.",
                     "picker": {
+                        "disable_selected": {
+                            "button": "Vô hiệu hoá các mục đã chọn"
+                        },
+                        "enable_selected": {
+                            "button": "Kích hoạt các mục đã chọn"
+                        },
+                        "filter": {
+                            "filter": "Lọc",
+                            "show_disabled": "Hiển thị các thực thể bị vô hiệu",
+                            "show_readonly": "Hiển thị các thực thể chỉ đọc",
+                            "show_unavailable": "Hiện thực thể không khả dụng"
+                        },
                         "header": "Đăng ký thực thể",
+                        "headers": {
+                            "status": "Trạng thái"
+                        },
                         "introduction": "Home Assistant giữ một sổ đăng ký của mọi thực thể mà nó từng thấy có thể được xác định duy nhất. Mỗi thực thể này sẽ có một ID thực thể được gán sẽ chỉ dành riêng cho thực thể này.",
-                        "introduction2": "Sử dụng sổ đăng ký thực thể để ghi đè tên, thay đổi ID thực thể hoặc xóa mục nhập khỏi Home Assistant. Lưu ý, xóa mục đăng ký thực thể sẽ không xóa thực thể. Để làm điều đó, hãy theo liên kết dưới đây và xóa nó khỏi trang tích hợp."
+                        "introduction2": "Sử dụng sổ đăng ký thực thể để ghi đè tên, thay đổi ID thực thể hoặc xóa mục nhập khỏi Home Assistant. Lưu ý, xóa mục đăng ký thực thể sẽ không xóa thực thể. Để làm điều đó, hãy theo liên kết dưới đây và xóa nó khỏi trang tích hợp.",
+                        "selected": "{number} đã chọn",
+                        "status": {
+                            "disabled": "Bị vô hiệu hoá",
+                            "ok": "Đồng ý",
+                            "readonly": "Chỉ đọc",
+                            "unavailable": "Không khả dụng"
+                        }
                     }
                 },
+                "filtering": {
+                    "clear": "Xoá",
+                    "filtering_by": "Lọc bởi"
+                },
                 "header": "Cấu hình Home Assistant",
+                "helpers": {
+                    "caption": "Người hỗ trợ",
+                    "description": "Các yếu tố có thể giúp xây dựng tự động hóa.",
+                    "dialog": {
+                        "add_helper": "Thêm hỗ trợ",
+                        "add_platform": "Thêm {platform}",
+                        "create": "Tạo"
+                    },
+                    "picker": {
+                        "add_helper": "Thêm hỗ trợ",
+                        "headers": {
+                            "editable": "Có thể chỉnh sửa",
+                            "entity_id": "Mã Thực thể",
+                            "name": "Tên",
+                            "type": "Loại"
+                        }
+                    },
+                    "types": {
+                        "input_boolean": "Chuyển đổi",
+                        "input_datetime": "Ngày và/hoặc giờ",
+                        "input_number": "Số",
+                        "input_select": "Thả xuống",
+                        "input_text": "Văn bản"
+                    }
+                },
                 "info": {
+                    "caption": "Thông tin",
+                    "description": "Thông tin về bản cài đặt Home Assistant của bạn",
+                    "developed_by": "Được phát triển bởi một nhóm những con người tuyệt vời.",
+                    "documentation": "Tài liệu",
+                    "home_assistant_logo": "Logo của Home Assistant",
+                    "integrations": "Các tích hợp",
+                    "issues": "Các vấn đề",
+                    "license": "Được xuất bản theo giấy phép Apache 2.0",
+                    "path_configuration": "Đường dẫn đến configuration.yaml: {path}",
+                    "server": "máy chủ",
+                    "source": "Nguồn:",
                     "title": "Thông tin"
                 },
                 "integrations": {
+                    "add_integration": "Thêm tích hợp",
                     "caption": "Các bộ tích hợp",
                     "config_entry": {
                         "delete": "Xóa",
                         "delete_confirm": "Bạn chắc chắn muốn xóa bộ tích hợp này?",
                         "device_unavailable": "Thiết bị không khả dụng",
+                        "devices": "{count} {count, plural,\n  one { thiết bị }\n  other { các thiết bị }\n}",
+                        "entities": "{count} {count, plural,\n  one { thực thể }\n  other { các thực thể }\n}",
                         "entity_unavailable": "Thiết bị không khả dụng",
                         "firmware": "Firmware: {version}",
                         "manuf": "bởi {manufacturer}",
@@ -856,35 +1105,119 @@
                         "system_options": "Tùy chọn hệ thống"
                     },
                     "config_flow": {
+                        "aborted": "Đã hủy bỏ",
+                        "close": "Đóng",
                         "created_config": "Đã tạo cấu hình cho {name}.",
+                        "dismiss": "Bỏ qua hộp thoại",
+                        "error_saving_area": "Lỗi khi lưu khu vực: {error}",
                         "external_step": {
                             "description": "Bước này yêu cầu bạn truy cập một trang web bên ngoài để hoàn thành.",
                             "open_site": "Mở trang web"
-                        }
+                        },
+                        "finish": "Hoàn thành",
+                        "loading_first_time": "Vui lòng chờ trong khi tích hợp đang được cài đặt",
+                        "not_all_required_fields": "Không phải tất cả các trường bắt buộc đều đã được điền.",
+                        "submit": "Gửi đi"
                     },
                     "configure": "Cấu hình",
                     "configured": "Đã cấu hình",
                     "description": "Quản lý thiết bị và dịch vụ đã kết nối",
                     "discovered": "Đã quét",
+                    "ignore": {
+                        "confirm_delete_ignore_title": "Ngừng bỏ qua {name}?",
+                        "hide_ignored": "Ẩn các tích hợp bị bỏ qua",
+                        "ignored": "Đã bỏ qua",
+                        "show_ignored": "Hiển thị các tích hợp bị bỏ qua",
+                        "stop_ignore": "Ngừng bỏ qua"
+                    },
                     "integration": "tích hợp",
+                    "integration_not_found": "Không tìm thấy tích hợp.",
                     "new": "Thiết lập bộ tích hợp mới",
-                    "none": "Chưa có cấu hình nào"
+                    "no_integrations": "Có vẻ như bạn chưa có bất kỳ tích hợp nào được cấu hình. Nhấp vào nút bên dưới để thêm tích hợp đầu tiên của bạn!",
+                    "none": "Chưa có cấu hình nào",
+                    "none_found": "Không tìm thấy tích hợp nào",
+                    "none_found_detail": "Điều chỉnh tiêu chí tìm kiếm của bạn."
                 },
                 "introduction": "Ở đây có thể định cấu hình các thành phần của bạn và Home Assistant. Không phải mọi thứ đều có thể được cấu hình từ giao diện người dùng, nhưng chúng tôi đang cải thiện việc đó.",
+                "logs": {
+                    "caption": "Nhật ký hoạt động",
+                    "description": "Xem nhật ký hoạt động của Home Assistant"
+                },
                 "lovelace": {
                     "caption": "Bảng điều khiển Lovelace",
                     "dashboards": {
                         "cant_edit_default": "Bảng điều khiển Lovelace tiêu chuẩn không thể chỉnh sửa được từ UI. Bạn có thể ẩn nó bằng cách đặt bảng điều khiển khác làm mặc định.",
+                        "cant_edit_yaml": "Các bảng điều khiển được định nghĩa trong YAML không thể được sửa từ giao diện người dùng. Thay đổi chúng trong configuration.yaml.",
+                        "caption": "Bảng điều khiển",
+                        "conf_mode": {
+                            "storage": "Điều khiển bằng UI",
+                            "yaml": "Tập tin YAML"
+                        },
+                        "confirm_delete": "Bạn có chắc chắn muốn xóa bảng điều khiển này?",
                         "default_dashboard": "Đây là bảng điều khiển mặc định",
                         "detail": {
+                            "create": "Tạo",
+                            "delete": "Xóa",
+                            "dismiss": "Đóng",
+                            "edit_dashboard": "Chỉnh sửa bảng điều khiển",
                             "icon": "Biểu tượng",
-                            "title": "Tiêu đề"
+                            "new_dashboard": "Thêm bảng điều khiển mới",
+                            "require_admin": "Chỉ Quản trị viên",
+                            "set_default": "Đặt làm mặc định trên thiết bị này",
+                            "show_sidebar": "Hiển thị trong thanh bên",
+                            "title": "Tiêu đề",
+                            "title_required": "Tiêu đề là bắt buộc.",
+                            "update": "Cập nhật",
+                            "url": "Url",
+                            "url_error_msg": "URL phải chứa một ký tự - và không thể chứa dấu cách hoặc ký tự đặc biệt, ngoại trừ _ và -"
                         },
                         "picker": {
+                            "add_dashboard": "Thêm bảng điều khiển",
+                            "headers": {
+                                "conf_mode": "Phương thức cấu hình",
+                                "default": "Mặc định",
+                                "filename": "Tên tệp",
+                                "require_admin": "Chỉ Quản trị viên",
+                                "sidebar": "Hiển thị trong thanh bên",
+                                "title": "Tiêu đề"
+                            },
                             "open": "Mở"
                         }
                     },
-                    "description": "Cấu hình bảng điều khiển Lovelace"
+                    "description": "Cấu hình bảng điều khiển Lovelace",
+                    "resources": {
+                        "cant_edit_yaml": "Bạn đang sử dụng Lovelace trong chế độ YAML, do đó bạn không thể quản lý tài nguyên của mình thông qua giao diện người dùng. Quản lý chúng trong configuration.yaml.",
+                        "caption": "Tài nguyên",
+                        "confirm_delete": "Bạn có chắc chắn muốn xóa tài nguyên này?",
+                        "detail": {
+                            "create": "Tạo",
+                            "delete": "Xóa",
+                            "dismiss": "Đóng",
+                            "new_resource": "Thêm tài nguyên mới",
+                            "type": "Loại tài nguyên",
+                            "update": "Cập nhật",
+                            "url": "Url",
+                            "url_error_msg": "URL là trường bắt buộc",
+                            "warning_header": "Thận trọng!",
+                            "warning_text": "Thêm tài nguyên có thể nguy hiểm, đảm bảo bạn biết rõ nguồn của tài nguyên và tin tưởng họ. Tài nguyên xấu có thể gây hại nghiêm trọng cho hệ thống của bạn."
+                        },
+                        "picker": {
+                            "add_resource": "Thêm tài nguyên",
+                            "headers": {
+                                "type": "Loại",
+                                "url": "Url"
+                            },
+                            "no_resources": "Không có tài nguyên"
+                        },
+                        "refresh_body": "Bạn phải làm mới trang để hoàn tất việc xóa, bạn có muốn làm mới bây giờ không?",
+                        "refresh_header": "Bạn có muốn làm mới không?",
+                        "types": {
+                            "css": "Stylesheet",
+                            "html": "HTML (không dùng nữa)",
+                            "js": "Tệp JavaScript (không dùng nữa)",
+                            "module": "Mô-đun JavaScript"
+                        }
+                    }
                 },
                 "person": {
                     "caption": "Người",
@@ -897,26 +1230,65 @@
                     }
                 },
                 "scene": {
+                    "activated": "Đã kích hoạt ngữ cảnh {name}.",
+                    "caption": "Các ngữ cảnh",
+                    "description": "Tạo và chỉnh sửa ngữ cảnh",
                     "editor": {
+                        "default_name": "Ngữ cảnh mới",
                         "devices": {
                             "add": "Thêm thiết bị",
                             "delete": "Xóa thiết bị",
-                            "header": "Thiết bị"
-                        }
+                            "header": "Thiết bị",
+                            "introduction": "Thêm các thiết bị mà bạn muốn bao gồm trong ngữ cảnh của bạn. Đặt tất cả các thiết bị vào trạng thái mong muốn cho ngữ cảnh này."
+                        },
+                        "entities": {
+                            "add": "Thêm một thực thể",
+                            "delete": "Xóa thực thể",
+                            "device_entities": "Nếu bạn thêm một thực thể thuộc về một thiết bị, thiết bị cũng sẽ được thêm vào.",
+                            "header": "Các thực thể",
+                            "introduction": "Các thực thể không thuộc về một thiết bị có thể được đặt ở đây.",
+                            "without_device": "Các thực thể không thuộc một thiết bị"
+                        },
+                        "introduction": "Sử dụng các ngữ cảnh để mang lại sự sống cho nhà bạn.",
+                        "load_error_not_editable": "Chỉ những ngữ cảnh nằm trong scenes.yaml là có thể chỉnh sửa.",
+                        "load_error_unknown": "Lỗi khi tải ngữ cảnh ({err_no}).",
+                        "name": "Tên",
+                        "save": "Lưu",
+                        "unsaved_confirm": "Bạn có những thay đổi chưa được lưu. Bạn có chắc chắn muốn rời đi không?"
                     },
                     "picker": {
+                        "add_scene": "Thêm ngữ cảnh",
+                        "delete_confirm": "Bạn có chắc bạn muốn xóa bỏ ngữ cảnh này không?",
+                        "delete_scene": "Xóa ngữ cảnh",
+                        "edit_scene": "Chỉnh sửa ngữ cảnh",
+                        "header": "Trình soạn thảo Ngữ cảnh",
                         "headers": {
                             "name": "Tên"
-                        }
+                        },
+                        "introduction": "Trình soạn thảo ngữ cảnh cho phép bạn tạo và chỉnh sửa các ngữ cảnh. Vui lòng theo liên kết dưới đây để xem hướng dẫn nhằm đảm bảo rằng bạn đã cấu hình Home Assistant chính xác.",
+                        "learn_more": "Tìm hiểu thêm về ngữ cảnh",
+                        "no_scenes": "Chúng tôi không thể tìm thấy bất kỳ ngữ cảnh nào có thể chỉnh sửa",
+                        "only_editable": "Chỉ những ngữ cảnh được định nghĩa trong scenes.yaml là có thể chỉnh sửa.",
+                        "pick_scene": "Chọn ngữ cảnh để chỉnh sửa",
+                        "show_info_scene": "Hiển thị thông tin về ngữ cảnh"
                     }
                 },
                 "script": {
                     "caption": "Kịch bản",
                     "description": "Tạo và chỉnh sửa các tập lệnh",
+                    "editor": {
+                        "delete_script": "Xóa kịch bản",
+                        "link_available_actions": "Tìm hiểu thêm về các hành động khả dụng.",
+                        "sequence": "Trình tự",
+                        "sequence_sentence": "Trình tự các hành động trong kịch bản này."
+                    },
                     "picker": {
+                        "edit_script": "Chỉnh sửa kịch bản",
                         "headers": {
                             "name": "Tên"
-                        }
+                        },
+                        "show_info": "Hiển thị thông tin về kịch bản",
+                        "trigger_script": "Kích hoạt kịch bản"
                     }
                 },
                 "server_control": {
@@ -928,6 +1300,11 @@
                             "core": "Tải lại lõi",
                             "group": "Tải lại nhóm",
                             "heading": "Đang tải lại cấu hình YAML",
+                            "input_boolean": "Tải lại input boolean",
+                            "input_datetime": "Tải lại input date time",
+                            "input_number": "Tải lại input number",
+                            "input_select": "Tải lại input select",
+                            "input_text": "Tải lại input texts",
                             "introduction": "Một số phần của Home Assistant có thể tải lại mà không yêu cầu khởi động lại. Nhấn nút tải lại sẽ gỡ bỏ cấu hình hiện tại của nó và tải một cấu hình mới.",
                             "person": "Tải lại người",
                             "scene": "Tải lại ngữ cảnh",
@@ -975,29 +1352,70 @@
                             "name": "Tên",
                             "system": "Hệ thống"
                         }
-                    }
+                    },
+                    "users_privileges_note": "Nhóm người dùng đang trong quá trình hoàn thiện. Người dùng sẽ không thể thực hiện các thao tác quản lý qua UI. Chúng tôi vẫn đang kiểm tra tất cả các điểm kết thúc của API để đảm bảo rằng chúng giới hạn chính xác các truy cập vào quyền quản trị."
                 },
                 "zha": {
                     "add_device_page": {
+                        "discovered_text": "Thiết bị sẽ hiển thị ở đây một khi được tìm thấy.",
+                        "no_devices_found": "Không có thiết bị nào được tìm thấy, hãy chắc chắn thiết bị đang trong chế độ ghép nối và giữ thiết bị kích hoạt khi tự động phát hiện đang chạy.",
+                        "pairing_mode": "Đảm bảo các thiết bị của bạn đang ở chế độ ghép nối. Kiểm tra hướng dẫn đi kèm thiết bị về cách làm điều này.",
                         "spinner": "Tìm kiếm các thiết bị ZHA Zigbee ..."
                     },
                     "add": {
                         "caption": "Thêm thiết bị"
                     },
+                    "button": "Cấu hình",
                     "caption": "ZHA",
                     "common": {
                         "add_devices": "Thêm thiết bị",
                         "devices": "Thiết bị"
                     },
-                    "description": "Quản lý mạng Zigbee Home Automation"
+                    "description": "Quản lý mạng Zigbee Home Automation",
+                    "group_binding": {
+                        "bind_button_help": "Liên kết nhóm đã chọn vào các cụm thiết bị đã chọn.",
+                        "bind_button_label": "Liên kết Nhóm",
+                        "cluster_selection_help": "Chọn các cụm để liên kết với nhóm đã chọn.",
+                        "group_picker_help": "Chọn một nhóm để thi hành một lệnh liên kết.",
+                        "unbind_button_help": "Hủy liên kết nhóm đã chọn khỏi cụm thiết bị đã chọn.",
+                        "unbind_button_label": "Ngừng liên kết Nhóm"
+                    },
+                    "groups": {
+                        "add_members": "Thêm Thành viên",
+                        "adding_members": "Thêm Thành viên",
+                        "caption": "Các nhóm",
+                        "group_id": "Mã Nhóm",
+                        "group_info": "Thông tin Nhóm",
+                        "group_not_found": "Không tìm thấy nhóm!",
+                        "group-header": "ZigBee Home Automation - Chi tiết Nhóm",
+                        "groups": "Nhóm",
+                        "members": "Thành viên",
+                        "remove_members": "Xóa Thành viên"
+                    },
+                    "network": {
+                        "caption": "Mạng"
+                    }
                 },
                 "zone": {
                     "caption": "Khu vực",
                     "configured_in_yaml": "Các khu vực được định cấu hình qua file configuration.yaml không thể được chỉnh sửa thông qua giao diện.",
                     "description": "Quản lý các khu vực bạn muốn theo dõi mọi người trong đó.",
+                    "detail": {
+                        "create": "Tạo",
+                        "delete": "Xóa",
+                        "latitude": "Vĩ độ",
+                        "longitude": "Kinh độ",
+                        "passive": "Thụ động",
+                        "radius": "Bán kính",
+                        "required_error_msg": "Trường này là cần thiết",
+                        "update": "Cập nhật"
+                    },
+                    "edit_home_zone": "Bán kính của vùng Nhà chưa thể chỉnh sửa được từ frontend. Kéo điểm đánh dấu trên bản đồ để di chuyển vùng Nhà.",
+                    "go_to_core_config": "Đi đến cấu hình chung?",
                     "no_zones_created_yet": "Có vẻ như bạn chưa tạo ra bất kỳ khu vực nào."
                 },
                 "zwave": {
+                    "button": "Cấu hình",
                     "caption": "Z-Wave",
                     "common": {
                         "index": "Mục lục",
@@ -1011,11 +1429,27 @@
                         "set_config_parameter": "Đặt tham số cấu hình",
                         "true": "Đúng"
                     },
+                    "node_management": {
+                        "group": "Nhóm"
+                    },
+                    "ozw_log": {
+                        "load": "Tải"
+                    },
                     "services": {
                         "cancel_command": "Hủy lệnh",
+                        "heal_node": "Nút sửa lỗi",
+                        "node_info": "Thông tin nút",
+                        "print_node": "Nút in ấn",
+                        "refresh_entity": "Làm mới Thực thể",
                         "save_config": "Lưu cấu hình",
-                        "soft_reset": "Khởi động lại"
+                        "soft_reset": "Khởi động lại",
+                        "test_node": "Nút kiểm tra"
                     }
+                }
+            },
+            "custom": {
+                "external_panel": {
+                    "question_trust": "Bạn có tin tưởng bảng điều khiển bên ngoài {name} tại {link} không?"
                 }
             },
             "developer-tools": {
@@ -1024,12 +1458,40 @@
                         "title": "Sự kiện"
                     },
                     "mqtt": {
+                        "description_listen": "Nghe một chủ đề",
+                        "listening_to": "Lắng nghe",
+                        "message_received": "Thông điệp {id} nhận được trên {topic} tại {time}:",
+                        "payload": "Nội dung (cho phép dùng Mẫu sẵn)",
+                        "publish": "Công bố",
+                        "start_listening": "Bắt đầu nghe",
+                        "stop_listening": "Dừng nghe",
+                        "subscribe_to": "Đăng ký vào chủ đề",
                         "title": "MQTT"
                     },
                     "services": {
+                        "alert_parsing_yaml": "Lỗi phân tích YAML: {data}",
+                        "call_service": "Gọi Dịch vụ",
+                        "column_description": "Mô tả",
+                        "column_example": "Ví dụ",
+                        "column_parameter": "Tham số",
+                        "data": "Dữ liệu dịch vụ (YAML, tùy chọn)",
+                        "description": "Công cụ hỗ trợ phát triển dịch vụ cho phép bạn gọi các dịch vụ khả dụng trong Home Assistant.",
+                        "fill_example_data": "Điền các Dữ liệu Mẫu",
+                        "no_description": "Không có mô tả nào",
+                        "no_parameters": "Dịch vụ này không có tham số.",
+                        "select_service": "Chọn một dịch vụ để xem mô tả",
                         "title": "Dịch vụ"
                     },
                     "states": {
+                        "attributes": "Các thuộc tính",
+                        "current_entities": "Thực thể hiện tại",
+                        "entity": "Thực thể",
+                        "filter_attributes": "Lọc các thuộc tính",
+                        "filter_entities": "Lọc các thực thể",
+                        "filter_states": "Lọc các trạng thái",
+                        "set_state": "Thiết lập Trạng thái",
+                        "state": "Trạng thái",
+                        "state_attributes": "Các thuộc tính Trạng thái (YAML, tuỳ chọn)",
                         "title": "Trạng thái"
                     },
                     "templates": {
@@ -1042,6 +1504,7 @@
                 "showing_entries": "Hiển thị mục cho"
             },
             "logbook": {
+                "entries_not_found": "Không tìm thấy trong sổ nhật ký.",
                 "period": "Giai đoạn",
                 "showing_entries": "Hiển thị mục cho"
             },
@@ -1051,6 +1514,9 @@
                         "go_to_integrations_page": "Chuyển đến trang tích hợp.",
                         "no_devices": "Trang này cho phép bạn điều khiển các thiết bị của mình, tuy nhiên có vẻ như bạn chưa có thiết bị nào được thiết lập. Đi đến trang tích hợp để bắt đầu.",
                         "title": "Chào mừng về nhà"
+                    },
+                    "entities": {
+                        "never_triggered": "Chưa bao giờ kích hoạt"
                     },
                     "picture-elements": {
                         "call_service": "Gọi dịch vụ {name}",
@@ -1064,6 +1530,10 @@
                         "add_item": "Thêm mục",
                         "checked_items": "Mục đã chọn",
                         "clear_items": "Xóa các mục đã chọn"
+                    },
+                    "starting": {
+                        "description": "Home Assistant đang khởi động, vui lòng chờ...",
+                        "header": "Home Assistant đang khởi động"
                     }
                 },
                 "changed_toast": {
@@ -1072,15 +1542,69 @@
                 },
                 "editor": {
                     "card": {
+                        "button": {
+                            "name": "Nút"
+                        },
                         "conditional": {
-                            "card": "Thẻ"
+                            "card": "Thẻ",
+                            "condition_explanation": "Thẻ sẽ được hiển thị khi TẤT CẢ các điều kiện dưới đây được đáp ứng.",
+                            "conditions": "Điều kiện",
+                            "current_state": "hiện tại",
+                            "description": "Thẻ Điều kiện hiển thị một thẻ khác dựa trên trạng thái của các thực thể.",
+                            "state_equal": "Trạng thái bằng với",
+                            "state_not_equal": "Trạng thái không bằng với"
+                        },
+                        "entity": {
+                            "description": "Thẻ Thực thể cung cấp cho bạn thông tin tổng quát về trạng thái của thực thể.",
+                            "name": "Thực thể"
                         },
                         "generic": {
+                            "attribute": "Thuộc tính",
+                            "double_tap_action": "Hành động khi Nhấn Đôi",
+                            "manual": "Thủ công",
+                            "manual_description": "Cần thêm một thẻ tuỳ chỉnh hay chỉ muốn viết cấu hình yaml thủ công?",
+                            "no_theme": "Không có theme.",
                             "state": "Trạng thái"
+                        },
+                        "history-graph": {
+                            "description": "Thẻ Biểu đồ Lịch sử cho phép bạn hiển thị biểu đồ cho từng thực thể được liệt kê."
+                        },
+                        "horizontal-stack": {
+                            "description": "Thẻ Xếp Ngang cho phép bạn nhóm nhiều thẻ để các thẻ này luôn nằm cạnh nhau trong cùng một hàng."
                         },
                         "iframe": {
                             "name": "Trang web"
+                        },
+                        "light": {
+                            "description": "Thẻ Đèn cho phép bạn thay đổi độ sáng của đèn."
+                        },
+                        "map": {
+                            "description": "Thẻ Bản đồ cho phép bạn hiển thị các thực thể trên bản đồ.",
+                            "hours_to_show": "Giờ hiển thị"
+                        },
+                        "plant-status": {
+                            "description": "Thẻ Tình trạng Cây cối dành cho tất cả các nhà thực vật học đáng yêu ngoài kia."
+                        },
+                        "sensor": {
+                            "description": "Thẻ Cảm biến cung cấp cho bạn tổng quan nhanh về trạng thái cảm biến của bạn với một biểu đồ tùy chọn thể hiện sự thay đổi qua thời gian."
+                        },
+                        "shopping-list": {
+                            "description": "Thẻ Danh sách mua sắm cho phép bạn thêm, chỉnh sửa, kiểm tra và xóa các mục khỏi danh sách mua sắm của bạn.",
+                            "integration_not_loaded": "Thẻ này yêu cầu thiết lập tích hợp 'shopping_list'."
+                        },
+                        "thermostat": {
+                            "description": "Thẻ Điều chỉnh nhiệt cho phép kiểm soát thực thể khí hậu của bạn. Cho phép bạn thay đổi nhiệt độ và chế độ của thực thể."
+                        },
+                        "vertical-stack": {
+                            "description": "Thẻ Xếp Dọc cho phép bạn nhóm nhiều thẻ để các thẻ này luôn nằm trong cùng một cột."
+                        },
+                        "weather-forecast": {
+                            "show_forecast": "Hiển thị Dự báo thời tiết"
                         }
+                    },
+                    "cardpicker": {
+                        "custom_card": "Tuỳ chỉnh",
+                        "no_description": "Không có mô tả nào."
                     },
                     "edit_card": {
                         "add": "Thêm Thẻ",
@@ -1091,14 +1615,22 @@
                         "move": "Di chuyển",
                         "options": "Tùy Chọn",
                         "pick_card": "Chọn Thẻ bạn muốn thêm.",
+                        "pick_card_view_title": "Loại thẻ nào bạn muốn thêm vào chế độ xem {name}?",
                         "show_code_editor": "Sửa mã nguồn",
                         "toggle_editor": "Đổi trình biên tập"
+                    },
+                    "edit_lovelace": {
+                        "edit_title": "Chỉnh sửa tiêu đề"
                     },
                     "edit_view": {
                         "add": "Thêm Tầm nhìn",
                         "delete": "Xóa Tầm nhìn",
                         "edit": "Chỉnh sửa Tầm nhìn",
-                        "header": "Cấu hình Tầm nhìn"
+                        "header": "Cấu hình Tầm nhìn",
+                        "tab_badges": "Huy hiệu",
+                        "visibility": {
+                            "select_users": "Chọn người dùng sẽ thấy chế độ xem này trong thanh điều hướng"
+                        }
                     },
                     "header": "Chỉnh sửa giao diện",
                     "menu": {
@@ -1112,32 +1644,62 @@
                         "para_no_id": "Phần tử này không có ID. Vui lòng thêm ID vào thành phần này trong 'ui-lovelace.yaml'."
                     },
                     "raw_editor": {
+                        "confirm_unsaved_changes": "Bạn có những thay đổi chưa được lưu, bạn có chắc muốn thoát không?",
+                        "confirm_unsaved_comments": "Cấu hình của bạn chứa (các) ghi chú, những ghi chú này sẽ không được lưu. Bạn có muốn tiếp tục?",
                         "error_invalid_config": "Cấu hình của bạn không hợp lệ: {error}",
+                        "error_parse_yaml": "Không thể phân tích YAML: {error}",
+                        "error_save_yaml": "Không thể lưu YAML: {error}",
                         "header": "Chỉnh sửa cấu hình",
+                        "resources_moved": "Các Tài nguyên giờ không nên được thêm vào qua cấu hình Lovelace nhưng có thể thêm vào qua bảng điều khiển cấu hình Lovelace.",
                         "save": "Lưu",
                         "saved": "Đã lưu",
                         "unsaved_changes": "Thay đổi chưa lưu"
                     },
                     "save_config": {
                         "cancel": "Đừng bận tâm",
+                        "close": "Đóng",
                         "empty_config": "Bắt đầu với một bảng điều khiển trống",
                         "header": "Kiểm soát giao diện Lovelace của bạn",
                         "para": "Theo mặc định, Home Assistant sẽ duy trì giao diện của bạn, cập nhật nó khi các thực thể mới hoặc các thành phần Lovelace có sẵn. Nếu bạn kiểm soát, chúng tôi sẽ không còn thay đổi tự động cho bạn nữa.",
                         "para_sure": "Bạn có chắc chắn muốn kiểm soát giao diện của mình không?",
-                        "save": "Kiểm soát"
+                        "save": "Kiểm soát",
+                        "yaml_config": "Để giúp bạn bắt đầu, đây là cấu hình hiện tại của bảng điều khiển này:",
+                        "yaml_control": "Để kiểm soát trong chế độ YAML, hãy tạo tệp YAML với tên bạn đã chỉ định trong cấu hình hoặc trong 'ui-lovelace.yaml' mặc định.",
+                        "yaml_mode": "Bạn đang sử dụng chế độ YAML cho bảng điều khiển này, có nghĩa là bạn không thể thay đổi cấu hình Lovelace từ giao diện người dùng. Nếu bạn muốn quản lý bảng điều khiển này từ giao diện người dùng, loại bỏ 'mode:yaml' từ cấu hình Lovelace của bạn trong 'configuration.yaml'."
                     },
                     "suggest_card": {
                         "add": "Thêm vào Lovelace UI",
                         "create_own": "Chọn thẻ khác"
+                    },
+                    "view": {
+                        "panel_mode": {
+                            "description": "Chế độ này hiển thị thẻ đầu tiên với toàn bộ chiều rộng; các thẻ còn lại sẽ không được hiển thị.",
+                            "title": "Chế độ Bảng điều khiển?",
+                            "warning_multiple_cards": "Chế độ xem này chứa nhiều thẻ, nhưng chế độ xem dạng bảng điều khiển chỉ có thể hiển thị 1 thẻ."
+                        }
                     }
                 },
                 "menu": {
+                    "close": "Đóng",
                     "configure_ui": "Cấu hình giao diện",
                     "help": "Trợ giúp",
                     "refresh": "Làm tươi",
                     "reload_resources": "Tải lại các tài nguyên"
                 },
                 "reload_lovelace": "Tải lại giao diện",
+                "reload_resources": {
+                    "refresh_body": "Bạn phải làm mới trang để hoàn thành tải lại, bạn có muốn làm mới bây giờ không?",
+                    "refresh_header": "Bạn có muốn làm mới không?"
+                },
+                "unused_entities": {
+                    "available_entities": "Đây là những thực thể mà bạn có, nhưng chưa thêm vào giao diện người dùng Lovelace.",
+                    "domain": "Tên miền",
+                    "entity": "Thực thể",
+                    "entity_id": "Mã Thực thể",
+                    "last_changed": "Thay đổi lần cuối",
+                    "select_to_add": "Chọn thực thể bạn muốn thêm vào thẻ và sau đó nhấp vào nút Thêm thẻ.",
+                    "title": "Thực thể chưa sử dụng"
+                },
                 "views": {
                     "confirm_delete": "Xóa cửa sổ?"
                 },
@@ -1145,7 +1707,8 @@
                     "attribute_not_found": "Thuộc tính {attribute} không có trong: {entity}",
                     "entity_non_numeric": "Thực thể không phải là số: {entity}",
                     "entity_not_found": "Thực thể không có sẵn: {entity}",
-                    "entity_unavailable": "{entity} hiện không khả dụng"
+                    "entity_unavailable": "{entity} hiện không khả dụng",
+                    "starting": "Home Assistant đang khởi động, không phải tất cả mọi thứ đã sẵn sàng"
                 }
             },
             "mailbox": {
@@ -1158,6 +1721,8 @@
                 "abort_intro": "Đã hủy đăng nhập",
                 "authorizing_client": "Bạn sắp cấp quyền cho {clientId} truy cập vào Home Assistant của bạn.",
                 "form": {
+                    "error": "Lỗi: {error}",
+                    "next": "Kế tiếp",
                     "providers": {
                         "command_line": {
                             "abort": {
@@ -1243,6 +1808,7 @@
                             }
                         }
                     },
+                    "start_over": "Bắt đầu lại",
                     "unknown_error": "Đã xảy ra sự cố",
                     "working": "Vui lòng đợi"
                 },
@@ -1263,6 +1829,7 @@
                             "hallway": "Hành lang",
                             "kitchen": "Phòng bếp",
                             "patio": "Sân trong",
+                            "temperature_study": "Nghiên cứu Nhiệt độ",
                             "upstairs": "Tầng trên"
                         },
                         "unit": {
@@ -1305,6 +1872,7 @@
             "profile": {
                 "advanced_mode": {
                     "description": "Mở các tính năng nâng cao.",
+                    "link_promo": "Tìm hiểu thêm",
                     "title": "Chế độ nâng cao"
                 },
                 "change_password": {
@@ -1332,6 +1900,8 @@
                     "link_promo": "Trợ giúp dịch"
                 },
                 "logout": "Đăng xuất",
+                "logout_text": "Bạn có chắc bạn muốn đăng xuất không?",
+                "logout_title": "Đăng xuất?",
                 "long_lived_access_tokens": {
                     "confirm_delete": "Bạn có chắn chắn muốn xóa token truy cập {name}?",
                     "create": "Tạo Token",
