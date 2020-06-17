@@ -59,7 +59,7 @@ const Component = {
     return createElement("date-range-picker", {
       props: {
         "time-picker": true,
-        "auto-apply": true,
+        "auto-apply": false,
         opens: "right",
         "show-dropdowns": false,
         // @ts-ignore

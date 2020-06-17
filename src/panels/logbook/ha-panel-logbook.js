@@ -151,8 +151,13 @@ class HaPanelLogbook extends LocalizeMixin(PolymerElement) {
                 readonly=""
               ></paper-input>
             </div>
-            <div slot="header"></div>
-            <div slot="footer"></div>
+            <div
+              slot="footer"
+              style="display: flex; justify-content: flex-end; padding: 8px; border-top: 1px solid var(--divider-color)"
+            >
+              <mwc-button on-click="_cancelDateRange">Cancel</mwc-button>
+              <mwc-button on-click="_applyDateRange">Select</mwc-button>
+            </div>
           </date-range-picker>
 
           <ha-entity-picker
@@ -276,6 +281,16 @@ class HaPanelLogbook extends LocalizeMixin(PolymerElement) {
         .formatToParts(new Date(2020, 0, 1, 13))
         .find((part) => part.type === "hour").value.length === 2
     );
+  }
+
+  _cancelDateRange(ev) {
+    const dateRangePicker = ev.target.closest("date-range-picker");
+    dateRangePicker.vueComponent.$children[0].clickCancel();
+  }
+
+  _applyDateRange(ev) {
+    const dateRangePicker = ev.target.closest("date-range-picker");
+    dateRangePicker.vueComponent.$children[0].clickedApply();
   }
 
   _dateRangeChanged(ev) {
