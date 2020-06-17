@@ -187,7 +187,7 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
 
       // Determine if oauth redirect has been provided
       const externalAuthParams = extractAuthParams();
-      const authParams: typeof externalAuthParams =
+      const authParams =
         externalAuthParams.client_id && externalAuthParams.redirect_uri
           ? externalAuthParams
           : {
