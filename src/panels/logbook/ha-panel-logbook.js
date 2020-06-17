@@ -34,7 +34,12 @@ class HaPanelLogbook extends LocalizeMixin(PolymerElement) {
         }
 
         date-range-picker {
-          margin-right: 4px;
+          margin-right: 16px;
+          max-width: 100%;
+        }
+
+        :host([narrow]) date-range-picker {
+          margin-right: 0;
         }
 
         date-range-picker ha-icon {
@@ -44,12 +49,6 @@ class HaPanelLogbook extends LocalizeMixin(PolymerElement) {
         date-range-picker paper-input {
           display: inline-block;
           max-width: 200px;
-          width: 200px;
-        }
-
-        paper-input {
-          max-width: 50px;
-          margin-right: 16px;
         }
 
         paper-spinner {
@@ -136,13 +135,14 @@ class HaPanelLogbook extends LocalizeMixin(PolymerElement) {
             end-date$="[[_endDate]]"
             on-change="_dateRangeChanged"
           >
-            <div slot="input">
+            <div slot="input" style="display: flex; align-items: center;">
               <ha-icon icon="mdi:calendar"></ha-icon>
               <paper-input
                 value="[[_formatDate(hass, _startDate)]]"
                 label="From"
                 disabled="[[isLoading]]"
                 readonly=""
+                style="margin-right: 8px;"
               ></paper-input>
               <paper-input
                 value="[[_formatDate(hass, _endDate)]]"
@@ -251,7 +251,7 @@ class HaPanelLogbook extends LocalizeMixin(PolymerElement) {
 
   _computeFilterEndDate(_endDate) {
     if (!_endDate) return undefined;
-    if (_endDate.getHours() === 0) {
+    if (_endDate.getHours() === 0 && _endDate.getMinutes() === 0) {
       _endDate.setDate(_endDate.getDate() + 1);
       _endDate.setMilliseconds(_endDate.getMilliseconds() - 1);
     }

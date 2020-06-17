@@ -77,14 +77,6 @@ const Component = {
             new Date(lastWeek.setDate(today.getDate() - today.getDay() - 7)),
             new Date(lastWeek.setDate(today.getDate() - today.getDay() - 1)),
           ],
-          "This month": [
-            new Date(today.getFullYear(), today.getMonth(), 1),
-            new Date(today.getFullYear(), today.getMonth() + 1, 0),
-          ],
-          "Last month": [
-            new Date(today.getFullYear(), today.getMonth() - 1, 1),
-            new Date(today.getFullYear(), today.getMonth(), 0),
-          ],
         },
       },
       model: {
@@ -132,15 +124,16 @@ class DateRangePickerElement extends WrappedElement {
         .daterangepicker {
             left: 0px !important; top: auto;
             background-color: var(--card-background-color);
-              border: none;
-              border-radius: var(--ha-card-border-radius, 4px);
-              box-shadow: var(
-                --ha-card-box-shadow,
-                0px 2px 1px -1px rgba(0, 0, 0, 0.2),
-                0px 1px 1px 0px rgba(0, 0, 0, 0.14),
-                0px 1px 3px 0px rgba(0, 0, 0, 0.12)
-              );
-              color: var(--primary-text-color);
+            border: none;
+            border-radius: var(--ha-card-border-radius, 4px);
+            box-shadow: var(
+            --ha-card-box-shadow,
+            0px 2px 1px -1px rgba(0, 0, 0, 0.2),
+            0px 1px 1px 0px rgba(0, 0, 0, 0.14),
+            0px 1px 3px 0px rgba(0, 0, 0, 0.12)
+            );
+            color: var(--primary-text-color);
+            min-width: initial !important;
         }
         .daterangepicker:after {
             border-bottom: 6px solid var(--card-background-color);
@@ -207,6 +200,26 @@ class DateRangePickerElement extends WrappedElement {
             border-radius: 4px;
             padding: 8px;
             cursor: pointer;
+        }
+        .calendars-container {
+            flex-direction: column;
+            align-items: center;
+          }
+          .drp-calendar.col.right .calendar-table {
+            display: none;
+          }
+          .daterangepicker.show-ranges .drp-calendar.left {
+            border-left: 0px;
+        }
+        .daterangepicker.show-calendar .ranges {
+            margin-top: 0;
+            padding-top: 8px;
+            border-right: 1px solid var(--divider-color);
+        }
+        @media only screen and (max-width: 800px) {
+            .calendars {
+                flex-direction: column;
+              }
         }
         `;
     // @ts-ignore
