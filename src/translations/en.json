@@ -1693,8 +1693,8 @@
         "period": "Period"
       },
       "logbook": {
-        "showing_entries": "[%key:ui::panel::history::showing_entries%]",
-        "period": "Period",
+        "start_date": "Start date",
+        "end_date": "End date",
         "entries_not_found": "No logbook entries found."
       },
       "lovelace": {

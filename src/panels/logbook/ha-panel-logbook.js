@@ -17,6 +17,7 @@ import "../../resources/ha-date-picker-style";
 import "../../styles/polymer-ha-style";
 import "./ha-logbook";
 import "./ha-logbook-data";
+import "../../components/date-range-picker";
 
 /*
  * @appliesMixin LocalizeMixin
@@ -31,6 +32,15 @@ class HaPanelLogbook extends LocalizeMixin(PolymerElement) {
 
         :host([narrow]) ha-logbook {
           height: calc(100vh - 198px);
+        }
+
+        date-range-picker {
+          margin-right: 16px;
+        }
+
+        paper-input {
+          max-width: 50px;
+          margin-right: 16px;
         }
 
         paper-spinner {
@@ -109,8 +119,8 @@ class HaPanelLogbook extends LocalizeMixin(PolymerElement) {
         hass="[[hass]]"
         is-loading="{{isLoading}}"
         entries="{{entries}}"
-        filter-date="[[_computeFilterDate(_currentDate)]]"
-        filter-period="[[_computeFilterDays(_periodIndex)]]"
+        filter-start-date="[[_computeFilterStartDate(_startDate)]]"
+        filter-end-date="[[_computeFilterEndDate(_endDate)]]"
         filter-entity="[[entityId]]"
       ></ha-logbook-data>
 
@@ -137,31 +147,13 @@ class HaPanelLogbook extends LocalizeMixin(PolymerElement) {
         ></paper-spinner>
 
         <div class="filters">
-          <vaadin-date-picker
-            id="picker"
-            value="{{_currentDate}}"
-            label="[[localize('ui.panel.logbook.showing_entries')]]"
+          <date-range-picker
             disabled="[[isLoading]]"
-            required
-          ></vaadin-date-picker>
-
-          <paper-dropdown-menu
-            label-float
-            label="[[localize('ui.panel.logbook.period')]]"
-            disabled="[[isLoading]]"
+            start-date="[[_startDate]]"
+            end-date="[[_endDate]]"
+            on-change="_dateRangeChanged"
           >
-            <paper-listbox slot="dropdown-content" selected="{{_periodIndex}}">
-              <paper-item
-                >[[localize('ui.duration.day', 'count', 1)]]</paper-item
-              >
-              <paper-item
-                >[[localize('ui.duration.day', 'count', 3)]]</paper-item
-              >
-              <paper-item
-                >[[localize('ui.duration.week', 'count', 1)]]</paper-item
-              >
-            </paper-listbox>
-          </paper-dropdown-menu>
+          </date-range-picker>
 
           <ha-entity-picker
             hass="[[hass]]"
@@ -187,21 +179,28 @@ class HaPanelLogbook extends LocalizeMixin(PolymerElement) {
 
       narrow: { type: Boolean, reflectToAttribute: true },
 
-      // ISO8601 formatted date string
-      _currentDate: {
-        type: String,
+      _dateRange: { type: Object, value: { startDate: null, endDate: null } },
+
+      _startDate: {
+        type: Date,
         value: function () {
           const value = new Date();
-          const today = new Date(
-            Date.UTC(value.getFullYear(), value.getMonth(), value.getDate())
-          );
-          return today.toISOString().split("T")[0];
+          value.setHours(value.getHours() - 2);
+          value.setMinutes(0);
+          value.setSeconds(0);
+          return value;
         },
       },
 
-      _periodIndex: {
-        type: Number,
-        value: 0,
+      _endDate: {
+        type: Date,
+        value: function () {
+          const value = new Date();
+          value.setHours(value.getHours() + 1);
+          value.setMinutes(0);
+          value.setSeconds(0);
+          return value;
+        },
       },
 
       _entityId: {
@@ -240,20 +239,22 @@ class HaPanelLogbook extends LocalizeMixin(PolymerElement) {
     this.hass.loadBackendTranslation("title");
   }
 
-  connectedCallback() {
-    super.connectedCallback();
-    // We are unable to parse date because we use intl api to render date
-    this.$.picker.set("i18n.parseDate", null);
-    this.$.picker.set("i18n.formatDate", (date) =>
-      formatDate(new Date(date.year, date.month, date.day), this.hass.language)
-    );
+  _computeFilterStartDate(_startDate) {
+    if (!_startDate) return undefined;
+    return _startDate.toISOString();
   }
 
-  _computeFilterDate(_currentDate) {
-    if (!_currentDate) return undefined;
-    var parts = _currentDate.split("-");
-    parts[1] = parseInt(parts[1]) - 1;
-    return new Date(parts[0], parts[1], parts[2]).toISOString();
+  _computeFilterEndDate(_endDate) {
+    if (!_endDate) return undefined;
+    // if (_endHour && _endHour !== "0") {
+    //   console.log(_endHour);
+    //   date.setHours(_endHour);
+    // } else {
+    //   date.setDate(date.getDate() + 1);
+    //   date.setHours(0);
+    //   date.setMilliseconds(date.getMilliseconds() - 1);
+    // }
+    return _endDate.toISOString();
   }
 
   _computeFilterDays(periodIndex) {
@@ -265,6 +266,12 @@ class HaPanelLogbook extends LocalizeMixin(PolymerElement) {
       default:
         return 1;
     }
+  }
+
+  _dateRangeChanged(ev) {
+    console.log(ev);
+    this._startDate = ev.detail.startDate;
+    this._endDate = ev.detail.endDate;
   }
 
   _entityPicked(ev) {
