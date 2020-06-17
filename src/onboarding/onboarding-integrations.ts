@@ -1,5 +1,4 @@
 import "@material/mwc-button/mwc-button";
-import { genClientId } from "home-assistant-js-websocket";
 import {
   css,
   CSSResult,
@@ -21,7 +20,6 @@ import {
 } from "../data/config_flow";
 import { DataEntryFlowProgress } from "../data/data_entry_flow";
 import { domainToName } from "../data/integration";
-import { onboardIntegrationStep } from "../data/onboarding";
 import {
   loadConfigFlowDialog,
   showConfigFlowDialog,
@@ -169,12 +167,8 @@ class OnboardingIntegrations extends LitElement {
   }
 
   private async _finish() {
-    const result = await onboardIntegrationStep(this.hass, {
-      client_id: genClientId(),
-    });
     fireEvent(this, "onboarding-step", {
       type: "integration",
-      result,
     });
   }
 
