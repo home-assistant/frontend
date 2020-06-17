@@ -346,14 +346,26 @@
             "climate": {
                 "aux_heat": "Nhiệt phụ trợ",
                 "away_mode": "Chế độ đi vắng",
+                "cooling": "{name} đang làm mát",
+                "current_temperature": "{name} nhiệt độ hiện tại",
                 "currently": "Hiện tại",
                 "fan_mode": "Chế độ quạt",
+                "heating": "{name} đang sưởi ấm",
+                "high": "cao",
+                "low": "thấp",
                 "on_off": "Bật / tắt",
                 "operation": "Chế độ hoạt động",
                 "preset_mode": "Đặt trước",
                 "swing_mode": "Chế độ swing",
                 "target_humidity": "Độ ẩm mục tiêu",
                 "target_temperature": "Nhiệt độ mục tiêu"
+            },
+            "counter": {
+                "actions": {
+                    "decrement": "giảm xuống",
+                    "increment": "tăng lên",
+                    "reset": "cài lại"
+                }
             },
             "cover": {
                 "position": "Vị trí",
@@ -449,12 +461,14 @@
             "loading": "Đang tải",
             "menu": "Menu",
             "next": "Kế tiếp",
+            "no": "Không",
             "overflow_menu": "Menu tràn",
             "previous": "Trước đó",
             "refresh": "Làm mới",
             "save": "Lưu",
             "successfully_deleted": "Xóa thành công",
-            "undo": "Hoàn tác"
+            "undo": "Hoàn tác",
+            "yes": "Có"
         },
         "components": {
             "area-picker": {
@@ -471,13 +485,17 @@
                 "show_areas": "Hiển thị các khu vực"
             },
             "device-picker": {
+                "clear": "Xoá",
+                "device": "Thiết bị",
                 "no_area": "Không có khu vực",
                 "show_devices": "Hiện các thiết bị",
                 "toggle": "Chuyển đổi"
             },
             "entity": {
                 "entity-picker": {
-                    "entity": "Thực thể"
+                    "clear": "Xoá",
+                    "entity": "Thực thể",
+                    "show_entities": "Hiển thị các thực thể"
                 }
             },
             "history_charts": {
@@ -517,6 +535,7 @@
             },
             "entity_registry": {
                 "control": "Điều khiển",
+                "dismiss": "Bỏ qua",
                 "editor": {
                     "confirm_delete": "Bạn có chắc bạn muốn xoá bỏ mục này không?",
                     "delete": "Xóa",
@@ -712,6 +731,7 @@
                             "header": "Hành động",
                             "introduction": "Hành động là những gì Home Assistant sẽ làm khi tự động hóa được kích hoạt. \n\n [Tìm hiểu thêm về các hành động.] (https://home-assistant.io/docs/automation/action/)",
                             "learn_more": "Tìm hiểu thêm về Hành động",
+                            "name": "Hành động",
                             "type_select": "Loại hành động",
                             "type": {
                                 "condition": {
@@ -722,7 +742,10 @@
                                     "label": "Chậm trễ"
                                 },
                                 "device_id": {
-                                    "action": "Hành động"
+                                    "action": "Hành động",
+                                    "extra_fields": {
+                                        "code": "Mã"
+                                    }
                                 },
                                 "event": {
                                     "event": "Sự kiện:",
@@ -750,6 +773,7 @@
                             "header": "Điều kiện",
                             "introduction": "Điều kiện là một phần tùy chọn của quy tắc tự động hóa và có thể được sử dụng để ngăn chặn một hành động xảy ra khi kích hoạt. Các điều kiện trông rất giống với kích hoạt nhưng rất khác nhau. Trình kích hoạt sẽ xem xét các sự kiện xảy ra trong hệ thống trong khi điều kiện chỉ nhìn vào hệ thống hiện tại. Một bộ kích hoạt có thể quan sát thấy rằng một công tắc đang được bật. Một điều kiện chỉ có thể xem nếu một công tắc hiện đang được bật hoặc tắt. \n\n [Tìm hiểu thêm về điều kiện] (https://home-assistant.io/docs/scripts/conditions/)",
                             "learn_more": "Tìm hiểu thêm về Điều kiện",
+                            "name": "Điều kiện",
                             "type_select": "Loại điều kiện",
                             "type": {
                                 "device": {
@@ -810,6 +834,7 @@
                             "header": "Bộ khởi động",
                             "introduction": "Bộ khởi động là bắt đầu quá trình xử lý quy tắc tự động hóa. Có thể chỉ định nhiều Bộ khởi động cho cùng một quy tắc. Khi kích hoạt một bộ khởi động, Home Assistant  sẽ xác nhận các điều kiện, nếu có, và gọi hành động. \n\n [Tìm hiểu thêm về Bộ khởi động] (https://home-assistant.io/docs/automation/trigger/)",
                             "learn_more": "Tìm hiểu thêm về Kích hoạt",
+                            "name": "Kích hoạt",
                             "type_select": "Loại Bộ khởi động",
                             "type": {
                                 "device": {
@@ -927,6 +952,7 @@
                                 "elevation_meters": "mét",
                                 "external_url": "URL bên ngoài",
                                 "imperial_example": "Độ F, pound",
+                                "internal_url": "URL nội bộ",
                                 "latitude": "Vĩ độ",
                                 "location_name": "Tên cài đặt Home Assistant của bạn",
                                 "longitude": "Kinh độ",
@@ -1072,9 +1098,11 @@
                 },
                 "info": {
                     "caption": "Thông tin",
+                    "custom_uis": "Các UI Tuỳ chỉnh:",
                     "description": "Thông tin về bản cài đặt Home Assistant của bạn",
                     "developed_by": "Được phát triển bởi một nhóm những con người tuyệt vời.",
                     "documentation": "Tài liệu",
+                    "frontend_version": "Phiên bản Frontend: {version} - {type}",
                     "home_assistant_logo": "Logo của Home Assistant",
                     "integrations": "Các tích hợp",
                     "issues": "Các vấn đề",
@@ -1089,6 +1117,7 @@
                     "caption": "Các bộ tích hợp",
                     "config_entry": {
                         "delete": "Xóa",
+                        "delete_button": "Xoá {integration}",
                         "delete_confirm": "Bạn chắc chắn muốn xóa bộ tích hợp này?",
                         "device_unavailable": "Thiết bị không khả dụng",
                         "devices": "{count} {count, plural,\n  one { thiết bị }\n  other { các thiết bị }\n}",
@@ -1102,7 +1131,8 @@
                         "options": "Tùy Chọn",
                         "rename": "Đổi tên",
                         "restart_confirm": "Khởi động lại Home Assistant để hoàn tất xóa bộ tích hợp này",
-                        "system_options": "Tùy chọn hệ thống"
+                        "system_options": "Tùy chọn hệ thống",
+                        "unnamed_entry": "Thực thể chưa có tên"
                     },
                     "config_flow": {
                         "aborted": "Đã hủy bỏ",
@@ -1141,7 +1171,15 @@
                 "introduction": "Ở đây có thể định cấu hình các thành phần của bạn và Home Assistant. Không phải mọi thứ đều có thể được cấu hình từ giao diện người dùng, nhưng chúng tôi đang cải thiện việc đó.",
                 "logs": {
                     "caption": "Nhật ký hoạt động",
-                    "description": "Xem nhật ký hoạt động của Home Assistant"
+                    "clear": "Xoá",
+                    "description": "Xem nhật ký hoạt động của Home Assistant",
+                    "details": "Chi tiết Nhật ký ({level})",
+                    "load_full_log": "Tải Đầy đủ Nhật ký của Home Assistant",
+                    "loading_log": "Đang tải nhật ký lỗi...",
+                    "multiple_messages": "thông điệp xuất hiện lần đầu vào lúc {time} và lặp lại {counter} lần",
+                    "no_errors": "Không có lỗi nào được báo cáo.",
+                    "no_issues": "Không có vấn đề mới nào!",
+                    "refresh": "Làm mới"
                 },
                 "lovelace": {
                     "caption": "Bảng điều khiển Lovelace",
@@ -1369,7 +1407,8 @@
                     "caption": "ZHA",
                     "common": {
                         "add_devices": "Thêm thiết bị",
-                        "devices": "Thiết bị"
+                        "devices": "Thiết bị",
+                        "value": "Giá trị"
                     },
                     "description": "Quản lý mạng Zigbee Home Automation",
                     "group_binding": {
@@ -1384,13 +1423,23 @@
                         "add_members": "Thêm Thành viên",
                         "adding_members": "Thêm Thành viên",
                         "caption": "Các nhóm",
+                        "create": "Tạo Nhóm",
+                        "create_group": "Zigbee Home Automation - Tạo Nhóm",
+                        "creating_group": "Đang tạo Nhóm",
                         "group_id": "Mã Nhóm",
                         "group_info": "Thông tin Nhóm",
+                        "group_name_placeholder": "Tên Nhóm",
                         "group_not_found": "Không tìm thấy nhóm!",
                         "group-header": "ZigBee Home Automation - Chi tiết Nhóm",
                         "groups": "Nhóm",
                         "members": "Thành viên",
-                        "remove_members": "Xóa Thành viên"
+                        "remove_groups": "Xoá các Nhóm",
+                        "remove_members": "Xóa Thành viên",
+                        "removing_groups": "Đang xoá các Nhóm",
+                        "removing_members": "Xoá các Thành Viên"
+                    },
+                    "network_management": {
+                        "header": "Quản lí Mạng"
                     },
                     "network": {
                         "caption": "Mạng"
@@ -1399,6 +1448,7 @@
                 "zone": {
                     "caption": "Khu vực",
                     "configured_in_yaml": "Các khu vực được định cấu hình qua file configuration.yaml không thể được chỉnh sửa thông qua giao diện.",
+                    "create_zone": "Tạo một Vùng",
                     "description": "Quản lý các khu vực bạn muốn theo dõi mọi người trong đó.",
                     "detail": {
                         "create": "Tạo",
@@ -1430,6 +1480,7 @@
                         "true": "Đúng"
                     },
                     "node_management": {
+                        "add_to_group": "Thêm vào Nhóm",
                         "group": "Nhóm"
                     },
                     "ozw_log": {
@@ -1455,10 +1506,26 @@
             "developer-tools": {
                 "tabs": {
                     "events": {
-                        "title": "Sự kiện"
+                        "alert_event_type": "Loại sự kiện là một trường bắt buộc",
+                        "available_events": "Các sự kiện khả dụng",
+                        "count_listeners": "({count} đang lắng nghe)",
+                        "data": "Dữ liệu của Sự kiện (YAML, tùy chọn)",
+                        "description": "Tạo một sự kiện trên kênh sự kiện.",
+                        "documentation": "Tài liệu của các Sự kiện.",
+                        "event_fired": "Sự kiện {type} đã được tạo",
+                        "fire_event": "Tạo Sự kiện",
+                        "listen_to_events": "Lắng nghe các sự kiện",
+                        "listening_to": "Lắng nghe",
+                        "notification_event_fired": "Sự kiện {type} được tạo thành công!",
+                        "start_listening": "Bắt đầu lắng nghe",
+                        "stop_listening": "Ngừng lắng nghe",
+                        "subscribe_to": "Sự kiện để đăng ký",
+                        "title": "Sự kiện",
+                        "type": "Loại Sự Kiện"
                     },
                     "mqtt": {
                         "description_listen": "Nghe một chủ đề",
+                        "description_publish": "Công bố một gói tin",
                         "listening_to": "Lắng nghe",
                         "message_received": "Thông điệp {id} nhận được trên {topic} tại {time}:",
                         "payload": "Nội dung (cho phép dùng Mẫu sẵn)",
@@ -1466,7 +1533,8 @@
                         "start_listening": "Bắt đầu nghe",
                         "stop_listening": "Dừng nghe",
                         "subscribe_to": "Đăng ký vào chủ đề",
-                        "title": "MQTT"
+                        "title": "MQTT",
+                        "topic": "chủ đề"
                     },
                     "services": {
                         "alert_parsing_yaml": "Lỗi phân tích YAML: {data}",
@@ -1489,13 +1557,17 @@
                         "filter_attributes": "Lọc các thuộc tính",
                         "filter_entities": "Lọc các thực thể",
                         "filter_states": "Lọc các trạng thái",
+                        "more_info": "Thêm Thông tin",
+                        "no_entities": "Không có thực thể",
                         "set_state": "Thiết lập Trạng thái",
                         "state": "Trạng thái",
                         "state_attributes": "Các thuộc tính Trạng thái (YAML, tuỳ chọn)",
                         "title": "Trạng thái"
                     },
                     "templates": {
-                        "title": "Mẫu sẵn"
+                        "editor": "Trình soạn thảo bản mẫu",
+                        "title": "Mẫu sẵn",
+                        "unknown_error_template": "Lỗi không xác định khi kết xuất bản mẫu"
                     }
                 }
             },
@@ -1509,6 +1581,11 @@
                 "showing_entries": "Hiển thị mục cho"
             },
             "lovelace": {
+                "add_entities": {
+                    "generated_unsupported": "Bạn chỉ có thể sử dụng chức năng này khi bạn lấy quyền kiểm soát giao diện Lovelace.",
+                    "saving_failed": "Không thể lưu lại cấu hình Lovelace.",
+                    "yaml_unsupported": "Bạn không thể sử dụng chức năng này khi sử dụng giao diện Lovelace trong chế độ YAML."
+                },
                 "cards": {
                     "empty_state": {
                         "go_to_integrations_page": "Chuyển đến trang tích hợp.",
@@ -1554,6 +1631,9 @@
                             "state_equal": "Trạng thái bằng với",
                             "state_not_equal": "Trạng thái không bằng với"
                         },
+                        "entity-filter": {
+                            "name": "Bộ lọc Thực thể"
+                        },
                         "entity": {
                             "description": "Thẻ Thực thể cung cấp cho bạn thông tin tổng quát về trạng thái của thực thể.",
                             "name": "Thực thể"
@@ -1570,7 +1650,8 @@
                             "description": "Thẻ Biểu đồ Lịch sử cho phép bạn hiển thị biểu đồ cho từng thực thể được liệt kê."
                         },
                         "horizontal-stack": {
-                            "description": "Thẻ Xếp Ngang cho phép bạn nhóm nhiều thẻ để các thẻ này luôn nằm cạnh nhau trong cùng một hàng."
+                            "description": "Thẻ Xếp Ngang cho phép bạn nhóm nhiều thẻ để các thẻ này luôn nằm cạnh nhau trong cùng một hàng.",
+                            "name": "Xếp Ngang"
                         },
                         "iframe": {
                             "name": "Trang web"
@@ -1582,23 +1663,33 @@
                             "description": "Thẻ Bản đồ cho phép bạn hiển thị các thực thể trên bản đồ.",
                             "hours_to_show": "Giờ hiển thị"
                         },
+                        "media-control": {
+                            "name": "Điều khiển Thiết bị đa phương tiện"
+                        },
+                        "picture": {
+                            "name": "Hình ảnh"
+                        },
                         "plant-status": {
                             "description": "Thẻ Tình trạng Cây cối dành cho tất cả các nhà thực vật học đáng yêu ngoài kia."
                         },
                         "sensor": {
-                            "description": "Thẻ Cảm biến cung cấp cho bạn tổng quan nhanh về trạng thái cảm biến của bạn với một biểu đồ tùy chọn thể hiện sự thay đổi qua thời gian."
+                            "description": "Thẻ Cảm biến cung cấp cho bạn tổng quan nhanh về trạng thái cảm biến của bạn với một biểu đồ tùy chọn thể hiện sự thay đổi qua thời gian.",
+                            "name": "Cảm biến"
                         },
                         "shopping-list": {
                             "description": "Thẻ Danh sách mua sắm cho phép bạn thêm, chỉnh sửa, kiểm tra và xóa các mục khỏi danh sách mua sắm của bạn.",
                             "integration_not_loaded": "Thẻ này yêu cầu thiết lập tích hợp 'shopping_list'."
                         },
                         "thermostat": {
-                            "description": "Thẻ Điều chỉnh nhiệt cho phép kiểm soát thực thể khí hậu của bạn. Cho phép bạn thay đổi nhiệt độ và chế độ của thực thể."
+                            "description": "Thẻ Điều chỉnh nhiệt cho phép kiểm soát thực thể khí hậu của bạn. Cho phép bạn thay đổi nhiệt độ và chế độ của thực thể.",
+                            "name": "Thiết bị điều chỉnh nhiệt độ"
                         },
                         "vertical-stack": {
-                            "description": "Thẻ Xếp Dọc cho phép bạn nhóm nhiều thẻ để các thẻ này luôn nằm trong cùng một cột."
+                            "description": "Thẻ Xếp Dọc cho phép bạn nhóm nhiều thẻ để các thẻ này luôn nằm trong cùng một cột.",
+                            "name": "Xếp Dọc"
                         },
                         "weather-forecast": {
+                            "name": "Dự báo Thời tiết",
                             "show_forecast": "Hiển thị Dự báo thời tiết"
                         }
                     },
@@ -1627,6 +1718,7 @@
                         "delete": "Xóa Tầm nhìn",
                         "edit": "Chỉnh sửa Tầm nhìn",
                         "header": "Cấu hình Tầm nhìn",
+                        "move_right": "Di chuyển tầm nhìn sang phải",
                         "tab_badges": "Huy hiệu",
                         "visibility": {
                             "select_users": "Chọn người dùng sẽ thấy chế độ xem này trong thanh điều hướng"
@@ -1669,7 +1761,8 @@
                     },
                     "suggest_card": {
                         "add": "Thêm vào Lovelace UI",
-                        "create_own": "Chọn thẻ khác"
+                        "create_own": "Chọn thẻ khác",
+                        "header": "Chúng tôi đã tạo một đề xuất cho bạn"
                     },
                     "view": {
                         "panel_mode": {
