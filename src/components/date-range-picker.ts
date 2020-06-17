@@ -43,6 +43,19 @@ const Component = {
     },
   },
   render(createElement) {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const yesterday = new Date();
+    yesterday.setDate(today.getDate() - 1);
+    yesterday.setHours(0, 0, 0, 0);
+
+    const thisWeek = new Date();
+    thisWeek.setHours(0, 0, 0, 0);
+
+    const lastWeek = new Date();
+    lastWeek.setHours(0, 0, 0, 0);
+
     return createElement("date-range-picker", {
       props: {
         "time-picker": true,
@@ -53,6 +66,26 @@ const Component = {
         "time-picker24-hour": this.twentyfourHours,
         // @ts-ignore
         disabled: this.disabled,
+        ranges: {
+          Today: [today, today],
+          Yesterday: [yesterday, yesterday],
+          "This week": [
+            new Date(thisWeek.setDate(today.getDate() - today.getDay())),
+            new Date(thisWeek.setDate(today.getDate() - today.getDay() + 6)),
+          ],
+          "Last week": [
+            new Date(lastWeek.setDate(today.getDate() - today.getDay() - 7)),
+            new Date(lastWeek.setDate(today.getDate() - today.getDay() - 1)),
+          ],
+          "This month": [
+            new Date(today.getFullYear(), today.getMonth(), 1),
+            new Date(today.getFullYear(), today.getMonth() + 1, 0),
+          ],
+          "Last month": [
+            new Date(today.getFullYear(), today.getMonth() - 1, 1),
+            new Date(today.getFullYear(), today.getMonth(), 0),
+          ],
+        },
       },
       model: {
         // @ts-ignore

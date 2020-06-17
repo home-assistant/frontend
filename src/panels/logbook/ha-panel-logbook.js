@@ -130,7 +130,6 @@ class HaPanelLogbook extends LocalizeMixin(PolymerElement) {
 
         <div class="filters">
           <date-range-picker
-            hour$="true"
             disabled$="[[isLoading]]"
             twentyfour-hours$="[[_compute24hourFormat(hass)]]"
             start-date$="[[_startDate]]"
