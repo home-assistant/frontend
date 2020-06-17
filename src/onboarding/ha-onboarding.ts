@@ -209,7 +209,11 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
           redirect_uri: authParams.redirect_uri!,
         });
       } catch (err) {
+        this.hass!.connection.close();
+        await this.hass!.auth.revoke();
+
         alert(`Unable to finish onboarding: ${err.message}`);
+
         document.location.assign("/?");
         return;
       }
