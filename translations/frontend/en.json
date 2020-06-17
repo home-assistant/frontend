@@ -1391,6 +1391,11 @@
                     "system_health_error": "System Health component is not loaded. Add 'system_health:' to configuration.yaml",
                     "title": "Info"
                 },
+                "integration_panel_move": {
+                    "link_integration_page": "integrations page",
+                    "missing_zha": "Missing the ZHA config panel? It was moved to the ZHA entry on the {integrations_page}.",
+                    "missing_zwave": "Missing the Z-Wave config panel? It was moved to the Z-Wave entry on the {integrations_page}."
+                },
                 "integrations": {
                     "add_integration": "Add integration",
                     "caption": "Integrations",
