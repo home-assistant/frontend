@@ -279,7 +279,6 @@ class HaPanelLogbook extends LocalizeMixin(PolymerElement) {
   }
 
   _dateRangeChanged(ev) {
-    console.log(ev.detail);
     this._startDate = ev.detail.startDate;
     this._endDate = ev.detail.endDate;
   }
