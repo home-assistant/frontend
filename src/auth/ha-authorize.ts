@@ -6,11 +6,15 @@ import {
   property,
   PropertyValues,
 } from "lit-element";
-import { AuthProvider, fetchAuthProviders } from "../data/auth";
+import {
+  AuthProvider,
+  fetchAuthProviders,
+  AuthUrlSearchParams,
+} from "../data/auth";
 import { litLocalizeLiteMixin } from "../mixins/lit-localize-lite-mixin";
 import { registerServiceWorker } from "../util/register-service-worker";
 import "./ha-auth-flow";
-import { extractAuthParams } from "../common/auth/query_params";
+import { extractSearchParamsObject } from "../common/url/search-params";
 
 import(/* webpackChunkName: "pick-auth-provider" */ "./ha-pick-auth-provider");
 
@@ -28,7 +32,7 @@ class HaAuthorize extends litLocalizeLiteMixin(LitElement) {
   constructor() {
     super();
     this.translationFragment = "page-authorize";
-    const query = extractAuthParams();
+    const query = extractSearchParamsObject() as AuthUrlSearchParams;
     if (query.client_id) {
       this.clientId = query.client_id;
     }

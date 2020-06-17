@@ -14,7 +14,7 @@ import {
 } from "lit-element";
 import { HASSDomEvent } from "../common/dom/fire_event";
 import { subscribeOne } from "../common/util/subscribe-one";
-import { hassUrl } from "../data/auth";
+import { hassUrl, AuthUrlSearchParams } from "../data/auth";
 import {
   fetchOnboardingOverview,
   OnboardingResponses,
@@ -28,7 +28,7 @@ import { HomeAssistant } from "../types";
 import { registerServiceWorker } from "../util/register-service-worker";
 import "./onboarding-create-user";
 import "./onboarding-loading";
-import { extractAuthParams } from "../common/auth/query_params";
+import { extractSearchParamsObject } from "../common/url/search-params";
 
 type OnboardingEvent =
   | {
@@ -186,7 +186,7 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
       this._loading = true;
 
       // Determine if oauth redirect has been provided
-      const externalAuthParams = extractAuthParams();
+      const externalAuthParams = extractSearchParamsObject() as AuthUrlSearchParams;
       const authParams =
         externalAuthParams.client_id && externalAuthParams.redirect_uri
           ? externalAuthParams
