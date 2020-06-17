@@ -302,6 +302,7 @@ interface ForecastAttribute {
   datetime: string;
   templow?: number;
   precipitation?: number;
+  precipitation_probability?: number;
   humidity?: number;
   condition?: string;
 }
