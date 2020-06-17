@@ -7,8 +7,7 @@ import "@polymer/paper-spinner/paper-spinner";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 /* eslint-plugin-disable lit */
 import { PolymerElement } from "@polymer/polymer/polymer-element";
-import "@vaadin/vaadin-date-picker/theme/material/vaadin-date-picker";
-import { formatDate } from "../../common/datetime/format_date";
+import { formatDateTime } from "../../common/datetime/format_date_time";
 import { computeRTL } from "../../common/util/compute_rtl";
 import "../../components/entity/ha-entity-picker";
 import "../../components/ha-menu-button";
@@ -35,7 +34,17 @@ class HaPanelLogbook extends LocalizeMixin(PolymerElement) {
         }
 
         date-range-picker {
-          margin-right: 16px;
+          margin-right: 4px;
+        }
+
+        date-range-picker ha-icon {
+          margin-right: 8px;
+        }
+
+        date-range-picker paper-input {
+          display: inline-block;
+          max-width: 200px;
+          width: 200px;
         }
 
         paper-input {
@@ -62,33 +71,6 @@ class HaPanelLogbook extends LocalizeMixin(PolymerElement) {
 
         :host([narrow]) .filters {
           flex-wrap: wrap;
-        }
-
-        vaadin-date-picker {
-          max-width: 200px;
-          margin-right: 16px;
-        }
-
-        :host([rtl]) vaadin-date-picker {
-          margin-right: 0;
-          margin-left: 16px;
-        }
-
-        paper-dropdown-menu {
-          max-width: 100px;
-          margin-right: 16px;
-          --paper-input-container-label-floating: {
-            padding-bottom: 11px;
-          }
-          --paper-input-suffix: {
-            height: 24px;
-          }
-        }
-
-        :host([rtl]) paper-dropdown-menu {
-          text-align: right;
-          margin-right: 0;
-          margin-left: 16px;
         }
 
         paper-item {
@@ -148,11 +130,30 @@ class HaPanelLogbook extends LocalizeMixin(PolymerElement) {
 
         <div class="filters">
           <date-range-picker
-            disabled="[[isLoading]]"
-            start-date="[[_startDate]]"
-            end-date="[[_endDate]]"
+            hour$="true"
+            disabled$="[[isLoading]]"
+            twentyfour-hours$="[[_compute24hourFormat(hass)]]"
+            start-date$="[[_startDate]]"
+            end-date$="[[_endDate]]"
             on-change="_dateRangeChanged"
           >
+            <div slot="input">
+              <ha-icon icon="mdi:calendar"></ha-icon>
+              <paper-input
+                value="[[_formatDate(hass, _startDate)]]"
+                label="From"
+                disabled="[[isLoading]]"
+                readonly=""
+              ></paper-input>
+              <paper-input
+                value="[[_formatDate(hass, _endDate)]]"
+                label="Till"
+                disabled="[[isLoading]]"
+                readonly=""
+              ></paper-input>
+            </div>
+            <div slot="header"></div>
+            <div slot="footer"></div>
           </date-range-picker>
 
           <ha-entity-picker
@@ -246,14 +247,10 @@ class HaPanelLogbook extends LocalizeMixin(PolymerElement) {
 
   _computeFilterEndDate(_endDate) {
     if (!_endDate) return undefined;
-    // if (_endHour && _endHour !== "0") {
-    //   console.log(_endHour);
-    //   date.setHours(_endHour);
-    // } else {
-    //   date.setDate(date.getDate() + 1);
-    //   date.setHours(0);
-    //   date.setMilliseconds(date.getMilliseconds() - 1);
-    // }
+    if (_endDate.getHours() === 0) {
+      _endDate.setDate(_endDate.getDate() + 1);
+      _endDate.setMilliseconds(_endDate.getMilliseconds() - 1);
+    }
     return _endDate.toISOString();
   }
 
@@ -268,8 +265,22 @@ class HaPanelLogbook extends LocalizeMixin(PolymerElement) {
     }
   }
 
+  _formatDate(hass, date) {
+    return formatDateTime(date, hass.language);
+  }
+
+  _compute24hourFormat(hass) {
+    return (
+      new Intl.DateTimeFormat(hass.language, {
+        hour: "numeric",
+      })
+        .formatToParts(new Date(2020, 0, 1, 13))
+        .find((part) => part.type === "hour").value.length === 2
+    );
+  }
+
   _dateRangeChanged(ev) {
-    console.log(ev);
+    console.log(ev.detail);
     this._startDate = ev.detail.startDate;
     this._endDate = ev.detail.endDate;
   }

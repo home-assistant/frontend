@@ -4,29 +4,31 @@ import DateRangePicker from "vue2-daterange-picker";
 // @ts-ignore
 import dateRangePickerStyles from "vue2-daterange-picker/dist/vue2-daterange-picker.css";
 import { fireEvent } from "../common/dom/fire_event";
-import { mdiCalendar } from "@mdi/js";
-import { formatDateTime } from "../common/datetime/format_date_time";
 
 const Component = {
   props: {
+    lang: {
+      type: String,
+      default: "en",
+    },
+    twentyfourHours: {
+      type: Boolean,
+      default: true,
+    },
+    disabled: {
+      type: Boolean,
+      default: false,
+    },
     startDate: {
       type: [String, Date],
       default() {
-        const value = new Date();
-        value.setHours(value.getHours() - 2);
-        value.setMinutes(0);
-        value.setSeconds(0);
-        return value;
+        return new Date();
       },
     },
     endDate: {
       type: [String, Date],
       default() {
-        const value = new Date();
-        value.setHours(value.getHours() + 1);
-        value.setMinutes(0);
-        value.setSeconds(0);
-        return value;
+        return new Date();
       },
     },
   },
@@ -44,8 +46,13 @@ const Component = {
     return createElement("date-range-picker", {
       props: {
         "time-picker": true,
+        "auto-apply": true,
         opens: "right",
         "show-dropdowns": false,
+        // @ts-ignore
+        "time-picker24-hour": this.twentyfourHours,
+        // @ts-ignore
+        disabled: this.disabled,
       },
       model: {
         // @ts-ignore
@@ -57,31 +64,20 @@ const Component = {
         expression: "dateRange",
       },
       scopedSlots: {
-        input: function (props) {
-          return [
-            createElement("ha-svg-icon", {
-              domProps: {
-                path: mdiCalendar,
-              },
-              style: { "margin-right": "8px" },
-            }),
-            createElement("paper-input", {
-              domProps: {
-                value: formatDateTime(props.startDate, "nl"),
-                label: "From",
-                readonly: true,
-              },
-              style: { display: "inline-block" },
-            }),
-            createElement("paper-input", {
-              domProps: {
-                value: formatDateTime(props.endDate, "nl"),
-                label: "Till",
-                readonly: true,
-              },
-              style: { display: "inline-block", "margin-left": "8px" },
-            }),
-          ];
+        input: function () {
+          return createElement("slot", {
+            domProps: { name: "input" },
+          });
+        },
+        header: function () {
+          return createElement("slot", {
+            domProps: { name: "header" },
+          });
+        },
+        footer: function () {
+          return createElement("slot", {
+            domProps: { name: "footer" },
+          });
         },
       },
     });
@@ -180,9 +176,11 @@ class DateRangePickerElement extends WrappedElement {
             cursor: pointer;
         }
         `;
-    this.shadowRoot!.appendChild(style);
-    this.shadowRoot!.addEventListener("click", (ev) => ev.stopPropagation());
+    // @ts-ignore
+    this.shadowRoot.appendChild(style);
+    // @ts-ignore
+    this.shadowRoot.addEventListener("click", (ev) => ev.stopPropagation());
   }
 }
-
+// @ts-ignore
 window.customElements.define("date-range-picker", DateRangePickerElement);

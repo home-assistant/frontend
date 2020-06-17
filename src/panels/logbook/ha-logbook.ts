@@ -18,7 +18,6 @@ import { computeRTL } from "../../common/util/compute_rtl";
 import "../../components/ha-icon";
 import { LogbookEntry } from "../../data/logbook";
 import { HomeAssistant } from "../../types";
-import "../../components/date-range-picker";
 
 class HaLogbook extends LitElement {
   @property() public hass!: HomeAssistant;
