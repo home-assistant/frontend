@@ -4,16 +4,16 @@ import { UNIT_C, UNIT_F } from "../const";
 import { domainIcon } from "./domain_icon";
 
 const fixedDeviceClassIcons = {
-  current: "hass:current-ac",
+  current: "hass:flash",
   energy: "hass:flash",
   humidity: "hass:water-percent",
   illuminance: "hass:brightness-5",
   temperature: "hass:thermometer",
   pressure: "hass:gauge",
   power: "hass:flash",
-  power_factor: "hass:angle-acute",
+  power_factor: "hass:flash",
   signal_strength: "hass:wifi",
-  voltage: "hass:sine-wave",
+  voltage: "hass:current-ac",
 };
 
 export const sensorIcon = (state: HassEntity) => {
