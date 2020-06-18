@@ -1,3 +1,6 @@
+import "@material/mwc-button";
+import "@material/mwc-list";
+import "@material/mwc-list/mwc-list-item";
 import "@polymer/app-layout/app-header-layout/app-header-layout";
 import "@polymer/app-layout/app-header/app-header";
 import "@polymer/app-layout/app-toolbar/app-toolbar";
@@ -17,6 +20,32 @@ import "../../styles/polymer-ha-style";
 import "./ha-logbook";
 import "./ha-logbook-data";
 import "../../components/date-range-picker";
+
+const today = new Date();
+today.setHours(0, 0, 0, 0);
+
+const yesterday = new Date();
+yesterday.setDate(today.getDate() - 1);
+yesterday.setHours(0, 0, 0, 0);
+
+const thisWeek = new Date();
+thisWeek.setHours(0, 0, 0, 0);
+
+const lastWeek = new Date();
+lastWeek.setHours(0, 0, 0, 0);
+
+const ranges = {
+  Today: [today, today],
+  Yesterday: [yesterday, yesterday],
+  "This week": [
+    new Date(thisWeek.setDate(today.getDate() - today.getDay())),
+    new Date(thisWeek.setDate(today.getDate() - today.getDay() + 6)),
+  ],
+  "Last week": [
+    new Date(lastWeek.setDate(today.getDate() - today.getDay() - 7)),
+    new Date(lastWeek.setDate(today.getDate() - today.getDay() - 1)),
+  ],
+};
 
 /*
  * @appliesMixin LocalizeMixin
@@ -152,6 +181,17 @@ class HaPanelLogbook extends LocalizeMixin(PolymerElement) {
               ></paper-input>
             </div>
             <div
+              slot="ranges"
+              style="border-right: 1px solid var(--divider-color); border-bottom: 1px solid var(--divider-color)"
+            >
+              <mwc-list>
+                <mwc-list-item on-click="_setDateRange">Item 0</mwc-list-item>
+                <mwc-list-item on-click="_setDateRange">Item 1</mwc-list-item>
+                <mwc-list-item on-click="_setDateRange">Item 2</mwc-list-item>
+                <mwc-list-item on-click="_setDateRange">Item 3</mwc-list-item>
+              </mwc-list>
+            </div>
+            <div
               slot="footer"
               style="display: flex; justify-content: flex-end; padding: 8px; border-top: 1px solid var(--divider-color)"
             >
@@ -281,6 +321,14 @@ class HaPanelLogbook extends LocalizeMixin(PolymerElement) {
         .formatToParts(new Date(2020, 0, 1, 13))
         .find((part) => part.type === "hour").value.length === 2
     );
+  }
+
+  _setDateRange(ev) {
+    const dateRangePicker = ev.currentTarget.closest("date-range-picker");
+    const startDate = new Date(); // ev.target.startDate;
+    const endDate = new Date(); // ev.target.endDate;
+    dateRangePicker.vueComponent.$children[0].clickRange([startDate, endDate]);
+    dateRangePicker.vueComponent.$children[0].clickedApply();
   }
 
   _cancelDateRange(ev) {
