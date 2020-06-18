@@ -1391,6 +1391,11 @@
                     "system_health_error": "Компонент System Health не загружен. Добавьте 'system_health:' в файл configuration.yaml.",
                     "title": "О системе"
                 },
+                "integration_panel_move": {
+                    "link_integration_page": "странице интеграций",
+                    "missing_zha": "Отсутствует панель конфигурации ZHA? Настройки ZHA теперь находятся на {integrations_page} в карточке ZHA.",
+                    "missing_zwave": "Отсутствует панель конфигурации Z-Wave? Настройки Z-Wave теперь находятся на {integrations_page} в карточке Z-Wave."
+                },
                 "integrations": {
                     "add_integration": "Добавить интеграцию",
                     "caption": "Интеграции",

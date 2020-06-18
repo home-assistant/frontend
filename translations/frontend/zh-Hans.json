@@ -1391,6 +1391,11 @@
                     "system_health_error": "未加载系统健康组件。请将 'system_health:' 添加到 configuration.yaml",
                     "title": "信息"
                 },
+                "integration_panel_move": {
+                    "link_integration_page": "集成页面",
+                    "missing_zha": "找不到 ZHA 配置面板了吗？它已移动到{integrations_page}中的 ZHA 条目。",
+                    "missing_zwave": "找不到 Z-Wave 配置面板了吗？它已移动到{integrations_page}中的 Z-Wave 条目。"
+                },
                 "integrations": {
                     "add_integration": "添加集成",
                     "caption": "集成",
@@ -1961,8 +1966,8 @@
                         "available_events": "可用事件",
                         "count_listeners": " ({count} 个监听器)",
                         "data": "事件数据（格式为YAML，选填）",
-                        "description": "将事件发送到事件总线",
-                        "documentation": "事件文档。",
+                        "description": "将事件发送到事件总线。",
+                        "documentation": "事件文档",
                         "event_fired": "事件 {name} 已触发",
                         "fire_event": "触发事件",
                         "listen_to_events": "监听事件",

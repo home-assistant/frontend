@@ -1391,6 +1391,11 @@
                     "system_health_error": "系統健康元件未載入。請於 configuration.yaml 內加入「system_health:」",
                     "title": "資訊"
                 },
+                "integration_panel_move": {
+                    "link_integration_page": "整合頁面",
+                    "missing_zha": "找不到 ZHA 設定頁面嗎？目前已經移至 {integrations_page}  中的 ZHA 物件。",
+                    "missing_zwave": "找不到 Z-Wave 設定頁面嗎？目前已經移至 {integrations_page}  中的 Z-Wave 物件。"
+                },
                 "integrations": {
                     "add_integration": "新增整合",
                     "caption": "整合",
