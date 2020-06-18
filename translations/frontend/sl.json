@@ -480,8 +480,10 @@
             "delete": "Izbriši",
             "error_required": "Zahtevano",
             "loading": "Nalaganje",
+            "menu": "Meni",
             "next": "Naslednji",
             "no": "Ne",
+            "overflow_menu": "Prelivni meni",
             "previous": "Prejšnji",
             "refresh": "Osveži",
             "save": "Shrani",
@@ -692,10 +694,10 @@
             },
             "zha_device_info": {
                 "buttons": {
-                    "add": "Dodajte naprave",
+                    "add": "Dodajte naprave prek te naprave",
                     "reconfigure": "Ponovno konfigurirajte napravo",
                     "remove": "Odstranite napravo",
-                    "zigbee_information": "Zigbee Informacije"
+                    "zigbee_information": "Podpis naprave Zigbee"
                 },
                 "confirmations": {
                     "remove": "Ali ste prepričani, da želite odstraniti napravo?"
@@ -715,7 +717,7 @@
                 "unknown": "Neznano",
                 "zha_device_card": {
                     "area_picker_label": "Območje",
-                    "device_name_placeholder": "Ime, ki ga je dodelil uporabnik",
+                    "device_name_placeholder": "Spremenite ime naprave",
                     "update_name_button": "Posodobi ime"
                 }
             }
@@ -911,6 +913,8 @@
                         "introduction": "Uporabite avtomatizacije za oživitev vašega doma.",
                         "load_error_not_editable": "Urejati je mogoče le avtomatizacije v automations.yaml.",
                         "load_error_unknown": "Napaka pri nalaganju avtomatizacije ({err_no}).",
+                        "move_down": "Premakni navzdol",
+                        "move_up": "Premakni navzgor",
                         "save": "Shrani",
                         "triggers": {
                             "add": "Dodaj sprožilec",
@@ -1369,7 +1373,9 @@
                 },
                 "info": {
                     "built_using": "Zgrajen z uporabo",
+                    "caption": "Info",
                     "custom_uis": "Uporabniški vmesniki po meri:",
+                    "description": "Informacije o vaši namestitvi programa Home Assistant",
                     "developed_by": "Razvija ga kup osupljivih ljudi.",
                     "documentation": "Dokumentacija",
                     "frontend": "frontend-ui",
@@ -1384,6 +1390,11 @@
                     "source": "Vir:",
                     "system_health_error": "Komponenta \"system health\" ni naložena. Dodajte \"system_health:\" v svoj configuration.yaml",
                     "title": "Info"
+                },
+                "integration_panel_move": {
+                    "link_integration_page": "Stran za integracije",
+                    "missing_zha": "Ali manjka konfiguracijska plošča ZHA? Premaknjen je bil v vnos ZHA na {integrations_page} .",
+                    "missing_zwave": "Ali manjka konfiguracijska plošča Z-Wave? Premaknili so ga v vnos Z-Wave na {integrations_page} ."
                 },
                 "integrations": {
                     "add_integration": "Dodaj integracijo",
@@ -1457,7 +1468,9 @@
                 },
                 "introduction": "Tukaj je mogoče konfigurirati vaše komponente in Home Assistanta. Vsega ni mogoče konfigurirati iz uporabniškega vmesnika (vendar delamo na tem).",
                 "logs": {
+                    "caption": "Dnevniki",
                     "clear": "Počisti",
+                    "description": "Oglejte si Home Assistant dnevnike",
                     "details": "Podrobnosti dnevnika ({level})",
                     "load_full_log": "Naloži celoten dnevnik Home Assistant-a",
                     "loading_log": "Nalaganje dnevnika napak ...",
@@ -1652,6 +1665,11 @@
                             "core": "Ponovno naloži lokacijo in prilagoditve",
                             "group": "Ponovno naloži skupine",
                             "heading": "Ponovno nalaganje konfiguracije YAML",
+                            "input_boolean": "Ponovno naloži \"input booleans\"",
+                            "input_datetime": "Ponovno naloži vhodne datumske čase",
+                            "input_number": "Ponovno naloži vhodne številke",
+                            "input_select": "Ponovno naloži izbirne vnose",
+                            "input_text": "Ponovno naloži vhodna besedila",
                             "introduction": "Nekateri deli programa Home Assistant-a se lahko naložijo brez ponovnega zagona. S ponovnim nalaganjem se trenutna konfiguracija YAML zamenja in naloži nova.",
                             "person": "Ponovno naloži osebe",
                             "scene": "Ponovno naloži scene",
@@ -1715,8 +1733,11 @@
                 },
                 "zha": {
                     "add_device_page": {
+                        "discovered_text": "Naprave se bodo prikazale tukaj, ko jih odkrijemo.",
                         "discovery_text": "Tukaj bodo prikazane odkrite naprave. Sledite navodilom za napravo in jo postavite v način seznanjanja.",
                         "header": "Zigbee Home Automation - Dodaj naprave",
+                        "no_devices_found": "Najdene ni bilo nobene naprave, preverite, ali so v načinu združevanje ter jih držite budne medtem, ko je v odkrivanje v teku.",
+                        "pairing_mode": "Prepričajte se, da so vaše naprave v načinu združevanja. Preverite navodila svoje naprave, kako to storiti.",
                         "search_again": "Ponovno iskanje",
                         "spinner": "Iskanje ZHA Zigbee naprav..."
                     },
@@ -1724,6 +1745,7 @@
                         "caption": "Dodajte naprave",
                         "description": "Dodajte naprave v omrežje Zigbee"
                     },
+                    "button": "Konfiguriraj",
                     "caption": "ZHA",
                     "cluster_attributes": {
                         "attributes_of_cluster": "Atributi izbrane gruče",
@@ -1802,6 +1824,9 @@
                         "header": "Upravljanje omrežja",
                         "introduction": "Ukazi, ki vplivajo na celotno omrežje"
                     },
+                    "network": {
+                        "caption": "Omrežje"
+                    },
                     "node_management": {
                         "header": "Upravljanje naprav",
                         "help_node_dropdown": "Izberite napravo za ogled njenih možnosti.",
@@ -1841,6 +1866,7 @@
                     "no_zones_created_yet": "Izgleda, da še niste ustvarili nobenih con."
                 },
                 "zwave": {
+                    "button": "Konfiguriraj",
                     "caption": "Z-Wave",
                     "common": {
                         "index": "Indeks",

@@ -694,10 +694,10 @@
             },
             "zha_device_info": {
                 "buttons": {
-                    "add": "Añadir dispositivos",
+                    "add": "Añadir dispositivos a través de este dispositivo",
                     "reconfigure": "Reconfigurar dispositivo",
                     "remove": "Eliminar dispositivos",
-                    "zigbee_information": "Información Zigbee"
+                    "zigbee_information": "Firma del dispositivo Zigbee"
                 },
                 "confirmations": {
                     "remove": "¿Estás seguro de que quieres eliminar este dispositivo?"
@@ -717,7 +717,7 @@
                 "unknown": "Desconocido",
                 "zha_device_card": {
                     "area_picker_label": "Área",
-                    "device_name_placeholder": "Nombre dado por el usuario",
+                    "device_name_placeholder": "Cambiar el nombre del dispositivo",
                     "update_name_button": "Cambiar nombre"
                 }
             }
@@ -1390,6 +1390,11 @@
                     "source": "Fuente:",
                     "system_health_error": "El componente Estado del Sistema no está cargado. Añade 'system_health:' a configuration.yaml",
                     "title": "Información"
+                },
+                "integration_panel_move": {
+                    "link_integration_page": "página de integraciones",
+                    "missing_zha": "¿Echas de menos el panel de configuración de ZHA? Se ha movido a la entrada ZHA en la {integrations_page}.",
+                    "missing_zwave": "¿Echas de menos el panel de configuración de Z-Wave? Se ha movido a la entrada Z-Wave en la {integrations_page}."
                 },
                 "integrations": {
                     "add_integration": "Añadir integración",
