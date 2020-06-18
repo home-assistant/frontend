@@ -8,15 +8,18 @@ import {
   property,
   TemplateResult,
 } from "lit-element";
-import { computeStateName } from "../../common/entity/compute_state_name";
-import "../../components/ha-dialog";
-import "../../components/ha-switch";
-import "../../components/ha-formfield";
-import type { HaSwitch } from "../../components/ha-switch";
-import { computeDeviceName } from "../../data/device_registry";
-import { fetchMQTTDebugInfo, MQTTDeviceDebugInfo } from "../../data/mqtt";
-import { haStyleDialog } from "../../resources/styles";
-import { HomeAssistant } from "../../types";
+import { computeStateName } from "../../../../../../common/entity/compute_state_name";
+import "../../../../../../components/ha-dialog";
+import "../../../../../../components/ha-switch";
+import "../../../../../../components/ha-formfield";
+import type { HaSwitch } from "../../../../../../components/ha-switch";
+import { computeDeviceName } from "../../../../../../data/device_registry";
+import {
+  fetchMQTTDebugInfo,
+  MQTTDeviceDebugInfo,
+} from "../../../../../../data/mqtt";
+import { haStyleDialog } from "../../../../../../resources/styles";
+import { HomeAssistant } from "../../../../../../types";
 import "./mqtt-discovery-payload";
 import "./mqtt-messages";
 import { MQTTDeviceDebugInfoDialogParams } from "./show-dialog-mqtt-device-debug-info";
@@ -187,19 +190,19 @@ class DialogMQTTDeviceDebugInfo extends LitElement {
           <li class="triggerlistitem">
             MQTT discovery data:
             <ul class="discoverydata">
-            <li>
-              Topic:
-              <code>${trigger.discovery_data.topic}</code>
-            </li>
-            <li>
-              <mqtt-discovery-payload
-                .hass=${this.hass}
-                .payload=${trigger.discovery_data.payload}
-                .showAsYaml=${this._showAsYaml}
-                .summary=${"Payload"}
-              >
-            </li>
-            </mqtt-discovery-payload>
+              <li>
+                Topic:
+                <code>${trigger.discovery_data.topic}</code>
+              </li>
+              <li>
+                <mqtt-discovery-payload
+                  .hass=${this.hass}
+                  .payload=${trigger.discovery_data.payload}
+                  .showAsYaml=${this._showAsYaml}
+                  .summary=${"Payload"}
+                >
+                </mqtt-discovery-payload>
+              </li>
             </ul>
           </li>
         `

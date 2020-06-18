@@ -8,11 +8,11 @@ import {
   css,
   PropertyValues,
 } from "lit-element";
-import { DeviceRegistryEntry } from "../../../../../data/device_registry";
-import { haStyle } from "../../../../../resources/styles";
-import { HomeAssistant } from "../../../../../types";
-import { ZHADevice, fetchZHADevice } from "../../../../../data/zha";
-import { formatAsPaddedHex } from "../../../integrations/integration-panels/zha/functions";
+import { DeviceRegistryEntry } from "../../../../../../data/device_registry";
+import { haStyle } from "../../../../../../resources/styles";
+import { HomeAssistant } from "../../../../../../types";
+import { ZHADevice, fetchZHADevice } from "../../../../../../data/zha";
+import { formatAsPaddedHex } from "../../../../integrations/integration-panels/zha/functions";
 
 @customElement("ha-device-info-zha")
 export class HaDeviceActionsZha extends LitElement {
