@@ -13,7 +13,6 @@ import {
   property,
   TemplateResult,
 } from "lit-element";
-import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import scrollToTarget from "../../common/dom/scroll-to-target";
 import { navigate } from "../../common/navigate";
 import "../../components/ha-menu-button";
