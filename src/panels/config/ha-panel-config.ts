@@ -323,6 +323,13 @@ class HaPanelConfig extends HassRouterPage {
             /* webpackChunkName: "panel-config-zwave" */ "./integrations/integration-panels/zwave/ha-config-zwave"
           ),
       },
+      mqtt: {
+        tag: "mqtt-config-panel",
+        load: () =>
+          import(
+            /* webpackChunkName: "panel-config-mqtt" */ "./integrations/integration-panels/mqtt/mqtt-config-panel"
+          ),
+      },
     },
   };
 

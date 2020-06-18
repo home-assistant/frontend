@@ -9,10 +9,10 @@ import {
   property,
   TemplateResult,
 } from "lit-element";
-import { formatTime } from "../../../common/datetime/format_time";
-import "../../../components/ha-card";
-import { MQTTMessage, subscribeMQTTTopic } from "../../../data/mqtt";
-import { HomeAssistant } from "../../../types";
+import { formatTime } from "../../../../../common/datetime/format_time";
+import "../../../../../components/ha-card";
+import { MQTTMessage, subscribeMQTTTopic } from "../../../../../data/mqtt";
+import { HomeAssistant } from "../../../../../types";
 
 @customElement("mqtt-subscribe-card")
 class MqttSubscribeCard extends LitElement {
@@ -43,18 +43,14 @@ class MqttSubscribeCard extends LitElement {
     return html`
       <ha-card
         header="${this.hass.localize(
-          "ui.panel.developer-tools.tabs.mqtt.description_listen"
+          "ui.panel.config.mqtt.description_listen"
         )}"
       >
         <form>
           <paper-input
             .label=${this._subscribed
-              ? this.hass.localize(
-                  "ui.panel.developer-tools.tabs.mqtt.listening_to"
-                )
-              : this.hass.localize(
-                  "ui.panel.developer-tools.tabs.mqtt.subscribe_to"
-                )}
+              ? this.hass.localize("ui.panel.config.mqtt.listening_to")
+              : this.hass.localize("ui.panel.config.mqtt.subscribe_to")}
             .disabled=${this._subscribed !== undefined}
             .value=${this._topic}
             @value-changed=${this._valueChanged}
@@ -65,12 +61,8 @@ class MqttSubscribeCard extends LitElement {
             type="submit"
           >
             ${this._subscribed
-              ? this.hass.localize(
-                  "ui.panel.developer-tools.tabs.mqtt.stop_listening"
-                )
-              : this.hass.localize(
-                  "ui.panel.developer-tools.tabs.mqtt.start_listening"
-                )}
+              ? this.hass.localize("ui.panel.config.mqtt.stop_listening")
+              : this.hass.localize("ui.panel.config.mqtt.start_listening")}
           </mwc-button>
         </form>
         <div class="events">
@@ -78,7 +70,7 @@ class MqttSubscribeCard extends LitElement {
             (msg) => html`
               <div class="event">
                 ${this.hass.localize(
-                  "ui.panel.developer-tools.tabs.mqtt.message_received",
+                  "ui.panel.config.mqtt.message_received",
                   "id",
                   msg.id,
                   "topic",

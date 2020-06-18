@@ -72,15 +72,6 @@ class PanelDeveloperTools extends LitElement {
                 "ui.panel.developer-tools.tabs.events.title"
               )}
             </paper-tab>
-            ${isComponentLoaded(this.hass, "mqtt")
-              ? html`
-                  <paper-tab page-name="mqtt">
-                    ${this.hass.localize(
-                      "ui.panel.developer-tools.tabs.mqtt.title"
-                    )}
-                  </paper-tab>
-                `
-              : ""}
           </paper-tabs>
         </app-header>
         <developer-tools-router
