@@ -61,6 +61,16 @@ export class HaFormInteger extends LitElement implements HaFormElement {
                 .disabled=${this.data === undefined}
                 @value-changed=${this._valueChanged}
               ></ha-paper-slider>
+              <paper-input
+                type="number"
+                .label=${this.label}
+                .value=${this._value}
+                .min=${this.schema.valueMin}
+                .max=${this.schema.valueMax}
+                .required=${this.schema.required}
+                .autoValidate=${this.schema.required}
+                @value-changed=${this._valueChanged}
+              ></paper-input>
             </div>
           </div>
         `

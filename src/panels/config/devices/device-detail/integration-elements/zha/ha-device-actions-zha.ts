@@ -17,8 +17,9 @@ import {
   reconfigureNode,
 } from "../../../../../../data/zha";
 import { navigate } from "../../../../../../common/navigate";
-import { showZHADeviceZigbeeInfoDialog } from "../../../../../../dialogs/zha-device-zigbee-signature-dialog/show-dialog-zha-device-zigbee-info";
+import { showZHADeviceZigbeeInfoDialog } from "../../../../integrations/integration-panels/zha/show-dialog-zha-device-zigbee-info";
 import { showConfirmationDialog } from "../../../../../../dialogs/generic/show-dialog-box";
+import { showZHAClusterDialog } from "../../../../integrations/integration-panels/zha/show-dialog-zha-cluster";
 
 @customElement("ha-device-actions-zha")
 export class HaDeviceActionsZha extends LitElement {
@@ -72,6 +73,11 @@ export class HaDeviceActionsZha extends LitElement {
                 "ui.dialogs.zha_device_info.buttons.zigbee_information"
               )}
             </mwc-button>
+            <mwc-button @click=${this._showClustersDialog}>
+              ${this.hass!.localize(
+                "ui.dialogs.zha_device_info.buttons.clusters"
+              )}
+            </mwc-button>
             <mwc-button class="warning" @click=${this._removeDevice}>
               ${this.hass!.localize(
                 "ui.dialogs.zha_device_info.buttons.remove"
@@ -80,6 +86,10 @@ export class HaDeviceActionsZha extends LitElement {
           `
         : ""}
     `;
+  }
+
+  private async _showClustersDialog(): Promise<void> {
+    await showZHAClusterDialog(this, { device: this._zhaDevice! });
   }
 
   private async _onReconfigureNodeClick(): Promise<void> {
