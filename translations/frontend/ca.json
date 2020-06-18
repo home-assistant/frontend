@@ -1391,6 +1391,11 @@
                     "system_health_error": "El component Estat del Sistema no està configurat. Afegeix 'system_health:' a configuration.yaml",
                     "title": "Informació"
                 },
+                "integration_panel_move": {
+                    "link_integration_page": "pàgina d'integracions",
+                    "missing_zha": "Trobes a faltar el panell de configuració de ZHA? S'ha traslladat a l'entrada ZHA de la {integrations_page}.",
+                    "missing_zwave": "Trobes a faltar el panell de configuració de Z-Wave? S'ha traslladat a l'entrada Z-Wave de la {integrations_page}."
+                },
                 "integrations": {
                     "add_integration": "Afegeix integració",
                     "caption": "Integracions",
