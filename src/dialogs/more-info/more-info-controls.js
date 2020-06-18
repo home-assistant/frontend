@@ -86,7 +86,7 @@ class MoreInfoControls extends LocalizeMixin(EventsMixin(PolymerElement)) {
         <div class="main-title" main-title="" on-click="enlarge">
           [[_computeStateName(stateObj)]]
         </div>
-        <template is="dom-if" if="[[_computeConfig(hass)]]">
+        <template is="dom-if" if="[[hass.user.is_admin]]">
           <ha-icon-button
             aria-label$="[[localize('ui.dialogs.more_info_control.settings')]]"
             icon="hass:settings"
@@ -217,10 +217,6 @@ class MoreInfoControls extends LocalizeMixin(EventsMixin(PolymerElement)) {
 
   _computeStateName(stateObj) {
     return stateObj ? computeStateName(stateObj) : "";
-  }
-
-  _computeConfig(hass) {
-    return hass.user.is_admin && isComponentLoaded(hass, "config");
   }
 
   _computeEdit(hass, stateObj) {
