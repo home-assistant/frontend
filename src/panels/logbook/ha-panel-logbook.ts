@@ -7,7 +7,6 @@ import "@polymer/app-layout/app-toolbar/app-toolbar";
 import "../../components/ha-icon-button";
 import "@polymer/paper-input/paper-input";
 import "@polymer/paper-spinner/paper-spinner";
-import { formatDateTime } from "../../common/datetime/format_date_time";
 import { computeRTL } from "../../common/util/compute_rtl";
 import "../../components/entity/ha-entity-picker";
 import "../../components/ha-menu-button";
@@ -25,20 +24,8 @@ import {
 import { HomeAssistant } from "../../types";
 import { haStyle } from "../../resources/styles";
 import { clearLogbookCache, getLogbookData } from "../../data/logbook";
-import { mdiRefresh, mdiCalendar } from "@mdi/js";
-
-const today = new Date();
-today.setHours(0, 0, 0, 0);
-
-const yesterday = new Date();
-yesterday.setDate(today.getDate() - 1);
-yesterday.setHours(0, 0, 0, 0);
-
-const thisWeek = new Date();
-thisWeek.setHours(0, 0, 0, 0);
-
-const lastWeek = new Date();
-lastWeek.setHours(0, 0, 0, 0);
+import { mdiRefresh } from "@mdi/js";
+import "../../components/ha-date-range-picker";
 
 @customElement("ha-panel-logbook")
 export class HaPanelLogbook extends LitElement {
@@ -101,70 +88,13 @@ export class HaPanelLogbook extends LitElement {
           : ""}
 
         <div class="filters">
-          <date-range-picker
+          <ha-date-range-picker
+            .hass=${this.hass}
             ?disabled=${this._isLoading}
-            twentyfour-hours=${this._compute24hourFormat()}
-            start-date=${this._startDate}
-            end-date=${this._endDate}
+            .startDate=${this._startDate}
+            .endDate=${this._endDate}
             @change=${this._dateRangeChanged}
-          >
-            <div slot="input" class="date-range-inputs">
-              <ha-svg-icon path=${mdiCalendar}></ha-svg-icon>
-              <paper-input
-                .value=${formatDateTime(this._startDate, this.hass.language)}
-                label="From"
-                .disabled=${this._isLoading}
-                readonly
-                style="margin-right: 8px;"
-              ></paper-input>
-              <paper-input
-                .value=${formatDateTime(this._endDate, this.hass.language)}
-                label="Till"
-                .disabled=${this._isLoading}
-                readonly
-              ></paper-input>
-            </div>
-            <div slot="ranges" class="date-range-ranges">
-              <mwc-list>
-                <mwc-list-item
-                  @click=${this._setDateRange}
-                  .startDate=${today}
-                  .endDate=${today}
-                  >Today</mwc-list-item
-                >
-                <mwc-list-item
-                  @click=${this._setDateRange}
-                  .startDate=${yesterday}
-                  .endDate=${yesterday}
-                  >Yesterday</mwc-list-item
-                >
-                <mwc-list-item
-                  @click=${this._setDateRange}
-                  .startDate=${new Date(
-                    thisWeek.setDate(today.getDate() - today.getDay())
-                  )}
-                  .endDate=${new Date(
-                    thisWeek.setDate(today.getDate() - today.getDay() + 6)
-                  )}
-                  >This week</mwc-list-item
-                >
-                <mwc-list-item
-                  @click=${this._setDateRange}
-                  .startDate=${new Date(
-                    lastWeek.setDate(today.getDate() - today.getDay() - 7)
-                  )}
-                  .endDate=${new Date(
-                    lastWeek.setDate(today.getDate() - today.getDay() - 1)
-                  )}
-                  >Last week</mwc-list-item
-                >
-              </mwc-list>
-            </div>
-            <div slot="footer" class="date-range-footer">
-              <mwc-button @click=${this._cancelDateRange}>Cancel</mwc-button>
-              <mwc-button @click=${this._applyDateRange}>Select</mwc-button>
-            </div>
-          </date-range-picker>
+          ></ha-date-range-picker>
 
           <ha-entity-picker
             .hass=${this.hass}
@@ -207,34 +137,6 @@ export class HaPanelLogbook extends LitElement {
         this.rtl = computeRTL(this.hass);
       }
     }
-  }
-
-  private _compute24hourFormat() {
-    return (
-      new Intl.DateTimeFormat(this.hass.language, {
-        hour: "numeric",
-      })
-        .formatToParts(new Date(2020, 0, 1, 13))
-        .find((part) => part.type === "hour")!.value.length === 2
-    );
-  }
-
-  private _setDateRange(ev) {
-    const dateRangePicker = ev.currentTarget.closest("date-range-picker");
-    const startDate = ev.target.startDate;
-    const endDate = ev.target.endDate;
-    dateRangePicker.vueComponent.$children[0].clickRange([startDate, endDate]);
-    dateRangePicker.vueComponent.$children[0].clickedApply();
-  }
-
-  private _cancelDateRange(ev) {
-    const dateRangePicker = ev.target.closest("date-range-picker");
-    dateRangePicker.vueComponent.$children[0].clickCancel();
-  }
-
-  private _applyDateRange(ev) {
-    const dateRangePicker = ev.target.closest("date-range-picker");
-    dateRangePicker.vueComponent.$children[0].clickedApply();
   }
 
   private _dateRangeChanged(ev) {
@@ -283,45 +185,13 @@ export class HaPanelLogbook extends LitElement {
           height: calc(100vh - 198px);
         }
 
-        date-range-picker {
+        ha-date-range-picker {
           margin-right: 16px;
           max-width: 100%;
         }
 
         :host([narrow]) date-range-picker {
           margin-right: 0;
-        }
-
-        date-range-picker ha-svg-icon {
-          margin-right: 8px;
-        }
-
-        .date-range-inputs {
-          display: flex;
-          align-items: center;
-        }
-
-        .date-range-ranges {
-          border-right: 1px solid var(--divider-color);
-        }
-
-        @media only screen and (max-width: 800px) {
-          .date-range-ranges {
-            border-right: none;
-            border-bottom: 1px solid var(--divider-color);
-          }
-        }
-
-        .date-range-footer {
-          display: flex;
-          justify-content: flex-end;
-          padding: 8px;
-          border-top: 1px solid var(--divider-color);
-        }
-
-        date-range-picker paper-input {
-          display: inline-block;
-          max-width: 200px;
         }
 
         paper-spinner {
