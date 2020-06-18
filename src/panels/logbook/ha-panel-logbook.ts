@@ -108,26 +108,23 @@ export class HaPanelLogbook extends LitElement {
             end-date=${this._endDate}
             @change=${this._dateRangeChanged}
           >
-            <div slot="input" style="display: flex; align-items: center;">
+            <div slot="input" class="date-range-inputs">
               <ha-svg-icon path=${mdiCalendar}></ha-svg-icon>
               <paper-input
                 .value=${formatDateTime(this._startDate, this.hass.language)}
                 label="From"
                 .disabled=${this._isLoading}
-                readonly=""
+                readonly
                 style="margin-right: 8px;"
               ></paper-input>
               <paper-input
                 .value=${formatDateTime(this._endDate, this.hass.language)}
                 label="Till"
                 .disabled=${this._isLoading}
-                readonly=""
+                readonly
               ></paper-input>
             </div>
-            <div
-              slot="ranges"
-              style="border-right: 1px solid var(--divider-color); border-bottom: 1px solid var(--divider-color)"
-            >
+            <div slot="ranges" class="date-range-ranges">
               <mwc-list>
                 <mwc-list-item
                   @click=${this._setDateRange}
@@ -163,10 +160,7 @@ export class HaPanelLogbook extends LitElement {
                 >
               </mwc-list>
             </div>
-            <div
-              slot="footer"
-              style="display: flex; justify-content: flex-end; padding: 8px; border-top: 1px solid var(--divider-color)"
-            >
+            <div slot="footer" class="date-range-footer">
               <mwc-button @click=${this._cancelDateRange}>Cancel</mwc-button>
               <mwc-button @click=${this._applyDateRange}>Select</mwc-button>
             </div>
@@ -298,8 +292,31 @@ export class HaPanelLogbook extends LitElement {
           margin-right: 0;
         }
 
-        date-range-picker ha-icon {
+        date-range-picker ha-svg-icon {
           margin-right: 8px;
+        }
+
+        .date-range-inputs {
+          display: flex;
+          align-items: center;
+        }
+
+        .date-range-ranges {
+          border-right: 1px solid var(--divider-color);
+        }
+
+        @media only screen and (max-width: 800px) {
+          .date-range-ranges {
+            border-right: none;
+            border-bottom: 1px solid var(--divider-color);
+          }
+        }
+
+        .date-range-footer {
+          display: flex;
+          justify-content: flex-end;
+          padding: 8px;
+          border-top: 1px solid var(--divider-color);
         }
 
         date-range-picker paper-input {
@@ -328,11 +345,6 @@ export class HaPanelLogbook extends LitElement {
           flex-wrap: wrap;
         }
 
-        paper-item {
-          cursor: pointer;
-          white-space: nowrap;
-        }
-
         ha-entity-picker {
           display: inline-block;
           flex-grow: 1;
@@ -345,10 +357,6 @@ export class HaPanelLogbook extends LitElement {
         :host([narrow]) ha-entity-picker {
           max-width: none;
           width: 100%;
-        }
-
-        [hidden] {
-          display: none !important;
         }
       `,
     ];
