@@ -4,7 +4,7 @@ import { UNIT_C, UNIT_F } from "../const";
 import { domainIcon } from "./domain_icon";
 
 const fixedDeviceClassIcons = {
-  current: "hass:current-ac"
+  current: "hass:current-ac",
   energy: "hass:flash",
   humidity: "hass:water-percent",
   illuminance: "hass:brightness-5",
