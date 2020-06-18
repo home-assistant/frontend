@@ -138,23 +138,28 @@ export class HaEntityToggle extends LitElement {
     }, 2000);
   }
 
-  static get styles(): CSSResult {
-    return css`
-      :host {
-        white-space: nowrap;
-        min-width: 38px;
-      }
-      ha-icon-button {
-        color: var(--ha-icon-button-inactive-color, var(--primary-text-color));
-        transition: color 0.5s;
-      }
-      ha-icon-button[state-active] {
-        color: var(--ha-icon-button-active-color, var(--primary-color));
-      }
-      ha-switch {
-        padding: 13px 5px;
-      }
-    `;
+  static get styles(): CSSResult[] {
+    return [
+      css`
+        :host {
+          white-space: nowrap;
+          min-width: 38px;
+        }
+        ha-icon-button {
+          color: var(
+            --ha-icon-button-inactive-color,
+            var(--primary-text-color)
+          );
+          transition: color 0.5s;
+        }
+        ha-icon-button[state-active] {
+          color: var(--ha-icon-button-active-color, var(--primary-color));
+        }
+        ha-switch {
+          padding: 13px 5px;
+        }
+      `,
+    ];
   }
 }
 
