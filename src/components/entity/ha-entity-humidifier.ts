@@ -28,8 +28,7 @@ class HaEntityHumidifier extends HaEntityToggle {
   }
 
   static get styles(): CSSResult[] {
-    return [
-      super.styles,
+    return super.styles.concat([
       css`
         :host {
           display: flex;
@@ -56,7 +55,7 @@ class HaEntityHumidifier extends HaEntityToggle {
           direction: ltr;
         }
       `,
-    ];
+    ]);
   }
 }
 
