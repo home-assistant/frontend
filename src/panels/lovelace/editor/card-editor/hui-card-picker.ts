@@ -27,7 +27,7 @@ import {
   calcUnusedEntities,
   computeUsedEntities,
 } from "../../common/compute-unused-entities";
-import { createCardElement } from "../../create-element/create-card-element";
+import { tryCreateCardElement } from "../../create-element/create-card-element";
 import { LovelaceCard } from "../../types";
 import { getCardStubConfig } from "../get-card-stub-config";
 import { CardPickTarget, Card } from "../types";
@@ -307,8 +307,8 @@ export class HuiCardPicker extends LitElement {
     fireEvent(this, "config-changed", { config });
   }
 
-  private _createCardElement(cardConfig: LovelaceCardConfig) {
-    const element = createCardElement(cardConfig) as LovelaceCard;
+  private _tryCreateCardElement(cardConfig: LovelaceCardConfig) {
+    const element = tryCreateCardElement(cardConfig) as LovelaceCard;
     element.hass = this.hass;
     element.addEventListener(
       "ll-rebuild",
@@ -325,7 +325,12 @@ export class HuiCardPicker extends LitElement {
     cardElToReplace: LovelaceCard,
     config: LovelaceCardConfig
   ): void {
-    const newCardEl = this._createCardElement(config);
+    let newCardEl: LovelaceCard;
+    try {
+      newCardEl = this._tryCreateCardElement(config);
+    } catch (err) {
+      return;
+    }
     if (cardElToReplace.parentElement) {
       cardElToReplace.parentElement!.replaceChild(newCardEl, cardElToReplace);
     }
@@ -351,7 +356,11 @@ export class HuiCardPicker extends LitElement {
       );
 
       if (showElement) {
-        element = this._createCardElement(cardConfig);
+        try {
+          element = this._tryCreateCardElement(cardConfig);
+        } catch (err) {
+          element = undefined;
+        }
       }
     }
 

@@ -73,15 +73,8 @@ const _createElement = <T extends keyof CreateElementConfigTypes>(
   const element = document.createElement(
     tag
   ) as CreateElementConfigTypes[T]["element"];
-  try {
-    // @ts-ignore
-    element.setConfig(config);
-  } catch (err) {
-    // eslint-disable-next-line
-    console.error(tag, err);
-    // eslint-disable-next-line @typescript-eslint/no-use-before-define
-    return _createErrorElement(err.message, config);
-  }
+  // @ts-ignore
+  element.setConfig(config);
   return element;
 };
 
@@ -153,8 +146,36 @@ export const createLovelaceElement = <T extends keyof CreateElementConfigTypes>(
   // Default type if no type given. If given, entity types will not work.
   defaultType?: string
 ): CreateElementConfigTypes[T]["element"] | HuiErrorCard => {
+  try {
+    return tryCreateLovelaceElement(
+      tagSuffix,
+      config,
+      alwaysLoadTypes,
+      lazyLoadTypes,
+      domainTypes,
+      defaultType
+    );
+  } catch (err) {
+    // eslint-disable-next-line
+    console.error(tagSuffix, config.type, err);
+    return _createErrorElement(err.message, config);
+  }
+};
+
+export const tryCreateLovelaceElement = <
+  T extends keyof CreateElementConfigTypes
+>(
+  tagSuffix: T,
+  config: CreateElementConfigTypes[T]["config"],
+  alwaysLoadTypes?: Set<string>,
+  lazyLoadTypes?: { [domain: string]: () => Promise<unknown> },
+  // Allow looking at "entity" in config and mapping that to a type
+  domainTypes?: { _domain_not_found: string; [domain: string]: string },
+  // Default type if no type given. If given, entity types will not work.
+  defaultType?: string
+): CreateElementConfigTypes[T]["element"] | HuiErrorCard => {
   if (!config || typeof config !== "object") {
-    return _createErrorElement("Config is not an object", config);
+    throw new Error("Config is not an object");
   }
 
   if (
@@ -163,7 +184,7 @@ export const createLovelaceElement = <T extends keyof CreateElementConfigTypes>(
     // If domain types is given, we can derive a type from "entity"
     (!domainTypes || !("entity" in config))
   ) {
-    return _createErrorElement("No card type configured.", config);
+    throw new Error("No card type configured.");
   }
 
   const customTag = config.type ? _getCustomTag(config.type) : undefined;
@@ -185,7 +206,7 @@ export const createLovelaceElement = <T extends keyof CreateElementConfigTypes>(
   }
 
   if (type === undefined) {
-    return _createErrorElement(`No type specified`, config);
+    throw new Error("No type specified.");
   }
 
   const tag = `hui-${type}-${tagSuffix}`;
@@ -199,7 +220,7 @@ export const createLovelaceElement = <T extends keyof CreateElementConfigTypes>(
     return _createElement(tag, config);
   }
 
-  return _createErrorElement(`Unknown type encountered: ${type}.`, config);
+  throw new Error(`Unknown type encountered: ${type}`);
 };
 
 export const getLovelaceElementClass = async <
