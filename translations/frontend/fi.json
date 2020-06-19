@@ -483,6 +483,7 @@
             "menu": "Valikko",
             "next": "Seuraava",
             "no": "Ei",
+            "overflow_menu": "Ylivuotovalikko",
             "previous": "Edellinen",
             "refresh": "Päivitä",
             "save": "Tallenna",
@@ -912,6 +913,8 @@
                         "introduction": "Käytä automaatioita herättääksesi kotisi eloon",
                         "load_error_not_editable": "Vain automaatiot tiedostossa automations.yaml ovat muokattavissa.",
                         "load_error_unknown": "Virhe ladatessa automaatiota ( {err_no} )",
+                        "move_down": "Siirrä alaspäin",
+                        "move_up": "Siirrä ylöspäin",
                         "save": "Tallenna",
                         "triggers": {
                             "add": "Laukaisuehto",
@@ -1370,7 +1373,9 @@
                 },
                 "info": {
                     "built_using": "Rakennettu käyttäen",
+                    "caption": "Tiedot",
                     "custom_uis": "Mukautetut käyttöliittymät:",
+                    "description": "Tietoja Home Assistant -asennuksesta",
                     "developed_by": "Kehittänyt joukko mahtavia ihmisiä.",
                     "documentation": "Dokumentointi",
                     "frontend": "frontend-ui",
@@ -1385,6 +1390,11 @@
                     "source": "Lähde:",
                     "system_health_error": "Järjestelmän kunto-komponenttia ei ole ladattu. Lisää 'system_health:' kohteeseen configuration.yaml",
                     "title": "Tiedot"
+                },
+                "integration_panel_move": {
+                    "link_integration_page": "Integraatiot",
+                    "missing_zha": "Etsitkö ZHA-asetuspaneelia? Se siirrettiin kohtaan ZHA {integrations_page}.",
+                    "missing_zwave": "Etsitkö Z-Wave-asetuspaneelia? Se siirrettiin Z-Wave-kohtaan {integrations_page}."
                 },
                 "integrations": {
                     "add_integration": "Lisää integraatio",
@@ -1458,7 +1468,9 @@
                 },
                 "introduction": "Täällä voit säätää Home Assistanttia ja sen komponentteja. Huomioithan, ettei kaikkea voi vielä säätää käyttöliittymän kautta, mutta teemme jatkuvasti töitä sen mahdollistamiseksi.",
                 "logs": {
+                    "caption": "Lokit",
                     "clear": "Tyhjennä",
+                    "description": "Tarkastele Home Assistant -lokeja",
                     "details": "Lokitiedot ( {level} )",
                     "load_full_log": "Lataa Home Assistantin koko loki",
                     "loading_log": "Ladataan virhelokia...",
@@ -1653,6 +1665,11 @@
                             "core": "Lataa ydin uudelleen",
                             "group": "Lataa ryhmät uudelleen",
                             "heading": "Asetusten uudelleenlataus",
+                            "input_boolean": "Lataa booleanit uudelleen",
+                            "input_datetime": "Lataa syöttöpäivämäärät uudelleen",
+                            "input_number": "Lataa syöttönumerot uudelleen",
+                            "input_select": "Lataa valinnat uudelleen",
+                            "input_text": "Lataa syöttötekstit uudelleen",
                             "introduction": "Jotkut Home Assistantin osat voidaan ladata uudelleen ilman, että tarvitaan uudelleenkäynnistystä. Painamalla uudelleenlatausta yaml-tiedosto luetaan uudelleen.",
                             "person": "Lataa henkilöt uudelleen",
                             "scene": "Lataa tilanteet uudelleen",
@@ -1716,8 +1733,11 @@
                 },
                 "zha": {
                     "add_device_page": {
+                        "discovered_text": "Laitteet tulevat tänne, kun ne löydetään.",
                         "discovery_text": "Löydetyt laitteet näkyvät täällä. Noudata laitteen (laitteiden) ohjeita ja aseta laite pariliitostilaan.",
                         "header": "Zigbee Home Automation - Lisää laitteita",
+                        "no_devices_found": "Mitään laitteita ei löydy. Varmista, että ne ovat paritustilassa ja pidä ne hereillä havaitsemisen ollessa käynnissä.",
+                        "pairing_mode": "Varmista, että laitteesi ovat paritustilassa. Tarkista laitteen ohjeet, kuinka tämä tehdään.",
                         "search_again": "Etsi uudestaan",
                         "spinner": "Etsitään ZHA Zigbee laitteita..."
                     },
@@ -1725,6 +1745,7 @@
                         "caption": "Lisää laitteita",
                         "description": "Lisää laitteita Zigbee-verkkoon"
                     },
+                    "button": "Määritä",
                     "caption": "ZHA",
                     "cluster_attributes": {
                         "attributes_of_cluster": "Valitun klusterin määritteet",
@@ -1803,6 +1824,9 @@
                         "header": "Verkon hallinta",
                         "introduction": "Koko verkkoon vaikuttavat komennot"
                     },
+                    "network": {
+                        "caption": "Verkko"
+                    },
                     "node_management": {
                         "header": "Laitehallinta",
                         "help_node_dropdown": "Valitse laite tarkastellaksesi laitekohtaisia vaihtoehtoja.",
@@ -1842,6 +1866,7 @@
                     "no_zones_created_yet": "Näyttää siltä, että et ole vielä luonut vyöhykkeitä."
                 },
                 "zwave": {
+                    "button": "Määritä",
                     "caption": "Z-Wave",
                     "common": {
                         "index": "Indeksi",
