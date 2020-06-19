@@ -1391,6 +1391,11 @@
                     "system_health_error": "Komponent kondycji systemu nie jest załadowany. Dodaj 'system_health:' do pliku configuration.yaml",
                     "title": "Informacje"
                 },
+                "integration_panel_move": {
+                    "link_integration_page": "stronie integracji",
+                    "missing_zha": "Nie możesz znaleźć konfiguracji ZHA? Została ona przeniesiona do wpisu Z-Wave na {integrations_page}.",
+                    "missing_zwave": "Nie możesz znaleźć konfiguracji Z-Wave? Została ona przeniesiona do wpisu Z-Wave na {integrations_page}."
+                },
                 "integrations": {
                     "add_integration": "Dodaj integrację",
                     "caption": "Integracje",
@@ -1661,7 +1666,7 @@
                             "group": "Grupy",
                             "heading": "Ponowne wczytanie konfiguracji",
                             "input_boolean": "Pomocnicy typu przełącznik",
-                            "input_datetime": "Wczytaj",
+                            "input_datetime": "Pomocnicy typu data i czas",
                             "input_number": "Pomocnicy typu numer",
                             "input_select": "Pomocnicy typu pole wyboru",
                             "input_text": "Pomocnicy typu tekst",

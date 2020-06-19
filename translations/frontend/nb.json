@@ -1391,6 +1391,11 @@
                     "system_health_error": "System tilstand komponenten er ikke lastet inn. Legg til 'system_health:' i configuration.yaml",
                     "title": "Informasjon"
                 },
+                "integration_panel_move": {
+                    "link_integration_page": "integrasjonsside",
+                    "missing_zha": "Mangler ZHA-konfigurasjonspanelet? Den ble flyttet til ZHA-oppføringen på {integrations_page} .",
+                    "missing_zwave": "Mangler Z-Wave-konfigurasjonspanelet? Den ble flyttet til Z-Wave-oppføringen på {integrations_page} ."
+                },
                 "integrations": {
                     "add_integration": "Legg til integrasjon",
                     "caption": "Integrasjoner",

@@ -1391,6 +1391,11 @@
                     "system_health_error": "시스템 상태보기 구성요소가 로드되지 않았습니다. configuration.yaml 에 'system_health:' 를 추가해주세요.",
                     "title": "정보"
                 },
+                "integration_panel_move": {
+                    "link_integration_page": "통합 구성요소 페이지",
+                    "missing_zha": "ZHA 구성 패널이 보이지 않으신가요? {integrations_page} 의 ZHA 항목으로 이동되었습니다.",
+                    "missing_zwave": "Z-Wave 구성 패널이 보이지 않으신가요? {integrations_page} 의 ZHA 항목으로 이동되었습니다."
+                },
                 "integrations": {
                     "add_integration": "통합 구성요소 추가",
                     "caption": "통합 구성요소",
