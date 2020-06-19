@@ -1,18 +1,12 @@
-import "@material/mwc-button";
-import "@material/mwc-list";
-import "@material/mwc-list/mwc-list-item";
 import "@polymer/app-layout/app-header-layout/app-header-layout";
 import "@polymer/app-layout/app-header/app-header";
 import "@polymer/app-layout/app-toolbar/app-toolbar";
 import "../../components/ha-icon-button";
-import "@polymer/paper-input/paper-input";
 import "@polymer/paper-spinner/paper-spinner";
 import { computeRTL } from "../../common/util/compute_rtl";
 import "../../components/entity/ha-entity-picker";
 import "../../components/ha-menu-button";
-import "../../resources/ha-date-picker-style";
 import "./ha-logbook";
-import "../../components/date-range-picker";
 import {
   LitElement,
   property,
@@ -26,6 +20,7 @@ import { haStyle } from "../../resources/styles";
 import { clearLogbookCache, getLogbookData } from "../../data/logbook";
 import { mdiRefresh } from "@mdi/js";
 import "../../components/ha-date-range-picker";
+import type { DateRangePickerRanges } from "../../components/ha-date-range-picker";
 
 @customElement("ha-panel-logbook")
 export class HaPanelLogbook extends LitElement {
@@ -44,6 +39,8 @@ export class HaPanelLogbook extends LitElement {
   @property() _entries = [];
 
   @property({ reflect: true, type: Boolean }) rtl = false;
+
+  @property() private _ranges?: DateRangePickerRanges;
 
   public constructor() {
     super();
@@ -93,6 +90,7 @@ export class HaPanelLogbook extends LitElement {
             ?disabled=${this._isLoading}
             .startDate=${this._startDate}
             .endDate=${this._endDate}
+            .ranges=${this._ranges}
             @change=${this._dateRangeChanged}
           ></ha-date-range-picker>
 
@@ -120,6 +118,51 @@ export class HaPanelLogbook extends LitElement {
   protected firstUpdated(changedProps: PropertyValues) {
     super.firstUpdated(changedProps);
     this.hass.loadBackendTranslation("title");
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const todayEnd = new Date(today);
+    todayEnd.setDate(todayEnd.getDate() + 1);
+    todayEnd.setMilliseconds(todayEnd.getMilliseconds() - 1);
+
+    const todayCopy = new Date(today);
+
+    const yesterday = new Date(todayCopy.setDate(today.getDate() - 1));
+    const yesterdayEnd = new Date(yesterday);
+    yesterdayEnd.setDate(yesterdayEnd.getDate() + 1);
+    yesterdayEnd.setMilliseconds(yesterdayEnd.getMilliseconds() - 1);
+
+    const thisWeekStart = new Date(
+      todayCopy.setDate(today.getDate() - today.getDay())
+    );
+    const thisWeekEnd = new Date(
+      todayCopy.setDate(today.getDate() - today.getDay() + 7)
+    );
+    thisWeekEnd.setMilliseconds(thisWeekEnd.getMilliseconds() - 1);
+
+    const lastWeekStart = new Date(
+      todayCopy.setDate(today.getDate() - today.getDay() - 7)
+    );
+    const lastWeekEnd = new Date(
+      todayCopy.setDate(today.getDate() - today.getDay())
+    );
+    lastWeekEnd.setMilliseconds(lastWeekEnd.getMilliseconds() - 1);
+
+    this._ranges = {
+      [this.hass.localize("ui.panel.logbook.ranges.today")]: [today, todayEnd],
+      [this.hass.localize("ui.panel.logbook.ranges.yesterday")]: [
+        yesterday,
+        yesterdayEnd,
+      ],
+      [this.hass.localize("ui.panel.logbook.ranges.this_week")]: [
+        thisWeekStart,
+        thisWeekEnd,
+      ],
+      [this.hass.localize("ui.panel.logbook.ranges.last_week")]: [
+        lastWeekStart,
+        lastWeekEnd,
+      ],
+    };
   }
 
   protected updated(changedProps: PropertyValues) {
@@ -190,7 +233,7 @@ export class HaPanelLogbook extends LitElement {
           max-width: 100%;
         }
 
-        :host([narrow]) date-range-picker {
+        :host([narrow]) ha-date-range-picker {
           margin-right: 0;
         }
 

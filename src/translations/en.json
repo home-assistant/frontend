@@ -278,6 +278,11 @@
           "failed_create_area": "Failed to create area."
         }
       },
+      "date-range-picker": {
+        "start_date": "Start date",
+        "end_date": "End date",
+        "select": "Select"
+      },
       "relative_time": {
         "past": "{time} ago",
         "future": "In {time}",
@@ -1693,9 +1698,13 @@
         "period": "Period"
       },
       "logbook": {
-        "start_date": "Start date",
-        "end_date": "End date",
-        "entries_not_found": "No logbook entries found."
+        "entries_not_found": "No logbook entries found.",
+        "ranges": {
+          "today": "Today",
+          "yesterday": "Yesterday",
+          "this_week": "This week",
+          "last_week": "Last week"
+        }
       },
       "lovelace": {
         "cards": {

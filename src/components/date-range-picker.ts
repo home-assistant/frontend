@@ -16,6 +16,10 @@ const Component = Vue.extend({
       type: Boolean,
       default: false,
     },
+    ranges: {
+      type: Boolean,
+      default: true,
+    },
     startDate: {
       type: [String, Date],
       default() {
@@ -39,7 +43,7 @@ const Component = Vue.extend({
         "show-dropdowns": false,
         "time-picker24-hour": this.twentyfourHours,
         disabled: this.disabled,
-        ranges: {},
+        ranges: this.ranges ? {} : false,
       },
       model: {
         value: {
@@ -203,7 +207,10 @@ class DateRangePickerElement extends WrappedElement {
             .calendars {
               flex-direction: column;
             }
-          }        
+          }
+          .calendar-table {
+            padding: 0 !important;
+          }     
         `;
     const shadowRoot = this.shadowRoot!;
     shadowRoot.appendChild(style);

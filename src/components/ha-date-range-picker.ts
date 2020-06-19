@@ -6,23 +6,21 @@ import {
   LitElement,
   property,
   TemplateResult,
+  PropertyValues,
 } from "lit-element";
 import { HomeAssistant } from "../types";
 import { mdiCalendar } from "@mdi/js";
 import { formatDateTime } from "../common/datetime/format_date_time";
+import "@material/mwc-button/mwc-button";
+import "@material/mwc-list/mwc-list-item";
+import "./ha-svg-icon";
+import "@polymer/paper-input/paper-input";
+import "@material/mwc-list/mwc-list";
+import "./date-range-picker";
 
-const today = new Date();
-today.setHours(0, 0, 0, 0);
-
-const yesterday = new Date();
-yesterday.setDate(today.getDate() - 1);
-yesterday.setHours(0, 0, 0, 0);
-
-const thisWeek = new Date();
-thisWeek.setHours(0, 0, 0, 0);
-
-const lastWeek = new Date();
-lastWeek.setHours(0, 0, 0, 0);
+export interface DateRangePickerRanges {
+  [key: string]: [Date, Date];
+}
 
 @customElement("ha-date-range-picker")
 export class HaDateRangePicker extends LitElement {
@@ -32,71 +30,75 @@ export class HaDateRangePicker extends LitElement {
 
   @property() public endDate!: Date;
 
+  @property() public ranges?: DateRangePickerRanges;
+
   @property({ type: Boolean }) public disabled = false;
+
+  @property({ type: Boolean }) private _hour24format = false;
+
+  protected updated(changedProps: PropertyValues) {
+    if (changedProps.has("hass")) {
+      const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
+      if (!oldHass || oldHass.language !== this.hass.language) {
+        this._hour24format = this._compute24hourFormat();
+      }
+    }
+  }
 
   protected render(): TemplateResult {
     return html`
       <date-range-picker
         ?disabled=${this.disabled}
-        twentyfour-hours=${this._compute24hourFormat()}
+        twentyfour-hours=${this._hour24format}
         start-date=${this.startDate}
         end-date=${this.endDate}
+        ?ranges=${this.ranges !== undefined}
       >
         <div slot="input" class="date-range-inputs">
           <ha-svg-icon path=${mdiCalendar}></ha-svg-icon>
           <paper-input
             .value=${formatDateTime(this.startDate, this.hass.language)}
-            label="From"
+            .label=${this.hass.localize(
+              "ui.components.date-range-picker.start_date"
+            )}
             .disabled=${this.disabled}
             readonly
-            style="margin-right: 8px;"
           ></paper-input>
           <paper-input
             .value=${formatDateTime(this.endDate, this.hass.language)}
-            label="Till"
+            label=${this.hass.localize(
+              "ui.components.date-range-picker.end_date"
+            )}
             .disabled=${this.disabled}
             readonly
           ></paper-input>
         </div>
-        <div slot="ranges" class="date-range-ranges">
-          <mwc-list>
-            <mwc-list-item
-              @click=${this._setDateRange}
-              .startDate=${today}
-              .endDate=${today}
-              >Today</mwc-list-item
-            >
-            <mwc-list-item
-              @click=${this._setDateRange}
-              .startDate=${yesterday}
-              .endDate=${yesterday}
-              >Yesterday</mwc-list-item
-            >
-            <mwc-list-item
-              @click=${this._setDateRange}
-              .startDate=${new Date(
-                thisWeek.setDate(today.getDate() - today.getDay())
-              )}
-              .endDate=${new Date(
-                thisWeek.setDate(today.getDate() - today.getDay() + 6)
-              )}
-              >This week</mwc-list-item
-            >
-            <mwc-list-item
-              @click=${this._setDateRange}
-              .startDate=${new Date(
-                lastWeek.setDate(today.getDate() - today.getDay() - 7)
-              )}
-              .endDate=${new Date(
-                lastWeek.setDate(today.getDate() - today.getDay() - 1)
-              )}
-              >Last week</mwc-list-item
-            >
-          </mwc-list>
-        </div>
+        ${this.ranges
+          ? html`<div slot="ranges" class="date-range-ranges">
+              <mwc-list @click=${this._setDateRange}>
+                ${Object.entries(this.ranges).map(
+                  ([name, dates]) => html`<mwc-list-item
+                    .activated=${this.startDate.getTime() ===
+                      dates[0].getTime() &&
+                    this.endDate.getTime() === dates[1].getTime()}
+                    .startDate=${dates[0]}
+                    .endDate=${dates[1]}
+                  >
+                    ${name}
+                  </mwc-list-item>`
+                )}
+              </mwc-list>
+            </div>`
+          : ""}
         <div slot="footer" class="date-range-footer">
-          <mwc-button @click=${this._cancelDateRange}>Cancel</mwc-button>
-          <mwc-button @click=${this._applyDateRange}>Select</mwc-button>
+          <mwc-button @click=${this._cancelDateRange}
+            >${this.hass.localize("ui.common.cancel")}</mwc-button
+          >
+          <mwc-button @click=${this._applyDateRange}
+            >${this.hass.localize(
+              "ui.components.date-range-picker.select"
+            )}</mwc-button
+          >
         </div>
       </date-range-picker>
     `;
@@ -112,27 +114,33 @@ export class HaDateRangePicker extends LitElement {
     );
   }
 
-  private _setDateRange(ev) {
-    const dateRangePicker = ev.currentTarget.closest("date-range-picker");
-    const startDate = ev.target.startDate;
-    const endDate = ev.target.endDate;
-    dateRangePicker.vueComponent.$children[0].clickRange([startDate, endDate]);
-    dateRangePicker.vueComponent.$children[0].clickedApply();
+  private _setDateRange(ev: Event) {
+    const target = ev.target as any;
+    const startDate = target.startDate;
+    const endDate = target.endDate;
+    const dateRangePicker = this._dateRangePicker;
+    dateRangePicker.clickRange([startDate, endDate]);
+    dateRangePicker.clickedApply();
   }
 
-  private _cancelDateRange(ev) {
-    const dateRangePicker = ev.target.closest("date-range-picker");
-    dateRangePicker.vueComponent.$children[0].clickCancel();
+  private _cancelDateRange() {
+    this._dateRangePicker.clickCancel();
   }
 
-  private _applyDateRange(ev) {
-    const dateRangePicker = ev.target.closest("date-range-picker");
-    dateRangePicker.vueComponent.$children[0].clickedApply();
+  private _applyDateRange() {
+    this._dateRangePicker.clickedApply();
+  }
+
+  private get _dateRangePicker() {
+    const dateRangePicker = this.shadowRoot!.querySelector(
+      "date-range-picker"
+    ) as any;
+    return dateRangePicker.vueComponent.$children[0];
   }
 
   static get styles(): CSSResult {
     return css`
-      date-range-picker ha-svg-icon {
+      ha-svg-icon {
         margin-right: 8px;
       }
 
@@ -159,9 +167,13 @@ export class HaDateRangePicker extends LitElement {
         border-top: 1px solid var(--divider-color);
       }
 
-      date-range-picker paper-input {
+      paper-input {
         display: inline-block;
         max-width: 200px;
+      }
+
+      paper-input:last-child {
+        margin-left: 8px;
       }
     `;
   }
