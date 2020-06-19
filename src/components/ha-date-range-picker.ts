@@ -62,6 +62,7 @@ export class HaDateRangePicker extends LitElement {
               "ui.components.date-range-picker.start_date"
             )}
             .disabled=${this.disabled}
+            @click=${this._handleInputClick}
             readonly
           ></paper-input>
           <paper-input
@@ -70,6 +71,7 @@ export class HaDateRangePicker extends LitElement {
               "ui.components.date-range-picker.end_date"
             )}
             .disabled=${this.disabled}
+            @click=${this._handleInputClick}
             readonly
           ></paper-input>
         </div>
@@ -136,6 +138,13 @@ export class HaDateRangePicker extends LitElement {
       "date-range-picker"
     ) as any;
     return dateRangePicker.vueComponent.$children[0];
+  }
+
+  private _handleInputClick() {
+    // close the date picker, so it will open again on the click event
+    if (this._dateRangePicker.open) {
+      this._dateRangePicker.open = false;
+    }
   }
 
   static get styles(): CSSResult {
