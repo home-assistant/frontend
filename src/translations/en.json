@@ -1694,8 +1694,12 @@
         }
       },
       "history": {
-        "showing_entries": "Showing entries for",
-        "period": "Period"
+        "ranges": {
+          "today": "Today",
+          "yesterday": "Yesterday",
+          "this_week": "This week",
+          "last_week": "Last week"
+        }
       },
       "logbook": {
         "entries_not_found": "No logbook entries found.",

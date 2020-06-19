@@ -1,29 +1,19 @@
 import "@polymer/app-layout/app-header-layout/app-header-layout";
 import "@polymer/app-layout/app-header/app-header";
 import "@polymer/app-layout/app-toolbar/app-toolbar";
-import "../../components/ha-icon-button";
-import "@polymer/paper-spinner/paper-spinner";
 import { computeRTL } from "../../common/util/compute_rtl";
-import "../../components/entity/ha-entity-picker";
 import "../../components/ha-menu-button";
-import "./ha-logbook";
-import {
-  LitElement,
-  property,
-  customElement,
-  html,
-  css,
-  PropertyValues,
-} from "lit-element";
-import { HomeAssistant } from "../../types";
+import "../../components/state-history-charts";
+import { LitElement, css, property, PropertyValues } from "lit-element";
+import { html } from "lit-html";
 import { haStyle } from "../../resources/styles";
-import { clearLogbookCache, getLogbookData } from "../../data/logbook";
-import { mdiRefresh } from "@mdi/js";
-import "../../components/ha-date-range-picker";
+import { HomeAssistant } from "../../types";
 import type { DateRangePickerRanges } from "../../components/ha-date-range-picker";
+import "../../components/ha-date-range-picker";
+import { fetchDate, computeHistory } from "../../data/history";
+import "@polymer/paper-spinner/paper-spinner";
 
-@customElement("ha-panel-logbook")
-export class HaPanelLogbook extends LitElement {
+class HaPanelHistory extends LitElement {
   @property() hass!: HomeAssistant;
 
   @property({ reflect: true, type: Boolean }) narrow!: boolean;
@@ -36,7 +26,7 @@ export class HaPanelLogbook extends LitElement {
 
   @property() _isLoading = false;
 
-  @property() _entries = [];
+  @property() _stateHistory?;
 
   @property({ reflect: true, type: Boolean }) rtl = false;
 
@@ -67,55 +57,42 @@ export class HaPanelLogbook extends LitElement {
               .hass=${this.hass}
               .narrow=${this.narrow}
             ></ha-menu-button>
-            <div main-title>${this.hass.localize("panel.logbook")}</div>
-            <mwc-icon-button
-              @click=${this._refreshLogbook}
-              .disabled=${this._isLoading}
-            >
-              <ha-svg-icon path=${mdiRefresh}></ha-svg-icon>
-            </mwc-icon-button>
+            <div main-title>${this.hass.localize("panel.history")}</div>
           </app-toolbar>
         </app-header>
 
-        ${this._isLoading ? html`` : ""}
-
-        <div class="filters">
-          <ha-date-range-picker
-            .hass=${this.hass}
-            ?disabled=${this._isLoading}
-            .startDate=${this._startDate}
-            .endDate=${this._endDate}
-            .ranges=${this._ranges}
-            @change=${this._dateRangeChanged}
-          ></ha-date-range-picker>
-
-          <ha-entity-picker
-            .hass=${this.hass}
-            .value=${this._entityId}
-            .label=${this.hass.localize(
-              "ui.components.entity.entity-picker.entity"
-            )}
-            .disabled=${this._isLoading}
-            @change=${this._entityPicked}
-          ></ha-entity-picker>
-        </div>
-
-        ${this._isLoading
-          ? html`<paper-spinner
-              active
-              alt=${this.hass.localize("ui.common.loading")}
-            ></paper-spinner>`
-          : html`<ha-logbook
+        <div class="flex content">
+          <div class="flex layout horizontal wrap">
+            <ha-date-range-picker
               .hass=${this.hass}
-              .entries=${this._entries}
-            ></ha-logbook>`}
+              ?disabled=${this._isLoading}
+              .startDate=${this._startDate}
+              .endDate=${this._endDate}
+              .ranges=${this._ranges}
+              @change=${this._dateRangeChanged}
+            ></ha-date-range-picker>
+          </div>
+          ${this._isLoading
+            ? html`<paper-spinner
+                active
+                alt=${this.hass.localize("ui.common.loading")}
+              ></paper-spinner>`
+            : html`
+                <state-history-charts
+                  .hass=${this.hass}
+                  .historyData=${this._stateHistory}
+                  .endTime=${this._endDate}
+                  no-single
+                >
+                </state-history-charts>
+              `}
+        </div>
       </app-header-layout>
     `;
   }
 
   protected firstUpdated(changedProps: PropertyValues) {
     super.firstUpdated(changedProps);
-    this.hass.loadBackendTranslation("title");
 
     const today = new Date();
     today.setHours(0, 0, 0, 0);
@@ -147,16 +124,16 @@ export class HaPanelLogbook extends LitElement {
     lastWeekEnd.setMilliseconds(lastWeekEnd.getMilliseconds() - 1);
 
     this._ranges = {
-      [this.hass.localize("ui.panel.logbook.ranges.today")]: [today, todayEnd],
-      [this.hass.localize("ui.panel.logbook.ranges.yesterday")]: [
+      [this.hass.localize("ui.panel.history.ranges.today")]: [today, todayEnd],
+      [this.hass.localize("ui.panel.history.ranges.yesterday")]: [
         yesterday,
         yesterdayEnd,
       ],
-      [this.hass.localize("ui.panel.logbook.ranges.this_week")]: [
+      [this.hass.localize("ui.panel.history.ranges.this_week")]: [
         thisWeekStart,
         thisWeekEnd,
       ],
-      [this.hass.localize("ui.panel.logbook.ranges.last_week")]: [
+      [this.hass.localize("ui.panel.history.ranges.last_week")]: [
         lastWeekStart,
         lastWeekEnd,
       ],
@@ -169,7 +146,7 @@ export class HaPanelLogbook extends LitElement {
       changedProps.has("_endDate") ||
       changedProps.has("_entityId")
     ) {
-      this._getData();
+      this._getHistory();
     }
 
     if (changedProps.has("hass")) {
@@ -178,6 +155,22 @@ export class HaPanelLogbook extends LitElement {
         this.rtl = computeRTL(this.hass);
       }
     }
+  }
+
+  private async _getHistory() {
+    this._isLoading = true;
+    const dateHistory = await fetchDate(
+      this.hass,
+      this._startDate,
+      this._endDate
+    );
+    this._stateHistory = computeHistory(
+      this.hass,
+      dateHistory,
+      this.hass.localize,
+      this.hass.language
+    );
+    this._isLoading = false;
   }
 
   private _dateRangeChanged(ev) {
@@ -190,86 +183,22 @@ export class HaPanelLogbook extends LitElement {
     this._endDate = endDate;
   }
 
-  private _entityPicked(ev) {
-    this._entityId = ev.target.value;
-  }
-
-  private _refreshLogbook() {
-    this._entries = [];
-    clearLogbookCache(
-      this._startDate.toISOString(),
-      this._endDate.toISOString()
-    );
-    this._getData();
-  }
-
-  private async _getData() {
-    this._isLoading = true;
-    this._entries = await getLogbookData(
-      this.hass,
-      this._startDate.toISOString(),
-      this._endDate.toISOString(),
-      this._entityId
-    );
-    this._isLoading = false;
-  }
-
   static get styles() {
     return [
       haStyle,
       css`
-        ha-logbook {
-          height: calc(100vh - 136px);
+        .content {
+          padding: 0 16px 16px;
         }
-
-        :host([narrow]) ha-logbook {
-          height: calc(100vh - 198px);
-        }
-
-        ha-date-range-picker {
-          margin-right: 16px;
-          max-width: 100%;
-        }
-
-        :host([narrow]) ha-date-range-picker {
-          margin-right: 0;
-        }
-
         paper-spinner {
           position: absolute;
           left: 50%;
           top: 50%;
           transform: translate(-50%, -50%);
         }
-
-        .wrap {
-          margin-bottom: 24px;
-        }
-
-        .filters {
-          display: flex;
-          align-items: flex-end;
-          padding: 0 16px;
-        }
-
-        :host([narrow]) .filters {
-          flex-wrap: wrap;
-        }
-
-        ha-entity-picker {
-          display: inline-block;
-          flex-grow: 1;
-          max-width: 400px;
-          --paper-input-suffix: {
-            height: 24px;
-          }
-        }
-
-        :host([narrow]) ha-entity-picker {
-          max-width: none;
-          width: 100%;
-        }
       `,
     ];
   }
 }
+
+customElements.define("ha-panel-history", HaPanelHistory);
