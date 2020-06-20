@@ -278,6 +278,11 @@
           "failed_create_area": "Failed to create area."
         }
       },
+      "date-range-picker": {
+        "start_date": "Start date",
+        "end_date": "End date",
+        "select": "Select"
+      },
       "relative_time": {
         "past": "{time} ago",
         "future": "In {time}",
@@ -1709,13 +1714,21 @@
         }
       },
       "history": {
-        "showing_entries": "Showing entries for",
-        "period": "Period"
+        "ranges": {
+          "today": "Today",
+          "yesterday": "Yesterday",
+          "this_week": "This week",
+          "last_week": "Last week"
+        }
       },
       "logbook": {
-        "showing_entries": "[%key:ui::panel::history::showing_entries%]",
-        "period": "Period",
-        "entries_not_found": "No logbook entries found."
+        "entries_not_found": "No logbook entries found.",
+        "ranges": {
+          "today": "Today",
+          "yesterday": "Yesterday",
+          "this_week": "This week",
+          "last_week": "Last week"
+        }
       },
       "lovelace": {
         "cards": {
