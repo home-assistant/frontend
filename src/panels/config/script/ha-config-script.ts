@@ -53,8 +53,7 @@ class HaConfigScript extends HassRouterPage {
 
   private _getScripts = memoizeOne((states: HassEntities): ScriptEntity[] => {
     return Object.values(states).filter(
-      (entity) =>
-        computeStateDomain(entity) === "script" && !entity.attributes.hidden
+      (entity) => computeStateDomain(entity) === "script"
     ) as ScriptEntity[];
   });
 

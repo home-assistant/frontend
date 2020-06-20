@@ -25,10 +25,6 @@ class DeveloperToolsRouter extends HassRouterPage {
         tag: "developer-tools-event",
         load: () => import("./event/developer-tools-event"),
       },
-      mqtt: {
-        tag: "developer-tools-mqtt",
-        load: () => import("./mqtt/developer-tools-mqtt"),
-      },
       service: {
         tag: "developer-tools-service",
         load: () => import("./service/developer-tools-service"),

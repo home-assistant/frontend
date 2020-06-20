@@ -14,6 +14,7 @@ import "../cards/hui-weather-forecast-card";
 import {
   createLovelaceElement,
   getLovelaceElementClass,
+  tryCreateLovelaceElement,
 } from "./create-element-base";
 
 const ALWAYS_LOADED_TYPES = new Set([
@@ -51,6 +52,17 @@ const LAZY_LOAD_TYPES = {
   markdown: () => import("../cards/hui-markdown-card"),
   picture: () => import("../cards/hui-picture-card"),
 };
+
+// This will not return an error card but will throw the error
+export const tryCreateCardElement = (config: LovelaceCardConfig) =>
+  tryCreateLovelaceElement(
+    "card",
+    config,
+    ALWAYS_LOADED_TYPES,
+    LAZY_LOAD_TYPES,
+    undefined,
+    undefined
+  );
 
 export const createCardElement = (config: LovelaceCardConfig) =>
   createLovelaceElement(

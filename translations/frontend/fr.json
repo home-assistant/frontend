@@ -308,12 +308,12 @@
             "lightning-rainy": "Orage / Pluie",
             "partlycloudy": "Partiellement nuageux",
             "pouring": "Averses",
-            "rainy": "Pluie",
-            "snowy": "Neige",
-            "snowy-rainy": "Neige / Pluie",
-            "sunny": "Soleil",
-            "windy": "Vent",
-            "windy-variant": "Vent"
+            "rainy": "Pluvieux",
+            "snowy": "Neigeux",
+            "snowy-rainy": "Neigeux, pluvieux",
+            "sunny": "Ensoleillé",
+            "windy": "Venteux",
+            "windy-variant": "Venteux"
         },
         "zwave": {
             "default": {
@@ -1391,6 +1391,11 @@
                     "system_health_error": "Le composant System Health n'est pas chargé. Ajouter 'system_health:' à configuration.yaml",
                     "title": "Info"
                 },
+                "integration_panel_move": {
+                    "link_integration_page": "page d'intégration",
+                    "missing_zha": "Il manque le panneau de configuration de ZHA ? Il a été déplacé vers l'entrée ZHA sur la {integrations_page}.",
+                    "missing_zwave": "Il manque le panneau de configuration Z-Wave ? Il a été déplacé vers l'entrée Z-Wave sur la {integrations_page}."
+                },
                 "integrations": {
                     "add_integration": "Ajouter l'intégration",
                     "caption": "Intégrations",
@@ -1657,7 +1662,7 @@
                     "section": {
                         "reloading": {
                             "automation": "Recharger les automatisations",
-                            "core": "Recharger l'emplacement et les personnalisations",
+                            "core": "Recharger les emplacements et personnalisations",
                             "group": "Recharger les groupes",
                             "heading": "Rechargement de la configuration",
                             "input_boolean": "Recharger les booléens d'entrée",
@@ -1728,8 +1733,11 @@
                 },
                 "zha": {
                     "add_device_page": {
+                        "discovered_text": "Les appareils s'afficheront ici une fois découverts.",
                         "discovery_text": "Les appareils découverts apparaîtront ici. Suivez les instructions pour votre / vos appareil(s) et placez-le(s) en mode de couplage.",
                         "header": "Zigbee Home Automation - Ajout de périphériques",
+                        "no_devices_found": "Aucun appareil n'a été trouvé, assurez-vous qu'ils sont en mode d'appairage et gardez-les éveillés pendant que la découverte est en cours",
+                        "pairing_mode": "Assurez-vous que vos appareils sont en mode d'appairage. Consultez les instructions de votre appareil pour savoir comment procéder.",
                         "search_again": "Rechercher à nouveau",
                         "spinner": "Recherche de périphériques ZHA Zigbee ..."
                     },
@@ -1737,6 +1745,7 @@
                         "caption": "Ajouter des appareils",
                         "description": "Ajouter des appareils au réseau Zigbee"
                     },
+                    "button": "Configurer",
                     "caption": "ZHA",
                     "cluster_attributes": {
                         "attributes_of_cluster": "Attributs du cluster sélectionné",
@@ -1815,6 +1824,9 @@
                         "header": "Gestion du réseau",
                         "introduction": "Commandes qui affectent l'ensemble du réseau"
                     },
+                    "network": {
+                        "caption": "Réseau"
+                    },
                     "node_management": {
                         "header": "Gestion des appareils",
                         "help_node_dropdown": "Sélectionnez un périphérique pour afficher les options par périphérique.",
@@ -1854,6 +1866,7 @@
                     "no_zones_created_yet": "Il semble que vous n'ayez pas encore créé de zones."
                 },
                 "zwave": {
+                    "button": "Configurer",
                     "caption": "Z-Wave",
                     "common": {
                         "index": "Index",
@@ -2334,7 +2347,7 @@
                     "refresh": "Actualiser",
                     "reload_resources": "Recharger les ressources"
                 },
-                "reload_lovelace": "Recharger Lovelace UI",
+                "reload_lovelace": "Recharger UI",
                 "reload_resources": {
                     "refresh_body": "Vous devez actualiser la page pour terminer le rechargement, voulez-vous actualiser maintenant?",
                     "refresh_header": "Voulez-vous vous rafraîchir ?"

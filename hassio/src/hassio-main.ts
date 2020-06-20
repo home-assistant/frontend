@@ -14,7 +14,9 @@ import {
   createHassioSession,
   fetchHassioHomeAssistantInfo,
   fetchHassioSupervisorInfo,
+  fetchHassioInfo,
   HassioHomeAssistantInfo,
+  HassioInfo,
   HassioPanelInfo,
   HassioSupervisorInfo,
 } from "../../src/data/hassio/supervisor";
@@ -74,6 +76,8 @@ class HassioMain extends ProvideHassLitMixin(HassRouterPage) {
   @property() private _supervisorInfo: HassioSupervisorInfo;
 
   @property() private _hostInfo: HassioHostInfo;
+
+  @property() private _hassioInfo?: HassioInfo;
 
   @property() private _hassOsInfo?: HassioHassOSInfo;
 
@@ -147,6 +151,7 @@ class HassioMain extends ProvideHassLitMixin(HassRouterPage) {
         hass: this.hass,
         narrow: this.narrow,
         supervisorInfo: this._supervisorInfo,
+        hassioInfo: this._hassioInfo,
         hostInfo: this._hostInfo,
         hassInfo: this._hassInfo,
         hassOsInfo: this._hassOsInfo,
@@ -156,6 +161,7 @@ class HassioMain extends ProvideHassLitMixin(HassRouterPage) {
       el.hass = this.hass;
       el.narrow = this.narrow;
       el.supervisorInfo = this._supervisorInfo;
+      el.hassioInfo = this._hassioInfo;
       el.hostInfo = this._hostInfo;
       el.hassInfo = this._hassInfo;
       el.hassOsInfo = this._hassOsInfo;
@@ -169,12 +175,14 @@ class HassioMain extends ProvideHassLitMixin(HassRouterPage) {
       return;
     }
 
-    const [supervisorInfo, hostInfo, hassInfo] = await Promise.all([
+    const [supervisorInfo, hostInfo, hassInfo, hassioInfo] = await Promise.all([
       fetchHassioSupervisorInfo(this.hass),
       fetchHassioHostInfo(this.hass),
       fetchHassioHomeAssistantInfo(this.hass),
+      fetchHassioInfo(this.hass),
     ]);
     this._supervisorInfo = supervisorInfo;
+    this._hassioInfo = hassioInfo;
     this._hostInfo = hostInfo;
     this._hassInfo = hassInfo;
 

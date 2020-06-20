@@ -58,12 +58,13 @@
       window.customPanelJS = "<%= latestCustomPanelJS %>";
       window.latestJS = true;
     </script>
+    <script>
     {% for extra_module in extra_modules -%}
-    <script type="module" crossorigin="use-credentials" src="{{ extra_module }}"></script>
+    import("{{ extra_module }}");
     {% endfor -%}
+    </script>
 
     <script>
-      (function() {
         if (!window.latestJS) {
           window.customPanelJS = "<%= es5CustomPanelJS %>";
 
@@ -79,11 +80,14 @@
             _ls("<%= es5CoreJS %>");
             _ls("<%= es5AppJS %>");
           <% } %>
-          {% for extra_script in extra_js_es5 -%}
-          _ls("{{ extra_script }}");
-          {% endfor -%}
         }
-      })();
+    </script>
+    <script>
+      if (!window.latestJS) {
+        {% for extra_script in extra_js_es5 -%}
+        _ls("{{ extra_script }}");
+        {% endfor -%}
+      }
     </script>
 
     {% for extra_url in extra_urls -%}

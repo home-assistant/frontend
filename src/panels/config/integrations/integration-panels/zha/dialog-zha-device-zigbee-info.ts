@@ -6,10 +6,10 @@ import {
   property,
   TemplateResult,
 } from "lit-element";
-import "../../components/ha-code-editor";
-import { createCloseHeading } from "../../components/ha-dialog";
-import { haStyleDialog } from "../../resources/styles";
-import { HomeAssistant } from "../../types";
+import "../../../../../components/ha-code-editor";
+import { createCloseHeading } from "../../../../../components/ha-dialog";
+import { haStyleDialog } from "../../../../../resources/styles";
+import { HomeAssistant } from "../../../../../types";
 import { ZHADeviceZigbeeInfoDialogParams } from "./show-dialog-zha-device-zigbee-info";
 
 @customElement("dialog-zha-device-zigbee-info")

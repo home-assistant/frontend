@@ -9,6 +9,7 @@ import {
 } from "lit-element";
 import { scroll } from "lit-virtualizer";
 import { formatDate } from "../../common/datetime/format_date";
+import { fetchUsers } from "../../data/user";
 import { formatTimeWithSeconds } from "../../common/datetime/format_time";
 import { fireEvent } from "../../common/dom/fire_event";
 import { domainIcon } from "../../common/entity/domain_icon";
@@ -20,6 +21,9 @@ import { HomeAssistant } from "../../types";
 
 class HaLogbook extends LitElement {
   @property() public hass!: HomeAssistant;
+
+  @property({ attribute: false })
+  private _userid_to_name = {};
 
   @property() public entries: LogbookEntry[] = [];
 
@@ -58,6 +62,20 @@ class HaLogbook extends LitElement {
     `;
   }
 
+  private async _fetchUsers() {
+    const users = await fetchUsers(this.hass);
+    const userid_to_name = {};
+    users.forEach((user) => {
+      userid_to_name[user.id] = user.name;
+    });
+    this._userid_to_name = userid_to_name;
+  }
+
+  protected firstUpdated(changedProperties: PropertyValues) {
+    super.firstUpdated(changedProperties);
+    this._fetchUsers();
+  }
+
   private _renderLogbookItem(
     item: LogbookEntry,
     index?: number
@@ -67,6 +85,8 @@ class HaLogbook extends LitElement {
     }
     const previous = this.entries[index - 1];
     const state = item.entity_id ? this.hass.states[item.entity_id] : undefined;
+    const item_username =
+      item.context_user_id && this._userid_to_name[item.context_user_id];
     return html`
       <div>
         ${index === 0 ||
@@ -101,7 +121,11 @@ class HaLogbook extends LitElement {
                     ${item.name}
                   </a>
                 `}
-            <span>${item.message}</span>
+            <span
+              >${item.message}${item_username
+                ? ` (${item_username})`
+                : ``}</span
+            >
           </div>
         </div>
       </div>

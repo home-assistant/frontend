@@ -12,7 +12,6 @@ import { classMap } from "lit-html/directives/class-map";
 import "../../../components/ha-card";
 import "../../../components/state-history-charts";
 import { CacheConfig, getRecentWithCache } from "../../../data/cached-history";
-import "../../../data/ha-state-history-data";
 import { HomeAssistant } from "../../../types";
 import { findEntities } from "../common/find-entites";
 import { processConfigEntities } from "../common/process-config-entities";

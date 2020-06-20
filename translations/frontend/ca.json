@@ -483,7 +483,7 @@
             "menu": "Menú",
             "next": "Següent",
             "no": "No",
-            "overflow_menu": "Menú de desbordament",
+            "overflow_menu": "Menú desbordament",
             "previous": "Anterior",
             "refresh": "Actualitza",
             "save": "Desa",
@@ -694,10 +694,10 @@
             },
             "zha_device_info": {
                 "buttons": {
-                    "add": "Afegir dispositius",
+                    "add": "Afegeix dispositius a través d'aquest dispositiu",
                     "reconfigure": "Reconfigurar dispositiu",
                     "remove": "Eliminar dispositiu",
-                    "zigbee_information": "Informació Zigbee"
+                    "zigbee_information": "Signatura Zigbee del dispositiu"
                 },
                 "confirmations": {
                     "remove": "Estàs segur que vols eliminar el dispositiu?"
@@ -717,7 +717,7 @@
                 "unknown": "Desconeguda",
                 "zha_device_card": {
                     "area_picker_label": "Àrea",
-                    "device_name_placeholder": "Nom donat per l'usuari",
+                    "device_name_placeholder": "Canvia el nom del dispositiu",
                     "update_name_button": "Actualitzar Nom"
                 }
             }
@@ -1375,7 +1375,7 @@
                     "built_using": "Creat utilitzant",
                     "caption": "Informació",
                     "custom_uis": "Interfícies d'usuari personalitzades:",
-                    "description": "Informació sobre la instal·lació de Home Assistant",
+                    "description": "Informació de la instal·lació de Home Assistant",
                     "developed_by": "Desenvolupat per un munt de gent fantàstica.",
                     "documentation": "Documentació",
                     "frontend": "frontend-ui",
@@ -1390,6 +1390,11 @@
                     "source": "Font:",
                     "system_health_error": "El component Estat del Sistema no està configurat. Afegeix 'system_health:' a configuration.yaml",
                     "title": "Informació"
+                },
+                "integration_panel_move": {
+                    "link_integration_page": "pàgina d'integracions",
+                    "missing_zha": "Trobes a faltar el panell de configuració de ZHA? S'ha traslladat a l'entrada ZHA de la {integrations_page}.",
+                    "missing_zwave": "Trobes a faltar el panell de configuració de Z-Wave? S'ha traslladat a l'entrada Z-Wave de la {integrations_page}."
                 },
                 "integrations": {
                     "add_integration": "Afegeix integració",
@@ -1660,11 +1665,11 @@
                             "core": "Actualitza ubicació i personalitzacions",
                             "group": "Actualitza grups",
                             "heading": "Tornant a carregar la configuració",
-                            "input_boolean": "Torna a carregar booleans d’entrada",
-                            "input_datetime": "Torna a carregar les hores de la data d'entrada",
-                            "input_number": "Recarregar números d'entrada",
-                            "input_select": "Actualitza l'entrada selecciona",
-                            "input_text": "Recarregar textos d'entrada",
+                            "input_boolean": "Actualitza entrades booleanes",
+                            "input_datetime": "Actualitza entrades de data i hora",
+                            "input_number": "Actualitza entrades numèriques",
+                            "input_select": "Actualitza entrades de selecció",
+                            "input_text": "Actualitza entrades de text",
                             "introduction": "Algunes parts de Home Assistant es poden actualitzar sense necessitat reiniciar-lo. Si prems actualitza s'esborrarà la configuració YAML actual i se'n carregarà la nova.",
                             "person": "Actualitza persones",
                             "scene": "Actualitza escenes",
@@ -1728,8 +1733,11 @@
                 },
                 "zha": {
                     "add_device_page": {
+                        "discovered_text": "Els dispositius apareixeran aquí un cop descoberts.",
                         "discovery_text": "Els dispositius descoberts apareixeran aquí. Segueix les instruccions del/s teu/s dispositiu/s i posa el dispositiu/s en mode d'emparellament.",
                         "header": "Domòtica amb Zigbee - Afegir dispositius",
+                        "no_devices_found": "No s'han trobat dispositius, assegura't que estiguin en mode vinculació i manten-los desperts mentre estiguin intentant ser descoberts.",
+                        "pairing_mode": "Assegura't que els dispositiu estiguin en mode vinculació. Consulta les instruccions del dispositiu per saber com fer-ho.",
                         "search_again": "Torna a cercar",
                         "spinner": "S'estan cercant dispositius ZHA Zigbee..."
                     },
@@ -1737,6 +1745,7 @@
                         "caption": "Afegeix dispositius",
                         "description": "Afegeix dispositius a la xarxa Zigbee"
                     },
+                    "button": "Configura",
                     "caption": "ZHA",
                     "cluster_attributes": {
                         "attributes_of_cluster": "Atributs del clúster seleccionat",
@@ -1815,6 +1824,9 @@
                         "header": "Gestió de la xarxa",
                         "introduction": "Comandes que afecten tota la xarxa"
                     },
+                    "network": {
+                        "caption": "Xarxa"
+                    },
                     "node_management": {
                         "header": "Gestió del dispositiu",
                         "help_node_dropdown": "Selecciona un dispositiu per visualitzar-ne les opcions (per dispositiu).",
@@ -1854,6 +1866,7 @@
                     "no_zones_created_yet": "Sembla que encara no has creat cap zona."
                 },
                 "zwave": {
+                    "button": "Configura",
                     "caption": "Z-Wave",
                     "common": {
                         "index": "Índex",

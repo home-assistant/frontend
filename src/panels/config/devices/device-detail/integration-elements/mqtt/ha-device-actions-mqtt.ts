@@ -7,12 +7,12 @@ import {
   TemplateResult,
   css,
 } from "lit-element";
-import { DeviceRegistryEntry } from "../../../../../data/device_registry";
-import { removeMQTTDeviceEntry } from "../../../../../data/mqtt";
-import { showConfirmationDialog } from "../../../../../dialogs/generic/show-dialog-box";
-import { showMQTTDeviceDebugInfoDialog } from "../../../../../dialogs/mqtt-device-debug-info-dialog/show-dialog-mqtt-device-debug-info";
-import { haStyle } from "../../../../../resources/styles";
-import { HomeAssistant } from "../../../../../types";
+import { DeviceRegistryEntry } from "../../../../../../data/device_registry";
+import { removeMQTTDeviceEntry } from "../../../../../../data/mqtt";
+import { showConfirmationDialog } from "../../../../../../dialogs/generic/show-dialog-box";
+import { showMQTTDeviceDebugInfoDialog } from "./show-dialog-mqtt-device-debug-info";
+import { haStyle } from "../../../../../../resources/styles";
+import { HomeAssistant } from "../../../../../../types";
 
 @customElement("ha-device-actions-mqtt")
 export class HaDeviceActionsMqtt extends LitElement {

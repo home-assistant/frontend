@@ -195,7 +195,7 @@
             "off": "wyłączony"
         },
         "configurator": {
-            "configure": "Skonfiguruj",
+            "configure": "Konfiguruj",
             "configured": "skonfigurowany"
         },
         "cover": {
@@ -480,8 +480,10 @@
             "delete": "Usuń",
             "error_required": "To pole jest wymagane",
             "loading": "Ładowanie",
+            "menu": "Menu",
             "next": "Dalej",
             "no": "Nie",
+            "overflow_menu": "Menu",
             "previous": "Poprzedni",
             "refresh": "Odśwież",
             "save": "Zapisz",
@@ -911,6 +913,8 @@
                         "introduction": "Użyj automatyzacji, aby ożywić swój dom",
                         "load_error_not_editable": "Tylko automatyzacje zdefiniowane w pliku automations.yaml są edytowalne.",
                         "load_error_unknown": "Wystąpił błąd podczas ładowania automatyzacji ({err_no}).",
+                        "move_down": "Przesuń w dół",
+                        "move_up": "Przesuń w górę",
                         "save": "Zapisz",
                         "triggers": {
                             "add": "Dodaj wyzwalacz",
@@ -1322,8 +1326,8 @@
                         "introduction2": "Użyj rejestru encji, aby nadpisać jej nazwę, zmienić jej identyfikator lub usunąć ją z Home Assistant'a. Uwaga: usunięcie wpisu rejestru encji nie spowoduje usunięcia encji. Aby to zrobić, kliknij poniższy link i usuń integracje encji.",
                         "remove_selected": {
                             "button": "Usuń wybrane",
-                            "confirm_partly_text": "Można usunąć tylko {removable} z wybranych {selected} encji. Encje można usunąć tylko wtedy, gdy integracja wspiera taka możliwość. Czasami trzeba ponownie uruchomić Home Assistanta, zanim będzie można usunąć encje usuniętej integracji. Czy na pewno chcesz usunąć usuwalne encje?",
-                            "confirm_partly_title": "Tylko {number} wybrane encje można usunąć.",
+                            "confirm_partly_text": "Można usunąć tylko {removable} z wybranych {selected} encji. Encje można usunąć tylko wtedy, gdy integracja wspiera taką możliwość. Czasami trzeba ponownie uruchomić Home Assistanta, zanim będzie można usunąć encje usuniętej integracji. Czy na pewno chcesz usunąć usuwalne encje?",
+                            "confirm_partly_title": "Wybrane encje możliwe do usunięcia: {number}",
                             "confirm_text": "Powinieneś uprzednio usunąć integrację z automatyzacji i konfiguracji Lovelace, jeśli encje w niej występują.",
                             "confirm_title": "Czy chcesz usunąć encje: {number}?"
                         },
@@ -1369,7 +1373,9 @@
                 },
                 "info": {
                     "built_using": "Zbudowany przy użyciu",
+                    "caption": "Informacje",
                     "custom_uis": "Niestandardowe interfejsy użytkownika:",
+                    "description": "Informacje o instalacji Home Assistanta",
                     "developed_by": "Opracowany przez grono wspaniałych ludzi.",
                     "documentation": "Dokumentacja",
                     "frontend": "frontend-ui",
@@ -1384,6 +1390,11 @@
                     "source": "Źródło:",
                     "system_health_error": "Komponent kondycji systemu nie jest załadowany. Dodaj 'system_health:' do pliku configuration.yaml",
                     "title": "Informacje"
+                },
+                "integration_panel_move": {
+                    "link_integration_page": "stronie integracji",
+                    "missing_zha": "Nie możesz znaleźć konfiguracji ZHA? Została ona przeniesiona do wpisu Z-Wave na {integrations_page}.",
+                    "missing_zwave": "Nie możesz znaleźć konfiguracji Z-Wave? Została ona przeniesiona do wpisu Z-Wave na {integrations_page}."
                 },
                 "integrations": {
                     "add_integration": "Dodaj integrację",
@@ -1457,7 +1468,9 @@
                 },
                 "introduction": "Tutaj możesz skonfigurować Home Assistanta i jego komponenty. Nie wszystkie opcje można konfigurować z interfejsu użytkownika, ale pracujemy nad tym.",
                 "logs": {
+                    "caption": "Logi",
                     "clear": "Wyczyść",
+                    "description": "Wyświetlanie logów Home Assistanta",
                     "details": "Szczegóły loga ({level})",
                     "load_full_log": "Załaduj cały log Home Assistanta",
                     "loading_log": "Ładowanie loga błędów…",
@@ -1652,6 +1665,11 @@
                             "core": "Lokalizacja i dostosowywanie",
                             "group": "Grupy",
                             "heading": "Ponowne wczytanie konfiguracji",
+                            "input_boolean": "Pomocnicy typu przełącznik",
+                            "input_datetime": "Pomocnicy typu data i czas",
+                            "input_number": "Pomocnicy typu numer",
+                            "input_select": "Pomocnicy typu pole wyboru",
+                            "input_text": "Pomocnicy typu tekst",
                             "introduction": "Niektóre fragmenty konfiguracji można przeładować bez ponownego uruchamiania. Poniższe przyciski pozwalają na ponowne wczytanie konfiguracji.",
                             "person": "Osoby",
                             "scene": "Sceny",
@@ -1715,8 +1733,11 @@
                 },
                 "zha": {
                     "add_device_page": {
+                        "discovered_text": "Urządzenia pojawią się tutaj, jak tylko zostaną wykryte.",
                         "discovery_text": "Wykryte urządzenia pojawią się tutaj. Postępuj zgodnie z instrukcjami dla urządzeń, by wprowadzić je w tryb parowania.",
                         "header": "Zigbee Home Automation - dodaj urządzenia",
+                        "no_devices_found": "Nie znaleziono urządzeń, upewnij się, że są w trybie parowania i nie są w trybie uśpienia podczas wykrywania.",
+                        "pairing_mode": "Upewnij się, że urządzenie jest w trybie parowania. Zapoznaj się z instrukcją obsługi urządzenia, by dowiedzieć się, jak to zrobić.",
                         "search_again": "Szukaj ponownie",
                         "spinner": "Wyszukiwanie urządzeń ZHA Zigbee..."
                     },
@@ -1724,6 +1745,7 @@
                         "caption": "Dodaj urządzenia",
                         "description": "Dodaj urządzenia do sieci Zigbee"
                     },
+                    "button": "Konfiguruj",
                     "caption": "ZHA",
                     "cluster_attributes": {
                         "attributes_of_cluster": "Atrybuty wybranego klastra",
@@ -1802,6 +1824,9 @@
                         "header": "Zarządzanie siecią",
                         "introduction": "Polecenia, które wpływają na całą sieć"
                     },
+                    "network": {
+                        "caption": "Sieć"
+                    },
                     "node_management": {
                         "header": "Zarządzanie urządzeniami",
                         "help_node_dropdown": "Wybierz urządzenie, aby wyświetlić jego opcje.",
@@ -1841,6 +1866,7 @@
                     "no_zones_created_yet": "Wygląda na to, że nie utworzyłeś jeszcze żadnych stref."
                 },
                 "zwave": {
+                    "button": "Konfiguruj",
                     "caption": "Z-Wave",
                     "common": {
                         "index": "Indeks",

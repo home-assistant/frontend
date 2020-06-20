@@ -2,7 +2,7 @@
       if (navigator.userAgent.indexOf("Android") === -1 &&
           navigator.userAgent.indexOf("CrOS") === -1) {
         function _pf(src, type) {
-          const el = document.createElement("link");
+          var el = document.createElement("link");
           el.rel = "preload";
           el.as = "font";
           el.type = "font/woff2";

@@ -694,10 +694,10 @@
             },
             "zha_device_info": {
                 "buttons": {
-                    "add": "Добавить устройства",
+                    "add": "Добавить устройства через это устройство",
                     "reconfigure": "Перенастроить устройство",
                     "remove": "Удалить устройство",
-                    "zigbee_information": "Информация о Zigbee"
+                    "zigbee_information": "Подпись устройства Zigbee"
                 },
                 "confirmations": {
                     "remove": "Вы уверены, что хотите удалить это устройство?"
@@ -1391,6 +1391,11 @@
                     "system_health_error": "Компонент System Health не загружен. Добавьте 'system_health:' в файл configuration.yaml.",
                     "title": "О системе"
                 },
+                "integration_panel_move": {
+                    "link_integration_page": "странице интеграций",
+                    "missing_zha": "Отсутствует панель конфигурации ZHA? Настройки ZHA теперь находятся на {integrations_page} в карточке ZHA.",
+                    "missing_zwave": "Отсутствует панель конфигурации Z-Wave? Настройки Z-Wave теперь находятся на {integrations_page} в карточке Z-Wave."
+                },
                 "integrations": {
                     "add_integration": "Добавить интеграцию",
                     "caption": "Интеграции",
@@ -1728,8 +1733,11 @@
                 },
                 "zha": {
                     "add_device_page": {
+                        "discovered_text": "Устройства появятся здесь, когда будут обнаружены.",
                         "discovery_text": "Здесь будут отображаться обнаруженные устройства. Следуйте инструкциям для Вашего устройства, чтобы включить режим сопряжения.",
                         "header": "Zigbee Home Automation",
+                        "no_devices_found": "Устройства не найдены, убедитесь, что они находятся в режиме сопряжения, и держите их активными во время обнаружения.",
+                        "pairing_mode": "Убедитесь, что подключаемые устройства находятся в режиме сопряжения. Чтобы узнать, как активировать режим сопряжения, ознакомьтесь с инструкциями для Вашего устройства.",
                         "search_again": "Повторный поиск",
                         "spinner": "Поиск Zigbee устройств..."
                     },
@@ -1737,6 +1745,7 @@
                         "caption": "Добавить устройства",
                         "description": "Добавить устройства в сеть Zigbee"
                     },
+                    "button": "Настроить",
                     "caption": "Zigbee Home Automation",
                     "cluster_attributes": {
                         "attributes_of_cluster": "Атрибуты выбранного кластера",
@@ -1815,6 +1824,9 @@
                         "header": "Управление сетью",
                         "introduction": "Команды, которые влияют на всю сеть"
                     },
+                    "network": {
+                        "caption": "Сеть"
+                    },
                     "node_management": {
                         "header": "Управление устройством",
                         "help_node_dropdown": "Выберите устройство для просмотра индивидуальных параметров.",
@@ -1854,6 +1866,7 @@
                     "no_zones_created_yet": "У Вас еще нет добавленных зон."
                 },
                 "zwave": {
+                    "button": "Настроить",
                     "caption": "Z-Wave",
                     "common": {
                         "index": "Индекс",
