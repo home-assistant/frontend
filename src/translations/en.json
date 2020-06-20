@@ -443,6 +443,7 @@
         "buttons": {
           "add": "Add Devices via this device",
           "remove": "Remove Device",
+          "clusters": "Manage Clusters",
           "reconfigure": "Reconfigure Device",
           "zigbee_information": "Zigbee device signature"
         },
