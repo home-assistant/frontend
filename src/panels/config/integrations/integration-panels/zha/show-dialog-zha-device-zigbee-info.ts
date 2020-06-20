@@ -1,5 +1,5 @@
-import { fireEvent } from "../../common/dom/fire_event";
-import { ZHADevice } from "../../data/zha";
+import { fireEvent } from "../../../../../common/dom/fire_event";
+import { ZHADevice } from "../../../../../data/zha";
 
 export interface ZHADeviceZigbeeInfoDialogParams {
   device: ZHADevice;

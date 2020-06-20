@@ -278,6 +278,11 @@
           "failed_create_area": "Failed to create area."
         }
       },
+      "date-range-picker": {
+        "start_date": "Start date",
+        "end_date": "End date",
+        "select": "Select"
+      },
       "relative_time": {
         "past": "{time} ago",
         "future": "In {time}",
@@ -443,6 +448,7 @@
         "buttons": {
           "add": "Add Devices via this device",
           "remove": "Remove Device",
+          "clusters": "Manage Clusters",
           "reconfigure": "Reconfigure Device",
           "zigbee_information": "Zigbee device signature"
         },
@@ -519,6 +525,11 @@
         "advanced_mode": {
           "hint_enable": "Missing config options? Enable advanced mode on",
           "link_profile_page": "your profile page"
+        },
+        "integration_panel_move": {
+          "missing_zha": "Missing the ZHA config panel? It was moved to the ZHA entry on the {integrations_page}.",
+          "missing_zwave": "Missing the Z-Wave config panel? It was moved to the Z-Wave entry on the {integrations_page}.",
+          "link_integration_page": "integrations page"
         },
         "common": {
           "editor": {
@@ -1501,6 +1512,20 @@
             "create": "Create"
           }
         },
+        "mqtt": {
+          "button": "Configure",
+          "title": "MQTT",
+          "description_publish": "Publish a packet",
+          "topic": "topic",
+          "payload": "Payload (template allowed)",
+          "publish": "Publish",
+          "description_listen": "Listen to a topic",
+          "listening_to": "Listening to",
+          "subscribe_to": "Topic to subscribe to",
+          "start_listening": "Start listening",
+          "stop_listening": "Stop listening",
+          "message_received": "Message {id} received on {topic} at {time}:"
+        },
         "zha": {
           "button": "Configure",
           "header": "Configure Zigbee Home Automation",
@@ -1689,13 +1714,21 @@
         }
       },
       "history": {
-        "showing_entries": "Showing entries for",
-        "period": "Period"
+        "ranges": {
+          "today": "Today",
+          "yesterday": "Yesterday",
+          "this_week": "This week",
+          "last_week": "Last week"
+        }
       },
       "logbook": {
-        "showing_entries": "[%key:ui::panel::history::showing_entries%]",
-        "period": "Period",
-        "entries_not_found": "No logbook entries found."
+        "entries_not_found": "No logbook entries found.",
+        "ranges": {
+          "today": "Today",
+          "yesterday": "Yesterday",
+          "this_week": "This week",
+          "last_week": "Last week"
+        }
       },
       "lovelace": {
         "cards": {
@@ -2293,19 +2326,6 @@
             "stop_listening": "Stop listening",
             "alert_event_type": "Event type is a mandatory field",
             "notification_event_fired": "Event {type} successful fired!"
-          },
-          "mqtt": {
-            "title": "MQTT",
-            "description_publish": "Publish a packet",
-            "topic": "topic",
-            "payload": "Payload (template allowed)",
-            "publish": "Publish",
-            "description_listen": "Listen to a topic",
-            "listening_to": "Listening to",
-            "subscribe_to": "Topic to subscribe to",
-            "start_listening": "Start listening",
-            "stop_listening": "Stop listening",
-            "message_received": "Message {id} received on {topic} at {time}:"
           },
           "services": {
             "title": "Services",

@@ -1373,7 +1373,9 @@
                 },
                 "info": {
                     "built_using": "Bygget ved hjælp af",
+                    "caption": "Oplysninger",
                     "custom_uis": "Tilpassede brugergrænseflader:",
+                    "description": "Oplysninger om din Home Assistant-installation",
                     "developed_by": "Udviklet af en masse fantastiske mennesker.",
                     "documentation": "Dokumentation",
                     "frontend": "brugerflade",
@@ -1388,6 +1390,11 @@
                     "source": "Kilde:",
                     "system_health_error": "System Health-komponenten er ikke indlæst. Føj 'system_health:' til 'config.yaml'",
                     "title": "Info"
+                },
+                "integration_panel_move": {
+                    "link_integration_page": "integrationssiden",
+                    "missing_zha": "Mangler ZHA-konfigurationspanelet? Det er blevet flyttet til ZHA-posten på {integrations_page}.",
+                    "missing_zwave": "Mangler Z-wave-konfigurationspanelet? Det er blevet flyttet til Z-wave-posten på {integrations_page}."
                 },
                 "integrations": {
                     "add_integration": "Tilføj integration",
@@ -1461,7 +1468,9 @@
                 },
                 "introduction": "Her er det muligt at konfigurere dine komponenter og Home Assistant. Ikke alt er muligt at konfigurere fra brugerfladen endnu, men vi arbejder på det.",
                 "logs": {
+                    "caption": "Logs",
                     "clear": "Ryd",
+                    "description": "Se logs for Home Assistant",
                     "details": "Logdetaljer ({level})",
                     "load_full_log": "Indlæs fuld Home Assistant-log",
                     "loading_log": "Indlæser fejllog...",
@@ -1656,6 +1665,11 @@
                             "core": "Genindlæs lokalitet og tilpasninger",
                             "group": "Genindlæs grupper",
                             "heading": "Genindlæsning af YAML-konfiguration",
+                            "input_boolean": "Genindlæs booleske input",
+                            "input_datetime": "Genindlæs inputdatotider",
+                            "input_number": "Genindlæs inputnumre",
+                            "input_select": "Genindlæs inputvalg",
+                            "input_text": "Genindlæs inputtekster",
                             "introduction": "Nogle dele af Home Assistant kan genindlæses uden en genstart. Tryk på genindlæs for at aflæse den nuværende YAML-konfiguration og indlæse den nye.",
                             "person": "Genindlæs personer",
                             "scene": "Genindlæs scener",
@@ -1719,8 +1733,11 @@
                 },
                 "zha": {
                     "add_device_page": {
+                        "discovered_text": "Enheder vil dukke op her, når de er fundet.",
                         "discovery_text": "Fundne enheder vil dukke op her. Følg instruktionerne for din enhed(er) og sæt enhed(erne) i parringstilstand.",
                         "header": "Zigbee Home Automation - Tilføj enheder",
+                        "no_devices_found": "Ingen enheder blev fundet. Sørg for at de er i paringtilstand, og hold dem vågne, mens opdagelsen kører.",
+                        "pairing_mode": "Sørg for, at dine enheder er i parringstilstand. Se enhedens vejledning i, hvordan du gør dette.",
                         "search_again": "Søg igen",
                         "spinner": "Søger efter ZHA Zigbee-enheder..."
                     },
@@ -1728,6 +1745,7 @@
                         "caption": "Tilføj enheder",
                         "description": "Føj enheder til Zigbee-netværk"
                     },
+                    "button": "Konfigurer",
                     "caption": "ZHA",
                     "cluster_attributes": {
                         "attributes_of_cluster": "Egenskaber for den valgte klynge",
@@ -1806,6 +1824,9 @@
                         "header": "Netværksstyring",
                         "introduction": "Kommandoer, der påvirker hele netværket"
                     },
+                    "network": {
+                        "caption": "Netværk"
+                    },
                     "node_management": {
                         "header": "Enhedshåndtering",
                         "help_node_dropdown": "Vælg en enhed for at få vist enhedsspecifikke indstillinger.",
@@ -1845,6 +1866,7 @@
                     "no_zones_created_yet": "Det ser ud til, at du ikke har oprettet nogen zoner endnu."
                 },
                 "zwave": {
+                    "button": "Konfigurer",
                     "caption": "Z-Wave",
                     "common": {
                         "index": "Indeks",
@@ -1886,12 +1908,17 @@
                         "add_node_secure": "Tilføj sikkert knudepunkt",
                         "cancel_command": "Annuller kommando",
                         "heal_network": "Helbred netværk",
+                        "heal_node": "Helbred node",
+                        "node_info": "Node information",
+                        "print_node": "Udskriv node",
+                        "refresh_entity": "Opdater entitet",
                         "remove_node": "Fjern knudepunkt",
                         "save_config": "Gem konfiguration",
                         "soft_reset": "Blød nulstilling",
                         "start_network": "Start netværk",
                         "stop_network": "Stop netværk",
-                        "test_network": "Test netværk"
+                        "test_network": "Test netværk",
+                        "test_node": "Test node"
                     },
                     "values": {
                         "header": "Knudepunktsværdier"

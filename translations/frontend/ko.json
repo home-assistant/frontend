@@ -694,10 +694,10 @@
             },
             "zha_device_info": {
                 "buttons": {
-                    "add": "기기 추가",
+                    "add": "이 기기를 통해 기기 추가",
                     "reconfigure": "기기 재설정",
                     "remove": "기기 제거",
-                    "zigbee_information": "Zigbee 정보"
+                    "zigbee_information": "Zigbee 기기 서명"
                 },
                 "confirmations": {
                     "remove": "이 기기를 제거하시겠습니까?"
@@ -717,7 +717,7 @@
                 "unknown": "알 수 없슴",
                 "zha_device_card": {
                     "area_picker_label": "영역",
-                    "device_name_placeholder": "사용자 지정 이름",
+                    "device_name_placeholder": "기기 이름 변경",
                     "update_name_button": "이름 업데이트"
                 }
             }
@@ -1391,6 +1391,11 @@
                     "system_health_error": "시스템 상태보기 구성요소가 로드되지 않았습니다. configuration.yaml 에 'system_health:' 를 추가해주세요.",
                     "title": "정보"
                 },
+                "integration_panel_move": {
+                    "link_integration_page": "통합 구성요소 페이지",
+                    "missing_zha": "ZHA 구성 패널이 보이지 않으신가요? {integrations_page} 의 ZHA 항목으로 이동되었습니다.",
+                    "missing_zwave": "Z-Wave 구성 패널이 보이지 않으신가요? {integrations_page} 의 ZHA 항목으로 이동되었습니다."
+                },
                 "integrations": {
                     "add_integration": "통합 구성요소 추가",
                     "caption": "통합 구성요소",
@@ -1728,8 +1733,11 @@
                 },
                 "zha": {
                     "add_device_page": {
+                        "discovered_text": "기기가 발견되면 여기에 표시됩니다.",
                         "discovery_text": "발견된 기기가 여기에 표시됩니다. 기기의 설명서를 참고하여 기기를 페어링 모드로 설정해주세요.",
                         "header": "Zigbee Home Automation - 기기 추가",
+                        "no_devices_found": "발견된 기기가 없습니다. 기기를 검색하는 동안 기기가 페어링 모드 상태이고 절전모드가 해제되어있는지 확인해주세요.",
+                        "pairing_mode": "기기가 페어링 모드인지 확인해주세요. 기기의 페어링 모드 설정 방법은 기기의 설명서를 참조해주세요.",
                         "search_again": "다시 검색",
                         "spinner": "ZHA Zigbee 기기를 찾고있습니다..."
                     },
@@ -1737,6 +1745,7 @@
                         "caption": "기기 추가",
                         "description": "Zigbee 네트워크에 기기를 추가합니다"
                     },
+                    "button": "설정",
                     "caption": "ZHA",
                     "cluster_attributes": {
                         "attributes_of_cluster": "선택된 클러스터의 속성",
@@ -1815,6 +1824,9 @@
                         "header": "네트워크 관리",
                         "introduction": "전체 네트워크에 영향을 미치는 명령"
                     },
+                    "network": {
+                        "caption": "네트워크"
+                    },
                     "node_management": {
                         "header": "기기 관리",
                         "help_node_dropdown": "기기별 옵션을 보려면 기기를 선택해주세요.",
@@ -1854,6 +1866,7 @@
                     "no_zones_created_yet": "아직 설정한 지역이 없는 것 같습니다."
                 },
                 "zwave": {
+                    "button": "설정",
                     "caption": "Z-Wave",
                     "common": {
                         "index": "색인",

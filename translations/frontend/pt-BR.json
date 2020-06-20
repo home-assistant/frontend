@@ -767,6 +767,7 @@
                     },
                     "description": "Visão geral de todas as áreas da sua casa.",
                     "editor": {
+                        "area_id": "ID da Área",
                         "create": "Criar",
                         "default_name": "Nova Zona",
                         "delete": "Excluir",
@@ -910,6 +911,8 @@
                         "introduction": "Use automações para trazer vida à sua casa",
                         "load_error_not_editable": "Somente automações em automations.yaml são editáveis.",
                         "load_error_unknown": "Erro ao carregar a automação ({err_no}).",
+                        "move_down": "Mover para baixo",
+                        "move_up": "Mover para cima",
                         "save": "Salvar",
                         "triggers": {
                             "add": "Adicionar gatilho",
@@ -1368,6 +1371,7 @@
                 },
                 "info": {
                     "built_using": "Construído usando",
+                    "caption": "Informações",
                     "custom_uis": "UIs personalizadas:",
                     "developed_by": "Desenvolvido por um monte de pessoas incríveis.",
                     "documentation": "Documentação",
@@ -1383,6 +1387,9 @@
                     "source": "Código fonte:",
                     "system_health_error": "O componente System Health não foi carregado. Adicione 'system_health:' ao configuration.yaml",
                     "title": "Info"
+                },
+                "integration_panel_move": {
+                    "link_integration_page": "Página de integrações"
                 },
                 "integrations": {
                     "add_integration": "Adicionar integração",
@@ -1456,6 +1463,7 @@
                 },
                 "introduction": "Aqui é possível configurar seus componentes e Home Assistant. Nem tudo é possível configurar via UI, mas estamos trabalhando nisso.",
                 "logs": {
+                    "caption": "Logs",
                     "clear": "Limpar",
                     "details": "Detalhes do log ({Level})",
                     "load_full_log": "Carregar todos os logs do Home Assistant",
@@ -1713,8 +1721,10 @@
                 },
                 "zha": {
                     "add_device_page": {
+                        "discovered_text": "Os dispositivos descobertos aparecerão aqui.",
                         "discovery_text": "Dispositivos descobertos serão exibidos aqui. Siga as instruções para o(s) seu(s) dispositivo(s) e coloque o(s) dispositivo(s) no modo de emparelhamento.",
                         "header": "Zigbee Home Automation - Adicionar dispositivos",
+                        "pairing_mode": "Certifique-se de que seus dispositivos estão em modo de pareamento. Verifique as instruções do seu dispositivo para saber como fazer isso.",
                         "search_again": "Pesquisar novamente",
                         "spinner": "Procurando por dispositivos ZHA Zigbee…"
                     },
@@ -1722,6 +1732,7 @@
                         "caption": "Adicionar Dispositivos",
                         "description": "Adicionar dispositivos à rede Zigbee"
                     },
+                    "button": "Configurar",
                     "caption": "ZHA",
                     "cluster_attributes": {
                         "attributes_of_cluster": "Atributos do cluster selecionado",
@@ -1800,6 +1811,9 @@
                         "header": "Gerenciamento de Rede",
                         "introduction": "Comandos que afetam toda a rede"
                     },
+                    "network": {
+                        "caption": "Rede"
+                    },
                     "node_management": {
                         "header": "Gerenciamento de Dispositivos",
                         "help_node_dropdown": "Selecione um dispositivo para visualizar as opções por dispositivo.",
@@ -1839,6 +1853,7 @@
                     "no_zones_created_yet": "Parece que você ainda não criou nenhuma zona."
                 },
                 "zwave": {
+                    "button": "Configurar",
                     "caption": "",
                     "common": {
                         "index": "Índice",
@@ -1883,6 +1898,7 @@
                     "ozw_log": {
                         "header": "OZW Log",
                         "introduction": "Veja o log. 0 é o mínimo (carrega o log inteiro) e 1000 é o máximo. A carga mostrará um log estático e tail será atualizada automaticamente com o último número especificado de linhas do log.",
+                        "last_log_lines": "Número da última linhas de log",
                         "load": "Carregar"
                     },
                     "services": {
@@ -1890,9 +1906,12 @@
                         "add_node_secure": "Adicionar Nó Seguro",
                         "cancel_command": "Cancelar Comando",
                         "heal_network": "Reparar rede",
+                        "heal_node": "Repara nó",
                         "node_info": "Informações do Nó",
+                        "print_node": "Imprimir nó",
                         "refresh_entity": "Atualizar Entidade",
                         "remove_node": "Remover Nó",
+                        "replace_failed_node": "Substituir Nó com Falha",
                         "save_config": "Salvar Configuração",
                         "soft_reset": "Soft Reset",
                         "start_network": "Iniciar Rede",

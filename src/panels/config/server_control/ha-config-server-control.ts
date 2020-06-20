@@ -25,7 +25,7 @@ import { checkCoreConfig } from "../../../data/core";
 const reloadableDomains = [
   "group",
   "automation",
-  "scripts",
+  "script",
   "scene",
   "person",
   "zone",

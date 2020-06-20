@@ -694,10 +694,10 @@
             },
             "zha_device_info": {
                 "buttons": {
-                    "add": "Añadir dispositivos",
+                    "add": "Añadir dispositivos a través de este dispositivo",
                     "reconfigure": "Reconfigurar dispositivo",
                     "remove": "Eliminar dispositivos",
-                    "zigbee_information": "Información Zigbee"
+                    "zigbee_information": "Firma del dispositivo Zigbee"
                 },
                 "confirmations": {
                     "remove": "¿Estás seguro de que quieres eliminar este dispositivo?"
@@ -717,7 +717,7 @@
                 "unknown": "Desconocido",
                 "zha_device_card": {
                     "area_picker_label": "Área",
-                    "device_name_placeholder": "Nombre dado por el usuario",
+                    "device_name_placeholder": "Cambiar el nombre del dispositivo",
                     "update_name_button": "Cambiar nombre"
                 }
             }
@@ -1391,6 +1391,11 @@
                     "system_health_error": "El componente Estado del Sistema no está cargado. Añade 'system_health:' a configuration.yaml",
                     "title": "Información"
                 },
+                "integration_panel_move": {
+                    "link_integration_page": "página de integraciones",
+                    "missing_zha": "¿Echas de menos el panel de configuración de ZHA? Se ha movido a la entrada ZHA en la {integrations_page}.",
+                    "missing_zwave": "¿Echas de menos el panel de configuración de Z-Wave? Se ha movido a la entrada Z-Wave en la {integrations_page}."
+                },
                 "integrations": {
                     "add_integration": "Añadir integración",
                     "caption": "Integraciones",
@@ -1728,8 +1733,11 @@
                 },
                 "zha": {
                     "add_device_page": {
+                        "discovered_text": "Los dispositivos aparecerán aquí una vez descubiertos.",
                         "discovery_text": "Los dispositivos detectados aparecerán aquí. Ponlos en modo emparejamiento siguiendo sus instrucciones.",
                         "header": "Domótica Zigbee - Añadir dispositivos",
+                        "no_devices_found": "No se encontraron dispositivos, asegúrate de que están en modo de emparejamiento y mantenlos despiertos mientras el descubrimiento se está ejecutando.",
+                        "pairing_mode": "Asegúrate de que tus dispositivos están en modo de emparejamiento. Consulta las instrucciones de tu dispositivo sobre cómo hacerlo.",
                         "search_again": "Buscar de nuevo",
                         "spinner": "Buscando dispositivos ZHA Zigbee...."
                     },
@@ -1737,6 +1745,7 @@
                         "caption": "Añadir dispositivos",
                         "description": "Añadir dispositivos a la red Zigbee"
                     },
+                    "button": "Configurar",
                     "caption": "ZHA",
                     "cluster_attributes": {
                         "attributes_of_cluster": "Atributos del clúster seleccionado",
@@ -1815,6 +1824,9 @@
                         "header": "Administración de la red",
                         "introduction": "Comandos que afectan a toda la red."
                     },
+                    "network": {
+                        "caption": "Red"
+                    },
                     "node_management": {
                         "header": "Administración de dispositivos",
                         "help_node_dropdown": "Selecciona un dispositivo para ver las opciones por dispositivo.",
@@ -1854,6 +1866,7 @@
                     "no_zones_created_yet": "Parece que aún no has creado ninguna zona."
                 },
                 "zwave": {
+                    "button": "Configurar",
                     "caption": "Z-Wave",
                     "common": {
                         "index": "Índice",

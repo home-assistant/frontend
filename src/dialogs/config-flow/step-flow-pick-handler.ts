@@ -42,6 +42,8 @@ class StepFlowPickHandler extends LitElement {
 
   private _width?: number;
 
+  private _height?: number;
+
   private _getHandlers = memoizeOne(
     (h: string[], filter?: string, _localize?: LocalizeFunc) => {
       const handlers: HandlerObj[] = h.map((handler) => {
@@ -82,7 +84,10 @@ class StepFlowPickHandler extends LitElement {
         @value-changed=${this._filterChanged}
       ></search-input>
       <div
-        style=${styleMap({ width: `${this._width}px` })}
+        style=${styleMap({
+          width: `${this._width}px`,
+          height: `${this._height}px`,
+        })}
         class=${classMap({ advanced: Boolean(this.showAdvanced) })}
       >
         ${handlers.map(
@@ -139,11 +144,18 @@ class StepFlowPickHandler extends LitElement {
 
   protected updated(changedProps) {
     super.updated(changedProps);
-    // Store the width so that when we search, box doesn't jump
+    // Store the width and height so that when we search, box doesn't jump
+    const div = this.shadowRoot!.querySelector("div")!;
     if (!this._width) {
-      const width = this.shadowRoot!.querySelector("div")!.clientWidth;
+      const width = div.clientWidth;
       if (width) {
         this._width = width;
+      }
+    }
+    if (!this._height) {
+      const height = div.clientHeight;
+      if (height) {
+        this._height = height;
       }
     }
   }
@@ -166,8 +178,8 @@ class StepFlowPickHandler extends LitElement {
       configFlowContentStyles,
       css`
         img {
-          max-width: 40px;
-          max-height: 40px;
+          width: 40px;
+          height: 40px;
         }
         search-input {
           display: block;
@@ -180,12 +192,12 @@ class StepFlowPickHandler extends LitElement {
           overflow: auto;
           max-height: 600px;
         }
-        @media all and (max-height: 1px) {
+        @media all and (max-height: 900px) {
           div {
-            max-height: calc(100vh - 205px);
+            max-height: calc(100vh - 134px);
           }
           div.advanced {
-            max-height: calc(100vh - 300px);
+            max-height: calc(100vh - 250px);
           }
         }
         paper-icon-item {

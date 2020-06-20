@@ -1,5 +1,11 @@
 import { HomeAssistant } from "../types";
 
+export interface AuthUrlSearchParams {
+  client_id?: string;
+  redirect_uri?: string;
+  state?: string;
+}
+
 export interface AuthProvider {
   name: string;
   id: string;

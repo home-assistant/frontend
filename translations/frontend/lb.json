@@ -480,6 +480,7 @@
             "delete": "Läschen",
             "error_required": "Erfuerderlech",
             "loading": "Lued",
+            "menu": "Menu",
             "next": "Nächst",
             "no": "Nee",
             "previous": "Virdrun",
@@ -911,6 +912,8 @@
                         "introduction": "Benotzt Automatismen fir däin Haus zum Liewen ze bréngen",
                         "load_error_not_editable": "Nëmmen Automatiounen am automations.yaml kënnen editéiert ginn.",
                         "load_error_unknown": "Feeler beim luede vun der Automatioun ({err_no}).",
+                        "move_down": "No ënne réckelen",
+                        "move_up": "No uewe réckelen",
                         "save": "Späicheren",
                         "triggers": {
                             "add": "Ausléiser dobäisetzen",
@@ -1369,7 +1372,9 @@
                 },
                 "info": {
                     "built_using": "Erstallt mat",
+                    "caption": "Info",
                     "custom_uis": "Personaliséierte Benotzer Interface:",
+                    "description": "Informatioune zu denger Home Assistant Installation",
                     "developed_by": "Entwéckelt vun enger ganzer Rei fantastesche Leit.",
                     "documentation": "Dokumentatioun",
                     "frontend": "frontend-ui",
@@ -1384,6 +1389,11 @@
                     "source": "Quell:",
                     "system_health_error": "System Gesondheet Komponent net gelueden. Setz 'system_health:' zur configuration.yaml dobäi",
                     "title": "Info"
+                },
+                "integration_panel_move": {
+                    "link_integration_page": "Integratiouns Säit",
+                    "missing_zha": "Vermëss du ZHA Konfig. Tableau? Et ass op ZHA Entrée op der {integrations_page} geplënnert.",
+                    "missing_zwave": "Vermëss du Z-Wave Konfig. Tableau? Et ass op Z-Wave Entrée op der {integrations_page} geplënnert."
                 },
                 "integrations": {
                     "add_integration": "Integratioun dobäisetzen",
@@ -1457,7 +1467,9 @@
                 },
                 "introduction": "Hei ass et méiglech är Komponenten vum Home Assistant ze konfiguréieren. Net alles ass méiglech fir iwwert den Interface anzestellen, mee mir schaffen drun.",
                 "logs": {
+                    "caption": "Logbicher",
                     "clear": "Läschen",
+                    "description": "Home Assistant Logbicher ukucken",
                     "details": "Detailler vum Log ({level})",
                     "load_full_log": "Kompletten Home Assistant Log lueden",
                     "loading_log": "Feeler Log gëtt gelueden...",
@@ -1715,6 +1727,7 @@
                 },
                 "zha": {
                     "add_device_page": {
+                        "discovered_text": "Apparater tauchen hei op soubaal se entdeckt sinn.",
                         "discovery_text": "Entdeckten Apparater tauchen op dëser Platz op. Suivéiert d'Instruktiounen fir är Apparater an aktivéiert den Kupplung's Mod.",
                         "header": "Zigbee Home Automation - Apparater dobäisetzen",
                         "search_again": "Nach emol sichen",
@@ -1724,6 +1737,7 @@
                         "caption": "Apparater bäisetzen",
                         "description": "Apparater am Zigbee Netzwierk bäisetzen"
                     },
+                    "button": "Astellen",
                     "caption": "ZHA",
                     "cluster_attributes": {
                         "attributes_of_cluster": "Attributer vum ausgewielten Cluster",
@@ -1802,6 +1816,9 @@
                         "header": "Verwaltung vum Netzwierk",
                         "introduction": "Kommandoe mat Impakt op d'gesamt Netzwierk"
                     },
+                    "network": {
+                        "caption": "Netzwierk"
+                    },
                     "node_management": {
                         "header": "Verwaltung vun den Apparaten",
                         "help_node_dropdown": "Wielt een Apparat aus fir seng spezifesch Optioune ze gesinn.",
@@ -1841,6 +1858,7 @@
                     "no_zones_created_yet": "Et gesäit sou aus wéi wann nach keng Zone erstallt goufen."
                 },
                 "zwave": {
+                    "button": "Astellen",
                     "caption": "Z-Wave",
                     "common": {
                         "index": "Index",
