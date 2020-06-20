@@ -27,39 +27,35 @@ class HaEntityHumidifier extends HaEntityToggle {
     `;
   }
 
-  static get styles(): CSSResult[] {
-    const toggle_styles = super.styles;
-    const humidifier_styles = [
-      css`
-        :host {
-          display: flex;
-          flex-direction: row;
-          justify-content: center;
-          align-items: center;
-        }
+  static get styles(): CSSResult {
+    return css`
+      :host {
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        align-items: center;
+      }
 
-        .target {
-          color: var(--primary-text-color);
-        }
+      .target {
+        color: var(--primary-text-color);
+      }
 
-        .current {
-          color: var(--secondary-text-color);
-        }
+      .current {
+        color: var(--secondary-text-color);
+      }
 
-        .state-label {
-          font-weight: bold;
-          text-transform: capitalize;
-        }
+      .state-label {
+        font-weight: bold;
+        text-transform: capitalize;
+      }
 
-        .unit {
-          display: inline-block;
-          direction: ltr;
-        }
-      `,
-    ];
-    return toggle_styles
-      ? toggle_styles.concat(humidifier_styles)
-      : humidifier_styles;
+      .unit {
+        display: inline-block;
+        direction: ltr;
+      }
+
+      ${super.styles}
+    `;
   }
 }
 
