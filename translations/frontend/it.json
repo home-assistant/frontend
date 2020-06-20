@@ -1147,7 +1147,7 @@
                         "email": "E-mail",
                         "email_error_msg": "E-mail non valida",
                         "forgot_password": "Hai dimenticato la password?",
-                        "introduction": "Home Assistant Cloud fornisce una connessione remota sicura alla tua istanza quando sei lontano da casa. Consente inoltre di connettersi con i servizi cloud: Amazon Alexa e Google Assistant.",
+                        "introduction": "Home Assistant Cloud fornisce una connessione remota sicura alla tua istanza quando sei lontano da casa. Consente inoltre di connettersi con i servizi solo su cloud: Amazon Alexa e Google Assistant.",
                         "introduction2": "Questo servizio è gestito dal nostro partner",
                         "introduction2a": ", una società fondata dai fondatori di Home Assistant e Hass.io.",
                         "introduction3": "Home Assistant Cloud è un servizio in abbonamento con un mese di prova gratuita. Non sono necessarie informazioni di pagamento.",
@@ -1228,7 +1228,7 @@
                     "picker": {
                         "entity": "Entità",
                         "header": "Personalizzazioni",
-                        "introduction": "Modificare gli attributi per entità. Le personalizzazioni aggiunte / modificate avranno effetto immediato. Le personalizzazioni rimosse avranno effetto quando l'entità viene aggiornata."
+                        "introduction": "Modificare gli attributi per entità. \nLe personalizzazioni aggiunte/modificate avranno effetto immediato. \nLe personalizzazioni rimosse avranno effetto quando l'entità sarà aggiornata."
                     },
                     "warning": {
                         "include_link": "includere customize.yaml",
@@ -1350,12 +1350,12 @@
                     "caption": "Aiutanti",
                     "description": "Elementi che possono aiutare a costruire le automazioni.",
                     "dialog": {
-                        "add_helper": "Aggiungi aiuto",
+                        "add_helper": "Aggiungi aiutante",
                         "add_platform": "Aggiungi {platform}",
                         "create": "Crea"
                     },
                     "picker": {
-                        "add_helper": "Aggiungi aiuto",
+                        "add_helper": "Aggiungi aiutante",
                         "headers": {
                             "editable": "Modificabile",
                             "entity_id": "ID Entità",
@@ -1382,7 +1382,7 @@
                     "frontend_version": "Versione Frontend: {version} - {type}",
                     "home_assistant_logo": "Logo Home Assistant",
                     "icons_by": "Icone di",
-                    "integrations": "integrazioni",
+                    "integrations": "Integrazioni",
                     "issues": "Problemi",
                     "license": "Pubblicato sotto la licenza Apache 2.0",
                     "path_configuration": "Percorso del file configuration.yaml: {path}",
@@ -1432,7 +1432,7 @@
                             "description": "Questo passaggio richiede di visitare un sito Web esterno per essere completato.",
                             "open_site": "Apri sito Web"
                         },
-                        "finish": "Finire",
+                        "finish": "Finito",
                         "loading_first_time": "Si prega di attendere durante l'installazione dell'integrazione",
                         "not_all_required_fields": "Non tutti i campi obbligatori sono compilati.",
                         "submit": "Invia"
@@ -1481,27 +1481,27 @@
                     "title": "Registri"
                 },
                 "lovelace": {
-                    "caption": "Cruscotti Lovelace",
+                    "caption": "Plance di Lovelace",
                     "dashboards": {
-                        "cant_edit_default": "Il cruscotto standard Lovelace non può essere modificato dall'Interfaccia Utente. È possibile nasconderlo impostando un altro cruscotto come predefinito.",
-                        "cant_edit_yaml": "I cruscotti definiti in YAML non possono essere modificati dall'Interfaccia Utente. Modificarli in configuration.yaml.",
-                        "caption": "Cruscotti",
+                        "cant_edit_default": "La plancia standard Lovelace non può essere modificata dall'Interfaccia Utente. È possibile nasconderla impostando un'altra plancia come predefinita.",
+                        "cant_edit_yaml": "Le plance definite in YAML non possono essere modificate dall'Interfaccia Utente. Modificarle in configuration.yaml.",
+                        "caption": "Plance",
                         "conf_mode": {
-                            "storage": "IU controllata",
+                            "storage": "Controllata dell'Interfaccia Utente",
                             "yaml": "File YAML"
                         },
-                        "confirm_delete": "Sei sicuro di voler eliminare questo cruscotto?",
-                        "default_dashboard": "Questo è il cruscotto predefinito",
+                        "confirm_delete": "Sei sicuro di voler eliminare questa plancia?",
+                        "default_dashboard": "Questa è la plancia predefinita",
                         "detail": {
                             "create": "Crea",
                             "delete": "Elimina",
                             "dismiss": "Chiudi",
-                            "edit_dashboard": "Modifica cruscotto",
+                            "edit_dashboard": "Modifica plancia",
                             "icon": "Icona",
-                            "new_dashboard": "Aggiungi nuovo cruscotto",
-                            "remove_default": "Rimuovi come predefinito su questo dispositivo",
+                            "new_dashboard": "Aggiungi nuova plancia",
+                            "remove_default": "Rimuovi come predefinita su questo dispositivo",
                             "require_admin": "Solo per l'amministratore",
-                            "set_default": "Imposta come predefinito su questo dispositivo",
+                            "set_default": "Imposta come predefinita su questo dispositivo",
                             "show_sidebar": "Mostra nella barra laterale",
                             "title": "Titolo",
                             "title_required": "È richiesto il titolo.",
@@ -1510,10 +1510,10 @@
                             "url_error_msg": "L'URL dovrebbe contenere un - e non può contenere spazi o caratteri speciali, ad eccezione di _ e -"
                         },
                         "picker": {
-                            "add_dashboard": "Aggiungi cruscotto",
+                            "add_dashboard": "Aggiungi plancia",
                             "headers": {
                                 "conf_mode": "Metodo di configurazione",
-                                "default": "Predefinito",
+                                "default": "Predefinita",
                                 "filename": "Nome del file",
                                 "require_admin": "Solo per l'amministratore",
                                 "sidebar": "Mostra nella barra laterale",
@@ -1522,7 +1522,7 @@
                             "open": "Aprire"
                         }
                     },
-                    "description": "Configurare i cruscotti Lovelace",
+                    "description": "Configura le tue plance di Lovelace",
                     "resources": {
                         "cant_edit_yaml": "Si utilizza Lovelace in modalità YAML, pertanto non è possibile gestire le risorse tramite l'Interfaccia Utente. Gestirli in configuration.yaml.",
                         "caption": "Risorse",
@@ -1629,7 +1629,7 @@
                 },
                 "script": {
                     "caption": "Script",
-                    "description": "Crea e modifica Script",
+                    "description": "Crea e modifica script",
                     "editor": {
                         "alias": "Nome",
                         "default_name": "Nuovo script",
@@ -1671,10 +1671,10 @@
                             "input_select": "Ricarica input a discesa",
                             "input_text": "Ricarica input testuali",
                             "introduction": "Alcune parti di Home Assistant possono essere ricaricate senza richiedere un riavvio. Premendo su Ricarica si rimuoverà la loro Configurazione YAML  attuale e si caricherà la versione aggiornata.",
-                            "person": "Ricarica persone",
+                            "person": "Ricarica le persone",
                             "scene": "Ricarica le Scene",
                             "script": "Ricarica gli Script",
-                            "zone": "Ricarica zone"
+                            "zone": "Ricarica le zone"
                         },
                         "server_management": {
                             "confirm_restart": "Sei sicuro di voler riavviare Home Assistant?",
@@ -1687,7 +1687,7 @@
                         "validation": {
                             "check_config": "Verifica Configurazione",
                             "heading": "Convalida della configurazione",
-                            "introduction": "Convalidare la configurazione se di recente sono state apportate alcune modifiche alla configurazione e si desidera assicurarsi che sia tutto valido",
+                            "introduction": "Convalidare la configurazione se di recente sono state apportate alcune modifiche alla configurazione e ci si vuole assicurare che sia tutto valido",
                             "invalid": "Configurazione non valida",
                             "valid": "Configurazione valida!"
                         }
@@ -2082,7 +2082,7 @@
                     }
                 },
                 "changed_toast": {
-                    "message": "La configurazione dell'Interfaccia Utente di Lovelace per questo cruscotto è stata aggiornata, ricaricare per vedere le modifiche?",
+                    "message": "La configurazione dell'Interfaccia Utente di Lovelace per questa plancia è stata aggiornata, ricaricare per vedere le modifiche?",
                     "refresh": "Aggiorna"
                 },
                 "editor": {
@@ -2317,14 +2317,14 @@
                     "save_config": {
                         "cancel": "Rinuncia",
                         "close": "Chiudi",
-                        "empty_config": "Iniziare con un cruscotto vuoto",
+                        "empty_config": "Iniziare con una plancia vuota",
                         "header": "Prendi il controllo della tua interfaccia utente di Lovelace",
-                        "para": "Questo cruscotto è attualmente gestito da Home Assistant. E' aggiornato automaticamente quando nuove entità o componenti dell'Interfaccia Utente Lovelace diventano disponibili. Se si assume il controllo, questo cruscotto non verrà più aggiornato automaticamente. È sempre possibile creare un nuovo cruscotto in configurazione con cui esperimentare.",
+                        "para": "Questa plancia è attualmente gestita da Home Assistant. E' aggiornata automaticamente quando nuove entità o componenti dell'Interfaccia Utente Lovelace diventano disponibili. Se si assume il controllo, questa plancia non verrà più aggiornata automaticamente. È sempre possibile creare una nuova plancia in configurazione con cui esperimentare.",
                         "para_sure": "Sei sicuro di voler prendere il controllo della tua interfaccia utente?",
                         "save": "Prendere il controllo",
-                        "yaml_config": "Per aiutarti a iniziare qui c'è la configurazione corrente di questo cruscotto:",
-                        "yaml_control": "Per assumere il controllo in modalità YAML, creare un file YAML con il nome specificato nella configurazione per questo cruscotto, o il predefinito 'ui-lovelace.yaml'.",
-                        "yaml_mode": "Questo cruscotto sta utilizzando la modalità YAML, il che significa che non è possibile modificare la configurazione di Lovelace dall'Interfaccia Utente. Se volete gestire questo cruscotto dall'Interfaccia Utente, rimuovere 'mode: yaml' dalla configurazione di Lovelace in 'configuration.yaml'."
+                        "yaml_config": "Per aiutarti a iniziare qui c'è la configurazione attuale di questa plancia:",
+                        "yaml_control": "Per assumere il controllo in modalità YAML, creare un file YAML con il nome specificato nella tua configurazione per questa plancia, o il predefinito 'ui-lovelace.yaml'.",
+                        "yaml_mode": "Questa plancia sta utilizzando la modalità YAML, il che significa che non è possibile modificare la configurazione di Lovelace dall'Interfaccia Utente. Se volete gestire questa plancia dall'Interfaccia Utente, rimuovere 'mode: yaml' dalla configurazione di Lovelace in 'configuration.yaml'."
                     },
                     "suggest_card": {
                         "add": "Aggiungi all'interfaccia utente di Lovelace",
@@ -2534,7 +2534,7 @@
                     "location_name_default": "Casa"
                 },
                 "integration": {
-                    "finish": "Finire",
+                    "finish": "Finito",
                     "intro": "Dispositivi e servizi sono rappresentati in Home Assistant come integrazioni. È possibile impostarli ora, o farlo in seguito dalla schermata di configurazione.",
                     "more_integrations": "Di Più"
                 },
@@ -2571,9 +2571,9 @@
                 },
                 "current_user": "Sei attualmente connesso come {fullName}.",
                 "dashboard": {
-                    "description": "Scegliere un cruscotto di default per questo dispositivo.",
-                    "dropdown_label": "Cruscotto",
-                    "header": "Cruscotto"
+                    "description": "Scegliere una plancia di default per questo dispositivo.",
+                    "dropdown_label": "Plancia",
+                    "header": "Plancia"
                 },
                 "force_narrow": {
                     "description": "Questo nasconderà la barra laterale per impostazione predefinita, in modo simile all'esperienza mobile",
