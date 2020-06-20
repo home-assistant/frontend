@@ -5,6 +5,7 @@ import DateRangePicker from "vue2-daterange-picker";
 import dateRangePickerStyles from "vue2-daterange-picker/dist/vue2-daterange-picker.css";
 import { fireEvent } from "../common/dom/fire_event";
 import { Constructor } from "../types";
+import { customElement } from "lit-element/lib/decorators";
 
 const Component = Vue.extend({
   props: {
@@ -84,6 +85,7 @@ const Component = Vue.extend({
 
 const WrappedElement: Constructor<HTMLElement> = wrap(Vue, Component);
 
+@customElement("date-range-picker")
 class DateRangePickerElement extends WrappedElement {
   constructor() {
     super();
@@ -214,8 +216,13 @@ class DateRangePickerElement extends WrappedElement {
         `;
     const shadowRoot = this.shadowRoot!;
     shadowRoot.appendChild(style);
+    // Stop click events from reaching the document, otherwise it will close the picker immediately.
     shadowRoot.addEventListener("click", (ev) => ev.stopPropagation());
   }
 }
 
-window.customElements.define("date-range-picker", DateRangePickerElement);
+declare global {
+  interface HTMLElementTagNameMap {
+    "date-range-picker": DateRangePickerElement;
+  }
+}

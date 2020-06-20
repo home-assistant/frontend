@@ -9,8 +9,9 @@ export interface LogbookEntry {
   context_user_id?: string;
 }
 
-const DATA_CACHE = {};
-const ALL_ENTITIES = "*";
+const DATA_CACHE: {
+  [cacheKey: string]: { [entityId: string]: Promise<LogbookEntry[]> };
+} = {};
 
 export const getLogbookData = (
   hass: HomeAssistant,
@@ -18,52 +19,49 @@ export const getLogbookData = (
   endDate: string,
   entityId?: string
 ) => {
-  if (!entityId) entityId = ALL_ENTITIES;
+  const ALL_ENTITIES = "*";
 
-  if (!DATA_CACHE[startDate]) DATA_CACHE[startDate] = [];
-  if (!DATA_CACHE[startDate][endDate]) DATA_CACHE[startDate][endDate] = [];
-
-  if (DATA_CACHE[startDate][endDate][entityId]) {
-    return DATA_CACHE[startDate][endDate][entityId];
+  if (!entityId) {
+    entityId = ALL_ENTITIES;
   }
 
-  if (
-    entityId !== ALL_ENTITIES &&
-    DATA_CACHE[startDate][endDate][ALL_ENTITIES]
-  ) {
-    return DATA_CACHE[startDate][endDate][ALL_ENTITIES].then(function (
-      entities
-    ) {
-      return entities.filter(function (entity) {
-        return entity.entity_id === entityId;
-      });
-    });
+  const cacheKey = `${startDate}${endDate}`;
+
+  if (!DATA_CACHE[cacheKey]) {
+    DATA_CACHE[cacheKey] = {};
   }
 
-  DATA_CACHE[startDate][endDate][entityId] = _getLogbookDataFromServer(
+  if (DATA_CACHE[cacheKey][entityId]) {
+    return DATA_CACHE[cacheKey][entityId];
+  }
+
+  if (entityId !== ALL_ENTITIES && DATA_CACHE[cacheKey][ALL_ENTITIES]) {
+    return DATA_CACHE[cacheKey][ALL_ENTITIES].then((entities) =>
+      entities.filter((entity) => entity.entity_id === entityId)
+    );
+  }
+
+  DATA_CACHE[cacheKey][entityId] = getLogbookDataFromServer(
     hass,
     startDate,
     endDate,
-    entityId
-  );
-  return DATA_CACHE[startDate][endDate][entityId];
+    entityId !== ALL_ENTITIES ? entityId : undefined
+  ).then((entries) => entries.reverse());
+  return DATA_CACHE[cacheKey][entityId];
 };
 
-const _getLogbookDataFromServer = async (
+const getLogbookDataFromServer = async (
   hass: HomeAssistant,
   startDate: string,
   endDate: string,
   entityId?: string
 ) => {
-  let url = "logbook/" + startDate + "?end_time=" + endDate;
-  if (entityId !== ALL_ENTITIES) {
-    url += "&entity=" + entityId;
-  }
-
-  const entries = await hass.callApi<LogbookEntry[]>("GET", url);
-  return entries.reverse();
+  const url = `logbook/${startDate}?end_time=${endDate}${
+    entityId ? `&entity=${entityId}` : ""
+  }`;
+  return hass.callApi<LogbookEntry[]>("GET", url);
 };
 
 export const clearLogbookCache = (startDate, endDate) => {
-  DATA_CACHE[startDate][endDate] = [];
+  DATA_CACHE[`${startDate}${endDate}`] = {};
 };
