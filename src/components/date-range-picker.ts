@@ -57,22 +57,22 @@ const Component = Vue.extend({
         expression: "dateRange",
       },
       scopedSlots: {
-        input: function () {
+        input() {
           return createElement("slot", {
             domProps: { name: "input" },
           });
         },
-        header: function () {
+        header() {
           return createElement("slot", {
             domProps: { name: "header" },
           });
         },
-        ranges: function () {
+        ranges() {
           return createElement("slot", {
             domProps: { name: "ranges" },
           });
         },
-        footer: function () {
+        footer() {
           return createElement("slot", {
             domProps: { name: "footer" },
           });
