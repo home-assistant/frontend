@@ -17,7 +17,11 @@ import {
 } from "lit-element";
 import { HomeAssistant } from "../../types";
 import { haStyle } from "../../resources/styles";
-import { clearLogbookCache, getLogbookData } from "../../data/logbook";
+import {
+  clearLogbookCache,
+  getLogbookData,
+  LogbookEntry,
+} from "../../data/logbook";
 import { mdiRefresh } from "@mdi/js";
 import "../../components/ha-date-range-picker";
 import type { DateRangePickerRanges } from "../../components/ha-date-range-picker";
@@ -36,7 +40,7 @@ export class HaPanelLogbook extends LitElement {
 
   @property() _isLoading = false;
 
-  @property() _entries = [];
+  @property() _entries: LogbookEntry[] = [];
 
   @property({ reflect: true, type: Boolean }) rtl = false;
 
