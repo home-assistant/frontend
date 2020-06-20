@@ -28,8 +28,8 @@ class HaEntityHumidifier extends HaEntityToggle {
   }
 
   static get styles(): CSSResult[] {
-    let toggle_styles = super.styles;
-    let humidifier_styles = [
+    const toggle_styles = super.styles;
+    const humidifier_styles = [
       css`
         :host {
           display: flex;
