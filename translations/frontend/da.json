@@ -1908,12 +1908,17 @@
                         "add_node_secure": "Tilføj sikkert knudepunkt",
                         "cancel_command": "Annuller kommando",
                         "heal_network": "Helbred netværk",
+                        "heal_node": "Helbred node",
+                        "node_info": "Node information",
+                        "print_node": "Udskriv node",
+                        "refresh_entity": "Opdater entitet",
                         "remove_node": "Fjern knudepunkt",
                         "save_config": "Gem konfiguration",
                         "soft_reset": "Blød nulstilling",
                         "start_network": "Start netværk",
                         "stop_network": "Stop netværk",
-                        "test_network": "Test netværk"
+                        "test_network": "Test netværk",
+                        "test_node": "Test node"
                     },
                     "values": {
                         "header": "Knudepunktsværdier"
