@@ -64,9 +64,6 @@ export class ZHAClusters extends LitElement {
     return html`
       <ha-config-section .isWide="${this.isWide}">
         <div class="header" slot="header">
-          <span>
-            ${this.hass!.localize("ui.panel.config.zha.clusters.header")}
-          </span>
           <ha-icon-button
             class="toggle-help-icon"
             @click="${this._onHelpTap}"
