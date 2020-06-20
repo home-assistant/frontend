@@ -46,6 +46,10 @@ declare global {
 }
 
 const integrationsWithPanel = {
+  mqtt: {
+    buttonLocalizeKey: "ui.panel.config.mqtt.button",
+    path: "/config/mqtt",
+  },
   zha: {
     buttonLocalizeKey: "ui.panel.config.zha.button",
     path: "/config/zha/dashboard",
