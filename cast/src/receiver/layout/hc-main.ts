@@ -192,10 +192,8 @@ export class HcMain extends HassElement {
           this._handleNewLovelaceConfig(lovelaceConfig)
         );
       } catch (err) {
-        if (err.code !== "config_not_found") {
-          // eslint-disable-next-line
-          console.log(err);
-        }
+        // eslint-disable-next-line
+        console.log("Error fetching Lovelace configuration", err, msg);
         // Generate a Lovelace config.
         this._unsubLovelace = () => undefined;
         await this._generateLovelaceConfig();
