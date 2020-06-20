@@ -38,6 +38,10 @@ class HaConfigZwave extends LocalizeMixin(EventsMixin(PolymerElement)) {
   static get template() {
     return html`
       <style include="iron-flex ha-style ha-form-style">
+        app-toolbar {
+          border-bottom: 1px solid var(--divider-color);
+        }
+
         .content {
           margin-top: 24px;
         }

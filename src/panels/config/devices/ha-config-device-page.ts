@@ -477,7 +477,9 @@ export class HaConfigDevicePage extends LitElement {
   ): TemplateResult[] {
     const templates: TemplateResult[] = [];
     if (integrations.includes("mqtt")) {
-      import("./device-detail/integration-elements/ha-device-actions-mqtt");
+      import(
+        "./device-detail/integration-elements/mqtt/ha-device-actions-mqtt"
+      );
       templates.push(html`
         <div class="card-actions" slot="actions">
           <ha-device-actions-mqtt
@@ -488,8 +490,8 @@ export class HaConfigDevicePage extends LitElement {
       `);
     }
     if (integrations.includes("zha")) {
-      import("./device-detail/integration-elements/ha-device-actions-zha");
-      import("./device-detail/integration-elements/ha-device-info-zha");
+      import("./device-detail/integration-elements/zha/ha-device-actions-zha");
+      import("./device-detail/integration-elements/zha/ha-device-info-zha");
       templates.push(html`
         <ha-device-info-zha
           .hass=${this.hass}

@@ -8,17 +8,17 @@ import {
   css,
   PropertyValues,
 } from "lit-element";
-import { DeviceRegistryEntry } from "../../../../../data/device_registry";
-import { haStyle } from "../../../../../resources/styles";
-import { HomeAssistant } from "../../../../../types";
+import { DeviceRegistryEntry } from "../../../../../../data/device_registry";
+import { haStyle } from "../../../../../../resources/styles";
+import { HomeAssistant } from "../../../../../../types";
 import {
   ZHADevice,
   fetchZHADevice,
   reconfigureNode,
-} from "../../../../../data/zha";
-import { navigate } from "../../../../../common/navigate";
-import { showZHADeviceZigbeeInfoDialog } from "../../../../../dialogs/zha-device-zigbee-signature-dialog/show-dialog-zha-device-zigbee-info";
-import { showConfirmationDialog } from "../../../../../dialogs/generic/show-dialog-box";
+} from "../../../../../../data/zha";
+import { navigate } from "../../../../../../common/navigate";
+import { showZHADeviceZigbeeInfoDialog } from "../../../../../../dialogs/zha-device-zigbee-signature-dialog/show-dialog-zha-device-zigbee-info";
+import { showConfirmationDialog } from "../../../../../../dialogs/generic/show-dialog-box";
 
 @customElement("ha-device-actions-zha")
 export class HaDeviceActionsZha extends LitElement {

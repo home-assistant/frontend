@@ -9,13 +9,14 @@ import {
   property,
   TemplateResult,
 } from "lit-element";
-import "../../../components/ha-card";
-import "../../../components/ha-code-editor";
-import { haStyle } from "../../../resources/styles";
-import { HomeAssistant } from "../../../types";
+import "../../../../../components/ha-card";
+import "../../../../../components/ha-code-editor";
+import { haStyle } from "../../../../../resources/styles";
+import { HomeAssistant } from "../../../../../types";
 import "./mqtt-subscribe-card";
+import "../../../../../layouts/hass-subpage";
 
-@customElement("developer-tools-mqtt")
+@customElement("mqtt-config-panel")
 class HaPanelDevMqtt extends LitElement {
   @property() public hass!: HomeAssistant;
 
@@ -37,43 +38,41 @@ class HaPanelDevMqtt extends LitElement {
 
   protected render(): TemplateResult {
     return html`
-      <div class="content">
-        <ha-card
-          header="${this.hass.localize(
-            "ui.panel.developer-tools.tabs.mqtt.description_publish"
-          )}"
-        >
-          <div class="card-content">
-            <paper-input
-              label="${this.hass.localize(
-                "ui.panel.developer-tools.tabs.mqtt.topic"
-              )}"
-              .value=${this.topic}
-              @value-changed=${this._handleTopic}
-            ></paper-input>
+      <hass-subpage>
+        <div class="content">
+          <ha-card
+            header="${this.hass.localize(
+              "ui.panel.config.mqtt.description_publish"
+            )}"
+          >
+            <div class="card-content">
+              <paper-input
+                label="${this.hass.localize("ui.panel.config.mqtt.topic")}"
+                .value=${this.topic}
+                @value-changed=${this._handleTopic}
+              ></paper-input>
 
-            <p>
-              ${this.hass.localize(
-                "ui.panel.developer-tools.tabs.mqtt.payload"
-              )}
-            </p>
-            <ha-code-editor
-              mode="jinja2"
-              .value="${this.payload}"
-              @value-changed=${this._handlePayload}
-            ></ha-code-editor>
-          </div>
-          <div class="card-actions">
-            <mwc-button @click=${this._publish}
-              >${this.hass.localize(
-                "ui.panel.developer-tools.tabs.mqtt.publish"
-              )}</mwc-button
-            >
-          </div>
-        </ha-card>
+              <p>
+                ${this.hass.localize("ui.panel.config.mqtt.payload")}
+              </p>
+              <ha-code-editor
+                mode="jinja2"
+                .value="${this.payload}"
+                @value-changed=${this._handlePayload}
+              ></ha-code-editor>
+            </div>
+            <div class="card-actions">
+              <mwc-button @click=${this._publish}
+                >${this.hass.localize(
+                  "ui.panel.config.mqtt.publish"
+                )}</mwc-button
+              >
+            </div>
+          </ha-card>
 
-        <mqtt-subscribe-card .hass=${this.hass}></mqtt-subscribe-card>
-      </div>
+          <mqtt-subscribe-card .hass=${this.hass}></mqtt-subscribe-card>
+        </div>
+      </hass-subpage>
     `;
   }
 
