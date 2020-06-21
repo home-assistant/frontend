@@ -22,7 +22,7 @@ import "../../../src/layouts/hass-tabs-subpage";
 import "../../../src/layouts/loading-screen";
 import { HomeAssistant, Route } from "../../../src/types";
 import { showRepositoriesDialog } from "../dialogs/repositories/show-dialog-repositories";
-import { supervisorTabs } from "../hassio-panel";
+import { supervisorTabs } from "../hassio-tabs";
 import "./hassio-addon-repository";
 
 const sortRepos = (a: HassioAddonRepository, b: HassioAddonRepository) => {
