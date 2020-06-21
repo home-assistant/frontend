@@ -1,4 +1,3 @@
-import "@polymer/paper-spinner/paper-spinner-lite";
 import {
   css,
   CSSResult,
@@ -7,11 +6,12 @@ import {
   LitElement,
   TemplateResult,
 } from "lit-element";
+import "../components/ha-spinner";
 
 @customElement("loading-screen")
 class LoadingScreen extends LitElement {
   protected render(): TemplateResult {
-    return html` <paper-spinner-lite active></paper-spinner-lite> `;
+    return html` <ha-spinner active></ha-spinner> `;
   }
 
   static get styles(): CSSResult {

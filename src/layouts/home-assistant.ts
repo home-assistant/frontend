@@ -11,6 +11,9 @@ import {
 } from "../util/register-service-worker";
 import "./ha-init-page";
 import "./home-assistant-main";
+import { dumpRegistrations } from "@polymer/polymer/lib/mixins/element-mixin.js";
+
+window.dump = dumpRegistrations;
 
 export class HomeAssistantAppEl extends HassElement {
   @property() private _route?: Route;
