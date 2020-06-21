@@ -43,6 +43,11 @@ declare global {
     };
     change: undefined;
   }
+
+  // For loading workers in webpack
+  interface ImportMeta {
+    url: string;
+  }
 }
 
 export type Constructor<T = {}> = new (...args: any[]) => T;
