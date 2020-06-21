@@ -2,7 +2,7 @@ import "@material/mwc-button";
 import "@polymer/iron-flex-layout/iron-flex-layout-classes";
 import "@polymer/iron-input/iron-input";
 import "@polymer/paper-input/paper-input";
-import "@polymer/paper-spinner/paper-spinner";
+import "../../../components/ha-spinner";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 /* eslint-plugin-disable lit */
 import { PolymerElement } from "@polymer/polymer/polymer-element";
@@ -38,7 +38,7 @@ class MoreInfoConfigurator extends PolymerElement {
           height: 41px;
         }
 
-        paper-spinner {
+        ha-spinner {
           width: 14px;
           height: 14px;
           margin-right: 20px;
@@ -75,11 +75,11 @@ class MoreInfoConfigurator extends PolymerElement {
               disabled="[[isConfiguring]]"
               on-click="submitClicked"
             >
-              <paper-spinner
+              <ha-spinner
                 active="[[isConfiguring]]"
                 hidden="[[!isConfiguring]]"
                 alt="Configuring"
-              ></paper-spinner>
+              ></ha-spinner>
               [[stateObj.attributes.submit_caption]]
             </mwc-button>
           </p>

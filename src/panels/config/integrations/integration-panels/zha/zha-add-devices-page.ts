@@ -1,6 +1,6 @@
 import "@material/mwc-button";
 import "../../../../../components/ha-icon-button";
-import "@polymer/paper-spinner/paper-spinner";
+import "../../../../../components/ha-spinner";
 import {
   css,
   CSSResult,
@@ -97,7 +97,7 @@ class ZHAAddDevicesPage extends LitElement {
                     "ui.panel.config.zha.add_device_page.spinner"
                   )}
                 </h1>
-                <paper-spinner active alt="Searching"></paper-spinner>
+                <ha-spinner active alt="Searching"></ha-spinner>
               `
             : html`
                 <div>
@@ -226,7 +226,7 @@ class ZHAAddDevicesPage extends LitElement {
         .error {
           color: var(--google-red-500);
         }
-        paper-spinner {
+        ha-spinner {
           padding: 20px;
         }
         .searching {

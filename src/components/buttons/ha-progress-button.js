@@ -1,5 +1,5 @@
 import "@material/mwc-button";
-import "@polymer/paper-spinner/paper-spinner";
+import "../../components/ha-spinner";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 /* eslint-plugin-disable lit */
 import { PolymerElement } from "@polymer/polymer/polymer-element";
@@ -51,7 +51,7 @@ class HaProgressButton extends PolymerElement {
           <slot></slot>
         </mwc-button>
         <template is="dom-if" if="[[progress]]">
-          <div class="progress"><paper-spinner active=""></paper-spinner></div>
+          <div class="progress"><ha-spinner active=""></ha-spinner></div>
         </template>
       </div>
     `;

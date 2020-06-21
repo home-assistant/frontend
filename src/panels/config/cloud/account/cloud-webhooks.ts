@@ -1,6 +1,6 @@
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-item/paper-item-body";
-import "@polymer/paper-spinner/paper-spinner";
+import "../../../../components/ha-spinner";
 import { html, LitElement, property, PropertyValues } from "lit-element";
 import "../../../../components/ha-card";
 import "../../../../components/ha-switch";
@@ -119,7 +119,7 @@ export class CloudWebhooks extends LitElement {
           ${this._progress.includes(entry.webhook_id)
             ? html`
                 <div class="progress">
-                  <paper-spinner active></paper-spinner>
+                  <ha-spinner active></ha-spinner>
                 </div>
               `
             : this._cloudHooks![entry.webhook_id]

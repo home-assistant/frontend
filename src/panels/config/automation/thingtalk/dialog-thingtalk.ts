@@ -2,7 +2,7 @@ import "@material/mwc-button";
 import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable";
 import "@polymer/paper-input/paper-input";
 import type { PaperInputElement } from "@polymer/paper-input/paper-input";
-import "@polymer/paper-spinner/paper-spinner";
+import "../../../../components/ha-spinner";
 import {
   css,
   CSSResult,
@@ -132,10 +132,10 @@ class DialogThingtalk extends LitElement {
             Skip
           </mwc-button>
           <mwc-button @click="${this._generate}" .disabled=${this._submitting}>
-            <paper-spinner
+            <ha-spinner
               ?active="${this._submitting}"
               alt="Creating your automation..."
-            ></paper-spinner>
+            ></ha-spinner>
             Create automation
           </mwc-button>
         </div>
@@ -245,15 +245,15 @@ class DialogThingtalk extends LitElement {
         mwc-button.left {
           margin-right: auto;
         }
-        mwc-button paper-spinner {
+        mwc-button ha-spinner {
           width: 14px;
           height: 14px;
           margin-right: 20px;
         }
-        paper-spinner {
+        ha-spinner {
           display: none;
         }
-        paper-spinner[active] {
+        ha-spinner[active] {
           display: block;
         }
         .error {

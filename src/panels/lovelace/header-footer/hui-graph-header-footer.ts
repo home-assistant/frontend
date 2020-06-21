@@ -1,4 +1,4 @@
-import "@polymer/paper-spinner/paper-spinner";
+import "../../../components/ha-spinner";
 import { HassEntity } from "home-assistant-js-websocket";
 import {
   css,
@@ -74,7 +74,7 @@ export class HuiGraphHeaderFooter extends LitElement
     if (!this._coordinates) {
       return html`
         <div class="container">
-          <paper-spinner active></paper-spinner>
+          <ha-spinner active></ha-spinner>
         </div>
       `;
     }
@@ -164,7 +164,7 @@ export class HuiGraphHeaderFooter extends LitElement
 
   static get styles(): CSSResult {
     return css`
-      paper-spinner {
+      ha-spinner {
         position: absolute;
         top: calc(50% - 28px);
       }

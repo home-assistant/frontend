@@ -9,7 +9,7 @@ import {
 } from "lit-element";
 import { classMap } from "lit-html/directives/class-map";
 
-// Adapted from polymer element https://github.com/PolymerElements/paper-spinner
+// Adapted from polymer element https://github.com/PolymerElements/ha-spinner
 /**
 @license
 Copyright (c) 2015 The Polymer Project Authors. All rights reserved.

@@ -5,7 +5,7 @@ import "@polymer/paper-input/paper-input";
 import type { PaperInputElement } from "@polymer/paper-input/paper-input";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-item/paper-item-body";
-import "@polymer/paper-spinner/paper-spinner";
+import "../../components/ha-spinner";
 import {
   css,
   CSSResult,
@@ -108,7 +108,7 @@ class HassioRepositoriesDialog extends LitElement {
             ></paper-input>
             <mwc-button @click=${this._addRepository}>
               ${this._prosessing
-                ? html`<paper-spinner active></paper-spinner>`
+                ? html`<ha-spinner active></ha-spinner>`
                 : "Add"}
             </mwc-button>
           </div>

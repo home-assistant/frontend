@@ -1,4 +1,4 @@
-import "@polymer/paper-spinner/paper-spinner";
+import "../../../components/ha-spinner";
 import {
   css,
   CSSResult,
@@ -46,7 +46,7 @@ class SystemHealthCard extends LitElement {
       sections.push(
         html`
           <div class="loading-container">
-            <paper-spinner active></paper-spinner>
+            <ha-spinner active></ha-spinner>
           </div>
         `
       );

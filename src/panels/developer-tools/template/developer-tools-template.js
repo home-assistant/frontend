@@ -1,4 +1,4 @@
-import "@polymer/paper-spinner/paper-spinner";
+import "../../../components/ha-spinner";
 import { timeOut } from "@polymer/polymer/lib/utils/async";
 import { Debouncer } from "@polymer/polymer/lib/utils/debounce";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
@@ -92,10 +92,10 @@ class HaPanelDevTemplate extends LocalizeMixin(PolymerElement) {
         </div>
 
         <div class="render-pane">
-          <paper-spinner
+          <ha-spinner
             class="render-spinner"
             active="[[rendering]]"
-          ></paper-spinner>
+          ></ha-spinner>
           <pre class$="[[computeRenderedClasses(error)]]">[[processed]]</pre>
         </div>
       </div>

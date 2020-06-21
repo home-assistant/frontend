@@ -1,5 +1,5 @@
 import "../../../../../components/ha-icon-button";
-import "@polymer/paper-spinner/paper-spinner";
+import "../../../../../components/ha-spinner";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import {
   css,
@@ -92,7 +92,7 @@ export class ZwaveNetwork extends LitElement {
                       `
                     : this._networkStatus.state === ZWAVE_NETWORK_STATE_STARTED
                     ? html`
-                        <paper-spinner active></paper-spinner>
+                        <ha-spinner active></ha-spinner>
                         ${this.hass!.localize(
                           "ui.panel.config.zwave.network_status.network_starting"
                         )}<br />

@@ -1,6 +1,6 @@
 import "@material/mwc-button";
 import "../../../../../components/ha-icon-button";
-import "@polymer/paper-spinner/paper-spinner";
+import "../../../../../components/ha-spinner";
 import {
   css,
   CSSResult,
@@ -166,12 +166,12 @@ export class ZHAGroupPage extends LitElement {
                     @click="${this._removeMembersFromGroup}"
                     class="button"
                   >
-                    <paper-spinner
+                    <ha-spinner
                       ?active="${this._processingRemove}"
                       alt=${this.hass.localize(
                         "ui.panel.config.zha.groups.removing_members"
                       )}
-                    ></paper-spinner>
+                    ></ha-spinner>
                     ${this.hass!.localize(
                       "ui.panel.config.zha.groups.remove_members"
                     )}</mwc-button
@@ -201,12 +201,12 @@ export class ZHAGroupPage extends LitElement {
               @click="${this._addMembersToGroup}"
               class="button"
             >
-              <paper-spinner
+              <ha-spinner
                 ?active="${this._processingAdd}"
                 alt=${this.hass.localize(
                   "ui.panel.config.zha.groups.adding_members"
                 )}
-              ></paper-spinner>
+              ></ha-spinner>
               ${this.hass!.localize(
                 "ui.panel.config.zha.groups.add_members"
               )}</mwc-button
@@ -309,15 +309,15 @@ export class ZHAGroupPage extends LitElement {
           text-decoration: none;
         }
 
-        mwc-button paper-spinner {
+        mwc-button ha-spinner {
           width: 14px;
           height: 14px;
           margin-right: 20px;
         }
-        paper-spinner {
+        ha-spinner {
           display: none;
         }
-        paper-spinner[active] {
+        ha-spinner[active] {
           display: block;
         }
         .paper-dialog-buttons {
