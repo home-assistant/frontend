@@ -11,7 +11,7 @@ import { PolymerElement } from "@polymer/polymer/polymer-element";
 import "../../src/components/ha-card";
 import "../../src/managers/notification-manager";
 import "../../src/styles/polymer-ha-style";
-import { DEMOS } from "../build/import-demos.ts";
+import { DEMOS } from "../build/import-demos";
 
 const fixPath = (path) => path.substr(2, path.length - 5);
 
