@@ -188,7 +188,7 @@
     "sinon": "^7.3.1",
     "source-map-url": "^0.4.0",
     "systemjs": "^6.3.2",
-    "terser-webpack-plugin": "^1.2.3",
+    "terser-webpack-plugin": "^3.0.6",
     "ts-lit-plugin": "^1.1.10",
     "ts-mocha": "^6.0.0",
     "typescript": "^3.8.3",
