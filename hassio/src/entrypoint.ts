@@ -1,5 +1,5 @@
-import "../../src/resources/compatibility";
-import "../../src/resources/roboto";
+import "~app/resources/compatibility";
+import "~app/resources/roboto";
 import "./hassio-main";
 
 const styleEl = document.createElement("style");

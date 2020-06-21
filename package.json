@@ -22,6 +22,7 @@
   "author": "Paulus Schoutsen <Paulus@PaulusSchoutsen.nl> (http://paulusschoutsen.nl)",
   "license": "Apache-2.0",
   "dependencies": {
+    "~app": "file:./src",
     "@formatjs/intl-pluralrules": "^1.5.8",
     "@fullcalendar/core": "^5.0.0-beta.2",
     "@fullcalendar/daygrid": "^5.0.0-beta.2",

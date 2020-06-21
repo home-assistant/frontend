@@ -66,11 +66,7 @@
     "import/prefer-default-export": 0,
     "import/no-unresolved": 0,
     "import/no-cycle": 0,
-    "import/extensions": [
-      2,
-      "ignorePackages",
-      { "ts": "never", "js": "never" }
-    ],
+    "import/extensions": 0,
     "no-restricted-syntax": ["error", "LabeledStatement", "WithStatement"],
     "object-curly-newline": 0,
     "default-case": 0,

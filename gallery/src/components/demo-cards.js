@@ -2,8 +2,8 @@ import "@polymer/app-layout/app-toolbar/app-toolbar";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 /* eslint-plugin-disable lit */
 import { PolymerElement } from "@polymer/polymer/polymer-element";
-import "../../../src/components/ha-switch";
-import "../../../src/components/ha-formfield";
+import "~app/components/ha-switch";
+import "~app/components/ha-formfield";
 import "./demo-card";
 
 class DemoCards extends PolymerElement {
