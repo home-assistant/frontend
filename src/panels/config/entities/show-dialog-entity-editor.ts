@@ -1,6 +1,6 @@
 import { fireEvent } from "../../../common/dom/fire_event";
 import { EntityRegistryEntry } from "../../../data/entity_registry";
-import { DialogEntityEditor } from "./dialog-entity-editor";
+import type { DialogEntityEditor } from "./dialog-entity-editor";
 
 export interface EntityRegistryDetailDialogParams {
   entry?: EntityRegistryEntry;

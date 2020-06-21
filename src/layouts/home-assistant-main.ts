@@ -9,6 +9,7 @@ import {
   html,
   LitElement,
   property,
+  customElement,
   PropertyValues,
   TemplateResult,
 } from "lit-element";
@@ -29,6 +30,7 @@ declare global {
   }
 }
 
+@customElement("home-assistant-main")
 class HomeAssistantMain extends LitElement {
   @property() public hass!: HomeAssistant;
 
@@ -170,4 +172,8 @@ class HomeAssistantMain extends LitElement {
   }
 }
 
-customElements.define("home-assistant-main", HomeAssistantMain);
+declare global {
+  interface HTMLElementTagNameMap {
+    "home-assistant-main": HomeAssistantMain;
+  }
+}
