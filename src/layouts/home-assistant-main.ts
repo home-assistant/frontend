@@ -130,10 +130,6 @@ class HomeAssistantMain extends LitElement {
     }
   }
 
-  private _narrowChanged(ev: PolymerChangedEvent<boolean>) {
-    this.narrow = ev.detail.value;
-  }
-
   private get _sidebarNarrow() {
     return this.narrow || this.hass.dockedSidebar === "always_hidden";
   }
