@@ -471,11 +471,15 @@
         },
         "common": {
             "and": "וגם",
+            "back": "חזור",
             "cancel": "ביטול",
             "delete": "מחיקה",
+            "error_required": "חובה",
             "loading": "טוען",
+            "menu": "תפריט",
             "next": "הבא",
             "no": "לא",
+            "overflow_menu": "תפריט גולש",
             "previous": "הקודם",
             "refresh": "רענן",
             "save": "שמור",
@@ -488,6 +492,7 @@
             "device-picker": {
                 "clear": "נקה",
                 "device": "התקן",
+                "no_area": "אין אזור",
                 "show_devices": "הצג התקנים"
             },
             "entity": {
@@ -530,17 +535,39 @@
                 "close": "סגור"
             },
             "helper_settings": {
+                "generic": {
+                    "icon": "סמל",
+                    "name": "שם"
+                },
                 "input_datetime": {
                     "date": "תאריך",
                     "datetime": "תאריך ושעה",
                     "time": "זמן"
+                },
+                "input_number": {
+                    "box": "שדה קלט",
+                    "max": "ערך מקסימאלי",
+                    "min": "ערך מינימלי",
+                    "mode": "מצב תצוגה",
+                    "slider": "סליידר",
+                    "step": "גודל צעד",
+                    "unit_of_measurement": "יחידת מידה"
                 },
                 "input_select": {
                     "add": "הוסף",
                     "add_option": "הוסף אפשרות",
                     "no_options": "אין עדיין אפשרויות.",
                     "options": "אפשרויות"
-                }
+                },
+                "input_text": {
+                    "max": "אורך מקסימאלי",
+                    "min": "אורך מינימלי",
+                    "mode": "מצב תצוגה",
+                    "password": "סיסמה",
+                    "pattern": "דפוס Regex לצורך אימות בצד הלקוח",
+                    "text": "טקסט"
+                },
+                "required_error_msg": "שדה זה הוא חובה"
             },
             "more_info_control": {
                 "dismiss": "סגור",
@@ -629,6 +656,8 @@
         "notification_toast": {
             "connection_lost": "החיבור אבד. מתחבר מחדש...",
             "service_call_failed": "נכשלה הקריאה לשירות {service} .",
+            "started": "Home Assistant עלה!",
+            "starting": "Home Assistant בעלייה, ייתכן שלא הכל יהיה זמין עד שהעליה תסתיים",
             "triggered": "הופעל {שם}"
         },
         "panel": {
@@ -653,8 +682,12 @@
                     },
                     "description": "סקירה של כל האזורים בביתך",
                     "editor": {
+                        "area_id": "מזהה אזור",
                         "create": "צור",
                         "delete": "מחק",
+                        "name": "שם",
+                        "name_required": "שם הוא חובה",
+                        "unknown_error": "שגיאה לא ידועה",
                         "update": "עדכון"
                     },
                     "picker": {
@@ -687,6 +720,7 @@
                                     "label": "עיכוב"
                                 },
                                 "device_id": {
+                                    "action": "פעולה",
                                     "extra_fields": {
                                         "code": "קוד"
                                     },
@@ -728,6 +762,7 @@
                                     "label": "וגם"
                                 },
                                 "device": {
+                                    "condition": "תנאי",
                                     "extra_fields": {
                                         "above": "מעל",
                                         "below": "מתחת",
@@ -787,6 +822,8 @@
                         "introduction": "השתמש/י באוטומציות להפיח חיים בביתך.",
                         "load_error_not_editable": "רק אוטומציה ב automations.yaml ניתנים לעריכה.",
                         "load_error_unknown": "שגיאה בטעינת האוטומציה ( {err_no} ).",
+                        "move_down": "הזז למטה",
+                        "move_up": "הזז למעלה",
                         "save": "שמור",
                         "triggers": {
                             "add": "הוספת טריגר",
@@ -805,7 +842,8 @@
                                         "below": "מתחת",
                                         "for": "משך"
                                     },
-                                    "label": "התקן"
+                                    "label": "התקן",
+                                    "trigger": "טריגר"
                                 },
                                 "event": {
                                     "event_data": "נתוני אירוע",
@@ -1096,6 +1134,7 @@
                     "different_include": "יתכן דרך דומיין, גלובלי או כלול אחר.",
                     "pick_attribute": "בחר תכונה לדריסה",
                     "picker": {
+                        "entity": "ישות",
                         "header": "התאמה אישית",
                         "introduction": "כוונן תכונות של כל ישות. ההתאמות הנוספות שנוספו / ייכנסו לתוקף באופן מיידי. התאמות אישיות שהוסרו ייכנסו לתוקף כאשר הישות תעודכן."
                     },
@@ -1127,12 +1166,16 @@
                         "integration": "אינטגרציה",
                         "manufacturer": "יצרן",
                         "model": "מודל",
+                        "no_area": "אין אזור",
                         "no_devices": "אין התקנים"
                     },
                     "delete": "מחיקה",
                     "description": "ניהול התקנים מחוברים",
                     "device_info": "פרטי התקן",
                     "device_not_found": "ההתקן לא נמצא.",
+                    "entities": {
+                        "disabled_entities": "+{count} {count, plural,\n  one {disabled entity}\n  other {disabled entities}\n}"
+                    },
                     "no_devices": "אין התקנים",
                     "unknown_error": "שגיאה לא ידועה",
                     "unnamed_device": "התקן ללא שם"
@@ -1163,11 +1206,14 @@
                 },
                 "header": "הגדר את Home Assistant",
                 "helpers": {
+                    "caption": "עוזרים",
+                    "description": "רכיבים שיכולים לסייע בבניית אוטומציות.",
                     "dialog": {
                         "add_platform": "הוסף {platform}",
                         "create": "צור"
                     },
                     "picker": {
+                        "add_helper": "הוסף עוזר",
                         "headers": {
                             "editable": "ניתן לעריכה",
                             "entity_id": "מזהה ישות",
@@ -1176,14 +1222,18 @@
                         }
                     },
                     "types": {
+                        "input_boolean": "החלף מצב",
                         "input_datetime": "תאריך ו/או שעה",
                         "input_number": "מספר",
+                        "input_select": "תיבת בחירה",
                         "input_text": "טקסט"
                     }
                 },
                 "info": {
                     "built_using": "נבנה באמצעות",
+                    "caption": "מידע",
                     "custom_uis": "ממשקי משתמש מותאמים אישית:",
+                    "description": "מידע על ההתקנה של Home Assistant שלך",
                     "developed_by": "פותח על ידי חבורה של אנשים מדהימים.",
                     "documentation": "תיעוד",
                     "frontend": "frontend-ui",
@@ -1198,6 +1248,11 @@
                     "source": "מקור:",
                     "system_health_error": "רכיב ה System Health אינו טעון. הוסף 'system_health:' ל - configuration.yaml",
                     "title": "מידע"
+                },
+                "integration_panel_move": {
+                    "link_integration_page": "עמוד אינטגרציות",
+                    "missing_zha": "חסר את לוח התצורה של ZHA? הוא הועבר לכניסה של ZHA בדף {integrations_page} .",
+                    "missing_zwave": "חסר את לוח התצורה של Z-Wave? הוא הועבר לכניסה של Z-Wave בכרטיסייה {integrations_page} ."
                 },
                 "integrations": {
                     "add_integration": "הוסף אינטגרציה",
@@ -1256,7 +1311,9 @@
                 },
                 "introduction": "כאן ניתן להגדיר את הרכיבים ואת ה Home Assistant. לא הכל ניתן להגדיר את ממשק המשתמש עדיין, אבל אנחנו עובדים על זה.",
                 "logs": {
+                    "caption": "יומנים",
                     "clear": "נקה",
+                    "description": "צפה ביומני Home Assistant",
                     "details": "פרטי יומן האירועים ({level})",
                     "load_full_log": "טען את הלוג המלא של Home Assistant",
                     "loading_log": "טוען יומן שגיאות ...",
@@ -1332,6 +1389,19 @@
                             "module": "JavaScript Module"
                         }
                     }
+                },
+                "mqtt": {
+                    "description_listen": "האזנה לנושא",
+                    "description_publish": "פרסם חבילה",
+                    "listening_to": "האזנה ל",
+                    "message_received": "הודעה {id} התקבלה ב- {topic} בשעה {time}:",
+                    "payload": "תוכן (תומך בתבניות)",
+                    "publish": "פרסם",
+                    "start_listening": "התחל להאזין",
+                    "stop_listening": "הפסק להאזין",
+                    "subscribe_to": "נושא להירשם אליו",
+                    "title": "MQTT",
+                    "topic": "נושא"
                 },
                 "person": {
                     "add_person": "הוסף אדם",
@@ -1440,6 +1510,11 @@
                             "core": "טען מחדש את הליבה",
                             "group": "טען מחדש קבוצות",
                             "heading": "טען מחדש קונפיגורציה",
+                            "input_boolean": "טען מחדש input boolean",
+                            "input_datetime": "טען מחדש input date time",
+                            "input_number": "טען מחדש input number",
+                            "input_select": "טען מחדש input selects",
+                            "input_text": "טען מחדש input text",
                             "introduction": "חלקים מסוימים של Home Assistant יכולים להטען מחדש ללא צורך בהפעלה מחדש.\nטעינה מחדש תשנה את הקונפיגורציה הנוכחית ותטען קונפיגורציה חדשה.",
                             "scene": "טען מחדש סצנות",
                             "script": "טען מחדש סקריפטים"
@@ -1496,15 +1571,20 @@
                             "name": "שם",
                             "system": "מערכת"
                         }
-                    }
+                    },
+                    "users_privileges_note": "קבוצת המשתמשים הינה עבודה בעיצומה. המשתמש לא יוכל לנהל את המופע באמצעות ממשק המשתמש. אנו עדיין בודקים את כל נקודות הקצה של ממשק ה- API כדי לוודא שהם מגבילים נכון את הגישה למנהלים."
                 },
                 "zha": {
                     "add_device_page": {
+                        "discovered_text": "מכשירים יופיעו כאן לאחר שהתגלו.",
                         "discovery_text": ". המכשירים שהתגלו יופיעו כאן. עקוב אחר ההוראות עבור ההתקנים שלך והצב את ההתקנים במצב תיאום.",
                         "header": "אוטומציית Zigbee - הוספת התקנים",
+                        "no_devices_found": "לא נמצאו התקנים כלשהם, וודאו שהם במצב צימוד והקפידו שיהיו דולקים בזמן הגילוי.",
+                        "pairing_mode": "ודא שהמכשירים שלך במצב צימוד. בדוק את הוראות המכשיר שלך כיצד לבצע זאת.",
                         "search_again": "חפש שוב",
                         "spinner": "מחפש מכשירי ZHA Zigbee..."
                     },
+                    "button": "הגדר",
                     "caption": "ZHA",
                     "cluster_attributes": {
                         "attributes_of_cluster": "תכונות של האשכול שנבחר",
@@ -1538,6 +1618,9 @@
                         "header": "ניהול רשת",
                         "introduction": "פקודות שמשפיעות על הרשת כולה"
                     },
+                    "network": {
+                        "caption": "רשת"
+                    },
                     "node_management": {
                         "header": "ניהול התקן",
                         "help_node_dropdown": "בחר התקן להצגת האפשרויות.",
@@ -1547,6 +1630,7 @@
                     }
                 },
                 "zwave": {
+                    "button": "הגדר",
                     "caption": "Z-Wave",
                     "common": {
                         "index": "אינדקס",
@@ -1579,6 +1663,22 @@
                         "set_wakeup": "בחירת מרווח פעולה",
                         "true": "True"
                     },
+                    "node_management": {
+                        "entities": "ישויות היחידה",
+                        "entity_info": "מידע על הישות",
+                        "exclude_entity": "אל תכלול ישות זו ב Home Assistant",
+                        "group": "קְבוּצָה",
+                        "header": "ניהול יחידות Z-Wave",
+                        "introduction": "הפעל פקודות Z-Wave המשפיעות על יחידה בודדת. בחר יחידה כדי לראות רשימה של פקודות זמינות.",
+                        "node_group_associations": "קישורי קבוצת היחידה",
+                        "node_protection": "הגנת יחידה",
+                        "node_to_control": "יחידה לניהול",
+                        "nodes": "יחידות",
+                        "nodes_hint": "בחר יחידה כדי להציג אפשרויות ליחידה",
+                        "pooling_intensity": "עוצמת דגימה",
+                        "protection": "הגנה",
+                        "set_protection": "הגדרת הגנה"
+                    },
                     "ozw_log": {
                         "header": "יומן OZW",
                         "introduction": "צפה ביומן. 0 הוא המינימום (טוען יומן שלם) ו -1000 הוא המקסימום. הטעינה תציג יומן סטטי והסוף יתעדכן אוטומטית במספר האחרון שצוין של שורות היומן."
@@ -1588,6 +1688,8 @@
                         "add_node_secure": "הוסף רכיב מאובטח",
                         "cancel_command": "ביטול פקודה",
                         "heal_network": "ריפוי רשת",
+                        "node_info": "מידע על היחידה",
+                        "refresh_entity": "רענן ישות",
                         "remove_node": "הסר רכיב",
                         "save_config": "שמור קונפיגורציה",
                         "soft_reset": "איפוס רך",
@@ -1626,19 +1728,6 @@
                         "subscribe_to": "אירוע להירשם אליו",
                         "title": "אירועים",
                         "type": "סוג אירוע"
-                    },
-                    "mqtt": {
-                        "description_listen": "האזנה לנושא",
-                        "description_publish": "פרסם חבילה",
-                        "listening_to": "האזנה ל",
-                        "message_received": "הודעה {id} התקבלה ב- {topic} בשעה {time}:",
-                        "payload": "תוכן (תומך בתבניות)",
-                        "publish": "פרסם",
-                        "start_listening": "התחל להאזין",
-                        "stop_listening": "הפסק להאזין",
-                        "subscribe_to": "נושא להירשם אליו",
-                        "title": "MQTT",
-                        "topic": "נושא"
                     },
                     "services": {
                         "alert_parsing_yaml": "שגיאה בניתוח YAML: {data}",
@@ -1711,6 +1800,10 @@
                         "add_item": "הוסף פריט",
                         "checked_items": "פריטים מסומנים",
                         "clear_items": "נקה פריטים מסומנים"
+                    },
+                    "starting": {
+                        "description": "Home Assistant בעלייה. אנא המתן...",
+                        "header": "Home Assistant בעלייה..."
                     }
                 },
                 "changed_toast": {
@@ -1984,7 +2077,8 @@
                     "attribute_not_found": "השדה {attribute} אינו זמין ב־{entity}",
                     "entity_non_numeric": "הישות אינה מספרית: {entity}",
                     "entity_not_found": "הישות אינה זמינה: {entity}",
-                    "entity_unavailable": "כרגע {entity} אינו זמין"
+                    "entity_unavailable": "כרגע {entity} אינו זמין",
+                    "starting": "Home Assistant בעלייה, ייתכן שלא הכל יהיה זמין"
                 }
             },
             "mailbox": {
@@ -1997,6 +2091,8 @@
                 "abort_intro": "הכניסה בוטלה",
                 "authorizing_client": "אתה עומד לתת גישה ל{clientId} עבור הHome Assistant שלך.",
                 "form": {
+                    "error": "שגיאה: {error}",
+                    "next": "הבא",
                     "providers": {
                         "command_line": {
                             "abort": {
@@ -2082,6 +2178,7 @@
                             }
                         }
                     },
+                    "start_over": "התחל מחדש",
                     "unknown_error": "משהו השתבש",
                     "working": "אנא המתן"
                 },

@@ -776,6 +776,9 @@
                     "none": "Belum ada yang dikonfigurasi"
                 },
                 "introduction": "Tempat ini bisa digunakan untuk mengonfigurasi komponen dan Home Assistant. Belum semua dapat dikonfigurasikan melalui UI, kami sedang mengusahakannya.",
+                "mqtt": {
+                    "title": "MQTT"
+                },
                 "person": {
                     "caption": "Orang",
                     "description": "Kelola orang yang Home Assistant lacak",
@@ -820,9 +823,6 @@
                 "tabs": {
                     "events": {
                         "title": "Peristiwa"
-                    },
-                    "mqtt": {
-                        "title": "MQTT"
                     },
                     "services": {
                         "title": "Layanan"

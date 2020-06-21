@@ -1142,6 +1142,9 @@
                         }
                     }
                 },
+                "mqtt": {
+                    "title": "MQTT"
+                },
                 "person": {
                     "caption": "Persone",
                     "description": "Bestuur die persone wat Home Assistant op spoor.",
@@ -1376,9 +1379,6 @@
                 "tabs": {
                     "events": {
                         "title": "Gebeure"
-                    },
-                    "mqtt": {
-                        "title": "MQTT"
                     },
                     "services": {
                         "title": "Dienste"

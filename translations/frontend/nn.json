@@ -1017,6 +1017,9 @@
                 "logs": {
                     "title": "Loggar"
                 },
+                "mqtt": {
+                    "title": "MQTT"
+                },
                 "person": {
                     "caption": "Personar",
                     "description": "Administrer personane Home Assistant sporer.",
@@ -1237,9 +1240,6 @@
                 "tabs": {
                     "events": {
                         "title": "Hendingar"
-                    },
-                    "mqtt": {
-                        "title": "MQTT"
                     },
                     "services": {
                         "title": "Tenester"
