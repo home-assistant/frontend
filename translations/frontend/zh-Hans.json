@@ -1557,6 +1557,19 @@
                         }
                     }
                 },
+                "mqtt": {
+                    "description_listen": "监听一个主题(Topic)",
+                    "description_publish": "发送一个数据包",
+                    "listening_to": "监听",
+                    "message_received": "{time} 收到关于 {topic} 的消息[ {id} ]",
+                    "payload": "负载参数（可使用模板）",
+                    "publish": "发送",
+                    "start_listening": "开始监听",
+                    "stop_listening": "停止监听",
+                    "subscribe_to": "订阅主题(Topic)",
+                    "title": "MQTT",
+                    "topic": "主题(Topic)"
+                },
                 "person": {
                     "add_person": "添加人员",
                     "caption": "人员",
@@ -1978,19 +1991,6 @@
                         "subscribe_to": "订阅事件",
                         "title": "事件",
                         "type": "事件类型"
-                    },
-                    "mqtt": {
-                        "description_listen": "监听一个主题(Topic)",
-                        "description_publish": "发送一个数据包",
-                        "listening_to": "监听",
-                        "message_received": "{time} 收到关于 {topic} 的消息[ {id} ]",
-                        "payload": "负载参数（可使用模板）",
-                        "publish": "发送",
-                        "start_listening": "开始监听",
-                        "stop_listening": "停止监听",
-                        "subscribe_to": "订阅主题(Topic)",
-                        "title": "MQTT",
-                        "topic": "主题(Topic)"
                     },
                     "services": {
                         "alert_parsing_yaml": "解析YAML时出错： {data}",

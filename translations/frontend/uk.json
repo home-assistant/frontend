@@ -1358,6 +1358,19 @@
                         }
                     }
                 },
+                "mqtt": {
+                    "description_listen": "Слухати тему",
+                    "description_publish": "Опублікувати пакет",
+                    "listening_to": "Слухати",
+                    "message_received": "Повідомлення {id} отримане в {topic} о {time} :",
+                    "payload": "Значення (шаблон дозволений)",
+                    "publish": "Опублікувати",
+                    "start_listening": "Почати прослуховування",
+                    "stop_listening": "Припинити прослуховування",
+                    "subscribe_to": "Тема для підписки",
+                    "title": "MQTT",
+                    "topic": "тема"
+                },
                 "person": {
                     "add_person": "Додати Людини",
                     "caption": "Особи",
@@ -1690,19 +1703,6 @@
                         "subscribe_to": "Подія, на яку підписатися",
                         "title": "Події",
                         "type": "Тип події"
-                    },
-                    "mqtt": {
-                        "description_listen": "Слухати тему",
-                        "description_publish": "Опублікувати пакет",
-                        "listening_to": "Слухати",
-                        "message_received": "Повідомлення {id} отримане в {topic} о {time} :",
-                        "payload": "Значення (шаблон дозволений)",
-                        "publish": "Опублікувати",
-                        "start_listening": "Почати прослуховування",
-                        "stop_listening": "Припинити прослуховування",
-                        "subscribe_to": "Тема для підписки",
-                        "title": "MQTT",
-                        "topic": "тема"
                     },
                     "services": {
                         "alert_parsing_yaml": "Помилка під час розбору YAML: {data}",

@@ -1557,6 +1557,19 @@
                         }
                     }
                 },
+                "mqtt": {
+                    "description_listen": "監聽主題",
+                    "description_publish": "發佈封包",
+                    "listening_to": "監聽：",
+                    "message_received": "主題 - {topic}，時間 - {time}，訊息 - {id}：",
+                    "payload": "負載（允取模版）",
+                    "publish": "發佈",
+                    "start_listening": "開始監聽",
+                    "stop_listening": "停止監聽",
+                    "subscribe_to": "訂閱主題",
+                    "title": "MQTT",
+                    "topic": "主題"
+                },
                 "person": {
                     "add_person": "新增人員",
                     "caption": "人員",
@@ -1978,19 +1991,6 @@
                         "subscribe_to": "訂閱事件",
                         "title": "事件",
                         "type": "事件類別"
-                    },
-                    "mqtt": {
-                        "description_listen": "監聽主題",
-                        "description_publish": "發佈封包",
-                        "listening_to": "監聽：",
-                        "message_received": "主題 - {topic}，時間 - {time}，訊息 - {id}：",
-                        "payload": "負載（允取模版）",
-                        "publish": "發佈",
-                        "start_listening": "開始監聽",
-                        "stop_listening": "停止監聽",
-                        "subscribe_to": "訂閱主題",
-                        "title": "MQTT",
-                        "topic": "主題"
                     },
                     "services": {
                         "alert_parsing_yaml": "解析 YAML 錯誤：{data}",

@@ -1182,6 +1182,9 @@
                         }
                     }
                 },
+                "mqtt": {
+                    "title": "MQTT"
+                },
                 "person": {
                     "add_person": "Bæta við persónu",
                     "caption": "Persónur",
@@ -1400,9 +1403,6 @@
                 "tabs": {
                     "events": {
                         "title": "Viðburðir"
-                    },
-                    "mqtt": {
-                        "title": "MQTT"
                     },
                     "services": {
                         "call_service": "Kalla í þjónustu",

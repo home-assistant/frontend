@@ -1557,6 +1557,19 @@
                         }
                     }
                 },
+                "mqtt": {
+                    "description_listen": "Écouter un sujet",
+                    "description_publish": "Publier un paquet",
+                    "listening_to": "Écouter",
+                    "message_received": "Message {id} reçu sur {topic} à {time} :",
+                    "payload": "Payload (modèle autorisé)",
+                    "publish": "Publier",
+                    "start_listening": "Commencer à écouter",
+                    "stop_listening": "Arrêter d'écouter",
+                    "subscribe_to": "Sujet auquel s'abonner",
+                    "title": "MQTT",
+                    "topic": "sujet"
+                },
                 "person": {
                     "add_person": "Ajouter une personne",
                     "caption": "Personnes",
@@ -1978,19 +1991,6 @@
                         "subscribe_to": "Évènement auquel s'abonner",
                         "title": "Événements",
                         "type": "Type d'événement"
-                    },
-                    "mqtt": {
-                        "description_listen": "Écouter un sujet",
-                        "description_publish": "Publier un paquet",
-                        "listening_to": "Écouter",
-                        "message_received": "Message {id} reçu sur {topic} à {time} :",
-                        "payload": "Payload (modèle autorisé)",
-                        "publish": "Publier",
-                        "start_listening": "Commencer à écouter",
-                        "stop_listening": "Arrêter d'écouter",
-                        "subscribe_to": "Sujet auquel s'abonner",
-                        "title": "MQTT",
-                        "topic": "sujet"
                     },
                     "services": {
                         "alert_parsing_yaml": "Erreur d'analyse de YAML : {data}",

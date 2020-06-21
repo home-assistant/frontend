@@ -1223,6 +1223,16 @@
                     "refresh": "Värskenda",
                     "title": "Logid"
                 },
+                "mqtt": {
+                    "description_listen": "Kuula teemat",
+                    "listening_to": "Kuulamas",
+                    "publish": "Avalda",
+                    "start_listening": "Alusta kuulamist",
+                    "stop_listening": "Lõpeta kuulamine",
+                    "subscribe_to": "Teema, mida tellida",
+                    "title": "MQTT",
+                    "topic": "teema"
+                },
                 "person": {
                     "add_person": "Lisa isik",
                     "caption": "Isikud",
@@ -1533,16 +1543,6 @@
                         "subscribe_to": "Sündmus, mida tellida",
                         "title": "Sündmused",
                         "type": "Sündmuse tüüp"
-                    },
-                    "mqtt": {
-                        "description_listen": "Kuula teemat",
-                        "listening_to": "Kuulamas",
-                        "publish": "Avalda",
-                        "start_listening": "Alusta kuulamist",
-                        "stop_listening": "Lõpeta kuulamine",
-                        "subscribe_to": "Teema, mida tellida",
-                        "title": "MQTT",
-                        "topic": "teema"
                     },
                     "services": {
                         "alert_parsing_yaml": "Viga YAML'i parsimisel: {data}",

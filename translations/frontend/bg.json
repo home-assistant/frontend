@@ -939,6 +939,9 @@
                         "cant_edit_yaml": "Използвате Lovelace в YAML режим, следователно не можете да управлявате ресурсите си чрез потребителския интерфейс. Управлявайте ги в configuration.yaml."
                     }
                 },
+                "mqtt": {
+                    "title": "MQTT"
+                },
                 "person": {
                     "caption": "Хора",
                     "description": "Управлявайте хората, които следите от Home Assistant.",
@@ -1091,9 +1094,6 @@
                 "tabs": {
                     "events": {
                         "title": "Събития"
-                    },
-                    "mqtt": {
-                        "title": "MQTT"
                     },
                     "services": {
                         "title": "Услуги"

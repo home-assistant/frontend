@@ -1557,6 +1557,19 @@
                         }
                     }
                 },
+                "mqtt": {
+                    "description_listen": "Подписаться на топик",
+                    "description_publish": "Опубликовать данные",
+                    "listening_to": "Подписано на",
+                    "message_received": "Сообщение {id} получено в {time} из {topic}:",
+                    "payload": "Значение (включая шаблоны)",
+                    "publish": "Опубликовать",
+                    "start_listening": "Подписаться",
+                    "stop_listening": "Отписаться",
+                    "subscribe_to": "Топик",
+                    "title": "MQTT",
+                    "topic": "Топик"
+                },
                 "person": {
                     "add_person": "Добавить персону",
                     "caption": "Люди",
@@ -1978,19 +1991,6 @@
                         "subscribe_to": "Событие",
                         "title": "События",
                         "type": "Событие"
-                    },
-                    "mqtt": {
-                        "description_listen": "Подписаться на топик",
-                        "description_publish": "Опубликовать данные",
-                        "listening_to": "Подписано на",
-                        "message_received": "Сообщение {id} получено в {time} из {topic}:",
-                        "payload": "Значение (включая шаблоны)",
-                        "publish": "Опубликовать",
-                        "start_listening": "Подписаться",
-                        "stop_listening": "Отписаться",
-                        "subscribe_to": "Топик",
-                        "title": "MQTT",
-                        "topic": "Топик"
                     },
                     "services": {
                         "alert_parsing_yaml": "Ошибка при разборе синтаксиса YAML: {data}",

@@ -1552,6 +1552,19 @@
                         }
                     }
                 },
+                "mqtt": {
+                    "description_listen": "Lyssna på ett ämne",
+                    "description_publish": "Publicera ett paket",
+                    "listening_to": "Lyssnar på",
+                    "message_received": "Meddelande {id} mottaget på {topic} vid {time} :",
+                    "payload": "Payload (mall tillåten)",
+                    "publish": "Publicera",
+                    "start_listening": "Börja lyssna",
+                    "stop_listening": "Sluta lyssna",
+                    "subscribe_to": "Ämne att prenumerera på",
+                    "title": "MQTT",
+                    "topic": "ämne"
+                },
                 "person": {
                     "add_person": "Lägg till person",
                     "caption": "Personer",
@@ -1973,19 +1986,6 @@
                         "subscribe_to": "Ämne att prenumerera på",
                         "title": "Händelser",
                         "type": "Händelsetyp"
-                    },
-                    "mqtt": {
-                        "description_listen": "Lyssna på ett ämne",
-                        "description_publish": "Publicera ett paket",
-                        "listening_to": "Lyssnar på",
-                        "message_received": "Meddelande {id} mottaget på {topic} vid {time} :",
-                        "payload": "Payload (mall tillåten)",
-                        "publish": "Publicera",
-                        "start_listening": "Börja lyssna",
-                        "stop_listening": "Sluta lyssna",
-                        "subscribe_to": "Ämne att prenumerera på",
-                        "title": "MQTT",
-                        "topic": "ämne"
                     },
                     "services": {
                         "alert_parsing_yaml": "Fel vid tolkning av YAML: {data}",

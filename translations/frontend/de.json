@@ -1551,6 +1551,19 @@
                         }
                     }
                 },
+                "mqtt": {
+                    "description_listen": "Auf einen Topic hören",
+                    "description_publish": "Ein Paket veröffentlichen",
+                    "listening_to": "Anhören von",
+                    "message_received": "Nachricht {id} empfangen auf {topic} um {time}:",
+                    "payload": "Payload (Vorlage erlaubt)",
+                    "publish": "Veröffentlichen",
+                    "start_listening": "Anfangen zuzuhören",
+                    "stop_listening": "Aufhören zuzuhören",
+                    "subscribe_to": "Topic abonnieren",
+                    "title": "MQTT",
+                    "topic": "Topic"
+                },
                 "person": {
                     "add_person": "Person hinzufügen",
                     "caption": "Personen",
@@ -1967,19 +1980,6 @@
                         "subscribe_to": "Ereignis, welches abboniert werden soll",
                         "title": "Ereignisse",
                         "type": "Ereignistyp"
-                    },
-                    "mqtt": {
-                        "description_listen": "Auf einen Topic hören",
-                        "description_publish": "Ein Paket veröffentlichen",
-                        "listening_to": "Anhören von",
-                        "message_received": "Nachricht {id} empfangen auf {topic} um {time}:",
-                        "payload": "Payload (Vorlage erlaubt)",
-                        "publish": "Veröffentlichen",
-                        "start_listening": "Anfangen zuzuhören",
-                        "stop_listening": "Aufhören zuzuhören",
-                        "subscribe_to": "Topic abonnieren",
-                        "title": "MQTT",
-                        "topic": "Topic"
                     },
                     "services": {
                         "alert_parsing_yaml": "Fehler beim Parsen von YAML: {data}",

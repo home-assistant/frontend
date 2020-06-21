@@ -755,6 +755,9 @@
                                 "homeassistant": {
                                     "label": "Home Assistant"
                                 },
+                                "mqtt": {
+                                    "label": "MQTT"
+                                },
                                 "numeric_state": {
                                     "label": "حالت عددی"
                                 },
@@ -1154,6 +1157,11 @@
                         }
                     }
                 },
+                "mqtt": {
+                    "publish": "Publica",
+                    "subscribe_to": "Subiect pentru abonare",
+                    "title": "MQTT"
+                },
                 "person": {
                     "add_person": "Adauga Persoana",
                     "caption": "افراد",
@@ -1361,11 +1369,6 @@
                 "tabs": {
                     "events": {
                         "title": "رویدادها"
-                    },
-                    "mqtt": {
-                        "publish": "Publica",
-                        "subscribe_to": "Subiect pentru abonare",
-                        "title": "MQTT"
                     },
                     "services": {
                         "call_service": "Apeleaza serviciul",

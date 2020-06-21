@@ -1557,6 +1557,19 @@
                         }
                     }
                 },
+                "mqtt": {
+                    "description_listen": "Kuuntele aihetta",
+                    "description_publish": "Julkaise paketti",
+                    "listening_to": "Kuunnellaan",
+                    "message_received": "Viesti {id} vastaanotettu aiheessa {topic} {time}:",
+                    "payload": "Tietosisältö (malli sallittu)",
+                    "publish": "Julkaise",
+                    "start_listening": "Aloita kuuntelu",
+                    "stop_listening": "Lopeta kuuntelu",
+                    "subscribe_to": "Tilaa aihe",
+                    "title": "MQTT",
+                    "topic": "aihe"
+                },
                 "person": {
                     "add_person": "Lisää henkilö",
                     "caption": "Henkilöt",
@@ -1978,19 +1991,6 @@
                         "subscribe_to": "Tilaa tapahtuma",
                         "title": "Tapahtumat",
                         "type": "Tapahtumatyyppi"
-                    },
-                    "mqtt": {
-                        "description_listen": "Kuuntele aihetta",
-                        "description_publish": "Julkaise paketti",
-                        "listening_to": "Kuunnellaan",
-                        "message_received": "Viesti {id} vastaanotettu aiheessa {topic} {time}:",
-                        "payload": "Tietosisältö (malli sallittu)",
-                        "publish": "Julkaise",
-                        "start_listening": "Aloita kuuntelu",
-                        "stop_listening": "Lopeta kuuntelu",
-                        "subscribe_to": "Tilaa aihe",
-                        "title": "MQTT",
-                        "topic": "aihe"
                     },
                     "services": {
                         "alert_parsing_yaml": "Virhe jäsennetettäessä YAML:ää: {data}",

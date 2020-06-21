@@ -1556,6 +1556,19 @@
                         }
                     }
                 },
+                "mqtt": {
+                    "description_listen": "Sujet lauschteren",
+                    "description_publish": "Ee Pak publizéieren",
+                    "listening_to": "Lauschtert op",
+                    "message_received": "Noriicht {id} empfaangen am {topic} um {time}:",
+                    "payload": "Payload (Modell erlaabt)",
+                    "publish": "Publizéieren",
+                    "start_listening": "Fänk un mam lauschteren",
+                    "stop_listening": "Hal op mam lauschteren",
+                    "subscribe_to": "Sujet fir unzemellen",
+                    "title": "MQTT",
+                    "topic": "Sujet"
+                },
                 "person": {
                     "add_person": "Persoun dobäisetzen",
                     "caption": "Persounen",
@@ -1970,19 +1983,6 @@
                         "subscribe_to": "Evenement fir unzemellen",
                         "title": "Evenementer",
                         "type": "Typ vun Evenement"
-                    },
-                    "mqtt": {
-                        "description_listen": "Sujet lauschteren",
-                        "description_publish": "Ee Pak publizéieren",
-                        "listening_to": "Lauschtert op",
-                        "message_received": "Noriicht {id} empfaangen am {topic} um {time}:",
-                        "payload": "Payload (Modell erlaabt)",
-                        "publish": "Publizéieren",
-                        "start_listening": "Fänk un mam lauschteren",
-                        "stop_listening": "Hal op mam lauschteren",
-                        "subscribe_to": "Sujet fir unzemellen",
-                        "title": "MQTT",
-                        "topic": "Sujet"
                     },
                     "services": {
                         "alert_parsing_yaml": "Feeler beim Parse vum YAML: {data}",

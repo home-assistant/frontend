@@ -981,6 +981,18 @@
                         }
                     }
                 },
+                "mqtt": {
+                    "description_listen": "トピックをリッスン",
+                    "description_publish": "パケットをパブリッシュ",
+                    "listening_to": "リッスンします",
+                    "payload": "ペイロード (テンプレート可)",
+                    "publish": "パブリッシュ",
+                    "start_listening": "リッスンを開始",
+                    "stop_listening": "リッスンを停止",
+                    "subscribe_to": "サブスクライブするトピック",
+                    "title": "MQTT",
+                    "topic": "トピック"
+                },
                 "person": {
                     "caption": "人",
                     "description": "Home Assistant を追跡している人の管理。",
@@ -1173,18 +1185,6 @@
                         "subscribe_to": "サブスクライブするイベント",
                         "title": "イベント",
                         "type": "イベントの種類"
-                    },
-                    "mqtt": {
-                        "description_listen": "トピックをリッスン",
-                        "description_publish": "パケットをパブリッシュ",
-                        "listening_to": "リッスンします",
-                        "payload": "ペイロード (テンプレート可)",
-                        "publish": "パブリッシュ",
-                        "start_listening": "リッスンを開始",
-                        "stop_listening": "リッスンを停止",
-                        "subscribe_to": "サブスクライブするトピック",
-                        "title": "MQTT",
-                        "topic": "トピック"
                     },
                     "services": {
                         "alert_parsing_yaml": "YAMLの解析エラー: {error}",
