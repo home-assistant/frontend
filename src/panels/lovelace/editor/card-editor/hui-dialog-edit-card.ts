@@ -17,6 +17,7 @@ import type {
   LovelaceViewConfig,
 } from "../../../../data/lovelace";
 import { haStyleDialog } from "../../../../resources/styles";
+import "../../../../components/ha-spinner";
 import type { HomeAssistant } from "../../../../types";
 import { showSaveSuccessToast } from "../../../../util/toast-saved-success";
 import { addCard, replaceCard } from "../config-util";
@@ -167,10 +168,10 @@ export class HuiDialogEditCard extends LitElement {
                     ></hui-card-preview>
                     ${this._error
                       ? html`
-                          <paper-spinner
+                          <ha-spinner
                             active
                             alt="Can't update card"
-                          ></paper-spinner>
+                          ></ha-spinner>
                         `
                       : ``}
                   </div>
@@ -204,9 +205,7 @@ export class HuiDialogEditCard extends LitElement {
                   @click=${this._save}
                 >
                   ${this._saving
-                    ? html`
-                        <paper-spinner active alt="Saving"></paper-spinner>
-                      `
+                    ? html` <ha-spinner active alt="Saving"></ha-spinner> `
                     : this.hass!.localize("ui.common.save")}
                 </mwc-button>
               `
@@ -286,7 +285,7 @@ export class HuiDialogEditCard extends LitElement {
           }
         }
 
-        mwc-button paper-spinner {
+        mwc-button ha-spinner {
           width: 14px;
           height: 14px;
           margin-right: 20px;
@@ -303,7 +302,7 @@ export class HuiDialogEditCard extends LitElement {
         .element-preview {
           position: relative;
         }
-        .element-preview paper-spinner {
+        .element-preview ha-spinner {
           top: 50%;
           left: 50%;
           position: absolute;
