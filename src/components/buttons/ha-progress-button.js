@@ -1,5 +1,5 @@
 import "@material/mwc-button";
-import "../../components/ha-spinner";
+import "../ha-spinner";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 /* eslint-plugin-disable lit */
 import { PolymerElement } from "@polymer/polymer/polymer-element";

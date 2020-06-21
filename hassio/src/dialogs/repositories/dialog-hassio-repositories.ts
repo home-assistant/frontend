@@ -5,7 +5,7 @@ import "@polymer/paper-input/paper-input";
 import type { PaperInputElement } from "@polymer/paper-input/paper-input";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-item/paper-item-body";
-import "../../components/ha-spinner";
+import "../../../../src/components/ha-spinner";
 import {
   css,
   CSSResult,
