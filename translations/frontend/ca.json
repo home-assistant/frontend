@@ -1557,6 +1557,19 @@
                         }
                     }
                 },
+                "mqtt": {
+                    "description_listen": "Escolta d'un tòpic",
+                    "description_publish": "Publicació d'un paquet",
+                    "listening_to": "Escoltant a",
+                    "message_received": "Missatge {id} rebut a {topic} a les {time}:",
+                    "payload": "Dades/missatge (plantilla permesa)",
+                    "publish": "Publica",
+                    "start_listening": "Comença a escoltar",
+                    "stop_listening": "Deixa d'escoltar",
+                    "subscribe_to": "Tòpic al qual subscriure's",
+                    "title": "MQTT",
+                    "topic": "tòpic"
+                },
                 "person": {
                     "add_person": "Afegeix persona",
                     "caption": "Persones",
@@ -1978,19 +1991,6 @@
                         "subscribe_to": "Esdeveniment al qual subscriure's",
                         "title": "Esdeveniments",
                         "type": "Tipus d'esdeveniment"
-                    },
-                    "mqtt": {
-                        "description_listen": "Escolta d'un tòpic",
-                        "description_publish": "Publicació d'un paquet",
-                        "listening_to": "Escoltant a",
-                        "message_received": "Missatge {id} rebut a {topic} a les {time}:",
-                        "payload": "Dades/missatge (plantilla permesa)",
-                        "publish": "Publica",
-                        "start_listening": "Comença a escoltar",
-                        "stop_listening": "Deixa d'escoltar",
-                        "subscribe_to": "Tòpic al qual subscriure's",
-                        "title": "MQTT",
-                        "topic": "tòpic"
                     },
                     "services": {
                         "alert_parsing_yaml": "S'ha produït un error analitzant el codi YAML: {data}",

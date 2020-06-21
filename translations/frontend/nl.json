@@ -956,7 +956,7 @@
                                     "start": "Opstarten"
                                 },
                                 "mqtt": {
-                                    "label": "",
+                                    "label": "MQTT",
                                     "payload": "Payload (optioneel)",
                                     "topic": "Onderwerp"
                                 },
@@ -1552,6 +1552,19 @@
                         }
                     }
                 },
+                "mqtt": {
+                    "description_listen": "Luisteren naar onderwerp",
+                    "description_publish": "Publiceer een pakket",
+                    "listening_to": "Luisteren naar",
+                    "message_received": "Bericht {id} ontvangen op {topic} om {time} :",
+                    "payload": "Payload (sjabloon toegestaan)",
+                    "publish": "Publiceer",
+                    "start_listening": "Begin te luisteren",
+                    "stop_listening": "Stop met luisteren",
+                    "subscribe_to": "Gebeurtenis om op te abonneren",
+                    "title": "MQTT",
+                    "topic": "onderwerp"
+                },
                 "person": {
                     "add_person": "Persoon toevoegen",
                     "caption": "Personen",
@@ -1944,19 +1957,6 @@
                         "subscribe_to": "Gebeurtenis om op te abonneren",
                         "title": "Gebeurtenissen",
                         "type": "Type gebeurtenis"
-                    },
-                    "mqtt": {
-                        "description_listen": "Luisteren naar onderwerp",
-                        "description_publish": "Publiceer een pakket",
-                        "listening_to": "Luisteren naar",
-                        "message_received": "Bericht {id} ontvangen op {topic} om {time} :",
-                        "payload": "Payload (sjabloon toegestaan)",
-                        "publish": "Publiceer",
-                        "start_listening": "Begin te luisteren",
-                        "stop_listening": "Stop met luisteren",
-                        "subscribe_to": "Gebeurtenis om op te abonneren",
-                        "title": "MQTT",
-                        "topic": "onderwerp"
                     },
                     "services": {
                         "alert_parsing_yaml": "Fout bij het parseren van YAML: {data}",

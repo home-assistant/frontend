@@ -172,6 +172,18 @@
                     "no_issues": "Ne estas novaj aferoj!",
                     "refresh": "Refreŝigi"
                 },
+                "mqtt": {
+                    "description_listen": "Aŭskulti temon",
+                    "description_publish": "Publikigi pakaĵon",
+                    "listening_to": "Aŭskulti",
+                    "message_received": "Mesaĝo {id} ricevita sur {topic} je {time} :",
+                    "payload": "Pagŝarĝo (ŝablono permesita)",
+                    "publish": "Publikigi",
+                    "start_listening": "Komenci aŭskulti",
+                    "stop_listening": "Halti aŭskulti",
+                    "subscribe_to": "Temo por aboni",
+                    "topic": "temo"
+                },
                 "scene": {
                     "activated": "Aktivigita sceno {name}.",
                     "caption": "Scenoj",
@@ -315,18 +327,6 @@
                         "stop_listening": "Halti aŭskulti",
                         "subscribe_to": "Evento por aboni",
                         "type": "Eventa Tipo"
-                    },
-                    "mqtt": {
-                        "description_listen": "Aŭskulti temon",
-                        "description_publish": "Publikigi pakaĵon",
-                        "listening_to": "Aŭskulti",
-                        "message_received": "Mesaĝo {id} ricevita sur {topic} je {time} :",
-                        "payload": "Pagŝarĝo (ŝablono permesita)",
-                        "publish": "Publikigi",
-                        "start_listening": "Komenci aŭskulti",
-                        "stop_listening": "Halti aŭskulti",
-                        "subscribe_to": "Temo por aboni",
-                        "topic": "temo"
                     },
                     "services": {
                         "alert_parsing_yaml": "Eraro dum analizado de YAML: {data}",

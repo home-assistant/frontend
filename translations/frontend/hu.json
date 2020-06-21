@@ -1548,6 +1548,19 @@
                         }
                     }
                 },
+                "mqtt": {
+                    "description_listen": "Téma figyelése",
+                    "description_publish": "Csomag közzététele",
+                    "listening_to": "Figyelés:",
+                    "message_received": "Üzenet ({id}) érkezett a(z) {topic} témában {time}-kor:",
+                    "payload": "Payload (sablon megengedett)",
+                    "publish": "Közzététel",
+                    "start_listening": "Figyelés indítása",
+                    "stop_listening": "Figyelés befejezése",
+                    "subscribe_to": "Feliratkozás erre a témára",
+                    "title": "MQTT",
+                    "topic": "téma"
+                },
                 "person": {
                     "add_person": "Személy hozzáadása",
                     "caption": "Személyek",
@@ -1929,19 +1942,6 @@
                         "subscribe_to": "Feliratkozás erre az eseményre",
                         "title": "Események",
                         "type": "Esemény típusa"
-                    },
-                    "mqtt": {
-                        "description_listen": "Téma figyelése",
-                        "description_publish": "Csomag közzététele",
-                        "listening_to": "Figyelés:",
-                        "message_received": "Üzenet ({id}) érkezett a(z) {topic} témában {time}-kor:",
-                        "payload": "Payload (sablon megengedett)",
-                        "publish": "Közzététel",
-                        "start_listening": "Figyelés indítása",
-                        "stop_listening": "Figyelés befejezése",
-                        "subscribe_to": "Feliratkozás erre a témára",
-                        "title": "MQTT",
-                        "topic": "téma"
                     },
                     "services": {
                         "alert_parsing_yaml": "Hiba a YAML elemzésekor: {data}",

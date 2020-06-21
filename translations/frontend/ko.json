@@ -1557,6 +1557,19 @@
                         }
                     }
                 },
+                "mqtt": {
+                    "description_listen": "토픽 내용 들어보기",
+                    "description_publish": "패킷 발행",
+                    "listening_to": "토픽 청취 중",
+                    "message_received": "{time} 에 {id} 메시지가 {topic} 에 수신되었습니다.",
+                    "payload": "페이로드 (템플릿 허용)",
+                    "publish": "발행",
+                    "start_listening": "청취 시작",
+                    "stop_listening": "그만 듣기",
+                    "subscribe_to": "청취할 토픽",
+                    "title": "MQTT",
+                    "topic": "토픽"
+                },
                 "person": {
                     "add_person": "구성원 추가하기",
                     "caption": "구성원",
@@ -1978,19 +1991,6 @@
                         "subscribe_to": "청취할 이벤트",
                         "title": "이벤트",
                         "type": "이벤트 유형"
-                    },
-                    "mqtt": {
-                        "description_listen": "토픽 내용 들어보기",
-                        "description_publish": "패킷 발행",
-                        "listening_to": "토픽 청취 중",
-                        "message_received": "{time} 에 {id} 메시지가 {topic} 에 수신되었습니다.",
-                        "payload": "페이로드 (템플릿 허용)",
-                        "publish": "발행",
-                        "start_listening": "청취 시작",
-                        "stop_listening": "그만 듣기",
-                        "subscribe_to": "청취할 토픽",
-                        "title": "MQTT",
-                        "topic": "토픽"
                     },
                     "services": {
                         "alert_parsing_yaml": "YAML 구문 분석 오류: {data}",

@@ -955,7 +955,7 @@
                                     "start": "Inicio"
                                 },
                                 "mqtt": {
-                                    "label": "MQTT",
+                                    "label": "",
                                     "payload": "Payload (opcional)",
                                     "topic": "Topic"
                                 },
@@ -1551,6 +1551,19 @@
                         }
                     }
                 },
+                "mqtt": {
+                    "description_listen": "Escuchar un tema",
+                    "description_publish": "Publicar un paquete",
+                    "listening_to": "Escuchando a",
+                    "message_received": "Mensaje {id} recibido el {topic} a las {time} :",
+                    "payload": "Carga útil (plantilla permitida)",
+                    "publish": "Publicar",
+                    "start_listening": "Comenzar a escuchar",
+                    "stop_listening": "Deja de escuchar",
+                    "subscribe_to": "Tema para suscribirse",
+                    "title": "",
+                    "topic": "tema"
+                },
                 "person": {
                     "add_person": "Agregar persona",
                     "caption": "Personas",
@@ -1963,19 +1976,6 @@
                         "subscribe_to": "Evento para suscribirse",
                         "title": "Eventos",
                         "type": "Tipo de evento"
-                    },
-                    "mqtt": {
-                        "description_listen": "Escuchar un tema",
-                        "description_publish": "Publicar un paquete",
-                        "listening_to": "Escuchando a",
-                        "message_received": "Mensaje {id} recibido el {topic} a las {time} :",
-                        "payload": "Carga útil (plantilla permitida)",
-                        "publish": "Publicar",
-                        "start_listening": "Comenzar a escuchar",
-                        "stop_listening": "Deja de escuchar",
-                        "subscribe_to": "Tema para suscribirse",
-                        "title": "",
-                        "topic": "tema"
                     },
                     "services": {
                         "alert_parsing_yaml": "Error al analizar YAML: {data}",

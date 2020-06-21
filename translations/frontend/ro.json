@@ -1331,6 +1331,19 @@
                         }
                     }
                 },
+                "mqtt": {
+                    "description_listen": "Ascultă un subiect",
+                    "description_publish": "Publică un pachet",
+                    "listening_to": "Ascultand",
+                    "message_received": "Mesajul {id} primit pe {topic} la {time} :",
+                    "payload": "Sarcină utilă (șablon permis)",
+                    "publish": "Publică",
+                    "start_listening": "Începe ascultare",
+                    "stop_listening": "Nu mai asculta",
+                    "subscribe_to": "Topic la care să vă abonați",
+                    "title": "MQTT",
+                    "topic": "subiect"
+                },
                 "person": {
                     "caption": "Persoane",
                     "description": "Gestionează persoanele pe care Home Assistant le urmărește.",
@@ -1686,19 +1699,6 @@
                         "subscribe_to": "Eveniment la care să vă abonați",
                         "title": "Evenimente",
                         "type": "Tip eveniment"
-                    },
-                    "mqtt": {
-                        "description_listen": "Ascultă un subiect",
-                        "description_publish": "Publică un pachet",
-                        "listening_to": "Ascultand",
-                        "message_received": "Mesajul {id} primit pe {topic} la {time} :",
-                        "payload": "Sarcină utilă (șablon permis)",
-                        "publish": "Publică",
-                        "start_listening": "Începe ascultare",
-                        "stop_listening": "Nu mai asculta",
-                        "subscribe_to": "Topic la care să vă abonați",
-                        "title": "MQTT",
-                        "topic": "subiect"
                     },
                     "services": {
                         "alert_parsing_yaml": "Eroare de parsare YAML: {date}",

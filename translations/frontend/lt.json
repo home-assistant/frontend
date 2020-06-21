@@ -314,6 +314,9 @@
                                     "source": "Šaltinis",
                                     "zone": "Zona"
                                 },
+                                "mqtt": {
+                                    "label": "MQTT"
+                                },
                                 "sun": {
                                     "event": "Ivykis"
                                 },
@@ -379,6 +382,9 @@
                     },
                     "details": "Integravimo informacija"
                 },
+                "mqtt": {
+                    "title": "MQTT"
+                },
                 "person": {
                     "caption": "Asmenys",
                     "detail": {
@@ -420,13 +426,6 @@
                     "complete_access": "Jis turės prieigą prie visų namų asistento duomenų.",
                     "hide_message": "Norėdami paslėpti šį pranešimą, patikrinkite „panel_custom“ dokumentacija",
                     "question_trust": "Ar pasitikite išoriniu skydeliu {name} adresu {link}?"
-                }
-            },
-            "developer-tools": {
-                "tabs": {
-                    "mqtt": {
-                        "title": "MQTT"
-                    }
                 }
             },
             "logbook": {

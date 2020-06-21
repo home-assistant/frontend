@@ -569,6 +569,9 @@
                     "new": "Integrazio berri bat konfiguratu",
                     "none": "Ez dago ezer konfiguratuta"
                 },
+                "mqtt": {
+                    "title": "MQTT"
+                },
                 "person": {
                     "caption": "Pertsonak",
                     "description": "Kudeatu Home Assistantek jarraituko dituen pertsonak.",
@@ -619,9 +622,6 @@
                 "tabs": {
                     "events": {
                         "title": "Gertaerak"
-                    },
-                    "mqtt": {
-                        "title": "MQTT"
                     },
                     "services": {
                         "title": "Zerbitzuak"

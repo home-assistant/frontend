@@ -75,6 +75,9 @@
                     "editor": {
                         "triggers": {
                             "type": {
+                                "mqtt": {
+                                    "label": "MQTT"
+                                },
                                 "numeric_state": {
                                     "above": "Iznad",
                                     "below": "Ispod",
@@ -95,17 +98,13 @@
                         "header": "Entiteter"
                     }
                 },
+                "mqtt": {
+                    "title": "MQTT"
+                },
                 "zwave": {
                     "caption": "Z-Wave",
                     "node_config": {
                         "set_config_parameter": "Подесите параметар Цонфиг"
-                    }
-                }
-            },
-            "developer-tools": {
-                "tabs": {
-                    "mqtt": {
-                        "title": "MQTT"
                     }
                 }
             }

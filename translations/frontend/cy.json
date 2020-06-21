@@ -780,6 +780,9 @@
                         }
                     }
                 },
+                "mqtt": {
+                    "title": "MQTT"
+                },
                 "person": {
                     "caption": "Pobl",
                     "description": "Rheoli'r pobl mae Home Assistant yn tracio.",
@@ -934,9 +937,6 @@
                 "tabs": {
                     "events": {
                         "title": "Digwyddiadau"
-                    },
-                    "mqtt": {
-                        "title": "MQTT"
                     },
                     "services": {
                         "title": "Gwasanaethau"

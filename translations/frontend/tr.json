@@ -1476,6 +1476,18 @@
                         }
                     }
                 },
+                "mqtt": {
+                    "description_listen": "Bir konuyu dinle",
+                    "description_publish": "Bir paket yayınla",
+                    "listening_to": "Dinliyorum",
+                    "payload": "Yük (şablona izin verilir)",
+                    "publish": "Yayınla",
+                    "start_listening": "Dinlemeye başla",
+                    "stop_listening": "Dinlemeyi bırak",
+                    "subscribe_to": "Abone olunacak konu",
+                    "title": "MQTT",
+                    "topic": "konu"
+                },
                 "person": {
                     "add_person": "Kişi ekle",
                     "caption": "Kişiler",
@@ -1811,18 +1823,6 @@
                         "stop_listening": "Dinlemeyi bırak",
                         "title": "Olaylar",
                         "type": "Olay Türü"
-                    },
-                    "mqtt": {
-                        "description_listen": "Bir konuyu dinle",
-                        "description_publish": "Bir paket yayınla",
-                        "listening_to": "Dinliyorum",
-                        "payload": "Yük (şablona izin verilir)",
-                        "publish": "Yayınla",
-                        "start_listening": "Dinlemeye başla",
-                        "stop_listening": "Dinlemeyi bırak",
-                        "subscribe_to": "Abone olunacak konu",
-                        "title": "MQTT",
-                        "topic": "konu"
                     },
                     "services": {
                         "alert_parsing_yaml": "YAML alınamadı: {data}",

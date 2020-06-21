@@ -1557,6 +1557,19 @@
                         }
                     }
                 },
+                "mqtt": {
+                    "description_listen": "Nasłuch tematu",
+                    "description_publish": "Opublikuj pakiet",
+                    "listening_to": "Nasłuchiwanie...",
+                    "message_received": "Wiadomość {id} otrzymana w {topic} o godzinie {time}:",
+                    "payload": "Payload (z możliwością użycia szablonów)",
+                    "publish": "Opublikuj",
+                    "start_listening": "Rozpocznij nasłuch",
+                    "stop_listening": "Zatrzymaj nasłuch",
+                    "subscribe_to": "Temat do zasubskrybowania",
+                    "title": "MQTT",
+                    "topic": "temat"
+                },
                 "person": {
                     "add_person": "Dodaj osobę",
                     "caption": "Osoby",
@@ -1978,19 +1991,6 @@
                         "subscribe_to": "Zdarzenie do zasubskrybowania",
                         "title": "Zdarzenia",
                         "type": "Typ zdarzenia"
-                    },
-                    "mqtt": {
-                        "description_listen": "Nasłuch tematu",
-                        "description_publish": "Opublikuj pakiet",
-                        "listening_to": "Nasłuchiwanie...",
-                        "message_received": "Wiadomość {id} otrzymana w {topic} o godzinie {time}:",
-                        "payload": "Payload (z możliwością użycia szablonów)",
-                        "publish": "Opublikuj",
-                        "start_listening": "Rozpocznij nasłuch",
-                        "stop_listening": "Zatrzymaj nasłuch",
-                        "subscribe_to": "Temat do zasubskrybowania",
-                        "title": "MQTT",
-                        "topic": "temat"
                     },
                     "services": {
                         "alert_parsing_yaml": "Błąd parsowania YAML: {data}",
