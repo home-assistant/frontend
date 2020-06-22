@@ -12,8 +12,6 @@ import {
 import progressStyles from "@material/circular-progress/dist/mdc.circular-progress.min.css";
 import { classMap } from "lit-html/directives/class-map";
 
-type sizes = "small" | "medium" | "large";
-
 @customElement("ha-circular-progress")
 export class HaCircularProgress extends LitElement {
   @property({ type: Boolean })
@@ -23,7 +21,7 @@ export class HaCircularProgress extends LitElement {
   public alt = "Loading";
 
   @property()
-  public size: sizes = "medium";
+  public size: "small" | "medium" | "large" = "medium";
 
   protected render(): TemplateResult | void {
     let determinatePart: SVGTemplateResult;
