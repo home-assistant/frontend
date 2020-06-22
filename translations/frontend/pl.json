@@ -506,6 +506,11 @@
                 "clear": "Wyczyść",
                 "show_areas": "Pokaż obszary"
             },
+            "date-range-picker": {
+                "end_date": "Data końcowa",
+                "select": "Wybierz",
+                "start_date": "Data początkowa"
+            },
             "device-picker": {
                 "clear": "Wyczyść",
                 "device": "Urządzenie",
@@ -695,6 +700,7 @@
             "zha_device_info": {
                 "buttons": {
                     "add": "Dodaj urządzenia",
+                    "clusters": "Zarządzaj klastrami",
                     "reconfigure": "Rekonfiguracja urządzenia",
                     "remove": "Usuń urządzenie",
                     "zigbee_information": "Informacje Zigbee"
@@ -1558,6 +1564,7 @@
                     }
                 },
                 "mqtt": {
+                    "button": "Konfiguruj",
                     "description_listen": "Nasłuch tematu",
                     "description_publish": "Opublikuj pakiet",
                     "listening_to": "Nasłuchiwanie...",
@@ -2035,11 +2042,23 @@
             },
             "history": {
                 "period": "Okres",
+                "ranges": {
+                    "last_week": "Poprzedni tydzień",
+                    "this_week": "Ten tydzień",
+                    "today": "Dzisiaj",
+                    "yesterday": "Wczoraj"
+                },
                 "showing_entries": "Wyświetlanie rekordów dla"
             },
             "logbook": {
                 "entries_not_found": "Nie znaleziono wpisów w dzienniku.",
                 "period": "Okres",
+                "ranges": {
+                    "last_week": "Poprzedni tydzień",
+                    "this_week": "Ten tydzień",
+                    "today": "Dzisiaj",
+                    "yesterday": "Wczoraj"
+                },
                 "showing_entries": "Wyświetlanie rekordów dla"
             },
             "lovelace": {
