@@ -10,7 +10,7 @@ import {
   TemplateResult,
 } from "lit-element";
 import "../../components/dialog/ha-paper-dialog";
-import "../../components/ha-spinner";
+import "../../components/ha-circular-progress";
 import "../../components/ha-switch";
 import "../../components/ha-formfield";
 import type { HaSwitch } from "../../components/ha-switch";
@@ -76,7 +76,7 @@ class DialogConfigEntrySystemOptions extends LitElement {
           ${this._loading
             ? html`
                 <div class="init-spinner">
-                  <ha-spinner active></ha-spinner>
+                  <ha-circular-progress active></ha-circular-progress>
                 </div>
               `
             : html`

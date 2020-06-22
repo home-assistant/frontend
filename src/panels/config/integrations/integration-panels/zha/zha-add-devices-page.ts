@@ -1,6 +1,6 @@
 import "@material/mwc-button";
 import "../../../../../components/ha-icon-button";
-import "../../../../../components/ha-spinner";
+import "../../../../../components/ha-circular-progress";
 import {
   css,
   CSSResult,
@@ -97,7 +97,10 @@ class ZHAAddDevicesPage extends LitElement {
                     "ui.panel.config.zha.add_device_page.spinner"
                   )}
                 </h1>
-                <ha-spinner active alt="Searching"></ha-spinner>
+                <ha-circular-progress
+                  active
+                  alt="Searching"
+                ></ha-circular-progress>
               `
             : html`
                 <div>
@@ -226,7 +229,7 @@ class ZHAAddDevicesPage extends LitElement {
         .error {
           color: var(--google-red-500);
         }
-        ha-spinner {
+        ha-circular-progress {
           padding: 20px;
         }
         .searching {

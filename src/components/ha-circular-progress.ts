@@ -36,7 +36,7 @@ const INDETERMINATE_SVG = {
 </svg>`,
 };
 
-@customElement("ha-spinner")
+@customElement("ha-circular-progress")
 class HaSpinner extends LitElement {
   @property({ type: Boolean })
   public active = false;
@@ -112,6 +112,6 @@ class HaSpinner extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "ha-spinner": HaSpinner;
+    "ha-circular-progress": HaSpinner;
   }
 }

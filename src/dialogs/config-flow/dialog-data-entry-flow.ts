@@ -1,7 +1,7 @@
 import "@material/mwc-button";
 import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable";
 import "../../components/ha-icon-button";
-import "../../components/ha-spinner";
+import "../../components/ha-circular-progress";
 import "@polymer/paper-tooltip/paper-tooltip";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import {

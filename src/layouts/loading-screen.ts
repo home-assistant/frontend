@@ -6,12 +6,12 @@ import {
   LitElement,
   TemplateResult,
 } from "lit-element";
-import "../components/ha-spinner";
+import "../components/ha-circular-progress";
 
 @customElement("loading-screen")
 class LoadingScreen extends LitElement {
   protected render(): TemplateResult {
-    return html` <ha-spinner active></ha-spinner> `;
+    return html` <ha-circular-progress active></ha-circular-progress> `;
   }
 
   static get styles(): CSSResult {

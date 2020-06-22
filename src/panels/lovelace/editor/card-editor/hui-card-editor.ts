@@ -140,11 +140,11 @@ export class HuiCardEditor extends LitElement {
               <div class="gui-editor">
                 ${this._loading
                   ? html`
-                      <ha-spinner
+                      <ha-circular-progress
                         active
                         alt="Loading"
                         class="center margin-bot"
-                      ></ha-spinner>
+                      ></ha-circular-progress>
                     `
                   : this._configElement}
               </div>
@@ -303,7 +303,7 @@ export class HuiCardEditor extends LitElement {
       .warning {
         color: #ffa726;
       }
-      ha-spinner {
+      ha-circular-progress {
         display: block;
         margin: auto;
       }

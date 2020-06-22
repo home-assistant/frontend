@@ -10,7 +10,7 @@ import {
   TemplateResult,
 } from "lit-element";
 import "../../../../components/dialog/ha-paper-dialog";
-import "../../../../components/ha-spinner";
+import "../../../../components/ha-circular-progress";
 import type { HaPaperDialog } from "../../../../components/dialog/ha-paper-dialog";
 import type { LovelaceConfig } from "../../../../data/lovelace";
 import { haStyleDialog } from "../../../../resources/styles";
@@ -75,7 +75,10 @@ export class HuiDialogEditLovelace extends LitElement {
             ?disabled="${!this._config || this._saving}"
             @click="${this._save}"
           >
-            <ha-spinner ?active="${this._saving}" alt="Saving"></ha-spinner>
+            <ha-circular-progress
+              ?active="${this._saving}"
+              alt="Saving"
+            ></ha-circular-progress>
             ${this.hass!.localize("ui.common.save")}</mwc-button
           >
         </div>
@@ -145,15 +148,15 @@ export class HuiDialogEditLovelace extends LitElement {
         ha-paper-dialog {
           max-width: 650px;
         }
-        mwc-button ha-spinner {
+        mwc-button ha-circular-progress {
           width: 14px;
           height: 14px;
           margin-right: 20px;
         }
-        ha-spinner {
+        ha-circular-progress {
           display: none;
         }
-        ha-spinner[active] {
+        ha-circular-progress[active] {
           display: block;
         }
       `,

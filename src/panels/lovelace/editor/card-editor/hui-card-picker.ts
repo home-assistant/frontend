@@ -210,7 +210,7 @@ export class HuiCardPicker extends LitElement {
         this._renderCardElement(card),
         html`
           <div class="card spinner">
-            <ha-spinner active alt="Loading"></ha-spinner>
+            <ha-circular-progress active alt="Loading"></ha-circular-progress>
           </div>
         `
       )}`,

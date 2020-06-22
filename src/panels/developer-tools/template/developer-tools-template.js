@@ -1,4 +1,4 @@
-import "../../../components/ha-spinner";
+import "../../../components/ha-circular-progress";
 import { timeOut } from "@polymer/polymer/lib/utils/async";
 import { Debouncer } from "@polymer/polymer/lib/utils/debounce";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
@@ -92,11 +92,11 @@ class HaPanelDevTemplate extends LocalizeMixin(PolymerElement) {
         </div>
 
         <div class="render-pane">
-          <ha-spinner
+          <ha-circular-progress
             class="render-spinner"
             active="[[rendering]]"
             size="small"
-          ></ha-spinner>
+          ></ha-circular-progress>
           <pre class$="[[computeRenderedClasses(error)]]">[[processed]]</pre>
         </div>
       </div>

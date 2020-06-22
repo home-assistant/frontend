@@ -112,7 +112,11 @@ export class HaConfigServerControl extends LitElement {
                                   )}
                                 </mwc-button>
                               `
-                            : html` <ha-spinner active></ha-spinner> `}
+                            : html`
+                                <ha-circular-progress
+                                  active
+                                ></ha-circular-progress>
+                              `}
                         </div>
                       `
                     : html`

@@ -10,7 +10,7 @@ import {
   PropertyValues,
 } from "lit-element";
 import "../../../components/ha-card";
-import "../../../components/ha-spinner";
+import "../../../components/ha-circular-progress";
 import { HomeAssistant } from "../../../types";
 import { LovelaceCard } from "../types";
 import { LovelaceCardConfig } from "../../../data/lovelace";
@@ -47,7 +47,7 @@ export class HuiStartingCard extends LitElement implements LovelaceCard {
 
     return html`
       <div class="content">
-        <ha-spinner active></ha-spinner>
+        <ha-circular-progress active></ha-circular-progress>
         ${this.hass.localize("ui.panel.lovelace.cards.starting.description")}
       </div>
     `;
@@ -59,7 +59,7 @@ export class HuiStartingCard extends LitElement implements LovelaceCard {
         display: block;
         height: calc(100vh - 64px);
       }
-      ha-spinner {
+      ha-circular-progress {
         padding-bottom: 20px;
       }
       .content {

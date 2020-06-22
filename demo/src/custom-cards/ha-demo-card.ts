@@ -9,7 +9,7 @@ import {
 } from "lit-element";
 import { until } from "lit-html/directives/until";
 import "../../../src/components/ha-card";
-import "../../../src/components/ha-spinner";
+import "../../../src/components/ha-circular-progress";
 import { LovelaceCardConfig } from "../../../src/data/lovelace";
 import { MockHomeAssistant } from "../../../src/fake_data/provide_hass";
 import { Lovelace, LovelaceCard } from "../../../src/panels/lovelace/types";
@@ -49,7 +49,7 @@ export class HADemoCard extends LitElement implements LovelaceCard {
         <div class="picker">
           <div class="label">
             ${this._switching
-              ? html`<ha-spinner active></ha-spinner>`
+              ? html`<ha-circular-progress active></ha-circular-progress>`
               : until(
                   selectedDemoConfig.then(
                     (conf) => html`

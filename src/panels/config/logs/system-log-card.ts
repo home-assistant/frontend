@@ -1,7 +1,7 @@
 import "../../../components/ha-icon-button";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-item/paper-item-body";
-import "../../../components/ha-spinner";
+import "../../../components/ha-circular-progress";
 import {
   css,
   CSSResult,
@@ -47,7 +47,7 @@ export class SystemLogCard extends LitElement {
           ${this._items === undefined
             ? html`
                 <div class="loading-container">
-                  <ha-spinner active></ha-spinner>
+                  <ha-circular-progress active></ha-circular-progress>
                 </div>
               `
             : html`

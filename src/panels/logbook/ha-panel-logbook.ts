@@ -2,7 +2,7 @@ import "@polymer/app-layout/app-header-layout/app-header-layout";
 import "@polymer/app-layout/app-header/app-header";
 import "@polymer/app-layout/app-toolbar/app-toolbar";
 import "../../components/ha-icon-button";
-import "../../components/ha-spinner";
+import "../../components/ha-circular-progress";
 import { computeRTL } from "../../common/util/compute_rtl";
 import "../../components/entity/ha-entity-picker";
 import "../../components/ha-menu-button";
@@ -105,10 +105,10 @@ export class HaPanelLogbook extends LitElement {
         </div>
 
         ${this._isLoading
-          ? html`<ha-spinner
+          ? html`<ha-circular-progress
               active
               alt=${this.hass.localize("ui.common.loading")}
-            ></ha-spinner>`
+            ></ha-circular-progress>`
           : html`<ha-logbook
               .hass=${this.hass}
               .entries=${this._entries}
@@ -239,7 +239,7 @@ export class HaPanelLogbook extends LitElement {
           margin-right: 0;
         }
 
-        ha-spinner {
+        ha-circular-progress {
           position: absolute;
           left: 50%;
           top: 50%;

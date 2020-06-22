@@ -8,7 +8,7 @@ import {
   property,
   TemplateResult,
 } from "lit-element";
-import "../components/ha-spinner";
+import "../components/ha-circular-progress";
 import "../components/ha-menu-button";
 import "../components/ha-icon-button-arrow-prev";
 import { haStyle } from "../resources/styles";
@@ -39,7 +39,7 @@ class HassLoadingScreen extends LitElement {
             `}
       </app-toolbar>
       <div class="content">
-        <ha-spinner active></ha-spinner>
+        <ha-circular-progress active></ha-circular-progress>
       </div>
     `;
   }

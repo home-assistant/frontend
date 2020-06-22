@@ -13,7 +13,7 @@ import {
   HassioAddonDetails,
 } from "../../../../src/data/hassio/addon";
 import "../../../../src/layouts/loading-screen";
-import "../../../../src/components/ha-spinner";
+import "../../../../src/components/ha-circular-progress";
 import { haStyle } from "../../../../src/resources/styles";
 import { HomeAssistant } from "../../../../src/types";
 import { hassioStyle } from "../../resources/hassio-style";
@@ -35,7 +35,7 @@ class HassioAddonDocumentationDashboard extends LitElement {
 
   protected render(): TemplateResult {
     if (!this.addon) {
-      return html`<ha-spinner active></ha-spinner>`;
+      return html`<ha-circular-progress active></ha-circular-progress>`;
     }
     return html`
       <div class="content">

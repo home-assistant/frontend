@@ -15,7 +15,7 @@ import {
 import { fireEvent, HASSDomEvent } from "../../../../common/dom/fire_event";
 import { navigate } from "../../../../common/navigate";
 import "../../../../components/dialog/ha-paper-dialog";
-import "../../../../components/ha-spinner";
+import "../../../../components/ha-circular-progress";
 import type { HaPaperDialog } from "../../../../components/dialog/ha-paper-dialog";
 import type {
   LovelaceBadgeConfig,
@@ -199,7 +199,10 @@ export class HuiDialogEditView extends LitElement {
             ?disabled="${!this._config || this._saving}"
             @click="${this._save}"
           >
-            <ha-spinner ?active="${this._saving}" alt="Saving"></ha-spinner>
+            <ha-circular-progress
+              ?active="${this._saving}"
+              alt="Saving"
+            ></ha-circular-progress>
             ${this.hass!.localize("ui.common.save")}</mwc-button
           >
         </div>
@@ -366,7 +369,7 @@ export class HuiDialogEditView extends LitElement {
           text-transform: uppercase;
           border-bottom: 1px solid rgba(0, 0, 0, 0.1);
         }
-        mwc-button ha-spinner {
+        mwc-button ha-circular-progress {
           width: 14px;
           height: 14px;
           margin-right: 20px;
@@ -374,10 +377,10 @@ export class HuiDialogEditView extends LitElement {
         mwc-button.warning {
           margin-right: auto;
         }
-        ha-spinner {
+        ha-circular-progress {
           display: none;
         }
-        ha-spinner[active] {
+        ha-circular-progress[active] {
           display: block;
         }
         paper-dialog-scrollable {

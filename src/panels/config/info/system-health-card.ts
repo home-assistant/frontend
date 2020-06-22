@@ -1,4 +1,4 @@
-import "../../../components/ha-spinner";
+import "../../../components/ha-circular-progress";
 import {
   css,
   CSSResult,
@@ -46,7 +46,7 @@ class SystemHealthCard extends LitElement {
       sections.push(
         html`
           <div class="loading-container">
-            <ha-spinner active></ha-spinner>
+            <ha-circular-progress active></ha-circular-progress>
           </div>
         `
       );

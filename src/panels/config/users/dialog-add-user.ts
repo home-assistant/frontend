@@ -1,6 +1,6 @@
 import "@material/mwc-button";
 import "@polymer/paper-input/paper-input";
-import "../../../components/ha-spinner";
+import "../../../components/ha-circular-progress";
 import {
   css,
   CSSResult,
@@ -138,7 +138,7 @@ export class DialogAddUser extends LitElement {
         ${this._loading
           ? html`
               <div slot="primaryAction" class="submit-spinner">
-                <ha-spinner active></ha-spinner>
+                <ha-circular-progress active></ha-circular-progress>
               </div>
             `
           : html`
