@@ -1,7 +1,7 @@
 import "@material/mwc-button";
-import "@polymer/paper-spinner/paper-spinner-lite";
 import { css, CSSResult, html, LitElement, property } from "lit-element";
 import { removeInitSkeleton } from "../util/init-skeleton";
+import "../components/ha-circular-progress";
 
 class HaInitPage extends LitElement {
   @property({ type: Boolean }) public error = false;
@@ -28,7 +28,7 @@ class HaInitPage extends LitElement {
                 : ""}
             `
           : html`
-              <paper-spinner-lite active></paper-spinner-lite>
+              <ha-circular-progress active></ha-circular-progress>
               <p>Loading data</p>
             `}
       </div>
@@ -52,7 +52,7 @@ class HaInitPage extends LitElement {
         justify-content: center;
         align-items: center;
       }
-      paper-spinner-lite {
+      ha-circular-progress {
         margin-top: 9px;
       }
       a {

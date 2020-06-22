@@ -3,7 +3,7 @@ import "@polymer/app-layout/app-header-layout/app-header-layout";
 import "@polymer/app-layout/app-header/app-header";
 import "@polymer/app-layout/app-toolbar/app-toolbar";
 import "../../components/ha-icon-button";
-import "@polymer/paper-spinner/paper-spinner";
+import "../../components/ha-circular-progress";
 import { safeDump, safeLoad } from "js-yaml";
 import {
   css,

@@ -1,5 +1,4 @@
 import "@polymer/app-layout/app-toolbar/app-toolbar";
-import "@polymer/paper-spinner/paper-spinner-lite";
 import {
   css,
   CSSResultArray,
@@ -9,6 +8,7 @@ import {
   property,
   TemplateResult,
 } from "lit-element";
+import "../components/ha-circular-progress";
 import "../components/ha-menu-button";
 import "../components/ha-icon-button-arrow-prev";
 import { haStyle } from "../resources/styles";
@@ -39,7 +39,7 @@ class HassLoadingScreen extends LitElement {
             `}
       </app-toolbar>
       <div class="content">
-        <paper-spinner-lite active></paper-spinner-lite>
+        <ha-circular-progress active></ha-circular-progress>
       </div>
     `;
   }
