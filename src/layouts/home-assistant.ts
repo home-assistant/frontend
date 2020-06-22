@@ -1,5 +1,5 @@
 import "@polymer/app-route/app-location";
-import { html, property, PropertyValues } from "lit-element";
+import { html, property, PropertyValues, customElement } from "lit-element";
 import { navigate } from "../common/navigate";
 import { getStorageDefaultPanelUrlPath } from "../data/panel";
 import "../resources/custom-card-support";
@@ -12,6 +12,7 @@ import {
 import "./ha-init-page";
 import "./home-assistant-main";
 
+@customElement("home-assistant")
 export class HomeAssistantAppEl extends HassElement {
   @property() private _route?: Route;
 
@@ -138,4 +139,8 @@ export class HomeAssistantAppEl extends HassElement {
   }
 }
 
-customElements.define("home-assistant", HomeAssistantAppEl);
+declare global {
+  interface HTMLElementTagNameMap {
+    "home-assistant": HomeAssistantAppEl;
+  }
+}

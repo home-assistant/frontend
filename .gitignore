@@ -24,7 +24,7 @@ dist
 .vscode/*
 !.vscode/extensions.json
 
-# Cast dev settings 
+# Cast dev settings
 src/cast/dev_const.ts
 
 # Secrets

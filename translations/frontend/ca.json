@@ -506,6 +506,11 @@
                 "clear": "Esborra",
                 "show_areas": "Mostra àrees"
             },
+            "date-range-picker": {
+                "end_date": "Data final",
+                "select": "Selecciona",
+                "start_date": "Data inici"
+            },
             "device-picker": {
                 "clear": "Esborra",
                 "device": "Dispositiu",
@@ -695,6 +700,7 @@
             "zha_device_info": {
                 "buttons": {
                     "add": "Afegeix dispositius a través d'aquest dispositiu",
+                    "clusters": "Gestiona clústers",
                     "reconfigure": "Reconfigurar dispositiu",
                     "remove": "Eliminar dispositiu",
                     "zigbee_information": "Signatura Zigbee del dispositiu"
@@ -1557,6 +1563,20 @@
                         }
                     }
                 },
+                "mqtt": {
+                    "button": "Configura",
+                    "description_listen": "Escolta d'un tòpic",
+                    "description_publish": "Publicació d'un paquet",
+                    "listening_to": "Escoltant a",
+                    "message_received": "Missatge {id} rebut a {topic} a les {time}:",
+                    "payload": "Dades/missatge (plantilla permesa)",
+                    "publish": "Publica",
+                    "start_listening": "Comença a escoltar",
+                    "stop_listening": "Deixa d'escoltar",
+                    "subscribe_to": "Tòpic al qual subscriure's",
+                    "title": "MQTT",
+                    "topic": "tòpic"
+                },
                 "person": {
                     "add_person": "Afegeix persona",
                     "caption": "Persones",
@@ -1979,19 +1999,6 @@
                         "title": "Esdeveniments",
                         "type": "Tipus d'esdeveniment"
                     },
-                    "mqtt": {
-                        "description_listen": "Escolta d'un tòpic",
-                        "description_publish": "Publicació d'un paquet",
-                        "listening_to": "Escoltant a",
-                        "message_received": "Missatge {id} rebut a {topic} a les {time}:",
-                        "payload": "Dades/missatge (plantilla permesa)",
-                        "publish": "Publica",
-                        "start_listening": "Comença a escoltar",
-                        "stop_listening": "Deixa d'escoltar",
-                        "subscribe_to": "Tòpic al qual subscriure's",
-                        "title": "MQTT",
-                        "topic": "tòpic"
-                    },
                     "services": {
                         "alert_parsing_yaml": "S'ha produït un error analitzant el codi YAML: {data}",
                         "call_service": "Crida servei",
@@ -2035,11 +2042,23 @@
             },
             "history": {
                 "period": "Període",
+                "ranges": {
+                    "last_week": "La setmana passada",
+                    "this_week": "Aquesta setmana",
+                    "today": "Avui",
+                    "yesterday": "Ahir"
+                },
                 "showing_entries": "Mostrant entrades de"
             },
             "logbook": {
                 "entries_not_found": "No s'han trobat entrades al registre.",
                 "period": "Període",
+                "ranges": {
+                    "last_week": "La setmana passada",
+                    "this_week": "Aquesta setmana",
+                    "today": "Avui",
+                    "yesterday": "Ahir"
+                },
                 "showing_entries": "Mostrant entrades de"
             },
             "lovelace": {

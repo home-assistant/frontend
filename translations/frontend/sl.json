@@ -1557,6 +1557,19 @@
                         }
                     }
                 },
+                "mqtt": {
+                    "description_listen": "Poslušajte temi",
+                    "description_publish": "Objavi paket",
+                    "listening_to": "Poslušanje",
+                    "message_received": "Sporočilo {id} prejeto v {topic} ob {time}:",
+                    "payload": "Tovor (predloga je dovoljena)",
+                    "publish": "Objavi",
+                    "start_listening": "Začnite poslušati",
+                    "stop_listening": "Nehajte poslušati",
+                    "subscribe_to": "Tema, na katero se lahko naročite",
+                    "title": "MQTT",
+                    "topic": "tema"
+                },
                 "person": {
                     "add_person": "Dodaj osebo",
                     "caption": "Osebe",
@@ -1978,19 +1991,6 @@
                         "subscribe_to": "Dogodek, na katerega se lahko naročite",
                         "title": "Dogodki",
                         "type": "Vrsta dogodka"
-                    },
-                    "mqtt": {
-                        "description_listen": "Poslušajte temi",
-                        "description_publish": "Objavi paket",
-                        "listening_to": "Poslušanje",
-                        "message_received": "Sporočilo {id} prejeto v {topic} ob {time}:",
-                        "payload": "Tovor (predloga je dovoljena)",
-                        "publish": "Objavi",
-                        "start_listening": "Začnite poslušati",
-                        "stop_listening": "Nehajte poslušati",
-                        "subscribe_to": "Tema, na katero se lahko naročite",
-                        "title": "MQTT",
-                        "topic": "tema"
                     },
                     "services": {
                         "alert_parsing_yaml": "Napaka pri razčlenjevanju YAML-a: {data}",

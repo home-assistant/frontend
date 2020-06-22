@@ -1082,6 +1082,11 @@
                     "clear": "Notīrīt",
                     "refresh": "Atsvaidzināt"
                 },
+                "mqtt": {
+                    "publish": "Publicēt",
+                    "title": "MQTT",
+                    "topic": "temats"
+                },
                 "person": {
                     "add_person": "Pievienot personu",
                     "caption": "Personas",
@@ -1354,11 +1359,6 @@
                 "tabs": {
                     "events": {
                         "title": "Notikumi"
-                    },
-                    "mqtt": {
-                        "publish": "Publicēt",
-                        "title": "MQTT",
-                        "topic": "temats"
                     },
                     "services": {
                         "column_description": "Apraksts",

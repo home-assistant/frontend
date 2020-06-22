@@ -1,5 +1,5 @@
 import "@material/mwc-button";
-import "@polymer/paper-spinner/paper-spinner";
+import "../../components/ha-circular-progress";
 import "@polymer/paper-tooltip/paper-tooltip";
 import {
   css,
@@ -76,7 +76,7 @@ class StepFlowForm extends LitElement {
         ${this._loading
           ? html`
               <div class="submit-spinner">
-                <paper-spinner active></paper-spinner>
+                <ha-circular-progress active></ha-circular-progress>
               </div>
             `
           : html`

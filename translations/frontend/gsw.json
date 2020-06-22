@@ -491,6 +491,9 @@
                     "none_found": "Keine Integrationen gefunden",
                     "none_found_detail": "Passen Sie Ihre Suchkriterien an."
                 },
+                "mqtt": {
+                    "title": "MQTT"
+                },
                 "users": {
                     "caption": "Benutzer",
                     "editor": {
@@ -499,13 +502,6 @@
                 },
                 "zwave": {
                     "caption": "Z-Wave"
-                }
-            },
-            "developer-tools": {
-                "tabs": {
-                    "mqtt": {
-                        "title": "MQTT"
-                    }
                 }
             },
             "history": {

@@ -506,6 +506,11 @@
                 "clear": "Effacer",
                 "show_areas": "Afficher les pièces"
             },
+            "date-range-picker": {
+                "end_date": "Date de fin",
+                "select": "Sélectionner",
+                "start_date": "Date de début"
+            },
             "device-picker": {
                 "clear": "Effacer",
                 "device": "Appareil",
@@ -695,6 +700,7 @@
             "zha_device_info": {
                 "buttons": {
                     "add": "Ajouter des appareils",
+                    "clusters": "Gérer les clusters",
                     "reconfigure": "Reconfigurer l'appareil",
                     "remove": "Supprimer l'appareil",
                     "zigbee_information": "Informations Zigbee"
@@ -1557,6 +1563,20 @@
                         }
                     }
                 },
+                "mqtt": {
+                    "button": "Configurer",
+                    "description_listen": "Écouter un sujet",
+                    "description_publish": "Publier un paquet",
+                    "listening_to": "Écouter",
+                    "message_received": "Message {id} reçu sur {topic} à {time} :",
+                    "payload": "Payload (modèle autorisé)",
+                    "publish": "Publier",
+                    "start_listening": "Commencer à écouter",
+                    "stop_listening": "Arrêter d'écouter",
+                    "subscribe_to": "Sujet auquel s'abonner",
+                    "title": "MQTT",
+                    "topic": "sujet"
+                },
                 "person": {
                     "add_person": "Ajouter une personne",
                     "caption": "Personnes",
@@ -1979,19 +1999,6 @@
                         "title": "Événements",
                         "type": "Type d'événement"
                     },
-                    "mqtt": {
-                        "description_listen": "Écouter un sujet",
-                        "description_publish": "Publier un paquet",
-                        "listening_to": "Écouter",
-                        "message_received": "Message {id} reçu sur {topic} à {time} :",
-                        "payload": "Payload (modèle autorisé)",
-                        "publish": "Publier",
-                        "start_listening": "Commencer à écouter",
-                        "stop_listening": "Arrêter d'écouter",
-                        "subscribe_to": "Sujet auquel s'abonner",
-                        "title": "MQTT",
-                        "topic": "sujet"
-                    },
                     "services": {
                         "alert_parsing_yaml": "Erreur d'analyse de YAML : {data}",
                         "call_service": "Appeler le service",
@@ -2035,11 +2042,23 @@
             },
             "history": {
                 "period": "Période",
+                "ranges": {
+                    "last_week": "La semaine dernière",
+                    "this_week": "Cette semaine",
+                    "today": "Aujourd'hui",
+                    "yesterday": "Hier"
+                },
                 "showing_entries": "Afficher les entrées pour"
             },
             "logbook": {
                 "entries_not_found": "Aucune entrée trouvée dans le journal.",
                 "period": "Période",
+                "ranges": {
+                    "last_week": "La semaine dernière",
+                    "this_week": "Cette semaine",
+                    "today": "Aujourd'hui",
+                    "yesterday": "Hier"
+                },
                 "showing_entries": "Afficher les entrées pour le"
             },
             "lovelace": {

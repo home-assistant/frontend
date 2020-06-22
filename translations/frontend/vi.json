@@ -1257,6 +1257,19 @@
                         }
                     }
                 },
+                "mqtt": {
+                    "description_listen": "Nghe một chủ đề",
+                    "description_publish": "Công bố một gói tin",
+                    "listening_to": "Lắng nghe",
+                    "message_received": "Thông điệp {id} nhận được trên {topic} tại {time}:",
+                    "payload": "Nội dung (cho phép dùng Mẫu sẵn)",
+                    "publish": "Công bố",
+                    "start_listening": "Bắt đầu nghe",
+                    "stop_listening": "Dừng nghe",
+                    "subscribe_to": "Đăng ký vào chủ đề",
+                    "title": "MQTT",
+                    "topic": "chủ đề"
+                },
                 "person": {
                     "caption": "Người",
                     "description": "Quản lý những người mà Home Assistant theo dõi.",
@@ -1522,19 +1535,6 @@
                         "subscribe_to": "Sự kiện để đăng ký",
                         "title": "Sự kiện",
                         "type": "Loại Sự Kiện"
-                    },
-                    "mqtt": {
-                        "description_listen": "Nghe một chủ đề",
-                        "description_publish": "Công bố một gói tin",
-                        "listening_to": "Lắng nghe",
-                        "message_received": "Thông điệp {id} nhận được trên {topic} tại {time}:",
-                        "payload": "Nội dung (cho phép dùng Mẫu sẵn)",
-                        "publish": "Công bố",
-                        "start_listening": "Bắt đầu nghe",
-                        "stop_listening": "Dừng nghe",
-                        "subscribe_to": "Đăng ký vào chủ đề",
-                        "title": "MQTT",
-                        "topic": "chủ đề"
                     },
                     "services": {
                         "alert_parsing_yaml": "Lỗi phân tích YAML: {data}",

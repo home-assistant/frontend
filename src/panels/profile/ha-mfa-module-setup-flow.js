@@ -1,6 +1,6 @@
 import "@material/mwc-button";
 import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable";
-import "@polymer/paper-spinner/paper-spinner";
+import "../../components/ha-circular-progress";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 /* eslint-plugin-disable lit */
 import { PolymerElement } from "@polymer/polymer/polymer-element";
@@ -70,7 +70,7 @@ class HaMfaModuleSetupFlow extends LocalizeMixin(EventsMixin(PolymerElement)) {
           </template>
           <template is="dom-if" if="[[!_step]]">
             <div class="init-spinner">
-              <paper-spinner active></paper-spinner>
+              <ha-circular-progress active></ha-circular-progress>
             </div>
           </template>
           <template is="dom-if" if="[[_step]]">
@@ -125,7 +125,7 @@ class HaMfaModuleSetupFlow extends LocalizeMixin(EventsMixin(PolymerElement)) {
           <template is="dom-if" if="[[_equals(_step.type, 'form')]]">
             <template is="dom-if" if="[[_loading]]">
               <div class="submit-spinner">
-                <paper-spinner active></paper-spinner>
+                <ha-circular-progress active></ha-circular-progress>
               </div>
             </template>
             <template is="dom-if" if="[[!_loading]]">

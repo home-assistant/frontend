@@ -1448,6 +1448,19 @@
                         }
                     }
                 },
+                "mqtt": {
+                    "description_listen": "Počúvať tému",
+                    "description_publish": "Publikovať paket",
+                    "listening_to": "Počúvam",
+                    "message_received": "Správa {id} prijatá v {topic} o {time} :",
+                    "payload": "Obsah (šablóny sú povolené)",
+                    "publish": "Publikovať",
+                    "start_listening": "Začať počúvať",
+                    "stop_listening": "Zastaviť počúvanie",
+                    "subscribe_to": "Téma na odber",
+                    "title": "MQTT",
+                    "topic": "téma"
+                },
                 "person": {
                     "add_person": "Pridať osobu",
                     "caption": "Osoby",
@@ -1790,19 +1803,6 @@
                         "subscribe_to": "Udalosť na ktorú čakať",
                         "title": "Udalosti",
                         "type": "Typ udalosti"
-                    },
-                    "mqtt": {
-                        "description_listen": "Počúvať tému",
-                        "description_publish": "Publikovať paket",
-                        "listening_to": "Počúvam",
-                        "message_received": "Správa {id} prijatá v {topic} o {time} :",
-                        "payload": "Obsah (šablóny sú povolené)",
-                        "publish": "Publikovať",
-                        "start_listening": "Začať počúvať",
-                        "stop_listening": "Zastaviť počúvanie",
-                        "subscribe_to": "Téma na odber",
-                        "title": "MQTT",
-                        "topic": "téma"
                     },
                     "services": {
                         "alert_parsing_yaml": "Chyba pri analýze YAML: {data}",

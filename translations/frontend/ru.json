@@ -506,6 +506,11 @@
                 "clear": "Очистить",
                 "show_areas": "Показать помещения"
             },
+            "date-range-picker": {
+                "end_date": "До даты",
+                "select": "Выбрать",
+                "start_date": "С даты"
+            },
             "device-picker": {
                 "clear": "Очистить",
                 "device": "Устройство",
@@ -695,6 +700,7 @@
             "zha_device_info": {
                 "buttons": {
                     "add": "Добавить устройства через это устройство",
+                    "clusters": "Управление кластерами",
                     "reconfigure": "Перенастроить устройство",
                     "remove": "Удалить устройство",
                     "zigbee_information": "Подпись устройства Zigbee"
@@ -1557,6 +1563,20 @@
                         }
                     }
                 },
+                "mqtt": {
+                    "button": "Настроить",
+                    "description_listen": "Подписаться на топик",
+                    "description_publish": "Опубликовать данные",
+                    "listening_to": "Подписано на",
+                    "message_received": "Сообщение {id} получено в {time} из {topic}:",
+                    "payload": "Значение (включая шаблоны)",
+                    "publish": "Опубликовать",
+                    "start_listening": "Подписаться",
+                    "stop_listening": "Отписаться",
+                    "subscribe_to": "Топик",
+                    "title": "MQTT",
+                    "topic": "Топик"
+                },
                 "person": {
                     "add_person": "Добавить персону",
                     "caption": "Люди",
@@ -1979,19 +1999,6 @@
                         "title": "События",
                         "type": "Событие"
                     },
-                    "mqtt": {
-                        "description_listen": "Подписаться на топик",
-                        "description_publish": "Опубликовать данные",
-                        "listening_to": "Подписано на",
-                        "message_received": "Сообщение {id} получено в {time} из {topic}:",
-                        "payload": "Значение (включая шаблоны)",
-                        "publish": "Опубликовать",
-                        "start_listening": "Подписаться",
-                        "stop_listening": "Отписаться",
-                        "subscribe_to": "Топик",
-                        "title": "MQTT",
-                        "topic": "Топик"
-                    },
                     "services": {
                         "alert_parsing_yaml": "Ошибка при разборе синтаксиса YAML: {data}",
                         "call_service": "Вызвать службу",
@@ -2035,11 +2042,23 @@
             },
             "history": {
                 "period": "Период",
+                "ranges": {
+                    "last_week": "Прошедшая неделя",
+                    "this_week": "Эта неделя",
+                    "today": "Сегодня",
+                    "yesterday": "Вчера"
+                },
                 "showing_entries": "Отображение записей за"
             },
             "logbook": {
                 "entries_not_found": "В журнале нет записей.",
                 "period": "Период",
+                "ranges": {
+                    "last_week": "Прошедшая неделя",
+                    "this_week": "Эта неделя",
+                    "today": "Сегодня",
+                    "yesterday": "Вчера"
+                },
                 "showing_entries": "Отображение записей за"
             },
             "lovelace": {

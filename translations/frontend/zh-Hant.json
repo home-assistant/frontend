@@ -506,6 +506,11 @@
                 "clear": "未觸發",
                 "show_areas": "顯示分區"
             },
+            "date-range-picker": {
+                "end_date": "結束日期",
+                "select": "選擇",
+                "start_date": "開始日期"
+            },
             "device-picker": {
                 "clear": "清除",
                 "device": "設備",
@@ -695,6 +700,7 @@
             "zha_device_info": {
                 "buttons": {
                     "add": "透過此設備新增設備",
+                    "clusters": "管理叢集",
                     "reconfigure": "重新設定設備",
                     "remove": "移除設備",
                     "zigbee_information": "Zigbee 設備簽章"
@@ -1557,6 +1563,20 @@
                         }
                     }
                 },
+                "mqtt": {
+                    "button": "設定",
+                    "description_listen": "監聽主題",
+                    "description_publish": "發佈封包",
+                    "listening_to": "監聽：",
+                    "message_received": "主題 - {topic}，時間 - {time}，訊息 - {id}：",
+                    "payload": "負載（允取模版）",
+                    "publish": "發佈",
+                    "start_listening": "開始監聽",
+                    "stop_listening": "停止監聽",
+                    "subscribe_to": "訂閱主題",
+                    "title": "MQTT",
+                    "topic": "主題"
+                },
                 "person": {
                     "add_person": "新增人員",
                     "caption": "人員",
@@ -1979,19 +1999,6 @@
                         "title": "事件",
                         "type": "事件類別"
                     },
-                    "mqtt": {
-                        "description_listen": "監聽主題",
-                        "description_publish": "發佈封包",
-                        "listening_to": "監聽：",
-                        "message_received": "主題 - {topic}，時間 - {time}，訊息 - {id}：",
-                        "payload": "負載（允取模版）",
-                        "publish": "發佈",
-                        "start_listening": "開始監聽",
-                        "stop_listening": "停止監聽",
-                        "subscribe_to": "訂閱主題",
-                        "title": "MQTT",
-                        "topic": "主題"
-                    },
                     "services": {
                         "alert_parsing_yaml": "解析 YAML 錯誤：{data}",
                         "call_service": "執行服務",
@@ -2035,11 +2042,23 @@
             },
             "history": {
                 "period": "期間長",
+                "ranges": {
+                    "last_week": "上週",
+                    "this_week": "本週",
+                    "today": "今天",
+                    "yesterday": "昨天"
+                },
                 "showing_entries": "選擇要查看的時間"
             },
             "logbook": {
                 "entries_not_found": "找不到物件日誌。",
                 "period": "選擇週期",
+                "ranges": {
+                    "last_week": "上週",
+                    "this_week": "本週",
+                    "today": "今天",
+                    "yesterday": "昨天"
+                },
                 "showing_entries": "選擇要查看的時間"
             },
             "lovelace": {
