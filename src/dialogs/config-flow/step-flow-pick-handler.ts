@@ -1,6 +1,5 @@
 import "@polymer/paper-item/paper-icon-item";
 import "@polymer/paper-item/paper-item-body";
-import "@polymer/paper-spinner/paper-spinner-lite";
 import Fuse from "fuse.js";
 import {
   css,

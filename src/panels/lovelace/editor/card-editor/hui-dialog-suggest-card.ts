@@ -111,7 +111,10 @@ export class HuiDialogSuggestCard extends LitElement {
                 <mwc-button ?disabled="${this._saving}" @click="${this._save}">
                   ${this._saving
                     ? html`
-                        <paper-spinner active alt="Saving"></paper-spinner>
+                        <ha-circular-progress
+                          active
+                          alt="Saving"
+                        ></ha-circular-progress>
                       `
                     : this.hass!.localize(
                         "ui.panel.lovelace.editor.suggest_card.add"
@@ -143,7 +146,7 @@ export class HuiDialogSuggestCard extends LitElement {
         ha-paper-dialog {
           max-width: 845px;
         }
-        mwc-button paper-spinner {
+        mwc-button ha-circular-progress {
           width: 14px;
           height: 14px;
           margin-right: 20px;

@@ -1,6 +1,6 @@
 import "@material/mwc-button";
 import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable";
-import "@polymer/paper-spinner/paper-spinner";
+import "../../../components/ha-circular-progress";
 import {
   css,
   CSSResult,
@@ -118,10 +118,10 @@ export class HuiSaveConfig extends LitElement {
                   ?disabled="${this._saving}"
                   @click="${this._saveConfig}"
                 >
-                  <paper-spinner
+                  <ha-circular-progress
                     ?active="${this._saving}"
                     alt="Saving"
-                  ></paper-spinner>
+                  ></ha-circular-progress>
                   ${this.hass!.localize(
                     "ui.panel.lovelace.editor.save_config.save"
                   )}
@@ -195,13 +195,13 @@ export class HuiSaveConfig extends LitElement {
         ha-paper-dialog {
           max-width: 650px;
         }
-        paper-spinner {
+        ha-circular-progress {
           display: none;
         }
-        paper-spinner[active] {
+        ha-circular-progress[active] {
           display: block;
         }
-        mwc-button paper-spinner {
+        mwc-button ha-circular-progress {
           width: 14px;
           height: 14px;
           margin-right: 20px;

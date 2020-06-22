@@ -1,4 +1,3 @@
-import "@polymer/paper-spinner/paper-spinner-lite";
 import {
   css,
   CSSResult,
@@ -12,6 +11,7 @@ import { HassioAddonDetails } from "../../../../src/data/hassio/addon";
 import { haStyle } from "../../../../src/resources/styles";
 import { HomeAssistant } from "../../../../src/types";
 import { hassioStyle } from "../../resources/hassio-style";
+import "../../../../src/components/ha-circular-progress";
 import "./hassio-addon-audio";
 import "./hassio-addon-config";
 import "./hassio-addon-network";
@@ -24,7 +24,7 @@ class HassioAddonConfigDashboard extends LitElement {
 
   protected render(): TemplateResult {
     if (!this.addon) {
-      return html` <paper-spinner-lite active></paper-spinner-lite> `;
+      return html`<ha-circular-progress active></ha-circular-progress>`;
     }
     return html`
       <div class="content">

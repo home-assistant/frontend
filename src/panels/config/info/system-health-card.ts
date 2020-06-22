@@ -1,4 +1,4 @@
-import "@polymer/paper-spinner/paper-spinner";
+import "../../../components/ha-circular-progress";
 import {
   css,
   CSSResult,
@@ -46,7 +46,7 @@ class SystemHealthCard extends LitElement {
       sections.push(
         html`
           <div class="loading-container">
-            <paper-spinner active></paper-spinner>
+            <ha-circular-progress active></ha-circular-progress>
           </div>
         `
       );

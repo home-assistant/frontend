@@ -17,6 +17,7 @@ import type {
   LovelaceViewConfig,
 } from "../../../../data/lovelace";
 import { haStyleDialog } from "../../../../resources/styles";
+import "../../../../components/ha-circular-progress";
 import type { HomeAssistant } from "../../../../types";
 import { showSaveSuccessToast } from "../../../../util/toast-saved-success";
 import { addCard, replaceCard } from "../config-util";
@@ -167,10 +168,10 @@ export class HuiDialogEditCard extends LitElement {
                     ></hui-card-preview>
                     ${this._error
                       ? html`
-                          <paper-spinner
+                          <ha-circular-progress
                             active
                             alt="Can't update card"
-                          ></paper-spinner>
+                          ></ha-circular-progress>
                         `
                       : ``}
                   </div>
@@ -205,7 +206,10 @@ export class HuiDialogEditCard extends LitElement {
                 >
                   ${this._saving
                     ? html`
-                        <paper-spinner active alt="Saving"></paper-spinner>
+                        <ha-circular-progress
+                          active
+                          alt="Saving"
+                        ></ha-circular-progress>
                       `
                     : this.hass!.localize("ui.common.save")}
                 </mwc-button>
@@ -286,7 +290,7 @@ export class HuiDialogEditCard extends LitElement {
           }
         }
 
-        mwc-button paper-spinner {
+        mwc-button ha-circular-progress {
           width: 14px;
           height: 14px;
           margin-right: 20px;
@@ -303,7 +307,7 @@ export class HuiDialogEditCard extends LitElement {
         .element-preview {
           position: relative;
         }
-        .element-preview paper-spinner {
+        .element-preview ha-circular-progress {
           top: 50%;
           left: 50%;
           position: absolute;
