@@ -83,7 +83,8 @@
   <body>
     <div id="ha-init-skeleton"></div>
     <ha-demo></ha-demo>
-    <%= renderTemplate('_js_base') %> <%= renderTemplate('_preload_roboto') %>
+    <%= renderTemplate('_js_base') %>
+    <%= renderTemplate('_preload_roboto') %>
 
     <script>
       import("<%= latestDemoJS %>");
