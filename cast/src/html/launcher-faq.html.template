@@ -37,23 +37,21 @@
   <body>
     <%= renderTemplate('_js_base') %>
 
-    <script type="module" crossorigin="use-credentials">
-      import "<%= latestLauncherJS %>";
+    <script>
+      import("<%= latestLauncherJS %>");
+      window.latestJS = true;
     </script>
 
-    <script nomodule>
-      (function() {
-        // // Safari 10.1 supports type=module but ignores nomodule, so we add this check.
-        if (!isS101) {
-          <% if (useRollup) { %>
-            _ls("/static/js/s.min.js").onload = function() {
-              System.import("<%= es5LauncherJS %>");
-            };
-          <% } else { %>
-            _ls("<%= es5LauncherJS %>");
-          <% } %>
-        }
-      })();
+    <script>
+      if (!window.latestJS) {
+        <% if (useRollup) { %>
+          _ls("/static/js/s.min.js").onload = function() {
+            System.import("<%= es5LauncherJS %>");
+          };
+        <% } else { %>
+          _ls("<%= es5LauncherJS %>");
+        <% } %>
+      }
     </script>
 
     <hc-layout subtitle="FAQ">
@@ -253,7 +251,7 @@ http:
 
     <script>
       var _gaq = [["_setAccount", "UA-57927901-9"], ["_trackPageview"]];
-      (function(d, t) {
+      (function (d, t) {
         var g = d.createElement(t),
           s = d.getElementsByTagName(t)[0];
         g.src =

@@ -52,7 +52,7 @@
     <%= renderTemplate('_js_base') %>
     <%= renderTemplate('_preload_roboto') %>
 
-    <script>
+    <script crossorigin="use-credentials">
       import("<%= latestCoreJS %>");
       import("<%= latestAppJS %>");
       window.customPanelJS = "<%= latestCustomPanelJS %>";
