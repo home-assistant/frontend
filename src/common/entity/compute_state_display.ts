@@ -57,7 +57,7 @@ export const computeStateDisplay = (
 
   if (domain === "humidifier") {
     if (stateObj.state === "on" && stateObj.attributes.humidity) {
-      return `${stateObj.attributes.humidity} %`;
+      return `${stateObj.attributes.humidity}%`;
     }
   }
 
