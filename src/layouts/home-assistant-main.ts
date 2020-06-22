@@ -15,7 +15,6 @@ import { listenMediaQuery } from "../common/dom/media_query";
 import { fireEvent } from "../common/dom/fire_event";
 import { toggleAttribute } from "../common/dom/toggle_attribute";
 import { showNotificationDrawer } from "../dialogs/notifications/show-notification-drawer";
-import type { PolymerChangedEvent } from "../polymer-types";
 import type { HomeAssistant, Route } from "../types";
 import "./partial-panel-resolver";
 
