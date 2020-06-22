@@ -15,7 +15,7 @@ import {
 import "../../../src/layouts/hass-tabs-subpage";
 import { haStyle } from "../../../src/resources/styles";
 import { HomeAssistant, Route } from "../../../src/types";
-import { supervisorTabs } from "../hassio-panel";
+import { supervisorTabs } from "../hassio-tabs";
 import "./hassio-addons";
 import "./hassio-update";
 
