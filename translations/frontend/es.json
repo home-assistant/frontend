@@ -506,6 +506,11 @@
                 "clear": "Limpiar",
                 "show_areas": "Mostrar áreas"
             },
+            "date-range-picker": {
+                "end_date": "Fecha de finalización",
+                "select": "Seleccione",
+                "start_date": "Fecha de inicio"
+            },
             "device-picker": {
                 "clear": "Limpiar",
                 "device": "Dispositivo",
@@ -695,6 +700,7 @@
             "zha_device_info": {
                 "buttons": {
                     "add": "Añadir dispositivos a través de este dispositivo",
+                    "clusters": "Administrar clústeres",
                     "reconfigure": "Reconfigurar dispositivo",
                     "remove": "Eliminar dispositivos",
                     "zigbee_information": "Firma del dispositivo Zigbee"
@@ -1558,6 +1564,7 @@
                     }
                 },
                 "mqtt": {
+                    "button": "Configurar",
                     "description_listen": "Escuchar un tema",
                     "description_publish": "Publicar un paquete",
                     "listening_to": "Escuchando",
@@ -2035,11 +2042,23 @@
             },
             "history": {
                 "period": "Periodo",
+                "ranges": {
+                    "last_week": "La semana pasada",
+                    "this_week": "Esta semana",
+                    "today": "Hoy",
+                    "yesterday": "Ayer"
+                },
                 "showing_entries": "Mostrando entradas del"
             },
             "logbook": {
                 "entries_not_found": "No se han encontrado entradas en el registro.",
                 "period": "Periodo",
+                "ranges": {
+                    "last_week": "La semana pasada",
+                    "this_week": "Esta semana",
+                    "today": "Hoy",
+                    "yesterday": "Ayer"
+                },
                 "showing_entries": "Mostrando entradas del"
             },
             "lovelace": {

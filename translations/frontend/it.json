@@ -506,6 +506,11 @@
                 "clear": "Cancella",
                 "show_areas": "Mostra le aree"
             },
+            "date-range-picker": {
+                "end_date": "Data di fine",
+                "select": "Selezionare",
+                "start_date": "Data di inizio"
+            },
             "device-picker": {
                 "clear": "Cancella",
                 "device": "Dispositivo",
@@ -695,6 +700,7 @@
             "zha_device_info": {
                 "buttons": {
                     "add": "Aggiungi dispositivi tramite questo dispositivo",
+                    "clusters": "Gestisci i cluster",
                     "reconfigure": "Riconfigura dispositivo",
                     "remove": "Rimuovi dispositivo",
                     "zigbee_information": "Firma del dispositivo Zigbee"
@@ -1558,6 +1564,7 @@
                     }
                 },
                 "mqtt": {
+                    "button": "Configura",
                     "description_listen": "Ascoltare un argomento",
                     "description_publish": "Pubblicare un pacchetto",
                     "listening_to": "Ascolto di",
@@ -2035,11 +2042,23 @@
             },
             "history": {
                 "period": "Periodo",
+                "ranges": {
+                    "last_week": "Settimana scorsa",
+                    "this_week": "Questa settimana",
+                    "today": "Oggi",
+                    "yesterday": "Ieri"
+                },
                 "showing_entries": "Visualizzazione delle voci per"
             },
             "logbook": {
                 "entries_not_found": "Non sono state trovate voci nel registro.",
                 "period": "Periodo",
+                "ranges": {
+                    "last_week": "Settimana scorsa",
+                    "this_week": "Questa settimana",
+                    "today": "Oggi",
+                    "yesterday": "Ieri"
+                },
                 "showing_entries": "Visualizzazione delle voci per"
             },
             "lovelace": {

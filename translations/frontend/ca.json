@@ -506,6 +506,11 @@
                 "clear": "Esborra",
                 "show_areas": "Mostra àrees"
             },
+            "date-range-picker": {
+                "end_date": "Data final",
+                "select": "Selecciona",
+                "start_date": "Data inici"
+            },
             "device-picker": {
                 "clear": "Esborra",
                 "device": "Dispositiu",
@@ -695,6 +700,7 @@
             "zha_device_info": {
                 "buttons": {
                     "add": "Afegeix dispositius a través d'aquest dispositiu",
+                    "clusters": "Gestiona clústers",
                     "reconfigure": "Reconfigurar dispositiu",
                     "remove": "Eliminar dispositiu",
                     "zigbee_information": "Signatura Zigbee del dispositiu"
@@ -1558,6 +1564,7 @@
                     }
                 },
                 "mqtt": {
+                    "button": "Configura",
                     "description_listen": "Escolta d'un tòpic",
                     "description_publish": "Publicació d'un paquet",
                     "listening_to": "Escoltant a",
@@ -2035,11 +2042,23 @@
             },
             "history": {
                 "period": "Període",
+                "ranges": {
+                    "last_week": "La setmana passada",
+                    "this_week": "Aquesta setmana",
+                    "today": "Avui",
+                    "yesterday": "Ahir"
+                },
                 "showing_entries": "Mostrant entrades de"
             },
             "logbook": {
                 "entries_not_found": "No s'han trobat entrades al registre.",
                 "period": "Període",
+                "ranges": {
+                    "last_week": "La setmana passada",
+                    "this_week": "Aquesta setmana",
+                    "today": "Avui",
+                    "yesterday": "Ahir"
+                },
                 "showing_entries": "Mostrant entrades de"
             },
             "lovelace": {
