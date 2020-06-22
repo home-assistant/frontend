@@ -2,7 +2,6 @@ import "@polymer/app-layout/app-drawer-layout/app-drawer-layout";
 import type { AppDrawerLayoutElement } from "@polymer/app-layout/app-drawer-layout/app-drawer-layout";
 import "@polymer/app-layout/app-drawer/app-drawer";
 import type { AppDrawerElement } from "@polymer/app-layout/app-drawer/app-drawer";
-import "@polymer/iron-media-query/iron-media-query";
 import {
   css,
   CSSResult,
@@ -13,10 +12,10 @@ import {
   PropertyValues,
   TemplateResult,
 } from "lit-element";
+import { listenMediaQuery } from "../common/dom/media_query";
 import { fireEvent } from "../common/dom/fire_event";
 import { toggleAttribute } from "../common/dom/toggle_attribute";
 import { showNotificationDrawer } from "../dialogs/notifications/show-notification-drawer";
-import type { PolymerChangedEvent } from "../polymer-types";
 import type { HomeAssistant, Route } from "../types";
 import "./partial-panel-resolver";
 
@@ -51,11 +50,6 @@ class HomeAssistantMain extends LitElement {
       !sidebarNarrow || NON_SWIPABLE_PANELS.indexOf(hass.panelUrl) !== -1;
 
     return html`
-      <iron-media-query
-        query="(max-width: 870px)"
-        @query-matches-changed=${this._narrowChanged}
-      ></iron-media-query>
-
       <app-drawer-layout
         fullbleed
         .forceNarrow=${sidebarNarrow}
@@ -110,6 +104,10 @@ class HomeAssistantMain extends LitElement {
         narrow: this.narrow!,
       });
     });
+
+    listenMediaQuery("(max-width: 870px)", (matches) => {
+      this.narrow = matches;
+    });
   }
 
   protected updated(changedProps: PropertyValues) {
@@ -131,10 +129,6 @@ class HomeAssistantMain extends LitElement {
     if (oldHass && oldHass.language !== this.hass!.language) {
       this.drawer._resetPosition();
     }
-  }
-
-  private _narrowChanged(ev: PolymerChangedEvent<boolean>) {
-    this.narrow = ev.detail.value;
   }
 
   private get _sidebarNarrow() {
