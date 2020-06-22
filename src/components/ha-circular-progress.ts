@@ -24,33 +24,20 @@ export class HaCircularProgress extends LitElement {
   public size: "small" | "medium" | "large" = "medium";
 
   protected render(): TemplateResult | void {
-    let determinatePart: SVGTemplateResult;
     let indeterminatePart: SVGTemplateResult;
 
     if (this.size === "small") {
-      determinatePart = svg`
-        <svg class="mdc-circular-progress__determinate-circle-graphic" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-          <circle class="mdc-circular-progress__determinate-circle" cx="12" cy="12" r="8.75" stroke-dasharray="54.978" stroke-dashoffset="54.978"/>
-        </svg>`;
       indeterminatePart = svg`
         <svg class="mdc-circular-progress__indeterminate-circle-graphic" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
           <circle cx="12" cy="12" r="8.75" stroke-dasharray="54.978" stroke-dashoffset="27.489"/>
         </svg>`;
     } else if (this.size === "large") {
-      determinatePart = svg`
-        <svg class="mdc-circular-progress__determinate-circle-graphic" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
-          <circle class="mdc-circular-progress__determinate-circle" cx="24" cy="24" r="18" stroke-dasharray="113.097" stroke-dashoffset="113.097"/>
-        </svg>`;
       indeterminatePart = svg`
         <svg class="mdc-circular-progress__indeterminate-circle-graphic" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
           <circle cx="24" cy="24" r="18" stroke-dasharray="113.097" stroke-dashoffset="56.549"/>
         </svg>`;
     } else {
       // medium
-      determinatePart = svg`
-        <svg class="mdc-circular-progress__determinate-circle-graphic" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
-          <circle class="mdc-circular-progress__determinate-circle" cx="16" cy="16" r="12.5" stroke-dasharray="78.54" stroke-dashoffset="78.54"/>
-        </svg>`;
       indeterminatePart = svg`
         <svg class="mdc-circular-progress__indeterminate-circle-graphic" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
           <circle cx="16" cy="16" r="12.5" stroke-dasharray="78.54" stroke-dashoffset="39.27"/>
@@ -58,6 +45,7 @@ export class HaCircularProgress extends LitElement {
     }
 
     // ignoring prettier as it will introduce unwanted whitespace
+    // We have not implemented the determinate support of mdc circular progress.
     // prettier-ignore
     return html`
       <div
@@ -70,9 +58,6 @@ export class HaCircularProgress extends LitElement {
         aria-valuemin="0"
         aria-valuemax="1"
       >
-        <div class="mdc-circular-progress__determinate-container">
-          ${determinatePart}
-        </div>
         <div class="mdc-circular-progress__indeterminate-container">
           <div class="mdc-circular-progress__spinner-layer">
             <div class="mdc-circular-progress__circle-clipper mdc-circular-progress__circle-left">
