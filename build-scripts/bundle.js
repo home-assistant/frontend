@@ -57,7 +57,7 @@ module.exports.babelOptions = ({ latestBuild }) => ({
   ].filter(Boolean),
   plugins: [
     // Part of ES2018. Converts {...a, b: 2} to Object.assign({}, a, {b: 2})
-    [
+    !latestBuild && [
       "@babel/plugin-proposal-object-rest-spread",
       { loose: true, useBuiltIns: true },
     ],
@@ -73,7 +73,7 @@ module.exports.babelOptions = ({ latestBuild }) => ({
       require("@babel/plugin-proposal-class-properties").default,
       { loose: true },
     ],
-  ],
+  ].filter(Boolean),
 });
 
 // Are already ES5, cause warnings when babelified.
