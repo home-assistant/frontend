@@ -95,6 +95,7 @@ class HaPanelDevTemplate extends LocalizeMixin(PolymerElement) {
           <ha-spinner
             class="render-spinner"
             active="[[rendering]]"
+            size="small"
           ></ha-spinner>
           <pre class$="[[computeRenderedClasses(error)]]">[[processed]]</pre>
         </div>

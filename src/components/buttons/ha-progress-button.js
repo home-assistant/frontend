@@ -51,7 +51,9 @@ class HaProgressButton extends PolymerElement {
           <slot></slot>
         </mwc-button>
         <template is="dom-if" if="[[progress]]">
-          <div class="progress"><ha-spinner active=""></ha-spinner></div>
+          <div class="progress">
+            <ha-spinner active size="small"></ha-spinner>
+          </div>
         </template>
       </div>
     `;
