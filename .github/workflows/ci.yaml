@@ -34,10 +34,8 @@ jobs:
         run: yarn install
         env:
           CI: true
-      - name: Build icons
-        run: ./node_modules/.bin/gulp gen-icons-json
-      - name: Build translations
-        run: ./node_modules/.bin/gulp build-translations
+      - name: Build resources
+        run: ./node_modules/.bin/gulp gen-icons-json build-translations gather-gallery-demos
       - name: Run eslint
         run: ./node_modules/.bin/eslint '{**/src,src}/**/*.{js,ts,html}' --ignore-path .gitignore
       - name: Run tsc
