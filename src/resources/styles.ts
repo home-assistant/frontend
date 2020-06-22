@@ -1,7 +1,6 @@
 import { css } from "lit-element";
 
 export const derivedStyles = {
-  "paper-spinner-color": "var(--primary-color)",
   "error-state-color": "var(--error-color)",
   "state-icon-unavailable-color": "var(--disabled-text-color)",
   "sidebar-text-color": "var(--primary-text-color)",
