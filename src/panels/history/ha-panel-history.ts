@@ -11,7 +11,7 @@ import { HomeAssistant } from "../../types";
 import type { DateRangePickerRanges } from "../../components/ha-date-range-picker";
 import "../../components/ha-date-range-picker";
 import { fetchDate, computeHistory } from "../../data/history";
-import "@polymer/paper-spinner/paper-spinner";
+import "../../components/ha-circular-progress";
 
 class HaPanelHistory extends LitElement {
   @property() hass!: HomeAssistant;
@@ -73,10 +73,10 @@ class HaPanelHistory extends LitElement {
             ></ha-date-range-picker>
           </div>
           ${this._isLoading
-            ? html`<paper-spinner
+            ? html`<ha-circular-progress
                 active
                 alt=${this.hass.localize("ui.common.loading")}
-              ></paper-spinner>`
+              ></ha-circular-progress>`
             : html`
                 <state-history-charts
                   .hass=${this.hass}
@@ -190,7 +190,7 @@ class HaPanelHistory extends LitElement {
         .content {
           padding: 0 16px 16px;
         }
-        paper-spinner {
+        ha-circular-progress {
           position: absolute;
           left: 50%;
           top: 50%;

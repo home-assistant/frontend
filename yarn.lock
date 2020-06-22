@@ -1394,6 +1394,18 @@
     "@material/typography" "7.0.0-canary.d92d8c93e.0"
     tslib "^1.9.3"
 
+"@material/circular-progress@7.0.0-canary.d92d8c93e.0":
+  version "7.0.0-canary.d92d8c93e.0"
+  resolved "https://registry.yarnpkg.com/@material/circular-progress/-/circular-progress-7.0.0-canary.d92d8c93e.0.tgz#f644c90076cdf30208201dfb37e0d7c8f2c58724"
+  integrity sha512-Xoj6E+HtvxesuRo/u8xLqDQ0rJY9DKXOelKErrOkxJskkS4G30jFRvdlDWXenBjzRaynH/Iu3RcnNOUTrcSL4A==
+  dependencies:
+    "@material/animation" "7.0.0-canary.d92d8c93e.0"
+    "@material/base" "7.0.0-canary.d92d8c93e.0"
+    "@material/feature-targeting" "7.0.0-canary.d92d8c93e.0"
+    "@material/progress-indicator" "7.0.0-canary.d92d8c93e.0"
+    "@material/theme" "7.0.0-canary.d92d8c93e.0"
+    tslib "^1.9.3"
+
 "@material/density@7.0.0-canary.d92d8c93e.0", "@material/density@=7.0.0-canary.d92d8c93e.0":
   version "7.0.0-canary.d92d8c93e.0"
   resolved "https://registry.yarnpkg.com/@material/density/-/density-7.0.0-canary.d92d8c93e.0.tgz#a7a3b0a4fdb4ce92487611a18af4bf51b8f7b09f"
@@ -1691,6 +1703,13 @@
     "@material/switch" "=7.0.0-canary.d92d8c93e.0"
     lit-element "^2.3.0"
     tslib "^1.10.0"
+
+"@material/progress-indicator@7.0.0-canary.d92d8c93e.0":
+  version "7.0.0-canary.d92d8c93e.0"
+  resolved "https://registry.yarnpkg.com/@material/progress-indicator/-/progress-indicator-7.0.0-canary.d92d8c93e.0.tgz#e49e3d22ed594f53624eae5c8b82b19fa13e93d8"
+  integrity sha512-ibwqKAKd8xJqN2SceGo7fsjwdy7E2yjmP8V3ASUqUnK+MXepKoxdjfj+pXBAuCwNy8ehx1b4HzYq7LA20PKWKw==
+  dependencies:
+    tslib "^1.9.3"
 
 "@material/radio@=7.0.0-canary.d92d8c93e.0":
   version "7.0.0-canary.d92d8c93e.0"
@@ -2246,14 +2265,6 @@
     "@polymer/paper-behaviors" "^3.0.0-pre.27"
     "@polymer/paper-input" "^3.0.0-pre.26"
     "@polymer/paper-progress" "^3.0.0-pre.26"
-    "@polymer/paper-styles" "^3.0.0-pre.26"
-    "@polymer/polymer" "^3.0.0"
-
-"@polymer/paper-spinner@^3.0.2":
-  version "3.0.2"
-  resolved "https://registry.yarnpkg.com/@polymer/paper-spinner/-/paper-spinner-3.0.2.tgz#c857c79f0494bc74e9ae293839d00f37fcf29f78"
-  integrity sha512-XUzu8/4NH+pnNZUTI2MxtOKFAr0EOsW7eGhTg3VBhTh7DDW/q3ewzwYRWnqNJokX9BEnxKMiXXaIeTEBq4k2dw==
-  dependencies:
     "@polymer/paper-styles" "^3.0.0-pre.26"
     "@polymer/polymer" "^3.0.0"
 

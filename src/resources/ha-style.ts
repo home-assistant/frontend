@@ -60,12 +60,6 @@ documentContainer.innerHTML = `<custom-style>
       --paper-grey-200: #eeeeee;  /* for ha-date-picker-style */
       --paper-grey-500: #9e9e9e;  /* --label-badge-grey */
 
-      /* for paper-spinner */
-      --google-red-500: #db4437;
-      --google-blue-500: #4285f4;
-      --google-green-500: #0f9d58;
-      --google-yellow-500: #f4b400;
-
       /* for paper-slider */
       --paper-green-400: #66bb6a;
       --paper-blue-400: #42a5f5;

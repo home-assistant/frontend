@@ -1,7 +1,7 @@
 import "@material/mwc-button";
 import "@polymer/paper-input/paper-input";
 import type { PaperInputElement } from "@polymer/paper-input/paper-input";
-import "@polymer/paper-spinner/paper-spinner";
+import "../../../../../components/ha-circular-progress";
 import {
   css,
   CSSResult,
@@ -104,12 +104,12 @@ export class ZHAAddGroupPage extends LitElement {
               @click="${this._createGroup}"
               class="button"
             >
-              <paper-spinner
+              <ha-circular-progress
                 ?active="${this._processingAdd}"
                 alt="${this.hass!.localize(
                   "ui.panel.config.zha.groups.creating_group"
                 )}"
-              ></paper-spinner>
+              ></ha-circular-progress>
               ${this.hass!.localize(
                 "ui.panel.config.zha.groups.create"
               )}</mwc-button
@@ -171,15 +171,15 @@ export class ZHAAddGroupPage extends LitElement {
         ha-config-section *:last-child {
           padding-bottom: 24px;
         }
-        mwc-button paper-spinner {
+        mwc-button ha-circular-progress {
           width: 14px;
           height: 14px;
           margin-right: 20px;
         }
-        paper-spinner {
+        ha-circular-progress {
           display: none;
         }
-        paper-spinner[active] {
+        ha-circular-progress[active] {
           display: block;
         }
         .paper-dialog-buttons {
