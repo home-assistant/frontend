@@ -237,17 +237,24 @@
         },
         "panel": {
             "config": {
+                "automation": {
+                    "editor": {
+                        "triggers": {
+                            "type": {
+                                "mqtt": {
+                                    "label": "MQTT"
+                                }
+                            }
+                        }
+                    }
+                },
+                "mqtt": {
+                    "title": "MQTT"
+                },
                 "zwave": {
                     "caption": "Z-Wave",
                     "node_config": {
                         "set_config_parameter": "கட்டமைப்பு அளவுருவை அமைக்கவும்"
-                    }
-                }
-            },
-            "developer-tools": {
-                "tabs": {
-                    "mqtt": {
-                        "title": "MQTT"
                     }
                 }
             }

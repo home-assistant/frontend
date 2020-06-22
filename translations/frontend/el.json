@@ -1319,6 +1319,19 @@
                         }
                     }
                 },
+                "mqtt": {
+                    "description_listen": "Ακούστε ένα θέμα",
+                    "description_publish": "Δημοσιεύστε ένα πακέτο",
+                    "listening_to": "Ακούγοντας το",
+                    "message_received": "Το μήνυμα {id} ελήφθη στο {topic} στις {time}:",
+                    "payload": "Τιμή φορτίου (επιτρέπεται το πρότυπο)",
+                    "publish": "Δημοσιεύστε",
+                    "start_listening": "Ξεκινήστε να ακούτε",
+                    "stop_listening": "Σταματήστε να ακούτε",
+                    "subscribe_to": "Θέμα για το οποίο θα εγγραφείτε",
+                    "title": "MQTT",
+                    "topic": "θέμα"
+                },
                 "person": {
                     "add_person": "Προσθέστε Άτομο",
                     "caption": "Άτομα",
@@ -1650,19 +1663,6 @@
                         "subscribe_to": "Συμβάν για να εγγραφείτε",
                         "title": "Γεγονότα",
                         "type": "Τύπος συμβάντος"
-                    },
-                    "mqtt": {
-                        "description_listen": "Ακούστε ένα θέμα",
-                        "description_publish": "Δημοσιεύστε ένα πακέτο",
-                        "listening_to": "Ακούγοντας το",
-                        "message_received": "Το μήνυμα {id} ελήφθη στο {topic} στις {time}:",
-                        "payload": "Τιμή φορτίου (επιτρέπεται το πρότυπο)",
-                        "publish": "Δημοσιεύστε",
-                        "start_listening": "Ξεκινήστε να ακούτε",
-                        "stop_listening": "Σταματήστε να ακούτε",
-                        "subscribe_to": "Θέμα για το οποίο θα εγγραφείτε",
-                        "title": "MQTT",
-                        "topic": "θέμα"
                     },
                     "services": {
                         "alert_parsing_yaml": "Σφάλμα ανάλυσης του YAML: {data}",

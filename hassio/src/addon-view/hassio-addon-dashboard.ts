@@ -4,7 +4,6 @@ import {
   mdiInformationVariant,
   mdiMathLog,
 } from "@mdi/js";
-import "@polymer/paper-spinner/paper-spinner-lite";
 import {
   css,
   CSSResult,
@@ -20,6 +19,7 @@ import {
   HassioAddonDetails,
 } from "../../../src/data/hassio/addon";
 import "../../../src/layouts/hass-tabs-subpage";
+import "../../../src/components/ha-circular-progress";
 import type { PageNavigation } from "../../../src/layouts/hass-tabs-subpage";
 import { haStyle } from "../../../src/resources/styles";
 import { HomeAssistant, Route } from "../../../src/types";
@@ -56,7 +56,7 @@ class HassioAddonDashboard extends LitElement {
 
   protected render(): TemplateResult {
     if (!this.addon) {
-      return html` <paper-spinner-lite active></paper-spinner-lite> `;
+      return html`<ha-circular-progress active></ha-circular-progress>`;
     }
 
     const addonTabs: PageNavigation[] = [

@@ -1557,6 +1557,19 @@
                         }
                     }
                 },
+                "mqtt": {
+                    "description_listen": "Lyt til et emne",
+                    "description_publish": "Udsend en pakke",
+                    "listening_to": "Lytter til",
+                    "message_received": "Besked {id} er modtaget på {topic} kl. {time}:",
+                    "payload": "Payload (skabelon tilladt)",
+                    "publish": "Udsend",
+                    "start_listening": "Start med at lytte",
+                    "stop_listening": "Stop med at lytte",
+                    "subscribe_to": "Emne at abonnere på",
+                    "title": "MQTT",
+                    "topic": "emne"
+                },
                 "person": {
                     "add_person": "Tilføj person",
                     "caption": "Personer",
@@ -1951,19 +1964,6 @@
                         "subscribe_to": "Hændelse at abonnere på",
                         "title": "Hændelser",
                         "type": "Hændelsestype"
-                    },
-                    "mqtt": {
-                        "description_listen": "Lyt til et emne",
-                        "description_publish": "Udsend en pakke",
-                        "listening_to": "Lytter til",
-                        "message_received": "Besked {id} er modtaget på {topic} kl. {time}:",
-                        "payload": "Payload (skabelon tilladt)",
-                        "publish": "Udsend",
-                        "start_listening": "Start med at lytte",
-                        "stop_listening": "Stop med at lytte",
-                        "subscribe_to": "Emne at abonnere på",
-                        "title": "MQTT",
-                        "topic": "emne"
                     },
                     "services": {
                         "alert_parsing_yaml": "Fejl under afkodning af YAML: {data}",

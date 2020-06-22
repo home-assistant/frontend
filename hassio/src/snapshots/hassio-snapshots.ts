@@ -37,7 +37,7 @@ import { haStyle } from "../../../src/resources/styles";
 import { HomeAssistant, Route } from "../../../src/types";
 import "../components/hassio-card-content";
 import { showHassioSnapshotDialog } from "../dialogs/snapshot/show-dialog-hassio-snapshot";
-import { supervisorTabs } from "../hassio-panel";
+import { supervisorTabs } from "../hassio-tabs";
 import { hassioStyle } from "../resources/hassio-style";
 
 interface CheckboxItem {

@@ -6,7 +6,6 @@ import {
   mdiMenu,
   mdiViewDashboard,
 } from "@mdi/js";
-import "@polymer/app-layout/app-toolbar/app-toolbar";
 import "@polymer/paper-item/paper-icon-item";
 import type { PaperIconItemElement } from "@polymer/paper-item/paper-icon-item";
 import "@polymer/paper-item/paper-item";
@@ -16,6 +15,7 @@ import {
   CSSResult,
   eventOptions,
   html,
+  customElement,
   LitElement,
   property,
   PropertyValues,
@@ -109,9 +109,7 @@ const computePanels = (hass: HomeAssistant): [PanelInfo[], PanelInfo[]] => {
   return [beforeSpacer, afterSpacer];
 };
 
-/*
- * @appliesMixin LocalizeMixin
- */
+@customElement("ha-sidebar")
 class HaSidebar extends LitElement {
   @property() public hass!: HomeAssistant;
 
@@ -749,5 +747,3 @@ declare global {
     "ha-sidebar": HaSidebar;
   }
 }
-
-customElements.define("ha-sidebar", HaSidebar);

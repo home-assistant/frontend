@@ -840,6 +840,9 @@
                 "logs": {
                     "title": "log-եր"
                 },
+                "mqtt": {
+                    "title": "MQTT"
+                },
                 "person": {
                     "caption": "Անձինք",
                     "description": "Կառավարել  այն անձանց, որոնք հետապնդում են Home Assistant-ին:",
@@ -964,9 +967,6 @@
                 "tabs": {
                     "events": {
                         "title": "Իրադարձություններ"
-                    },
-                    "mqtt": {
-                        "title": "MQTT"
                     },
                     "services": {
                         "title": "Սերվիսներ"

@@ -1056,6 +1056,9 @@
                 "logs": {
                     "title": "Logovi"
                 },
+                "mqtt": {
+                    "title": "MQTT"
+                },
                 "person": {
                     "caption": "Osobe",
                     "description": "Upravljajte osobama koje Home Assistant prati.",
@@ -1297,9 +1300,6 @@
                 "tabs": {
                     "events": {
                         "title": "Događaji"
-                    },
-                    "mqtt": {
-                        "title": "MQTT"
                     },
                     "services": {
                         "alert_parsing_yaml": "Greška pri analiziranju YAML-a: {data}",

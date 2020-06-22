@@ -920,6 +920,9 @@
                         }
                     }
                 },
+                "mqtt": {
+                    "title": "MQTT"
+                },
                 "person": {
                     "detail": {
                         "device_tracker_pick": "اختر جهاز لتتبع"
@@ -1044,9 +1047,6 @@
                 "tabs": {
                     "events": {
                         "title": "أحداث"
-                    },
-                    "mqtt": {
-                        "title": "MQTT"
                     },
                     "services": {
                         "title": "الخدمات"

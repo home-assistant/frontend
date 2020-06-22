@@ -1,4 +1,3 @@
-import { mdiBackupRestore, mdiCogs, mdiStore, mdiViewDashboard } from "@mdi/js";
 import {
   customElement,
   html,
@@ -12,32 +11,8 @@ import {
   HassioSupervisorInfo,
   HassioInfo,
 } from "../../src/data/hassio/supervisor";
-import type { PageNavigation } from "../../src/layouts/hass-tabs-subpage";
 import { HomeAssistant, Route } from "../../src/types";
 import "./hassio-panel-router";
-
-export const supervisorTabs: PageNavigation[] = [
-  {
-    name: "Dashboard",
-    path: `/hassio/dashboard`,
-    iconPath: mdiViewDashboard,
-  },
-  {
-    name: "Add-on store",
-    path: `/hassio/store`,
-    iconPath: mdiStore,
-  },
-  {
-    name: "Snapshots",
-    path: `/hassio/snapshots`,
-    iconPath: mdiBackupRestore,
-  },
-  {
-    name: "System",
-    path: `/hassio/system`,
-    iconPath: mdiCogs,
-  },
-];
 
 @customElement("hassio-panel")
 class HassioPanel extends LitElement {

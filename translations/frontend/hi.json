@@ -311,6 +311,9 @@
                 "logs": {
                     "title": "लॉग्स"
                 },
+                "mqtt": {
+                    "title": "MQTT"
+                },
                 "script": {
                     "picker": {
                         "headers": {
@@ -351,9 +354,6 @@
                 "tabs": {
                     "events": {
                         "title": "घटनाओं"
-                    },
-                    "mqtt": {
-                        "title": "MQTT"
                     },
                     "services": {
                         "title": "सेवाएं"

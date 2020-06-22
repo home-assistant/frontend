@@ -506,6 +506,11 @@
                 "clear": "清除",
                 "show_areas": "显示区域"
             },
+            "date-range-picker": {
+                "end_date": "结束日期",
+                "select": "选定",
+                "start_date": "开始日期"
+            },
             "device-picker": {
                 "clear": "清除",
                 "device": "设备",
@@ -695,6 +700,7 @@
             "zha_device_info": {
                 "buttons": {
                     "add": "通过此设备添加设备",
+                    "clusters": "管理集群",
                     "reconfigure": "重新配置设备",
                     "remove": "删除设备",
                     "zigbee_information": "Zigbee 设备签名"
@@ -1557,6 +1563,20 @@
                         }
                     }
                 },
+                "mqtt": {
+                    "button": "配置",
+                    "description_listen": "监听一个主题(Topic)",
+                    "description_publish": "发送一个数据包",
+                    "listening_to": "监听",
+                    "message_received": "{time} 收到关于 {topic} 的消息[ {id} ]",
+                    "payload": "负载参数（可使用模板）",
+                    "publish": "发送",
+                    "start_listening": "开始监听",
+                    "stop_listening": "停止监听",
+                    "subscribe_to": "订阅主题(Topic)",
+                    "title": "MQTT",
+                    "topic": "主题(Topic)"
+                },
                 "person": {
                     "add_person": "添加人员",
                     "caption": "人员",
@@ -1979,19 +1999,6 @@
                         "title": "事件",
                         "type": "事件类型"
                     },
-                    "mqtt": {
-                        "description_listen": "监听一个主题(Topic)",
-                        "description_publish": "发送一个数据包",
-                        "listening_to": "监听",
-                        "message_received": "{time} 收到关于 {topic} 的消息[ {id} ]",
-                        "payload": "负载参数（可使用模板）",
-                        "publish": "发送",
-                        "start_listening": "开始监听",
-                        "stop_listening": "停止监听",
-                        "subscribe_to": "订阅主题(Topic)",
-                        "title": "MQTT",
-                        "topic": "主题(Topic)"
-                    },
                     "services": {
                         "alert_parsing_yaml": "解析YAML时出错： {data}",
                         "call_service": "调用服务",
@@ -2035,11 +2042,23 @@
             },
             "history": {
                 "period": "日期范围",
+                "ranges": {
+                    "last_week": "上周",
+                    "this_week": "本周",
+                    "today": "今天",
+                    "yesterday": "昨天"
+                },
                 "showing_entries": "显示自以下日期的图表"
             },
             "logbook": {
                 "entries_not_found": "未找到日志条目。",
                 "period": "周期",
+                "ranges": {
+                    "last_week": "上周",
+                    "this_week": "本周",
+                    "today": "今天",
+                    "yesterday": "昨天"
+                },
                 "showing_entries": "显示以下日期的条目"
             },
             "lovelace": {

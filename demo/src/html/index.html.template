@@ -86,26 +86,26 @@
     <%= renderTemplate('_js_base') %>
     <%= renderTemplate('_preload_roboto') %>
 
-    <script type="module" src="<%= latestDemoJS %>"></script>
+    <script>
+      import("<%= latestDemoJS %>");
+      window.latestJS = true;
+    </script>
 
-    <script nomodule>
-      (function() {
-        // // Safari 10.1 supports type=module but ignores nomodule, so we add this check.
-        if (!isS101) {
-          <% if (useRollup) { %>
-            _ls("/static/js/s.min.js").onload = function() {
-              System.import("<%= es5DemoJS %>");
-            };
-          <% } else { %>
-            _ls("<%= es5DemoJS %>");
-          <% } %>
-        }
-      })();
+    <script>
+      if (!window.latestJS) {
+        <% if (useRollup) { %>
+          _ls("/static/js/s.min.js").onload = function() {
+            System.import("<%= es5DemoJS %>");
+          };
+        <% } else { %>
+          _ls("<%= es5DemoJS %>");
+        <% } %>
+      }
     </script>
 
     <script>
       var _gaq = [["_setAccount", "UA-57927901-5"], ["_trackPageview"]];
-      (function(d, t) {
+      (function (d, t) {
         var g = d.createElement(t),
           s = d.getElementsByTagName(t)[0];
         g.src =

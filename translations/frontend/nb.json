@@ -956,7 +956,7 @@
                                     "start": ""
                                 },
                                 "mqtt": {
-                                    "label": "",
+                                    "label": "MQTT",
                                     "payload": "Nyttelast (valgfritt)",
                                     "topic": "Emne"
                                 },
@@ -1557,6 +1557,19 @@
                         }
                     }
                 },
+                "mqtt": {
+                    "description_listen": "Lytt til et emne",
+                    "description_publish": "Publiser en pakke",
+                    "listening_to": "Lytter til",
+                    "message_received": "Meldingen {id} ble mottatt på {topic} klokken {time}:",
+                    "payload": "Nyttelast (mal tillatt)",
+                    "publish": "Publiser",
+                    "start_listening": "Begynn å lytte",
+                    "stop_listening": "Slutt å lytte",
+                    "subscribe_to": "Emne å abonnere på",
+                    "title": "MQTT",
+                    "topic": "emne"
+                },
                 "person": {
                     "add_person": "Legg til person",
                     "caption": "Personer",
@@ -1978,19 +1991,6 @@
                         "subscribe_to": "Hendelse for å abonnere på",
                         "title": "Hendelser",
                         "type": "Type hendelse"
-                    },
-                    "mqtt": {
-                        "description_listen": "Lytt til et emne",
-                        "description_publish": "Publiser en pakke",
-                        "listening_to": "Lytter til",
-                        "message_received": "Meldingen {id} ble mottatt på {topic} klokken {time}:",
-                        "payload": "Nyttelast (mal tillatt)",
-                        "publish": "Publiser",
-                        "start_listening": "Begynn å lytte",
-                        "stop_listening": "Slutt å lytte",
-                        "subscribe_to": "Emne å abonnere på",
-                        "title": "MQTT",
-                        "topic": "emne"
                     },
                     "services": {
                         "alert_parsing_yaml": "Feil ved parsing av YAML: {data}",
