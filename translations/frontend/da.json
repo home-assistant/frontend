@@ -506,6 +506,11 @@
                 "clear": "Ryd",
                 "show_areas": "Vis områder"
             },
+            "date-range-picker": {
+                "end_date": "Slutdato",
+                "select": "Vælg",
+                "start_date": "Startdato"
+            },
             "device-picker": {
                 "clear": "Ryd",
                 "device": "Enhed",
@@ -695,6 +700,7 @@
             "zha_device_info": {
                 "buttons": {
                     "add": "Tilføj enheder",
+                    "clusters": "Administrer klynger",
                     "reconfigure": "Genkonfigurer enhed",
                     "remove": "Fjern enhed",
                     "zigbee_information": "Zigbee-oplysninger"
@@ -1558,6 +1564,7 @@
                     }
                 },
                 "mqtt": {
+                    "button": "Konfigurer",
                     "description_listen": "Lyt til et emne",
                     "description_publish": "Udsend en pakke",
                     "listening_to": "Lytter til",
@@ -2008,11 +2015,23 @@
             },
             "history": {
                 "period": "Periode",
+                "ranges": {
+                    "last_week": "Sidste uge",
+                    "this_week": "Denne uge",
+                    "today": "I dag",
+                    "yesterday": "I går"
+                },
                 "showing_entries": "Viser poster for"
             },
             "logbook": {
                 "entries_not_found": "Der blev ikke fundet nogen logbogsposter.",
                 "period": "Periode",
+                "ranges": {
+                    "last_week": "Sidste uge",
+                    "this_week": "Denne uge",
+                    "today": "I dag",
+                    "yesterday": "I går"
+                },
                 "showing_entries": "Viser poster for"
             },
             "lovelace": {
