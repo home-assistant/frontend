@@ -60,6 +60,7 @@ const HIDE_DOMAIN = new Set([
   "device_tracker",
   "geo_location",
   "persistent_notification",
+  "zone",
 ]);
 
 let subscribedRegistries = false;
