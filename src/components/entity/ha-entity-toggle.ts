@@ -22,7 +22,7 @@ const isOn = (stateObj?: HassEntity) =>
   !STATES_OFF.includes(stateObj.state) &&
   !UNAVAILABLE_STATES.includes(stateObj.state);
 
-class HaEntityToggle extends LitElement {
+export class HaEntityToggle extends LitElement {
   // hass is not a property so that we only re-render on stateObj changes
   public hass?: HomeAssistant;
 
