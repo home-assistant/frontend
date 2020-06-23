@@ -15,6 +15,8 @@ import { haStyle } from "../../../../../resources/styles";
 import { HomeAssistant } from "../../../../../types";
 import "./mqtt-subscribe-card";
 import "../../../../../layouts/hass-subpage";
+import { showOptionsFlowDialog } from "../../../../../dialogs/config-flow/show-dialog-options-flow";
+import { getConfigEntries } from "../../../../../data/config_entries";
 
 @customElement("mqtt-config-panel")
 class HaPanelDevMqtt extends LitElement {
@@ -40,6 +42,13 @@ class HaPanelDevMqtt extends LitElement {
     return html`
       <hass-subpage>
         <div class="content">
+          <ha-card header="MQTT settings">
+            <div class="card-actions">
+              <mwc-button @click=${this._openOptionFlow}
+                >Re-configure MQTT</mwc-button
+              >
+            </div>
+          </ha-card>
           <ha-card
             header="${this.hass.localize(
               "ui.panel.config.mqtt.description_publish"
@@ -100,6 +109,19 @@ class HaPanelDevMqtt extends LitElement {
     });
   }
 
+  private async _openOptionFlow() {
+    const searchParams = new URLSearchParams(window.location.search);
+    if (!searchParams.has("config_entry")) {
+      return;
+    }
+    const configEntryId = searchParams.get("config_entry") as string;
+    const configEntries = await getConfigEntries(this.hass);
+    const configEntry = configEntries.find(
+      (entry) => entry.entry_id === configEntryId
+    );
+    showOptionsFlowDialog(this, configEntry!);
+  }
+
   static get styles(): CSSResultArray {
     return [
       haStyle,
@@ -116,7 +138,9 @@ class HaPanelDevMqtt extends LitElement {
           margin: 0 auto;
           direction: ltr;
         }
-
+        ha-card:first-child {
+          margin-bottom: 16px;
+        }
         mqtt-subscribe-card {
           display: block;
           margin: 16px auto;
