@@ -7,6 +7,7 @@ import {
   customElement,
   unsafeCSS,
   SVGTemplateResult,
+  css,
 } from "lit-element";
 // @ts-ignore
 import progressStyles from "@material/circular-progress/dist/mdc.circular-progress.min.css";
@@ -74,7 +75,14 @@ export class HaCircularProgress extends LitElement {
   }
 
   static get styles() {
-    return unsafeCSS(progressStyles);
+    return [
+      unsafeCSS(progressStyles),
+      css`
+        :host {
+          text-align: initial;
+        }
+      `,
+    ];
   }
 }
 
