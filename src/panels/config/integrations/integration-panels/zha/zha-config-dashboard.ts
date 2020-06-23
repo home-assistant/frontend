@@ -56,19 +56,27 @@ class ZHAConfigDashboard extends LitElement {
       >
         <ha-card header="Zigbee Network">
           <div class="card-content">
-            Network info/settings for specific config entry
+            In the future you can change network settings for ZHA here.
           </div>
           ${this.configEntryId
             ? html`<div class="card-actions">
                 <a
                   href="${`/config/devices/dashboard?historyBack=1&config_entry=${this.configEntryId}`}"
                 >
-                  <mwc-button>Devices</mwc-button>
+                  <mwc-button
+                    >${this.hass.localize(
+                      "ui.panel.config.devices.caption"
+                    )}</mwc-button
+                  >
                 </a>
                 <a
                   href="${`/config/entities/dashboard?historyBack=1&config_entry=${this.configEntryId}`}"
                 >
-                  <mwc-button>Entities</mwc-button>
+                  <mwc-button
+                    >${this.hass.localize(
+                      "ui.panel.config.entities.caption"
+                    )}</mwc-button
+                  >
                 </a>
               </div>`
             : ""}
