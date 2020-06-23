@@ -22,6 +22,10 @@ export class HomeAssistantAppEl extends HassElement {
 
   private _haVersion?: string;
 
+  private _hiddenTimeout?: number;
+
+  private _visiblePromiseResolve?: () => void;
+
   protected render() {
     const hass = this.hass;
 
@@ -71,6 +75,12 @@ export class HomeAssistantAppEl extends HassElement {
     super.hassConnected();
     // @ts-ignore
     this._loadHassTranslations(this.hass!.language, "state");
+
+    document.addEventListener(
+      "visibilitychange",
+      () => this.__handleVisibilityChange(),
+      false
+    );
   }
 
   protected hassReconnected() {
@@ -136,6 +146,33 @@ export class HomeAssistantAppEl extends HassElement {
       dividerPos === -1
         ? route.path.substr(1)
         : route.path.substr(1, dividerPos - 1);
+  }
+
+  private __handleVisibilityChange() {
+    if (document.hidden) {
+      // If the document is hidden, we will prevent reconnects until we are visible again
+      this.hass!.connection.suspendReconnectUntil(
+        new Promise((resolve) => {
+          this._visiblePromiseResolve = resolve;
+        })
+      );
+      // We close the connection to Home Assistant after being hidden for 5 minutes
+      this._hiddenTimeout = window.setTimeout(() => {
+        this._hiddenTimeout = undefined;
+        this.hass!.connection.suspend();
+      }, 300000);
+    } else {
+      // Clear timer to close the connection
+      if (this._hiddenTimeout) {
+        clearTimeout(this._hiddenTimeout);
+        this._hiddenTimeout = undefined;
+      }
+      // Unsuspend the reconnect
+      if (this._visiblePromiseResolve) {
+        this._visiblePromiseResolve();
+        this._visiblePromiseResolve = undefined;
+      }
+    }
   }
 }
 
