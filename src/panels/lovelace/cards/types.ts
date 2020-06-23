@@ -133,6 +133,12 @@ export interface GlanceCardConfig extends LovelaceCardConfig {
   state_color?: boolean;
 }
 
+export interface HumidifierCardConfig extends LovelaceCardConfig {
+  entity: string;
+  theme?: string;
+  name?: string;
+}
+
 export interface IframeCardConfig extends LovelaceCardConfig {
   aspect_ratio?: string;
   title?: string;

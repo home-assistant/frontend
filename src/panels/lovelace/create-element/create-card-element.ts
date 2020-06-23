@@ -38,6 +38,7 @@ const LAZY_LOAD_TYPES = {
   "empty-state": () => import("../cards/hui-empty-state-card"),
   starting: () => import("../cards/hui-starting-card"),
   "entity-filter": () => import("../cards/hui-entity-filter-card"),
+  humidifier: () => import("../cards/hui-humidifier-card"),
   "media-control": () => import("../cards/hui-media-control-card"),
   "picture-elements": () => import("../cards/hui-picture-elements-card"),
   "picture-entity": () => import("../cards/hui-picture-entity-card"),

@@ -506,6 +506,11 @@
                 "clear": "Tøm",
                 "show_areas": "Vis områder"
             },
+            "date-range-picker": {
+                "end_date": "Sluttdato",
+                "select": "Velg",
+                "start_date": "Startdato"
+            },
             "device-picker": {
                 "clear": "Tøm",
                 "device": "Enhet",
@@ -695,6 +700,7 @@
             "zha_device_info": {
                 "buttons": {
                     "add": "Legg til enheter via denne enheten",
+                    "clusters": "Behandle Clusters",
                     "reconfigure": "Rekonfigurer enhet",
                     "remove": "Fjern enhet",
                     "zigbee_information": "Zigbee-enhetssignatur"
@@ -1558,6 +1564,7 @@
                     }
                 },
                 "mqtt": {
+                    "button": "Konfigurer",
                     "description_listen": "Lytt til et emne",
                     "description_publish": "Publiser en pakke",
                     "listening_to": "Lytter til",
@@ -1678,11 +1685,11 @@
                             "core": "Last inn lokasjon og spesialtilpassinger på nytt",
                             "group": "Last inn grupper på nytt",
                             "heading": "YAML -Konfigurasjon lastes på nytt",
-                            "input_boolean": "Last input booleans på nytt",
-                            "input_datetime": "Last input date på nytt",
-                            "input_number": "Las input numbers på nytt",
-                            "input_select": "Last input selects på nytt ",
-                            "input_text": "Last input texts på nytt",
+                            "input_boolean": "Last inn bolsk inndata på nytt",
+                            "input_datetime": "Last inn dato inndata på nytt",
+                            "input_number": "Last inn nummer inndata på nytt",
+                            "input_select": "Last inn valg inndata på nytt ",
+                            "input_text": "Last inn tekst inndata på nytt",
                             "introduction": "Noen deler av Home Assistant kan laste inn uten å kreve omstart. Hvis du trykker last på nytt, vil du bytte den nåværende konfigurasjonen med den nye.",
                             "person": "Last inn personer på nytt",
                             "scene": "Last inn scener på nytt",
@@ -1742,14 +1749,14 @@
                             "system": ""
                         }
                     },
-                    "users_privileges_note": "Brukere-gruppen er et pågående arbeid. Brukeren kan ikke administrere forekomsten via brukergrensesnittet. Vi overvåker fortsatt alle API-endepunkter for administrasjonsadministrasjon for å sikre at de begrenser tilgangen til administratorer på riktig måte."
+                    "users_privileges_note": "Brukere-gruppen er et pågående arbeid. Brukeren kan ikke administrere forekomsten via brukergrensesnittet. Vi reviderer fortsatt alle API-endepunkter for å sikre at de begrenser tilgangen til administratorer på riktig måte."
                 },
                 "zha": {
                     "add_device_page": {
                         "discovered_text": "Enheter vises her når de er oppdaget.",
                         "discovery_text": "Oppdagede enheter vises her. Følg instruksjonene for enheten(e) og sett enheten(e) i paringsmodus.",
                         "header": "Zigbee Home Automation - Legg til enheter",
-                        "no_devices_found": "Ingen enheter er funnet, sørg for at de er i paringsmodus og holde dem våken mens du oppdager kjører.",
+                        "no_devices_found": "Ingen enheter ble funnet, sørg for at de er i paringsmodus og holde dem våken mens oppdagelse pågår.",
                         "pairing_mode": "Kontroller at enhetene er i paringsmodus. Sjekk instruksjonene til enheten om hvordan du gjør dette.",
                         "search_again": "Søk på nytt",
                         "spinner": "Søker etter ZHA Zigbee-enheter..."
@@ -2035,11 +2042,23 @@
             },
             "history": {
                 "period": "Periode",
+                "ranges": {
+                    "last_week": "Forrige uke",
+                    "this_week": "Denne uken",
+                    "today": "I dag",
+                    "yesterday": "I går"
+                },
                 "showing_entries": "Viser oppføringer for"
             },
             "logbook": {
                 "entries_not_found": "Finner ingen loggbokoppføringer.",
                 "period": "Periode",
+                "ranges": {
+                    "last_week": "Forrige uke",
+                    "this_week": "Denne uken",
+                    "today": "I dag",
+                    "yesterday": "I går"
+                },
                 "showing_entries": "Viser oppføringer for"
             },
             "lovelace": {
