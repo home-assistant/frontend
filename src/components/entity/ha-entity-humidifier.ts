@@ -40,10 +40,6 @@ class HaEntityHumidifier extends HaEntityToggle {
         color: var(--primary-text-color);
       }
 
-      .current {
-        color: var(--secondary-text-color);
-      }
-
       .state-label {
         font-weight: bold;
         text-transform: capitalize;
