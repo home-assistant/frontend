@@ -78,7 +78,7 @@ export class HomeAssistantAppEl extends HassElement {
 
     document.addEventListener(
       "visibilitychange",
-      () => this.__handleVisibilityChange(),
+      () => this._handleVisibilityChange(),
       false
     );
   }
@@ -148,7 +148,7 @@ export class HomeAssistantAppEl extends HassElement {
         : route.path.substr(1, dividerPos - 1);
   }
 
-  private __handleVisibilityChange() {
+  protected _handleVisibilityChange() {
     if (document.hidden) {
       // If the document is hidden, we will prevent reconnects until we are visible again
       this.hass!.connection.suspendReconnectUntil(

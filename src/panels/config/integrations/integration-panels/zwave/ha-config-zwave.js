@@ -487,7 +487,6 @@ class HaConfigZwave extends LocalizeMixin(EventsMixin(PolymerElement)) {
           return false;
         }
         return (
-          !ent.attributes.hidden &&
           "node_id" in ent.attributes &&
           ent.attributes.node_id === nodeid &&
           !ent.entity_id.match("zwave[.]")
