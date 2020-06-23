@@ -92,7 +92,6 @@ hassAttributeUtil.LOGIC_STATE_ATTRIBUTES = hassAttributeUtil.LOGIC_STATE_ATTRIBU
     description: "Device class",
     domains: ["binary_sensor", "cover", "humidifier", "sensor", "switch"],
   },
-  hidden: { type: "boolean", description: "Hide from UI" },
   assumed_state: {
     type: "boolean",
     domains: [

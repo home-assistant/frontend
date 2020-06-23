@@ -227,10 +227,7 @@ const computeDefaultViewStates = (entities: HassEntities): HassEntities => {
   const states = {};
   Object.keys(entities).forEach((entityId) => {
     const stateObj = entities[entityId];
-    if (
-      !stateObj.attributes.hidden &&
-      !HIDE_DOMAIN.has(computeStateDomain(stateObj))
-    ) {
+    if (!HIDE_DOMAIN.has(computeStateDomain(stateObj))) {
       states[entityId] = entities[entityId];
     }
   });

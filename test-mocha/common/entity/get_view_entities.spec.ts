@@ -47,33 +47,4 @@ describe("getViewEntities", () => {
 
     assert.deepEqual(expectedEntities, getViewEntities(entities, view));
   });
-
-  it("should not include hidden entities inside groups", () => {
-    const visibleEntity = createEntity({ attributes: { hidden: false } });
-    const hiddenEntity = createEntity({ attributes: { hidden: true } });
-    const group1 = createGroup({
-      attributes: {
-        entity_id: [visibleEntity.entity_id, hiddenEntity.entity_id],
-      },
-    });
-
-    const entities = {
-      [visibleEntity.entity_id]: visibleEntity,
-      [hiddenEntity.entity_id]: hiddenEntity,
-      [group1.entity_id]: group1,
-    };
-
-    const view = createView({
-      attributes: {
-        entity_id: [group1.entity_id],
-      },
-    });
-
-    const expectedEntities = {
-      [visibleEntity.entity_id]: visibleEntity,
-      [group1.entity_id]: group1,
-    };
-
-    assert.deepEqual(expectedEntities, getViewEntities(entities, view));
-  });
 });
