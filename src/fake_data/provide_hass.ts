@@ -114,6 +114,7 @@ export const provideHass = (
   );
 
   const localLanguage = getLocalLanguage();
+  const noop = () => undefined;
 
   const hassObj: MockHomeAssistant = {
     // Home Assistant properties
@@ -123,8 +124,8 @@ export const provideHass = (
       },
     } as any,
     connection: {
-      addEventListener: () => undefined,
-      removeEventListener: () => undefined,
+      addEventListener: noop,
+      removeEventListener: noop,
       sendMessage: (msg) => {
         const callback = wsCommands[msg.type];
 
@@ -168,6 +169,8 @@ export const provideHass = (
           );
         };
       },
+      suspendReconnectUntil: noop,
+      suspend: noop,
       socket: {
         readyState: WebSocket.OPEN,
       },
