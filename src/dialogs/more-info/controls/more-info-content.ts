@@ -14,6 +14,7 @@ import "./more-info-default";
 import "./more-info-fan";
 import "./more-info-group";
 import "./more-info-history_graph";
+import "./more-info-humidifier";
 import "./more-info-input_datetime";
 import "./more-info-light";
 import "./more-info-lock";

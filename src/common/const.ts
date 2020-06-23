@@ -37,6 +37,7 @@ export const DOMAINS_WITH_MORE_INFO = [
   "fan",
   "group",
   "history_graph",
+  "humidifier",
   "input_datetime",
   "light",
   "lock",
@@ -79,6 +80,7 @@ export const DOMAINS_TOGGLE = new Set([
   "switch",
   "group",
   "automation",
+  "humidifier",
 ]);
 
 /** Temperature units. */
