@@ -30,6 +30,10 @@ export const coreCards: Card[] = [
     showElement: true,
   },
   {
+    type: "humidifier",
+    showElement: true,
+  },
+  {
     type: "light",
     showElement: true,
   },
