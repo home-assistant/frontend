@@ -14,20 +14,20 @@ export const getViewEntities = (
   view.attributes.entity_id.forEach((entityId) => {
     const entity = entities[entityId];
 
-    if (entity && !entity.attributes.hidden) {
-      viewEntities[entity.entity_id] = entity;
+    if (!entity) {
+      return;
+    }
 
-      if (computeDomain(entity.entity_id) === "group") {
-        const groupEntities = getGroupEntities(entities, entity as GroupEntity);
+    viewEntities[entity.entity_id] = entity;
 
-        Object.keys(groupEntities).forEach((grEntityId) => {
-          const grEntity = groupEntities[grEntityId];
+    if (computeDomain(entity.entity_id) === "group") {
+      const groupEntities = getGroupEntities(entities, entity as GroupEntity);
 
-          if (!grEntity.attributes.hidden) {
-            viewEntities[grEntityId] = grEntity;
-          }
-        });
-      }
+      Object.keys(groupEntities).forEach((grEntityId) => {
+        const grEntity = groupEntities[grEntityId];
+
+        viewEntities[grEntityId] = grEntity;
+      });
     }
   });
 
