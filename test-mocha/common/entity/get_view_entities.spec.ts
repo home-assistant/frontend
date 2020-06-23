@@ -4,7 +4,6 @@ import { getViewEntities } from "../../../src/common/entity/get_view_entities";
 
 import {
   createEntities,
-  createEntity,
   createGroup,
   createView,
   entityMap,
