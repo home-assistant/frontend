@@ -48,6 +48,19 @@
                 "none": "None",
                 "sleep": "Sleep"
             }
+        },
+        "humidifier": {
+            "mode": {
+                "auto": "Auto",
+                "away": "Away",
+                "baby": "Baby",
+                "boost": "Boost",
+                "comfort": "Comfort",
+                "eco": "Eco",
+                "home": "Home",
+                "normal": "Normal",
+                "sleep": "Sleep"
+            }
         }
     },
     "state_badge": {
@@ -387,6 +400,12 @@
                 "oscillate": "Oscillate",
                 "reverse": "Reverse",
                 "speed": "Speed"
+            },
+            "humidifier": {
+                "humidity": "Target humidity",
+                "mode": "Mode",
+                "on_entity": "{name} on",
+                "target_humidity_entity": "{name} target humidity"
             },
             "light": {
                 "brightness": "Brightness",
@@ -2197,6 +2216,10 @@
                         "horizontal-stack": {
                             "description": "The Horizontal Stack card allows you to stack together multiple cards, so they always sit next to each other in the space of one column.",
                             "name": "Horizontal Stack"
+                        },
+                        "humidifier": {
+                            "description": "The Humidifier card gives control of your humidifier entity. Allowing you to change the humidity and mode of the entity.",
+                            "name": "Humidifier"
                         },
                         "iframe": {
                             "description": "The Webpage card allows you to embed your favorite webpage right into Home Assistant.",
