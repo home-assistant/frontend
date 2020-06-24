@@ -13,7 +13,7 @@ export interface AlarmPanelCardConfig extends LovelaceCardConfig {
 }
 
 export interface CalendarCardConfig extends LovelaceCardConfig {
-  entities: Array<EntitiesCardEntityConfig | string>;
+  entities: string[];
   title?: string;
   theme?: string;
 }

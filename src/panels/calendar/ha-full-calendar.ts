@@ -27,7 +27,7 @@ import "../../components/ha-button-toggle-group";
 import type {
   CalendarViewChanged,
   CalendarEvent,
-  ToggleViewButton,
+  ToggleButton,
   HomeAssistant,
   FullCalendarView,
 } from "../../types";
@@ -48,7 +48,7 @@ const defaultFullCalendarConfig: OptionsInput = {
   height: "parent",
 };
 
-const viewButtons: ToggleViewButton[] = [
+const viewButtons: ToggleButton[] = [
   { label: "Month View", value: "dayGridMonth", icon: "hass:view-module" },
   { label: "Week View", value: "dayGridWeek", icon: "hass:view-week" },
   { label: "Day View", value: "dayGridDay", icon: "hass:view-day" },
@@ -75,7 +75,7 @@ class HAFullCalendar extends LitElement {
 
   protected render(): TemplateResult {
     const viewToggleButtons = viewButtons.filter((button) =>
-      this.views.includes(button.value)
+      this.views.includes(button.value as FullCalendarView)
     );
 
     return html`
@@ -244,7 +244,7 @@ class HAFullCalendar extends LitElement {
         ${unsafeCSS(fullcalendarStyle)}
         ${unsafeCSS(daygridStyle)}
         ${unsafeCSS(listStyle)}
-      
+        
         :host {
           display: flex;
           flex-direction: column;
@@ -373,6 +373,8 @@ class HAFullCalendar extends LitElement {
 
         .fc-popover-header {
           background-color: var(--secondary-background-color) !important;
+        }
+
         .fc-theme-standard .fc-list-day-frame {
           background-color: transparent;
         }
@@ -398,13 +400,20 @@ class HAFullCalendar extends LitElement {
           color: var(--primary-color);
         }
 
-        .fc-list-table td, .fc-list-day-frame {
+        .fc-list-table td,
+        .fc-list-day-frame {
           padding-top: 12px;
           padding-bottom: 12px;
         }
 
-        :host([narrow]) .fc-dayGridMonth-view .fc-daygrid-dot-event .fc-event-time, 
-        :host([narrow]) .fc-dayGridMonth-view .fc-daygrid-dot-event .fc-event-title {
+        :host([narrow])
+          .fc-dayGridMonth-view
+          .fc-daygrid-dot-event
+          .fc-event-time,
+        :host([narrow])
+          .fc-dayGridMonth-view
+          .fc-daygrid-dot-event
+          .fc-event-title {
           display: none;
         }
 

@@ -18,14 +18,13 @@ import type {
   CalendarEvent,
   Calendar,
   CalendarViewChanged,
+  FullCalendarView,
 } from "../../../types";
 import type { LovelaceCard, LovelaceCardEditor } from "../types";
 import type { CalendarCardConfig } from "./types";
 import { findEntities } from "../common/find-entites";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import "../components/hui-warning";
-import { processConfigEntities } from "../common/process-config-entities";
-import { computeStateName } from "../../../common/entity/compute_state_name";
 import { fetchCalendarEvents } from "../../../data/calendar";
 import { HASSDomEvent } from "../../../common/dom/fire_event";
 import { HA_COLOR_PALETTE } from "../../../common/const";
@@ -45,7 +44,7 @@ export class HuiCalendarCard extends LitElement implements LovelaceCard {
     entitiesFill: string[]
   ) {
     const includeDomains = ["calendar"];
-    const maxEntities = 1;
+    const maxEntities = 2;
     const foundEntities = findEntities(
       hass,
       maxEntities,
@@ -55,7 +54,7 @@ export class HuiCalendarCard extends LitElement implements LovelaceCard {
     );
 
     return {
-      entity: foundEntities[0] || "",
+      entities: foundEntities,
     };
   }
 
@@ -76,6 +75,17 @@ export class HuiCalendarCard extends LitElement implements LovelaceCard {
       throw new Error("Entities need to be an array");
     }
 
+    const calendars: Calendar[] = [];
+
+    config!.entities.forEach((entity, idx) => {
+      calendars.push({
+        entity_id: entity,
+        backgroundColor: `#${HA_COLOR_PALETTE[idx % HA_COLOR_PALETTE.length]}`,
+      });
+    });
+
+    this._calendars = calendars;
+
     this._config = config;
   }
 
@@ -95,30 +105,11 @@ export class HuiCalendarCard extends LitElement implements LovelaceCard {
           .events=${this._events}
           .narrow=${this.offsetWidth < 870}
           .hass=${this.hass}
-          .views=${["listWeek", "dayGridMonth"]}
+          .views=${["listWeek", "dayGridMonth"] as FullCalendarView[]}
           @view-changed=${this._handleViewChanged}
         ></ha-full-calendar>
       </ha-card>
     `;
-  }
-
-  protected firstUpdated(changedProps: PropertyValues): void {
-    super.firstUpdated(changedProps);
-    const configEntities = this._config!.entities
-      ? processConfigEntities(this._config!.entities)
-      : [];
-
-    const calendars: Calendar[] = [];
-
-    configEntities.forEach((entity, idx) => {
-      calendars.push({
-        entity_id: entity.entity,
-        name: computeStateName(this.hass!.states[entity.entity]),
-        backgroundColor: HA_COLOR_PALETTE[idx % HA_COLOR_PALETTE.length],
-      });
-    });
-
-    this._calendars = calendars;
   }
 
   protected updated(changedProps: PropertyValues) {
@@ -135,8 +126,8 @@ export class HuiCalendarCard extends LitElement implements LovelaceCard {
     if (
       !oldHass ||
       !oldConfig ||
-      oldHass.themes !== this.hass.themes ||
-      oldConfig.theme !== this._config.theme
+      (changedProps.has("hass") && oldHass.themes !== this.hass.themes) ||
+      (changedProps.has("_config") && oldConfig.theme !== this._config.theme)
     ) {
       applyThemesOnElement(this, this.hass.themes, this._config!.theme);
     }

@@ -16,7 +16,6 @@ import "../../components/hui-entity-editor";
 import "../../../../components/entity/ha-entities-picker";
 import "../../components/hui-theme-select-editor";
 import type { LovelaceCardEditor } from "../../types";
-import { processEditorEntities } from "../process-editor-entities";
 import type { EditorTarget, EntitiesEditorEvent } from "../types";
 import { entitiesConfigStruct } from "../types";
 import { configElementStyle } from "./config-elements-style";
@@ -40,7 +39,6 @@ export class HuiCalendarCardEditor extends LitElement
   public setConfig(config: CalendarCardConfig): void {
     config = cardConfigStruct(config);
     this._config = config;
-    this._configEntities = processEditorEntities(config.entities);
   }
 
   get _title(): string {
@@ -101,24 +99,19 @@ export class HuiCalendarCardEditor extends LitElement
 
     const target = ev.target! as EditorTarget;
 
-    if (
-      (target.configValue! === "title" && target.value === this._title) ||
-      (target.configValue! === "theme" && target.value === this._theme)
-    ) {
+    if (this[`_${target.configValue}`] === target.value) {
       return;
     }
 
     if (ev.detail && ev.detail.value && Array.isArray(ev.detail.value)) {
       this._config.entities = ev.detail.value;
-      this._configEntities = processEditorEntities(this._config.entities);
     } else if (target.configValue) {
       if (target.value === "") {
         delete this._config[target.configValue!];
       } else {
         this._config = {
           ...this._config,
-          [target.configValue]:
-            target.checked !== undefined ? target.checked : target.value,
+          [target.configValue]: target.value,
         };
       }
     }

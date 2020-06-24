@@ -11,11 +11,11 @@ import {
 import "./ha-icon-button";
 
 import { fireEvent } from "../common/dom/fire_event";
-import type { ToggleViewButton } from "../types";
+import type { ToggleButton } from "../types";
 
 @customElement("ha-button-toggle-group")
 export class HaButtonToggleGroup extends LitElement {
-  @property() public buttons!: ToggleViewButton[];
+  @property() public buttons!: ToggleButton[];
 
   @property() public active?: string;
 

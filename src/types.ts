@@ -108,7 +108,7 @@ export interface Panels {
 
 export interface Calendar {
   entity_id: string;
-  name: string;
+  name?: string;
   backgroundColor?: string;
 }
 
@@ -140,10 +140,10 @@ export type FullCalendarView =
   | "dayGridDay"
   | "listWeek";
 
-export interface ToggleViewButton {
+export interface ToggleButton {
   label: string;
   icon: string;
-  value: FullCalendarView;
+  value: string;
 }
 
 export interface Translation {
