@@ -496,6 +496,11 @@
                 "clear": "Εκκαθάριση",
                 "show_areas": "Εμφάνιση περιοχών"
             },
+            "date-range-picker": {
+                "end_date": "Ημερομηνία λήξης",
+                "select": "Επιλογή",
+                "start_date": "Ημερομηνία έναρξης"
+            },
             "device-picker": {
                 "clear": "Καθαρός",
                 "device": "Συσκευή",
@@ -605,6 +610,7 @@
             "zha_device_info": {
                 "buttons": {
                     "add": "Προσθήκη συσκευών",
+                    "clusters": "Διαχείριση συμπλεγμάτων",
                     "reconfigure": "Ρυθμίστε Ξανά Τη Συσκευή",
                     "remove": "Κατάργηση συσκευής"
                 },
@@ -1231,6 +1237,9 @@
                     "system_health_error": "Το στοιχείο Υγεία Συστήματος δεν έχει φορτωθεί. Προσθέστε 'system_health:' στη ρύθμιση παραμέτρων configuration.yaml",
                     "title": "Πληροφορίες"
                 },
+                "integration_panel_move": {
+                    "link_integration_page": "Σελίδα ενσωματώσεων"
+                },
                 "integrations": {
                     "caption": "Ενσωματώσεις",
                     "config_entry": {
@@ -1320,6 +1329,7 @@
                     }
                 },
                 "mqtt": {
+                    "button": "Διαμόρφωση",
                     "description_listen": "Ακούστε ένα θέμα",
                     "description_publish": "Δημοσιεύστε ένα πακέτο",
                     "listening_to": "Ακούγοντας το",
@@ -1571,6 +1581,9 @@
                         "header": "Διαχείριση δικτύου",
                         "introduction": "Εντολές που επηρεάζουν ολόκληρο το δίκτυο"
                     },
+                    "network": {
+                        "caption": "Δίκτυο"
+                    },
                     "node_management": {
                         "header": "Διαχείριση συσκευής",
                         "help_node_dropdown": "Επιλέξτε μια συσκευή για να προβάλετε επιλογές ανά συσκευή.",
@@ -1584,6 +1597,7 @@
                     "edit_home_zone": "Η τοποθεσία του σπιτιού σας μπορεί να αλλαχτεί από τις γενικές ρυθμίσεις."
                 },
                 "zwave": {
+                    "button": "Διαμόρφωση",
                     "caption": "Z-Wave",
                     "common": {
                         "index": "Δείκτης",
@@ -1707,11 +1721,23 @@
             },
             "history": {
                 "period": "Περίοδος",
+                "ranges": {
+                    "last_week": "Προηγούμενη εβδομάδα",
+                    "this_week": "Αυτή την εβδομάδα",
+                    "today": "Σήμερα",
+                    "yesterday": "Εχθές"
+                },
                 "showing_entries": "Εμφανίζονται καταχωρήσεις για"
             },
             "logbook": {
                 "entries_not_found": "Δε βρέθηκαν καταχωρήσεις στο αρχείο καταγραφής.",
                 "period": "Περίοδος",
+                "ranges": {
+                    "last_week": "Προηγούμενη εβδομάδα",
+                    "this_week": "Αυτή την εβδομάδα",
+                    "today": "Σήμερα",
+                    "yesterday": "Εχθές"
+                },
                 "showing_entries": "Εμφανίζοντα καταχωρήσεις για"
             },
             "lovelace": {

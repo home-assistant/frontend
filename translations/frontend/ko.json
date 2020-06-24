@@ -506,6 +506,11 @@
                 "clear": "지우기",
                 "show_areas": "영역 표시"
             },
+            "date-range-picker": {
+                "end_date": "종료일",
+                "select": "선택",
+                "start_date": "시작일"
+            },
             "device-picker": {
                 "clear": "지우기",
                 "device": "기기",
@@ -695,6 +700,7 @@
             "zha_device_info": {
                 "buttons": {
                     "add": "이 기기를 통해 기기 추가",
+                    "clusters": "클러스터 관리",
                     "reconfigure": "기기 재설정",
                     "remove": "기기 제거",
                     "zigbee_information": "Zigbee 기기 서명"
@@ -1558,6 +1564,7 @@
                     }
                 },
                 "mqtt": {
+                    "button": "설정",
                     "description_listen": "토픽 내용 들어보기",
                     "description_publish": "패킷 발행",
                     "listening_to": "토픽 청취 중",
@@ -2035,11 +2042,23 @@
             },
             "history": {
                 "period": "기간",
+                "ranges": {
+                    "last_week": "지난주",
+                    "this_week": "이번주",
+                    "today": "오늘",
+                    "yesterday": "어제"
+                },
                 "showing_entries": "다음 날짜의 항목을 표시"
             },
             "logbook": {
                 "entries_not_found": "로그북 구성요소를 찾을 수 없습니다.",
                 "period": "기간",
+                "ranges": {
+                    "last_week": "지난주",
+                    "this_week": "이번주",
+                    "today": "오늘",
+                    "yesterday": "어제"
+                },
                 "showing_entries": "다음 날짜의 항목을 표시"
             },
             "lovelace": {

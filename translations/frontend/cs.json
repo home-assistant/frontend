@@ -478,9 +478,12 @@
             "cancel": "Zrušit",
             "close": "Zavřít",
             "delete": "Smazat",
+            "error_required": "Povinné",
             "loading": "Načítání",
+            "menu": "Menu",
             "next": "Další",
             "no": "Ne",
+            "overflow_menu": "Přesah menu",
             "previous": "Předchozí",
             "refresh": "Obnovit",
             "save": "Uložit",
@@ -502,6 +505,11 @@
                 "area": "Oblast",
                 "clear": "Vymazat",
                 "show_areas": "Zobrazit oblasti"
+            },
+            "date-range-picker": {
+                "end_date": "Koncové datum",
+                "select": "Vybrat",
+                "start_date": "Počáteční datum"
             },
             "device-picker": {
                 "clear": "Zrušit",
@@ -691,10 +699,11 @@
             },
             "zha_device_info": {
                 "buttons": {
-                    "add": "Přidat zařízení",
+                    "add": "Přidejte zařízení prostřednictvím tohoto zařízení",
+                    "clusters": "Clustery",
                     "reconfigure": "Překonfigurovat zařízení",
                     "remove": "Odebrat zařízení",
-                    "zigbee_information": "Informace o Zigbee"
+                    "zigbee_information": "Podpis zařízení Zigbee"
                 },
                 "confirmations": {
                     "remove": "Opravdu chcete zařízení odebrat?"
@@ -714,7 +723,7 @@
                 "unknown": "Neznámý",
                 "zha_device_card": {
                     "area_picker_label": "Oblast",
-                    "device_name_placeholder": "Název přidělený uživatelem",
+                    "device_name_placeholder": "Změnit název zařízení",
                     "update_name_button": "Název aktualizace"
                 }
             }
@@ -910,6 +919,8 @@
                         "introduction": "Použijte automatizace k oživení svého domova",
                         "load_error_not_editable": "Lze upravovat pouze automatizace v automations.yaml.",
                         "load_error_unknown": "Chyba při načítání automatizace ({err_no}).",
+                        "move_down": "Posunout dolů",
+                        "move_up": "Posunout nahoru",
                         "save": "Uložit",
                         "triggers": {
                             "add": "Přidat spouštěč",
@@ -1221,6 +1232,7 @@
                     "different_include": "Možné přidat přes doménu",
                     "pick_attribute": "Vyberte vlastnost, kterou chcete přepsat",
                     "picker": {
+                        "entity": "Entita",
                         "header": "Přizpůsobení",
                         "introduction": "Upravit atributy entity. Přídání/úprava bude mít okamžitý efekt. Odebraní se projeví až po aktualizaci entity."
                     },
@@ -1367,7 +1379,9 @@
                 },
                 "info": {
                     "built_using": "Sestaveno pomocí",
+                    "caption": "Informace",
                     "custom_uis": "Vlastní uživatelská rozhraní:",
+                    "description": "Informace o instalaci Home Assistant",
                     "developed_by": "Vyvinuto partou úžasných lidí.",
                     "documentation": "Dokumentace",
                     "frontend": "frontend-ui",
@@ -1383,6 +1397,11 @@
                     "system_health_error": "Součást System Health není načtena. Přidejte 'system_health:' do configuration.yaml",
                     "title": "Informace"
                 },
+                "integration_panel_move": {
+                    "link_integration_page": "stránka integrací",
+                    "missing_zha": "Hledáte konfiguraci ZHA? Byl přesunut do položky Z-Wave na {integrations_page} .",
+                    "missing_zwave": "Hledáte konfiguraci Z-Wave? Byl přesunut do položky Z-Wave na {integrations_page} ."
+                },
                 "integrations": {
                     "add_integration": "Přidat integraci",
                     "caption": "Integrace",
@@ -1392,6 +1411,7 @@
                         "delete_button": "Smazat {integration}",
                         "delete_confirm": "Opravdu chcete odstranit tuto integraci?",
                         "device_unavailable": "zařízení není k dispozici",
+                        "devices": "{count} {count, plural,\n  one {zařízení}\n  other {zařízení}\n}",
                         "entities": "{count} {count, plural,\n  one {entita}\n  other {entit}\n}",
                         "entity_unavailable": "entita není k dispozici",
                         "firmware": "Firmware: {version}",
@@ -1454,7 +1474,9 @@
                 },
                 "introduction": "Zde je možné konfigurovat vaše komponenty a Home Assistant.\nZ uživatelského rozhraní sice zatím není možné konfigurovat vše, ale pracujeme na tom.",
                 "logs": {
+                    "caption": "Logy",
                     "clear": "Zrušit",
+                    "description": "Zobrazit log Home Assistant",
                     "details": "Detaily protokolu ({level})",
                     "load_full_log": "Načíst úplný protokol Home Assistanta",
                     "loading_log": "Načítání protokolu chyb...",
@@ -1542,6 +1564,7 @@
                     }
                 },
                 "mqtt": {
+                    "button": "Konfigurovat",
                     "description_listen": "Naslouchat tématu",
                     "description_publish": "Publikovat paket",
                     "listening_to": "Naslouchám",
@@ -1662,6 +1685,11 @@
                             "core": "Znovu načíst umístění a přizpůsobení",
                             "group": "Znovu načíst skupiny",
                             "heading": "Konfigurace se načítá",
+                            "input_boolean": "Znovu načíst logické hodnoty",
+                            "input_datetime": "Znovu načíst časy",
+                            "input_number": "Znovu načíst vstupní čísla",
+                            "input_select": "Znovu načíst výběr",
+                            "input_text": "Znovu načíst text",
                             "introduction": "Některé části Home Assistant lze načíst bez nutnosti restartování. Volba načtení zahodí jejich aktuální konfiguraci a načte novou.",
                             "person": "Znovu načíst osoby",
                             "scene": "Znovu načíst scény",
@@ -1720,12 +1748,16 @@
                             "name": "Název",
                             "system": "Systémový"
                         }
-                    }
+                    },
+                    "users_privileges_note": "Skupina uživatelů je v přípravě. Uživatel nebude moci spravovat instanci prostřednictvím uživatelského rozhraní. Stále kontrolujeme všechny koncové body API pro správu, abychom zajistili, že správně omezují přístup."
                 },
                 "zha": {
                     "add_device_page": {
+                        "discovered_text": "Jakmile se objeví nalezne, zobrazí se zde.",
                         "discovery_text": "Zde se objeví nalezená zařízení. Postupujte dle pokynů pro vaše zařízení a uveďte je do režimu párování.",
                         "header": "Zigbee Home Automation - Přidat zařízení",
+                        "no_devices_found": "Žádná zařízení nalezena, ujistěte se, že jsou v režimu párování a udržujte je zapnuté, zatímco je objevování spuštěno.",
+                        "pairing_mode": "Zkontrolujte, zda jsou vaše zařízení v režimu párování. Postupujte podle pokynů svého zařízení.",
                         "search_again": "Hledat znovu",
                         "spinner": "Hledání zařízení ZHA Zigbee ..."
                     },
@@ -1733,6 +1765,7 @@
                         "caption": "Přidat zařízení",
                         "description": "Přidat zařízení do sítě Zigbee"
                     },
+                    "button": "Nakonfigurovat",
                     "caption": "ZHA",
                     "cluster_attributes": {
                         "attributes_of_cluster": "Atributy vybraného klastru",
@@ -1811,6 +1844,9 @@
                         "header": "Správa sítě",
                         "introduction": "Příkazy, které ovlivňují celou síť"
                     },
+                    "network": {
+                        "caption": "Síť"
+                    },
                     "node_management": {
                         "header": "Správa zařízení",
                         "help_node_dropdown": "Vyberte zařízení pro zobrazení možností pro jednotlivé zařízení.",
@@ -1850,6 +1886,7 @@
                     "no_zones_created_yet": "Vypadá to, že nejsou vytvořené žádné zóny."
                 },
                 "zwave": {
+                    "button": "Nakonfigurovat",
                     "caption": "Z-Wave",
                     "common": {
                         "index": "Index",
@@ -1907,7 +1944,8 @@
                         "header": "Protokol OZW",
                         "introduction": "Zobrazit protokol. 0 je minimum (načte celý protokol) a 1000 je maximum. Načíst zobrazí statický protokol a tail automaticky aktualizuje protokol s naposledy zvoleným počtem řádků.",
                         "last_log_lines": "Počet řádků posledního protokolu",
-                        "load": "Načíst"
+                        "load": "Načíst",
+                        "tail": "Konec"
                     },
                     "services": {
                         "add_node": "Přidat uzel",
@@ -1916,6 +1954,7 @@
                         "heal_network": "Vyléčit síť",
                         "heal_node": "Uzdravit uzel",
                         "node_info": "Informace o uzlu",
+                        "print_node": "Otisk nodu",
                         "refresh_entity": "Znovu načíst Entitu",
                         "refresh_node": "Obnovit uzel",
                         "remove_failed_node": "Odebrat selhaný uzel",
@@ -2003,11 +2042,23 @@
             },
             "history": {
                 "period": "Období",
+                "ranges": {
+                    "last_week": "Minulý týden",
+                    "this_week": "Tento týden",
+                    "today": "Dnes",
+                    "yesterday": "Včera"
+                },
                 "showing_entries": "Zobrazeny údaje pro"
             },
             "logbook": {
                 "entries_not_found": "Nebyly nalezeny žádné záznamy v deníku.",
                 "period": "Období",
+                "ranges": {
+                    "last_week": "Minulý týden",
+                    "this_week": "Tento týden",
+                    "today": "Dnes",
+                    "yesterday": "Včera"
+                },
                 "showing_entries": "Zobrazeny údaje pro"
             },
             "lovelace": {

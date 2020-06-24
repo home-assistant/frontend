@@ -506,6 +506,11 @@
                 "clear": "Tyhjennä",
                 "show_areas": "Näytä alueet"
             },
+            "date-range-picker": {
+                "end_date": "Päättymispäivä",
+                "select": "Valitse",
+                "start_date": "Aloituspäivä"
+            },
             "device-picker": {
                 "clear": "Tyhjennä",
                 "device": "Laite",
@@ -695,9 +700,10 @@
             "zha_device_info": {
                 "buttons": {
                     "add": "Lisää laitteita",
+                    "clusters": "Hallitse klustereita",
                     "reconfigure": "Määritä laite uudelleen",
                     "remove": "Poista laite",
-                    "zigbee_information": "Zigbee-tiedot"
+                    "zigbee_information": "Zigbee-laitteen allekirjoitus"
                 },
                 "confirmations": {
                     "remove": "Haluatko varmasti poistaa laitteen?"
@@ -717,7 +723,7 @@
                 "unknown": "Tuntematon",
                 "zha_device_card": {
                     "area_picker_label": "Alue",
-                    "device_name_placeholder": "Käyttäjän etunimi",
+                    "device_name_placeholder": "Vaihda laitteen nimi",
                     "update_name_button": "Päivitä nimi"
                 }
             }
@@ -1558,6 +1564,7 @@
                     }
                 },
                 "mqtt": {
+                    "button": "Määritä",
                     "description_listen": "Kuuntele aihetta",
                     "description_publish": "Julkaise paketti",
                     "listening_to": "Kuunnellaan",
@@ -2035,11 +2042,23 @@
             },
             "history": {
                 "period": "aikajakso",
+                "ranges": {
+                    "last_week": "Viime viikolla",
+                    "this_week": "Tällä viikolla",
+                    "today": "Tänään",
+                    "yesterday": "Eilen"
+                },
                 "showing_entries": "Näytetään tapahtumat alkaen"
             },
             "logbook": {
                 "entries_not_found": "Lokikirjauksia ei löytynyt.",
                 "period": "aikajakso",
+                "ranges": {
+                    "last_week": "Viime viikolla",
+                    "this_week": "Tällä viikolla",
+                    "today": "Tänään",
+                    "yesterday": "Eilen"
+                },
                 "showing_entries": "Näytetään kirjaukset ajalta"
             },
             "lovelace": {

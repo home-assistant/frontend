@@ -610,7 +610,7 @@
                     "min": "Minimalna wartość",
                     "mode": "Tryb wyświetlania",
                     "slider": "suwak",
-                    "step": "Wielkość kroku suwaka",
+                    "step": "Rozmiar kroku",
                     "unit_of_measurement": "Jednostka miary"
                 },
                 "input_select": {
@@ -699,7 +699,7 @@
             },
             "zha_device_info": {
                 "buttons": {
-                    "add": "Dodaj urządzenia",
+                    "add": "Dodaj urządzenia za pomocą tego urządzenia",
                     "clusters": "Zarządzaj klastrami",
                     "reconfigure": "Rekonfiguracja urządzenia",
                     "remove": "Usuń urządzenie",
@@ -723,7 +723,7 @@
                 "unknown": "Nieznany",
                 "zha_device_card": {
                     "area_picker_label": "Obszar",
-                    "device_name_placeholder": "Nazwa użytkownika",
+                    "device_name_placeholder": "Zmień nazwę urządzenia",
                     "update_name_button": "Aktualizuj nazwę"
                 }
             }
@@ -764,7 +764,7 @@
                     "link_profile_page": "strona Twojego profilu"
                 },
                 "areas": {
-                    "caption": "Rejestr obszarów",
+                    "caption": "Obszary",
                     "data_table": {
                         "area": "Obszar",
                         "devices": "Urządzenia"
@@ -776,17 +776,17 @@
                     "description": "Przegląd wszystkich obszarów w twoim domu",
                     "editor": {
                         "area_id": "Identyfikator obszaru",
-                        "create": "UTWÓRZ",
+                        "create": "Utwórz",
                         "default_name": "Nowy obszar",
-                        "delete": "USUŃ",
+                        "delete": "Usuń",
                         "name": "Nazwa",
                         "name_required": "Nazwa jest wymagana",
                         "unknown_error": "Nieznany błąd",
-                        "update": "AKTUALIZUJ"
+                        "update": "Aktualizuj"
                     },
                     "picker": {
                         "create_area": "Utwórz obszar",
-                        "header": "Rejestr obszarów",
+                        "header": "Obszary",
                         "integrations_page": "Strona integracji",
                         "introduction": "Obszary służą do organizacji urządzeń. Informacje te będą używane w Home Assistant, aby pomóc w organizacji interfejsu, uprawnień i integracji z innymi systemami.",
                         "introduction2": "Aby umieścić urządzenia w danym obszarze, użyj poniższego linku, aby przejść do strony integracji, a następnie kliknij skonfigurowaną integrację, aby dostać się do kart urządzeń.",
@@ -1445,7 +1445,7 @@
                     },
                     "configure": "Konfiguruj",
                     "configured": "Skonfigurowane",
-                    "description": "Zarządzaj integracjami",
+                    "description": "Zarządzaj i konfiguruj integracje",
                     "details": "Szczegóły integracji",
                     "discovered": "Wykryte",
                     "home_assistant_website": "Home Assistanta",
@@ -2275,7 +2275,7 @@
                     },
                     "edit_card": {
                         "add": "Dodaj kartę",
-                        "delete": "Usuń",
+                        "delete": "Usuń kartę",
                         "duplicate": "Duplikuj kartę",
                         "edit": "Edytuj",
                         "header": "Konfiguracja karty",
