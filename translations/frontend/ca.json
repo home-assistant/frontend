@@ -48,6 +48,19 @@
                 "none": "Cap",
                 "sleep": "Dormint"
             }
+        },
+        "humidifier": {
+            "mode": {
+                "auto": "Automàtic",
+                "away": "A fora",
+                "baby": "Nadó",
+                "boost": "Incrementat",
+                "comfort": "Confort",
+                "eco": "Econòmic",
+                "home": "A casa",
+                "normal": "Normal",
+                "sleep": "Dormint"
+            }
         }
     },
     "state_badge": {
@@ -387,6 +400,12 @@
                 "oscillate": "Oscil·lació",
                 "reverse": "Invers",
                 "speed": "Velocitat"
+            },
+            "humidifier": {
+                "humidity": "Humitat desitjada",
+                "mode": "Mode",
+                "on_entity": "{name} on",
+                "target_humidity_entity": "Temperatura desitjada de {name}"
             },
             "light": {
                 "brightness": "Brillantor",
@@ -2197,6 +2216,10 @@
                         "horizontal-stack": {
                             "description": "La targeta pila horizontal et permet agrupar diferents targetes, una al costat de l'altra (horizontalment), pero dins d'una única columna.",
                             "name": "Pila horitzontal"
+                        },
+                        "humidifier": {
+                            "description": "La targeta humidificador et permet controlar una entitat de tipus humidificador. Pots canviar-ne tant la humitat com el mode.",
+                            "name": "Humidificador"
                         },
                         "iframe": {
                             "description": "La targeta pàgina web et permet incrustar els teus llocs web preferits directament a Home Assistant.",

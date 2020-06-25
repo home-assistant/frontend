@@ -48,6 +48,19 @@
                 "none": "Keen",
                 "sleep": "Schlofen"
             }
+        },
+        "humidifier": {
+            "mode": {
+                "auto": "Auto",
+                "away": "Ënnerwee",
+                "baby": "Baby",
+                "boost": "Boost",
+                "comfort": "Bequem",
+                "eco": "Eco",
+                "home": "Doheem",
+                "normal": "Normal",
+                "sleep": "Schlofen"
+            }
         }
     },
     "state_badge": {
@@ -388,6 +401,12 @@
                 "reverse": "Hannerzeg",
                 "speed": "Vitesse"
             },
+            "humidifier": {
+                "humidity": "Viséiert Fiichtegkeet",
+                "mode": "Modus",
+                "on_entity": "{name} un",
+                "target_humidity_entity": "{name} Viséiert Fiichtegkeet"
+            },
             "light": {
                 "brightness": "Hellegkeet",
                 "color_temperature": "Faarf Temperatur",
@@ -504,6 +523,11 @@
                 "area": "Beräich",
                 "clear": "Läschen",
                 "show_areas": "Beräicher uweisen"
+            },
+            "date-range-picker": {
+                "end_date": "End Datum",
+                "select": "Auswielen",
+                "start_date": "Start Datum"
             },
             "device-picker": {
                 "clear": "Läschen",
@@ -694,6 +718,7 @@
             "zha_device_info": {
                 "buttons": {
                     "add": "Apparater dobäisetzen",
+                    "clusters": "Cluster verwalten",
                     "reconfigure": "Apparat frësch konfiguréieren",
                     "remove": "Apparat läschen",
                     "zigbee_information": "Zigbee Informatiounen"
@@ -1557,6 +1582,7 @@
                     }
                 },
                 "mqtt": {
+                    "button": "Astellen",
                     "description_listen": "Sujet lauschteren",
                     "description_publish": "Ee Pak publizéieren",
                     "listening_to": "Lauschtert op",
@@ -2027,11 +2053,23 @@
             },
             "history": {
                 "period": "Zäitraum",
+                "ranges": {
+                    "last_week": "Läscht Woch",
+                    "this_week": "Dës Woch",
+                    "today": "Haut",
+                    "yesterday": "Gëschter"
+                },
                 "showing_entries": "Weist Beiträg fir"
             },
             "logbook": {
                 "entries_not_found": "Keng Logbicher Entrée fonnt",
                 "period": "Zäitraum",
+                "ranges": {
+                    "last_week": "Läscht Woch",
+                    "this_week": "Dës Woch",
+                    "today": "Haut",
+                    "yesterday": "Gëschter"
+                },
                 "showing_entries": "Weist Beiträg fir"
             },
             "lovelace": {
@@ -2170,6 +2208,9 @@
                         "horizontal-stack": {
                             "description": "Horizontal Kaart erlaabt et méi Kaarten ze gruppéieren fir dass se ëmmer an der selwechter Rei ugewise ginn.",
                             "name": "Horizontale Stapel"
+                        },
+                        "humidifier": {
+                            "name": "Loftbefiichter"
                         },
                         "iframe": {
                             "description": "Websäit Kaart erlaabt et eng aaner Websäit am Home Assistant unzeweisen.",

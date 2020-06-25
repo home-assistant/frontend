@@ -35,7 +35,7 @@
                 "drying": "osuszanie",
                 "fan": "wentylator",
                 "heating": "grzanie",
-                "idle": "Bezczynny",
+                "idle": "nieaktywny",
                 "off": "wyłączony"
             },
             "preset_mode": {
@@ -46,7 +46,20 @@
                 "eco": "ekonomicznie",
                 "home": "w domu",
                 "none": "brak",
-                "sleep": "sen"
+                "sleep": "noc"
+            }
+        },
+        "humidifier": {
+            "mode": {
+                "auto": "automatycznie",
+                "away": "poza domem",
+                "baby": "dziecko",
+                "boost": "wzmocnienie",
+                "comfort": "komfort",
+                "eco": "ekonomicznie",
+                "home": "w domu",
+                "normal": "normalnie",
+                "sleep": "noc"
             }
         }
     },
@@ -362,11 +375,11 @@
                 "high": "wysoka",
                 "low": "niska",
                 "on_off": "Wł. / wył.",
-                "operation": "Tryb działania",
+                "operation": "Tryb pracy",
                 "preset_mode": "Ustawienia",
                 "swing_mode": "Tryb ruchu łopatek",
-                "target_humidity": "Docelowa wilgotność",
-                "target_temperature": "Docelowa temperatura",
+                "target_humidity": "Wilgotność docelowa",
+                "target_temperature": "Wilgotność docelowa",
                 "target_temperature_entity": "{name} temperatura docelowa",
                 "target_temperature_mode": "{name} temperatura docelowa {mode}"
             },
@@ -387,6 +400,12 @@
                 "oscillate": "Oscylacja",
                 "reverse": "Wstecz",
                 "speed": "Prędkość"
+            },
+            "humidifier": {
+                "humidity": "Wilgotność docelowa",
+                "mode": "Tryb pracy",
+                "on_entity": "{name} włączony",
+                "target_humidity_entity": "{name} wilgotność docelowa"
             },
             "light": {
                 "brightness": "Jasność",
@@ -437,7 +456,7 @@
                 "away_mode": "Tryb poza domem",
                 "currently": "Obecnie",
                 "on_off": "Wł. / wył.",
-                "operation": "Tryb działania",
+                "operation": "Tryb pracy",
                 "target_temperature": "Temperatura docelowa"
             },
             "weather": {
@@ -2197,6 +2216,10 @@
                         "horizontal-stack": {
                             "description": "Karta poziomego stosu umożliwia układanie wielu kart razem, dzięki czemu zawsze zlokalizowane są obok siebie w przestrzeni jednej kolumny.",
                             "name": "Poziomy stos"
+                        },
+                        "humidifier": {
+                            "description": "Karta nawilżacza zapewnia kontrolę nad encją nawilżacza. Umożliwia zmianę wilgotności i trybu pracy encji.",
+                            "name": "Nawilżacz"
                         },
                         "iframe": {
                             "description": "Karta strona web pozwala osadzić ulubioną stronę bezpośrednio w Home Assistant.",

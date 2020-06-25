@@ -48,6 +48,19 @@
                 "none": "无",
                 "sleep": "睡眠"
             }
+        },
+        "humidifier": {
+            "mode": {
+                "auto": "自动",
+                "away": "离开",
+                "baby": "儿童",
+                "boost": "强力",
+                "comfort": "舒适",
+                "eco": "节能",
+                "home": "在家",
+                "normal": "标准",
+                "sleep": "睡眠"
+            }
         }
     },
     "state_badge": {
@@ -387,6 +400,10 @@
                 "oscillate": "摇头",
                 "reverse": "反向",
                 "speed": "风速"
+            },
+            "humidifier": {
+                "humidity": "设定湿度",
+                "mode": "模式"
             },
             "light": {
                 "brightness": "亮度",
@@ -2197,6 +2214,10 @@
                         "horizontal-stack": {
                             "description": "“水平堆叠”卡片用于将多张卡片堆叠在一起，使它们始终彼此相邻放置成一行。",
                             "name": "水平堆叠"
+                        },
+                        "humidifier": {
+                            "description": "“加湿器”卡片用于控制加湿器实体，改变其设定湿度和模式。",
+                            "name": "加湿器"
                         },
                         "iframe": {
                             "description": "“网页”卡片供您将喜欢的网页直接嵌入 Home Assistant 中。",

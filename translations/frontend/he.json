@@ -48,6 +48,12 @@
                 "none": "לא נבחר",
                 "sleep": "שינה"
             }
+        },
+        "humidifier": {
+            "mode": {
+                "away": "לא בבית",
+                "home": "בבית"
+            }
         }
     },
     "state_badge": {
@@ -1664,6 +1670,7 @@
                         "true": "True"
                     },
                     "node_management": {
+                        "add_to_group": "הוסף לקבוצה",
                         "entities": "ישויות היחידה",
                         "entity_info": "מידע על הישות",
                         "exclude_entity": "אל תכלול ישות זו ב Home Assistant",
@@ -1677,11 +1684,13 @@
                         "nodes_hint": "בחר יחידה כדי להציג אפשרויות ליחידה",
                         "pooling_intensity": "עוצמת דגימה",
                         "protection": "הגנה",
+                        "remove_from_group": "הסר מהקבוצה",
                         "set_protection": "הגדרת הגנה"
                     },
                     "ozw_log": {
                         "header": "יומן OZW",
-                        "introduction": "צפה ביומן. 0 הוא המינימום (טוען יומן שלם) ו -1000 הוא המקסימום. הטעינה תציג יומן סטטי והסוף יתעדכן אוטומטית במספר האחרון שצוין של שורות היומן."
+                        "introduction": "צפה ביומן. 0 הוא המינימום (טוען יומן שלם) ו -1000 הוא המקסימום. הטעינה תציג יומן סטטי והסוף יתעדכן אוטומטית במספר האחרון שצוין של שורות היומן.",
+                        "load": "לִטעוֹן"
                     },
                     "services": {
                         "add_node": "הוסף רכיב",
@@ -1777,6 +1786,12 @@
             "logbook": {
                 "entries_not_found": "לא נמצאו רשומות ביומן.",
                 "period": "תקופה",
+                "ranges": {
+                    "last_week": "שבוע שעבר",
+                    "this_week": "השבוע",
+                    "today": "היום",
+                    "yesterday": "אתמול"
+                },
                 "showing_entries": "מציג רשומות עבור"
             },
             "lovelace": {
