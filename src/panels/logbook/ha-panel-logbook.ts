@@ -17,6 +17,7 @@ import {
 } from "lit-element";
 import { HomeAssistant } from "../../types";
 import { haStyle } from "../../resources/styles";
+import { fetchUsers } from "../../data/user";
 import {
   clearLogbookCache,
   getLogbookData,
@@ -32,6 +33,9 @@ export class HaPanelLogbook extends LitElement {
 
   @property({ reflect: true, type: Boolean }) narrow!: boolean;
 
+  @property({ attribute: false })
+  private _userIdToName = {};
+
   @property() _startDate: Date;
 
   @property() _endDate: Date;
@@ -45,6 +49,8 @@ export class HaPanelLogbook extends LitElement {
   @property({ reflect: true, type: Boolean }) rtl = false;
 
   @property() private _ranges?: DateRangePickerRanges;
+
+  private _fetchUserDone?: Promise<unknown>;
 
   public constructor() {
     super();
@@ -112,6 +118,7 @@ export class HaPanelLogbook extends LitElement {
           : html`<ha-logbook
               .hass=${this.hass}
               .entries=${this._entries}
+              .userIdToName=${this._userIdToName}
             ></ha-logbook>`}
       </app-header-layout>
     `;
@@ -120,6 +127,8 @@ export class HaPanelLogbook extends LitElement {
   protected firstUpdated(changedProps: PropertyValues) {
     super.firstUpdated(changedProps);
     this.hass.loadBackendTranslation("title");
+
+    this._fetchUserDone = this._fetchUsers();
 
     const today = new Date();
     today.setHours(0, 0, 0, 0);
@@ -184,6 +193,15 @@ export class HaPanelLogbook extends LitElement {
     }
   }
 
+  private async _fetchUsers() {
+    const users = await fetchUsers(this.hass);
+    const userid_to_name = {};
+    users.forEach((user) => {
+      userid_to_name[user.id] = user.name;
+    });
+    this._userIdToName = userid_to_name;
+  }
+
   private _dateRangeChanged(ev) {
     this._startDate = ev.detail.startDate;
     const endDate = ev.detail.endDate;
@@ -209,12 +227,18 @@ export class HaPanelLogbook extends LitElement {
 
   private async _getData() {
     this._isLoading = true;
-    this._entries = await getLogbookData(
-      this.hass,
-      this._startDate.toISOString(),
-      this._endDate.toISOString(),
-      this._entityId
-    );
+    const [entries] = await Promise.all([
+      getLogbookData(
+        this.hass,
+        this._startDate.toISOString(),
+        this._endDate.toISOString(),
+        this._entityId
+      ),
+      this._fetchUserDone,
+    ]);
+    // Fixed in TS 3.9 but upgrade out of scope for this PR.
+    // @ts-ignore
+    this._entries = entries;
     this._isLoading = false;
   }
 
