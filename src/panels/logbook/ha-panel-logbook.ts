@@ -198,7 +198,6 @@ export class HaPanelLogbook extends LitElement {
       userid_to_name[user.id] = user.name;
     });
     this._userid_to_name = userid_to_name;
-    this._fetched_users = true;
   }
 
   private _dateRangeChanged(ev) {
