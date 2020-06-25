@@ -236,6 +236,8 @@ export class HaPanelLogbook extends LitElement {
       ),
       this._fetchUserDone,
     ]);
+    // Fixed in TS 3.9 but upgrade out of scope for this PR.
+    // @ts-ignore
     this._entries = entries;
     this._isLoading = false;
   }
