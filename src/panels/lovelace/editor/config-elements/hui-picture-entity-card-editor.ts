@@ -77,7 +77,7 @@ export class HuiPictureEntityCardEditor extends LitElement
   }
 
   get _aspect_ratio(): string {
-    return this._config!.aspect_ratio || "50";
+    return this._config!.aspect_ratio || "";
   }
 
   get _tap_action(): ActionConfig {
