@@ -34,7 +34,7 @@ export class HaPanelLogbook extends LitElement {
   @property({ reflect: true, type: Boolean }) narrow!: boolean;
 
   @property({ attribute: false })
-  private _userid_to_name = {};
+  private _userIdToName = {};
 
   @property() _startDate: Date;
 
@@ -49,6 +49,8 @@ export class HaPanelLogbook extends LitElement {
   @property({ reflect: true, type: Boolean }) rtl = false;
 
   @property() private _ranges?: DateRangePickerRanges;
+
+  private _fetchUserDone?: Promise<unknown>;
 
   public constructor() {
     super();
@@ -116,7 +118,7 @@ export class HaPanelLogbook extends LitElement {
           : html`<ha-logbook
               .hass=${this.hass}
               .entries=${this._entries}
-              .userid_to_name=${this._userid_to_name}
+              .userIdToName=${this._userIdToName}
             ></ha-logbook>`}
       </app-header-layout>
     `;
@@ -126,7 +128,7 @@ export class HaPanelLogbook extends LitElement {
     super.firstUpdated(changedProps);
     this.hass.loadBackendTranslation("title");
 
-    this._fetchUsers();
+    this._fetchUserDone = this._fetchUsers();
 
     const today = new Date();
     today.setHours(0, 0, 0, 0);
@@ -197,7 +199,7 @@ export class HaPanelLogbook extends LitElement {
     users.forEach((user) => {
       userid_to_name[user.id] = user.name;
     });
-    this._userid_to_name = userid_to_name;
+    this._userIdToName = userid_to_name;
   }
 
   private _dateRangeChanged(ev) {
@@ -225,12 +227,16 @@ export class HaPanelLogbook extends LitElement {
 
   private async _getData() {
     this._isLoading = true;
-    this._entries = await getLogbookData(
-      this.hass,
-      this._startDate.toISOString(),
-      this._endDate.toISOString(),
-      this._entityId
-    );
+    const [entries] = await Promise.all([
+      getLogbookData(
+        this.hass,
+        this._startDate.toISOString(),
+        this._endDate.toISOString(),
+        this._entityId
+      ),
+      this._fetchUserDone,
+    ]);
+    this._entries = entries;
     this._isLoading = false;
   }
 

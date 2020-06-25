@@ -21,8 +21,7 @@ import { HomeAssistant } from "../../types";
 class HaLogbook extends LitElement {
   @property() public hass!: HomeAssistant;
 
-  @property({ attribute: false })
-  private userid_to_name = {};
+  @property() public userIdToName = {};
 
   @property() public entries: LogbookEntry[] = [];
 
@@ -71,7 +70,7 @@ class HaLogbook extends LitElement {
     const previous = this.entries[index - 1];
     const state = item.entity_id ? this.hass.states[item.entity_id] : undefined;
     const item_username =
-      item.context_user_id && this.userid_to_name[item.context_user_id];
+      item.context_user_id && this.userIdToName[item.context_user_id];
     return html`
       <div>
         ${index === 0 ||
