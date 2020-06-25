@@ -17,6 +17,7 @@ import {
 } from "lit-element";
 import { HomeAssistant } from "../../types";
 import { haStyle } from "../../resources/styles";
+import { fetchUsers } from "../../data/user";
 import {
   clearLogbookCache,
   getLogbookData,
@@ -31,6 +32,9 @@ export class HaPanelLogbook extends LitElement {
   @property() hass!: HomeAssistant;
 
   @property({ reflect: true, type: Boolean }) narrow!: boolean;
+
+  @property({ attribute: false })
+  private _userid_to_name = {};
 
   @property() _startDate: Date;
 
@@ -112,6 +116,7 @@ export class HaPanelLogbook extends LitElement {
           : html`<ha-logbook
               .hass=${this.hass}
               .entries=${this._entries}
+              .userid_to_name=${this._userid_to_name}
             ></ha-logbook>`}
       </app-header-layout>
     `;
@@ -120,6 +125,8 @@ export class HaPanelLogbook extends LitElement {
   protected firstUpdated(changedProps: PropertyValues) {
     super.firstUpdated(changedProps);
     this.hass.loadBackendTranslation("title");
+
+    this._fetchUsers();
 
     const today = new Date();
     today.setHours(0, 0, 0, 0);
@@ -182,6 +189,16 @@ export class HaPanelLogbook extends LitElement {
         this.rtl = computeRTL(this.hass);
       }
     }
+  }
+
+  private async _fetchUsers() {
+    const users = await fetchUsers(this.hass);
+    const userid_to_name = {};
+    users.forEach((user) => {
+      userid_to_name[user.id] = user.name;
+    });
+    this._userid_to_name = userid_to_name;
+    this._fetched_users = true;
   }
 
   private _dateRangeChanged(ev) {
