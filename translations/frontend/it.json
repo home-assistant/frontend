@@ -2198,6 +2198,10 @@
                             "description": "La scheda Pila Orizzontale consente di raggruppare insieme più schede, in modo che siano sempre l'una accanto all'altra nello spazio di una colonna.",
                             "name": "Pila orizzontale"
                         },
+                        "humidifier": {
+                            "description": "La scheda Umidificatore fornisce il controllo della tua entità umidificatore, consentendo di modificare l'umidità e la modalità dell'entità.",
+                            "name": "Umidificatore"
+                        },
                         "iframe": {
                             "description": "La scheda Pagina Web consente di incorporare la pagina Web preferita direttamente in Home Assistant.",
                             "name": "Pagina web"
