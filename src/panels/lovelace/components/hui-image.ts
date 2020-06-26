@@ -54,11 +54,8 @@ export class HuiImage extends LitElement {
 
   private _cameraUpdater?: number;
 
-  private _attached?: boolean;
-
   public connectedCallback(): void {
     super.connectedCallback();
-    this._attached = true;
     if (this.cameraImage && this.cameraView !== "live") {
       this._startUpdateCameraInterval();
     }
@@ -66,7 +63,6 @@ export class HuiImage extends LitElement {
 
   public disconnectedCallback(): void {
     super.disconnectedCallback();
-    this._attached = false;
     this._stopUpdateCameraInterval();
   }
 
@@ -170,7 +166,7 @@ export class HuiImage extends LitElement {
 
   private _startUpdateCameraInterval(): void {
     this._stopUpdateCameraInterval();
-    if (this.cameraImage && this._attached) {
+    if (this.cameraImage && this.isConnected) {
       this._cameraUpdater = window.setInterval(
         () => this._updateCameraImageSrc(),
         UPDATE_INTERVAL
@@ -181,6 +177,7 @@ export class HuiImage extends LitElement {
   private _stopUpdateCameraInterval(): void {
     if (this._cameraUpdater) {
       clearInterval(this._cameraUpdater);
+      this._cameraUpdater = undefined;
     }
   }
 
