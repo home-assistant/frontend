@@ -48,6 +48,19 @@
                 "none": "Geen",
                 "sleep": "Slapen"
             }
+        },
+        "humidifier": {
+            "mode": {
+                "auto": "Auto",
+                "away": "Afwezig",
+                "baby": "Baby",
+                "boost": "Boost",
+                "comfort": "Comfort",
+                "eco": "Eco",
+                "home": "Thuis",
+                "normal": "Normaal",
+                "sleep": "Slapen"
+            }
         }
     },
     "state_badge": {
@@ -388,6 +401,12 @@
                 "reverse": "Omkeren",
                 "speed": "Snelheid"
             },
+            "humidifier": {
+                "humidity": "Doel luchtvochtigheid",
+                "mode": "Modus",
+                "on_entity": "{name} aan",
+                "target_humidity_entity": "{name} doel luchtvochtigheid"
+            },
             "light": {
                 "brightness": "Helderheid",
                 "color_temperature": "Kleurtemperatuur",
@@ -505,6 +524,11 @@
                 "area": "Gebied",
                 "clear": "Wis",
                 "show_areas": "Toon gebieden"
+            },
+            "date-range-picker": {
+                "end_date": "Einddatum",
+                "select": "Selecteer",
+                "start_date": "Startdatum"
             },
             "device-picker": {
                 "clear": "Wis",
@@ -695,6 +719,7 @@
             "zha_device_info": {
                 "buttons": {
                     "add": "Apparaten toevoegen via dit apparaat",
+                    "clusters": "Clusters beheren",
                     "reconfigure": "Apparaat opnieuw configureren",
                     "remove": "Verwijder apparaat",
                     "zigbee_information": "Zigbee-apparaathandtekening"
@@ -744,7 +769,7 @@
             "connection_lost": "Verbinding verbroken. Opnieuw verbinden...",
             "service_call_failed": "Kan service {service} niet aanroepen",
             "started": "Home Assistant is gestart!",
-            "starting": "Home Assistant is aan het opstarten, nog niet alles is beschikbaar tot dit is voltooid.",
+            "starting": "Home Assistant is aan het opstarten. Gedurende het opstarten zal niet alles beschikbaar zijn.",
             "triggered": "Geactiveerd {name}"
         },
         "panel": {
@@ -1391,6 +1416,11 @@
                     "system_health_error": "De systeemstatus component is niet geladen. Voeg ' system_health: ' toe aan het configuratiebestand.",
                     "title": "Info"
                 },
+                "integration_panel_move": {
+                    "link_integration_page": "integraties pagina",
+                    "missing_zha": "Mis je de ZHA configuratie? Dit is verplaatst naar de ZHA integratie op de {integrations_page}.",
+                    "missing_zwave": "Mis je de Z-Wave configuratie? Dit is verplaatst naar de Z-Wave integratie op de {integrations_page}."
+                },
                 "integrations": {
                     "add_integration": "Integratie toevoegen",
                     "caption": "Integraties",
@@ -1553,6 +1583,7 @@
                     }
                 },
                 "mqtt": {
+                    "button": "Configureer",
                     "description_listen": "Luisteren naar onderwerp",
                     "description_publish": "Publiceer een pakket",
                     "listening_to": "Luisteren naar",
@@ -1673,6 +1704,11 @@
                             "core": "Herlaad locatie en aanpassingen",
                             "group": "Herlaad groepen",
                             "heading": "Configuratie herladen",
+                            "input_boolean": "Herlaad input booleans",
+                            "input_datetime": "Herlaad input date times",
+                            "input_number": "Herlaad input numbers",
+                            "input_select": "Herlaad input selects",
+                            "input_text": "Herlaad input texts",
                             "introduction": "Sommige delen van Home Assistant kunnen opnieuw worden geladen zonder dat een herstart vereist is. Als je herladen gebruikt, wordt de huidige configuratie leeggemaakt en wordt de nieuwe geladen.",
                             "person": "Herlaad personen",
                             "scene": "Herlaad scenes",
@@ -1732,13 +1768,15 @@
                             "system": "Systeem"
                         }
                     },
-                    "users_privileges_note": "Gebruikersgroepen zijn nog werk in uitvoering. De gebruiker kan de instantie niet beheren via de interface. We zijn bezig met het uitvoeren van een audit om verzekerd te zijn dat de management API-eindpunten toegang voor beheerders correct beperken."
+                    "users_privileges_note": "Gebruikersgroepen zijn nog in ontwikkeling. De gebruiker kan de instantie niet beheren via de interface. We zijn bezig met het controleren van de API-eindpunten toegang voor beheerders."
                 },
                 "zha": {
                     "add_device_page": {
                         "discovered_text": "Apparaten zullen hier verschijnen zodra ze zijn ontdekt.",
                         "discovery_text": "Gevonden apparaten worden hier weergegeven. Volg de instructies voor je apparaat of apparaten en plaats het apparaat of de apparaten in de koppelingsmodus.",
                         "header": "Zigbee Home Automation - Apparaten toevoegen",
+                        "no_devices_found": "Geen apparaten gevonden, zorg ervoor dat ze in de koppelingsmodus staan en dat gedurende het ontdekken ze actief zijn.",
+                        "pairing_mode": "Zorg ervoor dat de apparaten in de koppelingsmodus staan. Kijk in de instructies van het apparaat hoe dit moet.",
                         "search_again": "Opnieuw zoeken",
                         "spinner": "Zoeken naar ZHA Zigbee-apparaten ..."
                     },
@@ -2001,11 +2039,23 @@
             },
             "history": {
                 "period": "Periode",
+                "ranges": {
+                    "last_week": "Vorige week",
+                    "this_week": "Deze week",
+                    "today": "Vandaag",
+                    "yesterday": "Gisteren"
+                },
                 "showing_entries": "Toon items voor"
             },
             "logbook": {
                 "entries_not_found": "Geen logboekvermeldingen gevonden.",
                 "period": "Periode",
+                "ranges": {
+                    "last_week": "Vorige week",
+                    "this_week": "Deze week",
+                    "today": "Vandaag",
+                    "yesterday": "Gisteren"
+                },
                 "showing_entries": "Toont gegevens van"
             },
             "lovelace": {
@@ -2144,6 +2194,10 @@
                         "horizontal-stack": {
                             "description": "Met de Horizontal Stack-kaart kun je meerdere kaarten op elkaar stapelen, zodat ze altijd naast elkaar in de ruimte van één kolom zitten.",
                             "name": "Horizontale stapel"
+                        },
+                        "humidifier": {
+                            "description": "De luchtbevochtiger-kaart geeft controle over de entiteit van de luchtbevochtiger. Hiermee kun je de vochtigheid en de modus van de entiteit wijzigen.",
+                            "name": "Bevochtiger"
                         },
                         "iframe": {
                             "description": "Met de Webpage-kaart kunt u uw favoriete webpagina rechtstreeks in de Home Assistant insluiten.",

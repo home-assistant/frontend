@@ -136,19 +136,12 @@ export class HuiCardOptions extends LitElement {
         color: var(--disabled-text-color);
       }
 
-      paper-item.header {
-        color: var(--primary-text-color);
-        text-transform: uppercase;
-        font-weight: 500;
-        font-size: 14px;
-      }
-
-      paper-item {
+      mwc-list-item {
         cursor: pointer;
         white-space: nowrap;
       }
 
-      paper-item.delete-item {
+      mwc-list-item.delete-item {
         color: var(--error-color);
       }
     `;
