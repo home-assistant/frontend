@@ -209,6 +209,7 @@ export class HuiDialogEditCard extends LitElement {
                         <ha-circular-progress
                           active
                           alt="Saving"
+                          size="small"
                         ></ha-circular-progress>
                       `
                     : this.hass!.localize("ui.common.save")}
@@ -291,8 +292,6 @@ export class HuiDialogEditCard extends LitElement {
         }
 
         mwc-button ha-circular-progress {
-          width: 14px;
-          height: 14px;
           margin-right: 20px;
         }
         .hidden {
