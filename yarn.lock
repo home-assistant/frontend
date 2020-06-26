@@ -1176,7 +1176,7 @@
   dependencies:
     tslib "^2.0.0"
 
-"@fullcalendar/core@5.0.0":
+"@fullcalendar/core@^5.0.0":
   version "5.0.0"
   resolved "https://registry.yarnpkg.com/@fullcalendar/core/-/core-5.0.0.tgz#007ce602bc52adc0d867aed839850de39fff5f3b"
   integrity sha512-FPw8f8m8FI9/ofjWBxm/4cCiM5NHFnCBNj31HiJE/beNFUk034RJnFDxTa1pTWqLK8Wjj06xj4/IRMsIAi8FoA==

@@ -9,12 +9,12 @@ import {
   TemplateResult,
 } from "lit-element";
 import { Calendar } from "@fullcalendar/core";
-import type { OptionsInput } from "@fullcalendar/core";
+import type { CalendarOptions } from "@fullcalendar/core";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import listPlugin from "@fullcalendar/list";
 import interactionPlugin from "@fullcalendar/interaction";
 // @ts-ignore
-import fullcalendarStyle from "@fullcalendar/core/main.css";
+import fullcalendarStyle from "@fullcalendar/common/main.css";
 // @ts-ignore
 import daygridStyle from "@fullcalendar/daygrid/main.css";
 // @ts-ignore
@@ -40,12 +40,13 @@ declare global {
   }
 }
 
-const defaultFullCalendarConfig: OptionsInput = {
+const defaultFullCalendarConfig: CalendarOptions = {
   headerToolbar: false,
   plugins: [dayGridPlugin, listPlugin, interactionPlugin],
   initialView: "dayGridMonth",
   dayMaxEventRows: true,
   height: "parent",
+  eventDisplay: "list-item",
 };
 
 const viewButtons: ToggleButton[] = [
@@ -176,27 +177,37 @@ class HAFullCalendar extends LitElement {
   }
 
   protected firstUpdated(): void {
-    const config: OptionsInput = {
+    const config: CalendarOptions = {
       ...defaultFullCalendarConfig,
       locale: this.hass.language,
     };
 
-    if (this.narrow) {
-      config.views = {
-        dayGridMonth: {
-          eventDisplay: "list-item",
-          dayMaxEventRows: 999,
-        },
-      };
-      config.dateClick = (info) => {
-        if (info.view.type !== "dayGridMonth") {
-          return;
-        }
-        this._activeView = "dayGridDay";
-        this.calendar!.changeView("dayGridDay");
-        this.calendar!.gotoDate(info.dateStr);
-      };
-    }
+    // if (this.narrow) {
+    //   // config.views = {
+    //   //   dayGridMonth: {
+    //   //     eventContent: function (arg) {
+    //   //       const italicEl = document.createElement("i");
+
+    //   //       if (arg.event.extendedProps.isUrgent) {
+    //   //         italicEl.innerHTML = "urgent event";
+    //   //       } else {
+    //   //         italicEl.innerHTML = "normal event";
+    //   //       }
+
+    //   //       const arrayOfDomNodes = [italicEl];
+    //   //       return { domNodes: arrayOfDomNodes };
+    //   //     },
+    //   //   },
+    //   // };
+    //   config.dateClick = (info) => {
+    //     if (info.view.type !== "dayGridMonth") {
+    //       return;
+    //     }
+    //     this._activeView = "dayGridDay";
+    //     this.calendar!.changeView("dayGridDay");
+    //     this.calendar!.gotoDate(info.dateStr);
+    //   };
+    // }
 
     this.calendar = new Calendar(
       this.shadowRoot!.getElementById("calendar")!,
