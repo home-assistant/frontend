@@ -13,6 +13,7 @@ import {
   STATE_NOT_RUNNING,
   STATE_RUNNING,
 } from "home-assistant-js-websocket";
+import { CustomPanelInfo } from "../data/panel_custom";
 
 const CACHE_URL_PATHS = ["lovelace", "developer-tools"];
 const COMPONENTS = {
@@ -159,7 +160,17 @@ class PartialPanelResolver extends HassRouterPage {
     if (document.hidden) {
       this._hiddenTimeout = window.setTimeout(() => {
         this._hiddenTimeout = undefined;
-        if (this.lastChild) {
+        const curPanel = this.hass.panels[this._currentPage];
+        if (
+          this.lastChild &&
+          // iFrames will lose their state when disconnected
+          // Do not disconnect any iframe panel
+          curPanel.component_name !== "iframe" &&
+          // Do not disconnect any custom panel that embeds into iframe (ie hassio)
+          (curPanel.component_name !== "custom" ||
+            !(curPanel.config as CustomPanelInfo).config._panel_custom
+              .embed_iframe)
+        ) {
           this._disconnectedPanel = this.lastChild;
           this.removeChild(this.lastChild);
         }
