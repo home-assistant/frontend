@@ -48,6 +48,19 @@
                 "none": "Ninguno",
                 "sleep": "Dormir"
             }
+        },
+        "humidifier": {
+            "mode": {
+                "auto": "Auto",
+                "away": "Ausente",
+                "baby": "Bebé",
+                "boost": "Impulso",
+                "comfort": "Confort",
+                "eco": "Eco",
+                "home": "Casa",
+                "normal": "Normal",
+                "sleep": "Dormir"
+            }
         }
     },
     "state_badge": {
@@ -387,6 +400,12 @@
                 "oscillate": "Oscilar",
                 "reverse": "Inverso",
                 "speed": "Velocidad"
+            },
+            "humidifier": {
+                "humidity": "Fijar humedad",
+                "mode": "Modo",
+                "on_entity": "{name} encendido",
+                "target_humidity_entity": "{name} fijada humedad"
             },
             "light": {
                 "brightness": "Brillo",
@@ -2197,6 +2216,10 @@
                         "horizontal-stack": {
                             "description": "La tarjeta de la Pila Horizontal permite apilar varias tarjetas, de modo que siempre se sientan una al lado de la otra en el espacio de una columna.",
                             "name": "Pila horizontal"
+                        },
+                        "humidifier": {
+                            "description": "La tarjeta Humidificador te da el control de tu entidad humidificador. Te permite cambiar la humedad y el modo de la entidad.",
+                            "name": "Humidificador"
                         },
                         "iframe": {
                             "description": "La tarjeta de página web te permite incrustar tu página web favorita directamente en Home Assistant.",
