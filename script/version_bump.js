@@ -16,14 +16,31 @@ function today() {
   )}${String(now.getDate()).padStart(2, "0")}.0`;
 }
 
+function auto(version) {
+  const todayVersion = today();
+  if (todayVersion !== version) {
+    return todayVersion;
+  }
+  return patch(version);
+}
+
 const methods = {
   patch,
   today,
+  auto,
 };
 
 async function main(args) {
-  const method = args.length > 0 && methods[args[0]];
-  const commit = args.length > 1 && args[1] == "--commit";
+  let method;
+  let commit;
+
+  if (args.length === 0) {
+    method = methods.auto;
+    commit = true;
+  } else {
+    method = args.length > 0 && methods[args[0]];
+    commit = args.length > 1 && args[1] == "--commit";
+  }
 
   if (!method) {
     console.error(
