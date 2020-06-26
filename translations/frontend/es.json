@@ -527,7 +527,7 @@
             },
             "date-range-picker": {
                 "end_date": "Fecha de finalización",
-                "select": "Seleccione",
+                "select": "Seleccionar",
                 "start_date": "Fecha de inicio"
             },
             "device-picker": {

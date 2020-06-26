@@ -48,6 +48,19 @@
                 "none": "無",
                 "sleep": "睡眠"
             }
+        },
+        "humidifier": {
+            "mode": {
+                "auto": "自動模式",
+                "away": "離家模式",
+                "baby": "孩童模式",
+                "boost": "全速模式",
+                "comfort": "舒適模式",
+                "eco": "節能模式",
+                "home": "居家模式",
+                "normal": "一般模式",
+                "sleep": "睡眠模式"
+            }
         }
     },
     "state_badge": {
@@ -387,6 +400,12 @@
                 "oscillate": "擺動",
                 "reverse": "反向",
                 "speed": "風速"
+            },
+            "humidifier": {
+                "humidity": "設定濕度",
+                "mode": "模式",
+                "on_entity": "{name} 已開啟",
+                "target_humidity_entity": "{name} 設定濕度"
             },
             "light": {
                 "brightness": "亮度",
@@ -2197,6 +2216,10 @@
                         "horizontal-stack": {
                             "description": "水平排列面板可供將多個面板排列、同時顯示。",
                             "name": "水平排列面板"
+                        },
+                        "humidifier": {
+                            "description": "加濕器面板可供控制加濕物件、可允許變更濕度與模式。",
+                            "name": "加濕器"
                         },
                         "iframe": {
                             "description": "網頁面板可供於 Home Assistant 嵌入喜愛的網頁。",
