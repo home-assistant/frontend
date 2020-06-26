@@ -143,15 +143,17 @@ class CloudGoogleAssistant extends LitElement {
             </ha-formfield>
             ${entity.might_2fa
               ? html`
-                  <ha-switch
-                    .entityId=${entity.entity_id}
-                    .checked=${Boolean(config.disable_2fa)}
-                    @change=${this._disable2FAChanged}
-                  >
-                    ${this.hass!.localize(
+                  <ha-formfield
+                    .label=${this.hass!.localize(
                       "ui.panel.config.cloud.google.disable_2FA"
                     )}
-                  </ha-switch>
+                  >
+                    <ha-switch
+                      .entityId=${entity.entity_id}
+                      .checked=${Boolean(config.disable_2fa)}
+                      @change=${this._disable2FAChanged}
+                    ></ha-switch>
+                  </ha-formfield>
                 `
               : ""}
           </div>
@@ -374,6 +376,9 @@ class CloudGoogleAssistant extends LitElement {
       }
       state-info {
         cursor: pointer;
+      }
+      ha-formfield {
+        display: block;
       }
       ha-switch {
         padding: 8px 0;
