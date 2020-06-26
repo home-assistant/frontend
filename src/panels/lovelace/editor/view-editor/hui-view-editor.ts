@@ -133,11 +133,11 @@ export class HuiViewEditor extends LitElement {
             @change=${this._valueChanged}
           ></ha-switch
         ></ha-formfield>
-        <span class="panel"
-          >${this.hass.localize(
+        <span class="panel">
+          ${this.hass.localize(
             "ui.panel.lovelace.editor.view.panel_mode.description"
-          )}</span
-        >
+          )}
+        </span>
       </div>
     `;
   }
@@ -180,6 +180,9 @@ export class HuiViewEditor extends LitElement {
     return css`
       .panel {
         color: var(--secondary-text-color);
+      }
+      ha-formfield {
+        display: block;
       }
     `;
   }

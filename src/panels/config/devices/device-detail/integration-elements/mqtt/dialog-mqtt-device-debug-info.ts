@@ -232,6 +232,9 @@ class DialogMQTTDeviceDebugInfo extends LitElement {
         .triggerlistitem {
           margin-bottom: 12px;
         }
+        ha-formfield {
+          display: block;
+        }
       `,
     ];
   }

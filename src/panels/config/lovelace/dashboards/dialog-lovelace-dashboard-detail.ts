@@ -318,6 +318,9 @@ export class DialogLovelaceDashboardDetail extends LitElement {
         ha-switch {
           padding: 16px 0;
         }
+        ha-formfield {
+          display: block;
+        }
       `,
     ];
   }
