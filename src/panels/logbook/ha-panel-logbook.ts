@@ -59,12 +59,14 @@ export class HaPanelLogbook extends LitElement {
     start.setHours(start.getHours() - 2);
     start.setMinutes(0);
     start.setSeconds(0);
+    start.setMilliseconds(0);
     this._startDate = start;
 
     const end = new Date();
     end.setHours(end.getHours() + 1);
     end.setMinutes(0);
     end.setSeconds(0);
+    end.setMilliseconds(0);
     this._endDate = end;
   }
 
