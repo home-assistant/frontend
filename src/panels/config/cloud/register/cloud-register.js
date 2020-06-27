@@ -39,7 +39,7 @@ class CloudRegister extends LocalizeMixin(EventsMixin(PolymerElement)) {
         margin: 0;
       }
       .error {
-        color: var(--google-red-500);
+        color: var(--error-color);
       }
       .card-actions {
         display: flex;

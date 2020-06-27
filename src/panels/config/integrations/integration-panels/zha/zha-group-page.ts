@@ -325,7 +325,7 @@ export class ZHAGroupPage extends LitElement {
           padding: 8px;
         }
         .paper-dialog-buttons .warning {
-          --mdc-theme-primary: var(--google-red-500);
+          --mdc-theme-primary: var(--error-color);
         }
       `,
     ];

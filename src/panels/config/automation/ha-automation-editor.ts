@@ -445,7 +445,7 @@ export class HaAutomationEditor extends LitElement {
         .errors {
           padding: 20px;
           font-weight: bold;
-          color: var(--google-red-500);
+          color: var(--error-color);
         }
         .content {
           padding-bottom: 20px;

@@ -117,7 +117,7 @@ class HassioSupervisorInfo extends LitElement {
           text-align: right;
         }
         .errors {
-          color: var(--google-red-500);
+          color: var(--error-color);
           margin-top: 16px;
         }
       `,

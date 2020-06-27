@@ -560,7 +560,7 @@ class HassioAddonInfo extends LitElement {
           margin-bottom: 16px;
         }
         ha-card.warning {
-          background-color: var(--google-red-500);
+          background-color: var(--error-color);
           color: white;
         }
         ha-card.warning .card-header {
@@ -573,8 +573,8 @@ class HassioAddonInfo extends LitElement {
           --mdc-theme-primary: white !important;
         }
         .warning {
-          color: var(--google-red-500);
-          --mdc-theme-primary: var(--google-red-500);
+          color: var(--error-color);
+          --mdc-theme-primary: var(--error-color);
         }
         .light-color {
           color: var(--secondary-text-color);
@@ -590,7 +590,7 @@ class HassioAddonInfo extends LitElement {
           vertical-align: middle;
         }
         .errors {
-          color: var(--google-red-500);
+          color: var(--error-color);
           margin-bottom: 16px;
         }
         .description {

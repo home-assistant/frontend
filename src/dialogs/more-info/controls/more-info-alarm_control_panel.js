@@ -34,7 +34,7 @@ class MoreInfoAlarmControlPanel extends LocalizeMixin(PolymerElement) {
           max-width: 200px;
         }
         mwc-button.disarm {
-          color: var(--google-red-500);
+          color: var(--error-color);
         }
       </style>
 
