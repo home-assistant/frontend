@@ -159,6 +159,17 @@ export class HomeAssistantAppEl extends HassElement {
       // We close the connection to Home Assistant after being hidden for 5 minutes
       this._hiddenTimeout = window.setTimeout(() => {
         this._hiddenTimeout = undefined;
+
+        // setTimeout can be delayed in the background and only fire
+        // when we switch to the tab or app again (Hey Android!)
+        if (!document.hidden) {
+          if (this._visiblePromiseResolve) {
+            this._visiblePromiseResolve();
+            this._visiblePromiseResolve = undefined;
+          }
+          return;
+        }
+
         this.hass!.connection.suspend();
       }, 300000);
     } else {

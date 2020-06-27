@@ -160,6 +160,11 @@ class PartialPanelResolver extends HassRouterPage {
     if (document.hidden) {
       this._hiddenTimeout = window.setTimeout(() => {
         this._hiddenTimeout = undefined;
+        // setTimeout can be delayed in the background and only fire
+        // when we switch to the tab or app again (Hey Android!)
+        if (!document.hidden) {
+          return;
+        }
         const curPanel = this.hass.panels[this._currentPage];
         if (
           this.lastChild &&
