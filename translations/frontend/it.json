@@ -48,6 +48,19 @@
                 "none": "Nessuna",
                 "sleep": "Dormire"
             }
+        },
+        "humidifier": {
+            "mode": {
+                "auto": "Automatico",
+                "away": "Fuori casa",
+                "baby": "Bambino",
+                "boost": "Boost",
+                "comfort": "Comfort",
+                "eco": "Eco",
+                "home": "In casa",
+                "normal": "Normale",
+                "sleep": "Sonno"
+            }
         }
     },
     "state_badge": {
@@ -387,6 +400,12 @@
                 "oscillate": "Oscillazione",
                 "reverse": "Indietro",
                 "speed": "Velocità"
+            },
+            "humidifier": {
+                "humidity": "Target umidità",
+                "mode": "Modalità",
+                "on_entity": "{name} acceso",
+                "target_humidity_entity": "{name} target umidità"
             },
             "light": {
                 "brightness": "Luminosità",

@@ -403,7 +403,9 @@
             },
             "humidifier": {
                 "humidity": "设定湿度",
-                "mode": "模式"
+                "mode": "模式",
+                "on_entity": "{name} 已打开",
+                "target_humidity_entity": "{name} 的设定湿度"
             },
             "light": {
                 "brightness": "亮度",
