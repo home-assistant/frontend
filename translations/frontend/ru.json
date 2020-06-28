@@ -16,7 +16,7 @@
         "config": "Настройки",
         "developer_tools": "Панель разработчика",
         "history": "История",
-        "logbook": "Журнал",
+        "logbook": "Журнал событий",
         "mailbox": "Почта",
         "map": "Карта",
         "profile": "Профиль",
@@ -792,7 +792,7 @@
                         "confirmation_text": "Связанные устройства потеряют привязку к помещению.",
                         "confirmation_title": "Вы уверены, что хотите удалить это помещение?"
                     },
-                    "description": "Управляйте помещениями в Вашем доме",
+                    "description": "Управление помещениями в Вашем доме",
                     "editor": {
                         "area_id": "ID помещения",
                         "create": "Добавить",
@@ -814,7 +814,7 @@
                 },
                 "automation": {
                     "caption": "Автоматизация",
-                    "description": "Создавайте и редактируйте правила автоматизации",
+                    "description": "Создание и редактирование правил автоматизации",
                     "editor": {
                         "actions": {
                             "add": "Добавить действие",
@@ -934,7 +934,7 @@
                         },
                         "edit_ui": "Форма ввода",
                         "edit_yaml": "Текстовый редактор",
-                        "enable_disable": "Включить / выключить автоматизацию",
+                        "enable_disable": "Включить / выключить правило автоматизации",
                         "introduction": "Используйте автоматизацию, чтобы оживить Ваш дом.",
                         "load_error_not_editable": "Доступны для редактирования только автоматизации из automations.yaml.",
                         "load_error_unknown": "Ошибка загрузки автоматизации ({err_no}).",
@@ -1126,7 +1126,7 @@
                         "title": "Alexa"
                     },
                     "caption": "Home Assistant Cloud",
-                    "description_features": "Управление вдали от дома, интеграция с Alexa и Google Assistant",
+                    "description_features": "Управление сервером вдали от дома, интеграция с Alexa и Google Assistant",
                     "description_login": "{email}",
                     "description_not_login": "Вход не выполнен",
                     "dialog_certificate": {
@@ -1215,7 +1215,7 @@
                 },
                 "core": {
                     "caption": "Общие",
-                    "description": "Управляйте основными настройками Home Assistant",
+                    "description": "Основные настройки Home Assistant",
                     "section": {
                         "core": {
                             "core_config": {
@@ -1247,7 +1247,7 @@
                     "attributes_override": "Вы можете переназначить их.",
                     "attributes_set": "Следующие атрибуты были назначены программно.",
                     "caption": "Кастомизация",
-                    "description": "Настраивайте атрибуты объектов",
+                    "description": "Настройка атрибутов объектов",
                     "different_include": "Возможно через домен, glob или include.",
                     "pick_attribute": "Выберите атрибут",
                     "picker": {
@@ -1292,7 +1292,7 @@
                         "no_devices": "Нет устройств"
                     },
                     "delete": "Удалить",
-                    "description": "Управляйте подключенными устройствами",
+                    "description": "Управление подключенными устройствами",
                     "device_info": "Устройство",
                     "device_not_found": "Устройство не найдено",
                     "entities": {
@@ -1322,7 +1322,7 @@
                 },
                 "entities": {
                     "caption": "Объекты",
-                    "description": "Управляйте доступными объектами",
+                    "description": "Управление доступными объектами",
                     "picker": {
                         "disable_selected": {
                             "button": "Скрыть выбранные",
@@ -1373,7 +1373,7 @@
                 "header": "Настройка Home Assistant",
                 "helpers": {
                     "caption": "Вспомогательное",
-                    "description": "Элементы, которые могут помочь в создании автоматизации.",
+                    "description": "Элементы, которые могут помочь в автоматизации",
                     "dialog": {
                         "add_helper": "Создание вспомогательного элемента",
                         "add_platform": "Добавить \"{platform}\"",
@@ -1464,7 +1464,7 @@
                     },
                     "configure": "Настроить",
                     "configured": "Настроено",
-                    "description": "Добавляйте и настраивайте интеграции",
+                    "description": "Добавление и настройка интеграций",
                     "details": "Детали интеграции",
                     "discovered": "Обнаружено",
                     "home_assistant_website": "сайте Home Assistant",
@@ -1493,7 +1493,7 @@
                 },
                 "introduction": "Здесь можно настроить Home Assistant. Пока что не все настройки доступны из интерфейса, но мы работаем над этим.",
                 "logs": {
-                    "caption": "Журнал работы сервера",
+                    "caption": "Журнал сервера",
                     "clear": "Очистить",
                     "description": "Просмотр журналов работы сервера Home Assistant",
                     "details": "Уровень: {level}",
@@ -1547,7 +1547,7 @@
                             "open": "Открыть"
                         }
                     },
-                    "description": "Настройка панелей пользовательского интерфейса Lovelace.",
+                    "description": "Настройка панелей пользовательского интерфейса Lovelace",
                     "resources": {
                         "cant_edit_yaml": "Вы используете Lovelace в режиме YAML, поэтому невозможно управление ресурсами через пользовательский интерфейс. В данном режиме управление осуществляется через файл configuration.yaml.",
                         "caption": "Ресурсы",
@@ -1583,7 +1583,7 @@
                     }
                 },
                 "mqtt": {
-                    "button": "Настроить",
+                    "button": "Настройка",
                     "description_listen": "Подписаться на топик",
                     "description_publish": "Опубликовать данные",
                     "listening_to": "Подписано на",
@@ -1602,7 +1602,7 @@
                     "confirm_delete": "Вы уверены, что хотите удалить эту персону?",
                     "confirm_delete2": "Все устройства, связанные с этой персоной, станут не назначенными.",
                     "create_person": "Добавить персону",
-                    "description": "Определяйте людей, которых может отслеживать Home Assistant",
+                    "description": "Люди, которых может отслеживать Home Assistant",
                     "detail": {
                         "create": "Создать",
                         "delete": "Удалить",
@@ -1625,7 +1625,7 @@
                 "scene": {
                     "activated": "Активирована сцена {name}.",
                     "caption": "Сцены",
-                    "description": "Создавайте и редактируйте сцены",
+                    "description": "Создание и редактирование сцен",
                     "editor": {
                         "default_name": "Новая сцена",
                         "devices": {
@@ -1668,7 +1668,7 @@
                 },
                 "script": {
                     "caption": "Сценарии",
-                    "description": "Создавайте и редактируйте сценарии",
+                    "description": "Создание и редактирование сценариев",
                     "editor": {
                         "alias": "Название",
                         "default_name": "Новый сценарий",
@@ -1697,7 +1697,7 @@
                 },
                 "server_control": {
                     "caption": "Сервер",
-                    "description": "Управляйте сервером Home Assistant",
+                    "description": "Управление сервером Home Assistant",
                     "section": {
                         "reloading": {
                             "automation": "Перезагрузить автоматизации",
@@ -1741,7 +1741,7 @@
                         "username": "Логин"
                     },
                     "caption": "Пользователи",
-                    "description": "Управляйте учётными записями пользователей",
+                    "description": "Управление учётными записями пользователей",
                     "editor": {
                         "activate_user": "Активировать",
                         "active": "Активен",
@@ -1815,7 +1815,7 @@
                         "manufacturer_code_override": "Переназначить код производителя",
                         "value": "Значение"
                     },
-                    "description": "Управляйте сетью Zigbee Home Automation",
+                    "description": "Управление сетью Zigbee Home Automation",
                     "devices": {
                         "header": "Zigbee Home Automation - Устройство"
                     },
@@ -1881,7 +1881,7 @@
                     "configured_in_yaml": "Зоны, настроенные с помощью configuration.yaml, нельзя редактировать с помощью пользовательского интерфейса.",
                     "confirm_delete": "Вы уверены, что хотите удалить эту зону?",
                     "create_zone": "Создать зону",
-                    "description": "Управляйте зонами, в которых Вы хотите отслеживать людей.",
+                    "description": "Управление зонами, в которых Вы хотите отслеживать людей",
                     "detail": {
                         "create": "Создать",
                         "delete": "Удалить",
@@ -1914,7 +1914,7 @@
                         "value": "Значение",
                         "wakeup_interval": "Интервал пробуждения"
                     },
-                    "description": "Управляйте Вашей сетью Z-Wave",
+                    "description": "Управление сетью Z-Wave",
                     "learn_more": "Узнайте больше о Z-Wave",
                     "network_management": {
                         "header": "Управление сетью Z-Wave",
@@ -2050,7 +2050,7 @@
                         "title": "Состояния"
                     },
                     "templates": {
-                        "description": "Здесь Вы можете протестировать поведение шаблонов. Шаблоны используют шаблонизатор Jinja2 с некоторыми специальными расширениями Home Assistant.",
+                        "description": "Здесь Вы можете протестировать поведение шаблонов. В Home Assistant используется шаблонизатор Jinja2 с некоторыми специальными расширениями.",
                         "editor": "Редактор шаблонов",
                         "jinja_documentation": "Узнайте больше о шаблонизаторе Jinja2",
                         "template_extensions": "Узнайте больше о шаблонах Home Assistant",
@@ -2106,7 +2106,7 @@
                         "url": "Открыть окно {url_path}"
                     },
                     "safe-mode": {
-                        "description": "Home Assistant столкнулся с проблемой при загрузке Вашей конфигурации и теперь работает в безопасном режиме. Ознакомьтесь с журналом ошибок, чтобы увидеть, что пошло не так.",
+                        "description": "Home Assistant столкнулся с проблемой при загрузке Вашей конфигурации и теперь работает в безопасном режиме. Ознакомьтесь с журналом работы сервера, чтобы увидеть что пошло не так.",
                         "header": "Безопасный режим"
                     },
                     "shopping-list": {
