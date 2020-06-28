@@ -178,6 +178,9 @@ class HaCameraStream extends LitElement {
   ) {
     const hls = new Hls({
       liveBackBufferLength: 60,
+      fragLoadingTimeOut: 30000,
+      manifestLoadingTimeOut: 30000,
+      levelLoadingTimeOut: 30000,
     });
     this._hlsPolyfillInstance = hls;
     hls.attachMedia(videoEl);
