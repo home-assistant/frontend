@@ -50,6 +50,7 @@ import { showConfirmationDialog } from "../../../../src/dialogs/generic/show-dia
 import { haStyle } from "../../../../src/resources/styles";
 import { HomeAssistant } from "../../../../src/types";
 import "../../components/hassio-card-content";
+import "../../components/hassio-progress";
 import { showHassioMarkdownDialog } from "../../dialogs/markdown/show-dialog-hassio-markdown";
 import { hassioStyle } from "../../resources/hassio-style";
 
@@ -159,6 +160,10 @@ class HassioAddonInfo extends LitElement {
                 >
                   Update
                 </ha-call-api-button>
+                <hassio-progress
+                  .hass=${this.hass}
+                  name=${`addon_${this.addon.slug}`}
+                ></hassio-progress>
                 ${this.addon.changelog
                   ? html`
                       <mwc-button @click=${this._openChangelog}>
@@ -529,6 +534,10 @@ class HassioAddonInfo extends LitElement {
                 >
                   Install
                 </ha-progress-button>
+                <hassio-progress
+                  .hass=${this.hass}
+                  name=${`addon_${this.addon.slug}`}
+                ></hassio-progress>
               `}
         </div>
       </ha-card>

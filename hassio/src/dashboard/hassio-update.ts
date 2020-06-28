@@ -19,6 +19,7 @@ import {
 } from "../../../src/data/hassio/supervisor";
 import { haStyle } from "../../../src/resources/styles";
 import { HomeAssistant } from "../../../src/types";
+import "../components/hassio-progress";
 import { hassioStyle } from "../resources/hassio-style";
 
 @customElement("hassio-update")
@@ -72,6 +73,7 @@ export class HassioUpdate extends LitElement {
             `https://${
               this.hassInfo.version_latest.includes("b") ? "rc" : "www"
             }.home-assistant.io/latest-release-notes/`,
+            "homeassistant",
             mdiHomeAssistant
           )}
           ${this._renderUpdateCard(
@@ -79,7 +81,8 @@ export class HassioUpdate extends LitElement {
             this.supervisorInfo.version,
             this.supervisorInfo.version_latest,
             "hassio/supervisor/update",
-            `https://github.com//home-assistant/hassio/releases/tag/${this.supervisorInfo.version_latest}`
+            `https://github.com//home-assistant/hassio/releases/tag/${this.supervisorInfo.version_latest}`,
+            "hassio_supervisor"
           )}
           ${this.hassOsInfo
             ? this._renderUpdateCard(
@@ -101,6 +104,7 @@ export class HassioUpdate extends LitElement {
     lastVersion: string,
     apiPath: string,
     releaseNotesUrl: string,
+    progressName?: string,
     icon?: string
   ): TemplateResult {
     if (!lastVersion || lastVersion === curVersion) {
@@ -132,6 +136,12 @@ export class HassioUpdate extends LitElement {
           >
             Update
           </ha-call-api-button>
+          ${progressName
+            ? html`<hassio-progress
+                .hass=${this.hass}
+                .name=${progressName}
+              ></hassio-progress>`
+            : ""}
         </div>
       </ha-card>
     `;
