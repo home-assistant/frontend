@@ -1738,8 +1738,8 @@
                         "discovered_text": "Geräte werden hier angezeigt sobald sie erkannt worden sind.",
                         "discovery_text": "Erkannte Geräte werden hier angezeigt. Befolgen Sie die Anweisungen für Ihr Gerät und versetzen Sie das Gerät in den Pairing-Modus.",
                         "header": "Zigbee Home Automation - Geräte hinzufügen",
-                        "no_devices_found": "Es wurde keine Geräte erkannt, stelle sicher das sie sich im Pairing Modus befinden und halte sie Aktiv solange die Erkennung läuft,",
-                        "pairing_mode": "Stellen Sie sicher, dass sich Ihre Geräte im Pairing-Modus befinden. Überprüfen Sie dazu die Anweisungen Ihres Geräts.",
+                        "no_devices_found": "Es wurden keine Geräte erkannt. Stelle sicher, dass sie sich im Pairing-Modus befinden und halte sie aktiv, solange die Erkennung läuft,",
+                        "pairing_mode": "Stelle sicher, dass sich deine Geräte im Pairing-Modus befinden. Überprüfe dazu die Anweisungen deines Geräts.",
                         "search_again": "Erneut suchen",
                         "spinner": "Suche nach ZHA Zigbee Geräten..."
                     },
