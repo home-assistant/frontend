@@ -27,7 +27,7 @@ class HaConfigSectionCore extends LocalizeMixin(PolymerElement) {
         }
 
         .validate-result {
-          color: var(--google-green-500);
+          color: var(--success-color);
           font-weight: 500;
           margin-bottom: 1em;
         }
@@ -37,7 +37,7 @@ class HaConfigSectionCore extends LocalizeMixin(PolymerElement) {
         }
 
         .config-invalid .text {
-          color: var(--google-red-500);
+          color: var(--error-color);
           font-weight: 500;
         }
 

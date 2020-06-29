@@ -480,7 +480,7 @@ export class ThingTalkPlaceholders extends SubscribeMixin(LitElement) {
           font-weight: 500;
         }
         .error {
-          color: var(--google-red-500);
+          color: var(--error-color);
         }
       `,
     ];

@@ -227,7 +227,7 @@ class ZHAAddDevicesPage extends LitElement {
           justify-content: center;
         }
         .error {
-          color: var(--google-red-500);
+          color: var(--error-color);
         }
         ha-circular-progress {
           padding: 20px;

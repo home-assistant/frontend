@@ -14,7 +14,7 @@ class ZwaveNodeProtection extends PolymerElement {
     return html`
     <style include="iron-flex ha-style">
       .card-actions.warning ha-call-api-button {
-        color: var(--google-red-500);
+        color: var(--error-color);
       }
       .content {
         margin-top: 24px;

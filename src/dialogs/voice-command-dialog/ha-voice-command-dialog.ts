@@ -446,7 +446,7 @@ export class HaVoiceCommandDialog extends LitElement {
         }
 
         .message.error {
-          background-color: var(--google-red-500);
+          background-color: var(--error-color);
           color: var(--text-primary-color);
         }
 
