@@ -180,7 +180,7 @@ export class HassioUpdate extends LitElement {
           text-align: right;
         }
         .errors {
-          color: var(--google-red-500);
+          color: var(--error-color);
           padding: 16px;
         }
         a {

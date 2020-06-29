@@ -122,6 +122,7 @@ export class HuiDialogEditCard extends LitElement {
         scrimClickAction
         @keydown=${this._ignoreKeydown}
         @closed=${this._close}
+        @opened=${this._opened}
         .heading=${html`${heading}
         ${this._documentationURL !== undefined
           ? html`
@@ -358,6 +359,10 @@ export class HuiDialogEditCard extends LitElement {
 
   private _toggleMode(): void {
     this._cardEditorEl?.toggleMode();
+  }
+
+  private _opened() {
+    this._cardEditorEl?.refreshYamlEditor();
   }
 
   private _close(): void {

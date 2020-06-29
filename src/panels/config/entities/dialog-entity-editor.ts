@@ -292,7 +292,7 @@ export class DialogEntityEditor extends LitElement {
         }
 
         mwc-button.warning {
-          --mdc-theme-primary: var(--google-red-500);
+          --mdc-theme-primary: var(--error-color);
         }
 
         :host([rtl]) app-toolbar {

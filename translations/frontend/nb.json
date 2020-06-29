@@ -48,6 +48,19 @@
                 "none": "Ingen",
                 "sleep": "Sove"
             }
+        },
+        "humidifier": {
+            "mode": {
+                "auto": "Auto",
+                "away": "Borte",
+                "baby": "Baby",
+                "boost": "Øke",
+                "comfort": "Komfort",
+                "eco": "Øko",
+                "home": "Hjem",
+                "normal": "Normal",
+                "sleep": "Sove"
+            }
         }
     },
     "state_badge": {
@@ -387,6 +400,12 @@
                 "oscillate": "Vandring",
                 "reverse": "Omvendt",
                 "speed": "Hastighet"
+            },
+            "humidifier": {
+                "humidity": "Målfuktighet",
+                "mode": "Modus",
+                "on_entity": "{name} på",
+                "target_humidity_entity": "{name} målfuktighet"
             },
             "light": {
                 "brightness": "Lysstyrke",
@@ -2197,6 +2216,10 @@
                         "horizontal-stack": {
                             "description": "Horizontal Stack-kortet lar deg stable sammen flere kort, slik at de alltid sitter ved siden av hverandre i løpet av en kolonne.",
                             "name": "Horisontal Stack"
+                        },
+                        "humidifier": {
+                            "description": "Luftfukterkortet gir kontroll over luftfukterenheten din. Lar deg endre fuktigheten og modusen til enheten.",
+                            "name": "Luftfukter"
                         },
                         "iframe": {
                             "description": "Websidekortet lar deg legge inn favorittwebsiden din direkte i Home Assistant.",

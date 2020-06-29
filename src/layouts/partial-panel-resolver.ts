@@ -14,6 +14,7 @@ import {
   STATE_RUNNING,
 } from "home-assistant-js-websocket";
 import { CustomPanelInfo } from "../data/panel_custom";
+import { deepActiveElement } from "../common/dom/deep-active-element";
 
 const CACHE_URL_PATHS = ["lovelace", "developer-tools"];
 const COMPONENTS = {
@@ -92,18 +93,22 @@ class PartialPanelResolver extends HassRouterPage {
 
   private _waitForStart = false;
 
-  private _disconnectedPanel?: ChildNode;
+  private _disconnectedPanel?: HTMLElement;
+
+  private _disconnectedActiveElement?: HTMLElement;
 
   private _hiddenTimeout?: number;
 
   protected firstUpdated(changedProps: PropertyValues) {
     super.firstUpdated(changedProps);
 
+    // Attach listeners for visibility
     document.addEventListener(
       "visibilitychange",
-      () => this._handleVisibilityChange(),
+      () => this._checkVisibility(),
       false
     );
+    document.addEventListener("resume", () => this._checkVisibility());
   }
 
   protected updated(changedProps: PropertyValues) {
@@ -156,34 +161,58 @@ class PartialPanelResolver extends HassRouterPage {
     }
   }
 
-  private _handleVisibilityChange() {
+  private _checkVisibility() {
     if (document.hidden) {
-      this._hiddenTimeout = window.setTimeout(() => {
-        this._hiddenTimeout = undefined;
-        const curPanel = this.hass.panels[this._currentPage];
-        if (
-          this.lastChild &&
-          // iFrames will lose their state when disconnected
-          // Do not disconnect any iframe panel
-          curPanel.component_name !== "iframe" &&
-          // Do not disconnect any custom panel that embeds into iframe (ie hassio)
-          (curPanel.component_name !== "custom" ||
-            !(curPanel.config as CustomPanelInfo).config._panel_custom
-              .embed_iframe)
-        ) {
-          this._disconnectedPanel = this.lastChild;
-          this.removeChild(this.lastChild);
-        }
-      }, 300000);
+      this._onHidden();
     } else {
-      if (this._hiddenTimeout) {
-        clearTimeout(this._hiddenTimeout);
-        this._hiddenTimeout = undefined;
+      this._onVisible();
+    }
+  }
+
+  private _onHidden() {
+    this._hiddenTimeout = window.setTimeout(() => {
+      this._hiddenTimeout = undefined;
+      // setTimeout can be delayed in the background and only fire
+      // when we switch to the tab or app again (Hey Android!)
+      if (!document.hidden) {
+        return;
       }
-      if (this._disconnectedPanel) {
-        this.appendChild(this._disconnectedPanel);
-        this._disconnectedPanel = undefined;
+      const curPanel = this.hass.panels[this._currentPage];
+      if (
+        this.lastChild &&
+        // iFrames will lose their state when disconnected
+        // Do not disconnect any iframe panel
+        curPanel.component_name !== "iframe" &&
+        // Do not disconnect any custom panel that embeds into iframe (ie hassio)
+        (curPanel.component_name !== "custom" ||
+          !(curPanel.config as CustomPanelInfo).config._panel_custom
+            .embed_iframe)
+      ) {
+        this._disconnectedPanel = this.lastChild as HTMLElement;
+        const activeEl = deepActiveElement(
+          this._disconnectedPanel.shadowRoot || undefined
+        );
+        if (activeEl instanceof HTMLElement) {
+          this._disconnectedActiveElement = activeEl;
+        }
+        this.removeChild(this.lastChild);
       }
+    }, 300000);
+    window.addEventListener("focus", () => this._onVisible(), { once: true });
+  }
+
+  private _onVisible() {
+    if (this._hiddenTimeout) {
+      clearTimeout(this._hiddenTimeout);
+      this._hiddenTimeout = undefined;
+    }
+    if (this._disconnectedPanel) {
+      this.appendChild(this._disconnectedPanel);
+      this._disconnectedPanel = undefined;
+    }
+    if (this._disconnectedActiveElement) {
+      this._disconnectedActiveElement.focus();
+      this._disconnectedActiveElement = undefined;
     }
   }
 

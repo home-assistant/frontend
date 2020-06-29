@@ -48,6 +48,19 @@
                 "none": "Žádná",
                 "sleep": "Spánek"
             }
+        },
+        "humidifier": {
+            "mode": {
+                "auto": "Automatika",
+                "away": "Pryč",
+                "baby": "Dítě",
+                "boost": "Boost",
+                "comfort": "Komfort",
+                "eco": "Ekonomický mód",
+                "home": "Doma",
+                "normal": "Běžný",
+                "sleep": "Spánek"
+            }
         }
     },
     "state_badge": {
@@ -388,6 +401,12 @@
                 "reverse": "Vzad",
                 "speed": "Rychlost"
             },
+            "humidifier": {
+                "humidity": "Cílová vlhkost",
+                "mode": "Režim",
+                "on_entity": "{name} zapnuto",
+                "target_humidity_entity": "{name} cílová vlhkost"
+            },
             "light": {
                 "brightness": "Jas",
                 "color_temperature": "Teplota barvy",
@@ -560,7 +579,7 @@
             "config_entry_system_options": {
                 "enable_new_entities_description": "Pokud je zakázáno, nově objevené entity pro {integration} nebudou automaticky přidány do Home Assistant.",
                 "enable_new_entities_label": "Povolit nově přidané entity.",
-                "title": "Systémové možnosti pro {integration}",
+                "title": "Upravit nastavení pro {integration}",
                 "update": "Aktualizovat"
             },
             "domain_toggler": {
@@ -1425,7 +1444,7 @@
                         "restart_confirm": "Restartujte Home Assistant pro odstranění této integrace",
                         "settings_button": "Upravit nastavení pro {integration}",
                         "system_options": "Více možností",
-                        "system_options_button": "Systémové možnosti pro {integration}",
+                        "system_options_button": "Upravit nastavení pro {integration}",
                         "unnamed_entry": "Nepojmenovaný záznam"
                     },
                     "config_flow": {
@@ -2197,6 +2216,10 @@
                         "horizontal-stack": {
                             "description": "Karta Horizontální Stack umožňuje seskupovat více karet tak, že jsou vždy zobrazeny vedle sebe v prostoru šířky jednoho sloupce.",
                             "name": "Horizontální uskupení"
+                        },
+                        "humidifier": {
+                            "description": "Karta zvlhčovače poskytuje kontrolu nad vaší entitou zvlhčovače. Umožní vám změnit vlhkost a režim entity.",
+                            "name": "Zvlhčovač"
                         },
                         "iframe": {
                             "description": "Karta Webová stránka umožňuje vložit oblíbenou webovou stránku přímo do Home Assistanta.",

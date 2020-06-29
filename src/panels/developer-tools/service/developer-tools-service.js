@@ -81,7 +81,7 @@ class HaPanelDevService extends LocalizeMixin(PolymerElement) {
         }
 
         .error {
-          color: var(--google-red-500);
+          color: var(--error-color);
         }
       </style>
 

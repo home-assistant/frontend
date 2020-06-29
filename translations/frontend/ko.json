@@ -48,6 +48,19 @@
                 "none": "없음",
                 "sleep": "취침"
             }
+        },
+        "humidifier": {
+            "mode": {
+                "auto": "자동",
+                "away": "외출",
+                "baby": "아기",
+                "boost": "쾌속",
+                "comfort": "쾌적",
+                "eco": "에코",
+                "home": "재실",
+                "normal": "일반",
+                "sleep": "취침"
+            }
         }
     },
     "state_badge": {
@@ -388,6 +401,12 @@
                 "reverse": "뒤로",
                 "speed": "속도"
             },
+            "humidifier": {
+                "humidity": "희망 습도",
+                "mode": "모드",
+                "on_entity": "{name} 작동",
+                "target_humidity_entity": "{name} 희망 습도"
+            },
             "light": {
                 "brightness": "밝기",
                 "color_temperature": "색온도",
@@ -507,9 +526,9 @@
                 "show_areas": "영역 표시"
             },
             "date-range-picker": {
-                "end_date": "종료일",
+                "end_date": "종료 날짜",
                 "select": "선택",
-                "start_date": "시작일"
+                "start_date": "시작 날짜"
             },
             "device-picker": {
                 "clear": "지우기",
@@ -2043,8 +2062,8 @@
             "history": {
                 "period": "기간",
                 "ranges": {
-                    "last_week": "지난주",
-                    "this_week": "이번주",
+                    "last_week": "지난 주",
+                    "this_week": "이번 주",
                     "today": "오늘",
                     "yesterday": "어제"
                 },
@@ -2054,8 +2073,8 @@
                 "entries_not_found": "로그북 구성요소를 찾을 수 없습니다.",
                 "period": "기간",
                 "ranges": {
-                    "last_week": "지난주",
-                    "this_week": "이번주",
+                    "last_week": "지난 주",
+                    "this_week": "이번 주",
                     "today": "오늘",
                     "yesterday": "어제"
                 },
@@ -2197,6 +2216,10 @@
                         "horizontal-stack": {
                             "description": "수평 모아보기 카드를 사용하면 여러 카드를 함께 묶을 수 있으며 항상 한 열의 공간에서 옆으로 나열합니다.",
                             "name": "수평 모아보기"
+                        },
+                        "humidifier": {
+                            "description": "가습기 카드는 가습 기기를 제어합니다. 구성요소의 가습 모드를 변경할 수 있습니다.",
+                            "name": "가습기"
                         },
                         "iframe": {
                             "description": "웹 페이지 카드를 사용하면 즐겨 찾는 웹 페이지를 Home Assistant 에 삽입할 수 있습니다.",
