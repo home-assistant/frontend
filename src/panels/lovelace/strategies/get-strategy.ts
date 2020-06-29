@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { LovelaceDashboardStrategy } from "../../../data/lovelace";
 
 const CUSTOM_PREFIX = "custom:";
