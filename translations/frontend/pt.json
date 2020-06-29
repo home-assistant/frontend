@@ -48,6 +48,14 @@
                 "none": "Nenhum",
                 "sleep": "Dormir"
             }
+        },
+        "humidifier": {
+            "mode": {
+                "auto": "Auto",
+                "comfort": "Conforto",
+                "eco": "Eco",
+                "normal": "Normal"
+            }
         }
     },
     "state_badge": {
@@ -387,6 +395,12 @@
                 "oscillate": "Oscilar",
                 "reverse": "Reverter",
                 "speed": "Velocidade"
+            },
+            "humidifier": {
+                "humidity": "Humidade pretendida",
+                "mode": "Modo",
+                "on_entity": "{name} ligado",
+                "target_humidity_entity": "{name} humidade pretendida"
             },
             "light": {
                 "brightness": "Brilho",
@@ -1543,6 +1557,7 @@
                     }
                 },
                 "mqtt": {
+                    "button": "Configurar",
                     "description_listen": "Ouvir um tópico",
                     "description_publish": "Publicar um pacote",
                     "listening_to": "A escutar",
@@ -1981,11 +1996,23 @@
             },
             "history": {
                 "period": "Período",
+                "ranges": {
+                    "last_week": "Semana passada",
+                    "this_week": "Esta semana",
+                    "today": "Hoje",
+                    "yesterday": "Ontem"
+                },
                 "showing_entries": "Mostrar valores para"
             },
             "logbook": {
                 "entries_not_found": "Sem registos no diário de bordo",
                 "period": "Período",
+                "ranges": {
+                    "last_week": "Semana passada",
+                    "this_week": "Esta semana",
+                    "today": "Hoje",
+                    "yesterday": "Ontem"
+                },
                 "showing_entries": "Mostrar valores para"
             },
             "lovelace": {
@@ -2122,6 +2149,9 @@
                         "horizontal-stack": {
                             "description": "O cartão Agrupamento Vertical permite agrupar vários cartões para que estes fiquem sempre na mesma coluna.",
                             "name": "Agrupamento Horizontal"
+                        },
+                        "humidifier": {
+                            "name": "Humidificador"
                         },
                         "iframe": {
                             "description": "O cartão de página da Web, permite incorporar a sua página da Web favorita diretamente no Home Assistant.",

@@ -495,6 +495,7 @@
             "and": "וגם",
             "back": "חזור",
             "cancel": "ביטול",
+            "close": "סגור",
             "delete": "מחיקה",
             "error_required": "חובה",
             "loading": "טוען",
@@ -531,7 +532,7 @@
             },
             "device-picker": {
                 "clear": "נקה",
-                "device": "התקן",
+                "device": "מכשיר",
                 "no_area": "אין אזור",
                 "show_devices": "הצג התקנים",
                 "toggle": "החלף מצב"
@@ -590,8 +591,8 @@
                 "editor": {
                     "confirm_delete": "האם אתה בטוח שברצונך למחוק רשומה זו?",
                     "delete": "מחק",
-                    "enabled_cause": "לא זמין עקב {סיבה}.",
-                    "enabled_description": "ישויות לא זמינות לא יתווספו ל Home Assistant.",
+                    "enabled_cause": "מושבת עקב {סיבה}.",
+                    "enabled_description": "ישויות מושבתות לא יתווספו ל Home Assistant.",
                     "enabled_label": "הפוך ישות לזמינה",
                     "entity_id": "מזהה ישות",
                     "icon": "סמל חלופי",
@@ -651,8 +652,16 @@
             },
             "more_info_control": {
                 "dismiss": "סגור",
+                "edit": "ערוך יישות",
                 "person": {
                     "create_zone": "צור אזור מהמיקום הנוכחי"
+                },
+                "restored": {
+                    "confirm_remove_text": "האם אתה בטוח שברצונך להסיר ישות זו?",
+                    "confirm_remove_title": "להסיר את הישות?",
+                    "not_provided": "ישות זו אינה זמינה כרגע והיא בת לאינטגרציה או מכשיר שהוסרו, השתנו או לא מתפקדים.",
+                    "remove_action": "הסר יישות",
+                    "remove_intro": "אם הישות כבר אינה בשימוש, תוכלו לנקות אותה על ידי הסרתה."
                 },
                 "script": {
                     "last_action": "פעולה אחרונה",
@@ -718,17 +727,17 @@
                 "confirmations": {
                     "remove": "האם אתה בטוח שברצונך למחוק מכשיר זה?"
                 },
-                "device_signature": "חתימת התקן zigbee",
+                "device_signature": "חתימת מכשיר Zigbee",
                 "last_seen": "נראה לאחרונה",
                 "manuf": "לפי {manufacturer}",
                 "no_area": "ללא אזור",
                 "power_source": "מקור כוח",
                 "quirk": "מוזרות",
                 "services": {
-                    "reconfigure": "הגדר מחדש את התקן ה- ZHA (ריפוי מכשיר). השתמש בזה אם אתה נתקל בבעיות במכשיר. אם המכשיר המדובר הוא התקן המונע על ידי סוללה, אנא וודא שהוא דלוק ומקבל פקודות בעת השימוש בשירות זה.",
+                    "reconfigure": "הגדר מחדש את המכשיר ה- ZHA (ריפוי מכשיר). השתמש בזה אם אתה נתקל בבעיות במכשיר. אם המכשיר המדובר הוא מכשיר המונע על ידי סוללה, אנא וודא שהוא דלוק ומקבל פקודות בעת השימוש בשירות זה.",
                     "remove": "הסר מכשיר מרשת ה-Zigbee",
-                    "updateDeviceName": "הגדר שם מותאם אישית עבור התקן זה במאגר ההתקנים.",
-                    "zigbee_information": "הצגת מידע Zigbee עבור ההתקן."
+                    "updateDeviceName": "הגדר שם מותאם אישית עבור מכשיר זה במאגר ההתקנים.",
+                    "zigbee_information": "הצגת מידע Zigbee עבור המכשיר."
                 },
                 "unknown": "לא ידוע",
                 "zha_device_card": {
@@ -787,6 +796,7 @@
                     "editor": {
                         "area_id": "מזהה אזור",
                         "create": "צור",
+                        "default_name": "אזור חדש",
                         "delete": "מחק",
                         "name": "שם",
                         "name_required": "שם הוא חובה",
@@ -794,10 +804,12 @@
                         "update": "עדכון"
                     },
                     "picker": {
+                        "create_area": "צור אזור",
                         "header": "מאגר האזורים",
                         "integrations_page": "דף אינטגרציות",
                         "introduction": "אזורים משמשים לארגון המיקום של ההתקנים. Home Assistant יעשה שימוש במידע זה בכדי לסייע לך בארגון הממשק, ההרשאות והאינטגרציות שלך עם מערכות אחרות.",
-                        "introduction2": "כדי למקם התקנים באזור זה, השתמש בקישור הבא כדי לנווט אל דף האינטגרציות ולאחר מכן לחץ על אינטגרציה מוגדרת כדי להגיע לכרטיסי המכשיר."
+                        "introduction2": "כדי למקם התקנים באזור זה, השתמש בקישור הבא כדי לנווט אל דף האינטגרציות ולאחר מכן לחץ על אינטגרציה מוגדרת כדי להגיע לכרטיסי המכשיר.",
+                        "no_areas": "נראה שאין לך אזורים עדיין!"
                     }
                 },
                 "automation": {
@@ -827,7 +839,7 @@
                                     "extra_fields": {
                                         "code": "קוד"
                                     },
-                                    "label": "התקן"
+                                    "label": "מכשיר"
                                 },
                                 "event": {
                                     "event": "ארוע",
@@ -871,7 +883,7 @@
                                         "below": "מתחת",
                                         "for": "משך הזמן"
                                     },
-                                    "label": "התקן"
+                                    "label": "מכשיר"
                                 },
                                 "not": {
                                     "label": "לא"
@@ -946,7 +958,7 @@
                                         "below": "מתחת",
                                         "for": "משך"
                                     },
-                                    "label": "התקן",
+                                    "label": "מכשיר",
                                     "trigger": "טריגר"
                                 },
                                 "event": {
@@ -1044,8 +1056,8 @@
                     "account": {
                         "alexa": {
                             "config_documentation": "הגדרת תיעוד",
-                            "disable": "השבת",
-                            "enable": "אפשר",
+                            "disable": "השבתה",
+                            "enable": "אפשור",
                             "enable_ha_skill": "הפעל את מיומנות Home Assistant עבור אלקסה",
                             "enable_state_reporting": "הפוך דיווח מצב לזמין",
                             "info": "עם שילוב אלקסה עבור ענן Home Assistant תוכל לשלוט בכל המכשירים של Home Assistant באמצעות כל מכשיר המקושר לאלקסה.",
@@ -1067,11 +1079,12 @@
                             "enter_pin_error": "אין אפשרות לאחסן את הקוד ה PIN:",
                             "enter_pin_hint": "הזן קוד PIN לשימוש בהתקני אבטחה",
                             "enter_pin_info": "נא הזן קוד PIN כדי לעבוד עם מכשירי אבטחה. מכשירי אבטחה הם דלתות, דלתות מוסך ומנעולים. תתבקש לומר/להזין את קוד ה PIN כאשר אתה מקיים אינטראקציה עם התקנים אלה באמצעות המסייע של Google.",
-                            "info": "עם שילוב מסייע Google עבור ענן Home Assistant תוכל לשלוט בכל מכשירי Home Assistant שלך באמצעות כל התקן המקושר למסייע של Google.",
+                            "info": "עם שילוב מסייע Google עבור ענן Home Assistant תוכל לשלוט בכל מכשירי Home Assistant שלך באמצעות כל מכשיר המקושר למסייע של Google.",
                             "info_state_reporting": "אם תפעיל דיווח מצב, Home Assistant ישלח את כל שינויי המצבים של ישויות חשופות ל-Google. זה מאפשר לך תמיד לראות את המצבים האחרונים באפליקציה של גוגל.",
                             "manage_entities": "נהל ישויות",
                             "security_devices": "התקני אבטחה",
                             "sync_entities": "סנכרן ישויות לגוגל",
+                            "sync_entities_404_message": "כישלון בסינכרון היישויות שלך ל-Google, בקש מ Google 'Hey Google, sync my devices' כדי לסנכרן את הישויות שלך.",
                             "title": "Google Assistant"
                         },
                         "integrations": "אינטגרציות",
@@ -1126,11 +1139,11 @@
                     "dialog_cloudhook": {
                         "available_at": "ה-webhook זמין בכתובת הבאה:",
                         "close": "סגור",
-                        "confirm_disable": "אתה בטוח שאתה רוצה לבטל את ה webhook?",
+                        "confirm_disable": "אתה בטוח שאתה רוצה להשבית את ה webhook?",
                         "copied_to_clipboard": "הועתק ללוח",
                         "info_disable_webhook": "אם אינך מעוניין עוד להשתמש ב-webhook זה, באפשרותך",
-                        "link_disable_webhook": "לנטרל אותו",
-                        "managed_by_integration": "webhook זה מנוהל על ידי אינטגרציה ואי אפשר לנטרל אותו.",
+                        "link_disable_webhook": "השבת אותו",
+                        "managed_by_integration": "webhook זה מנוהל על ידי אינטגרציה ואי אפשר להשבית אותו.",
                         "view_documentation": "הצג תיעוד",
                         "webhook_for": "Webhook עבור {name}"
                     },
@@ -1206,7 +1219,7 @@
                     "section": {
                         "core": {
                             "core_config": {
-                                "edit_requires_storage": "עורך מושבת משום שתצורה מאוחסנת ב- configuration.yaml.",
+                                "edit_requires_storage": "העורך מושבת משום שהתצורה מאוחסנת ב- configuration.yaml.",
                                 "elevation": "גובה",
                                 "elevation_meters": "מטר",
                                 "external_url": "כתובת URL חיצונית",
@@ -1259,19 +1272,19 @@
                         },
                         "create": "צור אוטומציה עם המכשיר",
                         "no_automations": "אין אוטומציות",
-                        "no_device_automations": "אין אוטומציות זמינות עבור התקן זה.",
+                        "no_device_automations": "אין אוטומציות זמינות עבור מכשיר זה.",
                         "triggers": {
                             "caption": "עשה משהו כש ..."
                         }
                     },
                     "cant_edit": "באפשרותך לערוך פריטים שנוצרו בממשק המשתמש בלבד.",
                     "caption": "התקנים",
-                    "confirm_delete": "האם אתה בטוח שברצונך למחוק התקן זו?",
+                    "confirm_delete": "האם אתה בטוח שברצונך למחוק מכשיר זה?",
                     "confirm_rename_entity_ids": "האם אתה רוצה גם לשנות את המזהים של הישויות שלך?",
                     "data_table": {
                         "area": "אזור",
                         "battery": "סוללה",
-                        "device": "התקן",
+                        "device": "מכשיר",
                         "integration": "אינטגרציה",
                         "manufacturer": "יצרן",
                         "model": "מודל",
@@ -1280,16 +1293,19 @@
                     },
                     "delete": "מחיקה",
                     "description": "ניהול התקנים מחוברים",
-                    "device_info": "פרטי התקן",
-                    "device_not_found": "ההתקן לא נמצא.",
+                    "device_info": "פרטי מכשיר",
+                    "device_not_found": "המכשיר לא נמצא.",
                     "entities": {
+                        "add_entities_lovelace": "הוסף לממשק Lovelace",
                         "disabled_entities": "+{count} {count, plural,\n  one {disabled entity}\n  other {disabled entities}\n}",
-                        "hide_disabled": "הסתר לא זמינים"
+                        "entities": "ישויות",
+                        "hide_disabled": "הסתר מושבתים",
+                        "none": "למכשיר זה אין ישויות"
                     },
                     "name": "שם",
                     "no_devices": "אין התקנים",
                     "scene": {
-                        "create": "צור סצינה עם ההתקן",
+                        "create": "צור סצינה עם המכשיר",
                         "no_scenes": "אין סצינות",
                         "scenes": "סצינות"
                     },
@@ -1301,31 +1317,52 @@
                     },
                     "scripts": "סקריפטים",
                     "unknown_error": "שגיאה לא ידועה",
-                    "unnamed_device": "התקן ללא שם",
+                    "unnamed_device": "מכשיר ללא שם",
                     "update": "עדכון"
                 },
                 "entities": {
                     "caption": "מאגר הישויות",
                     "description": "סקירה של כל הישויות המוכרות",
                     "picker": {
+                        "disable_selected": {
+                            "button": "השבת מסומנים",
+                            "confirm_text": "ישויות מושבתות לא יתווספו ל Home Assistant.",
+                            "confirm_title": "האם אתה רוצה להשבית {number} ישויות?"
+                        },
+                        "enable_selected": {
+                            "button": "אפשר מסומנים",
+                            "confirm_text": "זה יהפוך אותם לזמינים ב Home Assistant שוב אם הם מושבתים כעת.",
+                            "confirm_title": "האם אתה רוצה לאפשר {number} ישויות?"
+                        },
                         "filter": {
-                            "show_readonly": "הצג ישויות לקריאה בלבד"
+                            "filter": "סנן",
+                            "show_disabled": "הצג ישויות מושבתות",
+                            "show_readonly": "הצג ישויות לקריאה בלבד",
+                            "show_unavailable": "הצג ישויות לא זמינות"
                         },
                         "header": "מאגר הישויות",
                         "headers": {
                             "entity_id": "מזהה ישות",
                             "integration": "אינטגרציה",
-                            "name": "שם"
+                            "name": "שם",
+                            "status": "סטטוס"
                         },
                         "introduction": "Home Assistant מנהל רישום של כל ישות שנראתה אי פעם ואשר ניתנת לזיהוי ייחודי. לכל אחד מישויות אלו יהיה מזהה ישות שהוקצה ואשר יהה שמור רק עבור ישות זו.",
                         "introduction2": "השתמש במאגר הישויות בכדי לשנות את השם, מזהה הישות או להסיר את הערך מ- Home Assistant. שים לב, הסרת הישות ממאגר זה לא תסיר את הישות. לשם כך, פעל לפי הקישור שלהלן והסר אותו מדף האינטגרציות.",
                         "remove_selected": {
+                            "button": "הסר את המסומנים",
                             "confirm_partly_text": "אתה יכול להסיר רק את {removable} מהישויות שנבחרו {selected}. ניתן להסיר ישויות רק כאשר האינטגרציה כבר לא מספקת את הישויות. לפעמים אתה צריך להפעיל מחדש את עוזר הבית לפני שתוכל להסיר את הישויות של אינטגרציה שהוסרה. האם אתה בטוח שברצונך להסיר את הישויות הניתנות להסרה?",
-                            "confirm_partly_title": "ניתן להסיר רק {number} ישויות שנבחרו."
+                            "confirm_partly_title": "ניתן להסיר רק {number} ישויות שנבחרו.",
+                            "confirm_text": "עליך להסיר אותם מתצורת ה- Lovelace ומהאוטומציות שלך אם הם מכילים ישויות אלה.",
+                            "confirm_title": "האם ברצונך להסיר {מספר} ישויות?"
                         },
+                        "selected": "{number} נבחרו",
                         "status": {
+                            "disabled": "מושבת",
+                            "ok": "אישור",
                             "readonly": "קריאה בלבד",
-                            "restored": "שוחזר"
+                            "restored": "שוחזר",
+                            "unavailable": "לא זמין"
                         }
                     }
                 },
@@ -1392,7 +1429,7 @@
                         "delete": "מחק",
                         "delete_button": "מחק {integration}",
                         "delete_confirm": "האם אתה בטוח שברצונך למחוק אינטגרציה זו?",
-                        "device_unavailable": "התקן אינו זמין",
+                        "device_unavailable": "מכשיר אינו זמין",
                         "devices": "{count} {count, plural,\n  one {device}\n  other {devices}\n}",
                         "entities": "{count} {count, plural,\n  one {entity}\n  other {entities}\n}",
                         "entity_unavailable": "ישות לא זמינה",
@@ -1414,6 +1451,7 @@
                         "aborted": "הופסק",
                         "close": "סגור",
                         "created_config": "נוצרה תצורה עבור {name}.",
+                        "dismiss": "ביטול תיבת דו-שיח",
                         "error_saving_area": "שגיאה בשמירת האזור: {error}",
                         "external_step": {
                             "description": "שלב זה מחייב אותך לבקר באתר אינטרנט חיצוני להשלמת הפעולה.",
@@ -1430,6 +1468,17 @@
                     "details": "פרטי האינטגרציה",
                     "discovered": "זוהו",
                     "home_assistant_website": "אתר Home Assistant",
+                    "ignore": {
+                        "confirm_delete_ignore": "פעולה זו תגרום לאינטגרציה להופיע באינטגרציות שהתגלו שוב כאשר היא תתגלה. ייתכן שתידרש הפעלה מחדש או להמתין כדי שזה יקרה.",
+                        "confirm_delete_ignore_title": "הפסק להתעלם מ- {name} ?",
+                        "confirm_ignore": "האם אתה בטוח שאתה לא רוצה להגדיר אינטגרציה זו? אתה יכול לבטל את זה על ידי לחיצה על 'הצג אינטגרציות שמתעלמים מהן' בתפריט שמשמאל למעלה.",
+                        "confirm_ignore_title": "התעלם מגילוי {name}?",
+                        "hide_ignored": "הסתר אינטגרציות שמתעלמים מהן",
+                        "ignore": "התעלם",
+                        "ignored": "מתעלם",
+                        "show_ignored": "הצג אינטגרציות שמתעלמים מהן",
+                        "stop_ignore": "הפסק להתעלם"
+                    },
                     "integration": "אינטגרציה",
                     "integration_not_found": "האינטגרציה לא נמצאה.",
                     "new": "הגדר אינטגרציה",
@@ -1475,9 +1524,9 @@
                             "edit_dashboard": "ערוך לוח בקרה",
                             "icon": "סמל",
                             "new_dashboard": "הוסף לוח בקרה חדש",
-                            "remove_default": "הסר כברירת מחדל בהתקן זה",
+                            "remove_default": "הסר כברירת מחדל במכשיר זה",
                             "require_admin": "מנהל בלבד",
-                            "set_default": "הגדר כברירת מחדל בהתקן זה",
+                            "set_default": "הגדר כברירת מחדל במכשיר זה",
                             "show_sidebar": "הצג בסרגל הצד",
                             "title": "כותרת",
                             "title_required": "הכותרת נדרשת.",
@@ -1566,7 +1615,7 @@
                         "name": "שם",
                         "name_error_msg": "שם נדרש",
                         "new_person": "אדם חדש",
-                        "no_device_tracker_available_intro": "כאשר יש לך התקנים המציינים את נוכחותו של אדם, כאן תוכל להקצותם לאדם זה. באפשרותך להוסיף את ההתקן הראשון על-ידי הוספת אינטגרציה של זיהוי נוכחות מעמוד האינטגרציות.",
+                        "no_device_tracker_available_intro": "כאשר יש לך התקנים המציינים את נוכחותו של אדם, כאן תוכל להקצותם לאדם זה. באפשרותך להוסיף את המכשיר הראשון על-ידי הוספת אינטגרציה של זיהוי נוכחות מעמוד האינטגרציות.",
                         "update": "עדכון"
                     },
                     "introduction": "כאן תוכלו להגדיר כל אדם ב Home Assistant.",
@@ -1580,18 +1629,18 @@
                     "editor": {
                         "default_name": "סצינה חדשה",
                         "devices": {
-                            "add": "הוסף התקן",
-                            "delete": "מחיקת התקן",
+                            "add": "הוסף מכשיר",
+                            "delete": "מחיקת מכשיר",
                             "header": "התקנים",
                             "introduction": "הוסף את ההתקנים שברצונך שייכללו בסצינה. הגדר את כל ההתקנים למצב הרצוי עבור סצינה זו."
                         },
                         "entities": {
                             "add": "הוסף ישות",
                             "delete": "מחק ישות",
-                            "device_entities": "אם תוסיף ישות השייכת להתקן, ההתקן יתווסף.",
+                            "device_entities": "אם תוסיף ישות השייכת למכשיר, המכשיר יתווסף.",
                             "header": "ישויות",
                             "introduction": "ניתן להגדיר כאן ישויות שאינן שייכות להתקנים.",
-                            "without_device": "ישויות ללא התקן"
+                            "without_device": "ישויות ללא מכשיר"
                         },
                         "introduction": "השתמש בסצינות כדי להחיות את הבית שלך.",
                         "load_error_not_editable": "רק סצינות ב scenes.yaml ניתנות לעריכה.",
@@ -1621,6 +1670,7 @@
                     "caption": "סקריפט",
                     "description": "צור וערוך סקריפטים",
                     "editor": {
+                        "alias": "שם",
                         "default_name": "סקריפט חדש",
                         "delete_confirm": "האם אתה בטוח שברצונך למחוק את הסקריפט הזה?",
                         "delete_script": "מחק סקריפט",
@@ -1777,13 +1827,35 @@
                         "group_picker_label": "קבוצות הניתנות לקישור",
                         "header": "קישור הקבוצה",
                         "introduction": "קישור וניתוק קבוצות.",
+                        "unbind_button_help": "נתק את הקבוצה שנבחרה מאשכולות המכשירים שנבחרו.",
                         "unbind_button_label": "ביטול קישור של קבוצה"
                     },
                     "groups": {
+                        "add_members": "הוסף חברים",
+                        "adding_members": "מוסיף חברים",
                         "caption": "קבוצות",
+                        "create": "צור קבוצה",
+                        "create_group": "אוטומציה ביתית של Zigbee - צור קבוצה",
+                        "create_group_details": "הזן את הפרטים הדרושים כדי ליצור קבוצת zigbee חדשה",
+                        "creating_group": "יוצר קבוצה",
                         "description": "יצירה ושינוי של קבוצות Zigbee",
+                        "group_details": "להלן כל הפרטים עבור קבוצת Zigbee שנבחרה.",
+                        "group_id": "מזהה קבוצה",
+                        "group_info": "פרטי קבוצה",
+                        "group_name_placeholder": "שם קבוצה",
+                        "group_not_found": "הקבוצה לא נמצאה!",
                         "group-header": "אוטומציה ביתית של Zigbee - פרטי קבוצה",
-                        "groups-header": "אוטומציה ביתית של Zigbee - ניהול קבוצות"
+                        "groups": "קבוצות",
+                        "groups-header": "אוטומציה ביתית של Zigbee - ניהול קבוצות",
+                        "header": "אוטומציה ביתית של Zigbee - ניהול קבוצות",
+                        "introduction": "יצירה ושינוי של קבוצות Zigbee",
+                        "manage_groups": "ניהול קבוצות Zigbee",
+                        "members": "חברים",
+                        "remove_groups": "הסר קבוצות",
+                        "remove_members": "הסר חברים",
+                        "removing_groups": "מסיר קבוצות",
+                        "removing_members": "מסיר חברים",
+                        "zha_zigbee_groups": "קבוצות Zigbee ZHA"
                     },
                     "header": "הגדר אוטומציה ביתית של Zigbee",
                     "introduction": "כאן ניתן לקבוע את התצורה של רכיב ה- ZHA. עדיין לא ניתן להגדיר הכל ממשק המשתמש, אך אנו עובדים על זה.",
@@ -1795,8 +1867,8 @@
                         "caption": "רשת"
                     },
                     "node_management": {
-                        "header": "ניהול התקן",
-                        "help_node_dropdown": "בחר התקן להצגת האפשרויות.",
+                        "header": "ניהול מכשירים",
+                        "help_node_dropdown": "בחר מכשיר להצגת האפשרויות.",
                         "hint_battery_devices": "הערה: מכשירים מנומנמים (מופעלים על סוללות) צריכים להיות ערים בעת ביצוע פקודות מולם. בדרך כלל ניתן להעיר מכשיר מנומנם על ידי ביצוע פקודה מולם.",
                         "hint_wakeup": "מכשירים מסוימים, כגון חיישני Xiaomi, כוללים כפתור להתעוררות עליו ניתן ללחוץ במרווח של ~5 שניות על מנת להשאיר אותם ערים בזמן שמתקשרים איתם.",
                         "introduction": "הפעל פקודות ZHA המשפיעות על מכשיר בודד. בחר מכשיר כדי לראות את רשימת הפקודות הזמינות."
@@ -1964,7 +2036,7 @@
                         "alert_entity_field": "ישות היא שדה חובה",
                         "attributes": "תכונות",
                         "current_entities": "ישויות נוכחיות",
-                        "description1": "הגדר את הייצוג של ההתקן בתוך Home Assistant.",
+                        "description1": "הגדר את הייצוג של המכשיר בתוך Home Assistant.",
                         "description2": "זה לא יתקשר עם המכשיר עצמו.",
                         "entity": "ישות",
                         "filter_attributes": "סנן תכונות",
@@ -2009,6 +2081,11 @@
                 "showing_entries": "מציג רשומות עבור"
             },
             "lovelace": {
+                "add_entities": {
+                    "generated_unsupported": "אתה יכול להשתמש בפונקציה זו רק לאחר שהשתלטת על ממשק המשתמש של Lovelace.",
+                    "saving_failed": "שמירת תצורת ממשק המשתמש של Lovelace נכשלה.",
+                    "yaml_unsupported": "אינך יכול להשתמש בפונקציה זו כשמשתמשים בממשק המשתמש של Lovelace במצב YAML."
+                },
                 "cards": {
                     "confirm_delete": "האם אתה בטוח שברצונך למחוק את הכרטיס הזה?",
                     "empty_state": {
@@ -2265,6 +2342,8 @@
                         "para_no_id": "האלמנט הנוכחי לא מכיל מזהה יחודיי. בבקשה הוסף מזהה יחודי לאלמט זה בקובץ 'ui-lovelace.yaml'."
                     },
                     "raw_editor": {
+                        "confirm_remove_config_text": "אנו ניצור אוטומטית את תצוגות ממשק המשתמש של Lovelace עם האזורים והמכשירים שלך אם תסיר את קונפיגורציית ממשק המשתמש שלך ב- Lovelace.",
+                        "confirm_remove_config_title": "האם אתה בטוח שברצונך להסיר את תצורת ממשק המשתמש של Lovelace? אנו נייצר אוטומטית את תצוגות ממשק המשתמש שלך ב- Lovelace עם האזורים והמכשירים שלך.",
                         "confirm_unsaved_changes": "יש לך שינויים שלא נשמרו, אתה בטוח שברצונך לצאת?",
                         "confirm_unsaved_comments": "התצורה שלך מכילה הערות, אלה לא יישמרו. האם אתה רוצה להמשיך?",
                         "error_invalid_config": "התצורה שלך אינה תקפה: {error}",
@@ -2288,6 +2367,11 @@
                         "yaml_config": "כדי לעזור לך להתחיל הנה התצורה הנוכחית של לוח מחוונים זה:",
                         "yaml_control": "כדי לקבל שליטה במצב YAML, צור קובץ YAML עם השם שציינת ב-config עבור לוח מחוונים זה, או ברירת המחדל  'ui-lovelace.yaml'.",
                         "yaml_mode": "אתה משתמש במצב YAML עבור לוח מחוונים זה ולכן אין באפשרותך לשנות את קונפיגורצית Lovelace מממשק המשתמש. אם ברצונך לנהל לוח מחוונים זה מממשק המשתמש, הסר 'mode: yaml' מתצורת Loverlace ב 'configuration.yaml.'."
+                    },
+                    "suggest_card": {
+                        "add": "הוסף לממשק המשתמש של Lovelace",
+                        "create_own": "בחר כרטיס אחר",
+                        "header": "יצרנו הצעה עבורך"
                     },
                     "view": {
                         "panel_mode": {
@@ -2569,8 +2653,8 @@
                     "title_success": "הצליח!"
                 },
                 "mfa": {
-                    "confirm_disable": "האם אתה בטוח שברצונך להשבית  {name}",
-                    "disable": "בטל",
+                    "confirm_disable": "האם אתה בטוח שברצונך להשבית {name}?",
+                    "disable": "השבת",
                     "enable": "הפעל",
                     "header": "מודלי אימות מרובה גורמים"
                 },
@@ -2600,7 +2684,7 @@
                     "link_promo": "למד אודות ערכות נושא"
                 },
                 "vibrate": {
-                    "description": "הפעל או בטל את הרטט בהתקן זה בעת שליטה בהתקנים.",
+                    "description": "הפעל או בטל את הרטט במכשיר זה בעת שליטה בהתקנים.",
                     "header": "רטט"
                 }
             },
