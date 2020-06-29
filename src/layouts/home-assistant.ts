@@ -1,11 +1,5 @@
 import "@polymer/app-route/app-location";
-import {
-  html,
-  property,
-  PropertyValues,
-  customElement,
-  css,
-} from "lit-element";
+import { html, property, PropertyValues, customElement } from "lit-element";
 import { navigate } from "../common/navigate";
 import { getStorageDefaultPanelUrlPath } from "../data/panel";
 import "../resources/custom-card-support";
@@ -206,24 +200,6 @@ export class HomeAssistantAppEl extends HassElement {
       this._visiblePromiseResolve();
       this._visiblePromiseResolve = undefined;
     }
-  }
-
-  static get styles() {
-    return css`
-      .suspended {
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background-color: rgba(255, 255, 255, 0.7);
-        z-index: 1000000;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        text-align: center;
-      }
-    `;
   }
 }
 
