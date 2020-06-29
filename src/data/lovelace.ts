@@ -196,12 +196,7 @@ type LovelaceUpdatedEvent = HassEventBase & {
 export interface LovelaceDashboardStrategy {
   generateDashboard(info: {
     lovelace: LovelaceConfig;
-    config: HassConfig;
-    areaEntries: AreaRegistryEntry[];
-    deviceEntries: DeviceRegistryEntry[];
-    entityEntries: EntityRegistryEntry[];
-    entities: HassEntities;
-    localize: LocalizeFunc;
+    hass: HomeAssistant;
   }): Partial<LovelaceConfig>;
 }
 
@@ -209,12 +204,7 @@ export interface LovelaceViewStrategy {
   generateView(info: {
     view: LovelaceViewConfig;
     lovelace: LovelaceConfig;
-    config: HassConfig;
-    areaEntries: AreaRegistryEntry[];
-    deviceEntries: DeviceRegistryEntry[];
-    entityEntries: EntityRegistryEntry[];
-    entities: HassEntities;
-    localize: LocalizeFunc;
+    hass: HomeAssistant;
   }): Partial<LovelaceViewConfig>;
 }
 
