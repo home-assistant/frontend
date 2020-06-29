@@ -3,8 +3,6 @@ import {
   getCollection,
   HassEventBase,
   HassServiceTarget,
-  HassConfig,
-  HassEntities,
 } from "home-assistant-js-websocket";
 import { HASSDomEvent } from "../common/dom/fire_event";
 import { HuiErrorCard } from "../panels/lovelace/cards/hui-error-card";
@@ -14,10 +12,6 @@ import {
   LovelaceCard,
 } from "../panels/lovelace/types";
 import { HomeAssistant } from "../types";
-import { AreaRegistryEntry } from "./area_registry";
-import { DeviceRegistryEntry } from "./device_registry";
-import { EntityRegistryEntry } from "./entity_registry";
-import { LocalizeFunc } from "../common/translations/localize";
 
 export interface LovelacePanelConfig {
   mode: "yaml" | "storage";
