@@ -30,7 +30,6 @@ export class HomeAssistantAppEl extends HassElement {
 
   private _hiddenTimeout?: number;
 
-  @property()
   private _visiblePromiseResolve?: () => void;
 
   protected render() {
@@ -41,14 +40,6 @@ export class HomeAssistantAppEl extends HassElement {
         @route-changed=${this._routeChanged}
         ?use-hash-as-path=${__DEMO__}
       ></app-location>
-      ${!this._visiblePromiseResolve
-        ? ""
-        : html`
-            <div class="suspended" @click=${this._unsuspend}>
-              App is suspended<br /><br />
-              tap to continue
-            </div>
-          `}
       ${this._panelUrl === undefined || this._route === undefined
         ? ""
         : hass && hass.states && hass.config && hass.services
@@ -91,11 +82,15 @@ export class HomeAssistantAppEl extends HassElement {
     // @ts-ignore
     this._loadHassTranslations(this.hass!.language, "state");
 
+    this.addEventListener("unsuspend-app", () => this._onVisible(), false);
+
     document.addEventListener(
       "visibilitychange",
-      () => this._handleVisibilityChange(),
+      () => this._checkVisibility(),
       false
     );
+    document.addEventListener("freeze", () => this._suspendApp());
+    document.addEventListener("resume", () => this._checkVisibility());
   }
 
   protected hassReconnected() {
@@ -163,45 +158,44 @@ export class HomeAssistantAppEl extends HassElement {
         : route.path.substr(1, dividerPos - 1);
   }
 
-  protected _handleVisibilityChange() {
+  protected _checkVisibility() {
     if (document.hidden) {
       // If the document is hidden, we will prevent reconnects until we are visible again
-      this.hass!.connection.suspendReconnectUntil(
-        new Promise((resolve) => {
-          this._visiblePromiseResolve = resolve;
-        })
-      );
-      // We close the connection to Home Assistant after being hidden for 5 minutes
-      this._hiddenTimeout = window.setTimeout(() => {
-        this._hiddenTimeout = undefined;
-
-        // setTimeout can be delayed in the background and only fire
-        // when we switch to the tab or app again (Hey Android!)
-        if (!document.hidden) {
-          if (this._visiblePromiseResolve) {
-            this._visiblePromiseResolve();
-            this._visiblePromiseResolve = undefined;
-          }
-          return;
-        }
-
-        this.hass!.connection.suspend();
-      }, 300000);
+      this._onHidden();
     } else {
-      // Clear timer to close the connection
-      if (this._hiddenTimeout) {
-        clearTimeout(this._hiddenTimeout);
-        this._hiddenTimeout = undefined;
-      }
-      // Unsuspend the reconnect
-      if (this._visiblePromiseResolve) {
-        this._visiblePromiseResolve();
-        this._visiblePromiseResolve = undefined;
-      }
+      this._onVisible();
     }
   }
 
-  private _unsuspend() {
+  private _onHidden() {
+    this.hass!.connection.suspendReconnectUntil(
+      new Promise((resolve) => {
+        this._visiblePromiseResolve = resolve;
+      })
+    );
+    // We close the connection to Home Assistant after being hidden for 5 minutes
+    this._hiddenTimeout = window.setTimeout(() => {
+      this._hiddenTimeout = undefined;
+      // setTimeout can be delayed in the background and only fire
+      // when we switch to the tab or app again (Hey Android!)
+      if (!document.hidden) {
+        this._suspendApp();
+      }
+    }, 300000);
+    window.addEventListener("focus", () => this._onVisible(), { once: true });
+  }
+
+  private _suspendApp() {
+    this.hass!.connection.suspend();
+  }
+
+  private _onVisible() {
+    // Clear timer to close the connection
+    if (this._hiddenTimeout) {
+      clearTimeout(this._hiddenTimeout);
+      this._hiddenTimeout = undefined;
+    }
+    // Unsuspend the reconnect
     if (this._visiblePromiseResolve) {
       this._visiblePromiseResolve();
       this._visiblePromiseResolve = undefined;
