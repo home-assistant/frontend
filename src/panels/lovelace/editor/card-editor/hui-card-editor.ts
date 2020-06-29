@@ -164,7 +164,6 @@ export class HuiCardEditor extends LitElement {
                   .rtl=${computeRTL(this.hass)}
                   @value-changed=${this._handleYAMLChanged}
                   @keydown=${this._ignoreKeydown}
-                  @editor-loaded=${this.refreshYamlEditor}
                 ></ha-code-editor>
               </div>
             `}
@@ -188,14 +187,6 @@ export class HuiCardEditor extends LitElement {
 
   protected updated(changedProperties) {
     super.updated(changedProperties);
-
-    if (changedProperties.has("_GUImode")) {
-      if (!this.GUImode) {
-        // Refresh code editor when switching to yaml mode
-        this.refreshYamlEditor(true);
-      }
-    }
-
     if (this._configElement && changedProperties.has("hass")) {
       this._configElement.hass = this.hass;
     }
