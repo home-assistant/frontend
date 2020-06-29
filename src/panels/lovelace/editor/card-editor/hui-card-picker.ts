@@ -56,9 +56,9 @@ export class HuiCardPicker extends LitElement {
 
   private _usedEntities?: string[];
 
-  private _width?: number;
+  @property() private _width?: number;
 
-  private _height?: number;
+  @property() private _height?: number;
 
   private _filterCards = memoizeOne(
     (cardElements: CardElement[], filter?: string): CardElement[] => {
@@ -99,6 +99,7 @@ export class HuiCardPicker extends LitElement {
         @value-changed=${this._handleSearchChange}
       ></search-input>
       <div
+        id="content"
         style=${styleMap({
           width: this._width ? `${this._width}px` : "auto",
           height: this._height ? `${this._height}px` : "auto",
@@ -209,14 +210,14 @@ export class HuiCardPicker extends LitElement {
       this._height = undefined;
     } else if (!this._width || !this._height) {
       // Save height and width so the dialog doesn't jump while searching
-      const div = this.shadowRoot!.querySelector("div")!;
-      if (!this._width) {
+      const div = this.shadowRoot!.getElementById("content");
+      if (div && !this._width) {
         const width = div.clientWidth;
         if (width) {
           this._width = width;
         }
       }
-      if (!this._height) {
+      if (div && !this._height) {
         const height = div.clientHeight;
         if (height) {
           this._height = height;
