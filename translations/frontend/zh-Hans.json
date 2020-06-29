@@ -646,7 +646,7 @@
                     "pattern": "用于客户端验证的正则表达式模式",
                     "text": "文本"
                 },
-                "platform_not_loaded": "{platform} 组件尚未加载。请在 'default_config:' 或 ''{platform}:'' 中选择一种方式，将其写入配置中。",
+                "platform_not_loaded": "{platform} 组件尚未加载。请从 'default_config:' 或 ''{platform}:'' 中选择一种方式，将其写入配置中。",
                 "required_error_msg": "此字段为必填字段",
                 "yaml_not_editable": "无法从 UI 编辑此实体的设置。只有通过 UI 设置的实体可以从 UI 配置。"
             },
