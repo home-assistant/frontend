@@ -84,7 +84,7 @@ class HassioAddonConfig extends LitElement {
           justify-content: space-between;
         }
         .errors {
-          color: var(--google-red-500);
+          color: var(--error-color);
           margin-top: 16px;
         }
         iron-autogrow-textarea {
@@ -92,7 +92,7 @@ class HassioAddonConfig extends LitElement {
           font-family: monospace;
         }
         .syntaxerror {
-          color: var(--google-red-500);
+          color: var(--error-color);
         }
       `,
     ];

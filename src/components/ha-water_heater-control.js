@@ -20,7 +20,7 @@ class HaWaterHeaterControl extends EventsMixin(PolymerElement) {
           @apply --layout-justified;
         }
         .in-flux#target_temperature {
-          color: var(--google-red-500);
+          color: var(--error-color);
         }
         #target_temperature {
           @apply --layout-self-center;

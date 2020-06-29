@@ -8,6 +8,7 @@ import { DEFAULT_DOMAIN_ICON } from "../const";
 const fixedIcons = {
   alert: "hass:alert",
   alexa: "hass:amazon-alexa",
+  air_quality: "hass:air-filter",
   automation: "hass:robot",
   calendar: "hass:calendar",
   camera: "hass:video",

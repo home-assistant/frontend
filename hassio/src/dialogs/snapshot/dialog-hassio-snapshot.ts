@@ -224,7 +224,7 @@ class HassioSnapshotDialog extends LitElement {
         }
         .warning,
         .error {
-          color: var(--google-red-500);
+          color: var(--error-color);
         }
         .buttons {
           display: flex;

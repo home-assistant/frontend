@@ -146,7 +146,7 @@ class HassioHostInfo extends LitElement {
           text-align: right;
         }
         .errors {
-          color: var(--google-red-500);
+          color: var(--error-color);
           margin-top: 16px;
         }
         mwc-button.info {
@@ -156,7 +156,7 @@ class HassioHostInfo extends LitElement {
           margin-bottom: 10px;
         }
         .warning {
-          --mdc-theme-primary: var(--google-red-500);
+          --mdc-theme-primary: var(--error-color);
         }
       `,
     ];

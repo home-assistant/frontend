@@ -157,7 +157,7 @@ class DialogAreaDetail extends LitElement {
           margin-right: auto;
         }
         .error {
-          color: var(--google-red-500);
+          color: var(--error-color);
         }
       `,
     ];

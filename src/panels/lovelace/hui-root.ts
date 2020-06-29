@@ -698,7 +698,7 @@ class HUIRoot extends LitElement {
           color: var(--text-primary-color, white);
         }
         mwc-button.warning:not([disabled]) {
-          color: var(--google-red-500);
+          color: var(--error-color);
         }
         #view {
           min-height: calc(100vh - 112px);
