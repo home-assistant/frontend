@@ -14,6 +14,7 @@ import {
   STATE_RUNNING,
 } from "home-assistant-js-websocket";
 import { CustomPanelInfo } from "../data/panel_custom";
+import { deepActiveElement } from "../common/dom/deep-active-element";
 
 const CACHE_URL_PATHS = ["lovelace", "developer-tools"];
 const COMPONENTS = {
@@ -92,7 +93,9 @@ class PartialPanelResolver extends HassRouterPage {
 
   private _waitForStart = false;
 
-  private _disconnectedPanel?: ChildNode;
+  private _disconnectedPanel?: HTMLElement;
+
+  private _disconnectedActiveElement?: HTMLElement;
 
   private _hiddenTimeout?: number;
 
@@ -185,7 +188,13 @@ class PartialPanelResolver extends HassRouterPage {
           !(curPanel.config as CustomPanelInfo).config._panel_custom
             .embed_iframe)
       ) {
-        this._disconnectedPanel = this.lastChild;
+        this._disconnectedPanel = this.lastChild as HTMLElement;
+        const activeEl = deepActiveElement(
+          this._disconnectedPanel.shadowRoot || undefined
+        );
+        if (activeEl instanceof HTMLElement) {
+          this._disconnectedActiveElement = activeEl;
+        }
         this.removeChild(this.lastChild);
       }
     }, 300000);
@@ -200,6 +209,10 @@ class PartialPanelResolver extends HassRouterPage {
     if (this._disconnectedPanel) {
       this.appendChild(this._disconnectedPanel);
       this._disconnectedPanel = undefined;
+    }
+    if (this._disconnectedActiveElement) {
+      this._disconnectedActiveElement.focus();
+      this._disconnectedActiveElement = undefined;
     }
   }
 
