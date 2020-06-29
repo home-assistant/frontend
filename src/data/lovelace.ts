@@ -25,7 +25,7 @@ export interface LovelacePanelConfig {
 
 export interface LovelaceConfig {
   title?: string;
-  // When specified, we ignore views but instead execute strategy
+  // When specified, we execute strategy and merge into config on top level (no deep merge)
   strategy?: {
     name: string;
     options: { [key: string]: unknown };
@@ -88,7 +88,7 @@ export interface LovelaceViewConfig {
   index?: number;
   title?: string;
   type?: string;
-  // When specified, we ignore badges + cards but instead execute strategy
+  // When specified, we execute strategy and merge into view config on top level (no deep merge)
   strategy?: {
     name: string;
     options: { [key: string]: unknown };
@@ -199,7 +199,7 @@ export interface LovelaceDashboardStrategy {
   generateDashboard(info: {
     lovelace: LovelaceConfig;
     hass: HomeAssistant;
-  }): Partial<LovelaceConfig>;
+  }): Promise<Partial<LovelaceConfig>>;
 }
 
 export interface LovelaceViewStrategy {
@@ -207,7 +207,7 @@ export interface LovelaceViewStrategy {
     view: LovelaceViewConfig;
     lovelace: LovelaceConfig;
     hass: HomeAssistant;
-  }): Partial<LovelaceViewConfig>;
+  }): Promise<Partial<LovelaceViewConfig>>;
 }
 
 export const fetchResources = (conn: Connection): Promise<LovelaceResource[]> =>
