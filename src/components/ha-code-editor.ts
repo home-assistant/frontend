@@ -11,6 +11,7 @@ import { loadCodeMirror } from "../resources/codemirror.ondemand";
 declare global {
   interface HASSDomEvents {
     "editor-save": undefined;
+    "editor-loaded": undefined;
   }
 }
 
@@ -139,6 +140,8 @@ export class HaCodeEditor extends UpdatingElement {
     });
     this._setScrollBarDirection();
     this.codemirror!.on("changes", () => this._onChange());
+
+    fireEvent(this, "editor-loaded");
   }
 
   private _onChange(): void {
