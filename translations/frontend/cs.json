@@ -2218,6 +2218,7 @@
                             "name": "Horizontální uskupení"
                         },
                         "humidifier": {
+                            "description": "Karta zvlhčovače poskytuje kontrolu nad vaší entitou zvlhčovače. Umožní vám změnit vlhkost a režim entity.",
                             "name": "Zvlhčovač"
                         },
                         "iframe": {
