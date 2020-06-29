@@ -9,7 +9,11 @@ import {
 } from "lit-element";
 import { HomeAssistant } from "../../../types";
 import { ConfigEntryExtended } from "./ha-config-integrations";
-import { domainToName } from "../../../data/integration";
+import {
+  domainToName,
+  fetchIntegrationManifests,
+  IntegrationManifest,
+} from "../../../data/integration";
 import {
   ConfigEntry,
   updateConfigEntry,
@@ -72,7 +76,14 @@ export class HaIntegrationCard extends LitElement {
 
   @property() public deviceRegistryEntries!: DeviceRegistryEntry[];
 
+  @property() public _manifests?: { [domain: string]: IntegrationManifest };
+
   @property() public selectedConfigEntryId?: string;
+
+  firstUpdated(changedProps) {
+    super.firstUpdated(changedProps);
+    this._fetchManifests();
+  }
 
   protected render(): TemplateResult {
     if (this.items.length === 1) {
@@ -125,6 +136,8 @@ export class HaIntegrationCard extends LitElement {
   private _renderSingleEntry(item: ConfigEntryExtended): TemplateResult {
     const devices = this._getDevices(item);
     const entities = this._getEntities(item);
+    const manifest = this._manifests && this._manifests[this.domain];
+
     return html`
       <ha-card
         outlined
@@ -229,11 +242,19 @@ export class HaIntegrationCard extends LitElement {
                 "ui.panel.config.integrations.config_entry.system_options"
               )}
             </mwc-list-item>
-            <mwc-list-item @click=${this._toDocumentation}>
-              ${this.hass.localize(
-                "ui.panel.config.integrations.config_entry.documentation"
-              )}
-            </mwc-list-item>
+            ${!manifest
+              ? ""
+              : html`<mwc-list-item>
+                  <a
+                    class="documentation"
+                    href=${manifest.documentation}
+                    rel="noreferrer"
+                    target="_blank"
+                    >${this.hass.localize(
+                      "ui.panel.config.integrations.config_entry.documentation"
+                    )}</a
+                  >
+                </mwc-list-item>`}
             <mwc-list-item class="warning" @click=${this._removeIntegration}>
               ${this.hass.localize(
                 "ui.panel.config.integrations.config_entry.delete"
@@ -245,6 +266,13 @@ export class HaIntegrationCard extends LitElement {
     `;
   }
 
+  private async _fetchManifests() {
+    const manifests = {};
+    const fetched = await fetchIntegrationManifests(this.hass);
+    for (const manifest of fetched) manifests[manifest.domain] = manifest;
+    this._manifests = manifests;
+  }
+
   private _selectConfigEntry(ev: Event) {
     this.selectedConfigEntryId = (ev.currentTarget as any).entryId;
   }
@@ -252,10 +280,6 @@ export class HaIntegrationCard extends LitElement {
   private _back() {
     this.selectedConfigEntryId = undefined;
     this.classList.remove("highlight");
-  }
-
-  private _toDocumentation() {
-    window.open(`https://www.home-assistant.io/integrations/${this.domain}`);
   }
 
   private _getEntities(configEntry: ConfigEntry): EntityRegistryEntry[] {
@@ -368,6 +392,9 @@ export class HaIntegrationCard extends LitElement {
           justify-content: space-between;
           align-items: center;
           padding-right: 5px;
+        }
+        .card-actions .documentation {
+          color: var(--primary-text-color);
         }
         .group-header {
           display: flex;
