@@ -62,7 +62,7 @@ class HassioAddonLogs extends LitElement {
           display: block;
         }
         .errors {
-          color: var(--google-red-500);
+          color: var(--error-color);
           margin-bottom: 16px;
         }
       `,

@@ -123,7 +123,7 @@ class HassioSupervisorLog extends LitElement {
           width: 96%;
         }
         .errors {
-          color: var(--google-red-500);
+          color: var(--error-color);
           margin-bottom: 16px;
         }
         .card-content {

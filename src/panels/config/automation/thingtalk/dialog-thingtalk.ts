@@ -257,7 +257,7 @@ class DialogThingtalk extends LitElement {
           display: block;
         }
         .error {
-          color: var(--google-red-500);
+          color: var(--error-color);
         }
         .attribution {
           color: var(--secondary-text-color);

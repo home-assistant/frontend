@@ -180,7 +180,7 @@ class DialogConfigEntrySystemOptions extends LitElement {
         }
 
         .error {
-          color: var(--google-red-500);
+          color: var(--error-color);
         }
       `,
     ];

@@ -104,7 +104,7 @@ export class HuiShoppingListEditor extends LitElement
   static get styles(): CSSResult {
     return css`
       .error {
-        color: var(--google-red-500);
+        color: var(--error-color);
       }
     `;
   }

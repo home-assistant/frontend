@@ -98,7 +98,7 @@ class HassioCardContent extends LitElement {
         color: var(--paper-item-icon-color);
       }
       ha-svg-icon.not_available {
-        color: var(--google-red-500);
+        color: var(--error-color);
       }
       .title {
         color: var(--primary-text-color);

@@ -105,15 +105,15 @@ export const haStyle = css`
   }
 
   .error {
-    color: var(--google-red-500);
+    color: var(--error-color);
   }
 
   .warning {
-    color: var(--google-red-500);
+    color: var(--error-color);
   }
 
   mwc-button.warning {
-    --mdc-theme-primary: var(--google-red-500);
+    --mdc-theme-primary: var(--error-color);
   }
 
   button.link {
@@ -132,7 +132,7 @@ export const haStyle = css`
   }
 
   .card-actions .warning {
-    --mdc-theme-primary: var(--google-red-500);
+    --mdc-theme-primary: var(--error-color);
   }
 
   .layout.horizontal,
@@ -247,9 +247,9 @@ export const haStyleDialog = css`
     }
   }
   mwc-button.warning {
-    --mdc-theme-primary: var(--google-red-500);
+    --mdc-theme-primary: var(--error-color);
   }
   .error {
-    color: var(--google-red-500);
+    color: var(--error-color);
   }
 `;

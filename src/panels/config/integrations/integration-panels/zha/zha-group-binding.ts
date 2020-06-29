@@ -270,7 +270,7 @@ export class ZHAGroupBindingControl extends LitElement {
         }
 
         .card-actions.warning ha-call-service-button {
-          color: var(--google-red-500);
+          color: var(--error-color);
         }
 
         .command-picker {
