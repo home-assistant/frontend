@@ -180,7 +180,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
                 >
                   <ha-icon
                     style=${styleMap({
-                      color: entity.unavailable ? "var(--google-red-500)" : "",
+                      color: entity.unavailable ? "var(--error-color)" : "",
                     })}
                     .icon=${entity.restored
                       ? "hass:restore-alert"

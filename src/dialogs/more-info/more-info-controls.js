@@ -64,7 +64,7 @@ class MoreInfoControls extends LocalizeMixin(EventsMixin(PolymerElement)) {
         }
 
         mwc-button.warning {
-          --mdc-theme-primary: var(--google-red-500);
+          --mdc-theme-primary: var(--error-color);
         }
 
         :host([domain="camera"]) paper-dialog-scrollable {

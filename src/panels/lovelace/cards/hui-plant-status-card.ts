@@ -229,7 +229,7 @@ class HuiPlantStatusCard extends LitElement implements LovelaceCard {
       }
 
       .problem {
-        color: var(--google-red-500);
+        color: var(--error-color);
         font-weight: bold;
       }
 
