@@ -178,7 +178,6 @@ module.exports.config = {
       publicPath: publicPath(latestBuild, paths.hassio_publicPath),
       isProdBuild,
       latestBuild,
-      dontHash: new Set(["entrypoint"]),
     };
   },
 
