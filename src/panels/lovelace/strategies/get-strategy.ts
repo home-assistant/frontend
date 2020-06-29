@@ -28,7 +28,7 @@ export const getLovelaceDashboardStrategy = (
 customElements.define(
   "ll-strategy-paulus",
   class extends HTMLElement {
-    static generateDashboard(info) {
+    static async generateDashboard(info) {
       return {
         views: [
           {
@@ -40,7 +40,7 @@ customElements.define(
       };
     }
 
-    static generateView(info) {
+    static async generateView(info) {
       return {
         cards: [],
       };
