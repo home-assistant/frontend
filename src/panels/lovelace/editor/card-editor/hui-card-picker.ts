@@ -33,7 +33,7 @@ import { getCardStubConfig } from "../get-card-stub-config";
 import { CardPickTarget, Card } from "../types";
 import { coreCards } from "../lovelace-cards";
 import { styleMap } from "lit-html/directives/style-map";
-import "./../../../../components/ha-circular-progress";
+import "../../../../components/ha-circular-progress";
 
 interface CardElement {
   card: Card;
