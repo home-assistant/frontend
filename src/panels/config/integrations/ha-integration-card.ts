@@ -229,6 +229,11 @@ export class HaIntegrationCard extends LitElement {
                 "ui.panel.config.integrations.config_entry.system_options"
               )}
             </mwc-list-item>
+            <mwc-list-item @click=${this._toDocumentation}>
+              ${this.hass.localize(
+                "ui.panel.config.integrations.config_entry.documentation"
+              )}
+            </mwc-list-item>
             <mwc-list-item class="warning" @click=${this._removeIntegration}>
               ${this.hass.localize(
                 "ui.panel.config.integrations.config_entry.delete"
@@ -247,6 +252,10 @@ export class HaIntegrationCard extends LitElement {
   private _back() {
     this.selectedConfigEntryId = undefined;
     this.classList.remove("highlight");
+  }
+
+  private _toDocumentation() {
+    window.open(`https://www.home-assistant.io/integrations/${this.domain}`);
   }
 
   private _getEntities(configEntry: ConfigEntry): EntityRegistryEntry[] {
