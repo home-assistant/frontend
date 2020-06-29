@@ -14,7 +14,6 @@ import {
   STATE_RUNNING,
 } from "home-assistant-js-websocket";
 import { CustomPanelInfo } from "../data/panel_custom";
-import "./hass-suspended-screen";
 
 const CACHE_URL_PATHS = ["lovelace", "developer-tools"];
 const COMPONENTS = {
@@ -106,10 +105,7 @@ class PartialPanelResolver extends HassRouterPage {
       () => this._checkVisibility(),
       false
     );
-    document.addEventListener("focus", () => this._onVisible(), false);
-    document.addEventListener("blur", () => this._checkVisibility(), false);
-    window.addEventListener("focus", () => this._onVisible(), false);
-    window.addEventListener("blur", () => this._checkVisibility(), false);
+    document.addEventListener("resume", () => this._checkVisibility());
   }
 
   protected updated(changedProps: PropertyValues) {
@@ -171,12 +167,7 @@ class PartialPanelResolver extends HassRouterPage {
   }
 
   private _onHidden() {
-    console.log("partial-panel-resolver handle tab hidden");
-
     this._hiddenTimeout = window.setTimeout(() => {
-      console.log("partial-panel-resolver setTimeout triggered", {
-        documentHidden: document.hidden,
-      });
       this._hiddenTimeout = undefined;
       // setTimeout can be delayed in the background and only fire
       // when we switch to the tab or app again (Hey Android!)
@@ -196,36 +187,20 @@ class PartialPanelResolver extends HassRouterPage {
       ) {
         this._disconnectedPanel = this.lastChild;
         this.removeChild(this.lastChild);
-        this.appendChild(this._createSuspendedScreen());
       }
     }, 300000);
+    window.addEventListener("focus", () => this._onVisible(), { once: true });
   }
 
   private _onVisible() {
-    console.group("partial-panel-resolver handle tab shown");
-
     if (this._hiddenTimeout) {
-      console.log("clearing timeout");
       clearTimeout(this._hiddenTimeout);
       this._hiddenTimeout = undefined;
     }
     if (this._disconnectedPanel) {
-      console.log("reinstating panel");
-
-      if (this.lastChild) {
-        this.removeChild(this.lastChild);
-      }
       this.appendChild(this._disconnectedPanel);
       this._disconnectedPanel = undefined;
     }
-    console.groupEnd();
-  }
-
-  private _createSuspendedScreen() {
-    const el = document.createElement("hass-suspended-screen");
-    el.hass = this.hass;
-    el.addEventListener("unsuspend-app", () => this._onVisible());
-    return el;
   }
 
   private async _updateRoutes(oldPanels?: HomeAssistant["panels"]) {

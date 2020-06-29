@@ -168,6 +168,9 @@ export class HomeAssistantAppEl extends HassElement {
   }
 
   private _onHidden() {
+    if (this._visiblePromiseResolve) {
+      return;
+    }
     this.hass!.connection.suspendReconnectUntil(
       new Promise((resolve) => {
         this._visiblePromiseResolve = resolve;
@@ -186,6 +189,9 @@ export class HomeAssistantAppEl extends HassElement {
   }
 
   private _suspendApp() {
+    if (!this.hass!.connection.connected) {
+      return;
+    }
     this.hass!.connection.suspend();
   }
 
