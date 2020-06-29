@@ -33,6 +33,7 @@ import { getCardStubConfig } from "../get-card-stub-config";
 import { CardPickTarget, Card } from "../types";
 import { coreCards } from "../lovelace-cards";
 import { styleMap } from "lit-html/directives/style-map";
+import "../../../../components/ha-circular-progress";
 
 interface CardElement {
   card: Card;
@@ -49,35 +50,35 @@ export class HuiCardPicker extends LitElement {
 
   public cardPicked?: (cardConf: LovelaceCardConfig) => void;
 
-  private _filter?: string;
+  @property() private _filter = "";
 
   private _unusedEntities?: string[];
 
   private _usedEntities?: string[];
 
-  private _width?: number;
+  @property() private _width?: number;
 
-  private _height?: number;
+  @property() private _height?: number;
 
   private _filterCards = memoizeOne(
     (cardElements: CardElement[], filter?: string): CardElement[] => {
-      if (filter) {
-        let cards = cardElements.map(
-          (cardElement: CardElement) => cardElement.card
-        );
-        const options: Fuse.IFuseOptions<Card> = {
-          keys: ["type", "name", "description"],
-          isCaseSensitive: false,
-          minMatchCharLength: 2,
-          threshold: 0.2,
-        };
-        const fuse = new Fuse(cards, options);
-        cards = fuse.search(filter).map((result) => result.item);
-        cardElements = cardElements.filter((cardElement: CardElement) =>
-          cards.includes(cardElement.card)
-        );
+      if (!filter) {
+        return cardElements;
       }
-      return cardElements;
+      let cards = cardElements.map(
+        (cardElement: CardElement) => cardElement.card
+      );
+      const options: Fuse.IFuseOptions<Card> = {
+        keys: ["type", "name", "description"],
+        isCaseSensitive: false,
+        minMatchCharLength: 2,
+        threshold: 0.2,
+      };
+      const fuse = new Fuse(cards, options);
+      cards = fuse.search(filter).map((result) => result.item);
+      return cardElements.filter((cardElement: CardElement) =>
+        cards.includes(cardElement.card)
+      );
     }
   );
 
@@ -98,9 +99,10 @@ export class HuiCardPicker extends LitElement {
         @value-changed=${this._handleSearchChange}
       ></search-input>
       <div
+        id="content"
         style=${styleMap({
-          width: `${this._width}px`,
-          height: `${this._height}px`,
+          width: this._width ? `${this._width}px` : "auto",
+          height: this._height ? `${this._height}px` : "auto",
         })}
       >
         <div class="cards-container">
@@ -165,24 +167,6 @@ export class HuiCardPicker extends LitElement {
     this._loadCards();
   }
 
-  protected updated(changedProps) {
-    super.updated(changedProps);
-    // Store the width and height so that when we search, box doesn't jump
-    const div = this.shadowRoot!.querySelector("div")!;
-    if (!this._width) {
-      const width = div.clientWidth;
-      if (width) {
-        this._width = width;
-      }
-    }
-    if (!this._height) {
-      const height = div.clientHeight;
-      if (height) {
-        this._height = height;
-      }
-    }
-  }
-
   private _loadCards() {
     let cards: Card[] = coreCards.map((card: Card) => ({
       name: this.hass!.localize(
@@ -218,8 +202,30 @@ export class HuiCardPicker extends LitElement {
   }
 
   private _handleSearchChange(ev: CustomEvent) {
-    this._filter = ev.detail.value;
-    this.requestUpdate();
+    const value = ev.detail.value;
+
+    if (!value) {
+      // Reset when we no longer filter
+      this._width = undefined;
+      this._height = undefined;
+    } else if (!this._width || !this._height) {
+      // Save height and width so the dialog doesn't jump while searching
+      const div = this.shadowRoot!.getElementById("content");
+      if (div && !this._width) {
+        const width = div.clientWidth;
+        if (width) {
+          this._width = width;
+        }
+      }
+      if (div && !this._height) {
+        const height = div.clientHeight;
+        if (height) {
+          this._height = height;
+        }
+      }
+    }
+
+    this._filter = value;
   }
 
   static get styles(): CSSResult[] {
