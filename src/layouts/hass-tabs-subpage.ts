@@ -161,10 +161,13 @@ class HassTabsSubpage extends LitElement {
     `;
   }
 
-  @eventOptions({ passive: true })
-  private _saveScrollPos(e: Event) {
-    this._savedScrollPos = (e.target as HTMLDivElement).scrollTop;
-  }
+  private _saveScrollPos: EventListenerOrEventListenerObject &
+    Partial<AddEventListenerOptions> = {
+    handleEvent: (e: Event) => {
+      this._savedScrollPos = (e.target as HTMLDivElement).scrollTop;
+    },
+    passive: true,
+  };
 
   private _tabTapped(ev: Event): void {
     navigate(this, (ev.currentTarget as any).path, true);
