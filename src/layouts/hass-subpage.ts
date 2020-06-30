@@ -22,6 +22,17 @@ class HassSubpage extends LitElement {
   @property({ type: Boolean })
   public hassio = false;
 
+  @property() private _savedScrollPos?: number;
+
+  public connectedCallback() {
+    super.connectedCallback();
+    if (this._savedScrollPos) {
+      (this.shadowRoot!.querySelector(
+        ".content"
+      ) as HTMLDivElement).scrollTop = this._savedScrollPos;
+    }
+  }
+
   protected render(): TemplateResult {
     return html`
       <div class="toolbar">
@@ -34,9 +45,17 @@ class HassSubpage extends LitElement {
         <div main-title>${this.header}</div>
         <slot name="toolbar-icon"></slot>
       </div>
-      <div class="content"><slot></slot></div>
+      <div class="content" @scroll=${this._saveScrollPos}><slot></slot></div>
     `;
   }
+
+  private _saveScrollPos: EventListenerOrEventListenerObject &
+    Partial<AddEventListenerOptions> = {
+    handleEvent: (e: Event) => {
+      this._savedScrollPos = (e.target as HTMLDivElement).scrollTop;
+    },
+    passive: true,
+  };
 
   private _backTapped(): void {
     history.back();

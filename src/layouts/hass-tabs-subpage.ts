@@ -52,6 +52,17 @@ class HassTabsSubpage extends LitElement {
 
   @property() private _activeTab?: PageNavigation;
 
+  @property() private _savedScrollPos?: number;
+
+  public connectedCallback() {
+    super.connectedCallback();
+    if (this._savedScrollPos) {
+      (this.shadowRoot!.querySelector(
+        ".content"
+      ) as HTMLDivElement).scrollTop = this._savedScrollPos;
+    }
+  }
+
   private _getTabs = memoizeOne(
     (
       tabs: PageNavigation[],
@@ -143,11 +154,19 @@ class HassTabsSubpage extends LitElement {
           <slot name="toolbar-icon"></slot>
         </div>
       </div>
-      <div class="content">
+      <div class="content" @scroll=${this._saveScrollPos}>
         <slot></slot>
       </div>
     `;
   }
+
+  private _saveScrollPos: EventListenerOrEventListenerObject &
+    Partial<AddEventListenerOptions> = {
+    handleEvent: (e: Event) => {
+      this._savedScrollPos = (e.target as HTMLDivElement).scrollTop;
+    },
+    passive: true,
+  };
 
   private _tabTapped(ev: Event): void {
     navigate(this, (ev.currentTarget as any).path, true);
