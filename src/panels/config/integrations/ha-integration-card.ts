@@ -9,11 +9,7 @@ import {
 } from "lit-element";
 import { HomeAssistant } from "../../../types";
 import { ConfigEntryExtended } from "./ha-config-integrations";
-import {
-  domainToName,
-  fetchIntegrationManifests,
-  IntegrationManifest,
-} from "../../../data/integration";
+import { domainToName, IntegrationManifest } from "../../../data/integration";
 import {
   ConfigEntry,
   updateConfigEntry,
@@ -31,7 +27,7 @@ import {
 import { haStyle } from "../../../resources/styles";
 import "../../../components/ha-icon-next";
 import { fireEvent } from "../../../common/dom/fire_event";
-import { mdiDotsVertical } from "@mdi/js";
+import { mdiDotsVertical, mdiOpenInNew } from "@mdi/js";
 
 export interface ConfigEntryUpdatedEvent {
   entry: ConfigEntry;
@@ -72,17 +68,16 @@ export class HaIntegrationCard extends LitElement {
 
   @property() public items!: ConfigEntryExtended[];
 
+  @property() public manifest!: IntegrationManifest;
+
   @property() public entityRegistryEntries!: EntityRegistryEntry[];
 
   @property() public deviceRegistryEntries!: DeviceRegistryEntry[];
-
-  @property() public _manifests?: { [domain: string]: IntegrationManifest };
 
   @property() public selectedConfigEntryId?: string;
 
   firstUpdated(changedProps) {
     super.firstUpdated(changedProps);
-    this._fetchManifests();
   }
 
   protected render(): TemplateResult {
@@ -136,7 +131,6 @@ export class HaIntegrationCard extends LitElement {
   private _renderSingleEntry(item: ConfigEntryExtended): TemplateResult {
     const devices = this._getDevices(item);
     const entities = this._getEntities(item);
-    const manifest = this._manifests && this._manifests[this.domain];
 
     return html`
       <ha-card
@@ -242,18 +236,18 @@ export class HaIntegrationCard extends LitElement {
                 "ui.panel.config.integrations.config_entry.system_options"
               )}
             </mwc-list-item>
-            ${!manifest
+            ${!this.manifest
               ? ""
               : html`<mwc-list-item>
                   <a
                     class="documentation"
-                    href=${manifest.documentation}
+                    href=${this.manifest.documentation}
                     rel="noreferrer"
                     target="_blank"
                     >${this.hass.localize(
                       "ui.panel.config.integrations.config_entry.documentation"
-                    )}</a
-                  >
+                    )}<ha-svg-icon path=${mdiOpenInNew}></ha-svg-icon
+                  ></a>
                 </mwc-list-item>`}
             <mwc-list-item class="warning" @click=${this._removeIntegration}>
               ${this.hass.localize(
@@ -264,13 +258,6 @@ export class HaIntegrationCard extends LitElement {
         </div>
       </ha-card>
     `;
-  }
-
-  private async _fetchManifests() {
-    const manifests = {};
-    const fetched = await fetchIntegrationManifests(this.hass);
-    for (const manifest of fetched) manifests[manifest.domain] = manifest;
-    this._manifests = manifests;
   }
 
   private _selectConfigEntry(ev: Event) {
