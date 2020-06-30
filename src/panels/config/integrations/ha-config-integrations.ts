@@ -47,7 +47,11 @@ import {
   EntityRegistryEntry,
   subscribeEntityRegistry,
 } from "../../../data/entity_registry";
-import { domainToName } from "../../../data/integration";
+import {
+  domainToName,
+  fetchIntegrationManifests,
+  IntegrationManifest,
+} from "../../../data/integration";
 import { showConfigFlowDialog } from "../../../dialogs/config-flow/show-dialog-config-flow";
 import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
 import "../../../layouts/hass-loading-screen";
@@ -105,6 +109,8 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
   @property() private _entityRegistryEntries: EntityRegistryEntry[] = [];
 
   @property() private _deviceRegistryEntries: DeviceRegistryEntry[] = [];
+
+  @property() private _manifests!: { [domain: string]: IntegrationManifest };
 
   @property() private _showIgnored = false;
 
@@ -211,6 +217,7 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
     super.firstUpdated(changed);
     this._loadConfigEntries();
     this.hass.loadBackendTranslation("title", undefined, true);
+    this._fetchManifests();
   }
 
   protected updated(changed: PropertyValues) {
@@ -390,6 +397,7 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
                     .hass=${this.hass}
                     .domain=${domain}
                     .items=${items}
+                    .manifest=${this._manifests[domain]}
                     .entityRegistryEntries=${this._entityRegistryEntries}
                     .deviceRegistryEntries=${this._deviceRegistryEntries}
                   ></ha-integration-card>`
@@ -468,6 +476,13 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
           )
         );
     });
+  }
+
+  private async _fetchManifests() {
+    const manifests = {};
+    const fetched = await fetchIntegrationManifests(this.hass);
+    for (const manifest of fetched) manifests[manifest.domain] = manifest;
+    this._manifests = manifests;
   }
 
   private _handleRemoved(ev: HASSDomEvent<ConfigEntryRemovedEvent>) {
