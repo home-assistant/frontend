@@ -383,6 +383,10 @@ export class HaIntegrationCard extends LitElement {
         .card-actions .documentation {
           color: var(--primary-text-color);
         }
+        .card-actions .documentation ha-svg-icon {
+          color: var(--secondary-text-color);
+          margin-left: 5px;
+        }
         .group-header {
           display: flex;
           align-items: center;
