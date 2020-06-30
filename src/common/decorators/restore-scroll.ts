@@ -1,15 +1,5 @@
-import { LitElement } from "lit-element";
-import { Constructor } from "../../types";
-
-interface ClassElement {
-  kind: "field" | "method";
-  key: PropertyKey;
-  placement: "static" | "prototype" | "own";
-  initializer?: Function;
-  extras?: ClassElement[];
-  finisher?: <T>(cls: Constructor<T>) => undefined | Constructor<T>;
-  descriptor?: PropertyDescriptor;
-}
+import type { LitElement } from "lit-element";
+import type { ClassElement } from "../../types";
 
 export const restoreScroll = (selector: string): any => {
   return (element: ClassElement) => ({
