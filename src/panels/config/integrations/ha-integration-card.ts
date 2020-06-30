@@ -250,7 +250,7 @@ export class HaIntegrationCard extends LitElement {
                         "ui.panel.config.integrations.config_entry.documentation"
                       )}<ha-svg-icon
                         slot="meta"
-                        path=${mdiOpenInNew}
+                        .path=${mdiOpenInNew}
                       ></ha-svg-icon>
                     </mwc-list-item>
                   </a>
