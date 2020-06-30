@@ -238,17 +238,23 @@ export class HaIntegrationCard extends LitElement {
             </mwc-list-item>
             ${!this.manifest
               ? ""
-              : html`<mwc-list-item>
+              : html`
                   <a
                     class="documentation"
                     href=${this.manifest.documentation}
                     rel="noreferrer"
                     target="_blank"
-                    >${this.hass.localize(
-                      "ui.panel.config.integrations.config_entry.documentation"
-                    )}<ha-svg-icon path=${mdiOpenInNew}></ha-svg-icon
-                  ></a>
-                </mwc-list-item>`}
+                  >
+                    <mwc-list-item hasMeta>
+                      ${this.hass.localize(
+                        "ui.panel.config.integrations.config_entry.documentation"
+                      )}<ha-svg-icon
+                        slot="meta"
+                        path=${mdiOpenInNew}
+                      ></ha-svg-icon>
+                    </mwc-list-item>
+                  </a>
+                `}
             <mwc-list-item class="warning" @click=${this._removeIntegration}>
               ${this.hass.localize(
                 "ui.panel.config.integrations.config_entry.delete"
@@ -383,10 +389,6 @@ export class HaIntegrationCard extends LitElement {
         .card-actions .documentation {
           color: var(--primary-text-color);
         }
-        .card-actions .documentation ha-svg-icon {
-          color: var(--secondary-text-color);
-          margin-left: 5px;
-        }
         .group-header {
           display: flex;
           align-items: center;
@@ -429,6 +431,7 @@ export class HaIntegrationCard extends LitElement {
         }
         ha-button-menu {
           color: var(--secondary-text-color);
+          --mdc-menu-min-width: 200px;
         }
         @media (min-width: 563px) {
           paper-listbox {
