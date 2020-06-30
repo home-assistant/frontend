@@ -11,7 +11,7 @@ interface ClassElement {
   descriptor?: PropertyDescriptor;
 }
 
-export function restoreScroll(selector: string): any {
+export const restoreScroll = (selector: string): any => {
   return (element: ClassElement) => ({
     kind: "method",
     placement: "prototype",
@@ -40,4 +40,4 @@ export function restoreScroll(selector: string): any {
       };
     },
   });
-}
+};
