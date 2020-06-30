@@ -6,6 +6,7 @@ import {
   LitElement,
   property,
   TemplateResult,
+  eventOptions,
 } from "lit-element";
 import { classMap } from "lit-html/directives/class-map";
 import "../components/ha-menu-button";
@@ -49,13 +50,10 @@ class HassSubpage extends LitElement {
     `;
   }
 
-  private _saveScrollPos: EventListenerOrEventListenerObject &
-    Partial<AddEventListenerOptions> = {
-    handleEvent: (e: Event) => {
-      this._savedScrollPos = (e.target as HTMLDivElement).scrollTop;
-    },
-    passive: true,
-  };
+  @eventOptions({ passive: true })
+  private _saveScrollPos(e: Event) {
+    this._savedScrollPos = (e.target as HTMLDivElement).scrollTop;
+  }
 
   private _backTapped(): void {
     history.back();
