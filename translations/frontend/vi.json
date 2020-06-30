@@ -41,6 +41,19 @@
                 "none": "Không",
                 "sleep": "Ngủ"
             }
+        },
+        "humidifier": {
+            "mode": {
+                "auto": "Tự động",
+                "away": "Đi vắng",
+                "baby": "Trẻ em",
+                "boost": "Tăng cường",
+                "comfort": "Thoải mái",
+                "eco": "Tiết kiệm",
+                "home": "Ở nhà",
+                "normal": "Bình thường",
+                "sleep": "Ngủ"
+            }
         }
     },
     "state_badge": {
@@ -376,6 +389,12 @@
                 "oscillate": "Dao động",
                 "speed": "Tốc độ"
             },
+            "humidifier": {
+                "humidity": "Độ ẩm mong muốn",
+                "mode": "Chế độ",
+                "on_entity": "{name} bật",
+                "target_humidity_entity": "{name} độ ẩm mong muốn"
+            },
             "light": {
                 "brightness": "Độ sáng",
                 "color_temperature": "Nhiệt độ màu",
@@ -424,6 +443,7 @@
                 "attributes": {
                     "air_pressure": "Áp suất không khí",
                     "humidity": "Độ ẩm",
+                    "precipitation": "Lượng mưa",
                     "temperature": "Nhiệt độ",
                     "visibility": "Tầm nhìn",
                     "wind_speed": "Tốc độ gió"
@@ -484,6 +504,11 @@
                 "clear": "Xoá",
                 "show_areas": "Hiển thị các khu vực"
             },
+            "date-range-picker": {
+                "end_date": "Ngày kết thúc",
+                "select": "Lựa chọn",
+                "start_date": "Ngày bắt đầu"
+            },
             "device-picker": {
                 "clear": "Xoá",
                 "device": "Thiết bị",
@@ -543,6 +568,7 @@
                     "enabled_description": "Các thực thể bị vô hiệu hóa sẽ không được thêm vào Home Assistant.",
                     "enabled_label": "Kích hoạt thực thể",
                     "entity_id": "Mã định danh Thực thể",
+                    "icon": "Ghi đè Biểu tượng",
                     "icon_error": "Các biểu tượng phải ở định dạng 'tiền tố:tên biểu tượng', ví dụ như 'mdi:home'",
                     "name": "Ghi đè Tên",
                     "note": "Lưu ý: điều này có thể không hoạt động với tất cả các tích hợp.",
@@ -594,7 +620,8 @@
                     "text": "Văn bản"
                 },
                 "platform_not_loaded": "Tích hợp {platform} không được nạp. Hãy thêm nó vào cấu hình của bạn bằng cách thêm 'default_config:' hoặc ''{platform}:''.",
-                "required_error_msg": "Trường này là cần thiết"
+                "required_error_msg": "Trường này là cần thiết",
+                "yaml_not_editable": "Không thể sửa cài đặt của thực thể này từ giao diện người dùng. Chỉ các thực thể được thiết lập từ giao diện người dùng mới có thể được sửa chữa từ giao diện người dùng."
             },
             "more_info_control": {
                 "edit": "Chỉnh sửa thực thể",
@@ -650,7 +677,11 @@
             "zha_device_info": {
                 "buttons": {
                     "add": "Thêm thiết bị",
+                    "clusters": "Quản lý các Cluster",
                     "zigbee_information": "Chữ ký thiết bị ZigBee"
+                },
+                "confirmations": {
+                    "remove": "Bạn có chắc muốn xoá bỏ thiết bị không?"
                 },
                 "device_signature": "Chữ ký thiết bị ZigBee",
                 "services": {
@@ -1057,11 +1088,16 @@
                         },
                         "introduction": "Home Assistant giữ một sổ đăng ký của mọi thực thể mà nó từng thấy có thể được xác định duy nhất. Mỗi thực thể này sẽ có một ID thực thể được gán sẽ chỉ dành riêng cho thực thể này.",
                         "introduction2": "Sử dụng sổ đăng ký thực thể để ghi đè tên, thay đổi ID thực thể hoặc xóa mục nhập khỏi Home Assistant. Lưu ý, xóa mục đăng ký thực thể sẽ không xóa thực thể. Để làm điều đó, hãy theo liên kết dưới đây và xóa nó khỏi trang tích hợp.",
+                        "remove_selected": {
+                            "button": "Loại bỏ mục đã chọn",
+                            "confirm_partly_title": "Chỉ {number} thực thể đã chọn có thể bị xoá."
+                        },
                         "selected": "{number} đã chọn",
                         "status": {
                             "disabled": "Bị vô hiệu hoá",
                             "ok": "Đồng ý",
                             "readonly": "Chỉ đọc",
+                            "restored": "Đã khôi phục",
                             "unavailable": "Không khả dụng"
                         }
                     }
@@ -1111,6 +1147,11 @@
                     "server": "máy chủ",
                     "source": "Nguồn:",
                     "title": "Thông tin"
+                },
+                "integration_panel_move": {
+                    "link_integration_page": "trang các tích hợp",
+                    "missing_zha": "Thiếu bảng cấu hình ZHA? Nó đã được chuyển đến mục ZHA trong {integrations_page}.",
+                    "missing_zwave": "Thiếu bảng cấu hình Z-Wave? Nó đã được chuyển đến mục Z-Wave trên {integrations_page} ."
                 },
                 "integrations": {
                     "add_integration": "Thêm tích hợp",
@@ -1166,7 +1207,9 @@
                     "no_integrations": "Có vẻ như bạn chưa có bất kỳ tích hợp nào được cấu hình. Nhấp vào nút bên dưới để thêm tích hợp đầu tiên của bạn!",
                     "none": "Chưa có cấu hình nào",
                     "none_found": "Không tìm thấy tích hợp nào",
-                    "none_found_detail": "Điều chỉnh tiêu chí tìm kiếm của bạn."
+                    "none_found_detail": "Điều chỉnh tiêu chí tìm kiếm của bạn.",
+                    "rename_dialog": "Chỉnh sửa tên của mục cấu hình này",
+                    "rename_input_label": "Tên mục"
                 },
                 "introduction": "Ở đây có thể định cấu hình các thành phần của bạn và Home Assistant. Không phải mọi thứ đều có thể được cấu hình từ giao diện người dùng, nhưng chúng tôi đang cải thiện việc đó.",
                 "logs": {
@@ -1200,6 +1243,7 @@
                             "edit_dashboard": "Chỉnh sửa bảng điều khiển",
                             "icon": "Biểu tượng",
                             "new_dashboard": "Thêm bảng điều khiển mới",
+                            "remove_default": "Không làm mặc định trên thiết bị này",
                             "require_admin": "Chỉ Quản trị viên",
                             "set_default": "Đặt làm mặc định trên thiết bị này",
                             "show_sidebar": "Hiển thị trong thanh bên",
@@ -1258,6 +1302,7 @@
                     }
                 },
                 "mqtt": {
+                    "button": "Cấu hình",
                     "description_listen": "Nghe một chủ đề",
                     "description_publish": "Công bố một gói tin",
                     "listening_to": "Lắng nghe",
@@ -1414,21 +1459,29 @@
                         "spinner": "Tìm kiếm các thiết bị ZHA Zigbee ..."
                     },
                     "add": {
-                        "caption": "Thêm thiết bị"
+                        "caption": "Thêm thiết bị",
+                        "description": "Thêm thiết bị vào mạng ZigBee"
                     },
                     "button": "Cấu hình",
                     "caption": "ZHA",
+                    "clusters": {
+                        "header": "Các Cụm"
+                    },
                     "common": {
                         "add_devices": "Thêm thiết bị",
                         "devices": "Thiết bị",
                         "value": "Giá trị"
                     },
                     "description": "Quản lý mạng Zigbee Home Automation",
+                    "devices": {
+                        "header": "ZigBee Home Automation - Thiết Bị"
+                    },
                     "group_binding": {
                         "bind_button_help": "Liên kết nhóm đã chọn vào các cụm thiết bị đã chọn.",
                         "bind_button_label": "Liên kết Nhóm",
                         "cluster_selection_help": "Chọn các cụm để liên kết với nhóm đã chọn.",
                         "group_picker_help": "Chọn một nhóm để thi hành một lệnh liên kết.",
+                        "header": "Ràng buộc Nhóm",
                         "unbind_button_help": "Hủy liên kết nhóm đã chọn khỏi cụm thiết bị đã chọn.",
                         "unbind_button_label": "Ngừng liên kết Nhóm"
                     },
@@ -1439,42 +1492,59 @@
                         "create": "Tạo Nhóm",
                         "create_group": "Zigbee Home Automation - Tạo Nhóm",
                         "creating_group": "Đang tạo Nhóm",
+                        "description": "Tạo và sửa đổi các nhóm ZigBee",
                         "group_id": "Mã Nhóm",
                         "group_info": "Thông tin Nhóm",
                         "group_name_placeholder": "Tên Nhóm",
                         "group_not_found": "Không tìm thấy nhóm!",
                         "group-header": "ZigBee Home Automation - Chi tiết Nhóm",
                         "groups": "Nhóm",
+                        "groups-header": "ZigBee Home Automation - Quản Lý Nhóm",
+                        "header": "Zigbee Home Automation - Quản Lý Nhóm",
+                        "introduction": "Tạo và sửa đổi các nhóm zigbee",
+                        "manage_groups": "Quản Lý Các Nhóm Zigbee",
                         "members": "Thành viên",
                         "remove_groups": "Xoá các Nhóm",
                         "remove_members": "Xóa Thành viên",
                         "removing_groups": "Đang xoá các Nhóm",
-                        "removing_members": "Xoá các Thành Viên"
+                        "removing_members": "Xoá các Thành Viên",
+                        "zha_zigbee_groups": "Các Nhóm Zigbee ZHA"
                     },
+                    "header": "Cấu hình ZigBee Home Automation",
                     "network_management": {
                         "header": "Quản lí Mạng"
                     },
                     "network": {
                         "caption": "Mạng"
-                    }
+                    },
+                    "title": "Zigbee Home Automation"
                 },
                 "zone": {
+                    "add_zone": "Thêm Vùng địa lý",
                     "caption": "Khu vực",
                     "configured_in_yaml": "Các khu vực được định cấu hình qua file configuration.yaml không thể được chỉnh sửa thông qua giao diện.",
+                    "confirm_delete": "Bạn có chắc bạn muốn xoá bỏ Vùng địa lý này không?",
                     "create_zone": "Tạo một Vùng",
                     "description": "Quản lý các khu vực bạn muốn theo dõi mọi người trong đó.",
                     "detail": {
                         "create": "Tạo",
                         "delete": "Xóa",
+                        "icon": "Biểu tượng",
+                        "icon_error_msg": "Biểu tượng phải ở định dạng \"tiền tố:tên biểu tượng\", ví dụ: mdi:home",
                         "latitude": "Vĩ độ",
                         "longitude": "Kinh độ",
+                        "name": "Tên",
+                        "new_zone": "Khu vực mới",
                         "passive": "Thụ động",
                         "radius": "Bán kính",
                         "required_error_msg": "Trường này là cần thiết",
                         "update": "Cập nhật"
                     },
-                    "edit_home_zone": "Bán kính của vùng Nhà chưa thể chỉnh sửa được từ frontend. Kéo điểm đánh dấu trên bản đồ để di chuyển vùng Nhà.",
+                    "edit_home_zone": "Bán kính của vùng quanh Nhà chưa thể chỉnh sửa được từ frontend. Kéo điểm đánh dấu trên bản đồ để di chuyển vùng quanh Nhà.",
+                    "edit_home_zone_narrow": "Bán kính của Khu vực nhà chưa thể được chỉnh sửa từ giao diện. Vị trí này có thể được thay đổi từ cấu hình chung.",
                     "go_to_core_config": "Đi đến cấu hình chung?",
+                    "home_zone_core_config": "Vị trí của Khu vực nhà của bạn có thể chỉnh sửa từ trang cấu hình chung. Bán kính của Khu vực nhà chưa thể được chỉnh sửa từ giao diện. Bạn có muốn chuyển đến cấu hình chung?",
+                    "introduction": "Vùng địa lý cho phép bạn xác định các khu vực nhất định trên trái đất. Khi một người nằm trong một vùng, trạng thái của họ sẽ hiển thị tên vùng này. Vùng cũng có thể được sử dụng như một kích hoạt hoặc điều kiện trong các thiết lập tự động hóa.",
                     "no_zones_created_yet": "Có vẻ như bạn chưa tạo ra bất kỳ khu vực nào."
                 },
                 "zwave": {
@@ -1494,9 +1564,12 @@
                     },
                     "node_management": {
                         "add_to_group": "Thêm vào Nhóm",
-                        "group": "Nhóm"
+                        "group": "Nhóm",
+                        "node_to_control": "Nút để điều khiển",
+                        "remove_from_group": "Xóa Khỏi Nhóm"
                     },
                     "ozw_log": {
+                        "last_log_lines": "Số dòng nhật ký gần nhất",
                         "load": "Tải"
                     },
                     "services": {
@@ -1505,6 +1578,9 @@
                         "node_info": "Thông tin nút",
                         "print_node": "Nút in ấn",
                         "refresh_entity": "Làm mới Thực thể",
+                        "refresh_node": "Làm Mới Nút",
+                        "remove_failed_node": "Loại Bỏ Nút Bị Lỗi",
+                        "replace_failed_node": "Thay Thế Nút Bị Lỗi",
                         "save_config": "Lưu cấu hình",
                         "soft_reset": "Khởi động lại",
                         "test_node": "Nút kiểm tra"
@@ -1573,11 +1649,23 @@
             },
             "history": {
                 "period": "Giai đoạn",
+                "ranges": {
+                    "last_week": "Tuần trước",
+                    "this_week": "Tuần này",
+                    "today": "Hôm nay",
+                    "yesterday": "Hôm qua"
+                },
                 "showing_entries": "Hiển thị mục cho"
             },
             "logbook": {
                 "entries_not_found": "Không tìm thấy trong sổ nhật ký.",
                 "period": "Giai đoạn",
+                "ranges": {
+                    "last_week": "Tuần trước",
+                    "this_week": "Tuần này",
+                    "today": "Hôm nay",
+                    "yesterday": "Hôm qua"
+                },
                 "showing_entries": "Hiển thị mục cho"
             },
             "lovelace": {
@@ -1603,6 +1691,10 @@
                         "tap": "Nhấn:",
                         "toggle": "Chuyển đổi {name}"
                     },
+                    "safe-mode": {
+                        "description": "Home Assistant gặp sự cố trong khi tải cấu hình của bạn và hiện đang chạy ở chế độ an toàn. Hãy xem nhật ký lỗi để xem phần nào bị sai.",
+                        "header": "Chế Độ An Toàn Đã Kích Hoạt"
+                    },
                     "shopping-list": {
                         "add_item": "Thêm mục",
                         "checked_items": "Mục đã chọn",
@@ -1619,11 +1711,16 @@
                 },
                 "editor": {
                     "card": {
+                        "alarm-panel": {
+                            "description": "Thẻ Bảng điều khiển An ninh cho phép bạn Kích hoạt và Vô hiệu hóa tích hợp bảng điều khiển an ninh."
+                        },
                         "button": {
+                            "description": "Thẻ Nút cho phép bạn thêm các nút để thực hiện các tác vụ.",
                             "name": "Nút"
                         },
                         "conditional": {
                             "card": "Thẻ",
+                            "change_type": "Đổi loại",
                             "condition_explanation": "Thẻ sẽ được hiển thị khi TẤT CẢ các điều kiện dưới đây được đáp ứng.",
                             "conditions": "Điều kiện",
                             "current_state": "hiện tại",
@@ -1631,12 +1728,19 @@
                             "state_equal": "Trạng thái bằng với",
                             "state_not_equal": "Trạng thái không bằng với"
                         },
+                        "entities": {
+                            "description": "Thẻ Các Thực thể là loại thẻ phổ biến nhất. Nó nhóm các mục với nhau thành một danh sách."
+                        },
                         "entity-filter": {
+                            "description": "Thẻ Bộ lọc Thực thể cho phép bạn xác định danh sách các thực thể mà bạn muốn theo dõi chỉ khi chúng ở trạng thái nhất định.",
                             "name": "Bộ lọc Thực thể"
                         },
                         "entity": {
                             "description": "Thẻ Thực thể cung cấp cho bạn thông tin tổng quát về trạng thái của thực thể.",
                             "name": "Thực thể"
+                        },
+                        "gauge": {
+                            "description": "Thẻ Thước đo là một thẻ cơ bản cho phép bạn quan sát trực quan dữ liệu của cảm biến."
                         },
                         "generic": {
                             "attribute": "Thuộc tính",
@@ -1646,6 +1750,9 @@
                             "no_theme": "Không có theme.",
                             "state": "Trạng thái"
                         },
+                        "glance": {
+                            "description": "Thẻ Xem nhanh rất hữu ích để hiển thị nhiều cảm biến trong một không gian nhỏ gọn."
+                        },
                         "history-graph": {
                             "description": "Thẻ Biểu đồ Lịch sử cho phép bạn hiển thị biểu đồ cho từng thực thể được liệt kê."
                         },
@@ -1653,7 +1760,12 @@
                             "description": "Thẻ Xếp Ngang cho phép bạn nhóm nhiều thẻ để các thẻ này luôn nằm cạnh nhau trong cùng một hàng.",
                             "name": "Xếp Ngang"
                         },
+                        "humidifier": {
+                            "description": "Thẻ Máy bù ẩm dùng để điều khiển thực thể đại diện cho máy bù ẩm. Cho phép bạn thay đổi độ ẩm và các chế độ của máy.",
+                            "name": "Máy bù ẩm"
+                        },
                         "iframe": {
+                            "description": "Thẻ Trang web cho phép bạn nhúng các trang ưa thích vào Home Assistant.",
                             "name": "Trang web"
                         },
                         "light": {
@@ -1663,10 +1775,24 @@
                             "description": "Thẻ Bản đồ cho phép bạn hiển thị các thực thể trên bản đồ.",
                             "hours_to_show": "Giờ hiển thị"
                         },
+                        "markdown": {
+                            "description": "Thẻ Markdown được sử dụng để hiển thị Markdown."
+                        },
                         "media-control": {
+                            "description": "Thẻ Điều khiển Phương tiện được sử dụng để hiển thị các thực thể Media Player trên một giao diện với các điều khiển dễ sử dụng.",
                             "name": "Điều khiển Thiết bị đa phương tiện"
                         },
+                        "picture-elements": {
+                            "description": "Thẻ Các thành phần trong Ảnh là một trong những loại thẻ linh hoạt nhất. Các thẻ cho phép bạn định vị các biểu tượng hoặc văn bản và thậm chí cả các dịch vụ! Trên một hình ảnh dựa trên tọa độ."
+                        },
+                        "picture-entity": {
+                            "description": "Thẻ Thực thể Hình ảnh hiển thị một thực thể ở dạng hình ảnh. Thay vì sử dụng hình ảnh từ URL, nó cũng có thể hiển thị hình ảnh của các thực thể camera."
+                        },
+                        "picture-glance": {
+                            "description": "Thẻ Hình ảnh Xem nhanh hiển thị hình ảnh và các thực thể tương ứng như một biểu tượng. Các thực thể ở bên phải cho phép các hành động chuyển đổi, những thực thể còn lại hiển thị hộp thoại thông tin bổ sung."
+                        },
                         "picture": {
+                            "description": "Thẻ ảnh cho phép bạn thiết lập một hình ảnh sử dụng để điều hướng đến các đường dẫn khác nhau trong giao diện của bạn hoặc gọi một dịch vụ.",
                             "name": "Hình ảnh"
                         },
                         "plant-status": {
@@ -1689,6 +1815,7 @@
                             "name": "Xếp Dọc"
                         },
                         "weather-forecast": {
+                            "description": "Thẻ Dự báo Thời tiết hiển thị thông tin thời tiết. Rất hữu ích khi thêm vào các giao diện điều khiển dùng gắn tường.",
                             "name": "Dự báo Thời tiết",
                             "show_forecast": "Hiển thị Dự báo thời tiết"
                         }
@@ -1720,6 +1847,8 @@
                         "header": "Cấu hình Tầm nhìn",
                         "move_right": "Di chuyển tầm nhìn sang phải",
                         "tab_badges": "Huy hiệu",
+                        "tab_settings": "Cài đặt",
+                        "tab_visibility": "Hiển thị",
                         "visibility": {
                             "select_users": "Chọn người dùng sẽ thấy chế độ xem này trong thanh điều hướng"
                         }
@@ -1736,10 +1865,13 @@
                         "para_no_id": "Phần tử này không có ID. Vui lòng thêm ID vào thành phần này trong 'ui-lovelace.yaml'."
                     },
                     "raw_editor": {
+                        "confirm_remove_config_text": "Chúng tôi sẽ tự động tạo giao diện người dùng Lovelace với các khu vực và thiết bị của bạn nếu bạn loại bỏ cấu hình giao diện người dùng Lovelace.",
+                        "confirm_remove_config_title": "Bạn có chắc  muốn loại bỏ cấu hình giao diện người dùng Lovelace? Chúng tôi sẽ tự động tạo ra các giao diện người dùng Lovelace với các khu vực và thiết bị của bạn.",
                         "confirm_unsaved_changes": "Bạn có những thay đổi chưa được lưu, bạn có chắc muốn thoát không?",
                         "confirm_unsaved_comments": "Cấu hình của bạn chứa (các) ghi chú, những ghi chú này sẽ không được lưu. Bạn có muốn tiếp tục?",
                         "error_invalid_config": "Cấu hình của bạn không hợp lệ: {error}",
                         "error_parse_yaml": "Không thể phân tích YAML: {error}",
+                        "error_remove": "Không thể loại bỏ cấu hình: {error}",
                         "error_save_yaml": "Không thể lưu YAML: {error}",
                         "header": "Chỉnh sửa cấu hình",
                         "resources_moved": "Các Tài nguyên giờ không nên được thêm vào qua cấu hình Lovelace nhưng có thể thêm vào qua bảng điều khiển cấu hình Lovelace.",
@@ -1794,7 +1926,10 @@
                     "title": "Thực thể chưa sử dụng"
                 },
                 "views": {
-                    "confirm_delete": "Xóa cửa sổ?"
+                    "confirm_delete": "Xóa cửa sổ?",
+                    "confirm_delete_existing_cards": "Xóa chế độ xem này cũng đồng thời xoá các thẻ bên trong",
+                    "confirm_delete_existing_cards_text": "Bạn có chắc chắn muốn xóa chế độ xem ''{name}'' không? Chế độ xem chứa {Number} thẻ sẽ bị xóa. Hành động này không thể hoàn tác được.",
+                    "confirm_delete_text": "Bạn có chắc chắn muốn xóa chế độ xem ''{name}'' không?"
                 },
                 "warning": {
                     "attribute_not_found": "Thuộc tính {attribute} không có trong: {entity}",
