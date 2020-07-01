@@ -20,6 +20,7 @@ import { HomeAssistant, Route } from "../types";
 import "../components/ha-svg-icon";
 import "../components/ha-icon";
 import "../components/ha-tab";
+import { restoreScroll } from "../common/decorators/restore-scroll";
 
 export interface PageNavigation {
   path: string;
@@ -53,16 +54,8 @@ class HassTabsSubpage extends LitElement {
 
   @property() private _activeTab?: PageNavigation;
 
-  @property() private _savedScrollPos?: number;
-
-  public connectedCallback() {
-    super.connectedCallback();
-    if (this._savedScrollPos) {
-      (this.shadowRoot!.querySelector(
-        ".content"
-      ) as HTMLDivElement).scrollTop = this._savedScrollPos;
-    }
-  }
+  // @ts-ignore
+  @restoreScroll(".content") private _savedScrollPos?: number;
 
   private _getTabs = memoizeOne(
     (
