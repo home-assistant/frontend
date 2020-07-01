@@ -646,7 +646,7 @@
                     "pattern": "Patró Regex per a la validació de client",
                     "text": "Text"
                 },
-                "platform_not_loaded": "La integració {platform} no està carregada, afegeix-la a la teva configuració mitjançant 'default_config:' o bé ''{platform}:''.",
+                "platform_not_loaded": "La integració {platform} no està carregada. Afegeix-la a la teva configuració afegint 'default_config:' o bé ''{platform}:''.",
                 "required_error_msg": "Aquest camp és obligatori",
                 "yaml_not_editable": "La configuració d'aquesta entitat no es pot editar des de la interfície d'usuari. Només es poden editar des de la interfície aquelles entitats que s'han configurat des d'ella."
             },
