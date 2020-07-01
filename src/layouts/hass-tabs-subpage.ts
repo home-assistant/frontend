@@ -8,6 +8,7 @@ import {
   property,
   PropertyValues,
   TemplateResult,
+  eventOptions,
 } from "lit-element";
 import { classMap } from "lit-html/directives/class-map";
 import memoizeOne from "memoize-one";
@@ -19,6 +20,7 @@ import { HomeAssistant, Route } from "../types";
 import "../components/ha-svg-icon";
 import "../components/ha-icon";
 import "../components/ha-tab";
+import { restoreScroll } from "../common/decorators/restore-scroll";
 
 export interface PageNavigation {
   path: string;
@@ -51,6 +53,9 @@ class HassTabsSubpage extends LitElement {
   @property({ type: Boolean, reflect: true }) public narrow = false;
 
   @property() private _activeTab?: PageNavigation;
+
+  // @ts-ignore
+  @restoreScroll(".content") private _savedScrollPos?: number;
 
   private _getTabs = memoizeOne(
     (
@@ -143,10 +148,15 @@ class HassTabsSubpage extends LitElement {
           <slot name="toolbar-icon"></slot>
         </div>
       </div>
-      <div class="content">
+      <div class="content" @scroll=${this._saveScrollPos}>
         <slot></slot>
       </div>
     `;
+  }
+
+  @eventOptions({ passive: true })
+  private _saveScrollPos(e: Event) {
+    this._savedScrollPos = (e.target as HTMLDivElement).scrollTop;
   }
 
   private _tabTapped(ev: Event): void {

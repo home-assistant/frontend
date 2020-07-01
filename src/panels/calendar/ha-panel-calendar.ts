@@ -62,7 +62,7 @@ class PanelCalendar extends LitElement {
 
   protected render(): TemplateResult {
     return html`
-      <app-header-layout has-scrolling-region>
+      <app-header-layout>
         <app-header fixed slot="header">
           <app-toolbar>
             <ha-menu-button

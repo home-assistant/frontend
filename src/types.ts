@@ -47,6 +47,16 @@ declare global {
 
 export type Constructor<T = {}> = new (...args: any[]) => T;
 
+export interface ClassElement {
+  kind: "field" | "method";
+  key: PropertyKey;
+  placement: "static" | "prototype" | "own";
+  initializer?: Function;
+  extras?: ClassElement[];
+  finisher?: <T>(cls: Constructor<T>) => undefined | Constructor<T>;
+  descriptor?: PropertyDescriptor;
+}
+
 export interface WebhookError {
   code: number;
   message: string;

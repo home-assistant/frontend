@@ -9,7 +9,7 @@ import {
 } from "lit-element";
 import { HomeAssistant } from "../../../types";
 import { ConfigEntryExtended } from "./ha-config-integrations";
-import { domainToName } from "../../../data/integration";
+import { domainToName, IntegrationManifest } from "../../../data/integration";
 import {
   ConfigEntry,
   updateConfigEntry,
@@ -27,7 +27,7 @@ import {
 import { haStyle } from "../../../resources/styles";
 import "../../../components/ha-icon-next";
 import { fireEvent } from "../../../common/dom/fire_event";
-import { mdiDotsVertical } from "@mdi/js";
+import { mdiDotsVertical, mdiOpenInNew } from "@mdi/js";
 
 export interface ConfigEntryUpdatedEvent {
   entry: ConfigEntry;
@@ -68,11 +68,17 @@ export class HaIntegrationCard extends LitElement {
 
   @property() public items!: ConfigEntryExtended[];
 
+  @property() public manifest!: IntegrationManifest;
+
   @property() public entityRegistryEntries!: EntityRegistryEntry[];
 
   @property() public deviceRegistryEntries!: DeviceRegistryEntry[];
 
   @property() public selectedConfigEntryId?: string;
+
+  firstUpdated(changedProps) {
+    super.firstUpdated(changedProps);
+  }
 
   protected render(): TemplateResult {
     if (this.items.length === 1) {
@@ -125,6 +131,7 @@ export class HaIntegrationCard extends LitElement {
   private _renderSingleEntry(item: ConfigEntryExtended): TemplateResult {
     const devices = this._getDevices(item);
     const entities = this._getEntities(item);
+
     return html`
       <ha-card
         outlined
@@ -229,6 +236,25 @@ export class HaIntegrationCard extends LitElement {
                 "ui.panel.config.integrations.config_entry.system_options"
               )}
             </mwc-list-item>
+            ${!this.manifest
+              ? ""
+              : html`
+                  <a
+                    class="documentation"
+                    href=${this.manifest.documentation}
+                    rel="noreferrer"
+                    target="_blank"
+                  >
+                    <mwc-list-item hasMeta>
+                      ${this.hass.localize(
+                        "ui.panel.config.integrations.config_entry.documentation"
+                      )}<ha-svg-icon
+                        slot="meta"
+                        .path=${mdiOpenInNew}
+                      ></ha-svg-icon>
+                    </mwc-list-item>
+                  </a>
+                `}
             <mwc-list-item class="warning" @click=${this._removeIntegration}>
               ${this.hass.localize(
                 "ui.panel.config.integrations.config_entry.delete"
@@ -360,6 +386,9 @@ export class HaIntegrationCard extends LitElement {
           align-items: center;
           padding-right: 5px;
         }
+        .card-actions .documentation {
+          color: var(--primary-text-color);
+        }
         .group-header {
           display: flex;
           align-items: center;
@@ -402,6 +431,7 @@ export class HaIntegrationCard extends LitElement {
         }
         ha-button-menu {
           color: var(--secondary-text-color);
+          --mdc-menu-min-width: 200px;
         }
         @media (min-width: 563px) {
           paper-listbox {

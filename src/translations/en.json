@@ -1469,6 +1469,7 @@
             "rename": "Rename",
             "options": "Options",
             "system_options": "System options",
+            "documentation": "Documentation",
             "delete": "Delete",
             "delete_confirm": "Are you sure you want to delete this integration?",
             "restart_confirm": "Restart Home Assistant to finish removing this integration",
