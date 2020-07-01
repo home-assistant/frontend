@@ -159,7 +159,7 @@ For loop example:
   }
 
   computeFormClasses(narrow) {
-    return narrow ? "content fit" : "content fit layout horizontal";
+    return narrow ? "content" : "content layout horizontal";
   }
 
   computeRenderedClasses(error) {
