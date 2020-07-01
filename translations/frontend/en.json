@@ -1431,6 +1431,7 @@
                         "delete_confirm": "Are you sure you want to delete this integration?",
                         "device_unavailable": "device unavailable",
                         "devices": "{count} {count, plural,\n  one {device}\n  other {devices}\n}",
+                        "documentation": "Documentation",
                         "entities": "{count} {count, plural,\n  one {entity}\n  other {entities}\n}",
                         "entity_unavailable": "entity unavailable",
                         "firmware": "Firmware: {version}",

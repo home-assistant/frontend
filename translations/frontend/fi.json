@@ -48,6 +48,19 @@
                 "none": "Asettamatta",
                 "sleep": "Nukkumassa"
             }
+        },
+        "humidifier": {
+            "mode": {
+                "auto": "Automaatilla",
+                "away": "Poissa",
+                "baby": "Vauva",
+                "boost": "Tehostus",
+                "comfort": "Mukavuus",
+                "eco": "Ekonominen",
+                "home": "Koti",
+                "normal": "Normaali",
+                "sleep": "Nukkumassa"
+            }
         }
     },
     "state_badge": {
@@ -388,6 +401,12 @@
                 "reverse": "Taaksepäin",
                 "speed": "Nopeus"
             },
+            "humidifier": {
+                "humidity": "Tavoitekosteus",
+                "mode": "Tila",
+                "on_entity": "{name} päällä",
+                "target_humidity_entity": "{name} tavoitekosteus"
+            },
             "light": {
                 "brightness": "Kirkkaus",
                 "color_temperature": "Värilämpötila",
@@ -627,7 +646,7 @@
                     "pattern": "Regex-malli käyttäjäpuolen validointia varten.",
                     "text": "Teksti"
                 },
-                "platform_not_loaded": "Integrointia {platform} ei ole ladattu. Voit ladata sen llisäämällä \"default_config:\" tai ''{platform}:'' konfiguraatiotiedostoon.",
+                "platform_not_loaded": "Integrointia {platform} ei ole ladattu. Voit ladata sen lisäämällä \"default_config:\" tai ''{platform}:'' konfiguraatiotiedostoon.",
                 "required_error_msg": "Tämä kenttä on pakollinen",
                 "yaml_not_editable": "Tämän kohteen asetuksia ei voi muokata käyttöliittymästä. Vain käyttöliittymästä määritetyt kohteet ovat määritettävissä käyttöliittymästä."
             },
@@ -2006,7 +2025,7 @@
                         "column_example": "Esimerkki",
                         "column_parameter": "Parametri",
                         "data": "Palvelutiedot (YAML, valinnainen)",
-                        "description": "Service dev -työkalun avulla voit kutsua mitMitä tahansa käytettävissä olevaan palvelua Home Assistant -sovelluksessa.",
+                        "description": "Service dev -työkalun avulla voit kutsua mitä tahansa käytettävissä olevaan palvelua Home Assistant -sovelluksessa.",
                         "fill_example_data": "Täytä esimerkkitiedoilla",
                         "no_description": "Kuvausta ei ole saatavilla",
                         "no_parameters": "Tämä palvelu ei ota parametreja.",
@@ -2197,6 +2216,10 @@
                         "horizontal-stack": {
                             "description": "Vaakapinokortin avulla voit pinota yhteen useita kortteja, jolloin ne ovat aina vierekkäin yhden sarakkeen tilassa.",
                             "name": "Vaakapino"
+                        },
+                        "humidifier": {
+                            "description": "Ilmankostutin-kortti antaa hallita ilmankostutin kokonaisuutta. Voit muuttaa kosteus ja tila asetusta.",
+                            "name": "Ilmankostutin"
                         },
                         "iframe": {
                             "description": "Verkkosivukortin avulla voit upottaa suosikkiverkkosivusi suoraan Home Assistantiin.",
