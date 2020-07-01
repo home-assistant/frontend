@@ -11,6 +11,7 @@ import {
 import { classMap } from "lit-html/directives/class-map";
 import "../components/ha-menu-button";
 import "../components/ha-icon-button-arrow-prev";
+import { restoreScroll } from "../common/decorators/restore-scroll";
 
 @customElement("hass-subpage")
 class HassSubpage extends LitElement {
@@ -23,16 +24,8 @@ class HassSubpage extends LitElement {
   @property({ type: Boolean })
   public hassio = false;
 
-  @property() private _savedScrollPos?: number;
-
-  public connectedCallback() {
-    super.connectedCallback();
-    if (this._savedScrollPos) {
-      (this.shadowRoot!.querySelector(
-        ".content"
-      ) as HTMLDivElement).scrollTop = this._savedScrollPos;
-    }
-  }
+  // @ts-ignore
+  @restoreScroll(".content") private _savedScrollPos?: number;
 
   protected render(): TemplateResult {
     return html`

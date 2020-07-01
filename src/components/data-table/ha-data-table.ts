@@ -9,6 +9,8 @@ import {
   PropertyValues,
   query,
   TemplateResult,
+  eventOptions,
+  internalProperty,
 } from "lit-element";
 import { classMap } from "lit-html/directives/class-map";
 import { ifDefined } from "lit-html/directives/if-defined";
@@ -23,6 +25,7 @@ import type { HaCheckbox } from "../ha-checkbox";
 import "../ha-icon";
 import { filterData, sortData } from "./sort-filter";
 import memoizeOne from "memoize-one";
+import { restoreScroll } from "../../common/decorators/restore-scroll";
 
 declare global {
   // for fire event
@@ -96,15 +99,15 @@ export class HaDataTable extends LitElement {
 
   @property({ type: String }) public filter = "";
 
-  @property({ type: Boolean }) private _filterable = false;
+  @internalProperty() private _filterable = false;
 
-  @property({ type: String }) private _filter = "";
+  @internalProperty() private _filter = "";
 
-  @property({ type: String }) private _sortColumn?: string;
+  @internalProperty() private _sortColumn?: string;
 
-  @property({ type: String }) private _sortDirection: SortingDirection = null;
+  @internalProperty() private _sortDirection: SortingDirection = null;
 
-  @property({ type: Array }) private _filteredData: DataTableRowData[] = [];
+  @internalProperty() private _filteredData: DataTableRowData[] = [];
 
   @query("slot[name='header']") private _header!: HTMLSlotElement;
 
@@ -117,6 +120,9 @@ export class HaDataTable extends LitElement {
   private _sortColumns: SortableColumnContainer = {};
 
   private curRequest = 0;
+
+  // @ts-ignore
+  @restoreScroll(".scroller") private _savedScrollPos?: number;
 
   private _debounceSearch = debounce(
     (value: string) => {
@@ -286,7 +292,10 @@ export class HaDataTable extends LitElement {
                 </div>
               `
             : html`
-                <div class="mdc-data-table__content scroller">
+                <div
+                  class="mdc-data-table__content scroller"
+                  @scroll=${this._saveScrollPos}
+                >
                   ${scroll({
                     items: !this.hasFab
                       ? this._filteredData
@@ -497,6 +506,11 @@ export class HaDataTable extends LitElement {
     }
     await this.updateComplete;
     this._table.style.height = `calc(100% - ${this._header.clientHeight}px)`;
+  }
+
+  @eventOptions({ passive: true })
+  private _saveScrollPos(e: Event) {
+    this._savedScrollPos = (e.target as HTMLDivElement).scrollTop;
   }
 
   static get styles(): CSSResult {
