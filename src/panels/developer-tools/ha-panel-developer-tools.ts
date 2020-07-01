@@ -36,7 +36,7 @@ class PanelDeveloperTools extends LitElement {
   protected render(): TemplateResult {
     const page = this._page;
     return html`
-      <app-header-layout has-scrolling-region>
+      <app-header-layout>
         <app-header fixed slot="header">
           <app-toolbar>
             <ha-menu-button
