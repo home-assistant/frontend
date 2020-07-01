@@ -184,10 +184,8 @@ class PartialPanelResolver extends HassRouterPage {
         // Do not disconnect any iframe panel
         curPanel.component_name !== "iframe" &&
         // Do not disconnect any custom panel that embeds into iframe (ie hassio)
-        !(
-          curPanel.component_name === "custom" &&
-          (curPanel.config as CustomPanelInfo).config._panel_custom.embed_iframe
-        )
+        (curPanel.component_name !== "custom" ||
+          !(curPanel as CustomPanelInfo).config._panel_custom.embed_iframe)
       ) {
         this._disconnectedPanel = this.lastChild as HTMLElement;
         const activeEl = deepActiveElement(
