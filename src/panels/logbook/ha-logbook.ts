@@ -6,6 +6,7 @@ import {
   property,
   PropertyValues,
   TemplateResult,
+  eventOptions,
 } from "lit-element";
 import { scroll } from "lit-virtualizer";
 import { formatDate } from "../../common/datetime/format_date";
@@ -17,6 +18,7 @@ import { computeRTL } from "../../common/util/compute_rtl";
 import "../../components/ha-icon";
 import { LogbookEntry } from "../../data/logbook";
 import { HomeAssistant } from "../../types";
+import { restoreScroll } from "../../common/decorators/restore-scroll";
 
 class HaLogbook extends LitElement {
   @property() public hass!: HomeAssistant;
@@ -28,6 +30,9 @@ class HaLogbook extends LitElement {
   @property({ attribute: "rtl", type: Boolean, reflect: true })
   // @ts-ignore
   private _rtl = false;
+
+  // @ts-ignore
+  @restoreScroll(".container") private _savedScrollPos?: number;
 
   protected shouldUpdate(changedProps: PropertyValues) {
     const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
@@ -50,7 +55,7 @@ class HaLogbook extends LitElement {
     }
 
     return html`
-      <div class="container">
+      <div class="container" @scroll=${this._saveScrollPos}>
         ${scroll({
           items: this.entries,
           renderItem: (item: LogbookEntry, index?: number) =>
@@ -114,6 +119,11 @@ class HaLogbook extends LitElement {
         </div>
       </div>
     `;
+  }
+
+  @eventOptions({ passive: true })
+  private _saveScrollPos(e: Event) {
+    this._savedScrollPos = (e.target as HTMLDivElement).scrollTop;
   }
 
   private _entityClicked(ev: Event) {
