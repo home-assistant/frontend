@@ -50,7 +50,7 @@ class HaPanelHistory extends LitElement {
 
   protected render() {
     return html`
-      <app-header-layout has-scrolling-region>
+      <app-header-layout>
         <app-header slot="header" fixed>
           <app-toolbar>
             <ha-menu-button

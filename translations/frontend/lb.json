@@ -502,6 +502,7 @@
             "menu": "Menu",
             "next": "Nächst",
             "no": "Nee",
+            "overflow_menu": "Iwwerlaf menu",
             "previous": "Virdrun",
             "refresh": "Aktualiséieren",
             "save": "Späicheren",
@@ -1769,6 +1770,8 @@
                         "discovered_text": "Apparater tauchen hei op soubaal se entdeckt sinn.",
                         "discovery_text": "Entdeckten Apparater tauchen op dëser Platz op. Suivéiert d'Instruktiounen fir är Apparater an aktivéiert den Kupplung's Mod.",
                         "header": "Zigbee Home Automation - Apparater dobäisetzen",
+                        "no_devices_found": "Keng Apparater fonnt, stell sécher dass sie am Kopplung Modus sinn a vermedi dass sie während der Entdeckung net an de Stand by ginn.",
+                        "pairing_mode": "Stell sécher dass deng Apparater sech am Kopplungs Modus befannen. Kuckt d'Instruktioune vun dengen Apparater wéi dat geht.",
                         "search_again": "Nach emol sichen",
                         "spinner": "Sicht no ZHA Zigbee Apparater..."
                     },
@@ -2210,6 +2213,7 @@
                             "name": "Horizontale Stapel"
                         },
                         "humidifier": {
+                            "description": "Loftbefiichter Kaart gëtt dir Kontroll iwwert ee Loftbefiichter. Erlaabt et dir d'Fiichtegkeet a Betriibs Modus anzestellen.",
                             "name": "Loftbefiichter"
                         },
                         "iframe": {
