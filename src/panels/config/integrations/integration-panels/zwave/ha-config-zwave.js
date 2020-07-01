@@ -89,7 +89,7 @@ class HaConfigZwave extends LocalizeMixin(EventsMixin(PolymerElement)) {
           color: var(--primary-color);
         }
       </style>
-      <ha-app-layout has-scrolling-region="">
+      <ha-app-layout>
         <app-header slot="header" fixed="">
           <app-toolbar>
             <ha-icon-button-arrow-prev

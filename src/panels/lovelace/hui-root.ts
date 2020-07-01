@@ -8,7 +8,6 @@ import {
   mdiPencil,
   mdiHelpCircle,
 } from "@mdi/js";
-import "@polymer/app-layout/app-header-layout/app-header-layout";
 import "@polymer/app-layout/app-header/app-header";
 import "@polymer/app-layout/app-scroll-effects/effects/waterfall";
 import "@polymer/app-layout/app-toolbar/app-toolbar";
