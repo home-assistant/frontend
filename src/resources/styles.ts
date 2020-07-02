@@ -242,7 +242,7 @@ export const haStyleDialog = css`
     ha-dialog {
       --mdc-dialog-min-width: 100vw;
       --mdc-dialog-max-height: 100vh;
-      --mdc-dialog-shape-radius: 0px;
+      --mdc-shape-medium: 0px;
       --vertial-align-dialog: flex-end;
     }
   }
