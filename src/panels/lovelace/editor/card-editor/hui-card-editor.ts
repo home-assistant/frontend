@@ -128,6 +128,9 @@ export class HuiCardEditor extends LitElement {
   }
 
   public refreshYamlEditor(focus = false) {
+    if (this._configElement?.refreshYamlEditor) {
+      this._configElement.refreshYamlEditor(focus);
+    }
     if (!this._yamlEditor?.codemirror) {
       return;
     }
