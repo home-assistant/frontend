@@ -1431,6 +1431,7 @@
                         "delete_confirm": "確定要刪除此整合？",
                         "device_unavailable": "設備不可用",
                         "devices": "{count} {count, plural,\n  one {個設備}\n  other {個設備}\n}",
+                        "documentation": "相關文件",
                         "entities": "{count} {count, plural,\n  one {個物件}\n  other {個物件}\n}",
                         "entity_unavailable": "物件不可用",
                         "firmware": "韌體：{version}",
