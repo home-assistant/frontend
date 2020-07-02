@@ -5,11 +5,24 @@ import {
   property,
   TemplateResult,
 } from "lit-element";
-import { fireEvent } from "../../common/dom/fire_event";
+import { fireEvent, HASSDomEvent } from "../../common/dom/fire_event";
 import "../../components/ha-switch";
 import type { HaSwitch } from "../../components/ha-switch";
 import type { HomeAssistant } from "../../types";
 import "./ha-settings-row";
+
+declare global {
+  // for fire event
+  interface HASSDomEvents {
+    "hass-suspend-when-hidden": { suspend: HomeAssistant["suspendWhenHidden"] };
+  }
+  // for add event listener
+  interface HTMLElementEventMap {
+    "hass-suspend-when-hidden": HASSDomEvent<{
+      suspend: HomeAssistant["suspendWhenHidden"];
+    }>;
+  }
+}
 
 @customElement("ha-set-suspend-row")
 class HaSetSuspendRow extends LitElement {
