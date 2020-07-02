@@ -265,7 +265,10 @@ gulp.task("gen-index-gallery-prod", (done) => {
 });
 
 gulp.task("gen-index-hassio-dev", async () => {
-  writeHassioEntrypoint("entrypoint.js", "entrypoints.js");
+  writeHassioEntrypoint(
+    `${paths.hassio_publicPath}/frontend_latest/entrypoint.js`,
+    `${paths.hassio_publicPath}/frontend_es5/entrypoint.js`
+  );
 });
 
 gulp.task("gen-index-hassio-prod", async () => {
@@ -289,10 +292,10 @@ function writeHassioEntrypoint(latestEntrypoint, es5Entrypoint) {
     path.resolve(paths.hassio_output_root, "entrypoint.js"),
     `
 try {
-  new Function("import('${paths.hassio_publicPath}/frontend_latest/${latestEntrypoint}')")();
+  new Function("import('${latestEntrypoint}')")();
 } catch (err) {
   var el = document.createElement('script');
-  el.src = '${paths.hassio_publicPath}/frontend_es5/${es5Entrypoint}';
+  el.src = '${es5Entrypoint}';
   document.body.appendChild(el);
 }
   `,
