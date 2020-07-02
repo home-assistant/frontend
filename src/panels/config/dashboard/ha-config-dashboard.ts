@@ -122,7 +122,7 @@ class HaConfigDashboard extends LitElement {
         : ""}
     </ha-config-section>`;
 
-    if (!this.narrow) {
+    if (!this.narrow && this.hass.dockedSidebar !== "always_hidden") {
       return content;
     }
 
