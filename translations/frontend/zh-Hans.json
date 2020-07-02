@@ -1431,6 +1431,7 @@
                         "delete_confirm": "您确定要删除此集成吗？",
                         "device_unavailable": "设备不可用",
                         "devices": "{count} {count, plural,\n  one {个设备}\n  other {个设备}\n}",
+                        "documentation": "文档",
                         "entities": "{count} {count, plural,\n  one {个实体}\n  other {个实体}\n}",
                         "entity_unavailable": "实体不可用",
                         "firmware": "固件：{version}",

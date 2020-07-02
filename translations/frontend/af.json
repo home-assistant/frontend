@@ -467,8 +467,8 @@
                 }
             },
             "history_charts": {
-                "loading_history": "Laai tans staatsgeskiedenis ...",
-                "no_history_found": "Geen staatgeskiedenis gevind nie."
+                "loading_history": "Laai tans toestandsgeskiedenis ...",
+                "no_history_found": "Geen toestandsgeskiedenis gevind nie."
             },
             "related-items": {
                 "area": "Area",
@@ -715,8 +715,8 @@
                                     "value_template": "Waarde templaat (opsioneel)"
                                 },
                                 "state": {
-                                    "label": "Staat",
-                                    "state": "Staat"
+                                    "label": "Toestand",
+                                    "state": "Toestand"
                                 },
                                 "sun": {
                                     "after": "Na:",
@@ -796,7 +796,7 @@
                                 "state": {
                                     "for": "Vir",
                                     "from": "Vanaf",
-                                    "label": "Staat",
+                                    "label": "Toestand",
                                     "to": "Tot en met"
                                 },
                                 "sun": {
@@ -1021,6 +1021,7 @@
                         "delete": "Verwyder",
                         "delete_confirm": "Is u seker u wil hierdie integrasie skrap?",
                         "device_unavailable": "toestel nie beskikbaar nie",
+                        "documentation": "Dokumentasie",
                         "entity_unavailable": "entiteit nie beskikbaar nie",
                         "firmware": "Fermware: {version}",
                         "hub": "Gekonnekteer via",
@@ -1165,7 +1166,7 @@
                             "add": "Voeg 'n toestel by",
                             "delete": "Verwyder toestel",
                             "header": "toestelle",
-                            "introduction": "Voeg die toestelle wat u wil insluit in u toneel by. Stel al die toestelle op die staat wat u wil hê vir hierdie toneel."
+                            "introduction": "Voeg die toestelle wat u wil insluit in u toneel by. Stel toestande van toestelle na verlange in vir hierdie toneel."
                         },
                         "entities": {
                             "add": "Voeg 'n entiteit by",
@@ -1325,7 +1326,7 @@
                     "edit_home_zone_narrow": "Die ligging van u tuissone kan vanaf die algemene konfigurasiebladsy verander word. Die radius van die Tuis-sone kan nog nie vanaf die voorkant verander word nie. Wil u na die algemene opset gaan?",
                     "go_to_core_config": "Gaan na Algemene konfigurasie?",
                     "home_zone_core_config": "Die ligging van u tuissone kan vanaf die algemene konfigurasiebladsy verander word. Die radius van die Tuis-sone kan nog nie vanaf die voorkant verander word nie. Wil u na die algemene opset gaan?",
-                    "introduction": "Met sones kan u sekere streke op aarde spesifiseer. As 'n persoon binne 'n sone is, neem die staat die naam van die sone af. Sones kan ook as 'n sneller of toestand gebruik word binne outomatiseringsinstellings.",
+                    "introduction": "Met sones kan u sekere streke op aarde spesifiseer. As 'n persoon binne 'n sone is, neem die toestand die sonenaam aan. Sones kan ook as 'n sneller of toestand gebruik word in outomatiseringsinstellings.",
                     "no_zones_created_yet": "Lyk asof jy nog geen sones geskep het nie."
                 },
                 "zwave": {
@@ -1431,6 +1432,9 @@
                         "add_item": "Voeg item by",
                         "checked_items": "Gemerkte items",
                         "clear_items": "Maak die gemerkte items skoon"
+                    },
+                    "starting": {
+                        "description": "Home Assistant begin tans, wag asseblief ..."
                     }
                 },
                 "changed_toast": {
@@ -1441,6 +1445,9 @@
                     "card": {
                         "button": {
                             "name": "Knoppie"
+                        },
+                        "humidifier": {
+                            "description": "Die Luchtbevochtigerkaart verleen beheer oor u lugbevochtiger-entiteit. Hiermee kan u die humiditeit en modus van die entiteit verander."
                         },
                         "shopping-list": {
                             "integration_not_loaded": "Hierdie kaart vereis die ' shopping_list ' integrasie wat opgestel moet word."
