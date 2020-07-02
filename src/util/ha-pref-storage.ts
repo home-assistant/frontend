@@ -5,6 +5,7 @@ const STORED_STATE = [
   "selectedTheme",
   "selectedLanguage",
   "vibrate",
+  "suspendWhenHidden",
   "defaultPanel",
 ];
 const STORAGE = window.localStorage || {};

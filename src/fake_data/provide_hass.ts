@@ -203,6 +203,7 @@ export const provideHass = (
     translationMetadata: translationMetadata as any,
     dockedSidebar: "auto",
     vibrate: true,
+    suspendWhenHidden: false,
     moreInfoEntityId: null as any,
     // @ts-ignore
     async callService(domain, service, data) {

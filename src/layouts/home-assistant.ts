@@ -11,6 +11,7 @@ import {
 } from "../util/register-service-worker";
 import "./ha-init-page";
 import "./home-assistant-main";
+import { storeState } from "../util/ha-pref-storage";
 
 @customElement("home-assistant")
 export class HomeAssistantAppEl extends HassElement {
@@ -55,6 +56,10 @@ export class HomeAssistantAppEl extends HassElement {
     import(
       /* webpackChunkName: "polyfill-web-animations-next" */ "web-animations-js/web-animations-next-lite.min"
     );
+    this.addEventListener("hass-suspend-when-hidden", (ev) => {
+      this._updateHass({ suspendWhenHidden: ev.detail.suspend });
+      storeState(this.hass!);
+    });
   }
 
   protected updated(changedProps: PropertyValues): void {
@@ -75,8 +80,6 @@ export class HomeAssistantAppEl extends HassElement {
     super.hassConnected();
     // @ts-ignore
     this._loadHassTranslations(this.hass!.language, "state");
-
-    this.addEventListener("unsuspend-app", () => this._onVisible(), false);
 
     document.addEventListener(
       "visibilitychange",
@@ -170,15 +173,17 @@ export class HomeAssistantAppEl extends HassElement {
         this._visiblePromiseResolve = resolve;
       })
     );
-    // We close the connection to Home Assistant after being hidden for 5 minutes
-    this._hiddenTimeout = window.setTimeout(() => {
-      this._hiddenTimeout = undefined;
-      // setTimeout can be delayed in the background and only fire
-      // when we switch to the tab or app again (Hey Android!)
-      if (!document.hidden) {
-        this._suspendApp();
-      }
-    }, 300000);
+    if (this.hass!.suspendWhenHidden !== false) {
+      // We close the connection to Home Assistant after being hidden for 5 minutes
+      this._hiddenTimeout = window.setTimeout(() => {
+        this._hiddenTimeout = undefined;
+        // setTimeout can be delayed in the background and only fire
+        // when we switch to the tab or app again (Hey Android!)
+        if (!document.hidden) {
+          this._suspendApp();
+        }
+      }, 300000);
+    }
     window.addEventListener("focus", () => this._onVisible(), { once: true });
   }
 

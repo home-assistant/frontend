@@ -2106,6 +2106,10 @@
           "header": "Vibrate",
           "description": "Enable or disable vibration on this device when controlling devices."
         },
+        "suspend": {
+          "header": "Automatically close connection",
+          "description": "Should we close the connection to the server after being hidden for 5 minutes?"
+        },
         "push_notifications": {
           "header": "Push Notifications",
           "description": "Send notifications to this device.",
