@@ -149,7 +149,7 @@ export class HaPanelLogbook extends LitElement {
       todayCopy.setDate(today.getDate() - today.getDay())
     );
     const thisWeekEnd = new Date(
-      todayCopy.setDate(today.getDate() - today.getDay() + 7)
+      todayCopy.setDate(thisWeekStart.getDate() + 7)
     );
     thisWeekEnd.setMilliseconds(thisWeekEnd.getMilliseconds() - 1);
 
@@ -157,7 +157,7 @@ export class HaPanelLogbook extends LitElement {
       todayCopy.setDate(today.getDate() - today.getDay() - 7)
     );
     const lastWeekEnd = new Date(
-      todayCopy.setDate(today.getDate() - today.getDay())
+      todayCopy.setDate(lastWeekStart.getDate() + 7)
     );
     lastWeekEnd.setMilliseconds(lastWeekEnd.getMilliseconds() - 1);
 
