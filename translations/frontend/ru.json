@@ -1431,6 +1431,7 @@
                         "delete_confirm": "Вы уверены, что хотите удалить эту интеграцию?",
                         "device_unavailable": "устройство недоступно",
                         "devices": "{count} {count, plural,\n  one {устройство}\n  other {устройств}\n}",
+                        "documentation": "Документация",
                         "entities": "{count} {count, plural,\n  one {объект}\n  other {объектов}\n}",
                         "entity_unavailable": "объект недоступен",
                         "firmware": "Прошивка: {version}",
@@ -1784,7 +1785,7 @@
                         "caption": "Добавить устройства",
                         "description": "Добавить устройства в сеть Zigbee"
                     },
-                    "button": "Настроить",
+                    "button": "Настройка",
                     "caption": "Zigbee Home Automation",
                     "cluster_attributes": {
                         "attributes_of_cluster": "Атрибуты выбранного кластера",
@@ -1905,7 +1906,7 @@
                     "no_zones_created_yet": "У Вас еще нет добавленных зон."
                 },
                 "zwave": {
-                    "button": "Настроить",
+                    "button": "Настройка",
                     "caption": "Z-Wave",
                     "common": {
                         "index": "Индекс",
