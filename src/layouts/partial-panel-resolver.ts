@@ -162,6 +162,10 @@ class PartialPanelResolver extends HassRouterPage {
   }
 
   private _checkVisibility() {
+    if (this.hass.suspendWhenHidden === false) {
+      return;
+    }
+
     if (document.hidden) {
       this._onHidden();
     } else {
