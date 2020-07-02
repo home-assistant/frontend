@@ -47,6 +47,7 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
         translationMetadata,
         dockedSidebar: "docked",
         vibrate: true,
+        suspendWhenHidden: true,
         moreInfoEntityId: null,
         hassUrl: (path = "") => new URL(path, auth.data.hassUrl).toString(),
         callService: async (domain, service, serviceData = {}) => {

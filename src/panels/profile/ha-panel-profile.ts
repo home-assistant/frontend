@@ -35,6 +35,7 @@ import "./ha-pick-theme-row";
 import "./ha-push-notifications-row";
 import "./ha-refresh-tokens-card";
 import "./ha-set-vibrate-row";
+import "./ha-set-suspend-row";
 
 class HaPanelProfile extends LitElement {
   @property() public hass!: HomeAssistant;
@@ -137,6 +138,10 @@ class HaPanelProfile extends LitElement {
                   ></ha-advanced-mode-row>
                 `
               : ""}
+            <ha-set-suspend-row
+              .narrow=${this.narrow}
+              .hass=${this.hass}
+            ></ha-set-suspend-row>
 
             <div class="card-actions">
               <mwc-button class="warning" @click=${this._handleLogOut}>
