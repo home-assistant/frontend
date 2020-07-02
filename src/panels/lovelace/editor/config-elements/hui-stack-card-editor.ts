@@ -51,6 +51,10 @@ export class HuiStackCardEditor extends LitElement
     this._config = cardConfigStruct(config);
   }
 
+  public refreshYamlEditor(focus) {
+    this._cardEditorEl?.refreshYamlEditor(focus);
+  }
+
   protected render(): TemplateResult {
     if (!this.hass || !this._config) {
       return html``;

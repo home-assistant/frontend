@@ -57,4 +57,5 @@ export interface LovelaceCardEditor extends HTMLElement {
   hass?: HomeAssistant;
   lovelace?: LovelaceConfig;
   setConfig(config: LovelaceCardConfig): void;
+  refreshYamlEditor?: (focus: boolean) => void;
 }
