@@ -113,10 +113,12 @@ export class HaPanelLogbook extends LitElement {
         </div>
 
         ${this._isLoading
-          ? html`<ha-circular-progress
-              active
-              alt=${this.hass.localize("ui.common.loading")}
-            ></ha-circular-progress>`
+          ? html`<div class="progress-wrapper">
+              <ha-circular-progress
+                active
+                alt=${this.hass.localize("ui.common.loading")}
+              ></ha-circular-progress>
+            </div>`
           : html`<ha-logbook
               .hass=${this.hass}
               .entries=${this._entries}
@@ -248,11 +250,13 @@ export class HaPanelLogbook extends LitElement {
     return [
       haStyle,
       css`
-        ha-logbook {
+        ha-logbook,
+        .progress-wrapper {
           height: calc(100vh - 136px);
         }
 
-        :host([narrow]) ha-logbook {
+        :host([narrow]) ha-logbook,
+        :host([narrow]) .progress-wrapper {
           height: calc(100vh - 198px);
         }
 
@@ -265,15 +269,15 @@ export class HaPanelLogbook extends LitElement {
           margin-right: 0;
         }
 
+        .progress-wrapper {
+          position: relative;
+        }
+
         ha-circular-progress {
           position: absolute;
           left: 50%;
           top: 50%;
           transform: translate(-50%, -50%);
-        }
-
-        .wrap {
-          margin-bottom: 24px;
         }
 
         .filters {
