@@ -24,6 +24,7 @@ import type { EntityConfig } from "../../entity-rows/types";
 import type { LovelaceCardEditor } from "../../types";
 import type { GUIModeChangedEvent } from "../types";
 import "../../../../components/ha-circular-progress";
+import { deepEqual } from "../../../../common/util/deep-equal";
 
 export interface ConfigChangedEvent {
   config: LovelaceCardConfig;
@@ -81,16 +82,11 @@ export class HuiCardEditor extends LitElement {
     this._yaml = _yaml;
     try {
       this._config = safeLoad(this.yaml);
-      this._updateConfigElement();
       this._error = undefined;
     } catch (err) {
       this._error = err.message;
     }
-    fireEvent(this, "config-changed", {
-      config: this.value!,
-      error: this._error,
-      guiModeAvailable: !(this.hasWarning || this.hasError),
-    });
+    this._setConfig();
   }
 
   public get value(): LovelaceCardConfig | undefined {
@@ -98,9 +94,29 @@ export class HuiCardEditor extends LitElement {
   }
 
   public set value(config: LovelaceCardConfig | undefined) {
-    if (JSON.stringify(config) !== JSON.stringify(this._config || {})) {
-      this.yaml = safeDump(config);
+    if (this._config && deepEqual(config, this._config)) {
+      return;
     }
+    this._config = config;
+    this._yaml = safeDump(config);
+    this._error = undefined;
+    this._setConfig();
+  }
+
+  private _setConfig() {
+    if (!this._error) {
+      try {
+        this._updateConfigElement();
+        this._error = undefined;
+      } catch (err) {
+        this._error = err.message;
+      }
+    }
+    fireEvent(this, "config-changed", {
+      config: this.value!,
+      error: this._error,
+      guiModeAvailable: !(this.hasWarning || this.hasError),
+    });
   }
 
   public get hasWarning(): boolean {
